@@ -1,54 +1,51 @@
+import { selectOutcomeGroups } from '@cf/redux/selectors/outcomes.selector'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { ReactNode, useCallback, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import data from './data'
 import { StyledOutcomes } from './styles'
 import DraggableBlock from '../../Draggable'
 import { DraggableBlockToggle } from '../../Draggable/styles'
 import type { DraggableBlockType } from '../../Draggable/types'
-import {
-  GroupWrap,
-  SidebarActions,
-  SidebarContent,
-  SidebarInnerWrap,
-  SidebarTitle
-} from '../../styles'
+import * as Styled from '../../styles'
 import { OutcomeGroup } from '../../types'
 
 const OutcomeTab = () => {
-  const { title, subtitle, groups } = data
+  const outcomeGroups = useSelector(selectOutcomeGroups)
+  const { title, subtitle } = data
 
   return (
-    <SidebarInnerWrap>
-      <SidebarContent>
+    <Styled.SidebarInnerWrap>
+      <Styled.SidebarContent>
         {title && (
-          <SidebarTitle as="h3" variant="h6">
+          <Styled.SidebarTitle as="h3" variant="h6">
             {title}
-          </SidebarTitle>
+          </Styled.SidebarTitle>
         )}
         {subtitle && (
           <Typography variant="body2" sx={{ mb: 3 }}>
             {subtitle}
           </Typography>
         )}
-        {groups?.map((group, idx) => (
-          <GroupWrap key={idx}>
+        {outcomeGroups.map((group, idx) => (
+          <Styled.GroupWrap key={idx}>
             <Typography component="h6" variant="body2">
               {group.title}
             </Typography>
-            <OutcomeGroupWrap group={group} blocks={group.blocks} />
-          </GroupWrap>
+            {/* <OutcomeGroupWrap group={group} blocks={group.blocks} /> */}
+          </Styled.GroupWrap>
         ))}
-      </SidebarContent>
-      <SidebarActions>
+      </Styled.SidebarContent>
+      <Styled.SidebarActions>
         <Button variant="contained" color="secondary">
           Edit outcomes
         </Button>
-      </SidebarActions>
-    </SidebarInnerWrap>
+      </Styled.SidebarActions>
+    </Styled.SidebarInnerWrap>
   )
 }
 

@@ -12,6 +12,7 @@ import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indi
 import BetterSelectionManager from '@cf/redux/BetterSelectionManager'
 import {
   Outcome as OutcomeType,
+  linkOutcome,
   moveOutcome
 } from '@cf/redux/slices/outcomes.slice'
 import { setDragging } from '@cf/redux/slices/outcomes.slice'
@@ -28,6 +29,7 @@ import * as Styled from '../styles'
 
 type OutcomeStateType = {
   collapsed: boolean
+  dragHighlight: boolean
   operation: null | Instruction['operation']
 }
 
@@ -36,6 +38,7 @@ const Outcome = ({
   title,
   children,
   level,
+  linkedOutcomes,
   code,
   prefix
 }: OutcomeType & {
@@ -45,11 +48,25 @@ const Outcome = ({
   const dispatch = useDispatch()
   const sidebarData = useSelector((state: AppState) => state.sidebar.edit)
   const dragging = useSelector((state: AppState) => state.outcomes.dragging)
+  const highlight = useSelector((state: AppState) => state.outcomes.highlighted)
   const manager = useRef(new BetterSelectionManager(dispatch))
   const [state, setState] = useState<OutcomeStateType>({
     collapsed: true,
+    dragHighlight: false,
     operation: null
   })
+
+  const selected =
+    sidebarData.objectType === CfObjectType.OUTCOME && sidebarData.id === id
+
+  const highlighted = linkedOutcomes?.some((o) => highlight.includes(o))
+
+  // use the 'code' prefix, which is only supported at level 1 outcomes
+  // otherwise it's all numbers
+  const formattedPrefix =
+    prefix.length === 1 && level === 1 && code
+      ? `${code} - `
+      : `${prefix.join('.')}. `
 
   useEffect(() => {
     const el = dragHandleRef.current
@@ -94,23 +111,42 @@ const Outcome = ({
           })
         },
         onDrag: (args) => {
+          const dragging = args.source.data
+
           const instruction: Instruction | null = extractInstruction(
             args.self.data
           )
+
           setState(
             produce((draft) => {
-              draft.operation = instruction?.operation ?? null
+              if (isOutcomeLink(dragging) && level === 1) {
+                draft.dragHighlight = true
+              } else {
+                draft.operation = instruction?.operation ?? null
+              }
             })
           )
         },
         onDropTargetChange: () => {
           setState(
             produce((draft) => {
+              draft.dragHighlight = false
               draft.operation = null
             })
           )
         },
         onDrop: (args) => {
+          const dragging = args.source.data
+
+          if (isOutcomeLink(dragging) && level === 1) {
+            dispatch(
+              linkOutcome({
+                targetId: dragging.id,
+                destinationId: id
+              })
+            )
+          }
+
           const instruction: Instruction | null = extractInstruction(
             args.self.data
           )
@@ -119,7 +155,7 @@ const Outcome = ({
             dispatch(
               moveOutcome({
                 targetId: args.source.data.id as number,
-                destinationId: args.self.data.id as number,
+                destinationId: id,
                 operation: instruction.operation
               })
             )
@@ -127,6 +163,7 @@ const Outcome = ({
 
           setState(
             produce((draft) => {
+              draft.dragHighlight = false
               draft.operation = null
             })
           )
@@ -134,9 +171,6 @@ const Outcome = ({
       })
     )
   }, [dispatch, dragHandleRef, dragging, id, level])
-
-  const selected =
-    sidebarData.objectType === CfObjectType.OUTCOME && sidebarData.id === id
 
   const setCollapsed = useCallback((value: boolean) => {
     setState(
@@ -162,13 +196,6 @@ const Outcome = ({
     }
   }, [id, selected])
 
-  // use the 'code' prefix, which is only supported at level 1 outcomes
-  // otherwise it's all numbers
-  const formattedPrefix =
-    prefix.length === 1 && level === 1 && code
-      ? `${code} - `
-      : `${prefix.join('.')}. `
-
   return (
     <Styled.OutcomeWrapper dragging={dragging?.id === id}>
       <OutcomeHeader
@@ -176,7 +203,8 @@ const Outcome = ({
         level={level}
         dragRef={dragHandleRef}
         title={`${formattedPrefix}${title}`}
-        selected={selected}
+        selected={selected || state.dragHighlight}
+        highlighted={highlighted}
         collapsed={state.collapsed}
         setCollapsed={setCollapsed}
         showToggle={!!children.length}
@@ -205,3 +233,11 @@ const Outcome = ({
 }
 
 export default Outcome
+
+// typeguards
+function isOutcomeLink(data: Record<string | symbol, unknown>): data is {
+  id: number
+  type: 'link_outcome'
+} {
+  return 'id' in data && 'type' in data && data.type === 'link_outcome'
+}

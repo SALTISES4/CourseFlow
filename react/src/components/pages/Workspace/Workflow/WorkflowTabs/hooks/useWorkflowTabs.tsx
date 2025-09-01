@@ -10,7 +10,7 @@ import OutcomeEditView from '@cfViews/WorkflowView/componentViews/OutcomeEditVie
 import CompetencyMatrixView from '@cfViews/WorkflowView/componentViews/OutcomeOverviewView/CompetencyMatrixView/CompetencyMatrixView'
 import OverviewView from '@cfViews/WorkflowView/componentViews/OverviewView'
 // import WorkflowEditView from '@cfViews/WorkflowView/componentViews/WorkflowEditView'
-import WorkflowEditViewV2 from '@cfViews/WorkflowView/componentViews/WorkflowEditViewV2'
+import WorkflowEditView from '@cfViews/WorkflowView/componentViews/WorkflowEditViewV2'
 import Tab from '@mui/material/Tab'
 import { ReactNode } from 'react'
 import { Route, generatePath, useNavigate, useParams } from 'react-router-dom'
@@ -43,8 +43,7 @@ const useWorkflowTabs = (workflow: EWorkflow, context: WorkflowContextType) => {
       route: CFRoutes.WORKFLOW_WORKFLOW,
       relRoute: RelativeRoutes.WORKFLOW,
       label: _t('Workflow'),
-      // content: <WorkflowEditView />,
-      content: <WorkflowEditViewV2 />,
+      content: <WorkflowEditView />,
       allowedTabs: [1, 2, 3, 4]
     },
     {

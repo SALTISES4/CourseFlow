@@ -1,17 +1,24 @@
-import { Outcome as OutcomeType } from '@cf/redux/slices/outcomes.slice'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { selectOutcomeChildrenById } from '@cf/redux/selectors/outcomes.selector'
+import { AppState } from '@cf/redux/types/type'
+import * as StyledOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/components/OutcomeTree/styles'
+import { useCallback, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 
+import Outcome from './Outcome'
 import * as Styled from './styles'
-import TreeView from './TreeView'
 
 type PropsType = {
-  outcomes: OutcomeType[]
+  id: number
+  outcomes: number[]
 }
 
-const LinkedOutcomes = ({ outcomes }: PropsType) => {
+const LinkedOutcomes = ({ id, outcomes }: PropsType) => {
   const [show, setShow] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
   const badgeRef = useRef<HTMLSpanElement>(null)
+  const outcomesData = useSelector(
+    (state: AppState) => state.outcomes.outcomeData
+  )
 
   const onWrapEnter = useCallback(() => {
     setShow(true)
@@ -21,23 +28,13 @@ const LinkedOutcomes = ({ outcomes }: PropsType) => {
     setShow(false)
   }, [])
 
-  useEffect(() => {
-    const target = badgeRef?.current
-
-    if (!target) {
-      return
-    }
-
-    target.addEventListener('click', onWrapEnter)
-
-    return () => {
-      target.removeEventListener('click', onWrapEnter)
-    }
-  }, [onWrapEnter])
-
   return (
     <Styled.Wrap ref={wrapRef}>
-      <Styled.Badge ref={badgeRef} badgeContent={4} />
+      <Styled.Badge
+        ref={badgeRef}
+        onClick={onWrapEnter}
+        badgeContent={outcomes.length}
+      />
       <Styled.Popover
         open={show}
         anchorEl={wrapRef?.current}
@@ -51,10 +48,35 @@ const LinkedOutcomes = ({ outcomes }: PropsType) => {
           horizontal: 'right'
         }}
       >
-        {/* <TreeView outcomes={outcomes} /> */}
-        <h1>Hello</h1>
+        <StyledOutcome.OutcomeGroup sx={{ mt: 0 }}>
+          {outcomes.map((outcome) => (
+            <StyledOutcome.OutcomeGroupItem key={outcome}>
+              <Outcome {...outcomesData[outcome]} linkParent={id} />
+            </StyledOutcome.OutcomeGroupItem>
+          ))}
+        </StyledOutcome.OutcomeGroup>
       </Styled.Popover>
     </Styled.Wrap>
+  )
+}
+
+export const OutcomeGroup = ({ parentId }: { parentId: number }) => {
+  const childOutcomes = useSelector((state: AppState) =>
+    selectOutcomeChildrenById(state, parentId)
+  )
+
+  if (!childOutcomes.length) {
+    return null
+  }
+
+  return (
+    <StyledOutcome.OutcomeGroup>
+      {childOutcomes.map((outcome) => (
+        <StyledOutcome.OutcomeGroupItem key={outcome.id}>
+          <Outcome {...outcome} />
+        </StyledOutcome.OutcomeGroupItem>
+      ))}
+    </StyledOutcome.OutcomeGroup>
   )
 }
 

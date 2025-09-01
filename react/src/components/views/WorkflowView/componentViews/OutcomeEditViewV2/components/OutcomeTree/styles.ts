@@ -13,27 +13,27 @@ export const OutcomeGroupTitle = styled(Typography)(({ theme }) => ({
 }))
 
 export const OutcomeGroup = styled('ul')(({ theme }) => ({
-  margin: 0,
+  margin: `${theme.spacing(1)} 0 0`,
   padding: 0,
   listStyle: 'none',
   '& ul': {
     marginLeft: theme.spacing(1)
   },
-  '& li': {
+  '& li + li': {
     marginTop: theme.spacing(1)
   }
 }))
 
 export const OutcomeGroupItem = styled('li', {
   shouldForwardProp: (prop) => prop !== 'level'
-})<{ level: number }>(({ theme, level }) => ({
+})<{ padded?: boolean }>(({ theme, padded }) => ({
   position: 'relative',
-  paddingRight: level === 1 ? '28px' : 0
+  paddingRight: padded ? '28px' : 0
 }))
 
 export const OutcomeWrapper = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'dragging'
-})<{ dragging: boolean }>(({ theme, dragging }) => ({
+})<{ dragging?: boolean }>(({ theme, dragging }) => ({
   position: 'relative',
   width: '100%;',
   opacity: dragging ? 0.4 : 1
@@ -42,7 +42,7 @@ export const OutcomeWrapper = styled(Box, {
 export const OutcomeHeader = styled(Box, {
   shouldForwardProp: (prop) =>
     !['selected', 'highlighted', 'level'].includes(prop as string)
-})<{ selected: boolean; highlighted: boolean; level: number }>(
+})<{ selected?: boolean; highlighted?: boolean; level: number }>(
   ({ theme, selected, highlighted, level }) => ({
     position: 'relative',
     display: 'flex',
@@ -81,7 +81,8 @@ export const OutcomeHeaderInner = styled(Box)(() => ({
   display: 'flex',
   gap: '1em',
   justifyContent: 'space-between',
-  flexGrow: 1
+  flexGrow: 1,
+  minWidth: 0
 }))
 
 export const OutcomeHeaderToggle = styled(IconButton)(({ theme }) => ({

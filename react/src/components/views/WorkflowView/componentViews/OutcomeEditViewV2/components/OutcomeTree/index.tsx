@@ -26,13 +26,15 @@ const OutcomeGroupWrap = ({ id, title, children, level }: OutcomeType) => {
         </Styled.OutcomeGroupTitle>
         <OutcomeGroup prefix={[]} parentId={id} />
         {!children.length && (
-          <Styled.AddNewButton
-            variant="text"
-            disableRipple
-            onClick={onAddNewOutcome}
-          >
-            {_t('Add outcome')}
-          </Styled.AddNewButton>
+          <div style={{ marginRight: '28px' }}>
+            <Styled.AddNewButton
+              variant="text"
+              disableRipple
+              onClick={onAddNewOutcome}
+            >
+              {_t('Add outcome')}
+            </Styled.AddNewButton>
+          </div>
         )}
       </Styled.OutcomeGroupWrap>
     </GroupDropzone>
@@ -57,9 +59,11 @@ export const OutcomeGroup = ({
   return (
     <Styled.OutcomeGroup>
       {childOutcomes.map((outcome, index) => (
-        <Styled.OutcomeGroupItem key={outcome.id} level={outcome.level}>
+        <Styled.OutcomeGroupItem key={outcome.id} padded={outcome.level === 1}>
           <Outcome {...outcome} prefix={[...prefix, index + 1]} />
-          {/* {outcome.level === 1 && <LinkedOutcomes outcomes={outcome.children} />} */}
+          {!!outcome.linkedOutcomes?.length && (
+            <LinkedOutcomes id={outcome.id} outcomes={outcome.linkedOutcomes} />
+          )}
         </Styled.OutcomeGroupItem>
       ))}
     </Styled.OutcomeGroup>

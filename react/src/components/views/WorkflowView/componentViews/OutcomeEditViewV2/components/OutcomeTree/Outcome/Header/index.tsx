@@ -26,6 +26,7 @@ type PropsType = {
   title: string
   dragRef: MutableRefObject<HTMLDivElement>
   selected: boolean
+  highlighted: boolean
   collapsed: boolean
   setCollapsed: (value: boolean) => void
   showToggle: boolean
@@ -38,6 +39,7 @@ const OutcomeHeader = ({
   level,
   title,
   dragRef,
+  highlighted,
   selected,
   collapsed,
   setCollapsed,
@@ -50,7 +52,7 @@ const OutcomeHeader = ({
   return (
     <Styled.OutcomeHeader
       ref={dragRef}
-      highlighted={false}
+      highlighted={highlighted}
       selected={selected}
       level={level}
       onClick={onClick}

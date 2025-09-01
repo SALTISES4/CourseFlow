@@ -1,3 +1,4 @@
+import { getPrefixPath } from '@cf/redux/selectors/outcomes.selector'
 import { Outcome as OutcomeType } from '@cf/redux/slices/outcomes.slice'
 import { AppState } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
@@ -7,15 +8,24 @@ import { produce } from 'immer'
 import { MouseEvent, useCallback, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import OutcomeGroup from '../OutcomeGroup'
+import { OutcomeGroup } from '../'
 import OutcomeHeader from './Header'
 
 type OutcomeStateType = {
   collapsed: boolean
 }
 
-const Outcome = ({ id, title, children, position }: OutcomeType) => {
+const Outcome = ({
+  id,
+  level,
+  title,
+  children,
+  linkParent
+}: OutcomeType & {
+  linkParent?: number
+}) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
+  const prefix = useSelector((state: AppState) => getPrefixPath(state, id))
   const sidebarData = useSelector((state: AppState) => state.sidebar.edit)
   const [state, setState] = useState<OutcomeStateType>({
     collapsed: true
@@ -40,23 +50,23 @@ const Outcome = ({ id, title, children, position }: OutcomeType) => {
     [setCollapsed, state.collapsed]
   )
 
-  const level = position.length
   const showToggleButton = !!children.length && level !== 3
 
   return (
-    <Styled.OutcomeWrapper dragging={false}>
+    <Styled.OutcomeWrapper>
       <OutcomeHeader
         id={id}
         level={level}
+        linkParent={linkParent}
         dragRef={dragHandleRef}
-        title={`${position.join('.')} - ${title}`}
+        title={`${prefix}${title}`}
         selected={selected}
         collapsed={state.collapsed}
         showToggle={showToggleButton}
         onToggleClick={onToggleClick}
       />
 
-      {!state.collapsed && <OutcomeGroup outcomes={children} />}
+      {!state.collapsed && <OutcomeGroup parentId={id} />}
     </Styled.OutcomeWrapper>
   )
 }

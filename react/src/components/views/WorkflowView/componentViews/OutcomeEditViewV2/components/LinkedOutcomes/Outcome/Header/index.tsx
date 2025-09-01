@@ -1,4 +1,5 @@
 import useHover from '@cf/hooks/useHover'
+import { linkOutcome } from '@cf/redux/slices/outcomes.slice'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
@@ -14,6 +15,7 @@ import { useDispatch } from 'react-redux'
 type PropsType = {
   id: number
   level: number
+  linkParent?: number
   title: string
   dragRef: MutableRefObject<HTMLDivElement>
   selected: boolean
@@ -25,9 +27,9 @@ type PropsType = {
 const OutcomeHeader = ({
   id,
   level,
+  linkParent,
   title,
   dragRef,
-  selected,
   collapsed,
   showToggle,
   onToggleClick
@@ -37,8 +39,6 @@ const OutcomeHeader = ({
   return (
     <Styled.OutcomeHeader
       ref={dragRef}
-      highlighted={false}
-      selected={selected}
       level={level}
       sx={{
         '&:hover': {
@@ -49,7 +49,7 @@ const OutcomeHeader = ({
     >
       <Styled.OutcomeHeaderInner>
         <Styled.OutcomeTitle variant="body2">{title}</Styled.OutcomeTitle>
-        <HoverMenu show={isHovered} id={id} />
+        <HoverMenu show={isHovered} id={id} linkParent={linkParent} />
       </Styled.OutcomeHeaderInner>
       {showToggle && (
         <Styled.OutcomeHeaderToggle onClick={onToggleClick}>
@@ -69,7 +69,15 @@ enum HoverMenuActions {
   COMMENTS = 'comments'
 }
 
-const HoverMenu = ({ id, show }: { id: PropsType['id']; show: boolean }) => {
+const HoverMenu = ({
+  id,
+  linkParent,
+  show
+}: {
+  id: PropsType['id']
+  linkParent: PropsType['linkParent']
+  show: boolean
+}) => {
   const dispatch = useDispatch()
 
   const onActionClick = useCallback(
@@ -78,7 +86,12 @@ const HoverMenu = ({ id, show }: { id: PropsType['id']; show: boolean }) => {
         e.stopPropagation()
         switch (action) {
           case HoverMenuActions.UNLINK:
-            console.log('delete linked outcome', id)
+            dispatch(
+              linkOutcome({
+                targetId: id,
+                destinationId: linkParent
+              })
+            )
             break
           case HoverMenuActions.COMMENTS:
             dispatch(
@@ -94,7 +107,7 @@ const HoverMenu = ({ id, show }: { id: PropsType['id']; show: boolean }) => {
         }
       }
     },
-    [dispatch, id]
+    [dispatch, id, linkParent]
   )
 
   return (
@@ -105,11 +118,15 @@ const HoverMenu = ({ id, show }: { id: PropsType['id']; show: boolean }) => {
           position: 'relative'
         }}
         items={[
-          {
-            label: 'Unlink outcome',
-            icon: <CancelOutlinedIcon />,
-            onClick: onActionClick(HoverMenuActions.UNLINK)
-          },
+          ...(linkParent
+            ? [
+                {
+                  label: 'Unlink outcome',
+                  icon: <CancelOutlinedIcon />,
+                  onClick: onActionClick(HoverMenuActions.UNLINK)
+                }
+              ]
+            : []),
           {
             label: 'Comments',
             icon: <ChatIcon />,

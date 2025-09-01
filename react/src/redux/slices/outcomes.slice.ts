@@ -14,16 +14,21 @@ export type Outcome = {
   parent: number | null
   children?: number[]
   level: number
+  linkedOutcomes?: number[]
 }
 
 export type OutcomesState = {
   dragging: { id: number; level: number } | null
+  highlighted: number[]
+
   outcomeOrder: number[]
   outcomeData: Record<number, Outcome>
 }
 
 const initialState: OutcomesState = {
   dragging: null,
+  highlighted: [],
+
   outcomeOrder: [],
   outcomeData: {}
 }
@@ -287,6 +292,41 @@ export const outcomesSlice = createSlice({
       action: PayloadAction<{ id: number; level: number } | null>
     ) => {
       state.dragging = action.payload
+    },
+
+    // add/remove clicked outcome from being highlighted
+    setHighlighted: (state, action: PayloadAction<number>) => {
+      const id = action.payload
+      const index = state.highlighted.indexOf(id)
+
+      if (index === -1) {
+        state.highlighted.push(id)
+      } else {
+        state.highlighted.splice(index, 1)
+      }
+    },
+
+    // add/remove linked outcomes
+    linkOutcome: (
+      state,
+      action: PayloadAction<{
+        targetId: number
+        destinationId: number
+      }>
+    ) => {
+      const { targetId, destinationId } = action.payload
+      const destination = state.outcomeData[destinationId]
+
+      if (!destination.linkedOutcomes) {
+        destination.linkedOutcomes = [targetId]
+      } else {
+        const index = destination.linkedOutcomes?.indexOf(targetId)
+        if (index !== -1) {
+          destination.linkedOutcomes.splice(index, 1)
+        } else {
+          destination.linkedOutcomes.push(targetId)
+        }
+      }
     }
   }
 })
@@ -298,6 +338,8 @@ export const {
   duplicateOutcome,
   updateOutcome,
   moveOutcome,
-  setDragging
+  linkOutcome,
+  setDragging,
+  setHighlighted
 } = outcomesSlice.actions
 export default outcomesSlice.reducer
