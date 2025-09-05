@@ -12,6 +12,7 @@ import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indi
 import BetterSelectionManager from '@cf/redux/BetterSelectionManager'
 import {
   Outcome as OutcomeType,
+  isOutcomeLink,
   linkOutcome,
   moveOutcome
 } from '@cf/redux/slices/outcomes.slice'
@@ -233,11 +234,3 @@ const Outcome = ({
 }
 
 export default Outcome
-
-// typeguards
-function isOutcomeLink(data: Record<string | symbol, unknown>): data is {
-  id: number
-  type: 'link_outcome'
-} {
-  return 'id' in data && 'type' in data && data.type === 'link_outcome'
-}

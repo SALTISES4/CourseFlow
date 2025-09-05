@@ -1,16 +1,11 @@
-import {
-  selectOutcomeChildrenById,
-  selectOutcomeGroups
-} from '@cf/redux/selectors/outcomes.selector'
-import { AppState } from '@cf/redux/types/type'
+import { selectOutcomeGroups } from '@cf/redux/selectors/outcomes.selector'
 import Alert from '@cfComponents/UIPrimitives/Alert'
-import * as StyledOutcomes from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/components/OutcomeTree/styles'
 import Typography from '@mui/material/Typography'
 import { useSelector } from 'react-redux'
 
 import data from './data'
-import Outcome from './Outcome'
 import * as Styled from '../../styles'
+import { OutcomeGroup } from '../OutcomesTab/Outcome'
 
 const RelatedTab = () => {
   const outcomeGroups = useSelector(selectOutcomeGroups)
@@ -47,32 +42,6 @@ const RelatedTab = () => {
         )}
       </Styled.SidebarContent>
     </Styled.SidebarInnerWrap>
-  )
-}
-
-export const OutcomeGroup = ({
-  parentId,
-  prefix
-}: {
-  parentId: number
-  prefix: (number | string)[]
-}) => {
-  const childOutcomes = useSelector((state: AppState) =>
-    selectOutcomeChildrenById(state, parentId)
-  )
-
-  if (!childOutcomes.length) {
-    return null
-  }
-
-  return (
-    <StyledOutcomes.OutcomeGroup>
-      {childOutcomes.map((outcome, index) => (
-        <StyledOutcomes.OutcomeGroupItem key={outcome.id}>
-          <Outcome {...outcome} prefix={[...prefix, index + 1]} />
-        </StyledOutcomes.OutcomeGroupItem>
-      ))}
-    </StyledOutcomes.OutcomeGroup>
   )
 }
 

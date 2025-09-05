@@ -28,7 +28,7 @@ export function getWorkflowBoardData(
     }
 
     // else, every node is on its own row and associated to a single column ID
-    const rows = weekNodes.map((nodeId, index) => {
+    const rows = weekNodes.map((nodeId) => {
       const rowArr: BoardWeekRowType = new Array(columns.length).fill(
         WeekCellNodeType.PHANTOM
       )

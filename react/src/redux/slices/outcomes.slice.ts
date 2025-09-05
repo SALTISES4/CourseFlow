@@ -331,6 +331,13 @@ export const outcomesSlice = createSlice({
   }
 })
 
+export function isOutcomeLink(data: Record<string | symbol, unknown>): data is {
+  id: number
+  type: 'link_outcome'
+} {
+  return 'id' in data && 'type' in data && data.type === 'link_outcome'
+}
+
 export const {
   addOutcomeGroup,
   addOutcome,

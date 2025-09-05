@@ -1,4 +1,5 @@
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { selectOutcomeChildrenById } from '@cf/redux/selectors/outcomes.selector'
 import {
   Outcome as OutcomeType,
   setHighlighted
@@ -6,11 +7,11 @@ import {
 import { AppState } from '@cf/redux/types/type'
 import { _t } from '@cf/utility/Utility.class'
 import * as Styled from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/components/OutcomeTree/styles'
+import * as StyledOutcomes from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/components/OutcomeTree/styles'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { OutcomeGroup } from '..'
 import OutcomeHeader from './Header'
 
 const Outcome = ({
@@ -110,6 +111,32 @@ const Outcome = ({
         />
       )}
     </Styled.OutcomeWrapper>
+  )
+}
+
+export const OutcomeGroup = ({
+  parentId,
+  prefix
+}: {
+  parentId: number
+  prefix: (number | string)[]
+}) => {
+  const childOutcomes = useSelector((state: AppState) =>
+    selectOutcomeChildrenById(state, parentId)
+  )
+
+  if (!childOutcomes.length) {
+    return null
+  }
+
+  return (
+    <StyledOutcomes.OutcomeGroup>
+      {childOutcomes.map((outcome, index) => (
+        <StyledOutcomes.OutcomeGroupItem key={outcome.id}>
+          <Outcome {...outcome} prefix={[...prefix, index + 1]} />
+        </StyledOutcomes.OutcomeGroupItem>
+      ))}
+    </StyledOutcomes.OutcomeGroup>
   )
 }
 
