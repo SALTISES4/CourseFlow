@@ -3,10 +3,12 @@ import Box from '@mui/material/Box'
 import MuiPopover from '@mui/material/Popover'
 import { styled } from '@mui/material/styles'
 
-export const Wrap = styled(Box)(({ theme }) => ({
+export const Wrap = styled(Box, {
+  shouldForwardProp: (prop) => !['type'].includes(prop as string)
+})<{ type: 'outcome' | 'node' }>(({ theme, type }) => ({
   position: 'absolute',
   top: '18px',
-  right: 0,
+  right: type === 'outcome' ? 0 : '-1.5em',
   width: '20px',
   height: '20px',
   transform: 'translateY(-50%)'

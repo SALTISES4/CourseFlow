@@ -7,12 +7,15 @@ import { useSelector } from 'react-redux'
 import Outcome from './Outcome'
 import * as Styled from './styles'
 
-type PropsType = {
-  id: number
+export type PropsType = {
+  parent: {
+    id: number
+    type: 'node' | 'outcome'
+  }
   outcomes: number[]
 }
 
-const LinkedOutcomes = ({ id, outcomes }: PropsType) => {
+const LinkedOutcomes = ({ parent, outcomes }: PropsType) => {
   const [show, setShow] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
   const badgeRef = useRef<HTMLSpanElement>(null)
@@ -20,16 +23,11 @@ const LinkedOutcomes = ({ id, outcomes }: PropsType) => {
     (state: AppState) => state.outcomes.outcomeData
   )
 
-  const onWrapEnter = useCallback(() => {
-    setShow(true)
-  }, [])
-
-  const onWrapLeave = useCallback(() => {
-    setShow(false)
-  }, [])
+  const onWrapEnter = useCallback(() => setShow(true), [])
+  const onWrapLeave = useCallback(() => setShow(false), [])
 
   return (
-    <Styled.Wrap ref={wrapRef}>
+    <Styled.Wrap ref={wrapRef} type={parent.type}>
       <Styled.Badge
         ref={badgeRef}
         onClick={onWrapEnter}
@@ -51,7 +49,7 @@ const LinkedOutcomes = ({ id, outcomes }: PropsType) => {
         <StyledOutcome.OutcomeGroup sx={{ mt: 0 }}>
           {outcomes.map((outcome) => (
             <StyledOutcome.OutcomeGroupItem key={outcome}>
-              <Outcome {...outcomesData[outcome]} linkParent={id} />
+              <Outcome {...outcomesData[outcome]} linkParent={parent} />
             </StyledOutcome.OutcomeGroupItem>
           ))}
         </StyledOutcome.OutcomeGroup>

@@ -9,6 +9,7 @@ export type BoardNodeDataType = {
   outgoingLinks: number[]
   contextType: number
   taskType: number
+  linkedOutcomes?: number[]
   time: {
     length: number
     unit: number

@@ -62,7 +62,13 @@ export const OutcomeGroup = ({
         <Styled.OutcomeGroupItem key={outcome.id} padded={outcome.level === 1}>
           <Outcome {...outcome} prefix={[...prefix, index + 1]} />
           {!!outcome.linkedOutcomes?.length && (
-            <LinkedOutcomes id={outcome.id} outcomes={outcome.linkedOutcomes} />
+            <LinkedOutcomes
+              parent={{
+                id: outcome.id,
+                type: 'outcome'
+              }}
+              outcomes={outcome.linkedOutcomes}
+            />
           )}
         </Styled.OutcomeGroupItem>
       ))}

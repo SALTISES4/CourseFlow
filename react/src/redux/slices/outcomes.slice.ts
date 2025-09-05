@@ -2,6 +2,8 @@ import { type Instruction } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-
 import { createSlice } from '@reduxjs/toolkit'
 import { type PayloadAction } from '@reduxjs/toolkit'
 
+import data from './dummyData/outcomes'
+
 // to keep track of newly created Outcome IDs
 let dynamicID = 1
 
@@ -25,13 +27,15 @@ export type OutcomesState = {
   outcomeData: Record<number, Outcome>
 }
 
-const initialState: OutcomesState = {
-  dragging: null,
-  highlighted: [],
+// const initialState: OutcomesState = {
+//   dragging: null,
+//   highlighted: [],
 
-  outcomeOrder: [],
-  outcomeData: {}
-}
+//   outcomeOrder: [],
+//   outcomeData: {}
+// }
+
+const initialState: OutcomesState = data
 
 type AddOutcomeType = Pick<Outcome, 'id'> &
   Partial<Outcome> & { order?: 'after' }

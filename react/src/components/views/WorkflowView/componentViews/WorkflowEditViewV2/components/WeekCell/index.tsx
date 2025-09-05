@@ -1,10 +1,13 @@
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
 import {
   draggable,
   dropTargetForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import useHover from '@cf/hooks/useHover'
+import { isOutcomeLink } from '@cf/redux/slices/outcomes.slice'
 import { AppState } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
+import LinkedOutcomes from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/components/LinkedOutcomes'
 import AutoLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/AutoLink'
 import NodeLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLink'
 import NodePorts from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodePorts'
@@ -52,16 +55,12 @@ const WeekCell = (props: PropsType) => {
       canDrop: ({ source }) => {
         const data = source.data
 
-        if (!isGridCell(data)) {
-          return
-        }
-
         // early exit if different row - and to disable column swapping with the new row
         // if (data.coords.y !== props.coords.y) {
         //   return false
         // }
 
-        return true
+        return isGridCell(data)
       },
       onDrop: ({ source }) => {
         const data = source.data
@@ -104,6 +103,7 @@ const WeekCellInner = (props: PropsType) => {
   const [ref, isHovered] = useHover()
   const [state, setState] = useState({
     dragging: false,
+    dropHighlight: false,
     initialRender: true,
 
     // circles where the node lines start from
@@ -122,6 +122,17 @@ const WeekCellInner = (props: PropsType) => {
     console.log('navigate to workflow')
   }, [])
 
+  const toggleState = useCallback(
+    (property: 'dragging' | 'dropHighlight', value?: boolean) => {
+      setState(
+        produce((draft) => {
+          draft[property] = value ?? !draft[property]
+        })
+      )
+    },
+    []
+  )
+
   useEffect(() => {
     const el = ref.current
 
@@ -129,28 +140,33 @@ const WeekCellInner = (props: PropsType) => {
       return
     }
 
-    return draggable({
-      element: el,
-      getInitialData: (): CellDataType => ({
-        coords,
-        type: DraggableType.CELL
+    return combine(
+      dropTargetForElements({
+        element: el,
+        canDrop: ({ source }) => {
+          return isOutcomeLink(source.data)
+        },
+        onDragEnter: () => toggleState('dropHighlight', true),
+        onDragLeave: () => toggleState('dropHighlight', false),
+        onDrop: ({ source }) => {
+          const data = source.data
+          if (isOutcomeLink(data) && props.type === WeekCellNodeType.NODE) {
+            console.log('link outcome id', data.id, 'with node id', props.id)
+            toggleState('dropHighlight', false)
+          }
+        }
       }),
-      onDragStart: () => {
-        setState(
-          produce((draft) => {
-            draft.dragging = !draft.dragging
-          })
-        )
-      },
-      onDrop: () => {
-        setState(
-          produce((draft) => {
-            draft.dragging = false
-          })
-        )
-      }
-    })
-  }, [ref, coords])
+      draggable({
+        element: el,
+        getInitialData: (): CellDataType => ({
+          coords,
+          type: DraggableType.CELL
+        }),
+        onDragStart: () => toggleState('dragging', true),
+        onDrop: () => toggleState('dragging', false)
+      })
+    )
+  }, [ref, coords, props, toggleState])
 
   useEffect(() => {
     if (state.initialRender) {
@@ -200,8 +216,16 @@ const WeekCellInner = (props: PropsType) => {
   if (type === WeekCellNodeType.PHANTOM) {
     return <div style={{ backgroundColor: borderColor }} />
   } else {
-    const { id, title, description, contextType, taskType, time, onClick } =
-      props
+    const {
+      id,
+      title,
+      description,
+      contextType,
+      taskType,
+      time,
+      linkedOutcomes,
+      onClick
+    } = props
 
     const selected =
       sidebarData.objectType === CfObjectType.NODE && sidebarData.id === id
@@ -211,9 +235,16 @@ const WeekCellInner = (props: PropsType) => {
         id={`node-${id}`}
         ref={ref}
         selected={selected}
-        dragging={state.dragging}
+        dropHighlight={state.dropHighlight}
+        dragShrink={state.dragging}
       >
         <HoverMenu show={isHovered} id={id} />
+        {!!linkedOutcomes?.length && (
+          <LinkedOutcomes
+            parent={{ id, type: 'node' }}
+            outcomes={linkedOutcomes}
+          />
+        )}
         <StyledNode.Border sx={{ backgroundColor: borderColor }} />
         <StyledNode.Content onClick={onClick}>
           <StyledNode.Title variant="body2">{title}</StyledNode.Title>

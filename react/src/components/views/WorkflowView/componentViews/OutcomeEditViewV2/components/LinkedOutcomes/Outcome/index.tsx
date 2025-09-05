@@ -8,7 +8,7 @@ import { produce } from 'immer'
 import { MouseEvent, useCallback, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { OutcomeGroup } from '../'
+import { PropsType as LinkedOutcomesProps, OutcomeGroup } from '../'
 import OutcomeHeader from './Header'
 
 type OutcomeStateType = {
@@ -22,7 +22,7 @@ const Outcome = ({
   children,
   linkParent
 }: OutcomeType & {
-  linkParent?: number
+  linkParent?: LinkedOutcomesProps['parent']
 }) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const prefix = useSelector((state: AppState) => getPrefixPath(state, id))

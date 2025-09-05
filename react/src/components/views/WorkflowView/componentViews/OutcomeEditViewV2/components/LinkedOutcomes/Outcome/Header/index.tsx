@@ -12,10 +12,12 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import { MouseEvent, MutableRefObject, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 
+import { PropsType as LinkedOutcomesProps } from '../..'
+
 type PropsType = {
   id: number
   level: number
-  linkParent?: number
+  linkParent?: LinkedOutcomesProps['parent']
   title: string
   dragRef: MutableRefObject<HTMLDivElement>
   selected: boolean
@@ -86,12 +88,19 @@ const HoverMenu = ({
         e.stopPropagation()
         switch (action) {
           case HoverMenuActions.UNLINK:
-            dispatch(
-              linkOutcome({
-                targetId: id,
-                destinationId: linkParent
-              })
-            )
+            switch (linkParent.type) {
+              case 'outcome':
+                dispatch(
+                  linkOutcome({
+                    targetId: id,
+                    destinationId: linkParent.id
+                  })
+                )
+                break
+              case 'node':
+                console.log('TODO: handle NODE unlinking')
+                break
+            }
             break
           case HoverMenuActions.COMMENTS:
             dispatch(

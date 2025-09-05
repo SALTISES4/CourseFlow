@@ -36,6 +36,10 @@ export function getWorkflowBoardData(
       const nodeData = nodes.find((n) => n.id === nodeId)
       const nodeColumnIndex = columns.indexOf(nodeData.column)
 
+      if (nodeData.id === 56) {
+        console.log(nodeData)
+      }
+
       // prepare node data beforehand
       rowArr[nodeColumnIndex] = {
         id: nodeData.id,
@@ -46,6 +50,7 @@ export function getWorkflowBoardData(
         outgoingLinks: nodeData.outgoingLinks,
         contextType: nodeData.contextClassification,
         taskType: nodeData.taskClassification,
+        linkedOutcomes: [],
         time: {
           length: nodeData.timeRequired,
           unit: nodeData.timeUnits

@@ -40,14 +40,30 @@ export const Cell = styled(Box)({
 
 export const CellInner = styled(Box, {
   shouldForwardProp: (prop) =>
-    !['dragging', 'selected'].includes(prop as string)
-})<{ dragging: boolean; selected: boolean }>(
-  ({ theme, dragging, selected }) => ({
+    !['dragShrink', 'dropHighlight', 'selected'].includes(prop as string)
+})<{ dragShrink: boolean; dropHighlight: boolean; selected: boolean }>(
+  ({ theme, dragShrink, dropHighlight, selected }) => ({
     borderRadius: theme.shape.borderRadius,
     transition: 'all 0.3s ease',
-    ...(dragging && {
+    ...(dragShrink && {
       opacity: 0.6,
       transform: 'scale(0.8)'
+    }),
+    ...(dropHighlight && {
+      '&': {
+        position: 'relative',
+        transition: 'none',
+        boxShadow: `0 0 0 2px rgba(4, 186, 116, 0.5)`,
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(4, 186, 116, 0.1)'
+        }
+      }
     }),
     ...(selected && {
       '&, &:hover': {
