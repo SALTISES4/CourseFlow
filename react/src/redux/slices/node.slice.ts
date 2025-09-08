@@ -171,6 +171,33 @@ const nodeSlice = createSlice({
     restoreSelf: toggleArchiveEntity,
     newNode(state, action: PayloadAction<{ newModel: TNode }>) {
       state.push(action.payload.newModel)
+    },
+
+    // add/remove linked outcomes
+    linkOutcome: (
+      state,
+      action: PayloadAction<{
+        outcomeId: number
+        nodeId: number
+      }>
+    ) => {
+      const { outcomeId, nodeId } = action.payload
+      const node = state.find((n) => n.id === nodeId)
+
+      if (!node) {
+        return
+      }
+
+      if (!node.outcomenodeSet) {
+        node.outcomenodeSet = [outcomeId]
+      } else {
+        const index = node.outcomenodeSet?.indexOf(outcomeId)
+        if (index !== -1) {
+          node.outcomenodeSet.splice(index, 1)
+        } else {
+          node.outcomenodeSet.push(outcomeId)
+        }
+      }
     }
   },
   extraReducers: (builder) => {
@@ -350,7 +377,8 @@ export const {
   restoreSelf: nodeRestoreSelf,
   insertBelow: nodeInsertBelow,
   reloadComments: nodeReloadComments,
-  setLinkedWorkflow: nodeSetLinkedWorkflow
+  setLinkedWorkflow: nodeSetLinkedWorkflow,
+  linkOutcome: nodeLinkOutcome
 } = nodeSlice.actions
 
 export default nodeSlice.reducer

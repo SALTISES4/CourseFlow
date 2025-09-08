@@ -469,6 +469,7 @@ const WeekRow = ({
               outgoingLinks={node.outgoingLinks}
               contextType={node.contextType}
               taskType={node.taskType}
+              linkedOutcomes={node.linkedOutcomes}
               time={node.time}
               onClick={(e) => onNodeClick(e, node.id)}
             />

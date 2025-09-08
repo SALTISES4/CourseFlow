@@ -4,6 +4,7 @@ import {
   dropTargetForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import useHover from '@cf/hooks/useHover'
+import { nodeLinkOutcome } from '@cf/redux/slices/node.slice'
 import { isOutcomeLink } from '@cf/redux/slices/outcomes.slice'
 import { AppState } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
@@ -15,7 +16,7 @@ import { alpha } from '@mui/material'
 import { produce } from 'immer'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import HoverMenu from './components/HoverMenu'
 import Meta from './components/Meta'
@@ -99,6 +100,7 @@ const WeekCell = (props: PropsType) => {
 }
 
 const WeekCellInner = (props: PropsType) => {
+  const dispatch = useDispatch()
   const sidebarData = useSelector((state: AppState) => state.sidebar.edit)
   const [ref, isHovered] = useHover()
   const [state, setState] = useState({
@@ -151,7 +153,7 @@ const WeekCellInner = (props: PropsType) => {
         onDrop: ({ source }) => {
           const data = source.data
           if (isOutcomeLink(data) && props.type === WeekCellNodeType.NODE) {
-            console.log('link outcome id', data.id, 'with node id', props.id)
+            dispatch(nodeLinkOutcome({ outcomeId: data.id, nodeId: props.id }))
             toggleState('dropHighlight', false)
           }
         }
@@ -166,7 +168,7 @@ const WeekCellInner = (props: PropsType) => {
         onDrop: () => toggleState('dragging', false)
       })
     )
-  }, [ref, coords, props, toggleState])
+  }, [ref, dispatch, coords, props, toggleState])
 
   useEffect(() => {
     if (state.initialRender) {

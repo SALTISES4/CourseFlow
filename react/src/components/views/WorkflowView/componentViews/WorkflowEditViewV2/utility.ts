@@ -50,7 +50,7 @@ export function getWorkflowBoardData(
         outgoingLinks: nodeData.outgoingLinks,
         contextType: nodeData.contextClassification,
         taskType: nodeData.taskClassification,
-        linkedOutcomes: [],
+        linkedOutcomes: nodeData.outcomenodeSet, // TODO: is this correct?
         time: {
           length: nodeData.timeRequired,
           unit: nodeData.timeUnits

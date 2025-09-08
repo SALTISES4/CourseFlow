@@ -1,4 +1,5 @@
 import useHover from '@cf/hooks/useHover'
+import { nodeLinkOutcome } from '@cf/redux/slices/node.slice'
 import { linkOutcome } from '@cf/redux/slices/outcomes.slice'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
@@ -98,7 +99,9 @@ const HoverMenu = ({
                 )
                 break
               case 'node':
-                console.log('TODO: handle NODE unlinking')
+                dispatch(
+                  nodeLinkOutcome({ outcomeId: id, nodeId: linkParent.id })
+                )
                 break
             }
             break
