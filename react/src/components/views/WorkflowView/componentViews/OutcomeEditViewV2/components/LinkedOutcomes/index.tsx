@@ -1,7 +1,7 @@
 import { selectOutcomeChildrenById } from '@cf/redux/selectors/outcomes.selector'
 import { AppState } from '@cf/redux/types/type'
 import * as StyledOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/components/OutcomeTree/styles'
-import { useCallback, useRef, useState } from 'react'
+import { MouseEvent, useCallback, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import Outcome from './Outcome'
@@ -23,20 +23,25 @@ const LinkedOutcomes = ({ parent, outcomes }: PropsType) => {
     (state: AppState) => state.outcomes.outcomeData
   )
 
-  const onWrapEnter = useCallback(() => setShow(true), [])
-  const onWrapLeave = useCallback(() => setShow(false), [])
+  const showPopover = useCallback((val: boolean) => {
+    return (e: MouseEvent<HTMLSpanElement>) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setShow(val)
+    }
+  }, [])
 
   return (
     <Styled.Wrap ref={wrapRef} type={parent.type}>
       <Styled.Badge
         ref={badgeRef}
-        onClick={onWrapEnter}
+        onClick={showPopover(true)}
         badgeContent={outcomes.length}
       />
       <Styled.Popover
         open={show}
         anchorEl={wrapRef?.current}
-        onClose={onWrapLeave}
+        onClose={showPopover(false)}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'left'
