@@ -2,7 +2,7 @@ import { _t } from '@cf/utility/Utility.class'
 import * as SC from '@cfComponents/globalNav/Sidebar/styles'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { workflowUrl } from '@cfComponents/UIPrimitives/Titles'
-import { AppState, TNode } from '@cfRedux/types/type'
+import { AppState } from '@cfRedux/types/type'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -22,8 +22,8 @@ type WorkflowNode = {
 
 const ParentWorkflowIndicator = () => {
   const { id } = useParams()
-  const nodes = useSelector<AppState, TNode[]>((state) => state.node)
-  const childWorkflows = nodes
+  const nodes = useSelector((state: AppState) => state.node)
+  const childWorkflows: WorkflowNode[] = nodes
     .filter((node) => node.linkedWorkflowData)
     .map((node) => ({
       id: node.linkedWorkflow,
@@ -65,15 +65,14 @@ const ParentWorkflowIndicator = () => {
           <SC.SectionLabel variant="body1">
             {_t('Workflows used')}
           </SC.SectionLabel>
-          <List>
-            {data.parentWorkflows.map((workflow, index) => {
+          <List data-test-id="panel-other-worflows">
+            {data.parentWorkflows.map((workflow) => {
               const url = workflowUrl(workflow)
               return (
                 <ListItem disablePadding dense key={workflow.id}>
                   <ListItemButton
                     component={Link}
                     to={url}
-                    data-test-id="panel-other-worflows"
                     selected={location.pathname === url}
                   >
                     <ListItemText primary={workflow.title} />

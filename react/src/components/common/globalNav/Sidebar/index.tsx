@@ -90,6 +90,7 @@ const Favourites = () => {
               </ListItem>
             )
           })}
+
           <SeeAll />
         </List>
       </SC.SectionWrap>
