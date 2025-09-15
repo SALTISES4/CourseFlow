@@ -104,11 +104,12 @@ export const SectionLabel = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.disabled
 }))
 
-export const SeeAllLink = styled(RouterLink)({
+export const SeeAllLink = styled(RouterLink)(({ theme }) => ({
   display: 'block',
   width: '100%',
-  fontSize: '14px'
-})
+  fontSize: '14px',
+  color: theme.palette.primary.dark
+}))
 
 export const HelpLink = styled(List)(({ theme }) => ({
   marginTop: 'auto',
