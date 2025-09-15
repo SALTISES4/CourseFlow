@@ -12,7 +12,7 @@ import weekworkflowReducer from '@cfRedux/reducers/workflow/weekworkflow'
 // slices
 import columnReducer from '@cfRedux/slices/column.slice'
 import nodeReducer from '@cfRedux/slices/node.slice'
-import nodelinkReducer from '@cfRedux/slices/nodelink.slice/workflow/nodelink'
+import nodelinkReducer from '@cfRedux/slices/nodelink.slice'
 import objectsetReducer from '@cfRedux/slices/objectset.slice'
 import projectReducer from '@cfRedux/slices/project.slice'
 import sidebarReducer from '@cfRedux/slices/sidebar.slice'

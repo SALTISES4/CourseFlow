@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 type PropsType = {
   objectId: number
-  nodeDiv: React.RefObject<HTMLDivElement>
+  nodeDiv: React.MutableRefObject<HTMLElement>
 }
 
 const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
