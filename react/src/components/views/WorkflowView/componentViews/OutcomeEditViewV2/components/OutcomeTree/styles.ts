@@ -56,12 +56,12 @@ export const OutcomeHeader = styled(Box, {
     },
     ...(selected && {
       '&, &:hover': {
-        boxShadow: `0 0 0 2px rgba(4, 186, 116, 0.5)`
+        boxShadow: `0 0 0 2px ${theme.palette.workflow.selected}`
       }
     }),
     ...(highlighted && {
       '&, &:hover': {
-        boxShadow: `0 0 0 2px rgb(253, 216, 53)`
+        boxShadow: `0 0 0 2px ${theme.palette.workflow.highlighted}`
       }
     }),
     ...(level === 1 && {

@@ -19,7 +19,7 @@ export const Popover = styled(MuiPopover)(({ theme }) => ({
     marginLeft: '-8px',
     padding: theme.spacing(1),
     borderRadius: theme.shape.borderRadius,
-    boxShadow: `0 0 0 2px rgba(4, 186, 116, 0.5)`
+    boxShadow: `0 0 0 2px ${theme.palette.workflow.selected}`
   }
 }))
 
@@ -27,6 +27,6 @@ export const Badge = styled(MuiBadge)(({ theme }) => ({
   top: '-5px',
   left: '10px',
   '& .MuiBadge-badge': {
-    backgroundColor: 'rgb(253, 216, 53)'
+    backgroundColor: theme.palette.workflow.highlighted
   }
 }))

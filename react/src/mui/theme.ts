@@ -28,6 +28,10 @@ const palette = {
     activity: 'rgba(41, 98, 255, 1)',
     template: 'rgba(255, 64, 129, 1)'
   },
+  workflow: {
+    highlighted: 'rgb(253, 216, 53)',
+    selected: 'rgba(4, 186, 116, 0.5)'
+  },
   template: {
     main: 'rgba(255, 64, 129, 1)',
     contrastText: '#fff'
