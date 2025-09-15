@@ -2,12 +2,11 @@ import { CfLock } from '@cf/types/common'
 import { _t } from '@cf/utility/Utility.class'
 import {
   CommonActions,
-  NodeLinkActions,
   SliceNamespace,
   StrategyActions,
   WeekActions
 } from '@cfRedux/types/enumActions'
-import { AppState, TColumn, TNodelink } from '@cfRedux/types/type'
+import { TNodelink } from '@cfRedux/types/type'
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 interface CreateLockPayload {
@@ -17,15 +16,11 @@ interface CreateLockPayload {
 
 interface ChangeFieldPayload {
   id: number
-  json: Pick<TNodelink>
+  json: Partial<TNodelink>
 }
 
 interface NodeLinkByIdPayload {
   id: number
-}
-
-interface InsertBelowWeekPayload {
-  children?: { nodelink: TNodelink[] }
 }
 
 interface AddStrategyPayload {
@@ -38,15 +33,16 @@ interface ReplaceStoreDataPayload {
 
 const initialState: TNodelink[] = []
 
-const nodelinkSlice = createSlice<AppState['nodelink']>({
+const nodelinkSlice = createSlice({
   name: SliceNamespace.NODELINK,
   initialState,
   reducers: {
     createLock(state, action: PayloadAction<CreateLockPayload>) {
       const item = state.find((item) => item.id === action.payload.id)
-      if (item) {
-        item.lock = action.payload.lock
-      }
+      // TODO: investigate locking behavior
+      // if (item) {
+      //   item.lock = action.payload.lock
+      // }
     },
     changeField(state, action: PayloadAction<ChangeFieldPayload>) {
       const item = state.find((item) => item.id === action.payload.id)
@@ -82,7 +78,7 @@ const nodelinkSlice = createSlice<AppState['nodelink']>({
     builder
       .addCase(
         CommonActions.REPLACE_STOREDATA,
-        (state, action: PayloadAction<{ nodelink?: TNodelink[] }>) => {
+        (state, action: PayloadAction<ReplaceStoreDataPayload>) => {
           if (action.payload.nodelink) {
             return action.payload.nodelink
           }
@@ -90,7 +86,7 @@ const nodelinkSlice = createSlice<AppState['nodelink']>({
       )
       .addCase(
         CommonActions.REFRESH_STOREDATA,
-        (state, action: PayloadAction<{ nodelink?: TNodelink[] }>) => {
+        (state, action: PayloadAction<ReplaceStoreDataPayload>) => {
           if (action.payload.nodelink) {
             action.payload.nodelink.forEach((newNodelink) => {
               const index = state.findIndex(
@@ -109,7 +105,7 @@ const nodelinkSlice = createSlice<AppState['nodelink']>({
         WeekActions.INSERT_BELOW,
         (
           state,
-          action: PayloadAction<{ children?: { nodelink: TNodelink[] } }>
+          action: PayloadAction<{ children?: ReplaceStoreDataPayload }>
         ) => {
           if (action.payload.children) {
             return [...state, ...action.payload.children.nodelink]
@@ -118,7 +114,7 @@ const nodelinkSlice = createSlice<AppState['nodelink']>({
       )
       .addCase(
         StrategyActions.ADD_STRATEGY,
-        (state, action: PayloadAction<{ nodelinksAdded: TNodelink[] }>) => {
+        (state, action: PayloadAction<AddStrategyPayload>) => {
           if (action.payload.nodelinksAdded.length !== 0) {
             return [...state, ...action.payload.nodelinksAdded]
           }
@@ -128,16 +124,16 @@ const nodelinkSlice = createSlice<AppState['nodelink']>({
 })
 
 export const {
-  replaceStoreData: nodelinkReplaceStoreData,
-  refreshStoreData: nodelinkRefreshStoreData,
+  // replaceStoreData: nodelinkReplaceStoreData,
+  // refreshStoreData: nodelinkRefreshStoreData,
   createLock: nodelinkCreateLock,
   changeField: nodelinkChangeField,
   newNodeLink: nodelinkNewNodeLink,
   deleteSelf: nodelinkDeleteSelf,
   deleteSelfSoft: nodelinkDeleteSelfSoft,
-  restoreSelf: nodelinkRestoreSelf,
-  insertBelow: nodelinkInsertBelow,
-  addStrategy: nodelinkAddStrategy
+  restoreSelf: nodelinkRestoreSelf
+  // insertBelow: nodelinkInsertBelow,
+  // addStrategy: nodelinkAddStrategy
 } = nodelinkSlice.actions
 
 export default nodelinkSlice.reducer
