@@ -185,13 +185,6 @@ const Sidebar = () => {
         <ParentWorkflowIndicator />
 
         <SC.HelpLink>
-          {process.env.NODE_ENV !== 'production' && (
-            <ListItem disablePadding dense>
-              <ListItemButton component={Link} to={CFRoutes.STYLEGUIDE}>
-                <ListItemText primary="Styleguide" />
-              </ListItemButton>
-            </ListItem>
-          )}
           <ListItem disablePadding dense>
             <ListItemButton
               component="a"
