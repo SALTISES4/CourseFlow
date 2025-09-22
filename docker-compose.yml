@@ -31,6 +31,9 @@ services:
       DALITE_DB_PASSWORD: dalite_password123
       DALITE_DB_HOST: db
       DALITE_DB_PORT: 3306
+    depends_on:
+        db:
+          condition: service_healthy
 
     # use this entrypoint override if the server crashes and we need to debug it
     # entrypoint: ["/bin/bash"]
@@ -66,6 +69,12 @@ services:
       - "3306:3306"
     networks:
       - cf-network
+    healthcheck:
+      # Use TCP and 127.0.0.1 to avoid socket issues.
+      test: ["CMD-SHELL", "mariadb-admin --connect-timeout=3 ping -h '$HOST' -uroot -p$${MYSQL_ROOT_PASSWORD} --protocol=tcp"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
   cache:
     container_name: "cf-redis"

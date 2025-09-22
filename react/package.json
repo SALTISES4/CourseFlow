@@ -14,6 +14,7 @@
     "dev": "vite",
     "preview": "vite preview",
     "build": "tsc && vite --config vite.config.dev.js build",
+    "unsafe-build": "vite --config vite.config.dev.js build",
     "tsc-watch": "tsc --watch",
     "prettier": "prettier --write './src/**/*.{js,ts,jsx,tsx}' '!course_flow/static/**/dist/**/*.{js,ts,jsx,tsx}'",
     "lint-quiet": "eslint --fix --quiet --max-warnings=-1  ./src --ext .js,.tsx,.ts -c ./.eslintrc.json"
