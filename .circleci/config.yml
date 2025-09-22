@@ -128,13 +128,13 @@ workflows:
           filters:
             branches:
               only:
-                - staging
+#                - staging
                 - master
       - install-pip-requirements:
           filters:
             branches:
               only:
-                - staging
+#                - staging
                 - master
 # TESTS FAILILNG SKIP FOR NOW
 #      - run-tests:
@@ -154,7 +154,7 @@ workflows:
           filters:
             branches:
               only:
-                - staging
+#                - staging
                 - master
       - upload-to-pypi:
           requires:
@@ -162,5 +162,5 @@ workflows:
           filters:
             branches:
               only:
-                - staging
+#                - staging
                 - master

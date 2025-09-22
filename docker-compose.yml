@@ -6,6 +6,12 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#        restart: true
+#      cache:
+#        condition: service_started
     restart: always
     container_name: "courseflow-django"
     shm_size: 2G
@@ -19,6 +25,12 @@ services:
       - cf-network
 #        ipv4_address:  10.10.10.7
     entrypoint: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    environment:
+      DALITE_DB_NAME: dalite_ng
+      DALITE_DB_USER: dalite
+      DALITE_DB_PASSWORD: dalite_password123
+      DALITE_DB_HOST: db
+      DALITE_DB_PORT: 3306
 
     # use this entrypoint override if the server crashes and we need to debug it
     # entrypoint: ["/bin/bash"]
@@ -42,6 +54,19 @@ services:
 #    networks:
 #      - cf-network
 
+  db:
+    image: mariadb
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
+      MYSQL_DATABASE: dalite_ng
+      MYSQL_USER: dalite
+      MYSQL_PASSWORD: dalite_password123
+      MYSQL_ROOT_PASSWORD: root_password123
+    ports:
+      - "3306:3306"
+    networks:
+      - cf-network
+
   cache:
     container_name: "cf-redis"
     image: redis:5.0
@@ -51,6 +76,7 @@ services:
     command: redis-server --loglevel warning
     networks:
       - cf-network
+
   helper:
     container_name: "helper"
     image: alpine

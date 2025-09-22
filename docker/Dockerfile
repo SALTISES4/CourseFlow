@@ -25,6 +25,9 @@ RUN apt-get install -y \
 RUN pip install \
     redislite \
     pip-tools
+RUN python3 -m pip install --upgrade pip setuptools wheel pip-tools
+RUN python3 -m piptools compile requirements/requirements.in \
+    -o requirements/requirements.txt pyproject.toml
 RUN python3 -m pip install -r requirements/requirements.txt
 
 
