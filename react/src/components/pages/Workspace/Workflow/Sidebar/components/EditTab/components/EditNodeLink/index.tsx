@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
 import { ChangeEvent, useCallback, useState } from 'react'
 
-import getNodelinkData from './getNodelinkData'
+import getNodelinkData from './getNodeLinkData'
 import { NodelinkForm } from './types'
 import {
   SidebarContent,

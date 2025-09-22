@@ -2,7 +2,7 @@ import Alert from '@cfComponents/UIPrimitives/Alert'
 
 import EditNode from './components/EditNode'
 import EditNodeCategory from './components/EditNodeCategory'
-import EditNodelink from './components/EditNodelink'
+import EditNodelink from './components/EditNodeLink'
 import EditOutcome from './components/EditOutcome'
 import EditPart from './components/EditPart'
 import EditTerm from './components/EditTerm'
