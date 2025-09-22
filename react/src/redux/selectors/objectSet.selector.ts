@@ -1,4 +1,4 @@
-import { objectSetAdapter } from '@cfRedux/slices/objectSet.slice'
+import { objectSetAdapter } from '@cfRedux/slices/objectset.slice'
 import { RootState } from '@cfRedux/store'
 
 export const {
