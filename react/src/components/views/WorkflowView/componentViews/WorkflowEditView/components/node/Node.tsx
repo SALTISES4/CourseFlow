@@ -12,7 +12,7 @@ import { nodeChangeField } from '@cfRedux/slices/node.slice'
 import { RootState } from '@cfRedux/store'
 import { TNode } from '@cfRedux/types/type'
 import OutcomeNode from '@cfViews/common/OutcomeNode'
-import AutoLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/AutoLink'
+import Autolink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Autolink'
 import Nodelink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Nodelink'
 import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
@@ -303,7 +303,7 @@ const Node = ({ objectId, parentId, objectSets }: OwnProps) => {
         <Nodelink key={link} objectId={link} nodeDiv={mainDiv} />
       ))
       if (node.hasAutolink) {
-        autoLink = <AutoLink nodeId={objectId} nodeDiv={mainDiv} />
+        autoLink = <Autolink nodeId={objectId} nodeDiv={mainDiv} />
       }
     }
   }

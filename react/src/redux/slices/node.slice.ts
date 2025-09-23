@@ -127,7 +127,7 @@ const updateItem = (state, action: PayloadAction<{ extraData: any[] }>) => {
 /*******************************************************
  * ACTIONS
  *******************************************************/
-const nodeSlice = createSlice({
+
 // not sure what this is doing yet
 export const replaceStoreData = createAction<{
   node: WorkspaceAppState['node'] | undefined
@@ -355,7 +355,6 @@ export const {
 } = nodeSlice.actions
 
 export default nodeSlice.reducer
-
 
 ////
 
@@ -741,8 +740,7 @@ export default nodeSlice.reducer
 //   insertBelow: nodeInsertBelow,
 //   reloadComments: nodeReloadComments,
 //   setLinkedWorkflow: nodeSetLinkedWorkflow,
-//   linkOutcome: nodeLinkOutcome
+//   linkOutcome: nodelinkOutcome
 // } = nodeSlice.actions
 //
 // export default nodeSlice.reducer
-

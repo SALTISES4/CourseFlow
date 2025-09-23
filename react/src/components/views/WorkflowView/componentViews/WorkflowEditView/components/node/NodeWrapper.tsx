@@ -4,7 +4,7 @@ import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { HoverMenu, MenuItemType } from '@cfComponents/menu/Menu'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -17,8 +17,6 @@ import {
 import mergeRefs from 'merge-refs'
 import { Ref } from 'react'
 import { useSelector } from 'react-redux'
-import { RootState } from '@cfRedux/store'
-
 
 import Node from './Node'
 import * as Styled from '../../styles'
@@ -116,12 +114,13 @@ const NodeHoverMenu = ({
 }
 
 const NodeWrapper = ({ objectId, parentId, row }: PropsType) => {
+  const [ref, isHovered] = useHover()
+
   // review the node name / data
   const node = useSelector((state: RootState) =>
     selectNodeById(state, objectId)
   )
-  const workflow = useSelector((state: AppState) => state.workflow)
-  const [ref, isHovered] = useHover()
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: objectId })
 
@@ -155,7 +154,7 @@ const NodeWrapper = ({ objectId, parentId, row }: PropsType) => {
             }}
             {...attributes}
             data-child-id={String(objectId)}
-            data-column-id={String(data.column)}
+            data-column-id={String(node.column)}
           >
             <div {...listeners}>
               <DragHandleIcon />
@@ -172,68 +171,3 @@ const NodeWrapper = ({ objectId, parentId, row }: PropsType) => {
 }
 
 export default NodeWrapper
-
-// import { TGetNodeWeekById, getNodeWeekByID } from '@cfFindState'
-// import { AppState } from '@cfRedux/types/type'
-// import Node from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Node'
-// import clsx from 'clsx'
-// import * as React from 'react'
-// import { connect } from 'react-redux'
-//
-// type ConnectedProps = TGetNodeWeekById
-//
-// type OwnProps = {
-//   objectId: number
-//   parentId: number
-//   columnOrder: any
-// }
-//
-// type PropsType = ConnectedProps & OwnProps
-//
-// /**
-//  * Represents the node-week throughmodel
-//  * this should not exist...
-//  */
-// class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
-//   constructor(props) {
-//     super(props)
-//   }
-//
-//   /*******************************************************
-//    * RENDER
-//    *******************************************************/
-//   render() {
-//     const data = this.props.data
-//
-//     return (
-//       <div
-//         className={clsx('node-week', {
-//           'no-drag': data.noDrag
-//         })}
-//         id={data.id}
-//         data-child-id={data.node}
-//         data-column-id={this.props.column}
-//       >
-//         <Node
-//           objectId={data.node}
-//           parentId={this.props.parentId}
-//           throughParentId={data.id}
-//           columnOrder={this.props.columnOrder}
-//         />
-//       </div>
-//     )
-//   }
-// }
-// const mapStateToProps = (
-//   state: AppState,
-//   ownProps: OwnProps
-// ): TGetNodeWeekById => {
-//   return getNodeWeekByID(state, ownProps.objectId)
-// }
-// const NodeWeek = connect<ConnectedProps, object, OwnProps, AppState>(
-//   mapStateToProps,
-//   null
-// )(NodeWeekUnconnected)
-// export default NodeWeek
-//
-// export { NodeWeekUnconnected }

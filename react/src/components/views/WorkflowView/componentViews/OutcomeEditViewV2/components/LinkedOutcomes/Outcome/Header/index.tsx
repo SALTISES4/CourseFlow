@@ -1,5 +1,5 @@
 import useHover from '@cf/hooks/useHover'
-import { nodeLinkOutcome } from '@cf/redux/slices/node.slice'
+import { nodelinkOutcome } from '@cf/redux/slices/node.slice'
 import { linkOutcome } from '@cf/redux/slices/outcomes.slice'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
@@ -100,7 +100,7 @@ const HoverMenu = ({
                 break
               case 'node':
                 dispatch(
-                  nodeLinkOutcome({ outcomeId: id, nodeId: linkParent.id })
+                  nodelinkOutcome({ outcomeId: id, nodeId: linkParent.id })
                 )
                 break
             }

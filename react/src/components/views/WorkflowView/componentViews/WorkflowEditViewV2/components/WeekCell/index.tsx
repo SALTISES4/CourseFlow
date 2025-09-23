@@ -4,12 +4,12 @@ import {
   dropTargetForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import useHover from '@cf/hooks/useHover'
-import { nodeLinkOutcome } from '@cf/redux/slices/node.slice'
+import { nodelinkOutcome } from '@cf/redux/slices/node.slice'
 import { isOutcomeLink } from '@cf/redux/slices/outcomes.slice'
 import { AppState } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
 import LinkedOutcomes from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/components/LinkedOutcomes'
-import AutoLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/AutoLink'
+import Autolink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Autolink'
 import NodeLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLink'
 import NodePorts from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodePorts'
 import { alpha } from '@mui/material'
@@ -153,7 +153,7 @@ const WeekCellInner = (props: PropsType) => {
         onDrop: ({ source }) => {
           const data = source.data
           if (isOutcomeLink(data) && props.type === WeekCellNodeType.NODE) {
-            dispatch(nodeLinkOutcome({ outcomeId: data.id, nodeId: props.id }))
+            dispatch(nodelinkOutcome({ outcomeId: data.id, nodeId: props.id }))
             toggleState('dropHighlight', false)
           }
         }
@@ -208,7 +208,7 @@ const WeekCellInner = (props: PropsType) => {
           }
 
           if (props.hasAutoLink) {
-            draft.nodeAutoLink = <AutoLink nodeId={objectId} nodeDiv={ref} />
+            draft.nodeAutoLink = <Autolink nodeId={objectId} nodeDiv={ref} />
           }
         })
       )

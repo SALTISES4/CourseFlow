@@ -21,8 +21,6 @@ import { useContext, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { Routes, matchPath } from 'react-router-dom'
 
-
-
 /**
  * The base component of our workflow view. This renders the menu bar
  * above itself, the right sidebar, the header (description, sharing etc),
@@ -89,7 +87,6 @@ const WorkflowTabs = () => {
       <JumpToMenu weekIds={workflow.weeks} />
       <ExpandCollapseMenu legend={<WorkflowLegend />} />
       <ViewSettingsMenu />
-
     </Stack>
   )
 

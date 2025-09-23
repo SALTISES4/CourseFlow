@@ -1,4 +1,3 @@
-import { Outcome } from '@cf/redux/slices/outcomes.slice'
 import { CfObjectType } from '@cf/types/enum'
 
 import { NodeForm } from './components/EditNode/types'

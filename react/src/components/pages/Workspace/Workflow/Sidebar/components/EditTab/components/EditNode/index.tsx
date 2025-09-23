@@ -1,7 +1,6 @@
 import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
-import { selectAllObjectSets } from '@cfRedux/selectors/objectSet.selector'
 import { nodeChangeField } from '@cfRedux/slices/node.slice'
 import { RootState } from '@cfRedux/store'
 import * as SC from '@cfSidebar/styles'
@@ -20,9 +19,8 @@ import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { updateValueQuery } from '@XMLHTTP/API/update'
-import { useEffect, useMemo, useState } from 'react'
 // import { useToggleObjectSetNodeMutation } from '@XMLHTTP/API/workflowObjects/node.rtk'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -57,7 +55,7 @@ const EditNode = () => {
       ponderation: {
         theory: String(node.ponderationTheory),
         practice: String(node.ponderationPractical),
-        individual: String(node.ponderationIndividual),
+        individual: String(node.ponderationIndividual)
         // TODO: where do these come from?
         // generalEdu: String(nodeData.node.ponderationGeneralEdu),
         // specificEdu: String(nodeData.node.ponderationSpecificEdu)
@@ -83,7 +81,7 @@ const EditNode = () => {
         ponderation: {
           theory: String(node.ponderationTheory),
           practice: String(node.ponderationPractical),
-          individual: String(node.ponderationIndividual),
+          individual: String(node.ponderationIndividual)
           // TODO: where do these come from?
           // generalEdu: String(nodeData.node.ponderationGeneralEdu),
           // specificEdu: String(nodeData.node.ponderationSpecificEdu)
@@ -119,7 +117,6 @@ const EditNode = () => {
         updateValueQuery(sidebarData.edit.id, CfObjectType.NODE, data, true)
 
         reset({}, { keepValues: true })
-
       }, 300),
     [dispatch, reset, sidebarData.edit.id]
   )

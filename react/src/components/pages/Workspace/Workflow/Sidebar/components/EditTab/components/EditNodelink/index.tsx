@@ -1,5 +1,12 @@
 import { nodelinkDeleteSelfSoft } from '@cf/redux/slices/nodelink.slice'
 import { AppState } from '@cf/redux/types/type'
+import { NodelinkForm } from '@cfSidebar/components/EditTab/components/EditNodelink/types'
+import {
+  SidebarActions,
+  SidebarContent,
+  SidebarInnerWrap,
+  SidebarTitle
+} from '@cfSidebar/styles'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -12,21 +19,11 @@ import { produce } from 'immer'
 import { ChangeEvent, useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { NodeLinkForm } from './types'
-import getNodelinkData from './getNodeLinkData'
-import { NodelinkForm } from './types'
-import {
-  SidebarActions,
-  SidebarContent,
-  SidebarInnerWrap,
-  SidebarTitle
-} from '../../../../styles'
-
-const EditNodeLink = () => {
+const EditNodelink = () => {
   const dispatch = useDispatch()
   const nodeLinkId = useSelector((state: AppState) => state.sidebar.edit.id)
 
-  const [state, setState] = useState<NodeLinkForm>({
+  const [state, setState] = useState<NodelinkForm>({
     title: 'Node Link text here',
     textPosition: 50,
     dashed: false
