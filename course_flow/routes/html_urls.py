@@ -104,14 +104,6 @@ def html_patterns():
             name="saltise-analytics",
         ),
         path("logout/", views.logout_view, name="logout"),
-        #########################################################
-        # UTILITY / DEV
-        #########################################################
-        path(
-            "styleguide/<path:rest_of_path>",
-            views.html.client.default_react_view,
-            name="styleguide",
-        ),
         # todo is this for dev only or this is the same path for dalite embed?
         path("import/", views.import_view, name="import"),
         path(

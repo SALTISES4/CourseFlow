@@ -1,5 +1,6 @@
-import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG'
-import React, { useEffect, useRef, useState } from 'react'
+import NodeLinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG'
+import * as d3 from 'd3'
+import React, { useEffect, useState } from 'react'
 import * as reactDom from 'react-dom'
 
 type PropsType = {
@@ -31,10 +32,11 @@ const AutoLink = ({ nodeId, nodeDiv }: PropsType) => {
     const srcNode = $(nodeDiv.current)
     setSourceNode(srcNode)
 
-    const srcPortHandle = d3.select(
-      `g.port-${nodeId} circle[data-port-type='source'][data-port='s']`
+    setSourcePortHandle(
+      d3.select(
+        `g.port-${nodeId} circle[data-port-type='source'][data-port='s']`
+      )
     )
-    setSourcePortHandle(srcPortHandle)
 
     srcNode.on(rerenderEvents, rerender)
 
@@ -90,17 +92,18 @@ const AutoLink = ({ nodeId, nodeDiv }: PropsType) => {
    **/
   const setTarget = (target: string) => {
     if (target) {
-      const tgtNode = $(`.week #${target}.node`)
-      const tgtPortHandle = d3.select(
-        `g.port-${target} circle[data-port-type='target'][data-port='n']`
-      )
+      const tgtNode = $(`#node-${target}`)
 
       if (targetNode) {
         targetNode.off(rerenderEvents)
       }
 
       setTargetNode(tgtNode)
-      setTargetPortHandle(tgtPortHandle)
+      setTargetPortHandle(
+        d3.select(
+          `g.port-${target} circle[data-port-type='target'][data-port='n']`
+        )
+      )
 
       tgtNode.on(rerenderEvents, rerender)
     } else {
@@ -152,9 +155,9 @@ const AutoLink = ({ nodeId, nodeDiv }: PropsType) => {
     sourceNode.attr('data-hovered') === 'true' ||
     targetNode.attr('data-hovered') === 'true'
 
-  // Create the portal for NodelinkSVG
+  // Create the portal for NodeLinkSVG
   const portal = reactDom.createPortal(
-    <NodelinkSVG
+    <NodeLinkSVG
       hovered={nodeHovered}
       nodeSelected={nodeSelected}
       sourcePortHandle={sourcePortHandle}
@@ -172,7 +175,7 @@ const AutoLink = ({ nodeId, nodeDiv }: PropsType) => {
 
 export default AutoLink
 
-// import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG'
+// import NodeLinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG'
 // import * as React from 'react'
 // import * as reactDom from 'react-dom'
 // // import $ from 'jquery'
@@ -183,7 +186,7 @@ export default AutoLink
 // }
 //
 // /**
-//  * A Nodelink that is automatically generated based on node setting. Has no direct back-end representation
+//  * A NodeLink that is automatically generated based on node setting. Has no direct back-end representation
 //  */
 // class AutoLink extends React.Component<PropsType> {
 //   private eventNameSpace: string
@@ -335,7 +338,7 @@ export default AutoLink
 //
 //     //  .workflow-canvas is dynamic portal
 //     const portal = reactDom.createPortal(
-//       <NodelinkSVG
+//       <NodeLinkSVG
 //         hovered={nodeHovered}
 //         nodeSelected={nodeSelected}
 //         sourcePortHandle={this.sourcePortHandle}

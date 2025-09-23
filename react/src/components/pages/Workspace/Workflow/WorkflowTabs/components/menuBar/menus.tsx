@@ -5,36 +5,64 @@ import { _t } from '@cf/utility/Utility.class'
 import {
   MenuItemType,
   MenuWithOverflow,
-  SimpleMenu,
-  SimpleSwitchMenu
+  SimpleMenu
 } from '@cfComponents/menu/Menu'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import ScrollToWeek from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ScrollToWeek'
 import { useMenuActions } from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useMenuActions'
-import { selectAllObjectSets } from '@cfRedux/selectors/objectSet.selector'
-import {
-  viewsettingsToggle,
-  viewsettingsUpdate
-} from '@cfRedux/slices/viewsettings.slice'
-import { RootState } from '@cfRedux/store'
+import { AppState } from '@cfRedux/types/type'
 import EditIcon from '@mui/icons-material/Edit'
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import TuneIcon from '@mui/icons-material/Tune'
-import { useContext } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
+import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
+import { FormControlLabel, Switch } from '@mui/material'
+import { produce } from 'immer'
+import {
+  ChangeEvent,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useContext,
+  useState
+} from 'react'
+import { useSelector } from 'react-redux'
 
-/*******************************************************
- * ACTION MENU
- *******************************************************/
+type StateType = {
+  openShareDialog: boolean
+  openExportDialog: boolean
+  openImportDialog: boolean
+  openEditDialog: boolean
+}
+
 const ActionMenu = () => {
   const userContext = useContext(UserContext)
-  const workflow = useSelector((state: RootState) => state.workspace.workflow)
-  const project = useSelector((state: RootState) => state.workspace.project)
+  const workflow = useSelector((state: AppState) => state.workflow)
+  const project = useSelector((state: AppState) => state.workspace.project)
+
+  const isStrategy = workflow.isStrategy
+  const userId = userContext.id
+  const workflowId = workflow.id
+  const projectId = project.id
+  const workflowType = workflow.type
+  const publicView = workflow.publicView
+
+  const [state, setState] = useState<StateType>({
+    openShareDialog: false,
+    openExportDialog: false,
+    openImportDialog: false,
+    openEditDialog: false
+  })
+  const objectSets = useSelector<AppState>((state: AppState) => state.objectset)
+  const week = useSelector<AppState>((state: AppState) => state.week)
+  const node = useSelector<AppState>((state: AppState) => state.node)
+  const outcome = useSelector<AppState>((state: AppState) => state.outcome)
 
   /*******************************************************
    * MODALS
    *******************************************************/
+
   const {
     openEditMenu,
     openShareDialog,
@@ -47,29 +75,22 @@ const ActionMenu = () => {
     deleteWorkflowHard
   } = useMenuActions()
 
-  if (!workflow || !project) {
-    return <></>
-  }
-
-  const isStrategy = workflow.isStrategy
-  const userId = userContext.id
-  const workflowId = workflow.id
-  const projectId = project.id
-  const workflowType = workflow.type
-  const publicView = workflow.publicView
-
   const menuItems: MenuItemType[] = [
     {
       id: 'edit-project',
-      title: _t('Edit Workflow'),
+      title: _t('Edit workflow'),
       action: openEditMenu,
-      content: <EditIcon />,
+      iconButton: {
+        icon: <EditIcon />
+      },
       show: workflow.workflowPermissions.write
     },
     {
       id: 'share',
       title: _t('Sharing'),
-      content: <PersonAddIcon />,
+      iconButton: {
+        icon: <PersonAddIcon />
+      },
       action: openShareDialog,
       show: workflow.workflowPermissions.write
     },
@@ -129,128 +150,114 @@ const ActionMenu = () => {
     }
   ]
 
-  return <MenuWithOverflow menuItems={menuItems} size={2} />
+  return (
+    <MenuWithOverflow menuItems={menuItems} size={2} buttonColor="primary" />
+  )
 }
 
-/*******************************************************
- * VIEW SETTINGS MENU
- *******************************************************/
-const ViewSettingsMenu = () => {
-  const objectSets = useSelector((state: RootState) =>
-    selectAllObjectSets(state)
-  )
-  const viewSettings = useSelector((state: RootState) => state.viewsettings)
-
+const ExpandCollapseMenu = ({ legend }: { legend?: ReactElement }) => {
   const { expandAll, collapseAll } = useMenuActions()
-  const dispatch = useDispatch()
-
-  /*******************************************************
-   * FUNCTIONS / ACTIONS
-   *******************************************************/
-  function toggleExpandWeeks() {
-    const weeks = viewSettings.expandedWeeks
-    if (!weeks) {
-      expandAll(CfObjectType.WEEK)
-    } else {
-      collapseAll(CfObjectType.WEEK)
-    }
-    dispatch(viewsettingsToggle({ key: 'expandedWeeks' }))
-  }
-
-  function toggleExpandNodes() {
-    const nodes = viewSettings.expandedNodes
-    if (!nodes) {
-      expandAll(CfObjectType.NODE)
-    } else {
-      collapseAll(CfObjectType.NODE)
-    }
-    dispatch(viewsettingsToggle({ key: 'expandedNodes' }))
-  }
-
-  function toggleViewSetting(key: string) {
-    dispatch(viewsettingsToggle({ key }))
-  }
-
-  function toggleObjectSet(id: number) {
-    const objectset = viewSettings.objectset
-    const clonedObjectset = [...objectset]
-
-    const index = objectset.indexOf(id)
-    if (index !== -1) {
-      clonedObjectset.splice(index, 1)
-    } else {
-      clonedObjectset.push(id)
-    }
-    dispatch(viewsettingsUpdate({ objectset: clonedObjectset }))
-  }
-
-  /*******************************************************
-   * SUBCOMPONENTS
-   *******************************************************/
-  const objectSetOptions = objectSets.map((item, index) => {
-    return {
-      content: item.title,
-      action: () => toggleObjectSet(item.id),
-      show: true,
-      defaultChecked: !!viewSettings.objectset.find((id) => id === item.id)
-    }
+  const [expanded, setExpanded] = useState({
+    [CfObjectType.WEEK]: true,
+    [CfObjectType.NODE]: true,
+    [CfObjectType.OUTCOME]: true
   })
 
+  const onExpandChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const type = event.target.value as CfObjectType
+      const checked = event.target.checked
+
+      setExpanded(
+        produce((draft) => {
+          draft[type] = checked
+
+          if (checked) {
+            expandAll(type)
+          } else {
+            collapseAll(type)
+          }
+        })
+      )
+    },
+    [expandAll, collapseAll]
+  )
+
   const header: MenuItemType = {
-    content: _t('View Settings'),
+    content: _t('View settings'),
     icon: <TuneIcon />,
     showIconInList: true,
     show: true
   }
 
   const menuItems: MenuItemType[] = [
-    // EXPAND
     {
-      content: _t('Expand weeks'),
-      action: () => toggleExpandWeeks(),
-      show: true,
-      defaultChecked: viewSettings.expandedWeeks
+      content: (
+        <FormControlLabel
+          control={
+            <Switch
+              value={CfObjectType.WEEK}
+              checked={expanded[CfObjectType.WEEK]}
+              onChange={onExpandChange}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+          }
+          label={_t('Expand all weeks')}
+        />
+      ),
+      icon: <ZoomOutMapIcon />,
+      showIconInList: true,
+      show: true
     },
     {
-      content: _t('Expand nodes'),
-      action: () => toggleExpandNodes(),
-      show: true,
-      defaultChecked: viewSettings.expandedNodes
-    },
-    // OUTCOMES
-    {
-      content: _t('Expand outcomes'),
-      action: () => toggleViewSetting('expandedOutcomes'),
-      seperator: true,
-      show: true,
-      defaultChecked: viewSettings.expandedOutcomes
-    },
-    // GLOBAL
-    {
-      content: _t('Condensed view'),
-      action: () => toggleViewSetting('condensed'),
-      seperator: true,
-      show: true,
-      defaultChecked: viewSettings.condensed
+      content: (
+        <FormControlLabel
+          control={
+            <Switch
+              value={CfObjectType.NODE}
+              checked={expanded[CfObjectType.NODE]}
+              onChange={onExpandChange}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+          }
+          label={_t('Expand all nodes')}
+        />
+      ),
+      icon: <ZoomInMapIcon />,
+      showIconInList: true,
+      show: true
     },
     {
-      content: _t('Display legend'),
-      action: () => toggleViewSetting('legend'),
-      show: true,
-      seperator: true,
-      defaultChecked: viewSettings.legend
-    },
-    {
-      content: '',
-      sectionTitle: _t('Object Set')
-    },
-    // OBJECT SETS
-    ...objectSetOptions
+      content: (
+        <FormControlLabel
+          control={
+            <Switch
+              value={CfObjectType.OUTCOME}
+              checked={expanded[CfObjectType.OUTCOME]}
+              onChange={onExpandChange}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+          }
+          label={_t('Expand all outcomes')}
+        />
+      ),
+      icon: <ZoomInMapIcon />,
+      showIconInList: true,
+      show: true
+    }
   ]
+
+  if (legend) {
+    menuItems.unshift({
+      content: legend,
+      show: true
+    })
+  }
+
   return (
-    <SimpleSwitchMenu
-      id="view-settings-menu"
-      data-test-id="view-settings-menu"
+    <SimpleMenu
+      id="actions-menu"
+      data-test-id="ExpandCollapseMenu"
       header={header}
       menuItems={menuItems}
     />
@@ -267,6 +274,7 @@ const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
   if (viewType !== WorkflowViewType.WORKFLOW || !weekIds.length) {
     return null
   }
+
   const menuItems: MenuItemType[] = weekIds.map((item, index) => {
     return {
       content: <ScrollToWeek key={`weekworkflow-${item}`} objectId={item} />,
@@ -274,6 +282,7 @@ const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
       show: true
     }
   })
+
   const header: MenuItemType = {
     content: _t('Jump to'),
     icon: <KeyboardDoubleArrowDownIcon />,
@@ -284,4 +293,4 @@ const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
   return <SimpleMenu id={'JumpToMenu'} menuItems={menuItems} header={header} />
 }
 
-export { JumpToMenu, ActionMenu, ViewSettingsMenu }
+export { JumpToMenu, ActionMenu, ExpandCollapseMenu }

@@ -16,7 +16,6 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { getErrorMessage } from '@XMLHTTP/API/api'
 import { useGetProjectByIdQuery } from '@XMLHTTP/API/project.rtk'
-import * as React from 'react'
 import { useEffect, useState } from 'react'
 import {
   Route,

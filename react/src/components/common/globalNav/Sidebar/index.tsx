@@ -34,12 +34,7 @@ const Favourites = () => {
 
     return (
       <ListItem disablePadding dense sx={{ mt: 1 }}>
-        <ListItemButton
-          component="div"
-          sx={{
-            padding: 0
-          }}
-        >
+        <ListItemButton component="div" sx={{ padding: 0 }}>
           <ListItemText
             sx={{
               margin: 0
@@ -95,6 +90,7 @@ const Favourites = () => {
               </ListItem>
             )
           })}
+
           <SeeAll />
         </List>
       </SC.SectionWrap>
@@ -185,13 +181,6 @@ const Sidebar = () => {
         <ParentWorkflowIndicator />
 
         <SC.HelpLink>
-          {process.env.NODE_ENV !== 'production' && (
-            <ListItem disablePadding dense>
-              <ListItemButton component={Link} to={CFRoutes.STYLEGUIDE}>
-                <ListItemText primary="Styleguide" />
-              </ListItemButton>
-            </ListItem>
-          )}
           <ListItem disablePadding dense>
             <ListItemButton
               component="a"

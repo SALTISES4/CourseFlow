@@ -1,4 +1,5 @@
 from pprint import pprint
+from typing import List
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -28,7 +29,7 @@ class WorkflowUpdateEmitter:
         room_group_name = "workflow_" + str(workflow.pk)
 
         message = {
-            "type": "workflow_action",
+            "type": WsEventType.WORKFLOW_ACTION.value,
             "action": action,
             "edit_count": str(workflow.edit_count),
         }
@@ -79,7 +80,7 @@ class WorkflowUpdateEmitter:
         channel_layer = get_channel_layer()
 
         message = {
-            "type": "workflow_child_updated",
+            "type": WsEventType.WORKFLOW_CHILD_UPDATED.value,
             "edit_count": workflow.edit_count,
             "child_workflow_id": child_workflow.pk,
         }
@@ -95,7 +96,7 @@ class WorkflowUpdateEmitter:
         channel_layer = get_channel_layer()
 
         message = {
-            "type": "lock_update",
+            "type": WsEventType.LOCK_UPDATE.value,
             "action": action,
         }
         camel_case_message = camelize(message)
@@ -149,7 +150,12 @@ class WorkflowUpdateEmitter:
 
     @staticmethod
     def restore_self_action(
-        object_id: int, objectType, parent_id: int, throughparentId, throughparent_index, extra_data
+        object_id: int,
+        objectType,
+        parent_id: int,
+        throughparentId,
+        throughparent_index,
+        extra_data
     ) -> dict:
         return {
             "type": objectType + "/restoreSelf",
@@ -164,31 +170,52 @@ class WorkflowUpdateEmitter:
 
     @staticmethod
     def insert_below_action(response_data, object_type) -> dict:
-        return {"type": object_type + "/insertBelow", "payload": response_data}
+        return {
+            "type": object_type + "/insertBelow",
+            "payload": response_data
+        }
 
     @staticmethod
     def insert_child_action(response_data, object_type) -> dict:
-        return {"type": object_type + "/insertChild", "payload": response_data}
+        return {
+            "type": object_type + "/insertChild",
+            "payload": response_data
+        }
 
     @staticmethod
     def set_linked_workflow_action(response_data) -> dict:
-        return {"type": "node/setLinkedWorkflow", "payload": response_data}
+        return {
+            "type": "node/setLinkedWorkflow",
+            "payload": response_data
+        }
 
     @staticmethod
     def new_node_action(response_data) -> dict:
-        return {"type": "node/newNode", "payload": response_data}
+        return {
+            "type": "node/newNode",
+            "payload": response_data
+        }
 
     @staticmethod
     def new_outcome_action(response_data) -> dict:
-        return {"type": "outcome/newOutcome", "payload": response_data}
+        return {
+            "type": "outcome/newOutcome",
+            "payload": response_data
+        }
 
     @staticmethod
     def new_node_link_action(response_data) -> dict:
-        return {"type": "nodelink/newNodeLink", "payload": response_data}
+        return {
+            "type": "nodelink/newNodeLink",
+            "payload": response_data
+        }
 
     @staticmethod
     def prepare_change_field_payload(
-        object_id: int, object_type: str, json, publishing_user_id: int = None
+        object_id: int,
+        object_type: str,
+        json,
+        publishing_user_id: int = None
     ) -> dict:
         return {
             "type": object_type + "/changeField",
@@ -201,7 +228,12 @@ class WorkflowUpdateEmitter:
         }
 
     @staticmethod
-    def change_field_many(object_ids: [int], object_type, json, publishing_user_id) -> dict:
+    def change_field_many(
+        object_ids: List[int],
+        object_type,
+        json,
+        publishing_user_id
+    ) -> dict:
         """
         no...
         """
@@ -217,7 +249,10 @@ class WorkflowUpdateEmitter:
 
     @staticmethod
     def update_outcomenode_degree_action(response_data) -> dict:
-        return {"type": "outcomenode/updateDegree", "payload": response_data}
+        return {
+            "type": "outcomenode/updateDegree",
+            "payload": response_data
+        }
 
     @staticmethod
     def update_outcomehorizontallink_degree_action(response_data) -> dict:
@@ -226,30 +261,45 @@ class WorkflowUpdateEmitter:
             "payload": response_data,
         }
 
-    # never called
-    # def updateChildOutcomehorizontallinkDegreeAction(response_data):
-    # return {
-    #     "type": "childoutcomehorizontallink/updateDegree",
-    #     "payload": response_data,
-    # }
-
     @staticmethod
     def new_strategy_action(response_data):
-        return {"type": "strategy/addStrategy", "payload": response_data}
+        return {
+            "type": "strategy/addStrategy",
+            "payload": response_data
+        }
 
     @staticmethod
     def toggle_strategy_action(response_data):
-        return {"type": "strategy/toggleStrategy", "payload": response_data}
+        return {
+            "type": "strategy/toggleStrategy",
+            "payload": response_data
+        }
 
     @staticmethod
     def update_horizontal_links(data_package):
-        return {"type": "outcome/updateHorizontalLinks", "payload": data_package}
+        return {
+            "type": "outcome/updateHorizontalLinks",
+            "payload": data_package
+        }
+
+    # never called
+    # def updateChildOutcomehorizontallinkDegreeAction(response_data):
+    #     return {
+    #         "type": "childoutcomehorizontallink/updateDegree",
+    #         "payload": response_data,
+    #     }
 
     # never called
     # def replaceStoreData(data_package):
-    #     return {"type": "replaceStoreData", "payload": data_package}
+    #     return {
+    #         "type": "replaceStoreData",
+    #         "payload": data_package
+    #     }
 
     # never called
     # def refreshStoreData(data_package):
     #     print("am i being called refreshStoreData")
-    #     return {"type": "refreshStoreData", "payload": data_package}
+    #     return {
+    #         "type": "refreshStoreData",
+    #         "payload": data_package
+    #     }

@@ -1,19 +1,22 @@
 import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
-import { selectNodelinkById } from '@cfRedux/selectors/nodelink.selector'
+import { selectNodeLinkById } from '@cfRedux/selectors/nodelink.selector'
+import { AppState } from '@cfRedux/types/type'
+import NodeLinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG'
 import { RootState } from '@cfRedux/store'
-import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG'
-import { RefObject, useEffect, useState } from 'react'
+
+import * as d3 from 'd3'
+import React, { useCallback, useEffect, useState } from 'react'
 import * as reactDom from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 type PropsType = {
   objectId: number
-  nodeDiv: RefObject<HTMLDivElement>
+  nodeDiv: React.MutableRefObject<HTMLElement>
 }
 
-const Nodelink = ({ objectId, nodeDiv }: PropsType) => {
+const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
   /*******************************************************
    * REDUX
    *******************************************************/
@@ -32,12 +35,17 @@ const Nodelink = ({ objectId, nodeDiv }: PropsType) => {
   /*******************************************************
    * STATE
    *******************************************************/
-  const [sourceNode, setSourceNode] = useState<JQuery>(null)
-  const [targetNode, setTargetNode] = useState<JQuery>(null)
+  const [sourceNode, setSourceNode] = useState(null)
+  const [targetNode, setTargetNode] = useState(null)
   const [sourcePortHandle, setSourcePortHandle] =
     useState<d3.Selection<SVGElement, unknown, HTMLElement, any>>(null)
   const [targetPortHandle, setTargetPortHandle] =
     useState<d3.Selection<SVGElement, unknown, HTMLElement, any>>(null)
+
+  const rerender = useCallback(() => {
+    setSourceNode($(nodeDiv.current))
+    setTargetNode($(`#node-${nodeLink.targetNode}`))
+  }, [nodeDiv, nodeLink.targetNode])
 
   /*******************************************************
    * LIFECYCLE HOOKS
@@ -49,7 +57,7 @@ const Nodelink = ({ objectId, nodeDiv }: PropsType) => {
     }
 
     const srcNode = $(nodeDiv.current)
-    const tgtNode = $(`#${nodelink.targetNode}.node`)
+    const tgtNode = $(`#node-${nodeLink.targetNode}`)
 
     setSourceNode(srcNode)
     setTargetNode(tgtNode)
@@ -60,17 +68,17 @@ const Nodelink = ({ objectId, nodeDiv }: PropsType) => {
     // this css selector defines the circle attached to each node
     // from which the line is connected
     const sourcePortSelector = [
-      `g.port-${nodelink.sourceNode}`,
+      `g.port-${nodeLink.sourceNode}`,
       ` circle[data-port-type='source']`,
-      `[data-port='${Constants.portKeys[nodelink.sourcePort]}']`
+      `[data-port='${Constants.portKeys[nodeLink.sourcePort]}']`
     ].join('')
 
     // this css selector defines the circle attached to each node
     // to which the line is connected
     const targetPortSelector = [
-      `g.port-${nodelink.targetNode}`,
+      `g.port-${nodeLink.targetNode}`,
       ` circle[data-port-type='target']`,
-      `[data-port='${Constants.portKeys[nodelink.targetPort]}']`
+      `[data-port='${Constants.portKeys[nodeLink.targetPort]}']`
     ].join('')
 
     setSourcePortHandle(d3.select(sourcePortSelector))
@@ -80,18 +88,14 @@ const Nodelink = ({ objectId, nodeDiv }: PropsType) => {
       srcNode.off(rerenderEvents)
       tgtNode.off(rerenderEvents)
     }
-  }, [nodelink, nodeDiv])
+  }, [nodeLink, nodeDiv, rerenderEvents, rerender])
 
   /**
    * FUNCTIONS
    **/
   /**
-   * This is outside of react, so we need to redraw the nodelinks manually
+   * This is outside of react, so we need to redraw the nodeLinks manually
    **/
-  const rerender = () => {
-    setSourceNode($(nodeDiv.current))
-    setTargetNode($(`#${nodelink.targetNode}.node`))
-  }
 
   /**
    * Early exit if dimensions are not available
@@ -108,6 +112,7 @@ const Nodelink = ({ objectId, nodeDiv }: PropsType) => {
   const nodeSelected =
     sourceNode.attr('data-selected') === 'true' ||
     targetNode.attr('data-selected') === 'true'
+
   const nodeHovered =
     sourceNode.attr('data-hovered') === 'true' ||
     targetNode.attr('data-hovered') === 'true'
@@ -116,7 +121,7 @@ const Nodelink = ({ objectId, nodeDiv }: PropsType) => {
    * React Style
    **/
   const style: React.CSSProperties = {}
-  if (nodelink.dashed) {
+  if (nodeLink.dashed) {
     style.strokeDasharray = '5,5'
   }
 
@@ -142,24 +147,23 @@ const Nodelink = ({ objectId, nodeDiv }: PropsType) => {
   }
 
   const portal = reactDom.createPortal(
-    <NodelinkSVG
+    <NodeLinkSVG
       style={style}
       hovered={nodeHovered}
       nodeSelected={nodeSelected}
+      // lock={nodeLink?.lock}
+      title={nodeLink.title}
+      textPosition={nodeLink.textPosition}
       sourcePortHandle={sourcePortHandle}
+      sourcePort={nodeLink.sourcePort}
       targetPortHandle={targetPortHandle}
-      sourceDimensions={sourceDims}
-      targetDimensions={targetDims}
-      // lock={nodelink?.lock}
-      // textPosition={nodelink.textPosition}
-      // title={nodelink.title}
-      // sourcePort={nodelink.sourcePort}
-      // targetPort={nodelink.targetPort}
-      nodelink={nodelink}
+      targetPort={nodeLink.targetPort}
       clickFunction={(e) => {
         e.stopPropagation()
-        manager.updateSidebar(nodelink.id, objectType)
+        manager.updateSidebar(nodeLink.id, objectType)
       }}
+      sourceDimensions={sourceDims}
+      targetDimensions={targetDims}
     />,
     $('.workflow-canvas')[0]
   )
@@ -167,15 +171,15 @@ const Nodelink = ({ objectId, nodeDiv }: PropsType) => {
   return <>{portal}</>
 }
 
-export default Nodelink
+export default NodeLink
 
 // import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 // import { CfObjectType } from '@cf/types/enum'
 // import * as Constants from '@cf/utility/constants'
-// import { TGetNodelinkById, getNodelinkByID } from '@cfFindState'
+// import { TGetNodeLinkById, getNodeLinkByID } from '@cfFindState'
 // import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 // import { AppState } from '@cfRedux/types/type'
-// import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG'
+// import NodeLinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG'
 // import { Dispatch } from '@reduxjs/toolkit'
 // import * as React from 'react'
 // import * as reactDom from 'react-dom'
@@ -183,7 +187,7 @@ export default Nodelink
 // import { Action } from 'redux'
 // // import $ from 'jquery'
 //
-// type ConnectedProps = TGetNodelinkById
+// type ConnectedProps = TGetNodeLinkById
 // type OwnProps = {
 //   objectId: number
 // //  parentId: number @todo no sure ?
@@ -196,7 +200,7 @@ export default Nodelink
 //  * The arrow manually drawn between two nodes (as opposed to the
 //  * autolink which is automatically drawn). This can have text added.
 //  */
-// class Nodelink extends React.Component<PropsType, StateProps> {
+// class NodeLink extends React.Component<PropsType, StateProps> {
 //   static contextType = WorkflowConfigContext
 //   declare context: React.ContextType<typeof WorkflowConfigContext>
 //
@@ -212,7 +216,7 @@ export default Nodelink
 //     super(props)
 //     this.manager = new BetterSelectionManager(this.props.dispatch)
 //     this.objectType = CfObjectType.NODELINK
-//     this.rerenderEvents = 'ports-rendered.' + this.props.nodelink.id
+//     this.rerenderEvents = 'ports-rendered.' + this.props.nodeLink.id
 //   }
 //
 //   /*******************************************************
@@ -249,7 +253,7 @@ export default Nodelink
 //       this.targetPortHandle.empty()
 //     ) {
 //       this.sourceNode = $(this.props.nodeDiv.current)
-//       this.targetNode = $('#' + nodelink.targetNode + '.node')
+//       this.targetNode = $('#' + nodeLink.targetNode + '.node')
 //
 //       this.sourceNode.on(this.rerenderEvents, this.rerender.bind(this))
 //       this.targetNode.on(this.rerenderEvents, this.rerender.bind(this))
@@ -257,9 +261,9 @@ export default Nodelink
 //       // this css selector defines the circle attached to each node
 //       // from which the line is connected
 //       const cssSourcePortSelector = [
-//         `g.port-${nodelink.sourceNode}`,
+//         `g.port-${nodeLink.sourceNode}`,
 //         ` circle[data-port-type='source']`,
-//         `[data-port='${Constants.portKeys[nodelink.sourcePort]}']`
+//         `[data-port='${Constants.portKeys[nodeLink.sourcePort]}']`
 //       ].join('')
 //
 //       // Utility.logger('cssSourcePortSelector')
@@ -268,9 +272,9 @@ export default Nodelink
 //       // this css selector defines the circle attached to each node
 //       // to which the line is connected
 //       const cssSourceTargetSelector = [
-//         `g.port-${nodelink.targetNode} `,
+//         `g.port-${nodeLink.targetNode} `,
 //         ` circle[data-port-type='target']`,
-//         `[data-port='${Constants.portKeys[nodelink.targetPort]}']`
+//         `[data-port='${Constants.portKeys[nodeLink.targetPort]}']`
 //       ].join('')
 //
 //       this.sourcePortHandle = d3.select(cssSourcePortSelector)
@@ -284,7 +288,7 @@ export default Nodelink
 //       this.sourceNode.attr('data-hovered') === 'true' ||
 //       this.targetNode.attr('data-hovered') === 'true'
 //
-//     if (nodelink.dashed) {
+//     if (nodeLink.dashed) {
 //       style.strokeDasharray = '5,5'
 //     }
 //
@@ -319,21 +323,21 @@ export default Nodelink
 //      *    for where this target is attached to the page
 //      **/
 //     const portal = reactDom.createPortal(
-//       <NodelinkSVG
+//       <NodeLinkSVG
 //         style={style}
 //         hovered={nodeHovered}
 //         nodeSelected={nodeSelected}
-//         lock={nodelink.lock} // @todo where is lock defined?
-//         title={nodelink.title}
-//         textPosition={nodelink.textPosition}
+//         lock={nodeLink.lock} // @todo where is lock defined?
+//         title={nodeLink.title}
+//         textPosition={nodeLink.textPosition}
 //         sourcePortHandle={this.sourcePortHandle}
-//         sourcePort={nodelink.sourcePort}
+//         sourcePort={nodeLink.sourcePort}
 //         targetPortHandle={this.targetPortHandle}
-//         targetPort={nodelink.targetPort}
+//         targetPort={nodeLink.targetPort}
 //         clickFunction={(e) => {
 //           e.stopPropagation()
 //           this.manager.updateSidebar(
-//             nodelink.id,
+//             nodeLink.id,
 //             this.objectType,
 //             this.props.parentId
 //           )
@@ -357,10 +361,10 @@ export default Nodelink
 // const mapStateToProps = (
 //   state: AppState,
 //   ownProps: OwnProps
-// ): TGetNodelinkById => {
-//   return getNodelinkByID(state, ownProps.objectId) || { data: undefined }
+// ): TGetNodeLinkById => {
+//   return getNodeLinkByID(state, ownProps.objectId) || { data: undefined }
 // }
 // export default connect<ConnectedProps, object, OwnProps, AppState>(
 //   mapStateToProps,
 //   null
-// )(Nodelink)
+// )(NodeLink)

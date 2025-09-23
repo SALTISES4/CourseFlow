@@ -14,6 +14,11 @@ declare module '@mui/material/styles' {
       template?: string
     }
 
+    workflow?: {
+      highlighted?: string
+      selected?: string
+    }
+
     template?: {
       main?: string
       contrastText?: string
@@ -45,6 +50,11 @@ declare module '@mui/material/styles' {
       course?: string
       activity?: string
       template?: string
+    }
+
+    workflow?: {
+      highlighted?: string
+      selected?: string
     }
 
     template?: {

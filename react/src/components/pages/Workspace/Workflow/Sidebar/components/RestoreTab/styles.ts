@@ -1,8 +1,8 @@
 import { styled } from '@mui/material'
 
-import { Wrap } from '../../Draggable/Block/styles'
+import { DraggableWrap } from '../../Draggable/styles'
 
-export const StyledRestorableBlock = styled(Wrap, {
+export const StyledRestorableBlock = styled(DraggableWrap, {
   shouldForwardProp: (prop) => !['selected'].includes(prop as string)
 })<{ selected?: boolean }>(({ theme, selected }) => ({
   padding: theme.spacing(1),

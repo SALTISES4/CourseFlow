@@ -1,10 +1,7 @@
-import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
-import { HoverMenu, MenuItemType } from '@cfComponents/menu/Menu'
-import CommentBox from '@cfEditableComponents/components/CommentBox'
-import { useMenuActions } from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useMenuActions'
+import { HoverMenu } from '@cfComponents/menu/Menu'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectColumnById } from '@cfRedux/selectors/column.selector'
 import { RootState } from '@cfRedux/store'
@@ -21,23 +18,14 @@ import * as React from 'react'
 import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import * as Styled from './styles'
+
 type OwnProps = {
   objectId: number
   parentId: number
 }
 
 type PropsType = OwnProps
-
-export const StyledDivLine = styled('div')<{ colour?: string }>(
-  ({ theme, colour }) => ({
-    height: '10px',
-    background: colour,
-    borderRadius: '4px',
-    flex: 'none',
-    order: 0,
-    flexGrow: 0
-  })
-)
 
 /**
  * The column in a workflow.
@@ -93,27 +81,24 @@ const Column = ({ objectId, parentId }: PropsType) => {
     return null
   }
 
-  const title = column.title ?? column.columnTypeDisplay
+  const data = columnData.column
+  const title = data.title ?? data.columnTypeDisplay
 
   return (
-    <div
+    <Styled.Column
       ref={mainDiv}
-      style={{
-        border:
-          (column.lock && '2px solid ' + column.lock.userColour) || 'inherit'
-      }}
+      border={data.lock && `2px solid ${data.lock.userColour}`}
       className={clsx(
-        'column',
-        column.lock && `locked`,
-        column.lock && `locked-${column.lock.userId}`
+        data.lock && 'locked',
+        data.lock && `locked-${data.lock.userId}`
       )}
       onClick={onClickHandler}
     >
-      <div>
-        <StyledDivLine colour={columnColourHex} />
-        <div dangerouslySetInnerHTML={{ __html: title }}></div>
-      </div>
-    </div>
+      <Styled.Border color={columnColourHex} />
+      <Styled.Title variant="body2">
+        <span dangerouslySetInnerHTML={{ __html: title }}></span>
+      </Styled.Title>
+    </Styled.Column>
   )
 }
 

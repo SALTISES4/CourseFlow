@@ -4,14 +4,12 @@ import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { HoverMenu, MenuItemType } from '@cfComponents/menu/Menu'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
-import { RootState } from '@cfRedux/store'
+import { AppState } from '@cfRedux/types/type'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import DeleteIcon from '@mui/icons-material/Delete'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import QueueIcon from '@mui/icons-material/Queue'
-import Box from '@mui/material/Box'
-import { styled } from '@mui/material/styles'
 import {
   useCreateNodeMutation,
   useDeleteNodeMutation
@@ -19,12 +17,17 @@ import {
 import mergeRefs from 'merge-refs'
 import { Ref } from 'react'
 import { useSelector } from 'react-redux'
+import { RootState } from '@cfRedux/store'
+
 
 import Node from './Node'
+import * as Styled from '../../styles'
+import DroppableCell from '../DroppableCell'
 
 type PropsType = {
   objectId: number
   parentId: number
+  row: number
 }
 
 /**
@@ -34,14 +37,6 @@ type PropsType = {
  * this is why we just call getNodeById in both NodeWrapper and child
  * TBD...
  **/
-
-// Define a fixed width for each cell
-const cellWidth = 200 // For example, 160px per cell
-
-const StyledCell = styled(Box)(() => ({
-  position: 'relative',
-  width: `${cellWidth}px` // Fixed width for each cell
-}))
 
 const NodeHoverMenu = ({
   objectId,
@@ -98,7 +93,7 @@ const NodeHoverMenu = ({
       show: true
     },
     {
-      content: _t('Insert New'),
+      content: _t('Insert new'),
       action: () => createButtonHandler(CfObjectType.WEEK),
       icon: <QueueIcon />,
       show: true
@@ -120,12 +115,12 @@ const NodeHoverMenu = ({
   )
 }
 
-const NodeWrapper = ({ objectId, parentId }: PropsType) => {
+const NodeWrapper = ({ objectId, parentId, row }: PropsType) => {
+  // review the node name / data
   const node = useSelector((state: RootState) =>
     selectNodeById(state, objectId)
   )
-
-  const workflow = useSelector((state: RootState) => state.workspace.workflow)
+  const workflow = useSelector((state: AppState) => state.workflow)
   const [ref, isHovered] = useHover()
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: objectId })
@@ -134,44 +129,45 @@ const NodeWrapper = ({ objectId, parentId }: PropsType) => {
     return null
   }
 
-  return workflow.columns.map((colNum, index) => (
-    <StyledCell key={index}>
-      <span
-        style={{
-          position: 'absolute',
-          top: '0.5em',
-          left: '0.5em',
-          fontWeight: 600,
-          fontSize: '12px',
-          opacity: 0.5
-        }}
-      >
-        col: {colNum}, order: {node.order}
-      </span>
+  return workflow.columns.map((column) => (
+    <DroppableCell
+      key={column}
+      groupId={parentId}
+      coords={{
+        row,
+        column
+      }}
+    >
+      <Styled.Cell>
+        <Styled.DebugCellInfo>
+          row: {row}, col: {column}
+        </Styled.DebugCellInfo>
 
-      {colNum === node.column && (
-        <div
-          id={String(objectId)}
-          className="node-week"
-          ref={mergeRefs(setNodeRef as Ref<HTMLDivElement>, ref)}
-          style={{
-            position: 'relative',
-            transform: CSS.Transform.toString(transform),
-            transition
-          }}
-          {...attributes}
-          data-child-id={String(objectId)}
-          data-column-id={String(node.column)}
-        >
-          <div {...listeners}>
-            <DragHandleIcon />
+        {column === node.column && (
+          <div
+            id={String(objectId)}
+            className="node-week"
+            ref={mergeRefs(setNodeRef as Ref<HTMLDivElement>, ref)}
+            style={{
+              position: 'relative',
+              transform: CSS.Transform.toString(transform),
+              transition
+            }}
+            {...attributes}
+            data-child-id={String(objectId)}
+            data-column-id={String(data.column)}
+          >
+            <div {...listeners}>
+              <DragHandleIcon />
+            </div>
+
+            <Node objectId={objectId} parentId={parentId} />
+
+            <NodeHoverMenu objectId={objectId} show={isHovered} />
           </div>
-
-          <Node objectId={objectId} parentId={parentId} />
-          <NodeHoverMenu objectId={objectId} show={isHovered} />
-        </div>
-      )}
-    </StyledCell>
+        )}
+      </Styled.Cell>
+    </DroppableCell>
   ))
 }
 

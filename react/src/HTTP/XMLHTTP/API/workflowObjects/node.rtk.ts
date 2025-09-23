@@ -155,7 +155,7 @@ const extendedApi = cfApi.injectEndpoints({
       }
     >({
       query: (args) => {
-        const base = apiPaths.json_api.node.link__create
+        const base = apiPaths.json_api.node.link_create
         return {
           method: Verb.POST,
           url: generatePath(base, { id: args.id }),

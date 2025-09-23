@@ -4,6 +4,7 @@ import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { _t } from '@cf/utility/Utility.class'
 import { ObjectSetType } from '@cfComponents/dialog/Project/components/ObjectSets/type'
 import ProjectForm from '@cfComponents/dialog/Project/components/ProjectForm'
+import { useGetHomeContextQuery } from '@XMLHTTP/API/library.rtk'
 import {
   useGetProjectByIdQuery,
   useUpdateProjectMutation
@@ -29,6 +30,12 @@ const ProjectEditDialog = () => {
    *******************************************************/
   const { show, onClose } = useDialog(DialogMode.PROJECT_EDIT)
   const { id } = useParams()
+
+  // TODO: grab amount of projects data from elsewhere?
+  const homeContextQuery = useGetHomeContextQuery()
+  const noProjects = homeContextQuery.isLoading
+    ? false
+    : homeContextQuery.data.dataPackage.projects.length === 0
 
   /*******************************************************
    * QUERY HOOK
@@ -104,8 +111,9 @@ const ProjectEditDialog = () => {
         defaultValues={defaultValues}
         submitHandler={onSubmit}
         closeCallback={onClose}
-        showNoProjectsAlert={true}
-        label={'Edit Project'}
+        showNoProjectsAlert={noProjects}
+        label={'Edit project'}
+        submitLabel={'Update project'}
       />
     </SC.StyledDialog>
   )

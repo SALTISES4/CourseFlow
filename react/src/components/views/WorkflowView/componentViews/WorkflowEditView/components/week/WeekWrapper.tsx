@@ -23,6 +23,7 @@ import mergeRefs from 'merge-refs'
 import { Ref } from 'react'
 import { useSelector } from 'react-redux'
 
+import * as Styled from './styles'
 import Term from './Term'
 import Week from './Week'
 
@@ -30,6 +31,7 @@ type PropsType = {
   condensed: boolean
   objectId: number
   parentId: number
+  reordering: boolean
 }
 
 /*******************************************************
@@ -96,16 +98,16 @@ const WeekHoverMenu = ({
   ] = useDeleteWeekMutation()
 
   const createButtonHandler = async (type: CfObjectType) => {
-    try {
-      const resp = await createMutate({
-        payload: {
-          rank: order + 1
-        }
-      }).unwrap()
-      onSuccess(resp)
-    } catch (e) {
-      onError(e)
-    }
+    // try {
+    //   const resp = await createMutate({
+    //     payload: {
+    //       rank: order + 1
+    //     }
+    //   }).unwrap()
+    //   onSuccess(resp)
+    // } catch (e) {
+    //   onError(e)
+    // }
   }
 
   const deleteButtonHandler = async () => {
@@ -127,7 +129,7 @@ const WeekHoverMenu = ({
       show: true
     },
     {
-      content: _t('Insert New'),
+      content: _t('Insert new'),
       action: () => createButtonHandler(CfObjectType.WEEK),
       icon: <QueueIcon />,
       show: true
@@ -143,7 +145,7 @@ const WeekHoverMenu = ({
 
   return (
     <HoverMenu
-      id="hover-menu"
+      id={`hover-menu-${objectId}`}
       data-test-id="hover-menu"
       menuItems={menuItems}
     />
@@ -154,7 +156,12 @@ const WeekHoverMenu = ({
  * this component should not exist...roll it into week
  * and disambiguate parentId: week is not a 'child' of weekworkflow
  **/
-const WeekWrapper = ({ condensed, objectId, parentId }: PropsType) => {
+const WeekWrapper = ({
+  condensed,
+  objectId,
+  parentId,
+  reordering
+}: PropsType) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: objectId })
 
@@ -163,6 +170,9 @@ const WeekWrapper = ({ condensed, objectId, parentId }: PropsType) => {
   /*******************************************************
    * REDUX
    *******************************************************/
+  // const weekData = useSelector((state: AppState) =>
+  //   selectWeekById(state, objectId)
+  // )
   // const weekData = useSelector((state: RootState) =>
   //   selectWeekById(state, objectId)
   // )
@@ -175,18 +185,22 @@ const WeekWrapper = ({ condensed, objectId, parentId }: PropsType) => {
     @todo investigate this switch
   it doesn't make sense why is term (label for program week) being used for the UI dropped view (as in drop down drawer)
     **/
-  const WeekChooser = () => {
+  const WeekOrTerm = () => {
     if (condensed) {
-      return (
-        <Term
-          objectId={objectId}
-          //  rank={weekData.order.indexOf(weekData.week.id)}
-          parentId={parentId}
-        />
-      )
+      // TODO: figure this out
+      return <></>
+      // return (
+      //   <Term
+      //     objectId={objectId}
+      //     //  rank={weekData.order.indexOf(weekData.week.id)}
+      //     parentId={parentId}
+      //   />
+      // )
     }
 
-    return <Week objectId={objectId} parentId={parentId} />
+    return (
+      <Week objectId={objectId} parentId={parentId} reordering={reordering} />
+    )
   }
 
   /*******************************************************
@@ -214,11 +228,17 @@ const WeekWrapper = ({ condensed, objectId, parentId }: PropsType) => {
       Need to solve this
       drag n drop sort zone take over whole object and hides inside click event  (hover menu etc)
       */}
-      <div {...listeners} className="drag-handle-icon-wrap">
-        <DragHandleIcon />
-      </div>
-      <WeekChooser />
-      <WeekHoverMenu objectId={objectId} show={isHovered} />
+      {reordering ? (
+        <Styled.DraggingWeekWrapper {...listeners}>
+          <DragHandleIcon />
+          <WeekOrTerm />
+        </Styled.DraggingWeekWrapper>
+      ) : (
+        <>
+          <WeekOrTerm />
+          <WeekHoverMenu objectId={objectId} show={isHovered} />
+        </>
+      )}
     </div>
   )
 }

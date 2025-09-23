@@ -42,10 +42,10 @@ input[type="submit"] {
 }
 
 .workflow-wrapper {
-  white-space: nowrap;
-  text-align: left;
+  // white-space: nowrap;
+  // text-align: left;
   width: fit-content;
-  background: $color-white;
+  // background: $color-white;
   min-width: 100%;
   min-height: 100%;
   box-sizing: border-box;
@@ -1613,25 +1613,28 @@ input:checked + .slider::before {
   pointer-events: all;
 }
 
-.workflow-canvas circle,
-.workflow-canvas path.nodelink {
-  pointer-events: auto;
-}
+.workflow-canvas {
 
-.workflow-canvas.creating-node-link circle[data-port-type="target"] {
-  visibility: visible;
-}
+  circle,
+  path.nodelink {
+    pointer-events: auto;
+  }
 
-.workflow-canvas circle {
-  // visibility: hidden;
-}
+  circle {
+    visibility: hidden;
 
-circle.mouseover {
-  // visibility: visible;
-}
+    &:hover {
+      visibility: visible;
+    }
+  }
 
-.workflow-canvas.dragging-weekworkflow {
-  opacity: 0;
+  &.creating-node-link circle[data-port-type="target"] {
+    visibility: visible;
+  }
+
+  .port-visible circle[data-port-type="source"] {
+    visibility: visible;
+  }
 }
 
 /*

@@ -1,3 +1,8 @@
+import type { Outcome } from '@cf/redux/slices/outcomes.slice'
+import type { DraggableType } from '@cfViews/WorkflowView/componentViews/WorkflowEditViewV2/types'
+
+import type { DraggableBlockType } from './Draggable/types'
+
 type GroupType<T> = {
   title: string
   subtitle?: string
@@ -5,28 +10,17 @@ type GroupType<T> = {
   groups?: T[]
 }
 
-export type DraggableBlock = {
-  id: number
-  label: string
-  type: string
-  blocks?: DraggableBlock[]
-}
-
 export type RestorableBlock = {
   id: string
   label: string
 }
 
-export type OutcomeGroup = {
-  title: string
-  type: string
-  blocks: DraggableBlock[]
-}
+export type OutcomeGroup = Outcome['id']
 
 type AddGroup = {
   title: string
-  type: string
-  blocks: DraggableBlock[]
+  type: DraggableType
+  blocks: DraggableBlockType[]
 }
 
 export type RestoreGroup = {

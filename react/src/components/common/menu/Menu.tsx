@@ -1,18 +1,25 @@
+import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { StyledMenu } from '@cfComponents/globalNav/TopBar/styles'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
+import CommentBox from '@cfEditableComponents/components/CommentBox'
+import {
+  AddCommentingButton,
+  DeleteSelfButton,
+  DuplicateSelfButton,
+  InsertSiblingButton
+} from '@cfEditableComponents/hoverEditActions'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import { Menu } from '@mui/material'
-import Button from '@mui/material/Button'
+import Button, { ButtonProps } from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import FormControlLabel from '@mui/material/FormControlLabel'
+import IconButton, { IconButtonProps } from '@mui/material/IconButton'
+import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Popover from '@mui/material/Popover'
+import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
-import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import { ChangeEvent, ReactElement, ReactNode, useMemo, useState } from 'react'
-import * as React from 'react'
+import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
 
 const StyledPopover = styled(Popover)({
   '& .MuiPaper-root': {
@@ -21,53 +28,72 @@ const StyledPopover = styled(Popover)({
   }
 })
 
-export const MenuItemLabel = styled(MenuItem)({
-  textTransform: 'uppercase',
-  fontSize: '12px'
-})
-/*******************************************************
- * MENU ITEMS
- *******************************************************/
-
 /*******************************************************
  * This file contains menu 'builders' the accept a config list, as a plain object
  *  and construct some different menu types based around MUI menu
  *******************************************************/
 
-export type MenuItemType = {
-  content: string | ReactElement
+type BaseMenuItemType = {
   action?: any
   show?: boolean
   id?: string
   title?: string
-  sectionTitle?: string
   icon?: ReactElement
   seperator?: boolean
   showIconInList?: boolean
-  defaultChecked?: boolean
 }
 
-export const IconMenuItem = ({
-  id,
-  title,
-  action,
-  icon,
-  show
-}: MenuItemType) => {
-  if (!show) {
+type IconButtonMenuItemType = BaseMenuItemType & {
+  iconButton: IconButtonProps & {
+    icon: ReactElement
+  }
+  content?: never
+}
+
+type ContentMenuItemType = BaseMenuItemType & {
+  iconButton?: never
+  content: string | ReactElement
+}
+
+export type MenuItemType = IconButtonMenuItemType | ContentMenuItemType
+
+const MenuToggleButton = (props: MenuItemType) => {
+  if (!props.show) {
     return null
   }
 
-  return (
-    <div
-      className="hover-shade"
-      id={`${id}-project-button`}
-      title={title}
-      onClick={action}
-    >
-      {icon}
-    </div>
-  )
+  const buttonProps = {
+    ...props,
+    content: null,
+    action: null,
+    onClick: props.action
+  }
+
+  if ('iconButton' in props) {
+    return (
+      <IconButton
+        size={buttonProps.iconButton.size ?? 'small'}
+        color={buttonProps.iconButton.color}
+        {...buttonProps}
+      >
+        {props.iconButton.icon}
+      </IconButton>
+    )
+  }
+
+  if (typeof props.content === 'string') {
+    return (
+      <Button
+        size="small"
+        startIcon={props.showIconInList && props.icon}
+        {...buttonProps}
+      >
+        {props.content}
+      </Button>
+    )
+  }
+
+  return props.content
 }
 
 export const ListMenuItem = ({
@@ -97,12 +123,7 @@ export const ListMenuItem = ({
 
   return (
     <>
-      <MenuItem
-        id={`${id}-button`}
-        className="hover-shade"
-        onClick={action}
-        title={title}
-      >
+      <MenuItem id={`${id}-button`} onClick={action} title={title}>
         {contentChooser(content)}
       </MenuItem>
       {seperator && <Divider />}
@@ -110,118 +131,7 @@ export const ListMenuItem = ({
   )
 }
 
-type PropsType = {
-  disabled?: boolean
-  children: ReactNode
-  name: string
-  onChange: (key: string, checked: boolean) => void
-  seperator?: boolean
-  defaultChecked?: boolean
-}
-
-const SwitchMenuItem = ({
-  children,
-  name,
-  disabled,
-  onChange,
-  seperator,
-  defaultChecked
-}: PropsType) => (
-  <>
-    <MenuItem disableRipple>
-      <FormControlLabel
-        control={
-          <Switch
-            size="medium"
-            checked={defaultChecked}
-            disabled={disabled}
-            onChange={(_: ChangeEvent<HTMLInputElement>, checked: boolean) => {
-              onChange(name, checked)
-            }}
-          />
-        }
-        label={children}
-      />
-    </MenuItem>
-    {seperator && <Divider />}
-  </>
-)
-
-const SimpleSwitchMenu = ({
-  id,
-  menuItems,
-  header
-}: {
-  id: string
-  menuItems: MenuItemType[]
-  header: MenuItemType
-}) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
-  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
-
-  const buttons = menuItems.map((item, idx) => {
-    const Title = () => {
-      if (item.sectionTitle) {
-        return (
-          <MenuItemLabel key={idx} disabled>
-            {item.sectionTitle}
-          </MenuItemLabel>
-        )
-      }
-      return <></>
-    }
-
-    return [
-      <Title />,
-      item.content && (
-        <SwitchMenuItem
-          key={JSON.stringify(item.content)}
-          name={JSON.stringify(item.content)}
-          disabled={!item.show}
-          defaultChecked={item.defaultChecked}
-          onChange={item.action}
-          seperator={item.seperator}
-        >
-          {item.content}
-        </SwitchMenuItem>
-      )
-    ]
-  })
-
-  return (
-    <>
-      <Button
-        id={`${id}-button`}
-        data-test-id={`${id}-button`}
-        aria-controls={open ? 'basic-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={onClickHandler}
-      >
-        <ListMenuItem {...header} />
-      </Button>
-      <StyledMenu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button'
-        }}
-      >
-        {buttons}
-      </StyledMenu>
-    </>
-  )
-}
-/*******************************************************
- * MENUS
- *******************************************************/
+// Regular menu structure
 const SimpleMenu = ({
   id,
   menuItems,
@@ -231,9 +141,9 @@ const SimpleMenu = ({
   menuItems: MenuItemType[]
   header: MenuItemType
 }) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
-  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickHandler = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
   const handleClose = () => {
@@ -246,23 +156,20 @@ const SimpleMenu = ({
 
   return (
     <>
-      <Button
+      <MenuToggleButton
         id={`${id}-button`}
         data-test-id={`${id}-button`}
-        aria-controls={open ? 'basic-menu' : undefined}
+        aria-controls={`${id}-menu`}
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={onClickHandler}
-      >
-        <ListMenuItem {...header} />
-      </Button>
+        aria-expanded={open ? 'true' : 'false'}
+        action={onClickHandler}
+        {...header}
+      />
       <StyledMenu
+        id={`${id}-menu`}
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button'
-        }}
       >
         {buttons}
       </StyledMenu>
@@ -270,24 +177,54 @@ const SimpleMenu = ({
   )
 }
 
+// A list of menu items, with a size limiter (moving overflow into [...] button)
 const MenuWithOverflow = ({
   size,
-  menuItems
+  menuItems,
+  buttonColor,
+  buttonSize = 'medium'
 }: {
   size: number
   menuItems: MenuItemType[]
+  buttonColor: IconButtonProps['color']
+  buttonSize?: IconButtonProps['size']
 }) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
-  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickHandler = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
   const handleClose = () => {
     setAnchorEl(null)
   }
 
-  const menuEls = menuItems.map((item, el) => {
-    return <ListMenuItem key={item.id} {...item} />
+  const menuEls = menuItems.map((item, index) => {
+    if (size && index < size) {
+      const props = item
+
+      if ('iconButton' in props) {
+        props.iconButton = {
+          ...props.iconButton,
+          color: buttonColor,
+          size: buttonSize
+        }
+      }
+
+      return (
+        <MenuToggleButton
+          key={props.id}
+          id={`${props.id}-button`}
+          data-test-id={`${props.id}-button`}
+          aria-controls={`${props.id}-menu`}
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : 'false'}
+          action={onClickHandler}
+          {...props}
+        />
+      )
+    } else {
+      return <ListMenuItem key={item.id} {...item} />
+    }
   })
 
   const visibleButtons = menuEls.slice(0, size)
@@ -295,30 +232,37 @@ const MenuWithOverflow = ({
 
   return (
     <>
-      {visibleButtons}
-      {overflowButtons.length && (
-        <>
-          <Button
-            id="basic-button"
-            aria-controls={open ? 'basic-menu' : undefined}
+      <Stack direction="row" spacing={1}>
+        {visibleButtons}
+        {overflowButtons.length && (
+          <MenuToggleButton
+            show={true}
+            id="overflow-button"
+            data-test-id="overflow-button"
+            aria-controls="overflow-menu"
             aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            onClick={onClickHandler}
-          >
-            <MoreHorizIcon />
-          </Button>
-          <Menu
-            id="basic-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button'
+            aria-expanded={open ? 'true' : 'false'}
+            action={onClickHandler}
+            iconButton={{
+              icon: <MoreHorizIcon />,
+              size: buttonSize,
+              color: buttonColor
             }}
-          >
-            {overflowButtons}
-          </Menu>
-        </>
+          />
+        )}
+      </Stack>
+      {overflowButtons.length && (
+        <Menu
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          MenuListProps={{
+            'aria-labelledby': 'basic-button'
+          }}
+        >
+          {overflowButtons}
+        </Menu>
       )}
     </>
   )
@@ -328,19 +272,20 @@ type StaticMenuProps = {
   id: string
   menuItems?: MenuItemType[] // Optional if you might only have content
   header: MenuItemType
-  content?: React.ReactNode // Optional content to be displayed
+  content?: ReactNode // Optional content to be displayed
 }
 
+// Non-standard/custom menu with content you inject through props
 const StaticMenu = ({
   id,
   menuItems = [], // Default to an empty array if not provided
   header,
   content
 }: StaticMenuProps) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
-  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickHandler = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
 
@@ -350,15 +295,16 @@ const StaticMenu = ({
 
   return (
     <>
-      <Button
+      <MenuToggleButton
         id={`${id}-button`}
-        aria-controls={open ? `${id}-menu` : undefined}
+        data-test-id={`${id}-button`}
+        aria-controls={`${id}-menu`}
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={onClickHandler}
-      >
-        {header.content}
-      </Button>
+        aria-expanded={open ? 'true' : 'false'}
+        action={onClickHandler}
+        {...header}
+      />
+
       <StyledPopover
         anchorEl={anchorEl}
         id={`${id}-menu`}
@@ -429,4 +375,4 @@ const HoverMenu = ({
   )
 }
 
-export { MenuWithOverflow, SimpleMenu, StaticMenu, HoverMenu, SimpleSwitchMenu }
+export { MenuWithOverflow, SimpleMenu, StaticMenu, HoverMenu }

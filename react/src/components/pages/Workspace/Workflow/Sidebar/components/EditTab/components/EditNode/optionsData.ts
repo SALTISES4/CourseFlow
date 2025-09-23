@@ -1,3 +1,5 @@
+import { timeUnits } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
+
 const contexts = [
   {
     value: 0,
@@ -26,6 +28,26 @@ const contexts = [
   {
     value: 6,
     label: 'Two-Stage Exam'
+  },
+  {
+    value: 7,
+    label: 'Toolkit'
+  },
+  {
+    value: 8,
+    label: 'One Minute Paper'
+  },
+  {
+    value: 9,
+    label: 'Distributed Problem Solving'
+  },
+  {
+    value: 10,
+    label: 'Peer Assessment'
+  },
+  {
+    value: 11,
+    label: 'Other'
   }
 ]
 
@@ -71,8 +93,33 @@ const unitTypes = [
   }
 ]
 
+const objectSets = [
+  {
+    value: 1,
+    label: 'Object set 1'
+  },
+  {
+    value: 2,
+    label: 'Object set 2'
+  },
+  {
+    value: 3,
+    label: 'Object set 3'
+  },
+  {
+    value: 4,
+    label: 'Object set 4'
+  },
+  {
+    value: 5,
+    label: 'Object set 5'
+  }
+]
+
 export default {
   contexts,
   taskTypes,
-  unitTypes
+  objectSets,
+  unitTypes,
+  timeUnits: timeUnits.filter((u) => u)
 }

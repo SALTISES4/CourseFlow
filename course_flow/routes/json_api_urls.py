@@ -381,7 +381,7 @@ node_endpoints = [
         name="node--link-to-node",
     ),
     path(
-        "node-link/create",
+        "node/node-link/create",
         NodeEndpoint.node_link__create,
         name="node-link--create",
     ),

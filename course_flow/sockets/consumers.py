@@ -12,10 +12,10 @@ from course_flow.models.workspace.workflow import Workflow
 
 
 class WsEventType(Enum):
+    WORKFLOW_ACTION = "workflow_action"
     MICRO_UPDATE = "micro_update"
     LOCK_UPDATE = "lock_update"
     CONNECTION_UPDATE = "connection_update"
-    WORKFLOW_ACTION = "workflow_action"
     WORKFLOW_PARENT_UPDATED = "workflow_parent_updated"
     WORKFLOW_CHILD_UPDATED = "workflow_child_updated"
 
@@ -58,7 +58,10 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
     def disconnect(self, close_code):
         try:
             async_to_sync(self.channel_layer.group_send)(
-                {"type": "lock_update", "action": self.last_lock},
+                {
+                    "type": "lock_update",
+                    "action": self.last_lock
+                }
             )
         except AttributeError as e:
             logger.exception("An error occurred")
@@ -106,15 +109,13 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
         #########################################################
         if text_data_json["type"] == WsEventType.MICRO_UPDATE.value:
             action = text_data_json["action"]
-            event_payload = {
-                "type": "workflow_action",
-                "action": action,
-            }
 
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
-                # unexpected argument hint is mistake
-                event_payload,
+                {
+                    "type": "workflow_action",
+                    "action": action,
+                }
             )
 
         #########################################################
@@ -122,18 +123,16 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
         #########################################################
         elif text_data_json["type"] == WsEventType.LOCK_UPDATE.value:
             lock = text_data_json["lock"]
+
             if lock["lock"]:
                 self.last_lock = {**lock, "lock": False}
 
-            event_payload = {
-                "type": WsEventType.LOCK_UPDATE.value,
-                "action": lock,
-            }
-
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
-                # unexpected argument hint is mistake
-                event_payload,
+                {
+                    "type": WsEventType.LOCK_UPDATE.value,
+                    "action": lock,
+                }
             )
 
         #########################################################
@@ -145,12 +144,12 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
         elif text_data_json["type"] == WsEventType.CONNECTION_UPDATE.value:
             user_data = text_data_json["payload"]
 
-            event_payload = {"type": WsEventType.CONNECTION_UPDATE.value, "action": user_data}
-
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
-                # unexpected argument hint is mistake
-                event_payload,
+                {
+                    "type": WsEventType.CONNECTION_UPDATE.value,
+                    "action": user_data
+                }
             )
 
     #########################################################
@@ -158,9 +157,6 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
     #  if
     #########################################################
     def workflow_action(self, event):
-        pprint("workflow_action yo")
-        pprint("event")
-        pprint(event)
         if not self.VIEW:
             return
         # redundant

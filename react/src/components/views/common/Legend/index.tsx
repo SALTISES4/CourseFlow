@@ -1,54 +1,93 @@
-import { viewsettingsUpdate } from '@cfRedux/slices/viewsettings.slice'
-import { RootState } from '@cfRedux/store'
+import { _t } from '@cf/utility/Utility.class'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
-import React, { ReactElement, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { FormControlLabel } from '@mui/material'
+import { Switch } from '@mui/material'
+import { ReactNode } from 'react'
 
-const Legend = ({ children }: { children: ReactElement }) => {
-  const showLegend = useSelector(
-    (state: RootState) => state.viewsettings.legend
-  )
-  const dispatch = useDispatch()
+import * as Styled from './styles'
+import useLegend from './useLegend'
 
-  function toggleLegend() {
-    const newShowLegend = !showLegend
-    dispatch(viewsettingsUpdate({ legend: newShowLegend }))
-  }
+const Legend = ({ children }: { children: ReactNode }) => {
+  const legend = useLegend()
 
-  /*******************************************************
-   * RETURN
-   *******************************************************/
   return (
     <>
-      {showLegend && (
-        <div // imported from legacy css
-          style={{
-            cursor: 'move',
-            position: 'fixed',
-            background: '#fff',
-            zIndex: 5,
-            padding: '20px',
-            border: '2px solid #00a86b',
-            left: 'calc(100% - 460px)',
-            boxShadow: '0px 2px 2px 0px rgba(0, 0, 0, 0.3)'
-          }}
-        >
-          {children}
-          <div
-            style={{
-              right: '8px',
-              top: '8px',
-              position: 'absolute',
-              cursor: 'pointer'
-            }}
-            onClick={toggleLegend}
-          >
-            <HighlightOffIcon />
-          </div>
-        </div>
-      )}
+      <FormControlLabel
+        control={
+          <Switch
+            value={'legend'}
+            checked={legend.show}
+            onChange={legend.toggle}
+            inputProps={{ 'aria-label': 'controlled' }}
+          />
+        }
+        label={_t('Show Legend')}
+      />
+
+      <Styled.LegendWrap show={legend.show}>
+        {children}
+        <Styled.LegendCloseButton onClick={legend.toggle}>
+          <HighlightOffIcon />
+        </Styled.LegendCloseButton>
+      </Styled.LegendWrap>
     </>
   )
 }
 
 export default Legend
+
+
+// import { viewsettingsUpdate } from '@cfRedux/slices/viewsettings.slice'
+// import { RootState } from '@cfRedux/store'
+// import HighlightOffIcon from '@mui/icons-material/HighlightOff'
+// import React, { ReactElement, useState } from 'react'
+// import { useDispatch, useSelector } from 'react-redux'
+//
+// const Legend = ({ children }: { children: ReactElement }) => {
+//   const showLegend = useSelector(
+//     (state: RootState) => state.viewsettings.legend
+//   )
+//   const dispatch = useDispatch()
+//
+//   function toggleLegend() {
+//     const newShowLegend = !showLegend
+//     dispatch(viewsettingsUpdate({ legend: newShowLegend }))
+//   }
+//
+//   /*******************************************************
+//    * RETURN
+//    *******************************************************/
+//   return (
+//     <>
+//       {showLegend && (
+//         <div // imported from legacy css
+//           style={{
+//             cursor: 'move',
+//             position: 'fixed',
+//             background: '#fff',
+//             zIndex: 5,
+//             padding: '20px',
+//             border: '2px solid #00a86b',
+//             left: 'calc(100% - 460px)',
+//             boxShadow: '0px 2px 2px 0px rgba(0, 0, 0, 0.3)'
+//           }}
+//         >
+//           {children}
+//           <div
+//             style={{
+//               right: '8px',
+//               top: '8px',
+//               position: 'absolute',
+//               cursor: 'pointer'
+//             }}
+//             onClick={toggleLegend}
+//           >
+//             <HighlightOffIcon />
+//           </div>
+//         </div>
+//       )}
+//     </>
+//   )
+// }
+//
+// export default Legend

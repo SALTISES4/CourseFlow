@@ -22,21 +22,21 @@ const PrettyPrintJSON = ({ error }: { error: string | object }) => {
 }
 
 const useGenericQueryMsgHandler = () => {
-  function onSuccess<TResp extends ResponseWithMessage, TCallback>(
+  function onSuccess<TResp extends ResponseWithMessage>(
     resp: TResp,
-    callback?: TCallback
+    callback?: () => void
   ) {
     const msg = resp.message ?? 'Success!'
 
     enqueueSnackbar(msg, {
       variant: SnackbarOptions.SUCCESS
     })
-    callback && callback
+    callback?.()
   }
 
-  function onError<TError extends ErrorWithMessage, TCallback>(
+  function onError<TError extends ErrorWithMessage>(
     error: TError,
-    callback?: TCallback
+    callback?: () => void
   ) {
     const msg = error ?? 'An error occurred!'
     enqueueSnackbar(<PrettyPrintJSON error={msg} />, {
@@ -47,7 +47,7 @@ const useGenericQueryMsgHandler = () => {
     // but it's a start
     console.error('error from useGenericQueryMsgHandler:onError ', error)
     // setErrors(error.name)
-    callback && callback
+    callback?.()
   }
 
   return {

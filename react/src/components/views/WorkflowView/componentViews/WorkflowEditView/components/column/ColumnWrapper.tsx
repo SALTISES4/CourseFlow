@@ -1,11 +1,8 @@
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import useHover from '@cf/hooks/useHover'
 import { CfObjectType } from '@cf/types/enum'
-import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import { HoverMenu, MenuItemType } from '@cfComponents/menu/Menu'
-import SortableDragAndDropManager from '@cfEditableComponents/SortableDragAndDropManager.class'
-import ActionCreator from '@cfRedux/ActionCreator'
 import { selectColumnById } from '@cfRedux/selectors/column.selector'
 import { RootState } from '@cfRedux/store'
 import { AppState } from '@cfRedux/types/type'
@@ -25,6 +22,7 @@ import { Ref } from 'react'
 import { useSelector } from 'react-redux'
 
 import Column from './Column'
+import * as Styled from '../../styles'
 
 // Define the props for the component
 type OwnProps = {
@@ -113,7 +111,7 @@ const ColumnHoverMenu = ({
       show: true
     },
     {
-      content: _t('Insert New'),
+      content: _t('Insert new'),
       action: () => createButtonHandler(CfObjectType.COLUMN),
       icon: <QueueIcon />,
       show: true
@@ -186,7 +184,7 @@ const ColumnWrapper = ({ objectId, parentId }: OwnProps) => {
   }
 
   return (
-    <div
+    <Styled.Cell
       id={String(objectId)}
       ref={mergeRefs(setNodeRef as Ref<HTMLDivElement>, ref)}
       style={{
@@ -207,7 +205,7 @@ const ColumnWrapper = ({ objectId, parentId }: OwnProps) => {
         order={column.order}
         show={isHovered}
       />
-    </div>
+    </Styled.Cell>
   )
 }
 

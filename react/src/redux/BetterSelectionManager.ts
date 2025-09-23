@@ -28,6 +28,10 @@ class BetterSelectionManager {
     store.dispatch(sidebarEdit({ id, parentId, objectType }))
   }
 
+  clearSidebar() {
+    store.dispatch(sidebarEdit({}))
+  }
+
   toggleDropReduxAction({
     objectId,
     objectType,

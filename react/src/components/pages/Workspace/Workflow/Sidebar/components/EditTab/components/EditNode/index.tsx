@@ -20,7 +20,8 @@ import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { updateValueQuery } from '@XMLHTTP/API/update'
-import { useToggleObjectSetNodeMutation } from '@XMLHTTP/API/workflowObjects/node.rtk'
+import { useEffect, useMemo, useState } from 'react'
+// import { useToggleObjectSetNodeMutation } from '@XMLHTTP/API/workflowObjects/node.rtk'
 import { useCallback, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -36,35 +37,9 @@ const EditNode = () => {
   const node = useSelector((state: RootState) =>
     selectNodeById(state, sidebarData.edit.id)
   )
-
-  // these are created and attached to the parent project, they are like 'all available tags'
-  const objectSets = useSelector((state: RootState) =>
-    selectAllObjectSets(state)
-  )
   const dispatch = useDispatch()
 
   const [linkedWorkflow, setLinkedWorkflow] = useState(false)
-
-  const [mutate] = useToggleObjectSetNodeMutation()
-  /*******************************************************
-   * RHF
-   *******************************************************/
-  const formValues = {
-    title: node.title,
-    description: node.description,
-    ponderation: {
-      theory: String(node.ponderationTheory),
-      practice: String(node.ponderationPractical),
-      individual: String(node.ponderationIndividual),
-      generalEdu: String(node.ponderationIndividual),
-      specificEdu: String(node.ponderationIndividual)
-    },
-    contextClassification: Number(node.contextClassification) || 0, // context_classification
-    taskClassification: Number(node.taskClassification) || 1, // task_classification
-    amount: node.timeRequired || '', // time_required
-    timeUnits: node.timeUnits || 1, // time units
-    sets: node.sets || [] // node_sets
-  }
 
   const {
     control,
@@ -74,78 +49,86 @@ const EditNode = () => {
     handleSubmit,
     watch,
     reset,
-    formState: { errors, isDirty, dirtyFields }
+    formState: { errors, isDirty }
   } = useForm<NodeForm>({
-    // @todo do i need to set the defaults here?
-    defaultValues: formValues
+    defaultValues: {
+      title: node.title,
+      description: node.description,
+      ponderation: {
+        theory: String(node.ponderationTheory),
+        practice: String(node.ponderationPractical),
+        individual: String(node.ponderationIndividual),
+        // TODO: where do these come from?
+        // generalEdu: String(nodeData.node.ponderationGeneralEdu),
+        // specificEdu: String(nodeData.node.ponderationSpecificEdu)
+      },
+      contextType: node.contextClassification || '',
+      taskType: node.taskClassification || '',
+      timeRequired: node.timeRequired,
+      timeUnits: node.timeUnits,
+      objectSets: node.sets || []
+    }
   })
+
   const watchedFields = watch()
-  const watchObjecSets = watch('sets')
-  const ponderation = watch('linkedWorkflow')
-    ? watch('linkedWorkflow.ponderation')
-    : watch('ponderation')
 
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
-
-  /*******************************************************
-   * HANDLE OBJECTSETS (TAGS) ONLY
-   *******************************************************/
   useEffect(() => {
     if (node && !isDirty) {
-      reset(formValues)
+      reset({
+        title: node.title,
+        description: node.description,
+        ponderation: {
+          theory: String(node.ponderationTheory),
+          practice: String(node.ponderationPractical),
+          individual: String(node.ponderationIndividual),
+          // TODO: where do these come from?
+          // generalEdu: String(nodeData.node.ponderationGeneralEdu),
+          // specificEdu: String(nodeData.node.ponderationSpecificEdu)
+        },
+        contextType: node.contextClassification || '',
+        taskType: node.taskClassification || '',
+        timeRequired: node.timeRequired,
+        timeUnits: node.timeUnits,
+        objectSets: node.sets || []
+      })
     }
   }, [reset, isDirty, node])
 
-  // @todo this needs work
-  const debouncedDispatch = useCallback(
-    debounce((data) => {
-      dispatch(
-        nodeChangeField({
-          id: sidebarData.edit.id,
-          data
-        })
-      )
+  const debouncedDispatch = useMemo(
+    () =>
+      debounce((data: NodeForm) => {
+        // update redux state
+        dispatch(
+          nodeChangeField({
+            id: sidebarData.edit.id,
+            data: {
+              title: data.title,
+              description: data.description,
+              contextClassification: parseInt(data.contextType.toString(), 10),
+              taskClassification: parseInt(data.taskType.toString(), 10),
+              timeRequired: data.timeRequired,
+              timeUnits: data.timeUnits
+            }
+          })
+        )
 
-      // dirty fields does not register?
-      //      if()
+        // update the server
+        updateValueQuery(sidebarData.edit.id, CfObjectType.NODE, data, true)
 
-      // update the server
-      updateValueQuery(sidebarData.edit.id, CfObjectType.NODE, data, true)
+        reset({}, { keepValues: true })
 
-      reset({}, { keepValues: true })
-    }, 300),
-    [dispatch, sidebarData.edit.id]
+      }, 300),
+    [dispatch, reset, sidebarData.edit.id]
   )
 
   useEffect(() => {
-    const formValues = getValues()
-
     if (isDirty) {
-      debouncedDispatch(formValues)
+      debouncedDispatch(watchedFields)
     }
   }, [watchedFields, isDirty, debouncedDispatch])
-
-  /*******************************************************
-   * HANDLE OBJECTSETS (TAGS) ONLY
-   *******************************************************/
-  useEffect(() => {
-    if (watchObjecSets.length > node.sets.length) {
-      const newId = watchObjecSets.find((id) => !node.sets.includes(id))
-      if (newId) {
-        console.log('new id')
-        mutate({ id: node.id, payload: { objectSetId: newId } })
-      }
-    } else if (watchObjecSets.length < node.sets.length) {
-      const removedId = node.sets.find((id) => !watchObjecSets.includes(id))
-      if (removedId) {
-        mutate({ id: node.id, payload: { objectSetId: removedId } })
-      }
-    }
-
-    // Update previousSets to currentSets after processing
-  }, [watchObjecSets, node.sets])
 
   /*******************************************************
    * FUNCTIONS
@@ -163,6 +146,9 @@ const EditNode = () => {
     setValue('linkedWorkflow', undefined)
   }
 
+  const ponderation = watch('linkedWorkflow')
+    ? watch('linkedWorkflow.ponderation')
+    : watch('ponderation')
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -243,10 +229,10 @@ const EditNode = () => {
               </>
             )}
 
-            <FormControl fullWidth>
+            <FormControl fullWidth size="small">
               <InputLabel id="context-type-select-label">Context</InputLabel>
               <Controller
-                name="contextClassification"
+                name="contextType"
                 control={control}
                 render={({ field }) => (
                   <Select
@@ -264,10 +250,10 @@ const EditNode = () => {
               />
             </FormControl>
 
-            <FormControl fullWidth>
+            <FormControl fullWidth size="small">
               <InputLabel id="task-type-select-label">Type of task</InputLabel>
               <Controller
-                name="taskClassification"
+                name="taskType"
                 control={control}
                 render={({ field }) => (
                   <Select
@@ -290,10 +276,10 @@ const EditNode = () => {
                 label="Amount"
                 variant="outlined"
                 size="small"
-                {...register('amount')}
+                {...register('timeRequired')}
                 sx={{ flexBasis: '35%' }}
               />
-              <FormControl sx={{ flexGrow: 1 }}>
+              <FormControl sx={{ flexGrow: 1 }} size="small">
                 <InputLabel id="unit-type-select-label">Unit type</InputLabel>
                 <Controller
                   name="timeUnits"
@@ -304,9 +290,9 @@ const EditNode = () => {
                       label="Unit type"
                       labelId="unit-type-select-label"
                     >
-                      {optionsData.unitTypes.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
+                      {optionsData.timeUnits.map((unit, idx) => (
+                        <MenuItem key={idx} value={idx + 1}>
+                          {unit}
                         </MenuItem>
                       ))}
                     </Select>
@@ -316,24 +302,18 @@ const EditNode = () => {
             </Stack>
 
             <Controller
-              name="sets"
+              name="objectSets"
               control={control}
               render={({ field }) => (
                 <Autocomplete
                   multiple
-                  options={objectSets}
-                  getOptionLabel={(option) => option.title}
+                  size="small"
+                  options={optionsData.objectSets}
+                  getOptionLabel={(option) => option.label}
                   isOptionEqualToValue={(option, value) =>
-                    option.id === value.id
+                    option.value === value.value
                   }
-                  value={
-                    objectSets.filter((obj) => field.value?.includes(obj.id)) ||
-                    []
-                  } // Sync form data to objects
-                  onChange={(_, value) => {
-                    const ids = value.map((v) => v.id)
-                    field.onChange(ids)
-                  }}
+                  onChange={(_, value) => field.onChange(value)}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -393,6 +373,11 @@ const EditNode = () => {
               </Stack>
             </>
           )}
+
+          {/*
+
+          probably not used bottom buttons
+          */}
           <BottomButtons />
         </SC.SidebarContent>
       </SC.SidebarInnerWrap>

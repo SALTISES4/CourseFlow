@@ -1,3 +1,4 @@
+import { _t } from '@cf/utility/Utility.class'
 import ObjectSets from '@cfComponents/dialog/Project/components/ObjectSets'
 import {
   ObjectSetOptions,
@@ -68,13 +69,15 @@ const ProjectForm = ({
   submitHandler,
   closeCallback,
   showNoProjectsAlert,
-  label
+  label,
+  submitLabel = ''
 }: {
   defaultValues: ProjectFormValues
   submitHandler: (data: ProjectFormValues) => void
   closeCallback: () => void
   showNoProjectsAlert: boolean
   label: string
+  submitLabel?: string
 }) => {
   /*******************************************************
    * PROPS
@@ -186,8 +189,11 @@ const ProjectForm = ({
         {showNoProjectsAlert && (
           <Alert
             sx={{ mb: 3 }}
-            title="Start by creating a project"
-            subtitle="All workflows, whether they are programs, courses, or activities, exist within projects. You must start by creating a project before proceeding to create any type of workflow."
+            persistent
+            title={_t('Start by creating a project')}
+            subtitle={_t(
+              'All workflows, whether they are programs, courses, or activities, exist within projects. You must start by creating a project before proceeding to create any type of workflow.'
+            )}
           />
         )}
         <StyledBox>
@@ -213,13 +219,16 @@ const ProjectForm = ({
           </FormControl>
 
           <FormControl fullWidth error={!!errors.disciplines}>
-            <InputLabel id="create-project-discipline">Discipline</InputLabel>
+            <InputLabel id="create-project-discipline">
+              {_t('Discipline')}
+            </InputLabel>
             <Controller
               name="disciplines"
               control={control}
               render={({ field }) => (
                 <Select
                   {...field}
+                  label={_t('Discipline')}
                   labelId="create-project-discipline"
                   variant={'outlined'}
                   open={selectOpenStates['disciplines'] ?? false}
@@ -281,14 +290,16 @@ const ProjectForm = ({
         </StyledBox>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onDialogClose}>Cancel</Button>
+        <Button color="secondary" onClick={onDialogClose}>
+          {_t('Cancel')}
+        </Button>
         <Button
           type="submit"
           variant="contained"
           color="primary"
           disabled={!isDirty}
         >
-          Edit Project
+          {submitLabel ?? _t('Edit project')}
         </Button>
       </DialogActions>
     </form>

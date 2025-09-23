@@ -5,6 +5,7 @@ import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { weekChangeField } from '@cfRedux/slices/week.slice'
 import { RootState } from '@cfRedux/store'
+import { AppState } from '@cfRedux/types/type'
 import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWrapper'
 import StrategyTabIcon from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/components/StrategyTabIcon'
 import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
@@ -17,11 +18,14 @@ import clsx from 'clsx'
 import { useCallback, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import DroppableCell from '../DroppableCell'
 import * as Styled from './styles'
+import { Cell, CellRow, DebugCellInfo } from '../../styles'
 
 type PropsType = {
   objectId: number
   parentId: number
+  reordering: boolean
 }
 
 export type WeekUnconnectedPropsType = PropsType
@@ -29,13 +33,16 @@ export type WeekUnconnectedPropsType = PropsType
 /**
  *
  **/
-const Week = ({ objectId, parentId }: PropsType) => {
+const Week = ({ objectId, parentId, reordering = false }: PropsType) => {
   /*******************************************************
    * REDUX
    *******************************************************/
   const dispatch = useDispatch()
   const week = useSelector((state: RootState) =>
     selectWeekById(state, objectId)
+  )
+  const sidebarDragTarget = useSelector(
+    (state: RootState) => state.sidebar.dragging.target
   )
   const workflow = useSelector((state: RootState) => state.workspace.workflow)
   /*******************************************************
@@ -47,6 +54,7 @@ const Week = ({ objectId, parentId }: PropsType) => {
    * REFS
    *******************************************************/
   const nodeBlock = useRef(null)
+  const mainDiv = useRef(null)
   const manager = useRef(new BetterSelectionManager(dispatch))
 
   /*******************************************************
@@ -81,13 +89,34 @@ const Week = ({ objectId, parentId }: PropsType) => {
    *******************************************************/
   const Nodes = () => {
     if (!nodesDragState?.length) {
-      return <div>Drag and drop nodes from the sidebar to add.</div>
+      return (
+        <CellRow sx={{ position: 'relative' }}>
+          {/* <Styled.EmptyText>
+            Drag and drop nodes from the sidebar to add.
+          </Styled.EmptyText> */}
+
+          {workflow.columns.map((colNum) => (
+            <DroppableCell
+              key={colNum}
+              groupId={weekData.week.id}
+              coords={{
+                row: 0,
+                column: colNum
+              }}
+            >
+              <Cell sx={{ height: 64 }}>
+                <DebugCellInfo>row: 0, col: {colNum}</DebugCellInfo>
+              </Cell>
+            </DroppableCell>
+          ))}
+        </CellRow>
+      )
     }
 
-    return nodesDragState.map((nodeId) => (
-      <Box display="flex" key={`node-${nodeId}`}>
-        <NodeWrapper objectId={nodeId} parentId={week.id} />
-      </Box>
+    return nodesDragState.map((nodeId, row) => (
+      <CellRow key={`node-${nodeId}`}>
+        <NodeWrapper objectId={nodeId} parentId={week.id} row={row} />
+      </CellRow>
     ))
   }
 
@@ -105,6 +134,9 @@ const Week = ({ objectId, parentId }: PropsType) => {
     )
   }, [])
 
+  // always collapse if reordering is ongoing, otherwise rely on week data
+  const expanded = reordering === true ? false : week.isDropped
+
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -116,20 +148,28 @@ const Week = ({ objectId, parentId }: PropsType) => {
       })}
       className={clsx('week', {
         strategy: week.isStrategy,
+        dropped:week.isDropped,
         [`locked`]: week?.lock,
         [`locked-${week.lock?.userId}`]: week.lock
       })}
       //      ref={mainDiv}
       onClick={(e) => {
         e.stopPropagation()
-        manager.current.updateSidebar(week.id, CfObjectType.WEEK, parentId)
+        manager.current.updateSidebar(
+          week.id,
+          CfObjectType.WEEK,
+          parentId
+        )
       }}
     >
-      <Styled.WeekHeader expanded={week.isDropped}>
+      <Styled.WeekHeader expanded={expanded}>
         <Styled.WeekTitle variant="subtitle2">
           <TitleText text={week.title} defaultText={defaultText} />
         </Styled.WeekTitle>
-        <IconButton onClick={toggleCollapse}>
+        <IconButton
+          onClick={toggleCollapse}
+          sx={{ opacity: reordering ? 0 : 1 }}
+        >
           <KeyboardArrowDown />
         </IconButton>
       </Styled.WeekHeader>
@@ -140,26 +180,32 @@ const Week = ({ objectId, parentId }: PropsType) => {
        and css
       */}
 
-      {week.isDropped && (
-        <Styled.WeekContent
+      {expanded && (
+        <div
           id={`${objectId}-node-block`}
           className="node-block"
           ref={nodeBlock}
         >
-          <DndContext
-            onDragEnd={handleNodeDragEnd}
-            onDragStart={handleNodeDragStart}
-          >
-            <SortableContext
-              items={nodesDragState}
-              strategy={rectSortingStrategy}
+          {sidebarDragTarget ? (
+            <Nodes />
+          ) : (
+            <DndContext
+              onDragEnd={handleNodeDragEnd}
+              onDragStart={handleNodeDragStart}
             >
-              <Nodes />
-            </SortableContext>
-          </DndContext>
-        </Styled.WeekContent>
+              <SortableContext
+                items={nodesDragState}
+                strategy={rectSortingStrategy}
+              >
+                <Nodes />
+              </SortableContext>
+            </DndContext>
+          )}
+        </div>
       )}
-      <StrategyTabIcon strategyClassification={week.strategyClassification} />
+      <StrategyTabIcon
+        strategyClassification={week.strategyClassification}
+      />
     </Styled.WeekWrapper>
   )
 }

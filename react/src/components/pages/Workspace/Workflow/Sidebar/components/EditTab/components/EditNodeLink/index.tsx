@@ -1,4 +1,7 @@
+import { nodelinkDeleteSelfSoft } from '@cf/redux/slices/nodelink.slice'
+import { AppState } from '@cf/redux/types/type'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
@@ -7,18 +10,41 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
 import { ChangeEvent, useCallback, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
+import { NodeLinkForm } from './types'
 import getNodelinkData from './getNodeLinkData'
 import { NodelinkForm } from './types'
 import {
+  SidebarActions,
   SidebarContent,
   SidebarInnerWrap,
   SidebarTitle
 } from '../../../../styles'
 
-const EditNodelink = () => {
-  const data = getNodelinkData(1)
-  const [state, setState] = useState<NodelinkForm>(data)
+const EditNodeLink = () => {
+  const dispatch = useDispatch()
+  const nodeLinkId = useSelector((state: AppState) => state.sidebar.edit.id)
+
+  const [state, setState] = useState<NodeLinkForm>({
+    title: 'Node Link text here',
+    textPosition: 50,
+    dashed: false
+  })
+
+  // const data = getNodelinkData(1)
+  // const [state, setState] = useState<NodelinkForm>(data)
+  //
+  // const onTitleChange = useCallback(
+  //   (e: ChangeEvent<HTMLInputElement>) => [
+  //     setState(
+  //       produce((draft) => {
+  //         draft.title = e.target.value
+  //       })
+  //     )
+  //   ],
+  //   []
+  // )
 
   const onTitleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => [
@@ -52,6 +78,10 @@ const EditNodelink = () => {
     ],
     []
   )
+
+  const onDelete = useCallback(() => {
+    dispatch(nodelinkDeleteSelfSoft({ id: nodeLinkId }))
+  }, [dispatch, nodeLinkId])
 
   return (
     <SidebarInnerWrap>
@@ -91,6 +121,11 @@ const EditNodelink = () => {
           />
         </Stack>
       </SidebarContent>
+      <SidebarActions>
+        <Button variant="contained" color="secondary" onClick={onDelete}>
+          Delete
+        </Button>
+      </SidebarActions>
     </SidebarInnerWrap>
   )
 }

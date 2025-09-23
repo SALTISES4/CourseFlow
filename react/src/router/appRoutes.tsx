@@ -4,7 +4,6 @@ import Explore from '@cfPages/Library/Explore'
 import Favourites from '@cfPages/Library/Favourites'
 import MyLibrary from '@cfPages/Library/MyLibrary'
 import NotificationsPage from '@cfPages/Notifications'
-// Styleguide views
 import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
 import WorkflowPage from '@cfPages/Workspace/Workflow'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
@@ -54,12 +53,6 @@ export enum CFRoutes {
   WORKFLOW_OUTCOME_EDIT = `/${DOMAIN}/workflow/:id/${RelativeRoutes.OUTCOME_EDIT}`,
   WORKFLOW_GRID = `/${DOMAIN}/workflow/:id/${RelativeRoutes.GRID}`,
 
-  // STYLEGUIDE - Static UI routes
-  STYLEGUIDE = `/${DOMAIN}/styleguide`,
-  STYLEGUIDE_PROJECT = `/${DOMAIN}/styleguide/project`,
-  STYLEGUIDE_PROJECT_WORKFLOWS = `/${DOMAIN}/styleguide/project/workflows`,
-  STYLEGUIDE_PROJECT_WORKSPACE = `/${DOMAIN}/styleguide/project/workspace`,
-
   TEMP_PROJECT = `/${DOMAIN}/temp-project`,
   TEMP_PROJECT_WORKFLOWS = `/${DOMAIN}/temp-project/workflows`
 }
@@ -72,19 +65,6 @@ export const CFRouter = createBrowserRouter([
         <Home />
       </Base>
     )
-  },
-  {
-    path: CFRoutes.STYLEGUIDE,
-    children: [
-      {
-        path: CFRoutes.STYLEGUIDE,
-        element: <></>
-      },
-      {
-        path: `${CFRoutes.STYLEGUIDE_PROJECT}/*`,
-        element: <></>
-      }
-    ]
   },
   {
     path: CFRoutes.FAVOURITES,

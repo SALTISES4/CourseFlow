@@ -66,6 +66,7 @@ const UserList = ({
     onSuccess(resp)
     refetch()
   }
+
   async function onChangeHandler(group: PermissionGroup, userId: number) {
     const args = {
       id: workspaceId,
@@ -90,15 +91,17 @@ const UserList = ({
   return (
     <SC.InfoBlockContent>
       <List>
-        <SC.PermissionThumbnail>
-          <ListItemAvatar>
-            <Avatar alt={author.firstName}>
-              {ThemeHelper.getInitials(author.firstName)}
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={author.firstName} secondary={author.email} />
-          <Button disabled>owner</Button>
-        </SC.PermissionThumbnail>
+        {author && (
+          <SC.PermissionThumbnail>
+            <ListItemAvatar>
+              <Avatar alt={author.firstName}>
+                {ThemeHelper.getInitials(author.firstName)}
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary={author.firstName} secondary={author.email} />
+            <Button disabled>owner</Button>
+          </SC.PermissionThumbnail>
+        )}
 
         {data.dataPackage.map((user) => {
           return (
