@@ -10,7 +10,7 @@ import {
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import ScrollToWeek from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ScrollToWeek'
 import { useMenuActions } from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useMenuActions'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import EditIcon from '@mui/icons-material/Edit'
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
@@ -22,7 +22,6 @@ import { produce } from 'immer'
 import {
   ChangeEvent,
   ReactElement,
-  ReactNode,
   useCallback,
   useContext,
   useState
@@ -38,8 +37,8 @@ type StateType = {
 
 const ActionMenu = () => {
   const userContext = useContext(UserContext)
-  const workflow = useSelector((state: AppState) => state.workflow)
-  const project = useSelector((state: AppState) => state.workspace.project)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
+  const project = useSelector((state: RootState) => state.workspace.project)
 
   const isStrategy = workflow.isStrategy
   const userId = userContext.id
@@ -54,10 +53,16 @@ const ActionMenu = () => {
     openImportDialog: false,
     openEditDialog: false
   })
-  const objectSets = useSelector<AppState>((state: AppState) => state.objectset)
-  const week = useSelector<AppState>((state: AppState) => state.week)
-  const node = useSelector<AppState>((state: AppState) => state.node)
-  const outcome = useSelector<AppState>((state: AppState) => state.outcome)
+  const objectSets = useSelector<RootState>(
+    (state: RootState) => state.workspace.objectSet
+  )
+  const week = useSelector<RootState>(
+    (state: RootState) => state.workspace.week
+  )
+  const node = useSelector<RootState>(
+    (state: RootState) => state.workspace.node
+  )
+  const outcome = useSelector<RootState>((state: RootState) => state.outcome)
 
   /*******************************************************
    * MODALS

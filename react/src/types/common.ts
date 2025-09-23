@@ -10,6 +10,12 @@ export type ObjectPermission = {
   lastViewed?: Date
 }
 
+export type ObjectLock = {
+  user_id: number
+  user_colour: string
+  userColour: string
+}
+
 export type QueryPages = {
   totalResults: number
   pageCount: number

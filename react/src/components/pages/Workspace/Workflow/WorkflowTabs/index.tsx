@@ -7,8 +7,8 @@ import Header from '@cfPages/Workspace/Workflow/WorkflowTabs/components/Header'
 import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
 import {
   ActionMenu,
-  JumpToMenu,
-  ViewSettingsMenu
+  ExpandCollapseMenu,
+  JumpToMenu
 } from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/menus'
 import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/WorkflowDialogs'
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
@@ -86,7 +86,6 @@ const WorkflowTabs = () => {
     <Stack direction="row" spacing={2}>
       <JumpToMenu weekIds={workflow.weeks} />
       <ExpandCollapseMenu legend={<WorkflowLegend />} />
-      <ViewSettingsMenu />
     </Stack>
   )
 

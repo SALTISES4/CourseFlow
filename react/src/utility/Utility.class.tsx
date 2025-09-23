@@ -1,9 +1,9 @@
 import { CFRoutes } from '@cf/router/appRoutes'
 import { WorkspaceType } from '@cf/types/enum'
 import { MaybeWithId, hasId } from '@cf/types/typeGuards'
+import { EDate } from '@XMLHTTP/types/entity'
 import he from 'he'
 import { generatePath } from 'react-router-dom'
-import {EDate} from "@XMLHTTP/types/entity";
 
 type GenericObject = {
   [key: string]: string | GenericObject
