@@ -3,6 +3,7 @@ import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { AppState } from '@cfRedux/types/type'
 import React from 'react'
 import { useSelector } from 'react-redux'
+import {RootState} from "@cfRedux/store";
 
 type OwnProps = {
   objectId: number
@@ -12,7 +13,7 @@ type OwnProps = {
  * The nodes (specifically the time data) in the matrix view
  */
 const MatrixNode = ({ objectId }: OwnProps) => {
-  const node = useSelector((state: AppState) => selectNodeById(state, objectId))
+  const node = useSelector((state: RootState) => selectNodeById(state, objectId))
 
   // @todo params here still a mess
   // data is any

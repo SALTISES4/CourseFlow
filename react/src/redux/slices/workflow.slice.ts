@@ -9,15 +9,28 @@ import {
   SliceNamespace,
   StrategyActions,
   WeekActions,
-  WeekWorkflowActions,
-  WorkflowActions
+  WeekWorkflowActions
 } from '@cfRedux/types/enumActions'
-import { AppState, TWorkflow } from '@cfRedux/types/type'
-import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { TWorkflow, WorkspaceAppState } from '@cfRedux/types/type'
+import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit'
 
 const initialState: TWorkflow = {} as TWorkflow
 
-const workflowSlice = createSlice<AppState['workflow']>({
+/*******************************************************
+ * CREATE ACTIONS
+ *******************************************************/
+export const replaceStoreData = createAction<{
+  workflow: WorkspaceAppState['workflow'] | undefined
+}>(CommonActions.REPLACE_STOREDATA)
+
+export const refreshStoreData = createAction<{
+  workflow: WorkspaceAppState['workflow'] | undefined
+}>(CommonActions.REFRESH_STOREDATA)
+
+/*******************************************************
+ * SLICE
+ *******************************************************/
+const workflowSlice = createSlice({
   name: SliceNamespace.WORKFLOW,
   initialState,
   reducers: {
@@ -39,20 +52,13 @@ const workflowSlice = createSlice<AppState['workflow']>({
   extraReducers: (builder) => {
     // Common Actions
     builder
-      .addCase(
-        CommonActions.REPLACE_STOREDATA,
-        (state, action: PayloadAction<{ workflow?: TWorkflow }>) => {
-          return action.payload.workflow || state
-        }
-      )
-      .addCase(
-        CommonActions.REFRESH_STOREDATA,
-        (state, action: PayloadAction<{ workflow: TWorkflow }>) => {
-          return action.payload.workflow || state
-        }
-      )
+      .addCase(replaceStoreData, (state, action) => {
+        return action.payload.workflow || state
+      })
+      .addCase(refreshStoreData, (state, action) => {
+        return action.payload.workflow || state
+      })
       .addCase(CommonActions.CLEAR_WORKFLOW_DATA, () => null)
-
     // Outcome Workflow Actions
     builder
       .addCase(
@@ -70,11 +76,7 @@ const workflowSlice = createSlice<AppState['workflow']>({
           const index = state.outcomes.indexOf(action.payload.id)
           if (index >= 0) {
             state.outcomes.splice(index, 1)
-            state.outcomes.splice(
-              action.payload.newIndex,
-              0,
-              action.payload.id
-            )
+            state.outcomes.splice(action.payload.newIndex, 0, action.payload.id)
           }
         }
       )
@@ -96,11 +98,7 @@ const workflowSlice = createSlice<AppState['workflow']>({
           const index = state.columns.indexOf(action.payload.id)
           if (index >= 0) {
             state.columns.splice(index, 1)
-            state.columns.splice(
-              action.payload.newIndex,
-              0,
-              action.payload.id
-            )
+            state.columns.splice(action.payload.newIndex, 0, action.payload.id)
           }
         }
       )
@@ -113,11 +111,7 @@ const workflowSlice = createSlice<AppState['workflow']>({
           const index = state.weeks.indexOf(action.payload.id)
           if (index >= 0) {
             state.weeks.splice(index, 1)
-            state.weeks.splice(
-              action.payload.newIndex,
-              0,
-              action.payload.id
-            )
+            state.weeks.splice(action.payload.newIndex, 0, action.payload.id)
           }
         }
       )

@@ -3,7 +3,8 @@ import { CfObjectType } from '@cf/types/enum'
 
 import { NodeForm } from './components/EditNode/types'
 import { NodeCategoryForm } from './components/EditNodeCategory/types'
-import { NodeLinkForm } from './components/EditNodeLink/types'
+import { NodelinkForm } from './components/EditNodelink/types'
+import { OutcomeForm } from './components/EditOutcome/types'
 import { PartForm } from './components/EditPart/types'
 import { TermForm } from './components/EditTerm/types'
 import { WeekForm } from './components/EditWeek/types'
@@ -23,9 +24,9 @@ type EditableDataMap = {
   [EditableType.TERM]: TermForm
   [EditableType.WEEK]: WeekForm
   [EditableType.PART]: PartForm
-  [EditableType.OUTCOME]: Outcome
+  [EditableType.OUTCOME]: OutcomeForm
   [EditableType.NODE]: NodeForm
-  [EditableType.NODE_LINK]: NodeLinkForm
+  [EditableType.NODE_LINK]: NodelinkForm
   [EditableType.NODE_CATEGORY]: NodeCategoryForm
 }
 

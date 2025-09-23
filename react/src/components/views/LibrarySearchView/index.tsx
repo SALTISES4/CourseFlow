@@ -130,8 +130,6 @@ const LibrarySearchView = ({
 
     const args = LibraryHelper.reduceStateToSearchArgs(searchFilterState)
 
-    //     Utility.logger(args)
-
     /*******************************************************
      *    These are the formatted search args, reduced to only active filters, and formatted in a flat list for the API call
      *    update to UI state, triggers an update to the search Args state, which in turn triggers useQuery
@@ -389,7 +387,9 @@ const LibrarySearchView = ({
             key={`workflow_${item.id}`}
             {...item}
             isSelected={item.id === override?.selectedId}
-            onClick={() => override?.onCardSelect(item.id)}
+            onClick={
+              override ? () => override.onCardSelect(item.id) : undefined
+            }
           />
         ))}
 

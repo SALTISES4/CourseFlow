@@ -175,7 +175,7 @@ export const getOutcomeByID = (
       data: updatedOutcome,
       hovertext: hovertext,
       prefix: prefix,
-      objectSets: state.objectset,
+      objectSets: state.objectSet,
       workflowId: state.workflow.id
     }
   }
@@ -288,7 +288,7 @@ export const getOutcomeHorizontalLinkByID = (
 export type TOutcomeWithDegree = TOutcome & { degree: number }
 
 export type TSortedOutcomeNodes = {
-  objectset: TObjectSet
+  objectSet: TObjectSet
   outcomes: TOutcomeWithDegree[]
 }[]
 
@@ -314,13 +314,13 @@ export const getSortedOutcomeNodesFromNodes = (
   }
 
   const baseTitle = ThemeHelper.capWords(_t('outcomes'))
-  const objectSets = state.objectset.filter(
-    (objectset) => objectset.term === outcomes[0].type
+  const objectSets = state.objectSet.filter(
+    (objectSet) => objectSet.term === outcomes[0].type
   )
   if (objectSets.length === 0) {
     return [
       {
-        objectset: {
+        objectSet: {
           title: baseTitle
         },
         outcomes: outcomes
@@ -329,15 +329,15 @@ export const getSortedOutcomeNodesFromNodes = (
   }
   const categories = [
     {
-      objectset: { title: _t('Uncategorized') },
+      objectSet: { title: _t('Uncategorized') },
       outcomes: outcomes.filter((outcome) => outcome.sets.length === 0)
     },
     ...objectSets
-      .filter((objectset) => !objectset.hidden)
-      .map((objectset) => ({
-        objectset: objectset,
+      .filter((objectSet) => !objectSet.hidden)
+      .map((objectSet) => ({
+        objectSet: objectSet,
         outcomes: outcomes.filter(
-          (outcome) => outcome.sets.indexOf(objectset.id) >= 0
+          (outcome) => outcome.sets.indexOf(objectSet.id) >= 0
         )
       }))
   ]
@@ -347,6 +347,6 @@ export const getSortedOutcomeNodesFromNodes = (
 }
 
 export type TSortedOutcomes = {
-  objectset: TObjectSet
+  objectSet: TObjectSet
   outcomes: TOutcome[]
 }[]

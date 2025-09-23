@@ -6,8 +6,13 @@ import {
   StrategyActions,
   WeekActions
 } from '@cfRedux/types/enumActions'
-import { TNodelink } from '@cfRedux/types/type'
-import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { TNodelink, WorkspaceAppState } from '@cfRedux/types/type'
+import {
+  PayloadAction,
+  createAction,
+  createEntityAdapter,
+  createSlice
+} from '@reduxjs/toolkit'
 
 interface CreateLockPayload {
   id: number
@@ -16,59 +21,66 @@ interface CreateLockPayload {
 
 interface ChangeFieldPayload {
   id: number
-  json: Partial<TNodelink>
+  json: Pick<TNodelink>
 }
 
-interface NodeLinkByIdPayload {
+interface NodelinkByIdPayload {
   id: number
 }
 
-interface AddStrategyPayload {
-  nodelinksAdded: TNodelink[]
-}
+export const nodelinkAdapter = createEntityAdapter<TNodelink>()
+const initialState = nodelinkAdapter.getInitialState()
 
-interface ReplaceStoreDataPayload {
-  nodelink?: TNodelink[]
-}
+/*******************************************************
+ * CREATE ACTIONS
+ *******************************************************/
+export const replaceStoreData = createAction<{
+  nodelink: WorkspaceAppState['nodelink'] | undefined
+}>(CommonActions.REPLACE_STOREDATA)
 
-const initialState: TNodelink[] = []
+export const refreshStoreData = createAction<{
+  nodelink: WorkspaceAppState['nodelink'] | undefined
+}>(CommonActions.REFRESH_STOREDATA)
 
+/*******************************************************
+ * SLICE
+ *******************************************************/
 const nodelinkSlice = createSlice({
   name: SliceNamespace.NODELINK,
   initialState,
   reducers: {
-    createLock(state, action: PayloadAction<CreateLockPayload>) {
-      const item = state.find((item) => item.id === action.payload.id)
-      // TODO: investigate locking behavior
-      // if (item) {
-      //   item.lock = action.payload.lock
-      // }
-    },
     changeField(state, action: PayloadAction<ChangeFieldPayload>) {
-      const item = state.find((item) => item.id === action.payload.id)
-      if (item) {
-        Object.assign(item, action.payload.json)
-      }
+      nodelinkAdapter.updateOne(state, {
+        id: action.payload.id,
+        changes: action.payload.json
+      })
     },
-    newNodeLink(state, action: PayloadAction<TNodelink>) {
-      state.push(action.payload)
+    createLock(state, action: PayloadAction<CreateLockPayload>) {
+      nodelinkAdapter.updateOne(state, {
+        id: action.payload.id,
+        changes: { lock: action.payload.lock }
+      })
     },
-    deleteSelf(state, action: PayloadAction<NodeLinkByIdPayload>) {
-      // maybe use findIndex and splice
-      return state.filter((item) => item.id !== action.payload.id)
+    newNodelink(state, action: PayloadAction<TNodelink>) {
+      nodelinkAdapter.addOne(state, action.payload)
     },
-    deleteSelfSoft(state, action: PayloadAction<NodeLinkByIdPayload>) {
-      const item = state.find((item) => item.id === action.payload.id)
-      if (item) {
-        item.deleted = true
-        item.deletedOn = _t('This session')
-      }
+    deleteSelf(state, action: PayloadAction<NodelinkByIdPayload>) {
+      nodelinkAdapter.removeOne(state, action.payload.id)
     },
-    restoreSelf(state, action: PayloadAction<NodeLinkByIdPayload>) {
-      const item = state.find((item) => item.id === action.payload.id)
-      if (item) {
-        item.deleted = false
-      }
+    deleteSelfSoft(state, action: PayloadAction<NodelinkByIdPayload>) {
+      nodelinkAdapter.updateOne(state, {
+        id: action.payload.id,
+        changes: {
+          deleted: true,
+          deletedOn: _t('This session')
+        }
+      })
+    },
+    restoreSelf(state, action: PayloadAction<NodelinkByIdPayload>) {
+      nodelinkAdapter.updateOne(state, {
+        id: action.payload.id,
+        changes: { deleted: false }
+      })
     }
   },
   extraReducers: (builder) => {
@@ -76,36 +88,21 @@ const nodelinkSlice = createSlice({
      * COMMON
      *******************************************************/
     builder
-      .addCase(
-        CommonActions.REPLACE_STOREDATA,
-        (state, action: PayloadAction<ReplaceStoreDataPayload>) => {
-          if (action.payload.nodelink) {
-            return action.payload.nodelink
-          }
+      .addCase(replaceStoreData, (state, action) => {
+        if (action.payload.nodelink) {
+          nodelinkAdapter.setAll(state, action.payload.nodelink)
+        } else {
+          nodelinkAdapter.removeAll(state)
         }
-      )
-      .addCase(
-        CommonActions.REFRESH_STOREDATA,
-        (state, action: PayloadAction<ReplaceStoreDataPayload>) => {
-          if (action.payload.nodelink) {
-            action.payload.nodelink.forEach((newNodelink) => {
-              const index = state.findIndex(
-                (item) => item.id === newNodelink.id
-              )
-              if (index !== -1) {
-                state[index] = newNodelink
-              } else {
-                state.push(newNodelink)
-              }
-            })
-          }
-        }
-      )
+      })
+      .addCase(refreshStoreData, (state, action) => {
+        nodelinkAdapter.upsertMany(state, action.payload.nodelink)
+      })
       .addCase(
         WeekActions.INSERT_BELOW,
         (
           state,
-          action: PayloadAction<{ children?: ReplaceStoreDataPayload }>
+          action: PayloadAction<{ children?: { nodelink: TNodelink[] } }>
         ) => {
           if (action.payload.children) {
             return [...state, ...action.payload.children.nodelink]
@@ -114,7 +111,7 @@ const nodelinkSlice = createSlice({
       )
       .addCase(
         StrategyActions.ADD_STRATEGY,
-        (state, action: PayloadAction<AddStrategyPayload>) => {
+        (state, action: PayloadAction<{ nodelinksAdded: TNodelink[] }>) => {
           if (action.payload.nodelinksAdded.length !== 0) {
             return [...state, ...action.payload.nodelinksAdded]
           }
@@ -124,16 +121,14 @@ const nodelinkSlice = createSlice({
 })
 
 export const {
-  // replaceStoreData: nodelinkReplaceStoreData,
-  // refreshStoreData: nodelinkRefreshStoreData,
   createLock: nodelinkCreateLock,
   changeField: nodelinkChangeField,
-  newNodeLink: nodelinkNewNodeLink,
+  newNodelink: nodelinkNewNodelink,
   deleteSelf: nodelinkDeleteSelf,
   deleteSelfSoft: nodelinkDeleteSelfSoft,
   restoreSelf: nodelinkRestoreSelf
-  // insertBelow: nodelinkInsertBelow,
-  // addStrategy: nodelinkAddStrategy
+  //  insertBelow: nodelinkInsertBelow,
+  //  addStrategy: nodelinkAddStrategy
 } = nodelinkSlice.actions
 
 export default nodelinkSlice.reducer

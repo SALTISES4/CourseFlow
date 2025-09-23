@@ -17,6 +17,8 @@ import {
 import mergeRefs from 'merge-refs'
 import { Ref } from 'react'
 import { useSelector } from 'react-redux'
+import { RootState } from '@cfRedux/store'
+
 
 import Node from './Node'
 import * as Styled from '../../styles'
@@ -114,13 +116,16 @@ const NodeHoverMenu = ({
 }
 
 const NodeWrapper = ({ objectId, parentId, row }: PropsType) => {
-  const data = useSelector((state: AppState) => selectNodeById(state, objectId))
+  // review the node name / data
+  const node = useSelector((state: RootState) =>
+    selectNodeById(state, objectId)
+  )
   const workflow = useSelector((state: AppState) => state.workflow)
   const [ref, isHovered] = useHover()
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: objectId })
 
-  if (!data) {
+  if (!node) {
     return null
   }
 
@@ -138,7 +143,7 @@ const NodeWrapper = ({ objectId, parentId, row }: PropsType) => {
           row: {row}, col: {column}
         </Styled.DebugCellInfo>
 
-        {column === data.node.column && (
+        {column === node.column && (
           <div
             id={String(objectId)}
             className="node-week"

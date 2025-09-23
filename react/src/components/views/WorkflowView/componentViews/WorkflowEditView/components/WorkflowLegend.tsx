@@ -1,7 +1,9 @@
 import * as Constants from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
 import LegendLine from '@cfComponents/UIPrimitives/LegendLine'
-import { AppState } from '@cfRedux/types/type'
+import { selectAllNodes } from '@cfRedux/selectors/node.selector'
+import { selectAllWeeks } from '@cfRedux/selectors/week.selector'
+import { RootState } from '@cfRedux/store'
 import Legend from '@cfViews/common/Legend'
 import { useSelector } from 'react-redux'
 
@@ -11,8 +13,8 @@ const choices = COURSEFLOW_APP.globalContextData.workflowChoices
  * first pass on FV conversion is done
  *******************************************************/
 const WorkflowLegend = () => {
-  const nodes = useSelector((state: AppState) => state.node)
-  const weeks = useSelector((state: AppState) => state.week)
+  const nodes = useSelector((state: RootState) => selectAllNodes(state))
+  const weeks = useSelector((state: RootState) => selectAllWeeks(state))
 
   /*******************************************************
    * COMPONENTS

@@ -7,12 +7,12 @@ import Header from '@cfPages/Workspace/Workflow/WorkflowTabs/components/Header'
 import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
 import {
   ActionMenu,
-  ExpandCollapseMenu,
-  JumpToMenu
+  JumpToMenu,
+  ViewSettingsMenu
 } from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/menus'
 import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/WorkflowDialogs'
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import WorkflowLegend from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/WorkflowLegend'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
@@ -21,13 +21,7 @@ import { useContext, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { Routes, matchPath } from 'react-router-dom'
 
-// & EditableComponentProps
 
-// type PropsType = DispatchProp & ConnectedProps & OwnProps
-type StateType = {
-  users: any
-  data?: any
-} // & EditableComponentStateType
 
 /**
  * The base component of our workflow view. This renders the menu bar
@@ -41,7 +35,7 @@ type StateType = {
 // class WorkflowTabsUnconnected extends EditableComponent<PropsType, StateType> {
 const WorkflowTabs = () => {
   const context = useContext(WorkflowConfigContext)
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   useWorkflowSidebar({
     workflowType: workflow.type,
@@ -94,6 +88,8 @@ const WorkflowTabs = () => {
     <Stack direction="row" spacing={2}>
       <JumpToMenu weekIds={workflow.weeks} />
       <ExpandCollapseMenu legend={<WorkflowLegend />} />
+      <ViewSettingsMenu />
+
     </Stack>
   )
 
@@ -121,6 +117,7 @@ const WorkflowTabs = () => {
           viewbar={<ViewBar />}
           userbar={<ConnectionBar show={!workflow.publicView} />}
         />
+        <WorkflowLegend />
         <div className="right-panel-wrapper">
           <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">

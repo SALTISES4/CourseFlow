@@ -66,7 +66,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
 //       if (this.initialObjectSets) {
 //         dataFlat = {
 //           ...dataFlat,
-//           objectset: this.initialObjectSets
+//           objectSet: this.initialObjectSets
 //         }
 //       }
 //

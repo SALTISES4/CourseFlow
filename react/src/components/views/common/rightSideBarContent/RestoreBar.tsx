@@ -26,11 +26,11 @@ const RestoreBar = () => {
       nodelinks: ENodelink[]
     }
   >((state) => ({
-    weeks: state.week.filter((x) => x.deleted),
-    columns: state.column.filter((x) => x.deleted),
-    nodes: state.node.filter((x) => x.deleted),
-    outcomes: state.outcome.filter((x) => x.deleted),
-    nodelinks: state.nodelink.filter((x) => x.deleted)
+    weeks: state.workspace.week.filter((x) => x.deleted),
+    columns: state.workspace.column.filter((x) => x.deleted),
+    nodes: state.workspace.node.filter((x) => x.deleted),
+    nodelinks: state.workspace.nodelink.filter((x) => x.deleted),
+    outcomes: state.outcome.filter((x) => x.deleted)
   }))
 
   useEffect(() => {

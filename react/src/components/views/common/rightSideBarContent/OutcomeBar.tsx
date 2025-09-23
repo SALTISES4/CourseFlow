@@ -61,7 +61,7 @@ class OutcomeBarUnconnected extends React.Component<PropsType, any> {
         <>
           <hr />
           <div>
-            <h4>{category.objectset.title}</h4>
+            <h4>{category.objectSet.title}</h4>
             {category.outcomes.map((outcome) => (
               <OutcomeBarOutcome
                 key={outcome.id}

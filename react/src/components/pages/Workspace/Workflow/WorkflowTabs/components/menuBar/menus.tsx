@@ -264,7 +264,9 @@ const ExpandCollapseMenu = ({ legend }: { legend?: ReactElement }) => {
   )
 }
 
-//
+/*******************************************************
+ * JUMP MENU
+ *******************************************************/
 const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
   const context = useContext(WorkflowConfigContext)
   const viewType = context.workflowView

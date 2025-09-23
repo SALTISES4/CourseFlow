@@ -127,13 +127,13 @@ export default function weekReducer(
     //       ? { ...item, ...action.payload.json }
     //       : item
     //   )
-//    case WeekActions.INSERT_BELOW:
-//     case StrategyActions.ADD_STRATEGY:
-//       return [...state, action.payload.newModel]
+    //    case WeekActions.INSERT_BELOW:
+    //     case StrategyActions.ADD_STRATEGY:
+    //       return [...state, action.payload.newModel]
 
-//    case WeekActions.DELETE_SELF:
-//     case NodeActions.DELETE_SELF_SOFT:
-//       return state.filter((item) => item.id !== action.payload.id)
+    //    case WeekActions.DELETE_SELF:
+    //     case NodeActions.DELETE_SELF_SOFT:
+    //       return state.filter((item) => item.id !== action.payload.id)
 
     // case WeekActions.DELETE_SELF_SOFT:
     // case WeekActions.RESTORE_SELF: {

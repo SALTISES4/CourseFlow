@@ -55,7 +55,7 @@ export type WorkflowDataPackage = {
   outcomenode: EOutcomenode[]
   outcomeworkflow: EOutcomeWorkflow[]
   outcomeoutcome: EOutcomeOutcome[]
-  objectset: EObjectSet[]
+  objectSet: EObjectSet[]
   strategy: EStrategy[]
   //
   unreadComments: any[]

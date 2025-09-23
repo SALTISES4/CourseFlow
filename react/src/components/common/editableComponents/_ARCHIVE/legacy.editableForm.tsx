@@ -5,7 +5,6 @@ import * as Constants from '@cf/utility/constants'
 import Utility from '@cf/utility/Utility.class'
 // import $ from 'jquery'
 import { _t } from '@cf/utility/Utility.class'
-import { UtilityLoaderClass } from '@cf/utility/UtilityLoader.class'
 import WorkflowLinkDialog from '@cfComponents/dialog/Workflow/WorkflowLinkDialog'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import CommentBox from '@cfEditableComponents/components/CommentBox'
@@ -78,15 +77,12 @@ class EditableComponent<
    * FUNCTIONS
    *******************************************************/
   setChanged(setId, evt) {
-    COURSEFLOW_APP.tinyLoader.startLoad()
     updateObjectSet(
       this.props.data.id,
       Constants.objectDictionary[this.objectType],
       setId,
       evt.target.checked,
-      () => {
-        COURSEFLOW_APP.tinyLoader.endLoad()
-      }
+      () => {}
     )
   }
 
@@ -530,10 +526,7 @@ class EditableComponent<
           disabled={readOnly}
           id="toggle-strategy-editor"
           onClick={() => {
-            const loader = new UtilityLoaderClass('body')
-            toggleStrategyQuery(data.id, data.isStrategy, (responseData) => {
-              loader.endLoad()
-            })
+            toggleStrategyQuery(data.id, data.isStrategy, (responseData) => {})
           }}
         >
           {data.isStrategy && _t('Remove Strategy Status')}
@@ -727,7 +720,6 @@ class EditableComponent<
 
   reloadComments(showComments: boolean) {
     const data = this.props.data
-    COURSEFLOW_APP.tinyLoader.startLoad()
     getCommentsForObjectQuery(
       data.id,
       Constants.objectDictionary[this.objectType],
@@ -746,7 +738,6 @@ class EditableComponent<
         //   showComments: true,
         //   commentData: responseData.dataPackage
         // })
-        COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
   }

@@ -10,6 +10,18 @@ export type NodeForm = {
   ponderation?: PonderationType
 }
 
+// for reference
+// export type NodeForm = {
+//   title?: string
+//   description?: string
+//   amount?: number
+//   linkedWorkflow?: LinkedWorkflowType
+//   ponderation?: PonderationType
+//   contextClassification?: number
+//   taskClassification?: number
+//   timeUnits?: number
+//   sets?: number[]
+// }
 type PonderationType = {
   theory: string
   practice: string

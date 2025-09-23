@@ -1,3 +1,4 @@
+# course_flow/templatetags/render_vite_bundle.py
 import json
 
 from django import template
@@ -9,29 +10,22 @@ register = template.Library()
 
 @register.simple_tag
 def render_vite_bundle():
-    """
-    Template tag to render a vite bundle.
-    Supposed to only be used in production.
-    For development, see other files.
-    """
-
+    # Read manifest exactly where you said it is
+    manifest_path = f"{settings.VITE_APP_DIR}/dist/.vite/manifest.json"
     try:
-        fd = open(f"{settings.VITE_APP_DIR}/dist/.vite/manifest.json", "r")
-        manifest = json.load(fd)
-    except Exception as e:
+        with open(manifest_path, "r", encoding="utf-8") as fd:
+            manifest = json.load(fd)
+    except Exception:
         raise Exception(
-            f"Vite manifest file not found or invalid. Maybe your {settings.VITE_APP_DIR}/dist/manifest.json file is empty?"
+            f"Vite manifest not found or invalid at {manifest_path}. "
+            "Did you run `vite build --manifest`?"
         )
 
-    imports_files = "".join(
-        [
-            f'<script type="module" src="/static/{manifest[file]["file"]}"></script>'
-            for file in manifest["index.html"]["imports"]
-        ]
-    )
+    entry = manifest["index.html"]  # tailored to your manifest key
+    js_file = entry["file"]  # e.g., assets/index-Crfdf0H1.js
+    css_file = entry["css"][0]  # e.g., assets/index-CJ7NE_O5.css
 
     return mark_safe(
-        f"""<script type="module" src="/static/{manifest['index.html']['file']}"></script>
-        <link rel="stylesheet" type="text/css" href="/static/{manifest['index.html']['css'][0]}" />
-        {imports_files}"""
+        f'<script type="module" src="/static/{js_file}"></script>\n'
+        f'<link rel="stylesheet" href="/static/{css_file}" />'
     )

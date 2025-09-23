@@ -39,6 +39,8 @@ class Outcome(AbstractCourseFlowModel):
     ##########################################################
     # FIELDS
     #########################################################
+    title = models.CharField(max_length=500, null=True, blank=True)
+
     code = models.CharField(max_length=title_max_length, null=True, blank=True)
 
     is_original = models.BooleanField(default=True)

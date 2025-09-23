@@ -58,7 +58,7 @@ export function API_POST<T>(url = '', data = {}): Promise<any> {
   }
 
   return new Promise((res, rej) => {
-    COURSEFLOW_APP.tinyLoader.startLoad()
+
     fetch(url, {
       method: 'POST',
       headers: {

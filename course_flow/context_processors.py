@@ -12,6 +12,7 @@ where they are added to the context_processors list.
 They should be used  judiciously due to potential performance impacts,
 as they execute  for every template rendered.
 """
+from django.conf import settings
 from django.http import HttpRequest
 from rest_framework.renderers import JSONRenderer
 
@@ -19,8 +20,6 @@ from course_flow.services.config import ConfigService
 from course_flow.services.notifications import get_app_update_notifications
 from course_flow.services.workflow import WorkflowService
 
-# LOCAL_IP = os.getenv("LOCAL_IP")
-# LOCAL_IP = "192.168.1.37"
 LOCAL_IP = "localhost"
 PORT = 3001
 
@@ -35,6 +34,7 @@ def add_global_context(request: HttpRequest):
         return {
             "host": LOCAL_IP,
             "port": PORT,
+            "env": settings.UI_ENV,
             "globalContextData": JSONRenderer()
             .render(
                 {

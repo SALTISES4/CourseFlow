@@ -109,7 +109,7 @@ class WorkflowUnconnected extends React.Component<PropsType, StateProps> {
 const mapWorkflowStateToProps = (state: AppState): ConnectedProps => {
   return {
     data: state.workflow,
-    objectSets: state.objectset
+    objectSets: state.objectSet
   }
 }
 

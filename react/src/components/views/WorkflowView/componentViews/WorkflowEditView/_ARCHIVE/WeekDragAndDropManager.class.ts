@@ -1,6 +1,5 @@
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Utility from '@cf/utility/Utility.class'
-import { UtilityLoaderClass } from '@cf/utility/UtilityLoader.class'
 import SortableDragAndDropManager from '@cfEditableComponents/SortableDragAndDropManager.class'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { addStrategyQuery } from '@XMLHTTP/API/create'
@@ -109,7 +108,6 @@ class WeekDragAndDropManager extends SortableDragAndDropManager {
         const dragItem = ui.draggable
         const newIndex = dropItem.parent().prevAll().length + 1
         if (dragItem.hasClass('new-strategy')) {
-          const loader = new UtilityLoaderClass('body')
           addStrategyQuery(
             this.props.parentId,
             newIndex,
@@ -117,7 +115,6 @@ class WeekDragAndDropManager extends SortableDragAndDropManager {
             // @ts-ignore
             dragItem[0].dataDraggable.strategy,
             (responseData) => {
-              loader.endLoad()
             }
           )
         }

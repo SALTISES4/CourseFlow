@@ -206,7 +206,7 @@ class ProjectSerializerShallow(
             "workflowproject_set",  # @todo define this
             "disciplines",  # @todo define this
             "type",  # @todo define this
-            "object_sets",  # @todo define this
+            "object_sets",
             "favourite",
             # "object_permission",  # @todo  define this
             "user_permissions",  # @todo  define this

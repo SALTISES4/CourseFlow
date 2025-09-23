@@ -51,7 +51,7 @@ import {
 
 type ConnectedProps = {
   data: AppState['workflow']
-  objectSets: AppState['objectset']
+  objectSets: AppState['objectSet']
   week: AppState['week']
   node: AppState['node']
   outcome: AppState['outcome']
@@ -152,7 +152,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     if (this.context.viewType === WorkflowViewType.OUTCOME_EDIT) {
       getWorkflowParentDataQuery(this.workflowId, (response) => {
         this.props.dispatch(
-          ActionCreator.refreshStoreData(response.dataPackage)
+          ActionCreator.refreshWorkspaceStoreData(response.dataPackage)
         )
       })
     }
@@ -180,14 +180,11 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   }
 
   copyToProject = () => {
-    const loader = COURSEFLOW_APP.tinyLoader
-    loader.startLoad()
     duplicateBaseItemQuery(
       this.data.id,
       this.data.type,
       this.project.id,
       (responseData) => {
-        loader.endLoad()
         // @ts-ignore
         window.location =
           COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
@@ -266,13 +263,11 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   duplicateItem(responseData) {
     if (responseData.parentId != null) {
-      const utilLoader = new UtilityLoader('body')
       duplicateBaseItemQuery(
         this.data.id,
         this.data.type,
         responseData.parentId,
         (responseData) => {
-          utilLoader.endLoad()
           // @ts-ignore
           window.location =
             COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
@@ -634,7 +629,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
     data: state.workflow,
-    objectSets: state.objectset,
+    objectSets: state.objectSet,
     week: state.week,
     node: state.node,
     outcome: state.outcome

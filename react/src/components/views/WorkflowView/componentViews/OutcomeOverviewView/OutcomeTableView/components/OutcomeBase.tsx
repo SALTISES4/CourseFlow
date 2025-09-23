@@ -5,6 +5,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 
 import Outcome from './Outcome'
+import {RootState} from "@cfRedux/store";
 
 type PropsType = {
   type: string
@@ -16,9 +17,9 @@ const OutcomeBase = ({ type, nodecategory, objectId }: PropsType) => {
   const outcomesType = useSelector(
     (state: AppState) => state.workflow.outcomesType
   )
-  const outcome = useSelector((state: AppState) => state.outcome)
-  const outcomeNode = useSelector((state: AppState) => state.outcomenode)
-  const outcomeOutcome = useSelector((state: AppState) => state.outcomeoutcome)
+  const outcome = useSelector((state: RootState) => state.outcome)
+  const outcomeNode = useSelector((state: RootState) => state.outcomenode)
+  const outcomeOutcome = useSelector((state: RootState) => state.outcomeoutcome)
 
   const outcomeTree = createOutcomeNodeBranch(
     { outcomesType, outcome, outcomeNode, outcomeOutcome },

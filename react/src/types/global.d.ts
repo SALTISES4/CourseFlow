@@ -40,14 +40,6 @@ interface CourseflowAppGlobals {
   // global context data that's available that more general use
   // (sidebar, topbar, app notifications, etc)
   globalContextData: GlobalContextData
-
-  // consumed by the current view (home, profile settings, etc)
-  tinyLoader: TinyLoader // @todo this should be deprecated
-  makeDropdown: (
-    // @todo this should be deprecated
-    item: HTMLElement | HTMLDivElement | jQuery<HTMLDivElement> | string, // @todo ...
-    item2?: HTMLElement | HTMLDivElement | jQuery<HTMLDivElement> | string // @todo ...
-  ) => void
 }
 
 interface Path {
@@ -158,13 +150,6 @@ export interface GlobalContextData {
         }
       | Record<string, never>
   }
-}
-
-interface TinyLoader {
-  identifier: Identifier
-  loadings: number
-  startLoad: () => void
-  endLoad: () => void
 }
 
 interface Identifier {

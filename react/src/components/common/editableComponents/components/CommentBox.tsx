@@ -35,9 +35,9 @@ const CommentBox = ({ id, setShow, objectType }: PropsType) => {
   /*******************************************************
    * HOOKS: REDUX
    *******************************************************/
-  //  const workflow = useSelector((state: AppState) => state.workflow)
+  //  const workflow = useSelector((state: RootState) => state.workflow)
   // currently comments in redux are an array of ids/
-  //   const commentsState = useSelector((state: AppState) => state)
+  //   const commentsState = useSelector((state: RootState) => state)
   // const comments = getComments({
   //   objectId: id,
   //   objectType,
@@ -198,11 +198,8 @@ const CommentBox = ({ id, setShow, objectType }: PropsType) => {
 
     if (evt.nativeEvent?.data === '@') {
       setTagPosition(inputRef.current?.selectionStart || 0)
-      const loader = COURSEFLOW_APP.tinyLoader
-      loader.startLoad()
 
       getUsersForObjectQueryLegacy(workflow.id, 'workflow', (response) => {
-        loader.endLoad()
         setUserList(response.dataPackage)
         setTagging(true)
       })
@@ -531,8 +528,6 @@ export default CommentBox
 //     }
 //     if (evt.nativeEvent && evt.nativeEvent.data === '@') {
 //       this.tagPosition = this.input.current.selectionStart - 1
-//       const loader = COURSEFLOW_APP.tinyLoader
-//       loader.startLoad()
 //
 //       getUsersForObjectQueryLegacy(
 //         this.props.workflow.id,

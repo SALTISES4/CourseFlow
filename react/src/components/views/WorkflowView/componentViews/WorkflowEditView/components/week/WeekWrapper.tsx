@@ -173,6 +173,9 @@ const WeekWrapper = ({
   // const weekData = useSelector((state: AppState) =>
   //   selectWeekById(state, objectId)
   // )
+  // const weekData = useSelector((state: RootState) =>
+  //   selectWeekById(state, objectId)
+  // )
 
   /*******************************************************
    * COMPONENTS

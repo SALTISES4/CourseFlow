@@ -72,10 +72,7 @@ class OutcomeNodeUnconnected extends React.Component<PropsType> {
     }
     //Temporary confirmation; add better confirmation dialogue later
     else {
-      COURSEFLOW_APP.tinyLoader.startLoad()
-      updateOutcomenodeDegree(data.node, data.outcome, 0, (responseData) => {
-        COURSEFLOW_APP.tinyLoader.endLoad()
-      })
+      updateOutcomenodeDegree(data.node, data.outcome, 0, (responseData) => {})
     }
   }
 

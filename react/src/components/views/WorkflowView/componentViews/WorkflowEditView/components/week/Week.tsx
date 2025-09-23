@@ -4,6 +4,7 @@ import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { weekChangeField } from '@cfRedux/slices/week.slice'
+import { RootState } from '@cfRedux/store'
 import { AppState } from '@cfRedux/types/type'
 import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWrapper'
 import StrategyTabIcon from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/components/StrategyTabIcon'
@@ -11,6 +12,7 @@ import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEdit
 import { DndContext } from '@dnd-kit/core'
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import clsx from 'clsx'
 import { useCallback, useRef, useState } from 'react'
@@ -36,19 +38,18 @@ const Week = ({ objectId, parentId, reordering = false }: PropsType) => {
    * REDUX
    *******************************************************/
   const dispatch = useDispatch()
-  const weekData = useSelector((state: AppState) =>
+  const week = useSelector((state: RootState) =>
     selectWeekById(state, objectId)
   )
   const sidebarDragTarget = useSelector(
-    (state: AppState) => state.sidebar.dragging.target
+    (state: RootState) => state.sidebar.dragging.target
   )
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
   /*******************************************************
    * HOOKS: STATE
    *******************************************************/
-  const [nodesDragState, setNodesDragState] = useState(
-    weekData.week.nodes || []
-  )
+  const [nodesDragState, setNodesDragState] = useState(week.nodes || [])
+
   /*******************************************************
    * REFS
    *******************************************************/
@@ -114,13 +115,13 @@ const Week = ({ objectId, parentId, reordering = false }: PropsType) => {
 
     return nodesDragState.map((nodeId, row) => (
       <CellRow key={`node-${nodeId}`}>
-        <NodeWrapper objectId={nodeId} parentId={weekData.week.id} row={row} />
+        <NodeWrapper objectId={nodeId} parentId={week.id} row={row} />
       </CellRow>
     ))
   }
 
   const defaultText = !workflow.isStrategy
-    ? `${weekData.week.weekTypeDisplay} ${weekData.week.order + 1}`
+    ? `${week.weekTypeDisplay} ${week.order + 1}`
     : undefined
 
   const toggleCollapse = useCallback((evt) => {
@@ -128,13 +129,13 @@ const Week = ({ objectId, parentId, reordering = false }: PropsType) => {
     dispatch(
       weekChangeField({
         id: objectId,
-        data: { isDropped: !weekData.week.isDropped }
+        data: { isDropped: !week.isDropped }
       })
     )
   }, [])
 
   // always collapse if reordering is ongoing, otherwise rely on week data
-  const expanded = reordering === true ? false : weekData.week.isDropped
+  const expanded = reordering === true ? false : week.isDropped
 
   /*******************************************************
    * RENDER
@@ -142,20 +143,20 @@ const Week = ({ objectId, parentId, reordering = false }: PropsType) => {
   return (
     <Styled.WeekWrapper
       style={ThemeHelper.getBorderStyle({
-        isLocked: weekData.week?.lock?.lock,
-        colour: weekData.week?.lock?.userColour
+        isLocked: week?.lock?.lock,
+        colour: week?.lock?.userColour
       })}
       className={clsx('week', {
-        strategy: weekData.week.isStrategy,
-        dropped: weekData.week.isDropped,
-        [`locked`]: weekData.week?.lock,
-        [`locked-${weekData.week.lock?.userId}`]: weekData.week.lock
+        strategy: week.isStrategy,
+        dropped:week.isDropped,
+        [`locked`]: week?.lock,
+        [`locked-${week.lock?.userId}`]: week.lock
       })}
       //      ref={mainDiv}
       onClick={(e) => {
         e.stopPropagation()
         manager.current.updateSidebar(
-          weekData.week.id,
+          week.id,
           CfObjectType.WEEK,
           parentId
         )
@@ -163,7 +164,7 @@ const Week = ({ objectId, parentId, reordering = false }: PropsType) => {
     >
       <Styled.WeekHeader expanded={expanded}>
         <Styled.WeekTitle variant="subtitle2">
-          <TitleText text={weekData.week.title} defaultText={defaultText} />
+          <TitleText text={week.title} defaultText={defaultText} />
         </Styled.WeekTitle>
         <IconButton
           onClick={toggleCollapse}
@@ -203,7 +204,7 @@ const Week = ({ objectId, parentId, reordering = false }: PropsType) => {
         </div>
       )}
       <StrategyTabIcon
-        strategyClassification={weekData.week.strategyClassification}
+        strategyClassification={week.strategyClassification}
       />
     </Styled.WeekWrapper>
   )

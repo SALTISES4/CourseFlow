@@ -2,7 +2,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
-import { UtilityLoaderClass } from '@cf/utility/UtilityLoader.class'
 import { ProjectComparisonClass } from '@cfPages/Workspace/ProjectComparison'
 import * as React from 'react'
 
@@ -29,7 +28,6 @@ class WorkflowComparisonRendererComponent extends React.Component<OwnProps> {
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    const loader = new UtilityLoaderClass('body')
 
     const querystring = window.location.search
     const urlParams = new URLSearchParams(querystring)
@@ -76,7 +74,6 @@ class WorkflowComparisonRendererComponent extends React.Component<OwnProps> {
       // this.workflowComparison.silent_connect_fail = true
       // this.workflowComparison.init()
 
-      loader.endLoad()
     })
   }
 

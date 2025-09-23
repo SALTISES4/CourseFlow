@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
@@ -118,22 +120,26 @@ class WorkflowSerializerShallow(
         return False
 
     @staticmethod
-    def get_strategy_icon(instance):
+    def get_strategy_icon(instance: Workflow):
         if instance.is_strategy:
-            return instance.weeks.first().strategy_classification
+            # Check if weeks exists and has at least one entry
+            # @todo this is a problem!
+            # it's 'maybe' loading a child week and then determining a derived quality about it
+            # NO.
+            first_week = instance.weeks.first() if instance.weeks.exists() else None
+            if first_week:
+                return first_week.strategy_classification
         else:
             return None
 
     @staticmethod
     def get_weeks(instance):
         weeks = instance.weekworkflow_set.filter(week__deleted=False).order_by("rank")
-        # return list(map(Utility.linkIDMap, links))
         return list(map(lambda item: item.week_id, weeks))
 
     @staticmethod
     def get_columns(instance):
         columns = instance.columnworkflow_set.filter(column__deleted=False).order_by("rank")
-        #        return list(map(lambda(item: item.id), links))
         return list(map(lambda item: item.column_id, columns))
 
     @staticmethod

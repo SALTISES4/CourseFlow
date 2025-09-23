@@ -55,7 +55,7 @@ class OutcomeAnalyticsUnconnected extends React.Component<
     //Choices of outcomes to sort by
     let viewButtonsOutcomes = this.props.outcomes.map((category, i) => {
       return [
-        <h4>{category.objectset.title}:</h4>,
+        <h4>{category.objectSet.title}:</h4>,
         <div className=" hide-print">
           {category.outcomes.map((outcome, j) => {
             let viewClass = 'hover-shade'

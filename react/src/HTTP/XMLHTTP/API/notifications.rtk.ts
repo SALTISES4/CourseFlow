@@ -4,7 +4,6 @@ import { TNotification } from '@cfRedux/types/type'
 import { Verb, cfApi } from '@XMLHTTP/API/api'
 import { ENotification } from '@XMLHTTP/types/entity'
 
-
 /*******************************************************
  *  Notification
  *******************************************************/

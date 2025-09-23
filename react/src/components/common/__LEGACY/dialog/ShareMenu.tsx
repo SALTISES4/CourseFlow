@@ -145,7 +145,6 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
   }
 
   setUserPermission(permissionType, user) {
-    COURSEFLOW_APP.tinyLoader.startLoad()
     setUserPermission(
       user.id,
       this.props.data.id,
@@ -162,7 +161,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
               edit: response.editors,
               student: response.students
             })
-            COURSEFLOW_APP.tinyLoader.endLoad()
+
           }
         )
       }

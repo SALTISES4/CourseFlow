@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography'
 import * as React from 'react'
 import { useSelector } from 'react-redux'
 import { Link, generatePath } from 'react-router-dom'
+import {RootState} from "@cfRedux/store";
 
 /**
  * @todo did a first pass, but there is work to do still
@@ -15,13 +16,13 @@ import { Link, generatePath } from 'react-router-dom'
  */
 const ReturnLinks = () => {
   const canView = true // @todo temp because project is not in store yet
-  const project = useSelector((state: AppState) => state.workspace.parentProject)
+  const project = useSelector((state: RootState) => state.workspace.project)
 
   /*******************************************************
    * REDUX
    *******************************************************/
   const publicView = useSelector<AppState>(
-    (state: AppState) => state.workflow?.publicView
+    (state: AppState) => state.workspace.workflow?.publicView
   )
 
   const WorkflowLink = () => {
@@ -74,6 +75,7 @@ const ReturnLinks = () => {
     const path = generatePath(CFRoutes.WORKFLOW, {
       id: String(project.id)
     })
+
     return (
       <Link data-test-id={'link-editable-workflow-return'} to={path}>
         <ArrowBackIosIcon />

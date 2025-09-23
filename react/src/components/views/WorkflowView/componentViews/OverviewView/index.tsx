@@ -2,6 +2,7 @@ import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { WorkspaceType } from '@cf/types/enum'
 import Utility, { _t } from '@cf/utility/Utility.class'
+import { RootState } from '@cfRedux/store'
 import { AppState } from '@cfRedux/types/type'
 import UserList from '@cfViews/common/workspaceOverview/UserList'
 import LinkIcon from '@mui/icons-material/Link'
@@ -14,8 +15,8 @@ import * as SC from './styles'
 
 const OverviewView = () => {
   const { dispatch } = useDialog()
-  const data = useSelector((state: AppState) => state.workflow)
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const data = useSelector((state: RootState) => state.workspace.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   // @todo disciplines is missing from workflow data type
   const disciplines = []

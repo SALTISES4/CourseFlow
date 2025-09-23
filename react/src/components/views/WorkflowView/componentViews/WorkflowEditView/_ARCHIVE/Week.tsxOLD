@@ -90,7 +90,7 @@ const Week = ({ objectId, parentId, rank, columnOrder, nodesByColumn }) => {
    *******************************************************/
   const dispatch = useDispatch()
   const week = useSelector((state) => getWeekById(state, objectId));
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: RootState) => state.workflow)
 
 
   /*******************************************************

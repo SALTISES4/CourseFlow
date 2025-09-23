@@ -4,6 +4,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 
 import Outcome from './Outcome'
+import {RootState} from "@cfRedux/store";
 
 /**
  * The link between an outcome and its children
@@ -23,7 +24,7 @@ const OutcomeWrapper = ({
   showHorizontal,
   parentDepth
 }: PropsType) => {
-  const outcomeData = useSelector((state: AppState) =>
+  const outcomeData = useSelector((state: RootState) =>
     selectOutcomeById(state, objectId)
   )
 

@@ -51,7 +51,7 @@
 //         createOutcomeBranch(state, sorted_outcomes[i].outcomes[j].id)
 //       )
 //     outcomes_tree.push({
-//       title: sorted_outcomes[i].objectset.title,
+//       title: sorted_outcomes[i].objectSet.title,
 //       outcomes: outcomes_tree_category
 //     })
 //   }

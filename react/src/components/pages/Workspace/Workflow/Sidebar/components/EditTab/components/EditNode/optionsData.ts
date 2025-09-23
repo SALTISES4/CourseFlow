@@ -74,6 +74,25 @@ const taskTypes = [
   }
 ]
 
+const unitTypes = [
+  {
+    value: 1,
+    label: 'Credits'
+  },
+  {
+    value: 2,
+    label: 'Something else'
+  },
+  {
+    value: 3,
+    label: 'Another unit type'
+  },
+  {
+    value: 4,
+    label: 'Other'
+  }
+]
+
 const objectSets = [
   {
     value: 1,
@@ -101,5 +120,6 @@ export default {
   contexts,
   taskTypes,
   objectSets,
+  unitTypes,
   timeUnits: timeUnits.filter((u) => u)
 }

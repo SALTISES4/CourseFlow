@@ -53,10 +53,8 @@ const RestoreBarItem = ({
 
   const restore = () => {
     setDisabled(true)
-    COURSEFLOW_APP.tinyLoader.startLoad()
-    restoreSelfQueryLegacy(id, objectType, () => {
-      COURSEFLOW_APP.tinyLoader.endLoad()
-    })
+
+    restoreSelfQueryLegacy(id, objectType, () => {})
   }
 
   const deleteItem = () => {
@@ -70,10 +68,8 @@ const RestoreBarItem = ({
         // @ts-ignore
         $(mainDiv.current).children('button').attr('disabled', true)
       }
-      COURSEFLOW_APP.tinyLoader.startLoad()
-      deleteSelfQueryLegacy(id, objectType, false, () => {
-        COURSEFLOW_APP.tinyLoader.endLoad()
-      })
+
+      deleteSelfQueryLegacy(id, objectType, false, () => {})
     }
   }
 
@@ -125,9 +121,9 @@ export default RestoreBarItem
 //
 //   restore() {
 //     this.setState({ disabled: true })
-//     COURSEFLOW_APP.tinyLoader.startLoad()
+//
 //     restoreSelfQueryLegacy(this.props.data.id, this.props.objectType, () => {
-//       COURSEFLOW_APP.tinyLoader.endLoad()
+//
 //     })
 //   }
 //
@@ -139,13 +135,13 @@ export default RestoreBarItem
 //     ) {
 //       // @ts-ignore
 //       $(this.mainDiv.current).children('button').attr('disabled', true)
-//       COURSEFLOW_APP.tinyLoader.startLoad()
+//
 //       deleteSelfQueryLegacy(
 //         this.props.data.id,
 //         this.props.objectType,
 //         false,
 //         () => {
-//           COURSEFLOW_APP.tinyLoader.endLoad()
+//
 //         }
 //       )
 //     }

@@ -6,7 +6,7 @@ import { createSelector } from 'reselect'
 // Base selectors
 const selectOutcomeWorkflow = (state: AppState) => state.outcomeworkflow
 const selectOutcome = (state: AppState) => state.outcome
-const selectObjectSet = (state: AppState) => state.objectset
+const selectObjectSet = (state: AppState) => state.objectSet
 
 // Selector for filtering and sorting outcome workflows
 export const selectOutcomesFromWorkflows = createSelector(
@@ -49,13 +49,13 @@ export const selectOutcomesFromWorkflows = createSelector(
 
     // Filter object sets by the type of the first updated outcome
     const filteredObjectSets = objectSets.filter(
-      (objectset) => objectset.term === updatedOutcomes[0].type
+      (objectSet) => objectSet.term === updatedOutcomes[0].type
     )
 
     if (filteredObjectSets.length === 0) {
       return [
         {
-          objectset: {
+          objectSet: {
             title: baseTitle
           },
           outcomes: updatedOutcomes
@@ -72,7 +72,7 @@ export const selectOutcomesFromWorkflows = createSelector(
 
     if (uncategorized.length > 0) {
       categories.push({
-        objectset: { title: _t('Uncategorized') },
+        objectSet: { title: _t('Uncategorized') },
         outcomes: uncategorized
       })
     }
@@ -81,11 +81,11 @@ export const selectOutcomesFromWorkflows = createSelector(
     categories = [
       ...categories,
       ...filteredObjectSets
-        .filter((objectset) => !objectset.hidden)
-        .map((objectset) => ({
-          objectset,
+        .filter((objectSet) => !objectSet.hidden)
+        .map((objectSet) => ({
+          objectSet,
           outcomes: updatedOutcomes.filter((outcome) =>
-            outcome.sets.includes(objectset.id)
+            outcome.sets.includes(objectSet.id)
           )
         }))
     ]
@@ -134,14 +134,14 @@ export const selectOutcomesFromWorkflows = createSelector(
 //
 //   const baseTitle = ThemeHelper.capWords(_t('outcomes'))
 //
-//   const objectSets = state.objectset.filter(
-//     (objectset) => objectset.term === updatedOutcomes[0].type
+//   const objectSets = state.objectSet.filter(
+//     (objectSet) => objectSet.term === updatedOutcomes[0].type
 //   )
 //
 //   if (objectSets.length === 0) {
 //     return [
 //       {
-//         objectset: {
+//         objectSet: {
 //           title: baseTitle
 //         },
 //         outcomes: updatedOutcomes
@@ -157,7 +157,7 @@ export const selectOutcomesFromWorkflows = createSelector(
 //   if (uncategorized.length > 0) {
 //     categories = [
 //       {
-//         objectset: { title: _t('Uncategorized') },
+//         objectSet: { title: _t('Uncategorized') },
 //         outcomes: uncategorized
 //       }
 //     ]
@@ -166,11 +166,11 @@ export const selectOutcomesFromWorkflows = createSelector(
 //   categories = [
 //     ...categories,
 //     ...objectSets
-//       .filter((objectset) => !objectset.hidden)
-//       .map((objectset) => ({
-//         objectset: objectset,
+//       .filter((objectSet) => !objectSet.hidden)
+//       .map((objectSet) => ({
+//         objectSet: objectSet,
 //         outcomes: updatedOutcomes.filter(
-//           (outcome) => outcome.sets.indexOf(objectset.id) >= 0
+//           (outcome) => outcome.sets.indexOf(objectSet.id) >= 0
 //         )
 //       }))
 //   ]

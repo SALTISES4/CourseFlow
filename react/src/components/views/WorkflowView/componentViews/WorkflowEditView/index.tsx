@@ -1,8 +1,8 @@
 import { OuterContentWrap } from '@cf/mui/helper'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
+import { AppDispatch, RootState } from '@cfRedux/store'
 import { updateAllEntities } from '@cfRedux/thunks'
-import { AppState } from '@cfRedux/types/type'
 import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
 import WeekWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekWrapper'
 import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
@@ -15,16 +15,19 @@ import {
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import React, { useState } from 'react'
+
 
 import * as Styled from './styles'
 
 const WorkflowEditView = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   /*******************************************************
    * HOOKS: REDUX
    *******************************************************/
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   /*******************************************************
    * HOOKS: STATE

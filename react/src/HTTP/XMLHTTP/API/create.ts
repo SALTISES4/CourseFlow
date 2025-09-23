@@ -1,4 +1,4 @@
- import { apiPaths } from '@cf/router/apiRoutes'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
 import { API_POST } from '@XMLHTTP/CallWrapper'
@@ -42,7 +42,7 @@ export function newOutcomeQuery(
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.new_outcome, {
     workflowPk: workflowPk,
-    objectsetPk: object_setId
+    objectSetPk: object_setId
   }).then((response: EmptyPostResp) => {
     callBackFunction(response)
   })
@@ -66,7 +66,7 @@ export function addStrategyQuery(
   })
 }
 
-export function newNodeLinkQuery(
+export function newNodelinkQuery(
   sourceNodeId: number,
   targetNodeId: number,
   sourcePort: number,

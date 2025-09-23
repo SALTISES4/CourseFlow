@@ -71,13 +71,13 @@ class OutcomeHorizontalLinkUnconnected extends React.Component<PropsType> {
           '?'
       )
     ) {
-      COURSEFLOW_APP.tinyLoader.startLoad()
+
       updateOutcomehorizontallinkDegree(
         data.outcome,
         data.parentOutcome,
         0,
         (responseData) => {
-          COURSEFLOW_APP.tinyLoader.endLoad()
+
         }
       )
     }

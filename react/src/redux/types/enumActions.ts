@@ -6,10 +6,11 @@ export enum SliceNamespace {
   WEEK = 'week',
   COLUMN = 'column',
   STRATEGY = 'strategy',
-  OBJECTSET = 'objectset',
+  OBJECTSET = 'objectSet',
   NODELINK = 'nodelink',
   WORKFLOW = 'workflow',
-  PROJECT = 'project'
+  PROJECT = 'project',
+  VIEWSETTINGS = 'viewsettings'
 }
 
 // group all actions together which are global
@@ -119,31 +120,21 @@ export enum NodeActions {
   SET_LINKED_WORKFLOW = 'node/setLinkedWorkflow'
 }
 
-export enum NodeLinkActions {
+export enum NodelinkActions {
   CREATE_LOCK = 'nodelink/createLock',
   CHANGE_FIELD = 'nodelink/changeField',
   RESTORE_SELF = 'nodelink/restoreSelf',
   DELETE_SELF = 'nodelink/deleteSelf',
   DELETE_SELF_SOFT = 'nodelink/deleteSelfSoft',
-  NEW_NODE_LINK = 'nodelink/newNodeLink'
+  NEW_NODE_LINK = 'nodelink/newNodelink'
 }
 
 export enum ObjectSetActions {
-  TOGGLE_OBJECT_SET = 'objectset/toggleObjectSet'
+  TOGGLE_OBJECT_SET = 'objectSet/toggleObjectSet'
 }
 
 export enum OutcomeHorizontalLinkActions {
   UPDATE_DEGREE = 'outcomehorizontallink/updateDegree'
-}
-
-export enum ReduxSlice {
-  SIDEBAR = 'sidebar',
-  NODE = 'node',
-  NODELINK = 'nodelink',
-  NODEWEEK = 'nodeweek',
-  WEEK = 'week',
-  COLUMN = 'column',
-  WORKFLOW = 'workflow'
 }
 
 export enum SidebarActions {

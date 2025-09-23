@@ -13,13 +13,11 @@ import weekworkflowReducer from '@cfRedux/reducers/workflow/weekworkflow'
 import columnReducer from '@cfRedux/slices/column.slice'
 import nodeReducer from '@cfRedux/slices/node.slice'
 import nodelinkReducer from '@cfRedux/slices/nodelink.slice'
-import objectsetReducer from '@cfRedux/slices/objectset.slice'
+import objectSetReducer from '@cfRedux/slices/objectset.slice'
 import projectReducer from '@cfRedux/slices/project.slice'
-import sidebarReducer from '@cfRedux/slices/sidebar.slice'
 import strategyReducer from '@cfRedux/slices/strategy.slice'
 import weekReducer from '@cfRedux/slices/week.slice'
 import workflowReducer from '@cfRedux/slices/workflow.slice'
-import * as Redux from 'redux'
 import { combineReducers } from 'redux'
 
 // @todo need to wrap these up
@@ -36,7 +34,7 @@ import { combineReducers } from 'redux'
  *   OutcomeActions.changeField_MANY:
  *   OutcomeBaseActions.changeField_MANY:
  *   ColumnActions.CHANGE_FIELD:
- *   NodeLinkActions.CHANGE_FIELD
+ *   NodelinkActions.CHANGE_FIELD
  *   WorkflowActions.CHANGE_FIELD:
  *   WorkflowActions.CHANGE_FIELD
  *   NodeActions.CHANGE_FIELD
@@ -63,14 +61,12 @@ export const legacyWorkflowReducers = {
   weekworkflow: weekworkflowReducer,
   outcomeworkflow: outcomeworkflowReducer,
   outcomenode: outcomeNodeReducer,
-  outcomeoutcome: outcomeOutcomeReducer,
-  objectset: objectsetReducer,
-  // keep these flat/normalized first order entities
+  //  objectSet: objectSetReducer,
 
-  // note this is not called nodenode, although that's what it is
   //  a n2M with UI applications
 
   outcome: outcomeReducer,
+  outcomeoutcome: outcomeOutcomeReducer,
   // verify
   outcomehorizontallink: outcomeHorizontalLinkReducer,
 
@@ -81,7 +77,15 @@ export const legacyWorkflowReducers = {
 }
 
 export const workspaceReducer = combineReducers({
-  project: projectReducer
+  project: projectReducer,
+  workflow: workflowReducer,
+  column: columnReducer,
+  week: weekReducer,
+  node: nodeReducer,
+  objectSet: objectSetReducer,
+  // note this is not called nodenode, although that's what it is
+  nodelink: nodelinkReducer,
+  strategy: strategyReducer
 })
 
 const rootOutcomeReducers = {

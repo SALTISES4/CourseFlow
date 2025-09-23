@@ -2,10 +2,10 @@ import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { AppState } from '@cfRedux/types/type'
 import { createSelector } from 'reselect'
 
-const selectNodeState = (state: AppState) => state.node
+const selectNodeState = (state: AppState) => state.workspace.node
 const selectNodeWeekState = (state: AppState) => state.nodeweek
 const selectNodeWeekId = (_: AppState, id: number) => id
-const selectWeekState = (state: AppState) => state.week
+const selectWeekState = (state: AppState) => state.workspace.week
 
 /**
  * Memoized selector to find a node week by ID.

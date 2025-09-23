@@ -436,11 +436,15 @@ class WorkflowService:
         }
 
         # If the workflow is not a strategy, add additional data
+        # @todo this is a problem, it loads many additional things and should be fixed
         if not workflow.is_strategy:
             WorkflowService.add_workflow_outcomes(data, workflow, user)
             # Add strategies based on the workflow type
             WorkflowService.add_strategies(data, workflow, user)
-            data["parent_project"] = WorkflowService.get_project(workflow, user)
+            data["project"] = WorkflowService.get_project(workflow, user)
+            # for now, objectset (i.e. tags) are only present on projects, and projects which are not strategies\
+            objectsets = ObjectSet.objects.filter(project__workflows=workflow)
+            data["object_set"] = ObjectSetSerializerShallow(objectsets, many=True).data
 
         # Add unread comments if the user is authenticated
         # this should not go here
@@ -451,10 +455,10 @@ class WorkflowService:
 
     @staticmethod
     def get_project(workflow, user):
-        project = WorkflowProject.objects.get(workflow=workflow).project
-        parent_project = ProjectSerializerShallow(project, context={"user": user}).data
+        parent_project = WorkflowProject.objects.get(workflow=workflow).project
+        serialized_project = ProjectSerializerShallow(parent_project, context={"user": user}).data
 
-        return parent_project
+        return serialized_project
 
     @staticmethod
     def add_workflow_outcomes(data, workflow, user):
@@ -462,7 +466,6 @@ class WorkflowService:
         outcomeworkflows = workflow.outcomeworkflow_set.all()
         outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_workflow(workflow)
         outcomenodes = OutcomeNode.objects.filter(node__week__workflow=workflow)
-        objectsets = ObjectSet.objects.filter(project__workflows=workflow)
 
         data.update(
             {
@@ -476,7 +479,6 @@ class WorkflowService:
                 ).data,
                 "outcomeoutcome": OutcomeOutcomeSerializerShallow(outcomeoutcomes, many=True).data,
                 "outcomenode": OutcomeNodeSerializerShallow(outcomenodes, many=True).data,
-                "objectset": ObjectSetSerializerShallow(objectsets, many=True).data,
             }
         )
 

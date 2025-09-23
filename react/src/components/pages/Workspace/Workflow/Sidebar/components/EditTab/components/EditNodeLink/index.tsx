@@ -13,6 +13,8 @@ import { ChangeEvent, useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { NodeLinkForm } from './types'
+import getNodelinkData from './getNodeLinkData'
+import { NodelinkForm } from './types'
 import {
   SidebarActions,
   SidebarContent,
@@ -29,6 +31,20 @@ const EditNodeLink = () => {
     textPosition: 50,
     dashed: false
   })
+
+  // const data = getNodelinkData(1)
+  // const [state, setState] = useState<NodelinkForm>(data)
+  //
+  // const onTitleChange = useCallback(
+  //   (e: ChangeEvent<HTMLInputElement>) => [
+  //     setState(
+  //       produce((draft) => {
+  //         draft.title = e.target.value
+  //       })
+  //     )
+  //   ],
+  //   []
+  // )
 
   const onTitleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => [
@@ -114,4 +130,4 @@ const EditNodeLink = () => {
   )
 }
 
-export default EditNodeLink
+export default EditNodelink

@@ -15,6 +15,7 @@ import {
   SidebarTitle
 } from '../../styles'
 import { RestorableBlock, RestoreTabType } from '../../types'
+import {RootState} from "@cfRedux/store";
 
 type RestorableBlockType = {
   group: number
@@ -41,29 +42,29 @@ const RestoreTab = () => {
   const [restoreGroups, setRestoreGroups] = useState(groups ?? [])
   const [selected, setSelected] = useState<RestorableBlockType[]>([])
 
-  const weeks = useSelector((state: AppState) =>
+  const weeks = useSelector((state: RootState) =>
     state.week.filter((x) => x.deleted)
   )
 
-  const columns = useSelector((state: AppState) =>
+  const columns = useSelector((state: RootState) =>
     state.column.filter((x) => x.deleted)
   )
 
-  const outcomes = useSelector((state: AppState) =>
+  const outcomes = useSelector((state: RootState) =>
     state.outcome.filter((x) => x.deleted)
   )
 
-  const nodes = useSelector((state: AppState) =>
+  const nodes = useSelector((state: RootState) =>
     state.node.filter((x) => x.deleted)
   )
 
-  const nodeLinks = useSelector((state: AppState) =>
+  const nodelinks = useSelector((state: RootState) =>
     state.nodelink.filter((x) => x.deleted)
   )
 
   // TODO: properly handle restoring deleted items
   console.log('RestoreTab able to restore deleted:')
-  console.log({ weeks, columns, outcomes, nodes, nodeLinks })
+  console.log({ weeks, columns, outcomes, nodes, nodelinks })
 
   const removeFromState = useCallback(() => {
     setRestoreGroups(

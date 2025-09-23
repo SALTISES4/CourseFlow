@@ -3,6 +3,7 @@ import { WorkspaceType } from '@cf/types/enum'
 import { MaybeWithId, hasId } from '@cf/types/typeGuards'
 import he from 'he'
 import { generatePath } from 'react-router-dom'
+import {EDate} from "@XMLHTTP/types/entity";
 
 type GenericObject = {
   [key: string]: string | GenericObject
@@ -152,7 +153,7 @@ class Utility {
   /*******************************************************
    * DATE TIME
    *******************************************************/
-  static formatDate(dateString: Date) {
+  static formatDate(dateString: EDate) {
     const date = new Date(dateString)
 
     // Create an Intl.DateTimeFormat instance with desired options
@@ -171,14 +172,14 @@ class Utility {
   /**
    * Check if a cfobject (such as a node or an outcome) should be hidden based on its sets and the currently active object sets
    * @param data
-   * @param objectsets
+   * @param objectSets
    */
-  static checkSetHidden(data, objectsets) {
-    if (!(data?.sets.length > 0) || !objectsets) {
+  static checkSetHidden(data, objectSets) {
+    if (!(data?.sets.length > 0) || !objectSets) {
       return false
     }
 
-    return !objectsets.some((set) => !set.hidden && data.sets.includes(set.id))
+    return !objectSets.some((set) => !set.hidden && data.sets.includes(set.id))
   }
 
   /**

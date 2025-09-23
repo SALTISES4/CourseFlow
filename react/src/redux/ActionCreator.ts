@@ -2,7 +2,6 @@ import { CfObjectType } from '@cf/types/enum'
 import {
   ColumnWorkflowActions,
   CommonActions,
-  GridMenuActions,
   NodeActions,
   NodeWeekActions,
   ObjectSetActions,
@@ -12,6 +11,27 @@ import {
 } from '@cfRedux/types/enumActions'
 import { AppState } from '@cfRedux/types/type'
 import { EComment } from '@XMLHTTP/types/entity'
+
+// eventually this will simply be AppState['workspace']
+export type WorkSpaceAppState = Pick<
+  AppState,
+  | 'workflow'
+  | 'column'
+  | 'week'
+  | 'nodelink'
+  | 'node'
+  | 'outcomeworkflow'
+  | 'outcome'
+  | 'outcomenode'
+  | 'outcomeoutcome'
+  | 'objectSet'
+  | 'strategy'
+  //   | 'parentWorkflow'
+  //   | 'parentNode'
+  //  | 'outcomehorizontallink'
+  //  | 'childWorkflow'
+> &
+  AppState['workspace']
 
 /**
  *  local action creators
@@ -29,9 +49,6 @@ class ActionCreator {
     userId?: number,
     userColour?: string
   ) => {
-    console.log('createLockAction')
-    console.log(lock)
-
     if (lock) {
       return {
         type: objectType + '/createLock', // this is a redux antipattern
@@ -90,18 +107,16 @@ class ActionCreator {
     type: CommonActions.CLEAR_WORKFLOW_DATA
   })
 
-  static replaceStoreData = (dataPackage) => {
-    console.log('what is   static replaceStoreData = (dataPackage) => {')
-    console.log(dataPackage)
+  static replaceWorkspaceStoreData = (dataPackage) => {
     return {
       type: CommonActions.REPLACE_STOREDATA,
       payload: dataPackage
     }
   }
 
-  static refreshStoreData = (
-    dataPackage: AppState
-  ): { type: CommonActions; payload: AppState } => {
+  static refreshWorkspaceStoreData = (
+    dataPackage: WorkSpaceAppState
+  ): { type: CommonActions; payload: WorkSpaceAppState } => {
     return {
       type: CommonActions.REFRESH_STOREDATA,
       payload: dataPackage
@@ -206,8 +221,6 @@ class ActionCreator {
       }
     }
   }
-
-
 
   static toggleObjectSet = (id: number, hidden: boolean) => {
     return {

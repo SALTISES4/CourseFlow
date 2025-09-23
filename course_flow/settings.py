@@ -345,10 +345,9 @@ VITE_APP_DIR = os.path.join(BASE_DIR, "react")
 # If it's not, collectstatic won't copy your bundle to production.
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "dist"),
+    os.path.join(BASE_DIR, "react/dist"),
 ]
-
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_ROOT = os.path.join(BASE_DIR, "course_flow/collected_static_files")
 
 #########################################################
 # CUSTOM APPLICATION

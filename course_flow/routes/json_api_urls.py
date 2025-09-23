@@ -255,11 +255,6 @@ workflow_endpoints = [
         views.workflow_objects.outcome.json_api_post_update_outcomenode_degree,
         name="json-api-post-update-outcomenode-degree",
     ),
-    path(
-        "workflow/updateobjectset",
-        workflow_objects.json_api_post_update_object_set,
-        name="json-api-post-update-object-set",
-    ),
 ]
 
 ##########################################################
@@ -374,6 +369,11 @@ node_endpoints = [
         "node/<int:pk>/update-position",
         NodeEndpoint.update_position,
         name="node--update-position",
+    ),
+    path(
+        "node/<int:pk>/toggle-object-set",
+        NodeEndpoint.toggle_object_set,
+        name="node--toggle-object-set",
     ),
     path(
         "node/<int:pk>/link-to-workflow",

@@ -4,6 +4,8 @@ import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectNodeLinkById } from '@cfRedux/selectors/nodelink.selector'
 import { AppState } from '@cfRedux/types/type'
 import NodeLinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG'
+import { RootState } from '@cfRedux/store'
+
 import * as d3 from 'd3'
 import React, { useCallback, useEffect, useState } from 'react'
 import * as reactDom from 'react-dom'
@@ -19,8 +21,8 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
    * REDUX
    *******************************************************/
   const dispatch = useDispatch()
-  const nodeLink = useSelector((state: AppState) =>
-    selectNodeLinkById(state, objectId)
+  const nodelink = useSelector((state: RootState) =>
+    selectNodelinkById(state, objectId)
   )
 
   /*******************************************************
@@ -50,7 +52,7 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
    *******************************************************/
   // Effect to handle node updates and event listeners
   useEffect(() => {
-    if (!nodeLink) {
+    if (!nodelink) {
       return
     }
 

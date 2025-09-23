@@ -28,6 +28,7 @@ import OutcomesTab from './components/OutcomesTab'
 import RelatedTab from './components/RelatedTab'
 import RestoreTab from './components/RestoreTab'
 import { SidebarTabsWrap, SidebarToggle, SidebarWrap } from './styles'
+import {RootState} from "@cfRedux/store";
 
 function getTabContent(
   tab: SidebarState['tab'],
@@ -66,7 +67,7 @@ const WorkspaceSidebar = () => {
   const location = useLocation()
   const dispatch = useDispatch()
 
-  const sidebar = useSelector((state: AppState) => state.sidebar)
+  const sidebar = useSelector((state: RootState) => state.sidebar)
 
   const onToggleClick = useCallback(() => {
     dispatch(sidebarCollapse())

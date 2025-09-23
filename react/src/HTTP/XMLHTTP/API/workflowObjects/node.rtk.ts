@@ -1,8 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { CfObjectType, LibraryObjectType, WorkspaceType } from '@cf/types/enum'
-import Utility from '@cf/utility/Utility.class'
+import { CfObjectType } from '@cf/types/enum'
 import { Verb, cfApi } from '@XMLHTTP/API/api'
-import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
 
@@ -111,6 +109,24 @@ const extendedApi = cfApi.injectEndpoints({
         }
       }
     }),
+    toggleObjectSetNode: builder.mutation<
+      EmptyPostResp,
+      {
+        id: number
+        payload: {
+          objectSetId: number
+        }
+      }
+    >({
+      query: (args) => {
+        const base = apiPaths.json_api.node.toggle_object_set
+        return {
+          method: Verb.POST,
+          url: generatePath(base, { id: args.id }),
+          body: args.payload
+        }
+      }
+    }),
     linkToWorkflow: builder.mutation<
       EmptyPostResp,
       {
@@ -129,7 +145,7 @@ const extendedApi = cfApi.injectEndpoints({
         }
       }
     }),
-    nodeLinkCreate: builder.mutation<
+    nodelinkCreate: builder.mutation<
       EmptyPostResp,
       {
         id: number
@@ -160,5 +176,6 @@ export const {
   useDuplicateNodeMutation,
   useUpdatePositionNodeMutation,
   useLinkToWorkflowMutation,
-  useNodeLinkCreateMutation
+  useNodelinkCreateMutation,
+  useToggleObjectSetNodeMutation
 } = extendedApi

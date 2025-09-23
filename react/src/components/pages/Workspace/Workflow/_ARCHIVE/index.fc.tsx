@@ -92,7 +92,7 @@ const Workflow: React.FC<PropsType> = () => {
       setState((prevState) => ({ ...prevState, wsConnected: true }))
 
       getWorkflowByIdQuery(workflowId, (response) => {
-        dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+        dispatch(ActionCreator.refreshWorkspaceStoreData(response.dataPackage))
 
         const newSelectionManager = new SelectionManager(
           response.dataPackage.workflow.workflowPermissions.read
@@ -215,12 +215,12 @@ const Workflow: React.FC<PropsType> = () => {
     setIsMessagesQueued(true)
     getWorkflowParentDataQueryLegacy(Number(id), (response) => {
       dispatch(
-        ActionCreator.replaceStoreData({
+        ActionCreator.replaceWorkspaceStoreData({
           parentNode: [],
           parentWorkflow: []
         })
       )
-      dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+      dispatch(ActionCreator.refreshWorkspaceStoreData(response.dataPackage))
       clearQueue(0)
     })
   }
@@ -228,7 +228,7 @@ const Workflow: React.FC<PropsType> = () => {
   const onChildWorkflowUpdateReceived = (childWorkflowId: number) => {
     setIsMessagesQueued(true)
     getWorkflowChildDataQuery(childWorkflowId, (response) => {
-      dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+      dispatch(ActionCreator.refreshWorkspaceStoreData(response.dataPackage))
       clearQueue()
     })
   }
@@ -300,7 +300,7 @@ const Workflow: React.FC<PropsType> = () => {
     getWorkflowChildDataQuery(
       childDataNeeded[childDataCompleted + 1],
       (response) => {
-        dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+        dispatch(ActionCreator.refreshWorkspaceStoreData(response.dataPackage))
         setTimeout(() => getDataForChildWorkflow(), 50)
       }
     )

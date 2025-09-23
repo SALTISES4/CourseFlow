@@ -4,7 +4,15 @@ import { _t } from '@cf/utility/Utility.class'
 import { HoverMenu } from '@cfComponents/menu/Menu'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectColumnById } from '@cfRedux/selectors/column.selector'
+import { RootState } from '@cfRedux/store'
 import { AppState } from '@cfRedux/types/type'
+import AddCommentIcon from '@mui/icons-material/AddComment'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import DeleteIcon from '@mui/icons-material/Delete'
+import QueueIcon from '@mui/icons-material/Queue'
+import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
+import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
+import { styled } from '@mui/material/styles'
 import clsx from 'clsx'
 import * as React from 'react'
 import { useMemo } from 'react'
@@ -34,10 +42,10 @@ const Column = ({ objectId, parentId }: PropsType) => {
    * HOOKS: REDUX
    *******************************************************/
   const dispatch = useDispatch()
-  const columnData = useSelector((state: AppState) =>
+  const column = useSelector((state: RootState) =>
     selectColumnById(state, objectId)
   )
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   /*******************************************************
    * FUNCTIONS
@@ -53,23 +61,23 @@ const Column = ({ objectId, parentId }: PropsType) => {
    **/
   const onClickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation()
-    if (columnData?.column) {
-      manager.updateSidebar(columnData.column.id, objectType, parentId)
+    if (column) {
+      manager.updateSidebar(column.id, objectType, parentId)
     }
   }
 
   const columnColourHex = useMemo(() => {
     return ThemeHelper.getColumnColour({
-      columnType: columnData.column.columnType,
-      colour: columnData.column.colour
+      columnType: column.columnType,
+      colour: column.colour
     })
-  }, [columnData.column.colour, columnData.column.columnType])
+  }, [column.colour, column.columnType])
 
   /*******************************************************
    * RENDER
    *******************************************************/
 
-  if (!columnData || !workflow) {
+  if (!column || !workflow) {
     return null
   }
 

@@ -4,6 +4,7 @@ import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { HoverMenu, MenuItemType } from '@cfComponents/menu/Menu'
 import { selectColumnById } from '@cfRedux/selectors/column.selector'
+import { RootState } from '@cfRedux/store'
 import { AppState } from '@cfRedux/types/type'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -14,6 +15,8 @@ import {
   useCreateColumnMutation,
   useDeleteColumnMutation
 } from '@XMLHTTP/API/workflowObjects/column.rtk'
+import { insertedAt } from '@XMLHTTP/postTemp'
+import clsx from 'clsx'
 import mergeRefs from 'merge-refs'
 import { Ref } from 'react'
 import { useSelector } from 'react-redux'
@@ -141,7 +144,7 @@ const ColumnWrapper = ({ objectId, parentId }: OwnProps) => {
    *******************************************************/
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: objectId })
-  const columnData = useSelector((state: AppState) =>
+  const column = useSelector((state: RootState) =>
     selectColumnById(state, objectId)
   )
   const [ref, isHovered] = useHover()
@@ -176,7 +179,7 @@ const ColumnWrapper = ({ objectId, parentId }: OwnProps) => {
   /*******************************************************
    * RENDER
    *******************************************************/
-  if (!columnData) {
+  if (!column) {
     return <></>
   }
 
@@ -199,7 +202,7 @@ const ColumnWrapper = ({ objectId, parentId }: OwnProps) => {
       <Column objectId={objectId} parentId={parentId} />
       <ColumnHoverMenu
         objectId={objectId}
-        order={columnData.column.order}
+        order={column.order}
         show={isHovered}
       />
     </Styled.Cell>

@@ -4,6 +4,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 
 import Outcome from './Outcome'
+import {RootState} from "@cfRedux/store";
 
 type OwnProps = {
   objectId: number
@@ -16,7 +17,7 @@ const TableOutcomeWorkflow = ({
   nodecategory,
   outcomesType
 }: OwnProps) => {
-  const data = useSelector((state: AppState) =>
+  const data = useSelector((state: RootState) =>
     getOutcomeWorkflowByID(state, objectId)
   )
 

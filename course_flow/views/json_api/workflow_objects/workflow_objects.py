@@ -697,62 +697,62 @@ def json_api_post_update_outcomehorizontallink_degree(
     return JsonResponse({"message": "success"})
 
 
-# @todo clarify this vocabulary
-# Toggle on or off an object set for an object.
-# @user_can_edit(False)
-# @user_can_view("objectsetPk")
-def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
-    body = json.loads(
-        request.body
-    )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
-    try:
-        object_id = body.get("objectID")
-        object_type = body.get("object_type")
-        objectset_id = body.get("objectsetPk")
-        add = body.get("add")
-        objects = DAO.get_model_from_str(object_type).objects
-        if hasattr(objects, "get_subclass"):
-            objects_to_update = [objects.get_subclass(pk=object_id)]
-        else:
-            objects_to_update = [objects.get(pk=object_id)]
-            if object_type == "outcome":
-                objects_to_update += list(DAO.get_descendant_outcomes(objects_to_update[0]))
-        objectset = ObjectSet.objects.get(id=objectset_id)
-        if add:
-            for object_to_update in objects_to_update:
-                object_to_update.sets.add(objectset)
-                object_to_update.save()
-        else:
-            for object_to_update in objects_to_update:
-                object_to_update.sets.remove(objectset)
-                object_to_update.save()
-
-    except ValidationError as e:
-        logger.exception("An error occurred")
-        return JsonResponse({"action": "error"})
-    try:
-        workflow = objects_to_update[0].get_workflow()
-
-        if len(objects_to_update) == 1:
-            action = WorkflowUpdateEmitter.prepare_change_field_payload(
-                object_id=object_id,
-                object_type=object_type,
-                json={"sets": [object_set.id for object_set in object_to_update.sets.all()]},
-            )
-        else:
-            action = WorkflowUpdateEmitter.change_field_many(
-                [obj.id for obj in objects_to_update],
-                object_type,
-                {"sets": [object_set.id for object_set in object_to_update.sets.all()]},
-            )
-
-        WorkflowUpdateEmitter.emit_workflow_update(workflow, action)
-
-        if object_type == "outcome":
-            WorkflowUpdateEmitter.dispatch_to_parent_wf(workflow, action)
-
-    except AttributeError as e:
-        logger.exception("An error occurred")
-        pass
-
-    return JsonResponse({"message": "success"})
+# # @todo clarify this vocabulary
+# # Toggle on or off an object set for an object.
+# # @user_can_edit(False)
+# # @user_can_view("objectsetPk")
+# def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
+#     body = json.loads(
+#         request.body
+#     )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
+#     try:
+#         object_id = body.get("objectID")
+#         object_type = body.get("object_type")
+#         objectset_id = body.get("objectsetPk")
+#         add = body.get("add")
+#         objects = DAO.get_model_from_str(object_type).objects
+#         if hasattr(objects, "get_subclass"):
+#             objects_to_update = [objects.get_subclass(pk=object_id)]
+#         else:
+#             objects_to_update = [objects.get(pk=object_id)]
+#             if object_type == "outcome":
+#                 objects_to_update += list(DAO.get_descendant_outcomes(objects_to_update[0]))
+#         objectset = ObjectSet.objects.get(id=objectset_id)
+#         if add:
+#             for object_to_update in objects_to_update:
+#                 object_to_update.sets.add(objectset)
+#                 object_to_update.save()
+#         else:
+#             for object_to_update in objects_to_update:
+#                 object_to_update.sets.remove(objectset)
+#                 object_to_update.save()
+#
+#     except ValidationError as e:
+#         logger.exception("An error occurred")
+#         return JsonResponse({"action": "error"})
+#     try:
+#         workflow = objects_to_update[0].get_workflow()
+#
+#         if len(objects_to_update) == 1:
+#             action = WorkflowUpdateEmitter.prepare_change_field_payload(
+#                 object_id=object_id,
+#                 object_type=object_type,
+#                 json={"sets": [object_set.id for object_set in object_to_update.sets.all()]},
+#             )
+#         else:
+#             action = WorkflowUpdateEmitter.change_field_many(
+#                 [obj.id for obj in objects_to_update],
+#                 object_type,
+#                 {"sets": [object_set.id for object_set in object_to_update.sets.all()]},
+#             )
+#
+#         WorkflowUpdateEmitter.emit_workflow_update(workflow, action)
+#
+#         if object_type == "outcome":
+#             WorkflowUpdateEmitter.dispatch_to_parent_wf(workflow, action)
+#
+#     except AttributeError as e:
+#         logger.exception("An error occurred")
+#         pass
+#
+#     return JsonResponse({"message": "success"})

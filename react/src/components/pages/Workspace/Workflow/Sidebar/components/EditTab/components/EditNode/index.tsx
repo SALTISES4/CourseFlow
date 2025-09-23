@@ -1,8 +1,9 @@
 import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
+import { selectAllObjectSets } from '@cfRedux/selectors/objectSet.selector'
 import { nodeChangeField } from '@cfRedux/slices/node.slice'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import * as SC from '@cfSidebar/styles'
 import { debounce } from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -20,6 +21,8 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { updateValueQuery } from '@XMLHTTP/API/update'
 import { useEffect, useMemo, useState } from 'react'
+// import { useToggleObjectSetNodeMutation } from '@XMLHTTP/API/workflowObjects/node.rtk'
+import { useCallback, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -30,8 +33,8 @@ const EditNode = () => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const sidebarData = useSelector((state: AppState) => state.sidebar)
-  const nodeData = useSelector((state: AppState) =>
+  const sidebarData = useSelector((state: RootState) => state.sidebar)
+  const node = useSelector((state: RootState) =>
     selectNodeById(state, sidebarData.edit.id)
   )
   const dispatch = useDispatch()
@@ -49,21 +52,21 @@ const EditNode = () => {
     formState: { errors, isDirty }
   } = useForm<NodeForm>({
     defaultValues: {
-      title: nodeData.node.title,
-      description: nodeData.node.description,
+      title: node.title,
+      description: node.description,
       ponderation: {
-        theory: String(nodeData.node.ponderationTheory),
-        practice: String(nodeData.node.ponderationPractical),
-        individual: String(nodeData.node.ponderationIndividual),
+        theory: String(node.ponderationTheory),
+        practice: String(node.ponderationPractical),
+        individual: String(node.ponderationIndividual),
         // TODO: where do these come from?
         // generalEdu: String(nodeData.node.ponderationGeneralEdu),
         // specificEdu: String(nodeData.node.ponderationSpecificEdu)
       },
-      contextType: nodeData.node.contextClassification || '',
-      taskType: nodeData.node.taskClassification || '',
-      timeRequired: nodeData.node.timeRequired,
-      timeUnits: nodeData.node.timeUnits,
-      objectSets: nodeData.node.sets || []
+      contextType: node.contextClassification || '',
+      taskType: node.taskClassification || '',
+      timeRequired: node.timeRequired,
+      timeUnits: node.timeUnits,
+      objectSets: node.sets || []
     }
   })
 
@@ -73,26 +76,26 @@ const EditNode = () => {
    * LIFECYCLE
    *******************************************************/
   useEffect(() => {
-    if (nodeData && !isDirty) {
+    if (node && !isDirty) {
       reset({
-        title: nodeData.node.title,
-        description: nodeData.node.description,
+        title: node.title,
+        description: node.description,
         ponderation: {
-          theory: String(nodeData.node.ponderationTheory),
-          practice: String(nodeData.node.ponderationPractical),
-          individual: String(nodeData.node.ponderationIndividual),
+          theory: String(node.ponderationTheory),
+          practice: String(node.ponderationPractical),
+          individual: String(node.ponderationIndividual),
           // TODO: where do these come from?
           // generalEdu: String(nodeData.node.ponderationGeneralEdu),
           // specificEdu: String(nodeData.node.ponderationSpecificEdu)
         },
-        contextType: nodeData.node.contextClassification || '',
-        taskType: nodeData.node.taskClassification || '',
-        timeRequired: nodeData.node.timeRequired,
-        timeUnits: nodeData.node.timeUnits,
-        objectSets: nodeData.node.sets || []
+        contextType: node.contextClassification || '',
+        taskType: node.taskClassification || '',
+        timeRequired: node.timeRequired,
+        timeUnits: node.timeUnits,
+        objectSets: node.sets || []
       })
     }
-  }, [reset, isDirty, nodeData])
+  }, [reset, isDirty, node])
 
   const debouncedDispatch = useMemo(
     () =>
@@ -116,7 +119,7 @@ const EditNode = () => {
         updateValueQuery(sidebarData.edit.id, CfObjectType.NODE, data, true)
 
         reset({}, { keepValues: true })
-        COURSEFLOW_APP.tinyLoader.endLoad()
+
       }, 300),
     [dispatch, reset, sidebarData.edit.id]
   )
@@ -149,8 +152,7 @@ const EditNode = () => {
   /*******************************************************
    * RENDER
    *******************************************************/
-
-  const Temp = (
+  const BottomButtons = () => (
     <SC.SidebarActions>
       <Button
         variant="contained"
@@ -172,7 +174,7 @@ const EditNode = () => {
     </SC.SidebarActions>
   )
 
-  if (!nodeData) {
+  if (!node) {
     return <></>
   }
 
@@ -371,6 +373,12 @@ const EditNode = () => {
               </Stack>
             </>
           )}
+
+          {/*
+
+          probably not used bottom buttons
+          */}
+          <BottomButtons />
         </SC.SidebarContent>
       </SC.SidebarInnerWrap>
     </form>

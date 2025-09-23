@@ -1,7 +1,8 @@
 import { NodeDom } from '@cf/types/global'
 import * as Constants from '@cf/utility/constants'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
-import { newNodeLinkQuery } from '@XMLHTTP/API/create'
+import { Dispatch } from '@reduxjs/toolkit'
+import { newNodelinkQuery } from '@XMLHTTP/API/create'
 import * as d3 from 'd3'
 import * as React from 'react'
 // import $ from 'jquery'
@@ -121,7 +122,7 @@ export class NodePorts extends React.Component<PropsType, StateType> {
       return
     }
 
-    newNodeLinkQuery(
+    newNodelinkQuery(
       props.nodeId,
       target,
       Constants.portKeys.indexOf(sourcePort),

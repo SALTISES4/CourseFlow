@@ -4,7 +4,6 @@ import { Verb, cfApi } from '@XMLHTTP/API/api'
 import { ELibraryObject, EProject } from '@XMLHTTP/types/entity'
 import { generatePath } from 'react-router-dom'
 
-
 /*******************************************************
  * TYPES
  *******************************************************/

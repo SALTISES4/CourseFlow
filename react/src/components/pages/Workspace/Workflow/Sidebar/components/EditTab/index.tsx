@@ -2,7 +2,7 @@ import Alert from '@cfComponents/UIPrimitives/Alert'
 
 import EditNode from './components/EditNode'
 import EditNodeCategory from './components/EditNodeCategory'
-import EditNodeLink from './components/EditNodeLink'
+import EditNodelink from './components/EditNodeLink'
 import EditOutcome from './components/EditOutcome'
 import EditPart from './components/EditPart'
 import EditTerm from './components/EditTerm'
@@ -24,7 +24,7 @@ const EditTab = ({ type }: { type: EditableType }) => {
     case EditableType.OUTCOME:
       return <EditOutcome />
     case EditableType.NODE_LINK:
-      return <EditNodeLink />
+      return <EditNodelink />
     case EditableType.NODE_CATEGORY:
       return <EditNodeCategory />
     case EditableType.NODE:
