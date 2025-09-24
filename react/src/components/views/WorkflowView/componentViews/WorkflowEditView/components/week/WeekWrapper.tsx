@@ -1,13 +1,8 @@
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import useHover from '@cf/hooks/useHover'
 import { CfObjectType } from '@cf/types/enum'
-import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import { HoverMenu, MenuItemType } from '@cfComponents/menu/Menu'
-import SortableDragAndDropManager from '@cfEditableComponents/SortableDragAndDropManager.class'
-import ActionCreator from '@cfRedux/ActionCreator'
-import { selectWeekById } from '@cfRedux/selectors/week.selector'
-import { AppState } from '@cfRedux/types/type'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -17,14 +12,11 @@ import {
   useCreateWeekMutation,
   useDeleteWeekMutation
 } from '@XMLHTTP/API/workflowObjects/week.rtk'
-import { insertedAt } from '@XMLHTTP/postTemp'
 import clsx from 'clsx'
 import mergeRefs from 'merge-refs'
 import { Ref } from 'react'
-import { useSelector } from 'react-redux'
 
 import * as Styled from './styles'
-import Term from './Term'
 import Week from './Week'
 
 type PropsType = {
@@ -33,42 +25,6 @@ type PropsType = {
   parentId: number
   reordering: boolean
 }
-
-/*******************************************************
- * DEPRECATED
- * KEEP FOR REFERENCE
- *  call backs like microUpdate abd  insertedAt not yet migrated
- *******************************************************/
-// class WeekWorkflowDragAndDropManager extends SortableDragAndDropManager {
-//   stopSortFunction() {
-//     ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
-//   }
-//
-//   /**
-//    * Overrides the sortableMovedFunction method from DragAndDropManager
-//    */
-//   onMovedIn(
-//     id: number,
-//     newPosition: number,
-//     type: string,
-//     newParent: number,
-//     childId: number
-//   ) {
-//     this.context.editableMethods.microUpdate(
-//       ActionCreator.moveColumnWorkflow(id, newPosition, newParent, childId)
-//     )
-//
-//     insertedAt(
-//       this.context.selectionManager,
-//       childId,
-//       CfObjectType.COLUMN,
-//       newParent,
-//       CfObjectType.WORKFLOW,
-//       newPosition,
-//       CfObjectType.COLUMNWORKFLOW
-//     )
-//   }
-// }
 
 /**
  *
@@ -168,16 +124,6 @@ const WeekWrapper = ({
   const [ref, isHovered] = useHover()
 
   /*******************************************************
-   * REDUX
-   *******************************************************/
-  // const weekData = useSelector((state: AppState) =>
-  //   selectWeekById(state, objectId)
-  // )
-  // const weekData = useSelector((state: RootState) =>
-  //   selectWeekById(state, objectId)
-  // )
-
-  /*******************************************************
    * COMPONENTS
    *******************************************************/
   /**
@@ -215,11 +161,7 @@ const WeekWrapper = ({
         transition
       }}
       {...attributes}
-      className={clsx('week-workflow', {
-        // legacy name of through model, still being used for jquery drag and drop i think
-        //   'no-drag': weekData.week?.noDrag, // find out about noDrag
-        //  dragging: mainDiv.current?.classList.contains('dragging')
-      })}
+      className={clsx('week-workflow', {})}
       ref={mergeRefs(setNodeRef as Ref<HTMLDivElement>, ref)}
       data-scroll-to-id={'week-block-' + String(objectId)}
       data-child-id={objectId}
@@ -236,7 +178,7 @@ const WeekWrapper = ({
       ) : (
         <>
           <WeekOrTerm />
-          <WeekHoverMenu objectId={objectId} show={isHovered} />
+          <WeekHoverMenu objectId={objectId} show={isHovered} order={1} />
         </>
       )}
     </div>

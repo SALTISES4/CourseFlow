@@ -3,8 +3,8 @@ import Utility from '@cf/utility/Utility.class'
 import { _t } from '@cf/utility/Utility.class'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import { getOutcomeIdFromWorkflow } from '@cfRedux/selectors/helpers'
+import { RootState } from '@cfRedux/store'
 import {
-  AppState,
   TColumn,
   TColumnworkflow,
   TNode,
@@ -18,7 +18,6 @@ import { useSelector } from 'react-redux'
 
 import OutcomeBase from './components/OutcomeBase'
 import OutcomeLegend from './components/OutcomeLegend'
-import {RootState} from "@cfRedux/store";
 
 type OwnProps = {}
 
@@ -38,14 +37,14 @@ const OutcomeTableView: React.FC<OwnProps> = () => {
     outcomeworkflow,
     outcome
   } = useSelector((state: RootState) => ({
-    workflow: state.workflow,
+    workflow: state.workspace.workflow,
     weekworkflow: state.weekworkflow,
-    week: state.week,
+    week: state.workspace.week,
     nodeweek: state.nodeweek,
-    node: state.node,
-    objectSet: state.objectSet,
+    node: state.workspace.node,
+    objectSet: state.workspace.objectSet,
     columnworkflow: state.columnworkflow,
-    column: state.column,
+    column: state.workspace.column,
     outcomeworkflow: state.outcomeworkflow,
     outcome: state.outcome
   }))

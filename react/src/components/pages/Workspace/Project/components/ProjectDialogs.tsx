@@ -5,7 +5,6 @@ import ContributorAddDialog from '@cfComponents/dialog/Workspace/ContributorAddD
 import ContributorRemoveDialog from '@cfComponents/dialog/Workspace/ContributorRemoveDialog'
 import RestoreDialog from '@cfComponents/dialog/Workspace/RestoreDialog'
 import { useGetProjectByIdQuery } from '@XMLHTTP/API/project.rtk'
-// import ContributorAddDialog from 'components/common/dialog/Workspace/ContributorManageDialog'
 import { useParams } from 'react-router-dom'
 
 const ProjectDialogs = () => {

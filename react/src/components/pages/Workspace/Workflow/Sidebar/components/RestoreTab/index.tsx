@@ -1,4 +1,4 @@
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
@@ -15,7 +15,6 @@ import {
   SidebarTitle
 } from '../../styles'
 import { RestorableBlock, RestoreTabType } from '../../types'
-import {RootState} from "@cfRedux/store";
 
 type RestorableBlockType = {
   group: number
@@ -43,11 +42,11 @@ const RestoreTab = () => {
   const [selected, setSelected] = useState<RestorableBlockType[]>([])
 
   const weeks = useSelector((state: RootState) =>
-    state.week.filter((x) => x.deleted)
+    state.workspace.week.filter((x) => x.deleted)
   )
 
   const columns = useSelector((state: RootState) =>
-    state.column.filter((x) => x.deleted)
+    state.workspace.column.filter((x) => x.deleted)
   )
 
   const outcomes = useSelector((state: RootState) =>
@@ -55,11 +54,11 @@ const RestoreTab = () => {
   )
 
   const nodes = useSelector((state: RootState) =>
-    state.node.filter((x) => x.deleted)
+    state.workspace.node.filter((x) => x.deleted)
   )
 
   const nodelinks = useSelector((state: RootState) =>
-    state.nodelink.filter((x) => x.deleted)
+    state.workspace.nodelink.filter((x) => x.deleted)
   )
 
   // TODO: properly handle restoring deleted items

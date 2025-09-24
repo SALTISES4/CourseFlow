@@ -29,20 +29,6 @@ const EditNodelink = () => {
     dashed: false
   })
 
-  // const data = getNodelinkData(1)
-  // const [state, setState] = useState<NodelinkForm>(data)
-  //
-  // const onTitleChange = useCallback(
-  //   (e: ChangeEvent<HTMLInputElement>) => [
-  //     setState(
-  //       produce((draft) => {
-  //         draft.title = e.target.value
-  //       })
-  //     )
-  //   ],
-  //   []
-  // )
-
   const onTitleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => [
       setState(

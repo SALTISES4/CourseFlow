@@ -5,7 +5,6 @@ import { _t } from '@cf/utility/Utility.class'
 import { HoverMenu, MenuItemType } from '@cfComponents/menu/Menu'
 import { selectColumnById } from '@cfRedux/selectors/column.selector'
 import { RootState } from '@cfRedux/store'
-import { AppState } from '@cfRedux/types/type'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -15,8 +14,6 @@ import {
   useCreateColumnMutation,
   useDeleteColumnMutation
 } from '@XMLHTTP/API/workflowObjects/column.rtk'
-import { insertedAt } from '@XMLHTTP/postTemp'
-import clsx from 'clsx'
 import mergeRefs from 'merge-refs'
 import { Ref } from 'react'
 import { useSelector } from 'react-redux'
@@ -29,37 +26,6 @@ type OwnProps = {
   objectId: number
   parentId: number
 }
-
-// class ColumnWorkflowDragAndDropManager extends SortableDragAndDropManager {
-//   stopSortFunction() {
-//     ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
-//   }
-//
-//   /**
-//    * Overrides the sortableMovedFunction method from DragAndDropManager
-//    */
-//   onMovedIn(
-//     id: number,
-//     newPosition: number,
-//     type: string,
-//     newParent: number,
-//     childId: number
-//   ) {
-//     this.context.editableMethods.microUpdate(
-//       ActionCreator.moveColumnWorkflow(id, newPosition, newParent, childId)
-//     )
-//
-//     insertedAt(
-//       this.context.selectionManager,
-//       childId,
-//       CfObjectType.COLUMN,
-//       newParent,
-//       CfObjectType.WORKFLOW,
-//       newPosition,
-//       CfObjectType.COLUMNWORKFLOW
-//     )
-//   }
-// }
 
 const ColumnHoverMenu = ({
   objectId,
@@ -210,83 +176,3 @@ const ColumnWrapper = ({ objectId, parentId }: OwnProps) => {
 }
 
 export default ColumnWrapper
-
-// import { CfObjectType } from '@cf/types/enum'
-// import { TColumnWorkflowById, getColumnWorkflowByID } from '@cfFindState'
-// import { AppState } from '@cfRedux/types/type'
-// import * as React from 'react'
-// import { connect } from 'react-redux'
-//
-// import Column from './Column'
-//
-// type ConnectedProps = TColumnWorkflowById
-// type OwnProps = {
-//   objectId: number
-//   parentId: number
-// }
-// type PropsType = ConnectedProps & OwnProps
-//
-// /**
-//  * Represents the column-workflow throughmodel
-//  */
-// class ColumnWorkflow extends React.Component<PropsType> {
-//   private objectType: CfObjectType
-//   private objectClass: string
-//   constructor(props) {
-//     super(props)
-//     this.objectType = CfObjectType.COLUMNWORKFLOW
-//     this.objectClass = '.column-workflow'
-//   }
-//
-//   makeDragAndDrop() {
-//     this.makeSortableNode(
-//       $('.column-row').children('.column-workflow').not('.ui-draggable'),
-//       this.props.objectId,
-//       'columnworkflow',
-//       '.column-workflow',
-//       // @ts-ignore
-//       'x',
-//       false,
-//       null,
-//       '.column',
-//       '.column-row'
-//     )
-//   }
-//
-//   /*******************************************************
-//    * RENDER
-//    *******************************************************/
-//   render() {
-//     const data = this.props.data
-//
-//     const cssClasses = [
-//       'column-workflow column-' + data.id,
-//       data.noDrag ? 'no-drag' : ''
-//     ].join(' ')
-//
-//     return (
-//       <div
-//         className={cssClasses}
-//         // ref={this.mainDiv} // @todo mainDiv not defined
-//         id={String(data.id)}
-//         data-child-id={data.column}
-//       >
-//         <Column
-//           objectId={data.column}
-//           parentId={this.props.parentId}
-//           throughParentId={data.id}
-//         />
-//       </div>
-//     )
-//   }
-// }
-// const mapColumnWorkflowStateToProps = (
-//   state: AppState,
-//   ownProps: OwnProps
-// ): TColumnWorkflowById => {
-//   return getColumnWorkflowByID(state, ownProps.objectId)
-// }
-// export default connect<ConnectedProps, object, OwnProps, AppState>(
-//   mapColumnWorkflowStateToProps,
-//   null
-// )(ColumnWorkflow)

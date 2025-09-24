@@ -10,7 +10,6 @@ import {
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import BetterSelectionManager from '@cf/redux/BetterSelectionManager'
 import { selectWeekById } from '@cf/redux/selectors/week.selector'
-import { AppState } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import { RootState } from '@cfRedux/store'
@@ -73,7 +72,7 @@ const Week = (props: WeekPropsType) => {
     closestEdge: null,
     draggedOver: false
   })
-  const sidebarData = useSelector((state: AppState) => state.sidebar.edit)
+  const sidebarData = useSelector((state: RootState) => state.sidebar.edit)
   const weekWrapperRef = useRef<HTMLDivElement>(null)
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()

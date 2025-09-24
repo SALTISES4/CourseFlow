@@ -91,32 +91,3 @@ export const useMenuActions = () => {
     deleteProject
   }
 }
-
-/*
- * graveyard
- * */
-
-// duplicateBaseItemQuery(
-//        project.id,
-//        project.type,
-//        null,
-//        (responseData) => {
-//          loader.endLoad()
-//          // @ts-ignore
-//          window.location =
-//            COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
-//              '0',
-//              // @ts-ignore
-//              responseData.newItem.id
-//            )
-//        }
-//      )
-
-// duplicateBaseItemQuery(
-//   workflowId,
-//   workflowType,
-//   parentId,
-//   (responseData) => {
-//     window.location.href = 'new iten path '
-//   }
-// )

@@ -19,7 +19,6 @@ type ColumnNodeDataType = {
 export function getColumnData(columns: TColumn[]): ColumnNodeDataType[] {
   const colors = getColumnColors(columns)
 
-
   return columns.map((column, index) => {
     const parsed: ColumnNodeDataType = {
       id: column.id,

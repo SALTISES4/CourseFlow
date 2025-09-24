@@ -124,5 +124,5 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
 //
 // export { ProjectComparison as ProjectComparisonClass }
 // export default legacyWithRouter(ProjectComparison)
-const hello = () => <></>
+const hello = () => <>this view WIP</>
 export default hello

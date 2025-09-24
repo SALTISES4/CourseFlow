@@ -10,7 +10,7 @@ import { AppState } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
 import LinkedOutcomes from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/components/LinkedOutcomes'
 import Autolink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Autolink'
-import NodeLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLink'
+import Nodelink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Nodelink'
 import NodePorts from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodePorts'
 import { alpha } from '@mui/material'
 import { produce } from 'immer'
@@ -203,7 +203,7 @@ const WeekCellInner = (props: PropsType) => {
 
           if (props.outgoingLinks.length) {
             draft.nodeLinks = props.outgoingLinks.map((link) => (
-              <NodeLink key={link} objectId={link} nodeDiv={ref} />
+              <Nodelink key={link} objectId={link} nodeDiv={ref} />
             ))
           }
 
