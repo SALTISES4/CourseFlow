@@ -3,7 +3,7 @@ import { selectOutcomeGroups } from '@cf/redux/selectors/outcomes.selector'
 import { addOutcomeGroup } from '@cf/redux/slices/outcomes.slice'
 import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -14,7 +14,7 @@ import OutcomeTree from './components/OutcomeTree'
 
 const OutcomeEditView = () => {
   const dispatch = useDispatch()
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
   const outcomeGroups = useSelector(selectOutcomeGroups)
 
   const onAddNewGroup = useCallback(() => {

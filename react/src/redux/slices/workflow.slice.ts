@@ -58,7 +58,7 @@ const workflowSlice = createSlice({
       .addCase(refreshStoreData, (state, action) => {
         return action.payload.workflow || state
       })
-      .addCase(CommonActions.CLEAR_WORKFLOW_DATA, () => null)
+      .addCase(CommonActions.CLEAR_WORKFLOW_DATA, () => initialState)
     // Outcome Workflow Actions
     builder
       .addCase(

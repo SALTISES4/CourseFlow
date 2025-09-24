@@ -1,8 +1,8 @@
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import { createSelector } from 'reselect'
 
-const selectOutcomeData = (state: AppState) => state.outcomes.outcomeData
-const selectOutcomeOrder = (state: AppState) => state.outcomes.outcomeOrder
+const selectOutcomeData = (state: RootState) => state.outcome.outcomeData
+const selectOutcomeOrder = (state: RootState) => state.outcome.outcomeOrder
 
 export const selectOutcomeGroups = createSelector(
   [selectOutcomeOrder, selectOutcomeData],
@@ -14,7 +14,7 @@ export const selectOutcomeGroups = createSelector(
 )
 
 export const selectOutcomeChildrenById = createSelector(
-  [selectOutcomeData, (_: AppState, parentId: number) => parentId],
+  [selectOutcomeData, (_: RootState, parentId: number) => parentId],
   (outcomesData, parentId) => {
     return outcomesData[parentId].children.map((c) => outcomesData[c])
   }
@@ -22,7 +22,7 @@ export const selectOutcomeChildrenById = createSelector(
 
 // drill through the outcome data to derive prefix based on parent outcomes
 export const getPrefixPath = createSelector(
-  [selectOutcomeData, (_: AppState, id: number) => id],
+  [selectOutcomeData, (_: RootState, id: number) => id],
   (outcomesData, outcomeId) => {
     const path: (number | string)[] = []
     let outcome = outcomesData[outcomeId]
