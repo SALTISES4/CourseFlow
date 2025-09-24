@@ -4,7 +4,7 @@ import Explore from '@cfPages/Library/Explore'
 import Favourites from '@cfPages/Library/Favourites'
 import MyLibrary from '@cfPages/Library/MyLibrary'
 import NotificationsPage from '@cfPages/Notifications'
-import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
+import ProjectComparison from '@cfPages/Workspace/ProjectComparison'
 import WorkflowPage from '@cfPages/Workspace/Workflow'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import { createBrowserRouter } from 'react-router-dom'
@@ -118,8 +118,7 @@ export const CFRouter = createBrowserRouter([
     path: CFRoutes.PROJECT_COMPARISON,
     element: (
       <Base>
-        {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-        <WorkflowComparison />
+        <ProjectComparison />
       </Base>
     )
   },
@@ -139,72 +138,6 @@ export const CFRouter = createBrowserRouter([
         <WorkflowPage initialView={WorkflowViewType.OVERVIEW} />
       </Base>
     )
-    // children: [
-    //   {
-    //     path: CFRoutes.WORKFLOW_WORKFLOW
-    //   },
-    //   {
-    //     path: CFRoutes.WORKFLOW_ALIGNMENT_ANALYSIS
-    //   },
-    //   {
-    //     path: CFRoutes.WORKFLOW_OUTCOME_TABLE
-    //   },
-    //   {
-    //     path: CFRoutes.WORKFLOW_OUTCOME_EDIT
-    //   },
-    //   {
-    //     path: CFRoutes.WORKFLOW_GRID
-    //   }
-    // ]
-    //  children: [
-    //   {
-    //     path: Routes.WORKFLOW_WORKFLOW,
-    //     element: (
-    //       <Base>
-    //         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-    //         {/*      <WorkflowPage initialView={WorkflowViewType.WORKFLOW} />*/}
-    //         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-    //         <WorkflowPage initialView={WorkflowViewType.OVERVIEW} />
-    //       </Base>
-    //     )
-    //   },
-    //   {
-    //     path: Routes.WORKFLOW_ALIGNMENT_ANALYSIS,
-    //     element: (
-    //       <Base>
-    //         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-    //         <WorkflowPage initialView={WorkflowViewType.WORKFLOW_ALIGNMENT_ANALYSIS} />
-    //       </Base>
-    //     )
-    //   },
-    //   {
-    //     path: Routes.WORKFLOW_OUTCOME_TABLE,
-    //     element: (
-    //       <Base>
-    //         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-    //         <WorkflowPage initialView={WorkflowViewType.OUTCOME_TABLE} />
-    //       </Base>
-    //     )
-    //   },
-    //   {
-    //     path: Routes.WORKFLOW_OUTCOME_EDIT,
-    //     element: (
-    //       <Base>
-    //         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-    //         <WorkflowPage initialView={WorkflowViewType.OUTCOME_EDIT} />
-    //       </Base>
-    //     )
-    //   },
-    //   {
-    //     path: Routes.WORKFLOW_GRID,
-    //     element: (
-    //       <Base>
-    //         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-    //         <WorkflowPage initialView={WorkflowViewType.GRID_VIEW} />
-    //       </Base>
-    //     )
-    //   }
-    // ]
   },
 
   {

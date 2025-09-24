@@ -3,19 +3,16 @@ import { EWorkflow } from '@cf/HTTP/XMLHTTP/types/entity'
 import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/Utility.class'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
-import GridView from '@cfViews/WorkflowView/componentViews/GridView/GridView'
-import OutcomeAnalytics from '@cfViews/WorkflowView/componentViews/OutcomeAnalytics/OutcomeAnalytics'
-// import OutcomeEditView from '@cfViews/WorkflowView/componentViews/OutcomeEditView'
+import GridView from '@cfViews/WorkflowView/componentViews/GridView'
+import OutcomeAnalytics from '@cfViews/WorkflowView/componentViews/OutcomeAnalytics'
 import OutcomeEditView from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2'
-import CompetencyMatrixView from '@cfViews/WorkflowView/componentViews/OutcomeOverviewView/CompetencyMatrixView/CompetencyMatrixView'
+import CompetencyMatrixView from '@cfViews/WorkflowView/componentViews/OutcomeOverviewView/CompetencyMatrixView'
+import OutcomeTableView from '@cfViews/WorkflowView/componentViews/OutcomeTableView'
 import OverviewView from '@cfViews/WorkflowView/componentViews/OverviewView'
-// import WorkflowEditView from '@cfViews/WorkflowView/componentViews/WorkflowEditView'
 import WorkflowEditView from '@cfViews/WorkflowView/componentViews/WorkflowEditViewV2'
 import Tab from '@mui/material/Tab'
 import { ReactNode } from 'react'
 import { Route, generatePath, useNavigate, useParams } from 'react-router-dom'
-
-import OutcomeTableView from 'components/views/WorkflowView/componentViews/OutcomeOverviewView/OutcomeTableView'
 
 const useWorkflowTabs = (workflow: EWorkflow, context: WorkflowContextType) => {
   const { id } = useParams()
