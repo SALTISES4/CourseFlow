@@ -31,6 +31,7 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
         self.workflow_pk = None
         self.EDIT = None
         self.VIEW = None
+        self.last_lock = None
 
     def get_permission(self):
         workflow = Workflow.objects.get(pk=self.workflow_pk)
@@ -58,10 +59,12 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
     def disconnect(self, close_code):
         try:
             async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
                 {
                     "type": "lock_update",
-                    "action": self.last_lock
-                }
+                    #  "action": self.last_lock
+                    "action": "aasdf",
+                },
             )
         except AttributeError as e:
             logger.exception("An error occurred")
@@ -115,7 +118,7 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
                 {
                     "type": "workflow_action",
                     "action": action,
-                }
+                },
             )
 
         #########################################################
@@ -132,7 +135,7 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
                 {
                     "type": WsEventType.LOCK_UPDATE.value,
                     "action": lock,
-                }
+                },
             )
 
         #########################################################
@@ -146,10 +149,7 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
 
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
-                {
-                    "type": WsEventType.CONNECTION_UPDATE.value,
-                    "action": user_data
-                }
+                {"type": WsEventType.CONNECTION_UPDATE.value, "action": user_data},
             )
 
     #########################################################

@@ -13,6 +13,7 @@ import { selectWeekById } from '@cf/redux/selectors/week.selector'
 import { AppState } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
+import { RootState } from '@cfRedux/store'
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
 import IconButton from '@mui/material/IconButton'
 import { produce } from 'immer'
@@ -76,8 +77,8 @@ const Week = (props: WeekPropsType) => {
   const weekWrapperRef = useRef<HTMLDivElement>(null)
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
-  const workflow = useSelector((state: AppState) => state.workflow)
-  const weekData = useSelector((state: AppState) =>
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
+  const week = useSelector((state: RootState) =>
     selectWeekById(state, props.weekId)
   )
   const manager = useRef(new BetterSelectionManager(dispatch))
@@ -218,7 +219,7 @@ const Week = (props: WeekPropsType) => {
   ))
 
   const defaultText = !workflow.isStrategy
-    ? `${weekData.week.weekTypeDisplay} ${weekData.week.order + 1}`
+    ? `${week.weekTypeDisplay} ${week.order + 1}`
     : undefined
 
   const selected =
@@ -237,7 +238,7 @@ const Week = (props: WeekPropsType) => {
         expanded={state.expanded && !props.condensed}
       >
         <StyledWeek.WeekTitle variant="subtitle2">
-          <TitleText text={weekData.week.title} defaultText={defaultText} />
+          <TitleText text={week.title} defaultText={defaultText} />
         </StyledWeek.WeekTitle>
 
         {!props.condensed && (

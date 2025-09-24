@@ -1,5 +1,6 @@
 import { selectOutcomeChildrenById } from '@cf/redux/selectors/outcomes.selector'
 import { AppState } from '@cf/redux/types/type'
+import { RootState } from '@cfRedux/store'
 import * as StyledOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/components/OutcomeTree/styles'
 import { MouseEvent, useCallback, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -19,9 +20,7 @@ const LinkedOutcomes = ({ parent, outcomes }: PropsType) => {
   const [show, setShow] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
   const badgeRef = useRef<HTMLSpanElement>(null)
-  const outcomesData = useSelector(
-    (state: AppState) => state.outcomes.outcomeData
-  )
+  const outcomesData = useSelector((state: RootState) => state.outcome)
 
   const showPopover = useCallback((val: boolean) => {
     return (e: MouseEvent<HTMLSpanElement>) => {

@@ -166,6 +166,7 @@ class Workflow(AbstractWorkspaceModel):
     # @todo this is wrong, should not be method
     @property
     def type(self):
+        return "program"
         for subclass in SUBCLASSES:
             try:
                 return getattr(self, subclass).type
@@ -200,15 +201,6 @@ class Workflow(AbstractWorkspaceModel):
     # ...????
     def get_permission_objects(self):
         return [self.get_workflow()]
-
-    # no more live project
-    # def get_live_project(self):
-    #     try:
-    #         liveproject = self.get_project().liveproject
-    #     except AttributeError as e:
-    #                logger.exception("An error occurred")
-    #         liveproject = None
-    #     return liveproject
 
     # @todo NO...
     def get_subclass(self):

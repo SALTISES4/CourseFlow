@@ -6,7 +6,7 @@ import {
   SliceNamespace,
   StrategyActions
 } from '@cfRedux/types/enumActions'
-import {AppState, TNode, TWeek, WorkspaceAppState} from '@cfRedux/types/type'
+import { AppState, TNode, TWeek, WorkspaceAppState } from '@cfRedux/types/type'
 import {
   PayloadAction,
   Update,

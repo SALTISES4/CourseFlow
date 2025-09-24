@@ -37,6 +37,7 @@ const GridWeek: React.FC<OwnProps> = ({ objectId, parentId, rank, week }) => {
     week.nodeweekSet
   )
 
+// @todo no mapped hooks
   const nodesData = nodeWeeks
     .map(
       (nodeweek) =>

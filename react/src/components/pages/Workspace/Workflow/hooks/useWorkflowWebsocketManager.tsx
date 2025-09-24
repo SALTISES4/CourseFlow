@@ -94,9 +94,10 @@ export const useWorkflowWebsocketManager = ({
 
     const newWsUserConnectedService = new WebSocketServiceConnectedUserManager(
       newWsService,
+      user,
       handleConnectedUsersUpdate
     )
-    newWsUserConnectedService.startUserUpdates(user)
+    newWsUserConnectedService.startUserUpdates()
     setWsUserConnectedService(newWsUserConnectedService)
 
     return () => {
@@ -125,7 +126,10 @@ export const useWorkflowWebsocketManager = ({
 
   useEffect(() => {
     if (data) {
+      console.log('yes i have data')
+      console.log(data)
       const payload = convertWorkflowRESTResToAppState(data.dataPackage)
+      console.log(payload)
       dispatch(ActionCreator.refreshWorkspaceStoreData(payload))
       setIsMessagesQueued(false)
     }

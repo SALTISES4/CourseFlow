@@ -6,20 +6,21 @@ import { useWorkflowWebsocketManager } from '@cfPages/Workspace/Workflow/hooks/u
 import { WorkflowSidebarContextProvider } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useSidebar/context'
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 import ActionCreator from '@cfRedux/ActionCreator'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import ErrorView from '@cfViews/MsgViews/ErrorView'
 import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflowObjects/workflow.rtk'
 import { useContext, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import {RootState} from "@cfRedux/store";
 
 const Workflow = () => {
   const userContext = useContext(UserContext)
   const { id } = useParams<{ id: string }>()
   const workflowId = Number(id)
 
-  const workflowData = useSelector((state: RootState) => state.workspace.workflow)
+  const workflowData = useSelector(
+    (state: RootState) => state.workspace.workflow
+  )
   const dispatch = useDispatch()
 
   const { onError } = useGenericMsgHandler()

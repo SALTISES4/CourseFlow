@@ -1,8 +1,10 @@
 import { getColumnColors } from '@cf/components/views/WorkflowView/componentViews/WorkflowEditViewV2/utility'
-import { selectColumnById } from '@cf/redux/selectors/column.selector'
-import { AppState, TWorkflow } from '@cf/redux/types/type'
+import {
+  makeSelectColumnsForWorkflow,
+  selectColumnById
+} from '@cf/redux/selectors/column.selector'
+import { TColumn, TWorkflow } from '@cf/redux/types/type'
 import { DraggableType } from '@cfViews/WorkflowView/componentViews/WorkflowEditViewV2/types'
-import { useSelector } from 'react-redux'
 
 import { AddTabType } from '../../types'
 
@@ -13,18 +15,16 @@ type ColumnNodeDataType = {
 }
 
 // Prepare the workflow node categories (columns) data
-export function getColumnData(workflow: TWorkflow): ColumnNodeDataType[] {
-  const { columns } = workflow
-  const columnData = columns.map((columnId) =>
-    useSelector((appState: AppState) => selectColumnById(appState, columnId))
-  )
-  const colors = getColumnColors(columnData)
-  return columnData.map((data, index) => {
-    const { column } = data
+// @todo his is probably wrong
+export function getColumnData(columns: TColumn[]): ColumnNodeDataType[] {
+  const colors = getColumnColors(columns)
+
+
+  return columns.map((column, index) => {
     const parsed: ColumnNodeDataType = {
-      id: columns[index],
+      id: column.id,
       title: column.title ?? column.columnTypeDisplay,
-      color: colors[index]
+      color: column.colour
     }
 
     return parsed

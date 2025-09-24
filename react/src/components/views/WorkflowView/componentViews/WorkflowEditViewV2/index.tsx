@@ -6,7 +6,8 @@ import {
 import { OuterContentWrap } from '@cf/mui/helper'
 import { _t } from '@cf/utility/Utility.class'
 import { getColumnData } from '@cfPages/Workspace/Workflow/Sidebar/components/AddTab/data'
-import { AppState, TNode, TWorkflow } from '@cfRedux/types/type'
+import { makeSelectColumnsForWorkflow } from '@cfRedux/selectors/column.selector'
+import { RootState } from '@cfRedux/store'
 import { debounce } from '@mui/material'
 import { produce } from 'immer'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -24,10 +25,11 @@ import {
 import { getWorkflowBoardData, swapInPlace } from './utility'
 
 /*
-  .workflow-canvas is used for all kinds of targeting
+  .workflow-canvas is used for all kinds of targeting´´
   nodes and nodelinks (drawn line connections between nodes) are added/rendered to the canvas and they seem to float on top of react
   it doesn't look like comments, nodes, weeks etc are part of the 3js stuff
 */
+
 const CanvasPlaceholder = () => (
   <svg className="workflow-canvas" width="100%" height="100%">
     <defs>
@@ -48,18 +50,20 @@ const CanvasPlaceholder = () => (
 
 const WorkflowEditView = () => {
   const weeksWrapperRef = useRef<HTMLDivElement>(null)
-  const workflow = useSelector((state: AppState) => state.workflow)
-  const nodes = useSelector((state: AppState) => state.node)
-  const weeks = useSelector((state: AppState) => state.week)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
+  const nodes = useSelector((state: RootState) => state.workspace.node)
+  const weeks = useSelector((state: RootState) => state.workspace.week)
 
   // memoize costly state derivations
-  const weeksMap = useMemo(() => {
-    return Object.fromEntries(weeks.map((week) => [week.id, week]))
-  }, [weeks])
+  // const weeksMap = useMemo(() => {
+  //   return Object.fromEntries(weeks.entities.map((week) => [week.id, week]))
+  // }, [weeks])
+
+  const nodesArr = Object.entries(nodes.entities).map(([_, item]) => item)
 
   const boardData = useMemo(() => {
-    return getWorkflowBoardData(workflow, nodes, weeksMap)
-  }, [workflow, nodes, weeksMap])
+    return getWorkflowBoardData(workflow, nodesArr, weeks.entities)
+  }, [workflow, nodesArr, weeks])
 
   // detach from redux state and locally make board changes to not trigger
   // redux updates all over the place and (and restructure redux app state even further)
@@ -87,7 +91,9 @@ const WorkflowEditView = () => {
     }
   }, [debouncedSync, nodes])
 
-  const columnColors = getColumnData(workflow).map((col) => {
+  const selectColumnsForWorkflow = useMemo(makeSelectColumnsForWorkflow, [])
+  const columns = useSelector((s: RootState) => selectColumnsForWorkflow(s))
+  const columnColors = getColumnData(columns).map((col) => {
     return col.color
   })
 

@@ -62,17 +62,11 @@ export function getWorkflowBoardData(
   return weeksData
 }
 
-export function getColumnColors(
-  columns: {
-    column: TColumn
-    siblingCount: number
-    columns: number[]
-  }[]
-): string[] {
-  return columns.map((columnData) =>
+export function getColumnColors(columns: TColumn[]): string[] {
+  return columns.map((column) =>
     ThemeHelper.getColumnColour({
-      columnType: columnData.column.columnType,
-      colour: columnData.column.colour
+      columnType: column.columnType,
+      colour: column.colour
     })
   )
 }
