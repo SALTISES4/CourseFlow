@@ -3,11 +3,11 @@ import * as Constants from '@cf/utility/constants'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectNodelinkById } from '@cfRedux/selectors/nodelink.selector'
 import { RootState } from '@cfRedux/store'
+import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG'
 import * as d3 from 'd3'
 import React, { useCallback, useEffect, useState } from 'react'
 import * as reactDom from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import NodelinkSVG from "@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG";
 
 type PropsType = {
   objectId: number

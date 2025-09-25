@@ -12,17 +12,6 @@ import {
   TWeekworkflow
 } from '@cfRedux/types/type'
 
-// stubs
-export const getWeekById = () => {
-  // must go
-}
-export const getNodeById = () => {
-  // must go
-}
-export const getWeekWorkflowByID = () => {
-  // must go
-}
-
 export const getColumnWorkflowByID = () => {
   // to go...
 }
@@ -68,23 +57,6 @@ export type TTermByID = {
  *******************************************************/
 
 export type TGetComments = TComment[]
-
-export const getComments = ({
-  objectId,
-  objectType,
-  state
-}: {
-  objectId: number
-  objectType: CfObjectType
-  state: AppState
-}): TGetComments => {
-  if (objectType === CfObjectType.NODE) {
-    return state.node.find((item) => item.id === objectId).comments
-  }
-
-  return []
-  Utility.logger('no column found with id', id)
-}
 
 /*******************************************************
  * OUTCOME

@@ -1,8 +1,8 @@
 import { RootState } from '@cfRedux/store'
 import { createSelector } from 'reselect'
 
-const selectOutcomeData = (state: RootState) => state.outcome.outcomeData
-const selectOutcomeOrder = (state: RootState) => state.outcome.outcomeOrder
+const selectOutcomeData = (state: RootState) => state.outcomes.outcomeData
+const selectOutcomeOrder = (state: RootState) => state.outcomes.outcomeOrder
 
 export const selectOutcomeGroups = createSelector(
   [selectOutcomeOrder, selectOutcomeData],

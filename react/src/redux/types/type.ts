@@ -2,6 +2,7 @@ import { CfLock } from '@cf/types/common'
 import { WorkflowPermission } from '@cf/utility/permissions'
 import { OutcomesState } from '@cfRedux/slices/outcomes.slice'
 import { SidebarState } from '@cfRedux/slices/sidebar.slice'
+import { RootState } from '@cfRedux/store'
 import {
   EColumn,
   EComment,
@@ -63,7 +64,7 @@ export type AppState = {
   outcomes: OutcomesState
 }
 
-export type RootOutcomeStateType = Pick<AppState, 'outcomeoutcome' | 'outcome'>
+export type RootOutcomeStateType = Pick<RootState, 'outcomeoutcome' | 'outcome'>
 
 /*******************************************************
  * INDIVIDUAL REDUCER TYPES

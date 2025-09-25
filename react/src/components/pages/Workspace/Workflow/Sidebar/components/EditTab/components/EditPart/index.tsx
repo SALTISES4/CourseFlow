@@ -1,3 +1,9 @@
+import {
+  SidebarActions,
+  SidebarContent,
+  SidebarInnerWrap,
+  SidebarTitle
+} from '@cfSidebar/styles'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
@@ -8,12 +14,6 @@ import TextField from '@mui/material/TextField'
 import { produce } from 'immer'
 import { ChangeEvent, useCallback, useState } from 'react'
 
-import {
-  SidebarActions,
-  SidebarContent,
-  SidebarInnerWrap,
-  SidebarTitle
-} from '@cfSidebar/styles'
 import SaveAsTemplate from '../SaveAsTemplate'
 import getPartData from './getPartData'
 import { strategiesOptions } from './optionsData'

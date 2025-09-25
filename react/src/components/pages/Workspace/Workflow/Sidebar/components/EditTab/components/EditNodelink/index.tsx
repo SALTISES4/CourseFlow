@@ -1,5 +1,6 @@
 import { nodelinkDeleteSelfSoft } from '@cf/redux/slices/nodelink.slice'
 import { AppState } from '@cf/redux/types/type'
+import { RootState } from '@cfRedux/store'
 import { NodelinkForm } from '@cfSidebar/components/EditTab/components/EditNodelink/types'
 import {
   SidebarActions,
@@ -21,7 +22,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 const EditNodelink = () => {
   const dispatch = useDispatch()
-  const nodeLinkId = useSelector((state: AppState) => state.sidebar.edit.id)
+  const nodeLinkId = useSelector((state: RootState) => state.sidebar.edit.id)
 
   const [state, setState] = useState<NodelinkForm>({
     title: 'Node Link text here',

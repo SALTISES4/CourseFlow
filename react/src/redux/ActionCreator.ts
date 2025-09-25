@@ -12,7 +12,6 @@ import {
 import { AppState } from '@cfRedux/types/type'
 import { EComment } from '@XMLHTTP/types/entity'
 
-// eventually this will simply be AppState['workspace']
 export type WorkSpaceAppState = Pick<
   AppState,
   | 'workflow'

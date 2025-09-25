@@ -1,15 +1,15 @@
-import Button from '@mui/material/Button'
-import TextField from '@mui/material/TextField'
-import { produce } from 'immer'
-import { ChangeEvent, useCallback, useState } from 'react'
-
-import getTermData from './getTermData'
 import {
   SidebarActions,
   SidebarContent,
   SidebarInnerWrap,
   SidebarTitle
 } from '@cfSidebar/styles'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
+import { produce } from 'immer'
+import { ChangeEvent, useCallback, useState } from 'react'
+
+import getTermData from './getTermData'
 
 const EditTerm = () => {
   const { title } = getTermData(1)

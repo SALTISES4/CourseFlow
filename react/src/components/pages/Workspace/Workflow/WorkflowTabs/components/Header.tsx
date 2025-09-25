@@ -6,12 +6,10 @@ import { ChipOptions } from '@cfComponents/cards/WorkflowCardDumb'
 import { CardChip } from '@cfComponents/cards/WorkflowCardDumb/styles'
 import Favourite from '@cfComponents/UIPrimitives/Favourite'
 import { workflowTitle } from '@cfComponents/UIPrimitives/Titles.ts'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-// import { useContext } from 'react'
 import { useSelector } from 'react-redux'
-import {RootState} from "@cfRedux/store";
 
 // @todo not sure this needs its own file
 const Header = () => {

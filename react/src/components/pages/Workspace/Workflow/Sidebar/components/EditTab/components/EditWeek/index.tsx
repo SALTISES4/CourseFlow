@@ -13,7 +13,7 @@ import { updateValueQuery } from '@XMLHTTP/API/update'
 import { produce } from 'immer'
 import { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import {useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import SaveAsTemplate from '../SaveAsTemplate'
 

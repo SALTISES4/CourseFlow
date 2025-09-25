@@ -71,14 +71,11 @@ class OutcomeHorizontalLinkUnconnected extends React.Component<PropsType> {
           '?'
       )
     ) {
-
       updateOutcomehorizontallinkDegree(
         data.outcome,
         data.parentOutcome,
         0,
-        (responseData) => {
-
-        }
+        (responseData) => {}
       )
     }
   }

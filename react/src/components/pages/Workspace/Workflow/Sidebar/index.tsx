@@ -6,7 +6,7 @@ import {
   sidebarChangeTab,
   sidebarCollapse
 } from '@cfRedux/slices/sidebar.slice'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import ChatIcon from '@mui/icons-material/Chat'
@@ -28,7 +28,6 @@ import OutcomesTab from './components/OutcomesTab'
 import RelatedTab from './components/RelatedTab'
 import RestoreTab from './components/RestoreTab'
 import { SidebarTabsWrap, SidebarToggle, SidebarWrap } from './styles'
-import {RootState} from "@cfRedux/store";
 
 function getTabContent(
   tab: SidebarState['tab'],

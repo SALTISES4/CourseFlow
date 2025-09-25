@@ -4,7 +4,8 @@ import { _t } from '@cf/utility/Utility.class'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import CompletionImg from '@cfComponents/UIPrimitives/CompletionIng'
 import { TOutcomeNodeByID, getOutcomeNodeByID } from '@cfFindState'
-import { AppState, TWorkflow } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
+import { TWorkflow } from '@cfRedux/types/type'
 import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/components/SimpleOutcome'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
@@ -167,7 +168,7 @@ class OutcomeNodeUnconnected extends React.Component<PropsType> {
   }
 }
 const mapStateToProps = (
-  state: AppState,
+  state: RootState,
   ownProps: OwnProps
 ): ConnectedProps => {
   return {
@@ -176,7 +177,7 @@ const mapStateToProps = (
   }
 }
 
-const OutcomeNode = connect<ConnectedProps, object, OwnProps, AppState>(
+const OutcomeNode = connect<ConnectedProps, object, OwnProps, RootState>(
   mapStateToProps,
   null
 )(OutcomeNodeUnconnected)

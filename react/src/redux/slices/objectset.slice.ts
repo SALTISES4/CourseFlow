@@ -1,7 +1,4 @@
-import {
-  CommonActions,
-  SliceNamespace
-} from '@cfRedux/types/enumActions'
+import { CommonActions, SliceNamespace } from '@cfRedux/types/enumActions'
 import { TObjectSet, WorkspaceAppState } from '@cfRedux/types/type'
 import {
   PayloadAction,

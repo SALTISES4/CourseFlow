@@ -4,8 +4,8 @@ import {
   Outcome as OutcomeType,
   setHighlighted
 } from '@cf/redux/slices/outcomes.slice'
-import { AppState } from '@cf/redux/types/type'
 import { _t } from '@cf/utility/Utility.class'
+import { RootState } from '@cfRedux/store'
 import * as Styled from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/components/OutcomeTree/styles'
 import * as StyledOutcomes from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/components/OutcomeTree/styles'
 import { produce } from 'immer'
@@ -27,7 +27,7 @@ const Outcome = ({
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
   const highlighted = useSelector(
-    (state: AppState) => state.outcomes.highlighted
+    (state: RootState) => state.outcomes.highlighted
   )
   const [state, setState] = useState({
     collapsed: true,
@@ -121,7 +121,7 @@ export const OutcomeGroup = ({
   parentId: number
   prefix: (number | string)[]
 }) => {
-  const childOutcomes = useSelector((state: AppState) =>
+  const childOutcomes = useSelector((state: RootState) =>
     selectOutcomeChildrenById(state, parentId)
   )
 

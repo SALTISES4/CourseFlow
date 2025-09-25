@@ -27,14 +27,6 @@ export type OutcomesState = {
   outcomeData: Record<number, Outcome>
 }
 
-// const initialState: OutcomesState = {
-//   dragging: null,
-//   highlighted: [],
-
-//   outcomeOrder: [],
-//   outcomeData: {}
-// }
-
 const initialState: OutcomesState = data
 
 type AddOutcomeType = Pick<Outcome, 'id'> &

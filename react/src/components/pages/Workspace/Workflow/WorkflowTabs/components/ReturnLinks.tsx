@@ -1,13 +1,12 @@
 import { CFRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/Utility.class'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import * as React from 'react'
 import { useSelector } from 'react-redux'
 import { Link, generatePath } from 'react-router-dom'
-import {RootState} from "@cfRedux/store";
 
 /**
  * @todo did a first pass, but there is work to do still
@@ -21,8 +20,8 @@ const ReturnLinks = () => {
   /*******************************************************
    * REDUX
    *******************************************************/
-  const publicView = useSelector<AppState>(
-    (state: AppState) => state.workspace.workflow?.publicView
+  const publicView = useSelector(
+    (state: RootState) => state.workspace.workflow?.publicView
   )
 
   const WorkflowLink = () => {

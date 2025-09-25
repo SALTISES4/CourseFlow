@@ -1,3 +1,4 @@
+import NetworkActivityProvider from '@cf/HTTP/NetworkActivityProvider'
 import { OuterContentWrap } from '@cf/mui/helper'
 import GlobalDialogs from '@cfComponents/globalNav/GlobalDialogs'
 import Sidebar from '@cfComponents/globalNav/Sidebar'
@@ -6,7 +7,6 @@ import Alert from '@cfComponents/UIPrimitives/Alert'
 import HtmlReactParser from 'html-react-parser'
 import { ReactNode } from 'react'
 import * as React from 'react'
-import NetworkActivityProvider from "@cf/HTTP/NetworkActivityProvider";
 
 type PropsType = {
   showNotifications?: boolean

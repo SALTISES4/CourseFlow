@@ -22,7 +22,6 @@ const AddTab = () => {
   // but where do the reusable blocks come from?
   // state.strategy
   // state.saltiseStrategy
-  // const strategies = useSelector((state: AppState) => state.strategy)
   // console.log({ strategies })
 
   return (

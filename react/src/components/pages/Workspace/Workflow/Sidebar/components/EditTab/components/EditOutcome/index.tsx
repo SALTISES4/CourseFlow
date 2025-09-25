@@ -1,8 +1,7 @@
 import { Outcome, updateOutcome } from '@cf/redux/slices/outcomes.slice'
-import { AppState } from '@cf/redux/types/type'
 import { _t } from '@cf/utility/Utility.class'
+import { RootState } from '@cfRedux/store'
 import { debounce } from '@mui/material'
-import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -23,8 +22,8 @@ const EditOutcome = () => {
   const dispatch = useDispatch()
   const firstRender = useRef(true)
 
-  const outcomeId = useSelector((state: AppState) => state.sidebar.edit.id)
-  const outcomes = useSelector((state: AppState) => state.outcomes.outcomeData)
+  const outcomeId = useSelector((state: RootState) => state.sidebar.edit.id)
+  const outcomes = useSelector((state: RootState) => state.outcomes.outcomeData)
   const outcome = outcomes[outcomeId]
 
   const {

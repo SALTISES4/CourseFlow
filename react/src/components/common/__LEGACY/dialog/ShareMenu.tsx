@@ -161,7 +161,6 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
               edit: response.editors,
               student: response.students
             })
-
           }
         )
       }

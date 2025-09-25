@@ -14,6 +14,7 @@ import columnReducer from '@cfRedux/slices/column.slice'
 import nodeReducer from '@cfRedux/slices/node.slice'
 import nodelinkReducer from '@cfRedux/slices/nodelink.slice'
 import objectSetReducer from '@cfRedux/slices/objectset.slice'
+import outcomesReducer from '@cfRedux/slices/outcomes.slice'
 import projectReducer from '@cfRedux/slices/project.slice'
 import strategyReducer from '@cfRedux/slices/strategy.slice'
 import weekReducer from '@cfRedux/slices/week.slice'
@@ -87,6 +88,10 @@ export const workspaceReducer = combineReducers({
   nodelink: nodelinkReducer,
   strategy: strategyReducer
 })
+
+export const dummyReducers = {
+  outcomes: outcomesReducer
+}
 
 const rootOutcomeReducers = {
   outcome: outcomeReducer,

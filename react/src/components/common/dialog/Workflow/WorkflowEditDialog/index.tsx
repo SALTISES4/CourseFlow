@@ -8,7 +8,7 @@ import {
   timeUnits
 } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -27,9 +27,10 @@ import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
-import {RootState} from "@cfRedux/store";
 
-function configFields(workflow: AppState['workflow']): FormField[] {
+function configFields(
+  workflow: RootState['workspace']['workflow']
+): FormField[] {
   const allFields = [
     FormField.TITLE,
     FormField.DESCRIPTION,

@@ -1,5 +1,6 @@
 import { FieldChoice } from '@cf/types/common'
 import { _t } from '@cf/utility/Utility.class'
+import { RootState } from '@cfRedux/store'
 import { AppState } from '@cfRedux/types/type'
 import NodeBarColumnWorkflow from '@cfViews/common/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow'
 import Strategy from '@cfViews/common/rightSideBarContent/NodeBar/components/Strategy'
@@ -18,10 +19,9 @@ type OwnProps = {
 }
 
 type ConnectedProps = {
-  data: AppState['workflow']
-  columns: AppState['column']
+  data: RootState['workspace']['workflow']
+  columns: RootState['workspace']['column']
   availableStrategies: AppState['strategy']
-  // saltise_strategies: AppState['saltiseStrategy']
 }
 
 type PropsType = OwnProps & ConnectedProps

@@ -1,5 +1,9 @@
 import { listenerMiddleware } from '@cfRedux/middleware/viewsettings.localstorage'
-import { legacyWorkflowReducers, workspaceReducer } from '@cfRedux/Reducers'
+import {
+  dummyReducers,
+  legacyWorkflowReducers,
+  workspaceReducer
+} from '@cfRedux/Reducers'
 import sidebarReducer from '@cfRedux/slices/sidebar.slice'
 import viewsettingsReducer from '@cfRedux/slices/viewsettings.slice'
 import { configureStore } from '@reduxjs/toolkit'
@@ -11,6 +15,7 @@ import '@cfSCSS/workflow_styles.scss'
 const store = configureStore({
   reducer: {
     ...legacyWorkflowReducers,
+    ...dummyReducers,
     workspace: workspaceReducer,
     sidebar: sidebarReducer,
     viewsettings: viewsettingsReducer,
