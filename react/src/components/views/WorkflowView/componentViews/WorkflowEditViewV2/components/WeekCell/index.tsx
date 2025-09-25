@@ -9,9 +9,11 @@ import { isOutcomeLink } from '@cf/redux/slices/outcomes.slice'
 import { AppState } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
 import LinkedOutcomes from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/components/LinkedOutcomes'
+
 import Autolink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Autolink'
 import Nodelink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Nodelink'
 import NodePorts from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodePorts'
+
 import { alpha } from '@mui/material'
 import { produce } from 'immer'
 import { useCallback, useEffect, useRef, useState } from 'react'
