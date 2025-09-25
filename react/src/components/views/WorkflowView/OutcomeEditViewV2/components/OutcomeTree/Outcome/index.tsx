@@ -9,6 +9,8 @@ import {
   extractInstruction
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item'
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/list-item'
+import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/Utility.class'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import {
   Outcome as OutcomeType,
@@ -18,8 +20,6 @@ import {
 } from '@cfRedux/slices/outcomes.slice'
 import { setDragging } from '@cfRedux/slices/outcomes.slice'
 import { AppState } from '@cfRedux/types/type'
-import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/Utility.class'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'

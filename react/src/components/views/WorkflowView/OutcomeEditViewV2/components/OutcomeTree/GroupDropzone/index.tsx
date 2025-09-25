@@ -1,6 +1,6 @@
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { moveOutcome } from '@cfRedux/slices/outcomes.slice'
 import { _t } from '@cf/utility/Utility.class'
+import { moveOutcome } from '@cfRedux/slices/outcomes.slice'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 

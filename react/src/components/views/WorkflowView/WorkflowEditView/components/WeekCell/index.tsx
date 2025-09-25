@@ -4,10 +4,10 @@ import {
   dropTargetForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import useHover from '@cf/hooks/useHover'
+import { CfObjectType } from '@cf/types/enum'
 import { nodelinkOutcome } from '@cfRedux/slices/node.slice'
 import { isOutcomeLink } from '@cfRedux/slices/outcomes.slice'
 import { AppState } from '@cfRedux/types/type'
-import { CfObjectType } from '@cf/types/enum'
 import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditViewV2/components/LinkedOutcomes'
 import Autolink from '@cfViews/WorkflowView/WorkflowEditView/components/_node/Autolink'
 import Nodelink from '@cfViews/WorkflowView/WorkflowEditView/components/_node/Nodelink'

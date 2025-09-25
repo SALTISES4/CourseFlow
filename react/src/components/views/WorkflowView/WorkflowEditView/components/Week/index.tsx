@@ -8,10 +8,10 @@ import {
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
-import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { CfObjectType } from '@cf/types/enum'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts.tsx'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
+import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { RootState } from '@cfRedux/store'
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
 import IconButton from '@mui/material/IconButton'

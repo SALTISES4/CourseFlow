@@ -1,12 +1,12 @@
 import useHover from '@cf/hooks/useHover'
+import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/Utility.class'
+import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import {
   addOutcome,
   deleteOutcome,
   duplicateOutcome
 } from '@cfRedux/slices/outcomes.slice'
-import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/Utility.class'
-import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
 import AddIcon from '@mui/icons-material/Add'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'

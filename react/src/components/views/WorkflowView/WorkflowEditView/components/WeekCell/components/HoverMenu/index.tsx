@@ -1,6 +1,6 @@
-import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
 import { CfObjectType } from '@cf/types/enum'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
+import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import ChatIcon from '@mui/icons-material/Chat'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
