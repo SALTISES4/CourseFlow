@@ -60,7 +60,7 @@ services:
   db:
     image: mariadb
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: true
+      # MYSQL_ALLOW_EMPTY_PASSWORD: true
       MYSQL_DATABASE: dalite_ng
       MYSQL_USER: dalite
       MYSQL_PASSWORD: dalite_password123
