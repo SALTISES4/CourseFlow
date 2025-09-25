@@ -4,12 +4,9 @@ import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/Utility.class'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import GridView from '@cfViews/WorkflowView/componentViews/GridView'
-import OutcomeAnalytics from '@cfViews/WorkflowView/componentViews/OutcomeAnalytics'
 import OutcomeEditView from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2'
-import CompetencyMatrixView from '@cfViews/WorkflowView/componentViews/OutcomeOverviewView/CompetencyMatrixView'
-import OutcomeTableView from '@cfViews/WorkflowView/componentViews/OutcomeTableView'
 import OverviewView from '@cfViews/WorkflowView/componentViews/OverviewView'
-import WorkflowEditView from '@cfViews/WorkflowView/componentViews/WorkflowEditViewV2'
+import WorkflowEditView from '@cfViews/WorkflowView/componentViews/WorkflowEditView'
 import Tab from '@mui/material/Tab'
 import { ReactNode } from 'react'
 import { Route, generatePath, useNavigate, useParams } from 'react-router-dom'
@@ -50,28 +47,6 @@ const useWorkflowTabs = (workflow: EWorkflow, context: WorkflowContextType) => {
       label: _t('Outcomes'),
       content: <OutcomeEditView />,
       allowedTabs: workflow.type == 'program' ? [3] : [2, 3]
-    },
-    {
-      type: WorkflowViewType.OUTCOME_TABLE,
-      route: CFRoutes.WORKFLOW_OUTCOME_TABLE,
-      relRoute: RelativeRoutes.OUTCOME_TABLE,
-      label: _t('Outcome table'),
-      content:
-        workflow.tableType === 1 ? (
-          <CompetencyMatrixView />
-        ) : (
-          <OutcomeTableView />
-        ),
-      allowedTabs: [3]
-    },
-    {
-      type: WorkflowViewType.OUTCOME_ANALYTICS,
-      route: CFRoutes.WORKFLOW_ALIGNMENT_ANALYSIS,
-      relRoute: RelativeRoutes.ALIGNMENT_ANALYSIS,
-      label: _t('Outcome analytics'),
-      content: <OutcomeAnalytics />,
-      allowedTabs: [3],
-      hidden: ['activity'].includes(workflow.type)
     },
     {
       type: WorkflowViewType.GRID_VIEW,

@@ -1,7 +1,7 @@
 import { makeSelectColumnsForWorkflow } from '@cfRedux/selectors/column.selector'
 import { RootState } from '@cfRedux/store'
 import * as SC from '@cfSidebar/styles'
-import { DraggableType } from '@cfViews/WorkflowView/componentViews/WorkflowEditViewV2/types'
+import { DraggableType } from '@cfViews/WorkflowView/componentViews/WorkflowEditView/types'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useMemo } from 'react'

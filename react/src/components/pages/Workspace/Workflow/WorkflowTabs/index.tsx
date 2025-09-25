@@ -13,7 +13,7 @@ import {
 import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/WorkflowDialogs'
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
 import { RootState } from '@cfRedux/store'
-import WorkflowLegend from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/WorkflowLegend'
+import Index from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/WorkflowLegend'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Tabs from '@mui/material/Tabs'
@@ -85,7 +85,7 @@ const WorkflowTabs = () => {
   const ViewBar = () => (
     <Stack direction="row" spacing={2}>
       <JumpToMenu weekIds={workflow.weeks} />
-      <ExpandCollapseMenu legend={<WorkflowLegend />} />
+      <ExpandCollapseMenu legend={<Index />} />
     </Stack>
   )
 
@@ -113,7 +113,6 @@ const WorkflowTabs = () => {
           viewbar={<ViewBar />}
           userbar={<ConnectionBar show={!workflow.publicView} />}
         />
-        <WorkflowLegend />
         <div className="right-panel-wrapper">
           <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">

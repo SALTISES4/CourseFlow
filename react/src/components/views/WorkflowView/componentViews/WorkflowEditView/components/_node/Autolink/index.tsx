@@ -1,4 +1,4 @@
-import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG'
+import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/_node/NodelinkSVG'
 import * as d3 from 'd3'
 import React, { useEffect, useState } from 'react'
 import * as reactDom from 'react-dom'
@@ -8,7 +8,7 @@ type PropsType = {
   nodeDiv: React.RefObject<HTMLElement>
 }
 
-const Autolink = ({ nodeId, nodeDiv }: PropsType) => {
+const Index = ({ nodeId, nodeDiv }: PropsType) => {
   /*******************************************************
    * CONSTANT
    *******************************************************/
@@ -173,4 +173,4 @@ const Autolink = ({ nodeId, nodeDiv }: PropsType) => {
   return <>{portal}</>
 }
 
-export default Autolink
+export default Index

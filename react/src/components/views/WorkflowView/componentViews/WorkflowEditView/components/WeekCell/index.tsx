@@ -9,11 +9,9 @@ import { isOutcomeLink } from '@cf/redux/slices/outcomes.slice'
 import { AppState } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
 import LinkedOutcomes from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/components/LinkedOutcomes'
-
-import Autolink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Autolink'
-import Nodelink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Nodelink'
-import NodePorts from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodePorts'
-
+import Autolink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/_node/Autolink'
+import Nodelink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/_node/Nodelink'
+import NodePorts from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/_node/NodePorts'
 import { alpha } from '@mui/material'
 import { produce } from 'immer'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -57,11 +55,6 @@ const WeekCell = (props: PropsType) => {
       },
       canDrop: ({ source }) => {
         const data = source.data
-
-        // early exit if different row - and to disable column swapping with the new row
-        // if (data.coords.y !== props.coords.y) {
-        //   return false
-        // }
 
         return isGridCell(data)
       },

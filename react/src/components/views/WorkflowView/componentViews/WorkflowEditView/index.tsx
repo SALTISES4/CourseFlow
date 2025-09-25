@@ -1,195 +1,240 @@
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
+import {
+  dropTargetForElements,
+  monitorForElements
+} from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { _t } from '@cf/utility/Utility.class'
-import { AppDispatch, RootState } from '@cfRedux/store'
-import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
-import WeekWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekWrapper'
-import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
-import { DndContext } from '@dnd-kit/core'
-import {
-  SortableContext,
-  horizontalListSortingStrategy,
-  verticalListSortingStrategy
-} from '@dnd-kit/sortable'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import React, { useCallback, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { getColumnData } from '@cfPages/Workspace/Workflow/Sidebar/components/AddTab/data'
+import { makeSelectColumnsForWorkflow } from '@cfRedux/selectors/column.selector'
+import { RootState } from '@cfRedux/store'
+import { debounce } from '@mui/material'
+import { produce } from 'immer'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 
-import * as Styled from './styles'
+import ColumnsHeader from './components/ColumnsHeader'
+import Week from './components/Week'
+import {
+  CellReorderCallbackFn,
+  ColumnReorderCallbackFn,
+  RowReorderCallbackFn,
+  isGridWeek,
+  isSidebarPart
+} from './types'
+import { getWorkflowBoardData, swapInPlace } from './utility'
+
+/*
+  .workflow-canvas is used for all kinds of targeting´´
+  nodes and nodelinks (drawn line connections between nodes) are added/rendered to the canvas and they seem to float on top of react
+  it doesn't look like comments, nodes, weeks etc are part of the 3js stuff
+*/
+
+const CanvasPlaceholder = () => (
+  <svg className="workflow-canvas" width="100%" height="100%">
+    <defs>
+      <marker
+        id="arrow"
+        viewBox="0 0 10 10"
+        refX="10"
+        refY="5"
+        markerWidth="4"
+        markerHeight="4"
+        orient="auto-start-reverse"
+      >
+        <path d="M 0 0 L 10 5 L 0 10 z" />
+      </marker>
+    </defs>
+  </svg>
+)
 
 const WorkflowEditView = () => {
-  const dispatch = useDispatch<AppDispatch>()
-  /*******************************************************
-   * HOOKS: REDUX
-   *******************************************************/
+  const weeksWrapperRef = useRef<HTMLDivElement>(null)
   const workflow = useSelector((state: RootState) => state.workspace.workflow)
+  const nodes = useSelector((state: RootState) => state.workspace.node)
+  const weeks = useSelector((state: RootState) => state.workspace.week)
 
-  /*******************************************************
-   * HOOKS: STATE
-   *******************************************************/
-  const [weekReordering, setWeekReordering] = useState(false)
-  const [weekOrder, setWeekOrder] = useState(workflow.weeks || [])
-  const [columnOrder, setColumnOrder] = useState(workflow.columns || [])
+  // memoize costly state derivations
+  // const weeksMap = useMemo(() => {
+  //   return Object.fromEntries(weeks.entities.map((week) => [week.id, week]))
+  // }, [weeks])
 
-  const toggleWeekReordering = useCallback(() => {
-    setWeekReordering(!weekReordering)
-  }, [weekReordering])
+  const nodesArr = Object.entries(nodes.entities).map(([_, item]) => item)
 
-  /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-  const CanvasPlaceholder = () => {
-    /*
-      .workflow-canvas is used for all kinds of targeting
-      nodes and nodelinks (drawn line connections between nodes) are added/rendered to the canvas and they seem to float on top of react
-      it doesn't look like comments, nodes, weeks etc are part of the 3js stuff
-      */
-    return (
-      <svg className="workflow-canvas" width="100%" height="100%">
-        <defs>
-          <marker
-            id="arrow"
-            viewBox="0 0 10 10"
-            refX="10"
-            refY="5"
-            markerWidth="4"
-            markerHeight="4"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 0 L 10 5 L 0 10 z" />
-          </marker>
-        </defs>
-      </svg>
-    )
-  }
+  const boardData = useMemo(() => {
+    return getWorkflowBoardData(workflow, nodesArr, weeks.entities)
+  }, [workflow, nodesArr, weeks])
 
-  /*******************************************************
-   * DRAGGABLE COLUMNS AREAS
-   *******************************************************/
-  const handleColumnDragEnd = (event) => {
-    const { active, over } = event
-    if (!over || active.id === over.id) {
-      return
+  // detach from redux state and locally make board changes to not trigger
+  // redux updates all over the place and (and restructure redux app state even further)
+  const [state, setState] = useState({
+    condensed: false,
+    columns: workflow.columns || [],
+    board: boardData
+  })
+
+  // sync local state to redux when board changes (nodes, actually)
+  const debouncedSync = useMemo(() => {
+    return debounce(() => {
+      setState(
+        produce((draft) => {
+          draft.board = boardData
+        })
+      )
+    }, 200)
+  }, [boardData])
+
+  useEffect(() => {
+    debouncedSync()
+    return () => {
+      debouncedSync.clear()
     }
+  }, [debouncedSync, nodes])
 
-    const oldIndex = columnOrder.indexOf(active.id)
-    const newIndex = columnOrder.indexOf(over.id)
+  const selectColumnsForWorkflow = useMemo(makeSelectColumnsForWorkflow, [])
+  const columns = useSelector((s: RootState) => selectColumnsForWorkflow(s))
+  const columnColors = getColumnData(columns).map((col) => {
+    return col.color
+  })
 
-    const reorderedColumns = WorkflowFunctions.reorderArray(
-      columnOrder,
-      oldIndex,
-      newIndex
+  useEffect(() => {
+    const el = weeksWrapperRef.current
+    return combine(
+      // because the user can technically drag elements outside the drop container
+      // we use a global monitor to reset the weeks/parts into non-condensed state
+      // when a drop (or error, or drop cancel) happens
+      monitorForElements({
+        onDrop({ source }) {
+          if (!isGridWeek(source.data) && !isSidebarPart(source.data)) {
+            return
+          }
+          setState(
+            produce((draft) => {
+              draft.condensed = false
+            })
+          )
+        }
+      }),
+      dropTargetForElements({
+        element: el,
+        canDrop({ source }) {
+          return isGridWeek(source.data) || isSidebarPart(source.data)
+        },
+        onDragStart({ source }) {
+          if (!isGridWeek(source.data) && !isSidebarPart(source.data)) {
+            return
+          }
+          setState(
+            produce((draft) => {
+              draft.condensed = true
+            })
+          )
+        }
+      })
     )
-    // set local state
-    setWeekOrder(reorderedColumns)
-    // commit to DB
-    //    WorkflowAction.
-  }
+  }, [])
 
-  const handleColumnDragStart = () => {
-    //  dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: false })))
-  }
+  const onColumnReorder: ColumnReorderCallbackFn = useCallback(
+    (oldIndex: number, newIndex: number) => {
+      if (oldIndex === newIndex) {
+        return
+      }
 
-  const columns = columnOrder.map((columnId) => (
-    <ColumnWrapper
-      key={`columnworkflow-${columnId}`}
-      objectId={columnId}
-      parentId={workflow.id}
-    />
-  ))
+      const reorderedColumns = swapInPlace(state.columns, oldIndex, newIndex)
 
-  const weeks = weekOrder.map((weekId) => (
-    <WeekWrapper
-      condensed={false} // TODO: where does this come from?
-      key={`weekworkflow-${weekId}`}
-      objectId={weekId}
-      parentId={workflow.id}
-      reordering={weekReordering}
-    />
-  ))
+      setState(
+        produce((draft) => {
+          draft.columns = reorderedColumns
+        })
+      )
+    },
+    [state.columns]
+  )
 
-  /*******************************************************
-   * DRAGGABLE WEEKS AREAS
-   *******************************************************/
-  const handleWeekDragEnd = (event) => {
-    const { active, over } = event
-    if (!over || active.id === over.id) {
-      return
-    }
-
-    const oldIndex = weekOrder.indexOf(active.id)
-    const newIndex = weekOrder.indexOf(over.id)
-
-    // calculate new order
-    const reorderedWeeks: number[] = WorkflowFunctions.reorderArray(
-      weekOrder,
-      oldIndex,
-      newIndex
+  // TODO: actually use real data instead of this cloning nonsense
+  const onWeekInsert = useCallback((insertIndex: number) => {
+    setState(
+      produce((draft) => {
+        const clone = draft.board[0]
+        draft.board.splice(insertIndex, 0, clone)
+      })
     )
+  }, [])
 
-    // set redux state
-    // dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: true })))
+  const onWeekReorder = useCallback((from: number, to: number) => {
+    setState(
+      produce((draft) => {
+        const moved = draft.board.splice(from, 1)
+        draft.board.splice(to, 0, moved[0])
+      })
+    )
+  }, [])
 
-    // set local state
-    setWeekOrder(reorderedWeeks)
+  const onRowDragEnd: RowReorderCallbackFn = useCallback((from, to) => {
+    setState(
+      produce((draft) => {
+        if (from.week === to.week) {
+          // reorganizing within the same week/part
+          const weekIndex = draft.board.findIndex((w) => w.id === from.week)
+          const moved = draft.board[weekIndex].rows.splice(from.y, 1)
+          draft.board[weekIndex].rows.splice(to.y, 0, moved[0])
+        } else {
+          // adding items to a different week/part
+          const fromIndex = draft.board.findIndex((w) => w.id === from.week)
+          const toIndex = draft.board.findIndex((w) => w.id === to.week)
+          const moved = draft.board[fromIndex].rows.splice(from.y, 1)
+          draft.board[toIndex].rows.splice(to.y, 0, moved[0])
+        }
+      })
+    )
+  }, [])
 
-    // commit to DB
-    //    WorkflowAction.
-  }
+  const onNodeDragEnd: CellReorderCallbackFn = useCallback(
+    (coords, newIndex) => {
+      setState(
+        produce((draft) => {
+          const weekIndex = draft.board.findIndex((w) => w.id === coords.week)
+          const reorderedColumns = swapInPlace(
+            draft.board[weekIndex].rows[coords.y],
+            coords.x,
+            newIndex
+          )
 
-  const handleWeekDragStart = () => {
-    // dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: false })))
-  }
+          draft.board[weekIndex].rows[coords.y] = reorderedColumns
+        })
+      )
+    },
+    []
+  )
 
-  /*******************************************************
-   * RETURN
-   *******************************************************/
   return (
-    <>
-      <OuterContentWrap>
-        <Styled.CellRow data-test-id="columns-block">
-          <DndContext
-            onDragEnd={handleColumnDragEnd}
-            onDragStart={handleColumnDragStart}
-          >
-            <SortableContext
-              items={columnOrder}
-              strategy={horizontalListSortingStrategy}
-            >
-              {columns}
-            </SortableContext>
-          </DndContext>
-        </Styled.CellRow>
+    <OuterContentWrap>
+      <ColumnsHeader
+        columns={state.columns}
+        parentId={workflow.id}
+        onReorder={onColumnReorder}
+      />
+      <div data-test-id="weeks-block" ref={weeksWrapperRef}>
+        {state.board.map((boardWeek, index) => (
+          <Week
+            key={`week_${boardWeek.id}`}
+            weekId={boardWeek.id}
+            weekRows={boardWeek.rows}
+            index={index}
+            parentId={workflow.id}
+            columnIds={state.columns}
+            columnColors={columnColors}
+            condensed={state.condensed}
+            onWeekInsert={onWeekInsert}
+            onWeekReorder={onWeekReorder}
+            onRowReorder={onRowDragEnd}
+            onNodeReorder={onNodeDragEnd}
+          />
+        ))}
+      </div>
 
-        <Box sx={{ my: 3 }}>
-          <Button
-            variant={weekReordering ? 'contained' : 'outlined'}
-            onClick={toggleWeekReordering}
-          >
-            {_t(weekReordering ? 'Save' : 'Reorder Weeks')}
-          </Button>
-        </Box>
-
-        <div data-test-id="weeks-block">
-          {weekReordering ? (
-            <DndContext
-              onDragEnd={handleWeekDragEnd}
-              onDragStart={handleWeekDragStart}
-            >
-              <SortableContext
-                items={weekOrder}
-                strategy={verticalListSortingStrategy}
-              >
-                {weeks}
-              </SortableContext>
-            </DndContext>
-          ) : (
-            weeks
-          )}
-        </div>
-      </OuterContentWrap>
       <CanvasPlaceholder />
-    </>
+    </OuterContentWrap>
   )
 }
 

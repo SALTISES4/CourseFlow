@@ -50,7 +50,7 @@ jobs:
           command: |
             . .venv/bin/activate
             pip install -r requirements/requirements.txt
-      - save_cache:  # Save the virtual environment to cache
+      - save_cache: # Save the virtual environment to cache
           key: deps3-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
           paths:
             - "~/repo/.venv"
@@ -61,7 +61,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/repo
-      - restore_cache:  # Restoring the packages from cache
+      - restore_cache: # Restoring the packages from cache
           key: deps3-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
       - run:
           name: Run Tests
@@ -75,7 +75,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/repo
-      - restore_cache:  # Restoring the packages from cache
+      - restore_cache: # Restoring the packages from cache
           key: deps3-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
       - run:
           name: Package Application
@@ -87,37 +87,6 @@ jobs:
           paths:
             - dist
 
-  upload-to-pypi:
-    executor: python_node
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/repo
-      - restore_cache:  # Restoring the packages from cache
-          key: deps3-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
-      - run:
-          name: Upload to PyPI
-          command: |
-            . .venv/bin/activate
-            twine upload dist/*  --non-interactive --verbose
-
-  # https://pypi.org/pypi/SALTISE-course-flow/json
-  get-packageversion:
-    executor: python_node
-    steps:
-      - checkout
-      - run:
-          name: Tappity Tip Tap
-          command: |
-            version=$(python ./scripts/get_latest_version_number.py)
-      - run:
-          name: Tappity Tip Tap
-          command: |
-            curl -u ${CIRCLE_TOKEN}: -X POST --header "Content-Type: application/json" -d '{
-              "parameters": {
-                "package_version": "$version"
-              }
-            }' https://circleci.com/api/v2/project/:project_slug/pipeline
 
 
 workflows:
@@ -128,39 +97,11 @@ workflows:
           filters:
             branches:
               only:
-#                - staging
+                #                - staging
                 - master
       - install-pip-requirements:
           filters:
             branches:
               only:
-#                - staging
-                - master
-# TESTS FAILILNG SKIP FOR NOW
-#      - run-tests:
-#          requires:
-#            - build-node
-#            - install-pip-requirements
-#          filters:
-#            branches:
-#              only:
-#                - staging
-#                - master
-      - package-app:
-          requires:
-#            - run-tests
-            - build-node
-            - install-pip-requirements
-          filters:
-            branches:
-              only:
-#                - staging
-                - master
-      - upload-to-pypi:
-          requires:
-            - package-app
-          filters:
-            branches:
-              only:
-#                - staging
+                #                - staging
                 - master

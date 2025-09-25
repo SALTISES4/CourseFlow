@@ -4,7 +4,6 @@ import Explore from '@cfPages/Library/Explore'
 import Favourites from '@cfPages/Library/Favourites'
 import MyLibrary from '@cfPages/Library/MyLibrary'
 import NotificationsPage from '@cfPages/Notifications'
-import ProjectComparison from '@cfPages/Workspace/ProjectComparison'
 import WorkflowPage from '@cfPages/Workspace/Workflow'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import { createBrowserRouter } from 'react-router-dom'
@@ -44,17 +43,13 @@ export enum CFRoutes {
   //  PROJECT
   PROJECT = `/${DOMAIN}/project/:id`,
   PROJECT_WORKFLOW = `/${DOMAIN}/project/:id/workflow/`,
-  PROJECT_COMPARISON = `/${DOMAIN}/project/:id/${RelativeRoutes.COMPARISON}`,
   // WORKFLOW
   WORKFLOW = `/${DOMAIN}/workflow/:id`,
   WORKFLOW_WORKFLOW = `/${DOMAIN}/workflow/:id/${RelativeRoutes.WORKFLOW}`,
   WORKFLOW_ALIGNMENT_ANALYSIS = `/${DOMAIN}/workflow/:id/${RelativeRoutes.ALIGNMENT_ANALYSIS}`,
   WORKFLOW_OUTCOME_TABLE = `/${DOMAIN}/workflow/:id/${RelativeRoutes.OUTCOME_TABLE}`,
   WORKFLOW_OUTCOME_EDIT = `/${DOMAIN}/workflow/:id/${RelativeRoutes.OUTCOME_EDIT}`,
-  WORKFLOW_GRID = `/${DOMAIN}/workflow/:id/${RelativeRoutes.GRID}`,
-
-  TEMP_PROJECT = `/${DOMAIN}/temp-project`,
-  TEMP_PROJECT_WORKFLOWS = `/${DOMAIN}/temp-project/workflows`
+  WORKFLOW_GRID = `/${DOMAIN}/workflow/:id/${RelativeRoutes.GRID}`
 }
 
 export const CFRouter = createBrowserRouter([
@@ -115,14 +110,6 @@ export const CFRouter = createBrowserRouter([
     )
   },
   {
-    path: CFRoutes.PROJECT_COMPARISON,
-    element: (
-      <Base>
-        <ProjectComparison />
-      </Base>
-    )
-  },
-  {
     path: `${CFRoutes.PROJECT}/*`,
     element: (
       <Base>
@@ -139,7 +126,6 @@ export const CFRouter = createBrowserRouter([
       </Base>
     )
   },
-
   {
     path: '*',
     element: <div>in browser router, caught </div>,

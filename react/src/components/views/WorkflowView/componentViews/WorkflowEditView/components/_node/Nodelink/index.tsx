@@ -3,7 +3,7 @@ import * as Constants from '@cf/utility/constants'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectNodelinkById } from '@cfRedux/selectors/nodelink.selector'
 import { RootState } from '@cfRedux/store'
-import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG'
+import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/_node/NodelinkSVG'
 import * as d3 from 'd3'
 import React, { useCallback, useEffect, useState } from 'react'
 import * as reactDom from 'react-dom'
@@ -14,7 +14,7 @@ type PropsType = {
   nodeDiv: React.MutableRefObject<HTMLElement>
 }
 
-const Nodelink = ({ objectId, nodeDiv }: PropsType) => {
+const Index = ({ objectId, nodeDiv }: PropsType) => {
   /*******************************************************
    * REDUX
    *******************************************************/
@@ -169,4 +169,4 @@ const Nodelink = ({ objectId, nodeDiv }: PropsType) => {
   return <>{portal}</>
 }
 
-export default Nodelink
+export default Index
