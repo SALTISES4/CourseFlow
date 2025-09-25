@@ -1,5 +1,5 @@
 import type { Outcome } from '@cf/redux/slices/outcomes.slice'
-import type { DraggableType } from '@cfViews/WorkflowView/componentViews/WorkflowEditView/types'
+import type { DraggableType } from '@cfViews/WorkflowView/WorkflowEditView/types'
 
 import type { DraggableBlockType } from './Draggable/types'
 

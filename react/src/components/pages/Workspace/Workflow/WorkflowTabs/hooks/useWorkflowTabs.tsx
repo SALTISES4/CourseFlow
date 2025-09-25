@@ -3,10 +3,9 @@ import { EWorkflow } from '@cf/HTTP/XMLHTTP/types/entity'
 import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/Utility.class'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
-import GridView from '@cfViews/WorkflowView/componentViews/GridView'
-import OutcomeEditView from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2'
-import OverviewView from '@cfViews/WorkflowView/componentViews/OverviewView'
-import WorkflowEditView from '@cfViews/WorkflowView/componentViews/WorkflowEditView'
+import OutcomeEditView from '@cfViews/WorkflowView/OutcomeEditViewV2'
+import OverviewView from '@cfViews/WorkflowView/OverviewView'
+import WorkflowEditView from '@cfViews/WorkflowView/WorkflowEditView'
 import Tab from '@mui/material/Tab'
 import { ReactNode } from 'react'
 import { Route, generatePath, useNavigate, useParams } from 'react-router-dom'
@@ -47,15 +46,6 @@ const useWorkflowTabs = (workflow: EWorkflow, context: WorkflowContextType) => {
       label: _t('Outcomes'),
       content: <OutcomeEditView />,
       allowedTabs: workflow.type == 'program' ? [3] : [2, 3]
-    },
-    {
-      type: WorkflowViewType.GRID_VIEW,
-      route: CFRoutes.WORKFLOW_GRID,
-      relRoute: RelativeRoutes.GRID,
-      label: _t('Grid view'),
-      content: <GridView />,
-      allowedTabs: [3],
-      hidden: ['activity', 'course'].includes(workflow.type)
     }
   ]
 

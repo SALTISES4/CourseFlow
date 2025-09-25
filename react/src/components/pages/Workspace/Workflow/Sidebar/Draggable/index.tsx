@@ -1,5 +1,5 @@
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { DraggableType } from '@cfViews/WorkflowView/componentViews/WorkflowEditView/types'
+import { DraggableType } from '@cfViews/WorkflowView/WorkflowEditView/types'
 import { SxProps } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import { ElementType, ReactNode, useEffect, useRef } from 'react'

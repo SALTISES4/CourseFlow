@@ -1,5 +1,5 @@
 import { _t } from '@cf/utility/Utility.class'
-import * as Styled from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/components/OutcomeTree/styles'
+import * as Styled from '@cfViews/WorkflowView/OutcomeEditViewV2/components/OutcomeTree/styles'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import { MouseEvent, MutableRefObject } from 'react'

@@ -13,7 +13,7 @@ import {
 import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/WorkflowDialogs'
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
 import { RootState } from '@cfRedux/store'
-import Index from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/WorkflowLegend'
+import Index from '@cfViews/WorkflowView/WorkflowEditView/components/WorkflowLegend'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Tabs from '@mui/material/Tabs'

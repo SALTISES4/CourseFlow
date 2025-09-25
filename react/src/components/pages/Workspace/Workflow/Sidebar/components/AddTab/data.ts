@@ -1,10 +1,10 @@
-import { getColumnColors } from '@cf/components/views/WorkflowView/componentViews/WorkflowEditView/utility'
+import { getColumnColors } from '@cfViews/WorkflowView/WorkflowEditView/utility'
 import {
   makeSelectColumnsForWorkflow,
   selectColumnById
 } from '@cf/redux/selectors/column.selector'
 import { TColumn, TWorkflow } from '@cf/redux/types/type'
-import { DraggableType } from '@cfViews/WorkflowView/componentViews/WorkflowEditView/types'
+import { DraggableType } from '@cfViews/WorkflowView/WorkflowEditView/types'
 
 import { AddTabType } from '../../types'
 
