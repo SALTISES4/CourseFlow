@@ -22,4 +22,3 @@ djangorestframework-camel-case
 drf_spectacular
 mysqlclient
 
--e file:./#egg=saltise_course_flow
