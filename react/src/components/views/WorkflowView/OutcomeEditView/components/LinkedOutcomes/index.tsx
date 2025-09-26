@@ -1,7 +1,7 @@
 import { selectOutcomeChildrenById } from '@cfRedux/selectors/outcomes.selector'
 import { RootState } from '@cfRedux/store'
 import { AppState } from '@cfRedux/types/type'
-import * as StyledOutcome from '@cfViews/WorkflowView/OutcomeEditViewV2/components/OutcomeTree/styles'
+import * as StyledOutcome from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import { MouseEvent, useCallback, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 

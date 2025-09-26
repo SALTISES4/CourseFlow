@@ -3,7 +3,7 @@ import { selectOutcomeChildrenById } from '@cfRedux/selectors/outcomes.selector'
 import { Outcome as OutcomeType } from '@cfRedux/slices/outcomes.slice'
 import { addOutcome } from '@cfRedux/slices/outcomes.slice'
 import { AppState } from '@cfRedux/types/type'
-import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditViewV2/components/LinkedOutcomes'
+import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
