@@ -1,6 +1,5 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/Utility.class'
-import WorkflowsMenu from '@cfComponents/__LEGACY/dialog/WorkflowsMenu'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -51,13 +50,7 @@ function LinkWorkflowDialogContents({
   data,
   onDialogClose
 }: LinkWorkflowDialogContentsType) {
-  return (
-    <WorkflowsMenu
-      type={'linkedWorkflow_menu'}
-      data={data}
-      actionFunction={onDialogClose}
-    />
-  )
+  return <>workflow link content goes here </>
 }
 
 export default WorkflowLinkDialog

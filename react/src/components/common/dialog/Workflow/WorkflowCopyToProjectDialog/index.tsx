@@ -1,6 +1,5 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/Utility.class'
-import WorkflowsMenu from '@cfComponents/__LEGACY/dialog/WorkflowsMenu'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -69,13 +68,7 @@ function TargetProjectDialogContents({
   data,
   onDialogClose
 }: TargetProjectDialogContentsType) {
-  return (
-    <WorkflowsMenu
-      type="target_project_menu"
-      data={data}
-      actionFunction={onDialogClose}
-    />
-  )
+  return <>copy to project content goes here </>
 }
 
 export default WorkflowCopyToProjectDialog

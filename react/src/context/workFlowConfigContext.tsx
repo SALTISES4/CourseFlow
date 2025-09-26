@@ -21,7 +21,6 @@ export type WorkflowContextType = {
     connectedUsers: ConnectedUser[]
     wsConnected: boolean
   }
-  container: any
   workflowView: WorkflowViewType
   setWorkflowView: Dispatch<SetStateAction<WorkflowViewType>>
 }
@@ -42,8 +41,7 @@ const WorkflowConfigProvider = ({ children, initialValue }: PropsType) => {
   ): Omit<WorkflowContextType, 'workflowView' | 'setWorkflowView'> => {
     const formattedValue = {
       editableMethods: initialValue.editableMethods,
-      ws: initialValue.ws,
-      container: ''
+      ws: initialValue.ws
     }
     return formattedValue
   }
