@@ -18,7 +18,6 @@ const Header = ({ project }: { project: ProjectDetailsType }) => (
       justifyContent="space-between"
       sx={{ mt: 6, mb: 3 }}
       // @todo selection manager is only defined in workflow currently so we'll need to go get that
-      // onClick={(evt) => context.selectionManager.changeSelection(evt)}
     >
       <Typography
         sx={{

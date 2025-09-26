@@ -17,7 +17,6 @@ export const useMenuActions = () => {
    * MENU HANDLERS
    *******************************************************/
   function openEditMenu(evt: EventUnion) {
-    // this.selectionManager.changeSelection(evt, this)
     dispatchDialog(DialogMode.WORKFLOW_EDIT)
   }
 

@@ -1,7 +1,6 @@
 import { ConnectedUser } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
 import { CfObjectType } from '@cf/types/enum'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
-import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 
 export const WorkflowConfigContext = React.createContext<WorkflowContextType>(
@@ -9,8 +8,6 @@ export const WorkflowConfigContext = React.createContext<WorkflowContextType>(
 )
 
 export type WorkflowContextType = {
-  selectionManager: SelectionManager
-
   editableMethods: {
     lockUpdate: (
       obj: { objectId: number; objectType: CfObjectType },
@@ -31,10 +28,7 @@ export type WorkflowContextType = {
 
 type PropsType = {
   children: ReactNode
-  initialValue: Pick<
-    WorkflowContextType,
-    'editableMethods' | 'ws' | 'selectionManager'
-  >
+  initialValue: Pick<WorkflowContextType, 'editableMethods' | 'ws'>
 }
 
 const WorkflowConfigProvider = ({ children, initialValue }: PropsType) => {
@@ -47,7 +41,6 @@ const WorkflowConfigProvider = ({ children, initialValue }: PropsType) => {
     initialValue: PropsType['initialValue']
   ): Omit<WorkflowContextType, 'workflowView' | 'setWorkflowView'> => {
     const formattedValue = {
-      selectionManager: initialValue.selectionManager,
       editableMethods: initialValue.editableMethods,
       ws: initialValue.ws,
       container: ''

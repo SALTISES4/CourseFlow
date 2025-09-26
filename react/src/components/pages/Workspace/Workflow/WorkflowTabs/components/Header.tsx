@@ -38,7 +38,6 @@ const Header = () => {
             gap: 1
           }}
           // TODO: add editable name functinality
-          // onClick={(evt) => context.selectionManager.changeSelection(evt)}
         >
           {workflowTitle({
             title: workflow.title,

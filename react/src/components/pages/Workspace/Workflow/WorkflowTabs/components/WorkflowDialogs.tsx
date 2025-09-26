@@ -38,11 +38,6 @@ const WorkflowDialogs = () => {
         refetch={refetch}
       />
       <ContributorRemoveDialog id={workflowId} type={WorkspaceType.WORKFLOW} />
-      {/*
-        @todo: still to implement
-      */}
-      {/*<ImportDialog />*/}
-      {/*<ProjectExportDialog {...dummyProjectExportData} />*/}
     </>
   )
 }

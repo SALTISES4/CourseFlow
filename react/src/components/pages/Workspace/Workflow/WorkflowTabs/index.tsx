@@ -26,11 +26,7 @@ import { Routes, matchPath } from 'react-router-dom'
  * above itself, the right sidebar, the header (description, sharing etc),
  * and then the tabs that allow the user to select a "type" of workflow view.
  */
-// @todo was previously extending EditableComponentWithActions
-// but as far as i can tell it uses nothing from
-// EditableComponentWithActions or EditableComponentWithComments
-// with possible exception of addDeleteSelf (which needs addressing independently)
-// class WorkflowTabsUnconnected extends EditableComponent<PropsType, StateType> {
+
 const WorkflowTabs = () => {
   const context = useContext(WorkflowConfigContext)
   const workflow = useSelector((state: RootState) => state.workspace.workflow)
@@ -42,26 +38,6 @@ const WorkflowTabs = () => {
 
   // @todo should be memoized (calling the tabs per render)
   const { tabRoutes, tabButtons, tabs } = useWorkflowTabs(workflow, context)
-
-  // @todo this is called originally via
-  //    getWorkflowParentDataQuery(this.workflowId, (response) => {
-  //      this.props.dispatch(
-  //        ActionCreator.refreshStoreData(response.dataPackage)
-  //      )
-  //    })
-  //  }
-  //
-  //   in component did mount
-  //   move it to outcomedit view
-  // const {
-  //   data: workflowParentData,
-  //   error: workflowParentError,
-  //   isLoading: workflowParentIsLoading,
-  //   isError: workflowParentIsError
-  // } = useQuery<WorkflowParentDataQueryResp>({
-  //   queryKey: ['getWorkflowParentDataQuery'],
-  //   queryFn: () => getWorkflowParentDataQuery(workflow.id),
-  // })
 
   /*******************************************************
    * FUNCTIONS
@@ -75,8 +51,6 @@ const WorkflowTabs = () => {
       context.setWorkflowView(match.type)
     }
   }, [])
-
-  // Utility.logger({ context })
 
   /*******************************************************
    * COMPONENTS
@@ -94,13 +68,6 @@ const WorkflowTabs = () => {
    *******************************************************/
   return (
     <>
-      {
-        // @todo leave as reference, this 'invokes' the right sidebar into a portal
-        // it's trying to set up the right side bar context from current workflow data
-        // theres is no reason for it be here
-        // this.addEditable(this.props.data)
-      }
-
       {/*
       this div has been randomly dropped here so we can still see the legacy selectmanager in action
       after that it can go
@@ -132,12 +99,6 @@ const WorkflowTabs = () => {
           </div>
 
           <WorkspaceSidebar />
-
-          {/*<RightSideBar*/}
-          {/*  wfcontext={WFContext.WORKFLOW}*/}
-          {/*  data={this.props.data}*/}
-          {/*  readOnly={this.readOnly}*/}
-          {/*/>*/}
         </div>
       </div>
 

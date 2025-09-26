@@ -99,7 +99,6 @@ const Workflow = () => {
     <WorkflowSidebarContextProvider>
       <WorkflowConfigProvider
         initialValue={{
-          selectionManager: null,
           editableMethods: {
             lockUpdate,
             microUpdate,
