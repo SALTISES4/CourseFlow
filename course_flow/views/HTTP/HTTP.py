@@ -44,11 +44,6 @@ class CreateViewNoAutocomplete(CreateView):
         return form
 
 
-def ratelimited_view(request, exception):
-    return HttpResponse(
-        "Error: too many requests to public page. Please wait at least one minute then try again.",
-        status=429,
-    )
 
 
 #

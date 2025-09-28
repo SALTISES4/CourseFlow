@@ -3,7 +3,6 @@
 #########################################################
 from django.urls import path
 from django.views.i18n import JavaScriptCatalog
-from ratelimit.decorators import ratelimit
 
 from course_flow import views
 
@@ -66,9 +65,7 @@ def html_patterns():
         ),
         path(
             "workflow/public/<int:pk>/",
-            ratelimit(key="ip", method=["GET"], rate="5/m", block=True)(
-                views.html.client.default_react_view,
-            ),
+            views.html.client.default_react_view,
             name="workflow-public",
         ),
         #########################################################
