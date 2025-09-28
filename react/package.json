@@ -71,6 +71,7 @@
     "jquery": "^3.7.1",
     "jquery-ui": "^1.14.1",
     "js-cookie": "^3.0.5",
+    "knip": "^5.64.0",
     "mathjs": "^14.0.0",
     "merge-refs": "^1.3.0",
     "mui-color-input": "^4.0.1",
