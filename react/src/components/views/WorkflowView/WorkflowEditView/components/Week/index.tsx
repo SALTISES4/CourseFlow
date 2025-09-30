@@ -9,7 +9,7 @@ import {
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import { CfObjectType } from '@cf/types/enum'
-import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts.tsx'
+import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { RootState } from '@cfRedux/store'

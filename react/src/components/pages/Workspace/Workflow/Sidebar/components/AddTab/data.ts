@@ -19,15 +19,11 @@ type ColumnNodeDataType = {
 export function getColumnData(columns: TColumn[]): ColumnNodeDataType[] {
   const colors = getColumnColors(columns)
 
-  return columns.map((column, index) => {
-    const parsed: ColumnNodeDataType = {
-      id: column.id,
-      title: column.title ?? column.columnTypeDisplay,
-      color: column.colour
-    }
-
-    return parsed
-  })
+  return columns.map((column, index) => ({
+    id: column.id,
+    title: column.title ?? column.columnTypeDisplay,
+    color: colors[index]
+  }))
 }
 
 const data: AddTabType = {

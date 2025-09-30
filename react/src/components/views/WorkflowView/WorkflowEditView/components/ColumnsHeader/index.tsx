@@ -143,7 +143,12 @@ const ColumnCellInner = ({
   }, [index, columnId])
 
   return (
-    <Styled.CellInner ref={ref} selected={selected} dragging={state.dragging}>
+    <Styled.CellInner
+      ref={ref}
+      selected={selected}
+      dragShrink={false}
+      dropHighlight={state.dragging}
+    >
       <ColumnInner objectId={columnId} parentId={parentId} />
     </Styled.CellInner>
   )

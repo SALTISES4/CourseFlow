@@ -10,7 +10,7 @@ import { RootState } from '@cfRedux/store'
 import { getColumnData } from '@cfSidebar/components/AddTab/data'
 import { debounce } from '@mui/material'
 import { produce } from 'immer'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import ColumnsHeader from './components/ColumnsHeader'
@@ -238,4 +238,4 @@ const WorkflowEditView = () => {
   )
 }
 
-export default WorkflowEditView
+export default memo(WorkflowEditView)
