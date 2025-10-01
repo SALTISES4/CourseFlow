@@ -8,7 +8,7 @@ import * as React from 'react'
 //The ports used to connect links for the nodes
 type PropsType = {
   nodeId: number
-  nodeDiv: React.RefObject<HTMLDivElement>
+  nodeDiv: React.MutableRefObject<HTMLElement>
   show: boolean
 }
 type StateType = NodeDom

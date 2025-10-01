@@ -7,7 +7,7 @@ import useHover from '@cf/hooks/useHover'
 import { CfObjectType } from '@cf/types/enum'
 import { nodelinkOutcome } from '@cfRedux/slices/node.slice'
 import { isOutcomeLink } from '@cfRedux/slices/outcomes.slice'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TNode } from '@cfRedux/types/type'
 import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
 import Autolink from '@cfViews/WorkflowView/WorkflowEditView/components/_node/Autolink'
 import Nodelink from '@cfViews/WorkflowView/WorkflowEditView/components/_node/Nodelink'
@@ -148,7 +148,9 @@ const WeekCellInner = (props: PropsType) => {
         onDrop: ({ source }) => {
           const data = source.data
           if (isOutcomeLink(data) && props.type === WeekCellNodeType.NODE) {
-            dispatch(nodelinkOutcome({ outcomeId: data.id, nodeId: props.id }))
+            dispatch(
+              nodelinkOutcome({ outcomeId: data.id, nodeId: props.node.id })
+            )
             toggleState('dropHighlight', false)
           }
         }
@@ -188,22 +190,22 @@ const WeekCellInner = (props: PropsType) => {
 
   useEffect(() => {
     if (!state.initialRender && props.type === WeekCellNodeType.NODE) {
-      const objectId = props.id
+      const { node } = props
       setState(
         produce((draft) => {
           draft.nodePorts = createPortal(
-            <NodePorts show={isHovered} nodeId={objectId} nodeDiv={ref} />,
+            <NodePorts show={isHovered} nodeId={node.id} nodeDiv={ref} />,
             $('.workflow-canvas')[0]
           )
 
-          if (props.outgoingLinks.length) {
-            draft.nodeLinks = props.outgoingLinks.map((link) => (
+          if (node.outgoingLinks.length) {
+            draft.nodeLinks = node.outgoingLinks.map((link) => (
               <Nodelink key={link} objectId={link} nodeDiv={ref} />
             ))
           }
 
-          if (props.hasAutoLink) {
-            draft.nodeAutoLink = <Autolink nodeId={objectId} nodeDiv={ref} />
+          if (node.hasAutolink) {
+            draft.nodeAutoLink = <Autolink nodeId={node.id} nodeDiv={ref} />
           }
         })
       )
@@ -213,48 +215,44 @@ const WeekCellInner = (props: PropsType) => {
   if (type === WeekCellNodeType.PHANTOM) {
     return <div style={{ backgroundColor: borderColor }} />
   } else {
-    const {
-      id,
-      title,
-      description,
-      contextType,
-      taskType,
-      time,
-      linkedOutcomes,
-      onClick
-    } = props
+    const { node } = props
 
     const selected =
-      sidebarData.objectType === CfObjectType.NODE && sidebarData.id === id
+      sidebarData.objectType === CfObjectType.NODE && sidebarData.id === node.id
 
     return (
       <Styled.CellInner
-        id={`node-${id}`}
+        id={`node-${node.id}`}
         ref={ref}
         selected={selected}
         dropHighlight={state.dropHighlight}
         dragShrink={state.dragging}
       >
-        <HoverMenu show={isHovered} id={id} />
-        {!!linkedOutcomes?.length && (
+        <HoverMenu show={isHovered} id={node.id} />
+        {!!node.outcomenodeSet?.length && (
           <LinkedOutcomes
-            parent={{ id, type: 'node' }}
-            outcomes={linkedOutcomes}
+            parent={{ id: node.id, type: 'node' }}
+            outcomes={node.outcomenodeSet}
           />
         )}
         <StyledNode.Border sx={{ backgroundColor: borderColor }} />
-        <StyledNode.Content onClick={onClick}>
-          <StyledNode.Title variant="body2">{title}</StyledNode.Title>
-          {description && (
+        <StyledNode.Content onClick={props.onClick}>
+          <StyledNode.Title variant="body2">
+            {node.title ?? `Empty title (#${node.id})`}
+          </StyledNode.Title>
+          {node.description && (
             <StyledNode.Subtitle variant="caption">
-              {description}
+              {node.description}
             </StyledNode.Subtitle>
           )}
           <Meta
             workflow="#"
-            contextType={contextType}
-            taskType={taskType}
-            time={time}
+            contextType={node.contextClassification}
+            taskType={node.taskClassification}
+            time={{
+              length: node.timeRequired,
+              unit: node.timeUnits
+            }}
           />
         </StyledNode.Content>
         {state.nodePorts}

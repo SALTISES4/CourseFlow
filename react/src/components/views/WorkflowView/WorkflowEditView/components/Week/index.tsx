@@ -50,7 +50,6 @@ type WeekPropsType = {
   index: number
   weekId: number
   condensed: boolean
-  weekRows: BoardWeekRowType[]
   parentId: number
   columnIds: number[]
   columnColors: string[]
@@ -67,6 +66,7 @@ type WeekStateType = {
 }
 
 const Week = (props: WeekPropsType) => {
+  const dispatch = useDispatch()
   const [state, setState] = useState<WeekStateType>({
     expanded: true,
     closestEdge: null,
@@ -75,7 +75,6 @@ const Week = (props: WeekPropsType) => {
   const sidebarData = useSelector((state: RootState) => state.sidebar.edit)
   const weekWrapperRef = useRef<HTMLDivElement>(null)
   const dragHandleRef = useRef<HTMLDivElement>(null)
-  const dispatch = useDispatch()
   const workflow = useSelector((state: RootState) => state.workspace.workflow)
   const week = useSelector((state: RootState) =>
     selectWeekById(state, props.weekId)
@@ -202,14 +201,15 @@ const Week = (props: WeekPropsType) => {
     )
   }, [])
 
-  const weekGrid = props.weekRows.map((row, rowIndex) => (
+  const weekGrid = week.nodes.map((nodeId, rowIndex) => (
     <WeekRow
       key={`week_${props.weekId}_${rowIndex}`}
-      row={row}
+      nodeId={nodeId}
       rowIndex={rowIndex}
-      rowCount={props.weekRows.length}
+      totalRows={week.nodes.length}
       weekId={props.weekId}
       parentId={props.parentId}
+      columnIds={props.columnIds}
       columnColors={props.columnColors}
       onNodeReorder={props.onNodeReorder}
       onRowReorder={props.onRowReorder}
@@ -253,11 +253,12 @@ const Week = (props: WeekPropsType) => {
 }
 
 type WeekRowPropsType = {
-  row: BoardWeekRowType
+  nodeId: number
   parentId: number
   weekId: number
   rowIndex: number
-  rowCount: number
+  totalRows: number
+  columnIds: WeekPropsType['columnIds']
   columnColors: WeekPropsType['columnColors']
   onRowReorder: WeekPropsType['onRowReorder']
   onNodeReorder: WeekPropsType['onNodeReorder']
@@ -270,15 +271,17 @@ type WeekRowStateType = {
 }
 
 const WeekRow = ({
-  row,
+  nodeId,
   weekId,
   rowIndex,
-  rowCount,
+  totalRows,
+  columnIds,
   columnColors,
   onNodeReorder,
   onRowReorder,
   onNodeClick
 }: WeekRowPropsType) => {
+  const nodes = useSelector((state: RootState) => state.workspace.node)
   const ref = useRef<HTMLDivElement>(null)
   const [state, setState] = useState<WeekRowStateType>({
     edge: null,
@@ -332,7 +335,7 @@ const WeekRow = ({
           // and the bottom indicator when dragging the bottom-most row
           if (
             fromData.coords.y === toData.coords.y &&
-            toData.coords.y === rowCount - 1 &&
+            toData.coords.y === totalRows - 1 &&
             edge === 'bottom'
           ) {
             return
@@ -385,7 +388,7 @@ const WeekRow = ({
           // same as above, but for the bottom edge
           if (edge === 'bottom') {
             if (from.y > to.y) {
-              to.y = Math.min(rowCount, to.y + 1)
+              to.y = Math.min(totalRows, to.y + 1)
             }
           }
         } else {
@@ -397,7 +400,7 @@ const WeekRow = ({
 
           // same as above, but for the bottom edge
           if (edge === 'bottom') {
-            to.y = Math.min(rowCount, to.y + 1)
+            to.y = Math.min(totalRows, to.y + 1)
           }
         }
 
@@ -406,15 +409,11 @@ const WeekRow = ({
       },
       onDragLeave: resetState
     })
-  }, [weekId, rowIndex, rowCount, onRowReorder, resetState])
+  }, [weekId, rowIndex, totalRows, onRowReorder, resetState])
 
   // show a 'drag things into this container' message if nothing is being dragged
   // and all the nodes for this row are phantom nodes
-  if (
-    rowCount === 1 &&
-    row.every((node) => node === WeekCellNodeType.PHANTOM) &&
-    !state.draggedOver
-  ) {
+  if (totalRows === 1 && !nodeId && !state.draggedOver) {
     return (
       <Styled.CellRow ref={ref}>
         <span style={{ minHeight: 50 }}>
@@ -426,10 +425,7 @@ const WeekRow = ({
 
   // don't render empty phantom rows unless it's the only empty row in the week/part
   // but still need to supply the ref to make drag listeners happy hence the empty div
-  if (
-    rowCount !== 1 &&
-    row.every((node) => node === WeekCellNodeType.PHANTOM)
-  ) {
+  if (totalRows !== 1 && !nodeId) {
     return (
       <Styled.CellRow ref={ref} style={{ display: 'none' }}>
         <Styled.CellRowIndicator edge={state.edge} />
@@ -437,12 +433,15 @@ const WeekRow = ({
     )
   }
 
+  const nodesArr = Object.entries(nodes.entities).map(([_, item]) => item)
+  const node = nodesArr.find((n) => n.id === nodeId)
+
   return (
-    <Styled.CellRow ref={ref}>
+    <Styled.CellRow ref={ref} data-node-id={node?.id}>
       <Styled.CellRowIndicator edge={state.edge} />
-      {row.map((node, nodeIndex) => (
+      {columnIds.map((columnId, nodeIndex) => (
         <Fragment key={`${weekId}_${rowIndex}_${nodeIndex}`}>
-          {node === WeekCellNodeType.PHANTOM ? (
+          {!node || node.column !== columnId ? (
             <WeekCell
               type={WeekCellNodeType.PHANTOM}
               coords={{
@@ -455,22 +454,14 @@ const WeekRow = ({
             />
           ) : (
             <WeekCell
-              id={node.id}
               type={WeekCellNodeType.NODE}
               coords={{
                 week: weekId,
                 x: nodeIndex,
                 y: rowIndex
               }}
+              node={node}
               borderColor={columnColors[nodeIndex]}
-              title={node.title}
-              description={node.description}
-              hasAutoLink={node.hasAutoLink}
-              outgoingLinks={node.outgoingLinks}
-              contextType={node.contextType}
-              taskType={node.taskType}
-              linkedOutcomes={node.linkedOutcomes}
-              time={node.time}
               onClick={(e) => onNodeClick(e, node.id)}
             />
           )}

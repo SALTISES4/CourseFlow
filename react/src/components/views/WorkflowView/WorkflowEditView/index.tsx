@@ -219,7 +219,6 @@ const WorkflowEditView = () => {
           <Week
             key={`week_${boardWeek.id}`}
             weekId={boardWeek.id}
-            weekRows={boardWeek.rows}
             index={index}
             parentId={workflow.id}
             columnIds={state.columns}

@@ -1,6 +1,7 @@
+import { TNode } from '@cf/redux/types/type'
 import { MouseEvent, ReactNode } from 'react'
 
-import { BoardNodeDataType, CellDataType } from '../../types'
+import { CellDataType } from '../../types'
 
 export enum WeekCellNodeType {
   PHANTOM = 'phantom',
@@ -17,19 +18,8 @@ export type PhantomPropsType = SharedProps & {
   onReorder: (coords: CellDataType['coords'], newIndex: number) => void
 }
 
-export type NodePropsType = SharedProps &
-  Pick<
-    BoardNodeDataType,
-    | 'id'
-    | 'outgoingLinks'
-    | 'hasAutoLink'
-    | 'contextType'
-    | 'taskType'
-    | 'time'
-    | 'linkedOutcomes'
-  > & {
-    type: WeekCellNodeType.NODE
-    title: string | ReactNode
-    description: string | ReactNode
-    onClick: (e: MouseEvent<HTMLDivElement>) => void
-  }
+export type NodePropsType = SharedProps & {
+  node: TNode
+  type: WeekCellNodeType.NODE
+  onClick: (e: MouseEvent<HTMLDivElement>) => void
+}
