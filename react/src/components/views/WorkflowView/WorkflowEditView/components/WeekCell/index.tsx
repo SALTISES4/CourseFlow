@@ -238,13 +238,8 @@ const WeekCellInner = (props: PropsType) => {
         <StyledNode.Border sx={{ backgroundColor: borderColor }} />
         <StyledNode.Content onClick={props.onClick}>
           <StyledNode.Title variant="body2">
-            {node.title ?? `Empty title (#${node.id})`}
+            {node.title || `Empty title (#${node.id})`}
           </StyledNode.Title>
-          {node.description && (
-            <StyledNode.Subtitle variant="caption">
-              {node.description}
-            </StyledNode.Subtitle>
-          )}
           <Meta
             workflow="#"
             contextType={node.contextClassification}
