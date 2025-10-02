@@ -1,3 +1,4 @@
+import { swapInPlace } from '@cf/components/views/WorkflowView/WorkflowEditView/utility'
 import {
   ColumnActions,
   ColumnWorkflowActions,
@@ -47,6 +48,19 @@ const workflowSlice = createSlice({
     },
     changeField(state, action: PayloadAction<{ json: any }>) {
       Object.assign(state, action.payload.json)
+    },
+    // workflow reorder columns
+    reorderColumns(
+      state,
+      action: PayloadAction<{ moveIndex: number; toIndex: number }>
+    ) {
+      const { moveIndex, toIndex } = action.payload
+
+      if (moveIndex === toIndex) {
+        return
+      }
+
+      state.columns = swapInPlace(state.columns, moveIndex, toIndex)
     }
   },
   extraReducers: (builder) => {
@@ -290,6 +304,8 @@ export const {
   deleteSelfSoft: workflowDeleteSelfSoft,
   restoreSelf: workflowRestoreSelf,
   createLock: workflowCreateLock,
-  changeField: workflowChangeField
+  changeField: workflowChangeField,
+  reorderColumns: workflowMoveColumns
 } = workflowSlice.actions
+
 export default workflowSlice.reducer

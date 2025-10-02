@@ -4,13 +4,14 @@ import {
   monitorForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { OuterContentWrap } from '@cf/mui/helper'
+import { selectWorkflowColumns } from '@cf/redux/selectors/column.selector'
+import { workflowMoveColumns } from '@cf/redux/slices/workflow.slice'
 import { _t } from '@cf/utility/Utility.class'
-import { makeSelectColumnsForWorkflow } from '@cfRedux/selectors/column.selector'
 import { RootState } from '@cfRedux/store'
 import { getColumnData } from '@cfSidebar/components/AddTab/data'
 import { produce } from 'immer'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import ColumnsHeader from './components/ColumnsHeader'
 import Week from './components/Week'
@@ -21,7 +22,6 @@ import {
   isGridWeek,
   isSidebarPart
 } from './types'
-import { swapInPlace } from './utility'
 
 const CanvasPlaceholder = () => (
   <svg className="workflow-canvas" width="100%" height="100%">
@@ -42,21 +42,13 @@ const CanvasPlaceholder = () => (
 )
 
 const WorkflowEditView = () => {
+  const dispatch = useDispatch()
   const weeksWrapperRef = useRef<HTMLDivElement>(null)
   const workflow = useSelector((state: RootState) => state.workspace.workflow)
-  // const nodes = useSelector((state: RootState) => state.workspace.node)
-  // const weeks = useSelector((state: RootState) => state.workspace.week)
-
-  // detach from redux state and locally make board changes to not trigger
-  // redux updates all over the place and (and restructure redux app state even further)
+  const workflowColumns = useSelector(selectWorkflowColumns)
+  const columnColors = getColumnData(workflowColumns).map((col) => col.color)
   const [state, setState] = useState({
     condensed: false
-  })
-
-  const selectColumnsForWorkflow = useMemo(makeSelectColumnsForWorkflow, [])
-  const columns = useSelector((s: RootState) => selectColumnsForWorkflow(s))
-  const columnColors = getColumnData(columns).map((col) => {
-    return col.color
   })
 
   useEffect(() => {
@@ -98,20 +90,9 @@ const WorkflowEditView = () => {
 
   const onColumnReorder: ColumnReorderCallbackFn = useCallback(
     (oldIndex: number, newIndex: number) => {
-      console.log('+++ COLUMN reorder', { oldIndex, newIndex })
-      // if (oldIndex === newIndex) {
-      //   return
-      // }
-
-      // const reorderedColumns = swapInPlace(workflow.columns, oldIndex, newIndex)
-
-      // setState(
-      //   produce((draft) => {
-      //     draft.columns = reorderedColumns
-      //   })
-      // )
+      dispatch(workflowMoveColumns({ moveIndex: oldIndex, toIndex: newIndex }))
     },
-    []
+    [dispatch]
   )
 
   const onWeekInsert = useCallback((insertIndex: number) => {
