@@ -8,7 +8,6 @@ import { _t } from '@cf/utility/Utility.class'
 import { makeSelectColumnsForWorkflow } from '@cfRedux/selectors/column.selector'
 import { RootState } from '@cfRedux/store'
 import { getColumnData } from '@cfSidebar/components/AddTab/data'
-import { debounce } from '@mui/material'
 import { produce } from 'immer'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -22,13 +21,7 @@ import {
   isGridWeek,
   isSidebarPart
 } from './types'
-import { getWorkflowBoardData, swapInPlace } from './utility'
-
-/*
-  .workflow-canvas is used for all kinds of targeting´´
-  nodes and nodelinks (drawn line connections between nodes) are added/rendered to the canvas and they seem to float on top of react
-  it doesn't look like comments, nodes, weeks etc are part of the 3js stuff
-*/
+import { swapInPlace } from './utility'
 
 const CanvasPlaceholder = () => (
   <svg className="workflow-canvas" width="100%" height="100%">
@@ -51,45 +44,14 @@ const CanvasPlaceholder = () => (
 const WorkflowEditView = () => {
   const weeksWrapperRef = useRef<HTMLDivElement>(null)
   const workflow = useSelector((state: RootState) => state.workspace.workflow)
-  const nodes = useSelector((state: RootState) => state.workspace.node)
-  const weeks = useSelector((state: RootState) => state.workspace.week)
-
-  // memoize costly state derivations
-  // const weeksMap = useMemo(() => {
-  //   return Object.fromEntries(weeks.entities.map((week) => [week.id, week]))
-  // }, [weeks])
-
-  const nodesArr = Object.entries(nodes.entities).map(([_, item]) => item)
-
-  const boardData = useMemo(() => {
-    return getWorkflowBoardData(workflow, nodesArr, weeks.entities)
-  }, [workflow, nodesArr, weeks])
+  // const nodes = useSelector((state: RootState) => state.workspace.node)
+  // const weeks = useSelector((state: RootState) => state.workspace.week)
 
   // detach from redux state and locally make board changes to not trigger
   // redux updates all over the place and (and restructure redux app state even further)
   const [state, setState] = useState({
-    condensed: false,
-    columns: workflow.columns || [],
-    board: boardData
+    condensed: false
   })
-
-  // sync local state to redux when board changes (nodes, actually)
-  const debouncedSync = useMemo(() => {
-    return debounce(() => {
-      setState(
-        produce((draft) => {
-          draft.board = boardData
-        })
-      )
-    }, 200)
-  }, [boardData])
-
-  useEffect(() => {
-    debouncedSync()
-    return () => {
-      debouncedSync.clear()
-    }
-  }, [debouncedSync, nodes])
 
   const selectColumnsForWorkflow = useMemo(makeSelectColumnsForWorkflow, [])
   const columns = useSelector((s: RootState) => selectColumnsForWorkflow(s))
@@ -136,73 +98,77 @@ const WorkflowEditView = () => {
 
   const onColumnReorder: ColumnReorderCallbackFn = useCallback(
     (oldIndex: number, newIndex: number) => {
-      if (oldIndex === newIndex) {
-        return
-      }
+      console.log('+++ COLUMN reorder', { oldIndex, newIndex })
+      // if (oldIndex === newIndex) {
+      //   return
+      // }
 
-      const reorderedColumns = swapInPlace(state.columns, oldIndex, newIndex)
+      // const reorderedColumns = swapInPlace(workflow.columns, oldIndex, newIndex)
 
-      setState(
-        produce((draft) => {
-          draft.columns = reorderedColumns
-        })
-      )
+      // setState(
+      //   produce((draft) => {
+      //     draft.columns = reorderedColumns
+      //   })
+      // )
     },
-    [state.columns]
+    []
   )
 
-  // TODO: actually use real data instead of this cloning nonsense
   const onWeekInsert = useCallback((insertIndex: number) => {
-    setState(
-      produce((draft) => {
-        const clone = draft.board[0]
-        draft.board.splice(insertIndex, 0, clone)
-      })
-    )
+    console.log('+++ WEEK INSERT', { insertIndex })
+    // setState(
+    //   produce((draft) => {
+    //     const clone = draft.board[0]
+    //     draft.board.splice(insertIndex, 0, clone)
+    //   })
+    // )
   }, [])
 
   const onWeekReorder = useCallback((from: number, to: number) => {
-    setState(
-      produce((draft) => {
-        const moved = draft.board.splice(from, 1)
-        draft.board.splice(to, 0, moved[0])
-      })
-    )
+    console.log('+++ WEEK REORDER', { from, to })
+    // setState(
+    //   produce((draft) => {
+    //     const moved = draft.board.splice(from, 1)
+    //     draft.board.splice(to, 0, moved[0])
+    //   })
+    // )
   }, [])
 
   const onRowDragEnd: RowReorderCallbackFn = useCallback((from, to) => {
-    setState(
-      produce((draft) => {
-        if (from.week === to.week) {
-          // reorganizing within the same week/part
-          const weekIndex = draft.board.findIndex((w) => w.id === from.week)
-          const moved = draft.board[weekIndex].rows.splice(from.y, 1)
-          draft.board[weekIndex].rows.splice(to.y, 0, moved[0])
-        } else {
-          // adding items to a different week/part
-          const fromIndex = draft.board.findIndex((w) => w.id === from.week)
-          const toIndex = draft.board.findIndex((w) => w.id === to.week)
-          const moved = draft.board[fromIndex].rows.splice(from.y, 1)
-          draft.board[toIndex].rows.splice(to.y, 0, moved[0])
-        }
-      })
-    )
+    console.log('+++ ROW dragend', { from, to })
+    // setState(
+    //   produce((draft) => {
+    //     if (from.week === to.week) {
+    //       // reorganizing within the same week/part
+    //       const weekIndex = draft.board.findIndex((w) => w.id === from.week)
+    //       const moved = draft.board[weekIndex].rows.splice(from.y, 1)
+    //       draft.board[weekIndex].rows.splice(to.y, 0, moved[0])
+    //     } else {
+    //       // adding items to a different week/part
+    //       const fromIndex = draft.board.findIndex((w) => w.id === from.week)
+    //       const toIndex = draft.board.findIndex((w) => w.id === to.week)
+    //       const moved = draft.board[fromIndex].rows.splice(from.y, 1)
+    //       draft.board[toIndex].rows.splice(to.y, 0, moved[0])
+    //     }
+    //   })
+    // )
   }, [])
 
   const onNodeDragEnd: CellReorderCallbackFn = useCallback(
     (coords, newIndex) => {
-      setState(
-        produce((draft) => {
-          const weekIndex = draft.board.findIndex((w) => w.id === coords.week)
-          const reorderedColumns = swapInPlace(
-            draft.board[weekIndex].rows[coords.y],
-            coords.x,
-            newIndex
-          )
+      console.log('+++ NODE dragend', { coords, newIndex })
+      // setState(
+      //   produce((draft) => {
+      //     const weekIndex = draft.board.findIndex((w) => w.id === coords.week)
+      //     const reorderedColumns = swapInPlace(
+      //       draft.board[weekIndex].rows[coords.y],
+      //       coords.x,
+      //       newIndex
+      //     )
 
-          draft.board[weekIndex].rows[coords.y] = reorderedColumns
-        })
-      )
+      //     draft.board[weekIndex].rows[coords.y] = reorderedColumns
+      //   })
+      // )
     },
     []
   )
@@ -210,18 +176,18 @@ const WorkflowEditView = () => {
   return (
     <OuterContentWrap>
       <ColumnsHeader
-        columns={state.columns}
+        columns={workflow.columns}
         parentId={workflow.id}
         onReorder={onColumnReorder}
       />
       <div data-test-id="weeks-block" ref={weeksWrapperRef}>
-        {state.board.map((boardWeek, index) => (
+        {workflow.weeks.map((weekId, index) => (
           <Week
-            key={`week_${boardWeek.id}`}
-            weekId={boardWeek.id}
+            key={`week_${weekId}`}
+            weekId={weekId}
             index={index}
             parentId={workflow.id}
-            columnIds={state.columns}
+            columnIds={workflow.columns}
             columnColors={columnColors}
             condensed={state.condensed}
             onWeekInsert={onWeekInsert}

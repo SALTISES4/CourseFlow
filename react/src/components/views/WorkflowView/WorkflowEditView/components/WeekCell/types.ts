@@ -1,5 +1,5 @@
 import { TNode } from '@cf/redux/types/type'
-import { MouseEvent, ReactNode } from 'react'
+import { MouseEvent } from 'react'
 
 import { CellDataType } from '../../types'
 
