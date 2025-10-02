@@ -18,7 +18,7 @@ const updateEntity = <T, S>(
   state: T,
   action: PayloadAction<{
     id: number
-    data: Pick<S>
+    data: Partial<S>
   }>
 ) => {
   return state.map((item) =>

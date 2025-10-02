@@ -9,12 +9,10 @@ export const {
   selectIds: selectColumnIds
 } = columnAdapter.getSelectors<RootState>((state) => state.workspace.column)
 
-// Factory keeps memoization per component instance
-export const makeSelectColumnsForWorkflow = () =>
-  createSelector(
-    [
-      (s: RootState) => s.workspace.workflow?.columns ?? [],
-      selectColumnEntities
-    ],
-    (columnIds, entities) => columnIds.map((id) => entities[id]).filter(Boolean)
-  )
+const selectWorkflowColumnIds = (state: RootState) =>
+  state.workspace.workflow.columns
+
+export const selectWorkflowColumns = createSelector(
+  [selectWorkflowColumnIds, selectColumnEntities],
+  (columnIds, entities) => columnIds.map((id) => entities[id]).filter(Boolean)
+)
