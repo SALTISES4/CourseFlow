@@ -1,10 +1,8 @@
-import { makeSelectColumnsForWorkflow } from '@cfRedux/selectors/column.selector'
-import { RootState } from '@cfRedux/store'
+import { selectWorkflowColumns } from '@cfRedux/selectors/column.selector'
 import * as SC from '@cfSidebar/styles'
 import { DraggableType } from '@cfViews/WorkflowView/WorkflowEditView/types'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 
 import data, { getColumnData } from './data'
@@ -14,9 +12,8 @@ const AddTab = () => {
   const theme = useTheme()
   const { title, subtitle, groups } = data
 
-  const selectColumnsForWorkflow = useMemo(makeSelectColumnsForWorkflow, [])
-  const columns = useSelector((s: RootState) => selectColumnsForWorkflow(s))
-  const nodeCategories = getColumnData(columns)
+  const workflowColumns = useSelector(selectWorkflowColumns)
+  const nodeCategories = getColumnData(workflowColumns)
 
   // TODO: fetch from strategies
   // but where do the reusable blocks come from?

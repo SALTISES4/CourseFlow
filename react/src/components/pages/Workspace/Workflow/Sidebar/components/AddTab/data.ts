@@ -1,10 +1,6 @@
-import {
-  makeSelectColumnsForWorkflow,
-  selectColumnById
-} from '@cf/redux/selectors/column.selector'
-import { TColumn, TWorkflow } from '@cf/redux/types/type'
+import { TColumn } from '@cf/redux/types/type'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { DraggableType } from '@cfViews/WorkflowView/WorkflowEditView/types'
-import { getColumnColors } from '@cfViews/WorkflowView/WorkflowEditView/utility'
 
 import { AddTabType } from '../../types'
 
@@ -15,14 +11,15 @@ type ColumnNodeDataType = {
 }
 
 // Prepare the workflow node categories (columns) data
-// @todo his is probably wrong
+// @todo this is probably wrong
 export function getColumnData(columns: TColumn[]): ColumnNodeDataType[] {
-  const colors = getColumnColors(columns)
-
-  return columns.map((column, index) => ({
+  return columns.map((column) => ({
     id: column.id,
     title: column.title ?? column.columnTypeDisplay,
-    color: colors[index]
+    color: ThemeHelper.getColumnColour({
+      columnType: column.columnType,
+      colour: column.colour
+    })
   }))
 }
 
