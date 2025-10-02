@@ -141,7 +141,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "ratelimit.middleware.RatelimitMiddleware",
     "csp.middleware.CSPMiddleware",
     "djangorestframework_camel_case.middleware.CamelCaseMiddleWare",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -285,8 +284,6 @@ SPECTACULAR_SETTINGS = {
 }
 
 COURSE_FLOW_RETURN_URL = {"name": "course_flow:home", "title": "myDalite"}
-
-RATELIMIT_VIEW = "course_flow.views.ratelimited_view"
 
 try:
     from .local_settings import *  # noqa F403

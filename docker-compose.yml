@@ -2,29 +2,20 @@ version: '3'
 
 services:
   courseflow-django:
-    # platform: linux/amd64
     build:
       context: .
       dockerfile: ./docker/Dockerfile
-#    depends_on:
-#      db:
-#        condition: service_healthy
-#        restart: true
-#      cache:
-#        condition: service_started
     restart: always
     container_name: "courseflow-django"
     shm_size: 2G
     tty: true
     volumes:
       - ./:/app/src
-      - ./docker/setup-data.sh:/app/src/setup-data.sh
     ports:
       - "8001:8000"
     networks:
       - cf-network
-#        ipv4_address:  10.10.10.7
-    entrypoint: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    entrypoint: [ "uv","run", "python", "manage.py", "runserver", "0.0.0.0:8000" ]
     environment:
       DALITE_DB_NAME: dalite_ng
       DALITE_DB_USER: dalite
@@ -32,30 +23,8 @@ services:
       DALITE_DB_HOST: db
       DALITE_DB_PORT: 3306
     depends_on:
-        db:
-          condition: service_healthy
-
-    # use this entrypoint override if the server crashes and we need to debug it
-    # entrypoint: ["/bin/bash"]
-
-
-#  test-data:
-#    platform: linux/amd64
-#    build:
-#      context: .
-#      dockerfile: ./docker/Dockerfile
-#    restart: on-failure
-#    container_name: "courseflow-django-data"
-#    shm_size: 2G
-#    tty: true
-#    volumes:
-#      - ./:/app/src
-#      - ./docker/setup-data.sh:/app/src/setup-data.sh
-#    command: cd /app/src/setup-data.sh
-#    depends_on:
-#      - courseflow-django
-#    networks:
-#      - cf-network
+      db:
+        condition: service_healthy
 
   db:
     image: mariadb
@@ -71,7 +40,7 @@ services:
       - cf-network
     healthcheck:
       # Use TCP and 127.0.0.1 to avoid socket issues.
-      test: ["CMD-SHELL", "mariadb-admin --connect-timeout=3 ping -h '$HOST' -uroot -p$${MYSQL_ROOT_PASSWORD} --protocol=tcp"]
+      test: [ "CMD-SHELL", "mariadb-admin --connect-timeout=3 ping -h '$HOST' -uroot -p$${MYSQL_ROOT_PASSWORD} --protocol=tcp" ]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -95,6 +64,3 @@ services:
 networks:
   cf-network:
     driver: bridge
-#    ipam:
-#      config:
-#        - subnet: 10.10.10.0/24

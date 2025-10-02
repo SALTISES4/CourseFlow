@@ -10,7 +10,6 @@ from django.http import (
     HttpResponseNotFound,
     JsonResponse,
 )
-from ratelimit.decorators import ratelimit
 
 from course_flow.apps import logger
 from course_flow.models import User
@@ -451,15 +450,10 @@ def from_same_workflow(model1, model2, **outer_kwargs):
 
 
 def public_access(**outer_kwargs):
-    rate_per_min = outer_kwargs.get("rate", 5)
 
     def wrapped_view(fct):
-        @ratelimit(key="ip", rate=str(rate_per_min) + "/m", method=["GET"])
         @wraps(fct)
         def _wrapped_view(request, outer_kwargs=outer_kwargs, *args, **kwargs):
-            ratelimited = getattr(request, "limited", False)
-            if ratelimited:
-                return JsonResponse({"error": "ratelimited"}, stats=429)
 
             return fct(request, *args, **kwargs)
 
@@ -470,15 +464,11 @@ def public_access(**outer_kwargs):
 
 # @todo more explanation on this decorator business purpose
 def public_model_access(model, **outer_kwargs):
-    rate_per_min = outer_kwargs.get("rate", 5)
 
     def wrapped_view(fct):
-        @ratelimit(key="ip", rate=str(rate_per_min) + "/m", method=["GET"])
         @wraps(fct)
         def _wrapped_view(request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs):
-            ratelimited = getattr(request, "limited", False)
-            if ratelimited:
-                return JsonResponse({"error": "ratelimited"}, stats=429)
+
             try:
                 model_type = DAO.get_model_from_str(model)
                 permission_objects = model_type.objects.get(
