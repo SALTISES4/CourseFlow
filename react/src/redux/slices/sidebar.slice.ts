@@ -1,6 +1,7 @@
 import { SliceNamespace } from '@cf/redux/types/enumActions'
 import { CfObjectType } from '@cf/types/enum'
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { shallowEqual } from 'react-redux'
 
 export type SidebarState = {
   collapsed: boolean
@@ -23,7 +24,7 @@ const initialState: SidebarState = {
 function resetState(state: SidebarState) {
   state.tab = null
   state.collapsed = true
-  state.edit = {}
+  state.edit = shallowEqual(state.edit, {}) ? state.edit : {}
 }
 
 const sidebarSlice = createSlice({
@@ -76,7 +77,7 @@ const sidebarSlice = createSlice({
       action: PayloadAction<{ tab: SidebarState['tab']; collapsed: boolean }>
     ) {
       if (!action.payload.tab) {
-        state.edit = {}
+        state.edit = shallowEqual(state.edit, {}) ? state.edit : {}
       }
       state.tab = action.payload.tab
       state.collapsed = action.payload.collapsed
