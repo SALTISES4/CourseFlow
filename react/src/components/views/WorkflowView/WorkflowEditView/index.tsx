@@ -14,6 +14,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import ColumnsHeader from './components/ColumnsHeader'
+import LineSVG from './components/LineSVG'
 import Week from './components/Week'
 import {
   CellReorderCallbackFn,
@@ -143,7 +144,11 @@ const WorkflowEditView = () => {
         parentId={workflow.id}
         onReorder={onColumnReorder}
       />
-      <div data-test-id="weeks-block" ref={weeksWrapperRef}>
+      <div
+        data-test-id="weeks-block"
+        ref={weeksWrapperRef}
+        style={{ position: 'relative' }}
+      >
         {workflow.weeks.map((weekId, index) => (
           <Week
             key={`week_${weekId}`}
@@ -159,6 +164,7 @@ const WorkflowEditView = () => {
             onNodeReorder={onNodeDragEnd}
           />
         ))}
+        <LineSVG />
       </div>
     </OuterContentWrap>
   )
