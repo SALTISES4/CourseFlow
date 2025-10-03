@@ -7,15 +7,11 @@ import useHover from '@cf/hooks/useHover'
 import { CfObjectType } from '@cf/types/enum'
 import { nodelinkOutcome } from '@cfRedux/slices/node.slice'
 import { isOutcomeLink } from '@cfRedux/slices/outcomes.slice'
-import { AppState, TNode } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
-import Autolink from '@cfViews/WorkflowView/WorkflowEditView/components/_node/Autolink'
-import Nodelink from '@cfViews/WorkflowView/WorkflowEditView/components/_node/Nodelink'
-import NodePorts from '@cfViews/WorkflowView/WorkflowEditView/components/_node/NodePorts'
 import { alpha } from '@mui/material'
 import { produce } from 'immer'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import HoverMenu from './components/HoverMenu'
@@ -96,28 +92,14 @@ const WeekCell = (props: PropsType) => {
 
 const WeekCellInner = (props: PropsType) => {
   const dispatch = useDispatch()
-  const sidebarData = useSelector((state: AppState) => state.sidebar.edit)
+  const sidebarData = useSelector((state: RootState) => state.sidebar.edit)
   const [ref, isHovered] = useHover()
   const [state, setState] = useState({
     dragging: false,
-    dropHighlight: false,
-    initialRender: true,
-
-    // circles where the node lines start from
-    nodePorts: null,
-    // lines between the nodes
-    nodeLinks: null,
-    // ??
-    nodeAutoLink: null
+    dropHighlight: false
   })
 
   const { coords, type, borderColor } = props
-
-  // TODO: navigate to workflow
-  const onMouseDoubleClick = useCallback((evt: MouseEvent) => {
-    evt.stopPropagation()
-    console.log('navigate to workflow')
-  }, [])
 
   const toggleState = useCallback(
     (property: 'dragging' | 'dropHighlight', value?: boolean) => {
@@ -167,51 +149,6 @@ const WeekCellInner = (props: PropsType) => {
     )
   }, [ref, dispatch, coords, props, toggleState])
 
-  useEffect(() => {
-    if (state.initialRender) {
-      setState(
-        produce((draft) => {
-          draft.initialRender = false
-        })
-      )
-    }
-
-    const component = ref.current
-    if (component) {
-      component.addEventListener('dblclick', onMouseDoubleClick)
-    }
-
-    return () => {
-      if (component) {
-        component.removeEventListener('dblclick', onMouseDoubleClick)
-      }
-    }
-  }, [ref, onMouseDoubleClick, state.initialRender])
-
-  useEffect(() => {
-    if (!state.initialRender && props.type === WeekCellNodeType.NODE) {
-      const { node } = props
-      setState(
-        produce((draft) => {
-          draft.nodePorts = createPortal(
-            <NodePorts show={isHovered} nodeId={node.id} nodeDiv={ref} />,
-            $('.workflow-canvas')[0]
-          )
-
-          if (node.outgoingLinks.length) {
-            draft.nodeLinks = node.outgoingLinks.map((link) => (
-              <Nodelink key={link} objectId={link} nodeDiv={ref} />
-            ))
-          }
-
-          if (node.hasAutolink) {
-            draft.nodeAutoLink = <Autolink nodeId={node.id} nodeDiv={ref} />
-          }
-        })
-      )
-    }
-  }, [isHovered, state.initialRender, props, ref])
-
   if (type === WeekCellNodeType.PHANTOM) {
     return <div style={{ backgroundColor: borderColor }} />
   } else {
@@ -250,9 +187,6 @@ const WeekCellInner = (props: PropsType) => {
             }}
           />
         </StyledNode.Content>
-        {state.nodePorts}
-        {state.nodeLinks}
-        {state.nodeAutoLink}
       </Styled.CellInner>
     )
   }

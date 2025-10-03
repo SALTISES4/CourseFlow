@@ -23,24 +23,6 @@ import {
   isSidebarPart
 } from './types'
 
-const CanvasPlaceholder = () => (
-  <svg className="workflow-canvas" width="100%" height="100%">
-    <defs>
-      <marker
-        id="arrow"
-        viewBox="0 0 10 10"
-        refX="10"
-        refY="5"
-        markerWidth="4"
-        markerHeight="4"
-        orient="auto-start-reverse"
-      >
-        <path d="M 0 0 L 10 5 L 0 10 z" />
-      </marker>
-    </defs>
-  </svg>
-)
-
 const WorkflowEditView = () => {
   const dispatch = useDispatch()
   const weeksWrapperRef = useRef<HTMLDivElement>(null)
@@ -178,8 +160,6 @@ const WorkflowEditView = () => {
           />
         ))}
       </div>
-
-      <CanvasPlaceholder />
     </OuterContentWrap>
   )
 }
