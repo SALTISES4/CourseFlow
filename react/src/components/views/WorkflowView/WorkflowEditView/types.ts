@@ -1,30 +1,3 @@
-import { WeekCellNodeType } from './components/WeekCell/types'
-
-export type BoardNodeDataType = {
-  id: number
-  title: string
-  description: string
-  column: number
-  hasAutoLink: boolean
-  outgoingLinks: number[]
-  contextType: number
-  taskType: number
-  linkedOutcomes?: number[]
-  time: {
-    length: number
-    unit: number
-  }
-}
-
-export type BoardWeekRowType = (WeekCellNodeType.PHANTOM | BoardNodeDataType)[]
-
-type BoardWeekType = {
-  id: number
-  rows: BoardWeekRowType[]
-}
-
-export type BoardType = BoardWeekType[]
-
 export enum DraggableType {
   COLUMN = 'column',
   CELL = 'cell',
@@ -96,12 +69,15 @@ export function isGridCell(
   return 'coords' in data && 'type' in data && data.type === DraggableType.CELL
 }
 
+type BoardWeekType = {
+  id: number
+}
+
 export function isSidebarPart(
   data: Record<string | symbol, unknown>
 ): data is BoardWeekType {
   return (
     'id' in data &&
-    'rows' in data &&
     (data.type === DraggableType.REUSABLE ||
       data.type === DraggableType.STRATEGIES)
   )

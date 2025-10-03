@@ -37,7 +37,6 @@ import {
   isSidebarPart
 } from '../../types'
 import {
-  BoardWeekRowType,
   CellReorderCallbackFn,
   RowReorderCallbackFn,
   WeekInsertCallbackFn,
