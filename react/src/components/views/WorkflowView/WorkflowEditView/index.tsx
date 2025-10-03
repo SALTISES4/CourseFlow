@@ -10,7 +10,14 @@ import { _t } from '@cf/utility/Utility.class'
 import { RootState } from '@cfRedux/store'
 import { getColumnData } from '@cfSidebar/components/AddTab/data'
 import { produce } from 'immer'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState
+} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import ColumnsHeader from './components/ColumnsHeader'
@@ -31,7 +38,8 @@ const WorkflowEditView = () => {
   const workflowColumns = useSelector(selectWorkflowColumns)
   const columnColors = getColumnData(workflowColumns).map((col) => col.color)
   const [state, setState] = useState({
-    condensed: false
+    condensed: false,
+    redrawLines: false // just to trigger LineSVG to redraw on layout change
   })
 
   useEffect(() => {
@@ -70,6 +78,15 @@ const WorkflowEditView = () => {
       })
     )
   }, [])
+
+  // update redraw state to retrigger LineSVG to render with correct DOM rects
+  useLayoutEffect(() => {
+    setState(
+      produce((draft) => {
+        draft.redrawLines = !draft.redrawLines
+      })
+    )
+  }, [workflow.columns])
 
   const onColumnReorder: ColumnReorderCallbackFn = useCallback(
     (oldIndex: number, newIndex: number) => {

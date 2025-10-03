@@ -10,24 +10,44 @@ import {
 } from 'react'
 import { useSelector } from 'react-redux'
 
-import { ConnectionEdge, ConnectionType } from './types'
-
-const edgeKeys: ConnectionEdge[] = ['top', 'right', 'bottom', 'left']
-
-type PositionCoords = {
-  x: number
-  y: number
-}
+import { edgeKeys } from './types'
+import { ConnectionType } from './types'
+import { generateOffsets, getCoords, groupLinksByNodeEdge } from './utility'
 
 const LineSVG = () => {
   const [ready, setReady] = useState(false)
   const ref = useRef<SVGSVGElement>(null)
 
+  // grab all the non-deleted links
   const links = useSelector(selectAllNodelink).filter((link) => !link.deleted)
-  const connections: ConnectionType[] = links.map((link) => ({
-    from: [link.sourceNode, edgeKeys[link.sourcePort]],
-    to: [link.targetNode, edgeKeys[link.targetPort]]
-  }))
+
+  // group links into node/edge to allow offsets
+  const linksGroup = groupLinksByNodeEdge(links)
+
+  // generate connections
+  const connections: ConnectionType[] = Object.keys(linksGroup).flatMap(
+    (edgeKey) => {
+      const lineGroup = linksGroup[edgeKey]
+
+      const offsets = generateOffsets(lineGroup.length)
+
+      return lineGroup.map((link, index) => ({
+        id: link.id,
+        from: [link.sourceNode, edgeKeys[link.sourcePort]],
+        to: [link.targetNode, edgeKeys[link.targetPort]],
+        offset: {
+          // top/bottom use horizontal offsets
+          x: ['top', 'bottom'].includes(edgeKeys[link.sourcePort])
+            ? offsets[index]
+            : 0,
+          // left/right use vertical
+          y: ['left', 'right'].includes(edgeKeys[link.sourcePort])
+            ? offsets[index]
+            : 0
+        }
+      }))
+    }
+  )
 
   // actually wait for DOM to be ready before drawing the lines
   useLayoutEffect(() => {
@@ -74,24 +94,11 @@ type ConnectionState = {
   highlighted: boolean
 }
 
-function getCoords(bcr: DOMRect, direction: ConnectionEdge): PositionCoords {
-  const { left, right, top, bottom, width, height } = bcr
-  const posX = left + width / 2
-  const posY = top + height / 2
-
-  const positions: Record<ConnectionEdge, PositionCoords> = {
-    left: { x: left, y: posY },
-    right: { x: right, y: posY },
-    top: { x: posX, y: top },
-    bottom: { x: posX, y: bottom }
-  }
-
-  return positions[direction]
-}
-
 const Connection = ({
+  id,
   from,
   to,
+  offset,
   svgRef
 }: ConnectionType & {
   svgRef: MutableRefObject<SVGSVGElement | null>
@@ -144,10 +151,10 @@ const Connection = ({
   const lineEnd = getCoords(toBCR, toEdge)
 
   // adjust positions for the SVG BCR and window scrolling
-  lineStart.x += window.scrollX - svgBCR.left
-  lineStart.y += window.scrollY - svgBCR.top
-  lineEnd.x += window.scrollX - svgBCR.left
-  lineEnd.y += window.scrollY - svgBCR.top
+  lineStart.x += window.scrollX - svgBCR.left + offset.x
+  lineStart.y += window.scrollY - svgBCR.top + offset.y
+  lineEnd.x += window.scrollX - svgBCR.left + offset.x
+  lineEnd.y += window.scrollY - svgBCR.top + offset.y
 
   const [path, labelX, labelY] = getSmoothStepPath({
     sourceX: lineStart.x,
@@ -161,7 +168,7 @@ const Connection = ({
   const lineId = `line-${fromId}-${fromEdge}-to-${toId}-${toEdge}`
 
   return (
-    <g fill="none">
+    <g fill="none" data-nodelink-id={id}>
       <path
         d={path}
         stroke={strokeColor}
