@@ -4,6 +4,7 @@ import { produce } from 'immer'
 import { MutableRefObject, useCallback, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
+import DrawPreview from './DrawPreview'
 import { edgeKeys } from './types'
 import { ConnectionType } from './types'
 import { generateOffsets, getCoords, groupLinksByNodeEdge } from './utility'
@@ -93,6 +94,12 @@ const LineSVG = () => {
       {connections.map((conn) => (
         <Connection key={conn.id} svgRef={ref} {...conn} />
       ))}
+      <DrawPreview
+        coords={{
+          from: { x: 426, y: 277, edge: 'bottom' },
+          to: { x: 540, y: 353, edge: 'left' }
+        }}
+      />
     </svg>
   )
 }

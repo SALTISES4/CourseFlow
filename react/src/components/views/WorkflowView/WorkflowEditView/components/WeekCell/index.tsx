@@ -189,7 +189,7 @@ const WeekCellInner = (props: PropsType) => {
           />
         </StyledNode.Content>
 
-        <Handles hovering={isHovered} />
+        <Handles id={node.id} hovering={isHovered} />
       </Styled.CellInner>
     )
   }

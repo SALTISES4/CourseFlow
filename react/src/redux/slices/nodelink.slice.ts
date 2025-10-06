@@ -21,7 +21,7 @@ interface CreateLockPayload {
 
 interface ChangeFieldPayload {
   id: number
-  json: Pick<TNodelink>
+  json: Partial<TNodelink>
 }
 
 interface NodelinkByIdPayload {

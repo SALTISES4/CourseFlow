@@ -10,6 +10,7 @@ export const Wrap = styled('svg', {
   bottom: `${radius * -1}px`,
   width: `calc(100% + ${radius * 2}px)`,
   height: `calc(100% + ${radius * 2}px)`,
+  zIndex: 10,
   pointerEvents: 'none'
 }))
 
@@ -17,5 +18,6 @@ export const Handle = styled('circle')(({ theme }) => ({
   position: 'relative',
   fill: '#fff',
   stroke: theme.palette.workflow.selected,
-  strokeWidth: '2px'
+  strokeWidth: '2px',
+  pointerEvents: 'auto'
 }))
