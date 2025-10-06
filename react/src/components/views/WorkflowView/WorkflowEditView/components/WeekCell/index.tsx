@@ -14,6 +14,7 @@ import { produce } from 'immer'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import Handles from '../LineSVG/Handles'
 import HoverMenu from './components/HoverMenu'
 import Meta from './components/Meta'
 import * as StyledNode from './styles'
@@ -187,6 +188,8 @@ const WeekCellInner = (props: PropsType) => {
             }}
           />
         </StyledNode.Content>
+
+        <Handles hovering={isHovered} />
       </Styled.CellInner>
     )
   }
