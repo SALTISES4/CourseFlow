@@ -1,13 +1,7 @@
 import { selectAllNodelink } from '@cfRedux/selectors/nodelink.selector'
 import { Position, getSmoothStepPath } from '@xyflow/react'
 import { produce } from 'immer'
-import {
-  MutableRefObject,
-  useCallback,
-  useLayoutEffect,
-  useRef,
-  useState
-} from 'react'
+import { MutableRefObject, useCallback, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { edgeKeys } from './types'
@@ -15,7 +9,6 @@ import { ConnectionType } from './types'
 import { generateOffsets, getCoords, groupLinksByNodeEdge } from './utility'
 
 const LineSVG = () => {
-  const [ready, setReady] = useState(false)
   const ref = useRef<SVGSVGElement>(null)
 
   // grab all the non-deleted links
@@ -24,35 +17,52 @@ const LineSVG = () => {
   // group links into node/edge to allow offsets
   const linksGroup = groupLinksByNodeEdge(links)
 
-  // generate connections
   const connections: ConnectionType[] = Object.keys(linksGroup).flatMap(
     (edgeKey) => {
       const lineGroup = linksGroup[edgeKey]
 
-      const offsets = generateOffsets(lineGroup.length)
+      return lineGroup.map((link) => {
+        // group links by edges
+        const fromEdgeId = `${link.sourceNode}-${edgeKeys[link.sourcePort]}`
+        const toEdgeId = `${link.targetNode}-${edgeKeys[link.targetPort]}`
 
-      return lineGroup.map((link, index) => ({
-        id: link.id,
-        from: [link.sourceNode, edgeKeys[link.sourcePort]],
-        to: [link.targetNode, edgeKeys[link.targetPort]],
-        offset: {
-          // top/bottom use horizontal offsets
-          x: ['top', 'bottom'].includes(edgeKeys[link.sourcePort])
-            ? offsets[index]
-            : 0,
-          // left/right use vertical
-          y: ['left', 'right'].includes(edgeKeys[link.sourcePort])
-            ? offsets[index]
-            : 0
+        const fromGroup = linksGroup[fromEdgeId]
+        const toGroup = linksGroup[toEdgeId]
+
+        // generate offsets for both groups
+        const fromOffsets = generateOffsets(fromGroup.length)
+        const toOffsets = generateOffsets(toGroup.length)
+
+        // figure out this link’s index in each group
+        const fromIndex = fromGroup.indexOf(link)
+        const toIndex = toGroup.indexOf(link)
+
+        return {
+          id: link.id,
+          from: [link.sourceNode, edgeKeys[link.sourcePort]] as const,
+          to: [link.targetNode, edgeKeys[link.targetPort]] as const,
+          offset: {
+            from: {
+              x: ['top', 'bottom'].includes(edgeKeys[link.sourcePort])
+                ? fromOffsets[fromIndex]
+                : 0,
+              y: ['left', 'right'].includes(edgeKeys[link.sourcePort])
+                ? fromOffsets[fromIndex]
+                : 0
+            },
+            to: {
+              x: ['top', 'bottom'].includes(edgeKeys[link.targetPort])
+                ? toOffsets[toIndex]
+                : 0,
+              y: ['left', 'right'].includes(edgeKeys[link.targetPort])
+                ? toOffsets[toIndex]
+                : 0
+            }
+          }
         }
-      }))
+      })
     }
   )
-
-  // actually wait for DOM to be ready before drawing the lines
-  useLayoutEffect(() => {
-    setReady(true)
-  }, [])
 
   return (
     <svg
@@ -80,10 +90,9 @@ const LineSVG = () => {
           <path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" />
         </marker>
       </defs>
-      {ready &&
-        connections.map((conn, index) => (
-          <Connection key={index} svgRef={ref} {...conn} />
-        ))}
+      {connections.map((conn) => (
+        <Connection key={conn.id} svgRef={ref} {...conn} />
+      ))}
     </svg>
   )
 }
@@ -140,7 +149,7 @@ const Connection = ({
   const toEl = document.getElementById(`node-${toId}`)
 
   if (!fromEl || !toEl || !svgRef?.current) {
-    return
+    return null
   }
 
   const svgBCR = svgRef.current.getBoundingClientRect()
@@ -151,10 +160,11 @@ const Connection = ({
   const lineEnd = getCoords(toBCR, toEdge)
 
   // adjust positions for the SVG BCR and window scrolling
-  lineStart.x += window.scrollX - svgBCR.left + offset.x
-  lineStart.y += window.scrollY - svgBCR.top + offset.y
-  lineEnd.x += window.scrollX - svgBCR.left + offset.x
-  lineEnd.y += window.scrollY - svgBCR.top + offset.y
+  lineStart.x += window.scrollX - svgBCR.left + offset.from.x
+  lineStart.y += window.scrollY - svgBCR.top + offset.from.y
+
+  lineEnd.x += window.scrollX - svgBCR.left + offset.to.x
+  lineEnd.y += window.scrollY - svgBCR.top + offset.to.y
 
   const [path, labelX, labelY] = getSmoothStepPath({
     sourceX: lineStart.x,

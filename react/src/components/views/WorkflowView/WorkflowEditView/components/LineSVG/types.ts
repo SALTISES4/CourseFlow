@@ -4,14 +4,12 @@ export type ConnectionEdge = (typeof edgeKeys)[number]
 
 export type ConnectionTargetType = [number, ConnectionEdge]
 
-type ConnectionOffsetType = {
-  x: number
-  y: number
-}
-
 export type ConnectionType = {
   id: number
   from: ConnectionTargetType
   to: ConnectionTargetType
-  offset?: ConnectionOffsetType
+  offset?: {
+    from: { x: number; y: number }
+    to: { x: number; y: number }
+  }
 }

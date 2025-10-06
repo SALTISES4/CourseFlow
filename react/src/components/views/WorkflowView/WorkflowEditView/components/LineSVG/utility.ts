@@ -2,6 +2,30 @@ import { TNodelink } from '@cf/redux/types/type'
 
 import { ConnectionEdge, edgeKeys } from './types'
 
+// group node + edge information into easier to work with groups
+// so that we can calculate line offsete
+// (by knowing how many total lines there are on each of the edges for a given node)
+export function groupLinksByNodeEdge(links: TNodelink[]) {
+  const grouped: Record<string, TNodelink[]> = {}
+
+  links.forEach((link) => {
+    const edgeFrom = `${link.sourceNode}-${edgeKeys[link.sourcePort]}`
+    const edgeTo = `${link.targetNode}-${edgeKeys[link.targetPort]}`
+
+    if (grouped[edgeFrom] == null) {
+      grouped[edgeFrom] = []
+    }
+    grouped[edgeFrom].push(link) // TODO: maybe only store id instead of entire TNodeLink?
+
+    if (grouped[edgeTo] == null) {
+      grouped[edgeTo] = []
+    }
+    grouped[edgeTo].push(link)
+  })
+
+  return grouped
+}
+
 // generate line offsets in steps of eg. 5>, starting from 0 and then incrementing by step
 // and alternating between positive and negative number, ie
 // [0, 5, -5, 10, -10, 15, -15, ...]
@@ -18,30 +42,6 @@ export function generateOffsets(edgeLineCount: number, step = 10): number[] {
     }
   }
   return result
-}
-
-// group node + edge information into easier to work with groups
-// so that we can calculate line offsete
-// (ie, by knowing how many total lines there are on each of the edges)
-export function groupLinksByNodeEdge(links: TNodelink[]) {
-  const grouped: Record<string, TNodelink[]> = {}
-
-  links.forEach((link) => {
-    const edgeFrom = `${link.sourceNode}-${edgeKeys[link.sourcePort]}`
-    const edgeTo = `${link.targetNode}-${edgeKeys[link.targetPort]}`
-
-    if (grouped[edgeFrom] == null) {
-      grouped[edgeFrom] = []
-    }
-    grouped[edgeFrom].push(link)
-
-    if (grouped[edgeTo] == null) {
-      grouped[edgeTo] = []
-    }
-    grouped[edgeTo].push(link)
-  })
-
-  return grouped
 }
 
 type PositionCoords = {
