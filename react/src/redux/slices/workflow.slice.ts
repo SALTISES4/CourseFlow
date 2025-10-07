@@ -49,6 +49,7 @@ const workflowSlice = createSlice({
     changeField(state, action: PayloadAction<{ json: any }>) {
       Object.assign(state, action.payload.json)
     },
+
     // workflow reorder columns
     reorderColumns(
       state,
@@ -61,6 +62,21 @@ const workflowSlice = createSlice({
       }
 
       state.columns = swapInPlace(state.columns, moveIndex, toIndex)
+    },
+
+    // workflow reorder weeks
+    reorderWeeks(
+      state,
+      action: PayloadAction<{ fromIndex: number; toIndex: number }>
+    ) {
+      const { fromIndex, toIndex } = action.payload
+
+      if (fromIndex === toIndex) {
+        return
+      }
+
+      const moved = state.weeks.splice(fromIndex, 1)
+      state.weeks.splice(toIndex, 0, moved[0])
     }
   },
   extraReducers: (builder) => {
@@ -305,7 +321,8 @@ export const {
   restoreSelf: workflowRestoreSelf,
   createLock: workflowCreateLock,
   changeField: workflowChangeField,
-  reorderColumns: workflowMoveColumns
+  reorderColumns: workflowReorderColumns,
+  reorderWeeks: workflowReorderWeeks
 } = workflowSlice.actions
 
 export default workflowSlice.reducer

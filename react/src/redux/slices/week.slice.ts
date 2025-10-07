@@ -6,13 +6,14 @@ import {
   SliceNamespace,
   StrategyActions
 } from '@cfRedux/types/enumActions'
-import { AppState, TNode, TWeek, WorkspaceAppState } from '@cfRedux/types/type'
+import { AppState, TWeek, WorkspaceAppState } from '@cfRedux/types/type'
 import {
   PayloadAction,
   Update,
   createAction,
   createEntityAdapter,
-  createSlice
+  createSlice,
+  current
 } from '@reduxjs/toolkit'
 
 interface WeekPayload {
@@ -34,6 +35,11 @@ interface MovedToPayload {
   id: number
   newParent: number
   newIndex: number
+}
+
+interface MoveNodesPayload {
+  from: { weekId: number; index: number }
+  to: { weekId: number; index: number }
 }
 
 interface NodeGenericPayload {
@@ -186,6 +192,20 @@ const weekSlice = createSlice({
           id === action.payload.oldId ? action.payload.newId : id
         )
       }))
+    },
+
+    // reorder week nodes on workflow view node drag
+    moveNodes: (state, action: PayloadAction<MoveNodesPayload>) => {
+      const { from, to } = action.payload
+      if (from.weekId === to.weekId) {
+        // reorganizing within the same week/part
+        const moved = state.entities[from.weekId].nodes.splice(from.index, 1)
+        state.entities[from.weekId].nodes.splice(to.index, 0, moved[0])
+      } else {
+        // adding items to a different week/part
+        const moved = state.entities[from.weekId].nodes.splice(from.index, 1)
+        state.entities[to.weekId].nodes.splice(to.index, 0, moved[0])
+      }
     }
   },
   extraReducers: (builder) => {
@@ -260,7 +280,8 @@ export const {
   deleteSelfSoft: weekDeleteSelfSoft,
   restoreSelf: weekRestoreSelf,
   changeId: weekChangeId,
-  movedTo: weekMovedTo
+  movedTo: weekMovedTo,
+  moveNodes: weekMoveNodes
 } = weekSlice.actions
 
 export default weekSlice.reducer

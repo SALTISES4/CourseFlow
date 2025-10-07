@@ -1,7 +1,7 @@
 import { TNode } from '@cf/redux/types/type'
 import { MouseEvent } from 'react'
 
-import { CellDataType } from '../../types'
+import { CellDataType, CellReorderCallbackFn } from '../../types'
 
 export enum WeekCellNodeType {
   PHANTOM = 'phantom',
@@ -15,7 +15,7 @@ export type SharedProps = {
 
 export type PhantomPropsType = SharedProps & {
   type: WeekCellNodeType.PHANTOM
-  onReorder: (coords: CellDataType['coords'], newIndex: number) => void
+  onReorder: CellReorderCallbackFn
 }
 
 export type NodePropsType = SharedProps & {

@@ -66,7 +66,7 @@ const WeekCell = (props: PropsType) => {
           data.coords.x !== props.coords.x &&
           props.type === WeekCellNodeType.PHANTOM
         ) {
-          props.onReorder(data.coords, props.coords.x)
+          props.onReorder(data.id, data.coords.week, props.coords.x)
         }
 
         setState(
@@ -141,6 +141,7 @@ const WeekCellInner = (props: PropsType) => {
       draggable({
         element: el,
         getInitialData: (): CellDataType => ({
+          id: type === WeekCellNodeType.NODE ? props.node.id : null,
           coords,
           type: DraggableType.CELL
         }),
@@ -148,7 +149,7 @@ const WeekCellInner = (props: PropsType) => {
         onDrop: () => toggleState('dragging', false)
       })
     )
-  }, [ref, dispatch, coords, props, toggleState])
+  }, [ref, dispatch, type, coords, props, toggleState])
 
   if (type === WeekCellNodeType.PHANTOM) {
     return <div style={{ backgroundColor: borderColor }} />

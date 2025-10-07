@@ -5,7 +5,12 @@ import {
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { selectWorkflowColumns } from '@cf/redux/selectors/column.selector'
-import { workflowMoveColumns } from '@cf/redux/slices/workflow.slice'
+import { nodeChangedColumn } from '@cf/redux/slices/node.slice'
+import { weekMoveNodes } from '@cf/redux/slices/week.slice'
+import {
+  workflowReorderColumns,
+  workflowReorderWeeks
+} from '@cf/redux/slices/workflow.slice'
 import { _t } from '@cf/utility/Utility.class'
 import { RootState } from '@cfRedux/store'
 import { getColumnData } from '@cfSidebar/components/AddTab/data'
@@ -90,68 +95,57 @@ const WorkflowEditView = () => {
 
   const onColumnReorder: ColumnReorderCallbackFn = useCallback(
     (oldIndex: number, newIndex: number) => {
-      dispatch(workflowMoveColumns({ moveIndex: oldIndex, toIndex: newIndex }))
+      dispatch(
+        workflowReorderColumns({ moveIndex: oldIndex, toIndex: newIndex })
+      )
     },
     [dispatch]
   )
 
   const onWeekInsert = useCallback((insertIndex: number) => {
     console.log('+++ WEEK INSERT', { insertIndex })
-    // setState(
-    //   produce((draft) => {
-    //     const clone = draft.board[0]
-    //     draft.board.splice(insertIndex, 0, clone)
-    //   })
-    // )
+    // TODO: figure out how sidebar parts/strategies work
+    // dispatch workflow week insert
+    // state.weeks.splice(insertIndex, 0, dataForTheInsertedWeek)
   }, [])
 
-  const onWeekReorder = useCallback((from: number, to: number) => {
-    console.log('+++ WEEK REORDER', { from, to })
-    // setState(
-    //   produce((draft) => {
-    //     const moved = draft.board.splice(from, 1)
-    //     draft.board.splice(to, 0, moved[0])
-    //   })
-    // )
-  }, [])
+  const onWeekReorder = useCallback(
+    (from: number, to: number) => {
+      dispatch(workflowReorderWeeks({ fromIndex: from, toIndex: to }))
+    },
+    [dispatch]
+  )
 
-  const onRowDragEnd: RowReorderCallbackFn = useCallback((from, to) => {
-    console.log('+++ ROW dragend', { from, to })
-    // setState(
-    //   produce((draft) => {
-    //     if (from.week === to.week) {
-    //       // reorganizing within the same week/part
-    //       const weekIndex = draft.board.findIndex((w) => w.id === from.week)
-    //       const moved = draft.board[weekIndex].rows.splice(from.y, 1)
-    //       draft.board[weekIndex].rows.splice(to.y, 0, moved[0])
-    //     } else {
-    //       // adding items to a different week/part
-    //       const fromIndex = draft.board.findIndex((w) => w.id === from.week)
-    //       const toIndex = draft.board.findIndex((w) => w.id === to.week)
-    //       const moved = draft.board[fromIndex].rows.splice(from.y, 1)
-    //       draft.board[toIndex].rows.splice(to.y, 0, moved[0])
-    //     }
-    //   })
-    // )
-  }, [])
+  const onRowDragEnd: RowReorderCallbackFn = useCallback(
+    (from, to) => {
+      dispatch(
+        weekMoveNodes({
+          from: {
+            weekId: from.week,
+            index: from.y
+          },
+          to: {
+            weekId: to.week,
+            index: to.y
+          }
+        })
+      )
+    },
+    [dispatch]
+  )
 
   const onNodeDragEnd: CellReorderCallbackFn = useCallback(
-    (coords, newIndex) => {
-      console.log('+++ NODE dragend', { coords, newIndex })
-      // setState(
-      //   produce((draft) => {
-      //     const weekIndex = draft.board.findIndex((w) => w.id === coords.week)
-      //     const reorderedColumns = swapInPlace(
-      //       draft.board[weekIndex].rows[coords.y],
-      //       coords.x,
-      //       newIndex
-      //     )
-
-      //     draft.board[weekIndex].rows[coords.y] = reorderedColumns
-      //   })
-      // )
+    (id, week, columnIndex) => {
+      dispatch(
+        nodeChangedColumn({
+          id,
+          data: {
+            column: workflow.columns[columnIndex]
+          }
+        })
+      )
     },
-    []
+    [dispatch, workflow.columns]
   )
 
   return (
