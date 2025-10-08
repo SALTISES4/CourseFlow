@@ -94,12 +94,12 @@ const LineSVG = () => {
       {connections.map((conn) => (
         <Connection key={conn.id} svgRef={ref} {...conn} />
       ))}
-      <DrawPreview
+      {/* <DrawPreview
         coords={{
           from: { x: 426, y: 277, edge: 'bottom' },
           to: { x: 540, y: 353, edge: 'left' }
         }}
-      />
+      /> */}
     </svg>
   )
 }

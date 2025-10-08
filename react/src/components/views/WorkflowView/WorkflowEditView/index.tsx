@@ -20,6 +20,7 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState
 } from 'react'
@@ -41,7 +42,12 @@ const WorkflowEditView = () => {
   const weeksWrapperRef = useRef<HTMLDivElement>(null)
   const workflow = useSelector((state: RootState) => state.workspace.workflow)
   const workflowColumns = useSelector(selectWorkflowColumns)
-  const columnColors = getColumnData(workflowColumns).map((col) => col.color)
+  const columnIds = useMemo(() => workflow.columns, [workflow.columns])
+  const columnColors = useMemo(
+    () => getColumnData(workflowColumns).map((col) => col.color),
+    [workflowColumns]
+  )
+
   const [state, setState] = useState({
     condensed: false,
     redrawLines: false // just to trigger LineSVG to redraw on layout change
@@ -91,7 +97,7 @@ const WorkflowEditView = () => {
         draft.redrawLines = !draft.redrawLines
       })
     )
-  }, [workflow.columns])
+  }, [columnIds])
 
   const onColumnReorder: ColumnReorderCallbackFn = useCallback(
     (oldIndex: number, newIndex: number) => {
@@ -140,18 +146,18 @@ const WorkflowEditView = () => {
         nodeChangedColumn({
           id,
           data: {
-            column: workflow.columns[columnIndex]
+            column: columnIds[columnIndex]
           }
         })
       )
     },
-    [dispatch, workflow.columns]
+    [dispatch, columnIds]
   )
 
   return (
     <OuterContentWrap>
       <ColumnsHeader
-        columns={workflow.columns}
+        columns={columnIds}
         parentId={workflow.id}
         onReorder={onColumnReorder}
       />
@@ -166,7 +172,7 @@ const WorkflowEditView = () => {
             weekId={weekId}
             index={index}
             parentId={workflow.id}
-            columnIds={workflow.columns}
+            columnIds={columnIds}
             columnColors={columnColors}
             condensed={state.condensed}
             onWeekInsert={onWeekInsert}
