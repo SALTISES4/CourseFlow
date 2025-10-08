@@ -63,7 +63,11 @@ const Week = (props: WeekPropsType) => {
     closestEdge: null,
     draggedOver: false
   })
-  const sidebarData = useSelector((state: RootState) => state.sidebar.edit)
+  const selected = useSelector(
+    (state: RootState) =>
+      state.sidebar.edit.objectType === CfObjectType.WEEK &&
+      state.sidebar.edit.id === props.weekId
+  )
   const weekWrapperRef = useRef<HTMLDivElement>(null)
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const workflow = useSelector((state: RootState) => state.workspace.workflow)
@@ -211,10 +215,6 @@ const Week = (props: WeekPropsType) => {
   const defaultText = !workflow.isStrategy
     ? `${week.weekTypeDisplay} ${week.order + 1}`
     : undefined
-
-  const selected =
-    sidebarData.objectType === CfObjectType.WEEK &&
-    sidebarData.id === props.weekId
 
   return (
     <StyledWeek.WeekWrapper

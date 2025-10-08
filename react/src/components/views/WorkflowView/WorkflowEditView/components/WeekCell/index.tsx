@@ -93,7 +93,13 @@ const WeekCell = (props: PropsType) => {
 
 const WeekCellInner = (props: PropsType) => {
   const dispatch = useDispatch()
-  const sidebarData = useSelector((state: RootState) => state.sidebar.edit)
+  const selected = useSelector(
+    (state: RootState) =>
+      props.type === WeekCellNodeType.NODE &&
+      state.sidebar.edit.objectType === CfObjectType.NODE &&
+      state.sidebar.edit.id === props.node.id
+  )
+
   const [ref, isHovered] = useHover()
   const [state, setState] = useState({
     dragging: false,
@@ -155,9 +161,6 @@ const WeekCellInner = (props: PropsType) => {
     return <div style={{ backgroundColor: borderColor }} />
   } else {
     const { node } = props
-
-    const selected =
-      sidebarData.objectType === CfObjectType.NODE && sidebarData.id === node.id
 
     return (
       <Styled.CellInner
