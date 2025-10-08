@@ -24,7 +24,7 @@ const initialState: SidebarState = {
 function resetState(state: SidebarState) {
   state.tab = null
   state.collapsed = true
-  state.edit = shallowEqual(state.edit, {}) ? state.edit : {}
+  state.edit = Object.keys(state.edit).length === 0 ? state.edit : {}
 }
 
 const sidebarSlice = createSlice({
@@ -77,7 +77,7 @@ const sidebarSlice = createSlice({
       action: PayloadAction<{ tab: SidebarState['tab']; collapsed: boolean }>
     ) {
       if (!action.payload.tab) {
-        state.edit = shallowEqual(state.edit, {}) ? state.edit : {}
+        state.edit = Object.keys(state.edit).length === 0 ? state.edit : {}
       }
       state.tab = action.payload.tab
       state.collapsed = action.payload.collapsed
