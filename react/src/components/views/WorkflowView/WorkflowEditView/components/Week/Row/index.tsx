@@ -209,7 +209,6 @@ const WeekRow = ({
       <Styled.CellRowIndicator edge={state.edge} />
       {columnIds.map((columnId, index) => {
         const isNodeCell = node?.column === columnId
-
         return isNodeCell ? (
           <WeekCell
             key={columnId}

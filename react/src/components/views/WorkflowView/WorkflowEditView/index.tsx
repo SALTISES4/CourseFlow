@@ -43,10 +43,14 @@ const WorkflowEditView = () => {
   const workflow = useSelector((state: RootState) => state.workspace.workflow)
   const workflowColumns = useSelector(selectWorkflowColumns)
   const columnIds = useMemo(() => workflow.columns, [workflow.columns])
-  const columnColors = useMemo(
-    () => getColumnData(workflowColumns).map((col) => col.color),
-    [workflowColumns]
-  )
+  const columnColors: Record<number, string> = useMemo(() => {
+    const colors: Record<number, string> = {}
+    getColumnData(workflowColumns).forEach((col) => {
+      colors[col.id] = col.color
+    })
+    return colors
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workflowColumns.map((col) => `${col.id}_${col.colour}`).join(',')])
 
   const [state, setState] = useState({
     condensed: false,

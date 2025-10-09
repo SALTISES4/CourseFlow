@@ -43,7 +43,7 @@ export type WeekPropsType = {
   condensed: boolean
   parentId: number
   columnIds: number[]
-  columnColors: string[]
+  columnColors: Record<number, string>
   onNodeReorder: CellReorderCallbackFn
   onRowReorder: RowReorderCallbackFn
   onWeekReorder: WeekReorderCallbackFn
@@ -221,6 +221,7 @@ const Week = (props: WeekPropsType) => {
       onClick={onWeekWrapperClick}
       ref={weekWrapperRef}
       selected={selected}
+      data-week-id={props.weekId}
     >
       <Styled.WeekRowIndicator edge={state.closestEdge} />
       <StyledWeek.WeekHeader
