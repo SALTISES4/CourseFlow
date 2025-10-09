@@ -4,6 +4,7 @@ import {
   dropTargetForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import useHover from '@cf/hooks/useHover'
+import { selectNodeById } from '@cf/redux/selectors/node.selector'
 import { CfObjectType } from '@cf/types/enum'
 import { nodelinkOutcome } from '@cfRedux/slices/node.slice'
 import { isOutcomeLink } from '@cfRedux/slices/outcomes.slice'
@@ -69,12 +70,13 @@ const WeekCellPhantom = ({
 }
 
 const WeekCellNode = ({
-  node,
+  nodeId,
   coords,
   borderColor,
   onClick
 }: NodePropsType) => {
   const dispatch = useDispatch()
+  const node = useSelector((state: RootState) => selectNodeById(state, nodeId))
   const [ref, isHovered] = useHover()
 
   const selected = useSelector(

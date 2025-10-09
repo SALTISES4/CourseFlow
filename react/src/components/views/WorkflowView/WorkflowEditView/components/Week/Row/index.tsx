@@ -4,8 +4,7 @@ import {
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import { selectNodeById } from '@cf/redux/selectors/node.selector'
-import { RootState } from '@cfRedux/store'
+import { selectNodeColumn } from '@cf/redux/selectors/node.selector'
 import { produce } from 'immer'
 import {
   MouseEvent,
@@ -52,7 +51,7 @@ const WeekRow = ({
   onRowReorder,
   onNodeClick
 }: WeekRowPropsType) => {
-  const node = useSelector((state: RootState) => selectNodeById(state, nodeId))
+  const nodeColumn = useSelector(selectNodeColumn(nodeId))
   const ref = useRef<HTMLDivElement>(null)
   const [state, setState] = useState<WeekRowStateType>({
     edge: null,
@@ -205,22 +204,22 @@ const WeekRow = ({
   }
 
   return (
-    <Styled.CellRow ref={ref} data-node-id={node?.id}>
+    <Styled.CellRow ref={ref} data-node-id={nodeId}>
       <Styled.CellRowIndicator edge={state.edge} />
       {columnIds.map((columnId, index) => {
-        const isNodeCell = node?.column === columnId
+        const isNodeCell = nodeColumn === columnId
         return isNodeCell ? (
           <WeekCell
-            key={columnId}
+            key={`${weekId}_${rowIndex}_${columnId}_${index}`}
             type={WeekCellNodeType.NODE}
             coords={{ week: weekId, x: index, y: rowIndex }}
-            node={node}
+            nodeId={nodeId}
             borderColor={columnColors[columnId]}
-            onClick={(e) => onNodeClick(e, node.id)}
+            onClick={(e) => onNodeClick(e, nodeId)}
           />
         ) : (
           <WeekCell
-            key={columnId}
+            key={`${weekId}_${rowIndex}_${columnId}_${index}`}
             type={WeekCellNodeType.PHANTOM}
             coords={{ week: weekId, x: index, y: rowIndex }}
             borderColor={columnColors[columnId]}

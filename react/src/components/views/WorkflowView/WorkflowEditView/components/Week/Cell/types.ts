@@ -1,4 +1,3 @@
-import { TNode } from '@cf/redux/types/type'
 import { MouseEvent } from 'react'
 
 import { CellDataType, CellReorderCallbackFn } from '../../../types'
@@ -19,7 +18,7 @@ export type PhantomPropsType = SharedProps & {
 }
 
 export type NodePropsType = SharedProps & {
-  node: TNode
+  nodeId: number
   type: WeekCellNodeType.NODE
   onClick: (e: MouseEvent<HTMLDivElement>) => void
 }
