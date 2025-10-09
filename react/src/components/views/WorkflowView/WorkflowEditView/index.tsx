@@ -145,17 +145,15 @@ const WorkflowEditView = () => {
   )
 
   const onNodeDragEnd: CellReorderCallbackFn = useCallback(
-    (id, week, columnIndex) => {
+    (id, week, columnId) => {
       dispatch(
         nodeChangedColumn({
           id,
-          data: {
-            column: columnIds[columnIndex]
-          }
+          data: { column: columnId }
         })
       )
     },
-    [dispatch, columnIds]
+    [dispatch]
   )
 
   return (

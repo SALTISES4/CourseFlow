@@ -231,6 +231,7 @@ const WeekRow = ({
             coordsWeek={weekId}
             coordsX={index}
             coordsY={rowIndex}
+            columnId={columnId}
             borderColor={columnColors[columnId]}
             onReorder={onNodeReorder}
           />

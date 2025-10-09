@@ -15,6 +15,7 @@ export type SharedProps = {
 }
 
 export type PhantomPropsType = SharedProps & {
+  columnId: number
   type: WeekCellNodeType.PHANTOM
   onReorder: CellReorderCallbackFn
 }
