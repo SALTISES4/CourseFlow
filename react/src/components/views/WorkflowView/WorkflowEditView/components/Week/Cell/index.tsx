@@ -14,14 +14,14 @@ import { produce } from 'immer'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import Handles from '../LineSVG/Handles'
 import HoverMenu from './components/HoverMenu'
 import Meta from './components/Meta'
 import * as StyledNode from './styles'
 import { NodePropsType, PhantomPropsType, WeekCellNodeType } from './types'
-import * as Styled from '../../styles'
-import { CellDataType, DraggableType } from '../../types'
-import { isGridCell } from '../../types'
+import * as Styled from '../../../styles'
+import { CellDataType, DraggableType } from '../../../types'
+import { isGridCell } from '../../../types'
+import Handles from '../../LineSVG/Handles'
 
 type PropsType = PhantomPropsType | NodePropsType
 

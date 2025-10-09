@@ -20,8 +20,8 @@ import { useSelector } from 'react-redux'
 import type { WeekPropsType } from '../'
 import * as Styled from '../../../styles'
 import { DroppableType, isGridCell, isGridRow } from '../../../types'
-import WeekCell from '../../WeekCell'
-import { WeekCellNodeType } from '../../WeekCell/types'
+import WeekCell from '../Cell'
+import { WeekCellNodeType } from '../Cell/types'
 
 type WeekRowPropsType = {
   nodeId: number

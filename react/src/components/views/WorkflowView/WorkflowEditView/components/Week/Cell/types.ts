@@ -1,7 +1,7 @@
 import { TNode } from '@cf/redux/types/type'
 import { MouseEvent } from 'react'
 
-import { CellDataType, CellReorderCallbackFn } from '../../types'
+import { CellDataType, CellReorderCallbackFn } from '../../../types'
 
 export enum WeekCellNodeType {
   PHANTOM = 'phantom',
