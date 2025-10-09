@@ -11,7 +11,7 @@ import { RootState } from '@cfRedux/store'
 import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
 import { alpha } from '@mui/material'
 import { produce } from 'immer'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import Handles from '../LineSVG/Handles'
@@ -25,88 +25,68 @@ import { isGridCell } from '../../types'
 
 type PropsType = PhantomPropsType | NodePropsType
 
-const WeekCell = (props: PropsType) => {
+const WeekCellPhantom = ({
+  coords,
+  borderColor,
+  onReorder
+}: PhantomPropsType) => {
   const ref = useRef<HTMLDivElement>(null)
-  const [state, setState] = useState({
-    draggedOver: false
-  })
+  const [draggedOver, setDraggedOver] = useState(false)
 
   useEffect(() => {
     const el = ref.current
+    if (!el) {
+      return null
+    }
 
     return dropTargetForElements({
       element: el,
-      onDragEnter: () => {
-        setState(
-          produce((draft) => {
-            draft.draggedOver = true
-          })
-        )
-      },
-      onDragLeave: () => {
-        setState(
-          produce((draft) => {
-            draft.draggedOver = false
-          })
-        )
-      },
-      canDrop: ({ source }) => {
-        const data = source.data
-
-        return isGridCell(data)
-      },
+      onDragEnter: () => setDraggedOver(true),
+      onDragLeave: () => setDraggedOver(false),
+      canDrop: ({ source }) => isGridCell(source.data),
       onDrop: ({ source }) => {
         const data = source.data
-
         if (!isGridCell(data)) {
-          return
+          return null
         }
 
-        if (
-          data.coords.x !== props.coords.x &&
-          props.type === WeekCellNodeType.PHANTOM
-        ) {
-          props.onReorder(data.id, data.coords.week, props.coords.x)
+        if (data.coords.x !== coords.x) {
+          onReorder(data.id, data.coords.week, coords.x)
         }
-
-        setState(
-          produce((draft) => {
-            draft.draggedOver = false
-          })
-        )
+        setDraggedOver(false)
       }
     })
-  }, [props])
+  }, [coords.x, onReorder])
 
   return (
     <Styled.Cell
       ref={ref}
-      sx={{
-        minHeight: '50px',
-        backgroundColor: state.draggedOver && alpha(props.borderColor, 0.2)
-      }}
+      sx={{ backgroundColor: draggedOver && alpha(borderColor, 0.2) }}
     >
-      <WeekCellInner {...props} />
+      <div style={{ backgroundColor: borderColor }} />
     </Styled.Cell>
   )
 }
 
-const WeekCellInner = (props: PropsType) => {
+const WeekCellNode = ({
+  node,
+  coords,
+  borderColor,
+  onClick
+}: NodePropsType) => {
   const dispatch = useDispatch()
+  const [ref, isHovered] = useHover()
+
   const selected = useSelector(
     (state: RootState) =>
-      props.type === WeekCellNodeType.NODE &&
       state.sidebar.edit.objectType === CfObjectType.NODE &&
-      state.sidebar.edit.id === props.node.id
+      state.sidebar.edit.id === node.id
   )
 
-  const [ref, isHovered] = useHover()
   const [state, setState] = useState({
     dragging: false,
     dropHighlight: false
   })
-
-  const { coords, type, borderColor } = props
 
   const toggleState = useCallback(
     (property: 'dragging' | 'dropHighlight', value?: boolean) => {
@@ -121,7 +101,6 @@ const WeekCellInner = (props: PropsType) => {
 
   useEffect(() => {
     const el = ref.current
-
     if (!el) {
       return
     }
@@ -129,25 +108,21 @@ const WeekCellInner = (props: PropsType) => {
     return combine(
       dropTargetForElements({
         element: el,
-        canDrop: ({ source }) => {
-          return isOutcomeLink(source.data)
-        },
+        canDrop: ({ source }) => isOutcomeLink(source.data),
         onDragEnter: () => toggleState('dropHighlight', true),
         onDragLeave: () => toggleState('dropHighlight', false),
         onDrop: ({ source }) => {
           const data = source.data
-          if (isOutcomeLink(data) && props.type === WeekCellNodeType.NODE) {
-            dispatch(
-              nodelinkOutcome({ outcomeId: data.id, nodeId: props.node.id })
-            )
-            toggleState('dropHighlight', false)
+          if (isOutcomeLink(data)) {
+            dispatch(nodelinkOutcome({ outcomeId: data.id, nodeId: node.id }))
           }
+          toggleState('dropHighlight', false)
         }
       }),
       draggable({
         element: el,
         getInitialData: (): CellDataType => ({
-          id: type === WeekCellNodeType.NODE ? props.node.id : null,
+          id: node.id,
           coords,
           type: DraggableType.CELL
         }),
@@ -155,30 +130,27 @@ const WeekCellInner = (props: PropsType) => {
         onDrop: () => toggleState('dragging', false)
       })
     )
-  }, [ref, dispatch, type, coords, props, toggleState])
+  }, [ref, dispatch, coords, node.id, toggleState])
 
-  if (type === WeekCellNodeType.PHANTOM) {
-    return <div style={{ backgroundColor: borderColor }} />
-  } else {
-    const { node } = props
-
-    return (
+  return (
+    <Styled.Cell ref={ref}>
       <Styled.CellInner
         id={`node-${node.id}`}
-        ref={ref}
         selected={selected}
         dropHighlight={state.dropHighlight}
         dragShrink={state.dragging}
       >
         <HoverMenu show={isHovered} id={node.id} />
+
         {!!node.outcomenodeSet?.length && (
           <LinkedOutcomes
             parent={{ id: node.id, type: 'node' }}
             outcomes={node.outcomenodeSet}
           />
         )}
+
         <StyledNode.Border sx={{ backgroundColor: borderColor }} />
-        <StyledNode.Content onClick={props.onClick}>
+        <StyledNode.Content onClick={onClick}>
           <StyledNode.Title variant="body2">
             {node.title || `Empty title (#${node.id})`}
           </StyledNode.Title>
@@ -195,8 +167,16 @@ const WeekCellInner = (props: PropsType) => {
 
         <Handles id={node.id} hovering={isHovered} />
       </Styled.CellInner>
-    )
-  }
+    </Styled.Cell>
+  )
 }
 
-export default WeekCell
+const WeekCell = (props: PropsType) => {
+  return props.type === WeekCellNodeType.PHANTOM ? (
+    <WeekCellPhantom {...props} />
+  ) : (
+    <WeekCellNode {...props} />
+  )
+}
+
+export default memo(WeekCell)

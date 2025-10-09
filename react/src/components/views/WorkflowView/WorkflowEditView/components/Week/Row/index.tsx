@@ -8,7 +8,6 @@ import { selectNodeById } from '@cf/redux/selectors/node.selector'
 import { RootState } from '@cfRedux/store'
 import { produce } from 'immer'
 import {
-  Fragment,
   MouseEvent,
   memo,
   useCallback,
@@ -208,34 +207,28 @@ const WeekRow = ({
   return (
     <Styled.CellRow ref={ref} data-node-id={node?.id}>
       <Styled.CellRowIndicator edge={state.edge} />
-      {columnIds.map((columnId, nodeIndex) => (
-        <Fragment key={`${weekId}_${rowIndex}_${nodeIndex}`}>
-          {!node || node.column !== columnId ? (
-            <WeekCell
-              type={WeekCellNodeType.PHANTOM}
-              coords={{
-                week: weekId,
-                x: nodeIndex,
-                y: rowIndex
-              }}
-              borderColor={columnColors[nodeIndex]}
-              onReorder={onNodeReorder}
-            />
-          ) : (
-            <WeekCell
-              type={WeekCellNodeType.NODE}
-              coords={{
-                week: weekId,
-                x: nodeIndex,
-                y: rowIndex
-              }}
-              node={node}
-              borderColor={columnColors[nodeIndex]}
-              onClick={(e) => onNodeClick(e, node.id)}
-            />
-          )}
-        </Fragment>
-      ))}
+      {columnIds.map((columnId, index) => {
+        const isNodeCell = node?.column === columnId
+
+        return isNodeCell ? (
+          <WeekCell
+            key={columnId}
+            type={WeekCellNodeType.NODE}
+            coords={{ week: weekId, x: index, y: rowIndex }}
+            node={node}
+            borderColor={columnColors[columnId]}
+            onClick={(e) => onNodeClick(e, node.id)}
+          />
+        ) : (
+          <WeekCell
+            key={columnId}
+            type={WeekCellNodeType.PHANTOM}
+            coords={{ week: weekId, x: index, y: rowIndex }}
+            borderColor={columnColors[columnId]}
+            onReorder={onNodeReorder}
+          />
+        )
+      })}
     </Styled.CellRow>
   )
 }

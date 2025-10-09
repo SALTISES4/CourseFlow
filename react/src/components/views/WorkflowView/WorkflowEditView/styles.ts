@@ -35,6 +35,7 @@ export const WeekRowIndicator = styled(CellRowIndicator, {
 export const Cell = styled(Box)({
   position: 'relative',
   width: `${COLUMN_WIDTH}px`,
+  minHeight: '50px',
   flexShrink: 0
 })
 
