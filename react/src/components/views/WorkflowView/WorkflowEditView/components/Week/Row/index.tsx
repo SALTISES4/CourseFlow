@@ -58,6 +58,11 @@ const WeekRow = ({
     draggedOver: false
   })
 
+  const onNodeClicked = useCallback(
+    (e: MouseEvent<HTMLDivElement>) => onNodeClick(e, nodeId),
+    [onNodeClick, nodeId]
+  )
+
   const resetState = useCallback(() => {
     setState(
       produce((draft) => {
@@ -210,18 +215,22 @@ const WeekRow = ({
         const isNodeCell = nodeColumn === columnId
         return isNodeCell ? (
           <WeekCell
-            key={`${weekId}_${rowIndex}_${columnId}_${index}`}
+            key={`${weekId}_${rowIndex}_${columnId}`}
             type={WeekCellNodeType.NODE}
-            coords={{ week: weekId, x: index, y: rowIndex }}
+            coordsWeek={weekId}
+            coordsX={index}
+            coordsY={rowIndex}
             nodeId={nodeId}
             borderColor={columnColors[columnId]}
-            onClick={(e) => onNodeClick(e, nodeId)}
+            onClick={onNodeClicked}
           />
         ) : (
           <WeekCell
-            key={`${weekId}_${rowIndex}_${columnId}_${index}`}
+            key={`${weekId}_${rowIndex}_${columnId}`}
             type={WeekCellNodeType.PHANTOM}
-            coords={{ week: weekId, x: index, y: rowIndex }}
+            coordsWeek={weekId}
+            coordsX={index}
+            coordsY={rowIndex}
             borderColor={columnColors[columnId]}
             onReorder={onNodeReorder}
           />

@@ -27,7 +27,7 @@ import Handles from '../../LineSVG/Handles'
 type PropsType = PhantomPropsType | NodePropsType
 
 const WeekCellPhantom = ({
-  coords,
+  coordsX,
   borderColor,
   onReorder
 }: PhantomPropsType) => {
@@ -51,13 +51,13 @@ const WeekCellPhantom = ({
           return null
         }
 
-        if (data.coords.x !== coords.x) {
-          onReorder(data.id, data.coords.week, coords.x)
+        if (data.coords.x !== coordsX) {
+          onReorder(data.id, data.coords.week, coordsX)
         }
         setDraggedOver(false)
       }
     })
-  }, [coords.x, onReorder])
+  }, [coordsX, onReorder])
 
   return (
     <Styled.Cell
@@ -71,7 +71,9 @@ const WeekCellPhantom = ({
 
 const WeekCellNode = ({
   nodeId,
-  coords,
+  coordsWeek,
+  coordsX,
+  coordsY,
   borderColor,
   onClick
 }: NodePropsType) => {
@@ -125,14 +127,18 @@ const WeekCellNode = ({
         element: el,
         getInitialData: (): CellDataType => ({
           id: node.id,
-          coords,
+          coords: {
+            week: coordsWeek,
+            x: coordsX,
+            y: coordsY
+          },
           type: DraggableType.CELL
         }),
         onDragStart: () => toggleState('dragging', true),
         onDrop: () => toggleState('dragging', false)
       })
     )
-  }, [ref, dispatch, coords, node.id, toggleState])
+  }, [ref, dispatch, node.id, toggleState, coordsWeek, coordsX, coordsY])
 
   return (
     <Styled.Cell ref={ref}>
@@ -174,6 +180,7 @@ const WeekCellNode = ({
 }
 
 const WeekCell = (props: PropsType) => {
+  console.log('+++ render', props.coordsY + 1, 'x', props.coordsX + 1)
   return props.type === WeekCellNodeType.PHANTOM ? (
     <WeekCellPhantom {...props} />
   ) : (

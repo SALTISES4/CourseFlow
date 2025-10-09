@@ -1,6 +1,6 @@
 import { MouseEvent } from 'react'
 
-import { CellDataType, CellReorderCallbackFn } from '../../../types'
+import { CellReorderCallbackFn } from '../../../types'
 
 export enum WeekCellNodeType {
   PHANTOM = 'phantom',
@@ -8,7 +8,9 @@ export enum WeekCellNodeType {
 }
 
 export type SharedProps = {
-  coords: CellDataType['coords']
+  coordsWeek: number
+  coordsX: number
+  coordsY: number
   borderColor: string
 }
 
