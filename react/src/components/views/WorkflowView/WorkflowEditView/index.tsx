@@ -94,22 +94,26 @@ const WorkflowEditView = () => {
     )
   }, [])
 
-  // update redraw state to retrigger LineSVG to render with correct DOM rects
-  useLayoutEffect(() => {
-    setState(
-      produce((draft) => {
-        draft.redrawLines = !draft.redrawLines
-      })
-    )
-  }, [columnIds])
+  const triggerLineRerender = useCallback(() => {
+    setTimeout(() => {
+      setState(
+        produce((draft) => {
+          draft.redrawLines = !draft.redrawLines
+        })
+      )
+    }, 0) // schedule for next frame
+  }, [])
+
+  useLayoutEffect(() => triggerLineRerender(), [triggerLineRerender])
 
   const onColumnReorder: ColumnReorderCallbackFn = useCallback(
     (oldIndex: number, newIndex: number) => {
       dispatch(
         workflowReorderColumns({ moveIndex: oldIndex, toIndex: newIndex })
       )
+      triggerLineRerender()
     },
-    [dispatch]
+    [dispatch, triggerLineRerender]
   )
 
   const onWeekInsert = useCallback((insertIndex: number) => {
@@ -122,38 +126,30 @@ const WorkflowEditView = () => {
   const onWeekReorder = useCallback(
     (from: number, to: number) => {
       dispatch(workflowReorderWeeks({ fromIndex: from, toIndex: to }))
+      triggerLineRerender()
     },
-    [dispatch]
+    [dispatch, triggerLineRerender]
   )
 
   const onRowDragEnd: RowReorderCallbackFn = useCallback(
     (from, to) => {
       dispatch(
         weekMoveNodes({
-          from: {
-            weekId: from.week,
-            index: from.y
-          },
-          to: {
-            weekId: to.week,
-            index: to.y
-          }
+          from: { weekId: from.week, index: from.y },
+          to: { weekId: to.week, index: to.y }
         })
       )
+      triggerLineRerender()
     },
-    [dispatch]
+    [dispatch, triggerLineRerender]
   )
 
   const onNodeDragEnd: CellReorderCallbackFn = useCallback(
     (id, week, columnId) => {
-      dispatch(
-        nodeChangedColumn({
-          id,
-          data: { column: columnId }
-        })
-      )
+      dispatch(nodeChangedColumn({ id, data: { column: columnId } }))
+      triggerLineRerender()
     },
-    [dispatch]
+    [dispatch, triggerLineRerender]
   )
 
   return (
