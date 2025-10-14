@@ -5,6 +5,7 @@ import {
   workspaceReducer
 } from '@cfRedux/Reducers'
 import sidebarReducer from '@cfRedux/slices/sidebar.slice'
+import svgLinkReducer from '@cfRedux/slices/svglink.slice'
 import viewsettingsReducer from '@cfRedux/slices/viewsettings.slice'
 import { configureStore } from '@reduxjs/toolkit'
 import { cfApi } from '@XMLHTTP/API/api'
@@ -18,6 +19,7 @@ const store = configureStore({
     ...dummyReducers,
     workspace: workspaceReducer,
     sidebar: sidebarReducer,
+    svglink: svgLinkReducer,
     viewsettings: viewsettingsReducer,
     [cfApi.reducerPath]: cfApi.reducer
   },

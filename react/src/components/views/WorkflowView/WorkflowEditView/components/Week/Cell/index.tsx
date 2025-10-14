@@ -5,14 +5,27 @@ import {
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import useHover from '@cf/hooks/useHover'
 import { selectNodeById } from '@cf/redux/selectors/node.selector'
+import {
+  svglinkDragEnd,
+  svglinkDragMove,
+  svglinkDragStart
+} from '@cf/redux/slices/svglink.slice'
 import { CfObjectType } from '@cf/types/enum'
 import { nodelinkOutcome } from '@cfRedux/slices/node.slice'
 import { isOutcomeLink } from '@cfRedux/slices/outcomes.slice'
 import { RootState } from '@cfRedux/store'
 import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
 import { alpha } from '@mui/material'
+import { Position } from '@xyflow/react'
 import { produce } from 'immer'
-import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import {
+  MouseEvent as ReactMouseEvent,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import HoverMenu from './components/HoverMenu'
@@ -119,7 +132,7 @@ const WeekCellNode = ({
         onDrop: ({ source }) => {
           const data = source.data
           if (isOutcomeLink(data)) {
-            dispatch(nodelinkOutcome({ outcomeId: data.id, nodeId: node.id }))
+            dispatch(nodelinkOutcome({ outcomeId: data.id, nodeId }))
           }
           toggleState('dropHighlight', false)
         }
@@ -127,7 +140,7 @@ const WeekCellNode = ({
       draggable({
         element: el,
         getInitialData: (): CellDataType => ({
-          id: node.id,
+          id: nodeId,
           coords: {
             week: coordsWeek,
             x: coordsX,
@@ -139,7 +152,49 @@ const WeekCellNode = ({
         onDrop: () => toggleState('dragging', false)
       })
     )
-  }, [ref, dispatch, node.id, toggleState, coordsWeek, coordsX, coordsY])
+  }, [ref, dispatch, nodeId, toggleState, coordsWeek, coordsX, coordsY])
+
+  const onHandleMouseDown = useCallback(
+    (edge: Position) => {
+      return (e: ReactMouseEvent<SVGCircleElement>) => {
+        e.stopPropagation()
+        e.preventDefault()
+
+        const target = e.currentTarget
+        const bcr = target.getBoundingClientRect()
+
+        dispatch(
+          svglinkDragStart({
+            nodeId,
+            x: bcr.x + bcr.width / 2,
+            y: bcr.y + bcr.height / 2,
+            edge
+          })
+        )
+
+        const onMouseMove = (e: MouseEvent) => {
+          dispatch(
+            svglinkDragMove({
+              nodeId: null,
+              x: e.clientX,
+              y: e.clientY,
+              edge: null
+            })
+          )
+        }
+
+        const onMouseUp = () => {
+          dispatch(svglinkDragEnd())
+          window.removeEventListener('mousemove', onMouseMove)
+          window.removeEventListener('mouseup', onMouseUp)
+        }
+
+        window.addEventListener('mousemove', onMouseMove)
+        window.addEventListener('mouseup', onMouseUp)
+      }
+    },
+    [dispatch, nodeId]
+  )
 
   return (
     <Styled.Cell ref={ref}>
@@ -174,7 +229,7 @@ const WeekCellNode = ({
           />
         </StyledNode.Content>
 
-        <Handles id={node.id} hovering={isHovered} />
+        <Handles hovering={isHovered} onHandleMouseDown={onHandleMouseDown} />
       </Styled.CellInner>
     </Styled.Cell>
   )

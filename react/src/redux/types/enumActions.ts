@@ -3,6 +3,7 @@
 export enum SliceNamespace {
   NODE = 'node',
   SIDEBAR = 'sidebar',
+  SVGLINK = 'svglink',
   WEEK = 'week',
   COLUMN = 'column',
   STRATEGY = 'strategy',

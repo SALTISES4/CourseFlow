@@ -179,7 +179,7 @@ const WorkflowEditView = () => {
             onNodeReorder={onNodeDragEnd}
           />
         ))}
-        <LineSVG />
+        <LineSVG rerender={state.redrawLines} />
       </div>
     </OuterContentWrap>
   )

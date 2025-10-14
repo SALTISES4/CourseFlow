@@ -1,77 +1,18 @@
+import { selectIsDrawingLinkPreview } from '@cf/redux/selectors/nodelink.selector'
 import { Position } from '@xyflow/react'
-import { produce } from 'immer'
-import { MouseEvent as ReactMouseEvent, useCallback, useState } from 'react'
+import { MouseEventHandler } from 'react'
+import { useSelector } from 'react-redux'
 
 import * as Styled from './styles'
 
 type PropsType = {
-  id: number
   hovering: boolean
+  onHandleMouseDown: (edge: Position) => MouseEventHandler<SVGCircleElement>
   diameter?: number
 }
 
-type DragCoords = {
-  x: number
-  y: number
-  edge: Position
-}
-
-type StateType = {
-  dragging: boolean
-  coords: {
-    from: DragCoords
-    to: DragCoords
-  } | null
-}
-
-const Handles = ({ id, hovering, diameter = 10 }: PropsType) => {
-  const [state, setState] = useState<StateType>({
-    dragging: false,
-    coords: null
-  })
-
-  const onMouseDown = useCallback((edge: Position) => {
-    return (e: ReactMouseEvent<SVGCircleElement>) => {
-      e.stopPropagation()
-      e.preventDefault()
-
-      const target = e.currentTarget
-      const bcr = target.getBoundingClientRect()
-      const cursor = {
-        x: bcr.x + bcr.width / 2,
-        y: bcr.y + bcr.height / 2,
-        edge
-      }
-
-      setState({
-        dragging: true,
-        coords: { from: cursor, to: cursor }
-      })
-
-      const onMouseMove = (e: MouseEvent) => {
-        console.log('move to', { x: e.clientX, y: e.clientY })
-        setState(
-          produce((draft) => {
-            draft.dragging = true
-            draft.coords.to = {
-              x: e.clientX,
-              y: e.clientY,
-              edge: Position.Left
-            }
-          })
-        )
-      }
-
-      const onMouseUp = () => {
-        window.removeEventListener('mousemove', onMouseMove)
-        window.removeEventListener('mouseup', onMouseUp)
-        setState({ dragging: false, coords: null })
-      }
-
-      window.addEventListener('mousemove', onMouseMove)
-      window.addEventListener('mouseup', onMouseUp)
-    }
-  }, [])
+const Handles = ({ hovering, onHandleMouseDown, diameter = 10 }: PropsType) => {
+  const isDraggingPreview = useSelector(selectIsDrawingLinkPreview)
 
   const r = diameter / 2
 
@@ -82,7 +23,7 @@ const Handles = ({ id, hovering, diameter = 10 }: PropsType) => {
     ['0%', '50%', `translate(${r}, 0)`, Position.Left]
   ]
 
-  return hovering ? (
+  return hovering || isDraggingPreview ? (
     <Styled.Wrap radius={r}>
       {handles.map(([cx, cy, transform, edge], index) => (
         <Styled.Handle
@@ -91,7 +32,7 @@ const Handles = ({ id, hovering, diameter = 10 }: PropsType) => {
           cy={cy}
           r={r}
           transform={transform}
-          onMouseDown={onMouseDown(edge)}
+          onMouseDown={onHandleMouseDown(edge)}
         />
       ))}
     </Styled.Wrap>

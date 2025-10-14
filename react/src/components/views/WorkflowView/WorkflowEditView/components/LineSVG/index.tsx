@@ -1,13 +1,14 @@
 import { selectActiveLinks } from '@cfRedux/selectors/nodelink.selector'
-import { useRef } from 'react'
+import { memo, useRef } from 'react'
 import { useSelector } from 'react-redux'
 
 import Connection from './Connection'
+import ConnectionDrawPreview from './DrawPreview'
 import { edgeKeys } from './types'
 import { ConnectionType } from './types'
 import { generateOffsets, groupLinksByNodeEdge } from './utility'
 
-const LineSVG = () => {
+const LineSVG = ({ rerender }: { rerender: boolean }) => {
   const ref = useRef<SVGSVGElement>(null)
 
   // grab all the non-deleted links
@@ -92,14 +93,9 @@ const LineSVG = () => {
       {connections.map((conn) => (
         <Connection key={conn.id} svgRef={ref} {...conn} />
       ))}
-      {/* <DrawPreview
-        coords={{
-          from: { x: 426, y: 277, edge: 'bottom' },
-          to: { x: 540, y: 353, edge: 'left' }
-        }}
-      /> */}
+      <ConnectionDrawPreview svgRef={ref} />
     </svg>
   )
 }
 
-export default LineSVG
+export default memo(LineSVG)

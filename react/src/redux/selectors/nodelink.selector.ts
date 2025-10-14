@@ -11,3 +11,7 @@ export const {
 export const selectActiveLinks = createSelector([selectAllNodelink], (links) =>
   links.filter((link) => !link.deleted)
 )
+
+export const selectIsDrawingLinkPreview = (state: RootState) => {
+  return state.svglink.dragging.from !== null
+}
