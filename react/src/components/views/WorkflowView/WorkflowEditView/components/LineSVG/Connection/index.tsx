@@ -67,12 +67,12 @@ const Connection = ({
   const lineStart = getCoords(fromBCR, fromEdge)
   const lineEnd = getCoords(toBCR, toEdge)
 
-  // adjust positions for the SVG BCR and window scrolling
-  lineStart.x += window.scrollX - svgBCR.left + offset.from.x
-  lineStart.y += window.scrollY - svgBCR.top + offset.from.y
+  // adjust positions for the SVG BCR
+  lineStart.x -= svgBCR.left + offset.from.x
+  lineStart.y -= svgBCR.top + offset.from.y
 
-  lineEnd.x += window.scrollX - svgBCR.left + offset.to.x
-  lineEnd.y += window.scrollY - svgBCR.top + offset.to.y
+  lineEnd.x -= svgBCR.left + offset.to.x
+  lineEnd.y -= svgBCR.top + offset.to.y
 
   const [path, labelX, labelY] = getSmoothStepPath({
     sourceX: lineStart.x,

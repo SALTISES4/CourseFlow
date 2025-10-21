@@ -236,6 +236,7 @@ const WeekCellNode = ({
 }
 
 const WeekCell = (props: PropsType) => {
+  // console.log(`${props.coordsY+ 1} x ${props.coordsX + 1}`)
   return props.type === WeekCellNodeType.PHANTOM ? (
     <WeekCellPhantom {...props} />
   ) : (

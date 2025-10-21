@@ -1,5 +1,6 @@
+import { RootState } from '@cf/redux/store'
 import { selectActiveLinks } from '@cfRedux/selectors/nodelink.selector'
-import { memo, useRef } from 'react'
+import { memo, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import Connection from './Connection'
@@ -10,6 +11,22 @@ import { generateOffsets, groupLinksByNodeEdge } from './utility'
 
 const LineSVG = ({ rerender }: { rerender: boolean }) => {
   const ref = useRef<SVGSVGElement>(null)
+  const nodes = useSelector((state: RootState) => state.workspace.node.ids)
+  const [nodesBCR, setNodesBCR] = useState<Record<number, DOMRect>>({})
+
+  // wait for DOM to render before querying it for node BCRs
+  useLayoutEffect(() => {
+    const results: Record<number, DOMRect> = {}
+
+    nodes.forEach((nodeId) => {
+      const node = document.getElementById(`node-${nodeId}`)
+      if (node) {
+        results[nodeId] = node.getBoundingClientRect()
+      }
+    })
+
+    setNodesBCR(results)
+  }, [nodes])
 
   // grab all the non-deleted links
   const links = useSelector(selectActiveLinks)
@@ -93,7 +110,7 @@ const LineSVG = ({ rerender }: { rerender: boolean }) => {
       {connections.map((conn) => (
         <Connection key={conn.id} svgRef={ref} {...conn} />
       ))}
-      <ConnectionDrawPreview svgRef={ref} />
+      <ConnectionDrawPreview svgRef={ref} nodesBCR={nodesBCR} />
     </svg>
   )
 }
