@@ -1,3 +1,5 @@
+import useHover from '@cf/hooks/useHover'
+import { selectIsDrawingLinkPreview } from '@cf/redux/selectors/nodelink.selector'
 import { CfObjectType } from '@cf/types/enum'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
@@ -5,18 +7,20 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import ChatIcon from '@mui/icons-material/Chat'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { MouseEvent, useCallback } from 'react'
-import { useDispatch } from 'react-redux'
+import { MouseEvent, MutableRefObject, useCallback } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 type PropsType = {
-  id: number
-  show: boolean
+  nodeId: number
+  nodeRef: MutableRefObject<HTMLDivElement>
 }
 
 type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
 
-const HoverMenu = ({ id, show }: PropsType) => {
+const HoverMenu = ({ nodeId, nodeRef }: PropsType) => {
   const dispatch = useDispatch()
+  const [, hovering] = useHover(nodeRef)
+  const isDraggingPreview = useSelector(selectIsDrawingLinkPreview)
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {
@@ -35,7 +39,7 @@ const HoverMenu = ({ id, show }: PropsType) => {
           case 'comments':
             dispatch(
               sidebarEdit({
-                id,
+                id: nodeId,
                 objectType: CfObjectType.NODE,
                 tab: 'comments'
               })
@@ -46,12 +50,12 @@ const HoverMenu = ({ id, show }: PropsType) => {
         }
       }
     },
-    [dispatch, id]
+    [dispatch, nodeId]
   )
 
   return (
     <NodeHoverMenu
-      show={show}
+      show={hovering && !isDraggingPreview}
       items={[
         {
           label: 'Insert node below',

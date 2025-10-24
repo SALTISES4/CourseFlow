@@ -3,29 +3,15 @@ import {
   draggable,
   dropTargetForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import useHover from '@cf/hooks/useHover'
 import { selectNodeById } from '@cf/redux/selectors/node.selector'
-import {
-  svglinkDragEnd,
-  svglinkDragMove,
-  svglinkDragStart
-} from '@cf/redux/slices/svglink.slice'
 import { CfObjectType } from '@cf/types/enum'
 import { nodelinkOutcome } from '@cfRedux/slices/node.slice'
 import { isOutcomeLink } from '@cfRedux/slices/outcomes.slice'
 import { RootState } from '@cfRedux/store'
 import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
 import { alpha } from '@mui/material'
-import { Position } from '@xyflow/react'
 import { produce } from 'immer'
-import {
-  MouseEvent as ReactMouseEvent,
-  memo,
-  useCallback,
-  useEffect,
-  useRef,
-  useState
-} from 'react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import HoverMenu from './components/HoverMenu'
@@ -93,7 +79,7 @@ const WeekCellNode = ({
 }: NodePropsType) => {
   const dispatch = useDispatch()
   const node = useSelector((state: RootState) => selectNodeById(state, nodeId))
-  const [ref, isHovered] = useHover()
+  const ref = useRef<HTMLDivElement>(null)
 
   const selected = useSelector(
     (state: RootState) =>
@@ -154,61 +140,19 @@ const WeekCellNode = ({
     )
   }, [ref, dispatch, nodeId, toggleState, coordsWeek, coordsX, coordsY])
 
-  const onHandleMouseDown = useCallback(
-    (edge: Position) => {
-      return (e: ReactMouseEvent<SVGCircleElement>) => {
-        e.stopPropagation()
-        e.preventDefault()
-
-        const target = e.currentTarget
-        const bcr = target.getBoundingClientRect()
-
-        dispatch(
-          svglinkDragStart({
-            nodeId,
-            x: bcr.x + bcr.width / 2,
-            y: bcr.y + bcr.height / 2,
-            edge
-          })
-        )
-
-        const onMouseMove = (e: MouseEvent) => {
-          dispatch(
-            svglinkDragMove({
-              nodeId: null,
-              x: e.clientX,
-              y: e.clientY,
-              edge: null
-            })
-          )
-        }
-
-        const onMouseUp = () => {
-          dispatch(svglinkDragEnd())
-          window.removeEventListener('mousemove', onMouseMove)
-          window.removeEventListener('mouseup', onMouseUp)
-        }
-
-        window.addEventListener('mousemove', onMouseMove)
-        window.addEventListener('mouseup', onMouseUp)
-      }
-    },
-    [dispatch, nodeId]
-  )
-
   return (
     <Styled.Cell ref={ref}>
       <Styled.CellInner
-        id={`node-${node.id}`}
+        id={`node-${nodeId}`}
         selected={selected}
         dropHighlight={state.dropHighlight}
         dragShrink={state.dragging}
       >
-        <HoverMenu show={isHovered} id={node.id} />
+        <HoverMenu nodeId={nodeId} nodeRef={ref} />
 
         {!!node.outcomenodeSet?.length && (
           <LinkedOutcomes
-            parent={{ id: node.id, type: 'node' }}
+            parent={{ id: nodeId, type: 'node' }}
             outcomes={node.outcomenodeSet}
           />
         )}
@@ -216,7 +160,7 @@ const WeekCellNode = ({
         <StyledNode.Border sx={{ backgroundColor: borderColor }} />
         <StyledNode.Content onClick={onClick}>
           <StyledNode.Title variant="body2">
-            {node.title || `Empty title (#${node.id})`}
+            {node.title || `Empty title (#${nodeId})`}
           </StyledNode.Title>
           <Meta
             workflow="#"
@@ -229,7 +173,7 @@ const WeekCellNode = ({
           />
         </StyledNode.Content>
 
-        <Handles hovering={isHovered} onHandleMouseDown={onHandleMouseDown} />
+        <Handles nodeId={nodeId} nodeRef={ref} />
       </Styled.CellInner>
     </Styled.Cell>
   )
