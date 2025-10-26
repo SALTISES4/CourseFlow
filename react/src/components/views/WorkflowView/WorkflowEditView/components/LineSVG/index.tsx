@@ -9,24 +9,50 @@ import { edgeKeys } from './types'
 import { ConnectionType } from './types'
 import { generateOffsets, groupLinksByNodeEdge } from './utility'
 
+export type NodeBCR = {
+  x: number
+  y: number
+  top: number
+  left: number
+  right: number
+  bottom: number
+  width: number
+  height: number
+}
+
 const LineSVG = ({ rerender }: { rerender: boolean }) => {
   const ref = useRef<SVGSVGElement>(null)
   const nodes = useSelector((state: RootState) => state.workspace.node.ids)
-  const [nodesBCR, setNodesBCR] = useState<Record<number, DOMRect>>({})
+  const [nodesBCR, setNodesBCR] = useState<Record<number, NodeBCR>>({})
 
   // wait for DOM to render before querying it for node BCRs
+  // but adjusted for SVG offsets to give SVG relative coordinates
   useLayoutEffect(() => {
-    const results: Record<number, DOMRect> = {}
+    const results: Record<number, NodeBCR> = {}
+    const svgBCR = ref.current.getBoundingClientRect()
 
     nodes.forEach((nodeId) => {
       const node = document.getElementById(`node-${nodeId}`)
       if (node) {
-        results[nodeId] = node.getBoundingClientRect()
+        const bcr = node.getBoundingClientRect()
+        const x = bcr.x - svgBCR.left
+        const y = bcr.y - svgBCR.top
+
+        results[nodeId] = {
+          x,
+          y,
+          width: bcr.width,
+          height: bcr.height,
+          left: x,
+          right: x + bcr.width,
+          top: y,
+          bottom: y + bcr.height
+        }
       }
     })
 
     setNodesBCR(results)
-  }, [nodes])
+  }, [rerender, nodes])
 
   // grab all the non-deleted links
   const links = useSelector(selectActiveLinks)
@@ -83,6 +109,7 @@ const LineSVG = ({ rerender }: { rerender: boolean }) => {
 
   return (
     <svg
+      id="line-svg"
       ref={ref}
       style={{
         position: 'absolute',

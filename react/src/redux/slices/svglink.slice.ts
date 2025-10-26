@@ -25,10 +25,19 @@ const svgLinkSlice = createSlice({
   initialState,
   reducers: {
     dragStart(state, action: PayloadAction<DragPosition>) {
-      state.dragging.from = action.payload
+      // to make the starting corodinates always use "stable" SVG BCR offsets
+      const svgBCR = document.querySelector('#line-svg').getBoundingClientRect()
+      const { payload } = action
+      payload.x -= svgBCR.left
+      payload.y -= svgBCR.top
+      state.dragging.from = payload
     },
     dragMove(state, action: PayloadAction<DragPosition>) {
-      state.dragging.to = action.payload
+      const svgBCR = document.querySelector('#line-svg').getBoundingClientRect()
+      const { payload } = action
+      payload.x -= svgBCR.left
+      payload.y -= svgBCR.top
+      state.dragging.to = payload
     },
     dragEnd(state) {
       state.dragging.from = null

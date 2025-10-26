@@ -38,7 +38,6 @@ const Handles = ({ nodeId, nodeRef, diameter = 10 }: PropsType) => {
     (e: ReactMouseEvent<SVGCircleElement>) => {
       e.stopPropagation()
       e.preventDefault()
-
       const target = e.currentTarget
       const edge = target.dataset.edge as Position
       const bcr = target.getBoundingClientRect()

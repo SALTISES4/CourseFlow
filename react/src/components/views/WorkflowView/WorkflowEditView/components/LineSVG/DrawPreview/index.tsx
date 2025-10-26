@@ -4,17 +4,19 @@ import { Position, getSmoothStepPath, getStraightPath } from '@xyflow/react'
 import { MutableRefObject } from 'react'
 import { useSelector } from 'react-redux'
 
+import type { NodeBCR } from '../'
+
 type PropsType = {
   svgRef: MutableRefObject<SVGSVGElement | null>
-  nodesBCR: Record<number, DOMRect>
+  nodesBCR: Record<number, NodeBCR>
 }
 
 function findNearestRect(
   coords: { id: number; x: number; y: number },
-  rects: Record<number, DOMRect>
+  rects: Record<number, NodeBCR>
 ): DragPosition | null {
   const snapThreshold = 25
-  const potentialTargets: Map<string, DOMRect> = new Map() // hashmap ftw
+  const potentialTargets: Map<string, NodeBCR> = new Map() // hashmap ftw
 
   for (const [nodeId, rect] of Object.entries(rects)) {
     const isNearEdge =
@@ -92,19 +94,22 @@ const DrawPreview = ({ svgRef, nodesBCR }: PropsType) => {
   }
 
   const snapTarget = findNearestRect(
-    { id: coords.from.nodeId, x: coords.to.x, y: coords.to.y },
+    {
+      id: coords.from.nodeId,
+      x: coords.to.x,
+      y: coords.to.y
+    },
     nodesBCR
   )
 
-  const svgBCR = svgRef.current.getBoundingClientRect()
   const target = snapTarget ?? coords.to
 
   const pathArgs = {
-    sourceX: coords.from.x - svgBCR.left,
-    sourceY: coords.from.y - svgBCR.top,
+    sourceX: coords.from.x,
+    sourceY: coords.from.y,
     sourcePosition: coords.from.edge,
-    targetX: target.x - svgBCR.left,
-    targetY: target.y - svgBCR.top,
+    targetX: target.x,
+    targetY: target.y,
     targetPosition: target.edge ?? undefined
   }
 
@@ -112,11 +117,7 @@ const DrawPreview = ({ svgRef, nodesBCR }: PropsType) => {
     ? getSmoothStepPath(pathArgs)
     : getStraightPath(pathArgs)
 
-  return (
-    <g id="draw-preview" fill="none">
-      <path d={path} stroke="orange" strokeWidth="3" fill="none" />
-    </g>
-  )
+  return <path d={path} stroke="orange" strokeWidth="3" fill="none" />
 }
 
 export default DrawPreview
