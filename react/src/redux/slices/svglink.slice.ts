@@ -14,6 +14,7 @@ type SVGLinkState = {
     from: DragPosition | null
     to: DragPosition | null
   }
+  editing: LineEdit['editing'] | null
 }
 
 type LineEdit = {
@@ -23,7 +24,8 @@ type LineEdit = {
 }
 
 const initialState: SVGLinkState = {
-  dragging: { from: null, to: null }
+  dragging: { from: null, to: null },
+  editing: null
 }
 
 const svgLinkSlice = createSlice({
@@ -39,10 +41,12 @@ const svgLinkSlice = createSlice({
     dragEnd(state) {
       state.dragging.from = null
       state.dragging.to = null
+      state.editing = null
     },
     lineEdit(state, action: PayloadAction<LineEdit>) {
       state.dragging.from = action.payload.from
       state.dragging.to = action.payload.to
+      state.editing = action.payload.editing
     }
   }
 })

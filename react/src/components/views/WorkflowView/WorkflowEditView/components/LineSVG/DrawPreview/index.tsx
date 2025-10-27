@@ -12,7 +12,7 @@ type PropsType = {
 }
 
 function findNearestRect(
-  coords: { id: number; x: number; y: number },
+  coords: { anchorNodeId: number; x: number; y: number },
   rects: Record<number, NodeBCR>
 ): DragPosition | null {
   const snapThreshold = 25
@@ -43,7 +43,7 @@ function findNearestRect(
     const [nodeId, rect] = potentialTargets.entries().next().value
 
     // early exit if we're checking the self as the nearest node
-    if (nodeId === String(coords.id)) {
+    if (nodeId === String(coords.anchorNodeId)) {
       return null
     }
 
@@ -88,26 +88,34 @@ function findNearestRect(
 
 const DrawPreview = ({ svgRef, nodesBCR }: PropsType) => {
   const coords = useSelector((state: RootState) => state.svglink.dragging)
+  const editing = useSelector((state: RootState) => state.svglink.editing)
 
   if (!coords.from || !coords.to || !svgRef.current) {
     return null
   }
 
   const snapTarget = findNearestRect(
-    {
-      id: coords.from.nodeId,
-      x: coords.to.x,
-      y: coords.to.y
-    },
+    editing === 'from'
+      ? {
+          anchorNodeId: coords.to.nodeId,
+          x: coords.from.x,
+          y: coords.from.y
+        }
+      : {
+          anchorNodeId: coords.from.nodeId,
+          x: coords.to.x,
+          y: coords.to.y
+        },
     nodesBCR
   )
 
-  const target = snapTarget ?? coords.to
+  const source = editing === 'from' ? coords.to : coords.from
+  const target = snapTarget ?? (editing === 'from' ? coords.from : coords.to)
 
   const pathArgs = {
-    sourceX: coords.from.x,
-    sourceY: coords.from.y,
-    sourcePosition: coords.from.edge,
+    sourceX: source.x,
+    sourceY: source.y,
+    sourcePosition: source.edge,
     targetX: target.x,
     targetY: target.y,
     targetPosition: target.edge ?? undefined
