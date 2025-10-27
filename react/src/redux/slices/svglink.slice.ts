@@ -16,6 +16,12 @@ type SVGLinkState = {
   }
 }
 
+type LineEdit = {
+  from: DragPosition
+  to: DragPosition
+  editing: 'from' | 'to'
+}
+
 const initialState: SVGLinkState = {
   dragging: { from: null, to: null }
 }
@@ -25,23 +31,18 @@ const svgLinkSlice = createSlice({
   initialState,
   reducers: {
     dragStart(state, action: PayloadAction<DragPosition>) {
-      // to make the starting corodinates always use "stable" SVG BCR offsets
-      const svgBCR = document.querySelector('#line-svg').getBoundingClientRect()
-      const { payload } = action
-      payload.x -= svgBCR.left
-      payload.y -= svgBCR.top
-      state.dragging.from = payload
+      state.dragging.from = action.payload
     },
     dragMove(state, action: PayloadAction<DragPosition>) {
-      const svgBCR = document.querySelector('#line-svg').getBoundingClientRect()
-      const { payload } = action
-      payload.x -= svgBCR.left
-      payload.y -= svgBCR.top
-      state.dragging.to = payload
+      state.dragging.to = action.payload
     },
     dragEnd(state) {
       state.dragging.from = null
       state.dragging.to = null
+    },
+    lineEdit(state, action: PayloadAction<LineEdit>) {
+      state.dragging.from = action.payload.from
+      state.dragging.to = action.payload.to
     }
   }
 })
@@ -51,5 +52,6 @@ export default svgLinkSlice.reducer
 export const {
   dragStart: svglinkDragStart,
   dragMove: svglinkDragMove,
-  dragEnd: svglinkDragEnd
+  dragEnd: svglinkDragEnd,
+  lineEdit: svglinkLineEdit
 } = svgLinkSlice.actions

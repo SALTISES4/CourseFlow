@@ -1,13 +1,27 @@
+import BetterSelectionManager from '@cf/redux/BetterSelectionManager'
+import { selectIsDrawingLinkPreview } from '@cf/redux/selectors/nodelink.selector'
+import { svglinkDragEnd, svglinkLineEdit } from '@cf/redux/slices/svglink.slice'
+import { RootState } from '@cf/redux/store'
+import { CfObjectType } from '@cf/types/enum'
+import { Handle as StyledHandle } from '@cfViews/WorkflowView/WorkflowEditView/components/LineSVG/Handles/styles'
 import { Position, getSmoothStepPath } from '@xyflow/react'
 import { produce } from 'immer'
-import { MutableRefObject, useCallback, useState } from 'react'
+import {
+  MutableRefObject,
+  MouseEvent as ReactMouseEvent,
+  useCallback,
+  useMemo,
+  useState
+} from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { ConnectionType } from '../types'
 import { getCoords } from '../utility'
 
+type PositionCoords = ReturnType<typeof getCoords>
+
 type ConnectionState = {
   hovering: boolean
-  selected: boolean
   highlighted: boolean
 }
 
@@ -20,11 +34,81 @@ const Connection = ({
 }: ConnectionType & {
   svgRef: MutableRefObject<SVGSVGElement | null>
 }) => {
+  const dispatch = useDispatch()
+  const isDraggingPreview = useSelector(selectIsDrawingLinkPreview)
   const [state, setState] = useState<ConnectionState>({
     hovering: false,
-    selected: false,
     highlighted: false
   })
+
+  const manager = useMemo(
+    () => new BetterSelectionManager(dispatch),
+    [dispatch]
+  )
+
+  const selected = useSelector(
+    (state: RootState) =>
+      state.sidebar.edit.objectType === CfObjectType.NODELINK &&
+      state.sidebar.edit.id === id
+  )
+
+  const [fromId, fromEdge] = from
+  const [toId, toEdge] = to
+
+  const onMouseDown = useCallback(
+    (
+      lineStart: PositionCoords,
+      lineEnd: PositionCoords,
+      editing: 'from' | 'to'
+    ) => {
+      return (e: ReactMouseEvent<SVGCircleElement>) => {
+        e.stopPropagation()
+        e.preventDefault()
+
+        const args = {
+          from: {
+            nodeId: fromId,
+            x: lineStart.x,
+            y: lineStart.y,
+            edge: fromEdge as Position
+          },
+          to: {
+            nodeId: toId,
+            x: lineEnd.x,
+            y: lineEnd.y,
+            edge: toEdge as Position
+          },
+          editing
+        }
+
+        dispatch(svglinkLineEdit(args))
+
+        // this is so crappy
+        const onMouseMove = (e: MouseEvent) => {
+          const svgBCR = svgRef.current.getBoundingClientRect()
+          const moveArgs = {
+            ...args,
+            [editing]: {
+              ...args[editing],
+              x: e.clientX - svgBCR.left,
+              y: e.clientY - svgBCR.top
+            }
+          }
+          dispatch(svglinkLineEdit(moveArgs))
+        }
+
+        const onMouseUp = () => {
+          dispatch(svglinkDragEnd())
+          window.removeEventListener('mousemove', onMouseMove)
+          window.removeEventListener('mouseup', onMouseUp)
+        }
+
+        window.addEventListener('mousemove', onMouseMove)
+        window.addEventListener('mouseup', onMouseUp)
+      }
+    },
+    [dispatch, svgRef, fromEdge, fromId, toEdge, toId]
+  )
 
   const toggleHover = useCallback(() => {
     setState(
@@ -35,23 +119,16 @@ const Connection = ({
   }, [])
 
   const toggleSelected = useCallback(() => {
-    setState(
-      produce((draft) => {
-        draft.selected = !draft.selected
-      })
-    )
-  }, [])
+    manager.updateSidebar(id, CfObjectType.NODELINK)
+  }, [id, manager])
 
   let strokeColor = '#666' // actually '#CBD5DF'
   if (state.hovering) {
     strokeColor = '#7CD5B9'
   }
-  if (state.highlighted || state.selected) {
+  if (state.highlighted || selected) {
     strokeColor = '#FCD748'
   }
-
-  const [fromId, fromEdge] = from
-  const [toId, toEdge] = to
 
   const fromEl = document.getElementById(`node-${fromId}`)
   const toEl = document.getElementById(`node-${toId}`)
@@ -90,7 +167,8 @@ const Connection = ({
       <path
         d={path}
         stroke={strokeColor}
-        strokeWidth={state.selected ? 3 : 1}
+        strokeWidth={selected ? 3 : 1}
+        opacity={isDraggingPreview ? 0.2 : 1}
         fill="none"
         markerEnd="url(#line-arrow)"
       />
@@ -105,10 +183,27 @@ const Connection = ({
         onClick={toggleSelected}
         style={{ pointerEvents: 'auto', cursor: 'pointer' }}
       />
-      {state.selected && (
-        <text x={labelX} y={labelY} fill="red">
-          Line text label
-        </text>
+      {selected && (
+        <>
+          <StyledHandle
+            cx={lineStart.x}
+            cy={lineStart.y}
+            r={6}
+            sx={{ cursor: 'grab', stroke: strokeColor }}
+            onMouseDown={onMouseDown(lineStart, lineEnd, 'from')}
+          />
+          <StyledHandle
+            cx={lineEnd.x}
+            cy={lineEnd.y}
+            r={6}
+            sx={{ cursor: 'grab', stroke: strokeColor }}
+            onMouseDown={onMouseDown(lineStart, lineEnd, 'to')}
+          />
+
+          {/* <text x={labelX} y={labelY} fill="red">
+            Line text label
+          </text> */}
+        </>
       )}
     </g>
   )

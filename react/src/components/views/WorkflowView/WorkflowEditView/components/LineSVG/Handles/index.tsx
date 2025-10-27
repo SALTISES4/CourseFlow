@@ -41,22 +41,26 @@ const Handles = ({ nodeId, nodeRef, diameter = 10 }: PropsType) => {
       const target = e.currentTarget
       const edge = target.dataset.edge as Position
       const bcr = target.getBoundingClientRect()
+      const svg = document.querySelector('#line-svg')
+      const svgBCR = svg.getBoundingClientRect()
 
       dispatch(
         svglinkDragStart({
           nodeId,
-          x: bcr.x + bcr.width / 2,
-          y: bcr.y + bcr.height / 2,
+          x: bcr.x + bcr.width / 2 - svgBCR.left,
+          y: bcr.y + bcr.height / 2 - svgBCR.top,
           edge
         })
       )
 
       const onMouseMove = (e: MouseEvent) => {
+        const svgBCR = svg.getBoundingClientRect()
+
         dispatch(
           svglinkDragMove({
             nodeId: null,
-            x: e.clientX,
-            y: e.clientY,
+            x: e.clientX - svgBCR.left,
+            y: e.clientY - svgBCR.top,
             edge: null
           })
         )
