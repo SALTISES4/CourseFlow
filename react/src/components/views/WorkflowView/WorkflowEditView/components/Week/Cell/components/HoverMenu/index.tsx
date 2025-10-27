@@ -1,5 +1,4 @@
 import useHover from '@cf/hooks/useHover'
-import { selectIsDrawingLinkPreview } from '@cf/redux/selectors/nodelink.selector'
 import { CfObjectType } from '@cf/types/enum'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
@@ -8,7 +7,7 @@ import ChatIcon from '@mui/icons-material/Chat'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { MouseEvent, MutableRefObject, useCallback } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 type PropsType = {
   nodeId: number
@@ -20,7 +19,6 @@ type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
 const HoverMenu = ({ nodeId, nodeRef }: PropsType) => {
   const dispatch = useDispatch()
   const [, hovering] = useHover(nodeRef)
-  const isDraggingPreview = useSelector(selectIsDrawingLinkPreview)
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {
@@ -55,7 +53,7 @@ const HoverMenu = ({ nodeId, nodeRef }: PropsType) => {
 
   return (
     <NodeHoverMenu
-      show={hovering && !isDraggingPreview}
+      show={hovering}
       items={[
         {
           label: 'Insert node below',
