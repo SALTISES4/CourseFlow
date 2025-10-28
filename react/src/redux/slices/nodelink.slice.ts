@@ -129,7 +129,9 @@ const nodelinkSlice = createSlice({
         if (id === null) {
           // TODO: actually figure out how we'll be handling this
           const newLink = { ...state.entities[state.ids[state.ids.length - 1]] }
-          newLink.id += 10 // just something random
+
+          // figure out the next biggest id
+          newLink.id = state.ids.reduce((acc, c) => Math.max(acc, c), 0) + 1
           newLink.sourceNode = from.nodeId
           newLink.sourcePort = getEdgePortKey(from.edge)
           newLink.targetNode = to.nodeId
