@@ -1,13 +1,12 @@
 import { RootState } from '@cf/redux/store'
 import { selectActiveLinks } from '@cfRedux/selectors/nodelink.selector'
-import { memo, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { memo, useLayoutEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import Connection from './Connection'
 import ConnectionDrawPreview from './DrawPreview'
 import { edgeKeys } from './types'
 import { ConnectionType } from './types'
-import { generateOffsets, groupLinksByNodeEdge } from './utility'
 
 export type NodeBCR = {
   x: number
@@ -25,6 +24,7 @@ const LineSVG = ({ rerender }: { rerender: boolean }) => {
   const nodelinks = useSelector(
     (state: RootState) => state.workspace.nodelink.ids
   )
+  const links = useSelector(selectActiveLinks)
   const nodes = useSelector((state: RootState) => state.workspace.node.ids)
   const [nodesBCR, setNodesBCR] = useState<Record<number, NodeBCR>>({})
 
@@ -57,58 +57,11 @@ const LineSVG = ({ rerender }: { rerender: boolean }) => {
     setNodesBCR(results)
   }, [rerender, nodes, nodelinks])
 
-  // grab all the non-deleted links
-  const links = useSelector(selectActiveLinks)
-
-  // group links into node/edge to allow offsets
-  const linksGroup = groupLinksByNodeEdge(links)
-
-  const connections: ConnectionType[] = Object.keys(linksGroup).flatMap(
-    (edgeKey) => {
-      const lineGroup = linksGroup[edgeKey]
-
-      return lineGroup.map((link) => {
-        // group links by edges
-        const fromEdgeId = `${link.sourceNode}-${edgeKeys[link.sourcePort]}`
-        const toEdgeId = `${link.targetNode}-${edgeKeys[link.targetPort]}`
-
-        const fromGroup = linksGroup[fromEdgeId]
-        const toGroup = linksGroup[toEdgeId]
-
-        // generate offsets for both groups
-        const fromOffsets = generateOffsets(fromGroup.length)
-        const toOffsets = generateOffsets(toGroup.length)
-
-        // figure out this link’s index in each group
-        const fromIndex = fromGroup.indexOf(link)
-        const toIndex = toGroup.indexOf(link)
-
-        return {
-          id: link.id,
-          from: [link.sourceNode, edgeKeys[link.sourcePort]] as const,
-          to: [link.targetNode, edgeKeys[link.targetPort]] as const,
-          offset: {
-            from: {
-              x: ['top', 'bottom'].includes(edgeKeys[link.sourcePort])
-                ? fromOffsets[fromIndex]
-                : 0,
-              y: ['left', 'right'].includes(edgeKeys[link.sourcePort])
-                ? fromOffsets[fromIndex]
-                : 0
-            },
-            to: {
-              x: ['top', 'bottom'].includes(edgeKeys[link.targetPort])
-                ? toOffsets[toIndex]
-                : 0,
-              y: ['left', 'right'].includes(edgeKeys[link.targetPort])
-                ? toOffsets[toIndex]
-                : 0
-            }
-          }
-        }
-      })
-    }
-  )
+  const connections: ConnectionType[] = links.map((link) => ({
+    id: link.id,
+    from: [link.sourceNode, edgeKeys[link.sourcePort]] as const,
+    to: [link.targetNode, edgeKeys[link.targetPort]] as const
+  }))
 
   return (
     <svg

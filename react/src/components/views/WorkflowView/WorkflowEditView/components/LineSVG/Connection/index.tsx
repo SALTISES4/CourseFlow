@@ -29,7 +29,6 @@ const Connection = ({
   id,
   from,
   to,
-  offset,
   svgRef
 }: ConnectionType & {
   svgRef: MutableRefObject<SVGSVGElement | null>
@@ -146,11 +145,11 @@ const Connection = ({
   const lineEnd = getCoords(toBCR, toEdge)
 
   // adjust positions for the SVG BCR
-  lineStart.x -= svgBCR.left + offset.from.x
-  lineStart.y -= svgBCR.top + offset.from.y
+  lineStart.x -= svgBCR.left
+  lineStart.y -= svgBCR.top
 
-  lineEnd.x -= svgBCR.left + offset.to.x
-  lineEnd.y -= svgBCR.top + offset.to.y
+  lineEnd.x -= svgBCR.left
+  lineEnd.y -= svgBCR.top
 
   const [path, labelX, labelY] = getSmoothStepPath({
     sourceX: lineStart.x,
