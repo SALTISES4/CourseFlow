@@ -1,7 +1,7 @@
 import BetterSelectionManager from '@cf/redux/BetterSelectionManager'
 import { selectIsDrawingLinkPreview } from '@cf/redux/selectors/nodelink.selector'
-import { svglinkDragEnd, svglinkLineEdit } from '@cf/redux/slices/svglink.slice'
-import { RootState } from '@cf/redux/store'
+import { dragEndThunk, svglinkLineEdit } from '@cf/redux/slices/svglink.slice'
+import { AppDispatch, RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
 import { Handle as StyledHandle } from '@cfViews/WorkflowView/WorkflowEditView/components/LineSVG/Handles/styles'
 import { Position, getSmoothStepPath } from '@xyflow/react'
@@ -34,7 +34,7 @@ const Connection = ({
 }: ConnectionType & {
   svgRef: MutableRefObject<SVGSVGElement | null>
 }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const isDraggingPreview = useSelector(selectIsDrawingLinkPreview)
   const [state, setState] = useState<ConnectionState>({
     hovering: false,
@@ -66,6 +66,7 @@ const Connection = ({
         e.preventDefault()
 
         const args = {
+          id,
           from: {
             nodeId: fromId,
             x: lineStart.x,
@@ -98,7 +99,7 @@ const Connection = ({
         }
 
         const onMouseUp = () => {
-          dispatch(svglinkDragEnd())
+          dispatch(dragEndThunk())
           window.removeEventListener('mousemove', onMouseMove)
           window.removeEventListener('mouseup', onMouseUp)
         }

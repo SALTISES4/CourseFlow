@@ -14,6 +14,8 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
+import { svglinkDragEnd } from './svglink.slice'
+
 interface CreateLockPayload {
   id: number
   lock: CfLock
@@ -117,6 +119,17 @@ const nodelinkSlice = createSlice({
           }
         }
       )
+      .addCase(svglinkDragEnd, (state, action) => {
+        const { id, from, to } = action.payload
+        if (id === null) {
+          console.log('creating new nodelink', from, to)
+        }
+
+        if (id && from.nodeId && to.nodeId) {
+          console.log('---- nodelink', id, 'changed')
+          console.log(from, to)
+        }
+      })
   }
 })
 

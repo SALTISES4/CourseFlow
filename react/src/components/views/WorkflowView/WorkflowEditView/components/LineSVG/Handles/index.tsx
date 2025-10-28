@@ -1,10 +1,11 @@
 import useHover from '@cf/hooks/useHover'
 import { selectIsDrawingLinkPreview } from '@cf/redux/selectors/nodelink.selector'
 import {
-  svglinkDragEnd,
+  dragEndThunk,
   svglinkDragMove,
   svglinkDragStart
 } from '@cf/redux/slices/svglink.slice'
+import { AppDispatch } from '@cf/redux/store'
 import { Position } from '@xyflow/react'
 import {
   MutableRefObject,
@@ -22,7 +23,7 @@ type PropsType = {
 }
 
 const Handles = ({ nodeId, nodeRef, diameter = 10 }: PropsType) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [, hovering] = useHover(nodeRef)
   const isDraggingPreview = useSelector(selectIsDrawingLinkPreview)
   const r = diameter / 2
@@ -67,7 +68,7 @@ const Handles = ({ nodeId, nodeRef, diameter = 10 }: PropsType) => {
       }
 
       const onMouseUp = () => {
-        dispatch(svglinkDragEnd())
+        dispatch(dragEndThunk())
         window.removeEventListener('mousemove', onMouseMove)
         window.removeEventListener('mouseup', onMouseUp)
       }
