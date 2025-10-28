@@ -4,14 +4,22 @@ import { Position } from '@xyflow/react'
 
 import { AppDispatch, RootState } from '../store'
 
-export const svglinkDragEnd = createAction<SVGLinkState['dragging']>(
-  'svgLink/svglinkDragEnd'
-)
+export const svglinkDragEnd = createAction<{
+  id: number
+  from: SVGLinkState['snap']['from']
+  to: SVGLinkState['snap']['to']
+}>('svgLink/svglinkDragEnd')
 
 export const dragEndThunk =
   () => (dispatch: AppDispatch, getState: () => RootState) => {
-    const { id, from, to } = getState().svglink.dragging
-    dispatch(svglinkDragEnd({ id, from, to }))
+    const state = getState().svglink
+    dispatch(
+      svglinkDragEnd({
+        id: state.dragging.id,
+        from: state.snap.from,
+        to: state.snap.to
+      })
+    )
   }
 
 export type DragPosition = {
@@ -27,6 +35,10 @@ type SVGLinkState = {
     from: DragPosition | null
     to: DragPosition | null
   }
+  snap: {
+    from: { nodeId: number; edge: Position } | null
+    to: { nodeId: number; edge: Position } | null
+  }
   editing: LineEdit['editing'] | null
 }
 
@@ -39,6 +51,7 @@ type LineEdit = {
 
 const initialState: SVGLinkState = {
   dragging: { id: null, from: null, to: null },
+  snap: { from: null, to: null },
   editing: null
 }
 
@@ -53,7 +66,7 @@ const svgLinkSlice = createSlice({
     dragMove(state, action: PayloadAction<DragPosition>) {
       state.dragging.to = action.payload
     },
-    snapTarget(
+    dragSnap(
       state,
       action: PayloadAction<{
         id: number
@@ -62,11 +75,23 @@ const svgLinkSlice = createSlice({
       }>
     ) {
       const { id, edge, editing } = action.payload
-      const target = state.dragging[editing]
-      target.nodeId = id
-      target.edge = edge
+      const fromId = state.dragging.from?.nodeId ?? null
+      const fromEdge = state.dragging.from?.edge ?? null
+      const toId = state.dragging.to?.nodeId ?? null
+      const toEdge = state.dragging.to?.edge ?? null
 
-      console.log('set the snap target to', action.payload)
+      const snap: SVGLinkState['snap'] = {
+        from: { nodeId: fromId, edge: fromEdge },
+        to: { nodeId: toId, edge: toEdge }
+      }
+
+      state.snap = snap
+
+      const target = state.snap[editing]
+      if (target) {
+        target.nodeId = id
+        target.edge = edge
+      }
     },
     lineEdit(state, action: PayloadAction<LineEdit>) {
       state.dragging.id = action.payload.id
@@ -80,6 +105,8 @@ const svgLinkSlice = createSlice({
       state.dragging.id = null
       state.dragging.from = null
       state.dragging.to = null
+      state.snap.from = null
+      state.snap.to = null
       state.editing = null
     })
   }
@@ -90,5 +117,6 @@ export default svgLinkSlice.reducer
 export const {
   dragStart: svglinkDragStart,
   dragMove: svglinkDragMove,
+  dragSnap: svglinkDragSnap,
   lineEdit: svglinkLineEdit
 } = svgLinkSlice.actions

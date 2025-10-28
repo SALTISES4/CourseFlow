@@ -22,6 +22,9 @@ export type NodeBCR = {
 
 const LineSVG = ({ rerender }: { rerender: boolean }) => {
   const ref = useRef<SVGSVGElement>(null)
+  const nodelinks = useSelector(
+    (state: RootState) => state.workspace.nodelink.ids
+  )
   const nodes = useSelector((state: RootState) => state.workspace.node.ids)
   const [nodesBCR, setNodesBCR] = useState<Record<number, NodeBCR>>({})
 
@@ -52,7 +55,7 @@ const LineSVG = ({ rerender }: { rerender: boolean }) => {
     })
 
     setNodesBCR(results)
-  }, [rerender, nodes])
+  }, [rerender, nodes, nodelinks])
 
   // grab all the non-deleted links
   const links = useSelector(selectActiveLinks)
@@ -137,7 +140,7 @@ const LineSVG = ({ rerender }: { rerender: boolean }) => {
       {connections.map((conn) => (
         <Connection key={conn.id} svgRef={ref} {...conn} />
       ))}
-      <ConnectionDrawPreview svgRef={ref} nodesBCR={nodesBCR} />
+      <ConnectionDrawPreview nodesBCR={nodesBCR} />
     </svg>
   )
 }

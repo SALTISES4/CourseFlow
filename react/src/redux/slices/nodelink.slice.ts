@@ -7,6 +7,7 @@ import {
   WeekActions
 } from '@cfRedux/types/enumActions'
 import { TNodelink, WorkspaceAppState } from '@cfRedux/types/type'
+import { getEdgePortKey } from '@cfViews/WorkflowView/WorkflowEditView/components/LineSVG/types'
 import {
   PayloadAction,
   createAction,
@@ -121,13 +122,46 @@ const nodelinkSlice = createSlice({
       )
       .addCase(svglinkDragEnd, (state, action) => {
         const { id, from, to } = action.payload
-        if (id === null) {
-          console.log('creating new nodelink', from, to)
+        if (!from || !to) {
+          return
         }
 
-        if (id && from.nodeId && to.nodeId) {
-          console.log('---- nodelink', id, 'changed')
-          console.log(from, to)
+        if (id === null) {
+          // TODO: actually figure out how we'll be handling this
+          const newLink = { ...state.entities[state.ids[state.ids.length - 1]] }
+          newLink.id += 10 // just something random
+          newLink.sourceNode = from.nodeId
+          newLink.sourcePort = getEdgePortKey(from.edge)
+          newLink.targetNode = to.nodeId
+          newLink.targetPort = getEdgePortKey(to.edge)
+
+          // only allow one unique connection combo sourceId/sourceEdge -> targetId/targetEdge
+          const found = state.ids.filter((id) => {
+            const nodelink = state.entities[id]
+            return (
+              nodelink.sourceNode === newLink.sourceNode &&
+              nodelink.sourcePort === newLink.sourcePort &&
+              nodelink.targetNode === newLink.targetNode &&
+              nodelink.targetPort === newLink.targetPort
+            )
+          })
+
+          // if not found, create new link
+          if (!found.length) {
+            nodelinkAdapter.addOne(state, newLink)
+          } else {
+            // if a link already exists, but it's been deleted, just restore it
+            const link = state.entities[found[0]]
+            if (link.deleted) {
+              link.deleted = false
+            }
+          }
+        } else {
+          const target = state.entities[id]
+          target.sourceNode = from.nodeId
+          target.sourcePort = getEdgePortKey(from.edge)
+          target.targetNode = to.nodeId
+          target.targetPort = getEdgePortKey(to.edge)
         }
       })
   }

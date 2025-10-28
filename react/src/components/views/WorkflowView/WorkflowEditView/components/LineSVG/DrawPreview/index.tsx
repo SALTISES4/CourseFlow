@@ -1,13 +1,12 @@
-import { DragPosition } from '@cf/redux/slices/svglink.slice'
+import { DragPosition, svglinkDragSnap } from '@cf/redux/slices/svglink.slice'
 import { RootState } from '@cfRedux/store'
 import { Position, getSmoothStepPath, getStraightPath } from '@xyflow/react'
-import { MutableRefObject } from 'react'
-import { useSelector } from 'react-redux'
+import { useEffect, useMemo, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import type { NodeBCR } from '../'
 
 type PropsType = {
-  svgRef: MutableRefObject<SVGSVGElement | null>
   nodesBCR: Record<number, NodeBCR>
 }
 
@@ -86,28 +85,62 @@ function findNearestRect(
   return null
 }
 
-const DrawPreview = ({ svgRef, nodesBCR }: PropsType) => {
+const DrawPreview = ({ nodesBCR }: PropsType) => {
   const coords = useSelector((state: RootState) => state.svglink.dragging)
   const editing = useSelector((state: RootState) => state.svglink.editing)
+  const [snapTo, setSnapTo] = useState<DragPosition | null>(null)
+  const dispatch = useDispatch()
 
-  if (!coords.from || !coords.to || !svgRef.current) {
+  const snapTarget = useMemo(() => {
+    if (!coords.from || !coords.to) {
+      return null
+    }
+
+    return findNearestRect(
+      editing === 'from'
+        ? {
+            anchorNodeId: coords.to.nodeId,
+            x: coords.from.x,
+            y: coords.from.y
+          }
+        : {
+            anchorNodeId: coords.from.nodeId,
+            x: coords.to.x,
+            y: coords.to.y
+          },
+      nodesBCR
+    )
+  }, [coords.from, coords.to, editing, nodesBCR])
+
+  // sync up snap target to local state
+  useEffect(() => {
+    if (
+      (snapTarget && !snapTo) ||
+      (!snapTarget && snapTo) ||
+      snapTarget?.nodeId !== snapTo?.nodeId
+    ) {
+      setSnapTo(snapTarget)
+    }
+  }, [snapTo, snapTarget])
+
+  // dispatch the action only when things actually change
+  useEffect(() => {
+    const nodeId = snapTo?.nodeId ?? null
+    const edge = snapTo?.edge ?? null
+    if (nodeId && edge) {
+      dispatch(
+        svglinkDragSnap({
+          id: nodeId,
+          edge,
+          editing: editing ?? 'to'
+        })
+      )
+    }
+  }, [editing, snapTo, dispatch])
+
+  if (!coords.from || !coords.to) {
     return null
   }
-
-  const snapTarget = findNearestRect(
-    editing === 'from'
-      ? {
-          anchorNodeId: coords.to.nodeId,
-          x: coords.from.x,
-          y: coords.from.y
-        }
-      : {
-          anchorNodeId: coords.from.nodeId,
-          x: coords.to.x,
-          y: coords.to.y
-        },
-    nodesBCR
-  )
 
   const source = editing === 'from' ? coords.to : coords.from
   const target = snapTarget ?? (editing === 'from' ? coords.from : coords.to)

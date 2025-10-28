@@ -108,7 +108,7 @@ const Connection = ({
         window.addEventListener('mouseup', onMouseUp)
       }
     },
-    [dispatch, svgRef, fromEdge, fromId, toEdge, toId]
+    [id, fromId, fromEdge, toId, toEdge, dispatch, svgRef]
   )
 
   const toggleHover = useCallback(() => {
