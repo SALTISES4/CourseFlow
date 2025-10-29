@@ -69,10 +69,10 @@ const LineSVG = ({ rerender }: { rerender: boolean }) => {
       ref={ref}
       style={{
         position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
+        top: '-30px',
+        left: '-30px',
+        width: 'calc(100% + 60px)',
+        height: 'calc(100% + 60px)',
         pointerEvents: 'none'
       }}
     >
