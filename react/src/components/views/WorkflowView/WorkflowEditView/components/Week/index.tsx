@@ -218,7 +218,6 @@ const Week = (props: WeekPropsType) => {
 
   return (
     <StyledWeek.WeekWrapper
-      onClick={onWeekWrapperClick}
       ref={weekWrapperRef}
       selected={selected}
       data-week-id={props.weekId}
@@ -227,6 +226,7 @@ const Week = (props: WeekPropsType) => {
       <StyledWeek.WeekHeader
         ref={dragHandleRef}
         expanded={state.expanded && !props.condensed}
+        onClick={onWeekWrapperClick}
       >
         <StyledWeek.WeekTitle variant="subtitle2">
           <TitleText text={week.title} defaultText={defaultText} />
