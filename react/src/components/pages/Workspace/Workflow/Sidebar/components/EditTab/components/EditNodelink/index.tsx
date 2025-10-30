@@ -1,7 +1,11 @@
-import { nodelinkDeleteSelfSoft } from '@cf/redux/slices/nodelink.slice'
-import { AppState } from '@cf/redux/types/type'
+import { selectNodelinkById } from '@cf/redux/selectors/nodelink.selector'
+import {
+  nodelinkChangeField,
+  nodelinkDeleteSelfSoft
+} from '@cf/redux/slices/nodelink.slice'
+import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
+import { _t } from '@cf/utility/Utility.class'
 import { RootState } from '@cfRedux/store'
-import { NodelinkForm } from '@cfSidebar/components/EditTab/components/EditNodelink/types'
 import {
   SidebarActions,
   SidebarContent,
@@ -16,54 +20,60 @@ import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { produce } from 'immer'
-import { ChangeEvent, useCallback, useState } from 'react'
+import { ChangeEvent, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 const EditNodelink = () => {
   const dispatch = useDispatch()
   const nodeLinkId = useSelector((state: RootState) => state.sidebar.edit.id)
-
-  const [state, setState] = useState<NodelinkForm>({
-    title: 'Node Link text here',
-    textPosition: 50,
-    dashed: false
-  })
+  const nodelink = useSelector((state: RootState) =>
+    selectNodelinkById(state, nodeLinkId)
+  )
 
   const onTitleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => [
-      setState(
-        produce((draft) => {
-          draft.title = e.target.value
+      dispatch(
+        nodelinkChangeField({
+          id: nodeLinkId,
+          json: {
+            title: e.target.value
+          }
         })
       )
     ],
-    []
+    [dispatch, nodeLinkId]
   )
 
   const onDashChange = useCallback(
-    (_: ChangeEvent<HTMLInputElement>, checked: boolean) => [
-      setState(
-        produce((draft) => {
-          draft.dashed = checked
+    (_: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+      dispatch(
+        nodelinkChangeField({
+          id: nodeLinkId,
+          json: {
+            dashed: checked
+          }
         })
       )
-    ],
-    []
+    },
+    [dispatch, nodeLinkId]
   )
 
   const onSliderChange = useCallback(
-    (_: Event, value: number | number[]) => [
-      setState(
-        produce((draft) => {
-          draft.textPosition = value as number
+    (_: Event, value: number | number[]) => {
+      dispatch(
+        nodelinkChangeField({
+          id: nodeLinkId,
+          json: {
+            textPosition: value as number
+          }
         })
       )
-    ],
-    []
+    },
+    [dispatch, nodeLinkId]
   )
 
   const onDelete = useCallback(() => {
+    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
     dispatch(nodelinkDeleteSelfSoft({ id: nodeLinkId }))
   }, [dispatch, nodeLinkId])
 
@@ -71,22 +81,22 @@ const EditNodelink = () => {
     <SidebarInnerWrap>
       <SidebarContent>
         <SidebarTitle as="h3" variant="h6">
-          Edit node link
+          {_t('Edit node link')}
         </SidebarTitle>
         <Stack direction="column" gap={3}>
           <TextField
             variant="outlined"
             label="Title"
             size="small"
-            value={state.title}
+            value={nodelink.title}
             onChange={onTitleChange}
           />
           <Box>
             <Typography id="edit-text-position" gutterBottom>
-              Text position
+              {_t('Text position')}
             </Typography>
             <Slider
-              value={state.textPosition}
+              value={nodelink.textPosition}
               aria-labelledby="edit-text-position"
               valueLabelDisplay="off"
               onChange={onSliderChange}
@@ -97,7 +107,7 @@ const EditNodelink = () => {
             label="Dashed line"
             control={
               <Switch
-                checked={state.dashed}
+                checked={nodelink.dashed}
                 onChange={onDashChange}
                 size="small"
               />
@@ -107,7 +117,7 @@ const EditNodelink = () => {
       </SidebarContent>
       <SidebarActions>
         <Button variant="contained" color="secondary" onClick={onDelete}>
-          Delete
+          {_t('Delete')}
         </Button>
       </SidebarActions>
     </SidebarInnerWrap>
