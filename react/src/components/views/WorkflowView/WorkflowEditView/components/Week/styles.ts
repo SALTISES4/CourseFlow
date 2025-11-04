@@ -33,12 +33,12 @@ export const WeekWrapper = styled(Box, {
     ...(hovering && {
       '&': {
         cursor: 'pointer',
-        boxShadow: `0 0 0 2px ${theme.palette.grey[300]}`
+        boxShadow: `0 0 0 1px ${theme.palette.workflow.selected}`
       }
     }),
     ...(selected && {
       '&, &:hover': {
-        boxShadow: `0 0 0 2px rgba(4, 186, 116, 0.5)`
+        boxShadow: `0 0 0 2px ${theme.palette.workflow.selected}`
       }
     })
   })
@@ -86,6 +86,7 @@ export const WeekNumber = styled('span')(() => ({
   justifyContent: 'center',
   alignItems: 'center',
   borderRadius: '50%',
+  fontSize: '10px',
   backgroundColor: '#D5D9E4'
 }))
 

@@ -45,14 +45,20 @@ const Connection = ({
     [dispatch]
   )
 
+  const [fromId, fromEdge] = from
+  const [toId, toEdge] = to
+
   const selected = useSelector(
     (state: RootState) =>
       state.sidebar.edit.objectType === CfObjectType.NODELINK &&
       state.sidebar.edit.id === id
   )
 
-  const [fromId, fromEdge] = from
-  const [toId, toEdge] = to
+  const highlight = useSelector(
+    (state: RootState) =>
+      state.sidebar.edit.objectType === CfObjectType.NODE &&
+      (state.sidebar.edit.id === fromId || state.sidebar.edit.id === toId)
+  )
 
   const onMouseDown = useCallback(
     (
@@ -126,7 +132,7 @@ const Connection = ({
   if (state.hovering) {
     strokeColor = '#7CD5B9'
   }
-  if (state.highlighted || selected) {
+  if (state.highlighted || highlight || selected) {
     strokeColor = '#FCD748'
   }
 
@@ -167,7 +173,7 @@ const Connection = ({
       <path
         d={path}
         stroke={strokeColor}
-        strokeWidth={selected ? 3 : 1}
+        strokeWidth={selected || highlight ? 3 : 1}
         opacity={isDraggingPreview ? 0.2 : 1}
         fill="none"
         markerEnd="url(#line-arrow)"

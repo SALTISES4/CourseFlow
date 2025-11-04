@@ -12,9 +12,9 @@ export const StyledRestorableBlock = styled(DraggableWrap, {
     cursor: 'pointer'
   },
   ...(selected && {
-    boxShadow: '0 0 0 1px rgba(4, 186, 116, 0.5)',
+    boxShadow: `0 0 0 1px ${theme.palette.workflow.selected})`,
     '&:hover': {
-      boxShadow: '0 0 0 1px rgba(4, 186, 116, 0.5)'
+      boxShadow: `0 0 0 1px ${theme.palette.workflow.selected})`
     }
   })
 }))

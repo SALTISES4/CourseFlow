@@ -54,7 +54,7 @@ export const CellInner = styled(Box, {
       '&': {
         position: 'relative',
         transition: 'none',
-        boxShadow: `0 0 0 2px rgba(4, 186, 116, 0.5)`,
+        boxShadow: `0 0 0 2px ${theme.palette.workflow.selected}`,
         '&::before': {
           content: '""',
           position: 'absolute',
@@ -68,7 +68,7 @@ export const CellInner = styled(Box, {
     }),
     ...(selected && {
       '&, &:hover': {
-        boxShadow: `0 0 0 2px rgba(4, 186, 116, 0.5)`
+        boxShadow: `0 0 0 2px ${theme.palette.workflow.selected}`
       }
     })
   })
