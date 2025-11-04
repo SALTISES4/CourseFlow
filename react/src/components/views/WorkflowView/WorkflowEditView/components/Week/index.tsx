@@ -8,6 +8,7 @@ import {
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
+import useHover from '@cf/hooks/useHover'
 import { CfObjectType } from '@cf/types/enum'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
@@ -26,6 +27,7 @@ import {
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import HoverMenu from './HoverMenu'
 import WeekRow from './Row'
 import * as StyledWeek from './styles'
 import * as Styled from '../../styles'
@@ -53,6 +55,7 @@ export type WeekPropsType = {
 type WeekStateType = {
   expanded: boolean
   closestEdge: Edge | null
+  dragging: boolean
   draggedOver: boolean
 }
 
@@ -61,7 +64,8 @@ const Week = (props: WeekPropsType) => {
   const [state, setState] = useState<WeekStateType>({
     expanded: true,
     closestEdge: null,
-    draggedOver: false
+    draggedOver: false,
+    dragging: false
   })
   const selected = useSelector(
     (state: RootState) =>
@@ -75,6 +79,8 @@ const Week = (props: WeekPropsType) => {
     selectWeekById(state, props.weekId)
   )
   const manager = useRef(new BetterSelectionManager(dispatch))
+
+  const [_, isHovered] = useHover(dragHandleRef)
 
   const resetState = useCallback(() => {
     setState(
@@ -111,6 +117,13 @@ const Week = (props: WeekPropsType) => {
         },
         canDrop({ source }) {
           return isGridWeek(source.data) || isSidebarPart(source.data)
+        },
+        onDragStart() {
+          setState(
+            produce((draft) => {
+              draft.dragging = true
+            })
+          )
         },
         onDragLeave() {
           resetState()
@@ -161,6 +174,11 @@ const Week = (props: WeekPropsType) => {
             return
           }
 
+          setState(
+            produce((draft) => {
+              draft.dragging = false
+            })
+          )
           resetState()
         }
       })
@@ -220,23 +238,28 @@ const Week = (props: WeekPropsType) => {
     <StyledWeek.WeekWrapper
       ref={weekWrapperRef}
       selected={selected}
+      hovering={isHovered}
       data-week-id={props.weekId}
     >
       <Styled.WeekRowIndicator edge={state.closestEdge} />
       <StyledWeek.WeekHeader
         ref={dragHandleRef}
+        dragging={state.dragging}
         expanded={state.expanded && !props.condensed}
         onClick={onWeekWrapperClick}
       >
         <StyledWeek.WeekTitle variant="subtitle2">
+          <StyledWeek.WeekNumber>{props.index + 1}</StyledWeek.WeekNumber>
           <TitleText text={week.title} defaultText={defaultText} />
         </StyledWeek.WeekTitle>
 
         {!props.condensed && (
-          <IconButton onClick={onCollapseIconClick}>
+          <IconButton onClick={onCollapseIconClick} className="arrow-icon">
             <KeyboardArrowDown />
           </IconButton>
         )}
+
+        <HoverMenu weekId={props.weekId} show={isHovered} />
       </StyledWeek.WeekHeader>
 
       {state.expanded && !props.condensed && weekGrid}

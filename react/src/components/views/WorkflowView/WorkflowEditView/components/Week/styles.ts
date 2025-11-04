@@ -21,42 +21,72 @@ export const DraggingWeekWrapper = styled(Box)(({ theme }) => ({
 }))
 
 export const WeekWrapper = styled(Box, {
-  shouldForwardProp: (prop) => !['selected'].includes(prop as string)
-})<{ selected: boolean }>(({ theme, selected }) => ({
-  position: 'relative',
-  marginTop: theme.spacing(2),
-  marginBottom: theme.spacing(2),
-  backgroundColor: 'rgb(238, 242, 253)',
-  borderRadius: theme.shape.borderRadius,
-  ...(selected && {
-    '&, &:hover': {
-      boxShadow: `0 0 0 2px rgba(4, 186, 116, 0.5)`
-    }
+  shouldForwardProp: (prop) =>
+    !['selected', 'hovering'].includes(prop as string)
+})<{ selected: boolean; hovering: boolean }>(
+  ({ theme, selected, hovering }) => ({
+    position: 'relative',
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    backgroundColor: 'rgb(238, 242, 253)',
+    borderRadius: theme.shape.borderRadius,
+    ...(hovering && {
+      '&': {
+        cursor: 'pointer',
+        boxShadow: `0 0 0 2px ${theme.palette.grey[300]}`
+      }
+    }),
+    ...(selected && {
+      '&, &:hover': {
+        boxShadow: `0 0 0 2px rgba(4, 186, 116, 0.5)`
+      }
+    })
   })
-}))
+)
 
 export const WeekHeader = styled('header', {
-  shouldForwardProp: (prop) => prop !== 'expanded'
-})<{ expanded: boolean }>(({ theme, expanded }) => ({
-  display: 'flex',
-  padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  borderBottom: '1px solid transparent',
-  minHeight: 57,
-  ...(expanded && {
-    borderBottomColor: theme.palette.divider,
-    '.MuiIconButton-root': {
-      transform: 'rotateZ(-180deg)'
+  shouldForwardProp: (prop) =>
+    !['expanded', 'dragging'].includes(prop as string)
+})<{ dragging: boolean; expanded: boolean }>(
+  ({ theme, expanded, dragging }) => ({
+    position: 'relative',
+    display: 'flex',
+    padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottom: '1px solid transparent',
+    minHeight: 57,
+    ...(expanded && {
+      borderBottomColor: theme.palette.divider,
+      '.arrow-icon': {
+        transform: 'rotateZ(-180deg)'
+      }
+    }),
+    ...(dragging && {
+      '.hover-menu': {
+        display: 'none'
+      }
+    }),
+    '& .arrow-icon': {
+      transition: 'transform 0.2s ease'
     }
-  }),
-  '& .MuiIconButton-root': {
-    transition: 'transform 0.2s ease'
-  }
-}))
+  })
+)
 
 export const WeekTitle = styled(Typography)(() => ({
+  display: 'inline-flex',
+  gap: '1em',
   fontWeight: 600
+}))
+
+export const WeekNumber = styled('span')(() => ({
+  display: 'inline-flex',
+  width: '24px',
+  heght: '24px',
+  justifyContent: 'center',
+  alignItems: 'center',
+  borderRadius: '50%',
+  backgroundColor: '#D5D9E4'
 }))
 
 export const EmptyText = styled(Typography)(({ theme }) => ({

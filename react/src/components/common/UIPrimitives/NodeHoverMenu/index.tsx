@@ -15,10 +15,11 @@ type PropsType = {
   show: boolean
   items: MenuItem[]
   sx?: SxProps
+  classNames?: string
 }
 
-const HoverMenu = ({ items, show, sx }: PropsType) => (
-  <Styled.Wrap sx={sx} show={show}>
+const HoverMenu = ({ items, show, sx, classNames }: PropsType) => (
+  <Styled.Wrap sx={sx} show={show} className={classNames}>
     {items.map((item, index) => (
       <Tooltip key={index} placement="top" arrow title={item.label}>
         <IconButton color="secondary" size="small" onClick={item.onClick}>
