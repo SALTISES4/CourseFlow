@@ -4,6 +4,7 @@ import {
   dropTargetForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { selectNodeById } from '@cf/redux/selectors/node.selector'
+import { svglinkAllowDND } from '@cf/redux/slices/svglink.slice'
 import { CfObjectType } from '@cf/types/enum'
 import { nodelinkOutcome } from '@cfRedux/slices/node.slice'
 import { isOutcomeLink } from '@cfRedux/slices/outcomes.slice'
@@ -94,13 +95,17 @@ const WeekCellNode = ({
 
   const toggleState = useCallback(
     (property: 'dragging' | 'dropHighlight', value?: boolean) => {
+      if (property === 'dragging') {
+        dispatch(svglinkAllowDND(value ?? false))
+      }
+
       setState(
         produce((draft) => {
           draft[property] = value ?? !draft[property]
         })
       )
     },
-    []
+    [dispatch]
   )
 
   useEffect(() => {

@@ -3,7 +3,6 @@ import {
   dropTargetForElements,
   monitorForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { OuterContentWrap } from '@cf/mui/helper'
 import { selectWorkflowColumns } from '@cf/redux/selectors/column.selector'
 import { nodeChangedColumn } from '@cf/redux/slices/node.slice'
 import { weekMoveNodes } from '@cf/redux/slices/week.slice'
@@ -29,6 +28,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import ColumnsHeader from './components/ColumnsHeader'
 import LineSVG from './components/LineSVG'
 import Week from './components/Week'
+import { WeeksWrapper, WorkflowEditViewWrap } from './styles'
 import {
   CellReorderCallbackFn,
   ColumnReorderCallbackFn,
@@ -39,6 +39,7 @@ import {
 
 const WorkflowEditView = () => {
   const dispatch = useDispatch()
+  const allowDnd = useSelector((state: RootState) => state.svglink.allowDnd)
   const weeksWrapperRef = useRef<HTMLDivElement>(null)
   const workflow = useSelector((state: RootState) => state.workspace.workflow)
   const workflowColumns = useSelector(selectWorkflowColumns)
@@ -153,17 +154,13 @@ const WorkflowEditView = () => {
   )
 
   return (
-    <OuterContentWrap>
+    <WorkflowEditViewWrap dragging={allowDnd}>
       <ColumnsHeader
         columns={columnIds}
         parentId={workflow.id}
         onReorder={onColumnReorder}
       />
-      <div
-        data-test-id="weeks-block"
-        ref={weeksWrapperRef}
-        style={{ position: 'relative' }}
-      >
+      <WeeksWrapper data-test-id="weeks-block" ref={weeksWrapperRef}>
         {workflow.weeks.map((weekId, index) => (
           <Week
             key={`week_${weekId}`}
@@ -180,8 +177,8 @@ const WorkflowEditView = () => {
           />
         ))}
         <LineSVG rerender={state.redrawLines} />
-      </div>
-    </OuterContentWrap>
+      </WeeksWrapper>
+    </WorkflowEditViewWrap>
   )
 }
 

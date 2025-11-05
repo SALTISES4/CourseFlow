@@ -40,6 +40,10 @@ type SVGLinkState = {
     to: { nodeId: number; edge: Position } | null
   }
   editing: LineEdit['editing'] | null
+
+  // turn on workflow view pragmatic element pointer events
+  // so that the drag'n'drop functionality works properly
+  allowDnd: boolean
 }
 
 type LineEdit = {
@@ -52,7 +56,8 @@ type LineEdit = {
 const initialState: SVGLinkState = {
   dragging: { id: null, from: null, to: null },
   snap: { from: null, to: null },
-  editing: null
+  editing: null,
+  allowDnd: false
 }
 
 const svgLinkSlice = createSlice({
@@ -98,6 +103,9 @@ const svgLinkSlice = createSlice({
       state.dragging.from = action.payload.from
       state.dragging.to = action.payload.to
       state.editing = action.payload.editing
+    },
+    allowDragDrop(state, action: PayloadAction<boolean>) {
+      state.allowDnd = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -118,5 +126,6 @@ export const {
   dragStart: svglinkDragStart,
   dragMove: svglinkDragMove,
   dragSnap: svglinkDragSnap,
-  lineEdit: svglinkLineEdit
+  lineEdit: svglinkLineEdit,
+  allowDragDrop: svglinkAllowDND
 } = svgLinkSlice.actions

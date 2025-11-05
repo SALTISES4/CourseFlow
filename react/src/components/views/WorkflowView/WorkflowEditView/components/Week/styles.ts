@@ -28,8 +28,9 @@ export const WeekWrapper = styled(Box, {
     position: 'relative',
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
-    backgroundColor: 'rgb(238, 242, 253)',
+    zIndex: 1,
     borderRadius: theme.shape.borderRadius,
+    pointerEvents: 'none',
     ...(hovering && {
       '&': {
         cursor: 'pointer',
@@ -56,6 +57,7 @@ export const WeekHeader = styled('header', {
     alignItems: 'center',
     borderBottom: '1px solid transparent',
     minHeight: 57,
+    pointerEvents: 'auto',
     ...(expanded && {
       borderBottomColor: theme.palette.divider,
       '.arrow-icon': {
