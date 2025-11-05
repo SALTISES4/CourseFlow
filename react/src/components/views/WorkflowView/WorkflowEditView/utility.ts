@@ -17,16 +17,3 @@ export function getNodeTitle(node: TNode): string {
 
   return calcTitle() || _t('Untitled')
 }
-
-// Swaps the positions between two elements of an array
-export function swapInPlace<ArrayItemsType>(
-  arr: ArrayItemsType[],
-  from: number,
-  to: number
-): ArrayItemsType[] {
-  const result = Array.from(arr)
-  const clone = result[from]
-  result[from] = result[to]
-  result[to] = clone
-  return result
-}
