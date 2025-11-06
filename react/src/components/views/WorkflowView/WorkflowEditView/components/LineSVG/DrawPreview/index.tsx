@@ -158,7 +158,7 @@ const DrawPreview = ({ nodesBCR }: PropsType) => {
     ? getSmoothStepPath(pathArgs)
     : getStraightPath(pathArgs)
 
-  return <path d={path} stroke="orange" strokeWidth="3" fill="none" />
+  return <path d={path} stroke="#FCD748" strokeWidth="2" fill="none" />
 }
 
 export default DrawPreview

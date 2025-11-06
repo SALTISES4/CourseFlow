@@ -22,13 +22,14 @@ type PositionCoords = ReturnType<typeof getCoords>
 
 type ConnectionState = {
   hovering: boolean
-  highlighted: boolean
 }
 
 const Connection = ({
   id,
-  from,
-  to,
+  fromId,
+  fromEdge,
+  toId,
+  toEdge,
   svgRef
 }: ConnectionType & {
   svgRef: MutableRefObject<SVGSVGElement | null>
@@ -36,8 +37,7 @@ const Connection = ({
   const dispatch = useDispatch<AppDispatch>()
   const isDraggingPreview = useSelector(selectIsDrawingLinkPreview)
   const [state, setState] = useState<ConnectionState>({
-    hovering: false,
-    highlighted: false
+    hovering: false
   })
 
   const manager = useMemo(
@@ -45,8 +45,10 @@ const Connection = ({
     [dispatch]
   )
 
-  const [fromId, fromEdge] = from
-  const [toId, toEdge] = to
+  const onClick = useCallback(
+    () => manager.updateSidebar(id, CfObjectType.NODELINK),
+    [id, manager]
+  )
 
   const selected = useSelector(
     (state: RootState) =>
@@ -54,7 +56,7 @@ const Connection = ({
       state.sidebar.edit.id === id
   )
 
-  const highlight = useSelector(
+  const highlighted = useSelector(
     (state: RootState) =>
       state.sidebar.edit.objectType === CfObjectType.NODE &&
       (state.sidebar.edit.id === fromId || state.sidebar.edit.id === toId)
@@ -116,23 +118,21 @@ const Connection = ({
     [id, fromId, fromEdge, toId, toEdge, dispatch, svgRef]
   )
 
-  const toggleHover = useCallback(() => {
-    setState(
-      produce((draft) => {
-        draft.hovering = !draft.hovering
-      })
-    )
+  const toggleHover = useCallback((newValue: boolean) => {
+    return (e: ReactMouseEvent<SVGPathElement>) => {
+      setState(
+        produce((draft) => {
+          draft.hovering = newValue
+        })
+      )
+    }
   }, [])
-
-  const toggleSelected = useCallback(() => {
-    manager.updateSidebar(id, CfObjectType.NODELINK)
-  }, [id, manager])
 
   let strokeColor = '#666' // actually '#CBD5DF'
   if (state.hovering) {
     strokeColor = '#7CD5B9'
   }
-  if (state.highlighted || highlight || selected) {
+  if (highlighted || selected) {
     strokeColor = '#FCD748'
   }
 
@@ -173,7 +173,7 @@ const Connection = ({
       <path
         d={path}
         stroke={strokeColor}
-        strokeWidth={selected || highlight ? 3 : 1}
+        strokeWidth={selected || highlighted ? 2 : 1}
         opacity={isDraggingPreview ? 0.2 : 1}
         fill="none"
         markerEnd="url(#line-arrow)"
@@ -184,9 +184,9 @@ const Connection = ({
         stroke="transparent"
         strokeWidth="16"
         fill="none"
-        onMouseEnter={toggleHover}
-        onMouseLeave={toggleHover}
-        onClick={toggleSelected}
+        onMouseEnter={toggleHover(true)}
+        onMouseLeave={toggleHover(false)}
+        onClick={onClick}
         style={{ pointerEvents: 'auto', cursor: 'pointer' }}
       />
       {selected && (

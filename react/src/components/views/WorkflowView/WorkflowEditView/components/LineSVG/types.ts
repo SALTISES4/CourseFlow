@@ -11,6 +11,8 @@ export type ConnectionTargetType = [number, ConnectionEdge]
 
 export type ConnectionType = {
   id: number
-  from: ConnectionTargetType
-  to: ConnectionTargetType
+  fromId: number
+  fromEdge: ConnectionEdge
+  toId: number
+  toEdge: ConnectionEdge
 }
