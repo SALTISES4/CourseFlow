@@ -19,9 +19,11 @@ import IconButton from '@mui/material/IconButton'
 import { produce } from 'immer'
 import {
   MouseEvent,
+  MutableRefObject,
   memo,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState
 } from 'react'
@@ -46,6 +48,7 @@ export type WeekPropsType = {
   parentId: number
   columnIds: number[]
   columnColors: Record<number, string>
+  onWeekCollapse: (weekId: number) => void
   onNodeReorder: CellReorderCallbackFn
   onRowReorder: RowReorderCallbackFn
   onWeekReorder: WeekReorderCallbackFn
@@ -53,7 +56,6 @@ export type WeekPropsType = {
 }
 
 type WeekStateType = {
-  expanded: boolean
   closestEdge: Edge | null
   dragging: boolean
   draggedOver: boolean
@@ -62,7 +64,6 @@ type WeekStateType = {
 const Week = (props: WeekPropsType) => {
   const dispatch = useDispatch()
   const [state, setState] = useState<WeekStateType>({
-    expanded: true,
     closestEdge: null,
     draggedOver: false,
     dragging: false
@@ -205,14 +206,13 @@ const Week = (props: WeekPropsType) => {
     [props.parentId]
   )
 
-  const onCollapseIconClick = useCallback((e: MouseEvent<HTMLElement>) => {
-    e.stopPropagation()
-    setState(
-      produce((draft) => {
-        draft.expanded = !draft.expanded
-      })
-    )
-  }, [])
+  const onCollapseIconClick = useCallback(
+    (e: MouseEvent<HTMLElement>) => {
+      e.stopPropagation()
+      props.onWeekCollapse(props.weekId)
+    },
+    [props]
+  )
 
   const weekGrid = week.nodes.map((nodeId, rowIndex) => (
     <WeekRow
@@ -235,35 +235,77 @@ const Week = (props: WeekPropsType) => {
     : undefined
 
   return (
-    <StyledWeek.WeekWrapper
-      ref={weekWrapperRef}
-      selected={selected}
-      hovering={isHovered}
-      data-week-id={props.weekId}
-    >
-      <Styled.WeekRowIndicator edge={state.closestEdge} />
-      <StyledWeek.WeekHeader
-        ref={dragHandleRef}
-        dragging={state.dragging}
-        expanded={state.expanded && !props.condensed}
-        onClick={onWeekWrapperClick}
+    <>
+      <StyledWeek.WeekWrapper
+        ref={weekWrapperRef}
+        selected={selected}
+        hovering={isHovered}
+        data-week-id={props.weekId}
       >
-        <StyledWeek.WeekTitle variant="subtitle2">
-          <StyledWeek.WeekNumber>{props.index + 1}</StyledWeek.WeekNumber>
-          <TitleText text={week.title} defaultText={defaultText} />
-        </StyledWeek.WeekTitle>
+        <Styled.WeekRowIndicator edge={state.closestEdge} />
+        <StyledWeek.WeekHeader
+          ref={dragHandleRef}
+          dragging={state.dragging}
+          expanded={!props.condensed}
+          onClick={onWeekWrapperClick}
+        >
+          <StyledWeek.WeekTitle variant="subtitle2">
+            <StyledWeek.WeekNumber>{props.index + 1}</StyledWeek.WeekNumber>
+            <TitleText text={week.title} defaultText={defaultText} />
+          </StyledWeek.WeekTitle>
 
-        {!props.condensed && (
           <IconButton onClick={onCollapseIconClick} className="arrow-icon">
             <KeyboardArrowDown />
           </IconButton>
-        )}
 
-        <HoverMenu weekId={props.weekId} show={isHovered} />
-      </StyledWeek.WeekHeader>
+          <HoverMenu weekId={props.weekId} show={isHovered} />
+        </StyledWeek.WeekHeader>
 
-      {state.expanded && !props.condensed && weekGrid}
-    </StyledWeek.WeekWrapper>
+        {!props.condensed && weekGrid}
+      </StyledWeek.WeekWrapper>
+      <Background weekRef={weekWrapperRef} expanded={!props.condensed} />
+    </>
+  )
+}
+
+// fake week wrapper background element that syncs with the week's BCR
+const Background = ({
+  expanded,
+  weekRef
+}: {
+  expanded: boolean
+  weekRef: MutableRefObject<HTMLDivElement>
+}) => {
+  const [state, setState] = useState({
+    top: 0,
+    height: 0
+  })
+
+  useLayoutEffect(() => {
+    if (!weekRef.current) {
+      return
+    }
+
+    const weekBCR = weekRef.current.getBoundingClientRect()
+    const wrapBCR = weekRef.current.parentElement.getBoundingClientRect()
+
+    setState({
+      top: weekBCR.top - wrapBCR.top,
+      height: weekBCR.height
+    })
+  }, [expanded, weekRef])
+
+  if (!weekRef.current) {
+    return null
+  }
+
+  return (
+    <StyledWeek.WeekBackground
+      style={{
+        top: `${state.top}px`,
+        height: `${state.height}px`
+      }}
+    />
   )
 }
 

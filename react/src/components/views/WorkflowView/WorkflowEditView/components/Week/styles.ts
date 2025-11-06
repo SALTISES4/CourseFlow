@@ -45,6 +45,13 @@ export const WeekWrapper = styled(Box, {
   })
 )
 
+export const WeekBackground = styled(Box)(() => ({
+  position: 'absolute',
+  left: 0,
+  width: '100%',
+  backgroundColor: 'rgb(238, 242, 253)'
+}))
+
 export const WeekHeader = styled('header', {
   shouldForwardProp: (prop) =>
     !['expanded', 'dragging'].includes(prop as string)

@@ -60,7 +60,7 @@ const LineSVG = ({ rerender }: { rerender: boolean }) => {
   useLayoutEffect(() => {
     const results: Record<number, NodeBCR> = {}
     if (!ref.current) {
-      return null
+      return
     }
 
     const svgBCR = ref.current.getBoundingClientRect()

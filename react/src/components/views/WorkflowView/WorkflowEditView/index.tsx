@@ -37,6 +37,11 @@ import {
   isSidebarPart
 } from './types'
 
+type StateType = {
+  condensed: number[] | 'all'
+  redrawLines: boolean
+}
+
 const WorkflowEditView = () => {
   const dispatch = useDispatch()
   const allowDnd = useSelector((state: RootState) => state.svglink.allowDnd)
@@ -53,8 +58,11 @@ const WorkflowEditView = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workflowColumns.map((col) => `${col.id}_${col.colour}`).join(',')])
 
-  const [state, setState] = useState({
-    condensed: false,
+  const [state, setState] = useState<StateType>({
+    condensed: [],
+    // TODO: move week condensed state here
+    // so I can trigger line rerender when weeks collapse
+
     redrawLines: false // just to trigger LineSVG to redraw on layout change
   })
 
@@ -71,7 +79,7 @@ const WorkflowEditView = () => {
           }
           setState(
             produce((draft) => {
-              draft.condensed = false
+              draft.condensed = []
             })
           )
         }
@@ -87,7 +95,7 @@ const WorkflowEditView = () => {
           }
           setState(
             produce((draft) => {
-              draft.condensed = true
+              draft.condensed = 'all'
             })
           )
         }
@@ -105,6 +113,7 @@ const WorkflowEditView = () => {
     }, 0) // schedule for next frame
   }, [])
 
+  // just do the initial line rerender once DOM is ready
   useLayoutEffect(() => triggerLineRerender(), [triggerLineRerender])
 
   const onColumnReorder: ColumnReorderCallbackFn = useCallback(
@@ -116,6 +125,21 @@ const WorkflowEditView = () => {
     },
     [dispatch, triggerLineRerender]
   )
+
+  const onWeekCollapse = useCallback((weekId: number) => {
+    setState(
+      produce((draft) => {
+        if (Array.isArray(draft.condensed)) {
+          const index = draft.condensed.indexOf(weekId)
+          if (index !== -1) {
+            draft.condensed.splice(index, 1)
+          } else {
+            draft.condensed.push(weekId)
+          }
+        }
+      })
+    )
+  }, [])
 
   const onWeekInsert = useCallback((insertIndex: number) => {
     console.log('+++ WEEK INSERT', { insertIndex })
@@ -169,7 +193,10 @@ const WorkflowEditView = () => {
             parentId={workflow.id}
             columnIds={columnIds}
             columnColors={columnColors}
-            condensed={state.condensed}
+            condensed={
+              state.condensed === 'all' || state.condensed.includes(weekId)
+            }
+            onWeekCollapse={onWeekCollapse}
             onWeekInsert={onWeekInsert}
             onWeekReorder={onWeekReorder}
             onRowReorder={onRowDragEnd}
