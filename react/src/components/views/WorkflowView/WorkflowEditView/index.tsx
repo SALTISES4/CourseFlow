@@ -60,9 +60,6 @@ const WorkflowEditView = () => {
 
   const [state, setState] = useState<StateType>({
     condensed: [],
-    // TODO: move week condensed state here
-    // so I can trigger line rerender when weeks collapse
-
     redrawLines: false // just to trigger LineSVG to redraw on layout change
   })
 
@@ -201,9 +198,13 @@ const WorkflowEditView = () => {
             onWeekReorder={onWeekReorder}
             onRowReorder={onRowDragEnd}
             onNodeReorder={onNodeDragEnd}
+            redrawer={state.condensed.length}
           />
         ))}
-        <LineSVG rerender={state.redrawLines} />
+        <LineSVG
+          rerender={state.redrawLines}
+          condensed={state.condensed.length}
+        />
       </WeeksWrapper>
     </WorkflowEditViewWrap>
   )

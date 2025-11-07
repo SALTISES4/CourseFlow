@@ -28,6 +28,7 @@ import {
   useState
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useResizeObserver } from 'usehooks-ts'
 
 import HoverMenu from './HoverMenu'
 import WeekRow from './Row'
@@ -44,6 +45,7 @@ import {
 export type WeekPropsType = {
   index: number
   weekId: number
+  redrawer: number
   condensed: boolean
   parentId: number
   columnIds: number[]
@@ -263,39 +265,43 @@ const Week = (props: WeekPropsType) => {
 
         {!props.condensed && weekGrid}
       </StyledWeek.WeekWrapper>
-      <Background weekRef={weekWrapperRef} expanded={!props.condensed} />
+      <Background weekRef={weekWrapperRef} redrawer={props.redrawer} />
     </>
   )
 }
 
 // fake week wrapper background element that syncs with the week's BCR
 const Background = ({
-  expanded,
+  redrawer,
   weekRef
 }: {
-  expanded: boolean
+  redrawer: number
   weekRef: MutableRefObject<HTMLDivElement>
 }) => {
-  const [state, setState] = useState({
-    top: 0,
-    height: 0
+  const [state, setState] = useState({ top: 0 })
+
+  const { height = 0 } = useResizeObserver({
+    ref: weekRef,
+    box: 'border-box'
   })
 
   useLayoutEffect(() => {
-    if (!weekRef.current) {
+    const week = weekRef.current
+    const weekTop = week?.getBoundingClientRect().top ?? 0
+    const wrapTop = week?.parentElement.getBoundingClientRect().top ?? 0
+
+    if (!week) {
       return
     }
 
-    const weekBCR = weekRef.current.getBoundingClientRect()
-    const wrapBCR = weekRef.current.parentElement.getBoundingClientRect()
+    setState(
+      produce((draft) => {
+        draft.top = weekTop - wrapTop
+      })
+    )
+  }, [redrawer, height, weekRef])
 
-    setState({
-      top: weekBCR.top - wrapBCR.top,
-      height: weekBCR.height
-    })
-  }, [expanded, weekRef])
-
-  if (!weekRef.current) {
+  if (height === 0) {
     return null
   }
 
@@ -303,7 +309,7 @@ const Background = ({
     <StyledWeek.WeekBackground
       style={{
         top: `${state.top}px`,
-        height: `${state.height}px`
+        height: `${height}px`
       }}
     />
   )

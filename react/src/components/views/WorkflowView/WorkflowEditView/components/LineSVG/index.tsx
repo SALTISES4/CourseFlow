@@ -28,7 +28,13 @@ export type NodeBCR = {
   height: number
 }
 
-const LineSVG = ({ rerender }: { rerender: boolean }) => {
+const LineSVG = ({
+  rerender,
+  condensed
+}: {
+  rerender: boolean
+  condensed: number
+}) => {
   const ref = useRef<SVGSVGElement>(null)
   const nodelinks = useSelector(
     (state: RootState) => state.workspace.nodelink.ids
@@ -52,7 +58,7 @@ const LineSVG = ({ rerender }: { rerender: boolean }) => {
         toId: link.targetNode,
         toEdge: edgeKeys[link.targetPort]
       })),
-    [rerender, links]
+    [links]
   )
 
   // wait for DOM to render before querying it for node BCRs
@@ -86,7 +92,7 @@ const LineSVG = ({ rerender }: { rerender: boolean }) => {
     })
 
     setNodesBCR(results)
-  }, [rerender, nodes, nodelinks])
+  }, [rerender, condensed, nodes, nodelinks])
 
   return (
     <>
@@ -103,46 +109,40 @@ const LineSVG = ({ rerender }: { rerender: boolean }) => {
   )
 }
 
-// Potential TODO: memoize <Connection /> to reduce rerendering by
-// moving svg ref into the Connection component
-// (but then we have DOM lookup cost for each of the connection which could
-// break the whole point and bring us back to square one)
-const BottomSVG = memo(
-  ({
-    svgRef,
-    connections,
-    selectedLinkId
-  }: {
-    svgRef: MutableRefObject<SVGSVGElement>
-    connections: ConnectionType[]
-    selectedLinkId: number | null
-  }) => {
-    return (
-      <Styled.BottomSVG id="line-svg" ref={svgRef}>
-        <defs>
-          <marker
-            id="line-arrow"
-            viewBox="0 0 10 10"
-            refX="5"
-            refY="5"
-            markerWidth="8"
-            markerHeight="8"
-            orient="auto"
-            markerUnits="userSpaceOnUse"
-          >
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" />
-          </marker>
-        </defs>
-        {connections.map((conn) => {
-          if (conn.id !== selectedLinkId) {
-            return <Connection key={conn.id} svgRef={svgRef} {...conn} />
-          }
-          return null
-        })}
-      </Styled.BottomSVG>
-    )
-  }
-)
+const BottomSVG = ({
+  svgRef,
+  connections,
+  selectedLinkId
+}: {
+  svgRef: MutableRefObject<SVGSVGElement>
+  connections: ConnectionType[]
+  selectedLinkId: number | null
+}) => {
+  return (
+    <Styled.BottomSVG id="line-svg" ref={svgRef}>
+      <defs>
+        <marker
+          id="line-arrow"
+          viewBox="0 0 10 10"
+          refX="5"
+          refY="5"
+          markerWidth="8"
+          markerHeight="8"
+          orient="auto"
+          markerUnits="userSpaceOnUse"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" />
+        </marker>
+      </defs>
+      {connections.map((conn) => {
+        if (conn.id !== selectedLinkId) {
+          return <Connection key={conn.id} svgRef={svgRef} {...conn} />
+        }
+        return null
+      })}
+    </Styled.BottomSVG>
+  )
+}
 
 const TopSVG = memo(
   ({
@@ -162,4 +162,4 @@ const TopSVG = memo(
   }
 )
 
-export default memo(LineSVG)
+export default LineSVG

@@ -8807,6 +8807,13 @@ use-sync-external-store@^1.2.2:
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.6.0.tgz#b174bfa65cb2b526732d9f2ac0a408027876f32d"
   integrity sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==
 
+usehooks-ts@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/usehooks-ts/-/usehooks-ts-3.1.1.tgz#0bb7f38f36f8219ee4509cc5e944ae610fb97656"
+  integrity sha512-I4diPp9Cq6ieSUH2wu+fDAVQO43xwtulo+fKEidHUwZPnYImbtkTjzIJYcDcJqxgmX31GVqNFURodvcgHcW0pA==
+  dependencies:
+    lodash.debounce "^4.0.8"
+
 uuid@^11.0.3:
   version "11.0.3"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-11.0.3.tgz#248451cac9d1a4a4128033e765d137e2b2c49a3d"
