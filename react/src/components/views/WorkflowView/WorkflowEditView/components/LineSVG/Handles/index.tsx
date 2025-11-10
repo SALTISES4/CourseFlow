@@ -27,12 +27,13 @@ const Handles = ({ nodeId, nodeRef, diameter = 10 }: PropsType) => {
   const [, hovering] = useHover(nodeRef)
   const isDraggingPreview = useSelector(selectIsDrawingLinkPreview)
   const r = diameter / 2
+  const offset = 2
 
   const handles: [string, string, string, Position][] = [
-    ['50%', '0%', `translate(0, ${r})`, Position.Top],
-    ['100%', '50%', `translate(-${r}, 0)`, Position.Right],
-    ['50%', '100%', `translate(0, -${r})`, Position.Bottom],
-    ['0%', '50%', `translate(${r}, 0)`, Position.Left]
+    ['50%', '0%', `translate(0, ${r + offset})`, Position.Top],
+    ['100%', '50%', `translate(-${r + offset}, 0)`, Position.Right],
+    ['50%', '100%', `translate(0, -${r + offset})`, Position.Bottom],
+    ['0%', '50%', `translate(${r + offset}, 0)`, Position.Left]
   ]
 
   const onMouseDown = useCallback(
@@ -80,7 +81,7 @@ const Handles = ({ nodeId, nodeRef, diameter = 10 }: PropsType) => {
   )
 
   return hovering || isDraggingPreview ? (
-    <Styled.Wrap radius={r}>
+    <Styled.Wrap radius={r} offset={offset}>
       {handles.map(([cx, cy, transform, edge], index) => (
         <Styled.Handle
           key={index}

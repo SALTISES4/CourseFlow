@@ -1,15 +1,14 @@
 import { styled } from '@mui/material/styles'
 
 export const Wrap = styled('svg', {
-  shouldForwardProp: (prop) => !['radius'].includes(prop as string)
-})<{ radius: number }>(({ theme, radius }) => ({
+  shouldForwardProp: (prop) => !['radius', 'offset'].includes(prop as string)
+})<{ radius: number; offset: number }>(({ theme, radius, offset }) => ({
   position: 'absolute',
-  top: `${radius * -1}px`,
-  left: `${radius * -1}px`,
-  right: `${radius * -1}px`,
-  bottom: `${radius * -1}px`,
-  width: `calc(100% + ${radius * 2}px)`,
-  height: `calc(100% + ${radius * 2}px)`,
+  top: '50%',
+  left: '50%',
+  width: `calc(100% + ${radius * 2 + offset * 2}px)`,
+  height: `calc(100% + ${radius * 2 + offset * 2}px)`,
+  transform: 'translate(-50%, -50%)',
   zIndex: 10,
   pointerEvents: 'none'
 }))
