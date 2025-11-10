@@ -5,6 +5,7 @@ import {
   CardChip,
   CardFooter,
   CardFooterActions,
+  CardFooterInfo,
   CardFooterTags,
   CardHeader,
   CardTitle,
@@ -64,10 +65,10 @@ const WorkflowCardDumb = ({
   <CardWrap onMouseDown={onMouseDown} className={isSelected ? 'selected' : ''}>
     <CardHeader onClick={!isDisabledLink ? onClick : null}>
       <CardTitle>{title}</CardTitle>
-      {description && <CardCaption>{description}</CardCaption>}
+      {description && <CardCaption variant="body2">{description}</CardCaption>}
     </CardHeader>
-
     <CardFooter>
+      {!!footer && <CardFooterInfo>{footer}</CardFooterInfo>}
       {chips.length && (
         <CardFooterTags>
           {chips.map((chip, index) => {
@@ -84,7 +85,6 @@ const WorkflowCardDumb = ({
         </CardFooterTags>
       )}
       <CardFooterActions>{favourite}</CardFooterActions>
-      {footer}
     </CardFooter>
   </CardWrap>
 )

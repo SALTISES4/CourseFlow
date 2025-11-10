@@ -4,7 +4,10 @@ import { _t } from '@cf/utility/Utility.class'
 import Favourite from '@cfComponents/UIPrimitives/Favourite'
 import { workflowTitle } from '@cfComponents/UIPrimitives/Titles.ts'
 import ErrorIcon from '@mui/icons-material/Error'
-import * as React from 'react'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 
 import WorkflowCardDumb, {
   PropsType as WorkflowCardDumbPropsType
@@ -42,24 +45,30 @@ const WorkflowCardWrapper = ({
    *******************************************************/
   const navigateToItem = useNavigateToLibraryItem()
 
-  const Extras = () => {
-    return (
-      <>
-        {isLinked && (
-          <div
-            key="workflow-created-warning"
-            className="workflow-created linked-workflow-warning"
-            title={_t(
-              'Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes.'
-            )}
-          >
-            <ErrorIcon sx={{ color: 'red' }} />
-            {` ${_t('Already in use')}`}
-          </div>
+  const Extras = () =>
+    isLinked ? (
+      <Tooltip
+        className="linked-workflow-warning"
+        placement="top"
+        arrow
+        title={_t(
+          'Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes.'
         )}
-      </>
-    )
-  }
+      >
+        <Box
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start'
+          }}
+        >
+          <IconButton color="secondary" size="small">
+            <ErrorIcon sx={{ color: 'error.main' }} />
+          </IconButton>
+          <Typography variant="body2">{_t('Already in use')}</Typography>
+        </Box>
+      </Tooltip>
+    ) : null
 
   /*******************************************************
    * RENDER

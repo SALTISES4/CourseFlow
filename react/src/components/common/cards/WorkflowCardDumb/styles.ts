@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
-import { alpha, styled } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
 export const CardWrap = styled(Box)(({ theme }) => ({
@@ -14,19 +14,22 @@ export const CardWrap = styled(Box)(({ theme }) => ({
   transition: 'background-color 0.3s ease',
   '&:hover': {
     cursor: 'pointer',
-    backgroundColor: alpha(theme.palette.action.hover, 0.04)
+    borderColor: theme.palette.workflow.selected
   },
   '&.selected': {
     borderColor: theme.palette.primary.main
   }
 }))
 
-export const CardHeader = styled('header')({})
+export const CardHeader = styled('header')({
+  marginBottom: 'auto'
+})
 
 export const CardFooter = styled('footer')(({ theme }) => ({
   display: 'flex',
-  marginTop: theme.spacing(3),
-  alignItems: 'flex-start'
+  marginTop: theme.spacing(2),
+  alignItems: 'center',
+  flexWrap: 'wrap'
 }))
 
 export const CardFooterTags = styled('div')(({ theme }) => ({
@@ -35,8 +38,25 @@ export const CardFooterTags = styled('div')(({ theme }) => ({
 }))
 
 export const CardFooterActions = styled('div')(({ theme }) => ({
+  position: 'relative',
   marginLeft: 'auto',
-  paddingLeft: theme.spacing(2)
+  paddingLeft: theme.spacing(2),
+  '& button': {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)'
+  }
+}))
+
+export const CardFooterInfo = styled('div')(({ theme }) => ({
+  width: '100%',
+  '&:not(:last-child)': {
+    marginBottom: theme.spacing(1)
+  },
+  '&:empty': {
+    display: 'none'
+  }
 }))
 
 export const CardTitle = styled(Typography)({
@@ -62,10 +82,6 @@ CardTitle.defaultProps = {
 }
 
 export const CardCaption = styled(Typography)({})
-
-CardCaption.defaultProps = {
-  variant: 'caption'
-}
 
 export const CardChip = styled(Chip)(({ theme }) => ({
   '&.project': {
