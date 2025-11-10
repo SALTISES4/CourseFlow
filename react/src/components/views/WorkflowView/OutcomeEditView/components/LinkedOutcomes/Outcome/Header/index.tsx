@@ -8,7 +8,7 @@ import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
 import * as Styled from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import AddIcon from '@mui/icons-material/Add'
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined'
-import ChatIcon from '@mui/icons-material/Chat'
+import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
 import RemoveIcon from '@mui/icons-material/Remove'
 import { MouseEvent, MutableRefObject, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
@@ -141,7 +141,7 @@ const HoverMenu = ({
             : []),
           {
             label: 'Comments',
-            icon: <ChatIcon />,
+            icon: <CommentOutlinedIcon />,
             onClick: onActionClick(HoverMenuActions.COMMENTS)
           }
         ]}

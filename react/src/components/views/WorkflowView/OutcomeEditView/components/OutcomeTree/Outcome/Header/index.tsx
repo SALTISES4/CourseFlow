@@ -10,9 +10,9 @@ import {
 import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
 import AddIcon from '@mui/icons-material/Add'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
-import ChatIcon from '@mui/icons-material/Chat'
+import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import DeleteIcon from '@mui/icons-material/Delete'
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import QueueIcon from '@mui/icons-material/Queue'
 import RemoveIcon from '@mui/icons-material/Remove'
 import { MouseEvent, MutableRefObject, useCallback } from 'react'
@@ -159,12 +159,12 @@ const HoverMenu = ({
           },
           {
             label: 'Delete outcome',
-            icon: <DeleteIcon />,
+            icon: <DeleteOutlinedIcon />,
             onClick: onActionClick('delete')
           },
           {
             label: 'Comments',
-            icon: <ChatIcon />,
+            icon: <CommentOutlinedIcon />,
             onClick: onActionClick('comments')
           }
         ]}

@@ -2,10 +2,10 @@ import { CfObjectType } from '@cf/types/enum'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
-import ChatIcon from '@mui/icons-material/Chat'
+import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import DeleteIcon from '@mui/icons-material/Delete'
-import { MouseEvent, MutableRefObject, useCallback } from 'react'
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
+import { MouseEvent, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 
 type PropsType = {
@@ -67,12 +67,12 @@ const HoverMenu = ({ weekId, show }: PropsType) => {
         },
         {
           label: 'Delete week',
-          icon: <DeleteIcon />,
+          icon: <DeleteOutlinedIcon />,
           onClick: onActionClick('delete')
         },
         {
           label: 'Comments',
-          icon: <ChatIcon />,
+          icon: <CommentOutlinedIcon />,
           onClick: onActionClick('comments')
         }
       ]}
