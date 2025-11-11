@@ -4,7 +4,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 export type SidebarState = {
   collapsed: boolean
-  tab: null | 'edit' | 'add' | 'outcomes' | 'restore' | 'related' | 'comments'
+  tab: null | 'edit' | 'add' | 'outcomes' | 'related' | 'comments'
   edit: Partial<EditTabState>
 }
 

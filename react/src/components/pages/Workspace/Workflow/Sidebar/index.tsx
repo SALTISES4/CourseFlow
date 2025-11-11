@@ -13,7 +13,6 @@ import ChatIcon from '@mui/icons-material/Chat'
 import EditIcon from '@mui/icons-material/Edit'
 import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined'
 import LinkIcon from '@mui/icons-material/Link'
-import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash'
 import Paper from '@mui/material/Paper'
 import ToggleButton from '@mui/material/ToggleButton'
 import { ReactNode, useCallback, useEffect } from 'react'
@@ -26,7 +25,6 @@ import EditTab from './components/EditTab'
 import { EditableType } from './components/EditTab/types'
 import OutcomesTab from './components/OutcomesTab'
 import RelatedTab from './components/RelatedTab'
-import RestoreTab from './components/RestoreTab'
 import { SidebarTabsWrap, SidebarToggle, SidebarWrap } from './styles'
 
 function getTabContent(
@@ -44,8 +42,6 @@ function getTabContent(
       return <AddTab />
     case 'comments':
       return <CommentsTab />
-    case 'restore':
-      return <RestoreTab />
     case 'outcomes':
       return <OutcomesTab />
     case 'related':
@@ -114,10 +110,6 @@ const WorkspaceSidebar = () => {
     {
       value: 'outcomes',
       icon: <EmojiEventsOutlinedIcon />
-    },
-    {
-      value: 'restore',
-      icon: <RestoreFromTrashIcon />
     },
     {
       value: 'related',

@@ -62,20 +62,6 @@ const permissionMatrix: PermissionMatrixType = {
   related: {
     [WorkflowType.ACTIVITY]: [WorkflowViewType.OUTCOME_EDIT],
     [WorkflowType.COURSE]: [WorkflowViewType.OUTCOME_EDIT]
-  },
-  restore: {
-    [WorkflowType.ACTIVITY]: [
-      WorkflowViewType.WORKFLOW,
-      WorkflowViewType.OUTCOME_EDIT
-    ],
-    [WorkflowType.COURSE]: [
-      WorkflowViewType.WORKFLOW,
-      WorkflowViewType.OUTCOME_EDIT
-    ],
-    [WorkflowType.PROGRAM]: [
-      WorkflowViewType.WORKFLOW,
-      WorkflowViewType.OUTCOME_EDIT
-    ]
   }
 }
 

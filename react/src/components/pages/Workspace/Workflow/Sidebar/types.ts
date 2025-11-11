@@ -30,7 +30,6 @@ export type RestoreGroup = {
 
 export type AddTabType = GroupType<AddGroup>
 export type OutcomesTabType = GroupType<OutcomeGroup>
-export type RestoreTabType = GroupType<RestoreGroup>
 export type RelatedTabType = GroupType<OutcomeGroup> & {
   alert?: boolean
 }
