@@ -63,7 +63,7 @@ export const CellInner = styled(Box, {
 })<{ dragShrink: boolean; dropHighlight: boolean; selected: boolean }>(
   ({ theme, dragShrink, dropHighlight, selected }) => ({
     borderRadius: theme.shape.borderRadius,
-    transition: 'all 0.3s ease',
+    transition: 'all 0.15s ease',
     ...(dragShrink && {
       opacity: 0.6,
       transform: 'scale(0.8)'

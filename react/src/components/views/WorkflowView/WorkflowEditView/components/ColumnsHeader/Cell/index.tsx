@@ -2,6 +2,7 @@ import {
   draggable,
   dropTargetForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import useHover from '@cf/hooks/useHover'
 import BetterSelectionManager from '@cf/redux/BetterSelectionManager'
 import { selectColumnById } from '@cf/redux/selectors/column.selector'
 import { CfObjectType } from '@cf/types/enum'
@@ -12,6 +13,7 @@ import { produce } from 'immer'
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import HoverMenu from './HoverMenu'
 import * as Styled from './styles'
 import * as StyledWorkflow from '../../../styles'
 import { ColumnReorderCallbackFn, DraggableType } from '../../../types'
@@ -20,6 +22,7 @@ type CellProps = {
   index: number
   columnId: number
   parentId: number
+  draggingOver?: boolean
   onReorder: ColumnReorderCallbackFn
 }
 
@@ -75,11 +78,13 @@ const ColumnCell = ({ index, columnId, parentId, onReorder }: CellProps) => {
   }, [index, onReorder])
 
   return (
-    <StyledWorkflow.Cell
-      ref={ref}
-      sx={{ backgroundColor: state.draggedOver && '#dbdbdb' }}
-    >
-      <ColumnCellInner index={index} columnId={columnId} parentId={parentId} />
+    <StyledWorkflow.Cell ref={ref}>
+      <ColumnCellInner
+        index={index}
+        columnId={columnId}
+        parentId={parentId}
+        draggingOver={state.draggedOver}
+      />
     </StyledWorkflow.Cell>
   )
 }
@@ -87,8 +92,10 @@ const ColumnCell = ({ index, columnId, parentId, onReorder }: CellProps) => {
 const ColumnCellInner = ({
   index,
   columnId,
-  parentId
+  parentId,
+  draggingOver
 }: Omit<CellProps, 'onReorder'>) => {
+  const [ref, isHovering] = useHover()
   const dispatch = useDispatch()
   const workflow = useSelector((state: RootState) => state.workspace.workflow)
   const column = useSelector((state: RootState) =>
@@ -99,7 +106,6 @@ const ColumnCellInner = ({
       state.sidebar.edit.objectType === CfObjectType.COLUMN &&
       state.sidebar.edit.id === columnId
   )
-  const ref = useRef<HTMLDivElement>(null)
   const [state, setState] = useState({
     dragging: false
   })
@@ -145,7 +151,7 @@ const ColumnCellInner = ({
         )
       }
     })
-  }, [index, columnId])
+  }, [index, columnId, ref])
 
   if (!column || !workflow) {
     return null
@@ -154,13 +160,14 @@ const ColumnCellInner = ({
   const title = column.title ?? column.columnTypeDisplay
 
   return (
-    <StyledWorkflow.CellInner
-      ref={ref}
-      selected={selected}
-      dragShrink={false}
-      dropHighlight={state.dragging}
-    >
-      <Styled.Column
+    <Styled.ColumnWrap ref={ref} dragging={state.dragging}>
+      <Styled.Background
+        selected={selected}
+        hovering={isHovering}
+        draggingOver={draggingOver}
+      />
+      <HoverMenu nodeId={columnId} show={isHovering} />
+      <Styled.Inner
         border={column.lock && `2px solid ${column.lock.userColour}`}
         className={clsx(
           column.lock && 'locked',
@@ -172,8 +179,8 @@ const ColumnCellInner = ({
         <Styled.Title variant="body2">
           <span dangerouslySetInnerHTML={{ __html: title }}></span>
         </Styled.Title>
-      </Styled.Column>
-    </StyledWorkflow.CellInner>
+      </Styled.Inner>
+    </Styled.ColumnWrap>
   )
 }
 
