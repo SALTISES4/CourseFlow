@@ -11,6 +11,7 @@ export type ConnectionTargetType = [number, ConnectionEdge]
 
 export type ConnectionType = {
   id: number
+  dashed: boolean
   fromId: number
   fromEdge: ConnectionEdge
   toId: number

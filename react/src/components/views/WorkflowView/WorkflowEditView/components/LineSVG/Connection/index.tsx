@@ -26,6 +26,7 @@ type ConnectionState = {
 
 const Connection = ({
   id,
+  dashed,
   fromId,
   fromEdge,
   toId,
@@ -174,6 +175,7 @@ const Connection = ({
         d={path}
         stroke={strokeColor}
         strokeWidth={selected || highlighted ? 2 : 1}
+        strokeDasharray={dashed ? 5 : 0}
         opacity={isDraggingPreview ? 0.2 : 1}
         fill="none"
         markerEnd="url(#line-arrow)"

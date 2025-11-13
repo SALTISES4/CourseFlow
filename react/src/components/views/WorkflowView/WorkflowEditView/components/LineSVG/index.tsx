@@ -53,6 +53,7 @@ const LineSVG = ({
     () =>
       links.map((link) => ({
         id: link.id,
+        dashed: link.dashed,
         fromId: link.sourceNode,
         fromEdge: edgeKeys[link.sourcePort],
         toId: link.targetNode,
