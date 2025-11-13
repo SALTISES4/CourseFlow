@@ -11,6 +11,7 @@ import {
   workflowReorderWeeks
 } from '@cf/redux/slices/workflow.slice'
 import { _t } from '@cf/utility/Utility.class'
+import DeleteSectionDialog from '@cfComponents/dialog/Workflow/DeleteSection'
 import { RootState } from '@cfRedux/store'
 import { getColumnData } from '@cfSidebar/components/AddTab/data'
 import { produce } from 'immer'
@@ -206,6 +207,9 @@ const WorkflowEditView = () => {
           condensed={state.condensed.length}
         />
       </WeeksWrapper>
+
+      {/* dialogs */}
+      <DeleteSectionDialog />
     </WorkflowEditViewWrap>
   )
 }

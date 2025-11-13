@@ -24,6 +24,7 @@ export enum DialogMode {
   WORKFLOW_EDIT = 'workflow_edit',
   WORKFLOW_COPY_TO_PROJECT = 'workflow_copy_to_project',
   WORKFLOW_CREATE = 'workflow_create',
+  WORKFLOW_DELETE_SECTION = 'workflow_delete_section',
 
   // WORKSPACE
   CONTRIBUTOR_REMOVE = 'contributor_remove',
@@ -38,6 +39,10 @@ export type DialogPayloadMap = {
   [DialogMode.CONTRIBUTOR_REMOVE]: { userId: number; username: string }
   [DialogMode.ARCHIVE]: { peopleId: string }
   [DialogMode.WORKFLOW_CREATE]: { workflowType: WorkflowType }
+  [DialogMode.WORKFLOW_DELETE_SECTION]: {
+    sectionId: number
+    workflowId: number
+  }
 
   /*******************************************************
    * we shouldn't need to  list out all the ones for undefined

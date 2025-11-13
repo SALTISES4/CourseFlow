@@ -260,7 +260,11 @@ const Week = (props: WeekPropsType) => {
             <KeyboardArrowDown />
           </IconButton>
 
-          <HoverMenu weekId={props.weekId} show={isHovered} />
+          <HoverMenu
+            workflowId={props.parentId}
+            weekId={props.weekId}
+            show={isHovered}
+          />
         </StyledWeek.WeekHeader>
 
         {!props.condensed && weekGrid}

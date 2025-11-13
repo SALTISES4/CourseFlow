@@ -1,3 +1,4 @@
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CfObjectType } from '@cf/types/enum'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
@@ -9,14 +10,16 @@ import { MouseEvent, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 
 type PropsType = {
+  workflowId: number
   weekId: number
   show: boolean
 }
 
 type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
 
-const HoverMenu = ({ weekId, show }: PropsType) => {
+const HoverMenu = ({ workflowId, weekId, show }: PropsType) => {
   const dispatch = useDispatch()
+  const { dispatch: dialogDispatch } = useDialog()
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {
@@ -30,7 +33,10 @@ const HoverMenu = ({ weekId, show }: PropsType) => {
             console.log('duplicate week', weekId)
             break
           case 'delete':
-            console.log('delete week', weekId)
+            dialogDispatch(DialogMode.WORKFLOW_DELETE_SECTION, {
+              sectionId: weekId,
+              workflowId
+            })
             break
           case 'comments':
             dispatch(
@@ -46,7 +52,7 @@ const HoverMenu = ({ weekId, show }: PropsType) => {
         }
       }
     },
-    [dispatch, weekId]
+    [dispatch, dialogDispatch, weekId]
   )
 
   return (
