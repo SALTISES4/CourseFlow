@@ -45,10 +45,13 @@ import {
 
 export type WeekPropsType = {
   index: number
-  week: WorkflowBoard['weeks'][0]
+  weekId: number
+  weekRows: WorkflowBoard['weeks'][0]['rows']
   redrawer: number
   condensed: boolean
-  board: WorkflowBoard
+  boardId: WorkflowBoard['id']
+  columnIds: WorkflowBoard['columns']['ids']
+  columnColors: WorkflowBoard['columns']['colors']
   onWeekCollapse: (weekId: number) => void
   onNodeReorder: CellReorderCallbackFn
   onRowReorder: RowReorderCallbackFn
@@ -72,7 +75,7 @@ const Week = (props: WeekPropsType) => {
   const selected = useSelector(
     (state: RootState) =>
       state.sidebar.edit.objectType === CfObjectType.WEEK &&
-      state.sidebar.edit.id === props.week.id
+      state.sidebar.edit.id === props.weekId
   )
   const weekWrapperRef = useRef<HTMLDivElement>(null)
   const dragHandleRef = useRef<HTMLDivElement>(null)
@@ -80,7 +83,7 @@ const Week = (props: WeekPropsType) => {
     (state: RootState) => state.workspace.workflow.isStrategy
   )
   const week = useSelector((state: RootState) =>
-    selectWeekById(state, props.week.id)
+    selectWeekById(state, props.weekId)
   )
   const manager = useRef(new BetterSelectionManager(dispatch))
 
@@ -193,40 +196,40 @@ const Week = (props: WeekPropsType) => {
     (e: MouseEvent<HTMLDivElement>) => {
       e.stopPropagation()
       manager.current.updateSidebar(
-        props.week.id,
+        props.weekId,
         CfObjectType.WEEK,
-        props.board.id
+        props.boardId
       )
     },
-    [props.board.id, props.week.id]
+    [props.boardId, props.weekId]
   )
 
   const onNodeClick = useCallback(
     (e: MouseEvent<HTMLDivElement>, nodeId: number) => {
       e.stopPropagation()
-      manager.current.updateSidebar(nodeId, CfObjectType.NODE, props.board.id)
+      manager.current.updateSidebar(nodeId, CfObjectType.NODE, props.boardId)
     },
-    [props.board.id]
+    [props.boardId]
   )
 
   const onCollapseIconClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
       e.stopPropagation()
-      props.onWeekCollapse(props.week.id)
+      props.onWeekCollapse(props.weekId)
     },
     [props]
   )
 
-  const weekGrid = props.week.rows.map((nodes, rowIndex) => (
+  const weekGrid = props.weekRows.map((nodes, rowIndex) => (
     <WeekRow
-      key={`week_${props.week.id}_${rowIndex}`}
+      key={`week_${props.weekId}_${rowIndex}`}
       nodes={nodes}
       rowIndex={rowIndex}
-      totalRows={props.week.rows.length}
-      weekId={props.week.id}
-      parentId={props.board.id}
-      columnIds={props.board.columns.ids}
-      columnColors={props.board.columns.colors}
+      totalRows={props.weekRows.length}
+      weekId={props.weekId}
+      parentId={props.boardId}
+      columnIds={props.columnIds}
+      columnColors={props.columnColors}
       onNodeReorder={props.onNodeReorder}
       onRowReorder={props.onRowReorder}
       onNodeClick={onNodeClick}
@@ -243,7 +246,7 @@ const Week = (props: WeekPropsType) => {
         ref={weekWrapperRef}
         selected={selected}
         hovering={isHovered}
-        data-week-id={props.week.id}
+        data-week-id={props.weekId}
       >
         <Styled.WeekRowIndicator edge={state.closestEdge} />
         <StyledWeek.WeekHeader
@@ -262,8 +265,8 @@ const Week = (props: WeekPropsType) => {
           </IconButton>
 
           <HoverMenu
-            workflowId={props.board.id}
-            weekId={props.week.id}
+            workflowId={props.boardId}
+            weekId={props.weekId}
             show={isHovered}
           />
         </StyledWeek.WeekHeader>

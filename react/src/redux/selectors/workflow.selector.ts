@@ -23,13 +23,11 @@ const selectWorkflowColumnEntities = createSelector(
 
 type Week = {
   id: number
-  rows: (null | number)[][]
+  rows: Record<number, number>[]
 }
 
 export type WorkflowBoard = {
   id: number
-  dragging: boolean
-
   columns: {
     ids: number[]
     colors: Record<number, string>
@@ -37,15 +35,20 @@ export type WorkflowBoard = {
   weeks: Week[]
 }
 
+// WEEK ROW EXAMPLE
+// this week has 3 rows       rows = [
+// #11 x: 3, y: 0               { 3: 11 },
+// #22 x: 2, y: 1               { 2: 22, 3, 23 },
+// #23 x: 3, y: 1               { 0: 33 }
+// #33 x: 0, y: 2             ]
 export const selectWorkflowBoard = createSelector(
   [
     (state: RootState) => state.workspace.workflow,
     selectAllWeeks,
     selectAllNodes,
-    (state: RootState) => state.svglink.allowDnd,
     selectWorkflowColumnEntities
   ],
-  (workflow, weekEntities, nodeEntities, dragging, columns) => {
+  (workflow, weekEntities, nodeEntities, columns) => {
     // prepare column colors
     const colors: WorkflowBoard['columns']['colors'] = {}
     getColumnData(columns).forEach((col) => {
@@ -55,7 +58,6 @@ export const selectWorkflowBoard = createSelector(
     // final shape of the board
     const board: WorkflowBoard = {
       id: workflow.id,
-      dragging,
       columns: {
         ids: columns.map((col) => col.id),
         colors
@@ -64,16 +66,26 @@ export const selectWorkflowBoard = createSelector(
         ...workflow.weeks.map((id) => {
           const rows: Week['rows'] = []
 
-          // grab the nodes from the week
           const week = weekEntities.find((w) => w.id === id)
-          if (week) {
-            week.nodes.forEach((nodeId) => {
-              const node = nodeEntities.find((n) => n.id === nodeId)
-              const nodeX = columns.findIndex((c) => c.id === node.column)
-              const nodeY = node.order
-              console.log('node', nodeId, 'x', nodeX, 'y', nodeY)
-            })
-          }
+          week.nodes.forEach((nodeId) => {
+            const node = nodeEntities.find((n) => n.id === nodeId)
+            const x = columns.findIndex((c) => c.id === node.column)
+            const y = node.order
+
+            // place the node into the corresponding row/cell
+            if (!rows[y]) {
+              rows[y] = { [x]: nodeId }
+            } else {
+              if (rows[y][x]) {
+                console.log(
+                  `node overwrite at week #${id} ${y}/${x} by node #${nodeId}`
+                )
+              }
+
+              // assign the node anyway
+              rows[y][x] = nodeId
+            }
+          })
 
           return { id, rows }
         })

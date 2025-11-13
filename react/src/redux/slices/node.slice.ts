@@ -25,6 +25,11 @@ interface DeleteColumnAction {
   extraData: any
 }
 
+interface MoveNodesPayload {
+  from: { weekId: number; index: number }
+  to: { weekId: number; index: number }
+}
+
 export const nodeAdapter = createEntityAdapter<TNode>()
 type NodeState = ReturnType<typeof nodeAdapter.getInitialState>
 const initialState = nodeAdapter.getInitialState()
@@ -186,6 +191,22 @@ const nodeSlice = createSlice({
     restoreSelf: toggleArchiveEntity,
     newNode(state, action: PayloadAction<{ newModel: TNode }>) {
       nodeAdapter.addOne(state, action.payload.newModel)
+    },
+
+    // reorder week nodes on workflow view node drag
+    moveNodes: (state, action: PayloadAction<MoveNodesPayload>) => {
+      const { from, to } = action.payload
+      if (from.weekId === to.weekId) {
+        // reorganizing within the same week/part
+        // state.entities[from.]
+
+        // const moved = state.entities[from.weekId].nodes.splice(from.index, 1)
+        // state.entities[from.weekId].nodes.splice(to.index, 0, moved[0])
+      } else {
+        // // adding items to a different week/part
+        // const moved = state.entities[from.weekId].nodes.splice(from.index, 1)
+        // state.entities[to.weekId].nodes.splice(to.index, 0, moved[0])
+      }
     },
 
     // add/remove linked outcomes

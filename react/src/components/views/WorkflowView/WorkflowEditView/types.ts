@@ -49,7 +49,8 @@ export type RowReorderCallbackFn = (
 export type CellReorderCallbackFn = (
   id: number,
   week: number,
-  columnIndex: number
+  columnId: number,
+  row: number
 ) => void
 
 // simple typeguards for better draggable data typing

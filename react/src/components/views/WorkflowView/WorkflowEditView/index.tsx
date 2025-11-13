@@ -10,16 +10,15 @@ import {
   workflowReorderColumns,
   workflowReorderWeeks
 } from '@cf/redux/slices/workflow.slice'
+import { RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import DeleteSectionDialog from '@cfComponents/dialog/Workflow/DeleteSection'
-import { RootState } from '@cfRedux/store'
 import { produce } from 'immer'
 import {
   memo,
   useCallback,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState
 } from 'react'
@@ -45,6 +44,7 @@ type StateType = {
 const WorkflowEditView = () => {
   const dispatch = useDispatch()
   const workflowBoard = useSelector(selectWorkflowBoard)
+  const dragging = useSelector((state: RootState) => state.svglink.allowDnd)
   const weeksWrapperRef = useRef<HTMLDivElement>(null)
 
   const [state, setState] = useState<StateType>({
@@ -144,35 +144,42 @@ const WorkflowEditView = () => {
 
   const onRowDragEnd: RowReorderCallbackFn = useCallback(
     (from, to) => {
-      dispatch(
-        weekMoveNodes({
-          from: { weekId: from.week, index: from.y },
-          to: { weekId: to.week, index: to.y }
-        })
-      )
+      console.log('row dragend', { from, to })
+      // dispatch(
+      //   weekMoveNodes({
+      //     from: { weekId: from.week, index: from.y },
+      //     to: { weekId: to.week, index: to.y }
+      //   })
+      // )
       triggerLineRerender()
     },
     [dispatch, triggerLineRerender]
   )
 
   const onNodeDragEnd: CellReorderCallbackFn = useCallback(
-    (id, week, columnId) => {
-      dispatch(nodeChangedColumn({ id, data: { column: columnId } }))
+    (id, week, columnId, row) => {
+      console.log('node drag end', { id, week, columnId, row })
+      dispatch(
+        nodeChangedColumn({ id, data: { column: columnId, order: row } })
+      )
       triggerLineRerender()
     },
     [dispatch, triggerLineRerender]
   )
 
   return (
-    <WorkflowEditViewWrap dragging={workflowBoard.dragging}>
+    <WorkflowEditViewWrap dragging={dragging}>
       <ColumnsHeader board={workflowBoard} onReorder={onColumnReorder} />
       <WeeksWrapper data-test-id="weeks-block" ref={weeksWrapperRef}>
         {workflowBoard.weeks.map((week, index) => (
           <Week
             key={`week_${week.id}`}
             index={index}
-            week={week}
-            board={workflowBoard}
+            weekId={week.id}
+            weekRows={week.rows}
+            boardId={workflowBoard.id}
+            columnIds={workflowBoard.columns.ids}
+            columnColors={workflowBoard.columns.colors}
             condensed={
               state.condensed === 'all' || state.condensed.includes(week.id)
             }

@@ -28,7 +28,7 @@ type PropsType = PhantomPropsType | NodePropsType
 
 const WeekCellPhantom = ({
   columnId,
-  coordsX,
+  coordsY,
   borderColor,
   onReorder
 }: PhantomPropsType) => {
@@ -52,13 +52,11 @@ const WeekCellPhantom = ({
           return null
         }
 
-        if (data.coords.x !== coordsX) {
-          onReorder(data.id, data.coords.week, columnId)
-        }
+        onReorder(data.id, data.coords.week, columnId, coordsY)
         setDraggedOver(false)
       }
     })
-  }, [coordsX, columnId, onReorder])
+  }, [columnId, coordsY, onReorder])
 
   return (
     <Styled.Cell
@@ -185,7 +183,7 @@ const WeekCellNode = ({
 }
 
 const WeekCell = (props: PropsType) => {
-  console.log(`${props.coordsY + 1} x ${props.coordsX + 1}`)
+  // console.log(`${props.coordsY + 1} x ${props.coordsX + 1}`)
   return props.type === WeekCellNodeType.PHANTOM ? (
     <WeekCellPhantom {...props} />
   ) : (
