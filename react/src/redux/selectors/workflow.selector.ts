@@ -3,6 +3,8 @@ import { getColumnData } from '@cfSidebar/components/AddTab/data'
 import { createSelector } from 'reselect'
 
 import { selectColumnEntities } from './column.selector'
+import { selectAllNodes } from './node.selector'
+import { selectAllWeeks } from './week.selector'
 
 // grabs columns associated to the current workflow
 export const selectWorkflowColumns = (state: RootState): number[] => {
@@ -21,7 +23,7 @@ const selectWorkflowColumnEntities = createSelector(
 
 type Week = {
   id: number
-  rows: (number | null)[]
+  rows: (null | number)[][]
 }
 
 export type WorkflowBoard = {
@@ -38,10 +40,12 @@ export type WorkflowBoard = {
 export const selectWorkflowBoard = createSelector(
   [
     (state: RootState) => state.workspace.workflow,
+    selectAllWeeks,
+    selectAllNodes,
     (state: RootState) => state.svglink.allowDnd,
     selectWorkflowColumnEntities
   ],
-  (workflow, dragging, columns) => {
+  (workflow, weekEntities, nodeEntities, dragging, columns) => {
     // prepare column colors
     const colors: WorkflowBoard['columns']['colors'] = {}
     getColumnData(columns).forEach((col) => {
@@ -56,7 +60,24 @@ export const selectWorkflowBoard = createSelector(
         ids: columns.map((col) => col.id),
         colors
       },
-      weeks: [...workflow.weeks.map((w) => ({ id: w, rows: [] }))]
+      weeks: [
+        ...workflow.weeks.map((id) => {
+          const rows: Week['rows'] = []
+
+          // grab the nodes from the week
+          const week = weekEntities.find((w) => w.id === id)
+          if (week) {
+            week.nodes.forEach((nodeId) => {
+              const node = nodeEntities.find((n) => n.id === nodeId)
+              const nodeX = columns.findIndex((c) => c.id === node.column)
+              const nodeY = node.order
+              console.log('node', nodeId, 'x', nodeX, 'y', nodeY)
+            })
+          }
+
+          return { id, rows }
+        })
+      ]
     }
 
     return board

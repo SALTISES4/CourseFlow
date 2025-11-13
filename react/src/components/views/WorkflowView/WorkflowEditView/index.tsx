@@ -170,11 +170,9 @@ const WorkflowEditView = () => {
         {workflowBoard.weeks.map((week, index) => (
           <Week
             key={`week_${week.id}`}
-            weekId={week.id}
             index={index}
-            parentId={workflowBoard.id}
-            columnIds={workflowBoard.columns.ids}
-            columnColors={workflowBoard.columns.colors}
+            week={week}
+            board={workflowBoard}
             condensed={
               state.condensed === 'all' || state.condensed.includes(week.id)
             }

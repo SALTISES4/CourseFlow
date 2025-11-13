@@ -9,6 +9,7 @@ import {
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import useHover from '@cf/hooks/useHover'
+import { WorkflowBoard } from '@cf/redux/selectors/workflow.selector'
 import { CfObjectType } from '@cf/types/enum'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
@@ -44,12 +45,10 @@ import {
 
 export type WeekPropsType = {
   index: number
-  weekId: number
+  week: WorkflowBoard['weeks'][0]
   redrawer: number
   condensed: boolean
-  parentId: number
-  columnIds: number[]
-  columnColors: Record<number, string>
+  board: WorkflowBoard
   onWeekCollapse: (weekId: number) => void
   onNodeReorder: CellReorderCallbackFn
   onRowReorder: RowReorderCallbackFn
@@ -73,13 +72,15 @@ const Week = (props: WeekPropsType) => {
   const selected = useSelector(
     (state: RootState) =>
       state.sidebar.edit.objectType === CfObjectType.WEEK &&
-      state.sidebar.edit.id === props.weekId
+      state.sidebar.edit.id === props.week.id
   )
   const weekWrapperRef = useRef<HTMLDivElement>(null)
   const dragHandleRef = useRef<HTMLDivElement>(null)
-  const workflow = useSelector((state: RootState) => state.workspace.workflow)
+  const isStrategy = useSelector(
+    (state: RootState) => state.workspace.workflow.isStrategy
+  )
   const week = useSelector((state: RootState) =>
-    selectWeekById(state, props.weekId)
+    selectWeekById(state, props.week.id)
   )
   const manager = useRef(new BetterSelectionManager(dispatch))
 
@@ -192,47 +193,47 @@ const Week = (props: WeekPropsType) => {
     (e: MouseEvent<HTMLDivElement>) => {
       e.stopPropagation()
       manager.current.updateSidebar(
-        props.weekId,
+        props.week.id,
         CfObjectType.WEEK,
-        props.parentId
+        props.board.id
       )
     },
-    [props.parentId, props.weekId]
+    [props.board.id, props.week.id]
   )
 
   const onNodeClick = useCallback(
     (e: MouseEvent<HTMLDivElement>, nodeId: number) => {
       e.stopPropagation()
-      manager.current.updateSidebar(nodeId, CfObjectType.NODE, props.parentId)
+      manager.current.updateSidebar(nodeId, CfObjectType.NODE, props.board.id)
     },
-    [props.parentId]
+    [props.board.id]
   )
 
   const onCollapseIconClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
       e.stopPropagation()
-      props.onWeekCollapse(props.weekId)
+      props.onWeekCollapse(props.week.id)
     },
     [props]
   )
 
-  const weekGrid = week.nodes.map((nodeId, rowIndex) => (
+  const weekGrid = props.week.rows.map((nodes, rowIndex) => (
     <WeekRow
-      key={`week_${props.weekId}_${rowIndex}`}
-      nodeId={nodeId}
+      key={`week_${props.week.id}_${rowIndex}`}
+      nodes={nodes}
       rowIndex={rowIndex}
-      totalRows={week.nodes.length}
-      weekId={props.weekId}
-      parentId={props.parentId}
-      columnIds={props.columnIds}
-      columnColors={props.columnColors}
+      totalRows={props.week.rows.length}
+      weekId={props.week.id}
+      parentId={props.board.id}
+      columnIds={props.board.columns.ids}
+      columnColors={props.board.columns.colors}
       onNodeReorder={props.onNodeReorder}
       onRowReorder={props.onRowReorder}
       onNodeClick={onNodeClick}
     />
   ))
 
-  const defaultText = !workflow.isStrategy
+  const defaultText = !isStrategy
     ? `${week.weekTypeDisplay} ${week.order + 1}`
     : undefined
 
@@ -242,7 +243,7 @@ const Week = (props: WeekPropsType) => {
         ref={weekWrapperRef}
         selected={selected}
         hovering={isHovered}
-        data-week-id={props.weekId}
+        data-week-id={props.week.id}
       >
         <Styled.WeekRowIndicator edge={state.closestEdge} />
         <StyledWeek.WeekHeader
@@ -261,8 +262,8 @@ const Week = (props: WeekPropsType) => {
           </IconButton>
 
           <HoverMenu
-            workflowId={props.parentId}
-            weekId={props.weekId}
+            workflowId={props.board.id}
+            weekId={props.week.id}
             show={isHovered}
           />
         </StyledWeek.WeekHeader>
