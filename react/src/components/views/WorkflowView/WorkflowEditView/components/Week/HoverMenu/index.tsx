@@ -52,7 +52,7 @@ const HoverMenu = ({ workflowId, weekId, show }: PropsType) => {
         }
       }
     },
-    [dispatch, dialogDispatch, weekId]
+    [dispatch, dialogDispatch, weekId, workflowId]
   )
 
   return (
