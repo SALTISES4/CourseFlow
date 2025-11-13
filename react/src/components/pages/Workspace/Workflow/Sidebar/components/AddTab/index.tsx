@@ -1,4 +1,4 @@
-import { selectWorkflowColumns } from '@cfRedux/selectors/column.selector'
+import { selectWorkflowColumns } from '@cf/redux/selectors/workflow.selector'
 import * as SC from '@cfSidebar/styles'
 import { DraggableType } from '@cfViews/WorkflowView/WorkflowEditView/types'
 import { useTheme } from '@mui/material/styles'

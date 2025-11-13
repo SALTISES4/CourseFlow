@@ -3,7 +3,7 @@ import {
   dropTargetForElements,
   monitorForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { selectWorkflowColumns } from '@cf/redux/selectors/column.selector'
+import { selectWorkflowBoard } from '@cf/redux/selectors/workflow.selector'
 import { nodeChangedColumn } from '@cf/redux/slices/node.slice'
 import { weekMoveNodes } from '@cf/redux/slices/week.slice'
 import {
@@ -13,7 +13,6 @@ import {
 import { _t } from '@cf/utility/Utility.class'
 import DeleteSectionDialog from '@cfComponents/dialog/Workflow/DeleteSection'
 import { RootState } from '@cfRedux/store'
-import { getColumnData } from '@cfSidebar/components/AddTab/data'
 import { produce } from 'immer'
 import {
   memo,
@@ -45,19 +44,8 @@ type StateType = {
 
 const WorkflowEditView = () => {
   const dispatch = useDispatch()
-  const allowDnd = useSelector((state: RootState) => state.svglink.allowDnd)
+  const workflowBoard = useSelector(selectWorkflowBoard)
   const weeksWrapperRef = useRef<HTMLDivElement>(null)
-  const workflow = useSelector((state: RootState) => state.workspace.workflow)
-  const workflowColumns = useSelector(selectWorkflowColumns)
-  const columnIds = useMemo(() => workflow.columns, [workflow.columns])
-  const columnColors: Record<number, string> = useMemo(() => {
-    const colors: Record<number, string> = {}
-    getColumnData(workflowColumns).forEach((col) => {
-      colors[col.id] = col.color
-    })
-    return colors
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [workflowColumns.map((col) => `${col.id}_${col.colour}`).join(',')])
 
   const [state, setState] = useState<StateType>({
     condensed: [],
@@ -176,23 +164,19 @@ const WorkflowEditView = () => {
   )
 
   return (
-    <WorkflowEditViewWrap dragging={allowDnd}>
-      <ColumnsHeader
-        columns={columnIds}
-        parentId={workflow.id}
-        onReorder={onColumnReorder}
-      />
+    <WorkflowEditViewWrap dragging={workflowBoard.dragging}>
+      <ColumnsHeader board={workflowBoard} onReorder={onColumnReorder} />
       <WeeksWrapper data-test-id="weeks-block" ref={weeksWrapperRef}>
-        {workflow.weeks.map((weekId, index) => (
+        {workflowBoard.weeks.map((week, index) => (
           <Week
-            key={`week_${weekId}`}
-            weekId={weekId}
+            key={`week_${week.id}`}
+            weekId={week.id}
             index={index}
-            parentId={workflow.id}
-            columnIds={columnIds}
-            columnColors={columnColors}
+            parentId={workflowBoard.id}
+            columnIds={workflowBoard.columns.ids}
+            columnColors={workflowBoard.columns.colors}
             condensed={
-              state.condensed === 'all' || state.condensed.includes(weekId)
+              state.condensed === 'all' || state.condensed.includes(week.id)
             }
             onWeekCollapse={onWeekCollapse}
             onWeekInsert={onWeekInsert}

@@ -78,7 +78,7 @@ const ColumnCell = ({ index, columnId, parentId, onReorder }: CellProps) => {
   }, [index, onReorder])
 
   return (
-    <StyledWorkflow.Cell ref={ref}>
+    <StyledWorkflow.Cell ref={ref} data-column-id={columnId}>
       <ColumnCellInner
         index={index}
         columnId={columnId}
