@@ -1,3 +1,5 @@
+import { MouseEvent } from 'react'
+
 export enum DraggableType {
   COLUMN = 'column',
   CELL = 'cell',
@@ -51,6 +53,11 @@ export type CellReorderCallbackFn = (
   week: number,
   columnId: number,
   row: number
+) => void
+
+export type CellClickCallbackFn = (
+  e: MouseEvent<HTMLDivElement>,
+  nodeId: number
 ) => void
 
 // simple typeguards for better draggable data typing

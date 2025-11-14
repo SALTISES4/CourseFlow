@@ -1,6 +1,4 @@
-import { MouseEvent } from 'react'
-
-import { CellReorderCallbackFn } from '../../../types'
+import { CellClickCallbackFn, CellReorderCallbackFn } from '../../../types'
 
 export enum WeekCellNodeType {
   PHANTOM = 'phantom',
@@ -23,5 +21,5 @@ export type PhantomPropsType = SharedProps & {
 export type NodePropsType = SharedProps & {
   nodeId: number
   type: WeekCellNodeType.NODE
-  onClick: (e: MouseEvent<HTMLDivElement>) => void
+  onClick: CellClickCallbackFn
 }

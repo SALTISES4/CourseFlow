@@ -58,15 +58,6 @@ const WeekRow = ({
 
   const rowNodeCount = Object.keys(nodes).length
 
-  // const onNodeClicked = useCallback(
-  //   (e: MouseEvent<HTMLDivElement>) => onNodeClick(e, nodeId),
-  //   [onNodeClick, nodeId]
-  // )
-
-  const onNodeClicked = useCallback((e: MouseEvent<HTMLDivElement>) => {
-    console.log('clicked me', e)
-  }, [])
-
   const resetState = useCallback(() => {
     setState(
       produce((draft) => {
@@ -227,7 +218,7 @@ const WeekRow = ({
             coordsY={rowIndex}
             nodeId={nodeId}
             borderColor={columnColors[columnId]}
-            onClick={onNodeClicked}
+            onClick={onNodeClick}
           />
         ) : (
           <WeekCell

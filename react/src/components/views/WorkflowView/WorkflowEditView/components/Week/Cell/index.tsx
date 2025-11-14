@@ -12,7 +12,14 @@ import { RootState } from '@cfRedux/store'
 import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
 import { alpha } from '@mui/material'
 import { produce } from 'immer'
-import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import {
+  MouseEvent,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import HoverMenu from './HoverMenu'
@@ -79,6 +86,11 @@ const WeekCellNode = ({
   const dispatch = useDispatch()
   const node = useSelector((state: RootState) => selectNodeById(state, nodeId))
   const ref = useRef<HTMLDivElement>(null)
+
+  const onNodeClicked = useCallback(
+    (e: MouseEvent<HTMLDivElement>) => onClick(e, nodeId),
+    [onClick, nodeId]
+  )
 
   const selected = useSelector(
     (state: RootState) =>
@@ -161,7 +173,7 @@ const WeekCellNode = ({
         )}
 
         <StyledNode.Border sx={{ backgroundColor: borderColor }} />
-        <StyledNode.Content onClick={onClick}>
+        <StyledNode.Content onClick={onNodeClicked}>
           <StyledNode.Title variant="body2">
             {node.title || `Empty title (#${nodeId})`}
           </StyledNode.Title>
