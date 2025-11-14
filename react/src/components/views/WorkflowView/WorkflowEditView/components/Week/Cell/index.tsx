@@ -36,6 +36,7 @@ type PropsType = PhantomPropsType | NodePropsType
 const WeekCellPhantom = ({
   columnId,
   coordsY,
+  coordsWeek,
   borderColor,
   onReorder
 }: PhantomPropsType) => {
@@ -54,16 +55,15 @@ const WeekCellPhantom = ({
       onDragLeave: () => setDraggedOver(false),
       canDrop: ({ source }) => isGridCell(source.data),
       onDrop: ({ source }) => {
-        const data = source.data
+        const { data } = source
         if (!isGridCell(data)) {
           return null
         }
-
-        onReorder(data.id, data.coords.week, columnId, coordsY)
+        onReorder(data.id, data.coords.week, coordsWeek, columnId, coordsY)
         setDraggedOver(false)
       }
     })
-  }, [columnId, coordsY, onReorder])
+  }, [columnId, coordsWeek, coordsY, onReorder])
 
   return (
     <Styled.Cell

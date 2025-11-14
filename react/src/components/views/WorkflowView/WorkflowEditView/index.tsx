@@ -5,7 +5,7 @@ import {
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { selectWorkflowBoard } from '@cf/redux/selectors/workflow.selector'
 import { nodeChangedColumn } from '@cf/redux/slices/node.slice'
-import { weekMoveNodes } from '@cf/redux/slices/week.slice'
+import { weekMoveNode } from '@cf/redux/slices/week.slice'
 import {
   workflowReorderColumns,
   workflowReorderWeeks
@@ -31,7 +31,6 @@ import { WeeksWrapper, WorkflowEditViewWrap } from './styles'
 import {
   CellReorderCallbackFn,
   ColumnReorderCallbackFn,
-  RowReorderCallbackFn,
   isGridWeek,
   isSidebarPart
 } from './types'
@@ -142,23 +141,11 @@ const WorkflowEditView = () => {
     [dispatch, triggerLineRerender]
   )
 
-  const onRowDragEnd: RowReorderCallbackFn = useCallback(
-    (from, to) => {
-      console.log('row dragend', { from, to })
-      // dispatch(
-      //   weekMoveNodes({
-      //     from: { weekId: from.week, index: from.y },
-      //     to: { weekId: to.week, index: to.y }
-      //   })
-      // )
-      triggerLineRerender()
-    },
-    [dispatch, triggerLineRerender]
-  )
-
   const onNodeDragEnd: CellReorderCallbackFn = useCallback(
-    (id, week, columnId, row) => {
-      console.log('node drag end', { id, week, columnId, row })
+    (id, fromWeek, toWeek, columnId, row) => {
+      if (fromWeek !== toWeek) {
+        dispatch(weekMoveNode({ id, fromWeek, toWeek }))
+      }
       dispatch(
         nodeChangedColumn({ id, data: { column: columnId, order: row } })
       )
@@ -186,7 +173,6 @@ const WorkflowEditView = () => {
             onWeekCollapse={onWeekCollapse}
             onWeekInsert={onWeekInsert}
             onWeekReorder={onWeekReorder}
-            onRowReorder={onRowDragEnd}
             onNodeReorder={onNodeDragEnd}
             redrawer={state.condensed.length}
           />

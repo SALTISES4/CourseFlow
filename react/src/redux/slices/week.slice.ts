@@ -37,11 +37,6 @@ interface MovedToPayload {
   newIndex: number
 }
 
-interface MoveNodesPayload {
-  from: { weekId: number; index: number }
-  to: { weekId: number; index: number }
-}
-
 interface NodeGenericPayload {
   id: number
   index: number
@@ -195,17 +190,14 @@ const weekSlice = createSlice({
     },
 
     // reorder week nodes on workflow view node drag
-    moveNodes: (state, action: PayloadAction<MoveNodesPayload>) => {
-      const { from, to } = action.payload
-      if (from.weekId === to.weekId) {
-        // reorganizing within the same week/part
-        const moved = state.entities[from.weekId].nodes.splice(from.index, 1)
-        state.entities[from.weekId].nodes.splice(to.index, 0, moved[0])
-      } else {
-        // adding items to a different week/part
-        const moved = state.entities[from.weekId].nodes.splice(from.index, 1)
-        state.entities[to.weekId].nodes.splice(to.index, 0, moved[0])
-      }
+    moveNode: (
+      state,
+      action: PayloadAction<{ id: number; fromWeek: number; toWeek: number }>
+    ) => {
+      const { id, fromWeek, toWeek } = action.payload
+      const sourceIndex = state.entities[fromWeek].nodes.indexOf(id)
+      state.entities[fromWeek].nodes.splice(sourceIndex, 1)
+      state.entities[toWeek].nodes.push(id)
     }
   },
   extraReducers: (builder) => {
@@ -281,7 +273,7 @@ export const {
   restoreSelf: weekRestoreSelf,
   changeId: weekChangeId,
   movedTo: weekMovedTo,
-  moveNodes: weekMoveNodes
+  moveNode: weekMoveNode
 } = weekSlice.actions
 
 export default weekSlice.reducer

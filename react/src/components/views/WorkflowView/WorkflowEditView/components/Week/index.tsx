@@ -38,7 +38,6 @@ import * as Styled from '../../styles'
 import { DraggableType, isGridWeek, isSidebarPart } from '../../types'
 import {
   CellReorderCallbackFn,
-  RowReorderCallbackFn,
   WeekInsertCallbackFn,
   WeekReorderCallbackFn
 } from '../../types'
@@ -54,7 +53,6 @@ export type WeekPropsType = {
   columnColors: WorkflowBoard['columns']['colors']
   onWeekCollapse: (weekId: number) => void
   onNodeReorder: CellReorderCallbackFn
-  onRowReorder: RowReorderCallbackFn
   onWeekReorder: WeekReorderCallbackFn
   onWeekInsert: WeekInsertCallbackFn
 }
@@ -231,7 +229,6 @@ const Week = (props: WeekPropsType) => {
       columnIds={props.columnIds}
       columnColors={props.columnColors}
       onNodeReorder={props.onNodeReorder}
-      onRowReorder={props.onRowReorder}
       onNodeClick={onNodeClick}
     />
   ))

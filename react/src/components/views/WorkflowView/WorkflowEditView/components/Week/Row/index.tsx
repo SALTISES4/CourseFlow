@@ -29,7 +29,6 @@ type WeekRowPropsType = {
   totalRows: number
   columnIds: WorkflowBoard['columns']['ids']
   columnColors: WorkflowBoard['columns']['colors']
-  onRowReorder: WeekPropsType['onRowReorder']
   onNodeReorder: WeekPropsType['onNodeReorder']
   onNodeClick: (e: MouseEvent<HTMLDivElement>, nodeId: number) => void
 }
@@ -47,7 +46,6 @@ const WeekRow = ({
   columnIds,
   columnColors,
   onNodeReorder,
-  onRowReorder,
   onNodeClick
 }: WeekRowPropsType) => {
   const ref = useRef<HTMLDivElement>(null)

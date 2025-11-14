@@ -43,14 +43,10 @@ export type ColumnReorderCallbackFn = (
 export type WeekInsertCallbackFn = (insertAt: number) => void
 export type WeekReorderCallbackFn = (from: number, to: number) => void
 
-export type RowReorderCallbackFn = (
-  from: RowDataType['coords'],
-  to: RowDataType['coords']
-) => void
-
 export type CellReorderCallbackFn = (
   id: number,
-  week: number,
+  fromWeek: number,
+  toWeek: number,
   columnId: number,
   row: number
 ) => void
