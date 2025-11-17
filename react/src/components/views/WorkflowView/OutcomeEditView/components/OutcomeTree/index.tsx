@@ -1,8 +1,8 @@
+import { RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import { selectOutcomeChildrenById } from '@cfRedux/selectors/outcomes.selector'
 import { Outcome as OutcomeType } from '@cfRedux/slices/outcomes.slice'
 import { addOutcome } from '@cfRedux/slices/outcomes.slice'
-import { AppState } from '@cfRedux/types/type'
 import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -48,7 +48,7 @@ export const OutcomeGroup = ({
   parentId: number
   prefix: (number | string)[]
 }) => {
-  const childOutcomes = useSelector((state: AppState) =>
+  const childOutcomes = useSelector((state: RootState) =>
     selectOutcomeChildrenById(state, parentId)
   )
 
