@@ -100,6 +100,13 @@ export const WeekNumber = styled('span')(() => ({
 }))
 
 export const EmptyText = styled(Typography)(({ theme }) => ({
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
   width: '100%',
-  padding: theme.spacing(2)
+  padding: theme.spacing(2),
+  transform: 'translate(-50%, -50%)',
+  textAlign: 'center',
+  color: theme.palette.secondary.light,
+  pointerEvents: 'none'
 }))

@@ -31,6 +31,8 @@ import { WeeksWrapper, WorkflowEditViewWrap } from './styles'
 import {
   CellReorderCallbackFn,
   ColumnReorderCallbackFn,
+  WeekInsertCallbackFn,
+  WeekReorderCallbackFn,
   isGridWeek,
   isSidebarPart
 } from './types'
@@ -126,15 +128,15 @@ const WorkflowEditView = () => {
     )
   }, [])
 
-  const onWeekInsert = useCallback((insertIndex: number) => {
+  const onWeekInsert: WeekInsertCallbackFn = useCallback((insertIndex) => {
     console.log('+++ WEEK INSERT', { insertIndex })
     // TODO: figure out how sidebar parts/strategies work
     // dispatch workflow week insert
     // state.weeks.splice(insertIndex, 0, dataForTheInsertedWeek)
   }, [])
 
-  const onWeekReorder = useCallback(
-    (from: number, to: number) => {
+  const onWeekReorder: WeekReorderCallbackFn = useCallback(
+    (from, to) => {
       dispatch(workflowReorderWeeks({ fromIndex: from, toIndex: to }))
       triggerLineRerender()
     },

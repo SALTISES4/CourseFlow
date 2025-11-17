@@ -33,6 +33,7 @@ import { useResizeObserver } from 'usehooks-ts'
 
 import HoverMenu from './HoverMenu'
 import WeekRow from './Row'
+import WeekRowEmpty from './RowEmpty'
 import * as StyledWeek from './styles'
 import * as Styled from '../../styles'
 import { DraggableType, isGridWeek, isSidebarPart } from '../../types'
@@ -218,20 +219,28 @@ const Week = (props: WeekPropsType) => {
     [props]
   )
 
-  const weekGrid = props.weekRows.map((nodes, rowIndex) => (
-    <WeekRow
-      key={`week_${props.weekId}_${rowIndex}`}
-      nodes={nodes}
-      rowIndex={rowIndex}
-      totalRows={props.weekRows.length}
+  const weekGrid = !props.weekRows.length ? (
+    <WeekRowEmpty
       weekId={props.weekId}
-      parentId={props.boardId}
       columnIds={props.columnIds}
       columnColors={props.columnColors}
       onNodeReorder={props.onNodeReorder}
-      onNodeClick={onNodeClick}
     />
-  ))
+  ) : (
+    props.weekRows.map((nodes, rowIndex) => (
+      <WeekRow
+        key={`week_${props.weekId}_${rowIndex}`}
+        nodes={nodes}
+        rowIndex={rowIndex}
+        weekId={props.weekId}
+        parentId={props.boardId}
+        columnIds={props.columnIds}
+        columnColors={props.columnColors}
+        onNodeReorder={props.onNodeReorder}
+        onNodeClick={onNodeClick}
+      />
+    ))
+  )
 
   const defaultText = !isStrategy
     ? `${week.weekTypeDisplay} ${week.order + 1}`
