@@ -4,7 +4,6 @@ import { createSelector } from 'reselect'
 
 import { selectColumnEntities } from './column.selector'
 import { selectAllNodes } from './node.selector'
-import { selectAllWeeks } from './week.selector'
 
 // grabs columns associated to the current workflow
 export const selectWorkflowColumns = (state: RootState): number[] => {
@@ -44,11 +43,10 @@ export type WorkflowBoard = {
 export const selectWorkflowBoard = createSelector(
   [
     (state: RootState) => state.workspace.workflow,
-    selectAllWeeks,
     selectAllNodes,
     selectWorkflowColumnEntities
   ],
-  (workflow, weekEntities, nodeEntities, columns) => {
+  (workflow, nodes, columns) => {
     // prepare column colors
     const colors: WorkflowBoard['columns']['colors'] = {}
     getColumnData(columns).forEach((col) => {
@@ -62,34 +60,33 @@ export const selectWorkflowBoard = createSelector(
         ids: columns.map((col) => col.id),
         colors
       },
-      weeks: [
-        ...workflow.weeks.map((id) => {
-          const rows: Week['rows'] = []
-
-          const week = weekEntities.find((w) => w.id === id)
-          week.nodes.forEach((nodeId) => {
-            const node = nodeEntities.find((n) => n.id === nodeId)
+      weeks: workflow.weeks.map((weekId) => {
+        const rows: Week['rows'] = []
+        const weekNodes = nodes.filter((n) => n.week === weekId && !n.deleted)
+        weekNodes
+          .sort((a, b) => a.order - b.order)
+          .forEach((node) => {
             const x = columns.findIndex((c) => c.id === node.column)
             const y = node.order
 
             // place the node into the corresponding row/cell
             if (!rows[y]) {
-              rows[y] = { [x]: nodeId }
+              rows[y] = { [x]: node.id }
             } else {
+              // there can technically be an overwrite
               if (rows[y][x]) {
                 console.log(
-                  `node overwrite at week #${id} ${y}/${x} by node #${nodeId}`
+                  `node overwrite at week #${weekId} ${y}/${x} node id #${node.id} replacing #${rows[y][x]}`
                 )
               }
 
               // assign the node anyway
-              rows[y][x] = nodeId
+              rows[y][x] = node.id
             }
           })
 
-          return { id, rows }
-        })
-      ]
+        return { id: weekId, rows }
+      })
     }
 
     return board

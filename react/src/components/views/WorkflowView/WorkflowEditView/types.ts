@@ -1,3 +1,4 @@
+import { NodeWorkflowReorderPayload } from '@cf/redux/slices/node.slice'
 import { MouseEvent } from 'react'
 
 export enum DraggableType {
@@ -44,11 +45,7 @@ export type WeekInsertCallbackFn = (insertAt: number) => void
 export type WeekReorderCallbackFn = (from: number, to: number) => void
 
 export type CellReorderCallbackFn = (
-  id: number,
-  fromWeek: number,
-  toWeek: number,
-  columnId: number,
-  row: number
+  payload: NodeWorkflowReorderPayload
 ) => void
 
 export type CellClickCallbackFn = (

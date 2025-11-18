@@ -38,7 +38,9 @@ const WeekRow = ({
           coordsX={index}
           coordsY={rowIndex}
           nodeId={nodeId}
+          columnId={columnId}
           borderColor={columnColors[columnId]}
+          onReorder={onNodeReorder}
           onClick={onNodeClick}
         />
       ) : (

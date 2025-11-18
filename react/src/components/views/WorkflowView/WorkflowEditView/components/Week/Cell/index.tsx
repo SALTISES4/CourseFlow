@@ -3,6 +3,12 @@ import {
   draggable,
   dropTargetForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import {
+  Edge,
+  attachClosestEdge,
+  extractClosestEdge
+} from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
+import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box'
 import { selectNodeById } from '@cf/redux/selectors/node.selector'
 import { svglinkAllowDND } from '@cf/redux/slices/svglink.slice'
 import { CfObjectType } from '@cf/types/enum'
@@ -59,7 +65,13 @@ const WeekCellPhantom = ({
         if (!isGridCell(data)) {
           return null
         }
-        onReorder(data.id, data.coords.week, coordsWeek, columnId, coordsY)
+        onReorder({
+          id: data.id,
+          fromWeek: data.coords.week,
+          toWeek: coordsWeek,
+          toColumn: columnId,
+          toRow: coordsY
+        })
         setDraggedOver(false)
       }
     })
@@ -75,13 +87,21 @@ const WeekCellPhantom = ({
   )
 }
 
+type NodeStateType = {
+  dragging: boolean
+  dropHighlight: boolean
+  closestEdge: Edge | null
+}
+
 const WeekCellNode = ({
   nodeId,
+  columnId,
   coordsWeek,
   coordsX,
   coordsY,
   borderColor,
-  onClick
+  onClick,
+  onReorder
 }: NodePropsType) => {
   const dispatch = useDispatch()
   const node = useSelector((state: RootState) => selectNodeById(state, nodeId))
@@ -98,20 +118,23 @@ const WeekCellNode = ({
       state.sidebar.edit.id === node.id
   )
 
-  const [state, setState] = useState({
+  const [state, setState] = useState<NodeStateType>({
     dragging: false,
-    dropHighlight: false
+    dropHighlight: false,
+    closestEdge: null
   })
 
   const toggleState = useCallback(
-    (property: 'dragging' | 'dropHighlight', value?: boolean) => {
-      if (property === 'dragging') {
-        dispatch(svglinkAllowDND(value ?? false))
+    (newState: Partial<NodeStateType>) => {
+      if ('dragging' in newState) {
+        dispatch(svglinkAllowDND(newState.dragging ?? false))
       }
 
       setState(
         produce((draft) => {
-          draft[property] = value ?? !draft[property]
+          for (const [key, value] of Object.entries(newState)) {
+            draft[key] = value ?? !draft[key]
+          }
         })
       )
     },
@@ -127,15 +150,58 @@ const WeekCellNode = ({
     return combine(
       dropTargetForElements({
         element: el,
-        canDrop: ({ source }) => isOutcomeLink(source.data),
-        onDragEnter: () => toggleState('dropHighlight', true),
-        onDragLeave: () => toggleState('dropHighlight', false),
-        onDrop: ({ source }) => {
-          const data = source.data
-          if (isOutcomeLink(data)) {
-            dispatch(nodelinkOutcome({ outcomeId: data.id, nodeId }))
+        getData: ({ input, element }) => {
+          return attachClosestEdge(
+            {},
+            {
+              input,
+              element,
+              allowedEdges: ['top', 'bottom']
+            }
+          )
+        },
+        canDrop: ({ source }) => {
+          return isOutcomeLink(source.data) || isGridCell(source.data)
+        },
+        onDragEnter: ({ source }) => {
+          if (isOutcomeLink(source.data)) {
+            toggleState({ dropHighlight: true })
           }
-          toggleState('dropHighlight', false)
+        },
+        onDragLeave: ({ source }) => {
+          if (isOutcomeLink(source.data)) {
+            toggleState({ dropHighlight: false })
+          }
+          toggleState({ closestEdge: null })
+        },
+        onDrag: ({ source, self }) => {
+          const dragging = source.data
+          if (isGridCell(dragging) && dragging.id !== nodeId) {
+            setState(
+              produce((draft) => {
+                draft.closestEdge = extractClosestEdge(self.data)
+              })
+            )
+          }
+        },
+        onDrop: ({ source, self }) => {
+          const dropped = source.data
+          if (isOutcomeLink(dropped)) {
+            dispatch(nodelinkOutcome({ outcomeId: dropped.id, nodeId }))
+          }
+
+          if (isGridCell(dropped) && dropped.id !== nodeId) {
+            onReorder({
+              edge: extractClosestEdge(self.data) as 'top' | 'bottom',
+              id: dropped.id,
+              fromWeek: dropped.coords.week,
+              toWeek: coordsWeek,
+              toColumn: columnId,
+              toRow: coordsY
+            })
+          }
+
+          toggleState({ dropHighlight: false, closestEdge: null })
         }
       }),
       draggable({
@@ -149,11 +215,20 @@ const WeekCellNode = ({
           },
           type: DraggableType.CELL
         }),
-        onDragStart: () => toggleState('dragging', true),
-        onDrop: () => toggleState('dragging', false)
+        onDragStart: () => toggleState({ dragging: true }),
+        onDrop: () => toggleState({ dragging: false })
       })
     )
-  }, [ref, dispatch, nodeId, toggleState, coordsWeek, coordsX, coordsY])
+  }, [
+    columnId,
+    coordsWeek,
+    coordsX,
+    coordsY,
+    dispatch,
+    nodeId,
+    onReorder,
+    toggleState
+  ])
 
   return (
     <Styled.Cell ref={ref}>
@@ -190,6 +265,9 @@ const WeekCellNode = ({
 
         <Handles nodeId={nodeId} nodeRef={ref} />
       </Styled.CellInner>
+      {state.closestEdge && (
+        <DropIndicator edge={state.closestEdge} type="no-terminal" gap="32px" />
+      )}
     </Styled.Cell>
   )
 }

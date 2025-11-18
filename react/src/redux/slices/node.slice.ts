@@ -25,6 +25,16 @@ interface DeleteColumnAction {
   extraData: any
 }
 
+export type NodeWorkflowReorderPayload = {
+  edge?: 'top' | 'bottom'
+  mode?: 'row' | 'column'
+  id: number
+  fromWeek: number
+  toWeek: number
+  toColumn: number
+  toRow: number
+}
+
 export const nodeAdapter = createEntityAdapter<TNode>()
 type NodeState = ReturnType<typeof nodeAdapter.getInitialState>
 const initialState = nodeAdapter.getInitialState()
@@ -110,6 +120,24 @@ const updatingNodeSet = (
   nodeAdapter.updateMany(state, updates)
 }
 
+const splitWorkflowGridNodes = ({
+  ids,
+  entities,
+  column,
+  row
+}: {
+  ids: number[]
+  entities: typeof initialState.entities
+  column?: number
+  row: number
+}) => {
+  return ids.filter((nodeId) => {
+    const n = entities[nodeId]
+    const columnMatch = column !== undefined ? n.column === column : true
+    return columnMatch && n.order >= row
+  })
+}
+
 /*******************************************************
  * TO DO
  *******************************************************/
@@ -179,6 +207,51 @@ const nodeSlice = createSlice({
           linkedWorkflowData: action.payload.linkedWorkflowData
         }
       })
+    },
+
+    // when node is moved in the workflow edit view
+    // update order/column attributes, but also check if other nodes
+    // need to be moved around as well (ie, node inserted between two rows, etc)
+    workflowReorder: (
+      state,
+      action: PayloadAction<NodeWorkflowReorderPayload>
+    ) => {
+      const {
+        mode = 'column',
+        edge = 'top',
+        id,
+        toWeek,
+        toColumn,
+        toRow
+      } = action.payload
+
+      const movedNode = state.entities[id]
+      const otherWeekNodes = state.ids.filter(
+        (nodeId) => nodeId !== id && state.entities[nodeId].week === toWeek
+      )
+
+      // "row" insert moves all the other week nodes below this row
+      // "column" works the same as row, but contained within the current column
+      const otherNodes = splitWorkflowGridNodes({
+        ids: otherWeekNodes,
+        entities: state.entities,
+        row: edge === 'top' ? toRow : toRow + 1,
+        column: mode === 'column' ? toColumn : undefined
+      })
+
+      // loop through other nodes, only updating order of the nodes
+      // between the "current" and the "new" row
+      otherNodes.forEach((nodeId) => {
+        const node = state.entities[nodeId]
+        if (movedNode.order >= node.order) {
+          node.order += 1
+        }
+      })
+
+      // finally update the dragged node's properties
+      movedNode.order = toRow
+      movedNode.column = toColumn
+      movedNode.week = toWeek
     },
 
     // this one had a jquery update side effect
@@ -378,6 +451,7 @@ export const {
   restoreSelf: nodeRestoreSelf,
   insertBelow: nodeInsertBelow,
   reloadComments: nodeReloadComments,
+  workflowReorder: nodeWorkflowReorder,
   setLinkedWorkflow: nodeSetLinkedWorkflow,
   linkOutcome: nodelinkOutcome
 } = nodeSlice.actions

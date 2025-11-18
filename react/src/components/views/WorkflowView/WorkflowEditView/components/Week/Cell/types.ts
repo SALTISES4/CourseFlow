@@ -10,12 +10,12 @@ export type SharedProps = {
   coordsX: number
   coordsY: number
   borderColor: string
+  columnId: number
+  onReorder: CellReorderCallbackFn
 }
 
 export type PhantomPropsType = SharedProps & {
-  columnId: number
   type: WeekCellNodeType.PHANTOM
-  onReorder: CellReorderCallbackFn
 }
 
 export type NodePropsType = SharedProps & {

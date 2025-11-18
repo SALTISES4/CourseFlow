@@ -29,25 +29,17 @@ export const CellRow = styled(Box)(({ theme }) => ({
   gap: theme.spacing(3)
 }))
 
-export const CellRowIndicator = styled(Box, {
+export const WeekRowIndicator = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'edge'
 })<{ edge: Edge | null }>(({ theme, edge }) => ({
   position: 'absolute',
-  top: edge === 'top' ? -1 : 'initial',
-  bottom: edge === 'bottom' ? -1 : 'initial',
-  left: 0,
-  height: '2px',
   width: '100%',
+  height: '16px',
+  left: 0,
+  top: edge === 'top' ? -16 : 'initial',
+  bottom: edge === 'bottom' ? -16 : 'initial',
   opacity: edge ? 1 : 0,
   backgroundColor: alpha(theme.palette.secondary.light, 0.5)
-}))
-
-export const WeekRowIndicator = styled(CellRowIndicator, {
-  shouldForwardProp: (prop) => prop !== 'edge'
-})<{ edge: Edge | null }>(({ theme, edge }) => ({
-  height: '16px',
-  top: edge === 'top' ? -16 : 'initial',
-  bottom: edge === 'bottom' ? -16 : 'initial'
 }))
 
 export const Cell = styled(Box)({
