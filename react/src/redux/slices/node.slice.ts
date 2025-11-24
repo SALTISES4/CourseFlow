@@ -120,6 +120,9 @@ const updatingNodeSet = (
   nodeAdapter.updateMany(state, updates)
 }
 
+// returns groups of nodes based on the coordinates affected
+// before - gorup of nodes before the current row/column
+// after - group of nodes after the current row/colun
 const splitWorkflowGridNodes = ({
   ids,
   entities,
@@ -131,11 +134,52 @@ const splitWorkflowGridNodes = ({
   column?: number
   row: number
 }) => {
-  return ids.filter((nodeId) => {
+  const before: number[] = []
+  const after: number[] = []
+
+  ids.forEach((nodeId) => {
     const n = entities[nodeId]
     const columnMatch = column !== undefined ? n.column === column : true
-    return columnMatch && n.order >= row
+
+    if (columnMatch && n.order >= row) {
+      after.push(nodeId)
+    }
+
+    if (columnMatch && n.order < row) {
+      before.push(nodeId)
+    }
   })
+
+  return { before, after }
+}
+
+// check if we need to collapse the row from the original node position
+const collapseRows = ({
+  nodeId,
+  weekId,
+  row,
+  ids,
+  entities
+}: {
+  nodeId: number
+  weekId: number
+  row: number
+  ids: number[]
+  entities: typeof initialState.entities
+}) => {
+  const sameRowNodes = ids.filter((id) => {
+    const node = entities[id]
+    return id !== nodeId && node.week === weekId && node.order === row
+  })
+
+  if (!sameRowNodes.length) {
+    ids.forEach((id) => {
+      const node = entities[id]
+      if (node.order > row) {
+        node.order -= 1
+      }
+    })
+  }
 }
 
 /*******************************************************
@@ -220,36 +264,62 @@ const nodeSlice = createSlice({
         mode = 'column',
         edge = 'top',
         id,
+        fromWeek,
         toWeek,
         toColumn,
         toRow
       } = action.payload
 
       const movedNode = state.entities[id]
-      const otherWeekNodes = state.ids.filter(
+      const newRow = edge === 'top' ? toRow : toRow + 1
+      const toWeekNodes = state.ids.filter(
         (nodeId) => nodeId !== id && state.entities[nodeId].week === toWeek
       )
 
-      // "row" insert moves all the other week nodes below this row
-      // "column" works the same as row, but contained within the current column
-      const otherNodes = splitWorkflowGridNodes({
-        ids: otherWeekNodes,
-        entities: state.entities,
-        row: edge === 'top' ? toRow : toRow + 1,
-        column: mode === 'column' ? toColumn : undefined
-      })
+      // TODO: collapse these if/else into single branch
+      if (fromWeek === toWeek) {
+        if (movedNode.order !== toRow) {
+          collapseRows({
+            nodeId: id,
+            weekId: toWeek,
+            row: newRow,
+            ids: toWeekNodes,
+            entities: state.entities
+          })
 
-      // loop through other nodes, only updating order of the nodes
-      // between the "current" and the "new" row
-      otherNodes.forEach((nodeId) => {
-        const node = state.entities[nodeId]
-        if (movedNode.order >= node.order) {
-          node.order += 1
+          const gridSplits = splitWorkflowGridNodes({
+            ids: toWeekNodes,
+            entities: state.entities,
+            row: newRow,
+            column: mode === 'column' ? toColumn : undefined
+          })
+
+          gridSplits.after.forEach((nodeId) => {
+            state.entities[nodeId].order += 1
+          })
         }
-      })
+      } else {
+        collapseRows({
+          nodeId: id,
+          weekId: fromWeek,
+          row: movedNode.order,
+          ids: state.ids,
+          entities: state.entities
+        })
 
-      // finally update the dragged node's properties
-      movedNode.order = toRow
+        const gridSplits = splitWorkflowGridNodes({
+          ids: toWeekNodes,
+          entities: state.entities,
+          row: newRow,
+          column: mode === 'column' ? toColumn : undefined
+        })
+
+        gridSplits.after.forEach((nodeId) => {
+          state.entities[nodeId].order += 1
+        })
+      }
+
+      movedNode.order = newRow
       movedNode.column = toColumn
       movedNode.week = toWeek
     },
