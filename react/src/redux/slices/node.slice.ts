@@ -27,7 +27,6 @@ interface DeleteColumnAction {
 
 export type NodeWorkflowReorderPayload = {
   edge?: 'top' | 'bottom'
-  mode?: 'row' | 'column'
   id: number
   fromWeek: number
   toWeek: number
@@ -35,9 +34,16 @@ export type NodeWorkflowReorderPayload = {
   toRow: number
 }
 
+export type NodeInsertMode = 'manual' | 'row' | 'column'
+
 export const nodeAdapter = createEntityAdapter<TNode>()
-type NodeState = ReturnType<typeof nodeAdapter.getInitialState>
-const initialState = nodeAdapter.getInitialState()
+type NodeState = ReturnType<typeof nodeAdapter.getInitialState> & {
+  insertMode: NodeInsertMode
+}
+const initialState: NodeState = {
+  ...nodeAdapter.getInitialState(),
+  insertMode: 'column'
+}
 
 /*******************************************************
  * Reusable Reducer Functions
@@ -153,33 +159,37 @@ const splitWorkflowGridNodes = ({
   return { before, after }
 }
 
-// check if we need to collapse the row from the original node position
-const collapseRows = ({
-  nodeId,
-  weekId,
-  row,
+const collapseEmptyRows = ({
+  movedNode,
   ids,
   entities
 }: {
-  nodeId: number
-  weekId: number
-  row: number
+  movedNode: TNode
   ids: number[]
   entities: typeof initialState.entities
-}) => {
-  const sameRowNodes = ids.filter((id) => {
+}): boolean => {
+  const sameRowNodes: number[] = []
+  const sameWeekNodes = ids.filter((id) => {
     const node = entities[id]
-    return id !== nodeId && node.week === weekId && node.order === row
+    if (node.week === movedNode.week) {
+      if (node.id !== movedNode.id && node.order === movedNode.order) {
+        sameRowNodes.push(node.id)
+      }
+      return true
+    }
   })
 
   if (!sameRowNodes.length) {
-    ids.forEach((id) => {
+    sameWeekNodes.forEach((id) => {
       const node = entities[id]
-      if (node.order > row) {
+      if (node.order > movedNode.order) {
         node.order -= 1
       }
     })
+    return true
   }
+
+  return false
 }
 
 /*******************************************************
@@ -227,6 +237,9 @@ const nodeSlice = createSlice({
     insertBelow(state, action: PayloadAction<{ newModel: TNode }>) {
       nodeAdapter.addOne(state, action.payload.newModel)
     },
+    changeInsertMode(state, action: PayloadAction<NodeState['insertMode']>) {
+      state.insertMode = action.payload
+    },
     reloadComments(
       state,
       action: PayloadAction<{ id: number; commentData: any }>
@@ -260,61 +273,73 @@ const nodeSlice = createSlice({
       state,
       action: PayloadAction<NodeWorkflowReorderPayload>
     ) => {
-      const {
-        mode = 'column',
-        edge = 'top',
-        id,
-        fromWeek,
-        toWeek,
-        toColumn,
-        toRow
-      } = action.payload
+      const { edge, id, fromWeek, toWeek, toColumn, toRow } = action.payload
 
+      // different behavior based on the insertion mode
+      const insertModeRow = state.insertMode === 'row'
+      const insertModeColumn = state.insertMode === 'column'
       const movedNode = state.entities[id]
-      const newRow = edge === 'top' ? toRow : toRow + 1
-      const toWeekNodes = state.ids.filter(
-        (nodeId) => nodeId !== id && state.entities[nodeId].week === toWeek
+
+      const fromWeekNodes = state.ids.filter(
+        (nodeId) => nodeId !== id && state.entities[nodeId].week === fromWeek
       )
 
-      // TODO: collapse these if/else into single branch
+      const toWeekNodes =
+        fromWeek === toWeek
+          ? fromWeekNodes
+          : state.ids.filter(
+              (nodeId) =>
+                nodeId !== id && state.entities[nodeId].week === toWeek
+            )
+
+      // absolute cinema
+      const newRow = !edge
+        ? toRow
+        : edge === 'top'
+          ? insertModeColumn
+            ? Math.max(0, toRow - 1)
+            : toRow
+          : toRow + 1
+
+      const collapsed =
+        movedNode.order === newRow
+          ? false
+          : collapseEmptyRows({
+              movedNode,
+              ids: fromWeekNodes,
+              entities: state.entities
+            })
+
+      console.log({
+        insertMode: state.insertMode,
+        id,
+        fromRow: movedNode.order,
+        toRow: newRow,
+        collapsed
+      })
+
       if (fromWeek === toWeek) {
-        if (movedNode.order !== toRow) {
-          collapseRows({
-            nodeId: id,
-            weekId: toWeek,
-            row: newRow,
-            ids: toWeekNodes,
-            entities: state.entities
-          })
-
-          const gridSplits = splitWorkflowGridNodes({
-            ids: toWeekNodes,
-            entities: state.entities,
-            row: newRow,
-            column: mode === 'column' ? toColumn : undefined
-          })
-
-          gridSplits.after.forEach((nodeId) => {
-            state.entities[nodeId].order += 1
-          })
-        }
+        // if (movedNode.order !== newRow) {
+        //   newRow = !collapsed ? newRow : Math.max(0, newRow - 1)
+        // }
+        // const gridSplits = splitWorkflowGridNodes({
+        //   ids: toWeekNodes,
+        //   entities: state.entities,
+        //   row: newRow,
+        //   column: insertModeColumn ? toColumn : undefined
+        // })
+        // if (collapsed) {
+        //   gridSplits.after.forEach((nodeId) => {
+        //     state.entities[nodeId].order += 1
+        //   })
+        // }
       } else {
-        collapseRows({
-          nodeId: id,
-          weekId: fromWeek,
-          row: movedNode.order,
-          ids: state.ids,
-          entities: state.entities
-        })
-
-        const gridSplits = splitWorkflowGridNodes({
+        splitWorkflowGridNodes({
           ids: toWeekNodes,
           entities: state.entities,
           row: newRow,
-          column: mode === 'column' ? toColumn : undefined
-        })
-
-        gridSplits.after.forEach((nodeId) => {
+          column: insertModeColumn ? toColumn : undefined
+        }).after.forEach((nodeId) => {
           state.entities[nodeId].order += 1
         })
       }
@@ -516,6 +541,7 @@ export const {
   changedColumn: nodeChangedColumn,
   createLock: nodeCreateLock,
   changeField: nodeChangeField,
+  changeInsertMode: nodeChangeInsertMode,
   deleteSelf: nodeDeleteSelf,
   deleteSelfSoft: nodeDeleteSelfSoft,
   restoreSelf: nodeRestoreSelf,

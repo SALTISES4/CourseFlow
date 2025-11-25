@@ -13,7 +13,7 @@ export const selectWorkflowColumns = (state: RootState): number[] => {
 // filters through the columns
 // (some of them might be soft deleted too and wouldn't appear)
 // maybe this is unnecessary if soft delete is being removed
-const selectWorkflowColumnEntities = createSelector(
+export const selectWorkflowColumnEntities = createSelector(
   [selectWorkflowColumns, selectColumnEntities],
   (columnIds, columnEntities) => {
     return columnIds.map((id) => columnEntities[id]).filter(Boolean)
