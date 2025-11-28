@@ -49,7 +49,8 @@ const WeekCell = (props: WeekCellProps) => {
       const data = state.dropData
       props.onReorder({
         ...data,
-        edge: data.type === 'phantom' ? undefined : data.edge,
+        edge:
+          insertModeOption && data.type === 'phantom' ? undefined : data.edge,
         mode: insertModeOption
       })
       setState({
