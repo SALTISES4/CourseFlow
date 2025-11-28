@@ -1,11 +1,13 @@
+import { MutableRefObject } from 'react'
+
 import { CellClickCallbackFn, CellReorderCallbackFn } from '../../../types'
 
-export enum WeekCellNodeType {
+export enum WeekCellType {
   PHANTOM = 'phantom',
   NODE = 'node'
 }
 
-export type SharedProps = {
+interface WeekCellShared {
   coordsWeek: number
   coordsX: number
   coordsY: number
@@ -14,12 +16,26 @@ export type SharedProps = {
   onReorder: CellReorderCallbackFn
 }
 
-export type PhantomPropsType = SharedProps & {
-  type: WeekCellNodeType.PHANTOM
+export type WeekCellProps = WeekCellPhantomType | WeekCellNodeType
+
+export interface WeekCellPhantomType extends WeekCellShared {
+  type: WeekCellType.PHANTOM
 }
 
-export type NodePropsType = SharedProps & {
+export interface WeekCellNodeType extends WeekCellShared {
   nodeId: number
-  type: WeekCellNodeType.NODE
+  type: WeekCellType.NODE
   onClick: CellClickCallbackFn
 }
+
+interface InternalShared {
+  wrapRef: MutableRefObject<HTMLDivElement>
+}
+
+export interface WeekCellPhantomTypeInternal
+  extends WeekCellPhantomType,
+    InternalShared {}
+
+export interface WeekCellNodeTypeTypeInternal
+  extends WeekCellNodeType,
+    InternalShared {}

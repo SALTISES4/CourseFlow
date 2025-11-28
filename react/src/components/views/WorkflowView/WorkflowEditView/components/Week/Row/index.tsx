@@ -5,7 +5,7 @@ import { MouseEvent, memo } from 'react'
 import type { WeekPropsType } from '../'
 import * as Styled from '../../../styles'
 import WeekCell from '../Cell'
-import { WeekCellNodeType } from '../Cell/types'
+import { WeekCellType } from '../Cell/types'
 
 type WeekRowPropsType = {
   nodes: WorkflowBoard['weeks'][0]['rows'][0]
@@ -33,7 +33,7 @@ const WeekRow = ({
       return nodeId ? (
         <WeekCell
           key={`${weekId}_${rowIndex}_${columnId}`}
-          type={WeekCellNodeType.NODE}
+          type={WeekCellType.NODE}
           coordsWeek={weekId}
           coordsX={index}
           coordsY={rowIndex}
@@ -46,7 +46,7 @@ const WeekRow = ({
       ) : (
         <WeekCell
           key={`${weekId}_${rowIndex}_${columnId}`}
-          type={WeekCellNodeType.PHANTOM}
+          type={WeekCellType.PHANTOM}
           coordsWeek={weekId}
           coordsX={index}
           coordsY={rowIndex}

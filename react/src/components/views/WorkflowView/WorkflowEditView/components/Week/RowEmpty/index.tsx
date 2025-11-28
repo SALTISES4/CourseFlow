@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux'
 import type { WeekPropsType } from '../'
 import * as StyledWorkflow from '../../../styles'
 import WeekCell from '../Cell'
-import { WeekCellNodeType } from '../Cell/types'
+import { WeekCellType } from '../Cell/types'
 import * as Styled from '../styles'
 
 type PropsType = {
@@ -31,7 +31,7 @@ const EmptyWeekRow = ({
       {columnIds.map((columnId, index) => (
         <WeekCell
           key={`${weekId}_${columnId}`}
-          type={WeekCellNodeType.PHANTOM}
+          type={WeekCellType.PHANTOM}
           coordsWeek={weekId}
           coordsX={index}
           coordsY={0}

@@ -17,6 +17,7 @@ import { isOutcomeLink } from '@cfRedux/slices/outcomes.slice'
 import { RootState } from '@cfRedux/store'
 import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
 import { alpha } from '@mui/material'
+import Box from '@mui/material/Box'
 import { produce } from 'immer'
 import {
   MouseEvent,
@@ -31,22 +32,40 @@ import { useDispatch, useSelector } from 'react-redux'
 import HoverMenu from './HoverMenu'
 import Meta from './Meta'
 import * as StyledNode from './styles'
-import { NodePropsType, PhantomPropsType, WeekCellNodeType } from './types'
+import {
+  WeekCellNodeTypeTypeInternal,
+  WeekCellPhantomTypeInternal,
+  WeekCellProps,
+  WeekCellType
+} from './types'
 import * as Styled from '../../../styles'
 import { CellDataType, DraggableType } from '../../../types'
 import { isGridCell } from '../../../types'
 import Handles from '../../LineSVG/Handles'
 
-type PropsType = PhantomPropsType | NodePropsType
+const WeekCell = (props: WeekCellProps) => {
+  // console.log(`${props.coordsY + 1} x ${props.coordsX + 1}`)
+  const ref = useRef<HTMLDivElement>(null)
+
+  return (
+    <Styled.Cell ref={ref}>
+      {props.type === WeekCellType.PHANTOM ? (
+        <WeekCellPhantom wrapRef={ref} {...props} />
+      ) : (
+        <WeekCellNode wrapRef={ref} {...props} />
+      )}
+    </Styled.Cell>
+  )
+}
 
 const WeekCellPhantom = ({
   columnId,
   coordsY,
   coordsWeek,
   borderColor,
+  wrapRef,
   onReorder
-}: PhantomPropsType) => {
-  const ref = useRef<HTMLDivElement>(null)
+}: WeekCellPhantomTypeInternal) => {
   const insertMode = useSelector(
     (state: RootState) => state.workspace.node.insertMode
   )
@@ -56,7 +75,7 @@ const WeekCellPhantom = ({
   })
 
   useEffect(() => {
-    const el = ref.current
+    const el = wrapRef.current
     if (!el) {
       return null
     }
@@ -123,12 +142,12 @@ const WeekCellPhantom = ({
         )
       }
     })
-  }, [columnId, coordsWeek, coordsY, insertMode, onReorder])
+  }, [wrapRef, columnId, coordsWeek, coordsY, insertMode, onReorder])
 
   return (
-    <Styled.Cell
-      ref={ref}
+    <Box
       sx={{
+        height: '100%',
         backgroundColor:
           insertMode === 'column' &&
           state.draggedOver &&
@@ -138,7 +157,7 @@ const WeekCellPhantom = ({
       {state.closestEdge && insertMode !== 'column' && (
         <DropIndicator edge={state.closestEdge} type="no-terminal" gap="32px" />
       )}
-    </Styled.Cell>
+    </Box>
   )
 }
 
@@ -155,12 +174,12 @@ const WeekCellNode = ({
   coordsX,
   coordsY,
   borderColor,
+  wrapRef,
   onClick,
   onReorder
-}: NodePropsType) => {
+}: WeekCellNodeTypeTypeInternal) => {
   const dispatch = useDispatch()
   const node = useSelector((state: RootState) => selectNodeById(state, nodeId))
-  const ref = useRef<HTMLDivElement>(null)
 
   const onNodeClicked = useCallback(
     (e: MouseEvent<HTMLDivElement>) => onClick(e, nodeId),
@@ -197,7 +216,7 @@ const WeekCellNode = ({
   )
 
   useEffect(() => {
-    const el = ref.current
+    const el = wrapRef.current
     if (!el) {
       return
     }
@@ -279,21 +298,22 @@ const WeekCellNode = ({
     coordsWeek,
     coordsX,
     coordsY,
-    dispatch,
     nodeId,
+    wrapRef,
+    dispatch,
     onReorder,
     toggleState
   ])
 
   return (
-    <Styled.Cell ref={ref}>
+    <>
       <Styled.CellInner
         id={`node-${nodeId}`}
         selected={selected}
         dropHighlight={state.dropHighlight}
         dragShrink={state.dragging}
       >
-        <HoverMenu nodeId={nodeId} nodeRef={ref} />
+        <HoverMenu nodeId={nodeId} nodeRef={wrapRef} />
 
         {!!node.outcomenodeSet?.length && (
           <LinkedOutcomes
@@ -319,21 +339,12 @@ const WeekCellNode = ({
           />
         </StyledNode.Content>
 
-        <Handles nodeId={nodeId} nodeRef={ref} />
+        <Handles nodeId={nodeId} nodeRef={wrapRef} />
       </Styled.CellInner>
       {state.closestEdge && (
         <DropIndicator edge={state.closestEdge} type="no-terminal" gap="32px" />
       )}
-    </Styled.Cell>
-  )
-}
-
-const WeekCell = (props: PropsType) => {
-  // console.log(`${props.coordsY + 1} x ${props.coordsX + 1}`)
-  return props.type === WeekCellNodeType.PHANTOM ? (
-    <WeekCellPhantom {...props} />
-  ) : (
-    <WeekCellNode {...props} />
+    </>
   )
 }
 
