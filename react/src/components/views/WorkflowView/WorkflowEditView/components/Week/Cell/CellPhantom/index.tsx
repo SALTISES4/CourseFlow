@@ -19,7 +19,6 @@ const WeekCellPhantom = ({
   borderColor,
   wrapRef,
   insertMode,
-  onReorder,
   onDrop
 }: WeekCellPhantomTypeInternal) => {
   const [state, setState] = useState({
@@ -75,19 +74,18 @@ const WeekCellPhantom = ({
           return null
         }
 
-        onDrop()
-
-        // onReorder({
-        //   edge:
-        //     insertMode === 'column'
-        //       ? undefined
-        //       : (extractClosestEdge(self.data) as 'top' | 'bottom'),
-        //   id: dropped.id,
-        //   fromWeek: dropped.coords.week,
-        //   toWeek: coordsWeek,
-        //   toColumn: columnId,
-        //   toRow: coordsY
-        // })
+        onDrop({
+          type: 'phantom',
+          edge:
+            insertMode === 'column'
+              ? undefined
+              : (extractClosestEdge(self.data) as 'top' | 'bottom'),
+          id: dropped.id,
+          fromWeek: dropped.coords.week,
+          toWeek: coordsWeek,
+          toColumn: columnId,
+          toRow: coordsY
+        })
 
         setState(
           produce((draft) => {
@@ -97,7 +95,7 @@ const WeekCellPhantom = ({
         )
       }
     })
-  }, [wrapRef, columnId, coordsWeek, coordsY, insertMode, onReorder])
+  }, [wrapRef, columnId, coordsWeek, coordsY, insertMode, onDrop])
 
   return (
     <Box

@@ -54,6 +54,9 @@ export const CellInner = styled(Box, {
     !['dragShrink', 'dropHighlight', 'selected'].includes(prop as string)
 })<{ dragShrink: boolean; dropHighlight: boolean; selected: boolean }>(
   ({ theme, dragShrink, dropHighlight, selected }) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
     borderRadius: theme.shape.borderRadius,
     transition: 'all 0.15s ease',
     ...(dragShrink && {

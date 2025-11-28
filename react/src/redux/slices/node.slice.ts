@@ -26,6 +26,7 @@ interface DeleteColumnAction {
 }
 
 export type NodeWorkflowReorderPayload = {
+  mode?: 'row' | 'column'
   edge?: 'top' | 'bottom'
   id: number
   fromWeek: number
@@ -260,9 +261,11 @@ const nodeSlice = createSlice({
       state,
       action: PayloadAction<NodeWorkflowReorderPayload>
     ) => {
-      const { edge, id, fromWeek, toWeek, toColumn, toRow } = action.payload
-      const insertModeRow = state.insertMode === 'row'
-      const insertModeColumn = state.insertMode === 'column'
+      const { mode, edge, id, fromWeek, toWeek, toColumn, toRow } =
+        action.payload
+      const insertMode = mode ?? state.insertMode
+      const insertModeRow = insertMode === 'row'
+      const insertModeColumn = insertMode === 'column'
       const movedNode = state.entities[id]
       const oldRow = movedNode.order
       let newRow = toRow

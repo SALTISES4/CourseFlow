@@ -25,7 +25,8 @@ export const Content = styled(Box)(({ theme }) => ({
   padding: theme.spacing(1),
   borderBottomLeftRadius: theme.shape.borderRadius,
   borderBottomRightRadius: theme.shape.borderRadius,
-  backgroundColor: theme.palette.common.white
+  backgroundColor: theme.palette.common.white,
+  flexGrow: 1
 }))
 
 export const Title = styled(Typography)({

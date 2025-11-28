@@ -13,7 +13,7 @@ const InsertMenu = ({
   onClose
 }: {
   anchorEl: HTMLElement | null
-  onOption: (val: NodeInsertMode) => void
+  onOption: (val: Exclude<NodeInsertMode, 'manual'>) => void
   onClose: () => void
 }) => (
   <Menu

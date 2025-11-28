@@ -44,8 +44,7 @@ const WeekCellNode = ({
   borderColor,
   wrapRef,
   onClick,
-  onDrop,
-  onReorder
+  onDrop
 }: WeekCellNodeTypeTypeInternal) => {
   const dispatch = useDispatch()
   const node = useSelector((state: RootState) => selectNodeById(state, nodeId))
@@ -134,15 +133,15 @@ const WeekCellNode = ({
           }
 
           if (isGridCell(dropped) && dropped.id !== nodeId) {
-            onDrop()
-            // onReorder({
-            //   edge: extractClosestEdge(self.data) as 'top' | 'bottom',
-            //   id: dropped.id,
-            //   fromWeek: dropped.coords.week,
-            //   toWeek: coordsWeek,
-            //   toColumn: columnId,
-            //   toRow: coordsY
-            // })
+            onDrop({
+              type: 'node',
+              edge: extractClosestEdge(self.data) as 'top' | 'bottom',
+              id: dropped.id,
+              fromWeek: dropped.coords.week,
+              toWeek: coordsWeek,
+              toColumn: columnId,
+              toRow: coordsY
+            })
           }
 
           toggleState({ dropHighlight: false, closestEdge: null })
@@ -171,8 +170,8 @@ const WeekCellNode = ({
     nodeId,
     wrapRef,
     dispatch,
-    onReorder,
-    toggleState
+    toggleState,
+    onDrop
   ])
 
   return (
