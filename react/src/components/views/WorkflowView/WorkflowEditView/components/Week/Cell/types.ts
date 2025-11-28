@@ -1,3 +1,4 @@
+import { NodeInsertMode } from '@cf/redux/slices/node.slice'
 import { MutableRefObject } from 'react'
 
 import { CellClickCallbackFn, CellReorderCallbackFn } from '../../../types'
@@ -30,11 +31,14 @@ export interface WeekCellNodeType extends WeekCellShared {
 
 interface InternalShared {
   wrapRef: MutableRefObject<HTMLDivElement>
+  onDrop: () => void
 }
 
 export interface WeekCellPhantomTypeInternal
   extends WeekCellPhantomType,
-    InternalShared {}
+    InternalShared {
+  insertMode: NodeInsertMode
+}
 
 export interface WeekCellNodeTypeTypeInternal
   extends WeekCellNodeType,
