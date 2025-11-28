@@ -47,7 +47,13 @@ const WeekCellPhantom = ({
   onReorder
 }: PhantomPropsType) => {
   const ref = useRef<HTMLDivElement>(null)
-  const [draggedOver, setDraggedOver] = useState(false)
+  const insertMode = useSelector(
+    (state: RootState) => state.workspace.node.insertMode
+  )
+  const [state, setState] = useState({
+    draggedOver: false,
+    closestEdge: null
+  })
 
   useEffect(() => {
     const el = ref.current
@@ -57,32 +63,81 @@ const WeekCellPhantom = ({
 
     return dropTargetForElements({
       element: el,
-      onDragEnter: () => setDraggedOver(true),
-      onDragLeave: () => setDraggedOver(false),
+      getData: ({ input, element }) => {
+        return attachClosestEdge(
+          {},
+          {
+            input,
+            element,
+            allowedEdges: ['top', 'bottom']
+          }
+        )
+      },
+      onDrag: ({ source, self }) => {
+        if (!isGridCell(source.data)) {
+          return
+        }
+        setState(
+          produce((draft) => {
+            draft.closestEdge = extractClosestEdge(self.data)
+          })
+        )
+      },
+      onDragEnter: () => {
+        setState(
+          produce((draft) => {
+            draft.draggedOver = true
+          })
+        )
+      },
+      onDragLeave: () => {
+        setState({
+          draggedOver: false,
+          closestEdge: null
+        })
+      },
       canDrop: ({ source }) => isGridCell(source.data),
-      onDrop: ({ source }) => {
-        const { data } = source
-        if (!isGridCell(data)) {
+      onDrop: ({ source, self }) => {
+        const dropped = source.data
+        if (!isGridCell(dropped)) {
           return null
         }
+
         onReorder({
-          id: data.id,
-          fromWeek: data.coords.week,
+          edge:
+            insertMode === 'column'
+              ? undefined
+              : (extractClosestEdge(self.data) as 'top' | 'bottom'),
+          id: dropped.id,
+          fromWeek: dropped.coords.week,
           toWeek: coordsWeek,
           toColumn: columnId,
           toRow: coordsY
         })
-        setDraggedOver(false)
+
+        setState(
+          produce((draft) => {
+            draft.draggedOver = false
+            draft.closestEdge = null
+          })
+        )
       }
     })
-  }, [columnId, coordsWeek, coordsY, onReorder])
+  }, [columnId, coordsWeek, coordsY, insertMode, onReorder])
 
   return (
     <Styled.Cell
       ref={ref}
-      sx={{ backgroundColor: draggedOver && alpha(borderColor, 0.2) }}
+      sx={{
+        backgroundColor:
+          insertMode === 'column' &&
+          state.draggedOver &&
+          alpha(borderColor, 0.1)
+      }}
     >
-      <div style={{ backgroundColor: borderColor }} />
+      {state.closestEdge && insertMode !== 'column' && (
+        <DropIndicator edge={state.closestEdge} type="no-terminal" gap="32px" />
+      )}
     </Styled.Cell>
   )
 }
@@ -250,7 +305,8 @@ const WeekCellNode = ({
         <StyledNode.Border sx={{ backgroundColor: borderColor }} />
         <StyledNode.Content onClick={onNodeClicked}>
           <StyledNode.Title variant="body2">
-            {node.title || `Empty title (#${nodeId})`}
+            {node.title || `Empty title (#${nodeId})`} <br />
+            {`#${nodeId}, row: ${node.order}`}
           </StyledNode.Title>
           <Meta
             workflow="#"

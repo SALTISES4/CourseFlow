@@ -42,7 +42,7 @@ type NodeState = ReturnType<typeof nodeAdapter.getInitialState> & {
 }
 const initialState: NodeState = {
   ...nodeAdapter.getInitialState(),
-  insertMode: 'column'
+  insertMode: 'manual'
 }
 
 /*******************************************************
@@ -133,12 +133,12 @@ const splitWorkflowGridNodes = ({
   ids,
   entities,
   column,
-  row
+  newRow
 }: {
   ids: number[]
   entities: typeof initialState.entities
   column?: number
-  row: number
+  newRow: number
 }) => {
   const before: number[] = []
   const after: number[] = []
@@ -147,11 +147,11 @@ const splitWorkflowGridNodes = ({
     const n = entities[nodeId]
     const columnMatch = column !== undefined ? n.column === column : true
 
-    if (columnMatch && n.order >= row) {
+    if (columnMatch && n.order >= newRow) {
       after.push(nodeId)
     }
 
-    if (columnMatch && n.order < row) {
+    if (columnMatch && n.order < newRow) {
       before.push(nodeId)
     }
   })
@@ -159,37 +159,24 @@ const splitWorkflowGridNodes = ({
   return { before, after }
 }
 
-const collapseEmptyRows = ({
-  movedNode,
+// figure out whether a row needs to be collapsed or not
+const getCollapsedWeekRow = ({
   ids,
-  entities
+  entities,
+  oldRow,
+  newRow
 }: {
-  movedNode: TNode
   ids: number[]
   entities: typeof initialState.entities
-}): boolean => {
-  const sameRowNodes: number[] = []
-  const sameWeekNodes = ids.filter((id) => {
-    const node = entities[id]
-    if (node.week === movedNode.week) {
-      if (node.id !== movedNode.id && node.order === movedNode.order) {
-        sameRowNodes.push(node.id)
-      }
-      return true
-    }
-  })
-
-  if (!sameRowNodes.length) {
-    sameWeekNodes.forEach((id) => {
-      const node = entities[id]
-      if (node.order > movedNode.order) {
-        node.order -= 1
-      }
-    })
-    return true
+  oldRow: number
+  newRow: number
+}): number | null => {
+  const sameRow = ids.filter((nodeId) => entities[nodeId].order === oldRow)
+  if (!sameRow.length && oldRow !== newRow) {
+    return oldRow
   }
 
-  return false
+  return null
 }
 
 /*******************************************************
@@ -274,11 +261,23 @@ const nodeSlice = createSlice({
       action: PayloadAction<NodeWorkflowReorderPayload>
     ) => {
       const { edge, id, fromWeek, toWeek, toColumn, toRow } = action.payload
-
-      // different behavior based on the insertion mode
       const insertModeRow = state.insertMode === 'row'
       const insertModeColumn = state.insertMode === 'column'
       const movedNode = state.entities[id]
+      const oldRow = movedNode.order
+      let newRow = toRow
+
+      if (insertModeColumn) {
+        newRow = !edge // yuck
+          ? toRow
+          : edge === 'top'
+            ? Math.max(0, toRow - 1)
+            : toRow + 1
+      }
+
+      if (insertModeRow) {
+        newRow = edge === 'top' ? toRow : toRow + 1
+      }
 
       const fromWeekNodes = state.ids.filter(
         (nodeId) => nodeId !== id && state.entities[nodeId].week === fromWeek
@@ -292,54 +291,35 @@ const nodeSlice = createSlice({
                 nodeId !== id && state.entities[nodeId].week === toWeek
             )
 
-      // absolute cinema
-      const newRow = !edge
-        ? toRow
-        : edge === 'top'
-          ? insertModeColumn
-            ? Math.max(0, toRow - 1)
-            : toRow
-          : toRow + 1
-
-      const collapsed =
-        movedNode.order === newRow
-          ? false
-          : collapseEmptyRows({
-              movedNode,
-              ids: fromWeekNodes,
-              entities: state.entities
-            })
-
-      console.log({
-        insertMode: state.insertMode,
-        id,
-        fromRow: movedNode.order,
-        toRow: newRow,
-        collapsed
+      const gridSplits = splitWorkflowGridNodes({
+        ids: toWeekNodes,
+        entities: state.entities,
+        newRow,
+        column: insertModeColumn ? toColumn : undefined
       })
 
-      if (fromWeek === toWeek) {
-        // if (movedNode.order !== newRow) {
-        //   newRow = !collapsed ? newRow : Math.max(0, newRow - 1)
-        // }
-        // const gridSplits = splitWorkflowGridNodes({
-        //   ids: toWeekNodes,
-        //   entities: state.entities,
-        //   row: newRow,
-        //   column: insertModeColumn ? toColumn : undefined
-        // })
-        // if (collapsed) {
-        //   gridSplits.after.forEach((nodeId) => {
-        //     state.entities[nodeId].order += 1
-        //   })
-        // }
-      } else {
-        splitWorkflowGridNodes({
-          ids: toWeekNodes,
-          entities: state.entities,
-          row: newRow,
-          column: insertModeColumn ? toColumn : undefined
-        }).after.forEach((nodeId) => {
+      const collapseRow = getCollapsedWeekRow({
+        ids: fromWeekNodes,
+        entities: state.entities,
+        oldRow,
+        newRow
+      })
+
+      if (collapseRow !== null) {
+        // the new row is actually -1 due to the collapse
+        // ... but only if it happened in the same week
+        newRow = fromWeek === toWeek && newRow > oldRow ? newRow - 1 : newRow
+
+        // collapse the source week rows to account for the collapse
+        fromWeekNodes.forEach((nodeId) => {
+          const n = state.entities[nodeId]
+          if (n.order > collapseRow) {
+            n.order -= 1
+          }
+        })
+
+        // and finally bump up the "after" rows for the destination week
+        gridSplits.after.forEach((nodeId) => {
           state.entities[nodeId].order += 1
         })
       }
