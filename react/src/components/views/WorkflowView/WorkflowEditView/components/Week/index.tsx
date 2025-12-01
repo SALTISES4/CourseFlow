@@ -47,7 +47,6 @@ export type WeekPropsType = {
   index: number
   weekId: number
   weekRows: WorkflowBoard['weeks'][0]['rows']
-  redrawer: number
   condensed: boolean
   boardId: WorkflowBoard['id']
   columnIds: WorkflowBoard['columns']['ids']
@@ -56,6 +55,7 @@ export type WeekPropsType = {
   onNodeReorder: CellReorderCallbackFn
   onWeekReorder: WeekReorderCallbackFn
   onWeekInsert: WeekInsertCallbackFn
+  memoBuster: (number | boolean)[]
 }
 
 type WeekStateType = {
@@ -279,41 +279,26 @@ const Week = (props: WeekPropsType) => {
 
         {!props.condensed && weekGrid}
       </StyledWeek.WeekWrapper>
-      <Background weekRef={weekWrapperRef} redrawer={props.redrawer} />
+      <Background weekRef={weekWrapperRef} />
     </>
   )
 }
 
 // fake week wrapper background element that syncs with the week's BCR
 const Background = ({
-  redrawer,
   weekRef
 }: {
-  redrawer: number
   weekRef: MutableRefObject<HTMLDivElement>
 }) => {
-  const [state, setState] = useState({ top: 0 })
-
   const { height = 0 } = useResizeObserver({
     ref: weekRef,
     box: 'border-box'
   })
 
-  useEffect(() => {
-    const week = weekRef.current
-    const weekTop = week?.getBoundingClientRect().top ?? 0
-    const wrapTop = week?.parentElement.getBoundingClientRect().top ?? 0
-
-    if (!week) {
-      return
-    }
-
-    setState(
-      produce((draft) => {
-        draft.top = weekTop - wrapTop
-      })
-    )
-  }, [redrawer, height, weekRef])
+  const week = weekRef.current
+  const weekTop = week?.getBoundingClientRect().top ?? 0
+  const wrapTop = week?.parentElement.getBoundingClientRect().top ?? 0
+  const top: number = weekTop - wrapTop
 
   if (height === 0) {
     return null
@@ -322,7 +307,7 @@ const Background = ({
   return (
     <StyledWeek.WeekBackground
       style={{
-        top: `${state.top}px`,
+        top: `${top}px`,
         height: `${height}px`
       }}
     />

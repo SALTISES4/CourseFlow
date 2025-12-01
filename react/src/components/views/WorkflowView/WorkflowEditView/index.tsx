@@ -170,7 +170,7 @@ const WorkflowEditView = () => {
             onWeekInsert={onWeekInsert}
             onWeekReorder={onWeekReorder}
             onNodeReorder={onNodeDragEnd}
-            redrawer={state.condensed.length}
+            memoBuster={[state.condensed.length, state.redrawLines]}
           />
         ))}
         <LineSVG
