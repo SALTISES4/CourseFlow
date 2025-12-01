@@ -50,7 +50,9 @@ const WeekCell = (props: WeekCellProps) => {
       props.onReorder({
         ...data,
         edge:
-          insertModeOption && data.type === 'phantom' ? undefined : data.edge,
+          insertModeOption === 'column' && data.type === 'phantom'
+            ? undefined
+            : data.edge,
         mode: insertModeOption
       })
       setState({
