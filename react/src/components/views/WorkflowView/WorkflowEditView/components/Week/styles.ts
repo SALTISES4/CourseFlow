@@ -49,7 +49,7 @@ export const WeekBackground = styled(Box)(() => ({
   position: 'absolute',
   left: 0,
   width: '100%',
-  backgroundColor: 'rgb(238, 242, 253)'
+  backgroundColor: '#eef2fd'
 }))
 
 export const WeekHeader = styled('header', {

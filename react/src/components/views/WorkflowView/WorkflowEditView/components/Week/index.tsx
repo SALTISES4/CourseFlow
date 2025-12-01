@@ -299,7 +299,7 @@ const Background = ({
     box: 'border-box'
   })
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const week = weekRef.current
     const weekTop = week?.getBoundingClientRect().top ?? 0
     const wrapTop = week?.parentElement.getBoundingClientRect().top ?? 0
