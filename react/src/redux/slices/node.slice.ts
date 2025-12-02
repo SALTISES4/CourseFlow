@@ -165,19 +165,18 @@ const getCollapsedWeekRow = ({
   ids,
   entities,
   oldRow,
-  newRow
+  newRow,
+  columnMode
 }: {
   ids: number[]
   entities: typeof initialState.entities
   oldRow: number
   newRow: number
+  columnMode: boolean
 }): number | null => {
   const sameRow = ids.filter((nodeId) => entities[nodeId].order === oldRow)
-  if (!sameRow.length && oldRow !== newRow) {
-    return oldRow
-  }
-
-  return null
+  const columnCheck = columnMode ? oldRow !== newRow : true
+  return !sameRow.length && columnCheck ? oldRow : null
 }
 
 /*******************************************************
@@ -305,8 +304,28 @@ const nodeSlice = createSlice({
         ids: fromWeekNodes,
         entities: state.entities,
         oldRow,
-        newRow
+        newRow,
+        columnMode: insertModeColumn
       })
+
+      // for the columns, when there's no row collapsing
+      // iterate over same column nodes and chain bump them if necessary
+      if (insertModeColumn && collapseRow === null) {
+        let currRow = newRow
+        const sorted = gridSplits.after.sort((nodeA, nodeB) => {
+          return state.entities[nodeA].order - state.entities[nodeB].order
+        })
+
+        for (let i = 0; i < sorted.length; i++) {
+          const node = state.entities[sorted[i]]
+          if (node.order === currRow) {
+            currRow += 1
+            node.order = currRow
+          } else {
+            break // stop chain bumping as soon as the first node doesn't need to move
+          }
+        }
+      }
 
       if (collapseRow !== null) {
         // the new row is actually -1 due to the collapse
