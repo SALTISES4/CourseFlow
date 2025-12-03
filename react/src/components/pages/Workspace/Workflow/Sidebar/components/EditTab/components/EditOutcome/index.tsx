@@ -2,6 +2,7 @@ import { Outcome, updateOutcome } from '@cf/redux/slices/outcomes.slice'
 import { _t } from '@cf/utility/Utility.class'
 import { RootState } from '@cfRedux/store'
 import { debounce } from '@mui/material'
+import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -108,23 +109,19 @@ const EditOutcome = () => {
             size="small"
             {...register('code')}
           />
-          {/* {data.objectSets && (
+          {data.objectSets && (
             <Autocomplete
               multiple
               size="small"
               options={objectSetOptions}
-              onChange={(_, v) => Utility.logger('changed to', v)}
               isOptionEqualToValue={(option, value) =>
                 option.value === value.value
               }
-              defaultValue={objectSetOptions.filter((o) =>
-                data.objectSets!.includes(o.value)
-              )}
               renderInput={(params) => (
-                <TextField {...params} variant="outlined" label="Object sets" />
+                <TextField {...params} variant="outlined" label="Tags" />
               )}
             />
-          )} */}
+          )}
         </Stack>
       </SidebarContent>
       <SidebarActions>
