@@ -5,14 +5,12 @@ import { WorkspaceType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import * as SC from '@cfViews/common/workspaceOverview/styles'
 import UserList from '@cfViews/common/workspaceOverview/UserList'
+import Tags from '@cfViews/ProjectView/TabOverview/TagsSection'
 import LinkIcon from '@mui/icons-material/Link'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useParams } from 'react-router-dom'
-
-import { ObjectSetThumbnail } from './styles'
 
 const OverviewTab = ({
   description,
@@ -48,30 +46,6 @@ const OverviewTab = ({
       </Button>
     </Stack>
   )
-
-  const ObjectSets = () => {
-    if (!objectSets) {
-      return <></>
-    }
-    return (
-      <SC.InfoBlock sx={{ mt: 3 }}>
-        <SC.InfoBlockTitle>{_t('Object sets')}</SC.InfoBlockTitle>
-
-        <SC.InfoBlockContent sx={{ mt: 0 }}>
-          <Grid container columnSpacing={3}>
-            {objectSets.map((set, idx) => (
-              <Grid item key={idx} xs={6}>
-                <ObjectSetThumbnail>
-                  <Typography variant="body1">{set.title}</Typography>
-                  <Typography variant="body2">{set.term}</Typography>
-                </ObjectSetThumbnail>
-              </Grid>
-            ))}
-          </Grid>
-        </SC.InfoBlockContent>
-      </SC.InfoBlock>
-    )
-  }
 
   /*******************************************************
    * RETURN
@@ -116,7 +90,7 @@ const OverviewTab = ({
         <Buttons />
       </SC.InfoBlock>
 
-      <ObjectSets />
+      <Tags data={objectSets} />
     </OuterContentWrap>
   )
 }

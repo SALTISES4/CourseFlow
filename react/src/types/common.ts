@@ -89,6 +89,7 @@ export type PermissionUserType = {
 }
 
 export type ObjectSetType = {
+  id: number
   title: string
   term: string
 }

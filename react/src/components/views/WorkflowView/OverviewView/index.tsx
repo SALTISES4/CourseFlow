@@ -54,13 +54,13 @@ const OverviewView = () => {
       <Grid container columnSpacing={3} sx={{ mt: 3 }}>
         <Grid item xs={6}>
           <SC.InfoBlock>
-            <SC.InfoBlockTitle>Disciplines</SC.InfoBlockTitle>
+            <SC.InfoBlockTitle>{_t('Disciplines')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>{disciplines?.join(', ')}</SC.InfoBlockContent>
           </SC.InfoBlock>
         </Grid>
         <Grid item xs={6}>
           <SC.InfoBlock>
-            <SC.InfoBlockTitle>Created on</SC.InfoBlockTitle>
+            <SC.InfoBlockTitle>{_t('Created on')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
               {Utility.formatDate(data.createdOn)}
             </SC.InfoBlockContent>
@@ -69,7 +69,7 @@ const OverviewView = () => {
       </Grid>
 
       <SC.InfoBlock sx={{ mt: 3 }}>
-        <SC.InfoBlockTitle>Permissions</SC.InfoBlockTitle>
+        <SC.InfoBlockTitle>{_t('Permissions')}</SC.InfoBlockTitle>
 
         <UserList
           workspaceId={workflow.id}
