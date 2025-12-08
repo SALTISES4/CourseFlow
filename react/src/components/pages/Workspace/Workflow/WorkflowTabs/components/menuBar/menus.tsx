@@ -97,15 +97,17 @@ const ActionMenu = () => {
         icon: <PersonAddIcon />
       },
       action: openShareDialog,
-      show: workflow.workflowPermissions.write
-    },
-    {
-      id: 'export',
-      content: _t('Export'),
-      action: openExportDialog,
-      show: (!publicView || userId) && workflow.workflowPermissions.read,
+      show: workflow.workflowPermissions.write,
       seperator: true
     },
+    // NOTE: scoped out temporarily, see COURSEFLOW-489
+    // {
+    //   id: 'export',
+    //   content: _t('Export'),
+    //   action: openExportDialog,
+    //   show: (!publicView || userId) && workflow.workflowPermissions.read,
+    //   seperator: true
+    // },
     // hidden
     {
       id: 'copy-to-project',
@@ -122,19 +124,20 @@ const ActionMenu = () => {
       action: openExportDialog,
       show: !(publicView && !userId)
     },
-    {
-      id: 'import-outcomes',
-      content: _t('Import outcomes'),
-      action: importOutcomes,
-      show: !(publicView && !userId)
-    },
-    {
-      id: 'import-nodes',
-      content: _t('Import nodes'),
-      action: importNodes,
-      show: !(publicView && !userId),
-      seperator: true
-    },
+    // NOTE: scoped out temporarily, see COURSEFLOW-489
+    // {
+    //   id: 'import-outcomes',
+    //   content: _t('Import outcomes'),
+    //   action: importOutcomes,
+    //   show: !(publicView && !userId)
+    // },
+    // {
+    //   id: 'import-nodes',
+    //   content: _t('Import nodes'),
+    //   action: importNodes,
+    //   show: !(publicView && !userId),
+    //   seperator: true
+    // },
     {
       id: 'archive-workflow',
       action: archiveWorkflow,

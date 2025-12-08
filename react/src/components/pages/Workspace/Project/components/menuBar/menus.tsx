@@ -23,7 +23,7 @@ const ActionMenu = () => {
   const {
     openEditDialog,
     openShareDialog,
-    openExportDialog,
+    // openExportDialog,
     duplicateProject,
     archiveProject,
     unarchiveProject,
@@ -59,13 +59,14 @@ const ActionMenu = () => {
       action: openShareDialog,
       show: projectPermission.manage
     },
-    {
-      id: 'export',
-      content: _t('Export'),
-      action: openExportDialog,
-      show: projectPermission.read,
-      seperator: true
-    },
+    // NOTE: scoped out temporarily, see COURSEFLOW-489
+    // {
+    //   id: 'export',
+    //   content: _t('Export'),
+    //   action: openExportDialog,
+    //   show: projectPermission.read,
+    //   seperator: true
+    // },
     /**
      * Spill over menu section
      * this is dynamic in that we pass a 'split' cutoff number to the menu builder to construct what is show
