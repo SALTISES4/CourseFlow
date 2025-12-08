@@ -17,7 +17,7 @@ export function formatProjectEntity(project: EProject): ProjectDetailsType {
       return {
         id: item.id,
         title: item.title,
-        term: item.term
+        term: 'we actually dont use this anymore?' // TODO
       }
     }
   )

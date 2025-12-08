@@ -1,9 +1,4 @@
 import { _t } from '@cf/utility/Utility.class'
-import ObjectSets from '@cfComponents/dialog/Project/components/ObjectSets'
-import {
-  ObjectSetOptions,
-  ObjectSetType
-} from '@cfComponents/dialog/Project/components/ObjectSets/type'
 import { StyledBox } from '@cfComponents/dialog/styles'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import CancelIcon from '@mui/icons-material/Cancel'
@@ -19,18 +14,11 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import TextField from '@mui/material/TextField'
-import { produce } from 'immer'
-import { useEffect, useState } from 'react'
-import { Controller, useFieldArray, useForm } from 'react-hook-form'
+import { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-export type OnUpdateType = {
-  index: number
-  newVal?: ObjectSetType
-}
-
 export type StateType = {
-  objectSets: ObjectSetType[]
   objectSetsExpanded: boolean
 }
 
@@ -38,24 +26,12 @@ export type ProjectFormValues = {
   title: string
   description: string
   disciplines: string[]
-  objectSets: ObjectSetType[]
 }
 
-const initialState = {
-  objectSets: [],
-  objectSetsExpanded: false
-}
 const projectSchema = z.object({
   title: z.string().min(1, { message: 'Title is required' }).max(200),
   description: z.string().nullish(),
-  disciplines: z.array(z.string()).optional(),
-  objectSets: z.array(
-    z.object({
-      id: z.string().optional(),
-      term: z.string(),
-      title: z.string()
-    })
-  )
+  disciplines: z.array(z.string()).optional()
 })
 
 /**
@@ -86,7 +62,6 @@ const ProjectForm = ({
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const [state, setState] = useState<StateType>(initialState)
   const [selectOpenStates, setSelectOpenStates] = useState({})
 
   const {
@@ -102,69 +77,9 @@ const ProjectForm = ({
     defaultValues
   })
 
-  /*******************************************************
-   * LIFE CYCLE HOOKS
-   *******************************************************/
-  useEffect(() => {
-    setState(
-      produce((draft) => {
-        draft.objectSets = defaultValues.objectSets
-      })
-    )
-  }, [defaultValues])
-
-  const {
-    fields: objectSetsFields,
-    append,
-    remove,
-    update
-  } = useFieldArray({
-    control,
-    name: 'objectSets'
-  })
-
   function onDialogClose() {
-    setState(initialState)
     reset()
     closeCallback()
-  }
-
-  /**
-   * either updating existing one
-   * or deleting when no newVal is supplied
-   * @param index
-   * @param newVal
-   */
-  function onObjectSetUpdate({ index, newVal }: OnUpdateType) {
-    setState(
-      produce((draft) => {
-        const sets = draft.objectSets
-        if (newVal) {
-          update(index, newVal) // Update object set in the array
-          sets.splice(index, 1, newVal)
-        } else {
-          remove(index)
-          sets.splice(index, 1)
-        }
-      })
-    )
-  }
-
-  function onObjectSetAddNew() {
-    append({ term: '', title: '' })
-    setState(
-      produce((draft) => {
-        draft.objectSets.push({ term: '' as ObjectSetOptions, title: '' })
-      })
-    )
-  }
-
-  function onObjectSetsClick() {
-    setState(
-      produce((draft) => {
-        draft.objectSetsExpanded = !draft.objectSetsExpanded
-      })
-    )
   }
 
   // Open or close a controlled Select component
@@ -280,13 +195,6 @@ const ProjectForm = ({
               <FormHelperText>{errors.disciplines.message}</FormHelperText>
             )}
           </FormControl>
-          <ObjectSets
-            expanded={state.objectSetsExpanded}
-            toggleExpanded={onObjectSetsClick}
-            objectSets={state.objectSets}
-            onUpdate={onObjectSetUpdate}
-            onAddNew={onObjectSetAddNew}
-          />
         </StyledBox>
       </DialogContent>
       <DialogActions>

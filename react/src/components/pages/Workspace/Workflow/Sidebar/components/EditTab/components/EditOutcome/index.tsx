@@ -17,7 +17,6 @@ import {
   SidebarTitle
 } from '../../../../styles'
 import data from '../EditNode/optionsData'
-const objectSetOptions = data.objectSets
 
 const EditOutcome = () => {
   const dispatch = useDispatch()
@@ -113,10 +112,8 @@ const EditOutcome = () => {
             <Autocomplete
               multiple
               size="small"
-              options={objectSetOptions}
-              isOptionEqualToValue={(option, value) =>
-                option.value === value.value
-              }
+              options={data.objectSets}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
               renderInput={(params) => (
                 <TextField {...params} variant="outlined" label="Tags" />
               )}

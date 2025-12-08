@@ -1,5 +1,4 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { ObjectSetType } from '@cf/types/common'
 import { Verb, cfApi } from '@XMLHTTP/API/api'
 import { ELibraryObject, EProject } from '@XMLHTTP/types/entity'
 import { generatePath } from 'react-router-dom'
@@ -32,7 +31,6 @@ export interface CreateProjectArgs {
   description: string
   title: string
   disciplines: number[]
-  objectSets: ObjectSetType[]
 }
 export interface UpdateProjectArgs extends CreateProjectArgs {
   id: number

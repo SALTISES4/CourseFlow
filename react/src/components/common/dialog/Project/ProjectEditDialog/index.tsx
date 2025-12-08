@@ -2,7 +2,6 @@ import * as SC from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { _t } from '@cf/utility/Utility.class'
-import { ObjectSetType } from '@cfComponents/dialog/Project/components/ObjectSets/type'
 import ProjectForm from '@cfComponents/dialog/Project/components/ProjectForm'
 import { useGetHomeContextQuery } from '@XMLHTTP/API/library.rtk'
 import {
@@ -15,7 +14,6 @@ type ProjectFormValues = {
   title: string
   description: string
   disciplines: string[]
-  objectSets: ObjectSetType[]
 }
 
 /**
@@ -56,13 +54,6 @@ const ProjectEditDialog = () => {
     description: data.dataPackage.description,
     disciplines: data.dataPackage.disciplines.map((item) => {
       return String(item)
-    }),
-    objectSets: data.dataPackage.objectSets.map((item) => {
-      return {
-        id: item.id,
-        term: item.term,
-        title: item.title
-      }
     })
   }
 
@@ -72,19 +63,11 @@ const ProjectEditDialog = () => {
   function onSubmit(data: ProjectFormValues) {
     // remove null value first
     // since the endpoint does not accept them
-    const filteredObjectSets = data.objectSets
-      .filter((set) => set.term && set.title)
-      .map((item) => ({
-        id: item.id,
-        title: item.title,
-        term: item.term
-      }))
 
     const payload = {
       id: Number(id),
       ...data,
-      disciplines: data.disciplines.map((item) => Number(item)),
-      objectSets: filteredObjectSets
+      disciplines: data.disciplines.map((item) => Number(item))
     }
 
     mutate(payload)

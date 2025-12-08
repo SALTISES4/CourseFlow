@@ -223,14 +223,14 @@ export const getDefaultDropState = (objectId, objectType, depth = 1) => {
 /**
  * get all possible object sets
  **/
-export const objectSetsTypes = {
+export const objectSetsTypes = () => ({
   'program outcome': ThemeHelper.capFirst(_t('program outcome')),
   'course outcome': ThemeHelper.capFirst(_t('course outcome')),
   'activity outcome': ThemeHelper.capFirst(_t('activity outcome')),
   'program node': ThemeHelper.capFirst(_t('program node')),
   'course node': ThemeHelper.capFirst(_t('course node')),
   'activity node': ThemeHelper.capFirst(_t('activity node'))
-}
+})
 
 // @todo no
 //missingTranslations, DO NOT DELETE. This will ensure that a few "utility" translations that don't otherwise show up get translated
