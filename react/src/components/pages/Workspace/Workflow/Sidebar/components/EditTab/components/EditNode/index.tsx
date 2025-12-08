@@ -20,7 +20,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { updateValueQuery } from '@XMLHTTP/API/update'
 // import { useToggleObjectSetNodeMutation } from '@XMLHTTP/API/workflowObjects/node.rtk'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -308,15 +308,11 @@ const EditNode = () => {
                   options={optionsData.objectSets}
                   getOptionLabel={(option) => option.label}
                   isOptionEqualToValue={(option, value) =>
-                    option.value === value.value
+                    option.id === value.id
                   }
                   onChange={(_, value) => field.onChange(value)}
                   renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      label="Object sets"
-                    />
+                    <TextField {...params} variant="outlined" label="Tags" />
                   )}
                 />
               )}

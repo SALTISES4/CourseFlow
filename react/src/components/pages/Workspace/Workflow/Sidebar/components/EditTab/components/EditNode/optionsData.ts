@@ -95,23 +95,23 @@ const unitTypes = [
 
 const objectSets = [
   {
-    value: 1,
+    id: 1,
     label: 'Object set 1'
   },
   {
-    value: 2,
+    id: 2,
     label: 'Object set 2'
   },
   {
-    value: 3,
+    id: 3,
     label: 'Object set 3'
   },
   {
-    value: 4,
+    id: 4,
     label: 'Object set 4'
   },
   {
-    value: 5,
+    id: 5,
     label: 'Object set 5'
   }
 ]
