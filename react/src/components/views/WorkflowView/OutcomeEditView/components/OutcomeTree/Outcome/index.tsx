@@ -66,7 +66,7 @@ const Outcome = ({
   // otherwise it's all numbers
   const formattedPrefix =
     prefix.length === 1 && level === 1 && code
-      ? `${code} - `
+      ? `${prefix.join('.')} - ${code} - `
       : `${prefix.join('.')}. `
 
   useEffect(() => {
@@ -213,12 +213,7 @@ const Outcome = ({
         onToggleClick={onToggleClick}
       />
 
-      {!state.collapsed && (
-        <OutcomeGroup
-          prefix={prefix.length === 1 && code ? [code] : prefix}
-          parentId={id}
-        />
-      )}
+      {!state.collapsed && <OutcomeGroup prefix={prefix} parentId={id} />}
 
       <DropIndicator
         lineGap="8px"
