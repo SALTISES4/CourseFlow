@@ -6,6 +6,7 @@ import { produce } from 'immer'
 import {
   ChangeEventHandler,
   FocusEventHandler,
+  KeyboardEventHandler,
   MouseEvent,
   useCallback,
   useRef,
@@ -86,6 +87,32 @@ const Tag = ({
     )
   }, [onChange, id, create, state.focused, state.label])
 
+  const onInputKeyDown: KeyboardEventHandler<HTMLInputElement> = useCallback(
+    (e) => {
+      if (!create) {
+        return
+      }
+
+      if (e.key === 'Enter') {
+        onChange(id, state.label, create)
+        setState(
+          produce((draft) => {
+            draft.label = ''
+          })
+        )
+      }
+
+      if (e.key === 'Escape') {
+        inputRef?.current.blur()
+        setState({
+          label: '',
+          focused: false
+        })
+      }
+    },
+    [create, id, onChange, state.label]
+  )
+
   const onDeleteClick = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation()
@@ -111,6 +138,7 @@ const Tag = ({
           disabled={disabled}
           onFocus={onInputFocus}
           onChange={onInputChange}
+          onKeyDown={onInputKeyDown}
           placeholder={create ? _t('Add new tag') : null}
         />
         {!create && (
