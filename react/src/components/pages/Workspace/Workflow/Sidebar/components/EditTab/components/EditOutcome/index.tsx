@@ -1,4 +1,5 @@
 import { Outcome, updateOutcome } from '@cf/redux/slices/outcomes.slice'
+import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
 import { _t } from '@cf/utility/Utility.class'
 import { RootState } from '@cfRedux/store'
 import { debounce } from '@mui/material'
@@ -33,9 +34,9 @@ const EditOutcome = () => {
     formState: { isDirty }
   } = useForm<Outcome>({
     defaultValues: {
-      title: outcome.title,
-      description: outcome.description,
-      code: outcome.code
+      title: outcome?.title,
+      description: outcome?.description,
+      code: outcome?.code
     }
   })
 
@@ -46,8 +47,8 @@ const EditOutcome = () => {
       debounce((data: Outcome) => {
         dispatch(
           updateOutcome({
-            id: outcome.id,
-            children: outcome.children,
+            id: outcome?.id,
+            children: outcome?.children,
             ...data
           })
         )
@@ -67,16 +68,17 @@ const EditOutcome = () => {
   }, [watched, isDirty, debouncedDispatch])
 
   useEffect(() => {
-    if (outcomeId === outcome.id) {
+    if (outcomeId === outcome?.id) {
       reset({
-        title: outcome.title,
-        description: outcome.description,
-        code: outcome.code
+        title: outcome?.title,
+        description: outcome?.description,
+        code: outcome?.code
       })
     }
   }, [outcomeId, outcome, reset])
 
   if (!outcome) {
+    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
     return null
   }
 
