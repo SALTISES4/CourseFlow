@@ -1,6 +1,5 @@
 import { selectOutcomeChildrenById } from '@cfRedux/selectors/outcomes.selector'
 import { RootState } from '@cfRedux/store'
-import { AppState } from '@cfRedux/types/type'
 import * as StyledOutcome from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import { MouseEvent, useCallback, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -21,6 +20,10 @@ const LinkedOutcomes = ({ parent, outcomes }: PropsType) => {
   const wrapRef = useRef<HTMLDivElement>(null)
   const badgeRef = useRef<HTMLSpanElement>(null)
   const outcomesData = useSelector((state: RootState) => state.outcome)
+
+  if (parent.id === 309) {
+    console.log('outcomeData', outcomesData)
+  }
 
   const showPopover = useCallback((val: boolean) => {
     return (e: MouseEvent<HTMLSpanElement>) => {
@@ -51,11 +54,11 @@ const LinkedOutcomes = ({ parent, outcomes }: PropsType) => {
         }}
       >
         <StyledOutcome.OutcomeGroup sx={{ mt: 0 }}>
-          {outcomes.map((outcome) => (
+          {/* {outcomes.map((outcome) => (
             <StyledOutcome.OutcomeGroupItem key={outcome}>
               <Outcome {...outcomesData[outcome]} linkParent={parent} />
             </StyledOutcome.OutcomeGroupItem>
-          ))}
+          ))} */}
         </StyledOutcome.OutcomeGroup>
       </Styled.Popover>
     </Styled.Wrap>
@@ -63,7 +66,7 @@ const LinkedOutcomes = ({ parent, outcomes }: PropsType) => {
 }
 
 export const OutcomeGroup = ({ parentId }: { parentId: number }) => {
-  const childOutcomes = useSelector((state: AppState) =>
+  const childOutcomes = useSelector((state: RootState) =>
     selectOutcomeChildrenById(state, parentId)
   )
 

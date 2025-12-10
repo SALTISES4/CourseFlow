@@ -4,6 +4,11 @@ import { createSelector } from 'reselect'
 const selectOutcomeData = (state: RootState) => state.outcomes.outcomeData
 const selectOutcomeOrder = (state: RootState) => state.outcomes.outcomeOrder
 
+export const selectOutcomes = createSelector(
+  [selectOutcomeOrder, selectOutcomeData],
+  (outcomeOrder, outcomesData) => outcomeOrder.map((id) => outcomesData[id])
+)
+
 export const selectOutcomeGroups = createSelector(
   [selectOutcomeOrder, selectOutcomeData],
   (outcomeOrder, outcomesData) => {
@@ -14,8 +19,18 @@ export const selectOutcomeGroups = createSelector(
 )
 
 export const selectOutcomeChildrenById = createSelector(
-  [selectOutcomeData, (_: RootState, parentId: number) => parentId],
-  (outcomesData, parentId) => {
+  [
+    selectOutcomeOrder,
+    selectOutcomeData,
+    (_: RootState, parentId: number | null) => parentId
+  ],
+  (outcomeOrder, outcomesData, parentId) => {
+    if (parentId === null) {
+      return outcomeOrder
+        .map((id) => outcomesData[id])
+        .filter((outcome) => outcome?.parent === null)
+    }
+
     return outcomesData[parentId].children.map((c) => outcomesData[c])
   }
 )

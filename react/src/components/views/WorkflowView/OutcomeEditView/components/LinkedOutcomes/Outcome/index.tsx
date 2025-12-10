@@ -2,7 +2,7 @@ import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { getPrefixPath } from '@cfRedux/selectors/outcomes.selector'
 import { Outcome as OutcomeType } from '@cfRedux/slices/outcomes.slice'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import * as Styled from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useRef, useState } from 'react'
@@ -25,8 +25,8 @@ const Outcome = ({
   linkParent?: LinkedOutcomesProps['parent']
 }) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
-  const prefix = useSelector((state: AppState) => getPrefixPath(state, id))
-  const sidebarData = useSelector((state: AppState) => state.sidebar.edit)
+  const prefix = useSelector((state: RootState) => getPrefixPath(state, id))
+  const sidebarData = useSelector((state: RootState) => state.sidebar.edit)
   const [state, setState] = useState<OutcomeStateType>({
     collapsed: true
   })

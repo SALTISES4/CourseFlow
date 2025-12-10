@@ -1,16 +1,10 @@
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import { blueGrey } from '@mui/material/colors'
 import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
 export const OutcomeGroupWrap = styled(Box)(({ theme }) => ({}))
-
-export const OutcomeGroupTitle = styled(Typography)(({ theme }) => ({
-  fontWeight: 600,
-  marginBottom: theme.spacing(1)
-}))
 
 export const OutcomeGroup = styled('ul')(({ theme }) => ({
   margin: `${theme.spacing(1)} 0 0`,
@@ -25,7 +19,7 @@ export const OutcomeGroup = styled('ul')(({ theme }) => ({
 }))
 
 export const OutcomeGroupItem = styled('li', {
-  shouldForwardProp: (prop) => prop !== 'level'
+  shouldForwardProp: (prop) => !['padded', 'level'].includes(prop as string)
 })<{ padded?: boolean }>(({ theme, padded }) => ({
   position: 'relative',
   paddingRight: padded ? '28px' : 0
@@ -64,13 +58,13 @@ export const OutcomeHeader = styled(Box, {
         boxShadow: `0 0 0 2px ${theme.palette.workflow.highlighted}`
       }
     }),
-    ...(level === 1 && {
+    ...(level === 0 && {
       backgroundColor: 'rgb(229, 233, 244)' // NOTE: Figma says grey[100] but it's not
     }),
-    ...(level === 2 && {
+    ...(level === 1 && {
       backgroundColor: 'rgb(245, 249, 255)' // NOTE: Figma says grey[50] but it's not
     }),
-    ...(level === 3 && {
+    ...(level === 2 && {
       border: '1px solid rgb(238, 242, 253)',
       backgroundColor: 'transparent'
     })
@@ -108,18 +102,6 @@ export const OutcomeTitle = styled(Typography)(({ theme }) => ({
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis'
-}))
-
-export const AddNewButton = styled(Button)(({ theme }) => ({
-  display: 'block',
-  width: '100%',
-  marginTop: theme.spacing(1),
-  padding: theme.spacing(1),
-  border: '1px dashed rgb(178, 182, 192)',
-  textAlign: 'left',
-  color: 'currentcolor',
-  fontWeight: 'normal',
-  lineHeight: 1.3
 }))
 
 export const GroupDropzone = styled('div', {

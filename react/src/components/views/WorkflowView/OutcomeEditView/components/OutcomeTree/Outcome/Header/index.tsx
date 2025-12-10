@@ -147,7 +147,7 @@ const HoverMenu = ({
             icon: <AddCircleOutlineIcon />,
             onClick: onActionClick('insert-sibling')
           },
-          level !== 3 && {
+          level !== 2 && {
             label: 'Insert child outcome',
             icon: <QueueIcon />,
             onClick: onActionClick('insert-child')

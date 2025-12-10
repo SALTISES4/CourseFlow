@@ -24,7 +24,7 @@ import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { OutcomeGroup } from '../index'
+import { OutcomeGroup } from '../'
 import OutcomeHeader from './Header'
 import * as Styled from '../styles'
 
@@ -65,7 +65,7 @@ const Outcome = ({
   // use the 'code' prefix, which is only supported at level 1 outcomes
   // otherwise it's all numbers
   const formattedPrefix =
-    prefix.length === 1 && level === 1 && code
+    prefix.length === 1 && level === 0 && code
       ? `${prefix.join('.')} - ${code} - `
       : `${prefix.join('.')}. `
 
@@ -120,7 +120,7 @@ const Outcome = ({
 
           setState(
             produce((draft) => {
-              if (isOutcomeLink(dragging) && level === 1) {
+              if (isOutcomeLink(dragging) && level === 0) {
                 draft.dragHighlight = true
               } else {
                 draft.operation = instruction?.operation ?? null
@@ -139,7 +139,7 @@ const Outcome = ({
         onDrop: (args) => {
           const dragging = args.source.data
 
-          if (isOutcomeLink(dragging) && level === 1) {
+          if (isOutcomeLink(dragging) && level === 0) {
             dispatch(
               linkOutcome({
                 targetId: dragging.id,

@@ -1,30 +1,31 @@
 import { OuterContentWrap } from '@cf/mui/helper'
+import { RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
-import { selectOutcomeGroups } from '@cfRedux/selectors/outcomes.selector'
-import { addOutcomeGroup } from '@cfRedux/slices/outcomes.slice'
-import { RootState } from '@cfRedux/store'
+import { selectOutcomeChildrenById } from '@cfRedux/selectors/outcomes.selector'
+import { addOutcome } from '@cfRedux/slices/outcomes.slice'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import { useCallback } from 'react'
+import { memo, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import OutcomeTree from './components/OutcomeTree'
 
 const OutcomeEditView = () => {
   const dispatch = useDispatch()
-  const workflow = useSelector((state: RootState) => state.workspace.workflow)
-  const outcomeGroups = useSelector(selectOutcomeGroups)
+  const outcomes = useSelector((state: RootState) =>
+    selectOutcomeChildrenById(state, null)
+  )
 
-  const onAddNewGroup = useCallback(() => {
-    dispatch(addOutcomeGroup('Outcome group label'))
+  const onAddNewOutcome = useCallback(() => {
+    dispatch(addOutcome())
   }, [dispatch])
 
   return (
-    <OuterContentWrap id={`#workflow-${workflow.id}`} sx={{ pt: 4 }}>
-      {!outcomeGroups.length ? (
-        <Box>
+    <OuterContentWrap sx={{ pt: 4 }}>
+      {!outcomes.length ? (
+        <Box maxWidth="md">
           <Alert
             sx={{ mb: 3 }}
             persistent
@@ -33,22 +34,17 @@ const OutcomeEditView = () => {
               'In this view you can add and edit outcomes for this workflow. Once added, outcomes can be attached to nodes within your workflow by navigating to the “Workflow” tab and drag and dropping your outcomes to your nodes from the Outcomes tab of the right sidebar.'
             )}
           />
+          <Button color="primary" variant="contained" onClick={onAddNewOutcome}>
+            {_t('Add outcome')}
+          </Button>
         </Box>
       ) : (
         <Stack spacing={3} direction="column">
-          {outcomeGroups.map((group) => (
-            <OutcomeTree key={group.id} {...group} />
-          ))}
+          <OutcomeTree outcomes={outcomes} />
         </Stack>
       )}
-
-      <Box sx={{ mt: 3 }}>
-        <Button color="primary" variant="contained" onClick={onAddNewGroup}>
-          {_t('Add outcome group')}
-        </Button>
-      </Box>
     </OuterContentWrap>
   )
 }
 
-export default OutcomeEditView
+export default memo(OutcomeEditView)

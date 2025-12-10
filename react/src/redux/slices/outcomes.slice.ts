@@ -2,7 +2,7 @@ import { type Instruction } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-
 import { createSlice } from '@reduxjs/toolkit'
 import { type PayloadAction } from '@reduxjs/toolkit'
 
-import data from './dummyData/outcomes'
+// import data from './dummyData/outcomes'
 
 // to keep track of newly created Outcome IDs
 let dynamicID = 1
@@ -27,7 +27,12 @@ export type OutcomesState = {
   outcomeData: Record<number, Outcome>
 }
 
-const initialState: OutcomesState = data
+const initialState: OutcomesState = {
+  dragging: null,
+  highlighted: [],
+  outcomeOrder: [],
+  outcomeData: {}
+}
 
 type AddOutcomeType = Pick<Outcome, 'id'> &
   Partial<Outcome> & { order?: 'after' }
@@ -36,33 +41,28 @@ export const outcomesSlice = createSlice({
   name: 'outcomes',
   initialState,
   reducers: {
-    // add new outcome group (at root level)
-    addOutcomeGroup: (state, action: PayloadAction<string>) => {
-      const outcomeId = dynamicID++
-      state.outcomeOrder.push(outcomeId)
-      state.outcomeData[outcomeId] = {
-        id: outcomeId,
-        title: action.payload,
-        parent: null,
-        children: [],
-        level: 0
-      }
-    },
-
     // add outcome to a specific parent
     addOutcome: (state, action: PayloadAction<AddOutcomeType>) => {
       const outcomeId = dynamicID++
+
       const newOutcomeData: Outcome = {
         id: outcomeId,
-        title: action.payload.title ?? 'Blank outcome title',
-        description: action.payload.description ?? '',
-        code: action.payload.code ?? '',
-        children: action.payload.children ?? [],
-        parent: -1, // added later
+        title: action.payload?.title ?? 'Blank outcome title',
+        description: action.payload?.description ?? '',
+        code: action.payload?.code ?? '',
+        children: action.payload?.children ?? [],
+        parent: null, // added later
         level: 0 // added later
       }
 
       let orderAfterId = -1
+
+      // no payload, we're just creating new root level outcome
+      if (!action.payload) {
+        state.outcomeOrder.push(outcomeId)
+        state.outcomeData[outcomeId] = newOutcomeData
+        return
+      }
 
       // if no "order", then we're simply appending to the parent ID
       if (!action.payload.order) {
@@ -78,14 +78,15 @@ export const outcomesSlice = createSlice({
       } else {
         // if order is present, add after the target outcome
         const target = state.outcomeData[action.payload.id]
-        newOutcomeData.parent = target.parent
         orderAfterId = target.id // order after target
 
-        // update parent index
-        const parent = state.outcomeData[target.parent]
-        const childIndex = parent.children.indexOf(target.id)
-        if (childIndex !== -1) {
-          parent.children.splice(childIndex + 1, 0, outcomeId)
+        if (target.parent) {
+          newOutcomeData.parent = target.parent
+          const parent = state.outcomeData[target.parent]
+          const childIndex = parent.children.indexOf(target.id)
+          if (childIndex !== -1) {
+            parent.children.splice(childIndex + 1, 0, outcomeId)
+          }
         }
       }
 
@@ -96,7 +97,10 @@ export const outcomesSlice = createSlice({
       }
 
       // set the correct level
-      newOutcomeData.level = state.outcomeData[newOutcomeData.parent].level + 1
+      newOutcomeData.level =
+        newOutcomeData.parent === null
+          ? 0
+          : state.outcomeData[newOutcomeData.parent].level + 1
 
       // finally add the data itself
       state.outcomeData[outcomeId] = newOutcomeData
@@ -111,10 +115,12 @@ export const outcomesSlice = createSlice({
 
       // delete from parent
       const parentId = state.outcomeData[outcomeId].parent
-      state.outcomeData[parentId].children.splice(
-        state.outcomeData[parentId].children.indexOf(outcomeId),
-        1
-      )
+      if (parentId) {
+        state.outcomeData[parentId].children.splice(
+          state.outcomeData[parentId].children.indexOf(outcomeId),
+          1
+        )
+      }
 
       // finally, delete data
       delete state.outcomeData[outcomeId]
@@ -123,7 +129,6 @@ export const outcomesSlice = createSlice({
     // duplicates the outcome below the target
     // cloning the tree structure as well
     duplicateOutcome: (state, action: PayloadAction<number>) => {
-      // duplicateOutcomeTree(state, action.payload)
       const target = state.outcomeData[action.payload]
 
       // find the last outcome ID to know after which outcome to inject
@@ -167,7 +172,9 @@ export const outcomesSlice = createSlice({
       state.outcomeOrder.splice(lastOutcomeIndex + 1, 0, ...clonedIds)
 
       // add the root clone to the correct parent
-      state.outcomeData[target.parent].children.push(clonedIds[0])
+      if (target.parent) {
+        state.outcomeData[target.parent].children.push(clonedIds[0])
+      }
     },
 
     // edit/update existing outcome with payload data
@@ -236,15 +243,17 @@ export const outcomesSlice = createSlice({
           }
 
           // reorder outcomes
-          const parent = state.outcomeData[target.parent]
-          const { children } = parent
-          children.splice(children.indexOf(targetId), 1)
-          const destIndex = children.indexOf(destinationId)
-          children.splice(
-            operation === 'reorder-after' ? destIndex + 1 : destIndex,
-            0,
-            targetId
-          )
+          if (target.parent !== -1) {
+            const parent = state.outcomeData[target.parent]
+            const { children } = parent
+            children.splice(children.indexOf(targetId), 1)
+            const destIndex = children.indexOf(destinationId)
+            children.splice(
+              operation === 'reorder-after' ? destIndex + 1 : destIndex,
+              0,
+              targetId
+            )
+          }
 
           // order after or before the target?
           orderAfter = operation === 'reorder-after'
@@ -335,7 +344,6 @@ export function isOutcomeLink(data: Record<string | symbol, unknown>): data is {
 }
 
 export const {
-  addOutcomeGroup,
   addOutcome,
   deleteOutcome,
   duplicateOutcome,
