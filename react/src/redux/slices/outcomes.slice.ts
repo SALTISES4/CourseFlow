@@ -2,8 +2,6 @@ import { type Instruction } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-
 import { createSlice } from '@reduxjs/toolkit'
 import { type PayloadAction } from '@reduxjs/toolkit'
 
-// import data from './dummyData/outcomes'
-
 // to keep track of newly created Outcome IDs
 let dynamicID = 1
 
@@ -243,7 +241,7 @@ export const outcomesSlice = createSlice({
           }
 
           // reorder outcomes
-          if (target.parent !== -1) {
+          if (target.parent !== null) {
             const parent = state.outcomeData[target.parent]
             const { children } = parent
             children.splice(children.indexOf(targetId), 1)
