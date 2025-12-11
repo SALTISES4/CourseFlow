@@ -1,26 +1,23 @@
 import { selectOutcomeGroups } from '@cf/redux/selectors/outcomes.selector'
+import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { useSelector } from 'react-redux'
 
-import data from './data'
 import { OutcomeGroup } from './Outcome'
 import * as Styled from '../../styles'
 
 const OutcomeTab = () => {
   const outcomeGroups = useSelector(selectOutcomeGroups)
-  const { title, subtitle } = data
 
   if (!outcomeGroups.length) {
     return (
       <Styled.SidebarInnerWrap>
         <Styled.SidebarContent>
-          {title && (
-            <Styled.SidebarTitle as="h3" variant="h6">
-              {title}
-            </Styled.SidebarTitle>
-          )}
+          <Styled.SidebarTitle as="h3" variant="h6">
+            {_t('Outcomes')}
+          </Styled.SidebarTitle>
           <Alert
             severity="info"
             persistent
@@ -34,16 +31,14 @@ const OutcomeTab = () => {
   return (
     <Styled.SidebarInnerWrap>
       <Styled.SidebarContent>
-        {title && (
-          <Styled.SidebarTitle as="h3" variant="h6">
-            {title}
-          </Styled.SidebarTitle>
-        )}
-        {subtitle && (
-          <Typography variant="body2" sx={{ mb: 3 }}>
-            {subtitle}
-          </Typography>
-        )}
+        <Styled.SidebarTitle as="h3" variant="h6">
+          {_t('Outcomes')}
+        </Styled.SidebarTitle>
+        <Typography variant="body2" sx={{ mb: 3 }}>
+          {_t(
+            'Drag and drop to associate outcomes from parents workflows to outcomes of your current workflow. Click on an outcome to highlight relevant nodes.'
+          )}
+        </Typography>
         {outcomeGroups.map(
           (group, idx) =>
             !!group.children?.length && (
@@ -58,7 +53,7 @@ const OutcomeTab = () => {
       </Styled.SidebarContent>
       <Styled.SidebarActions>
         <Button variant="contained" color="secondary">
-          Edit outcomes
+          {_t('Edit outcomes')}
         </Button>
       </Styled.SidebarActions>
     </Styled.SidebarInnerWrap>

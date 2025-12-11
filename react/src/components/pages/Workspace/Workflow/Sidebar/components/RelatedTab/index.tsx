@@ -1,27 +1,27 @@
 import { selectOutcomeGroups } from '@cf/redux/selectors/outcomes.selector'
+import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import Typography from '@mui/material/Typography'
 import { useSelector } from 'react-redux'
 
-import data from './data'
 import * as Styled from '../../styles'
 import { OutcomeGroup } from '../OutcomesTab/Outcome'
 
 const RelatedTab = () => {
   const outcomeGroups = useSelector(selectOutcomeGroups)
-  const { title, subtitle, alert } = data
+  const alert = true
 
   return (
     <Styled.SidebarInnerWrap>
       <Styled.SidebarContent>
         <Styled.SidebarTitle as="h3" variant="h6">
-          {title}
+          {_t('Outcomes from parent workflows')}
         </Styled.SidebarTitle>
-        {subtitle && (
-          <Typography variant="body2" sx={{ mb: 3 }}>
-            {subtitle}
-          </Typography>
-        )}
+        <Typography variant="body2" sx={{ mb: 3 }}>
+          {_t(
+            'Drag and drop to associate outcomes from parents workflows to outcomes of your current workflow. Click on an outcome to highlight relevant nodes.'
+          )}
+        </Typography>
         {alert && (
           <Alert
             severity="warning"
