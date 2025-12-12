@@ -15,6 +15,7 @@ export type Outcome = {
   children?: number[]
   level: number
   linkedOutcomes?: number[]
+  tags?: number[]
 }
 
 export type OutcomesState = {
@@ -49,6 +50,7 @@ export const outcomesSlice = createSlice({
         description: action.payload?.description ?? '',
         code: action.payload?.code ?? '',
         children: action.payload?.children ?? [],
+        tags: action.payload?.tags ?? [],
         parent: null, // added later
         level: 0 // added later
       }

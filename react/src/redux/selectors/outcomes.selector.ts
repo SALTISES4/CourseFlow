@@ -1,3 +1,4 @@
+import { _t } from '@cf/utility/Utility.class'
 import { RootState } from '@cfRedux/store'
 import { createSelector } from 'reselect'
 
@@ -9,12 +10,42 @@ export const selectOutcomes = createSelector(
   (outcomeOrder, outcomesData) => outcomeOrder.map((id) => outcomesData[id])
 )
 
-export const selectOutcomeGroups = createSelector(
+type TagGroup = {
+  id: number
+  title: string
+  outcomes: number[]
+}
+
+// generate groups of outcomes, grouped by untagged/tagged-by-id
+export const selectOutcomeTagGroups = createSelector(
   [selectOutcomeOrder, selectOutcomeData],
-  (outcomeOrder, outcomesData) => {
-    return outcomeOrder
-      .map((id) => outcomesData[id])
-      .filter((outcome) => outcome?.parent === null)
+  (outcomeOrder, outcomeData) => {
+    const tagGroups: TagGroup[] = [
+      { id: -1, title: _t('Untagged'), outcomes: [] }
+    ]
+
+    for (let i = 0; i < outcomeOrder.length; i++) {
+      const outcome = outcomeData[outcomeOrder[i]]
+      if (!outcome.tags?.length) {
+        tagGroups[0].outcomes.push(outcome.id)
+      }
+
+      for (let j = 0; j < outcome.tags.length; j++) {
+        const tagId = outcome.tags[j]
+        const foundIndex = tagGroups.findIndex((t) => t.id === tagId)
+        if (foundIndex === -1) {
+          tagGroups.push({
+            id: tagId,
+            title: `Tag group - #${tagId}`,
+            outcomes: [outcome.id]
+          })
+        } else {
+          tagGroups[foundIndex].outcomes.push(outcome.id)
+        }
+      }
+    }
+
+    return tagGroups.sort((a, b) => a.id - b.id)
   }
 )
 

@@ -1,4 +1,4 @@
-import { selectOutcomeGroups } from '@cf/redux/selectors/outcomes.selector'
+import { selectOutcomeTagGroups } from '@cf/redux/selectors/outcomes.selector'
 import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import Typography from '@mui/material/Typography'
@@ -8,8 +8,11 @@ import * as Styled from '../../styles'
 import { OutcomeGroup } from '../OutcomesTab/Outcome'
 
 const RelatedTab = () => {
-  const outcomeGroups = useSelector(selectOutcomeGroups)
+  // TODO: figure out where the outcomes data actually comes from
+  const outcomeGroups = useSelector(selectOutcomeTagGroups)
   const alert = true
+
+  console.log(outcomeGroups)
 
   return (
     <Styled.SidebarInnerWrap>
@@ -30,13 +33,14 @@ const RelatedTab = () => {
           />
         )}
         {outcomeGroups.map(
-          (group, idx) =>
-            !!group.children?.length && (
-              <Styled.GroupWrap key={idx}>
+          (tagGroup) =>
+            !!tagGroup.outcomes.length && (
+              <Styled.GroupWrap key={tagGroup.id}>
                 <Typography component="h6" variant="body2">
-                  {group.title}
+                  {tagGroup.title}
                 </Typography>
-                <OutcomeGroup prefix={[]} parentId={group.id} />
+                {/* TODO: actually render tag group outcomes */}
+                <OutcomeGroup prefix={[]} parentId={null} />
               </Styled.GroupWrap>
             )
         )}

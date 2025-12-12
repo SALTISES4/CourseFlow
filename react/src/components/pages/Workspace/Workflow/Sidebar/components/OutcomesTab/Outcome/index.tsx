@@ -85,8 +85,8 @@ const Outcome = ({
   // use the 'code' prefix, which is only supported at level 1 outcomes
   // otherwise it's all numbers
   const formattedPrefix =
-    prefix.length === 1 && level === 1 && code
-      ? `${code} - `
+    prefix.length === 1 && level === 0 && code
+      ? `${prefix.join('.')} - ${code} - `
       : `${prefix.join('.')}. `
 
   return (
@@ -118,7 +118,7 @@ export const OutcomeGroup = ({
   parentId,
   prefix
 }: {
-  parentId: number
+  parentId: number | null
   prefix: (number | string)[]
 }) => {
   const childOutcomes = useSelector((state: RootState) =>
