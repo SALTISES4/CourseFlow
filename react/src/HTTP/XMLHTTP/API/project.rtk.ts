@@ -52,6 +52,7 @@ const extendedApi = cfApi.injectEndpoints({
     >({
       query: (args) => {
         const base = apiPaths.json_api.project.detail
+        console.log('getting project by id', args.id, 'base', base)
         return {
           method: Verb.GET,
           url: generatePath(base, { id: args.id })

@@ -5,7 +5,6 @@ import {
   ENode,
   ENodelink,
   ENodeweek,
-  EObjectSet,
   EOutcome,
   EOutcomeHorizontalLink,
   EOutcomeOutcome,
@@ -13,6 +12,7 @@ import {
   EOutcomenode,
   EProject,
   EStrategy,
+  ETag,
   EWeek,
   EWeekworkflow,
   EWorkflow
@@ -55,7 +55,7 @@ export type WorkflowDataPackage = {
   outcomenode: EOutcomenode[]
   outcomeworkflow: EOutcomeWorkflow[]
   outcomeoutcome: EOutcomeOutcome[]
-  objectSet: EObjectSet[]
+  tags: ETag[]
   strategy: EStrategy[]
   //
   unreadComments: any[]

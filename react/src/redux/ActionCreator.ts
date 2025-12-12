@@ -4,7 +4,6 @@ import {
   CommonActions,
   NodeActions,
   NodeWeekActions,
-  ObjectSetActions,
   OutcomeOutcomeActions,
   OutcomeWorkflowActions,
   WeekWorkflowActions
@@ -14,21 +13,14 @@ import { EComment } from '@XMLHTTP/types/entity'
 
 export type WorkSpaceAppState = Pick<
   AppState,
-  | 'workflow'
-  | 'column'
-  | 'week'
-  | 'nodelink'
-  | 'node'
   | 'outcomeworkflow'
   | 'outcome'
   | 'outcomenode'
   | 'outcomeoutcome'
-  | 'objectSet'
-  | 'strategy'
-  //   | 'parentWorkflow'
-  //   | 'parentNode'
-  //  | 'outcomehorizontallink'
-  //  | 'childWorkflow'
+  | 'parentWorkflow'
+  | 'parentNode'
+  | 'outcomehorizontallink'
+  | 'childWorkflow'
 > &
   AppState['workspace']
 
@@ -218,13 +210,6 @@ class ActionCreator {
         newParent,
         childId
       }
-    }
-  }
-
-  static toggleObjectSet = (id: number, hidden: boolean) => {
-    return {
-      type: ObjectSetActions.TOGGLE_OBJECT_SET,
-      payload: { id: id, hidden: hidden }
     }
   }
 }

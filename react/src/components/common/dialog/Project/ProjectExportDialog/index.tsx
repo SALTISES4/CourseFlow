@@ -1,15 +1,14 @@
 import { StyledBox, StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import Utility from '@cf/utility/Utility.class'
 import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import FormGroup from '@mui/material/FormGroup'
 import FormLabel from '@mui/material/FormLabel'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
@@ -17,7 +16,6 @@ import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EProject } from '@XMLHTTP/types/entity'
 import { produce } from 'immer'
 import { MouseEvent, useState } from 'react'
-import * as React from 'react'
 
 enum EXPORT_TYPE {
   OUTCOME = 'outcome',
@@ -68,10 +66,7 @@ const fields = {
 //         <h2>{_t('Export project')}</h2>
 //       </DialogTitle>
 //       <ExportMenu
-//         data={{
-//           // ...data,
-//           objectSets: objectSets
-//         }}
+//         data={data}
 //         actionFunction={closeModals}
 //       />
 //     </Dialog>
@@ -81,8 +76,7 @@ const fields = {
 function ProjectExportDialog(data: EProject) {
   const [state, setState] = useState({
     type: EXPORT_TYPE.OUTCOME,
-    format: EXPORT_FORMAT.EXCEL,
-    sets: data.objectSets.map((set) => set.id)
+    format: EXPORT_FORMAT.EXCEL
   })
   const { show, onClose } = useDialog(DialogMode.PROJECT_EXPORT)
 
@@ -97,26 +91,12 @@ function ProjectExportDialog(data: EProject) {
     )
   }
 
-  function onSetChange(value: number) {
-    setState(
-      produce((draft) => {
-        const found = draft.sets.indexOf(value)
-        if (found === -1) {
-          draft.sets.push(value)
-        } else {
-          draft.sets.splice(found, 1)
-        }
-      })
-    )
-  }
-
   function onSubmit(e: MouseEvent<HTMLButtonElement>) {
     const postData = {
       objectId: data.id,
       objectType: data.type,
       exportType: state.type,
-      exportFormat: state.format,
-      objectSets: state.sets
+      exportFormat: state.format
     }
 
     // TODO: handle success/failure appropriately
@@ -194,26 +174,6 @@ function ProjectExportDialog(data: EProject) {
               ))}
             </RadioGroup>
           </FormControl>
-
-          {data.objectSets.length > 0 && (
-            <FormControl>
-              <FormLabel id="export-sets-group-label">
-                {_t('Object set visibility')}
-              </FormLabel>
-              <FormGroup>
-                {data.objectSets.map((set, index) => (
-                  <FormControlLabel
-                    key={index}
-                    value={set.id}
-                    control={<Checkbox />}
-                    label={set.title}
-                    checked={state.sets.includes(set.id)}
-                    onChange={() => onSetChange(set.id)}
-                  />
-                ))}
-              </FormGroup>
-            </FormControl>
-          )}
         </StyledBox>
       </DialogContent>
       <DialogActions>

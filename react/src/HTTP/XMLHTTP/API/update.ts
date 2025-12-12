@@ -54,51 +54,53 @@ export function updateValueInstantQuery(
   })
 }
 
-//When the drag is complete, this is called to update the back-end
-export function dragAction(
-  actionData,
-  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
-) {
-  $('.ui-draggable').draggable('disable')
+// TODO: uused?
+// //When the drag is complete, this is called to update the back-end
+// export function dragAction(
+//   actionData,
+//   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
+// ) {
+//   $('.ui-draggable').draggable('disable')
 
-  // COURSEFLOW_APP.globalContextData.path.post_paths.inserted_at
-  const url = apiPaths.json_api.workflow.object__order
-  API_POST(url, actionData).then((response: EmptyPostResp) => {
-    callBackFunction(response)
-    $('.ui-draggable').draggable('enable')
-  })
-}
+//   // COURSEFLOW_APP.globalContextData.path.post_paths.inserted_at
+//   const url = apiPaths.json_api.workflow.object__order
+//   API_POST(url, actionData).then((response: EmptyPostResp) => {
+//     callBackFunction(response)
+//     $('.ui-draggable').draggable('enable')
+//   })
+// }
 
-//Called when an object in a list is reordered
-export function insertedAtInstant(
-  objectId,
-  objectType,
-  parentId,
-  parentType,
-  newPosition,
-  throughType,
-  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
-) {
-  console.log(parentType)
+// TODO: unused?
+// //Called when an object in a list is reordered
+// export function insertedAtInstant(
+//   objectId,
+//   objectType,
+//   parentId,
+//   parentType,
+//   newPosition,
+//   throughType,
+//   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
+// ) {
+//   console.log(parentType)
 
-  $('.ui-draggable').draggable('disable')
+//   $('.ui-draggable').draggable('disable')
 
-  //   COURSEFLOW_APP.globalContextData.path.post_paths.inserted_at
-  const url = apiPaths.json_api.workflow.object__order
-  API_POST(url, {
-    objectId: objectId,
-    objectType: objectType,
-    parentId: parentId,
-    parentType: parentType,
-    newPosition: newPosition,
-    throughType: throughType,
-    inserted: true,
-    allowDifferent: true
-  }).then((response: EmptyPostResp) => {
-    callBackFunction(response)
-    $('.ui-draggable').draggable('enable')
-  })
-}
+//   //   COURSEFLOW_APP.globalContextData.path.post_paths.inserted_at
+//   const url = apiPaths.json_api.workflow.object__order
+//   API_POST(url, {
+//     objectId: objectId,
+//     objectType: objectType,
+//     parentId: parentId,
+//     parentType: parentType,
+//     newPosition: newPosition,
+//     throughType: throughType,
+//     inserted: true,
+//     allowDifferent: true
+//   }).then((response: EmptyPostResp) => {
+//     callBackFunction(response)
+//     $('.ui-draggable').draggable('enable')
+//   })
+// }
 
 //Causes the specified throughmodel to update its degree
 export function updateOutcomenodeDegree(
@@ -140,20 +142,21 @@ export function updateOutcomehorizontallinkDegree(
   })
 }
 
-//Set the linked workflow for the node
-export function setLinkedWorkflow(
-  nodeId,
-  workflowId,
-  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
-) {
-  const url = apiPaths.json_api.workflow.link
-  API_POST(url, {
-    nodePk: nodeId,
-    workflowPk: workflowId
-  }).then((response: EmptyPostResp) => {
-    callBackFunction(response)
-  })
-}
+// TODO" unused?
+// //Set the linked workflow for the node
+// export function setLinkedWorkflow(
+//   nodeId,
+//   workflowId,
+//   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
+// ) {
+//   const url = apiPaths.json_api.workflow.link
+//   API_POST(url, {
+//     nodePk: nodeId,
+//     workflowPk: workflowId
+//   }).then((response: EmptyPostResp) => {
+//     callBackFunction(response)
+//   })
+// }
 
 /**
  * Turn a week into a strategy or vice versa

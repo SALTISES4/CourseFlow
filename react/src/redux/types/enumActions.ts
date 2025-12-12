@@ -130,10 +130,6 @@ export enum NodelinkActions {
   NEW_NODE_LINK = 'nodelink/newNodelink'
 }
 
-export enum ObjectSetActions {
-  TOGGLE_OBJECT_SET = 'objectSet/toggleObjectSet'
-}
-
 export enum OutcomeHorizontalLinkActions {
   UPDATE_DEGREE = 'outcomehorizontallink/updateDegree'
 }

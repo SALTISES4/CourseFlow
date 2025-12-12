@@ -1,4 +1,4 @@
-import { ObjectSetType, ProjectDetailsType } from '@cf/types/common'
+import { ProjectDetailsType } from '@cf/types/common'
 import Utility from '@cf/utility/Utility.class'
 import { EProject } from '@XMLHTTP/types/entity'
 
@@ -12,16 +12,6 @@ export function formatProjectEntity(project: EProject): ProjectDetailsType {
     return allDisciplines.find((item) => item.id === projDisc).title
   })
 
-  const formattedObjectSets: ObjectSetType[] = project.objectSets.map(
-    (item) => {
-      return {
-        id: item.id,
-        title: item.title,
-        term: 'we actually dont use this anymore?' // TODO
-      }
-    }
-  )
-
   return {
     id: project.id,
     title: project.title,
@@ -30,7 +20,8 @@ export function formatProjectEntity(project: EProject): ProjectDetailsType {
     isDeleted: project.deleted,
     created: Utility.formatDate(project.createdOn),
     disciplines: formattedDisciplines,
-    objectSets: formattedObjectSets,
+    // @ts-expect-error TODO: kept objectSets for backwards compatibility, actually use tags
+    tags: project.objectSets,
     permissionGroup: project.userPermissions,
     author: project.author
   }

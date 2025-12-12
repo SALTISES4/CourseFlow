@@ -1,3 +1,4 @@
+import { TTag } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
 import { EUser } from '@XMLHTTP/types/entity'
 import { MouseEvent as ReactMouseEvent } from 'react'
@@ -88,12 +89,6 @@ export type PermissionUserType = {
   permissionGroup: PermissionGroup
 }
 
-export type ObjectSetType = {
-  id: number
-  title: string
-  term: string
-}
-
 /*******************************************************
  * simplified project for UI
  *******************************************************/
@@ -107,5 +102,5 @@ export type ProjectDetailsType = {
   author: EUser
   disciplines?: string[]
   permissionGroup: PermissionGroup
-  objectSets?: ObjectSetType[]
+  tags?: TTag[]
 }

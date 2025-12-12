@@ -1,4 +1,4 @@
-import { ObjectSetType } from '@cf/types/common'
+import { TTag } from '@cf/redux/types/type'
 import { _t } from '@cf/utility/Utility.class'
 import * as SC from '@cfViews/common/workspaceOverview/styles'
 import Grid from '@mui/material/Grid'
@@ -8,11 +8,11 @@ import { useCallback, useState } from 'react'
 import Tag from './Tag'
 
 type PropsType = {
-  data: ObjectSetType[]
+  data: TTag[]
 }
 
 const Tags = ({ data }: PropsType) => {
-  const [state, setState] = useState<ObjectSetType[]>(data)
+  const [state, setState] = useState<TTag[]>(data)
 
   const onChange = useCallback(
     (id: number, value: string, createNew: boolean) => {
@@ -25,7 +25,6 @@ const Tags = ({ data }: PropsType) => {
 
             draft.push({
               id,
-              term: 'we actually dont use this anymore?', // TODO
               title: value
             })
           } else {

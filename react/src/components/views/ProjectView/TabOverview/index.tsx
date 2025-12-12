@@ -16,7 +16,7 @@ const OverviewTab = ({
   description,
   disciplines,
   created,
-  objectSets,
+  tags,
   author
 }: ProjectDetailsType) => {
   const { id } = useParams()
@@ -90,7 +90,7 @@ const OverviewTab = ({
         <Buttons />
       </SC.InfoBlock>
 
-      <Tags data={objectSets} />
+      <Tags data={tags} />
     </OuterContentWrap>
   )
 }

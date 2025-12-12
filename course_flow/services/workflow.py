@@ -443,8 +443,8 @@ class WorkflowService:
             WorkflowService.add_strategies(data, workflow, user)
             data["project"] = WorkflowService.get_project(workflow, user)
             # for now, objectset (i.e. tags) are only present on projects, and projects which are not strategies\
-            objectsets = ObjectSet.objects.filter(project__workflows=workflow)
-            data["object_set"] = ObjectSetSerializerShallow(objectsets, many=True).data
+            tags = ObjectSet.objects.filter(project__workflows=workflow)
+            data["tags"] = ObjectSetSerializerShallow(tags, many=True).data
 
         # Add unread comments if the user is authenticated
         # this should not go here

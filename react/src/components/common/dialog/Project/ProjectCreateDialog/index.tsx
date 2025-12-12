@@ -11,8 +11,7 @@ import { generatePath, useNavigate } from 'react-router-dom'
 const defaultValues = {
   title: '',
   description: '',
-  disciplines: [],
-  objectSets: [] // Assuming object sets are part of the form
+  disciplines: []
 }
 /**
  *
@@ -59,21 +58,11 @@ const ProjectCreateDialog = () => {
    * FUNCTIONS
    *******************************************************/
   const onSubmit = async (data: ProjectFormValues) => {
-    // remove null values
-    const filteredObjectSets = data.objectSets
-      .filter((set) => set.term && set.title)
-      .map((item) => ({
-        title: item.title,
-        term: item.term
-      }))
-    const payload = {
-      ...data,
-      disciplines: data.disciplines.map((item) => Number(item)),
-      objectSets: filteredObjectSets
-    }
-
     try {
-      const response = await mutate(payload).unwrap()
+      const response = await mutate({
+        ...data,
+        disciplines: data.disciplines.map((item) => Number(item))
+      }).unwrap()
       onSuccess(String(response.dataPackage.id))
     } catch (err) {
       onError(err)

@@ -110,11 +110,11 @@ const EditOutcome = () => {
             size="small"
             {...register('code')}
           />
-          {data.objectSets && (
+          {data.tags && (
             <Autocomplete
               multiple
               size="small"
-              options={data.objectSets}
+              options={data.tags}
               isOptionEqualToValue={(option, value) => option.id === value.id}
               renderInput={(params) => (
                 <TextField {...params} variant="outlined" label="Tags" />

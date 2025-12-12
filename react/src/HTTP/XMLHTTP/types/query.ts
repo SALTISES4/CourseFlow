@@ -3,8 +3,8 @@ import {
   EComment,
   ELibraryObject,
   ENewItem,
-  EObjectSet,
   ESectionGroup,
+  ETag,
   EWorkflow
 } from '@XMLHTTP/types/entity'
 
@@ -68,7 +68,7 @@ export type CommentsForObjectQueryArgs = {
  *******************************************************/
 export type AddTerminologyQueryResp = {
   message: string
-  newDict: EObjectSet[]
+  newDict: ETag[]
 }
 
 /*******************************************************

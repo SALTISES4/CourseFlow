@@ -93,7 +93,7 @@ const unitTypes = [
   }
 ]
 
-const objectSets = [
+const tags = [
   {
     id: 1,
     label: 'Object set 1'
@@ -119,7 +119,7 @@ const objectSets = [
 export default {
   contexts,
   taskTypes,
-  objectSets,
+  tags,
   unitTypes,
   timeUnits: timeUnits.filter((u) => u)
 }

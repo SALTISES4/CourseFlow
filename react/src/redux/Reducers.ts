@@ -13,7 +13,6 @@ import weekworkflowReducer from '@cfRedux/reducers/workflow/weekworkflow'
 import columnReducer from '@cfRedux/slices/column.slice'
 import nodeReducer from '@cfRedux/slices/node.slice'
 import nodelinkReducer from '@cfRedux/slices/nodelink.slice'
-import objectSetReducer from '@cfRedux/slices/objectset.slice'
 import outcomesReducer from '@cfRedux/slices/outcomes.slice'
 import projectReducer from '@cfRedux/slices/project.slice'
 import strategyReducer from '@cfRedux/slices/strategy.slice'
@@ -62,7 +61,6 @@ export const legacyWorkflowReducers = {
   weekworkflow: weekworkflowReducer,
   outcomeworkflow: outcomeworkflowReducer,
   outcomenode: outcomeNodeReducer,
-  //  objectSet: objectSetReducer,
 
   //  a n2M with UI applications
 
@@ -83,7 +81,6 @@ export const workspaceReducer = combineReducers({
   column: columnReducer,
   week: weekReducer,
   node: nodeReducer,
-  objectSet: objectSetReducer,
   // note this is not called nodenode, although that's what it is
   nodelink: nodelinkReducer,
   strategy: strategyReducer
@@ -91,9 +88,4 @@ export const workspaceReducer = combineReducers({
 
 export const dummyReducers = {
   outcomes: outcomesReducer
-}
-
-const rootOutcomeReducers = {
-  outcome: outcomeReducer,
-  outcomeoutcome: outcomeOutcomeReducer
 }

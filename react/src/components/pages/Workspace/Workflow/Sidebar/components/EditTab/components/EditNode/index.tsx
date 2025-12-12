@@ -64,7 +64,7 @@ const EditNode = () => {
       taskType: node.taskClassification || '',
       timeRequired: node.timeRequired,
       timeUnits: node.timeUnits,
-      objectSets: node.sets || []
+      tags: node.tags || []
     }
   })
 
@@ -90,7 +90,7 @@ const EditNode = () => {
         taskType: node.taskClassification || '',
         timeRequired: node.timeRequired,
         timeUnits: node.timeUnits,
-        objectSets: node.sets || []
+        tags: node.tags || []
       })
     }
   }, [reset, isDirty, node])
@@ -299,13 +299,13 @@ const EditNode = () => {
             </Stack>
 
             <Controller
-              name="objectSets"
+              name="tags"
               control={control}
               render={({ field }) => (
                 <Autocomplete
                   multiple
                   size="small"
-                  options={optionsData.objectSets}
+                  options={optionsData.tags}
                   getOptionLabel={(option) => option.label}
                   isOptionEqualToValue={(option, value) =>
                     option.id === value.id

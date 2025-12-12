@@ -82,7 +82,7 @@ export interface EProject extends CourseFlowEntity {
   favourite: boolean
   // objectPermission: ObjectPermission
   disciplines: number[]
-  objectSets: EObjectSet[]
+  tags: ETag[]
   published: boolean
   type: CfObjectType.PROJECT
   workflowprojectSet: number[]
@@ -174,16 +174,15 @@ export interface ENode extends CourseFlowEntity {
   hasAssignment: boolean
   order: number
   week: number
-  sets: number[]
+  tags: number[]
   outcomenodeSet: number[]
   outcomenodeUniqueSet: number[]
   comments: number[]
 }
 
-export type EObjectSet = {
+export type ETag = {
   id: number
   title: string
-  translationPlural: null | string
 }
 
 export type EDiscipline = {

@@ -18,10 +18,6 @@ import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-export type StateType = {
-  objectSetsExpanded: boolean
-}
-
 export type ProjectFormValues = {
   title: string
   description: string

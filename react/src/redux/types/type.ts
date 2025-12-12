@@ -11,13 +11,13 @@ import {
   ENodelink,
   ENodeweek,
   ENotification,
-  EObjectSet,
   EOutcome,
   EOutcomeOutcome,
   EOutcomeWorkflow,
   EOutcomenode,
   EProject,
   EStrategy,
+  ETag,
   EUser,
   EWeek,
   EWeekworkflow,
@@ -37,7 +37,7 @@ export type WorkspaceAppState = {
   workflow: TWorkflow
   node: TNode[]
   strategy: TStrategy[]
-  objectSet: TObjectSet[]
+  tags: TTag[]
 }
 
 export type AppState = {
@@ -51,7 +51,7 @@ export type AppState = {
   outcome: TOutcome[]
   outcomenode: TOutcomenode[]
   outcomeoutcome: TOutcomeOutcome[]
-  objectSet: TObjectSet[]
+  tags: TTag[]
   //
   sidebar: SidebarState
   //
@@ -114,11 +114,7 @@ export type TNodelink = ENodelink & {
   lock?: CfLock
 }
 
-// @todo i think this is missing attributes
-export type TObjectSet = EObjectSet & {
-  hidden?: boolean
-}
-
+export type TTag = ETag
 export type TStrategy = EStrategy
 export type TParentWorkflow = any
 export type TChildWorkflow = any

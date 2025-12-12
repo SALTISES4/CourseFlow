@@ -5,7 +5,7 @@ export type NodeForm = {
   taskType?: number | string
   timeUnits?: number
   timeRequired?: number
-  objectSets?: number[]
+  tags?: number[]
   linkedWorkflow?: LinkedWorkflowType
   ponderation?: PonderationType
 }

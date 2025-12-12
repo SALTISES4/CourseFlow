@@ -1,15 +1,10 @@
 import Utility from '@cf/utility/Utility.class'
-import {
-  findRootOutcome,
-  findTopRank,
-  getDropped
-} from '@cfRedux/selectors/helpers'
+import { findRootOutcome, findTopRank } from '@cfRedux/selectors/helpers'
 import { AppState } from '@cfRedux/types/type'
 import { createSelector } from 'reselect'
 
 const selectOutcomes = (state: AppState) => state.outcome
 const selectOutcomeOutcome = (state: AppState) => state.outcomeoutcome
-const selectObjectSets = (state: AppState) => state.objectSet
 const selectWorkflowId = (state: AppState) => state.workspace.workflow.id
 // temp
 const stateProxy = (state: AppState) => state
@@ -18,12 +13,11 @@ export const selectOutcomeById = createSelector(
   [
     selectOutcomes,
     selectOutcomeOutcome,
-    selectObjectSets,
     selectWorkflowId,
     (_, id: number) => id,
     stateProxy
   ],
-  (outcomes, outcomeOutcomeSection, objectSets, workflowId, id, state) => {
+  (outcomes, outcomeOutcomeSection, workflowId, id, state) => {
     const outcome = outcomes.find((item) => item.id === id)
 
     if (!outcome) {
@@ -32,10 +26,6 @@ export const selectOutcomeById = createSelector(
     }
 
     const updatedOutcome = { ...outcome }
-
-    if (updatedOutcome.isDropped === undefined) {
-      updatedOutcome.isDropped = getDropped(id, 'outcome', updatedOutcome.depth)
-    }
 
     let rootOutcome = updatedOutcome
     let rank = []
@@ -95,7 +85,6 @@ export const selectOutcomeById = createSelector(
       outcome: updatedOutcome,
       hovertext,
       prefix,
-      objectSets,
       workflowId
     }
   }
