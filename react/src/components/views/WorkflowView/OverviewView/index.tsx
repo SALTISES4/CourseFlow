@@ -19,6 +19,7 @@ const OverviewView = () => {
 
   // @todo disciplines is missing from workflow data type
   const disciplines = []
+  const { description, createdOn } = data
 
   /*******************************************************
    * COMPONENTS
@@ -48,21 +49,26 @@ const OverviewView = () => {
    *******************************************************/
   return (
     <OuterContentWrap sx={{ pt: 4 }}>
-      <SC.InfoBlock>
-        <SC.InfoBlockContent>{data.description}</SC.InfoBlockContent>
+      <SC.InfoBlock sx={{ mb: 3 }}>
+        <SC.InfoBlockContent>{description}</SC.InfoBlockContent>
       </SC.InfoBlock>
-      <Grid container columnSpacing={3} sx={{ mt: 3 }}>
+
+      <Grid container columnSpacing={3}>
         <Grid item xs={6}>
           <SC.InfoBlock>
             <SC.InfoBlockTitle>{_t('Disciplines')}</SC.InfoBlockTitle>
-            <SC.InfoBlockContent>{disciplines?.join(', ')}</SC.InfoBlockContent>
+            <SC.InfoBlockContent>
+              {disciplines.length
+                ? disciplines?.join(', ')
+                : _t('No disciplines found.')}
+            </SC.InfoBlockContent>
           </SC.InfoBlock>
         </Grid>
         <Grid item xs={6}>
           <SC.InfoBlock>
             <SC.InfoBlockTitle>{_t('Created on')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
-              {Utility.formatDate(data.createdOn)}
+              {Utility.formatDate(createdOn)}
             </SC.InfoBlockContent>
           </SC.InfoBlock>
         </Grid>

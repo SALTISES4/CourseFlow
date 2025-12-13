@@ -52,16 +52,17 @@ const OverviewTab = ({
    *******************************************************/
   return (
     <OuterContentWrap sx={{ pt: 4 }}>
-      <SC.InfoBlock>
-        <SC.InfoBlockTitle>{_t('Description')}</SC.InfoBlockTitle>
-        <SC.InfoBlockContent>{description}</SC.InfoBlockContent>
-      </SC.InfoBlock>
+      {description && (
+        <SC.InfoBlock sx={{ mb: 3 }}>
+          <SC.InfoBlockTitle>{_t('Description')}</SC.InfoBlockTitle>
+          <SC.InfoBlockContent>{description}</SC.InfoBlockContent>
+        </SC.InfoBlock>
+      )}
 
-      <Grid container columnSpacing={3} sx={{ mt: 3 }}>
+      <Grid container columnSpacing={3}>
         <Grid item xs={6}>
           <SC.InfoBlock>
             <SC.InfoBlockTitle>{_t('Disciplines')}</SC.InfoBlockTitle>
-
             <SC.InfoBlockContent>
               {disciplines.length
                 ? disciplines?.join(', ')
