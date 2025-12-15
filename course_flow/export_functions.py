@@ -524,6 +524,43 @@ def get_nodes_export(model_object, object_type, export_format, allowed_sets):
             df.to_csv(path_or_buf=b, sep=",", index=False)
         return b.getvalue()
 
+def get_workflows_export(model_object, object_type, export_format, allowed_sets):
+    if object_type == "project":
+        workflows = list(model_object.workflows.filter(deleted=False))
+    else:
+        workflows = [model_object]
+    with BytesIO() as b:
+        if export_format == "excel":
+            with pd.ExcelWriter(b, engine="xlsxwriter") as writer:
+                for workflow in workflows:
+                    df = get_workflow_full_table(workflow, allowed_sets)
+                    sheet_name = (
+                        get_alphanum(workflow.title) + "_" + str(workflow.pk)
+                    )[:30]
+                    df.to_excel(
+                        writer,
+                        sheet_name=sheet_name,
+                        index=False,
+                    )
+        elif export_format == "csv":
+            df = pd.DataFrame(
+                {},
+                columns=["type", "title", "description", "column_order", "id"],
+            )
+            workflows_serialized = WorkflowExportSerializer(
+                workflows, many=True
+            ).data
+            for i, workflow in enumerate(workflows):
+                df = concat_line(
+                    df, {"title": workflows_serialized[i]["title"]}
+                )
+                df = concat_df(
+                    df, get_workflow_full_table(workflow, allowed_sets)
+                )
+                df = concat_line(df, {"title": ""})
+            df.to_csv(path_or_buf=b, sep=",", index=False)
+        return b.getvalue()
+
 
 def get_matrix_row_header(row):
     if row["type"] == "node":
@@ -712,6 +749,24 @@ def get_program_matrix(workflow, simple, allowed_sets):
 
 
 def get_workflow_nodes_table(workflow, allowed_sets):
+    entries = []
+    for week in Week.objects.filter(workflow=workflow, deleted=False).order_by(
+        "weekworkflow__rank"
+    ):
+        entries += [WeekExportSerializer(week).data]
+        entries += NodeExportSerializer(
+            Node.objects.filter(week=week, deleted=False)
+            .filter(allowed_sets_Q(allowed_sets))
+            .order_by("nodeweek__rank"),
+            many=True,
+        ).data
+    df = pd.DataFrame(
+        entries, columns=["type", "title", "description", "column_order", "id"]
+    )
+    pd.set_option("display.max_colwidth", None)
+    return df
+
+def get_workflow_full_table(workflow, allowed_sets):
     entries = []
     for week in Week.objects.filter(workflow=workflow, deleted=False).order_by(
         "weekworkflow__rank"

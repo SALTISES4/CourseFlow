@@ -34,6 +34,7 @@ owned_throughmodels = [
 
 
 def get_alphanum(string):
+    if(string is None):return ""
     return re.sub(r"\W+", "", string)
 
 
@@ -425,11 +426,13 @@ def clean_old_exports(user_dir, max_jobs: int = 2):
     # If too many, delete oldest
     while len(jobs) >= max_jobs + 1:
         print(f"max jobs {max_jobs} less than num jobs {len(jobs)}")
+        print(jobs)
         _, filename, job_file = jobs.pop(0)
-        data_file = user_dir / filename
         job_file.unlink()
-        if data_file.exists():
-            data_file.unlink()
+        if filename is not None:
+            data_file = user_dir / filename
+            if data_file.exists():
+                data_file.unlink()
 
     valid_filenames = {filename for _, filename, _ in jobs}
 

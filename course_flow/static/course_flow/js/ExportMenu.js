@@ -101,6 +101,9 @@ export class ExportMenu extends React.Component{
         exports.push(
             [<input name="export_type" type="radio" value="node" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="node"}/>,<label for="export_type">{gettext("Nodes")}</label>]
         );
+        exports.push(
+            [<input name="export_type" type="radio" value="workflow" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="workflow"}/>,<label for="export_type">{gettext("Workflow")}</label>]
+        );
         if(type=="project"||type=="course")exports.push(
             [<input name="export_type" type="radio" value="framework" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="framework"}/>,<label for="export_type">{gettext("Course Framework")}</label>]
         );
@@ -111,7 +114,7 @@ export class ExportMenu extends React.Component{
             [<input name="export_type" type="radio" value="sobec" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="sobec"}/>,<label for="export_type">{gettext("Sobec Validation")}</label>]
         );
         if(type=="program")exports.push(
-            [<input name="export_type" type="radio" value="excel" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="excel"}/>,<label for="export_type">{gettext("Program Analytics Export")}</label>]
+            [<input name="export_type" type="radio" value="program_analytics" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="program_analytics"}/>,<label for="export_type">{gettext("Program Analytics Export")}</label>]
         );
 
 
