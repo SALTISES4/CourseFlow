@@ -158,6 +158,8 @@ def async_create_export_file(
             file = export_functions.get_nodes_export(
                 model_object, object_type, export_format, allowed_sets
             )
+        elif export_type == "workflow":
+            file = export_analytics.get_workflows_export(model_object, object_type, export_format, allowed_sets)
         elif export_type == "program_analytics":
             file = export_analytics.get_analytics_table(model_object, object_type, export_format, allowed_sets)
 
