@@ -143,7 +143,7 @@ export interface EWeek extends CourseFlowEntity {
 }
 
 export interface EColumn extends CourseFlowEntity {
-  colour: null
+  colour: string | null
   columnType: number
   columnTypeDisplay: string
   icon: string | null

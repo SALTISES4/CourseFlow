@@ -49,7 +49,7 @@ const initialState: NodeState = {
 /*******************************************************
  * Reusable Reducer Functions
  *******************************************************/
-export const updateEntity = (
+const updateEntity = (
   state: NodeState,
   action: PayloadAction<{ id: number; data: Partial<TNode> }>
 ) => {

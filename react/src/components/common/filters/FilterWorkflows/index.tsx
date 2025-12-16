@@ -147,7 +147,7 @@ const FilterWorkflows = ({
     setTerm('')
     // for now, if we clear the term, update the parent search state
     onPropagateChange(term)
-    inputRef.current && inputRef.current.focus()
+    inputRef.current?.focus()
   }
 
   const onSuggestionClick = (p: ResultType) => {

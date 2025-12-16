@@ -14,18 +14,6 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
-const updateEntity = <T, S>(
-  state: T,
-  action: PayloadAction<{
-    id: number
-    data: Partial<S>
-  }>
-) => {
-  return state.map((item) =>
-    item.id === action.payload.id ? { ...item, ...action.payload.data } : item
-  )
-}
-
 // Define the initial state for the columns
 /*******************************************************
  * ENTITY ADAPTOR
@@ -76,7 +64,18 @@ const columnSlice = createSlice({
     insertBelow(state, action: PayloadAction<{ newModel: TColumn }>) {
       state.push(action.payload.newModel)
     },
-    changeField: updateEntity,
+    changeField(
+      state,
+      action: PayloadAction<{
+        id: number
+        data: Partial<TColumn>
+      }>
+    ) {
+      columnAdapter.updateOne(state, {
+        id: action.payload.id,
+        changes: action.payload.data
+      })
+    },
 
     reloadComments(
       state,

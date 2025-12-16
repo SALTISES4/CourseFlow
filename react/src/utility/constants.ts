@@ -101,16 +101,21 @@ export const strategyKeys = {
 }
 
 export const defaultColumnSettings = {
+  // activities
   0: { colour: '#6738ff', icon: 'other' },
   1: { colour: '#0b118a', icon: 'ooci' },
   2: { colour: '#114cd4', icon: 'home' },
   3: { colour: '#11b3d4', icon: 'instruct' },
   4: { colour: '#04d07d', icon: 'students' },
+
+  // courses
   10: { colour: '#6738ff', icon: 'other' },
   11: { colour: '#ad351d', icon: 'homework' },
   12: { colour: '#ed4a28', icon: 'lesson' },
   13: { colour: '#ed8934', icon: 'artifact' },
   14: { colour: '#f7ba2a', icon: 'assessment' },
+
+  // programs
   20: { colour: '#369934', icon: 'other' }
 }
 
