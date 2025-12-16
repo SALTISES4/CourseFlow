@@ -1,3 +1,4 @@
+import { _t } from '@cf/utility/Utility.class'
 import {
   SidebarActions,
   SidebarContent,
@@ -9,10 +10,8 @@ import TextField from '@mui/material/TextField'
 import { produce } from 'immer'
 import { ChangeEvent, useCallback, useState } from 'react'
 
-import getTermData from './getTermData'
-
 const EditTerm = () => {
-  const { title } = getTermData(1)
+  const title = 'Hello there'
 
   const [state, setState] = useState({
     title
@@ -30,7 +29,7 @@ const EditTerm = () => {
     <SidebarInnerWrap>
       <SidebarContent>
         <SidebarTitle as="h3" variant="h6">
-          Edit term
+          {_t('Edit term')}
         </SidebarTitle>
         <TextField
           variant="outlined"
@@ -42,10 +41,10 @@ const EditTerm = () => {
       </SidebarContent>
       <SidebarActions>
         <Button variant="contained" color="secondary">
-          Duplicate
+          {_t('Duplicate')}
         </Button>
         <Button variant="contained" color="secondary">
-          Delete
+          {_t('Delete')}
         </Button>
       </SidebarActions>
     </SidebarInnerWrap>

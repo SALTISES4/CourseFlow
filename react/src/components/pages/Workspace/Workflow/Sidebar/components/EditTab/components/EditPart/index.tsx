@@ -1,3 +1,4 @@
+import { _t } from '@cf/utility/Utility.class'
 import {
   SidebarActions,
   SidebarContent,
@@ -15,11 +16,14 @@ import { produce } from 'immer'
 import { ChangeEvent, useCallback, useState } from 'react'
 
 import SaveAsTemplate from '../SaveAsTemplate'
-import getPartData from './getPartData'
 import { strategiesOptions } from './optionsData'
 
 const EditPart = () => {
-  const { title, strategy } = getPartData(1)
+  const { title, strategy } = {
+    title: 'Part name here',
+    strategy: 3
+  }
+
   const [state, setState] = useState({
     title,
     strategy,
@@ -70,7 +74,7 @@ const EditPart = () => {
     <SidebarInnerWrap>
       <SidebarContent>
         <SidebarTitle as="h3" variant="h6">
-          Edit part
+          {_t('Edit part')}
         </SidebarTitle>
         <Stack direction="column" gap={3}>
           <TextField
@@ -82,7 +86,7 @@ const EditPart = () => {
           />
 
           <FormControl fullWidth>
-            <InputLabel id="strategy-select-label">Strategy</InputLabel>
+            <InputLabel id="strategy-select-label">{_t('Strategy')}</InputLabel>
             <Select
               size="small"
               label="Strategy"
@@ -105,13 +109,13 @@ const EditPart = () => {
           color="secondary"
           onClick={toggleTemplateForm}
         >
-          Save as personal template
+          {_t('Save as personal template')}
         </Button>
         <Button variant="contained" color="secondary">
-          Duplicate
+          {_t('Duplicate')}
         </Button>
         <Button variant="contained" color="secondary">
-          Delete
+          {_t('Delete')}
         </Button>
       </SidebarActions>
     </SidebarInnerWrap>

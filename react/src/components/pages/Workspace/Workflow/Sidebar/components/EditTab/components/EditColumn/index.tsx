@@ -18,7 +18,7 @@ import {
   SidebarTitle
 } from '../../../../styles'
 
-const EditNodeCategory = ({ columnId }: { columnId: number }) => {
+const EditColumn = ({ columnId }: { columnId: number }) => {
   const dispatch = useDispatch()
   const column = useSelector((state: RootState) =>
     selectColumnById(state, columnId)
@@ -95,4 +95,4 @@ const EditNodeCategory = ({ columnId }: { columnId: number }) => {
   )
 }
 
-export default EditNodeCategory
+export default EditColumn

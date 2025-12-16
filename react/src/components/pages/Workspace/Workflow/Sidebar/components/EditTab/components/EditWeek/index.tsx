@@ -1,7 +1,6 @@
 import { selectWeekById } from '@cf/redux/selectors/week.selector'
 import { CfObjectType } from '@cf/types/enum'
-import Utility from '@cf/utility/Utility.class'
-import { nodeChangeField } from '@cfRedux/slices/node.slice'
+import Utility, { _t } from '@cf/utility/Utility.class'
 import { weekChangeField } from '@cfRedux/slices/week.slice'
 import { RootState } from '@cfRedux/store'
 import { NodeForm } from '@cfSidebar/components/EditTab/components/EditNode/types'
@@ -11,31 +10,22 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import { updateValueQuery } from '@XMLHTTP/API/update'
 import { produce } from 'immer'
-import { ChangeEvent, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 
 import SaveAsTemplate from '../SaveAsTemplate'
 
 const EditWeek = () => {
-  /*******************************************************
-   * REDUX
-   *******************************************************/
   const sidebarData = useSelector((state: RootState) => state.sidebar)
   const week = useSelector((state: RootState) =>
     selectWeekById(state, sidebarData.edit.id)
   )
   const dispatch = useDispatch()
-  /*******************************************************
-   * STATE
-   *******************************************************/
   const [state, setState] = useState({
     template: false
   })
 
-  /*******************************************************
-   * RHF
-   *******************************************************/
   const {
     register,
     getValues,
@@ -49,9 +39,7 @@ const EditWeek = () => {
     }
   })
   const watchedFields = watch()
-  /*******************************************************
-   * RHF
-   *******************************************************/
+
   useEffect(() => {
     if (week && !isDirty) {
       reset({
@@ -112,9 +100,11 @@ const EditWeek = () => {
 
   return state.template ? (
     <SaveAsTemplate
-      title="Save as personal week template"
-      placeholder="Week label"
-      alert="The personal template name will not overwrite the node group title. Once saved, you’ll be able to add your personal template to any course. You can find and adjust your personal template within your Library."
+      title={_t('Save as personal week template')}
+      placeholder={_t('Week label')}
+      alert={_t(
+        'The personal template name will not overwrite the node group title. Once saved, you’ll be able to add your personal template to any course. You can find and adjust your personal template within your Library.'
+      )}
       onSave={onSaveTemplateClick}
       onCancel={toggleTemplateForm}
     />
@@ -123,10 +113,10 @@ const EditWeek = () => {
       <SC.SidebarInnerWrap>
         <SC.SidebarContent>
           <SC.SidebarTitle as="h3" variant="h6">
-            Edit week
+            {_t('Edit week')}
           </SC.SidebarTitle>
           <TextField
-            label="Week label"
+            label={_t('Week label')}
             variant="outlined"
             size="small"
             {...register('title')}
@@ -140,13 +130,13 @@ const EditWeek = () => {
             color="secondary"
             onClick={toggleTemplateForm}
           >
-            Save as personal template
+            {_t('Save as personal template')}
           </Button>
           <Button variant="contained" color="secondary">
-            Duplicate
+            {_t('Duplicate')}
           </Button>
           <Button variant="contained" color="secondary">
-            Delete
+            {_t('Delete')}
           </Button>
         </SC.SidebarActions>
       </SC.SidebarInnerWrap>
