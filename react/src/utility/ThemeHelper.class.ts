@@ -182,12 +182,9 @@ class ThemeHelper {
     colour
   }: {
     columnType: number
-    colour?: number
+    colour?: string | null
   }): string {
-    if (colour) {
-      return ThemeHelper.decimalToHex(colour)
-    }
-    return defaultColumnSettings[columnType]?.colour || ''
+    return colour ?? (defaultColumnSettings[columnType]?.colour || '')
   }
 
   static generateColorFromIntToHex(id: number) {
@@ -199,12 +196,6 @@ class ThemeHelper {
     const lightness = 50
 
     return this.hslToHex(hue, saturation, lightness)
-  }
-
-  static hexToDecimal() {}
-
-  static decimalToHex(val: number): string {
-    return '#' + ('000000' + val?.toString(16)).slice(-6)
   }
 
   static hslToHex(h, s, l) {
