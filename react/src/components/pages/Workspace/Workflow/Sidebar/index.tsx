@@ -37,7 +37,12 @@ function getTabContent(
 
   switch (tab) {
     case 'edit':
-      return <EditTab type={edit.objectType as unknown as EditableType} />
+      return (
+        <EditTab
+          id={edit.id}
+          type={edit.objectType as unknown as EditableType}
+        />
+      )
     case 'add':
       return <AddTab />
     case 'comments':

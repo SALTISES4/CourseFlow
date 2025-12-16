@@ -1,11 +1,16 @@
+import { selectColumnById } from '@cf/redux/selectors/column.selector'
+import { columnChangeField } from '@cf/redux/slices/column.slice'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
 import ColorPicker from '@cfComponents/UIPrimitives/ColorPicker'
+import { RootState } from '@cfRedux/store'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import { produce } from 'immer'
-import { ChangeEvent, useCallback, useState } from 'react'
+import { debounce } from '@mui/material/utils'
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
-import getNodeCategoryData from './getNodeCategoryData'
 import {
   SidebarActions,
   SidebarContent,
@@ -13,59 +18,77 @@ import {
   SidebarTitle
 } from '../../../../styles'
 
-const EditNodeCategory = () => {
-  const { title, color } = getNodeCategoryData(1)
-  const [state, setState] = useState({
-    title,
-    color: color || '#CFD8DC'
+const EditNodeCategory = ({ columnId }: { columnId: number }) => {
+  const dispatch = useDispatch()
+  const column = useSelector((state: RootState) =>
+    selectColumnById(state, columnId)
+  )
+
+  const columnColourHex = ThemeHelper.getColumnColour({
+    columnType: column.columnType,
+    colour: column.colour
   })
 
+  const [color, setColor] = useState(columnColourHex)
+
   const onTitleChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => [
-      setState(
-        produce((draft) => {
-          draft.title = e.target.value
+    (e: ChangeEvent<HTMLInputElement>) => {
+      dispatch(
+        columnChangeField({
+          id: columnId,
+          data: {
+            title: e.target.value
+          }
         })
       )
-    ],
-    []
+    },
+    [dispatch, columnId]
   )
 
   const onColorChange = useCallback((color: string) => {
-    setState(
-      produce((draft) => {
-        draft.color = color
-      })
-    )
+    setColor(color)
   }, [])
+
+  const debouncedUpdate = useMemo(
+    () =>
+      debounce((color: string) => {
+        dispatch(
+          columnChangeField({
+            id: columnId,
+            data: { colour: color }
+          })
+        )
+      }, 50),
+    [dispatch, columnId]
+  )
+
+  useEffect(() => {
+    debouncedUpdate(color)
+  }, [color, debouncedUpdate])
 
   return (
     <SidebarInnerWrap>
       <SidebarContent>
         <SidebarTitle as="h3" variant="h6">
-          Edit node category
+          {_t('Edit node category')}
         </SidebarTitle>
         <Stack direction="column" gap={3}>
           <TextField
             variant="outlined"
-            label="Title"
+            label={_t('Title')}
             size="small"
-            value={state.title}
+            value={column.title ?? column.columnTypeDisplay}
             onChange={onTitleChange}
           />
-          <ColorPicker
-            size="small"
-            color={state.color}
-            onChange={onColorChange}
-          />
+          <ColorPicker size="small" color={color} onChange={onColorChange} />
         </Stack>
       </SidebarContent>
       <SidebarActions>
         <Button variant="contained" color="secondary">
-          Duplicate
+          {_t('Duplicate')}
         </Button>
         <Button variant="contained" color="secondary">
-          Delete
+          {_t('Delete')}
         </Button>
       </SidebarActions>
     </SidebarInnerWrap>

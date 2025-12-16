@@ -123,12 +123,10 @@ const ColumnCellInner = ({
     }
   }
 
-  const columnColourHex = useMemo(() => {
-    return ThemeHelper.getColumnColour({
-      columnType: column.columnType,
-      colour: column.colour
-    })
-  }, [column.colour, column.columnType])
+  const columnColourHex = ThemeHelper.getColumnColour({
+    columnType: column.columnType,
+    colour: column.colour
+  })
 
   useEffect(() => {
     const el = ref.current
@@ -157,7 +155,11 @@ const ColumnCellInner = ({
     return null
   }
 
-  const title = column.title ?? column.columnTypeDisplay
+  const title = column.title
+    ? column.title.length
+      ? column.title
+      : column.columnTypeDisplay
+    : column.columnTypeDisplay
 
   return (
     <Styled.ColumnWrap ref={ref} dragging={state.dragging}>

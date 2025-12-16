@@ -9,7 +9,7 @@ import EditTerm from './components/EditTerm'
 import EditWeek from './components/EditWeek'
 import { EditableType } from './types'
 
-const EditTab = ({ type }: { type: EditableType }) => {
+const EditTab = ({ id, type }: { id: number; type: EditableType }) => {
   if (!type) {
     return null
   }
@@ -26,7 +26,7 @@ const EditTab = ({ type }: { type: EditableType }) => {
     case EditableType.NODE_LINK:
       return <EditNodelink />
     case EditableType.NODE_CATEGORY:
-      return <EditNodeCategory />
+      return <EditNodeCategory key={id} columnId={id} />
     case EditableType.NODE:
       return <EditNode />
     default:
