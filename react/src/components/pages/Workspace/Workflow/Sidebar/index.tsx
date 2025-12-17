@@ -59,6 +59,8 @@ function getTabContent(
 // Object types that have Comments tab shown once clicked on/edited
 const objectTypesWithComments: CfObjectType[] = [
   CfObjectType.NODE,
+  CfObjectType.COLUMN,
+  CfObjectType.WEEK,
   CfObjectType.OUTCOME
 ]
 
