@@ -1,4 +1,5 @@
 from io import BytesIO
+import traceback
 
 import pandas as pd
 from django.db.models import Q
@@ -14,13 +15,16 @@ from .models import (
     Program,
     Week,
     WeekWorkflow,
+    Column,
 )
 from .serializers import (
     NodeExportSerializer,
     NodeExportSerializerWithTime,
+    NodeExportSerializerForFormatted,
     OutcomeExportSerializer,
     WeekExportSerializer,
     WorkflowExportSerializer,
+    ColumnExportSerializer,
 )
 from .utils import (
     get_all_outcomes_ordered_filtered,
@@ -257,7 +261,7 @@ def get_course_framework(workflow, allowed_sets):
     df = concat_line(df, headers)
     for outcome in workflow.outcomes.filter(deleted=False).filter(
         allowed_sets_Q(allowed_sets)
-    ):
+    ).distinct():
         df = concat_line(
             df, get_framework_line_for_outcome(outcome, columns, allowed_sets)
         )
@@ -267,7 +271,7 @@ def get_course_framework(workflow, allowed_sets):
 def get_workflow_outcomes_table(workflow, allowed_sets):
     outcomes = get_all_outcomes_ordered_filtered(
         workflow, allowed_sets_Q(allowed_sets)
-    )
+    ).distinct()
     data = OutcomeExportSerializer(outcomes, many=True).data
     df = pd.DataFrame(
         data, columns=["code", "title", "description", "id", "depth"]
@@ -532,6 +536,10 @@ def get_workflows_export(model_object, object_type, export_format, allowed_sets)
     with BytesIO() as b:
         if export_format == "excel":
             with pd.ExcelWriter(b, engine="xlsxwriter") as writer:
+                workbook = writer.book 
+                wrap_format = workbook.add_format()
+                wrap_format.set_text_wrap()
+                wrap_format.set_align("top")
                 for workflow in workflows:
                     df = get_workflow_full_table(workflow, allowed_sets)
                     sheet_name = (
@@ -542,6 +550,8 @@ def get_workflows_export(model_object, object_type, export_format, allowed_sets)
                         sheet_name=sheet_name,
                         index=False,
                     )
+                    worksheet = writer.sheets[sheet_name]
+                    worksheet.set_column(0, 9, 40, wrap_format)
         elif export_format == "csv":
             df = pd.DataFrame(
                 {},
@@ -636,7 +646,7 @@ def get_program_matrix(workflow, simple, allowed_sets):
     else:
         outcomes = get_all_outcomes_ordered_filtered(
             workflow, allowed_sets_Q(allowed_sets)
-        )
+        ).distinct()
 
     rows = []
     for weekworkflow in WeekWorkflow.objects.filter(
@@ -648,6 +658,7 @@ def get_program_matrix(workflow, simple, allowed_sets):
         for node in (
             Node.objects.filter(allowed_sets_Q(allowed_sets))
             .filter(week=week, deleted=False)
+            .distinct()
             .order_by("nodeweek__rank")
         ):
             rows += [{"type": "node", "object": node}]
@@ -757,6 +768,7 @@ def get_workflow_nodes_table(workflow, allowed_sets):
         entries += NodeExportSerializer(
             Node.objects.filter(week=week, deleted=False)
             .filter(allowed_sets_Q(allowed_sets))
+            .distinct()
             .order_by("nodeweek__rank"),
             many=True,
         ).data
@@ -767,22 +779,76 @@ def get_workflow_nodes_table(workflow, allowed_sets):
     return df
 
 def get_workflow_full_table(workflow, allowed_sets):
-    entries = []
-    for week in Week.objects.filter(workflow=workflow, deleted=False).order_by(
-        "weekworkflow__rank"
-    ):
-        entries += [WeekExportSerializer(week).data]
-        entries += NodeExportSerializer(
-            Node.objects.filter(week=week, deleted=False)
-            .filter(allowed_sets_Q(allowed_sets))
-            .order_by("nodeweek__rank"),
-            many=True,
-        ).data
-    df = pd.DataFrame(
-        entries, columns=["type", "title", "description", "column_order", "id"]
-    )
-    pd.set_option("display.max_colwidth", None)
-    return df
+    try:
+        entries = []
+        for week in Week.objects.filter(workflow=workflow, deleted=False).order_by(
+            "weekworkflow__rank"
+        ):
+            week_serialized = WeekExportSerializer(week).data
+            week_serialized["week"]=week_serialized["title"]
+            del week_serialized["title"]
+            entries += [week_serialized]
+            nodes = NodeExportSerializerForFormatted(
+                Node.objects.filter(week=week, deleted=False)
+                .filter(allowed_sets_Q(allowed_sets))
+                .distinct()
+                .order_by("nodeweek__rank"),
+                many=True,
+            ).data
+            entries += nodes
+        #Create the original dataframe
+        df = pd.DataFrame(
+            entries, columns=["type", "week","title", "description", "outcomes", "column_order", "id"]
+        )
+        #Since we have weeks and nodes, we'll need a unique id for our objects and we want to preserve this order for later
+        df["uid"] = df.index
+        df["column_order"] = df["column_order"].fillna(-1)
+        df["column_order"] = df["column_order"].astype(int)
+
+        #Get the column colour info
+        df_col = pd.DataFrame(
+            ColumnExportSerializer(
+                Column.objects.filter(workflow=workflow, deleted=False).order_by("columnworkflow__rank"),
+                many=True
+            ).data, 
+            columns=["title", "colour"]
+        )
+        df_col = df_col.rename(columns={"title":"column_title"})
+        df_col["column_order"]=df_col.index
+        print(df_col)
+        print(df_col["column_order"].dtype)
+        print(df["column_order"].dtype)
+        #Merge it into our dataframe
+        df = df.merge(df_col,on="column_order",how="left")
+        print(df)
+
+        #Pivot our tables to get a sparse array that mimics the column structure of workflows
+        wide_title = (
+            df[df["type"]=="node"].pivot(index="uid",columns="column_order", values="title")
+        )
+        wide_title["rowtype"]="a_title"
+        wide_description = (
+            df[df["type"]=="node"].pivot(index="uid",columns="column_order", values="description")
+        )
+        wide_description["rowtype"]="b_description"
+        interleaved = (pd.concat([wide_title,wide_description])
+            .reset_index()
+        )
+        df.loc[df["type"]=="node", "rowtype"] = "b_description"
+        print("df columns")
+        print(df.columns)
+        print(interleaved)
+        print(interleaved.columns)
+        pivoted = df.merge(interleaved, on=["uid","rowtype"],how="outer").sort_values(["uid","rowtype"])
+        print(wide_title)
+        print(wide_description)
+        print(pivoted)
+
+        pd.set_option("display.max_colwidth", None)
+        return df
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
 
 
 def get_sobec_outcome(workflow, outcome, allowed_sets):
@@ -814,7 +880,7 @@ def get_sobec_outcome(workflow, outcome, allowed_sets):
 def get_sobec(workflow, allowed_sets):
     outcomes = get_base_outcomes_ordered_filtered(
         workflow, allowed_sets_Q(allowed_sets)
-    )
+    ).distinct()
     data = []
     for outcome in outcomes:
         data += get_sobec_outcome(workflow, outcome, allowed_sets)

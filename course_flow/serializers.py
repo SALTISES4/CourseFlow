@@ -52,6 +52,7 @@ from .utils import (
     get_user_role,
     linkIDMap,
     user_workflow_url,
+    default_column_settings,
 )
 
 bleach_allowed_attributes_description = {
@@ -191,6 +192,8 @@ class TitleSerializerTextMixin(serializers.Serializer):
                         + 1
                     )
                 )
+            elif self.get_type(instance) == "column":
+                return (instance.get_display_title())
             else:
                 return _("Untitled")
         returnval = html2text(
@@ -1596,6 +1599,30 @@ class WeekExportSerializer(
     def get_type(self, instance):
         return "week"
 
+class ColumnExportSerializer(
+    serializers.ModelSerializer,
+    TitleSerializerTextMixin
+):
+    class Meta:
+        model = Column
+        fields = [
+            "id",
+            "title",
+            "colour",
+        ]
+
+    colour = serializers.SerializerMethodField()
+
+    def get_colour(self, instance):
+        if instance.colour: return instance.colour 
+        default_col = default_column_settings.get(str(instance.column_type))
+        if default_col:
+            return default_col.get("colour")
+
+    def get_type(self, instance):
+        return "column"
+
+
 class NodeExportSerializer(
     serializers.ModelSerializer,
     TitleSerializerTextMixin,
@@ -1695,6 +1722,30 @@ class NodeExportSerializerWithTime(NodeExportSerializer):
             return instance.linked_workflow.time_required
         else:
             return instance.time_required
+
+class NodeExportSerializerForFormatted(
+    NodeExportSerializerWithTime
+):
+    class Meta:
+        model = Node
+        fields = [
+            "id",
+            "title",
+            "description",
+            "column_order",
+            "type",
+            "code",
+            "outcomes",
+            "time_required",
+        ]
+
+    outcomes = serializers.SerializerMethodField()
+
+    def get_outcomes(self, instance):
+        ocns = get_unique_outcomenodes(instance)
+        ocs = OutcomeExportSerializer([ocn.outcome for ocn in ocns],many=True).data 
+        ocs_format = [oc.get("code") + " - " +oc.get("title") for oc in ocs]
+        return "\n\n".join(ocs_format)
 
 
 class WorkflowExportSerializer(
