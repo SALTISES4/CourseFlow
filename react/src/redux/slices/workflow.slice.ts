@@ -60,9 +60,11 @@ const workflowSlice = createSlice({
         return
       }
 
-      const swapper = state.columns[moveIndex]
-      state.columns[moveIndex] = state.columns[toIndex]
-      state.columns[toIndex] = swapper
+      const deleted = state.columns.splice(moveIndex, 1)
+      state.columns.splice(toIndex, 0, ...deleted)
+      // const swapper = state.columns[moveIndex]
+      // state.columns[moveIndex] = state.columns[toIndex]
+      // state.columns[toIndex] = swapper
     },
 
     // workflow reorder weeks

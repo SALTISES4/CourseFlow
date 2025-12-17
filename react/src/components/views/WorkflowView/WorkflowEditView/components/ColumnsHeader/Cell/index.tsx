@@ -2,6 +2,12 @@ import {
   draggable,
   dropTargetForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import {
+  Edge,
+  attachClosestEdge,
+  extractClosestEdge
+} from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
+import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box'
 import useHover from '@cf/hooks/useHover'
 import BetterSelectionManager from '@cf/redux/BetterSelectionManager'
 import { selectColumnById } from '@cf/redux/selectors/column.selector'
@@ -9,7 +15,6 @@ import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { RootState } from '@cfRedux/store'
 import clsx from 'clsx'
-import { produce } from 'immer'
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -22,69 +27,62 @@ type CellProps = {
   index: number
   columnId: number
   parentId: number
-  draggingOver?: boolean
   onReorder: ColumnReorderCallbackFn
 }
 
 const ColumnCell = ({ index, columnId, parentId, onReorder }: CellProps) => {
   const ref = useRef<HTMLDivElement>(null)
-  const [state, setState] = useState({
-    draggedOver: false
-  })
+
+  const [closestEdge, setClosestEdge] = useState<Edge>(null)
 
   useEffect(() => {
     const el = ref.current
 
     return dropTargetForElements({
       element: el,
-      canDrop: ({ source }) => {
-        // early exit for unsupported draggables
-        if (source.data.type !== DraggableType.COLUMN) {
-          return false
-        }
-
-        return true
-      },
-      onDragEnter: ({ source }) => {
-        // early exit if no position change
-        if (source.data.index === index) {
-          return
-        }
-
-        setState(
-          produce((draft) => {
-            draft.draggedOver = true
-          })
+      getData: ({ input, element }) => {
+        return attachClosestEdge(
+          {},
+          {
+            input,
+            element,
+            allowedEdges: ['left', 'right']
+          }
         )
       },
-      onDragLeave: () => {
-        setState(
-          produce((draft) => {
-            draft.draggedOver = false
-          })
-        )
-      },
-      onDrop: ({ source }) => {
+      onDragLeave: () => setClosestEdge(null),
+      onDrag: ({ self, source }) => {
         if (source.data.index !== index) {
-          onReorder(source.data.index as number, index)
+          setClosestEdge(extractClosestEdge(self.data))
         }
-        setState(
-          produce((draft) => {
-            draft.draggedOver = false
-          })
-        )
+      },
+      canDrop: ({ source }) => source.data.type === DraggableType.COLUMN,
+      onDrop: ({ source }) => {
+        const fromIndex = source.data.index as number
+        let toIndex = index
+
+        if (fromIndex < toIndex && closestEdge === 'left') {
+          toIndex -= 1
+        }
+
+        if (fromIndex > toIndex && closestEdge === 'right') {
+          toIndex += 1
+        }
+
+        if (fromIndex !== toIndex) {
+          onReorder(fromIndex, toIndex)
+        }
+        setClosestEdge(null)
       }
     })
-  }, [index, onReorder])
+  }, [index, closestEdge, onReorder])
 
   return (
     <StyledWorkflow.Cell ref={ref} data-column-id={columnId}>
-      <ColumnCellInner
-        index={index}
-        columnId={columnId}
-        parentId={parentId}
-        draggingOver={state.draggedOver}
-      />
+      <ColumnCellInner index={index} columnId={columnId} parentId={parentId} />
+      {closestEdge && (
+        <DropIndicator edge={closestEdge} type="no-terminal" gap="24px" />
+      )}
     </StyledWorkflow.Cell>
   )
 }
@@ -92,8 +90,7 @@ const ColumnCell = ({ index, columnId, parentId, onReorder }: CellProps) => {
 const ColumnCellInner = ({
   index,
   columnId,
-  parentId,
-  draggingOver
+  parentId
 }: Omit<CellProps, 'onReorder'>) => {
   const [ref, isHovering] = useHover()
   const dispatch = useDispatch()
@@ -106,9 +103,7 @@ const ColumnCellInner = ({
       state.sidebar.edit.objectType === CfObjectType.COLUMN &&
       state.sidebar.edit.id === columnId
   )
-  const [state, setState] = useState({
-    dragging: false
-  })
+  const [dragging, setDragging] = useState(false)
   const objectType = CfObjectType.COLUMN
 
   const manager = useMemo(
@@ -134,22 +129,10 @@ const ColumnCellInner = ({
     return draggable({
       element: el,
       getInitialData: () => ({ index, columnId, type: DraggableType.COLUMN }),
-      onDragStart: () => {
-        setState(
-          produce((draft) => {
-            draft.dragging = !draft.dragging
-          })
-        )
-      },
-      onDrop: () => {
-        setState(
-          produce((draft) => {
-            draft.dragging = false
-          })
-        )
-      }
+      onDragStart: () => setDragging(!dragging),
+      onDrop: () => setDragging(false)
     })
-  }, [index, columnId, ref])
+  }, [columnId, dragging, index, ref])
 
   if (!column || !workflow) {
     return null
@@ -162,12 +145,8 @@ const ColumnCellInner = ({
     : column.columnTypeDisplay
 
   return (
-    <Styled.ColumnWrap ref={ref} dragging={state.dragging}>
-      <Styled.Background
-        selected={selected}
-        hovering={isHovering}
-        draggingOver={draggingOver}
-      />
+    <Styled.ColumnWrap ref={ref} dragging={dragging}>
+      <Styled.Background selected={selected} hovering={isHovering} />
       <HoverMenu nodeId={columnId} show={isHovering} />
       <Styled.Inner
         border={column.lock && `2px solid ${column.lock.userColour}`}

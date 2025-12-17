@@ -35,8 +35,8 @@ export const Border = styled(Box, {
 export const Background = styled(Box, {
   shouldForwardProp: (prop) =>
     !['hovering', 'selected', 'draggingOver'].includes(prop as string)
-})<{ hovering: boolean; selected: boolean; draggingOver: boolean }>(
-  ({ theme, hovering, selected, draggingOver }) => ({
+})<{ hovering: boolean; selected: boolean }>(
+  ({ theme, hovering, selected }) => ({
     position: 'absolute',
     top: '-8px',
     left: '-8px',
@@ -50,9 +50,6 @@ export const Background = styled(Box, {
     }),
     ...(selected && {
       boxShadow: `0 0 0 2px ${theme.palette.workflow.selected}`
-    }),
-    ...(draggingOver && {
-      backgroundColor: 'rgba(4, 186, 116, 0.1)'
     })
   })
 )
