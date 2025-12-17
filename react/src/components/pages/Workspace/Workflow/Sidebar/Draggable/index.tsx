@@ -1,8 +1,10 @@
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { svglinkAllowDND } from '@cf/redux/slices/svglink.slice'
 import { DraggableType } from '@cfViews/WorkflowView/WorkflowEditView/types'
 import { SxProps } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import { ElementType, ReactNode, useEffect, useRef } from 'react'
+import { useDispatch } from 'react-redux'
 
 import * as Styled from './styles'
 
@@ -20,6 +22,7 @@ type PropsType = {
 
 const DraggableBlock = ({
   sx,
+  id,
   type,
   typeColor,
   highlight,
@@ -28,44 +31,21 @@ const DraggableBlock = ({
   toggle,
   dashed
 }: PropsType) => {
+  const dispatch = useDispatch()
   const dragRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const el = dragRef.current
-
-    // dummy "dynamic" data
-    // TODO: properly type this out
-    let data = {}
-
-    if (type === DraggableType.REUSABLE || type === DraggableType.STRATEGIES) {
-      data = {
-        id: 3,
-        rows: [] // board rows
-      }
-    }
-
-    if (type === DraggableType.COLUMN) {
-      data = {}
-    }
-
-    if (type === DraggableType.CELL) {
-      data = {
-        coords: {
-          week: -1,
-          x: 0,
-          y: -1
-        }
-      }
-    }
-
     return draggable({
       element: el,
       getInitialData: () => ({
-        type,
-        ...data
-      })
+        id,
+        type
+      }),
+      onDragStart: () => dispatch(svglinkAllowDND(true)),
+      onDrop: () => dispatch(svglinkAllowDND(false))
     })
-  }, [type])
+  }, [id, type, dispatch])
 
   return (
     <Styled.DraggableWrap

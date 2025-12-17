@@ -4,15 +4,8 @@ import { DraggableType } from '@cfViews/WorkflowView/WorkflowEditView/types'
 
 import { AddTabType } from '../../types'
 
-type ColumnNodeDataType = {
-  id: number
-  title: string
-  color: string
-}
-
 // Prepare the workflow node categories (columns) data
-// @todo this is probably wrong
-export function getColumnData(columns: TColumn[]): ColumnNodeDataType[] {
+export function getColumnData(columns: TColumn[]) {
   return columns.map((column) => ({
     id: column.id,
     title: column.title ?? column.columnTypeDisplay,
@@ -28,7 +21,7 @@ const data: AddTabType = {
   subtitle: 'Drag and drop to add nodes.',
   groups: [
     {
-      type: DraggableType.REUSABLE,
+      type: DraggableType.SIDEBAR_REUSABLE,
       title: 'Reusable blocks',
       blocks: [
         {
@@ -46,7 +39,7 @@ const data: AddTabType = {
       ]
     },
     {
-      type: DraggableType.STRATEGIES,
+      type: DraggableType.SIDEBAR_STRATEGY,
       title: 'Strategies',
       blocks: [
         {

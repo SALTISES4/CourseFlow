@@ -21,7 +21,7 @@ import { MouseEvent, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import * as Styled from '../../../../styles'
-import { CellDataType, DraggableType } from '../../../../types'
+import { CellDataType, DraggableType, isSidebarNode } from '../../../../types'
 import { isGridCell } from '../../../../types'
 import Handles from '../../../LineSVG/Handles'
 import HoverMenu from '../HoverMenu'
@@ -102,9 +102,10 @@ const WeekCellNode = ({
             }
           )
         },
-        canDrop: ({ source }) => {
-          return isOutcomeLink(source.data) || isGridCell(source.data)
-        },
+        canDrop: ({ source }) =>
+          isOutcomeLink(source.data) ||
+          isGridCell(source.data) ||
+          isSidebarNode(source.data),
         onDragEnter: ({ source }) => {
           if (isOutcomeLink(source.data)) {
             toggleState({ dropHighlight: true })
@@ -118,7 +119,10 @@ const WeekCellNode = ({
         },
         onDrag: ({ source, self }) => {
           const dragging = source.data
-          if (isGridCell(dragging) && dragging.id !== nodeId) {
+          if (
+            isSidebarNode(dragging) ||
+            (isGridCell(dragging) && dragging.id !== nodeId)
+          ) {
             setState(
               produce((draft) => {
                 draft.closestEdge = extractClosestEdge(self.data)
@@ -142,6 +146,11 @@ const WeekCellNode = ({
               toColumn: columnId,
               toRow: coordsY
             })
+          }
+
+          // TODO: implement sidebar node categories
+          if (isSidebarNode(dropped)) {
+            console.log('dropped', dropped)
           }
 
           toggleState({ dropHighlight: false, closestEdge: null })

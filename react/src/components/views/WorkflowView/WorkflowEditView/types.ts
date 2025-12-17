@@ -2,15 +2,16 @@ import { NodeWorkflowReorderPayload } from '@cf/redux/slices/node.slice'
 import { MouseEvent } from 'react'
 
 export enum DraggableType {
+  // draggables from the workflow view grid
   COLUMN = 'column',
   CELL = 'cell',
   WEEK = 'week',
-  REUSABLE = 'reusable',
-  STRATEGIES = 'strategies'
-}
 
-export enum DroppableType {
-  ROW = 'row'
+  // draggables from the sidebar Add tab
+  SIDEBAR_NODE = 'sidebar node',
+  SIDEBAR_NODE_CUSTOM = 'sidebar node custom',
+  SIDEBAR_REUSABLE = 'reusable',
+  SIDEBAR_STRATEGY = 'strategy'
 }
 
 export type CellDataType = {
@@ -21,14 +22,6 @@ export type CellDataType = {
     y: number // row
   }
   type: DraggableType
-}
-
-type RowDataType = {
-  coords: {
-    week: number
-    y: number
-  }
-  type: DroppableType
 }
 
 type WeekDataType = {
@@ -60,12 +53,6 @@ export function isGridWeek(
   return 'index' in data && 'type' in data && data.type === DraggableType.WEEK
 }
 
-export function isGridRow(
-  data: Record<string | symbol, unknown>
-): data is RowDataType {
-  return 'coords' in data && 'type' in data && data.type === DroppableType.ROW
-}
-
 export function isGridCell(
   data: Record<string | symbol, unknown>
 ): data is CellDataType {
@@ -77,16 +64,24 @@ export function isGridCell(
   )
 }
 
-type BoardWeekType = {
-  id: number
-}
-
-export function isSidebarPart(
-  data: Record<string | symbol, unknown>
-): data is BoardWeekType {
+export function isSidebarNode(data: Record<string | symbol, unknown>): data is {
+  id: number | string
+  type: DraggableType.SIDEBAR_NODE | DraggableType.SIDEBAR_NODE_CUSTOM
+} {
   return (
     'id' in data &&
-    (data.type === DraggableType.REUSABLE ||
-      data.type === DraggableType.STRATEGIES)
+    'type' in data &&
+    (data.type === DraggableType.SIDEBAR_NODE ||
+      data.type === DraggableType.SIDEBAR_NODE_CUSTOM)
+  )
+}
+
+export function isSidebarPart(data: Record<string | symbol, unknown>): data is {
+  id: number
+} {
+  return (
+    'id' in data &&
+    (data.type === DraggableType.SIDEBAR_REUSABLE ||
+      data.type === DraggableType.SIDEBAR_STRATEGY)
   )
 }

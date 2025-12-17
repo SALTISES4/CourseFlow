@@ -102,7 +102,7 @@ const AddTab = () => {
                   component="li"
                   id={column.id}
                   label={column.title}
-                  type={DraggableType.CELL}
+                  type={DraggableType.SIDEBAR_NODE}
                   typeColor={column.color}
                 />
               ))}
@@ -110,7 +110,7 @@ const AddTab = () => {
                 component="li"
                 id="new"
                 label={'Custom node category'}
-                type={DraggableType.COLUMN}
+                type={DraggableType.SIDEBAR_NODE_CUSTOM}
                 dashed
               />
             </ul>
@@ -131,7 +131,7 @@ const AddTab = () => {
                     label={block.label}
                     type={group.type}
                     typeColor={
-                      group.type === DraggableType.REUSABLE
+                      group.type === DraggableType.SIDEBAR_REUSABLE
                         ? theme.palette.workspaceBlocks.reusableBlocks
                         : theme.palette.workspaceBlocks.strategies
                     }

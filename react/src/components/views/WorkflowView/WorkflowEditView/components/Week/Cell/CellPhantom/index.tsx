@@ -9,7 +9,7 @@ import Box from '@mui/material/Box'
 import { produce } from 'immer'
 import { useEffect, useState } from 'react'
 
-import { isGridCell } from '../../../../types'
+import { isGridCell, isSidebarNode } from '../../../../types'
 import { WeekCellPhantomTypeInternal } from '../types'
 
 const WeekCellPhantom = ({
@@ -45,7 +45,7 @@ const WeekCellPhantom = ({
         )
       },
       onDrag: ({ source, self }) => {
-        if (!isGridCell(source.data)) {
+        if (!isGridCell(source.data) && !isSidebarNode(source.data)) {
           return
         }
         setState(
@@ -67,25 +67,34 @@ const WeekCellPhantom = ({
           closestEdge: null
         })
       },
-      canDrop: ({ source }) => isGridCell(source.data),
+      canDrop: ({ source }) => {
+        return isGridCell(source.data) || isSidebarNode(source.data)
+      },
       onDrop: ({ source, self }) => {
         const dropped = source.data
-        if (!isGridCell(dropped)) {
+        if (!isGridCell(dropped) && !isSidebarNode(source.data)) {
           return null
         }
 
-        onDrop({
-          type: 'phantom',
-          edge:
-            insertMode === 'column'
-              ? undefined
-              : (extractClosestEdge(self.data) as 'top' | 'bottom'),
-          id: dropped.id,
-          fromWeek: dropped.coords.week,
-          toWeek: coordsWeek,
-          toColumn: columnId,
-          toRow: coordsY
-        })
+        if (isGridCell(dropped)) {
+          onDrop({
+            type: 'phantom',
+            edge:
+              insertMode === 'column'
+                ? undefined
+                : (extractClosestEdge(self.data) as 'top' | 'bottom'),
+            id: dropped.id,
+            fromWeek: dropped.coords.week,
+            toWeek: coordsWeek,
+            toColumn: columnId,
+            toRow: coordsY
+          })
+        }
+
+        // TODO: implement sidebar node categories
+        if (isSidebarNode(dropped)) {
+          console.log('dropped', dropped)
+        }
 
         setState(
           produce((draft) => {
