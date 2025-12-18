@@ -80,6 +80,9 @@ const workflowSlice = createSlice({
 
       const moved = state.weeks.splice(fromIndex, 1)
       state.weeks.splice(toIndex, 0, moved[0])
+    },
+    deleteWeek(state, action: PayloadAction<{ id: number }>) {
+      state.weeks.splice(state.weeks.indexOf(action.payload.id), 1)
     }
   },
   extraReducers: (builder) => {
@@ -325,7 +328,8 @@ export const {
   createLock: workflowCreateLock,
   changeField: workflowChangeField,
   reorderColumns: workflowReorderColumns,
-  reorderWeeks: workflowReorderWeeks
+  reorderWeeks: workflowReorderWeeks,
+  deleteWeek: workflowDeleteWeek
 } = workflowSlice.actions
 
 export default workflowSlice.reducer

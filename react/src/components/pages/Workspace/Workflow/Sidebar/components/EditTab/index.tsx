@@ -16,19 +16,19 @@ const EditTab = ({ id, type }: { id: number; type: EditableType }) => {
 
   switch (type) {
     case EditableType.TERM:
-      return <EditTerm />
+      return <EditTerm key={id} />
     case EditableType.WEEK:
-      return <EditWeek />
+      return <EditWeek key={id} weekId={id} />
     case EditableType.PART:
-      return <EditPart />
+      return <EditPart key={id} />
     case EditableType.OUTCOME:
-      return <EditOutcome />
+      return <EditOutcome key={id} outcomeId={id} />
     case EditableType.NODE_LINK:
-      return <EditNodelink />
+      return <EditNodelink key={id} nodeLinkId={id} />
     case EditableType.COLUMN:
       return <EditColumn key={id} columnId={id} />
     case EditableType.NODE:
-      return <EditNode />
+      return <EditNode key={id} nodeId={id} />
     default:
       return (
         <Alert

@@ -1,3 +1,5 @@
+import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
+import { TNode } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
@@ -27,16 +29,20 @@ import { useDispatch, useSelector } from 'react-redux'
 import optionsData from './optionsData'
 import { NodeForm } from './types'
 
-const EditNode = () => {
-  /*******************************************************
-   * HOOKS
-   *******************************************************/
-  const sidebarData = useSelector((state: RootState) => state.sidebar)
-  const node = useSelector((state: RootState) =>
-    selectNodeById(state, sidebarData.edit.id)
-  )
+const EditNode = ({ nodeId }: { nodeId: number }) => {
   const dispatch = useDispatch()
+  const node = useSelector((state: RootState) => selectNodeById(state, nodeId))
 
+  if (!node) {
+    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
+    return null
+  }
+
+  return <EditNodeForm node={node} />
+}
+
+const EditNodeForm = ({ node }: { node: TNode }) => {
+  const dispatch = useDispatch()
   const [linkedWorkflow, setLinkedWorkflow] = useState(false)
 
   const {
@@ -74,7 +80,7 @@ const EditNode = () => {
    * LIFECYCLE
    *******************************************************/
   useEffect(() => {
-    if (node && !isDirty) {
+    if (!isDirty) {
       reset({
         title: node.title,
         description: node.description,
@@ -101,7 +107,7 @@ const EditNode = () => {
         // update redux state
         dispatch(
           nodeChangeField({
-            id: sidebarData.edit.id,
+            id: node.id,
             data: {
               title: data.title,
               description: data.description,
@@ -114,11 +120,11 @@ const EditNode = () => {
         )
 
         // update the server
-        updateValueQuery(sidebarData.edit.id, CfObjectType.NODE, data, true)
+        updateValueQuery(node.id, CfObjectType.NODE, data, true)
 
         reset({}, { keepValues: true })
       }, 300),
-    [dispatch, reset, sidebarData.edit.id]
+    [dispatch, reset, node.id]
   )
 
   useEffect(() => {
@@ -366,11 +372,6 @@ const EditNode = () => {
               </Stack>
             </>
           )}
-
-          {/*
-
-          probably not used bottom buttons
-          */}
           <BottomButtons />
         </SC.SidebarContent>
       </SC.SidebarInnerWrap>

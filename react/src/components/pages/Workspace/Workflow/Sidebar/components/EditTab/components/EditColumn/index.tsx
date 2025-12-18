@@ -1,5 +1,7 @@
 import { selectColumnById } from '@cf/redux/selectors/column.selector'
 import { columnChangeField } from '@cf/redux/slices/column.slice'
+import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
+import { TColumn } from '@cf/redux/types/type'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import ColorPicker from '@cfComponents/UIPrimitives/ColorPicker'
@@ -24,6 +26,17 @@ const EditColumn = ({ columnId }: { columnId: number }) => {
     selectColumnById(state, columnId)
   )
 
+  if (!column) {
+    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
+    return null
+  }
+
+  return <EditColumnForm column={column} />
+}
+
+const EditColumnForm = ({ column }: { column: TColumn }) => {
+  const dispatch = useDispatch()
+
   const columnColourHex = ThemeHelper.getColumnColour({
     columnType: column.columnType,
     colour: column.colour
@@ -35,14 +48,14 @@ const EditColumn = ({ columnId }: { columnId: number }) => {
     (e: ChangeEvent<HTMLInputElement>) => {
       dispatch(
         columnChangeField({
-          id: columnId,
+          id: column.id,
           data: {
             title: e.target.value
           }
         })
       )
     },
-    [dispatch, columnId]
+    [dispatch, column.id]
   )
 
   const onColorChange = useCallback((color: string) => {
@@ -54,12 +67,12 @@ const EditColumn = ({ columnId }: { columnId: number }) => {
       debounce((color: string) => {
         dispatch(
           columnChangeField({
-            id: columnId,
+            id: column.id,
             data: { colour: color }
           })
         )
       }, 50),
-    [dispatch, columnId]
+    [dispatch, column.id]
   )
 
   useEffect(() => {

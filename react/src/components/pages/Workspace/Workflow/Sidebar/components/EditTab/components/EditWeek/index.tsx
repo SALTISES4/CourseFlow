@@ -1,4 +1,6 @@
 import { selectWeekById } from '@cf/redux/selectors/week.selector'
+import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
+import { TWeek } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { weekChangeField } from '@cfRedux/slices/week.slice'
@@ -16,11 +18,19 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import SaveAsTemplate from '../SaveAsTemplate'
 
-const EditWeek = () => {
-  const sidebarData = useSelector((state: RootState) => state.sidebar)
-  const week = useSelector((state: RootState) =>
-    selectWeekById(state, sidebarData.edit.id)
-  )
+const EditWeek = ({ weekId }: { weekId: number }) => {
+  const dispatch = useDispatch()
+  const week = useSelector((state: RootState) => selectWeekById(state, weekId))
+
+  if (!week) {
+    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
+    return null
+  }
+
+  return <EditWeekForm week={week} />
+}
+
+const EditWeekForm = ({ week }: { week: TWeek }) => {
   const dispatch = useDispatch()
   const [state, setState] = useState({
     template: false
@@ -52,23 +62,22 @@ const EditWeek = () => {
     debounce((data) => {
       dispatch(
         weekChangeField({
-          id: sidebarData.edit.id,
+          id: week.id,
           data: {
             title: data.title
           }
         })
       )
 
-      updateValueQuery(sidebarData.edit.id, CfObjectType.WEEK, data, true)
+      updateValueQuery(week.id, CfObjectType.WEEK, data, true)
 
       reset({}, { keepValues: true })
     }, 300),
-    [dispatch, sidebarData.edit.id]
+    [dispatch, week.id]
   )
 
   useEffect(() => {
     const formValues = getValues()
-
     if (isDirty) {
       debouncedDispatch(formValues)
     }

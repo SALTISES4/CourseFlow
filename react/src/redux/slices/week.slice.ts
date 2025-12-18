@@ -1,19 +1,16 @@
-import { nodeAdapter } from '@cfRedux/slices/node.slice'
-import store from '@cfRedux/store'
 import {
   CommonActions,
   NodeActions,
   SliceNamespace,
   StrategyActions
 } from '@cfRedux/types/enumActions'
-import { AppState, TWeek, WorkspaceAppState } from '@cfRedux/types/type'
+import { TWeek, WorkspaceAppState } from '@cfRedux/types/type'
 import {
   PayloadAction,
   Update,
   createAction,
   createEntityAdapter,
-  createSlice,
-  current
+  createSlice
 } from '@reduxjs/toolkit'
 
 interface WeekPayload {

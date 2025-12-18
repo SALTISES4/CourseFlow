@@ -4,6 +4,7 @@ import {
   nodelinkDeleteSelfSoft
 } from '@cf/redux/slices/nodelink.slice'
 import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
+import { TNodelink } from '@cf/redux/types/type'
 import { _t } from '@cf/utility/Utility.class'
 import { RootState } from '@cfRedux/store'
 import {
@@ -23,59 +24,68 @@ import Typography from '@mui/material/Typography'
 import { ChangeEvent, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-const EditNodelink = () => {
+const EditNodeLink = ({ nodeLinkId }: { nodeLinkId: number }) => {
   const dispatch = useDispatch()
-  const nodeLinkId = useSelector((state: RootState) => state.sidebar.edit.id)
-  const nodelink = useSelector((state: RootState) =>
+  const nodeLink = useSelector((state: RootState) =>
     selectNodelinkById(state, nodeLinkId)
   )
+
+  if (!nodeLink) {
+    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
+    return null
+  }
+
+  return <EditNodeLinkForm nodeLink={nodeLink} />
+}
+
+const EditNodeLinkForm = ({ nodeLink }: { nodeLink: TNodelink }) => {
+  const dispatch = useDispatch()
 
   const onTitleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => [
       dispatch(
         nodelinkChangeField({
-          id: nodeLinkId,
+          id: nodeLink.id,
           json: {
             title: e.target.value
           }
         })
       )
     ],
-    [dispatch, nodeLinkId]
+    [dispatch, nodeLink.id]
   )
 
   const onDashChange = useCallback(
     (_: ChangeEvent<HTMLInputElement>, checked: boolean) => {
       dispatch(
         nodelinkChangeField({
-          id: nodeLinkId,
+          id: nodeLink.id,
           json: {
             dashed: checked
           }
         })
       )
     },
-    [dispatch, nodeLinkId]
+    [dispatch, nodeLink.id]
   )
 
   const onSliderChange = useCallback(
     (_: Event, value: number | number[]) => {
       dispatch(
         nodelinkChangeField({
-          id: nodeLinkId,
+          id: nodeLink.id,
           json: {
             textPosition: value as number
           }
         })
       )
     },
-    [dispatch, nodeLinkId]
+    [dispatch, nodeLink.id]
   )
 
   const onDelete = useCallback(() => {
-    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
-    dispatch(nodelinkDeleteSelfSoft({ id: nodeLinkId }))
-  }, [dispatch, nodeLinkId])
+    dispatch(nodelinkDeleteSelfSoft({ id: nodeLink.id }))
+  }, [dispatch, nodeLink.id])
 
   return (
     <SidebarInnerWrap>
@@ -88,7 +98,7 @@ const EditNodelink = () => {
             variant="outlined"
             label="Title"
             size="small"
-            value={nodelink.title}
+            value={nodeLink.title}
             onChange={onTitleChange}
           />
           <Box>
@@ -96,7 +106,7 @@ const EditNodelink = () => {
               {_t('Text position')}
             </Typography>
             <Slider
-              value={nodelink.textPosition}
+              value={nodeLink.textPosition}
               aria-labelledby="edit-text-position"
               valueLabelDisplay="off"
               onChange={onSliderChange}
@@ -107,7 +117,7 @@ const EditNodelink = () => {
             label="Dashed line"
             control={
               <Switch
-                checked={nodelink.dashed}
+                checked={nodeLink.dashed}
                 onChange={onDashChange}
                 size="small"
               />
@@ -124,4 +134,4 @@ const EditNodelink = () => {
   )
 }
 
-export default EditNodelink
+export default EditNodeLink

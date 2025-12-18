@@ -19,13 +19,22 @@ import {
 } from '../../../../styles'
 import data from '../EditNode/optionsData'
 
-const EditOutcome = () => {
+const EditOutcome = ({ outcomeId }: { outcomeId: number }) => {
   const dispatch = useDispatch()
-  const firstRender = useRef(true)
-
-  const outcomeId = useSelector((state: RootState) => state.sidebar.edit.id)
   const outcomes = useSelector((state: RootState) => state.outcomes.outcomeData)
   const outcome = outcomes[outcomeId]
+
+  if (!outcome) {
+    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
+    return null
+  }
+
+  return <EditOutcomeForm outcome={outcome} />
+}
+
+const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
+  const dispatch = useDispatch()
+  const firstRender = useRef(true)
 
   const {
     register,
@@ -34,9 +43,9 @@ const EditOutcome = () => {
     formState: { isDirty }
   } = useForm<Outcome>({
     defaultValues: {
-      title: outcome?.title,
-      description: outcome?.description,
-      code: outcome?.code
+      title: outcome.title,
+      description: outcome.description,
+      code: outcome.code
     }
   })
 
@@ -47,8 +56,8 @@ const EditOutcome = () => {
       debounce((data: Outcome) => {
         dispatch(
           updateOutcome({
-            id: outcome?.id,
-            children: outcome?.children,
+            id: outcome.id,
+            children: outcome.children,
             ...data
           })
         )
@@ -68,19 +77,15 @@ const EditOutcome = () => {
   }, [watched, isDirty, debouncedDispatch])
 
   useEffect(() => {
-    if (outcomeId === outcome?.id) {
+    if (!isDirty) {
       reset({
-        title: outcome?.title,
-        description: outcome?.description,
-        code: outcome?.code
+        title: outcome.title,
+        description: outcome.description,
+        code: outcome.code,
+        tags: outcome.tags
       })
     }
-  }, [outcomeId, outcome, reset])
-
-  if (!outcome) {
-    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
-    return null
-  }
+  }, [reset, isDirty, outcome])
 
   return (
     <SidebarInnerWrap>
