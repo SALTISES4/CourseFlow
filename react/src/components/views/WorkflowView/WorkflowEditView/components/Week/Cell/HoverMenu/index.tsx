@@ -1,4 +1,8 @@
 import useHover from '@cf/hooks/useHover'
+import {
+  nodeWorkflowDelete,
+  nodeWorkflowInsert
+} from '@cf/redux/slices/node.slice'
 import { CfObjectType } from '@cf/types/enum'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
@@ -26,13 +30,13 @@ const HoverMenu = ({ nodeId, nodeRef }: PropsType) => {
         e.stopPropagation()
         switch (action) {
           case 'insert':
-            console.log('insert')
+            dispatch(nodeWorkflowInsert({ id: nodeId }))
             break
           case 'duplicate':
-            console.log('duplicate')
+            dispatch(nodeWorkflowInsert({ id: nodeId, duplicate: true }))
             break
           case 'delete':
-            console.log('delete')
+            dispatch(nodeWorkflowDelete({ id: nodeId }))
             break
           case 'comments':
             dispatch(

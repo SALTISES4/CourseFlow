@@ -28,6 +28,7 @@ import HoverMenu from '../HoverMenu'
 import Meta from '../Meta'
 import * as StyledNode from '../styles'
 import { WeekCellNodeTypeTypeInternal } from '../types'
+import { _t } from '@cf/utility/Utility.class'
 
 type NodeStateType = {
   dragging: boolean
@@ -203,8 +204,8 @@ const WeekCellNode = ({
         <StyledNode.Border sx={{ backgroundColor: borderColor }} />
         <StyledNode.Content onClick={onNodeClicked}>
           <StyledNode.Title variant="body2">
-            {node.title || `Empty title (#${nodeId})`} <br />
-            {`#${nodeId}, row: ${node.order}`}
+            {node.title || _t('Blank title')} <br />
+            <small>{`#${nodeId}, row: ${node.order}`}</small>
           </StyledNode.Title>
           <Meta
             workflow="#"

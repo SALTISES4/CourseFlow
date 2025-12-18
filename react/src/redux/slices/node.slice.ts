@@ -127,6 +127,14 @@ const updatingNodeSet = (
   nodeAdapter.updateMany(state, updates)
 }
 
+const getNewNodeId = (ids: number[]): number => {
+  const lastId = ids.reduce((acc, curr) => {
+    return acc > curr ? acc : curr
+  }, 0)
+
+  return lastId + 1
+}
+
 // returns groups of nodes based on the coordinates affected
 // before - gorup of nodes before the current row/column
 // after - group of nodes after the current row/colun
@@ -253,10 +261,76 @@ const nodeSlice = createSlice({
       })
     },
 
+    workflowNodeInsert: (
+      state,
+      action: PayloadAction<{ id: number; duplicate?: boolean }>
+    ) => {
+      const { id, duplicate } = action.payload
+      const node = state.entities[id]
+
+      const weekNodes = state.ids.filter(
+        (nodeId) =>
+          nodeId !== node.id && state.entities[nodeId].week === node.week
+      )
+
+      const gridSplits = splitWorkflowGridNodes({
+        ids: weekNodes,
+        entities: state.entities,
+        newRow: node.order + 1
+      })
+
+      const clone = { ...node }
+      nodeAdapter.addOne(state, {
+        ...clone,
+        id: getNewNodeId(state.ids),
+        title: _t('Blank title'),
+        order: clone.order + 1,
+        comments: [],
+        ...(duplicate && {
+          title: `${clone.title} (copy)`
+        })
+      })
+
+      // bump nodes by one row down
+      gridSplits.after.forEach((nodeId) => {
+        state.entities[nodeId].order += 1
+      })
+    },
+
+    workflowNodeDelete: (state, action: PayloadAction<{ id: number }>) => {
+      const { id } = action.payload
+      const node = state.entities[id]
+
+      const weekNodes = state.ids.filter(
+        (nodeId) =>
+          nodeId !== node.id && state.entities[nodeId].week === node.week
+      )
+
+      const collapseRow = getCollapsedWeekRow({
+        ids: weekNodes,
+        entities: state.entities,
+        oldRow: node.order,
+        newRow: node.order,
+        columnMode: undefined
+      })
+
+      nodeAdapter.removeOne(state, action.payload.id)
+
+      if (collapseRow !== null) {
+        splitWorkflowGridNodes({
+          ids: weekNodes,
+          entities: state.entities,
+          newRow: node.order
+        }).after.forEach((nodeId) => {
+          state.entities[nodeId].order -= 1
+        })
+      }
+    },
+
     // when node is moved in the workflow edit view
     // update order/column attributes, but also check if other nodes
     // need to be moved around as well (ie, node inserted between two rows, etc)
-    workflowReorder: (
+    workflowNodeReorder: (
       state,
       action: PayloadAction<NodeWorkflowReorderPayload>
     ) => {
@@ -351,15 +425,8 @@ const nodeSlice = createSlice({
       movedNode.week = toWeek
     },
 
-    // this one had a jquery update side effect
-    //  ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
-    restoreSelf: toggleArchiveEntity,
-    newNode(state, action: PayloadAction<{ newModel: TNode }>) {
-      nodeAdapter.addOne(state, action.payload.newModel)
-    },
-
     // add/remove linked outcomes
-    linkOutcome: (
+    workfowLinkOutcome: (
       state,
       action: PayloadAction<{
         outcomeId: number
@@ -383,6 +450,13 @@ const nodeSlice = createSlice({
           node.outcomenodeSet.push(outcomeId)
         }
       }
+    },
+
+    // this one had a jquery update side effect
+    //  ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
+    restoreSelf: toggleArchiveEntity,
+    newNode(state, action: PayloadAction<{ newModel: TNode }>) {
+      nodeAdapter.addOne(state, action.payload.newModel)
     }
   },
   extraReducers: (builder) => {
@@ -549,9 +623,13 @@ export const {
   restoreSelf: nodeRestoreSelf,
   insertBelow: nodeInsertBelow,
   reloadComments: nodeReloadComments,
-  workflowReorder: nodeWorkflowReorder,
   setLinkedWorkflow: nodeSetLinkedWorkflow,
-  linkOutcome: nodelinkOutcome
+
+  // workflow view
+  workfowLinkOutcome: nodelinkOutcome,
+  workflowNodeReorder: nodeWorkflowReorder,
+  workflowNodeInsert: nodeWorkflowInsert,
+  workflowNodeDelete: nodeWorkflowDelete
 } = nodeSlice.actions
 
 export default nodeSlice.reducer
