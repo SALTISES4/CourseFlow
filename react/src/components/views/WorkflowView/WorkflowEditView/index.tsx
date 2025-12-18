@@ -22,6 +22,7 @@ import {
   useState
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useResizeObserver } from 'usehooks-ts'
 
 import ColumnsHeader from './components/ColumnsHeader'
 import LineSVG from './components/LineSVG'
@@ -50,6 +51,13 @@ const WorkflowEditView = () => {
   const [state, setState] = useState<StateType>({
     condensed: [],
     redrawLines: false // just to trigger LineSVG to redraw on layout change
+  })
+
+  // basically retrigger repaint when any width/height change happens
+  // to trigger week backgrounds to correctly recalculate their BCR
+  useResizeObserver({
+    ref: weeksWrapperRef,
+    box: 'border-box'
   })
 
   useEffect(() => {
