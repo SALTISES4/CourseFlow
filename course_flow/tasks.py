@@ -11,7 +11,7 @@ from django.core.files.storage import default_storage
 from django.core.mail import EmailMessage
 from django.utils import timezone
 
-from course_flow import export_functions, import_functions, export_analytics
+from course_flow import export_functions, import_functions, export_analytics, export_workflow
 from course_flow import redux_actions as actions
 
 from .celery import logger, try_async
@@ -61,7 +61,7 @@ def async_send_export_email(
             model_object, object_type, export_format, allowed_sets
         )
     elif export_type == "workflow":
-        file = export_functions.get_workflows_export(
+        file = export_workflow.get_workflows_export(
             model_object, object_type, export_format, allowed_sets
         )
     elif export_type == "program_analytics":
@@ -159,7 +159,7 @@ def async_create_export_file(
                 model_object, object_type, export_format, allowed_sets
             )
         elif export_type == "workflow":
-            file = export_functions.get_workflows_export(model_object, object_type, export_format, allowed_sets)
+            file = export_workflow.get_workflows_export(model_object, object_type, export_format, allowed_sets)
         elif export_type == "program_analytics":
             file = export_analytics.get_analytics_table(model_object, object_type, export_format, allowed_sets)
 

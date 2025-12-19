@@ -148,8 +148,12 @@ class TitleSerializerMixin:
         return bleach_sanitizer(instance.title, tags=bleach_allowed_tags_title)
 
     def validate_title(self, value):
+        max_length = title_max_length
+        if self.Meta.model == Outcome:
+            max_length=500
+            print(max_length)
         return bleach_sanitizer(value, tags=bleach_allowed_tags_title)[
-            :title_max_length
+            :max_length
         ]
 
 
@@ -1614,7 +1618,7 @@ class ColumnExportSerializer(
     colour = serializers.SerializerMethodField()
 
     def get_colour(self, instance):
-        if instance.colour: return instance.colour 
+        if instance.colour: return str(hex(instance.colour)).replace("0x","#") 
         default_col = default_column_settings.get(str(instance.column_type))
         if default_col:
             return default_col.get("colour")
@@ -1737,9 +1741,11 @@ class NodeExportSerializerForFormatted(
             "code",
             "outcomes",
             "time_required",
+            "time_units_display",
         ]
 
     outcomes = serializers.SerializerMethodField()
+    time_units_display = serializers.CharField(source="get_time_units_display")
 
     def get_outcomes(self, instance):
         ocns = get_unique_outcomenodes(instance)
@@ -1766,6 +1772,21 @@ class WorkflowExportSerializer(
 
     def get_type(self, instance):
         return "workflow"
+
+class WorkflowExportSerializerWithPonderation(
+    WorkflowExportSerializer
+):
+    class Meta:
+        model = Workflow
+        fields = [
+            "id",
+            "title",
+            "description",
+            "ponderation_theory",
+            "ponderation_individual",
+            "ponderation_practical",
+            "type",
+        ]
 
 
 class UpdateNotificationSerializer(

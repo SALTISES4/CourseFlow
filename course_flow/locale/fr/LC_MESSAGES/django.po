@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-17 11:05-0400\n"
+"POT-Creation-Date: 2025-12-19 14:16-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,101 +18,115 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: export_functions.py:131
+#: export_functions.py:135
 msgid "Course Title"
 msgstr "Titre du cours"
 
-#: export_functions.py:133
+#: export_functions.py:137
 msgid "Ponderation Theory/Practical/Individual"
 msgstr "Pondération Théorie/Pratique/Individuel"
 
-#: export_functions.py:144
+#: export_functions.py:148
 msgid "Course Description"
 msgstr "Description du cours"
 
-#: export_functions.py:151 export_functions.py:782
+#: export_functions.py:155 export_functions.py:790
 msgid "Course Code"
 msgstr "Code de cours"
 
-#: export_functions.py:153
+#: export_functions.py:157
 msgid "Hours"
 msgstr "Heures"
 
-#: export_functions.py:157 models.py:920
+#: export_functions.py:161 models.py:920
 msgid "Time"
 msgstr "Temps"
 
-#: export_functions.py:163
+#: export_functions.py:167
 msgid "Ministerial Competencies"
 msgstr "Compétences ministérielles"
 
-#: export_functions.py:164
+#: export_functions.py:168
 msgid "Competency"
 msgstr "Compétence"
 
-#: export_functions.py:164 export_functions.py:783
+#: export_functions.py:168 export_functions.py:791
 msgid "Title"
 msgstr "Titre"
 
-#: export_functions.py:196 models.py:813
+#: export_functions.py:200 models.py:813
 msgid "Term"
 msgstr "Session"
 
-#: export_functions.py:223
+#: export_functions.py:227
 msgid "Prerequisites"
 msgstr "Prérequis"
 
-#: export_functions.py:238
+#: export_functions.py:242
 msgid "Required For"
 msgstr "Requis pour"
 
-#: export_functions.py:250
+#: export_functions.py:254
 msgid "Course Outcome"
 msgstr "Acquis de cours"
 
-#: export_functions.py:251
+#: export_functions.py:255
 msgid "Sub-Outcomes"
 msgstr "Sous-acquis"
 
-#: export_functions.py:252
+#: export_functions.py:256
 msgid "Competencies"
 msgstr "Compétences"
 
-#: export_functions.py:635
+#: export_functions.py:642
 msgid "Specific Education"
 msgstr "Éducation specifique"
 
-#: export_functions.py:643
+#: export_functions.py:650
 msgid "General Education"
 msgstr "Éducation générale"
 
-#: export_functions.py:651
+#: export_functions.py:658
 msgid "Total Hours"
 msgstr "Heures totale"
 
-#: export_functions.py:663 export_functions.py:784
+#: export_functions.py:670 export_functions.py:792
 msgid "Theory"
 msgstr "Théorie"
 
-#: export_functions.py:671 export_functions.py:679 export_functions.py:785
+#: export_functions.py:678 export_functions.py:686 export_functions.py:793
 msgid "Practical"
 msgstr "Pratique"
 
-#: export_functions.py:687
+#: export_functions.py:694
 msgid "Total"
 msgstr "Total"
 
-#: export_functions.py:702 export_functions.py:787
+#: export_functions.py:709 export_functions.py:795
 msgid "Credits"
 msgstr "Crédits"
 
-#: export_functions.py:781
+#: export_functions.py:789
 msgid "Competency Code"
 msgstr "Code de Compétence"
 
-#: export_functions.py:786
+#: export_functions.py:794
 msgid "Individual"
 msgstr "Individuel"
+
+#: export_workflow.py:130 models.py:813 models.py:826
+msgid "Week"
+msgstr "Semaine"
+
+#: export_workflow.py:131 models.py:356 moodle_export.py:75
+#: templates/course_flow/comparison.html:30
+#: templates/course_flow/workflow_update.html:37
+msgid "Outcomes"
+msgstr "Acquis"
+
+#: export_workflow.py:140
+msgid "Description"
+msgstr "Description"
 
 #: models.py:115 templates/course_flow/base.html:246
 msgid "Project"
@@ -200,11 +214,6 @@ msgstr "Liens entre noeuds"
 
 #: models.py:355
 msgid "Outcome"
-msgstr "Acquis"
-
-#: models.py:356 moodle_export.py:75 templates/course_flow/comparison.html:30
-#: templates/course_flow/workflow_update.html:37
-msgid "Outcomes"
 msgstr "Acquis"
 
 #: models.py:385 models.py:474
@@ -419,10 +428,6 @@ msgstr "Liens entre acquis et noeud"
 msgid "Part"
 msgstr "Partie"
 
-#: models.py:813 models.py:826
-msgid "Week"
-msgstr "Semaine"
-
 #: models.py:827
 msgid "Weeks"
 msgstr "Semaines"
@@ -544,11 +549,11 @@ msgstr "Instructeur"
 msgid "Shared"
 msgstr "Partagé"
 
-#: serializers.py:120
+#: serializers.py:121
 msgid "a CourseFlow user"
 msgstr "un utilisateur"
 
-#: serializers.py:195 templates/course_flow/live_assignment_update.html:11
+#: serializers.py:202 templates/course_flow/live_assignment_update.html:11
 #: templates/course_flow/live_project_update.html:11
 #: templates/course_flow/project_update.html:11
 #: templates/course_flow/workflow_update.html:11

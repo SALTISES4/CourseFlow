@@ -152,6 +152,7 @@ def get_base_outcomes_ordered_filtered(workflow, extra_filter=Q()):
         models.Outcome.objects.filter(workflow=workflow, deleted=False)
         .filter(extra_filter)
         .order_by("outcomeworkflow__rank")
+        .distinct()
     )
 
 
@@ -161,6 +162,7 @@ def get_all_outcomes_ordered_filtered(workflow, extra_filter):
         models.Outcome.objects.filter(workflow=workflow, deleted=False)
         .filter(extra_filter)
         .order_by("outcomeworkflow__rank")
+        .distinct()
     ):
         outcomes += get_all_outcomes_ordered_for_outcome(outcome)
     return outcomes
