@@ -1,7 +1,8 @@
 import datetime
 import re
 import time
-from functools import wraps
+from functools import (wraps, reduce)
+from operator import or_
 
 import bleach
 from django.contrib.contenttypes.models import ContentType
@@ -48,6 +49,7 @@ from .utils import (
     dateTimeFormat,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
+    get_outcomenode_trace,
     get_user_permission,
     get_user_role,
     linkIDMap,
@@ -1749,10 +1751,13 @@ class NodeExportSerializerForFormatted(
 
     def get_outcomes(self, instance):
         ocns = get_unique_outcomenodes(instance)
-        ocs = OutcomeExportSerializer([ocn.outcome for ocn in ocns],many=True).data 
-        ocs_format = [oc.get("code") + " - " +oc.get("title") for oc in ocs]
+        ocs = []
+        for ocn in ocns:
+            ocs += list(get_outcomenode_trace(ocn))
+        ocs_unique = list({o.pk: o for o in ocs}.values())
+        ocs_serialized = OutcomeExportSerializer(ocs_unique,many=True).data 
+        ocs_format = [oc.get("code") + " - " +oc.get("title") for oc in ocs_serialized]
         return "\n\n".join(ocs_format)
-
 
 class WorkflowExportSerializer(
     serializers.ModelSerializer,

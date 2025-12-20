@@ -185,7 +185,6 @@ def get_unique_outcomenodes(node):
         )
     )
 
-
 def get_outcomenodes(node):
     return node.outcomenode_set.exclude(
         Q(outcome__deleted=True)
@@ -199,6 +198,15 @@ def get_outcomenodes(node):
         "outcome__parent_outcome_links__rank",
     )
 
+#From an outcomenode, create a Q to get the outcome and all its parents, heirarchically organized
+def get_outcomenode_trace(ocn):
+    oc = ocn.outcome
+    return models.Outcome.objects.filter(
+        Q(pk=oc.pk)
+        | Q(children=oc)
+        | Q(children__children=oc)
+        | Q(children__children__children=oc)
+    ).distinct().order_by("depth")
 
 def get_unique_outcomehorizontallinks(outcome):
     return (

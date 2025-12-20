@@ -7,7 +7,7 @@ import {Loader} from "./Constants";
 export class ExportMenu extends React.Component{
     constructor(props){
         super(props);
-        this.state={type:"outcome",export_method:"email",jobs:[]}
+        this.state={type:"workflow",export_method:"email",jobs:[]}
     }
 
     componentDidMount() {
