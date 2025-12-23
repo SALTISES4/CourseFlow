@@ -40,25 +40,25 @@ const columnSlice = createSlice({
   initialState,
   reducers: {
     createLock(state, action: PayloadAction<{ id: number; lock: CfLock }>) {
-      const index = state.findIndex((item) => item.id === action.payload.id)
-      if (index !== -1) {
-        state[index].lock = action.payload.lock
+      const item = state.entities[action.payload.id]
+      if (item) {
+        item.lock = action.payload.lock
       }
     },
     deleteSelf(state, action: PayloadAction<{ id: number }>) {
-      return state.filter((item) => item.id !== action.payload.id)
+      columnAdapter.removeOne(state, action.payload.id)
     },
     deleteSelfSoft(state, action: PayloadAction<{ id: number }>) {
-      const index = state.findIndex((item) => item.id === action.payload.id)
-      if (index !== -1) {
-        state[index].deleted = true
-        state[index].deletedOn = _t('This session') // Check translation context usage
+      const item = state.entities[action.payload.id]
+      if (item) {
+        item.deleted = true
+        item.deletedOn = _t('This session') // Check translation context usage
       }
     },
     restoreSelf(state, action: PayloadAction<{ id: number }>) {
-      const index = state.findIndex((item) => item.id === action.payload.id)
-      if (index !== -1) {
-        state[index].deleted = false
+      const item = state.entities[action.payload.id]
+      if (item) {
+        item.deleted = false
       }
     },
     insertBelow(state, action: PayloadAction<{ newModel: TColumn }>) {

@@ -571,9 +571,12 @@ const nodeSlice = createSlice({
       .addCase(
         ColumnActions.DELETE_SELF as string,
         (state, action: PayloadAction<DeleteColumnAction>) => {
-          return state.map((item) => {
-            if (item.column === action.payload.id) {
-              item.column = action.payload.extraData
+          state.ids.forEach((nodeId) => {
+            const node = state.entities[nodeId]
+            // TODO: mmmm, should we delete nodes if associated column is deleted?
+            if (node.column === action.payload.id) {
+              node.deleted = true
+              node.column = -1
             }
           })
         }

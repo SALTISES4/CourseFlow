@@ -1,3 +1,4 @@
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CfObjectType } from '@cf/types/enum'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
@@ -17,6 +18,7 @@ type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
 
 const HoverMenu = ({ nodeId, show }: PropsType) => {
   const dispatch = useDispatch()
+  const { dispatch: dialogDispatch } = useDialog()
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {
@@ -30,7 +32,9 @@ const HoverMenu = ({ nodeId, show }: PropsType) => {
             console.log('duplicate column', nodeId)
             break
           case 'delete':
-            console.log('delete column', nodeId)
+            dialogDispatch(DialogMode.WORKFLOW_DELETE_NODE_CATEGORY, {
+              id: nodeId
+            })
             break
           case 'comments':
             dispatch(

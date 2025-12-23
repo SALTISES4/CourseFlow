@@ -11,6 +11,7 @@ import {
 } from '@cf/redux/slices/workflow.slice'
 import { RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
+import DeleteNodeCategoryDialog from '@cfComponents/dialog/Workflow/DeleteNodeCategory'
 import DeleteSectionDialog from '@cfComponents/dialog/Workflow/DeleteSection'
 import { produce } from 'immer'
 import {
@@ -188,6 +189,7 @@ const WorkflowEditView = () => {
       </WeeksWrapper>
 
       {/* dialogs */}
+      <DeleteNodeCategoryDialog />
       <DeleteSectionDialog />
     </WorkflowEditViewWrap>
   )

@@ -25,6 +25,7 @@ export enum DialogMode {
   WORKFLOW_COPY_TO_PROJECT = 'workflow_copy_to_project',
   WORKFLOW_CREATE = 'workflow_create',
   WORKFLOW_DELETE_SECTION = 'workflow_delete_section',
+  WORKFLOW_DELETE_NODE_CATEGORY = 'workflow_delete_node_category',
 
   // WORKSPACE
   CONTRIBUTOR_REMOVE = 'contributor_remove',
@@ -42,6 +43,9 @@ export type DialogPayloadMap = {
   [DialogMode.WORKFLOW_DELETE_SECTION]: {
     sectionId: number
     workflowId: number
+  }
+  [DialogMode.WORKFLOW_DELETE_NODE_CATEGORY]: {
+    id: number
   }
 
   /*******************************************************
