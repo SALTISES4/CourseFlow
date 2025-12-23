@@ -24,11 +24,11 @@ const initialState = columnAdapter.getInitialState()
 /*******************************************************
  * CREATE ACTIONS
  *******************************************************/
-export const replaceStoreData = createAction<{
+const replaceStoreData = createAction<{
   column: WorkspaceAppState['column'] | undefined
 }>(CommonActions.REPLACE_STOREDATA)
 
-export const refreshStoreData = createAction<{
+const refreshStoreData = createAction<{
   column: WorkspaceAppState['column'] | undefined
 }>(CommonActions.REFRESH_STOREDATA)
 

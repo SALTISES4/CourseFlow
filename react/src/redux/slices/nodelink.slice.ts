@@ -37,11 +37,11 @@ const initialState = nodelinkAdapter.getInitialState()
 /*******************************************************
  * CREATE ACTIONS
  *******************************************************/
-export const replaceStoreData = createAction<{
+const replaceStoreData = createAction<{
   nodelink: WorkspaceAppState['nodelink'] | undefined
 }>(CommonActions.REPLACE_STOREDATA)
 
-export const refreshStoreData = createAction<{
+const refreshStoreData = createAction<{
   nodelink: WorkspaceAppState['nodelink'] | undefined
 }>(CommonActions.REFRESH_STOREDATA)
 

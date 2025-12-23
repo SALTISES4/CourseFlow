@@ -17,10 +17,10 @@ const EditTab = ({ id, type }: { id: number; type: EditableType }) => {
   switch (type) {
     case EditableType.TERM:
       return <EditTerm key={id} />
-    case EditableType.WEEK:
-      return <EditWeek key={id} weekId={id} />
     case EditableType.PART:
       return <EditPart key={id} />
+    case EditableType.WEEK:
+      return <EditWeek key={id} weekId={id} />
     case EditableType.OUTCOME:
       return <EditOutcome key={id} outcomeId={id} />
     case EditableType.NODE_LINK:

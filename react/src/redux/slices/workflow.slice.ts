@@ -19,11 +19,11 @@ const initialState: TWorkflow = {} as TWorkflow
 /*******************************************************
  * CREATE ACTIONS
  *******************************************************/
-export const replaceStoreData = createAction<{
+const replaceStoreData = createAction<{
   workflow: WorkspaceAppState['workflow'] | undefined
 }>(CommonActions.REPLACE_STOREDATA)
 
-export const refreshStoreData = createAction<{
+const refreshStoreData = createAction<{
   workflow: WorkspaceAppState['workflow'] | undefined
 }>(CommonActions.REFRESH_STOREDATA)
 
@@ -62,9 +62,6 @@ const workflowSlice = createSlice({
 
       const deleted = state.columns.splice(moveIndex, 1)
       state.columns.splice(toIndex, 0, ...deleted)
-      // const swapper = state.columns[moveIndex]
-      // state.columns[moveIndex] = state.columns[toIndex]
-      // state.columns[toIndex] = swapper
     },
 
     // workflow reorder weeks
@@ -95,10 +92,11 @@ const workflowSlice = createSlice({
         return action.payload.workflow || state
       })
       .addCase(CommonActions.CLEAR_WORKFLOW_DATA, () => initialState)
+
     // Outcome Workflow Actions
     builder
       .addCase(
-        OutcomeWorkflowActions.CHANGE_ID,
+        OutcomeWorkflowActions.CHANGE_ID as string,
         (state, action: PayloadAction<{ oldId: number; newId: number }>) => {
           const index = state.outcomes.indexOf(action.payload.oldId)
           if (index >= 0) {
@@ -107,7 +105,7 @@ const workflowSlice = createSlice({
         }
       )
       .addCase(
-        OutcomeWorkflowActions.MOVED_TO,
+        OutcomeWorkflowActions.MOVED_TO as string,
         (state, action: PayloadAction<{ id: number; newIndex: number }>) => {
           const index = state.outcomes.indexOf(action.payload.id)
           if (index >= 0) {
@@ -120,7 +118,7 @@ const workflowSlice = createSlice({
     // Column Workflow Actions
     builder
       .addCase(
-        ColumnWorkflowActions.CHANGE_ID,
+        ColumnWorkflowActions.CHANGE_ID as string,
         (state, action: PayloadAction<{ oldId: number; newId: number }>) => {
           const index = state.columns.indexOf(action.payload.oldId)
           if (index >= 0) {
@@ -129,7 +127,7 @@ const workflowSlice = createSlice({
         }
       )
       .addCase(
-        ColumnWorkflowActions.MOVED_TO,
+        ColumnWorkflowActions.MOVED_TO as string,
         (state, action: PayloadAction<{ id: number; newIndex: number }>) => {
           const index = state.columns.indexOf(action.payload.id)
           if (index >= 0) {
@@ -142,7 +140,7 @@ const workflowSlice = createSlice({
     // Week Workflow Actions
     builder
       .addCase(
-        WeekWorkflowActions.MOVED_TO,
+        WeekWorkflowActions.MOVED_TO as string,
         (state, action: PayloadAction<{ id: number; newIndex: number }>) => {
           const index = state.weeks.indexOf(action.payload.id)
           if (index >= 0) {
@@ -152,7 +150,7 @@ const workflowSlice = createSlice({
         }
       )
       .addCase(
-        WeekWorkflowActions.CHANGE_ID,
+        WeekWorkflowActions.CHANGE_ID as string,
         (state, action: PayloadAction<{ oldId: number; newId: number }>) => {
           const index = state.weeks.indexOf(action.payload.oldId)
           if (index >= 0) {
@@ -164,7 +162,7 @@ const workflowSlice = createSlice({
     // Week Actions
     builder
       .addCase(
-        WeekActions.DELETE_SELF,
+        WeekActions.DELETE_SELF as string,
         (state, action: PayloadAction<{ parentId: number }>) => {
           state.weeks = state.weeks.filter(
             (id) => id !== action.payload.parentId
@@ -172,7 +170,7 @@ const workflowSlice = createSlice({
         }
       )
       .addCase(
-        WeekActions.RESTORE_SELF,
+        WeekActions.RESTORE_SELF as string,
         (
           state,
           action: PayloadAction<{
@@ -188,7 +186,7 @@ const workflowSlice = createSlice({
         }
       )
       .addCase(
-        WeekActions.INSERT_BELOW,
+        WeekActions.INSERT_BELOW as string,
         (
           state,
           action: PayloadAction<{ newThrough: { rank: number; id: number } }>
@@ -204,7 +202,7 @@ const workflowSlice = createSlice({
     // Outcome Base Actions
     builder
       .addCase(
-        OutcomeBaseActions.DELETE_SELF,
+        OutcomeBaseActions.DELETE_SELF as string,
         (state, action: PayloadAction<{ parentId: number }>) => {
           state.outcomes = state.outcomes.filter(
             (id) => id !== action.payload.parentId
@@ -212,7 +210,7 @@ const workflowSlice = createSlice({
         }
       )
       .addCase(
-        OutcomeBaseActions.RESTORE_SELF,
+        OutcomeBaseActions.RESTORE_SELF as string,
         (
           state,
           action: PayloadAction<{
@@ -228,7 +226,7 @@ const workflowSlice = createSlice({
         }
       )
       .addCase(
-        OutcomeActions.NEW_OUTCOME,
+        OutcomeActions.NEW_OUTCOME as string,
         (
           state,
           action: PayloadAction<{
@@ -248,7 +246,7 @@ const workflowSlice = createSlice({
 
     // Strategy Actions
     builder.addCase(
-      StrategyActions.ADD_STRATEGY,
+      StrategyActions.ADD_STRATEGY as string,
       (
         state,
         action: PayloadAction<{
@@ -272,7 +270,7 @@ const workflowSlice = createSlice({
 
     // Node Actions
     builder.addCase(
-      NodeActions.NEW_NODE,
+      NodeActions.NEW_NODE as string,
       (state, action: PayloadAction<{ columnworkflow: { id: number } }>) => {
         if (!state.columns.includes(action.payload.columnworkflow.id)) {
           state.columns.push(action.payload.columnworkflow.id)
@@ -283,7 +281,7 @@ const workflowSlice = createSlice({
     // Column Actions
     builder
       .addCase(
-        ColumnActions.RESTORE_SELF,
+        ColumnActions.RESTORE_SELF as string,
         (
           state,
           action: PayloadAction<{
@@ -299,7 +297,7 @@ const workflowSlice = createSlice({
         }
       )
       .addCase(
-        ColumnActions.DELETE_SELF,
+        ColumnActions.DELETE_SELF as string,
         (state, action: PayloadAction<{ parentId: number }>) => {
           state.columns = state.columns.filter(
             (id) => id !== action.payload.parentId
@@ -307,7 +305,7 @@ const workflowSlice = createSlice({
         }
       )
       .addCase(
-        ColumnActions.INSERT_BELOW,
+        ColumnActions.INSERT_BELOW as string,
         (
           state,
           action: PayloadAction<{ newThrough: { rank: number; id: number } }>

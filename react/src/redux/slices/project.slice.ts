@@ -6,11 +6,11 @@ const initialState: TProject = {} as TProject
 /*******************************************************
  * CREATE ACTIONS
  *******************************************************/
-export const replaceStoreData = createAction<{
+const replaceStoreData = createAction<{
   project: WorkspaceAppState['project'] | undefined
 }>(CommonActions.REPLACE_STOREDATA)
 
-export const refreshStoreData = createAction<{
+const refreshStoreData = createAction<{
   project: WorkspaceAppState['project'] | undefined
 }>(CommonActions.REFRESH_STOREDATA)
 

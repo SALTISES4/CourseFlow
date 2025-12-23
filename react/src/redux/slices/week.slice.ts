@@ -136,11 +136,11 @@ const movedTo = (
 /*******************************************************
  * CREATE ACTIONS
  *******************************************************/
-export const replaceStoreData = createAction<{
+const replaceStoreData = createAction<{
   week: WorkspaceAppState['week'] | undefined
 }>(CommonActions.REPLACE_STOREDATA)
 
-export const refreshStoreData = createAction<{
+const refreshStoreData = createAction<{
   week: WorkspaceAppState['week'] | undefined
 }>(CommonActions.REFRESH_STOREDATA)
 
@@ -215,18 +215,18 @@ const weekSlice = createSlice({
       /*******************************************************
        * STRATEGY
        *******************************************************/
-      .addCase(StrategyActions.TOGGLE_STRATEGY, updateEntity)
-      .addCase(StrategyActions.ADD_STRATEGY, createEntity)
+      .addCase(StrategyActions.TOGGLE_STRATEGY as string, updateEntity)
+      .addCase(StrategyActions.ADD_STRATEGY as string, createEntity)
 
     /*******************************************************
      * NODE
      *******************************************************/
     // i don;t think this one makes sense
     builder
-      .addCase(NodeActions.DELETE_SELF_SOFT, removeEntityById)
-      .addCase(NodeActions.RESTORE_SELF, newNode)
-      .addCase(NodeActions.NEW_NODE, newNode)
-      .addCase(NodeActions.INSERT_BELOW, newNode)
+      .addCase(NodeActions.DELETE_SELF_SOFT as string, removeEntityById)
+      .addCase(NodeActions.RESTORE_SELF as string, newNode)
+      .addCase(NodeActions.NEW_NODE as string, newNode)
+      .addCase(NodeActions.INSERT_BELOW as string, newNode)
     /*******************************************************
      * NODEWEEK
      * // @todo needs review

@@ -479,7 +479,7 @@ const nodeSlice = createSlice({
      *******************************************************/
     builder
       .addCase(
-        NodelinkActions.RESTORE_SELF,
+        NodelinkActions.RESTORE_SELF as string,
         (state, action: PayloadAction<{ parentId: number; id: number }>) => {
           return state.map((item) =>
             item.id === action.payload.parentId
@@ -493,7 +493,7 @@ const nodeSlice = createSlice({
       )
       // @todo needs review
       .addCase(
-        NodelinkActions.NEW_NODE_LINK,
+        NodelinkActions.NEW_NODE_LINK as string,
         (state, action: PayloadAction<{ parentId: number; id: number }>) => {
           return state.map((item) => {
             if (item.id === action.payload.newModel.sourceNode) {
@@ -509,15 +509,15 @@ const nodeSlice = createSlice({
           })
         }
       )
-      .addCase(NodelinkActions.DELETE_SELF_SOFT, deleteOutgoingLinks)
-      .addCase(NodelinkActions.DELETE_SELF, deleteOutgoingLinks)
+      .addCase(NodelinkActions.DELETE_SELF_SOFT as string, deleteOutgoingLinks)
+      .addCase(NodelinkActions.DELETE_SELF as string, deleteOutgoingLinks)
 
     /*******************************************************
      * STRATEGY
      *******************************************************/
     builder
       .addCase(
-        StrategyActions.ADD_STRATEGY,
+        StrategyActions.ADD_STRATEGY as string,
         (state, action: PayloadAction<{ nodesAdded: TNode[] }>) => {
           return state.concat(action.payload.nodesAdded)
         }
@@ -525,25 +525,25 @@ const nodeSlice = createSlice({
       /*******************************************************
        * OUTCOME
        *******************************************************/
-      .addCase(OutcomeActions.DELETE_SELF, updateItem)
+      .addCase(OutcomeActions.DELETE_SELF as string, updateItem)
 
-      .addCase(OutcomeActions.DELETE_SELF_SOFT, updateItem)
-      .addCase(OutcomeActions.RESTORE_SELF, updateItem)
-      .addCase(OutcomeBaseActions.DELETE_SELF, updateItem)
-      .addCase(OutcomeBaseActions.DELETE_SELF_SOFT, updateItem)
-      .addCase(OutcomeBaseActions.RESTORE_SELF, updateItem)
+      .addCase(OutcomeActions.DELETE_SELF_SOFT as string, updateItem)
+      .addCase(OutcomeActions.RESTORE_SELF as string, updateItem)
+      .addCase(OutcomeBaseActions.DELETE_SELF as string, updateItem)
+      .addCase(OutcomeBaseActions.DELETE_SELF_SOFT as string, updateItem)
+      .addCase(OutcomeBaseActions.RESTORE_SELF as string, updateItem)
 
-      .addCase(OutcomeActions.INSERT_CHILD, updatingNodeSet)
-      .addCase(OutcomeActions.INSERT_BELOW, updatingNodeSet)
-      .addCase(OutcomeBaseActions.INSERT_CHILD, updatingNodeSet)
-      .addCase(OutcomeOutcomeActions.CHANGE_ID, updatingNodeSet)
+      .addCase(OutcomeActions.INSERT_CHILD as string, updatingNodeSet)
+      .addCase(OutcomeActions.INSERT_BELOW as string, updatingNodeSet)
+      .addCase(OutcomeBaseActions.INSERT_CHILD as string, updatingNodeSet)
+      .addCase(OutcomeOutcomeActions.CHANGE_ID as string, updatingNodeSet)
 
     /*******************************************************
      * OUTCOME NODE
      *******************************************************/
     //@todo needs review
     builder.addCase(
-      OutcomeNodeActions.UPDATE_DEGREE,
+      OutcomeNodeActions.UPDATE_DEGREE as string,
       (state, action: PayloadAction<any>) => {
         if (action.payload.outcomenode === -1) {
           return state
@@ -569,7 +569,7 @@ const nodeSlice = createSlice({
     // Column Actions
     builder
       .addCase(
-        ColumnActions.DELETE_SELF,
+        ColumnActions.DELETE_SELF as string,
         (state, action: PayloadAction<DeleteColumnAction>) => {
           return state.map((item) => {
             if (item.column === action.payload.id) {
@@ -579,7 +579,7 @@ const nodeSlice = createSlice({
         }
       )
       .addCase(
-        ColumnActions.DELETE_SELF_SOFT,
+        ColumnActions.DELETE_SELF_SOFT as string,
         (state, action: PayloadAction<DeleteColumnAction>) => {
           return state.map((item) => {
             if (item.column === action.payload.id) {
@@ -589,7 +589,7 @@ const nodeSlice = createSlice({
         }
       )
       .addCase(
-        ColumnActions.RESTORE_SELF,
+        ColumnActions.RESTORE_SELF as string,
         (state, action: PayloadAction<DeleteColumnAction>) => {
           return state.map((item) => {
             if (action.payload.extraData.includes(item.id)) {
@@ -602,7 +602,7 @@ const nodeSlice = createSlice({
      * WEEK
      *******************************************************/
     builder.addCase(
-      WeekActions.INSERT_BELOW,
+      WeekActions.INSERT_BELOW as string,
       (state, action: PayloadAction<{ children: { node: TNode[] } }>) => {
         if (action.payload.children) {
           return state.push(...action.payload.children.node)
