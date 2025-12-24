@@ -101,37 +101,16 @@ const columnSlice = createSlice({
         id: action.payload.id,
         changes: action.payload.data
       })
-    },
-
-    reloadComments(
-      state,
-      action: PayloadAction<{ id: number; commentData: any }>
-    ) {
-      const index = state.findIndex((item) => item.id === action.payload.id)
-      if (index !== -1) {
-        state[index].comments = action.payload.commentData
-      }
-    },
-    //     case NodeActions.NEW_NODE:
-    newNode(state, action: PayloadAction<{ column: TColumn }>) {
-      if (!state.some((item) => item.id === action.payload.column.id)) {
-        state.push(action.payload.column)
-      }
-    },
-    // case StrategyActions.ADD_STRATEGY:
-    addStrategy(state, action: PayloadAction<{ columnsAdded: TColumn[] }>) {
-      if (action.payload.columnsAdded.length > 0) {
-        state.push(...action.payload.columnsAdded)
-      }
     }
   },
   extraReducers: (builder) => {
     builder
-      /*******************************************************
-       * COMMON
-       *******************************************************/
       .addCase(replaceStoreData, (state, action) => {
-        return action.payload.column || state
+        if (action.payload.column) {
+          columnAdapter.setAll(state, action.payload.column)
+        } else {
+          columnAdapter.removeAll(state)
+        }
       })
       .addCase(refreshStoreData, (state, action) => {
         if (action.payload.column) {
@@ -147,10 +126,7 @@ export const {
   deleteSelfSoft: columnDeleteSelfSoft,
   restoreSelf: columnRestoreSelf,
   insertBelow: columnInsertBelow,
-  changeField: columnChangeField,
-  reloadComments: columnReloadNode,
-  newNode: columnNeNode,
-  addStrategy: columnAddStrategy
+  changeField: columnChangeField
 } = columnSlice.actions
 
 export default columnSlice.reducer
