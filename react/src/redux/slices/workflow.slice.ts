@@ -298,23 +298,14 @@ const workflowSlice = createSlice({
       )
       .addCase(
         ColumnActions.DELETE_SELF as string,
-        (state, action: PayloadAction<{ parentId: number }>) => {
-          state.columns = state.columns.filter(
-            (id) => id !== action.payload.parentId
-          )
+        (state, action: PayloadAction<{ id: number }>) => {
+          state.columns = state.columns.filter((id) => id !== action.payload.id)
         }
       )
       .addCase(
         ColumnActions.INSERT_BELOW as string,
-        (
-          state,
-          action: PayloadAction<{ newThrough: { rank: number; id: number } }>
-        ) => {
-          state.columns.splice(
-            action.payload.newThrough.rank,
-            0,
-            action.payload.newThrough.id
-          )
+        (state, action: PayloadAction<{ id: number }>) => {
+          state.columns.push(action.payload.id)
         }
       )
   }

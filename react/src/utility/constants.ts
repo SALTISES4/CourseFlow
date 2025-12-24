@@ -100,6 +100,7 @@ export const strategyKeys = {
   11: 'other'
 }
 
+// TODO: review all of this with MC
 export const defaultColumnSettings = {
   // activities
   0: { colour: '#6738ff', icon: 'other' },
@@ -116,7 +117,10 @@ export const defaultColumnSettings = {
   14: { colour: '#f7ba2a', icon: 'assessment' },
 
   // programs
-  20: { colour: '#369934', icon: 'other' }
+  20: { colour: '#369934', icon: 'other' },
+
+  // new blank workflow view node category/channel
+  'new-column': { colour: '#bbb', icon: 'other' }
 }
 
 export const nodeTypeKeys = {

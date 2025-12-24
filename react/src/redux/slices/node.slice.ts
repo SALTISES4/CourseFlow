@@ -20,6 +20,8 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
+import { getNextLargestNumber } from '../selectors/helpers'
+
 interface DeleteColumnAction {
   id: number
   extraData: any
@@ -125,14 +127,6 @@ const updatingNodeSet = (
   }))
 
   nodeAdapter.updateMany(state, updates)
-}
-
-const getNewNodeId = (ids: number[]): number => {
-  const lastId = ids.reduce((acc, curr) => {
-    return acc > curr ? acc : curr
-  }, 0)
-
-  return lastId + 1
 }
 
 // returns groups of nodes based on the coordinates affected
@@ -282,7 +276,7 @@ const nodeSlice = createSlice({
       const clone = { ...node }
       nodeAdapter.addOne(state, {
         ...clone,
-        id: getNewNodeId(state.ids),
+        id: getNextLargestNumber(state.ids),
         title: _t('Blank title'),
         order: clone.order + 1,
         comments: [],

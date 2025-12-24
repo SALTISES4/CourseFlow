@@ -178,3 +178,11 @@ export function findTopRank(state: AppState, outcome) {
     }
   }
 }
+
+export const getNextLargestNumber = (haystack: number[]): number => {
+  const lastId = haystack.reduce((acc, curr) => {
+    return acc > curr ? acc : curr
+  }, 0)
+
+  return lastId + 1
+}

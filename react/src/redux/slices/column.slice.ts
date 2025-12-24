@@ -1,12 +1,8 @@
 import { CfLock } from '@cf/types/common'
+import { defaultColumnSettings } from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
 import { CommonActions, SliceNamespace } from '@cfRedux/types/enumActions'
-import {
-  AppState,
-  TColumn,
-  TWeek,
-  WorkspaceAppState
-} from '@cfRedux/types/type'
+import { TColumn, WorkspaceAppState } from '@cfRedux/types/type'
 import {
   PayloadAction,
   createAction,
@@ -61,8 +57,38 @@ const columnSlice = createSlice({
         item.deleted = false
       }
     },
-    insertBelow(state, action: PayloadAction<{ newModel: TColumn }>) {
-      state.push(action.payload.newModel)
+    insertBelow(
+      state,
+      action: PayloadAction<{ id: number; duplicate?: number }>
+    ) {
+      const { id, duplicate } = action.payload
+      const column = duplicate
+        ? state.entities[duplicate]
+        : state.entities[state.ids[0]]
+
+      const clone = { ...column }
+      const cloneTitle = column.title?.length
+        ? column.title
+        : column.columnTypeDisplay
+
+      columnAdapter.addOne(state, {
+        ...clone,
+        id,
+        title: _t('Blank title'),
+        description: '',
+        colour: defaultColumnSettings['new-column'].colour,
+        deleted: false,
+        columnType: -1,
+        columnTypeDisplay: '',
+        comments: [],
+        ...(duplicate && {
+          title: `${cloneTitle} (copy)`,
+          colour: clone.colour,
+          description: clone.description,
+          columnType: clone.columnType,
+          columnTypeDisplay: clone.columnTypeDisplay
+        })
+      })
     },
     changeField(
       state,

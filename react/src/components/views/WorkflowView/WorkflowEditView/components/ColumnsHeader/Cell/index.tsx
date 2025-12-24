@@ -104,7 +104,6 @@ const ColumnCellInner = ({
       state.sidebar.edit.id === columnId
   )
   const [dragging, setDragging] = useState(false)
-  const objectType = CfObjectType.COLUMN
 
   const manager = useMemo(
     () => new BetterSelectionManager(dispatch),
@@ -114,7 +113,7 @@ const ColumnCellInner = ({
   const onClickHandler = (e: MouseEvent<HTMLDivElement>) => {
     e.stopPropagation()
     if (column) {
-      manager.updateSidebar(column.id, objectType, parentId)
+      manager.updateSidebar(column.id, CfObjectType.COLUMN, parentId)
     }
   }
 
@@ -138,11 +137,7 @@ const ColumnCellInner = ({
     return null
   }
 
-  const title = column.title
-    ? column.title.length
-      ? column.title
-      : column.columnTypeDisplay
-    : column.columnTypeDisplay
+  const title = column.title?.length ? column.title : column.columnTypeDisplay
 
   return (
     <Styled.ColumnWrap ref={ref} dragging={dragging}>
