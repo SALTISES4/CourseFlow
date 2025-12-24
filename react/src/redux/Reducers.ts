@@ -57,7 +57,7 @@ import { combineReducers } from 'redux'
 export const legacyWorkflowReducers = {
   // to remove
   nodeweek: nodeweekReducer,
-  columnworkflow: columnworkflowReducer,
+  // columnworkflow: columnworkflowReducer,
   weekworkflow: weekworkflowReducer,
   outcomeworkflow: outcomeworkflowReducer,
   outcomenode: outcomeNodeReducer,

@@ -1,3 +1,6 @@
+// TODO: review whether this is used at all
+// currently commented out of the state reducers
+
 import {
   ColumnActions,
   ColumnWorkflowActions,
