@@ -14,11 +14,16 @@ import * as Styled from '../../../styles'
 
 type StateType = {
   anchor: HTMLDivElement | null
-  dropData: (NodeWorkflowReorderPayload & { type: 'node' | 'phantom' }) | null
+  dropData:
+    | (NodeWorkflowReorderPayload & {
+        type: WeekCellType.NODE | WeekCellType.PHANTOM
+      })
+    | null
 }
 
 const WeekCell = (props: WeekCellProps) => {
   // console.log(`${props.coordsY + 1} x ${props.coordsX + 1}`)
+  const { type, onReorder } = props
   const [state, setState] = useState<StateType>({
     anchor: null,
     dropData: null
@@ -29,28 +34,30 @@ const WeekCell = (props: WeekCellProps) => {
   )
 
   const onDrop = useCallback(
-    (data: NodeWorkflowReorderPayload & { type: 'node' | 'phantom' }) => {
+    (
+      data: NodeWorkflowReorderPayload & {
+        type: WeekCellType.NODE | WeekCellType.PHANTOM
+      }
+    ) => {
       if (insertMode === 'manual') {
         setState({
           anchor: ref.current,
           dropData: data
         })
       } else {
-        props.onReorder(data)
+        onReorder(data)
       }
     },
-    // TODO: is this necessary
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [props.onReorder, insertMode]
+    [onReorder, insertMode]
   )
 
   const onOption = useCallback(
     (insertModeOption: Exclude<NodeInsertMode, 'manual'>) => {
       const data = state.dropData
-      props.onReorder({
+      onReorder({
         ...data,
         edge:
-          insertModeOption === 'column' && data.type === 'phantom'
+          insertModeOption === 'column' && data.type === WeekCellType.PHANTOM
             ? undefined
             : data.edge,
         mode: insertModeOption
@@ -60,9 +67,7 @@ const WeekCell = (props: WeekCellProps) => {
         dropData: null
       })
     },
-    // TODO: is this necessary
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [props.onReorder, state.dropData]
+    [onReorder, state.dropData]
   )
 
   const onCancel = useCallback(() => {
@@ -74,7 +79,7 @@ const WeekCell = (props: WeekCellProps) => {
 
   return (
     <Styled.Cell ref={ref}>
-      {props.type === WeekCellType.PHANTOM ? (
+      {type === WeekCellType.PHANTOM ? (
         <WeekCellPhantom
           {...props}
           wrapRef={ref}

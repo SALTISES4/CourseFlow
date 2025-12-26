@@ -35,7 +35,9 @@ export interface WeekCellNodeType extends WeekCellShared {
 interface InternalShared {
   wrapRef: MutableRefObject<HTMLDivElement>
   onDrop: (
-    data: NodeWorkflowReorderPayload & { type: 'node' | 'phantom' }
+    data: NodeWorkflowReorderPayload & {
+      type: WeekCellType.NODE | WeekCellType.PHANTOM
+    }
   ) => void
 }
 

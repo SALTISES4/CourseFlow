@@ -12,6 +12,7 @@ import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indi
 import { selectNodeById } from '@cf/redux/selectors/node.selector'
 import { svglinkAllowDND } from '@cf/redux/slices/svglink.slice'
 import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/Utility.class'
 import { nodelinkOutcome } from '@cfRedux/slices/node.slice'
 import { isOutcomeLink } from '@cfRedux/slices/outcomes.slice'
 import { RootState } from '@cfRedux/store'
@@ -27,8 +28,7 @@ import Handles from '../../../LineSVG/Handles'
 import HoverMenu from '../HoverMenu'
 import Meta from '../Meta'
 import * as StyledNode from '../styles'
-import { WeekCellNodeTypeTypeInternal } from '../types'
-import { _t } from '@cf/utility/Utility.class'
+import { WeekCellNodeTypeTypeInternal, WeekCellType } from '../types'
 
 type NodeStateType = {
   dragging: boolean
@@ -139,7 +139,7 @@ const WeekCellNode = ({
 
           if (isGridCell(dropped) && dropped.id !== nodeId) {
             onDrop({
-              type: 'node',
+              type: WeekCellType.NODE,
               edge: extractClosestEdge(self.data) as 'top' | 'bottom',
               id: dropped.id,
               fromWeek: dropped.coords.week,
@@ -196,7 +196,7 @@ const WeekCellNode = ({
 
         {!!node.outcomenodeSet?.length && (
           <LinkedOutcomes
-            parent={{ id: nodeId, type: 'node' }}
+            parent={{ id: nodeId, type: WeekCellType.NODE }}
             outcomes={node.outcomenodeSet}
           />
         )}

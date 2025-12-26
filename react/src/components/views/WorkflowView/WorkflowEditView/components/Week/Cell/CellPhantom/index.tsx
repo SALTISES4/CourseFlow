@@ -10,7 +10,7 @@ import { produce } from 'immer'
 import { useEffect, useState } from 'react'
 
 import { isGridCell, isSidebarNode } from '../../../../types'
-import { WeekCellPhantomTypeInternal } from '../types'
+import { WeekCellPhantomTypeInternal, WeekCellType } from '../types'
 
 const WeekCellPhantom = ({
   columnId,
@@ -78,7 +78,7 @@ const WeekCellPhantom = ({
 
         if (isGridCell(dropped)) {
           onDrop({
-            type: 'phantom',
+            type: WeekCellType.PHANTOM,
             edge:
               insertMode === 'column'
                 ? undefined
