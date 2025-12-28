@@ -257,9 +257,13 @@ const nodeSlice = createSlice({
 
     workflowNodeInsert: (
       state,
-      action: PayloadAction<{ id: number; duplicate?: boolean }>
+      action: PayloadAction<{
+        id: number
+        mode: NodeWorkflowReorderPayload['mode']
+        duplicate?: boolean
+      }>
     ) => {
-      const { id, duplicate } = action.payload
+      const { id, mode, duplicate } = action.payload
       const node = state.entities[id]
 
       const weekNodes = state.ids.filter(
@@ -270,7 +274,8 @@ const nodeSlice = createSlice({
       const gridSplits = splitWorkflowGridNodes({
         ids: weekNodes,
         entities: state.entities,
-        newRow: node.order + 1
+        newRow: node.order + 1,
+        column: mode === 'column' ? node.column : undefined
       })
 
       const clone = { ...node }
