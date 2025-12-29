@@ -9,16 +9,18 @@ import Box from '@mui/material/Box'
 import { produce } from 'immer'
 import { useEffect, useState } from 'react'
 
-import { isGridCell, isSidebarNode } from '../../../../types'
+import { isGridCell } from '../../../../types'
 import { WeekCellPhantomTypeInternal, WeekCellType } from '../types'
 
 const WeekCellPhantom = ({
   columnId,
   coordsY,
   coordsWeek,
+  highlight,
   borderColor,
   wrapRef,
   insertMode,
+  empty,
   onDrop
 }: WeekCellPhantomTypeInternal) => {
   const [state, setState] = useState({
@@ -45,7 +47,7 @@ const WeekCellPhantom = ({
         )
       },
       onDrag: ({ source, self }) => {
-        if (!isGridCell(source.data) && !isSidebarNode(source.data)) {
+        if (!isGridCell(source.data)) {
           return
         }
         setState(
@@ -68,11 +70,11 @@ const WeekCellPhantom = ({
         })
       },
       canDrop: ({ source }) => {
-        return isGridCell(source.data) || isSidebarNode(source.data)
+        return isGridCell(source.data)
       },
       onDrop: ({ source, self }) => {
         const dropped = source.data
-        if (!isGridCell(dropped) && !isSidebarNode(source.data)) {
+        if (!isGridCell(dropped)) {
           return null
         }
 
@@ -80,7 +82,7 @@ const WeekCellPhantom = ({
           onDrop({
             type: WeekCellType.PHANTOM,
             edge:
-              insertMode === 'column'
+              insertMode === 'column' || empty
                 ? undefined
                 : (extractClosestEdge(self.data) as 'top' | 'bottom'),
             id: dropped.id,
@@ -91,11 +93,6 @@ const WeekCellPhantom = ({
           })
         }
 
-        // TODO: implement sidebar node categories
-        if (isSidebarNode(dropped)) {
-          console.log('dropped', dropped)
-        }
-
         setState(
           produce((draft) => {
             draft.draggedOver = false
@@ -104,19 +101,19 @@ const WeekCellPhantom = ({
         )
       }
     })
-  }, [wrapRef, columnId, coordsWeek, coordsY, insertMode, onDrop])
+  }, [wrapRef, columnId, coordsWeek, coordsY, insertMode, empty, onDrop])
 
   return (
     <Box
       sx={{
         height: '100%',
         backgroundColor:
-          insertMode === 'column' &&
-          state.draggedOver &&
-          alpha(borderColor, 0.1)
+          (((insertMode === 'column' || empty) && state.draggedOver) ||
+            highlight) &&
+          alpha(borderColor, 0.2)
       }}
     >
-      {state.closestEdge && insertMode !== 'column' && (
+      {state.closestEdge && insertMode !== 'column' && !empty && (
         <DropIndicator edge={state.closestEdge} type="no-terminal" gap="32px" />
       )}
     </Box>

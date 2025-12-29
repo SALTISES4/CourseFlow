@@ -219,7 +219,8 @@ const Week = (props: WeekPropsType) => {
   )
 
   const weekGrid = !props.weekRows.length ? (
-    <WeekRowEmpty
+    <WeekRow
+      rowIndex="empty"
       weekId={props.weekId}
       columnIds={props.columnIds}
       columnColors={props.columnColors}

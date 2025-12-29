@@ -65,7 +65,7 @@ export function isGridCell(
 }
 
 export function isSidebarNode(data: Record<string | symbol, unknown>): data is {
-  id: number | string
+  id: number
   type: DraggableType.SIDEBAR_NODE | DraggableType.SIDEBAR_NODE_CUSTOM
 } {
   return (

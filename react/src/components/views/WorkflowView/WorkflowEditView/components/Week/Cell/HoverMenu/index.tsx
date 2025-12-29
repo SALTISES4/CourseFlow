@@ -55,7 +55,7 @@ const HoverMenu = ({ nodeId, nodeRef }: PropsType) => {
             } else {
               dispatch(
                 nodeWorkflowInsert({
-                  id: nodeId,
+                  nodeId,
                   mode: insertMode,
                   duplicate: action === 'duplicate'
                 })
@@ -91,7 +91,7 @@ const HoverMenu = ({ nodeId, nodeRef }: PropsType) => {
     (insertModeOption: Exclude<NodeInsertMode, 'manual'>) => {
       dispatch(
         nodeWorkflowInsert({
-          id: nodeId,
+          nodeId,
           mode: insertModeOption,
           duplicate: state.duplicate
         })

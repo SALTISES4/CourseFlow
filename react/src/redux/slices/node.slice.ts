@@ -148,6 +148,10 @@ const splitWorkflowGridNodes = ({
 
   ids.forEach((nodeId) => {
     const n = entities[nodeId]
+    if (n.deleted) {
+      return
+    }
+
     const columnMatch = column !== undefined ? n.column === column : true
 
     if (columnMatch && n.order >= newRow) {
@@ -166,19 +170,24 @@ const splitWorkflowGridNodes = ({
 const getCollapsedWeekRow = ({
   ids,
   entities,
-  oldRow,
-  newRow,
+  from,
+  to,
   columnMode
 }: {
   ids: number[]
   entities: typeof initialState.entities
-  oldRow: number
-  newRow: number
-  columnMode: boolean
+  from: { week: number; row: number }
+  to: { week: number; row: number }
+  columnMode?: boolean
 }): number | null => {
-  const sameRow = ids.filter((nodeId) => entities[nodeId].order === oldRow)
-  const columnCheck = columnMode ? oldRow !== newRow : true
-  return !sameRow.length && columnCheck ? oldRow : null
+  const sameRow = ids.filter((nodeId) => {
+    const n = entities[nodeId]
+    return n.deleted === false && n.order === from.row
+  })
+  const columnCheck = columnMode
+    ? from.week !== to.week || (from.week === to.week && from.row !== to.row)
+    : true
+  return !sameRow.length && columnCheck ? from.row : null
 }
 
 /*******************************************************
@@ -257,43 +266,85 @@ const nodeSlice = createSlice({
 
     workflowNodeInsert: (
       state,
-      action: PayloadAction<{
-        id: number
-        mode: NodeWorkflowReorderPayload['mode']
-        duplicate?: boolean
-      }>
+      action: PayloadAction<
+        | {
+            nodeId: number
+            mode: NodeWorkflowReorderPayload['mode']
+            duplicate?: boolean
+          }
+        | {
+            columnId: number
+            weekId: number
+            row: number
+          }
+      >
     ) => {
-      const { id, mode, duplicate } = action.payload
-      const node = state.entities[id]
+      if ('columnId' in action.payload) {
+        const { columnId, weekId, row } = action.payload
+        const weekNodes = state.ids.filter(
+          (nodeId) => state.entities[nodeId].week === weekId
+        )
 
-      const weekNodes = state.ids.filter(
-        (nodeId) =>
-          nodeId !== node.id && state.entities[nodeId].week === node.week
-      )
-
-      const gridSplits = splitWorkflowGridNodes({
-        ids: weekNodes,
-        entities: state.entities,
-        newRow: node.order + 1,
-        column: mode === 'column' ? node.column : undefined
-      })
-
-      const clone = { ...node }
-      nodeAdapter.addOne(state, {
-        ...clone,
-        id: getNextLargestNumber(state.ids),
-        title: _t('Blank title'),
-        order: clone.order + 1,
-        comments: [],
-        ...(duplicate && {
-          title: `${clone.title} (copy)`
+        const gridSplits = splitWorkflowGridNodes({
+          ids: weekNodes,
+          entities: state.entities,
+          newRow: row
         })
-      })
 
-      // bump nodes by one row down
-      gridSplits.after.forEach((nodeId) => {
-        state.entities[nodeId].order += 1
-      })
+        // grab any existing node
+        const clone = state.entities[state.ids[0]]
+        nodeAdapter.addOne(state, {
+          ...clone,
+          id: getNextLargestNumber(state.ids),
+          title: _t('Blank title'),
+          order: row,
+          week: weekId,
+          column: columnId,
+          deleted: false,
+          taskClassification: -1,
+          contextClassification: -1,
+          comments: []
+        })
+
+        // bump nodes by one row down
+        gridSplits.after.forEach((nodeId) => {
+          state.entities[nodeId].order += 1
+        })
+      }
+
+      if ('nodeId' in action.payload) {
+        const { nodeId, mode, duplicate } = action.payload
+        const node = state.entities[nodeId]
+
+        const weekNodes = state.ids.filter(
+          (nodeId) =>
+            nodeId !== node.id && state.entities[nodeId].week === node.week
+        )
+
+        const gridSplits = splitWorkflowGridNodes({
+          ids: weekNodes,
+          entities: state.entities,
+          newRow: node.order + 1,
+          column: mode === 'column' ? node.column : undefined
+        })
+
+        const clone = { ...node }
+        nodeAdapter.addOne(state, {
+          ...clone,
+          id: getNextLargestNumber(state.ids),
+          title: _t('Blank title'),
+          order: clone.order + 1,
+          comments: [],
+          ...(duplicate && {
+            title: `${clone.title} (copy)`
+          })
+        })
+
+        // bump nodes by one row down
+        gridSplits.after.forEach((nodeId) => {
+          state.entities[nodeId].order += 1
+        })
+      }
     },
 
     workflowNodeDelete: (state, action: PayloadAction<{ id: number }>) => {
@@ -308,9 +359,8 @@ const nodeSlice = createSlice({
       const collapseRow = getCollapsedWeekRow({
         ids: weekNodes,
         entities: state.entities,
-        oldRow: node.order,
-        newRow: node.order,
-        columnMode: undefined
+        from: { week: node.week, row: node.order },
+        to: { week: node.week, row: node.order }
       })
 
       nodeAdapter.removeOne(state, action.payload.id)
@@ -351,7 +401,7 @@ const nodeSlice = createSlice({
       }
 
       if (insertModeRow) {
-        newRow = edge === 'top' ? toRow : toRow + 1
+        newRow = edge === 'bottom' ? toRow + 1 : toRow
       }
 
       const fromWeekNodes = state.ids.filter(
@@ -376,8 +426,8 @@ const nodeSlice = createSlice({
       const collapseRow = getCollapsedWeekRow({
         ids: fromWeekNodes,
         entities: state.entities,
-        oldRow,
-        newRow,
+        from: { week: fromWeek, row: oldRow },
+        to: { week: toWeek, row: newRow },
         columnMode: insertModeColumn
       })
 
@@ -398,6 +448,12 @@ const nodeSlice = createSlice({
             break // stop chain bumping as soon as the first node doesn't need to move
           }
         }
+      }
+
+      if (insertModeRow && collapseRow === null) {
+        gridSplits.after.forEach((nodeId) => {
+          state.entities[nodeId].order += 1
+        })
       }
 
       if (collapseRow !== null) {

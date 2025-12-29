@@ -108,7 +108,7 @@ const AddTab = () => {
               ))}
               <DraggableBlock
                 component="li"
-                id="new"
+                id={-1}
                 label={'Custom node category'}
                 type={DraggableType.SIDEBAR_NODE_CUSTOM}
                 dashed

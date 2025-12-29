@@ -45,10 +45,11 @@ export const WeekWrapper = styled(Box, {
   })
 )
 
-export const WeekBackground = styled(Box)(() => ({
+export const WeekBackground = styled(Box)(({ theme }) => ({
   position: 'absolute',
   left: 0,
   width: '100%',
+  borderRadius: theme.shape.borderRadius,
   backgroundColor: '#eef2fd'
 }))
 
