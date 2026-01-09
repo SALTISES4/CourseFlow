@@ -1,14 +1,16 @@
 import { _t } from '@cf/utility/Utility.class'
+import { outcomeAdapter } from '@cfRedux/slices/outcomes.slice'
 import { RootState } from '@cfRedux/store'
 import { createSelector } from 'reselect'
 
-const selectOutcomeData = (state: RootState) => state.outcomes.outcomeData
-const selectOutcomeOrder = (state: RootState) => state.outcomes.outcomeOrder
+export const {
+  selectAll: selectAllOutcomes,
+  selectById: selectOutcomeById,
+  selectIds: selectOutcomeIds
+} = outcomeAdapter.getSelectors<RootState>((state) => state.outcomes)
 
-export const selectOutcomes = createSelector(
-  [selectOutcomeOrder, selectOutcomeData],
-  (outcomeOrder, outcomesData) => outcomeOrder.map((id) => outcomesData[id])
-)
+const selectEntities = (state: RootState) => state.outcomes.entities
+const selectOrder = (state: RootState) => state.outcomes.order
 
 type TagGroup = {
   id: number
@@ -18,14 +20,14 @@ type TagGroup = {
 
 // generate groups of outcomes, grouped by untagged/tagged-by-id
 export const selectOutcomeTagGroups = createSelector(
-  [selectOutcomeOrder, selectOutcomeData],
-  (outcomeOrder, outcomeData) => {
+  [selectOrder, selectEntities],
+  (order, entities) => {
     const tagGroups: TagGroup[] = [
       { id: -1, title: _t('Untagged'), outcomes: [] }
     ]
 
-    for (let i = 0; i < outcomeOrder.length; i++) {
-      const outcome = outcomeData[outcomeOrder[i]]
+    for (let i = 0; i < order.length; i++) {
+      const outcome = entities[order[i]]
       if (!outcome.tags?.length) {
         tagGroups[0].outcomes.push(outcome.id)
       }
@@ -51,32 +53,36 @@ export const selectOutcomeTagGroups = createSelector(
 
 export const selectOutcomeChildrenById = createSelector(
   [
-    selectOutcomeOrder,
-    selectOutcomeData,
+    selectOrder,
+    selectEntities,
     (_: RootState, parentId: number | null) => parentId
   ],
-  (outcomeOrder, outcomesData, parentId) => {
+  (order, entities, parentId) => {
     if (parentId === null) {
-      return outcomeOrder
-        .map((id) => outcomesData[id])
+      return order
+        .map((id) => entities[id])
         .filter((outcome) => outcome?.parent === null)
     }
 
-    return outcomesData[parentId].children.map((c) => outcomesData[c])
+    return entities[parentId].children.map((c) => entities[c])
   }
 )
 
 // drill through the outcome data to derive prefix based on parent outcomes
 export const getPrefixPath = createSelector(
-  [selectOutcomeData, (_: RootState, id: number) => id],
-  (outcomesData, outcomeId) => {
+  [selectEntities, (_: RootState, id: number) => id],
+  (entities, outcomeId) => {
     const path: (number | string)[] = []
-    let outcome = outcomesData[outcomeId]
+    let outcome = entities[outcomeId]
+
+    // TODO: take a look at how prefixing/ordering will be handled
+    // ie, whether it's attached to each separate outcome or what
+    // (so that it can be rendered outside of the tree regardless of its "index" position)
 
     while (outcome && outcome.parent) {
-      const index = outcomesData[outcome.parent].children.indexOf(outcome.id)
+      const index = entities[outcome.parent].children.indexOf(outcome.id)
 
-      if (outcome.level === 1 && outcome.code) {
+      if (outcome.level === 0 && outcome.code) {
         // use the 'code' prefix, which is only supported at level 1 outcomes
         path.unshift(outcome.code)
       } else {
@@ -84,7 +90,7 @@ export const getPrefixPath = createSelector(
         path.unshift(index + 1)
       }
 
-      outcome = outcomesData[outcome.parent]
+      outcome = entities[outcome.parent]
     }
 
     // make it so that root string prefixes are separated by the dash
@@ -92,7 +98,7 @@ export const getPrefixPath = createSelector(
     const prefix =
       path.length === 1 && typeof path[0] === 'string'
         ? path + ' - '
-        : path.join('.') + '.'
+        : path.join('.') + '. '
 
     return prefix
   }

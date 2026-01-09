@@ -12,8 +12,6 @@ const RelatedTab = () => {
   const outcomeGroups = useSelector(selectOutcomeTagGroups)
   const alert = true
 
-  console.log(outcomeGroups)
-
   return (
     <Styled.SidebarInnerWrap>
       <Styled.SidebarContent>

@@ -19,11 +19,7 @@ const LinkedOutcomes = ({ parent, outcomes }: PropsType) => {
   const [show, setShow] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
   const badgeRef = useRef<HTMLSpanElement>(null)
-  const outcomesData = useSelector((state: RootState) => state.outcome)
-
-  if (parent.id === 309) {
-    console.log('outcomeData', outcomesData)
-  }
+  const entities = useSelector((state: RootState) => state.outcomes.entities)
 
   const showPopover = useCallback((val: boolean) => {
     return (e: MouseEvent<HTMLSpanElement>) => {
@@ -54,11 +50,11 @@ const LinkedOutcomes = ({ parent, outcomes }: PropsType) => {
         }}
       >
         <StyledOutcome.OutcomeGroup sx={{ mt: 0 }}>
-          {/* {outcomes.map((outcome) => (
+          {outcomes.map((outcome) => (
             <StyledOutcome.OutcomeGroupItem key={outcome}>
-              <Outcome {...outcomesData[outcome]} linkParent={parent} />
+              <Outcome {...entities[outcome]} linkParent={parent} />
             </StyledOutcome.OutcomeGroupItem>
-          ))} */}
+          ))}
         </StyledOutcome.OutcomeGroup>
       </Styled.Popover>
     </Styled.Wrap>

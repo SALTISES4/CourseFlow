@@ -1,3 +1,4 @@
+import { selectOutcomeById } from '@cf/redux/selectors/outcomes.selector'
 import { Outcome, updateOutcome } from '@cf/redux/slices/outcomes.slice'
 import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
 import { _t } from '@cf/utility/Utility.class'
@@ -21,8 +22,9 @@ import data from '../EditNode/optionsData'
 
 const EditOutcome = ({ outcomeId }: { outcomeId: number }) => {
   const dispatch = useDispatch()
-  const outcomes = useSelector((state: RootState) => state.outcomes.outcomeData)
-  const outcome = outcomes[outcomeId]
+  const outcome = useSelector((state: RootState) =>
+    selectOutcomeById(state, outcomeId)
+  )
 
   if (!outcome) {
     dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
@@ -57,8 +59,10 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
         dispatch(
           updateOutcome({
             id: outcome.id,
-            children: outcome.children,
-            ...data
+            data: {
+              children: outcome.children,
+              ...data
+            }
           })
         )
       }, 300),

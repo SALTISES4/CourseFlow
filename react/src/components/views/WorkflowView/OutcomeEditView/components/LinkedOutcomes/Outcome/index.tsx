@@ -50,7 +50,7 @@ const Outcome = ({
     [setCollapsed, state.collapsed]
   )
 
-  const showToggleButton = !!children.length && level !== 3
+  const showToggleButton = !!children.length && level < 3
 
   return (
     <Styled.OutcomeWrapper>

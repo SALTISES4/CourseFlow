@@ -1,9 +1,7 @@
 import { type Instruction } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item'
-import { createSlice } from '@reduxjs/toolkit'
+import { getNextLargestNumber } from '@cf/redux/selectors/helpers'
+import { createEntityAdapter, createSlice } from '@reduxjs/toolkit'
 import { type PayloadAction } from '@reduxjs/toolkit'
-
-// to keep track of newly created Outcome IDs
-let dynamicID = 1
 
 export type Outcome = {
   id: number
@@ -18,19 +16,19 @@ export type Outcome = {
   tags?: number[]
 }
 
-export type OutcomesState = {
+export const outcomeAdapter = createEntityAdapter<Outcome>()
+
+type OutcomesState = ReturnType<typeof outcomeAdapter.getInitialState> & {
   dragging: { id: number; level: number } | null
   highlighted: number[]
-
-  outcomeOrder: number[]
-  outcomeData: Record<number, Outcome>
+  order: number[]
 }
 
 const initialState: OutcomesState = {
+  ...outcomeAdapter.getInitialState(),
   dragging: null,
   highlighted: [],
-  outcomeOrder: [],
-  outcomeData: {}
+  order: []
 }
 
 type AddOutcomeType = Pick<Outcome, 'id'> &
@@ -42,7 +40,7 @@ export const outcomesSlice = createSlice({
   reducers: {
     // add outcome to a specific parent
     addOutcome: (state, action: PayloadAction<AddOutcomeType>) => {
-      const outcomeId = dynamicID++
+      const outcomeId = getNextLargestNumber(state.ids)
 
       const newOutcomeData: Outcome = {
         id: outcomeId,
@@ -55,18 +53,17 @@ export const outcomesSlice = createSlice({
         level: 0 // added later
       }
 
-      let orderAfterId = -1
-
       // no payload, we're just creating new root level outcome
       if (!action.payload) {
-        state.outcomeOrder.push(outcomeId)
-        state.outcomeData[outcomeId] = newOutcomeData
-        return
+        state.order.push(outcomeId)
+        return outcomeAdapter.addOne(state, newOutcomeData)
       }
+
+      let orderAfterId = -1
 
       // if no "order", then we're simply appending to the parent ID
       if (!action.payload.order) {
-        const parent = state.outcomeData[action.payload.id]
+        const parent = state.entities[action.payload.id]
         newOutcomeData.parent = parent.id
 
         // order after last parent's child, or parent, if none
@@ -77,12 +74,12 @@ export const outcomesSlice = createSlice({
         parent.children.push(outcomeId)
       } else {
         // if order is present, add after the target outcome
-        const target = state.outcomeData[action.payload.id]
+        const target = state.entities[action.payload.id]
         orderAfterId = target.id // order after target
 
         if (target.parent) {
           newOutcomeData.parent = target.parent
-          const parent = state.outcomeData[target.parent]
+          const parent = state.entities[target.parent]
           const childIndex = parent.children.indexOf(target.id)
           if (childIndex !== -1) {
             parent.children.splice(childIndex + 1, 0, outcomeId)
@@ -91,45 +88,44 @@ export const outcomesSlice = createSlice({
       }
 
       // update the order index
-      const orderIndex = state.outcomeOrder.indexOf(orderAfterId)
+      const orderIndex = state.order.indexOf(orderAfterId)
       if (orderIndex !== -1) {
-        state.outcomeOrder.splice(orderIndex + 1, 0, outcomeId)
+        state.order.splice(orderIndex + 1, 0, outcomeId)
       }
 
       // set the correct level
       newOutcomeData.level =
         newOutcomeData.parent === null
           ? 0
-          : state.outcomeData[newOutcomeData.parent].level + 1
+          : state.entities[newOutcomeData.parent].level + 1
 
       // finally add the data itself
-      state.outcomeData[outcomeId] = newOutcomeData
+      outcomeAdapter.addOne(state, newOutcomeData)
     },
 
     deleteOutcome: (state, action: PayloadAction<number>) => {
       const outcomeId = action.payload
 
       // delete from order
-      const orderIndex = state.outcomeOrder.indexOf(outcomeId)
-      state.outcomeOrder.splice(orderIndex, 1)
+      const orderIndex = state.order.indexOf(outcomeId)
+      state.order.splice(orderIndex, 1)
 
       // delete from parent
-      const parentId = state.outcomeData[outcomeId].parent
+      const parentId = state.entities[outcomeId].parent
       if (parentId) {
-        state.outcomeData[parentId].children.splice(
-          state.outcomeData[parentId].children.indexOf(outcomeId),
+        state.entities[parentId].children.splice(
+          state.entities[parentId].children.indexOf(outcomeId),
           1
         )
       }
 
-      // finally, delete data
-      delete state.outcomeData[outcomeId]
+      outcomeAdapter.removeOne(state, outcomeId)
     },
 
     // duplicates the outcome below the target
     // cloning the tree structure as well
     duplicateOutcome: (state, action: PayloadAction<number>) => {
-      const target = state.outcomeData[action.payload]
+      const target = state.entities[action.payload]
 
       // find the last outcome ID to know after which outcome to inject
       // the cloned outcome tree
@@ -139,51 +135,49 @@ export const outcomesSlice = createSlice({
       // recursively go over the tree of outcomes and make updates
       function cloneOutcome(outcome: Outcome, parentId: number | null = null) {
         lastOutcomeId = outcome.id
-        const cloneId = dynamicID++
+        const cloneId = getNextLargestNumber(state.ids)
         clonedIds.push(cloneId)
-
         const clone = {
           ...outcome,
           id: cloneId,
           title: outcome.title + ' (duplicate)'
         }
 
-        // set the correct parent
-        // and update the parent to also link to clone
+        // set the correct parent and update the parent to also link to clone
         if (parentId) {
           clone.parent = parentId
-          state.outcomeData[parentId].children.push(cloneId)
+          state.entities[parentId]?.children?.push(cloneId)
         }
 
-        // add the clone data to the state
-        state.outcomeData[cloneId] = clone
+        outcomeAdapter.addOne(state, clone)
 
         // iterate over children and do the whole dance over again
         const children = clone.children
         clone.children = [] // clear because they're being added in cloneOutcome
-        children.map((c) => cloneOutcome(state.outcomeData[c], cloneId))
+        children.map((c) => cloneOutcome(state.entities[c], cloneId))
       }
 
       // start from the target/root outcome
       cloneOutcome(target)
 
       // insert the clone IDs in the correct spot in order array
-      const lastOutcomeIndex = state.outcomeOrder.indexOf(lastOutcomeId)
-      state.outcomeOrder.splice(lastOutcomeIndex + 1, 0, ...clonedIds)
+      const lastOutcomeIndex = state.order.indexOf(lastOutcomeId)
+      state.order.splice(lastOutcomeIndex + 1, 0, ...clonedIds)
 
       // add the root clone to the correct parent
       if (target.parent) {
-        state.outcomeData[target.parent].children.push(clonedIds[0])
+        state.entities[target.parent].children.push(clonedIds[0])
       }
     },
 
-    // edit/update existing outcome with payload data
-    updateOutcome: (state, action: PayloadAction<Outcome>) => {
-      const outcome = state.outcomeData[action.payload.id]
-      state.outcomeData[action.payload.id] = {
-        ...outcome,
-        ...action.payload
-      }
+    updateOutcome: (
+      state,
+      action: PayloadAction<{ id: number; data: Partial<Outcome> }>
+    ) => {
+      outcomeAdapter.updateOne(state, {
+        id: action.payload.id,
+        changes: action.payload.data
+      })
     },
 
     // move outcome within the outcome tree
@@ -197,21 +191,19 @@ export const outcomesSlice = createSlice({
       }>
     ) => {
       const { targetId, destinationId, operation } = action.payload
-      const target = state.outcomeData[targetId]
-      const destination = state.outcomeData[destinationId]
-
-      const targetIndex = state.outcomeOrder.indexOf(targetId)
-      const destinationIndex = state.outcomeOrder.indexOf(destinationId)
+      const target = state.entities[targetId]
+      const destination = state.entities[destinationId]
+      const targetIndex = state.order.indexOf(targetId)
+      const destinationIndex = state.order.indexOf(destinationId)
       let orderId = destinationId // the id of the element around which we order
       let orderAfter = true // order after or before the orderId
-
       const combineMode = !operation || operation === 'combine'
       const reorderMode = !combineMode
 
       // combine mode means we're injecting outcome into a different parent
       if (combineMode) {
         // remove target from its parent
-        const targetParent = state.outcomeData[target.parent]
+        const targetParent = state.entities[target.parent]
         targetParent.children.splice(targetParent.children.indexOf(targetId), 1)
 
         // we're ordering after the last child of the parent, or parent if no children
@@ -232,19 +224,16 @@ export const outcomesSlice = createSlice({
         if (target.parent === destination.parent) {
           // early exit if the final positions wouldn't change at all
           if (
-            operation === 'reorder-before' &&
-            targetIndex < destinationIndex
+            (operation === 'reorder-before' &&
+              targetIndex < destinationIndex) ||
+            (operation === 'reorder-after' && targetIndex > destinationIndex)
           ) {
-            return
-          }
-
-          if (operation === 'reorder-after' && targetIndex > destinationIndex) {
             return
           }
 
           // reorder outcomes
           if (target.parent !== null) {
-            const parent = state.outcomeData[target.parent]
+            const parent = state.entities[target.parent]
             const { children } = parent
             children.splice(children.indexOf(targetId), 1)
             const destIndex = children.indexOf(destinationId)
@@ -258,14 +247,14 @@ export const outcomesSlice = createSlice({
           // order after or before the target?
           orderAfter = operation === 'reorder-after'
         } else {
-          const oldParent = state.outcomeData[target.parent]
+          const oldParent = state.entities[target.parent]
           const oldIndex = oldParent.children.indexOf(targetId)
 
           // remove from old parent
           oldParent.children.splice(oldIndex, 1)
 
           // add to new parent
-          const newParent = state.outcomeData[destination.parent]
+          const newParent = state.entities[destination.parent]
           const destIndex = newParent.children.indexOf(destinationId)
           newParent.children.splice(
             operation === 'reorder-after' ? destIndex + 1 : destIndex,
@@ -282,13 +271,9 @@ export const outcomesSlice = createSlice({
       }
 
       // update final order
-      state.outcomeOrder.splice(targetIndex, 1)
-      const orderIndex = state.outcomeOrder.indexOf(orderId)
-      state.outcomeOrder.splice(
-        orderAfter ? orderIndex + 1 : orderIndex,
-        0,
-        targetId
-      )
+      state.order.splice(targetIndex, 1)
+      const orderIndex = state.order.indexOf(orderId)
+      state.order.splice(orderAfter ? orderIndex + 1 : orderIndex, 0, targetId)
     },
 
     // set currently dragged outcome ID to better control pragmatic dropzones
@@ -320,8 +305,7 @@ export const outcomesSlice = createSlice({
       }>
     ) => {
       const { targetId, destinationId } = action.payload
-      const destination = state.outcomeData[destinationId]
-
+      const destination = state.entities[destinationId]
       if (!destination.linkedOutcomes) {
         destination.linkedOutcomes = [targetId]
       } else {
@@ -353,4 +337,5 @@ export const {
   setDragging,
   setHighlighted
 } = outcomesSlice.actions
+
 export default outcomesSlice.reducer

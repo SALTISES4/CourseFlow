@@ -12,8 +12,6 @@ const OutcomeTab = () => {
   // TODO: figure out where the outcomes data actually comes from
   const outcomeGroups = useSelector(selectOutcomeTagGroups)
 
-  console.log({ outcomeGroups })
-
   if (!outcomeGroups.length) {
     return (
       <Styled.SidebarInnerWrap>
