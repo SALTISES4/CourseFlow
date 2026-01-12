@@ -108,7 +108,7 @@ export const SeeAllLink = styled(RouterLink)(({ theme }) => ({
   display: 'block',
   width: '100%',
   fontSize: '14px',
-  color: theme.palette.primary.dark
+  color: theme.palette.primary.main
 }))
 
 export const HelpLink = styled(List)(({ theme }) => ({
