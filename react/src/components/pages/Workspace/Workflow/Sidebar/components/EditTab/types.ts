@@ -2,7 +2,7 @@ import { CfObjectType } from '@cf/types/enum'
 
 export enum EditableType {
   TERM = 'editable_term',
-  WEEK = CfObjectType.WEEK,
+  SECTION = CfObjectType.WEEK,
   PART = 'editable_part',
   OUTCOME = CfObjectType.OUTCOME,
   NODE = CfObjectType.NODE,

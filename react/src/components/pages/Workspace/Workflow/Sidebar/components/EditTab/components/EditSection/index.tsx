@@ -5,7 +5,6 @@ import { CfObjectType } from '@cf/types/enum'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { weekChangeField } from '@cfRedux/slices/week.slice'
 import { RootState } from '@cfRedux/store'
-import { NodeForm } from '@cfSidebar/components/EditTab/components/EditNode/types'
 import * as SC from '@cfSidebar/styles'
 import { debounce } from '@mui/material'
 import Button from '@mui/material/Button'
@@ -18,19 +17,25 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import SaveAsTemplate from '../SaveAsTemplate'
 
-const EditWeek = ({ weekId }: { weekId: number }) => {
+type SectionFormType = {
+  title: string
+}
+
+const EditSection = ({ sectionId }: { sectionId: number }) => {
   const dispatch = useDispatch()
-  const week = useSelector((state: RootState) => selectWeekById(state, weekId))
+  const week = useSelector((state: RootState) =>
+    selectWeekById(state, sectionId)
+  )
 
   if (!week) {
     dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
     return null
   }
 
-  return <EditWeekForm week={week} />
+  return <EditSectionForm week={week} />
 }
 
-const EditWeekForm = ({ week }: { week: TWeek }) => {
+const EditSectionForm = ({ week }: { week: TWeek }) => {
   const dispatch = useDispatch()
   const [state, setState] = useState({
     template: false
@@ -43,7 +48,7 @@ const EditWeekForm = ({ week }: { week: TWeek }) => {
     watch,
     reset,
     formState: { errors, isDirty }
-  } = useForm<NodeForm>({
+  } = useForm<SectionFormType>({
     defaultValues: {
       title: week.title
     }
@@ -86,7 +91,7 @@ const EditWeekForm = ({ week }: { week: TWeek }) => {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  const onSubmit = (data: NodeForm) => {
+  const onSubmit = (data: SectionFormType) => {
     Utility.logger('Form submitted with data:', data)
   }
 
@@ -122,7 +127,7 @@ const EditWeekForm = ({ week }: { week: TWeek }) => {
       <SC.SidebarInnerWrap>
         <SC.SidebarContent>
           <SC.SidebarTitle as="h3" variant="h6">
-            {_t('Edit week')}
+            {_t('Edit section')}
           </SC.SidebarTitle>
           <TextField
             label={_t('Week label')}
@@ -153,4 +158,4 @@ const EditWeekForm = ({ week }: { week: TWeek }) => {
   )
 }
 
-export default EditWeek
+export default EditSection

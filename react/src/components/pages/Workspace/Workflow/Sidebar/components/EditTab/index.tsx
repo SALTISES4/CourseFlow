@@ -5,8 +5,8 @@ import EditNode from './components/EditNode'
 import EditNodelink from './components/EditNodelink'
 import EditOutcome from './components/EditOutcome'
 import EditPart from './components/EditPart'
+import EditSection from './components/EditSection'
 import EditTerm from './components/EditTerm'
-import EditWeek from './components/EditWeek'
 import { EditableType } from './types'
 
 const EditTab = ({ id, type }: { id: number; type: EditableType }) => {
@@ -19,8 +19,8 @@ const EditTab = ({ id, type }: { id: number; type: EditableType }) => {
       return <EditTerm key={id} />
     case EditableType.PART:
       return <EditPart key={id} />
-    case EditableType.WEEK:
-      return <EditWeek key={id} weekId={id} />
+    case EditableType.SECTION:
+      return <EditSection key={id} sectionId={id} />
     case EditableType.OUTCOME:
       return <EditOutcome key={id} outcomeId={id} />
     case EditableType.NODE_LINK:
