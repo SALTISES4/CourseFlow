@@ -88,7 +88,7 @@ const ProjectCreateDialog = () => {
         submitHandler={onSubmit}
         closeCallback={onDialogClose}
         showNoProjectsAlert={true}
-        label={'Edit project'}
+        label={'Create project'}
       />
     </SC.StyledDialog>
   )
