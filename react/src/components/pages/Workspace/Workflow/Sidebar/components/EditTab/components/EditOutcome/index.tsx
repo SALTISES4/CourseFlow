@@ -8,8 +8,8 @@ import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import { useEffect, useMemo, useRef } from 'react'
-import { useForm } from 'react-hook-form'
+import { useEffect, useMemo } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 
 import {
@@ -36,9 +36,9 @@ const EditOutcome = ({ outcomeId }: { outcomeId: number }) => {
 
 const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
   const dispatch = useDispatch()
-  const firstRender = useRef(true)
 
   const {
+    control,
     register,
     watch,
     reset,
@@ -47,11 +47,12 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
     defaultValues: {
       title: outcome.title,
       description: outcome.description,
-      code: outcome.code
+      code: outcome.code,
+      tags: outcome.tags
     }
   })
 
-  const watched = watch()
+  const watchedFields = watch()
 
   const debouncedDispatch = useMemo(
     () =>
@@ -65,31 +66,17 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
             }
           })
         )
+
+        reset({}, { keepValues: true })
       }, 300),
-    [dispatch, outcome]
+    [dispatch, reset, outcome.id, outcome.children]
   )
 
   useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false
-      return
-    }
-
     if (isDirty) {
-      debouncedDispatch(watched)
+      debouncedDispatch(watchedFields)
     }
-  }, [watched, isDirty, debouncedDispatch])
-
-  useEffect(() => {
-    if (!isDirty) {
-      reset({
-        title: outcome.title,
-        description: outcome.description,
-        code: outcome.code,
-        tags: outcome.tags
-      })
-    }
-  }, [reset, isDirty, outcome])
+  }, [watchedFields, isDirty, debouncedDispatch])
 
   return (
     <SidebarInnerWrap>
@@ -120,13 +107,32 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
             {...register('code')}
           />
           {data.tags && (
-            <Autocomplete
-              multiple
-              size="small"
-              options={data.tags}
-              isOptionEqualToValue={(option, value) => option.id === value.id}
-              renderInput={(params) => (
-                <TextField {...params} variant="outlined" label="Tags" />
+            <Controller
+              name="tags"
+              control={control}
+              render={({ field }) => (
+                <Autocomplete
+                  multiple
+                  size="small"
+                  options={data.tags}
+                  getOptionLabel={(tag) => tag.label}
+                  value={data.tags.filter((tag) =>
+                    field.value.includes(tag.id)
+                  )}
+                  onChange={(_, selectedOptions) =>
+                    field.onChange(selectedOptions.map((option) => option.id))
+                  }
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === value.id
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label={_t('Tags')}
+                    />
+                  )}
+                />
               )}
             />
           )}

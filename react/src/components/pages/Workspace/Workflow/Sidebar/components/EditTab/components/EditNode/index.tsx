@@ -1,7 +1,7 @@
 import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
 import { TNode } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
-import Utility from '@cf/utility/Utility.class'
+import Utility, { _t } from '@cf/utility/Utility.class'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { nodeChangeField } from '@cfRedux/slices/node.slice'
 import { RootState } from '@cfRedux/store'
@@ -166,13 +166,15 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
             : toggleUseLinkWorkflowData
         }
       >
-        {!watch('linkedWorkflow') ? 'Link workflow' : 'Remove linked workflow'}
+        {!watch('linkedWorkflow')
+          ? _t('Link workflow')
+          : _t('Remove linked workflow')}
       </Button>
       <Button variant="contained" color="secondary">
-        Duplicate
+        {_t('Duplicate')}
       </Button>
       <Button variant="contained" color="secondary">
-        Delete
+        {_t('Delete')}
       </Button>
     </SC.SidebarActions>
   )
@@ -186,7 +188,7 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
       <SC.SidebarInnerWrap>
         <SC.SidebarContent>
           <SC.SidebarTitle as="h3" variant="h6">
-            Edit node
+            {_t('Edit node')}
           </SC.SidebarTitle>
 
           {watch('linkedWorkflow') && (
@@ -198,7 +200,7 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
                 />
               </div>
               <FormControlLabel
-                label="Use linked worfklow info"
+                label={_t('Use linked worfklow info')}
                 control={
                   <Switch
                     checked={linkedWorkflow}
@@ -214,15 +216,15 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
             {!linkedWorkflow && (
               <>
                 <TextField
-                  label="Title"
+                  label={_t('Title')}
                   variant="outlined"
                   size="small"
-                  {...register('title', { required: 'Title is required' })}
+                  {...register('title', { required: _t('Title is required') })}
                   error={!!errors.title}
                   helperText={errors.title?.message}
                 />
                 <TextField
-                  label="Description"
+                  label={_t('Description')}
                   variant="outlined"
                   size="small"
                   multiline
@@ -233,14 +235,16 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
             )}
 
             <FormControl fullWidth size="small">
-              <InputLabel id="context-type-select-label">Context</InputLabel>
+              <InputLabel id="context-type-select-label">
+                {_t('Context')}
+              </InputLabel>
               <Controller
                 name="contextType"
                 control={control}
                 render={({ field }) => (
                   <Select
                     {...field}
-                    label="Context"
+                    label={_t('Context')}
                     labelId="context-type-select-label"
                   >
                     {optionsData.contexts.map((option) => (
@@ -254,14 +258,16 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
             </FormControl>
 
             <FormControl fullWidth size="small">
-              <InputLabel id="task-type-select-label">Type of task</InputLabel>
+              <InputLabel id="task-type-select-label">
+                {_t('Type of task')}
+              </InputLabel>
               <Controller
                 name="taskType"
                 control={control}
                 render={({ field }) => (
                   <Select
                     {...field}
-                    label="Type of task"
+                    label={_t('Type of task')}
                     labelId="task-type-select-label"
                   >
                     {optionsData.taskTypes.map((option) => (
@@ -276,21 +282,23 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
 
             <Stack direction="row" gap={2}>
               <TextField
-                label="Amount"
+                label={_t('Amount')}
                 variant="outlined"
                 size="small"
                 {...register('timeRequired')}
                 sx={{ flexBasis: '35%' }}
               />
               <FormControl sx={{ flexGrow: 1 }} size="small">
-                <InputLabel id="unit-type-select-label">Unit type</InputLabel>
+                <InputLabel id="unit-type-select-label">
+                  {_t('Unit type')}
+                </InputLabel>
                 <Controller
                   name="timeUnits"
                   control={control}
                   render={({ field }) => (
                     <Select
                       {...field}
-                      label="Unit type"
+                      label={_t('Unit type')}
                       labelId="unit-type-select-label"
                     >
                       {optionsData.timeUnits.map((unit, idx) => (
@@ -312,13 +320,22 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
                   multiple
                   size="small"
                   options={optionsData.tags}
-                  getOptionLabel={(option) => option.label}
+                  getOptionLabel={(tag) => tag.label}
+                  value={optionsData.tags.filter((tag) =>
+                    field.value.includes(tag.id)
+                  )}
+                  onChange={(_, selectedOptions) =>
+                    field.onChange(selectedOptions.map((option) => option.id))
+                  }
                   isOptionEqualToValue={(option, value) =>
                     option.id === value.id
                   }
-                  onChange={(_, value) => field.onChange(value)}
                   renderInput={(params) => (
-                    <TextField {...params} variant="outlined" label="Tags" />
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label={_t('Tags')}
+                    />
                   )}
                 />
               )}
@@ -333,24 +350,24 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
                 variant="body2"
                 sx={{ mt: 1, mb: 3, fontWeight: 600 }}
               >
-                Ponderation
+                {_t('Ponderation')}
               </Typography>
               <Stack direction="row" gap={2} sx={{ mb: 2 }}>
                 <TextField
-                  label="Hrs. theory"
+                  label={_t('Hrs. theory')}
                   variant="outlined"
                   size="small"
                   {...register('ponderation.theory')}
                 />
                 <TextField
-                  label="Hrs. practice"
+                  label={_t('Hrs. practice')}
                   variant="outlined"
                   size="small"
                   {...register('ponderation.practice')}
                 />
               </Stack>
               <TextField
-                label="Hrs. individual"
+                label={_t('Hrs. individual')}
                 variant="outlined"
                 size="small"
                 {...register('ponderation.individual')}
@@ -358,13 +375,13 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
               <Divider sx={{ mt: 3, mb: 3 }} />
               <Stack direction="column" spacing={2}>
                 <TextField
-                  label="General education"
+                  label={_t('General education')}
                   variant="outlined"
                   size="small"
                   {...register('ponderation.generalEdu')}
                 />
                 <TextField
-                  label="Specific education"
+                  label={_t('Specific education')}
                   variant="outlined"
                   size="small"
                   {...register('ponderation.specificEdu')}

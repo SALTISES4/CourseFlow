@@ -96,23 +96,23 @@ const unitTypes = [
 const tags = [
   {
     id: 1,
-    label: 'Object set 1'
+    label: 'Tag 1'
   },
   {
     id: 2,
-    label: 'Object set 2'
+    label: 'Tag 2'
   },
   {
     id: 3,
-    label: 'Object set 3'
+    label: 'Tag 3'
   },
   {
     id: 4,
-    label: 'Object set 4'
+    label: 'Tag 4'
   },
   {
     id: 5,
-    label: 'Object set 5'
+    label: 'Tag 5'
   }
 ]
 
