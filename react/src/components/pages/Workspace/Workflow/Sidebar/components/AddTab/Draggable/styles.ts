@@ -53,20 +53,3 @@ export const DraggableDragHandle = styled('div')(() => ({
   width: '100%',
   height: '100%'
 }))
-
-export const DraggableBlockToggle = styled(IconButton)(({ theme }) => ({
-  marginLeft: 'auto',
-  border: 0,
-  padding: `0 ${theme.spacing(1)}`,
-  borderLeft: `1px solid ${theme.palette.divider}`,
-  borderRadius: 0,
-  background: 'transparent',
-  flexShrink: 0,
-  transition: 'color 0.15s ease',
-  cursor: 'pointer',
-  color: theme.palette.primary.main,
-  '&:hover': {
-    background: 'transparent',
-    color: theme.palette.primary.dark
-  }
-}))

@@ -16,8 +16,8 @@ import { MouseEvent, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import data, { getColumnData } from './data'
+import DraggableItem from './Draggable'
 import * as Styled from './styles'
-import DraggableBlock from '../../Draggable'
 
 const AddTab = () => {
   const dispatch = useDispatch()
@@ -97,7 +97,7 @@ const AddTab = () => {
             </Typography>
             <ul>
               {nodeCategories.map((column) => (
-                <DraggableBlock
+                <DraggableItem
                   key={column.id}
                   component="li"
                   id={column.id}
@@ -106,7 +106,7 @@ const AddTab = () => {
                   typeColor={column.color}
                 />
               ))}
-              <DraggableBlock
+              <DraggableItem
                 component="li"
                 id={-1}
                 label={'Custom node category'}
@@ -124,7 +124,7 @@ const AddTab = () => {
             {group.blocks && (
               <ul>
                 {group.blocks.map((block) => (
-                  <DraggableBlock
+                  <DraggableItem
                     key={block.id}
                     component="li"
                     id={block.id}

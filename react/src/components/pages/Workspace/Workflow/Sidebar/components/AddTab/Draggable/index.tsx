@@ -20,7 +20,7 @@ type PropsType = {
   toggle?: ReactNode
 }
 
-const DraggableBlock = ({
+const DraggableItem = ({
   sx,
   id,
   type,
@@ -28,7 +28,6 @@ const DraggableBlock = ({
   highlight,
   component,
   label,
-  toggle,
   dashed
 }: PropsType) => {
   const dispatch = useDispatch()
@@ -60,9 +59,8 @@ const DraggableBlock = ({
         <Styled.DraggableDragHandle />
         <Typography variant="body2">{label}</Typography>
       </Styled.DraggableDragWrap>
-      {toggle}
     </Styled.DraggableWrap>
   )
 }
 
-export default DraggableBlock
+export default DraggableItem
