@@ -54,9 +54,21 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
 
   const watchedFields = watch()
 
+  useEffect(() => {
+    if (!isDirty) {
+      reset({
+        title: outcome.title,
+        description: outcome.description,
+        code: outcome.code,
+        tags: outcome.tags
+      })
+    }
+  }, [reset, isDirty, outcome])
+
   const debouncedDispatch = useMemo(
     () =>
       debounce((data: Outcome) => {
+        console.log('debounced with data -', data)
         dispatch(
           updateOutcome({
             id: outcome.id,
@@ -74,6 +86,7 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
 
   useEffect(() => {
     if (isDirty) {
+      console.log('is dirty, debouncedDispatch')
       debouncedDispatch(watchedFields)
     }
   }, [watchedFields, isDirty, debouncedDispatch])
@@ -100,41 +113,47 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
             maxRows={5}
             {...register('description')}
           />
-          <TextField
-            variant="outlined"
-            label={_t('Code')}
-            size="small"
-            {...register('code')}
-          />
-          {data.tags && (
-            <Controller
-              name="tags"
-              control={control}
-              render={({ field }) => (
-                <Autocomplete
-                  multiple
-                  size="small"
-                  options={data.tags}
-                  getOptionLabel={(tag) => tag.label}
-                  value={data.tags.filter((tag) =>
-                    field.value.includes(tag.id)
-                  )}
-                  onChange={(_, selectedOptions) =>
-                    field.onChange(selectedOptions.map((option) => option.id))
-                  }
-                  isOptionEqualToValue={(option, value) =>
-                    option.id === value.id
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      label={_t('Tags')}
+          {outcome.level === 0 && (
+            <>
+              <TextField
+                variant="outlined"
+                label={_t('Code')}
+                size="small"
+                {...register('code')}
+              />
+              {data.tags && (
+                <Controller
+                  name="tags"
+                  control={control}
+                  render={({ field }) => (
+                    <Autocomplete
+                      multiple
+                      size="small"
+                      options={data.tags}
+                      getOptionLabel={(tag) => tag.label}
+                      value={data.tags.filter((tag) =>
+                        field.value.includes(tag.id)
+                      )}
+                      onChange={(_, selectedOptions) =>
+                        field.onChange(
+                          selectedOptions.map((option) => option.id)
+                        )
+                      }
+                      isOptionEqualToValue={(option, value) =>
+                        option.id === value.id
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          variant="outlined"
+                          label={_t('Tags')}
+                        />
+                      )}
                     />
                   )}
                 />
               )}
-            />
+            </>
           )}
         </Stack>
       </SidebarContent>
