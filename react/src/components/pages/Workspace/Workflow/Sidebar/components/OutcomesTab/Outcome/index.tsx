@@ -1,6 +1,7 @@
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import {
   getPrefixPath,
+  selectOutcomeById,
   selectOutcomeChildrenById
 } from '@cf/redux/selectors/outcomes.selector'
 import {
@@ -17,7 +18,21 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import OutcomeHeader from './Header'
 
-const Outcome = ({ id, title, children, level }: OutcomeType) => {
+export const Outcome = ({ id }: { id: number }) => {
+  const outcome = useSelector((state: RootState) =>
+    selectOutcomeById(state, id)
+  )
+
+  return (
+    <StyledOutcomes.OutcomeGroup sx={{ mt: '0.5em !important' }}>
+      <StyledOutcomes.OutcomeGroupItem>
+        <OutcomeBlock {...outcome} />
+      </StyledOutcomes.OutcomeGroupItem>
+    </StyledOutcomes.OutcomeGroup>
+  )
+}
+
+const OutcomeBlock = ({ id, title, children, level }: OutcomeType) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
   const prefix = useSelector((state: RootState) => getPrefixPath(state, id))
@@ -92,12 +107,12 @@ const Outcome = ({ id, title, children, level }: OutcomeType) => {
         onClick={onClick}
       />
 
-      {!state.collapsed && <OutcomeGroup parentId={id} />}
+      {!state.collapsed && <OutcomeChildren parentId={id} />}
     </Styled.OutcomeWrapper>
   )
 }
 
-export const OutcomeGroup = ({ parentId }: { parentId: number | null }) => {
+export const OutcomeChildren = ({ parentId }: { parentId: number | null }) => {
   const childOutcomes = useSelector((state: RootState) =>
     selectOutcomeChildrenById(state, parentId)
   )
@@ -108,9 +123,9 @@ export const OutcomeGroup = ({ parentId }: { parentId: number | null }) => {
 
   return (
     <StyledOutcomes.OutcomeGroup>
-      {childOutcomes.map((outcome, index) => (
+      {childOutcomes.map((outcome) => (
         <StyledOutcomes.OutcomeGroupItem key={outcome.id}>
-          <Outcome {...outcome} />
+          <OutcomeBlock {...outcome} />
         </StyledOutcomes.OutcomeGroupItem>
       ))}
     </StyledOutcomes.OutcomeGroup>

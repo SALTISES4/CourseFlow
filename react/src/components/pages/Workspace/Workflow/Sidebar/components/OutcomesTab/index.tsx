@@ -5,14 +5,11 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { useSelector } from 'react-redux'
 
-import { OutcomeGroup } from './Outcome'
+import Outcome from './Outcome'
 import * as Styled from '../../styles'
 
 const OutcomeTab = () => {
-  // TODO: figure out where the outcomes data actually comes from
   const outcomeGroups = useSelector(selectOutcomeTagGroups)
-
-  console.log({ outcomeGroups })
 
   if (!outcomeGroups.length) {
     return (
@@ -27,7 +24,7 @@ const OutcomeTab = () => {
             subtitle={
               <>
                 {_t(
-                  'Add Outcomes by navigating to the "Outcomes" tab of this workflow to be able to attach them to nodes within this view.'
+                  'Add Outcomes by navigating to the "Outcomes" tab of the current workflow to be able to attach them to nodes within this view.'
                 )}
               </>
             }
@@ -60,7 +57,9 @@ const OutcomeTab = () => {
                 <Typography component="h6" variant="body2">
                   {group.title}
                 </Typography>
-                <OutcomeGroup parentId={null} />
+                {group.outcomes.map((id) => (
+                  <Outcome key={id} id={id} />
+                ))}
               </Styled.GroupWrap>
             )
         )}

@@ -5,12 +5,34 @@ import Typography from '@mui/material/Typography'
 import { useSelector } from 'react-redux'
 
 import * as Styled from '../../styles'
-import { OutcomeGroup } from '../OutcomesTab/Outcome'
+import Outcome from '../OutcomesTab/Outcome'
 
 const RelatedTab = () => {
-  // TODO: figure out where the outcomes data actually comes from
   const outcomeGroups = useSelector(selectOutcomeTagGroups)
   const alert = true
+
+  if (!outcomeGroups.length) {
+    return (
+      <Styled.SidebarInnerWrap>
+        <Styled.SidebarContent>
+          <Styled.SidebarTitle as="h3" variant="h6">
+            {_t('Outcomes')}
+          </Styled.SidebarTitle>
+          <Alert
+            severity="info"
+            persistent
+            subtitle={
+              <>
+                {_t(
+                  'Add Outcomes to be able to attach them to nodes and outcomes within the current workflow.'
+                )}
+              </>
+            }
+          />
+        </Styled.SidebarContent>
+      </Styled.SidebarInnerWrap>
+    )
+  }
 
   return (
     <Styled.SidebarInnerWrap>
@@ -31,14 +53,15 @@ const RelatedTab = () => {
           />
         )}
         {outcomeGroups.map(
-          (tagGroup) =>
-            !!tagGroup.outcomes.length && (
-              <Styled.GroupWrap key={tagGroup.id}>
+          (group) =>
+            !!group.outcomes.length && (
+              <Styled.GroupWrap key={group.id}>
                 <Typography component="h6" variant="body2">
-                  {tagGroup.title}
+                  {group.title}
                 </Typography>
-                {/* TODO: actually render tag group outcomes */}
-                <OutcomeGroup prefix={[]} parentId={null} />
+                {group.outcomes.map((id) => (
+                  <Outcome key={id} id={id} />
+                ))}
               </Styled.GroupWrap>
             )
         )}
