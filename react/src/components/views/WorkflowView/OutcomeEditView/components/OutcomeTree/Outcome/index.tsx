@@ -9,6 +9,7 @@ import {
   extractInstruction
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item'
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/list-item'
+import { getPrefixPath } from '@cf/redux/selectors/outcomes.selector'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
@@ -19,7 +20,7 @@ import {
   moveOutcome
 } from '@cfRedux/slices/outcomes.slice'
 import { setDragging } from '@cfRedux/slices/outcomes.slice'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -39,17 +40,16 @@ const Outcome = ({
   title,
   children,
   level,
-  linkedOutcomes,
-  code,
-  prefix
-}: OutcomeType & {
-  prefix: (number | string)[]
-}) => {
+  linkedOutcomes
+}: OutcomeType) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
-  const sidebarData = useSelector((state: AppState) => state.sidebar.edit)
-  const dragging = useSelector((state: AppState) => state.outcomes.dragging)
-  const highlight = useSelector((state: AppState) => state.outcomes.highlighted)
+  const sidebarData = useSelector((state: RootState) => state.sidebar.edit)
+  const dragging = useSelector((state: RootState) => state.outcomes.dragging)
+  const prefix = useSelector((state: RootState) => getPrefixPath(state, id))
+  const highlight = useSelector(
+    (state: RootState) => state.outcomes.highlighted
+  )
   const manager = useRef(new BetterSelectionManager(dispatch))
   const [state, setState] = useState<OutcomeStateType>({
     collapsed: true,
@@ -61,13 +61,6 @@ const Outcome = ({
     sidebarData.objectType === CfObjectType.OUTCOME && sidebarData.id === id
 
   const highlighted = linkedOutcomes?.some((o) => highlight.includes(o))
-
-  // use the 'code' prefix, which is only supported at level 1 outcomes
-  // otherwise it's all numbers
-  const formattedPrefix =
-    prefix.length === 1 && level === 0 && code
-      ? `${prefix.join('.')} - ${code} - `
-      : `${prefix.join('.')}. `
 
   useEffect(() => {
     const el = dragHandleRef.current
@@ -203,7 +196,7 @@ const Outcome = ({
         id={id}
         level={level}
         dragRef={dragHandleRef}
-        title={`${formattedPrefix}${title}`}
+        title={`${prefix}${title}`}
         selected={selected || state.dragHighlight}
         highlighted={highlighted}
         collapsed={state.collapsed}
@@ -213,7 +206,7 @@ const Outcome = ({
         onToggleClick={onToggleClick}
       />
 
-      {!state.collapsed && <OutcomeGroup prefix={prefix} parentId={id} />}
+      {!state.collapsed && <OutcomeGroup parentId={id} />}
 
       <DropIndicator
         lineGap="8px"

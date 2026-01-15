@@ -1,5 +1,8 @@
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { selectOutcomeChildrenById } from '@cf/redux/selectors/outcomes.selector'
+import {
+  getPrefixPath,
+  selectOutcomeChildrenById
+} from '@cf/redux/selectors/outcomes.selector'
 import {
   Outcome as OutcomeType,
   setHighlighted
@@ -14,18 +17,10 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import OutcomeHeader from './Header'
 
-const Outcome = ({
-  id,
-  title,
-  children,
-  level,
-  code,
-  prefix
-}: OutcomeType & {
-  prefix: (number | string)[]
-}) => {
+const Outcome = ({ id, title, children, level }: OutcomeType) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
+  const prefix = useSelector((state: RootState) => getPrefixPath(state, id))
   const highlighted = useSelector(
     (state: RootState) => state.outcomes.highlighted
   )
@@ -82,20 +77,13 @@ const Outcome = ({
     )
   }, [])
 
-  // use the 'code' prefix, which is only supported at level 1 outcomes
-  // otherwise it's all numbers
-  const formattedPrefix =
-    prefix.length === 1 && level === 0 && code
-      ? `${prefix.join('.')} - ${code} - `
-      : `${prefix.join('.')}. `
-
   return (
     <Styled.OutcomeWrapper dragging={state.dragging}>
       <OutcomeHeader
         id={id}
         level={level}
         dragRef={dragHandleRef}
-        title={`${formattedPrefix}${title}`}
+        title={`${prefix}${title}`}
         collapsed={state.collapsed}
         setCollapsed={setCollapsed}
         showToggle={!!children.length}
@@ -104,23 +92,12 @@ const Outcome = ({
         onClick={onClick}
       />
 
-      {!state.collapsed && (
-        <OutcomeGroup
-          prefix={prefix.length === 1 && code ? [code] : prefix}
-          parentId={id}
-        />
-      )}
+      {!state.collapsed && <OutcomeGroup parentId={id} />}
     </Styled.OutcomeWrapper>
   )
 }
 
-export const OutcomeGroup = ({
-  parentId,
-  prefix
-}: {
-  parentId: number | null
-  prefix: (number | string)[]
-}) => {
+export const OutcomeGroup = ({ parentId }: { parentId: number | null }) => {
   const childOutcomes = useSelector((state: RootState) =>
     selectOutcomeChildrenById(state, parentId)
   )
@@ -133,7 +110,7 @@ export const OutcomeGroup = ({
     <StyledOutcomes.OutcomeGroup>
       {childOutcomes.map((outcome, index) => (
         <StyledOutcomes.OutcomeGroupItem key={outcome.id}>
-          <Outcome {...outcome} prefix={[...prefix, index + 1]} />
+          <Outcome {...outcome} />
         </StyledOutcomes.OutcomeGroupItem>
       ))}
     </StyledOutcomes.OutcomeGroup>

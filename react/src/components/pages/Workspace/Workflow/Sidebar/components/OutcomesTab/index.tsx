@@ -12,6 +12,8 @@ const OutcomeTab = () => {
   // TODO: figure out where the outcomes data actually comes from
   const outcomeGroups = useSelector(selectOutcomeTagGroups)
 
+  console.log({ outcomeGroups })
+
   if (!outcomeGroups.length) {
     return (
       <Styled.SidebarInnerWrap>
@@ -22,9 +24,20 @@ const OutcomeTab = () => {
           <Alert
             severity="info"
             persistent
-            subtitle={_t('No outcomes have been added yet.')}
+            subtitle={
+              <>
+                {_t(
+                  'Add Outcomes by navigating to the "Outcomes" tab of this workflow to be able to attach them to nodes within this view.'
+                )}
+              </>
+            }
           />
         </Styled.SidebarContent>
+        <Styled.SidebarActions>
+          <Button variant="contained" color="primary">
+            {_t('Edit outcomes')}
+          </Button>
+        </Styled.SidebarActions>
       </Styled.SidebarInnerWrap>
     )
   }
@@ -47,8 +60,7 @@ const OutcomeTab = () => {
                 <Typography component="h6" variant="body2">
                   {group.title}
                 </Typography>
-                {/* TODO: actually render tag group outcomes */}
-                <OutcomeGroup prefix={[]} parentId={null} />
+                <OutcomeGroup parentId={null} />
               </Styled.GroupWrap>
             )
         )}
