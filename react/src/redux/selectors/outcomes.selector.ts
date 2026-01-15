@@ -1,4 +1,5 @@
 import { _t } from '@cf/utility/Utility.class'
+import editTabNodeData from '@cfPages/Workspace/Workflow/Sidebar/components/EditTab/components/EditNode/optionsData'
 import { outcomeAdapter } from '@cfRedux/slices/outcomes.slice'
 import { RootState } from '@cfRedux/store'
 import { createSelector } from 'reselect'
@@ -6,11 +7,30 @@ import { createSelector } from 'reselect'
 export const {
   selectAll: selectAllOutcomes,
   selectById: selectOutcomeById,
-  selectIds: selectOutcomeIds
+  selectIds: selectOutcomeIds,
+  selectEntities: selectOutcomeEntities
 } = outcomeAdapter.getSelectors<RootState>((state) => state.outcomes)
 
-const selectEntities = (state: RootState) => state.outcomes.entities
-const selectOrder = (state: RootState) => state.outcomes.order
+export const selectRootOutcomeIds = createSelector(
+  [selectOutcomeIds, selectOutcomeEntities],
+  (ids, entities) => {
+    const found: number[] = []
+    ids.forEach((id) => {
+      if (entities[id].parent === null) {
+        found.push(id)
+      }
+    })
+    return found
+  }
+)
+
+export const selectRootOutcomes = createSelector(
+  [selectAllOutcomes],
+  (outcomes) => outcomes.filter((o) => o.parent === null)
+)
+
+// TODO: this actually needs to live somewhere else
+const tagsData = editTabNodeData.tags
 
 type TagGroup = {
   id: number
@@ -20,25 +40,32 @@ type TagGroup = {
 
 // generate groups of outcomes, grouped by untagged/tagged-by-id
 export const selectOutcomeTagGroups = createSelector(
-  [selectOrder, selectEntities],
-  (order, entities) => {
-    const tagGroups: TagGroup[] = [
-      { id: -1, title: _t('Untagged'), outcomes: [] }
-    ]
+  [selectRootOutcomes],
+  (rootOuutcomes) => {
+    const tagGroups: TagGroup[] = []
+    const untagged: TagGroup = {
+      id: -1,
+      title: _t('Untagged'),
+      outcomes: []
+    }
 
-    for (let i = 0; i < order.length; i++) {
-      const outcome = entities[order[i]]
-      if (!outcome.tags?.length) {
-        tagGroups[0].outcomes.push(outcome.id)
+    for (let i = 0; i < rootOuutcomes.length; i++) {
+      const outcome = rootOuutcomes[i]
+
+      // if no tags, throw into the untagged group
+      if (!outcome.tags || outcome.tags.length === 0) {
+        untagged.outcomes.push(outcome.id)
+        continue
       }
 
+      // otherwise, loop through tags and throw into respective groups
       for (let j = 0; j < outcome.tags.length; j++) {
         const tagId = outcome.tags[j]
         const foundIndex = tagGroups.findIndex((t) => t.id === tagId)
         if (foundIndex === -1) {
           tagGroups.push({
             id: tagId,
-            title: `Tag group - #${tagId}`,
+            title: tagsData.find((t) => t.id === tagId).label,
             outcomes: [outcome.id]
           })
         } else {
@@ -47,59 +74,68 @@ export const selectOutcomeTagGroups = createSelector(
       }
     }
 
+    if (untagged.outcomes.length) {
+      tagGroups.push(untagged)
+    }
+
     return tagGroups.sort((a, b) => a.id - b.id)
   }
 )
 
 export const selectOutcomeChildrenById = createSelector(
   [
-    selectOrder,
-    selectEntities,
+    selectAllOutcomes,
+    selectOutcomeEntities,
     (_: RootState, parentId: number | null) => parentId
   ],
-  (order, entities, parentId) => {
+  (allOutcomes, entities, parentId) => {
     if (parentId === null) {
-      return order
-        .map((id) => entities[id])
-        .filter((outcome) => outcome?.parent === null)
+      return allOutcomes.filter((o) => o.parent === null)
     }
 
-    return entities[parentId].children.map((c) => entities[c])
+    const parent = entities[parentId]
+
+    if (!parent) {
+      return []
+    }
+
+    return parent.children.map((id) => entities[id]!)
   }
 )
 
 // drill through the outcome data to derive prefix based on parent outcomes
 export const getPrefixPath = createSelector(
-  [selectEntities, (_: RootState, id: number) => id],
-  (entities, outcomeId) => {
+  [
+    selectRootOutcomeIds,
+    selectOutcomeEntities,
+    (_: RootState, id: number) => id
+  ],
+  (rootIds, entities, outcomeId) => {
     const path: (number | string)[] = []
     let outcome = entities[outcomeId]
 
-    // TODO: take a look at how prefixing/ordering will be handled
-    // ie, whether it's attached to each separate outcome or what
-    // (so that it can be rendered outside of the tree regardless of its "index" position)
+    // if we're immediately working with a level 0 item, bail out early
+    // and display code within the prefix (if it exists)
+    if (!outcome.parent) {
+      const rootIndex = rootIds.indexOf(outcome.id)
+      return outcome.code
+        ? `${rootIndex + 1} - ${outcome.code} - `
+        : `${rootIndex + 1}. `
+    }
 
+    // otherwise continue looping through parents to figure out the full prefix path
     while (outcome && outcome.parent) {
       const index = entities[outcome.parent].children.indexOf(outcome.id)
-
-      if (outcome.level === 0 && outcome.code) {
-        // use the 'code' prefix, which is only supported at level 1 outcomes
-        path.unshift(outcome.code)
-      } else {
-        // otherwise use the regular found index
-        path.unshift(index + 1)
-      }
-
+      path.unshift(index + 1)
       outcome = entities[outcome.parent]
     }
 
-    // make it so that root string prefixes are separated by the dash
-    // otherwise, it's all numbered
-    const prefix =
-      path.length === 1 && typeof path[0] === 'string'
-        ? path + ' - '
-        : path.join('.') + '. '
+    // after the while loop, we're at level 0 again
+    if (outcome.level === 0) {
+      const rootIndex = rootIds.indexOf(outcome.id)
+      path.unshift(rootIndex + 1)
+    }
 
-    return prefix
+    return `${path.join('.')}. `
   }
 )

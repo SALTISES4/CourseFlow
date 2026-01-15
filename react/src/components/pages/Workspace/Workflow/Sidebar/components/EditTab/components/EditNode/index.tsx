@@ -49,7 +49,6 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
     control,
     register,
     setValue,
-    getValues,
     handleSubmit,
     watch,
     reset,

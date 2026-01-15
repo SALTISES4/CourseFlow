@@ -21,14 +21,12 @@ export const outcomeAdapter = createEntityAdapter<Outcome>()
 type OutcomesState = ReturnType<typeof outcomeAdapter.getInitialState> & {
   dragging: { id: number; level: number } | null
   highlighted: number[]
-  order: number[]
 }
 
 const initialState: OutcomesState = {
   ...outcomeAdapter.getInitialState(),
   dragging: null,
-  highlighted: [],
-  order: []
+  highlighted: []
 }
 
 type AddOutcomeType = Pick<Outcome, 'id'> &
@@ -55,7 +53,6 @@ export const outcomesSlice = createSlice({
 
       // no payload, we're just creating new root level outcome
       if (!action.payload) {
-        state.order.push(outcomeId)
         return outcomeAdapter.addOne(state, newOutcomeData)
       }
 
@@ -87,12 +84,6 @@ export const outcomesSlice = createSlice({
         }
       }
 
-      // update the order index
-      const orderIndex = state.order.indexOf(orderAfterId)
-      if (orderIndex !== -1) {
-        state.order.splice(orderIndex + 1, 0, outcomeId)
-      }
-
       // set the correct level
       newOutcomeData.level =
         newOutcomeData.parent === null
@@ -105,10 +96,6 @@ export const outcomesSlice = createSlice({
 
     deleteOutcome: (state, action: PayloadAction<number>) => {
       const outcomeId = action.payload
-
-      // delete from order
-      const orderIndex = state.order.indexOf(outcomeId)
-      state.order.splice(orderIndex, 1)
 
       // delete from parent
       const parentId = state.entities[outcomeId].parent
@@ -160,10 +147,6 @@ export const outcomesSlice = createSlice({
       // start from the target/root outcome
       cloneOutcome(target)
 
-      // insert the clone IDs in the correct spot in order array
-      const lastOutcomeIndex = state.order.indexOf(lastOutcomeId)
-      state.order.splice(lastOutcomeIndex + 1, 0, ...clonedIds)
-
       // add the root clone to the correct parent
       if (target.parent) {
         state.entities[target.parent].children.push(clonedIds[0])
@@ -193,8 +176,8 @@ export const outcomesSlice = createSlice({
       const { targetId, destinationId, operation } = action.payload
       const target = state.entities[targetId]
       const destination = state.entities[destinationId]
-      const targetIndex = state.order.indexOf(targetId)
-      const destinationIndex = state.order.indexOf(destinationId)
+      const targetIndex = state.ids.indexOf(targetId)
+      const destinationIndex = state.ids.indexOf(destinationId)
       let orderId = destinationId // the id of the element around which we order
       let orderAfter = true // order after or before the orderId
       const combineMode = !operation || operation === 'combine'
@@ -271,9 +254,9 @@ export const outcomesSlice = createSlice({
       }
 
       // update final order
-      state.order.splice(targetIndex, 1)
-      const orderIndex = state.order.indexOf(orderId)
-      state.order.splice(orderAfter ? orderIndex + 1 : orderIndex, 0, targetId)
+      state.ids.splice(targetIndex, 1)
+      const orderIndex = state.ids.indexOf(orderId)
+      state.ids.splice(orderAfter ? orderIndex + 1 : orderIndex, 0, targetId)
     },
 
     // set currently dragged outcome ID to better control pragmatic dropzones

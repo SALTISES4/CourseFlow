@@ -37,7 +37,6 @@ export type WorkspaceAppState = {
   workflow: TWorkflow
   node: TNode[]
   strategy: TStrategy[]
-  tags: TTag[]
 }
 
 export type AppState = {
