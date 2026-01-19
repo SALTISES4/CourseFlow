@@ -113,7 +113,8 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
               contextClassification: parseInt(data.contextType.toString(), 10),
               taskClassification: parseInt(data.taskType.toString(), 10),
               timeRequired: data.timeRequired,
-              timeUnits: data.timeUnits
+              timeUnits: data.timeUnits,
+              tags: data.tags
             }
           })
         )
