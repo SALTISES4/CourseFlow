@@ -2,6 +2,7 @@ import useHover from '@cf/hooks/useHover'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
+import editTabNodeData from '@cfPages/Workspace/Workflow/Sidebar/components/EditTab/components/EditNode/optionsData'
 import {
   addOutcome,
   deleteOutcome,
@@ -15,21 +16,27 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import QueueIcon from '@mui/icons-material/Queue'
 import RemoveIcon from '@mui/icons-material/Remove'
+import Chip from '@mui/material/Chip'
+import Stack from '@mui/material/Stack'
 import { MouseEvent, MutableRefObject, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 
 import * as Styled from '../../styles'
 
+// TODO: this actually needs to live somewhere else
+const tagsData = editTabNodeData.tags
+
 type PropsType = {
   id: number
   level: number
   title: string
+  tags: number[]
   dragRef: MutableRefObject<HTMLDivElement>
   selected: boolean
   highlighted: boolean
   collapsed: boolean
-  setCollapsed: (value: boolean) => void
   showToggle: boolean
+  setCollapsed: (value: boolean) => void
   onClick: () => void
   onToggleClick: (e: MouseEvent<HTMLButtonElement>) => void
 }
@@ -38,6 +45,7 @@ const OutcomeHeader = ({
   id,
   level,
   title,
+  tags,
   dragRef,
   highlighted,
   selected,
@@ -57,8 +65,25 @@ const OutcomeHeader = ({
       level={level}
       onClick={onClick}
     >
-      <Styled.OutcomeHeaderInner>
+      <Styled.OutcomeHeaderInner sx={{ position: 'relative' }}>
         <Styled.OutcomeTitle variant="body2">{title}</Styled.OutcomeTitle>
+        {!!tags.length && (
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={1}
+            sx={{ marginRight: 1 }}
+          >
+            {tags.map((id) => (
+              <Chip
+                key={id}
+                label={tagsData.find((t) => t.id === id).label}
+                size="small"
+                variant="outlined"
+              />
+            ))}
+          </Stack>
+        )}
         <HoverMenu
           show={isHovered}
           id={id}
@@ -135,41 +160,36 @@ const HoverMenu = ({
   )
 
   return (
-    <div>
-      <NodeHoverMenu
-        show={show}
-        sx={{
-          position: 'relative'
-        }}
-        items={[
-          {
-            label: 'Insert outcome below',
-            icon: <AddCircleOutlineIcon />,
-            onClick: onActionClick('insert-sibling')
-          },
-          level !== 2 && {
-            label: 'Insert child outcome',
-            icon: <QueueIcon />,
-            onClick: onActionClick('insert-child')
-          },
-          {
-            label: 'Duplicate outcome below',
-            icon: <ContentCopyIcon />,
-            onClick: onActionClick('duplicate')
-          },
-          {
-            label: 'Delete outcome',
-            icon: <DeleteOutlinedIcon />,
-            onClick: onActionClick('delete')
-          },
-          {
-            label: 'Comments',
-            icon: <CommentOutlinedIcon />,
-            onClick: onActionClick('comments')
-          }
-        ]}
-      />
-    </div>
+    <NodeHoverMenu
+      show={show}
+      items={[
+        {
+          label: _t('Insert outcome below'),
+          icon: <AddCircleOutlineIcon />,
+          onClick: onActionClick('insert-sibling')
+        },
+        level !== 2 && {
+          label: _t('Insert child outcome'),
+          icon: <QueueIcon />,
+          onClick: onActionClick('insert-child')
+        },
+        {
+          label: _t('Duplicate outcome below'),
+          icon: <ContentCopyIcon />,
+          onClick: onActionClick('duplicate')
+        },
+        {
+          label: _t('Delete outcome'),
+          icon: <DeleteOutlinedIcon />,
+          onClick: onActionClick('delete')
+        },
+        {
+          label: _t('Comments'),
+          icon: <CommentOutlinedIcon />,
+          onClick: onActionClick('comments')
+        }
+      ]}
+    />
   )
 }
 

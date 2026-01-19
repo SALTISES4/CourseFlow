@@ -40,6 +40,7 @@ const Outcome = ({
   title,
   children,
   level,
+  tags,
   linkedOutcomes
 }: OutcomeType) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
@@ -195,6 +196,7 @@ const Outcome = ({
       <OutcomeHeader
         id={id}
         level={level}
+        tags={tags}
         dragRef={dragHandleRef}
         title={`${prefix}${title}`}
         selected={selected || state.dragHighlight}
