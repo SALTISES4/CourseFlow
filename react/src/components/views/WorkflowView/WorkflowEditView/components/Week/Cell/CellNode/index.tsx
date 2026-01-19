@@ -3,6 +3,8 @@ import {
   draggable,
   dropTargetForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/element/pointer-outside-of-preview'
+import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview'
 import {
   Edge,
   attachClosestEdge,
@@ -19,6 +21,7 @@ import { RootState } from '@cfRedux/store'
 import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import * as Styled from '../../../../styles'
@@ -34,6 +37,7 @@ type NodeStateType = {
   dragging: boolean
   dropHighlight: boolean
   closestEdge: Edge | null
+  previewTarget?: HTMLElement | null
 }
 
 const WeekCellNode = ({
@@ -149,6 +153,22 @@ const WeekCellNode = ({
       }),
       draggable({
         element: el,
+        onGenerateDragPreview: ({ nativeSetDragImage }) => {
+          setCustomNativeDragPreview({
+            getOffset: pointerOutsideOfPreview({
+              x: '16px',
+              y: '10px'
+            }),
+            render({ container }) {
+              toggleState({ dragging: true, previewTarget: container })
+              // cleanup, docs?
+              // return () => {
+              //   return toggleState({ dragging: false, preview: null })
+              // }
+            },
+            nativeSetDragImage
+          })
+        },
         getInitialData: (): CellDataType => ({
           id: nodeId,
           coords: {
@@ -159,7 +179,7 @@ const WeekCellNode = ({
           type: DraggableType.CELL
         }),
         onDragStart: () => toggleState({ dragging: true }),
-        onDrop: () => toggleState({ dragging: false })
+        onDrop: () => toggleState({ dragging: false, previewTarget: null })
       })
     )
   }, [
@@ -180,9 +200,9 @@ const WeekCellNode = ({
         id={`node-${nodeId}`}
         selected={selected}
         dropHighlight={state.dropHighlight}
-        dragShrink={state.dragging}
+        dragging={state.dragging}
       >
-        <HoverMenu nodeId={nodeId} nodeRef={wrapRef} />
+        {!state.dragging && <HoverMenu nodeId={nodeId} nodeRef={wrapRef} />}
 
         {!!node.outcomenodeSet?.length && (
           <LinkedOutcomes
@@ -208,11 +228,31 @@ const WeekCellNode = ({
           />
         </StyledNode.Content>
 
-        <Handles nodeId={nodeId} nodeRef={wrapRef} />
+        {!state.dragging && <Handles nodeId={nodeId} nodeRef={wrapRef} />}
       </Styled.CellInner>
+
       {state.closestEdge && (
         <DropIndicator edge={state.closestEdge} type="no-terminal" gap="32px" />
       )}
+
+      {state.dragging &&
+        state.previewTarget &&
+        createPortal(
+          <Styled.CellInner
+            sx={{ width: '180px', minHeight: '70px' }}
+            dragging={false}
+            dropHighlight={false}
+            selected={false}
+          >
+            <StyledNode.Border sx={{ backgroundColor: borderColor }} />
+            <StyledNode.Content>
+              <StyledNode.Title variant="body2">
+                {node.title || _t('Blank title')}
+              </StyledNode.Title>
+            </StyledNode.Content>
+          </Styled.CellInner>,
+          state.previewTarget
+        )}
     </>
   )
 }

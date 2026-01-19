@@ -51,17 +51,16 @@ export const Cell = styled(Box)({
 
 export const CellInner = styled(Box, {
   shouldForwardProp: (prop) =>
-    !['dragShrink', 'dropHighlight', 'selected'].includes(prop as string)
-})<{ dragShrink: boolean; dropHighlight: boolean; selected: boolean }>(
-  ({ theme, dragShrink, dropHighlight, selected }) => ({
+    !['dragging', 'dropHighlight', 'selected'].includes(prop as string)
+})<{ dragging: boolean; dropHighlight: boolean; selected: boolean }>(
+  ({ theme, dragging, dropHighlight, selected }) => ({
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
     borderRadius: theme.shape.borderRadius,
     transition: 'all 0.15s ease',
-    ...(dragShrink && {
-      opacity: 0.6,
-      transform: 'scale(0.8)'
+    ...(dragging && {
+      opacity: 0.6
     }),
     ...(dropHighlight && {
       '&': {
