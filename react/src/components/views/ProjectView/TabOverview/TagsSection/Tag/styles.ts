@@ -34,6 +34,9 @@ export const Tag = styled(Box, {
     }),
     '&:hover': {
       backgroundColor: alpha(theme.palette.primary.main, 0.04),
+      '& .MuiSvgIcon-root': {
+        color: theme.palette.primary.main
+      },
       '& button': {
         opacity: 1
       }
@@ -48,10 +51,11 @@ export const TagIcon = styled(Box)(({ theme }) => ({
   color: theme.palette.divider
 }))
 
-export const TagInput = styled('input')(({ theme }) => ({
+export const TagInput = styled('input')(() => ({
   padding: 0,
   border: 0,
   flexGrow: 1,
+  fontSize: '16px',
   background: 'transparent'
 }))
 
