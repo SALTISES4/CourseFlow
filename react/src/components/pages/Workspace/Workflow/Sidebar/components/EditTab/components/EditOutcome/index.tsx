@@ -68,7 +68,6 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
   const debouncedDispatch = useMemo(
     () =>
       debounce((data: Outcome) => {
-        console.log('debounced with data -', data)
         dispatch(
           updateOutcome({
             id: outcome.id,
@@ -86,7 +85,6 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
 
   useEffect(() => {
     if (isDirty) {
-      console.log('is dirty, debouncedDispatch')
       debouncedDispatch(watchedFields)
     }
   }, [watchedFields, isDirty, debouncedDispatch])
