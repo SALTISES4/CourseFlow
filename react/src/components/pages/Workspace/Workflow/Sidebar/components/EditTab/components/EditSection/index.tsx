@@ -130,7 +130,7 @@ const EditSectionForm = ({ week }: { week: TWeek }) => {
             {_t('Edit section')}
           </SC.SidebarTitle>
           <TextField
-            label={_t('Week label')}
+            label={_t('Week')}
             variant="outlined"
             size="small"
             {...register('title')}
