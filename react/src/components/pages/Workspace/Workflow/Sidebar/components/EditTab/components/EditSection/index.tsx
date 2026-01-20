@@ -12,7 +12,7 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import { updateValueQuery } from '@XMLHTTP/API/update'
 import { produce } from 'immer'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -68,22 +68,23 @@ const EditSectionForm = ({ week }: { week: TWeek }) => {
     }
   }, [reset, isDirty, week])
 
-  const debouncedDispatch = useCallback(
-    debounce((data) => {
-      dispatch(
-        weekChangeField({
-          id: week.id,
-          data: {
-            title: data.title
-          }
-        })
-      )
+  const debouncedDispatch = useMemo(
+    () =>
+      debounce((data) => {
+        dispatch(
+          weekChangeField({
+            id: week.id,
+            data: {
+              title: data.title
+            }
+          })
+        )
 
-      updateValueQuery(week.id, CfObjectType.WEEK, data, true)
+        updateValueQuery(week.id, CfObjectType.WEEK, data, true)
 
-      reset({}, { keepValues: true })
-    }, 300),
-    [dispatch, week.id]
+        reset({}, { keepValues: true })
+      }, 300),
+    [dispatch, reset, week.id]
   )
 
   useEffect(() => {
