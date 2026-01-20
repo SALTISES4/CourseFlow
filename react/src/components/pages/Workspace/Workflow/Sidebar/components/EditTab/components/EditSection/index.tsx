@@ -1,3 +1,4 @@
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { selectWeekById } from '@cf/redux/selectors/week.selector'
 import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
 import { TWeek } from '@cf/redux/types/type'
@@ -37,6 +38,10 @@ const EditSection = ({ sectionId }: { sectionId: number }) => {
 
 const EditSectionForm = ({ week }: { week: TWeek }) => {
   const dispatch = useDispatch()
+  const { dispatch: dialogDispatch } = useDialog()
+  const workflowId = useSelector(
+    (state: RootState) => state.workspace.workflow.id
+  )
   const [state, setState] = useState({
     template: false
   })
@@ -112,6 +117,13 @@ const EditSectionForm = ({ week }: { week: TWeek }) => {
     [toggleTemplateForm]
   )
 
+  const onDelete = useCallback(() => {
+    dialogDispatch(DialogMode.WORKFLOW_DELETE_SECTION, {
+      sectionId: week.id,
+      workflowId
+    })
+  }, [dialogDispatch, workflowId, week.id])
+
   return state.template ? (
     <SaveAsTemplate
       title={_t('Save as personal week template')}
@@ -149,7 +161,7 @@ const EditSectionForm = ({ week }: { week: TWeek }) => {
           <Button variant="contained" color="secondary">
             {_t('Duplicate')}
           </Button>
-          <Button variant="contained" color="secondary">
+          <Button variant="contained" color="secondary" onClick={onDelete}>
             {_t('Delete')}
           </Button>
         </SC.SidebarActions>
