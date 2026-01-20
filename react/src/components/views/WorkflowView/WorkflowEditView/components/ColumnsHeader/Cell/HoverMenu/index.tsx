@@ -55,7 +55,7 @@ const HoverMenu = ({ nodeId, show }: PropsType) => {
         }
       }
     },
-    [dispatch, dialogDispatch, nodeId]
+    [dispatch, dialogDispatch, newColumnId, nodeId]
   )
 
   return (

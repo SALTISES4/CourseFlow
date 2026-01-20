@@ -7,7 +7,7 @@ import { selectWorkflowBoard } from '@cf/redux/selectors/workflow.selector'
 import { nodeWorkflowReorder } from '@cf/redux/slices/node.slice'
 import {
   workflowReorderColumns,
-  workflowReorderWeeks
+  workflowReorderSection
 } from '@cf/redux/slices/workflow.slice'
 import { RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
@@ -145,7 +145,7 @@ const WorkflowEditView = () => {
 
   const onWeekReorder: WeekReorderCallbackFn = useCallback(
     (from, to) => {
-      dispatch(workflowReorderWeeks({ fromIndex: from, toIndex: to }))
+      dispatch(workflowReorderSection({ fromIndex: from, toIndex: to }))
       triggerLineRerender()
     },
     [dispatch, triggerLineRerender]

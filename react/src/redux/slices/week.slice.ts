@@ -1,3 +1,4 @@
+import { _t } from '@cf/utility/Utility.class'
 import {
   CommonActions,
   NodeActions,
@@ -155,7 +156,25 @@ const weekSlice = createSlice({
     updateMany(state, action: PayloadAction<Update<TWeek, number>[]>) {
       weekAdapter.updateMany(state, action.payload)
     },
-    insertBelow: createEntity,
+    insertBelow(
+      state,
+      action: PayloadAction<{ id: number; newId: number; duplicate?: boolean }>
+    ) {
+      const { id, newId, duplicate } = action.payload
+
+      const week = duplicate ? state.entities[id] : state.entities[state.ids[0]]
+      const clone = { ...week }
+      const cloneTitle = week.title?.length ? week.title : week.weekTypeDisplay
+
+      weekAdapter.addOne(state, {
+        ...clone,
+        id: newId,
+        title: _t('Blank title'),
+        ...(duplicate && {
+          title: `${cloneTitle} (copy)`
+        })
+      })
+    },
     reloadComments: updateEntity,
     deleteSelf: removeEntityById,
     // MISC

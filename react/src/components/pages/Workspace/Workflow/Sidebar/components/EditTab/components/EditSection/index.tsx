@@ -1,6 +1,8 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import { getNextLargestNumber } from '@cf/redux/selectors/helpers'
 import { selectWeekById } from '@cf/redux/selectors/week.selector'
 import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
+import { weekInsertBelow } from '@cf/redux/slices/week.slice'
 import { TWeek } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
 import Utility, { _t } from '@cf/utility/Utility.class'
@@ -39,6 +41,8 @@ const EditSection = ({ sectionId }: { sectionId: number }) => {
 const EditSectionForm = ({ week }: { week: TWeek }) => {
   const dispatch = useDispatch()
   const { dispatch: dialogDispatch } = useDialog()
+  const ids = useSelector((state: RootState) => state.workspace.week.ids)
+  const newWeekId = getNextLargestNumber(ids)
   const workflowId = useSelector(
     (state: RootState) => state.workspace.workflow.id
   )
@@ -118,6 +122,12 @@ const EditSectionForm = ({ week }: { week: TWeek }) => {
     [toggleTemplateForm]
   )
 
+  const onDuplicate = useCallback(() => {
+    dispatch(
+      weekInsertBelow({ id: week.id, newId: newWeekId, duplicate: true })
+    )
+  }, [dispatch, newWeekId, week.id])
+
   const onDelete = useCallback(() => {
     dialogDispatch(DialogMode.WORKFLOW_DELETE_SECTION, {
       sectionId: week.id,
@@ -159,7 +169,7 @@ const EditSectionForm = ({ week }: { week: TWeek }) => {
           >
             {_t('Save as personal template')}
           </Button>
-          <Button variant="contained" color="secondary">
+          <Button variant="contained" color="secondary" onClick={onDuplicate}>
             {_t('Duplicate')}
           </Button>
           <Button variant="contained" color="secondary" onClick={onDelete}>
