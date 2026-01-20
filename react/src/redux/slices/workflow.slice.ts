@@ -77,9 +77,6 @@ const workflowSlice = createSlice({
 
       const moved = state.weeks.splice(fromIndex, 1)
       state.weeks.splice(toIndex, 0, moved[0])
-    },
-    deleteSection(state, action: PayloadAction<{ id: number }>) {
-      state.weeks.splice(state.weeks.indexOf(action.payload.id), 1)
     }
   },
   extraReducers: (builder) => {
@@ -163,10 +160,8 @@ const workflowSlice = createSlice({
     builder
       .addCase(
         WeekActions.DELETE_SELF as string,
-        (state, action: PayloadAction<{ parentId: number }>) => {
-          state.weeks = state.weeks.filter(
-            (id) => id !== action.payload.parentId
-          )
+        (state, action: PayloadAction<{ id: number }>) => {
+          state.weeks = state.weeks.filter((id) => id !== action.payload.id)
         }
       )
       .addCase(
@@ -312,8 +307,7 @@ export const {
   createLock: workflowCreateLock,
   changeField: workflowChangeField,
   reorderColumns: workflowReorderColumns,
-  reorderSection: workflowReorderSection,
-  deleteSection: workflowDeleteSection
+  reorderSection: workflowReorderSection
 } = workflowSlice.actions
 
 export default workflowSlice.reducer

@@ -1,6 +1,6 @@
 import { StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { workflowDeleteSection } from '@cf/redux/slices/workflow.slice'
+import { weekDeleteSelf } from '@cf/redux/slices/week.slice'
 import { _t } from '@cf/utility/Utility.class'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -20,7 +20,7 @@ const DeleteWorkflowSection = () => {
   )
 
   const onSubmit = useCallback(() => {
-    dispatch(workflowDeleteSection({ id: payload?.sectionId }))
+    dispatch(weekDeleteSelf({ id: payload?.sectionId }))
     onClose()
   }, [dispatch, onClose, payload])
 
