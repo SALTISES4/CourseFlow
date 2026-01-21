@@ -49,9 +49,12 @@ const OverviewView = () => {
    *******************************************************/
   return (
     <OuterContentWrap sx={{ pt: 4 }}>
-      <SC.InfoBlock sx={{ mb: 3 }}>
-        <SC.InfoBlockContent>{description}</SC.InfoBlockContent>
-      </SC.InfoBlock>
+      {description && (
+        <SC.InfoBlock sx={{ mb: 3 }}>
+          <SC.InfoBlockTitle>{_t('Description')}</SC.InfoBlockTitle>
+          <SC.InfoBlockContent>{description}</SC.InfoBlockContent>
+        </SC.InfoBlock>
+      )}
 
       <Grid container columnSpacing={3}>
         <Grid item xs={6}>
