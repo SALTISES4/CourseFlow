@@ -63,9 +63,7 @@ const ParentWorkflowIndicator = () => {
       <>
         <Divider />
         <SC.SectionWrap>
-          <SC.SectionLabel variant="body1">
-            {_t('Workflows used')}
-          </SC.SectionLabel>
+          <SC.SectionLabel variant="body1">{_t('Appears in')}</SC.SectionLabel>
           <List data-test-id="panel-other-worflows">
             {data.parentWorkflows.map((workflow) => {
               const url = workflowUrl(workflow)
@@ -96,9 +94,7 @@ const ParentWorkflowIndicator = () => {
       <>
         <Divider />
         <SC.SectionWrap>
-          <SC.SectionLabel variant="body1">
-            {_t('Used in this Workflow')}
-          </SC.SectionLabel>
+          <SC.SectionLabel variant="body1">{_t('Contains')}</SC.SectionLabel>
           <List>
             {childWorkflows.map((workflow, index) => {
               const url = workflowUrl(workflow)
