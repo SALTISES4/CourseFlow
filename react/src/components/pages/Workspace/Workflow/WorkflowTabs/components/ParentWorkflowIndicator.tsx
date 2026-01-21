@@ -24,23 +24,25 @@ type WorkflowNode = {
 const ParentWorkflowIndicator = () => {
   const { id } = useParams()
   const nodes = useSelector((state: RootState) => selectAllNodes(state))
-  const childWorkflows: WorkflowNode[] = nodes
-    .filter((node) => node.linkedWorkflowData)
-    .map((node) => ({
-      id: node.linkedWorkflow,
-      title: node.linkedWorkflowData?.title || '',
-      description: node.linkedWorkflowData?.description || '',
-      url: node.linkedWorkflowData?.url || '',
-      deleted: node.linkedWorkflowData?.deleted || false
-    }))
 
-  const { data, error, isLoading, isError } = useGetParentWorkflowInfoQuery(
-    {
-      id: Number(id)
-    },
-    {
-      skip: !id
-    }
+  const childWorkflows = Array.from(
+    new Map(
+      nodes
+        .filter((node) => node.linkedWorkflowData)
+        .map((node) => [
+          node.linkedWorkflow,
+          {
+            id: node.linkedWorkflow,
+            title: node.linkedWorkflowData?.title || '',
+            url: node.linkedWorkflowData?.url || ''
+          }
+        ])
+    ).values()
+  )
+
+  const { data, isLoading } = useGetParentWorkflowInfoQuery(
+    { id: Number(id) },
+    { skip: !id }
   )
 
   if (!id) {
@@ -59,13 +61,22 @@ const ParentWorkflowIndicator = () => {
       return <></>
     }
 
+    const parentWorkflows = Array.from(
+      new Map(
+        (data.parentWorkflows as WorkflowNode[]).map((workflow) => [
+          workflow.id,
+          workflow
+        ])
+      ).values()
+    )
+
     return (
       <>
         <Divider />
         <SC.SectionWrap>
           <SC.SectionLabel variant="body1">{_t('Appears in')}</SC.SectionLabel>
           <List data-test-id="panel-other-worflows">
-            {data.parentWorkflows.map((workflow) => {
+            {parentWorkflows.map((workflow) => {
               const url = workflowUrl(workflow)
               return (
                 <ListItem disablePadding dense key={workflow.id}>
@@ -96,7 +107,7 @@ const ParentWorkflowIndicator = () => {
         <SC.SectionWrap>
           <SC.SectionLabel variant="body1">{_t('Contains')}</SC.SectionLabel>
           <List>
-            {childWorkflows.map((workflow, index) => {
+            {childWorkflows.map((workflow) => {
               const url = workflowUrl(workflow)
               return (
                 <ListItem disablePadding dense key={workflow.id}>
