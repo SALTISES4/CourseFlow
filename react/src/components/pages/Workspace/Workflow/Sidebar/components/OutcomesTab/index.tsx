@@ -1,15 +1,28 @@
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { selectOutcomeTagGroups } from '@cf/redux/selectors/outcomes.selector'
+import { CFRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
+import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import { useCallback, useContext } from 'react'
 import { useSelector } from 'react-redux'
+import { generatePath, useNavigate, useParams } from 'react-router-dom'
 
 import Outcome from './Outcome'
 import * as Styled from '../../styles'
 
 const OutcomeTab = () => {
+  const { id } = useParams()
   const outcomeGroups = useSelector(selectOutcomeTagGroups)
+  const context = useContext(WorkflowConfigContext)
+  const navigate = useNavigate()
+
+  const goToEditOutcomes = useCallback(() => {
+    context.setWorkflowView(WorkflowViewType.OUTCOME_EDIT)
+    navigate(generatePath(CFRoutes.WORKFLOW_OUTCOME_EDIT, { id }))
+  }, [navigate, context, id])
 
   if (!outcomeGroups.length) {
     return (
@@ -31,7 +44,11 @@ const OutcomeTab = () => {
           />
         </Styled.SidebarContent>
         <Styled.SidebarActions>
-          <Button variant="contained" color="primary">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={goToEditOutcomes}
+          >
             {_t('Edit outcomes')}
           </Button>
         </Styled.SidebarActions>
@@ -65,7 +82,11 @@ const OutcomeTab = () => {
         )}
       </Styled.SidebarContent>
       <Styled.SidebarActions>
-        <Button variant="contained" color="secondary">
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={goToEditOutcomes}
+        >
           {_t('Edit outcomes')}
         </Button>
       </Styled.SidebarActions>
