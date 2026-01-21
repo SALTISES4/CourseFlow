@@ -147,6 +147,14 @@ const Outcome = ({
           )
 
           if (instruction) {
+            setState(
+              produce((draft) => {
+                if (draft.collapsed) {
+                  draft.collapsed = false
+                }
+              })
+            )
+
             dispatch(
               moveOutcome({
                 targetId: args.source.data.id as number,
