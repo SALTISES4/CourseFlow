@@ -47,23 +47,6 @@ const ActionMenu = () => {
   const workflowType = workflow.type
   const publicView = workflow.publicView
 
-  const [state, setState] = useState<StateType>({
-    openShareDialog: false,
-    openExportDialog: false,
-    openImportDialog: false,
-    openEditDialog: false
-  })
-  const objectSets = useSelector<RootState>(
-    (state: RootState) => state.workspace.objectSet
-  )
-  const week = useSelector<RootState>(
-    (state: RootState) => state.workspace.week
-  )
-  const node = useSelector<RootState>(
-    (state: RootState) => state.workspace.node
-  )
-  const outcome = useSelector<RootState>((state: RootState) => state.outcome)
-
   /*******************************************************
    * MODALS
    *******************************************************/
@@ -283,13 +266,11 @@ const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
     return null
   }
 
-  const menuItems: MenuItemType[] = weekIds.map((item, index) => {
-    return {
-      content: <ScrollToWeek key={`weekworkflow-${item}`} objectId={item} />,
-      action: null,
-      show: true
-    }
-  })
+  const menuItems: MenuItemType[] = weekIds.map((item) => ({
+    content: <ScrollToWeek key={`weekworkflow-${item}`} objectId={item} />,
+    action: null,
+    show: true
+  }))
 
   const header: MenuItemType = {
     content: _t('Jump to'),
@@ -298,7 +279,7 @@ const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
     show: true
   }
 
-  return <SimpleMenu id={'JumpToMenu'} menuItems={menuItems} header={header} />
+  return <SimpleMenu id="jump-to-menu" menuItems={menuItems} header={header} />
 }
 
 export { JumpToMenu, ActionMenu, ExpandCollapseMenu }

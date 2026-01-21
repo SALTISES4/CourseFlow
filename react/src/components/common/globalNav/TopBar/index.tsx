@@ -89,6 +89,7 @@ const TopBar = () => {
         show: true
       }
     ]
+
     return <SimpleMenu id={'add-menu'} header={header} menuItems={menuItems} />
   }
 
