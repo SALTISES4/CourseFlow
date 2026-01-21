@@ -389,8 +389,8 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
               </Stack>
             </>
           )}
-          <BottomButtons />
         </SC.SidebarContent>
+        <BottomButtons />
       </SC.SidebarInnerWrap>
     </form>
   )
