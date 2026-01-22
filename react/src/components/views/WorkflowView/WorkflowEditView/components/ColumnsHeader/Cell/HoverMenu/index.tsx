@@ -2,6 +2,7 @@ import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { getNextLargestNumber } from '@cf/redux/selectors/helpers'
 import { columnInsertBelow } from '@cf/redux/slices/column.slice'
 import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
 import { RootState } from '@cfRedux/store'
@@ -31,10 +32,16 @@ const HoverMenu = ({ nodeId, show }: PropsType) => {
         e.stopPropagation()
         switch (action) {
           case 'insert':
-            dispatch(columnInsertBelow({ id: newColumnId }))
+            dispatch(columnInsertBelow({ id: nodeId, newId: newColumnId }))
             break
           case 'duplicate':
-            dispatch(columnInsertBelow({ id: newColumnId, duplicate: nodeId }))
+            dispatch(
+              columnInsertBelow({
+                id: nodeId,
+                newId: newColumnId,
+                duplicate: nodeId
+              })
+            )
             break
           case 'delete':
             dialogDispatch(DialogMode.WORKFLOW_DELETE_NODE_CATEGORY, {
@@ -63,22 +70,22 @@ const HoverMenu = ({ nodeId, show }: PropsType) => {
       show={show}
       items={[
         {
-          label: 'Insert below',
+          label: _t('Insert right'),
           icon: <AddCircleOutlineIcon />,
           onClick: onActionClick('insert')
         },
         {
-          label: 'Duplicate',
+          label: _t('Duplicate'),
           icon: <ContentCopyIcon />,
           onClick: onActionClick('duplicate')
         },
         {
-          label: 'Delete',
+          label: _t('Delete'),
           icon: <DeleteOutlinedIcon />,
           onClick: onActionClick('delete')
         },
         {
-          label: 'Comments',
+          label: _t('Comments'),
           icon: <CommentOutlinedIcon />,
           onClick: onActionClick('comments')
         }

@@ -1,5 +1,4 @@
 import {
-  ColumnActions,
   ColumnWorkflowActions,
   CommonActions,
   NodeActions,
@@ -13,6 +12,8 @@ import {
 } from '@cfRedux/types/enumActions'
 import { TWorkflow, WorkspaceAppState } from '@cfRedux/types/type'
 import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit'
+
+import { columnDeleteSelf, columnInsertBelow } from './column.slice'
 
 const initialState: TWorkflow = {} as TWorkflow
 
@@ -270,34 +271,14 @@ const workflowSlice = createSlice({
 
     // Column Actions
     builder
-      .addCase(
-        ColumnActions.RESTORE_SELF as string,
-        (
-          state,
-          action: PayloadAction<{
-            throughparentIndex: number
-            throughparentId: number
-          }>
-        ) => {
-          state.columns.splice(
-            action.payload.throughparentIndex,
-            0,
-            action.payload.throughparentId
-          )
-        }
-      )
-      .addCase(
-        ColumnActions.DELETE_SELF as string,
-        (state, action: PayloadAction<{ id: number }>) => {
-          state.columns = state.columns.filter((id) => id !== action.payload.id)
-        }
-      )
-      .addCase(
-        ColumnActions.INSERT_BELOW as string,
-        (state, action: PayloadAction<{ id: number }>) => {
-          state.columns.push(action.payload.id)
-        }
-      )
+      .addCase(columnDeleteSelf, (state, action) => {
+        state.columns = state.columns.filter((id) => id !== action.payload.id)
+      })
+      .addCase(columnInsertBelow, (state, action) => {
+        const { id, newId } = action.payload
+        const foundIndex = state.columns.indexOf(id)
+        state.columns.splice(foundIndex + 1, 0, newId)
+      })
   }
 })
 

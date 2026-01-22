@@ -59,9 +59,9 @@ const columnSlice = createSlice({
     },
     insertBelow(
       state,
-      action: PayloadAction<{ id: number; duplicate?: number }>
+      action: PayloadAction<{ id: number; newId: number; duplicate?: number }>
     ) {
-      const { id, duplicate } = action.payload
+      const { newId, duplicate } = action.payload
       const column = duplicate
         ? state.entities[duplicate]
         : state.entities[state.ids[0]]
@@ -73,7 +73,7 @@ const columnSlice = createSlice({
 
       columnAdapter.addOne(state, {
         ...clone,
-        id,
+        id: newId,
         title: _t('Blank title'),
         description: '',
         colour: defaultColumnSettings['new-column'].colour,
