@@ -8,6 +8,9 @@ export const TopBarWrap = styled(Box)(({ theme }) => ({
   '& .MuiPaper-root': {
     backgroundColor: theme.palette.common.white,
     boxShadow: 'none'
+  },
+  '& .MuiStack-root > .MuiIconButton-root:hover': {
+    backgroundColor: 'rgba(4, 186, 116, 0.04)'
   }
 }))
 

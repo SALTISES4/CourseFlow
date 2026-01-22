@@ -281,9 +281,7 @@ const StaticMenu = ({
     setAnchorEl(event.currentTarget)
   }
 
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
+  const handleClose = () => setAnchorEl(null)
 
   return (
     <>

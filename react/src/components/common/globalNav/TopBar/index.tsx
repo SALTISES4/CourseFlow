@@ -229,29 +229,20 @@ const TopBar = () => {
   }
 
   /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-  const ToolbarWrap = () => {
-    return (
-      <Toolbar variant="dense">
-        <ReturnLinks />
-        <Box sx={{ flexGrow: 1 }} className="title" />
-        <Stack direction="row" spacing={1}>
-          <AddMenu show />
-          <NotificationsMenu />
-          <AccountMenu />
-        </Stack>
-      </Toolbar>
-    )
-  }
-
-  /*******************************************************
    * RENDER
    *******************************************************/
   return (
     <SC.TopBarWrap>
       <AppBar position="static">
-        <ToolbarWrap />
+        <Toolbar variant="dense">
+          <ReturnLinks />
+          <Box sx={{ flexGrow: 1 }} className="title" />
+          <Stack direction="row" spacing={1}>
+            <AddMenu show />
+            <NotificationsMenu />
+            <AccountMenu />
+          </Stack>
+        </Toolbar>
       </AppBar>
     </SC.TopBarWrap>
   )
