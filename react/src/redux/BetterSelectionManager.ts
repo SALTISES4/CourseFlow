@@ -1,8 +1,7 @@
 import { CfObjectType } from '@cf/types/enum'
-import ActionCreator from '@cfRedux/ActionCreator'
 import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
 import store from '@cfRedux/store'
-import { AnyAction } from '@reduxjs/toolkit'
+import { UnknownAction } from '@reduxjs/toolkit'
 import { Dispatch } from 'redux'
 
 // thin wrapper around dipachtchers
@@ -17,9 +16,9 @@ import { Dispatch } from 'redux'
 // most likely it will be replaced by hooks and composition
 
 class BetterSelectionManager {
-  dispatch: Dispatch<AnyAction>
+  dispatch: Dispatch<UnknownAction>
 
-  constructor(dispatch: Dispatch<AnyAction>) {
+  constructor(dispatch: Dispatch<UnknownAction>) {
     this.dispatch = dispatch
   }
 
@@ -29,27 +28,6 @@ class BetterSelectionManager {
 
   clearSidebar() {
     store.dispatch(sidebarEdit({}))
-  }
-
-  toggleDropReduxAction({
-    objectId,
-    objectType,
-    newDropState,
-    depth = 1
-  }: {
-    objectId: number
-    objectType: CfObjectType
-    newDropState: boolean
-    depth?: number
-  }) {
-    // maybe logic to sync to local storage
-    // but if so we should compose a manager, and sync it with a derived state in redux
-
-    this.dispatch(
-      ActionCreator.changeField(objectId, objectType, {
-        isDropped: newDropState
-      })
-    )
   }
 }
 

@@ -1,26 +1,9 @@
 /*******************************************************
  * HELPER FUNCTIONS FOR FOR STATE QUERIES
  *******************************************************/
-import * as Constants from '@cf/utility/constants'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { AppState } from '@cfRedux/types/type'
-
-// this means is UI expanded (i.e. DROP down) not drag and dropped
-export const getDropped = (objectId: number, objectType, depth = 1) => {
-  const defaultDrop = Constants.getDefaultDropState(objectId, objectType, depth)
-  try {
-    const storedDrop = JSON.parse(
-      window.localStorage.getItem(objectType + objectId)
-    )
-    if (storedDrop === null) {
-      return defaultDrop
-    }
-    return storedDrop
-  } catch (err) {
-    return defaultDrop
-  }
-}
 
 // @todo doesn't really belong here (not a state selector)
 export const getTableOutcomeNodeById = (outcomeNodes, nodeId, outcomeId) => {

@@ -18,7 +18,9 @@ export type Outcome = {
 
 export const outcomeAdapter = createEntityAdapter<Outcome>()
 
-type OutcomesState = ReturnType<typeof outcomeAdapter.getInitialState> & {
+export type OutcomesState = ReturnType<
+  typeof outcomeAdapter.getInitialState
+> & {
   dragging: { id: number; level: number } | null
   highlighted: number[]
 }

@@ -4,7 +4,6 @@ import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { AppDispatch } from '@cfRedux/store'
-import { updateAllEntities } from '@cfRedux/thunks'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { deleteSelfQueryLegacy } from '@XMLHTTP/API/workspace.rtk'
 import { useDispatch } from 'react-redux'
@@ -78,12 +77,14 @@ export const useMenuActions = () => {
     }
   }
 
+  // TODO: verify Nodes, Outcomes(?) still need to support this, reimplement
   function expandAll(type: CfObjectType) {
-    dispatch(updateAllEntities(type, () => ({ isDropped: true })))
+    console.log('expand all', type)
   }
 
+  // TODO: verify Nodes, Outcomes(?) still need to support this, reimplement
   function collapseAll(type: CfObjectType) {
-    dispatch(updateAllEntities(type, () => ({ isDropped: false })))
+    console.log('collapse all', type)
   }
 
   function duplicateItem(

@@ -76,14 +76,10 @@ type LockableItem = {
   lock?: CfLock
 }
 
-type ExpandableItem = {
-  isDropped?: boolean
-}
-
 export type TOutcome = EOutcome & LockableItem
 export type TColumn = EColumn & LockableItem
-export type TNode = ENode & LockableItem & ExpandableItem
-export type TWeek = EWeek & LockableItem & ExpandableItem
+export type TNode = ENode & LockableItem
+export type TWeek = EWeek & LockableItem
 
 /*******************************************************
  * MORE RELAIONS
