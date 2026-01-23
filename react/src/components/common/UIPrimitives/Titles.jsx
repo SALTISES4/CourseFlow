@@ -1,7 +1,7 @@
 import { CFRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import * as React from 'react'
+import { Component } from 'react'
 import { NavLink, generatePath } from 'react-router-dom'
 
 export function workflowUrl(workflow) {
@@ -22,7 +22,7 @@ export const WorkflowNavLink = ({ workflow }) => {
 }
 
 //Title text for a week
-export class WeekTitle extends React.Component {
+export class WeekTitle extends Component {
   render() {
     const data = this.props.data
     const defaultText = data.weekTypeDisplay + ' ' + (this.props.rank + 1)

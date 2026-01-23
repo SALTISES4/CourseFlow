@@ -1,7 +1,6 @@
 import LibrarySearchView from '@cfViews/LibrarySearchView'
 import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
-import * as React from 'react'
 import { useState } from 'react'
 
 type PropsType = {

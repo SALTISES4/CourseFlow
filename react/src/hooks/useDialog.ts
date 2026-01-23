@@ -1,7 +1,6 @@
 import { DialogContext, DialogDispatchContext } from '@cf/context/dialogContext'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { useContext } from 'react'
-import * as React from 'react'
 
 export enum DialogMode {
   // Define your dialog modes here

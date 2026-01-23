@@ -6,7 +6,6 @@ import TopBar from '@cfComponents/globalNav/TopBar'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import HtmlReactParser from 'html-react-parser'
 import { ReactNode } from 'react'
-import * as React from 'react'
 
 type PropsType = {
   showNotifications?: boolean

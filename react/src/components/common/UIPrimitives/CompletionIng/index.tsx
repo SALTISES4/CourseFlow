@@ -1,5 +1,4 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import * as React from 'react'
 
 /**
  * Based on an outcomenode's completion status, return the correct icon

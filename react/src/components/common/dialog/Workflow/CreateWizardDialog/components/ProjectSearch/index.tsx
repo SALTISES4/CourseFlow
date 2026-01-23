@@ -3,7 +3,6 @@ import LibrarySearchView from '@cfViews/LibrarySearchView'
 import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
 import { useState } from 'react'
-import * as React from 'react'
 
 type PropsType = {
   selected?: number

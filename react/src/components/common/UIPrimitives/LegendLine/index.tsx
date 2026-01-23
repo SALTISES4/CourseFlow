@@ -1,5 +1,4 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import * as React from 'react'
 
 type PropsType = {
   icon?: string

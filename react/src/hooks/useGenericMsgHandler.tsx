@@ -1,6 +1,5 @@
 import { SnackbarOptions } from '@cf/utility/constants'
 import { enqueueSnackbar } from 'notistack'
-import * as React from 'react'
 
 interface ResponseWithMessage {
   message?: string

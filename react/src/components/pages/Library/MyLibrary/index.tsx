@@ -1,6 +1,5 @@
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
 import { useState } from 'react'
-import * as React from 'react'
 
 import LibrarySearchView from 'components/views/LibrarySearchView'
 
