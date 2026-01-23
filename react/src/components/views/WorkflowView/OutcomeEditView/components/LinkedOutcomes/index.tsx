@@ -13,9 +13,10 @@ export type PropsType = {
     type: 'node' | 'outcome'
   }
   outcomes: number[]
+  highlight?: boolean
 }
 
-const LinkedOutcomes = ({ parent, outcomes }: PropsType) => {
+const LinkedOutcomes = ({ parent, outcomes, highlight }: PropsType) => {
   const [show, setShow] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
   const badgeRef = useRef<HTMLSpanElement>(null)
@@ -35,6 +36,7 @@ const LinkedOutcomes = ({ parent, outcomes }: PropsType) => {
         ref={badgeRef}
         onClick={showPopover(true)}
         badgeContent={outcomes.length}
+        highlight={highlight}
       />
       <Styled.Popover
         open={show}

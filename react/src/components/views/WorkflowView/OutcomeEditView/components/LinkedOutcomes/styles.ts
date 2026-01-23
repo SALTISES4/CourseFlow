@@ -23,10 +23,14 @@ export const Popover = styled(MuiPopover)(({ theme }) => ({
   }
 }))
 
-export const Badge = styled(MuiBadge)(({ theme }) => ({
+export const Badge = styled(MuiBadge, {
+  shouldForwardProp: (prop) => !['type'].includes(prop as string)
+})<{ highlight?: boolean }>(({ theme, highlight }) => ({
   top: '-5px',
   left: '10px',
   '& .MuiBadge-badge': {
-    backgroundColor: theme.palette.workflow.highlighted
+    backgroundColor: highlight
+      ? theme.palette.workflow.highlighted
+      : theme.palette.common.white
   }
 }))

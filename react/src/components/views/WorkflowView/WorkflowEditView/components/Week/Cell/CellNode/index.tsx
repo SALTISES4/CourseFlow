@@ -12,6 +12,7 @@ import {
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box'
 import { selectNodeById } from '@cf/redux/selectors/node.selector'
+import { isHighlightedViaOutcome } from '@cf/redux/selectors/outcomes.selector'
 import { svglinkAllowDND } from '@cf/redux/slices/svglink.slice'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
@@ -19,15 +20,17 @@ import { nodelinkOutcome } from '@cfRedux/slices/node.slice'
 import { isOutcomeLink } from '@cfRedux/slices/outcomes.slice'
 import { RootState } from '@cfRedux/store'
 import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
+import Handles from '@cfViews/WorkflowView/WorkflowEditView/components/LineSVG/Handles'
+import {
+  CellDataType,
+  DraggableType,
+  isGridCell
+} from '@cfViews/WorkflowView/WorkflowEditView/types'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
-import * as Styled from '../../../../styles'
-import { CellDataType, DraggableType } from '../../../../types'
-import { isGridCell } from '../../../../types'
-import Handles from '../../../LineSVG/Handles'
 import HoverMenu from '../HoverMenu'
 import Meta from '../Meta'
 import * as StyledNode from '../styles'
@@ -63,6 +66,10 @@ const WeekCellNode = ({
     (state: RootState) =>
       state.sidebar.edit.objectType === CfObjectType.NODE &&
       state.sidebar.edit.id === node.id
+  )
+
+  const highlighted = useSelector((state: RootState) =>
+    isHighlightedViaOutcome(state, node.outcomenodeSet)
   )
 
   const [state, setState] = useState<NodeStateType>({
@@ -196,9 +203,10 @@ const WeekCellNode = ({
 
   return (
     <>
-      <Styled.CellInner
+      <StyledNode.CellInner
         id={`node-${nodeId}`}
         selected={selected}
+        highlighted={highlighted}
         dropHighlight={state.dropHighlight}
         dragging={state.dragging}
       >
@@ -208,6 +216,7 @@ const WeekCellNode = ({
           <LinkedOutcomes
             parent={{ id: nodeId, type: WeekCellType.NODE }}
             outcomes={node.outcomenodeSet}
+            highlight={highlighted}
           />
         )}
 
@@ -229,7 +238,7 @@ const WeekCellNode = ({
         </StyledNode.Content>
 
         {!state.dragging && <Handles nodeId={nodeId} nodeRef={wrapRef} />}
-      </Styled.CellInner>
+      </StyledNode.CellInner>
 
       {state.closestEdge && (
         <DropIndicator edge={state.closestEdge} type="no-terminal" gap="32px" />
@@ -238,19 +247,14 @@ const WeekCellNode = ({
       {state.dragging &&
         state.previewTarget &&
         createPortal(
-          <Styled.CellInner
-            sx={{ width: '180px', minHeight: '70px' }}
-            dragging={false}
-            dropHighlight={false}
-            selected={false}
-          >
+          <StyledNode.CellInner sx={{ width: '180px', minHeight: '70px' }}>
             <StyledNode.Border sx={{ backgroundColor: borderColor }} />
             <StyledNode.Content>
               <StyledNode.Title variant="body2">
                 {node.title || _t('Blank title')}
               </StyledNode.Title>
             </StyledNode.Content>
-          </Styled.CellInner>,
+          </StyledNode.CellInner>,
           state.previewTarget
         )}
     </>

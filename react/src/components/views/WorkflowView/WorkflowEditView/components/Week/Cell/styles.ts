@@ -2,6 +2,51 @@ import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
+export const CellInner = styled(Box, {
+  shouldForwardProp: (prop) =>
+    !['dragging', 'dropHighlight', 'selected'].includes(prop as string)
+})<{
+  dragging?: boolean
+  dropHighlight?: boolean
+  selected?: boolean
+  highlighted?: boolean
+}>(({ theme, dragging, dropHighlight, selected, highlighted }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+  borderRadius: theme.shape.borderRadius,
+  transition: 'all 0.15s ease',
+  ...(dragging && {
+    opacity: 0.6
+  }),
+  ...(dropHighlight && {
+    '&': {
+      position: 'relative',
+      transition: 'none',
+      boxShadow: `0 0 0 2px ${theme.palette.workflow.selected}`,
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(4, 186, 116, 0.1)'
+      }
+    }
+  }),
+  ...(selected && {
+    '&, &:hover': {
+      boxShadow: `0 0 0 2px ${theme.palette.workflow.selected}`
+    }
+  }),
+  ...(highlighted && {
+    '&, &:hover': {
+      boxShadow: `0 0 0 2px ${theme.palette.workflow.highlighted}`
+    }
+  })
+}))
+
 export const Border = styled(Box)(({ theme }) => ({
   position: 'relative',
   height: '10px',

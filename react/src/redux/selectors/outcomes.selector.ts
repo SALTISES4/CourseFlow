@@ -29,6 +29,16 @@ export const selectRootOutcomes = createSelector(
   (outcomes) => outcomes.filter((o) => o.parent === null)
 )
 
+export const selectHighlightedOutcomes = createSelector(
+  (state: RootState) => state.outcomes,
+  (outcomes) => outcomes.highlighted
+)
+
+export const isHighlightedViaOutcome = createSelector(
+  [selectHighlightedOutcomes, (_: RootState, searchIds: number[]) => searchIds],
+  (haystack, needle) => needle.some((n) => haystack.includes(n))
+)
+
 // TODO: this actually needs to live somewhere else
 const tagsData = editTabNodeData.tags
 
