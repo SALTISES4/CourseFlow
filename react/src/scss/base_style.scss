@@ -200,9 +200,6 @@ h3.big-space {
   box-shadow: inset 0 0 0 99999px rgba($color-black, 0.2);
 }
 
-
-
-
 .small-inline {
   font-size: 14px;
 }
@@ -227,14 +224,9 @@ h3.big-space {
   justify-content: space-between;
 }
 
-
-
-
 .inline-title {
   display: inline;
 }
-
-
 
 .workflow-title-bar {
   display: inline-block;
@@ -252,8 +244,6 @@ h3.big-space {
   display: inline-block;
 }
 
-
-
 #visible-icons {
   display: flex;
   color: $color-primary-green;
@@ -263,13 +253,6 @@ h3.big-space {
 #overflow-options.hidden {
   display: none;
 }
-
-
-
-
-
-
-
 
 // A tag at the top of the menu that does nothing
 .toplink {
@@ -340,7 +323,6 @@ h3.big-space {
   color: $color-primary-blue;
 }
 
-
 .left-panel {
   background: $color-white;
   min-width: 200px;
@@ -388,7 +370,6 @@ h3.big-space {
   display: block;
 }
 
-
 .collapsed #left-panel-collapse {
   display: none;
 }
@@ -428,12 +409,6 @@ h3.big-space {
   margin-right: 10px;
 }
 
-.no-underline.hover-shade:hover {
-  text-decoration: none;
-}
-
-
-
 .panel-item img {
   width: 24px;
 }
@@ -442,11 +417,6 @@ h3.big-space {
   margin-bottom: 20px;
   margin-top: 20px;
 }
-
-
-
-
-
 .saltise-menu-container {
   height: 100%;
   width: 100%;
@@ -511,7 +481,6 @@ h3.big-space {
   display: none;
 }
 
-
 .create-dropdown.position-right {
   right: 0px;
 }
@@ -520,8 +489,6 @@ h3.big-space {
 #create-options {
   position: relative;
 }
-
-
 
 .create-dropdown > a,
 .create-dropdown > div {
@@ -653,8 +620,6 @@ h3.big-space {
   margin: 0;
 }
 
-
-
 .workflow-publication {
   font-size: 14px;
   color: $color-gray;
@@ -744,8 +709,6 @@ h3.big-space {
   margin-left: 20px;
 }
 
-
-
 .workflow-filter-top {
   display: flex;
   justify-content: space-between;
@@ -767,13 +730,9 @@ h3.big-space {
   max-width: 600px;
 }
 
-
-
 .filter-option {
   position: relative;
 }
-
-
 
 .filter-option.active {
   background: $color-white-green;
@@ -871,11 +830,6 @@ h3.big-space {
   white-space: pre-wrap;
 }
 
-
-
-
-
-
 .flex-wrap {
   display: flex;
   flex-wrap: wrap;
@@ -941,14 +895,6 @@ h3.big-space {
   position: relative;
   padding: 3px 1em 3px 0.4em;
 }
-
-
-
-
-
-
-
-
 
 .public-link-button {
   border-radius: 10px;
@@ -1049,8 +995,6 @@ h3.big-space {
   margin-top: 8px;
 }
 
-
-
 .user-username {
   color: $color-gray;
   font-size: 12px;
@@ -1098,7 +1042,6 @@ h3.big-space {
   cursor: pointer;
 }
 
-
 .screen-barrier {
   width: 100%;
   height: 100%;
@@ -1122,11 +1065,6 @@ h3.big-space {
   box-sizing: border-box;
   padding-bottom: 50px;
 }
-
-
-
-
-
 
 .discipline-tag {
   border-radius: 100px;
@@ -1191,7 +1129,6 @@ h3.big-space {
   text-align: left;
   padding: 5px;
 }
-
 
 .overview-table .table-user {
   font-weight: 600;

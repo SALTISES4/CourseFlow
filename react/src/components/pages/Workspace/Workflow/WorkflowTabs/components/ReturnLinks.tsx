@@ -3,10 +3,10 @@ import { _t } from '@cf/utility/Utility.class'
 import { RootState } from '@cfRedux/store'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import Box from '@mui/material/Box'
+import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
-import * as React from 'react'
 import { useSelector } from 'react-redux'
-import { Link, generatePath } from 'react-router-dom'
+import { Link as RouterLink, generatePath } from 'react-router-dom'
 
 /**
  * @todo did a first pass, but there is work to do still
@@ -24,7 +24,7 @@ const ReturnLinks = () => {
     (state: RootState) => state.workspace.workflow?.publicView
   )
 
-  const WorkflowLink = () => {
+  const BackToProjectLink = () => {
     // @todo not sure about this check yet, redux store is not stable
     if (!project || !project?.id || publicView) {
       return <></>
@@ -35,10 +35,15 @@ const ReturnLinks = () => {
     })
 
     return (
-      <Link className="hover-shade no-underline" id="project-return" to={path}>
+      <Link
+        id="project-return"
+        to={path}
+        underline="hover"
+        component={RouterLink}
+      >
         <Box sx={{ display: 'flex' }}>
-          <ArrowBackIosIcon color={'primary'} />
-          <Typography color={'primary'}>
+          <ArrowBackIosIcon color="primary" />
+          <Typography color="primary">
             {_t('Return to')} {project.title}
           </Typography>
         </Box>
@@ -46,10 +51,11 @@ const ReturnLinks = () => {
     )
   }
 
+  // TODO:
   // if you are viewing the public link, and you have edit permissions (?)
   // this returns you to the editable version
   // not really understanding this yet, why not use the same link but with view permissions for all users?
-  const EditableProjectLink = () => {
+  const BackToEditableProjectLink = () => {
     if (!publicView || !canView) {
       return <></>
     }
@@ -57,16 +63,30 @@ const ReturnLinks = () => {
     const path = generatePath(CFRoutes.PROJECT, {
       id: String(project.id)
     })
+
     return (
-      <Link data-test-id={'link-editable-workflow-return'} to={path}>
-        <ArrowBackIosIcon />
-        {_t('Return to Editable Project')}
+      <Link
+        id="editable-project-return"
+        data-test-id="link-editable-project-return"
+        to={path}
+        underline="hover"
+        component={RouterLink}
+      >
+        <Box sx={{ display: 'flex' }}>
+          <ArrowBackIosIcon color="primary" />
+          <Typography color="primary">
+            {_t('Return to')} {project.title}
+          </Typography>
+        </Box>
       </Link>
     )
   }
 
+  // TODO:
   // this is not managed properly yet for if you are in a workflow or project view
-  const EditableWorkflowLink = () => {
+  const BackToEditableWorkflowLink = () => {
+    return null
+
     if (!publicView || !canView) {
       return <></>
     }
@@ -76,18 +96,28 @@ const ReturnLinks = () => {
     })
 
     return (
-      <Link data-test-id={'link-editable-workflow-return'} to={path}>
-        <ArrowBackIosIcon />
-        {_t('Return to Editable Project')}
+      <Link
+        id="editable-workflow-return"
+        data-test-id="link-editable-workflow-return"
+        to={path}
+        underline="hover"
+        component={RouterLink}
+      >
+        <Box sx={{ display: 'flex' }}>
+          <ArrowBackIosIcon color="primary" />
+          <Typography color="primary">
+            {_t('Return to Editable Workflow')}
+          </Typography>
+        </Box>
       </Link>
     )
   }
 
   return (
     <>
-      <WorkflowLink />
-      <EditableProjectLink />
-      <EditableWorkflowLink />
+      <BackToProjectLink />
+      <BackToEditableProjectLink />
+      <BackToEditableWorkflowLink />
     </>
   )
 }
