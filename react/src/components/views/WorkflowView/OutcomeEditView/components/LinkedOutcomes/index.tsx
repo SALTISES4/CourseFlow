@@ -37,6 +37,7 @@ const LinkedOutcomes = ({ parent, outcomes, highlight }: PropsType) => {
         onClick={showPopover(true)}
         badgeContent={outcomes.length}
         highlight={highlight}
+        type={parent.type}
       />
       <Styled.Popover
         open={show}
@@ -44,11 +45,11 @@ const LinkedOutcomes = ({ parent, outcomes, highlight }: PropsType) => {
         onClose={showPopover(false)}
         anchorOrigin={{
           vertical: 'top',
-          horizontal: 'left'
+          horizontal: 'right'
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'right'
+          horizontal: 'left'
         }}
       >
         <StyledOutcome.OutcomeGroup sx={{ mt: 0 }}>

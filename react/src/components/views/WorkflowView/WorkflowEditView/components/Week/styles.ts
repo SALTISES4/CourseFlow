@@ -50,7 +50,7 @@ export const WeekBackground = styled(Box)(({ theme }) => ({
   left: 0,
   width: '100%',
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: '#eef2fd'
+  backgroundColor: theme.palette.workspaceBlocks.background
 }))
 
 export const WeekHeader = styled('header', {

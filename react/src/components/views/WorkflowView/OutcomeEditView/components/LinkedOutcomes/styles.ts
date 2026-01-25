@@ -3,9 +3,13 @@ import Box from '@mui/material/Box'
 import MuiPopover from '@mui/material/Popover'
 import { styled } from '@mui/material/styles'
 
+import { PropsType } from './'
+
+type LinkedTo = PropsType['parent']['type']
+
 export const Wrap = styled(Box, {
   shouldForwardProp: (prop) => !['type'].includes(prop as string)
-})<{ type: 'outcome' | 'node' }>(({ theme, type }) => ({
+})<{ type: LinkedTo }>(({ theme, type }) => ({
   position: 'absolute',
   top: '18px',
   right: type === 'outcome' ? 0 : '-1.5em',
@@ -16,21 +20,23 @@ export const Wrap = styled(Box, {
 
 export const Popover = styled(MuiPopover)(({ theme }) => ({
   '& .MuiPaper-root': {
-    marginLeft: '-8px',
+    marginLeft: '8px',
     padding: theme.spacing(1),
     borderRadius: theme.shape.borderRadius,
-    boxShadow: `0 0 0 2px ${theme.palette.workflow.selected}`
+    boxShadow: `0 0 0 1px ${theme.palette.workflow.selected}`
   }
 }))
 
 export const Badge = styled(MuiBadge, {
-  shouldForwardProp: (prop) => !['type'].includes(prop as string)
-})<{ highlight?: boolean }>(({ theme, highlight }) => ({
+  shouldForwardProp: (prop) => !['highlight', 'type'].includes(prop as string)
+})<{ highlight?: boolean; type: LinkedTo }>(({ theme, highlight, type }) => ({
   top: '-5px',
   left: '10px',
   '& .MuiBadge-badge': {
     backgroundColor: highlight
       ? theme.palette.workflow.highlighted
-      : theme.palette.common.white
+      : type === 'node'
+        ? theme.palette.common.white
+        : theme.palette.workspaceBlocks.background
   }
 }))

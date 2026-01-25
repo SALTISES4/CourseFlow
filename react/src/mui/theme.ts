@@ -47,9 +47,9 @@ const palette = {
     activityOOCStud: '#114bd4',
     activityICInstr: '#268ae5',
     activityICStud: '#8bc8ff',
-    background: '#EEF2FD'
+    background: '#eef2fd'
   },
-  divider: '#CFD8DC',
+  divider: '#cfd8dc',
   action: {
     hover: 'rgba(4, 186, 116, 0.08)'
   }
