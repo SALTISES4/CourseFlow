@@ -11,7 +11,6 @@ import {
 import useHover from '@cf/hooks/useHover'
 import { WorkflowBoard } from '@cf/redux/selectors/workflow.selector'
 import { CfObjectType } from '@cf/types/enum'
-import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { RootState } from '@cfRedux/store'
@@ -263,7 +262,7 @@ const Week = (props: WeekPropsType) => {
         >
           <StyledWeek.WeekTitle variant="subtitle2">
             <StyledWeek.WeekNumber>{props.index + 1}</StyledWeek.WeekNumber>
-            <TitleText text={week.title} defaultText={defaultText} />
+            {week.title ?? defaultText}
           </StyledWeek.WeekTitle>
 
           <IconButton onClick={onCollapseIconClick} className="arrow-icon">
