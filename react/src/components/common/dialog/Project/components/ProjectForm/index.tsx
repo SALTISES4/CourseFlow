@@ -195,7 +195,7 @@ const ProjectForm = ({
         </StyledBox>
       </DialogContent>
       <DialogActions>
-        <Button color="secondary" onClick={onDialogClose}>
+        <Button variant="contained" color="secondary" onClick={onDialogClose}>
           {_t('Cancel')}
         </Button>
         <Button
