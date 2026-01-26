@@ -1,6 +1,6 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import Utility from '@cf/utility/Utility.class'
+import Utility, { _t } from '@cf/utility/Utility.class'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import { FormField } from '@cfComponents/dialog/Workflow/componnets/WorkflowForm'
 import {
@@ -77,17 +77,24 @@ const workflowSchema = z.object({
 })
 
 const WorkflowEditDialog = () => {
-  /*******************************************************
-   * HOOKS
-   *******************************************************/
   const { id } = useParams()
-
   const workflow = useSelector((state: RootState) => state.workspace.workflow)
-
   const config = configFields(workflow)
-
   const { show, onClose } = useDialog(DialogMode.WORKFLOW_EDIT)
   const { onError, onSuccess } = useGenericMsgHandler()
+
+  let typeLabel = ''
+  switch (workflow.type) {
+    case WorkflowType.PROGRAM:
+      typeLabel = 'Program'
+      break
+    case WorkflowType.ACTIVITY:
+      typeLabel = 'Activity'
+      break
+    case WorkflowType.COURSE:
+      typeLabel = 'Course'
+      break
+  }
 
   const {
     register,
@@ -149,7 +156,7 @@ const WorkflowEditDialog = () => {
       }}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>Edit activity</DialogTitle>
+        <DialogTitle>{_t(`Edit ${typeLabel.toLowerCase()}`)}</DialogTitle>
         <DialogContent dividers>
           <StyledBox>
             {config.includes(FormField.TITLE) && (
@@ -157,7 +164,7 @@ const WorkflowEditDialog = () => {
                 {...register('title')}
                 name="title"
                 variant="standard"
-                label="Course title"
+                label={_t(`${typeLabel} title`)}
                 error={!!errors.title}
                 fullWidth
                 helperText={errors.title?.message}
@@ -171,7 +178,7 @@ const WorkflowEditDialog = () => {
                 maxRows={3}
                 name="description"
                 variant="standard"
-                label="Course description"
+                label={_t(`${typeLabel} description`)}
                 error={!!errors.description}
                 helperText={errors.description?.message}
                 fullWidth
@@ -185,7 +192,7 @@ const WorkflowEditDialog = () => {
                 maxRows={3}
                 name="courseNumber"
                 variant="standard"
-                label="Course number"
+                label={_t(`${typeLabel} number`)}
                 helperText={errors.courseNumber?.message}
                 error={!!errors.description}
                 fullWidth
@@ -199,7 +206,7 @@ const WorkflowEditDialog = () => {
                   fullWidth
                   name="duration"
                   variant="standard"
-                  label="Duration"
+                  label={_t('Duration')}
                   error={!!errors.duration}
                   helperText={errors.duration?.message}
                 />
@@ -207,10 +214,10 @@ const WorkflowEditDialog = () => {
 
               {config.includes(FormField.UNITS) && (
                 <FormControl variant="standard" fullWidth>
-                  <InputLabel>Unit type</InputLabel>
+                  <InputLabel>{_t('Unit type')}</InputLabel>
                   <Select
                     {...register('units')}
-                    label="Unit type"
+                    label={_t('Unit type')}
                     defaultValue={workflow.timeUnits ?? '0'}
                   >
                     {timeUnits.map((unit, idx) => (
@@ -225,7 +232,9 @@ const WorkflowEditDialog = () => {
 
             {config.includes(FormField.PONDERATION) && (
               <>
-                <Typography sx={{ mt: 1, mb: 1 }}>Ponderation</Typography>
+                <Typography sx={{ mt: 1, mb: 1 }}>
+                  {_t('Ponderation')}
+                </Typography>
                 <Divider />
                 <Stack direction="row" spacing={2}>
                   <TextField
@@ -233,7 +242,7 @@ const WorkflowEditDialog = () => {
                     fullWidth
                     name="ponderation.theory"
                     variant="standard"
-                    label="Theory (hrs)"
+                    label={_t('Theory (hrs)')}
                     type="number"
                     helperText={errors.ponderation?.theory?.message}
                   />
@@ -244,7 +253,7 @@ const WorkflowEditDialog = () => {
                     fullWidth
                     name="ponderation.practice"
                     variant="standard"
-                    label="Practice (hrs)"
+                    label={_t('Practice (hrs)')}
                     type="number"
                     helperText={errors.ponderation?.practice?.message}
                   />
@@ -255,7 +264,7 @@ const WorkflowEditDialog = () => {
                     fullWidth
                     name="individual"
                     variant="standard"
-                    label="Individual work (hrs)"
+                    label={_t('Individual work (hrs)')}
                     type="number"
                     helperText={errors.ponderation?.individual?.message}
                   />
@@ -266,7 +275,7 @@ const WorkflowEditDialog = () => {
                     fullWidth
                     name="generalEdu"
                     variant="standard"
-                    label="General education (hrs)"
+                    label={_t('General education (hrs)')}
                     type="number"
                   />
                   <TextField
@@ -276,7 +285,7 @@ const WorkflowEditDialog = () => {
                     fullWidth
                     name="specificEdu"
                     variant="standard"
-                    label="Specific education (hrs)"
+                    label={_t('Specific education (hrs)')}
                     type="number"
                   />
                 </Stack>
@@ -287,10 +296,10 @@ const WorkflowEditDialog = () => {
 
         <DialogActions>
           <Button variant="contained" color="secondary" onClick={onClose}>
-            Cancel
+            {_t('Cancel')}
           </Button>
           <Button type="submit" variant="contained" disabled={!isDirty}>
-            Update activity
+            {_t(`Update ${typeLabel.toLowerCase()}`)}
           </Button>
         </DialogActions>
       </form>

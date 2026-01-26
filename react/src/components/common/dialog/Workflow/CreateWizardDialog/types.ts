@@ -24,7 +24,7 @@ export enum CreateResourceOptions {
 export type WorkflowFormType = {
   title: string
   description: string
-  duration: string
+  duration: number
   courseNumber: string
   units: number
   ponderation?: {
