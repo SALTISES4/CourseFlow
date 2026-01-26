@@ -110,9 +110,10 @@ const ProjectForm = ({
         <StyledBox>
           <FormControl fullWidth error={!!errors.title}>
             <TextField
-              label="Title"
-              placeholder="New Project Title"
+              label={_t('Title')}
+              placeholder={_t('Project title')}
               variant="standard"
+              required
               {...register('title')}
               error={!!errors.title}
               helperText={errors.title?.message}
@@ -121,7 +122,7 @@ const ProjectForm = ({
 
           <FormControl fullWidth error={!!errors.description}>
             <TextField
-              label="Description"
+              label={_t('Description')}
               variant="standard"
               {...register('description')}
               error={!!errors.description}
