@@ -164,7 +164,8 @@ const WorkflowEditDialog = () => {
                 {...register('title')}
                 name="title"
                 variant="standard"
-                label={_t(`${typeLabel} title`)}
+                required
+                label={_t(`Title`)}
                 error={!!errors.title}
                 fullWidth
                 helperText={errors.title?.message}
