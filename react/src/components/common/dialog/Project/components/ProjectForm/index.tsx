@@ -51,22 +51,16 @@ const ProjectForm = ({
   label: string
   submitLabel?: string
 }) => {
-  /*******************************************************
-   * PROPS
-   *******************************************************/
   const disciplineOptions = COURSEFLOW_APP.globalContextData.disciplines
-  /*******************************************************
-   * HOOKS
-   *******************************************************/
-  const [selectOpenStates, setSelectOpenStates] = useState({})
+  const [state, setState] = useState({
+    disciplines: false
+  })
 
   const {
     register,
     handleSubmit,
     control,
     formState: { errors, isDirty },
-    setValue,
-    getValues,
     reset
   } = useForm<ProjectFormValues>({
     // resolver: zodResolver(projectSchema),
@@ -79,15 +73,10 @@ const ProjectForm = ({
   }
 
   // Open or close a controlled Select component
-  function handleSelectOpen(index: string, open: boolean) {
-    const newState = { ...selectOpenStates }
-    newState[index] = open
-    setSelectOpenStates(newState)
-  }
-
-  const onInputChange = (e, field, override = false) => {
-    const value = override ? override : e.target.value
-    setValue(field.name, value)
+  function showDisciplines(open: boolean) {
+    setState({
+      disciplines: open
+    })
   }
 
   /*******************************************************
@@ -142,41 +131,44 @@ const ProjectForm = ({
                   {...field}
                   label={_t('Discipline')}
                   labelId="create-project-discipline"
-                  variant={'outlined'}
-                  open={selectOpenStates['disciplines'] ?? false}
+                  variant="outlined"
+                  open={state.disciplines}
+                  onOpen={() => showDisciplines(true)}
+                  onClose={() => showDisciplines(false)}
                   onChange={(e) => {
-                    onInputChange(e, field)
-                    handleSelectOpen('disciplines', false)
+                    field.onChange(e.target.value)
+                    showDisciplines(false)
                   }}
-                  onOpen={() => handleSelectOpen('disciplines', true)}
-                  onClose={() => handleSelectOpen('disciplines', false)}
                   multiple
                   renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {(selected as string[]).map((value) => {
-                        return (
-                          <Chip
-                            key={value}
-                            label={
-                              disciplineOptions.find(
-                                (option) => String(option.id) === String(value)
-                              )?.title
-                            }
-                            clickable
-                            deleteIcon={
-                              <CancelIcon
-                                onMouseDown={(event) => event.stopPropagation()}
-                              />
-                            }
-                            onDelete={() => {
-                              const newValues = (
-                                getValues('disciplines') as string[]
-                              ).filter((v) => v !== value)
-                              setValue('disciplines', newValues)
-                            }}
-                          />
-                        )
-                      })}
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 0.5
+                      }}
+                    >
+                      {selected.map((value) => (
+                        <Chip
+                          key={value}
+                          clickable
+                          label={
+                            disciplineOptions.find(
+                              (option) => String(option.id) === String(value)
+                            )?.title
+                          }
+                          deleteIcon={
+                            <CancelIcon
+                              onMouseDown={(e) => e.stopPropagation()}
+                            />
+                          }
+                          onDelete={() => {
+                            field.onChange(
+                              field.value.filter((v) => v !== value)
+                            )
+                          }}
+                        />
+                      ))}
                     </Box>
                   )}
                 >
