@@ -1,5 +1,10 @@
 import { selectOutcomeById } from '@cf/redux/selectors/outcomes.selector'
-import { Outcome, updateOutcome } from '@cf/redux/slices/outcomes.slice'
+import {
+  Outcome,
+  deleteOutcome,
+  duplicateOutcome,
+  updateOutcome
+} from '@cf/redux/slices/outcomes.slice'
 import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
 import { _t } from '@cf/utility/Utility.class'
 import { RootState } from '@cfRedux/store'
@@ -8,7 +13,7 @@ import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -89,6 +94,14 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
     }
   }, [watchedFields, isDirty, debouncedDispatch])
 
+  const onDuplicate = useCallback(() => {
+    dispatch(duplicateOutcome(outcome.id))
+  }, [dispatch, outcome.id])
+
+  const onDelete = useCallback(() => {
+    dispatch(deleteOutcome(outcome.id))
+  }, [dispatch, outcome.id])
+
   return (
     <SidebarInnerWrap>
       <SidebarContent>
@@ -156,10 +169,10 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
         </Stack>
       </SidebarContent>
       <SidebarActions>
-        <Button variant="contained" color="secondary">
+        <Button variant="contained" color="secondary" onClick={onDuplicate}>
           {_t('Duplicate')}
         </Button>
-        <Button variant="contained" color="secondary">
+        <Button variant="contained" color="secondary" onClick={onDelete}>
           {_t('Delete')}
         </Button>
       </SidebarActions>
