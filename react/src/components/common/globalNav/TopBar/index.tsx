@@ -123,11 +123,6 @@ const TopBar = () => {
         seperator: true
       },
       {
-        content: `Go to ${apiPaths.external.daliteUrl}`,
-        action: () => navigate(apiPaths.external.daliteUrl),
-        show: true
-      },
-      {
         content: strings.signOut,
         action: handleLogout,
         icon: <LogoutIcon />,
