@@ -125,7 +125,7 @@ const BottomSVG = ({
         <marker
           id="line-arrow"
           viewBox="0 0 10 10"
-          refX="5"
+          refX="9"
           refY="5"
           markerWidth="8"
           markerHeight="8"
