@@ -33,7 +33,7 @@ const Favourites = () => {
     }
 
     return (
-      <ListItem disablePadding dense sx={{ mt: 1 }}>
+      <ListItem disablePadding dense sx={{ mt: 1, mb: 2 }}>
         <ListItemButton component="div" sx={{ padding: 0 }}>
           <ListItemText
             sx={{
