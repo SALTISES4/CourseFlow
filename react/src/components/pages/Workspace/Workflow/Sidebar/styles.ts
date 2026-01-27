@@ -1,7 +1,7 @@
 import { IconButton } from '@mui/material'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { alpha, styled } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 
@@ -12,7 +12,7 @@ export const SidebarWrap = styled(Box, {
   width: '290px',
   height: '100%',
   marginLeft: 'auto',
-  paddingLeft: '30px',
+  paddingLeft: '40px',
   flexShrink: 0,
   '& > .MuiPaper-root': {
     position: 'relative',
@@ -24,7 +24,7 @@ export const SidebarWrap = styled(Box, {
     overflow: 'auto'
   },
   ...(collapsed && {
-    width: '30px',
+    width: '40px',
     '& .MuiPaper-root': {
       display: 'none'
     }
@@ -41,21 +41,21 @@ export const SidebarTabsWrap = styled(ToggleButtonGroup)(({ theme }) => ({
   position: 'absolute',
   top: '3rem',
   left: 0,
-  boxShadow: '0.5em 0.5em 1em 0.25em #ddd',
+  boxShadow: '0.3em 0.8em 1.3em 0.35em #c2c2c2',
   border: 0,
   zIndex: 0,
-  background: 'transparent',
-  gap: '2px',
+  background: '#dfdfdf',
+  gap: '4px',
   '& .MuiToggleButton-root': {
     minWidth: '0',
-    padding: '5px',
+    width: '40px',
+    height: '40px',
+    borderRadius: '4px 0 0 4px !important',
     border: 0,
-    borderTopRightRadius: 0,
-    borderBottomRightRadius: 0,
     color: theme.palette.primary.main,
     background: theme.palette.common.white,
     '&:hover': {
-      backgroundColor: alpha(theme.palette.primary.main, 0.04)
+      backgroundColor: theme.palette.action.hover
     },
     '&.Mui-selected': {
       background: theme.palette.primary.main,
@@ -65,7 +65,7 @@ export const SidebarTabsWrap = styled(ToggleButtonGroup)(({ theme }) => ({
       }
     },
     '&.Mui-disabled': {
-      color: theme.palette.divider,
+      color: '#9e9e9e', // or theme.palette.action.disabled?
       border: 0
     }
   },
