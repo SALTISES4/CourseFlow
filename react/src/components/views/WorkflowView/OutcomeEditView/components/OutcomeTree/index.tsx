@@ -26,7 +26,7 @@ export const OutcomeGroup = ({ parentId }: { parentId: number | null }) => {
     <Styled.OutcomeGroup>
       {childOutcomes.map((outcome) => (
         <Styled.OutcomeGroupItem key={outcome.id} padded={outcome.level === 0}>
-          <Outcome {...outcome} />
+          <Outcome {...outcome} greenHover />
           {!!outcome.linkedOutcomes?.length && (
             <LinkedOutcomes
               parent={{

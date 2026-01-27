@@ -35,41 +35,44 @@ export const OutcomeWrapper = styled(Box, {
 
 export const OutcomeHeader = styled(Box, {
   shouldForwardProp: (prop) =>
-    !['selected', 'highlighted', 'level'].includes(prop as string)
-})<{ selected?: boolean; highlighted?: boolean; level: number }>(
-  ({ theme, selected, highlighted, level }) => ({
-    position: 'relative',
-    display: 'flex',
-    borderRadius: `${theme.shape.borderRadius}px`,
-    flexDirection: 'row',
-    flexGrow: 1,
-    minWidth: 0,
-    '&:hover': {
-      boxShadow: `0 0 0 1px ${blueGrey[100]}`,
-      cursor: 'grab'
-    },
-    ...(selected && {
-      '&, &:hover': {
-        boxShadow: `0 0 0 2px ${theme.palette.workflow.selected}`
-      }
-    }),
-    ...(highlighted && {
-      '&, &:hover': {
-        boxShadow: `0 0 0 2px ${theme.palette.workflow.highlighted}`
-      }
-    }),
-    ...(level === 0 && {
-      backgroundColor: 'rgb(229, 233, 244)' // NOTE: Figma says grey[100] but it's not
-    }),
-    ...(level === 1 && {
-      backgroundColor: 'rgb(245, 249, 255)' // NOTE: Figma says grey[50] but it's not
-    }),
-    ...(level === 2 && {
-      border: '1px solid rgb(238, 242, 253)',
-      backgroundColor: 'transparent'
-    })
+    !['selected', 'highlighted', 'level', 'greenHover'].includes(prop as string)
+})<{
+  selected?: boolean
+  highlighted?: boolean
+  level: number
+  greenHover?: boolean
+}>(({ theme, selected, highlighted, level, greenHover }) => ({
+  position: 'relative',
+  display: 'flex',
+  borderRadius: `${theme.shape.borderRadius}px`,
+  flexDirection: 'row',
+  flexGrow: 1,
+  minWidth: 0,
+  '&:hover': {
+    boxShadow: `0 0 0 1px ${greenHover ? theme.palette.workflow.selected : blueGrey[100]}`,
+    cursor: 'grab'
+  },
+  ...(selected && {
+    '&, &:hover': {
+      boxShadow: `0 0 0 2px ${theme.palette.workflow.selected}`
+    }
+  }),
+  ...(highlighted && {
+    '&, &:hover': {
+      boxShadow: `0 0 0 2px ${theme.palette.workflow.highlighted}`
+    }
+  }),
+  ...(level === 0 && {
+    backgroundColor: 'rgb(229, 233, 244)' // NOTE: Figma says grey[100] but it's not
+  }),
+  ...(level === 1 && {
+    backgroundColor: 'rgb(245, 249, 255)' // NOTE: Figma says grey[50] but it's not
+  }),
+  ...(level === 2 && {
+    border: '1px solid rgb(238, 242, 253)',
+    backgroundColor: 'transparent'
   })
-)
+}))
 
 export const OutcomeHeaderInner = styled(Box)(() => ({
   display: 'flex',

@@ -41,8 +41,11 @@ const Outcome = ({
   children,
   level,
   tags,
-  linkedOutcomes
-}: OutcomeType) => {
+  linkedOutcomes,
+  greenHover
+}: OutcomeType & {
+  greenHover?: boolean
+}) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
   const sidebarData = useSelector((state: RootState) => state.sidebar.edit)
@@ -205,6 +208,7 @@ const Outcome = ({
         id={id}
         level={level}
         tags={tags}
+        greenHover={greenHover}
         dragRef={dragHandleRef}
         title={`${prefix}${title}`}
         selected={selected || state.dragHighlight}
