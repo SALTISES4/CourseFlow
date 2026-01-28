@@ -8,6 +8,7 @@ import {
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
+import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box'
 import useHover from '@cf/hooks/useHover'
 import { WorkflowBoard } from '@cf/redux/selectors/workflow.selector'
 import { CfObjectType } from '@cf/types/enum'
@@ -253,7 +254,6 @@ const Week = (props: WeekPropsType) => {
         hovering={isHovered}
         data-week-id={props.weekId}
       >
-        <Styled.WeekRowIndicator edge={state.closestEdge} />
         <StyledWeek.WeekHeader
           ref={dragHandleRef}
           dragging={state.dragging}
@@ -275,8 +275,14 @@ const Week = (props: WeekPropsType) => {
             show={isHovered}
           />
         </StyledWeek.WeekHeader>
-
         {!props.condensed && weekGrid}
+        {state.closestEdge && (
+          <DropIndicator
+            edge={state.closestEdge}
+            type="no-terminal"
+            gap="16px"
+          />
+        )}
       </StyledWeek.WeekWrapper>
       <Background weekRef={weekWrapperRef} />
     </>
