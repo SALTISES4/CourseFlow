@@ -65,7 +65,7 @@ const ActionMenu = () => {
     //   content: _t('Export'),
     //   action: openExportDialog,
     //   show: projectPermission.read,
-    //   seperator: true
+    //   separator: true
     // },
     /**
      * Spill over menu section

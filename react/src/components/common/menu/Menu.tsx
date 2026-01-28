@@ -31,7 +31,7 @@ type BaseMenuItemType = {
   id?: string
   title?: string
   icon?: ReactElement
-  seperator?: boolean
+  separator?: boolean | 'top' | 'bottom'
   showIconInList?: boolean
 }
 
@@ -94,7 +94,7 @@ export const ListMenuItem = ({
   content,
   action,
   show,
-  seperator,
+  separator,
   showIconInList,
   icon
 }: MenuItemType) => {
@@ -115,10 +115,11 @@ export const ListMenuItem = ({
 
   return (
     <>
+      {separator === 'top' && <Divider />}
       <MenuItem id={`${id}-button`} onClick={action} title={title}>
         {contentChooser(content)}
       </MenuItem>
-      {seperator && <Divider />}
+      {separator && separator !== 'top' && <Divider />}
     </>
   )
 }

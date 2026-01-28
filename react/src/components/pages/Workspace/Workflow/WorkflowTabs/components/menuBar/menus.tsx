@@ -81,7 +81,7 @@ const ActionMenu = () => {
       },
       action: openShareDialog,
       show: workflow.workflowPermissions.write,
-      seperator: true
+      separator: true
     },
     // NOTE: scoped out temporarily, see COURSEFLOW-489
     // {
@@ -89,7 +89,7 @@ const ActionMenu = () => {
     //   content: _t('Export'),
     //   action: openExportDialog,
     //   show: (!publicView || userId) && workflow.workflowPermissions.read,
-    //   seperator: true
+    //   separator: true
     // },
     // hidden
     {
@@ -119,13 +119,14 @@ const ActionMenu = () => {
     //   content: _t('Import nodes'),
     //   action: importNodes,
     //   show: !(publicView && !userId),
-    //   seperator: true
+    //   separator: true
     // },
     {
       id: 'archive-workflow',
       action: archiveWorkflow,
       content: _t('Archive workflow'),
-      show: workflow.workflowPermissions.write && !workflow.deleted
+      show: workflow.workflowPermissions.write && !workflow.deleted,
+      separator: 'top'
     },
     {
       id: 'restore-workflow',

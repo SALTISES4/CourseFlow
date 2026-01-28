@@ -120,7 +120,7 @@ const TopBar = () => {
         content: strings.notificationSettings,
         action: () => navigate(CFRoutes.NOTIFICATIONS_SETTINGS),
         show: true,
-        seperator: true
+        separator: true
       },
       {
         content: strings.signOut,
