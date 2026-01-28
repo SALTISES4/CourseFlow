@@ -148,6 +148,7 @@ const ActionMenu = () => {
 }
 
 const ExpandCollapseMenu = ({ legend }: { legend?: ReactElement }) => {
+  const context = useContext(WorkflowConfigContext)
   const { expandAll, collapseAll } = useMenuActions()
   const [expanded, setExpanded] = useState({
     [CfObjectType.WEEK]: true,
@@ -174,6 +175,10 @@ const ExpandCollapseMenu = ({ legend }: { legend?: ReactElement }) => {
     },
     [expandAll, collapseAll]
   )
+
+  if (context.workflowView === WorkflowViewType.OVERVIEW) {
+    return null
+  }
 
   const header: MenuItemType = {
     content: _t('View settings'),
