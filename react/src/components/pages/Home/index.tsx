@@ -43,7 +43,7 @@ const Home = () => {
           }}
         >
           <GridWrap>
-            {formattedProjects.map((item, index) => (
+            {formattedProjects.map((item) => (
               <WorkflowCardWrapper key={`project-${item.id}`} {...item} />
             ))}
           </GridWrap>
@@ -69,7 +69,7 @@ const Home = () => {
 
         <Alert sx={{ mb: 3 }} severity="warning" title="TODO - Backend" />
         <GridWrap>
-          {formattedTemplates.map((item, index) => (
+          {formattedTemplates.map((item) => (
             <WorkflowCardWrapper key={`template-${item.id}`} {...item} />
           ))}
         </GridWrap>

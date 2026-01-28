@@ -564,34 +564,10 @@ h3.big-space {
   -webkit-box-orient: vertical;
 }
 
-.workflow-buttons-row {
-  display: flex;
-  gap: 5px;
-  flex-direction: row-reverse;
-  justify-content: space-between;
-}
-
-.workflow-buttons-row > div {
-  display: flex;
-  gap: 5px;
-}
-
-.workflow-buttons-row .workflow-created {
-  background: $color-white-gray;
-  padding: 5px;
-  padding-left: 12px;
-  padding-right: 12px;
-  border-radius: 4px;
-  text-decoration: none;
-  color: $color-text;
-}
-
-.workflow-buttons-row .linked-workflow-warning {
+// TODO: do this in the template
+// don't display 'already in use' chip within the workflow thumbnails (library)
+.body-wrapper .linked-workflow-warning {
   display: none;
-}
-
-.linkedWorkflow_menu .linked-workflow-warning {
-  display: block;
 }
 
 .workflow-for-menu .workflow-toggle-favourite {

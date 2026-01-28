@@ -3,15 +3,13 @@ import { LibraryObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import Favourite from '@cfComponents/UIPrimitives/Favourite'
 import { workflowTitle } from '@cfComponents/UIPrimitives/Titles.ts'
-import ErrorIcon from '@mui/icons-material/Error'
-import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
+import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
 import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
 
 import WorkflowCardDumb, {
   PropsType as WorkflowCardDumbPropsType
 } from '../WorkflowCardDumb'
+import { CardChip as WorkflowCardChip } from '../WorkflowCardDumb/styles'
 
 /*******************************************************
  * A workflow card for a menu
@@ -29,6 +27,7 @@ export type WorkflowCardWrapperPropsType = Pick<
   isSelected?: boolean
   onClick?: () => void
 }
+
 const WorkflowCardWrapper = ({
   id,
   title,
@@ -44,31 +43,6 @@ const WorkflowCardWrapper = ({
    * FUNCTIONS
    *******************************************************/
   const navigateToItem = useNavigateToLibraryItem()
-
-  const Extras = () =>
-    isLinked ? (
-      <Tooltip
-        className="linked-workflow-warning"
-        placement="top"
-        arrow
-        title={_t(
-          'Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes.'
-        )}
-      >
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'flex-start'
-          }}
-        >
-          <IconButton color="secondary" size="small">
-            <ErrorIcon sx={{ color: 'error.main' }} />
-          </IconButton>
-          <Typography variant="body2">{_t('Already in use')}</Typography>
-        </Box>
-      </Tooltip>
-    ) : null
 
   /*******************************************************
    * RENDER
@@ -92,11 +66,36 @@ const WorkflowCardWrapper = ({
       description={description}
       isSelected={isSelected}
       // overridden onclick handler
-      onClick={onClick ? () => onClick() : () => navigateToItem(id, type)}
-      chips={chips}
-      footer={<Extras />}
+      onClick={onClick ? onClick : () => navigateToItem(id, type)}
+      chips={[...chips, isLinked && <InUseChip key="in-use" />]}
     />
   )
 }
+
+const InUseChip = () => (
+  <Tooltip
+    className="linked-workflow-warning"
+    placement="top"
+    arrow
+    title={_t(
+      'Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes.'
+    )}
+  >
+    <WorkflowCardChip
+      color="warning"
+      sx={{
+        paddingLeft: '2px',
+        border: 0,
+        backgroundColor: '#fff4e5',
+        '& .MuiChip-label': {
+          color: '#663C00'
+        }
+      }}
+      icon={<WarningAmberRoundedIcon sx={{ marginLeft: '2px' }} />}
+      label={_t('Already in use')}
+      variant="outlined"
+    />
+  </Tooltip>
+)
 
 export default WorkflowCardWrapper

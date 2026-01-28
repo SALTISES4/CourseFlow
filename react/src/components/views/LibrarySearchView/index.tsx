@@ -146,7 +146,7 @@ const LibrarySearchView = ({
       label: o.title
     }))
     setDisciplineOptions(mappedOptions)
-  }, [COURSEFLOW_APP.globalContextData.disciplines])
+  }, [])
 
   /*******************************************************
    * RENDER COMPONENTS
@@ -387,9 +387,7 @@ const LibrarySearchView = ({
             key={`workflow_${item.id}`}
             {...item}
             isSelected={item.id === override?.selectedId}
-            onClick={
-              override ? () => override.onCardSelect(item.id) : undefined
-            }
+            onClick={() => override?.onCardSelect(item.id)}
           />
         ))}
 
