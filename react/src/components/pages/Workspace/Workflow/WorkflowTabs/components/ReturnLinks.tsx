@@ -114,11 +114,11 @@ const ReturnLinks = () => {
   }
 
   return (
-    <>
+    <Box className="back-links-wrap">
       <BackToProjectLink />
       <BackToEditableProjectLink />
       <BackToEditableWorkflowLink />
-    </>
+    </Box>
   )
 }
 

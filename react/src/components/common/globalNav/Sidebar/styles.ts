@@ -54,8 +54,11 @@ export const SidebarWrap = styled(Box, {
   zIndex: 1,
   height: '100%',
   ...(collapsed && {
-    [`& .MuiPaper-root`]: {
+    '& .MuiPaper-root': {
       display: 'none'
+    },
+    '& ~ .main-block .back-links-wrap': {
+      paddingLeft: theme.spacing(5)
     }
   }),
   ...(!collapsed && {
