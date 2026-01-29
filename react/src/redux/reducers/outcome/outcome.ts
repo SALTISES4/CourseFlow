@@ -8,26 +8,26 @@ import {
   OutcomeOutcomeActions
 } from '@cfRedux/types/enumActions'
 import { TOutcome } from '@cfRedux/types/type'
-import { AnyAction } from '@reduxjs/toolkit'
+import { UnknownAction } from '@reduxjs/toolkit'
 
 // Common Actions
-interface ReplaceStoreDataAction extends AnyAction {
+interface ReplaceStoreDataAction extends UnknownAction {
   type: CommonActions.REPLACE_STOREDATA
   payload: { outcome?: TOutcome[] }
 }
 
-interface RefreshStoreDataAction extends AnyAction {
+interface RefreshStoreDataAction extends UnknownAction {
   type: CommonActions.REFRESH_STOREDATA
   payload: { outcome: TOutcome[] }
 }
 
 // Outcome Actions
-interface CreateLockAction extends AnyAction {
+interface CreateLockAction extends UnknownAction {
   type: OutcomeActions.CREATE_LOCK
   payload: { id: number; lock: CfLock }
 }
 
-interface RestoreSelfAction extends AnyAction {
+interface RestoreSelfAction extends UnknownAction {
   type: OutcomeActions.RESTORE_SELF
   payload: {
     id: number
@@ -37,27 +37,27 @@ interface RestoreSelfAction extends AnyAction {
   }
 }
 
-interface DeleteSelfAction extends AnyAction {
+interface DeleteSelfAction extends UnknownAction {
   type: OutcomeActions.DELETE_SELF
   payload: { id: number; parentId: number }
 }
 
-interface UpdateHorizontalLinkAction extends AnyAction {
+interface UpdateHorizontalLinkAction extends UnknownAction {
   type: OutcomeActions.UPDATE_HORIZONTAL_LINK
   payload: { id: number; data: any[] } // Specify the data structure if possible
 }
 
-interface DeleteSelfSoftAction extends AnyAction {
+interface DeleteSelfSoftAction extends UnknownAction {
   type: OutcomeActions.DELETE_SELF_SOFT
   payload: { id: number; parentId: number }
 }
 
-interface NewOutcomeAction extends AnyAction {
+interface NewOutcomeAction extends UnknownAction {
   type: OutcomeActions.NEW_OUTCOME
   payload: { newModel: TOutcome; children?: { outcome: TOutcome[] } }
 }
 
-interface InsertChildAction extends AnyAction {
+interface InsertChildAction extends UnknownAction {
   type: OutcomeActions.INSERT_CHILD
   payload: {
     parentId: number
@@ -69,7 +69,7 @@ interface InsertChildAction extends AnyAction {
   }
 }
 
-interface InsertBelowAction extends AnyAction {
+interface InsertBelowAction extends UnknownAction {
   type: OutcomeActions.INSERT_BELOW
   payload: {
     parentId: number
@@ -81,43 +81,43 @@ interface InsertBelowAction extends AnyAction {
   }
 }
 
-interface ReloadCommentsAction extends AnyAction {
+interface ReloadCommentsAction extends UnknownAction {
   type: OutcomeActions.RELOAD_COMMENTS
   payload: { id: number; commentData: any[] } // Specify the structure of `commentData`
 }
 
-interface ChangeFieldAction extends AnyAction {
+interface ChangeFieldAction extends UnknownAction {
   type: OutcomeActions.CHANGE_FIELD
   payload: { id: number; json: any }
 }
 
-interface ChangeFieldManyAction extends AnyAction {
+interface ChangeFieldManyAction extends UnknownAction {
   type: OutcomeActions.CHANGE_FIELD_MANY
   payload: { ids: number[]; json: any }
 }
 
 // Outcome Base Actions
-interface DeleteSelfBaseAction extends AnyAction {
+interface DeleteSelfBaseAction extends UnknownAction {
   type: OutcomeBaseActions.DELETE_SELF
   payload: { id: number }
 }
 
-interface DeleteSelfSoftBaseAction extends AnyAction {
+interface DeleteSelfSoftBaseAction extends UnknownAction {
   type: OutcomeBaseActions.DELETE_SELF_SOFT
   payload: { id: number }
 }
 
-interface RestoreSelfBaseAction extends AnyAction {
+interface RestoreSelfBaseAction extends UnknownAction {
   type: OutcomeBaseActions.RESTORE_SELF
   payload: { id: number }
 }
 
-interface ReloadCommentsBaseAction extends AnyAction {
+interface ReloadCommentsBaseAction extends UnknownAction {
   type: OutcomeBaseActions.RELOAD_COMMENTS
   payload: { id: number; commentData: any[] }
 }
 
-interface InsertBelowBaseAction extends AnyAction {
+interface InsertBelowBaseAction extends UnknownAction {
   type: OutcomeBaseActions.INSERT_BELOW
   payload: { newModel: TOutcome; children?: { outcome: TOutcome[] } }
 }

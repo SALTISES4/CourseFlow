@@ -4,24 +4,24 @@ import {
   OutcomeBaseActions
 } from '@cfRedux/types/enumActions'
 import { TChildWorkflow } from '@cfRedux/types/type'
-import { AnyAction } from '@reduxjs/toolkit'
+import { UnknownAction } from '@reduxjs/toolkit'
 
-interface ReplaceStoreDataAction extends AnyAction {
+interface ReplaceStoreDataAction extends UnknownAction {
   type: CommonActions.REPLACE_STOREDATA
   payload: { childWorkflow?: TChildWorkflow[] }
 }
 
-interface RefreshStoreDataAction extends AnyAction {
+interface RefreshStoreDataAction extends UnknownAction {
   type: CommonActions.REFRESH_STOREDATA
   payload: { childWorkflow: TChildWorkflow[] }
 }
 
-interface DeleteSelfOutcomeBaseAction extends AnyAction {
+interface DeleteSelfOutcomeBaseAction extends UnknownAction {
   type: OutcomeBaseActions.DELETE_SELF | OutcomeBaseActions.DELETE_SELF_SOFT
   payload: { parentId: number }
 }
 
-interface RestoreSelfOutcomeBaseAction extends AnyAction {
+interface RestoreSelfOutcomeBaseAction extends UnknownAction {
   type: OutcomeBaseActions.RESTORE_SELF
   payload: {
     parentId: number
@@ -30,7 +30,7 @@ interface RestoreSelfOutcomeBaseAction extends AnyAction {
   }
 }
 
-interface InsertBelowOutcomeBaseAction extends AnyAction {
+interface InsertBelowOutcomeBaseAction extends UnknownAction {
   type: OutcomeBaseActions.INSERT_BELOW
   payload: {
     parentId: number
@@ -42,7 +42,7 @@ interface InsertBelowOutcomeBaseAction extends AnyAction {
   }
 }
 
-interface NewOutcomeAction extends AnyAction {
+interface NewOutcomeAction extends UnknownAction {
   type: OutcomeActions.NEW_OUTCOME
   payload: {
     parentId: number
@@ -152,7 +152,7 @@ function childWorkflowReducer(state = [], action: ChildWorkflowActionTypes) {
 
 export default childWorkflowReducer
 
-// function childWorkflowReducer(state = [], action: AnyAction) {
+// function childWorkflowReducer(state = [], action: UnknownAction) {
 //   switch (action.type) {
 //     case CommonActions.REPLACE_STOREDATA: {
 //       if (action.payload.childWorkflow) {

@@ -6,48 +6,49 @@ import {
   WeekActions
 } from '@cfRedux/types/enumActions'
 import { TNodeweek } from '@cfRedux/types/type'
-import { AnyAction } from '@reduxjs/toolkit'
-interface ReplaceStoreDataAction extends AnyAction {
+import { UnknownAction } from '@reduxjs/toolkit'
+
+interface ReplaceStoreDataAction extends UnknownAction {
   type: CommonActions.REPLACE_STOREDATA
   payload: { nodeweek?: TNodeweek[] }
 }
 
-interface RefreshStoreDataAction extends AnyAction {
+interface RefreshStoreDataAction extends UnknownAction {
   type: CommonActions.REFRESH_STOREDATA
   payload: { nodeweek: TNodeweek[] }
 }
 
-interface ChangeIdNodeWeekAction extends AnyAction {
+interface ChangeIdNodeWeekAction extends UnknownAction {
   type: NodeWeekActions.CHANGE_ID
   payload: { oldId: number; newId: number }
 }
 
-interface MovedToNodeWeekAction extends AnyAction {
+interface MovedToNodeWeekAction extends UnknownAction {
   type: NodeWeekActions.MOVED_TO
   payload: { id: number; newParent: number }
 }
 
-interface DeleteSelfNodeAction extends AnyAction {
+interface DeleteSelfNodeAction extends UnknownAction {
   type: NodeActions.DELETE_SELF
   payload: { parentId: number }
 }
 
-interface InsertBelowNodeAction extends AnyAction {
+interface InsertBelowNodeAction extends UnknownAction {
   type: NodeActions.INSERT_BELOW
   payload: { newThrough: TNodeweek }
 }
 
-interface NewNodeAction extends AnyAction {
+interface NewNodeAction extends UnknownAction {
   type: NodeActions.NEW_NODE
   payload: { newThrough: TNodeweek }
 }
 
-interface InsertBelowWeekAction extends AnyAction {
+interface InsertBelowWeekAction extends UnknownAction {
   type: WeekActions.INSERT_BELOW
   payload: { children?: { nodeweek: TNodeweek[] } }
 }
 
-interface AddStrategyAction extends AnyAction {
+interface AddStrategyAction extends UnknownAction {
   type: StrategyActions.ADD_STRATEGY
   payload: { nodeweeksAdded: TNodeweek[] }
 }

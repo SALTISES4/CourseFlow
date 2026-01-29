@@ -9,36 +9,36 @@ import {
   WeekActions
 } from '@cfRedux/types/enumActions'
 import { TOutcomenode } from '@cfRedux/types/type'
-import { AnyAction } from '@reduxjs/toolkit'
+import { UnknownAction } from '@reduxjs/toolkit'
 
-interface ReplaceStoreDataAction extends AnyAction {
+interface ReplaceStoreDataAction extends UnknownAction {
   type: CommonActions.REPLACE_STOREDATA
   payload: { outcomenode?: TOutcomenode[] }
 }
 
-interface RefreshStoreDataAction extends AnyAction {
+interface RefreshStoreDataAction extends UnknownAction {
   type: CommonActions.REFRESH_STOREDATA
   payload: { outcomenode: TOutcomenode[] }
 }
 
-interface UpdateDegreeAction extends AnyAction {
+interface UpdateDegreeAction extends UnknownAction {
   type: OutcomeNodeActions.UPDATE_DEGREE
   payload: { outcomenode: number; dataPackage: TOutcomenode[] }
 }
 
-interface DeleteSelfAction extends AnyAction {
+interface DeleteSelfAction extends UnknownAction {
   type: OutcomeBaseActions.DELETE_SELF | OutcomeActions.DELETE_SELF
   payload: { id: number }
 }
 
-interface InsertChildAction extends AnyAction {
+interface InsertChildAction extends UnknownAction {
   type: OutcomeActions.INSERT_CHILD | OutcomeBaseActions.INSERT_CHILD
   payload: {
     children: { outcomenode: TOutcomenode[] }
   }
 }
 
-interface InsertBelowAction extends AnyAction {
+interface InsertBelowAction extends UnknownAction {
   type:
     | WeekActions.INSERT_BELOW
     | NodeActions.INSERT_BELOW
@@ -48,7 +48,7 @@ interface InsertBelowAction extends AnyAction {
   }
 }
 
-interface ChangeIdAction extends AnyAction {
+interface ChangeIdAction extends UnknownAction {
   type: OutcomeOutcomeActions.CHANGE_ID
   payload: {
     children: { outcomenode: TOutcomenode[] }
@@ -148,7 +148,7 @@ export default function outcomeNodeReducer(
 }
 // export default function outcomeNodeReducer(
 //   state: Outcomenode[] = [],
-//   action: AnyAction
+//   action: UnknownAction
 // ) {
 //   switch (action.type) {
 //     case CommonActions.REPLACE_STOREDATA: {

@@ -5,18 +5,18 @@ import {
   OutcomeNodeActions
 } from '@cfRedux/types/enumActions'
 import { TParentNode } from '@cfRedux/types/type'
-import { AnyAction } from '@reduxjs/toolkit'
-interface ReplaceStoreDataAction extends AnyAction {
+import { UnknownAction } from '@reduxjs/toolkit'
+interface ReplaceStoreDataAction extends UnknownAction {
   type: CommonActions.REPLACE_STOREDATA
   payload: { parentNode?: TParentNode[] }
 }
 
-interface RefreshStoreDataAction extends AnyAction {
+interface RefreshStoreDataAction extends UnknownAction {
   type: CommonActions.REFRESH_STOREDATA
   payload: { parentNode: TParentNode[] }
 }
 
-interface UpdateDegreeAction extends AnyAction {
+interface UpdateDegreeAction extends UnknownAction {
   type: OutcomeNodeActions.UPDATE_DEGREE
   payload: {
     outcomenode: number
@@ -24,17 +24,17 @@ interface UpdateDegreeAction extends AnyAction {
   }
 }
 
-interface DeleteSelfAction extends AnyAction {
+interface DeleteSelfAction extends UnknownAction {
   type: OutcomeActions.DELETE_SELF | OutcomeBaseActions.DELETE_SELF
   payload: { extraData: any[] } // Specify
 }
 
-interface DeleteSelfSoftAction extends AnyAction {
+interface DeleteSelfSoftAction extends UnknownAction {
   type: OutcomeActions.DELETE_SELF_SOFT | OutcomeBaseActions.DELETE_SELF_SOFT
   payload: { extraData: any[] }
 }
 
-interface RestoreSelfAction extends AnyAction {
+interface RestoreSelfAction extends UnknownAction {
   type: OutcomeActions.RESTORE_SELF | OutcomeBaseActions.RESTORE_SELF
   payload: { extraData: any[] }
 }

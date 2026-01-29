@@ -5,39 +5,39 @@ import {
   WeekWorkflowActions
 } from '@cfRedux/types/enumActions'
 import { TWeekworkflow } from '@cfRedux/types/type'
-import { AnyAction } from '@reduxjs/toolkit'
+import { UnknownAction } from '@reduxjs/toolkit'
 
-interface ReplaceStoreDataAction extends AnyAction {
+interface ReplaceStoreDataAction extends UnknownAction {
   type: CommonActions.REPLACE_STOREDATA
   payload: { weekworkflow?: TWeekworkflow[] }
 }
 
-interface RefreshStoreDataAction extends AnyAction {
+interface RefreshStoreDataAction extends UnknownAction {
   type: CommonActions.REFRESH_STOREDATA
   payload: { weekworkflow: TWeekworkflow[] }
 }
 
-interface MovedToAction extends AnyAction {
+interface MovedToAction extends UnknownAction {
   type: WeekWorkflowActions.MOVED_TO
   payload: { id: number }
 }
 
-interface ChangeIdAction extends AnyAction {
+interface ChangeIdAction extends UnknownAction {
   type: WeekWorkflowActions.CHANGE_ID
   payload: { oldId: number; newId: number }
 }
 
-interface DeleteSelfWeekAction extends AnyAction {
+interface DeleteSelfWeekAction extends UnknownAction {
   type: WeekActions.DELETE_SELF
   payload: { parentId: number }
 }
 
-interface InsertBelowWeekAction extends AnyAction {
+interface InsertBelowWeekAction extends UnknownAction {
   type: WeekActions.INSERT_BELOW
   payload: { newThrough: TWeekworkflow }
 }
 
-interface AddStrategyAction extends AnyAction {
+interface AddStrategyAction extends UnknownAction {
   type: StrategyActions.ADD_STRATEGY
   payload: { newThrough: TWeekworkflow }
 }

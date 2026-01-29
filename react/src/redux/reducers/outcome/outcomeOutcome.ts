@@ -5,19 +5,19 @@ import {
   OutcomeOutcomeActions
 } from '@cfRedux/types/enumActions'
 import { TOutcomeOutcome } from '@cfRedux/types/type'
-import { AnyAction } from '@reduxjs/toolkit'
+import { UnknownAction } from '@reduxjs/toolkit'
 
-interface ReplaceStoreDataAction extends AnyAction {
+interface ReplaceStoreDataAction extends UnknownAction {
   type: CommonActions.REPLACE_STOREDATA
   payload: { outcomeoutcome?: TOutcomeOutcome[] }
 }
 
-interface RefreshStoreDataAction extends AnyAction {
+interface RefreshStoreDataAction extends UnknownAction {
   type: CommonActions.REFRESH_STOREDATA
   payload: { outcomeoutcome: TOutcomeOutcome[] }
 }
 
-interface ChangeIdAction extends AnyAction {
+interface ChangeIdAction extends UnknownAction {
   type: OutcomeOutcomeActions.CHANGE_ID
   payload: {
     oldId: number
@@ -25,7 +25,7 @@ interface ChangeIdAction extends AnyAction {
   }
 }
 
-interface MovedToAction extends AnyAction {
+interface MovedToAction extends UnknownAction {
   type: OutcomeOutcomeActions.MOVED_TO
   payload: {
     id: number
@@ -33,12 +33,12 @@ interface MovedToAction extends AnyAction {
   }
 }
 
-interface DeleteSelfAction extends AnyAction {
+interface DeleteSelfAction extends UnknownAction {
   type: OutcomeActions.DELETE_SELF
   payload: { parentId: number }
 }
 
-interface InsertChildAction extends AnyAction {
+interface InsertChildAction extends UnknownAction {
   type: OutcomeActions.INSERT_CHILD
   payload: {
     newThrough: TOutcomeOutcome
@@ -46,7 +46,7 @@ interface InsertChildAction extends AnyAction {
   }
 }
 
-interface InsertBelowAction extends AnyAction {
+interface InsertBelowAction extends UnknownAction {
   type: OutcomeActions.INSERT_BELOW | OutcomeBaseActions.INSERT_BELOW
   payload: {
     newThrough: TOutcomeOutcome

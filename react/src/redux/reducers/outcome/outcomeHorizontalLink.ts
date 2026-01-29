@@ -4,19 +4,19 @@ import {
   OutcomeHorizontalLinkActions
 } from '@cfRedux/types/enumActions'
 import { TOutcomeHorizontalLink } from '@cfRedux/types/type'
-import { AnyAction } from '@reduxjs/toolkit'
+import { UnknownAction } from '@reduxjs/toolkit'
 
-interface ReplaceStoreDataAction extends AnyAction {
+interface ReplaceStoreDataAction extends UnknownAction {
   type: CommonActions.REPLACE_STOREDATA
   payload: { outcomehorizontallink?: TOutcomeHorizontalLink[] }
 }
 
-interface RefreshStoreDataAction extends AnyAction {
+interface RefreshStoreDataAction extends UnknownAction {
   type: CommonActions.REFRESH_STOREDATA
   payload: { outcomehorizontallink: TOutcomeHorizontalLink[] }
 }
 
-interface UpdateDegreeAction extends AnyAction {
+interface UpdateDegreeAction extends UnknownAction {
   type: OutcomeHorizontalLinkActions.UPDATE_DEGREE
   payload: {
     outcomehorizontallink: number
