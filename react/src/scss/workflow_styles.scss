@@ -254,73 +254,6 @@ input[type="submit"] {
   width: 180px;
 }
 
-.node-ghost {
-  width: 160px;
-  min-height: 50px;
-  border: 1px dashed $color-black;
-  position: absolute;
-  cursor: move;
-}
-
-.nodeweek-ghost {
-  width: 160px;
-  min-height: 50px;
-  border: 1px dashed $color-black;
-  position: absolute;
-  cursor: move;
-}
-
-.columnworkflow-ghost {
-  width: 160px;
-  min-height: 50px;
-  border: 1px dashed $color-black;
-  position: absolute;
-  z-index: 3;
-  cursor: move;
-}
-
-.weekworkflow-ghost {
-  min-height: 50px;
-  border: 1px dashed $color-black;
-  position: absolute;
-  cursor: move;
-}
-
-.outcomeoutcome-ghost {
-  min-width: 300px;
-  min-height: 10px;
-  border: 1px dashed $color-black;
-  position: absolute;
-  cursor: move;
-}
-
-.outcomeworkflow-ghost {
-  min-width: 300px;
-  min-height: 10px;
-  border: 1px dashed $color-black;
-  position: absolute;
-  cursor: move;
-}
-
-.node {
-  width: 200px;
-  border: 1px solid $color-black;
-//  position: relative;
-  white-space: normal;
-  border-radius: 5px;
-}
-
-.node-top-row {
-  padding: 5px;
-  box-sizing: border-box;
-  background: $color-white;
-  margin-top: 5px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
 .node-icon img {
   width: 24px;
   vertical-align: middle;
@@ -995,11 +928,6 @@ ol.children-block {
   vertical-align: top;
 }
 
-.competency-matrix .node-top-row {
-  padding: 2px;
-  border-radius: 0 0 5px 5px;
-}
-
 .competency-matrix .outcome-row {
   display: inline-block;
   position: relative;
@@ -1091,10 +1019,6 @@ ol.children-block {
 
 .workflow-grid .week {
   margin-right: 20px;
-}
-
-.workflow-grid .node-top-row {
-  border-radius: 0 0 5px 5px;
 }
 
 .grid-ponderation {
@@ -1281,12 +1205,6 @@ ol.children-block {
   width: 100%;
   min-height: 0px;
   max-height: 18px;
-}
-
-.outcome-table .node-top-row {
-  padding: 1px;
-  border-radius: 0px 0px 5px 5px;
-  height: calc(100% - 5px);
 }
 
 .outcome-table .table-cell .total-header,
@@ -2134,10 +2052,6 @@ input:checked + .slider::before {
   padding-top: 5px;
   max-width: 204px;
   white-space: normal;
-}
-
-.comparison-view .node-top-row {
-  border-radius: 0 0 5px 5px;
 }
 
 .comparison-view .week {
