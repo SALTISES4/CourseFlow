@@ -4,7 +4,6 @@ import outcomeNodeReducer from '@cfRedux/reducers/outcome/outcomeNode'
 import outcomeOutcomeReducer from '@cfRedux/reducers/outcome/outcomeOutcome'
 import outcomeworkflowReducer from '@cfRedux/reducers/outcome/outcomeWorkflow'
 import childWorkflowReducer from '@cfRedux/reducers/workflow/childWorkflow'
-import columnworkflowReducer from '@cfRedux/reducers/workflow/columnworkflow'
 import nodeweekReducer from '@cfRedux/reducers/workflow/nodeWeek'
 import parentNodeReducer from '@cfRedux/reducers/workflow/parentNode'
 import parentWorkflowReducer from '@cfRedux/reducers/workflow/parentWorfkflow'
@@ -57,7 +56,6 @@ import { combineReducers } from 'redux'
 export const legacyWorkflowReducers = {
   // to remove
   nodeweek: nodeweekReducer,
-  // columnworkflow: columnworkflowReducer,
   weekworkflow: weekworkflowReducer,
   outcomeworkflow: outcomeworkflowReducer,
   outcomenode: outcomeNodeReducer,
