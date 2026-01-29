@@ -97,11 +97,6 @@ export enum ColumnActions {
   CHANGE_FIELD = 'column/changeField'
 }
 
-export enum ColumnWorkflowActions {
-  CHANGE_ID = 'columnworkflow/changeId',
-  MOVED_TO = 'columnworkflow/movedTo'
-}
-
 export enum NodeWeekActions {
   CHANGE_ID = 'nodeweek/changeId',
   MOVED_TO = 'nodeweek/movedTo'

@@ -1,7 +1,5 @@
 import {
-  ColumnWorkflowActions,
   CommonActions,
-  NodeActions,
   OutcomeActions,
   OutcomeBaseActions,
   OutcomeWorkflowActions,
@@ -77,7 +75,7 @@ const workflowSlice = createSlice({
       }
 
       const moved = state.weeks.splice(fromIndex, 1)
-      state.weeks.splice(toIndex, 0, moved[0])
+      state.weeks.splice(toIndex, 0, ...moved)
     }
   },
   extraReducers: (builder) => {
@@ -109,28 +107,6 @@ const workflowSlice = createSlice({
           if (index >= 0) {
             state.outcomes.splice(index, 1)
             state.outcomes.splice(action.payload.newIndex, 0, action.payload.id)
-          }
-        }
-      )
-
-    // Column Workflow Actions
-    builder
-      .addCase(
-        ColumnWorkflowActions.CHANGE_ID as string,
-        (state, action: PayloadAction<{ oldId: number; newId: number }>) => {
-          const index = state.columns.indexOf(action.payload.oldId)
-          if (index >= 0) {
-            state.columns.splice(index, 1, action.payload.newId)
-          }
-        }
-      )
-      .addCase(
-        ColumnWorkflowActions.MOVED_TO as string,
-        (state, action: PayloadAction<{ id: number; newIndex: number }>) => {
-          const index = state.columns.indexOf(action.payload.id)
-          if (index >= 0) {
-            state.columns.splice(index, 1)
-            state.columns.splice(action.payload.newIndex, 0, action.payload.id)
           }
         }
       )
@@ -255,16 +231,6 @@ const workflowSlice = createSlice({
           state.columns.push(
             ...action.payload.columnworkflowsAdded.map((col) => col.id)
           )
-        }
-      }
-    )
-
-    // Node Actions
-    builder.addCase(
-      NodeActions.NEW_NODE as string,
-      (state, action: PayloadAction<{ columnworkflow: { id: number } }>) => {
-        if (!state.columns.includes(action.payload.columnworkflow.id)) {
-          state.columns.push(action.payload.columnworkflow.id)
         }
       }
     )

@@ -1,6 +1,5 @@
 import { CfObjectType } from '@cf/types/enum'
 import {
-  ColumnWorkflowActions,
   CommonActions,
   NodeActions,
   NodeWeekActions,
@@ -120,23 +119,6 @@ class ActionCreator {
   //     payload: { id: id, hasAssignment: hasAssignment }
   //   }
   // }
-
-  static moveColumnWorkflow = (
-    id: number,
-    newIndex: number,
-    newParent: number,
-    childId: number
-  ) => {
-    return {
-      type: ColumnWorkflowActions.MOVED_TO,
-      payload: {
-        id,
-        newIndex,
-        newParent,
-        childId
-      }
-    }
-  }
 
   static moveWeekWorkflow = (
     id: number,
