@@ -3,7 +3,6 @@ import { OuterContentWrap } from '@cf/mui/helper'
 import { WorkspaceType } from '@cf/types/enum'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { RootState } from '@cfRedux/store'
-import UserList from '@cfViews/common/workspaceOverview/UserList'
 import LinkIcon from '@mui/icons-material/Link'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
@@ -11,6 +10,7 @@ import Stack from '@mui/material/Stack'
 import { useSelector } from 'react-redux'
 
 import * as SC from './styles'
+import UserPermissions from './UserPermissions'
 
 const OverviewView = () => {
   const { dispatch } = useDialog()
@@ -78,14 +78,12 @@ const OverviewView = () => {
       </Grid>
 
       <SC.InfoBlock sx={{ mt: 3 }}>
-        <SC.InfoBlockTitle>{_t('Permissions')}</SC.InfoBlockTitle>
-
-        <UserList
+        <SC.InfoBlockTitle>{_t('Permissionsa')}</SC.InfoBlockTitle>
+        <UserPermissions
           workspaceId={workflow.id}
           author={workflow.author}
           workspaceType={WorkspaceType.WORKFLOW}
         />
-
         <Buttons />
       </SC.InfoBlock>
     </OuterContentWrap>

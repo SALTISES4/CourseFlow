@@ -3,9 +3,9 @@ import { OuterContentWrap } from '@cf/mui/helper'
 import { ProjectDetailsType } from '@cf/types/common'
 import { WorkspaceType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
-import * as SC from '@cfViews/common/workspaceOverview/styles'
-import UserList from '@cfViews/common/workspaceOverview/UserList'
 import Tags from '@cfViews/ProjectView/TabOverview/TagsSection'
+import * as SC from '@cfViews/WorkflowView/OverviewView/styles'
+import UserPermissions from '@cfViews/WorkflowView/OverviewView/UserPermissions'
 import LinkIcon from '@mui/icons-material/Link'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
@@ -82,7 +82,7 @@ const OverviewTab = ({
       <SC.InfoBlock sx={{ mt: 3 }}>
         <SC.InfoBlockTitle>{_t('Permissions')}</SC.InfoBlockTitle>
 
-        <UserList
+        <UserPermissions
           workspaceId={projectId}
           author={author}
           workspaceType={WorkspaceType.PROJECT}

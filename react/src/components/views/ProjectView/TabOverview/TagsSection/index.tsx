@@ -1,6 +1,6 @@
 import { TTag } from '@cf/redux/types/type'
 import { _t } from '@cf/utility/Utility.class'
-import * as SC from '@cfViews/common/workspaceOverview/styles'
+import * as SC from '@cfViews/WorkflowView/OverviewView/styles'
 import Grid from '@mui/material/Grid'
 import { produce } from 'immer'
 import { useCallback, useState } from 'react'

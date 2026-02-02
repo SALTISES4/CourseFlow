@@ -4,6 +4,7 @@ import { PermissionGroup } from '@cf/types/common'
 import { WorkspaceType } from '@cf/types/enum'
 import { permissionGroupMenuOptions } from '@cf/utility/permissions'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
 import MenuButton from '@cfComponents/menu/MenuButton'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
@@ -17,33 +18,18 @@ import {
 import { EUser } from '@XMLHTTP/types/entity'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 
-import * as SC from './styles'
+import * as SC from '../styles'
 
-/**
- *
- * Gets the list of every user and their permission group for management
- * Can be used for both projects and workflows ('workspace' object)
- * see: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow---V2?node-id=3566-42791&node-type=frame&t=g3Bcy86xsBXtIG9U-0
- *
- * @param workspaceId
- * @param author
- * @constructor
- */
-const UserList = ({
-  workspaceId,
-  workspaceType,
-  author
-}: {
+type PropsType = {
   workspaceId: number
   workspaceType: WorkspaceType
   author: EUser
-}) => {
+}
+
+const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
   const { onError, onSuccess } = useGenericMsgHandler()
   const { dispatch } = useDialog()
 
-  /*******************************************************
-   * QUERIES
-   *******************************************************/
   const { data, error, isLoading, isError, refetch } =
     useGetUsersForObjectQuery({
       id: workspaceId,
@@ -57,10 +43,6 @@ const UserList = ({
 
   const [mutate, { isError: isMutateError, error: mutateError, isSuccess }] =
     useWorkspaceUserUpdateMutation()
-
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
 
   function onSuccessHandler(resp: EmptyPostResp) {
     onSuccess(resp)
@@ -99,7 +81,7 @@ const UserList = ({
               </Avatar>
             </ListItemAvatar>
             <ListItemText primary={author.firstName} secondary={author.email} />
-            <Button disabled>owner</Button>
+            <Button disabled>{_t('owner')}</Button>
           </SC.PermissionThumbnail>
         )}
 
@@ -153,4 +135,4 @@ const UserList = ({
   )
 }
 
-export default UserList
+export default UserPermissions
