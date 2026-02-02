@@ -1,4 +1,3 @@
-import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { WorkspaceType } from '@cf/types/enum'
 import Utility, { _t } from '@cf/utility/Utility.class'
@@ -13,7 +12,6 @@ import * as SC from './styles'
 import UserPermissions from './UserPermissions'
 
 const OverviewView = () => {
-  const { dispatch } = useDialog()
   const data = useSelector((state: RootState) => state.workspace.workflow)
   const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
@@ -21,32 +19,6 @@ const OverviewView = () => {
   const disciplines = []
   const { description, createdOn } = data
 
-  /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-  const Buttons = () => (
-    <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
-      <Button
-        size="medium"
-        variant="contained"
-        color="secondary"
-        startIcon={<LinkIcon />}
-      >
-        {_t('Generate public link')}
-      </Button>
-      <Button
-        size="medium"
-        variant="contained"
-        onClick={() => dispatch(DialogMode.CONTRIBUTOR_ADD)}
-      >
-        {_t('Add contributor')}
-      </Button>
-    </Stack>
-  )
-
-  /*******************************************************
-   * RENDER
-   *******************************************************/
   return (
     <OuterContentWrap sx={{ pt: 4 }}>
       {description && (
@@ -84,7 +56,22 @@ const OverviewView = () => {
           author={workflow.author}
           workspaceType={WorkspaceType.WORKFLOW}
         />
-        <Buttons />
+
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="flex-end"
+          sx={{ mt: 2 }}
+        >
+          <Button
+            size="medium"
+            variant="contained"
+            color="secondary"
+            startIcon={<LinkIcon />}
+          >
+            {_t('Generate public link')}
+          </Button>
+        </Stack>
       </SC.InfoBlock>
     </OuterContentWrap>
   )

@@ -1,4 +1,3 @@
-import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { ProjectDetailsType } from '@cf/types/common'
 import { WorkspaceType } from '@cf/types/enum'
@@ -21,35 +20,7 @@ const OverviewTab = ({
 }: ProjectDetailsType) => {
   const { id } = useParams()
   const projectId = Number(id)
-  const { dispatch } = useDialog()
 
-  /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-  const Buttons = () => (
-    <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
-      <Button
-        size="medium"
-        variant="contained"
-        color="secondary"
-        startIcon={<LinkIcon />}
-      >
-        {_t('Generate public link')}
-      </Button>
-
-      <Button
-        size="medium"
-        variant="contained"
-        onClick={() => dispatch(DialogMode.CONTRIBUTOR_ADD)}
-      >
-        {_t('Add contributor')}
-      </Button>
-    </Stack>
-  )
-
-  /*******************************************************
-   * RETURN
-   *******************************************************/
   return (
     <OuterContentWrap sx={{ pt: 4 }}>
       {description && (
@@ -88,7 +59,21 @@ const OverviewTab = ({
           workspaceType={WorkspaceType.PROJECT}
         />
 
-        <Buttons />
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="flex-end"
+          sx={{ mt: 2 }}
+        >
+          <Button
+            size="medium"
+            variant="contained"
+            color="secondary"
+            startIcon={<LinkIcon />}
+          >
+            {_t('Generate public link')}
+          </Button>
+        </Stack>
       </SC.InfoBlock>
 
       <Tags data={tags} />

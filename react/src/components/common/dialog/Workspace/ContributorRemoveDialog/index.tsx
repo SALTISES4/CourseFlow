@@ -2,6 +2,7 @@ import { StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { WorkspaceType } from '@cf/types/enum'
+import { _t } from '@cf/utility/Utility.class'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -75,18 +76,19 @@ const ContributorRemoveDialog = ({
       maxWidth="xs"
       aria-labelledby="remove-user-modal"
     >
-      <DialogTitle id="remove-user-modal">Remove user?</DialogTitle>
+      <DialogTitle id="remove-user-modal">{_t('Remove user?')}</DialogTitle>
       <DialogContent dividers>
         <Typography gutterBottom>
-          Are you sure you want to remove <strong>{payload?.username}</strong>?
+          {_t('Are you sure you want to remove')}{' '}
+          <strong>{payload?.username}</strong>?
         </Typography>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onClose}>
-          Cancel
+          {_t('Cancel')}
         </Button>
         <Button variant="contained" onClick={onSubmit}>
-          Remove
+          {_t('Remove')}
         </Button>
       </DialogActions>
     </StyledDialog>

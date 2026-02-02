@@ -2,12 +2,14 @@ import { defaultColumnSettings } from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
 
 class ThemeHelper {
-  /*******************************************************
-   * STRINGS
-   *******************************************************/
   static getInitials(name: string): string {
-    const split = name.split(' ')
-    return `${split[0][0]}${split[split.length - 1][0]}`
+    const split = name.trim().split(' ')
+
+    if (split.length >= 2) {
+      return `${split[0][0]}${split[split.length - 1][0]}`
+    }
+
+    return `${name[0]}${name[1]}`
   }
 
   static getBorderStyle({

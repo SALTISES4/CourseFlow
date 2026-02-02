@@ -6,9 +6,9 @@ import { permissionGroupMenuOptions } from '@cf/utility/permissions'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import MenuButton from '@cfComponents/menu/MenuButton'
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
-import List from '@mui/material/List'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import {
@@ -17,6 +17,7 @@ import {
 } from '@XMLHTTP/API/workspaceUser.rtk'
 import { EUser } from '@XMLHTTP/types/entity'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
+import { useCallback } from 'react'
 
 import * as SC from '../styles'
 
@@ -66,71 +67,105 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
     }
   }
 
+  const onUserAdd = useCallback(() => {
+    dispatch(DialogMode.CONTRIBUTOR_ADD)
+  }, [dispatch])
+
+  const onUserRemove = useCallback(
+    (userId: number, username: string) => {
+      return () => {
+        dispatch(DialogMode.CONTRIBUTOR_REMOVE, {
+          userId,
+          username
+        })
+      }
+    },
+    [dispatch]
+  )
+
   if (!data || isLoading) {
     return <></>
   }
 
   return (
     <SC.InfoBlockContent>
-      <List>
+      <SC.PermissionGrid>
         {author && (
           <SC.PermissionThumbnail>
             <ListItemAvatar>
-              <Avatar alt={author.firstName}>
-                {ThemeHelper.getInitials(author.firstName)}
+              <Avatar alt={author.name}>
+                {ThemeHelper.getInitials(
+                  author.name.trim().length > 2
+                    ? author.name.trim()
+                    : author.username
+                ).toUpperCase()}
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={author.firstName} secondary={author.email} />
-            <Button disabled>{_t('owner')}</Button>
+            <ListItemText
+              primary={
+                author.name.trim().length ? author.name : author.username
+              }
+              secondary={author.email}
+            />
+            <Button variant="outlined" disabled>
+              {_t('Owner')}
+            </Button>
           </SC.PermissionThumbnail>
         )}
 
-        {data.dataPackage.map((user) => {
-          return (
-            <SC.PermissionThumbnail key={user.id}>
-              <ListItemAvatar>
-                <Avatar alt={user.firstName}>
-                  {ThemeHelper.getInitials(user.name)}
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={user.username} secondary={user.email} />
-              <MenuButton
-                // TODO: this needs to be a check on call to see if current user can edit
-                disabled={false}
-                options={[
-                  ...permissionGroupMenuOptions.map((item) => ({
-                    name: String(item.value),
-                    label:
-                      item.label +
-                      (user.group === item.value ? ' ' + '(current)' : ''),
-                    disabled: user.group === item.value
-                  })),
-                  {
-                    name: 'mui-divider'
-                  },
-                  {
-                    name: 'remove',
-                    label: 'Remove user',
-                    onClick: () => {
-                      dispatch(DialogMode.CONTRIBUTOR_REMOVE, {
-                        userId: user.id,
-                        username: user.name
-                      })
-                    }
-                  }
-                ]}
-                onChange={(group) =>
-                  onChangeHandler(Number(group) as PermissionGroup, user.id)
+        {data.dataPackage.map((user) => (
+          <SC.PermissionThumbnail key={user.id}>
+            <ListItemAvatar>
+              <Avatar alt={user.name}>
+                {ThemeHelper.getInitials(
+                  user.name.trim().length > 2 ? user.name.trim() : user.username
+                ).toUpperCase()}
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={user.name.trim().length ? user.name : user.username}
+              secondary={author.email}
+            />
+            <MenuButton
+              // TODO: this needs to be a check on call to see if current user can edit
+              disabled={false}
+              options={[
+                ...permissionGroupMenuOptions.map((item) => ({
+                  name: String(item.value),
+                  label:
+                    item.label +
+                    (user.group === item.value ? ' ' + '(current)' : ''),
+                  disabled: user.group === item.value
+                })),
+                {
+                  name: 'mui-divider'
+                },
+                {
+                  name: 'remove',
+                  label: _t('Remove user'),
+                  onClick: onUserRemove(user.id, user.username)
                 }
-                placeholder={
-                  permissionGroupMenuOptions.find((p) => p.value === user.group)
-                    ?.label || 'Choose Permissions (user should never see this)'
-                }
-              />
-            </SC.PermissionThumbnail>
-          )
-        })}
-      </List>
+              ]}
+              onChange={(group) =>
+                onChangeHandler(Number(group) as PermissionGroup, user.id)
+              }
+              placeholder={
+                permissionGroupMenuOptions.find((p) => p.value === user.group)
+                  ?.label || 'Choose Permissions (user should never see this)'
+              }
+            />
+          </SC.PermissionThumbnail>
+        ))}
+
+        <SC.PermissionThumbnail addNew as={Button} onClick={onUserAdd}>
+          <ListItemAvatar>
+            <Avatar>
+              <PersonAddAlt1Icon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary={_t('Add CourseFlow user')} />
+        </SC.PermissionThumbnail>
+      </SC.PermissionGrid>
     </SC.InfoBlockContent>
   )
 }
