@@ -82,7 +82,8 @@ const ActionMenu = () => {
       id: 'archive-project',
       action: archiveProject,
       content: _t('Archive project'),
-      show: projectPermission.manage && !project.deleted
+      show: projectPermission.manage && !project.deleted,
+      separator: 'top'
     },
     {
       id: 'unarchive-project',
