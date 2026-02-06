@@ -92,7 +92,7 @@ export const WeekTitle = styled(Typography)(() => ({
 export const WeekNumber = styled('span')(() => ({
   display: 'inline-flex',
   width: '24px',
-  heght: '24px',
+  height: '24px',
   justifyContent: 'center',
   alignItems: 'center',
   borderRadius: '50%',
