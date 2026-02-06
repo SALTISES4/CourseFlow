@@ -137,6 +137,8 @@ class WorkspaceUserEndpoint:
             users_with_permissions_ids = list(permissions.values_list("user_id", flat=True))
             exclusion_ids = users_with_permissions_ids + [this_object.author.id]
 
+            # TODO: check permissions and add additional "search" param filtering
+            # that matches against username/email/fullname fields to reduce results
             available_users = User.objects.exclude(id__in=exclusion_ids)
 
             users = UserSerializer(available_users, many=True).data
