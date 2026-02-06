@@ -21,13 +21,15 @@ import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import Select from '@mui/material/Select'
 import TextField from '@mui/material/TextField'
+import { debounce } from '@mui/material/utils'
 import {
   WorkspaceUserArgs,
   useGetUsersForObjectAvailableQuery,
   useWorkspaceUserCreateMutation
 } from '@XMLHTTP/API/workspaceUser.rtk'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
-import { useCallback, useEffect, useState } from 'react'
+import { isDraft, produce } from 'immer'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
 import dummyUserData from './dummyUserData'
@@ -52,6 +54,13 @@ const ContributorAddDialog = ({
   refetch: () => void
 }) => {
   const { show, onClose } = useDialog(DialogMode.CONTRIBUTOR_ADD)
+  const [state, setState] = useState<{
+    search: string
+    suggestions: UserFormOption[]
+  }>({
+    search: '',
+    suggestions: []
+  })
 
   const { control, reset, watch } = useForm<IFormInputs>({
     defaultValues: {
@@ -60,13 +69,55 @@ const ContributorAddDialog = ({
     }
   })
 
-  const contributor = watch('userId')
+  const userIds = watch('userId')
   const role = watch('group')
-  const disableSubmit = contributor?.length === 0 || !role
+  const disableSubmit = !userIds || userIds?.length === 0 || !role
 
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((search: string) => {
+        console.log('contributor debounced search', { search })
+
+        if (!search.trim().length) {
+          return setState(
+            produce((draft) => {
+              draft.suggestions = []
+            })
+          )
+        }
+
+        // NOTE: fake "user suggestion" list, just for preview
+        // actually fire off a request and save results to suggestions
+        setState(
+          produce((draft) => {
+            const start = Math.floor(Math.random() * dummyUserData.length)
+            const end =
+              start + Math.floor(Math.random() * (dummyUserData.length - start))
+
+            draft.suggestions = dummyUserData.slice(start, end + 1)
+          })
+        )
+      }, 500),
+    []
+  )
+
+  useEffect(() => {
+    debouncedSearch(state.search)
+  }, [state.search, debouncedSearch])
+
+  // sync autocomplete to local (uncontrolled) state
+  const onAutocompleteChange = useCallback((value: string) => {
+    setState(
+      produce((draft) => {
+        draft.search = value
+      })
+    )
+  }, [])
+
+  // TODO: handle form submission
   const onSubmit = useCallback(() => {
-    console.log('contributor add dialog submit', { contributor, role })
-  }, [contributor, role])
+    console.log('contributor add dialog submit', { userIds, role })
+  }, [userIds, role])
 
   return (
     <StyledDialog
@@ -89,12 +140,14 @@ const ContributorAddDialog = ({
               render={({ field }) => (
                 <Autocomplete
                   multiple
-                  options={dummyUserData}
+                  options={state.suggestions}
                   getOptionLabel={(user) => user.name}
                   onChange={(_, selectedUsers) =>
                     field.onChange(selectedUsers.map((user) => user.id))
                   }
                   isOptionEqualToValue={(opt, val) => opt.id === val.id}
+                  filterOptions={(x) => x}
+                  onInputChange={(_, value) => onAutocompleteChange(value)}
                   renderInput={(params) => (
                     <TextField
                       {...params}
