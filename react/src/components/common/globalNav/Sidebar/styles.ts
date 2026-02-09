@@ -82,6 +82,8 @@ export const SidebarInner = styled(Paper)({
 })
 
 export const MainMenuWrap = styled(List)({
+  paddingTop: 0,
+  paddingBottom: 0,
   '& .MuiListItemText-primary': {
     fontSize: '16px'
   }

@@ -1,5 +1,3 @@
-import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
-import { apiPaths } from '@cf/router/apiRoutes'
 import { CFRoutes } from '@cf/router/appRoutes'
 import strings from '@cf/utility/strings'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -20,7 +18,7 @@ import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 import { useLibraryFavouriteObjectsQuery } from '@XMLHTTP/API/library.rtk'
 import { useState } from 'react'
-import { Link, generatePath, useLocation, useNavigate } from 'react-router-dom'
+import { Link, generatePath, useLocation } from 'react-router-dom'
 
 import * as SC from './styles'
 
@@ -36,17 +34,9 @@ const Favourites = () => {
       <ListItem disablePadding dense sx={{ mt: 1, mb: 2 }}>
         <ListItemButton component="div" sx={{ padding: 0 }}>
           <ListItemText
-            sx={{
-              margin: 0
-            }}
+            sx={{ margin: 0 }}
             primary={
-              <SC.SeeAllLink
-                sx={{
-                  px: 2,
-                  py: 1
-                }}
-                to={CFRoutes.FAVOURITES}
-              >
+              <SC.SeeAllLink sx={{ px: 2, py: 1 }} to={CFRoutes.FAVOURITES}>
                 {strings.viewAll}
               </SC.SeeAllLink>
             }
@@ -66,7 +56,7 @@ const Favourites = () => {
 
   return (
     <>
-      <Divider />
+      <Divider sx={{ mt: 2 }} />
 
       <SC.SectionWrap>
         <SC.SectionLabel variant="body1">{strings.favourites}</SC.SectionLabel>
@@ -133,7 +123,7 @@ const Sidebar = () => {
           <Typography component="span">CourseFlow</Typography>
         </SC.LogoWrap>
 
-        <SC.MainMenuWrap sx={{ pt: 0 }}>
+        <SC.MainMenuWrap>
           <ListItem disablePadding dense>
             <ListItemButton
               component={Link}

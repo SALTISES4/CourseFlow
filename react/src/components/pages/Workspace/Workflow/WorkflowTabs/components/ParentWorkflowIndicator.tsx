@@ -72,7 +72,7 @@ const ParentWorkflowIndicator = () => {
 
     return (
       <>
-        <Divider />
+        <Divider sx={{ mt: 2 }} />
         <SC.SectionWrap>
           <SC.SectionLabel variant="body1">{_t('Appears in')}</SC.SectionLabel>
           <List data-test-id="panel-other-worflows">
@@ -103,7 +103,7 @@ const ParentWorkflowIndicator = () => {
 
     return (
       <>
-        <Divider />
+        <Divider sx={{ mt: 2 }} />
         <SC.SectionWrap>
           <SC.SectionLabel variant="body1">{_t('Contains')}</SC.SectionLabel>
           <List>
