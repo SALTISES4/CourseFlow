@@ -8,7 +8,6 @@ import {
   SimpleMenu
 } from '@cfComponents/menu/Menu'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
-import ScrollToWeek from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ScrollToWeek'
 import { useMenuActions } from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useMenuActions'
 import { RootState } from '@cfRedux/store'
 import EditIcon from '@mui/icons-material/Edit'
@@ -28,12 +27,7 @@ import {
 } from 'react'
 import { useSelector } from 'react-redux'
 
-type StateType = {
-  openShareDialog: boolean
-  openExportDialog: boolean
-  openImportDialog: boolean
-  openEditDialog: boolean
-}
+import WeekTitle from './WeekTitle'
 
 const ActionMenu = () => {
   const userContext = useContext(UserContext)
@@ -268,13 +262,23 @@ const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
   const context = useContext(WorkflowConfigContext)
   const viewType = context.workflowView
 
+  const scrollToHandler = useCallback((objectId: number) => {
+    return () => {
+      const weekEl = document.querySelector(`[data-week-id='${objectId}']`)
+      weekEl?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }
+  }, [])
+
   if (viewType !== WorkflowViewType.WORKFLOW || !weekIds.length) {
     return null
   }
 
-  const menuItems: MenuItemType[] = weekIds.map((item) => ({
-    content: <ScrollToWeek key={`weekworkflow-${item}`} objectId={item} />,
-    action: null,
+  const menuItems: MenuItemType[] = weekIds.map((weekId) => ({
+    content: <WeekTitle key={`weekworkflow-${weekId}`} objectId={weekId} />,
+    action: scrollToHandler(weekId),
     show: true
   }))
 
