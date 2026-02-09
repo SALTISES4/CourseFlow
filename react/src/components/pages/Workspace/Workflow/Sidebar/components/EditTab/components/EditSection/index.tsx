@@ -5,7 +5,7 @@ import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
 import { weekInsertBelow } from '@cf/redux/slices/week.slice'
 import { TWeek } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
-import Utility, { _t } from '@cf/utility/Utility.class'
+import { _t } from '@cf/utility/Utility.class'
 import { weekChangeField } from '@cfRedux/slices/week.slice'
 import { RootState } from '@cfRedux/store'
 import * as SC from '@cfSidebar/styles'
@@ -53,7 +53,6 @@ const EditSectionForm = ({ week }: { week: TWeek }) => {
   const {
     register,
     getValues,
-    handleSubmit,
     watch,
     reset,
     formState: { errors, isDirty }
@@ -101,10 +100,6 @@ const EditSectionForm = ({ week }: { week: TWeek }) => {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  const onSubmit = (data: SectionFormType) => {
-    Utility.logger('Form submitted with data:', data)
-  }
-
   const toggleTemplateForm = useCallback(() => {
     setState(
       produce((draft) => {
@@ -146,38 +141,36 @@ const EditSectionForm = ({ week }: { week: TWeek }) => {
       onCancel={toggleTemplateForm}
     />
   ) : (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <SC.SidebarInnerWrap>
-        <SC.SidebarContent>
-          <SC.SidebarTitle as="h3" variant="h6">
-            {_t('Edit section')}
-          </SC.SidebarTitle>
-          <TextField
-            label={_t('Week')}
-            variant="outlined"
-            size="small"
-            {...register('title')}
-            error={!!errors.title}
-            helperText={errors.title?.message}
-          />
-        </SC.SidebarContent>
-        <SC.SidebarActions>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={toggleTemplateForm}
-          >
-            {_t('Save as personal template')}
-          </Button>
-          <Button variant="contained" color="secondary" onClick={onDuplicate}>
-            {_t('Duplicate')}
-          </Button>
-          <Button variant="contained" color="secondary" onClick={onDelete}>
-            {_t('Delete')}
-          </Button>
-        </SC.SidebarActions>
-      </SC.SidebarInnerWrap>
-    </form>
+    <SC.SidebarInnerWrap>
+      <SC.SidebarContent>
+        <SC.SidebarTitle as="h3" variant="h6">
+          {_t('Edit section')}
+        </SC.SidebarTitle>
+        <TextField
+          label={_t('Week')}
+          variant="outlined"
+          size="small"
+          {...register('title')}
+          error={!!errors.title}
+          helperText={errors.title?.message}
+        />
+      </SC.SidebarContent>
+      <SC.SidebarActions>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={toggleTemplateForm}
+        >
+          {_t('Save as personal template')}
+        </Button>
+        <Button variant="contained" color="secondary" onClick={onDuplicate}>
+          {_t('Duplicate')}
+        </Button>
+        <Button variant="contained" color="secondary" onClick={onDelete}>
+          {_t('Delete')}
+        </Button>
+      </SC.SidebarActions>
+    </SC.SidebarInnerWrap>
   )
 }
 
