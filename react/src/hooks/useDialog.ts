@@ -4,7 +4,7 @@ import { useContext } from 'react'
 
 export enum DialogMode {
   // Define your dialog modes here
-  LINK_WORKFLOW = 'link_workflow',
+  NODE_LINK_WORKFLOW = 'link_workflow',
   TARGET_PROJECT = 'target_project',
 
   // USER
@@ -18,7 +18,6 @@ export enum DialogMode {
   // WORKFLOW
   IMPORT_OUTCOMES = 'import_outcomes',
   IMPORT_NODES = 'import_nodes',
-  WORKFLOW_LINK = 'workflow_link',
   WORKFLOW_DELETE = 'workflow_DELETE',
   WORKFLOW_EDIT = 'workflow_edit',
   WORKFLOW_COPY_TO_PROJECT = 'workflow_copy_to_project',
@@ -46,13 +45,14 @@ export type DialogPayloadMap = {
   [DialogMode.WORKFLOW_DELETE_NODE_CATEGORY]: {
     id: number
   }
+  [DialogMode.NODE_LINK_WORKFLOW]: {
+    id: number
+  }
 
   /*******************************************************
    * we shouldn't need to  list out all the ones for undefined
    * but i couldn't get the typing correct for now
    *******************************************************/
-
-  [DialogMode.LINK_WORKFLOW]: undefined
   [DialogMode.TARGET_PROJECT]: undefined
   [DialogMode.PASSWORD_RESET]: undefined
   [DialogMode.PROJECT_CREATE]: undefined
@@ -61,7 +61,6 @@ export type DialogPayloadMap = {
   [DialogMode.PROJECT_DELETE]: undefined
   [DialogMode.IMPORT_OUTCOMES]: undefined
   [DialogMode.IMPORT_NODES]: undefined
-  [DialogMode.WORKFLOW_LINK]: undefined
   [DialogMode.WORKFLOW_DELETE]: undefined
   [DialogMode.WORKFLOW_EDIT]: undefined
   [DialogMode.WORKFLOW_COPY_TO_PROJECT]: undefined

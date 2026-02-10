@@ -2,7 +2,7 @@ import WorkflowEditDialog from '@cf/components/common/dialog/Workflow/WorkflowEd
 import ContributorAddDialog from '@cf/components/common/dialog/Workspace/ContributorAddDialog'
 import { WorkspaceType } from '@cf/types/enum'
 import WorkflowCopyToProjectDialog from '@cfComponents/dialog/Workflow/WorkflowCopyToProjectDialog'
-import WorkflowLinkDialog from '@cfComponents/dialog/Workflow/WorkflowLinkDialog'
+import NodeLinkWorkflowDialog from '@cfComponents/dialog/Workflow/WorkflowLinkDialog'
 import ArchiveDialog from '@cfComponents/dialog/Workspace/ArchiveDialog'
 import ContributorRemoveDialog from '@cfComponents/dialog/Workspace/ContributorRemoveDialog'
 import RestoreDialog from '@cfComponents/dialog/Workspace/RestoreDialog'
@@ -31,7 +31,7 @@ const WorkflowDialogs = () => {
       <WorkflowEditDialog />
 
       <WorkflowCopyToProjectDialog />
-      <WorkflowLinkDialog />
+      <NodeLinkWorkflowDialog />
       <ContributorAddDialog
         id={workflowId}
         type={WorkspaceType.WORKFLOW}

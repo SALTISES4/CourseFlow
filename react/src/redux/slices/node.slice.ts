@@ -247,21 +247,24 @@ const nodeSlice = createSlice({
         changes: { comments: action.payload.commentData }
       })
     },
+
+    // TODO:
     setLinkedWorkflow(
       state,
       action: PayloadAction<{
         id: number
-        linkedWorkflow: any
+        linkedWorkflow: number
         linkedWorkflowData: any
       }>
     ) {
-      nodeAdapter.updateOne(state, {
-        id: action.payload.id,
-        changes: {
-          linkedWorkflow: action.payload.linkedWorkflow,
-          linkedWorkflowData: action.payload.linkedWorkflowData
-        }
-      })
+      console.log('set linked workflow with', action.payload)
+      // nodeAdapter.updateOne(state, {
+      //   id: action.payload.id,
+      //   changes: {
+      //     linkedWorkflow: action.payload.linkedWorkflow,
+      //     linkedWorkflowData: action.payload.linkedWorkflowData
+      //   }
+      // })
     },
 
     workflowNodeInsert: (

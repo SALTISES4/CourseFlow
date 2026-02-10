@@ -1,3 +1,4 @@
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
 import { TNode } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
@@ -21,8 +22,7 @@ import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { updateValueQuery } from '@XMLHTTP/API/update'
-// import { useToggleObjectSetNodeMutation } from '@XMLHTTP/API/workflowObjects/node.rtk'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -43,12 +43,11 @@ const EditNode = ({ nodeId }: { nodeId: number }) => {
 
 const EditNodeForm = ({ node }: { node: TNode }) => {
   const dispatch = useDispatch()
-  const [linkedWorkflow, setLinkedWorkflow] = useState(false)
+  const { dispatch: dialogDispatch } = useDialog()
 
   const {
     control,
     register,
-    setValue,
     handleSubmit,
     watch,
     reset,
@@ -140,48 +139,20 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
     Utility.logger('Form submitted with data:', data)
   }
 
-  const toggleUseLinkWorkflowData = () => {
-    setLinkedWorkflow(!linkedWorkflow)
-  }
+  const toggleLinkWorkflowDialog = useCallback(() => {
+    dialogDispatch(DialogMode.NODE_LINK_WORKFLOW, { id: node.id })
+  }, [dialogDispatch, node.id])
 
-  const removeLinkedWorkflow = () => {
-    setLinkedWorkflow(false)
-    setValue('linkedWorkflow', undefined)
-  }
+  const removeLinkedWorkflow = useCallback(() => {
+    console.log('actually remove linked workflow')
+  }, [])
 
   const ponderation = watch('linkedWorkflow')
     ? watch('linkedWorkflow.ponderation')
     : watch('ponderation')
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  const BottomButtons = () => (
-    <SC.SidebarActions>
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={
-          watch('linkedWorkflow')
-            ? removeLinkedWorkflow
-            : toggleUseLinkWorkflowData
-        }
-      >
-        {!watch('linkedWorkflow')
-          ? _t('Link workflow')
-          : _t('Remove linked workflow')}
-      </Button>
-      <Button variant="contained" color="secondary">
-        {_t('Duplicate')}
-      </Button>
-      <Button variant="contained" color="secondary">
-        {_t('Delete')}
-      </Button>
-    </SC.SidebarActions>
-  )
 
-  if (!node) {
-    return <></>
-  }
+  // TODO: actually read from the node
+  const linkedWorkflow = false
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -203,8 +174,9 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
                 label={_t('Use linked worfklow info')}
                 control={
                   <Switch
-                    checked={linkedWorkflow}
-                    onChange={toggleUseLinkWorkflowData}
+                    // TODO:
+                    // checked={linkedWorkflow}
+                    // onChange={toggleLinkWorkflowDaialog}
                     size="small"
                   />
                 }
@@ -390,7 +362,27 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
             </>
           )}
         </SC.SidebarContent>
-        <BottomButtons />
+        <SC.SidebarActions>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={
+              watch('linkedWorkflow')
+                ? removeLinkedWorkflow
+                : toggleLinkWorkflowDialog
+            }
+          >
+            {!watch('linkedWorkflow')
+              ? _t('Link workflow')
+              : _t('Remove linked workflow')}
+          </Button>
+          <Button variant="contained" color="secondary">
+            {_t('Duplicate')}
+          </Button>
+          <Button variant="contained" color="secondary">
+            {_t('Delete')}
+          </Button>
+        </SC.SidebarActions>
       </SC.SidebarInnerWrap>
     </form>
   )

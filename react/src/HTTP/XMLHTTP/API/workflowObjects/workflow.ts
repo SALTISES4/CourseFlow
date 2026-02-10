@@ -230,7 +230,7 @@ export function getPublicParentWorkflowInfo(
  * @param callBackFunction
  */
 export function getLinkedWorkflowMenuQuery(
-  nodeId,
+  nodeId: number,
   callBackFunction = (_data?: LinkedWorkflowMenuQueryResp) =>
     Utility.logger('success')
 ) {
