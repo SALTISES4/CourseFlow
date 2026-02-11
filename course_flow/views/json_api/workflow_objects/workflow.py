@@ -286,17 +286,14 @@ class WorkflowEndpoint:
     #########################################################
     @staticmethod
     # @user_can_edit("nodePk")
-    def possible_linked(
-        request: Request,
-    ) -> Response:
+    @api_view(["POST"])
+    def possible_linked(request: Request) -> Response:
         """
         @todo what does this do?
         :return:
         """
-        body = json.loads(
-            request.body
-        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
-        node = Node.objects.get(pk=body.get("nodePk"))
+        body = request.data
+        node = Node.objects.get(pk=body.get("node_pk"))
 
         try:
             project = node.get_workflow().get_project()
@@ -308,15 +305,16 @@ class WorkflowEndpoint:
 
         except AttributeError as e:
             logger.exception("An error occurred")
-            return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                { "action": "error" },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        return Response(
-            {
-                "message": "success",
-                "data_package": data_package,
-                "node_id": node.id,
-            }
-        )
+        return Response({
+            "message": "success",
+            "data_package": data_package,
+            "node_id": node.id,
+        })
 
     @staticmethod
     # @user_can_view_or_none("projectPk")
