@@ -34,7 +34,6 @@ export type PropsType = {
   description?: string
   isSelected?: boolean
   onClick?: () => void
-  onMouseDown?: (evt: MouseEvent<HTMLDivElement>) => void
   chips: (WorkflowCardChipType | ReactNode)[]
   footer?: ReactNode
   isDisabledLink?: boolean
@@ -57,13 +56,15 @@ const WorkflowCardDumb = ({
   isSelected,
   favourite,
   onClick,
-  onMouseDown,
   chips,
   footer,
   isDisabledLink
 }: PropsType) => (
-  <CardWrap onMouseDown={onMouseDown} className={isSelected ? 'selected' : ''}>
-    <CardHeader onClick={!isDisabledLink ? onClick : null}>
+  <CardWrap
+    onClick={!isDisabledLink ? onClick : null}
+    className={isSelected ? 'selected' : ''}
+  >
+    <CardHeader>
       <CardTitle>{title}</CardTitle>
       {description && <CardCaption variant="body2">{description}</CardCaption>}
     </CardHeader>
