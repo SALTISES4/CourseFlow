@@ -3,14 +3,11 @@ import { _t } from '@cf/utility/Utility.class'
 import {
   ColumnActions,
   CommonActions,
-  NodelinkActions,
   OutcomeActions,
   OutcomeBaseActions,
-  OutcomeNodeActions,
   OutcomeOutcomeActions,
   SliceNamespace,
-  StrategyActions,
-  WeekActions
+  StrategyActions
 } from '@cfRedux/types/enumActions'
 import { TNode, WorkspaceAppState } from '@cfRedux/types/type'
 import {
@@ -83,26 +80,6 @@ const toggleArchiveEntity = (
       }
     })
   }
-}
-
-const deleteOutgoingLinks = (
-  state: NodeState,
-  action: PayloadAction<{ id: number }>
-) => {
-  const entitiesToUpdate = Object.values(state.entities).filter((entity) =>
-    entity?.outgoingLinks.includes(action.payload.id)
-  )
-
-  const updates = entitiesToUpdate.map((entity) => ({
-    id: entity.id,
-    changes: {
-      outgoingLinks: entity.outgoingLinks.filter(
-        (linkId) => linkId !== action.payload.id
-      )
-    }
-  }))
-
-  nodeAdapter.updateMany(state, updates)
 }
 
 const updatingNodeSet = (
@@ -232,7 +209,6 @@ const nodeSlice = createSlice({
     createLock: updateEntity,
     changeField: updateEntity,
     deleteSelf: removeEntityById,
-    deleteSelfSoft: toggleArchiveEntity,
     insertBelow(state, action: PayloadAction<{ newModel: TNode }>) {
       nodeAdapter.addOne(state, action.payload.newModel)
     },
@@ -518,7 +494,6 @@ const nodeSlice = createSlice({
 
     // this one had a jquery update side effect
     //  ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
-    restoreSelf: toggleArchiveEntity,
     newNode(state, action: PayloadAction<{ newModel: TNode }>) {
       nodeAdapter.addOne(state, action.payload.newModel)
     }
@@ -538,43 +513,6 @@ const nodeSlice = createSlice({
           nodeAdapter.upsertMany(state, action.payload.node)
         }
       })
-    /*******************************************************
-     * NODE LINK
-     *******************************************************/
-    builder
-      .addCase(
-        NodelinkActions.RESTORE_SELF as string,
-        (state, action: PayloadAction<{ parentId: number; id: number }>) => {
-          return state.map((item) =>
-            item.id === action.payload.parentId
-              ? {
-                  ...item,
-                  outgoingLinks: [...item.outgoingLinks, action.payload.id]
-                }
-              : item
-          )
-        }
-      )
-      // @todo needs review
-      .addCase(
-        NodelinkActions.NEW_NODE_LINK as string,
-        (state, action: PayloadAction<{ parentId: number; id: number }>) => {
-          return state.map((item) => {
-            if (item.id === action.payload.newModel.sourceNode) {
-              return {
-                ...item,
-                outgoingLinks: [
-                  ...item.outgoingLinks,
-                  action.payload.newModel.id
-                ]
-              }
-            }
-            return item
-          })
-        }
-      )
-      .addCase(NodelinkActions.DELETE_SELF_SOFT as string, deleteOutgoingLinks)
-      .addCase(NodelinkActions.DELETE_SELF as string, deleteOutgoingLinks)
 
     /*******************************************************
      * STRATEGY
@@ -583,55 +521,24 @@ const nodeSlice = createSlice({
       .addCase(
         StrategyActions.ADD_STRATEGY as string,
         (state, action: PayloadAction<{ nodesAdded: TNode[] }>) => {
-          return state.concat(action.payload.nodesAdded)
+          // TODO: review
+          // return state.concat(action.payload.nodesAdded)
         }
       )
       /*******************************************************
        * OUTCOME
        *******************************************************/
       .addCase(OutcomeActions.DELETE_SELF as string, updateItem)
-
-      .addCase(OutcomeActions.DELETE_SELF_SOFT as string, updateItem)
-      .addCase(OutcomeActions.RESTORE_SELF as string, updateItem)
       .addCase(OutcomeBaseActions.DELETE_SELF as string, updateItem)
-      .addCase(OutcomeBaseActions.DELETE_SELF_SOFT as string, updateItem)
-      .addCase(OutcomeBaseActions.RESTORE_SELF as string, updateItem)
 
       .addCase(OutcomeActions.INSERT_CHILD as string, updatingNodeSet)
       .addCase(OutcomeActions.INSERT_BELOW as string, updatingNodeSet)
       .addCase(OutcomeBaseActions.INSERT_CHILD as string, updatingNodeSet)
       .addCase(OutcomeOutcomeActions.CHANGE_ID as string, updatingNodeSet)
 
-    /*******************************************************
-     * OUTCOME NODE
-     *******************************************************/
-    //@todo needs review
-    builder.addCase(
-      OutcomeNodeActions.UPDATE_DEGREE as string,
-      (state, action: PayloadAction<any>) => {
-        if (action.payload.outcomenode === -1) {
-          return state
-        }
-
-        return state.map((item) => {
-          return item.id === action.payload.dataPackage[0].node
-            ? {
-                ...item,
-                outcomenodeSet: action.payload.newOutcomenodeSet,
-                outcomenodeUniqueSet: action.payload.newOutcomenodeUniqueSet
-              }
-            : item
-        })
-      }
-    )
-
-    /*******************************************************
-     * COLUMN
-     * add the coluns trigger
-     *  ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
-     *******************************************************/
-    // Column Actions
-    builder
+      /*******************************************************
+       * COLUMN
+       *******************************************************/
       .addCase(
         ColumnActions.DELETE_SELF as string,
         (state, action: PayloadAction<DeleteColumnAction>) => {
@@ -645,37 +552,6 @@ const nodeSlice = createSlice({
           })
         }
       )
-      .addCase(
-        ColumnActions.DELETE_SELF_SOFT as string,
-        (state, action: PayloadAction<DeleteColumnAction>) => {
-          return state.map((item) => {
-            if (item.column === action.payload.id) {
-              item.column = action.payload.extraData
-            }
-          })
-        }
-      )
-      .addCase(
-        ColumnActions.RESTORE_SELF as string,
-        (state, action: PayloadAction<DeleteColumnAction>) => {
-          return state.map((item) => {
-            if (action.payload.extraData.includes(item.id)) {
-              item.column = action.payload.id
-            }
-          })
-        }
-      )
-    /*******************************************************
-     * WEEK
-     *******************************************************/
-    builder.addCase(
-      WeekActions.INSERT_BELOW as string,
-      (state, action: PayloadAction<{ children: { node: TNode[] } }>) => {
-        if (action.payload.children) {
-          return state.push(...action.payload.children.node)
-        }
-      }
-    )
   }
 })
 
@@ -686,8 +562,6 @@ export const {
   changeField: nodeChangeField,
   changeInsertMode: nodeChangeInsertMode,
   deleteSelf: nodeDeleteSelf,
-  deleteSelfSoft: nodeDeleteSelfSoft,
-  restoreSelf: nodeRestoreSelf,
   insertBelow: nodeInsertBelow,
   reloadComments: nodeReloadComments,
   setLinkedWorkflow: nodeSetLinkedWorkflow,

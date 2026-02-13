@@ -69,21 +69,6 @@ const nodelinkSlice = createSlice({
     },
     deleteSelf(state, action: PayloadAction<NodelinkByIdPayload>) {
       nodelinkAdapter.removeOne(state, action.payload.id)
-    },
-    deleteSelfSoft(state, action: PayloadAction<NodelinkByIdPayload>) {
-      nodelinkAdapter.updateOne(state, {
-        id: action.payload.id,
-        changes: {
-          deleted: true,
-          deletedOn: _t('This session')
-        }
-      })
-    },
-    restoreSelf(state, action: PayloadAction<NodelinkByIdPayload>) {
-      nodelinkAdapter.updateOne(state, {
-        id: action.payload.id,
-        changes: { deleted: false }
-      })
     }
   },
   extraReducers: (builder) => {
@@ -102,22 +87,24 @@ const nodelinkSlice = createSlice({
         nodelinkAdapter.upsertMany(state, action.payload.nodelink)
       })
       .addCase(
-        WeekActions.INSERT_BELOW,
+        WeekActions.INSERT_BELOW as string,
         (
           state,
           action: PayloadAction<{ children?: { nodelink: TNodelink[] } }>
         ) => {
-          if (action.payload.children) {
-            return [...state, ...action.payload.children.nodelink]
-          }
+          // TODO: review / delete
+          // if (action.payload.children) {
+          //   return [...state, ...action.payload.children.nodelink]
+          // }
         }
       )
       .addCase(
-        StrategyActions.ADD_STRATEGY,
+        StrategyActions.ADD_STRATEGY as string,
         (state, action: PayloadAction<{ nodelinksAdded: TNodelink[] }>) => {
-          if (action.payload.nodelinksAdded.length !== 0) {
-            return [...state, ...action.payload.nodelinksAdded]
-          }
+          // TODO: review / delete
+          // if (action.payload.nodelinksAdded.length !== 0) {
+          //   return [...state, ...action.payload.nodelinksAdded]
+          // }
         }
       )
       .addCase(svglinkDragEnd, (state, action) => {
@@ -173,10 +160,7 @@ export const {
   createLock: nodelinkCreateLock,
   changeField: nodelinkChangeField,
   newNodelink: nodelinkNewNodelink,
-  deleteSelf: nodelinkDeleteSelf,
-  deleteSelfSoft: nodelinkDeleteSelfSoft,
-  restoreSelf: nodelinkRestoreSelf
-  //  insertBelow: nodelinkInsertBelow,
+  deleteSelf: nodelinkDeleteSelf
   //  addStrategy: nodelinkAddStrategy
 } = nodelinkSlice.actions
 

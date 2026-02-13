@@ -1,8 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { Verb, cfApi } from '@XMLHTTP/API/api'
-import { LibraryObjectsSearchQueryResp } from '@XMLHTTP/API/library.rtk'
-import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
 import {
   CommentsForObjectQueryArgs,
   CommentsForObjectQueryResp,

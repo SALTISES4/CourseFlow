@@ -1,7 +1,7 @@
 import { selectNodelinkById } from '@cf/redux/selectors/nodelink.selector'
 import {
   nodelinkChangeField,
-  nodelinkDeleteSelfSoft
+  nodelinkDeleteSelf
 } from '@cf/redux/slices/nodelink.slice'
 import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
 import { TNodelink } from '@cf/redux/types/type'
@@ -84,7 +84,7 @@ const EditNodeLinkForm = ({ nodeLink }: { nodeLink: TNodelink }) => {
   )
 
   const onDelete = useCallback(() => {
-    dispatch(nodelinkDeleteSelfSoft({ id: nodeLink.id }))
+    dispatch(nodelinkDeleteSelf({ id: nodeLink.id }))
   }, [dispatch, nodeLink.id])
 
   return (

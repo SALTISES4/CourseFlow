@@ -44,19 +44,6 @@ const columnSlice = createSlice({
     deleteSelf(state, action: PayloadAction<{ id: number }>) {
       columnAdapter.removeOne(state, action.payload.id)
     },
-    deleteSelfSoft(state, action: PayloadAction<{ id: number }>) {
-      const item = state.entities[action.payload.id]
-      if (item) {
-        item.deleted = true
-        item.deletedOn = _t('This session') // Check translation context usage
-      }
-    },
-    restoreSelf(state, action: PayloadAction<{ id: number }>) {
-      const item = state.entities[action.payload.id]
-      if (item) {
-        item.deleted = false
-      }
-    },
     insertBelow(
       state,
       action: PayloadAction<{ id: number; newId: number; duplicate?: number }>
@@ -123,8 +110,6 @@ const columnSlice = createSlice({
 export const {
   createLock: columnCreateLock,
   deleteSelf: columnDeleteSelf,
-  deleteSelfSoft: columnDeleteSelfSoft,
-  restoreSelf: columnRestoreSelf,
   insertBelow: columnInsertBelow,
   changeField: columnChangeField
 } = columnSlice.actions

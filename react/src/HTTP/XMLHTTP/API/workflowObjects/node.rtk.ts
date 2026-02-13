@@ -47,34 +47,6 @@ const extendedApi = cfApi.injectEndpoints({
         }
       }
     }),
-    deleteSoftNode: builder.mutation<
-      EmptyPostResp,
-      {
-        id: number
-      }
-    >({
-      query: (args) => {
-        const base = apiPaths.json_api.node.delete_soft
-        return {
-          method: Verb.POST,
-          url: generatePath(base, { id: args.id })
-        }
-      }
-    }),
-    restoreNode: builder.mutation<
-      EmptyPostResp,
-      {
-        id: number
-      }
-    >({
-      query: (args) => {
-        const base = apiPaths.json_api.node.restore
-        return {
-          method: Verb.POST,
-          url: generatePath(base, { id: args.id })
-        }
-      }
-    }),
     duplicateNode: builder.mutation<
       EmptyPostResp,
       {
@@ -109,6 +81,7 @@ const extendedApi = cfApi.injectEndpoints({
         }
       }
     }),
+    // TODO: review where this is used / if at all
     // toggleObjectSetNode: builder.mutation<
     //   EmptyPostResp,
     //   {
@@ -144,25 +117,26 @@ const extendedApi = cfApi.injectEndpoints({
           body: args.payload
         }
       }
-    }),
-    nodelinkCreate: builder.mutation<
-      EmptyPostResp,
-      {
-        id: number
-        payload: {
-          targetNodeId: number
-        }
-      }
-    >({
-      query: (args) => {
-        const base = apiPaths.json_api.node.link_create
-        return {
-          method: Verb.POST,
-          url: generatePath(base, { id: args.id }),
-          body: args.payload
-        }
-      }
     })
+    // TODO: review where this is used / if at all
+    // nodelinkCreate: builder.mutation<
+    //   EmptyPostResp,
+    //   {
+    //     id: number
+    //     payload: {
+    //       targetNodeId: number
+    //     }
+    //   }
+    // >({
+    //   query: (args) => {
+    //     const base = apiPaths.json_api.node.link_create
+    //     return {
+    //       method: Verb.POST,
+    //       url: generatePath(base, { id: args.id }),
+    //       body: args.payload
+    //     }
+    //   }
+    // })
   }),
 
   overrideExisting: false
@@ -171,11 +145,9 @@ const extendedApi = cfApi.injectEndpoints({
 export const {
   useCreateNodeMutation,
   useDeleteNodeMutation,
-  useDeleteSoftNodeMutation,
-  useRestoreNodeMutation,
   useDuplicateNodeMutation,
   useUpdatePositionNodeMutation,
-  useLinkToWorkflowMutation,
-  useNodelinkCreateMutation
+  useLinkToWorkflowMutation
+  // useNodelinkCreateMutation
   // useToggleObjectSetNodeMutation
 } = extendedApi
