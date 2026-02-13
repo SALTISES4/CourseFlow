@@ -8,11 +8,7 @@ export function getNodeTitle(node: TNode): string {
       return node.title
     }
 
-    return [
-      node.linkedWorkflowData.code || '',
-      node.linkedWorkflowData.code && ' - ',
-      node.linkedWorkflowData.title
-    ].join()
+    return node.linkedWorkflowData.title
   }
 
   return calcTitle() || _t('Untitled')

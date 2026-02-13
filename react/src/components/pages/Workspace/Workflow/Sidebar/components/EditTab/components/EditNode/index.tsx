@@ -4,7 +4,10 @@ import { TNode } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
-import { nodeChangeField } from '@cfRedux/slices/node.slice'
+import {
+  nodeChangeField,
+  nodeSetLinkedWorkflow
+} from '@cfRedux/slices/node.slice'
 import { RootState } from '@cfRedux/store'
 import * as SC from '@cfSidebar/styles'
 import { debounce } from '@mui/material'
@@ -27,6 +30,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 
 import optionsData from './optionsData'
+import * as Styled from './styles'
 import { NodeForm } from './types'
 
 const EditNode = ({ nodeId }: { nodeId: number }) => {
@@ -144,15 +148,36 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
   }, [dialogDispatch, node.id])
 
   const removeLinkedWorkflow = useCallback(() => {
-    console.log('actually remove linked workflow')
-  }, [])
+    dispatch(
+      nodeSetLinkedWorkflow({
+        nodeId: node.id,
+        workflowId: null,
+        workflowData: null,
+        representsWorkflow: false
+      })
+    )
+  }, [dispatch, node.id])
 
+  const toggleRepresentWorkflow = useCallback(
+    (_, checked: boolean) => {
+      dispatch(
+        nodeChangeField({
+          id: node.id,
+          data: {
+            representsWorkflow: checked
+          }
+        })
+      )
+    },
+    [dispatch, node.id]
+  )
+
+  // TODO: seems wrong, investigate where this comes from with MC
   const ponderation = watch('linkedWorkflow')
     ? watch('linkedWorkflow.ponderation')
     : watch('ponderation')
 
-  // TODO: actually read from the node
-  const linkedWorkflow = false
+  const linkedWorkflow = node.linkedWorkflowData
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -162,36 +187,35 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
             {_t('Edit node')}
           </SC.SidebarTitle>
 
-          {watch('linkedWorkflow') && (
-            <Stack sx={{ mb: 3 }} gap={2}>
-              <div>
-                <Chip
-                  label={watch('linkedWorkflow.title')}
-                  onDelete={removeLinkedWorkflow}
-                />
-              </div>
+          {linkedWorkflow && (
+            <Styled.LinkedWorkflowTooltip>
+              <Chip
+                label={linkedWorkflow.title}
+                onDelete={removeLinkedWorkflow}
+              />
               <FormControlLabel
                 label={_t('Use linked worfklow info')}
                 control={
                   <Switch
-                    // TODO:
-                    // checked={linkedWorkflow}
-                    // onChange={toggleLinkWorkflowDaialog}
+                    checked={node.representsWorkflow}
+                    onChange={toggleRepresentWorkflow}
                     size="small"
                   />
                 }
               />
-            </Stack>
+            </Styled.LinkedWorkflowTooltip>
           )}
 
           <Stack direction="column" spacing={3}>
-            {!linkedWorkflow && (
+            {!node.representsWorkflow && (
               <>
                 <TextField
                   label={_t('Title')}
                   variant="outlined"
                   size="small"
-                  {...register('title', { required: _t('Title is required') })}
+                  {...register('title', {
+                    required: _t('Title is required')
+                  })}
                   error={!!errors.title}
                   helperText={errors.title?.message}
                 />
@@ -367,12 +391,12 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
             variant="contained"
             color="secondary"
             onClick={
-              watch('linkedWorkflow')
+              linkedWorkflow
                 ? removeLinkedWorkflow
                 : toggleLinkWorkflowDialog
             }
           >
-            {!watch('linkedWorkflow')
+            {!linkedWorkflow
               ? _t('Link workflow')
               : _t('Remove linked workflow')}
           </Button>

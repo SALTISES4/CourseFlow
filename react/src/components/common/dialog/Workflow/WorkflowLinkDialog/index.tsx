@@ -1,9 +1,9 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { ELibraryObject } from '@cf/HTTP/XMLHTTP/types/entity'
 import { GridWrap } from '@cf/mui/helper'
+import { nodeSetLinkedWorkflow } from '@cf/redux/slices/node.slice'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
 import { _t } from '@cf/utility/Utility.class'
-import { PropsType as ResultType } from '@cfComponents/cards/WorkflowCardDumb'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import { StyledDialog } from '@cfComponents/dialog/styles'
 import SearchIcon from '@mui/icons-material/Search'
@@ -19,14 +19,16 @@ import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/API/workflowObjects/workflo
 import Fuse from 'fuse.js'
 import { produce } from 'immer'
 import { ChangeEvent, useCallback, useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 
 type StateType = {
   selected: number | null
-  workflowData: ReturnType<typeof formatLibraryObjects> | null
+  workflowData: ELibraryObject[] | null
   filteredWorkflows: ReturnType<typeof formatLibraryObjects> | null
 }
 
 function NodeLinkWorkflowDialog() {
+  const dispatch = useDispatch()
   const { payload, show, onClose } = useDialog(DialogMode.NODE_LINK_WORKFLOW)
   const [state, setState] = useState<StateType>({
     selected: null,
@@ -34,8 +36,9 @@ function NodeLinkWorkflowDialog() {
     filteredWorkflows: null
   })
 
-  const { workflowData, filteredWorkflows } = state
-  const filteredResults = filteredWorkflows ?? workflowData
+  const { selected, workflowData, filteredWorkflows } = state
+  const filteredResults =
+    filteredWorkflows ?? formatLibraryObjects(workflowData ?? [])
 
   const onDialogClose = useCallback(() => {
     onClose()
@@ -57,8 +60,16 @@ function NodeLinkWorkflowDialog() {
   }, [])
 
   const onSubmit = useCallback(() => {
-    console.log('submitted with', state.selected)
-  }, [state.selected])
+    dispatch(
+      nodeSetLinkedWorkflow({
+        nodeId: payload?.id,
+        workflowId: selected,
+        workflowData: workflowData.find((w) => w.id === selected)
+      })
+    )
+
+    onClose()
+  }, [dispatch, onClose, payload, selected, workflowData])
 
   const onSearchChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -82,7 +93,7 @@ function NodeLinkWorkflowDialog() {
             .search(value)
             .map((result) => result.item)
 
-          draft.filteredWorkflows = filtered
+          draft.filteredWorkflows = formatLibraryObjects(filtered)
         })
       )
     },
@@ -104,10 +115,7 @@ function NodeLinkWorkflowDialog() {
                 return [...acc, ...curr.objects]
               }, [])
 
-            draft.workflowData = formatLibraryObjects([
-              ...workflowsFavorites,
-              ...workflowsProject
-            ])
+            draft.workflowData = [...workflowsFavorites, ...workflowsProject]
           })
         )
       })

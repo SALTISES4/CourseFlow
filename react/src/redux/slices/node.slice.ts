@@ -1,3 +1,4 @@
+import { ELibraryObject } from '@cf/HTTP/XMLHTTP/types/entity'
 import { _t } from '@cf/utility/Utility.class'
 import {
   ColumnActions,
@@ -248,23 +249,28 @@ const nodeSlice = createSlice({
       })
     },
 
-    // TODO:
     setLinkedWorkflow(
       state,
       action: PayloadAction<{
-        id: number
-        linkedWorkflow: number
-        linkedWorkflowData: any
+        nodeId: number
+        workflowId: number
+        workflowData: ELibraryObject
+        representsWorkflow?: boolean
       }>
     ) {
-      console.log('set linked workflow with', action.payload)
-      // nodeAdapter.updateOne(state, {
-      //   id: action.payload.id,
-      //   changes: {
-      //     linkedWorkflow: action.payload.linkedWorkflow,
-      //     linkedWorkflowData: action.payload.linkedWorkflowData
-      //   }
-      // })
+      const { nodeId, workflowId, workflowData, representsWorkflow } =
+        action.payload
+
+      nodeAdapter.updateOne(state, {
+        id: nodeId,
+        changes: {
+          linkedWorkflow: workflowId,
+          linkedWorkflowData: workflowData,
+          ...(representsWorkflow !== undefined && {
+            representsWorkflow
+          })
+        }
+      })
     },
 
     workflowNodeInsert: (

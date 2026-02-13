@@ -169,8 +169,8 @@ export interface ENode extends CourseFlowEntity {
   timeGeneralHours: number
   timeSpecificHours: number
   representsWorkflow: boolean
-  linkedWorkflow: number
-  linkedWorkflowData: any // TODO:
+  linkedWorkflow: number | null
+  linkedWorkflowData: ELibraryObject | null
   hasAssignment: boolean
   order: number
   week: number
