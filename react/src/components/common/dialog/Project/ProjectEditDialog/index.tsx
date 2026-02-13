@@ -63,14 +63,11 @@ const ProjectEditDialog = () => {
   function onSubmit(data: ProjectFormValues) {
     // remove null value first
     // since the endpoint does not accept them
-
-    const payload = {
+    mutate({
       id: Number(id),
       ...data,
       disciplines: data.disciplines.map((item) => Number(item))
-    }
-
-    mutate(payload)
+    })
       .unwrap()
       .then((response) => {
         onSuccess(response, onSuccessHandler)

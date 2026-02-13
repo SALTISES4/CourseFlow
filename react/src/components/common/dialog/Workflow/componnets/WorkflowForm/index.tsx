@@ -73,25 +73,11 @@ const workflowSchema = z.object({
     specificEdu: z.number()
   })
 })
-export type WorkflowFormValues = {
-  title: string
-  description?: string
-  duration?: string
-  courseNumber?: string
-  units?: number
-  ponderation?: {
-    theory: number
-    practice: number
-    individual: number
-    generalEdu: number
-    specificEdu: number
-  }
-}
 
-const emptyDefaultValues = {
+const emptyDefaultValues: WorkflowFormType = {
   title: '',
   description: '',
-  duration: '',
+  duration: 0,
   courseNumber: '',
   units: 0,
   ponderation: {
@@ -112,10 +98,10 @@ const WorkflowForm = ({
   setIsFormReady,
   formRef
 }: {
-  submitHandler: (data: WorkflowFormValues) => void
+  submitHandler: (data: WorkflowFormType) => void
   closeCallback: () => void
   label: string
-  defaultValues?: WorkflowFormValues
+  defaultValues?: WorkflowFormType
   workflowType?: WorkflowType
   setIsFormReady: (isReady: boolean) => void
   formRef: RefObject<HTMLFormElement>
@@ -126,9 +112,7 @@ const WorkflowForm = ({
     register,
     handleSubmit,
     reset,
-    getValues,
-    formState: { errors, isDirty },
-    formState
+    formState: { errors, isDirty }
   } = useForm<WorkflowFormType>({
     resolver: zodResolver(workflowSchema),
     defaultValues
