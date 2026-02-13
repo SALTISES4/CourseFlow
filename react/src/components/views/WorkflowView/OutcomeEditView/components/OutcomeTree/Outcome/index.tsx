@@ -96,7 +96,12 @@ const Outcome = ({
           // allow combine if we're combining different outcome IDs
           // (ie, you can't combine self with self)
           // and the dragged outcome level must be +1 compared to our target
-          const combine = dragging?.id !== id && dragging?.level === level + 1
+          let combine = dragging?.id !== id && dragging?.level === level + 1
+
+          // but also disallow combine if dragged outcome is a child of the parent already
+          if (children.includes(dragging?.id)) {
+            combine = false
+          }
 
           return attachInstruction(data, {
             input,
