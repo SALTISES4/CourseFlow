@@ -95,11 +95,11 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
   }, [watchedFields, isDirty, debouncedDispatch])
 
   const onDuplicate = useCallback(() => {
-    dispatch(duplicateOutcome(outcome.id))
+    dispatch(duplicateOutcome({ id: outcome.id }))
   }, [dispatch, outcome.id])
 
   const onDelete = useCallback(() => {
-    dispatch(deleteOutcome(outcome.id))
+    dispatch(deleteOutcome({ id: outcome.id }))
   }, [dispatch, outcome.id])
 
   return (

@@ -140,10 +140,10 @@ const HoverMenu = ({
             setCollapsed(false)
             break
           case 'duplicate':
-            dispatch(duplicateOutcome(id))
+            dispatch(duplicateOutcome({ id }))
             break
           case 'delete':
-            dispatch(deleteOutcome(id))
+            dispatch(deleteOutcome({ id }))
             break
           case 'comments':
             dispatch(

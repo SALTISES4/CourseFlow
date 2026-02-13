@@ -58,24 +58,14 @@ export const outcomesSlice = createSlice({
         return outcomeAdapter.addOne(state, newOutcomeData)
       }
 
-      let orderAfterId = -1
-
       // if no "order", then we're simply appending to the parent ID
       if (!action.payload.order) {
         const parent = state.entities[action.payload.id]
         newOutcomeData.parent = parent.id
-
-        // order after last parent's child, or parent, if none
-        orderAfterId = parent.children.length
-          ? parent.children[parent.children.length - 1]
-          : parent.id
-
         parent.children.push(outcomeId)
       } else {
         // if order is present, add after the target outcome
         const target = state.entities[action.payload.id]
-        orderAfterId = target.id // order after target
-
         if (target.parent) {
           newOutcomeData.parent = target.parent
           const parent = state.entities[target.parent]
@@ -94,10 +84,20 @@ export const outcomesSlice = createSlice({
 
       // finally add the data itself
       outcomeAdapter.addOne(state, newOutcomeData)
+
+      // 4realfinally, move the newly added outcome to the correct position
+      // but only if it's the root level outcome
+      // can't do it earlier since RTK.addOne doesn't support rearranging
+      if (action.payload.order && newOutcomeData.parent === null) {
+        const index = state.ids.indexOf(newOutcomeData.id)
+        const targetIndex = state.ids.indexOf(action.payload.id)
+        state.ids.splice(index, 1)
+        state.ids.splice(targetIndex + 1, 0, newOutcomeData.id)
+      }
     },
 
-    deleteOutcome: (state, action: PayloadAction<number>) => {
-      const outcomeId = action.payload
+    deleteOutcome: (state, action: PayloadAction<{ id: number }>) => {
+      const outcomeId = action.payload.id
 
       // delete from parent
       const parentId = state.entities[outcomeId].parent
@@ -113,17 +113,12 @@ export const outcomesSlice = createSlice({
 
     // duplicates the outcome below the target
     // cloning the tree structure as well
-    duplicateOutcome: (state, action: PayloadAction<number>) => {
-      const target = state.entities[action.payload]
-
-      // find the last outcome ID to know after which outcome to inject
-      // the cloned outcome tree
-      let lastOutcomeId: number
-      const clonedIds = []
+    duplicateOutcome: (state, action: PayloadAction<{ id: number }>) => {
+      const target = state.entities[action.payload.id]
+      const clonedIds: number[] = []
 
       // recursively go over the tree of outcomes and make updates
       function cloneOutcome(outcome: Outcome, parentId: number | null = null) {
-        lastOutcomeId = outcome.id
         const cloneId = getNextLargestNumber(state.ids)
         clonedIds.push(cloneId)
         const clone = {
@@ -151,7 +146,15 @@ export const outcomesSlice = createSlice({
 
       // add the root clone to the correct parent
       if (target.parent) {
-        state.entities[target.parent].children.push(clonedIds[0])
+        const parent = state.entities[target.parent]
+        const index = parent.children.indexOf(target.id)
+        parent.children.splice(index + 1, 0, clonedIds[0])
+      } else {
+        // for the root level outcomes (without parent), rearrange ids
+        const index = state.ids.indexOf(clonedIds[0])
+        const targetIndex = state.ids.indexOf(target.id)
+        state.ids.splice(index, 1)
+        state.ids.splice(targetIndex + 1, 0, clonedIds[0])
       }
     },
 
