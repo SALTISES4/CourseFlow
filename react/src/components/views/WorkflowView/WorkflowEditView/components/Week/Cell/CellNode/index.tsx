@@ -227,7 +227,7 @@ const WeekCellNode = ({
             <small>{`#${nodeId}, row: ${node.order}`}</small>
           </StyledNode.Title>
           <Meta
-            workflow="#"
+            workflow={node.linkedWorkflow}
             contextType={node.contextClassification}
             taskType={node.taskClassification}
             time={{
