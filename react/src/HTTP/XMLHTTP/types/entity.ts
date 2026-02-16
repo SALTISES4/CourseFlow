@@ -157,7 +157,7 @@ export interface ENode extends CourseFlowEntity {
   columnworkflow: number
   contextClassification: number
   taskClassification: number
-  outgoingLinks: any[]
+  outgoingLinks: number[]
   nodeType: number
   nodeTypeDisplay: NodeTypeDisplay
   hasAutolink: boolean

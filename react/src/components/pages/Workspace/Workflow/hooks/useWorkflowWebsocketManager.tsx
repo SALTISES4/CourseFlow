@@ -126,14 +126,15 @@ export const useWorkflowWebsocketManager = ({
 
   useEffect(() => {
     if (data) {
-      console.log('yes i have data')
-      console.log(data)
-      const payload = convertWorkflowRESTResToAppState(data.dataPackage)
-      console.log(payload)
-      dispatch(ActionCreator.refreshWorkspaceStoreData(payload))
+      console.log('hydrate workflow data', data)
+      dispatch(
+        ActionCreator.refreshWorkspaceStoreData(
+          convertWorkflowRESTResToAppState(data.dataPackage)
+        )
+      )
       setIsMessagesQueued(false)
     }
-  }, [data])
+  }, [dispatch, data])
 
   /*******************************************************
    * HANDLERS
