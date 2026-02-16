@@ -102,8 +102,10 @@ const ContributorAddDialog = ({
   )
 
   useEffect(() => {
-    debouncedSearch(state.search)
-  }, [state.search, debouncedSearch])
+    if (show) {
+      debouncedSearch(state.search)
+    }
+  }, [show, state.search, debouncedSearch])
 
   // sync autocomplete to local (uncontrolled) state
   const onAutocompleteChange = useCallback((value: string) => {
