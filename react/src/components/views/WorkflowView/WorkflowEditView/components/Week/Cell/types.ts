@@ -2,9 +2,11 @@ import {
   NodeInsertMode,
   NodeWorkflowReorderPayload
 } from '@cf/redux/slices/node.slice'
+import {
+  CellClickCallbackFn,
+  CellReorderCallbackFn
+} from '@cfViews/WorkflowView/WorkflowEditView/types'
 import { MutableRefObject } from 'react'
-
-import { CellClickCallbackFn, CellReorderCallbackFn } from '../../../types'
 
 export enum WeekCellType {
   PHANTOM = 'phantom',

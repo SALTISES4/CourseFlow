@@ -8,6 +8,12 @@ import {
 import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
 import { _t } from '@cf/utility/Utility.class'
 import { RootState } from '@cfRedux/store'
+import {
+  SidebarActions,
+  SidebarContent,
+  SidebarInnerWrap,
+  SidebarTitle
+} from '@cfSidebar/styles'
 import { debounce } from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
@@ -17,12 +23,6 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 
-import {
-  SidebarActions,
-  SidebarContent,
-  SidebarInnerWrap,
-  SidebarTitle
-} from '../../../../styles'
 import data from '../EditNode/optionsData'
 
 const EditOutcome = ({ outcomeId }: { outcomeId: number }) => {

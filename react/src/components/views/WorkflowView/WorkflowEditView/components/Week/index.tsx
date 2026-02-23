@@ -32,9 +32,7 @@ import { useResizeObserver } from 'usehooks-ts'
 
 import HoverMenu from './HoverMenu'
 import WeekRow from './Row'
-import WeekRowEmpty from './RowEmpty'
 import * as StyledWeek from './styles'
-import * as Styled from '../../styles'
 import { DraggableType, isGridWeek, isSidebarPart } from '../../types'
 import {
   CellReorderCallbackFn,

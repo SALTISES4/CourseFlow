@@ -1,11 +1,11 @@
 import { WorkflowBoard } from '@cf/redux/selectors/workflow.selector'
 import { RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
+import * as StyledWorkflow from '@cfViews/WorkflowView/WorkflowEditView/styles'
 import { memo, useRef } from 'react'
 import { useSelector } from 'react-redux'
 
 import type { WeekPropsType } from '../'
-import * as StyledWorkflow from '../../../styles'
 import WeekCell from '../Cell'
 import { WeekCellType } from '../Cell/types'
 import * as Styled from '../styles'
