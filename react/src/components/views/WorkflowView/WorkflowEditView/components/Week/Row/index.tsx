@@ -108,7 +108,7 @@ const WeekRow = (props: WeekRowPropsType) => {
 
         if (columnId === -1) {
           columnId = getNextLargestNumber(wsColIds)
-          dispatch(columnInsertBelow({ id: columnId }))
+          dispatch(columnInsertBelow({ id: null, newId: columnId }))
         }
 
         dispatch(

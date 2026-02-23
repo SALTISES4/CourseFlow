@@ -46,9 +46,14 @@ const columnSlice = createSlice({
     },
     insertBelow(
       state,
-      action: PayloadAction<{ id: number; newId: number; duplicate?: number }>
+      action: PayloadAction<{
+        id: number | null
+        newId: number
+        duplicate?: number
+      }>
     ) {
       const { newId, duplicate } = action.payload
+
       const column = duplicate
         ? state.entities[duplicate]
         : state.entities[state.ids[0]]
