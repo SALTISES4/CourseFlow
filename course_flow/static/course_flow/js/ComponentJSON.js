@@ -5,7 +5,34 @@ import * as Constants from "./Constants";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
 import {reloadCommentsAction} from "./Reducers";
 import {getUsersForObject, restoreSelf, toggleDrop, newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, removeAllComments, updateObjectSet} from "./PostFunctions";
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css';
 
+//Fix Quilljs's link sanitization
+const Link = Quill.import('formats/link')
+// Override the existing property on the Quill global object and add custom protocols
+Link.PROTOCOL_WHITELIST = ['http', 'https'];
+
+class CustomLinkSanitizer extends Link {
+  static sanitize(url) {
+    // Run default sanitize method from Quill
+    const sanitizedUrl = super.sanitize(url);
+
+    // Not whitelisted URL based on protocol so, let's return `blank`
+    if (!sanitizedUrl || sanitizedUrl === 'about:blank') return sanitizedUrl;
+
+    // Verify if the URL already have a whitelisted protocol
+    const hasWhitelistedProtocol = this.PROTOCOL_WHITELIST.some(function(protocol) {
+      return sanitizedUrl.startsWith(protocol);
+    })
+
+    if (hasWhitelistedProtocol) return sanitizedUrl;
+
+    // if not, then append only 'http' to not to be a relative URL
+    return `http://${sanitizedUrl}`;
+  }
+}
+Quill.register(CustomLinkSanitizer, true);
 
 //Extends the react component to add a few features that are used in a large number of components
 export class Component extends React.Component{
