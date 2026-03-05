@@ -1,4 +1,4 @@
-console.log('CourseFLow version 0.8.34 scripts')
+console.log('CourseFLow version 0.8.36 scripts')
 
 
 $.ajaxSetup({
