@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-17 11:05-0400\n"
+"POT-Creation-Date: 2025-12-19 14:16-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -581,43 +581,48 @@ msgid "Created"
 msgstr "Créé"
 
 #: static/course_flow/js/ExportMenu.js:99
-#: static/course_flow/js/WorkflowView.js:1175
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Outcomes"
-msgstr "Acquis"
+msgid "Workflow (formatted)"
+msgstr "Plan de travail (formaté):"
 
 #: static/course_flow/js/ExportMenu.js:102
-#: static/course_flow/js/WorkflowView.js:1160
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Nodes"
-msgstr "Noeuds"
+msgid "Outcomes (data only)"
+msgstr "Acquis (données seulement)"
 
 #: static/course_flow/js/ExportMenu.js:105
+#: static/course_flow/js/scripts-library.min.js:27
+#: static/course_flow/js/scripts-live.min.js:28
+#: static/course_flow/js/scripts-wf-redux.min.js:42
+msgid "Nodes (data only)"
+msgstr "Noeuds (données seulement)"
+
+#: static/course_flow/js/ExportMenu.js:108
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Course Framework"
 msgstr "Structure de cours"
 
-#: static/course_flow/js/ExportMenu.js:108
+#: static/course_flow/js/ExportMenu.js:111
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Competency Matrix"
 msgstr "Matrice de compétences"
 
-#: static/course_flow/js/ExportMenu.js:111
+#: static/course_flow/js/ExportMenu.js:114
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Sobec Validation"
 msgstr "Validation Sobec"
 
-#: static/course_flow/js/ExportMenu.js:114
+#: static/course_flow/js/ExportMenu.js:117
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -2014,6 +2019,11 @@ msgstr "Stratégies SALTISE"
 msgid "Restore items"
 msgstr "Restaurer"
 
+#: static/course_flow/js/WorkflowView.js:1160
+#: static/course_flow/js/scripts-wf-redux.min.js:42
+msgid "Nodes"
+msgstr "Noeuds"
+
 #: static/course_flow/js/WorkflowView.js:1165
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Weeks"
@@ -2023,6 +2033,11 @@ msgstr "Semaines"
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Columns"
 msgstr "Colonnes"
+
+#: static/course_flow/js/WorkflowView.js:1175
+#: static/course_flow/js/scripts-wf-redux.min.js:42
+msgid "Outcomes"
+msgstr "Acquis"
 
 #: static/course_flow/js/WorkflowView.js:1180
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -2693,9 +2708,6 @@ msgstr "Utilisé dans:"
 #~ msgid "fallbackFocus"
 #~ msgstr "fallbackFocus"
 
-#~ msgid "Outcomes to .xls"
-#~ msgstr "Acquis (.xls)"
-
 #~ msgid "Outcomes to .csv"
 #~ msgstr "Acquis (.csv)"
 
@@ -2722,9 +2734,6 @@ msgstr "Utilisé dans:"
 
 #~ msgid "Nodes to .csv"
 #~ msgstr "Noeuds (.csv)"
-
-#~ msgid "Nodes to .xls"
-#~ msgstr "Noeuds (.xls)"
 
 #~ msgid "custom value"
 #~ msgstr "valeur personnalisée"

@@ -1,7 +1,8 @@
 import datetime
 import re
 import time
-from functools import wraps
+from functools import (wraps, reduce)
+from operator import or_
 
 import bleach
 from django.contrib.contenttypes.models import ContentType
@@ -48,10 +49,12 @@ from .utils import (
     dateTimeFormat,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
+    get_outcomenode_trace,
     get_user_permission,
     get_user_role,
     linkIDMap,
     user_workflow_url,
+    default_column_settings,
 )
 
 bleach_allowed_attributes_description = {
@@ -147,8 +150,12 @@ class TitleSerializerMixin:
         return bleach_sanitizer(instance.title, tags=bleach_allowed_tags_title)
 
     def validate_title(self, value):
+        max_length = title_max_length
+        if self.Meta.model == Outcome:
+            max_length=500
+            print(max_length)
         return bleach_sanitizer(value, tags=bleach_allowed_tags_title)[
-            :title_max_length
+            :max_length
         ]
 
 
@@ -191,6 +198,8 @@ class TitleSerializerTextMixin(serializers.Serializer):
                         + 1
                     )
                 )
+            elif self.get_type(instance) == "column":
+                return (instance.get_display_title())
             else:
                 return _("Untitled")
         returnval = html2text(
@@ -1596,6 +1605,30 @@ class WeekExportSerializer(
     def get_type(self, instance):
         return "week"
 
+class ColumnExportSerializer(
+    serializers.ModelSerializer,
+    TitleSerializerTextMixin
+):
+    class Meta:
+        model = Column
+        fields = [
+            "id",
+            "title",
+            "colour",
+        ]
+
+    colour = serializers.SerializerMethodField()
+
+    def get_colour(self, instance):
+        if instance.colour: return str(hex(instance.colour)).replace("0x","#") 
+        default_col = default_column_settings.get(str(instance.column_type))
+        if default_col:
+            return default_col.get("colour")
+
+    def get_type(self, instance):
+        return "column"
+
+
 class NodeExportSerializer(
     serializers.ModelSerializer,
     TitleSerializerTextMixin,
@@ -1696,6 +1729,35 @@ class NodeExportSerializerWithTime(NodeExportSerializer):
         else:
             return instance.time_required
 
+class NodeExportSerializerForFormatted(
+    NodeExportSerializerWithTime
+):
+    class Meta:
+        model = Node
+        fields = [
+            "id",
+            "title",
+            "description",
+            "column_order",
+            "type",
+            "code",
+            "outcomes",
+            "time_required",
+            "time_units_display",
+        ]
+
+    outcomes = serializers.SerializerMethodField()
+    time_units_display = serializers.CharField(source="get_time_units_display")
+
+    def get_outcomes(self, instance):
+        ocns = get_unique_outcomenodes(instance)
+        ocs = []
+        for ocn in ocns:
+            ocs += list(get_outcomenode_trace(ocn))
+        ocs_unique = list({o.pk: o for o in ocs}.values())
+        ocs_serialized = OutcomeExportSerializer(ocs_unique,many=True).data 
+        ocs_format = [oc.get("code") + " - " +oc.get("title") for oc in ocs_serialized]
+        return "\n\n".join(ocs_format)
 
 class WorkflowExportSerializer(
     serializers.ModelSerializer,
@@ -1715,6 +1777,21 @@ class WorkflowExportSerializer(
 
     def get_type(self, instance):
         return "workflow"
+
+class WorkflowExportSerializerWithPonderation(
+    WorkflowExportSerializer
+):
+    class Meta:
+        model = Workflow
+        fields = [
+            "id",
+            "title",
+            "description",
+            "ponderation_theory",
+            "ponderation_individual",
+            "ponderation_practical",
+            "type",
+        ]
 
 
 class UpdateNotificationSerializer(

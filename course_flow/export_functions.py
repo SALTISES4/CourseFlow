@@ -1,4 +1,5 @@
 from io import BytesIO
+import traceback
 
 import pandas as pd
 from django.db.models import Q
@@ -14,13 +15,16 @@ from .models import (
     Program,
     Week,
     WeekWorkflow,
+    Column,
 )
 from .serializers import (
     NodeExportSerializer,
     NodeExportSerializerWithTime,
+    NodeExportSerializerForFormatted,
     OutcomeExportSerializer,
     WeekExportSerializer,
     WorkflowExportSerializer,
+    ColumnExportSerializer,
 )
 from .utils import (
     get_all_outcomes_ordered_filtered,
@@ -257,7 +261,7 @@ def get_course_framework(workflow, allowed_sets):
     df = concat_line(df, headers)
     for outcome in workflow.outcomes.filter(deleted=False).filter(
         allowed_sets_Q(allowed_sets)
-    ):
+    ).distinct():
         df = concat_line(
             df, get_framework_line_for_outcome(outcome, columns, allowed_sets)
         )
@@ -279,6 +283,7 @@ def get_workflow_outcomes_table(workflow, allowed_sets):
 def get_outcomes_export(
     model_object, object_type, export_format, allowed_sets
 ):
+    print("in outcome export")
     if object_type == "project":
         workflows = list(model_object.workflows.filter(deleted=False))
     else:
@@ -288,6 +293,7 @@ def get_outcomes_export(
             with pd.ExcelWriter(b, engine="xlsxwriter") as writer:
                 for workflow in workflows:
                     df = get_workflow_outcomes_table(workflow, allowed_sets)
+                    print("got it")
                     sheet_name = (
                         get_alphanum(workflow.title) + "_" + str(workflow.pk)
                     )[:30]
@@ -611,6 +617,7 @@ def get_program_matrix(workflow, simple, allowed_sets):
         for node in (
             Node.objects.filter(allowed_sets_Q(allowed_sets))
             .filter(week=week, deleted=False)
+            .distinct()
             .order_by("nodeweek__rank")
         ):
             rows += [{"type": "node", "object": node}]
@@ -720,6 +727,7 @@ def get_workflow_nodes_table(workflow, allowed_sets):
         entries += NodeExportSerializer(
             Node.objects.filter(week=week, deleted=False)
             .filter(allowed_sets_Q(allowed_sets))
+            .distinct()
             .order_by("nodeweek__rank"),
             many=True,
         ).data
@@ -759,7 +767,7 @@ def get_sobec_outcome(workflow, outcome, allowed_sets):
 def get_sobec(workflow, allowed_sets):
     outcomes = get_base_outcomes_ordered_filtered(
         workflow, allowed_sets_Q(allowed_sets)
-    )
+    )    
     data = []
     for outcome in outcomes:
         data += get_sobec_outcome(workflow, outcome, allowed_sets)

@@ -33,7 +33,23 @@ owned_throughmodels = [
 ]
 
 
+default_column_settings = {
+    "0":{"colour":"#6738ff","icon":"other"},
+    "1":{"colour":"#0b118a","icon":"ooci"},
+    "2":{"colour":"#114cd4","icon":"home"},
+    "3":{"colour":"#11b3d4","icon":"instruct"},
+    "4":{"colour":"#04d07d","icon":"students"},
+    "10":{"colour":"#6738ff","icon":"other"},
+    "11":{"colour":"#ad351d","icon":"homework"},
+    "12":{"colour":"#ed4a28","icon":"lesson"},
+    "13":{"colour":"#ed8934","icon":"artifact"},
+    "14":{"colour":"#f7ba2a","icon":"assessment"},
+    "20":{"colour":"#369934","icon":"other"}
+}
+
+
 def get_alphanum(string):
+    if(string is None):return ""
     return re.sub(r"\W+", "", string)
 
 
@@ -136,6 +152,7 @@ def get_base_outcomes_ordered_filtered(workflow, extra_filter=Q()):
         models.Outcome.objects.filter(workflow=workflow, deleted=False)
         .filter(extra_filter)
         .order_by("outcomeworkflow__rank")
+        .distinct()
     )
 
 
@@ -145,6 +162,7 @@ def get_all_outcomes_ordered_filtered(workflow, extra_filter):
         models.Outcome.objects.filter(workflow=workflow, deleted=False)
         .filter(extra_filter)
         .order_by("outcomeworkflow__rank")
+        .distinct()
     ):
         outcomes += get_all_outcomes_ordered_for_outcome(outcome)
     return outcomes
@@ -167,7 +185,6 @@ def get_unique_outcomenodes(node):
         )
     )
 
-
 def get_outcomenodes(node):
     return node.outcomenode_set.exclude(
         Q(outcome__deleted=True)
@@ -181,6 +198,15 @@ def get_outcomenodes(node):
         "outcome__parent_outcome_links__rank",
     )
 
+#From an outcomenode, create a Q to get the outcome and all its parents, heirarchically organized
+def get_outcomenode_trace(ocn):
+    oc = ocn.outcome
+    return models.Outcome.objects.filter(
+        Q(pk=oc.pk)
+        | Q(children=oc)
+        | Q(children__children=oc)
+        | Q(children__children__children=oc)
+    ).distinct().order_by("depth")
 
 def get_unique_outcomehorizontallinks(outcome):
     return (
@@ -424,12 +450,12 @@ def clean_old_exports(user_dir, max_jobs: int = 2):
 
     # If too many, delete oldest
     while len(jobs) >= max_jobs + 1:
-        print(f"max jobs {max_jobs} less than num jobs {len(jobs)}")
         _, filename, job_file = jobs.pop(0)
-        data_file = user_dir / filename
         job_file.unlink()
-        if data_file.exists():
-            data_file.unlink()
+        if filename is not None:
+            data_file = user_dir / filename
+            if data_file.exists():
+                data_file.unlink()
 
     valid_filenames = {filename for _, filename, _ in jobs}
 

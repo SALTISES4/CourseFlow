@@ -7,7 +7,7 @@ import {Loader} from "./Constants";
 export class ExportMenu extends React.Component{
     constructor(props){
         super(props);
-        this.state={type:"outcome",export_method:"email",jobs:[]}
+        this.state={type:"workflow",export_method:"email",jobs:[]}
     }
 
     componentDidMount() {
@@ -96,10 +96,13 @@ export class ExportMenu extends React.Component{
         let type = this.props.data.type;
         let exports=[];
         exports.push(
-            [<input name="export_type" type="radio" value="outcome" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="outcome"}/>,<label for="export_type">{gettext("Outcomes")}</label>]
+            [<input name="export_type" type="radio" value="workflow" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="workflow"}/>,<label for="export_type">{gettext("Workflow (formatted)")}</label>]
         );
         exports.push(
-            [<input name="export_type" type="radio" value="node" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="node"}/>,<label for="export_type">{gettext("Nodes")}</label>]
+            [<input name="export_type" type="radio" value="outcome" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="outcome"}/>,<label for="export_type">{gettext("Outcomes (data only)")}</label>]
+        );
+        exports.push(
+            [<input name="export_type" type="radio" value="node" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="node"}/>,<label for="export_type">{gettext("Nodes (data only)")}</label>]
         );
         if(type=="project"||type=="course")exports.push(
             [<input name="export_type" type="radio" value="framework" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="framework"}/>,<label for="export_type">{gettext("Course Framework")}</label>]
@@ -111,7 +114,7 @@ export class ExportMenu extends React.Component{
             [<input name="export_type" type="radio" value="sobec" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="sobec"}/>,<label for="export_type">{gettext("Sobec Validation")}</label>]
         );
         if(type=="program")exports.push(
-            [<input name="export_type" type="radio" value="analytics" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="analytics"}/>,<label for="export_type">{gettext("Program Analytics Export")}</label>]
+            [<input name="export_type" type="radio" value="program_analytics" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="program_analytics"}/>,<label for="export_type">{gettext("Program Analytics Export")}</label>]
         );
 
 
