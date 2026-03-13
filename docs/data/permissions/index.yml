@@ -1,0 +1,3 @@
+workflow: workflow_permissions.yml
+project: project_permissions.yml
+organization: organization_permissions.yml

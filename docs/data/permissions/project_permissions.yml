@@ -1,0 +1,64 @@
+version: 1
+
+resource: project
+
+states:
+  - active
+  - archived
+  - declined
+  - open
+  - closed
+  - dead
+
+roles:
+  - owner
+  - editor
+  - commenter
+  - viewer
+  - anonymous
+
+actions:
+
+  view:
+    active:
+      owner: true
+      editor: true
+      commenter: true
+      viewer: true
+      anonymous: false
+    open:
+      owner: true
+      editor: true
+      commenter: true
+      viewer: true
+      anonymous: true
+
+  edit_project:
+    active:
+      owner: true
+      editor: true
+
+  manage_members:
+    active:
+      owner: true
+      editor: true
+
+  archive_project:
+    active:
+      owner: true
+
+  restore_project:
+    archived:
+      owner: true
+
+  delete_project:
+    archived:
+      owner: true
+
+  publish_project:
+    active:
+      owner: true
+
+  decline_project:
+    active:
+      owner: true

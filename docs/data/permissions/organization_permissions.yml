@@ -1,0 +1,35 @@
+version: 1
+
+resource: organization
+
+roles:
+  - lead
+  - member
+  - third_party
+
+actions:
+
+  view_public_projects:
+    lead: true
+    member: true
+    third_party: true
+
+  create_project:
+    lead: true
+    member: true
+    third_party: false
+
+  edit_organization_projects:
+    lead: true
+    member: true
+    third_party: false
+
+  manage_organization_members:
+    lead: true
+    member: false
+    third_party: false
+
+  archive_organization_projects:
+    lead: true
+    member: false
+    third_party: false

@@ -1,0 +1,137 @@
+version: 1
+
+resource: workflow
+
+states:
+  - active
+  - archived
+
+roles:
+  - owner
+  - editor
+  - commenter
+  - viewer
+  - anonymous
+
+actions:
+
+  view:
+    active:
+      owner: true
+      editor: true
+      commenter: true
+      viewer: true
+      anonymous: false
+    archived:
+      owner: true
+      editor: true
+      commenter: true
+      viewer: true
+      anonymous: false
+
+  edit_attributes:
+    active:
+      owner: true
+      editor: true
+      commenter: false
+      viewer: false
+      anonymous: false
+
+  manage_contributors:
+    active:
+      owner: true
+      editor: true
+
+  archive:
+    active:
+      owner: true
+      editor: true
+
+  restore:
+    archived:
+      owner: true
+
+  delete_permanently:
+    archived:
+      owner: true
+
+  export:
+    active:
+      owner: true
+      editor: true
+      commenter: true
+      viewer: true
+    archived:
+      owner: true
+      editor: true
+      commenter: true
+      viewer: true
+
+  copy:
+    active:
+      owner: true
+      editor: true
+      commenter: true
+      viewer: true
+    archived:
+      owner: true
+      editor: true
+      commenter: true
+      viewer: true
+
+  import_nodes:
+    active:
+      owner: true
+      editor: true
+
+  import_outcomes:
+    active:
+      owner: true
+      editor: true
+
+  node_management:
+    active:
+      owner: true
+      editor: true
+
+  part_management:
+    active:
+      owner: true
+      editor: true
+
+  node_category_management:
+    active:
+      owner: true
+      editor: true
+
+  node_link_management:
+    active:
+      owner: true
+      editor: true
+
+  outcome_management:
+    active:
+      owner: true
+      editor: true
+
+  comment:
+    active:
+      owner: true
+      editor: true
+      commenter: true
+
+  delete_own_comment:
+    active:
+      owner: true
+      editor: true
+      commenter: true
+
+  delete_any_comment:
+    active:
+      owner: true
+      editor: true
+
+  assign_outcomes:
+    active:
+      owner: true
+      editor: true
