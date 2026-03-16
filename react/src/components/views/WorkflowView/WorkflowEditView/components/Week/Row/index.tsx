@@ -147,7 +147,7 @@ const WeekRow = (props: WeekRowPropsType) => {
               highlight={state.draggingOver === columnId}
               borderColor={columnColors[columnId]}
               onReorder={onNodeReorder}
-              empty
+              emptyRow
             />
           ))}
         </WeekRowEmpty>

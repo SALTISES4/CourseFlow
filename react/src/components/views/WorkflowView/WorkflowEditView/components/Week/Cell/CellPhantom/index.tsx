@@ -3,13 +3,13 @@ import {
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box'
+import { isGridCell } from '@cfViews/WorkflowView/WorkflowEditView/types'
 import { alpha } from '@mui/material'
 import Box from '@mui/material/Box'
 import { produce } from 'immer'
 import { useEffect, useState } from 'react'
 
-import { isGridCell } from '../../../../types'
+import DropIndicator from '../DropIndicator'
 import { WeekCellPhantomTypeInternal, WeekCellType } from '../types'
 
 const WeekCellPhantom = ({
@@ -20,7 +20,7 @@ const WeekCellPhantom = ({
   borderColor,
   wrapRef,
   insertMode,
-  empty,
+  emptyRow,
   onDrop
 }: WeekCellPhantomTypeInternal) => {
   const [state, setState] = useState({
@@ -82,7 +82,7 @@ const WeekCellPhantom = ({
           onDrop({
             type: WeekCellType.PHANTOM,
             edge:
-              insertMode === 'column' || empty
+              insertMode === 'column' || emptyRow
                 ? undefined
                 : (extractClosestEdge(self.data) as 'top' | 'bottom'),
             id: dropped.id,
@@ -101,21 +101,18 @@ const WeekCellPhantom = ({
         )
       }
     })
-  }, [wrapRef, columnId, coordsWeek, coordsY, insertMode, empty, onDrop])
+  }, [wrapRef, columnId, coordsWeek, coordsY, insertMode, emptyRow, onDrop])
+
+  const backgroundIndicator =
+    ((insertMode === 'column' || emptyRow) && state.draggedOver) || highlight
+
+  const lineIndicator =
+    state.closestEdge && insertMode !== 'column' && !emptyRow
 
   return (
-    <Box
-      sx={{
-        height: '100%',
-        backgroundColor:
-          (((insertMode === 'column' || empty) && state.draggedOver) ||
-            highlight) &&
-          alpha(borderColor, 0.2)
-      }}
-    >
-      {state.closestEdge && insertMode !== 'column' && !empty && (
-        <DropIndicator edge={state.closestEdge} type="no-terminal" gap="32px" />
-      )}
+    <Box sx={{ height: '100%' }}>
+      {backgroundIndicator && <DropIndicator color={alpha(borderColor, 0.2)} />}
+      {lineIndicator && <DropIndicator edge={state.closestEdge} />}
     </Box>
   )
 }

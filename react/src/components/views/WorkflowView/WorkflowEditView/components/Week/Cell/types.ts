@@ -26,7 +26,7 @@ export type WeekCellProps = WeekCellPhantomType | WeekCellNodeType
 
 export interface WeekCellPhantomType extends WeekCellShared {
   type: WeekCellType.PHANTOM
-  empty?: boolean
+  emptyRow?: boolean
   highlight?: boolean
 }
 
