@@ -50,16 +50,32 @@ const WeekCellPhantom = ({
         if (!isGridCell(source.data)) {
           return
         }
-        setState(
-          produce((draft) => {
-            draft.closestEdge = extractClosestEdge(self.data)
-          })
-        )
+
+        if (
+          insertMode === 'row' &&
+          isGridCell(source.data) &&
+          source.data.coords.y !== coordsY
+        ) {
+          setState(
+            produce((draft) => {
+              draft.closestEdge = extractClosestEdge(self.data)
+            })
+          )
+        }
       },
-      onDragEnter: () => {
+      onDragEnter: ({ source, self }) => {
         setState(
           produce((draft) => {
             draft.draggedOver = true
+            draft.closestEdge = false
+
+            if (
+              insertMode === 'row' &&
+              isGridCell(source.data) &&
+              source.data.coords.y !== coordsY
+            ) {
+              draft.closestEdge = extractClosestEdge(self.data)
+            }
           })
         )
       },
@@ -69,10 +85,8 @@ const WeekCellPhantom = ({
           closestEdge: null
         })
       },
-      canDrop: ({ source }) => {
-        return isGridCell(source.data)
-      },
-      onDrop: ({ source, self }) => {
+      canDrop: ({ source }) => isGridCell(source.data),
+      onDrop: ({ source }) => {
         const dropped = source.data
         if (!isGridCell(dropped)) {
           return null
@@ -81,10 +95,7 @@ const WeekCellPhantom = ({
         if (isGridCell(dropped)) {
           onDrop({
             type: WeekCellType.PHANTOM,
-            edge:
-              insertMode === 'column' || emptyRow
-                ? undefined
-                : (extractClosestEdge(self.data) as 'top' | 'bottom'),
+            edge: undefined,
             id: dropped.id,
             fromWeek: dropped.coords.week,
             toWeek: coordsWeek,
@@ -93,21 +104,17 @@ const WeekCellPhantom = ({
           })
         }
 
-        setState(
-          produce((draft) => {
-            draft.draggedOver = false
-            draft.closestEdge = null
-          })
-        )
+        setState({
+          draggedOver: false,
+          closestEdge: null
+        })
       }
     })
   }, [wrapRef, columnId, coordsWeek, coordsY, insertMode, emptyRow, onDrop])
 
   const backgroundIndicator =
-    ((insertMode === 'column' || emptyRow) && state.draggedOver) || highlight
-
-  const lineIndicator =
-    state.closestEdge && insertMode !== 'column' && !emptyRow
+    !state.closestEdge && (state.draggedOver || highlight)
+  const lineIndicator = state.closestEdge && !emptyRow
 
   return (
     <Box sx={{ height: '100%' }}>

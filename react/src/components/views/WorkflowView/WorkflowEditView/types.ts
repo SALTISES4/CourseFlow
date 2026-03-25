@@ -76,6 +76,15 @@ export function isSidebarNode(data: Record<string | symbol, unknown>): data is {
   )
 }
 
+export function isSidebarCustomNode(
+  data: Record<string | symbol, unknown>
+): data is {
+  id: number
+  type: DraggableType.SIDEBAR_NODE_CUSTOM
+} {
+  return isSidebarNode(data) && data.type === DraggableType.SIDEBAR_NODE_CUSTOM
+}
+
 export function isSidebarPart(data: Record<string | symbol, unknown>): data is {
   id: number
 } {
