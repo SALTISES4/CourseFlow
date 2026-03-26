@@ -15,8 +15,8 @@ export const CellHighlight = styled(Box, {
 }))
 
 export const CellLine = styled(Box, {
-  shouldForwardProp: (prop) => !['edge'].includes(prop as string)
-})<{ edge: Edge }>(({ theme, edge }) => ({
+  shouldForwardProp: (prop) => !['edge', 'offset'].includes(prop as string)
+})<{ edge: Edge; offset?: number }>(({ theme, edge, offset }) => ({
   position: 'absolute',
   top: 0,
   left: 0,
@@ -25,8 +25,8 @@ export const CellLine = styled(Box, {
   '&::before': {
     content: '""',
     position: 'absolute',
-    top: edge === 'top' && '-19px',
-    bottom: edge === 'bottom' && '-19px',
+    top: edge === 'top' && (offset ?? '-19px'),
+    bottom: edge === 'bottom' && (offset ?? '-19px'),
     left: 0,
     width: '100%',
     height: '6px',

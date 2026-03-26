@@ -4,7 +4,6 @@ import {
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box'
 import { getNextLargestNumber } from '@cf/redux/selectors/helpers'
 import { WorkflowBoard } from '@cf/redux/selectors/workflow.selector'
 import { columnInsertBelow } from '@cf/redux/slices/column.slice'
@@ -19,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import type { WeekPropsType } from '../'
 import WeekCell from '../Cell'
+import DropIndicator from '../Cell/DropIndicator'
 import { WeekCellType } from '../Cell/types'
 import * as StyledWeek from '../styles'
 
@@ -188,7 +188,7 @@ const WeekRow = (props: WeekRowPropsType) => {
         )
       })}
       {state.closestEdge && (
-        <DropIndicator edge={state.closestEdge} type="no-terminal" />
+        <DropIndicator edge={state.closestEdge} offset={-3} />
       )}
     </StyledWorkflow.CellRow>
   )

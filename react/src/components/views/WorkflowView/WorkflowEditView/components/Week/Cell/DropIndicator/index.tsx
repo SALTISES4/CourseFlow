@@ -1,10 +1,12 @@
 import { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
+import { SxProps } from '@mui/material'
 
 import * as Styled from './styles'
 
 type PropsType =
   | {
       edge: Edge
+      offset?: number
     }
   | {
       color: string
@@ -12,7 +14,7 @@ type PropsType =
 
 const DropIndicator = (props: PropsType) => {
   if ('edge' in props && (props.edge === 'top' || props.edge === 'bottom')) {
-    return <Styled.CellLine edge={props.edge} />
+    return <Styled.CellLine offset={props.offset} edge={props.edge} />
   }
 
   if ('color' in props) {
