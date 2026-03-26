@@ -14,14 +14,14 @@ type PropsType = {
   weekId: number
   columnIds: WorkflowBoard['columns']['ids']
   columnColors: WorkflowBoard['columns']['colors']
-  onNodeReorder: WeekPropsType['onNodeReorder']
+  onNodeDrop: WeekPropsType['onNodeDrop']
 }
 
 const EmptyWeekRow = ({
   weekId,
   columnIds,
   columnColors,
-  onNodeReorder
+  onNodeDrop
 }: PropsType) => {
   const ref = useRef<HTMLDivElement>(null)
   const dragging = useSelector((state: RootState) => state.svglink.allowDnd)
@@ -37,7 +37,7 @@ const EmptyWeekRow = ({
           coordsY={0}
           columnId={columnId}
           borderColor={columnColors[columnId]}
-          onReorder={onNodeReorder}
+          onReorder={onNodeDrop}
         />
       ))}
       <Styled.EmptyText sx={{ opacity: dragging ? 0 : 1 }}>

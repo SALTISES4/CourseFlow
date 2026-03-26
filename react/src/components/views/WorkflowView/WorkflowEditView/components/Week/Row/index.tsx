@@ -34,14 +34,14 @@ interface NonEmptyRowType {
   rowIndex: number
   columnIds: WorkflowBoard['columns']['ids']
   columnColors: WorkflowBoard['columns']['colors']
-  onNodeReorder: WeekPropsType['onNodeReorder']
+  onNodeDrop: WeekPropsType['onNodeDrop']
   onNodeClick: (e: MouseEvent<HTMLDivElement>, nodeId: number) => void
 }
 
 interface EmptyRowType
   extends Pick<
     NonEmptyRowType,
-    'weekId' | 'columnIds' | 'columnColors' | 'onNodeReorder'
+    'weekId' | 'columnIds' | 'columnColors' | 'onNodeDrop'
   > {
   rowIndex: 'empty'
 }
@@ -64,7 +64,7 @@ const WeekRow = (props: WeekRowPropsType) => {
     closestEdge: null
   })
 
-  const { weekId, rowIndex, columnIds, columnColors, onNodeReorder } = props
+  const { weekId, rowIndex, columnIds, columnColors, onNodeDrop } = props
 
   useEffect(() => {
     return dropTargetForElements({
@@ -158,7 +158,7 @@ const WeekRow = (props: WeekRowPropsType) => {
               columnId={columnId}
               highlight={state.dragId === columnId}
               borderColor={columnColors[columnId]}
-              onReorder={onNodeReorder}
+              onReorder={onNodeDrop}
               emptyRow
             />
           ))}
@@ -190,7 +190,7 @@ const WeekRow = (props: WeekRowPropsType) => {
             nodeId={nodeId}
             columnId={columnId}
             borderColor={columnColors[columnId]}
-            onReorder={onNodeReorder}
+            onReorder={onNodeDrop}
             onClick={onNodeClick}
           />
         ) : (
@@ -202,7 +202,7 @@ const WeekRow = (props: WeekRowPropsType) => {
             coordsY={rowIndex}
             columnId={columnId}
             borderColor={columnColors[columnId]}
-            onReorder={onNodeReorder}
+            onReorder={onNodeDrop}
           />
         )
       })}
