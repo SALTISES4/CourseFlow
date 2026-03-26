@@ -8,6 +8,7 @@ import { getNextLargestNumber } from '@cf/redux/selectors/helpers'
 import { WorkflowBoard } from '@cf/redux/selectors/workflow.selector'
 import { columnInsertBelow } from '@cf/redux/slices/column.slice'
 import { nodeWorkflowInsert } from '@cf/redux/slices/node.slice'
+import store from '@cf/redux/store'
 import { RootState } from '@cf/redux/store'
 import { defaultColumnSettings } from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
@@ -87,7 +88,9 @@ const WeekRow = (props: WeekRowPropsType) => {
         }
         setState(
           produce((draft) => {
-            draft.highlightRow = isSidebarCustomNode(dragging)
+            const columnMode =
+              store.getState().workspace.node.insertMode === 'column'
+            draft.highlightRow = columnMode && isSidebarCustomNode(dragging)
             draft.dragId = dragging.id
           })
         )
@@ -112,11 +115,14 @@ const WeekRow = (props: WeekRowPropsType) => {
         )
       },
       onDrop: ({ source, self }) => {
-        let columnId = source.data.id as number
         const row = self.data.row as number
+        let columnId = source.data.id as number
         let closestEdge = extractClosestEdge(self.data)
 
-        if (isSidebarCustomNode(source.data)) {
+        const columnMode =
+          store.getState().workspace.node.insertMode === 'column'
+
+        if (isSidebarCustomNode(source.data) && columnMode) {
           columnId = getNextLargestNumber(wsColIds)
           closestEdge = 'top'
           dispatch(columnInsertBelow({ id: null, newId: columnId }))
@@ -124,6 +130,7 @@ const WeekRow = (props: WeekRowPropsType) => {
 
         dispatch(
           nodeWorkflowInsert({
+            newColumn: isSidebarCustomNode(source.data),
             columnId,
             weekId,
             row:
