@@ -1,0 +1,180 @@
+import json
+import logging
+import re
+
+import bleach
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.models import ProtectedError
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.request import Request
+from rest_framework.response import Response
+
+from course_flow_legacy.apps import logger
+from course_flow_legacy.decorators import (
+    check_object_permission,
+    user_can_comment,
+    user_can_edit,
+)
+from course_flow_legacy.models import Notification, User
+from course_flow_legacy.models.notification import TypeChoices
+from course_flow_legacy.models.objectPermission import Permission
+from course_flow_legacy.serializers import CommentSerializer
+from course_flow_legacy.services import DAO
+
+#########################################################
+# COMMENTS
+#########################################################
+
+
+##########################################################
+# GET
+#########################################################
+class CommentEndpoint:
+    @staticmethod
+    # @user_can_comment(False)
+    @api_view(["POST"])
+    def list_by_object(request: Request) -> Response:
+        """
+
+        :param request:
+        :return:
+        """
+        body = request.data
+        object_id = body.get("object_id")
+        object_type = body.get("object_type")
+
+        try:
+            comments = (
+                DAO.get_model_from_str(object_type)
+                .objects.get(id=object_id)
+                .comments.all()
+                .order_by("created_on")
+            )
+            Notification.objects.filter(comment__in=comments, user=request.user).update(
+                is_unread=False
+            )
+            data_package = CommentSerializer(comments, many=True).data
+
+        except AttributeError as e:
+            logger.exception("An error occurred")
+            return Response(
+                {
+                    "error": "Error loading comments",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        return Response({"message": "success", "data_package": data_package})
+
+    ##########################################################
+    # CREATE
+    #########################################################
+    @staticmethod
+    # @user_can_comment(False)
+    @api_view(["POST"])
+    def create(request: Request) -> Response:
+        """
+
+        :param request:
+        :return:
+        """
+        body = request.data
+        object_id = body.get("object_id")
+        object_type = body.get("object_type")
+        text = bleach.clean(body.get("text"))
+
+        try:
+            obj = DAO.get_model_from_str(object_type).objects.get(id=object_id)
+
+            # check if we are notifying any users by parsing mentions via '@' in the body
+            usernames = re.findall(r"@\w[@a-zA-Z0-9_.]{1,}", text)
+            target_users = []
+
+            if len(usernames) > 0:
+                content_object = obj.get_workflow()
+                for username in usernames:
+                    try:
+                        target_user = User.objects.get(username=username[1:])
+                        if check_object_permission(
+                            content_object,
+                            target_user,
+                            Permission.PERMISSION_COMMENT.value,
+                        ):
+                            target_users += [target_user]
+                        else:
+                            raise ObjectDoesNotExist
+                    except ObjectDoesNotExist:
+                        text = text.replace(username, username[1:])
+
+            # create the comment
+            comment = obj.comments.create(text=text, user=request.user)
+
+            # create notifications
+            for target_user in target_users:
+                DAO.make_user_notification(
+                    source_user=request.user,
+                    target_user=target_user,
+                    notification_type=TypeChoices.TYPE_COMMENT.value,
+                    content_object=content_object,
+                    extra_text=text,
+                    comment=comment,
+                )
+
+        except ValidationError as e:
+            logger.exception("An error occurred")
+            return Response(
+                {
+                    "message": "Error creating comment",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        return Response({"message": "Success creating comment!"})
+
+    ##########################################################
+    # DELETE
+    #########################################################
+
+    @staticmethod
+    # @user_can_edit(False)
+    @api_view(["POST"])
+    def delete(request: Request, pk: int) -> Response:
+        body = request.data
+        object_type = body.get("object_type")
+        comment_id = body.get("comment_pk")
+
+        try:
+            model = DAO.get_model_from_str(object_type).objects.get(id=pk)
+            comment = model.comments.get(id=comment_id)
+            comment.delete()
+
+        except (ProtectedError, ObjectDoesNotExist):
+            return Response(
+                {
+                    "message": "Error deleting comment!",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        return Response({"message": "success"})
+
+    @staticmethod
+    # @user_can_edit(False)
+    @api_view(["POST"])
+    def delete_all(request: Request) -> Response:
+        body = request.data
+        object_id = body.get("object_id")
+        object_type = body.get("object_type")
+
+        try:
+            model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
+            model.comments.all().delete()
+
+        except (ProtectedError, ObjectDoesNotExist):
+            return Response(
+                {
+                    "message": "Error deleting comments!",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        return Response({"message": "success"})
