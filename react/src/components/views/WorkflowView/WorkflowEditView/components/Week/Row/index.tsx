@@ -9,9 +9,14 @@ import { WorkflowBoard } from '@cf/redux/selectors/workflow.selector'
 import { columnInsertBelow } from '@cf/redux/slices/column.slice'
 import { nodeWorkflowInsert } from '@cf/redux/slices/node.slice'
 import { RootState } from '@cf/redux/store'
+import { defaultColumnSettings } from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
 import * as StyledWorkflow from '@cfViews/WorkflowView/WorkflowEditView/styles'
-import { isSidebarNode } from '@cfViews/WorkflowView/WorkflowEditView/types'
+import {
+  isSidebarCustomNode,
+  isSidebarNode
+} from '@cfViews/WorkflowView/WorkflowEditView/types'
+import { alpha } from '@mui/material'
 import { produce } from 'immer'
 import { MouseEvent, ReactNode, memo, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -44,7 +49,8 @@ interface EmptyRowType
 type WeekRowPropsType = EmptyRowType | NonEmptyRowType
 
 type StateType = {
-  draggingOver: number | null
+  highlightRow: boolean
+  dragId: number | null
   closestEdge: Edge | null
 }
 
@@ -53,7 +59,8 @@ const WeekRow = (props: WeekRowPropsType) => {
   const rowRef = useRef<HTMLDivElement>(null)
   const wsColIds = useSelector((state: RootState) => state.workspace.column.ids)
   const [state, setState] = useState<StateType>({
-    draggingOver: null,
+    highlightRow: false,
+    dragId: null,
     closestEdge: null
   })
 
@@ -64,7 +71,7 @@ const WeekRow = (props: WeekRowPropsType) => {
       element: rowRef.current,
       getData: ({ element, input }) => {
         return attachClosestEdge(
-          { weekId: weekId, row: rowIndex },
+          { row: rowIndex },
           {
             element,
             input,
@@ -80,13 +87,16 @@ const WeekRow = (props: WeekRowPropsType) => {
         }
         setState(
           produce((draft) => {
-            draft.draggingOver = dragging.id
+            draft.highlightRow = isSidebarCustomNode(dragging)
+            draft.dragId = dragging.id
           })
         )
       },
-      onDragLeave: () => setState({ draggingOver: null, closestEdge: null }),
+      onDragLeave: () => {
+        setState({ highlightRow: false, dragId: null, closestEdge: null })
+      },
       onDrag: ({ source, self }) => {
-        if (!isSidebarNode(source.data)) {
+        if (!isSidebarNode(source.data) || isSidebarCustomNode(source.data)) {
           return
         }
 
@@ -104,23 +114,24 @@ const WeekRow = (props: WeekRowPropsType) => {
       onDrop: ({ source, self }) => {
         let columnId = source.data.id as number
         const row = self.data.row as number
-        const closestEdge = extractClosestEdge(self.data)
+        let closestEdge = extractClosestEdge(self.data)
 
-        if (columnId === -1) {
+        if (isSidebarCustomNode(source.data)) {
           columnId = getNextLargestNumber(wsColIds)
+          closestEdge = 'top'
           dispatch(columnInsertBelow({ id: null, newId: columnId }))
         }
 
         dispatch(
           nodeWorkflowInsert({
             columnId,
-            weekId: weekId,
+            weekId,
             row:
               rowIndex === 'empty' ? 0 : closestEdge === 'top' ? row : row + 1
           })
         )
 
-        setState({ draggingOver: null, closestEdge: null })
+        setState({ highlightRow: false, dragId: null, closestEdge: null })
       }
     })
   }, [dispatch, wsColIds, weekId, rowIndex])
@@ -129,10 +140,11 @@ const WeekRow = (props: WeekRowPropsType) => {
     return (
       <StyledWorkflow.CellRow
         ref={rowRef}
-        sx={{
+        style={{
           minHeight: 120,
           backgroundColor:
-            state.draggingOver === -1 ? 'rgba(4, 186, 116, 0.2)' : 'transparent'
+            state.dragId === -1 &&
+            alpha(defaultColumnSettings['new-column'].colour, 0.2)
         }}
       >
         <WeekRowEmpty>
@@ -144,7 +156,7 @@ const WeekRow = (props: WeekRowPropsType) => {
               coordsX={index}
               coordsY={0}
               columnId={columnId}
-              highlight={state.draggingOver === columnId}
+              highlight={state.dragId === columnId}
               borderColor={columnColors[columnId]}
               onReorder={onNodeReorder}
               emptyRow
@@ -158,7 +170,14 @@ const WeekRow = (props: WeekRowPropsType) => {
   const { nodes, onNodeClick } = props
 
   return (
-    <StyledWorkflow.CellRow ref={rowRef}>
+    <StyledWorkflow.CellRow
+      ref={rowRef}
+      style={{
+        backgroundColor:
+          state.highlightRow &&
+          alpha(defaultColumnSettings['new-column'].colour, 0.2)
+      }}
+    >
       {columnIds.map((columnId, index) => {
         const nodeId = nodes[index]
         return nodeId ? (
