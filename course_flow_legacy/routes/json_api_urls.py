@@ -13,10 +13,18 @@ from course_flow_legacy.views.json_api.workflow_objects import (
     outcome,
     workflow_objects,
 )
-from course_flow_legacy.views.json_api.workflow_objects.column import ColumnEndpoint
-from course_flow_legacy.views.json_api.workflow_objects.comment import CommentEndpoint
-from course_flow_legacy.views.json_api.workflow_objects.node import NodeEndpoint
-from course_flow_legacy.views.json_api.workflow_objects.week import WeekEndpoint
+from course_flow_legacy.views.json_api.workflow_objects.column import (
+    ColumnEndpoint,
+)
+from course_flow_legacy.views.json_api.workflow_objects.comment import (
+    CommentEndpoint,
+)
+from course_flow_legacy.views.json_api.workflow_objects.node import (
+    NodeEndpoint,
+)
+from course_flow_legacy.views.json_api.workflow_objects.week import (
+    WeekEndpoint,
+)
 from course_flow_legacy.views.json_api.workflow_objects.workflow import (
     WorkflowEndpoint,
 )
@@ -24,7 +32,9 @@ from course_flow_legacy.views.json_api.workflow_objects.workflow_objects import 
     WorkflowObjectEndpoint,
 )
 from course_flow_legacy.views.json_api.workspace import WorkspaceEndpoint
-from course_flow_legacy.views.json_api.workspace_user import WorkspaceUserEndpoint
+from course_flow_legacy.views.json_api.workspace_user import (
+    WorkspaceUserEndpoint,
+)
 
 router = routers.SimpleRouter()
 

@@ -18,7 +18,10 @@ from course_flow_legacy.models import Project
 from course_flow_legacy.models.favourite import Favourite
 from course_flow_legacy.models.objectPermission import ObjectPermission
 from course_flow_legacy.models.workspace.workflow import Workflow
-from course_flow_legacy.serializers import LibraryObjectSerializer, SearchSerializer
+from course_flow_legacy.serializers import (
+    LibraryObjectSerializer,
+    SearchSerializer,
+)
 from course_flow_legacy.services import DAO
 from course_flow_legacy.services.library import LibraryService
 from course_flow_legacy.templatetags.course_flow_templatetags import has_group

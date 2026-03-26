@@ -1,6 +1,9 @@
 from django.contrib.contenttypes.models import ContentType
 
-from course_flow_legacy.models.objectPermission import ObjectPermission, Permission
+from course_flow_legacy.models.objectPermission import (
+    ObjectPermission,
+    Permission,
+)
 from course_flow_legacy.models.workspace.project import Project
 from course_flow_legacy.serializers import LibraryObjectSerializer
 

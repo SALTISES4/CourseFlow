@@ -13,7 +13,10 @@ from django.http import (
 
 from course_flow_legacy.apps import logger
 from course_flow_legacy.models import User
-from course_flow_legacy.models.objectPermission import ObjectPermission, Permission
+from course_flow_legacy.models.objectPermission import (
+    ObjectPermission,
+    Permission,
+)
 from course_flow_legacy.models.workspace.workflow import Workflow
 from course_flow_legacy.services import DAO
 

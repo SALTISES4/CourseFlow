@@ -14,7 +14,12 @@ from course_flow_legacy.duplication_functions import (
     fast_duplicate_week,
     fast_duplicate_workflow,
 )
-from course_flow_legacy.models import ColumnWorkflow, Week, WeekWorkflow, Workflow
+from course_flow_legacy.models import (
+    ColumnWorkflow,
+    Week,
+    WeekWorkflow,
+    Workflow,
+)
 from course_flow_legacy.models.relations import NodeLink
 from course_flow_legacy.serializers import (
     ActivitySerializerShallow,

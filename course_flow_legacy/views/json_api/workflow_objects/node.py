@@ -30,9 +30,14 @@ from course_flow_legacy.serializers import (
     OutcomeNodeSerializerShallow,
 )
 from course_flow_legacy.services import DAO
-from course_flow_legacy.services.node import duplicate_node, set_linked_workflow
+from course_flow_legacy.services.node import (
+    duplicate_node,
+    set_linked_workflow,
+)
 from course_flow_legacy.sockets.emitters import WorkflowUpdateEmitter
-from course_flow_legacy.views.json_api._validators import DeleteRequestSerializer
+from course_flow_legacy.views.json_api._validators import (
+    DeleteRequestSerializer,
+)
 
 
 class NodeEndpoint:

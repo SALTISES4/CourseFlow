@@ -15,7 +15,10 @@ as they execute  for every template rendered.
 from django.urls import reverse
 
 from course_flow_legacy.models import Discipline
-from course_flow_legacy.serializers import DisciplineSerializer, FormFieldsSerializer
+from course_flow_legacy.serializers import (
+    DisciplineSerializer,
+    FormFieldsSerializer,
+)
 
 
 class ConfigService:

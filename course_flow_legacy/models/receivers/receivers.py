@@ -7,7 +7,10 @@ from django.dispatch import receiver
 from course_flow_legacy.apps import logger
 from course_flow_legacy.models.comment import Comment
 from course_flow_legacy.models.favourite import Favourite
-from course_flow_legacy.models.objectPermission import ObjectPermission, Permission
+from course_flow_legacy.models.objectPermission import (
+    ObjectPermission,
+    Permission,
+)
 from course_flow_legacy.models.relations.columnWorkflow import ColumnWorkflow
 from course_flow_legacy.models.relations.nodeLink import NodeLink
 from course_flow_legacy.models.relations.nodeWeek import NodeWeek

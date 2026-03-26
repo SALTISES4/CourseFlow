@@ -29,7 +29,9 @@ from course_flow_legacy.services import DAO, Utility
 from course_flow_legacy.services.events_dispatch import EventsDispatch
 from course_flow_legacy.services.workspace import WorkspaceService
 from course_flow_legacy.sockets.emitters import WorkflowUpdateEmitter
-from course_flow_legacy.views.json_api._validators import DeleteRequestSerializer
+from course_flow_legacy.views.json_api._validators import (
+    DeleteRequestSerializer,
+)
 
 
 class ObjectType(Enum):

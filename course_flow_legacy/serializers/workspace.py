@@ -5,7 +5,10 @@ from django.utils.translation import gettext as _
 from rest_framework import serializers
 
 from course_flow_legacy.models import Favourite, Node
-from course_flow_legacy.models.objectPermission import ObjectPermission, Permission
+from course_flow_legacy.models.objectPermission import (
+    ObjectPermission,
+    Permission,
+)
 from course_flow_legacy.models.objectset import ObjectSet
 from course_flow_legacy.serializers.mixin import (
     DescriptionSerializerMixin,

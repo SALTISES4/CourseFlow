@@ -6,7 +6,10 @@ from django.contrib.contenttypes.models import ContentType
 from course_flow_legacy.decorators import check_object_permission
 from course_flow_legacy.models import Project
 from course_flow_legacy.models.notification import Notification
-from course_flow_legacy.models.objectPermission import ObjectPermission, Permission
+from course_flow_legacy.models.objectPermission import (
+    ObjectPermission,
+    Permission,
+)
 
 
 class ContentPublicViewMixin(UserPassesTestMixin):

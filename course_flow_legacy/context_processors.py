@@ -17,7 +17,9 @@ from django.http import HttpRequest
 from rest_framework.renderers import JSONRenderer
 
 from course_flow_legacy.services.config import ConfigService
-from course_flow_legacy.services.notifications import get_app_update_notifications
+from course_flow_legacy.services.notifications import (
+    get_app_update_notifications,
+)
 from course_flow_legacy.services.workflow import WorkflowService
 
 LOCAL_IP = "localhost"

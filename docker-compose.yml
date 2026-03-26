@@ -1,66 +1,20 @@
-version: '3'
-
 services:
-  courseflow-django:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile
-    restart: always
-    container_name: "courseflow-django"
-    shm_size: 2G
-    tty: true
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - ./:/app/src
-    ports:
-      - "8001:8000"
-    networks:
-      - cf-network
-    entrypoint: [ "uv","run", "python", "manage.py", "runserver", "0.0.0.0:8000" ]
-    environment:
-      DALITE_DB_NAME: dalite_ng
-      DALITE_DB_USER: dalite
-      DALITE_DB_PASSWORD: dalite_password123
-      DALITE_DB_HOST: db
-      DALITE_DB_PORT: 3306
-    depends_on:
-      db:
-        condition: service_healthy
-
-  db:
-    image: mariadb
-    environment:
-      # MYSQL_ALLOW_EMPTY_PASSWORD: true
-      MYSQL_DATABASE: dalite_ng
-      MYSQL_USER: dalite
-      MYSQL_PASSWORD: dalite_password123
-      MYSQL_ROOT_PASSWORD: root_password123
-    ports:
-      - "3306:3306"
-    networks:
-      - cf-network
+      - courseflow_pgdata:/var/lib/postgresql/data
     healthcheck:
-      # Use TCP and 127.0.0.1 to avoid socket issues.
-      test: [ "CMD-SHELL", "mariadb-admin --connect-timeout=3 ping -h '$HOST' -uroot -p$${MYSQL_ROOT_PASSWORD} --protocol=tcp" ]
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 5s
-      timeout: 3s
-      retries: 20
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
-  cache:
-    container_name: "cf-redis"
-    image: redis:5.0
-    restart: always
-    ports:
-      - '6380:6379'
-    command: redis-server --loglevel warning
-    networks:
-      - cf-network
-
-  helper:
-    container_name: "helper"
-    image: alpine
-    command: sh -c "echo never > /sys/kernel/mm/transparent_hugepage/enabled"
-    privileged: true
-
-networks:
-  cf-network:
-    driver: bridge
+volumes:
+  courseflow_pgdata:

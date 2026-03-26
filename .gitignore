@@ -13,7 +13,7 @@
 .pytest_cache/
 .tern-port
 *venv*/
-/course_flow/local_settings.py
+/course_flow_legacy/local_settings.py
 /log
 /media
 /sent_emails
@@ -22,8 +22,8 @@
 /*venv*/
 logs
 pytest-logs.txt
-!/course_flow/static/course_flow/js/other/src/
-/course_flow/static/course_flow/js/other/dist/_virtual
+!/course_flow_legacy/static/course_flow/js/other/src/
+/course_flow_legacy/static/course_flow/js/other/dist/_virtual
 
 # Django stuff:
 *.sqlite3
@@ -39,9 +39,11 @@ local_settings.py
 /react/build/
 /react/dist/
 dist
-/course_flow/static/course_flow/js/react/dist/
+/course_flow_legacy/static/course_flow/js/react/dist/
 
 dump.rdb
 setup-data.sh
 assets
-course_flow/collected_static_files
+course_flow_legacy/collected_static_files
+/docs/
+/.cursorprompt

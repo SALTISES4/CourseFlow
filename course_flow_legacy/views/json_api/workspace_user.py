@@ -18,7 +18,10 @@ from rest_framework.response import Response
 from course_flow_legacy.apps import logger
 from course_flow_legacy.models import User
 from course_flow_legacy.models.notification import Notification
-from course_flow_legacy.models.objectPermission import ObjectPermission, Permission
+from course_flow_legacy.models.objectPermission import (
+    ObjectPermission,
+    Permission,
+)
 from course_flow_legacy.serializers import (
     ObjectPermissionDeleteSerializer,
     ObjectPermissionUpsertSerializer,
