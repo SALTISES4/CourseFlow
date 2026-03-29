@@ -1968,7 +1968,7 @@ def import_data(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"action": "posted"})
 
 
-EXPORT_DIR = 'exports/courseflow/exports'
+EXPORT_DIR = os.path.abspath('exports/courseflow/exports')
 
 @user_can_view(False)
 def get_export(request: HttpRequest) -> HttpResponse:
