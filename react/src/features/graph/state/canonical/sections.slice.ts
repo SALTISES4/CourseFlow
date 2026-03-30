@@ -1,4 +1,8 @@
-import { createEntityAdapter, createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import {
+  type PayloadAction,
+  createEntityAdapter,
+  createSlice
+} from '@reduxjs/toolkit'
 
 import type { SectionEntity, WorkflowId } from '../model/types'
 

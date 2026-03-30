@@ -1,7 +1,9 @@
+import { mapCurrentUserToEUser } from '@cf/context/mapCurrentUserToEUser'
 import Loader from '@cfComponents/UIPrimitives/Loader'
-import { useGetCurrentUserQuery } from '@XMLHTTP/API/user.rtk'
+import { selectAuthStatus, selectAuthUser } from '@cfRedux/slices/auth.slice'
 import { EUser } from '@XMLHTTP/types/entity'
 import React, { ReactNode } from 'react'
+import { useSelector } from 'react-redux'
 
 type UserContextType = {
   id: number
@@ -11,22 +13,34 @@ type UserContextType = {
 export const UserContext = React.createContext<UserContextType>(
   {} as UserContextType
 )
+
 interface UserProviderProps {
   children: ReactNode
 }
 
+/**
+ * Supplies legacy EUser from Redux auth (v2 Bearer + /api/auth/me).
+ * Only used under protected shell routes where auth is already established.
+ */
 const UserProvider = ({ children }: UserProviderProps) => {
-  const { data, error, isLoading, isError } = useGetCurrentUserQuery()
+  const status = useSelector(selectAuthStatus)
+  const current = useSelector(selectAuthUser)
 
-  if (isLoading) {
+  if (status === 'authenticated' && !current) {
     return <Loader />
   }
+
+  if (status !== 'authenticated' || !current) {
+    return <>{children}</>
+  }
+
+  const eUser = mapCurrentUserToEUser(current)
 
   return (
     <UserContext.Provider
       value={{
-        id: data.dataPackage.id,
-        user: data.dataPackage
+        id: eUser.id,
+        user: eUser
       }}
     >
       {children}

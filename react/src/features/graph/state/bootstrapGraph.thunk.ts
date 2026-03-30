@@ -1,15 +1,21 @@
 import type { ThunkAction, UnknownAction } from '@reduxjs/toolkit'
 
-import { channelsActions, edgesActions, nodesActions, sectionsActions, tagsActions, workflowMetaActions } from './canonical'
-import { graphLoadActions } from './graphLoad.slice'
+import {
+  channelsActions,
+  edgesActions,
+  nodesActions,
+  sectionsActions,
+  tagsActions,
+  workflowMetaActions
+} from './canonical'
 import {
   fetchWorkflowGraphBundle,
   fetchWorkflowMeta,
   fetchWorkflowTags
 } from './graphApi'
-import type { GraphResourceLoadState, WorkflowId } from './model/types'
-
+import { graphLoadActions } from './graphLoad.slice'
 import type { GraphState } from './graphState'
+import type { GraphResourceLoadState, WorkflowId } from './model/types'
 
 type GraphBootstrapState = { graph: GraphState }
 type GraphThunk<ReturnType = void> = ThunkAction<
@@ -19,21 +25,30 @@ type GraphThunk<ReturnType = void> = ThunkAction<
   UnknownAction
 >
 
-const setLoading = (workflowId: WorkflowId, resource: keyof GraphResourceLoadState) =>
+const setLoading = (
+  workflowId: WorkflowId,
+  resource: keyof GraphResourceLoadState
+) =>
   graphLoadActions.setResourceStatus({
     workflowId,
     resource,
     status: 'loading'
   })
 
-const setSucceeded = (workflowId: WorkflowId, resource: keyof GraphResourceLoadState) =>
+const setSucceeded = (
+  workflowId: WorkflowId,
+  resource: keyof GraphResourceLoadState
+) =>
   graphLoadActions.setResourceStatus({
     workflowId,
     resource,
     status: 'succeeded'
   })
 
-const setFailed = (workflowId: WorkflowId, resource: keyof GraphResourceLoadState) =>
+const setFailed = (
+  workflowId: WorkflowId,
+  resource: keyof GraphResourceLoadState
+) =>
   graphLoadActions.setResourceStatus({
     workflowId,
     resource,

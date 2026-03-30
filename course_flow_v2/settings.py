@@ -13,6 +13,7 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() in ("1", "true", "yes")
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 INSTALLED_APPS = [
+    "corsheaders",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -22,6 +23,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -69,3 +71,22 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+
+# ---------------------------------------------------------------------------
+# CORS — required when the SPA is served from a different origin than the API
+# (e.g. Vite on :3000 / :5173, Django on :8000). Use with fetch(..., credentials: "include").
+# Wildcard origins are not compatible with credentials; list explicit origins.
+# See: https://github.com/adamchainz/django-cors-headers
+# ---------------------------------------------------------------------------
+_cors_default = (
+    "http://localhost:3000,"
+    "http://127.0.0.1:3000,"
+    "http://localhost:5173,"
+    "http://127.0.0.1:5173"
+)
+CORS_ALLOWED_ORIGINS = [
+    o.strip()
+    for o in os.environ.get("CORS_ALLOWED_ORIGINS", _cors_default).split(",")
+    if o.strip()
+]
+CORS_ALLOW_CREDENTIALS = True

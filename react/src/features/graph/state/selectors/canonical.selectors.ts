@@ -1,6 +1,13 @@
 import { createSelector } from 'reselect'
 
-import { channelsAdapter, edgesAdapter, nodesAdapter, sectionsAdapter, tagsAdapter, workflowMetaAdapter } from '../canonical'
+import {
+  channelsAdapter,
+  edgesAdapter,
+  nodesAdapter,
+  sectionsAdapter,
+  tagsAdapter,
+  workflowMetaAdapter
+} from '../canonical'
 import type { GraphState } from '../graphState'
 import type { WorkflowId } from '../model/types'
 
@@ -8,7 +15,8 @@ type StateWithGraph = {
   graph: GraphState
 }
 
-export const selectGraphState = (state: StateWithGraph): GraphState => state.graph
+export const selectGraphState = (state: StateWithGraph): GraphState =>
+  state.graph
 export const selectGraphCanonical = (state: StateWithGraph) =>
   selectGraphState(state).canonical
 
@@ -29,7 +37,9 @@ const sectionSelectors = sectionsAdapter.getSelectors(selectSectionsState)
 const channelSelectors = channelsAdapter.getSelectors(selectChannelsState)
 const nodeSelectors = nodesAdapter.getSelectors(selectNodesState)
 const edgeSelectors = edgesAdapter.getSelectors(selectEdgesState)
-const workflowMetaSelectors = workflowMetaAdapter.getSelectors(selectWorkflowMetaState)
+const workflowMetaSelectors = workflowMetaAdapter.getSelectors(
+  selectWorkflowMetaState
+)
 const tagSelectors = tagsAdapter.getSelectors(selectTagsState)
 
 export const selectAllWorkflowMeta = workflowMetaSelectors.selectAll

@@ -9,6 +9,7 @@ import {
   renameNodeCommand
 } from './graphApi'
 import { graphLoadActions } from './graphLoad.slice'
+import type { GraphState } from './graphState'
 import type {
   CreateEdgeInput,
   DeleteEdgeInput,
@@ -16,7 +17,6 @@ import type {
   MoveNodeInput,
   RenameNodeInput
 } from './model/types'
-import type { GraphState } from './graphState'
 
 type GraphMutationState = { graph: GraphState }
 type GraphMutationThunk<ReturnType = void> = ThunkAction<

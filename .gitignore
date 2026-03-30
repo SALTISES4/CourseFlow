@@ -35,6 +35,8 @@ local_settings.py
 #Local Scripts:
 *_local.sh
 /.env
+/react/.env
+/react/.env.local
 /react/node_modules/
 /react/build/
 /react/dist/
@@ -47,3 +49,5 @@ assets
 course_flow_legacy/collected_static_files
 /docs/
 /.cursorprompt
+/course_flow_legacy/
+/course_flow_legacy.zip

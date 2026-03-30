@@ -1,3 +1,4 @@
+import UserProvider from '@cf/context/userContext'
 import NetworkActivityProvider from '@cf/HTTP/NetworkActivityProvider'
 import { OuterContentWrap } from '@cf/mui/helper'
 import GlobalDialogs from '@cfComponents/globalNav/GlobalDialogs'
@@ -32,7 +33,7 @@ const NotificationsAlert = ({ show }: { show: boolean }) => {
 
 const Base = ({ showNotifications, children }: PropsType) => {
   return (
-    <>
+    <UserProvider>
       <div className="main-wrapper">
         <Sidebar />
 
@@ -52,7 +53,7 @@ const Base = ({ showNotifications, children }: PropsType) => {
         </div>
       </div>
       <NetworkActivityProvider />
-    </>
+    </UserProvider>
   )
 }
 

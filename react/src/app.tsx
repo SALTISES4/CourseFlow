@@ -8,10 +8,10 @@ import { Provider } from 'react-redux'
 import { RouterProvider } from 'react-router-dom'
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
+import AuthBootstrap from '@cf/components/auth/AuthBootstrap'
 import CfRouter from '@cf/router/appRoutes'
 import { CookieProvider } from '@cf/context/cookieContext'
 import { DialogContextProvider } from '@cf/context/dialogContext'
-import UserProvider from '@cf/context/userContext'
 import { SidebarRootStyles } from '@cfComponents/globalNav/Sidebar/styles'
 import { CacheProvider } from '@emotion/react'
 
@@ -45,8 +45,7 @@ console.error = (message, ...args) => {
 
 // create the emotion cache
 const cache = createCache({
-  key: 'emotion',
-  nonce: window.cf_nonce
+  key: 'emotion'
 })
 
 const rootElement = document.getElementById('root')
@@ -54,22 +53,21 @@ const root = ReactDOM.createRoot(rootElement)
 
 root.render(
   <Provider store={store}>
+    <AuthBootstrap />
     <CookieProvider>
       <CacheProvider value={cache}>
         <SnackbarProvider
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
           <DialogContextProvider>
-            <UserProvider>
-              <ThemeProvider theme={theme}>
-                <ScopedCssBaseline sx={SidebarRootStyles}>
-                  <RouterProvider
-                    router={CfRouter}
-                    future={{ v7_startTransition: true }}
-                  />
-                </ScopedCssBaseline>
-              </ThemeProvider>
-            </UserProvider>
+            <ThemeProvider theme={theme}>
+              <ScopedCssBaseline sx={SidebarRootStyles}>
+                <RouterProvider
+                  router={CfRouter}
+                  future={{ v7_startTransition: true }}
+                />
+              </ScopedCssBaseline>
+            </ThemeProvider>
           </DialogContextProvider>
         </SnackbarProvider>
       </CacheProvider>

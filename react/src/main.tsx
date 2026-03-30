@@ -1,3 +1,4 @@
 // Standard Vite entrypoint.
-// app.tsx currently owns provider composition + render bootstrap.
+// Load legacy globals (mock globalContextData) before any module reads COURSEFLOW_APP.
+import '@cf/bootstrap'
 import './app'

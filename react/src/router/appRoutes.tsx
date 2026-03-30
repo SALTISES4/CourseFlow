@@ -1,4 +1,6 @@
 import Base from '@cf/base'
+import LoginRoute from '@cf/router/LoginRoute'
+import { RequireAuth } from '@cf/router/RequireAuth'
 import Home from '@cfPages/Home'
 import Explore from '@cfPages/Library/Explore'
 import Favourites from '@cfPages/Library/Favourites'
@@ -6,7 +8,7 @@ import MyLibrary from '@cfPages/Library/MyLibrary'
 import NotificationsPage from '@cfPages/Notifications'
 import WorkflowPage from '@cfPages/Workspace/Workflow'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
-import { createBrowserRouter } from 'react-router-dom'
+import { Navigate, createBrowserRouter } from 'react-router-dom'
 
 import NotificationsSettingsPage from 'components/pages/Settings/NotificationsSettings'
 import ProfileSettingsPage from 'components/pages/Settings/ProfileSettings'
@@ -54,89 +56,94 @@ export enum CFRoutes {
 
 export const CFRouter = createBrowserRouter([
   {
-    path: CFRoutes.HOME,
-    element: (
-      <Base showNotifications>
-        <Home />
-      </Base>
-    )
+    path: '/login',
+    element: <LoginRoute />
   },
   {
-    path: CFRoutes.FAVOURITES,
-    element: (
-      <Base>
-        <Favourites />
-      </Base>
-    )
+    path: '/',
+    element: <Navigate to={CFRoutes.HOME} replace />
   },
   {
-    path: CFRoutes.LIBRARY,
-    element: (
-      <Base>
-        <MyLibrary />
-      </Base>
-    )
-  },
-  {
-    path: CFRoutes.EXPLORE,
-    element: (
-      <Base>
-        <Explore />
-      </Base>
-    )
-  },
-  {
-    path: CFRoutes.NOTIFICATIONS,
-    element: (
-      <Base>
-        <NotificationsPage />
-      </Base>
-    )
-  },
-  {
-    path: CFRoutes.NOTIFICATIONS_SETTINGS,
-    element: (
-      <Base>
-        <NotificationsSettingsPage />
-      </Base>
-    )
-  },
-  {
-    path: CFRoutes.PROFILE_SETTINGS,
-    element: (
-      <Base>
-        <ProfileSettingsPage />
-      </Base>
-    )
-  },
-  {
-    path: `${CFRoutes.PROJECT}/*`,
-    element: (
-      <Base>
-        <Project />
-      </Base>
-    )
-  },
-  {
-    path: `${CFRoutes.WORKFLOW}/*`,
-    element: (
-      <Base>
-        {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-        <WorkflowPage initialView={WorkflowViewType.OVERVIEW} />
-      </Base>
-    )
-  },
-  {
-    path: '*',
-    element: <div>in browser router, caught </div>,
-    future: {
-      v7_relativeSplatPath: true,
-      v7_fetcherPersist: true,
-      v7_normalizeFormMethod: true,
-      v7_partialHydration: true,
-      v7_startTransition: true,
-      v7_skipActionStatusRevalidation: true
-    }
+    element: <RequireAuth />,
+    children: [
+      {
+        path: CFRoutes.HOME,
+        element: (
+          <Base showNotifications>
+            <Home />
+          </Base>
+        )
+      },
+      {
+        path: CFRoutes.FAVOURITES,
+        element: (
+          <Base>
+            <Favourites />
+          </Base>
+        )
+      },
+      {
+        path: CFRoutes.LIBRARY,
+        element: (
+          <Base>
+            <MyLibrary />
+          </Base>
+        )
+      },
+      {
+        path: CFRoutes.EXPLORE,
+        element: (
+          <Base>
+            <Explore />
+          </Base>
+        )
+      },
+      {
+        path: CFRoutes.NOTIFICATIONS,
+        element: (
+          <Base>
+            <NotificationsPage />
+          </Base>
+        )
+      },
+      {
+        path: CFRoutes.NOTIFICATIONS_SETTINGS,
+        element: (
+          <Base>
+            <NotificationsSettingsPage />
+          </Base>
+        )
+      },
+      {
+        path: CFRoutes.PROFILE_SETTINGS,
+        element: (
+          <Base>
+            <ProfileSettingsPage />
+          </Base>
+        )
+      },
+      {
+        path: `${CFRoutes.PROJECT}/*`,
+        element: (
+          <Base>
+            <Project />
+          </Base>
+        )
+      },
+      {
+        path: `${CFRoutes.WORKFLOW}/*`,
+        element: (
+          <Base>
+            {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
+            <WorkflowPage initialView={WorkflowViewType.OVERVIEW} />
+          </Base>
+        )
+      },
+      {
+        path: '*',
+        element: <div>in browser router, caught </div>
+      }
+    ]
   }
 ])
 

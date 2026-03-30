@@ -10,33 +10,11 @@ import {
 } from './common'
 export {}
 declare global {
-  /*~ Here, declare things that go in the global namespace, or augment
-   *~ existing declarations in the global namespace
-   */
-  interface Window {
-    ngettext: (str: string, str2: string, count: number) => string
-    gettext: (str: string) => string
-    getCsrfToken: () => string
-    cf_nonce: string
-  }
-  interface Document {
-    lastUpdateCall: {
-      time: number
-      id: number
-      type: string
-      field: string
-    }
-    lastUpdateCallFunction
-    lastUpdateCallTimer
-  }
-
-  const $: jQuery
-  const d3: d3
-  const globalD3: d3
-  const COURSEFLOW_APP: CourseflowAppGlobals
+  /** Legacy Django-era global; populated at runtime from `bootstrap.ts` (mock JSON in dev). */
+  var COURSEFLOW_APP: CourseflowAppGlobals
 }
 
-interface CourseflowAppGlobals {
+export interface CourseflowAppGlobals {
   // global context data that's available that more general use
   // (sidebar, topbar, app notifications, etc)
   globalContextData: GlobalContextData

@@ -1,4 +1,9 @@
-import { edgesActions, nodesActions, tagsActions, workflowMetaActions } from './canonical'
+import {
+  edgesActions,
+  nodesActions,
+  tagsActions,
+  workflowMetaActions
+} from './canonical'
 import type { GraphMutationEnvelope } from './model/types'
 
 type DispatchLike = (action: unknown) => void
@@ -18,7 +23,10 @@ export const applyGraphDelta = (
     })
   )
 
-  if (envelope.changes.nodes.created.length || envelope.changes.nodes.updated.length) {
+  if (
+    envelope.changes.nodes.created.length ||
+    envelope.changes.nodes.updated.length
+  ) {
     dispatch(
       nodesActions.upsertMany([
         ...envelope.changes.nodes.created,
@@ -31,7 +39,10 @@ export const applyGraphDelta = (
     dispatch(nodesActions.removeManyById(envelope.changes.nodes.deleted))
   }
 
-  if (envelope.changes.edges.created.length || envelope.changes.edges.updated.length) {
+  if (
+    envelope.changes.edges.created.length ||
+    envelope.changes.edges.updated.length
+  ) {
     dispatch(
       edgesActions.upsertMany([
         ...envelope.changes.edges.created,
@@ -44,7 +55,10 @@ export const applyGraphDelta = (
     dispatch(edgesActions.removeManyById(envelope.changes.edges.deleted))
   }
 
-  if (envelope.changes.tags.created.length || envelope.changes.tags.updated.length) {
+  if (
+    envelope.changes.tags.created.length ||
+    envelope.changes.tags.updated.length
+  ) {
     dispatch(
       tagsActions.upsertMany([
         ...envelope.changes.tags.created,

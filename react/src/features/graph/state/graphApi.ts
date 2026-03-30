@@ -1,3 +1,6 @@
+import { apiUrl } from '@cf/api/apiBaseUrl'
+import { getAuthFetchHeaders } from '@cf/api/authHeaders'
+
 import type {
   ChannelEntity,
   CreateEdgeInput,
@@ -83,8 +86,16 @@ type GraphMutationEnvelopeResponse = {
       deleted: number[]
     }
     tags: {
-      created: Array<{ id: number; label?: string; translation_plural?: string }>
-      updated: Array<{ id: number; label?: string; translation_plural?: string }>
+      created: Array<{
+        id: number
+        label?: string
+        translation_plural?: string
+      }>
+      updated: Array<{
+        id: number
+        label?: string
+        translation_plural?: string
+      }>
       deleted: number[]
     }
   }
@@ -94,13 +105,11 @@ type GraphMutationEnvelopeResponse = {
   }
 }
 
-const defaultRequestInit: RequestInit = {
-  method: 'GET',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  credentials: 'include'
-}
+const withAuthFetch = (overrides: RequestInit = {}): RequestInit => ({
+  credentials: 'include',
+  headers: getAuthFetchHeaders(),
+  ...overrides
+})
 
 const assertOk = async (response: Response) => {
   if (response.ok) {
@@ -113,15 +122,17 @@ const assertOk = async (response: Response) => {
 export const fetchWorkflowMeta = async (
   workflowId: WorkflowId
 ): Promise<WorkflowMetaEntity> => {
-  const response = await fetch(`/api/workflow/${workflowId}`, defaultRequestInit)
+  const response = await fetch(
+    apiUrl(`/api/workflow/${workflowId}`),
+    withAuthFetch({ method: 'GET' })
+  )
   await assertOk(response)
   const payload = (await response.json()) as WorkflowMetaResponse
   return {
     id: payload.uuid,
     title: payload.title,
     ownerId: String(payload.owner_id),
-    projectId:
-      payload.project_id === null ? null : String(payload.project_id),
+    projectId: payload.project_id === null ? null : String(payload.project_id),
     revisionId: payload.revision_id,
     dateCreated: payload.date_created,
     modifiedOn: payload.modified_on
@@ -140,8 +151,8 @@ export const fetchWorkflowGraphBundle = async (
   workflowId: WorkflowId
 ): Promise<GraphResourceBundle> => {
   const response = await fetch(
-    `/api/workflow/${workflowId}/graph`,
-    defaultRequestInit
+    apiUrl(`/api/workflow/${workflowId}/graph`),
+    withAuthFetch({ method: 'GET' })
   )
   await assertOk(response)
   const payload = (await response.json()) as WorkflowGraphResponse
@@ -282,12 +293,13 @@ const postJson = async <TResponse>(
   url: string,
   body: unknown
 ): Promise<TResponse> => {
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: defaultRequestInit.headers,
-    credentials: defaultRequestInit.credentials,
-    body: JSON.stringify(body)
-  })
+  const response = await fetch(
+    url,
+    withAuthFetch({
+      method: 'POST',
+      body: JSON.stringify(body)
+    })
+  )
   await assertOk(response)
   return (await response.json()) as TResponse
 }
@@ -296,22 +308,19 @@ const patchJson = async <TResponse>(
   url: string,
   body: unknown
 ): Promise<TResponse> => {
-  const response = await fetch(url, {
-    method: 'PATCH',
-    headers: defaultRequestInit.headers,
-    credentials: defaultRequestInit.credentials,
-    body: JSON.stringify(body)
-  })
+  const response = await fetch(
+    url,
+    withAuthFetch({
+      method: 'PATCH',
+      body: JSON.stringify(body)
+    })
+  )
   await assertOk(response)
   return (await response.json()) as TResponse
 }
 
 const deleteJson = async <TResponse>(url: string): Promise<TResponse> => {
-  const response = await fetch(url, {
-    method: 'DELETE',
-    headers: defaultRequestInit.headers,
-    credentials: defaultRequestInit.credentials
-  })
+  const response = await fetch(url, withAuthFetch({ method: 'DELETE' }))
   await assertOk(response)
   return (await response.json()) as TResponse
 }
@@ -320,7 +329,7 @@ export const moveNodeCommand = async (
   input: MoveNodeInput
 ): Promise<GraphMutationEnvelope> => {
   const payload = await patchJson<GraphMutationEnvelopeResponse>(
-    `/api/workflow/${input.workflowId}/nodes/${input.nodeId}`,
+    apiUrl(`/api/workflow/${input.workflowId}/nodes/${input.nodeId}`),
     {
       section_uuid: input.sectionId,
       channel_uuid: input.channelId,
@@ -334,7 +343,7 @@ export const createEdgeCommand = async (
   input: CreateEdgeInput
 ): Promise<GraphMutationEnvelope> => {
   const payload = await postJson<GraphMutationEnvelopeResponse>(
-    `/api/workflow/${input.workflowId}/edges`,
+    apiUrl(`/api/workflow/${input.workflowId}/edges`),
     {
       source_node_uuid: input.sourceNodeId,
       target_node_uuid: input.targetNodeId,
@@ -350,7 +359,7 @@ export const deleteEdgeCommand = async (
   input: DeleteEdgeInput
 ): Promise<GraphMutationEnvelope> => {
   const payload = await deleteJson<GraphMutationEnvelopeResponse>(
-    `/api/workflow/${input.workflowId}/edges/${input.edgeId}`
+    apiUrl(`/api/workflow/${input.workflowId}/edges/${input.edgeId}`)
   )
   return mapMutationEnvelope(payload)
 }
@@ -359,7 +368,7 @@ export const deleteNodeCommand = async (
   input: DeleteNodeInput
 ): Promise<GraphMutationEnvelope> => {
   const payload = await deleteJson<GraphMutationEnvelopeResponse>(
-    `/api/workflow/${input.workflowId}/nodes/${input.nodeId}`
+    apiUrl(`/api/workflow/${input.workflowId}/nodes/${input.nodeId}`)
   )
   return mapMutationEnvelope(payload)
 }

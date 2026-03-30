@@ -1,10 +1,11 @@
+import { graphStateReducer } from '@cf/features/graph/state'
 import { listenerMiddleware } from '@cfRedux/middleware/viewsettings.localstorage'
 import {
   dummyReducers,
   legacyWorkflowReducers,
   workspaceReducer
 } from '@cfRedux/Reducers'
-import { graphStateReducer } from '@cf/features/graph/state'
+import authReducer from '@cfRedux/slices/auth.slice'
 import sidebarReducer from '@cfRedux/slices/sidebar.slice'
 import svgLinkReducer from '@cfRedux/slices/svglink.slice'
 import viewsettingsReducer from '@cfRedux/slices/viewsettings.slice'
@@ -16,6 +17,8 @@ import '@cfSCSS/workflow_styles.scss'
 
 const store = configureStore({
   reducer: {
+    auth: authReducer,
+
     // New graph rewrite state (canonical/load/ui/ops).
     // This is the active target for new graph hydration.
     graph: graphStateReducer,

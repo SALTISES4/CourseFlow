@@ -1,6 +1,10 @@
-import { createEntityAdapter, createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import {
+  type PayloadAction,
+  createEntityAdapter,
+  createSlice
+} from '@reduxjs/toolkit'
 
-import type { WorkflowMetaEntity, WorkflowId } from '../model/types'
+import type { WorkflowId, WorkflowMetaEntity } from '../model/types'
 
 export const workflowMetaAdapter = createEntityAdapter<WorkflowMetaEntity>()
 

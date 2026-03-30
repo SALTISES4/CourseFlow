@@ -27,8 +27,6 @@ export function API_GET<T>(url = ''): Promise<any> {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
-        // Assuming CSRF isn't needed for GET, but if needed, uncomment the next line
-        // 'X-CSRFToken': window.getCsrfToken()
       }
     })
       .then((response) => response.json())
@@ -61,9 +59,7 @@ export function API_POST<T>(url = '', data = {}): Promise<any> {
     fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        // 'root' comes from the csrf-setup script
-        'X-CSRFToken': window.getCsrfToken()
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
     })
@@ -114,10 +110,6 @@ export function API_POST_FILE<T>(
   return new Promise((res, rej) => {
     fetch(url, {
       method: 'POST',
-      headers: {
-        // // 'root' comes from the csrf-setup script
-        'X-CSRFToken': window.getCsrfToken()
-      },
       body: formData
     })
       // convert to JSON

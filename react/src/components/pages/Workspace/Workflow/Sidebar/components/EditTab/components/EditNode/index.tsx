@@ -391,9 +391,7 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
             variant="contained"
             color="secondary"
             onClick={
-              linkedWorkflow
-                ? removeLinkedWorkflow
-                : toggleLinkWorkflowDialog
+              linkedWorkflow ? removeLinkedWorkflow : toggleLinkWorkflowDialog
             }
           >
             {!linkedWorkflow

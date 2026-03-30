@@ -1,4 +1,4 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import { type PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 import type {
   GraphLoadStatus,
@@ -27,7 +27,10 @@ const graphLoadSlice = createSlice({
   name: 'graph/graphLoad',
   initialState,
   reducers: {
-    initializeWorkflowLoadState(state, action: PayloadAction<{ workflowId: WorkflowId }>) {
+    initializeWorkflowLoadState(
+      state,
+      action: PayloadAction<{ workflowId: WorkflowId }>
+    ) {
       const { workflowId } = action.payload
       state.byWorkflowId[workflowId] ??= makeInitialResourceState()
     },
@@ -43,7 +46,10 @@ const graphLoadSlice = createSlice({
       state.byWorkflowId[workflowId] ??= makeInitialResourceState()
       state.byWorkflowId[workflowId][resource] = status
     },
-    clearWorkflowLoadState(state, action: PayloadAction<{ workflowId: WorkflowId }>) {
+    clearWorkflowLoadState(
+      state,
+      action: PayloadAction<{ workflowId: WorkflowId }>
+    ) {
       delete state.byWorkflowId[action.payload.workflowId]
     },
     clearAllLoadState(state) {

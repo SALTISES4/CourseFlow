@@ -1,4 +1,6 @@
 // Import necessary functions from Redux Toolkit
+import { getApiBaseUrl } from '@cf/api/apiBaseUrl'
+import { getAuthFetchHeaders } from '@cf/api/authHeaders'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 /*******************************************************
@@ -67,14 +69,15 @@ export function getErrorMessage(error: ApiError): string {
   return 'An unknown error occurred'
 }
 
-const apiPathBase = '/'
+// Same-origin: `'/'` so joinUrls keeps absolute paths like `/course-flow/json-api/v1/...`
+// Cross-origin: full API origin from VITE_API_BASE_URL (see `apiBaseUrl.ts`).
+const apiPathBase = getApiBaseUrl() || '/'
 // Define the base query with necessary headers and configurations
 const baseQuery = fetchBaseQuery({
   baseUrl: apiPathBase,
   prepareHeaders: (headers) => {
-    headers.set('Content-Type', 'application/json')
-    // Ensure your CSRF token setup is handled here
-    headers.set('X-CSRFToken', window.getCsrfToken())
+    const auth = getAuthFetchHeaders()
+    Object.entries(auth).forEach(([k, v]) => headers.set(k, v))
     return headers
   }
 })

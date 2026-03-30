@@ -1,8 +1,8 @@
 import { createSelector } from 'reselect'
 
 import type { GraphState } from '../graphState'
-import { optimisticOpsAdapter } from '../optimisticOps.slice'
 import type { WorkflowId } from '../model/types'
+import { optimisticOpsAdapter } from '../optimisticOps.slice'
 import {
   selectAllEdges,
   selectAllNodes,
@@ -10,8 +10,7 @@ import {
 } from './canonical.selectors'
 
 const optimisticSelectors = optimisticOpsAdapter.getSelectors(
-  (state: { graph: GraphState }) =>
-    selectGraphState(state).optimisticOps
+  (state: { graph: GraphState }) => selectGraphState(state).optimisticOps
 )
 
 export const selectPendingOperations = optimisticSelectors.selectAll

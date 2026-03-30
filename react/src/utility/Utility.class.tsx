@@ -238,9 +238,10 @@ class Utility {
 export default Utility
 
 /**
- * thin wrapper around the global python gettext method
+ * thin wrapper around the global django
  * @param str
  */
 export const _t = (str: string) => {
-  return window.gettext(str)
+  // used to return django gettext helper but we don't use that any more
+  return str
 }
