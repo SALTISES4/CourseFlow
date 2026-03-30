@@ -20,6 +20,7 @@ export type WorkSpaceAppState = Pick<
   | 'parentNode'
   | 'outcomehorizontallink'
   | 'childWorkflow'
+  | 'tags'
 > &
   AppState['workspace']
 

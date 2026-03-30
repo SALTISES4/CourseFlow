@@ -3,6 +3,7 @@ import {
   NodeWorkflowReorderPayload
 } from '@cf/redux/slices/node.slice'
 import { RootState } from '@cf/redux/store'
+import * as Styled from '@cfViews/WorkflowView/WorkflowEditView/styles'
 import { memo, useCallback, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
@@ -10,7 +11,6 @@ import WeekCellNode from './CellNode'
 import WeekCellPhantom from './CellPhantom'
 import InsertMenu from './InsertMenu'
 import { WeekCellProps, WeekCellType } from './types'
-import * as Styled from '../../../styles'
 
 type StateType = {
   anchor: HTMLDivElement | null

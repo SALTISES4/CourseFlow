@@ -1,6 +1,10 @@
+import { CFRoutes } from '@cf/router/appRoutes'
+import { _t } from '@cf/utility/Utility.class'
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined'
 import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined'
 import Link from '@mui/material/Link'
+import { MouseEvent, useCallback } from 'react'
+import { generatePath } from 'react-router-dom'
 
 import * as Styled from './styles'
 import { getIcon } from './utility'
@@ -8,7 +12,7 @@ import { getIcon } from './utility'
 const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
 type PropsType = {
-  workflow?: string
+  workflow?: number | null
   contextType: number
   taskType: number
   time?: {
@@ -20,14 +24,26 @@ type PropsType = {
 const Meta = ({ workflow, contextType, taskType, time }: PropsType) => {
   const contextIcon = getIcon('context', contextType)
   const taskIcon = getIcon('task', taskType)
+  const workflowUrl = generatePath(CFRoutes.WORKFLOW, { id: String(workflow) })
+
+  const onWorkflowLinkClick = useCallback(
+    (e: MouseEvent<HTMLAnchorElement>) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      // not using navigate(...) because we want to trigger a good ol' full reload
+      window.location.href = workflowUrl
+    },
+    [workflowUrl]
+  )
 
   return (
     <Styled.Wrap>
       {workflow && (
         <Styled.WorkflowLink>
-          <Link href={workflow}>
+          <Link href={workflowUrl} onClick={onWorkflowLinkClick}>
             <LaunchOutlinedIcon />
-            Linked workflow
+            {_t('Linked workflow')}
           </Link>
         </Styled.WorkflowLink>
       )}

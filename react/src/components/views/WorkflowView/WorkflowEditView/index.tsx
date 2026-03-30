@@ -151,7 +151,7 @@ const WorkflowEditView = () => {
     [dispatch, triggerLineRerender]
   )
 
-  const onNodeDragEnd: CellReorderCallbackFn = useCallback(
+  const onNodeDrop: CellReorderCallbackFn = useCallback(
     (payload) => {
       dispatch(nodeWorkflowReorder(payload))
       triggerLineRerender()
@@ -178,7 +178,7 @@ const WorkflowEditView = () => {
             onWeekCollapse={onWeekCollapse}
             onWeekInsert={onWeekInsert}
             onWeekReorder={onWeekReorder}
-            onNodeReorder={onNodeDragEnd}
+            onNodeDrop={onNodeDrop}
             memoBuster={[state.condensed.length, state.redrawLines]}
           />
         ))}

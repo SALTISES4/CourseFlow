@@ -1,24 +1,16 @@
-import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import {
-  Edge,
-  attachClosestEdge,
-  extractClosestEdge
-} from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box'
-import { getNextLargestNumber } from '@cf/redux/selectors/helpers'
 import { WorkflowBoard } from '@cf/redux/selectors/workflow.selector'
-import { columnInsertBelow } from '@cf/redux/slices/column.slice'
-import { nodeWorkflowInsert } from '@cf/redux/slices/node.slice'
 import { RootState } from '@cf/redux/store'
+import { defaultColumnSettings } from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
-import { produce } from 'immer'
-import { MouseEvent, ReactNode, memo, useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import * as StyledWorkflow from '@cfViews/WorkflowView/WorkflowEditView/styles'
+import { alpha } from '@mui/material'
+import { MouseEvent, ReactNode, memo, useRef } from 'react'
+import { useSelector } from 'react-redux'
 
+import useRowDnd from './useRowDnd'
 import type { WeekPropsType } from '../'
-import * as StyledWorkflow from '../../../styles'
-import { isSidebarNode } from '../../../types'
 import WeekCell from '../Cell'
+import DropIndicator from '../Cell/DropIndicator'
 import { WeekCellType } from '../Cell/types'
 import * as StyledWeek from '../styles'
 
@@ -29,110 +21,34 @@ interface NonEmptyRowType {
   rowIndex: number
   columnIds: WorkflowBoard['columns']['ids']
   columnColors: WorkflowBoard['columns']['colors']
-  onNodeReorder: WeekPropsType['onNodeReorder']
+  onNodeDrop: WeekPropsType['onNodeDrop']
   onNodeClick: (e: MouseEvent<HTMLDivElement>, nodeId: number) => void
 }
 
 interface EmptyRowType
   extends Pick<
     NonEmptyRowType,
-    'weekId' | 'columnIds' | 'columnColors' | 'onNodeReorder'
+    'weekId' | 'columnIds' | 'columnColors' | 'onNodeDrop'
   > {
   rowIndex: 'empty'
 }
 
-type WeekRowPropsType = EmptyRowType | NonEmptyRowType
-
-type StateType = {
-  draggingOver: number | null
-  closestEdge: Edge | null
-}
+export type WeekRowPropsType = EmptyRowType | NonEmptyRowType
 
 const WeekRow = (props: WeekRowPropsType) => {
-  const dispatch = useDispatch()
   const rowRef = useRef<HTMLDivElement>(null)
-  const wsColIds = useSelector((state: RootState) => state.workspace.column.ids)
-  const [state, setState] = useState<StateType>({
-    draggingOver: null,
-    closestEdge: null
-  })
-
-  const { weekId, rowIndex, columnIds, columnColors, onNodeReorder } = props
-
-  useEffect(() => {
-    return dropTargetForElements({
-      element: rowRef.current,
-      getData: ({ element, input }) => {
-        return attachClosestEdge(
-          { weekId: weekId, row: rowIndex },
-          {
-            element,
-            input,
-            allowedEdges: ['top', 'bottom']
-          }
-        )
-      },
-      canDrop: ({ source }) => isSidebarNode(source.data),
-      onDragEnter: ({ source }) => {
-        const dragging = source.data
-        if (!isSidebarNode(dragging)) {
-          return
-        }
-        setState(
-          produce((draft) => {
-            draft.draggingOver = dragging.id
-          })
-        )
-      },
-      onDragLeave: () => setState({ draggingOver: null, closestEdge: null }),
-      onDrag: ({ source, self }) => {
-        if (!isSidebarNode(source.data)) {
-          return
-        }
-
-        const closestEdge = extractClosestEdge(self.data)
-        if (!closestEdge) {
-          return
-        }
-
-        setState(
-          produce((draft) => {
-            draft.closestEdge = closestEdge
-          })
-        )
-      },
-      onDrop: ({ source, self }) => {
-        let columnId = source.data.id as number
-        const row = self.data.row as number
-        const closestEdge = extractClosestEdge(self.data)
-
-        if (columnId === -1) {
-          columnId = getNextLargestNumber(wsColIds)
-          dispatch(columnInsertBelow({ id: columnId }))
-        }
-
-        dispatch(
-          nodeWorkflowInsert({
-            columnId,
-            weekId: weekId,
-            row:
-              rowIndex === 'empty' ? 0 : closestEdge === 'top' ? row : row + 1
-          })
-        )
-
-        setState({ draggingOver: null, closestEdge: null })
-      }
-    })
-  }, [dispatch, wsColIds, weekId, rowIndex])
+  const dnd = useRowDnd({ ...props, rowRef })
+  const { weekId, rowIndex, columnIds, columnColors, onNodeDrop } = props
 
   if (rowIndex === 'empty') {
     return (
       <StyledWorkflow.CellRow
         ref={rowRef}
-        sx={{
+        style={{
           minHeight: 120,
           backgroundColor:
-            state.draggingOver === -1 ? 'rgba(4, 186, 116, 0.2)' : 'transparent'
+            dnd.dragId === -1 &&
+            alpha(defaultColumnSettings['new-column'].colour, 0.2)
         }}
       >
         <WeekRowEmpty>
@@ -144,10 +60,10 @@ const WeekRow = (props: WeekRowPropsType) => {
               coordsX={index}
               coordsY={0}
               columnId={columnId}
-              highlight={state.draggingOver === columnId}
+              highlight={dnd.dragId === columnId}
               borderColor={columnColors[columnId]}
-              onReorder={onNodeReorder}
-              empty
+              onReorder={onNodeDrop}
+              emptyRow
             />
           ))}
         </WeekRowEmpty>
@@ -158,7 +74,14 @@ const WeekRow = (props: WeekRowPropsType) => {
   const { nodes, onNodeClick } = props
 
   return (
-    <StyledWorkflow.CellRow ref={rowRef}>
+    <StyledWorkflow.CellRow
+      ref={rowRef}
+      style={{
+        backgroundColor:
+          dnd.highlightRow &&
+          alpha(defaultColumnSettings['new-column'].colour, 0.2)
+      }}
+    >
       {columnIds.map((columnId, index) => {
         const nodeId = nodes[index]
         return nodeId ? (
@@ -171,7 +94,7 @@ const WeekRow = (props: WeekRowPropsType) => {
             nodeId={nodeId}
             columnId={columnId}
             borderColor={columnColors[columnId]}
-            onReorder={onNodeReorder}
+            onReorder={onNodeDrop}
             onClick={onNodeClick}
           />
         ) : (
@@ -183,13 +106,11 @@ const WeekRow = (props: WeekRowPropsType) => {
             coordsY={rowIndex}
             columnId={columnId}
             borderColor={columnColors[columnId]}
-            onReorder={onNodeReorder}
+            onReorder={onNodeDrop}
           />
         )
       })}
-      {state.closestEdge && (
-        <DropIndicator edge={state.closestEdge} type="no-terminal" />
-      )}
+      {dnd.closestEdge && <DropIndicator edge={dnd.closestEdge} offset={-3} />}
     </StyledWorkflow.CellRow>
   )
 }

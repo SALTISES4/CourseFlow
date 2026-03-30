@@ -6,19 +6,18 @@ import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import ColorPicker from '@cfComponents/UIPrimitives/ColorPicker'
 import { RootState } from '@cfRedux/store'
+import {
+  SidebarActions,
+  SidebarContent,
+  SidebarInnerWrap,
+  SidebarTitle
+} from '@cfSidebar/styles'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { debounce } from '@mui/material/utils'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-
-import {
-  SidebarActions,
-  SidebarContent,
-  SidebarInnerWrap,
-  SidebarTitle
-} from '../../../../styles'
 
 const EditColumn = ({ columnId }: { columnId: number }) => {
   const dispatch = useDispatch()

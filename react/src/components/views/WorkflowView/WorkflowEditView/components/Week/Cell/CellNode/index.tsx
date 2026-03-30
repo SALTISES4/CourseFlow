@@ -10,7 +10,6 @@ import {
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box'
 import { selectNodeById } from '@cf/redux/selectors/node.selector'
 import { isHighlightedViaOutcome } from '@cf/redux/selectors/outcomes.selector'
 import { svglinkAllowDND } from '@cf/redux/slices/svglink.slice'
@@ -31,6 +30,7 @@ import { MouseEvent, useCallback, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
+import DropIndicator from '../DropIndicator'
 import HoverMenu from '../HoverMenu'
 import Meta from '../Meta'
 import * as StyledNode from '../styles'
@@ -227,7 +227,7 @@ const WeekCellNode = ({
             <small>{`#${nodeId}, row: ${node.order}`}</small>
           </StyledNode.Title>
           <Meta
-            workflow="#"
+            workflow={node.linkedWorkflow}
             contextType={node.contextClassification}
             taskType={node.taskClassification}
             time={{
@@ -240,9 +240,7 @@ const WeekCellNode = ({
         {!state.dragging && <Handles nodeId={nodeId} nodeRef={wrapRef} />}
       </StyledNode.CellInner>
 
-      {state.closestEdge && (
-        <DropIndicator edge={state.closestEdge} type="no-terminal" gap="32px" />
-      )}
+      {state.closestEdge && <DropIndicator edge={state.closestEdge} />}
 
       {state.dragging &&
         state.previewTarget &&

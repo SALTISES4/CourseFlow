@@ -1,15 +1,14 @@
 import Alert from '@cfComponents/UIPrimitives/Alert'
-import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
-import { ChangeEvent, useCallback, useState } from 'react'
-
 import {
   SidebarActions,
   SidebarContent,
   SidebarInnerWrap,
   SidebarTitle
-} from '../../../../styles'
+} from '@cfSidebar/styles'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import { ChangeEvent, useCallback, useState } from 'react'
 
 type PropsType = {
   title: string

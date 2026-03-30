@@ -14,14 +14,17 @@ import { selectColumnById } from '@cf/redux/selectors/column.selector'
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { RootState } from '@cfRedux/store'
+import * as StyledWorkflow from '@cfViews/WorkflowView/WorkflowEditView/styles'
+import {
+  ColumnReorderCallbackFn,
+  DraggableType
+} from '@cfViews/WorkflowView/WorkflowEditView/types'
 import clsx from 'clsx'
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import HoverMenu from './HoverMenu'
 import * as Styled from './styles'
-import * as StyledWorkflow from '../../../styles'
-import { ColumnReorderCallbackFn, DraggableType } from '../../../types'
 
 type CellProps = {
   index: number

@@ -32,9 +32,7 @@ import { useResizeObserver } from 'usehooks-ts'
 
 import HoverMenu from './HoverMenu'
 import WeekRow from './Row'
-import WeekRowEmpty from './RowEmpty'
 import * as StyledWeek from './styles'
-import * as Styled from '../../styles'
 import { DraggableType, isGridWeek, isSidebarPart } from '../../types'
 import {
   CellReorderCallbackFn,
@@ -51,7 +49,7 @@ export type WeekPropsType = {
   columnIds: WorkflowBoard['columns']['ids']
   columnColors: WorkflowBoard['columns']['colors']
   onWeekCollapse: (weekId: number) => void
-  onNodeReorder: CellReorderCallbackFn
+  onNodeDrop: CellReorderCallbackFn
   onWeekReorder: WeekReorderCallbackFn
   onWeekInsert: WeekInsertCallbackFn
   memoBuster: (number | boolean)[]
@@ -224,7 +222,7 @@ const Week = (props: WeekPropsType) => {
       weekId={props.weekId}
       columnIds={props.columnIds}
       columnColors={props.columnColors}
-      onNodeReorder={props.onNodeReorder}
+      onNodeDrop={props.onNodeDrop}
     />
   ) : (
     props.weekRows.map((nodes, rowIndex) => (
@@ -236,7 +234,7 @@ const Week = (props: WeekPropsType) => {
         parentId={props.boardId}
         columnIds={props.columnIds}
         columnColors={props.columnColors}
-        onNodeReorder={props.onNodeReorder}
+        onNodeDrop={props.onNodeDrop}
         onNodeClick={onNodeClick}
       />
     ))

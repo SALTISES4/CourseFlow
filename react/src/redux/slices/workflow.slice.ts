@@ -242,6 +242,13 @@ const workflowSlice = createSlice({
       })
       .addCase(columnInsertBelow, (state, action) => {
         const { id, newId } = action.payload
+
+        // if no "target" id, we're just adding to the end
+        if (!id) {
+          state.columns.push(newId)
+          return
+        }
+
         const foundIndex = state.columns.indexOf(id)
         state.columns.splice(foundIndex + 1, 0, newId)
       })

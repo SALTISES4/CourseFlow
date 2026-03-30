@@ -249,6 +249,11 @@ const nodeSlice = createSlice({
       })
     },
 
+    // with nodeId
+    // - used to insert a new node with regards to the insert mode and
+    //   whether it's duplicating an existing node or not
+    // with columnID
+    // - used to insert a new node into an entirely new column into a specific position
     workflowNodeInsert: (
       state,
       action: PayloadAction<
@@ -258,6 +263,7 @@ const nodeSlice = createSlice({
             duplicate?: boolean
           }
         | {
+            newColumn?: boolean
             columnId: number
             weekId: number
             row: number
@@ -265,7 +271,7 @@ const nodeSlice = createSlice({
       >
     ) => {
       if ('columnId' in action.payload) {
-        const { columnId, weekId, row } = action.payload
+        const { newColumn, columnId, weekId, row } = action.payload
         const weekNodes = state.ids.filter(
           (nodeId) => state.entities[nodeId].week === weekId
         )
@@ -273,7 +279,8 @@ const nodeSlice = createSlice({
         const gridSplits = splitWorkflowGridNodes({
           ids: weekNodes,
           entities: state.entities,
-          newRow: row
+          newRow: row,
+          column: newColumn ? -1 : undefined
         })
 
         // grab any existing node
