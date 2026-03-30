@@ -1,14 +1,12 @@
-import reactRefresh from '@vitejs/plugin-react-refresh'
+import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import viteCompression from 'vite-plugin-compression'
 import { VitePWA } from 'vite-plugin-pwa'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   build: { manifest: true },
-  base: process.env.mode === 'production' ? '/static/' : '/',
-  root: './',
+  base: '/',
   server: {
     port: 3000,
     strictPort: true
@@ -17,7 +15,7 @@ export default defineConfig({
     port: 8081
   },
   plugins: [
-    reactRefresh(),
+    react(),
     tsconfigPaths(),
     viteCompression(),
     VitePWA({
@@ -31,23 +29,3 @@ export default defineConfig({
     })
   ]
 })
-
-// https://vitejs.dev/config/
-// export default defineConfig({
-//   build: { manifest: true },
-//   base: process.env.mode === 'production' ? '/static/' : '/',
-//   root: './react-app',
-//   plugins: [
-//     reactRefresh(),
-//     viteCompression(),
-//     VitePWA({
-//       workbox: {
-//         inlineWorkboxRuntime: true,
-//         navigateFallbackDenylist: [/^\/admin/, /^\/api/],
-//         modifyURLPrefix: {
-//           assets: 'static/assets'
-//         }
-//       }
-//     })
-//   ]
-// })
