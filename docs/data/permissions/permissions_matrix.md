@@ -18,7 +18,6 @@ This document exists primarily to help:
 
 - backend permission checks
 - frontend UI enable/disable logic
-- LLM coding agents modifying permission logic
 
 ---
 

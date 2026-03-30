@@ -13,7 +13,6 @@ class UnitTypeIn(str, Enum):
 
 
 class WorkflowCreateIn(Schema):
-    owner_id: int
     project_id: int | None = None
     workflow_title: str
     unit_title: str = ""
@@ -21,14 +20,31 @@ class WorkflowCreateIn(Schema):
     unit_description: str = ""
 
 
-class WorkflowOut(Schema):
+class WorkflowUpdateIn(Schema):
+    title: str | None = None
+    project_id: int | None = None
+
+
+class WorkflowListItemOut(Schema):
+    """List rows: workflow entity fields only."""
+
     id: int
     uuid: UUID
     title: str
     owner_id: int
     project_id: int | None
-    unit_uuid: UUID
-    unit_type: str
-    unit_title: str
+    revision_id: int
+    modified_on: datetime
+
+
+class WorkflowDetailOut(Schema):
+    """Single workflow resource: persisted fields only (no unit/sections/channels)."""
+
+    id: int
+    uuid: UUID
+    title: str
+    owner_id: int
+    project_id: int | None
+    revision_id: int
     date_created: datetime
     modified_on: datetime

@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import UUID
 
 from course_flow_v2.application.dto import ProjectDTO
@@ -41,5 +42,24 @@ class DjangoProjectRepository:
         p = Project.objects.filter(uuid=uuid).first()
         return _to_dto(p) if p else None
 
-    def list_all(self) -> list[ProjectDTO]:
-        return [_to_dto(p) for p in Project.objects.select_related("owner").order_by("-modified_on")]
+    def get_by_id(self, id: int) -> ProjectDTO | None:
+        p = Project.objects.filter(id=id).first()
+        return _to_dto(p) if p else None
+
+    def list_for_owner(self, owner_id: int) -> list[ProjectDTO]:
+        return [
+            _to_dto(p)
+            for p in Project.objects.filter(owner_id=owner_id).order_by("-modified_on")
+        ]
+
+    def update(self, uuid: UUID, updates: dict[str, Any]) -> ProjectDTO | None:
+        p = Project.objects.filter(uuid=uuid).first()
+        if p is None:
+            return None
+        allowed = {"title", "description", "is_published", "is_template"}
+        for key, value in updates.items():
+            if key in allowed:
+                setattr(p, key, value)
+        p.save()
+        p.refresh_from_db()
+        return _to_dto(p)

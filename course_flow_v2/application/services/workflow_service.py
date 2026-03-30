@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import UUID
 
 from course_flow_v2.application.dto import WorkflowDTO
@@ -30,5 +31,11 @@ class WorkflowService:
     def get_by_uuid(self, uuid: UUID) -> WorkflowDTO | None:
         return self._repository.get_by_uuid(uuid)
 
-    def list_all(self) -> list[WorkflowDTO]:
-        return self._repository.list_all()
+    def list_for_owner(self, owner_id: int) -> list[WorkflowDTO]:
+        return self._repository.list_for_owner(owner_id)
+
+    def list_for_project(self, project_id: int) -> list[WorkflowDTO]:
+        return self._repository.list_for_project(project_id)
+
+    def update(self, uuid: UUID, updates: dict[str, Any]) -> WorkflowDTO | None:
+        return self._repository.update(uuid, updates)

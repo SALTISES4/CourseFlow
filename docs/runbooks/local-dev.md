@@ -1,320 +1,72 @@
-```md
-# Local Development Runbook
+# Local development (rebuild foundation)
 
-## Status
+Python runs on the host. Docker Compose provides **PostgreSQL only**.
 
-Starter draft based on the current CourseFlow repository snapshot.
-Exact commands and scripts should be finalized once the canonical dev workflow stabilizes.
+The default Django project is **V2**: `manage.py` uses `course_flow_v2.settings`. The `course_flow/` package is legacy reference code only.
 
----
+## Stack roles (short)
 
-# Goal
+| Layer | Role |
+| --- | --- |
+| Django ORM models (`course_flow_v2/core/models/`) | Persistence |
+| Ninja `Schema` classes (`course_flow_v2/api/schemas/`) | API request/response DTOs (Pydantic-backed) |
+| Django Ninja routes (`course_flow_v2/api/routers/`) | HTTP API; OpenAPI is generated from routes + schemas |
+| Application services (`course_flow_v2/application/`) | Thin orchestration; persistence via repository implementations |
 
-Provide one location where both humans and coding agents can quickly answer:
+Do not hand-maintain a parallel OpenAPI document as the source of truth; export the generated spec when tooling needs it (see [OpenAPI and client workflow](../architecture/openapi_and_client_workflow.md)).
 
-- how to boot the backend and frontend
-- how configuration is loaded
-- which services must be running
-- which entrypoints correspond to which runtime modes
-- what prerequisites must exist before the system will function
+## 1. Environment file
 
-The goal is to eliminate guesswork during local development.
+Copy the example file and set secrets:
 
----
-
-# Preconditions
-
-A working local CourseFlow development environment requires the following components.
-
-## Core dependencies
-
-At minimum:
-
-- Python environment for the backend
-- Node.js environment for the React frontend
-- PostgreSQL database
-- environment variables or `.env` configuration
-- websocket support through the Django backend runtime
-
----
-
-## Optional but common development dependencies
-
-Depending on the features being tested:
-
-- Redis (if used for websocket channels or caching)
-- local email or notification configuration
-- test data fixtures
-
----
-
-# System components
-
-Local development typically runs **three processes**:
-
-| Component | Purpose |
-|---|---|
-| Django backend | API, persistence, websocket server |
-| React frontend | UI and editing environment |
-| PostgreSQL | workflow persistence |
-
-If websockets use Channels + Redis, then Redis must also run locally.
-
----
-
-# Configuration model
-
-Configuration is loaded from multiple sources.
-
-Typical precedence:
-
-1. environment variables
-2. `.env` file
-3. Django settings modules
-4. frontend environment configuration
-
-Backend configuration ultimately resolves through the Django settings layer.
-
-Frontend configuration is typically injected via environment variables during the React build or dev server startup.
-
----
-
-# Backend entrypoints
-
-The Django backend exposes several runtime entrypoints.
-
-## Development server
-
-Primary development server:
-
+```bash
+cp .env.example .env
 ```
 
-python manage.py runserver
+Variables:
 
+- **Compose**: `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_PORT`
+- **Django (host → container)**: `POSTGRES_HOST` (default `127.0.0.1`); database name/user/password/port align with the same values Compose uses
+- **Optional**: `DJANGO_SECRET_KEY`, `DJANGO_DEBUG`, `DJANGO_ALLOWED_HOSTS`
+
+`course_flow_v2/settings.py` loads `.env` from the repository root via `python-dotenv`.
+
+## 2. Start Postgres
+
+```bash
+docker compose up -d postgres
 ```
 
-Responsibilities:
+Persistence uses the named volume `courseflow_pgdata`. Check health with `docker compose ps`.
 
-- REST API
-- websocket endpoints
-- permission enforcement
-- workflow mutation handling
+## 3. Python dependencies
 
-If Django Channels is used, this command may instead launch an ASGI server.
-
----
-
-## Database migrations
-
-When schema changes occur:
-
+```bash
+uv sync
 ```
 
-python manage.py migrate
+Runtime packages: `django`, `django-ninja`, `psycopg[binary]`, `python-dotenv`. Dev: `pytest`, `pytest-django`, `ruff`.
 
+## 4. Django against Postgres
+
+With Postgres up and env vars set:
+
+```bash
+uv run python manage.py migrate
+uv run python manage.py createsuperuser
+uv run python manage.py runserver
 ```
 
-For creating migrations:
+## 5. V2 API entrypoints
 
-```
+With the dev server running:
 
-python manage.py makemigrations
+- Docs UI: `http://127.0.0.1:8000/api/docs`
+- OpenAPI JSON: `http://127.0.0.1:8000/api/openapi.json`
+- Example routes: `GET/POST /api/project`, `GET/POST /api/workflow` (see OpenAPI for exact paths)
 
-```
+**Note:** Authenticated workflow/project writes derive the owner from the bearer token; register or log in to obtain a token before calling protected routes.
 
----
+## 6. Canonical data model
 
-## Django shell
-
-Useful for debugging models and services:
-
-```
-
-python manage.py shell
-
-```
-
----
-
-# Frontend entrypoint
-
-The React frontend runs independently from the backend.
-
-Typical development startup:
-
-```
-
-npm install
-npm run start
-
-```
-
-or
-
-```
-
-yarn install
-yarn start
-
-```
-
-Responsibilities:
-
-- workflow editing UI
-- websocket client connections
-- REST API interaction
-- local editing state
-
-The development server typically runs on a port such as:
-
-```
-
-[http://localhost:3000](http://localhost:3000)
-
-```
-
----
-
-# Websocket endpoints
-
-Realtime collaboration relies on websocket connections.
-
-Typical route pattern:
-
-```
-
-ws/update/<workflowPk>/
-
-```
-
-Backend components involved include:
-
-- websocket routing configuration
-- websocket consumers
-- workflow event dispatch logic
-
-Clients must be authenticated and authorized before a websocket connection is accepted.
-
----
-
-# Database initialization
-
-Local development requires a working PostgreSQL database.
-
-Typical tasks:
-
-1. create local database
-2. configure database connection in Django settings
-3. run migrations
-
-Example workflow:
-
-```
-
-createdb courseflow_dev
-python manage.py migrate
-
-```
-
----
-
-# First-pass startup checklist
-
-Typical local development startup sequence:
-
-1. Start PostgreSQL locally.
-2. Configure environment variables or `.env`.
-3. Run backend migrations.
-4. Start the Django backend server.
-5. Install frontend dependencies.
-6. Start the React development server.
-7. Open the frontend in the browser.
-
----
-
-# Verifying the environment
-
-Basic sanity checks:
-
-### Backend
-
-Confirm API responds:
-
-```
-
-[http://localhost:8000/](http://localhost:8000/)
-
-```
-
-Confirm websocket endpoint accepts connections.
-
-### Frontend
-
-Confirm the UI loads and can fetch workflows.
-
-### Database
-
-Confirm workflows can be created, edited, and saved.
-
----
-
-# Common failure points
-
-Typical local development issues include:
-
-### Migration drift
-
-Symptoms:
-
-- models do not match database schema
-
-Fix:
-
-```
-
-python manage.py makemigrations
-python manage.py migrate
-
-```
-
----
-
-### Websocket connection failures
-
-Symptoms:
-
-- collaboration not updating across clients
-
-Possible causes:
-
-- websocket routing misconfigured
-- missing Redis dependency (if Channels backend used)
-- authentication failure during websocket connect
-
----
-
-### CORS or API base URL misconfiguration
-
-Symptoms:
-
-- frontend cannot reach backend API
-
-Fix:
-
-- verify frontend environment variables
-- verify Django CORS settings
-
----
-
-# Required follow-up
-
-This runbook should eventually include:
-
-- exact backend startup commands
-- canonical `.env` template
-- Redis requirements (if used)
-- docker-compose development workflow (if introduced)
-- automated dev bootstrap scripts
-
-Once the development workflow stabilizes, this document should become the **single authoritative source for local development setup**.
-```
+Persistence shapes are defined to match `docs/data/entities/entities.md` (authoritative YAML). When in doubt, update that document before changing ORM fields.

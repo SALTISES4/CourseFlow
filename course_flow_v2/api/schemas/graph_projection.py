@@ -1,0 +1,26 @@
+"""Project-level projection schemas (non-CRUD read models).
+
+Workflow graph shapes live in ``course_flow_v2.api.schemas.workflow_graph``.
+"""
+
+from __future__ import annotations
+
+from datetime import datetime
+from uuid import UUID
+
+from ninja import Schema
+
+
+class ProjectGraphProjectionOut(Schema):
+    """Project overview: entity fields + workflow UUID references only."""
+
+    id: int
+    uuid: UUID
+    title: str
+    description: str
+    is_published: bool
+    is_template: bool
+    owner_id: int
+    date_created: datetime
+    modified_on: datetime
+    workflow_uuids: list[UUID]

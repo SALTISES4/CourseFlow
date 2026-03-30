@@ -11,21 +11,21 @@ from course_flow_v2.core.models.unit import Unit
 class Node(UUIDModel):
     section = models.ForeignKey(
         Section,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name="nodes",
     )
     channel = models.ForeignKey(
         Channel,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name="nodes",
     )
     unit = models.ForeignKey(
         Unit,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name="nodes",
@@ -36,6 +36,11 @@ class Node(UUIDModel):
         null=True,
         blank=True,
         related_name="node",
+    )
+    section_row = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Row index within the section grid (column is channel).",
     )
     outcomes = models.ManyToManyField(
         Outcome,

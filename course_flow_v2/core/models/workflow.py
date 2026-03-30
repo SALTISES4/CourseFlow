@@ -19,6 +19,10 @@ class Workflow(TimeStampedUUIDModel):
         related_name="workflows",
     )
     title = models.CharField(max_length=200)
+    revision_id = models.PositiveIntegerField(
+        default=0,
+        help_text="Monotonic graph revision; incremented on graph-affecting mutations only.",
+    )
 
     class Meta:
         db_table = "cf2_workflow"

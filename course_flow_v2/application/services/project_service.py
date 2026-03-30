@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import UUID
 
 from course_flow_v2.application.dto import ProjectDTO
@@ -28,5 +29,11 @@ class ProjectService:
     def get_by_uuid(self, uuid: UUID) -> ProjectDTO | None:
         return self._repository.get_by_uuid(uuid)
 
-    def list_all(self) -> list[ProjectDTO]:
-        return self._repository.list_all()
+    def get_by_id(self, id: int) -> ProjectDTO | None:
+        return self._repository.get_by_id(id)
+
+    def list_for_owner(self, owner_id: int) -> list[ProjectDTO]:
+        return self._repository.list_for_owner(owner_id)
+
+    def update(self, uuid: UUID, updates: dict[str, Any]) -> ProjectDTO | None:
+        return self._repository.update(uuid, updates)

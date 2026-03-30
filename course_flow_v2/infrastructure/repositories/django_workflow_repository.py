@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import UUID
 
 from django.db import transaction
@@ -14,6 +15,7 @@ def _to_dto(w: Workflow) -> WorkflowDTO:
         title=w.title,
         owner_id=w.owner_id,
         project_id=w.project_id,
+        revision_id=w.revision_id,
         unit_uuid=unit.uuid,
         unit_type=unit.unit_type,
         unit_title=unit.title,
@@ -56,6 +58,33 @@ class DjangoWorkflowRepository:
         )
         return _to_dto(w) if w else None
 
-    def list_all(self) -> list[WorkflowDTO]:
-        qs = Workflow.objects.select_related("unit", "project").order_by("-modified_on")
+    def list_for_owner(self, owner_id: int) -> list[WorkflowDTO]:
+        qs = Workflow.objects.filter(owner_id=owner_id).select_related(
+            "unit",
+            "project",
+        ).order_by("-modified_on")
         return [_to_dto(w) for w in qs]
+
+    def list_for_project(self, project_id: int) -> list[WorkflowDTO]:
+        qs = Workflow.objects.filter(project_id=project_id).select_related(
+            "unit",
+            "project",
+        ).order_by("-modified_on")
+        return [_to_dto(w) for w in qs]
+
+    def update(self, uuid: UUID, updates: dict[str, Any]) -> WorkflowDTO | None:
+        w = Workflow.objects.filter(uuid=uuid).first()
+        if w is None:
+            return None
+        allowed = {"title", "project_id"}
+        for key, value in updates.items():
+            if key in allowed:
+                setattr(w, key, value)
+        w.save()
+        w = (
+            Workflow.objects.select_related("unit", "project")
+            .filter(pk=w.pk)
+            .first()
+        )
+        assert w is not None
+        return _to_dto(w)

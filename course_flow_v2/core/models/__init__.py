@@ -1,4 +1,5 @@
 from course_flow_v2.core.models.activity_meta import ActivityMeta
+from course_flow_v2.core.models.auth_token import AuthToken
 from course_flow_v2.core.models.channel import Channel
 from course_flow_v2.core.models.comment import Comment
 from course_flow_v2.core.models.course_meta import CourseMeta
@@ -32,6 +33,7 @@ from course_flow_v2.core.models.workflow import Workflow
 
 __all__ = [
     "ActivityMeta",
+    "AuthToken",
     "Channel",
     "Comment",
     "CourseMeta",

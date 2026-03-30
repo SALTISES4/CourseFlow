@@ -6,3 +6,6 @@ class CoreConfig(AppConfig):
     name = "course_flow_v2.core"
     label = "cf2_core"
     verbose_name = "CourseFlow V2 core"
+
+    def ready(self) -> None:
+        import course_flow_v2.core.signals  # noqa: F401
