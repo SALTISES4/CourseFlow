@@ -15,7 +15,7 @@ export enum DraggableType {
 }
 
 export type CellDataType = {
-  id: number
+  id: string
   coords: {
     week: number
     x: number // column
@@ -43,7 +43,7 @@ export type CellReorderCallbackFn = (
 
 export type CellClickCallbackFn = (
   e: MouseEvent<HTMLDivElement>,
-  nodeId: number
+  nodeid: string
 ) => void
 
 // simple typeguards for better draggable data typing
@@ -65,7 +65,7 @@ export function isGridCell(
 }
 
 export function isSidebarNode(data: Record<string | symbol, unknown>): data is {
-  id: number
+  id: string
   type: DraggableType.SIDEBAR_NODE | DraggableType.SIDEBAR_NODE_CUSTOM
 } {
   return (
@@ -79,14 +79,14 @@ export function isSidebarNode(data: Record<string | symbol, unknown>): data is {
 export function isSidebarCustomNode(
   data: Record<string | symbol, unknown>
 ): data is {
-  id: number
+  id: string
   type: DraggableType.SIDEBAR_NODE_CUSTOM
 } {
   return isSidebarNode(data) && data.type === DraggableType.SIDEBAR_NODE_CUSTOM
 }
 
 export function isSidebarPart(data: Record<string | symbol, unknown>): data is {
-  id: number
+  id: string
 } {
   return (
     'id' in data &&

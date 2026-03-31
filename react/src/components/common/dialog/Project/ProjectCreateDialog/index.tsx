@@ -63,7 +63,7 @@ const ProjectCreateDialog = () => {
         ...data,
         disciplines: data.disciplines.map((item) => Number(item))
       }).unwrap()
-      onSuccess(String(response.dataPackage.id))
+      onSuccess(String(response.uuid))
     } catch (err) {
       onError(err)
     }

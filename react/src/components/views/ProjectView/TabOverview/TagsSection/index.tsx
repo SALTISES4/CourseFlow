@@ -15,7 +15,7 @@ const Tags = ({ data }: PropsType) => {
   const [state, setState] = useState<TTag[]>(data)
 
   const onChange = useCallback(
-    (id: number, value: string, createNew: boolean) => {
+    (id: string, value: string, createNew: boolean) => {
       setState(
         produce((draft) => {
           if (createNew) {
@@ -39,11 +39,15 @@ const Tags = ({ data }: PropsType) => {
     []
   )
 
-  const onTagDelete = useCallback((id: number) => {
+  const onTagDelete = useCallback((id: string) => {
     setState((oldTags) =>
       produce(oldTags, (draft) => draft.filter((t) => t.id !== id))
     )
   }, [])
+
+  if (!state) {
+    return
+  }
 
   return (
     <SC.InfoBlock sx={{ mt: 3 }}>

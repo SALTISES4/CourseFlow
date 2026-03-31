@@ -1,4 +1,5 @@
 import Base from '@cf/base'
+import { CFRoutes, RelativeRoutes } from '@cf/router/cfRoutes'
 import LoginRoute from '@cf/router/LoginRoute'
 import { RequireAuth } from '@cf/router/RequireAuth'
 import Home from '@cfPages/Home'
@@ -19,40 +20,8 @@ import Project from 'components/pages/Workspace/Project'
  * this is a workaround until we finalize a 'pattern'
  * see: https://github.com/remix-run/react-router/discussions/9841
  *******************************************************/
-const DOMAIN = 'course-flow'
 
-export enum RelativeRoutes {
-  // COMMON
-  INDEX = '/',
-  WORKFLOW = `workflow`,
-  // WORKFLOW
-  ALIGNMENT_ANALYSIS = `alignment`,
-  OUTCOME_TABLE = `outcometable`,
-  OUTCOME_EDIT = `outcomedit`,
-  GRID = `grid`,
-  // PROJECT
-  COMPARISON = 'comparison'
-}
-
-export enum CFRoutes {
-  HOME = `/${DOMAIN}/home`,
-  LIBRARY = `/${DOMAIN}/library`,
-  FAVOURITES = `/${DOMAIN}/favourites`,
-  EXPLORE = `/${DOMAIN}/explore`,
-  NOTIFICATIONS = `/${DOMAIN}/user/notifications`,
-  NOTIFICATIONS_SETTINGS = `/${DOMAIN}/user/notifications-settings`,
-  PROFILE_SETTINGS = `/${DOMAIN}/user/profile-settings`,
-  //  PROJECT
-  PROJECT = `/${DOMAIN}/project/:id`,
-  PROJECT_WORKFLOW = `/${DOMAIN}/project/:id/workflow/`,
-  // WORKFLOW
-  WORKFLOW = `/${DOMAIN}/workflow/:id`,
-  WORKFLOW_WORKFLOW = `/${DOMAIN}/workflow/:id/${RelativeRoutes.WORKFLOW}`,
-  WORKFLOW_ALIGNMENT_ANALYSIS = `/${DOMAIN}/workflow/:id/${RelativeRoutes.ALIGNMENT_ANALYSIS}`,
-  WORKFLOW_OUTCOME_TABLE = `/${DOMAIN}/workflow/:id/${RelativeRoutes.OUTCOME_TABLE}`,
-  WORKFLOW_OUTCOME_EDIT = `/${DOMAIN}/workflow/:id/${RelativeRoutes.OUTCOME_EDIT}`,
-  WORKFLOW_GRID = `/${DOMAIN}/workflow/:id/${RelativeRoutes.GRID}`
-}
+export { CFRoutes, RelativeRoutes }
 
 export const CFRouter = createBrowserRouter([
   {

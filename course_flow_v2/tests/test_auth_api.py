@@ -89,7 +89,7 @@ def test_register_creates_user_and_returns_usable_token(client: Client):
 
     me_response = client.get("/api/auth/me", **_auth_header(body["access_token"]))
     assert me_response.status_code == 200
-    assert me_response.json()["id"] == db_user.id
+    assert me_response.json()["item"]["uuid"] == str(db_user.uuid)
 
 
 @pytest.mark.django_db
@@ -130,7 +130,7 @@ def test_authenticated_me_succeeds_with_valid_bearer(client: Client, user):
 
     response = client.get("/api/auth/me", **_auth_header(raw_token))
     assert response.status_code == 200
-    assert response.json()["id"] == user.id
+    assert response.json()["item"]["uuid"] == str(user.uuid)
 
 
 @pytest.mark.django_db
@@ -191,6 +191,6 @@ def test_create_project_uses_authenticated_user_for_owner(
     assert response.status_code == 200
     body = response.json()
     assert body["owner_id"] == user.id
-    project = Project.objects.get(id=body["id"])
+    project = Project.objects.get(uuid=body["uuid"])
     assert project.owner_id == user.id
     assert project.owner_id != other_user.id

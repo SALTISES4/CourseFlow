@@ -6,7 +6,9 @@ import {
 
 import type { TagEntity } from '../model/types'
 
-export const tagsAdapter = createEntityAdapter<TagEntity>()
+export const tagsAdapter = createEntityAdapter<TagEntity, string>({
+  selectId: (t) => t.tagId
+})
 
 export type TagsState = ReturnType<typeof tagsAdapter.getInitialState>
 
@@ -19,7 +21,7 @@ const tagsSlice = createSlice({
     upsertMany(state, action: PayloadAction<TagEntity[]>) {
       tagsAdapter.upsertMany(state, action.payload)
     },
-    removeManyById(state, action: PayloadAction<string[]>) {
+    removeManyByTagId(state, action: PayloadAction<string[]>) {
       tagsAdapter.removeMany(state, action.payload)
     },
     clearAll(state) {

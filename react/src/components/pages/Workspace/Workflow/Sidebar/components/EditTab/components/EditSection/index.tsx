@@ -24,7 +24,7 @@ type SectionFormType = {
   title: string
 }
 
-const EditSection = ({ sectionId }: { sectionId: number }) => {
+const EditSection = ({ sectionId }: { sectionid: string }) => {
   const dispatch = useDispatch()
   const week = useSelector((state: RootState) =>
     selectWeekById(state, sectionId)

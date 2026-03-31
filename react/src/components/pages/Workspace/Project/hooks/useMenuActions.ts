@@ -68,12 +68,12 @@ export const useMenuActions = () => {
    *
    * @param id
    */
-  async function duplicateProject(id: number) {
+  async function duplicateProject(projectUuid: string) {
     try {
-      const response = await mutate({ id }).unwrap()
+      const response = await mutate({ projectUuid }).unwrap()
       onSuccess(response)
       const url = generatePath(CFRoutes.PROJECT, {
-        id: String(response.dataPackage.id)
+        id: String(response.uuid)
       })
       navigate(url)
     } catch (err) {

@@ -121,7 +121,7 @@ const WorkflowEditView = () => {
     [dispatch, triggerLineRerender]
   )
 
-  const onWeekCollapse = useCallback((weekId: number) => {
+  const onWeekCollapse = useCallback((weekid: string) => {
     setState(
       produce((draft) => {
         if (Array.isArray(draft.condensed)) {

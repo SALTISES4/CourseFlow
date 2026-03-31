@@ -33,7 +33,7 @@ import optionsData from './optionsData'
 import * as Styled from './styles'
 import { NodeForm } from './types'
 
-const EditNode = ({ nodeId }: { nodeId: number }) => {
+const EditNode = ({ nodeId }: { nodeid: string }) => {
   const dispatch = useDispatch()
   const node = useSelector((state: RootState) => selectNodeById(state, nodeId))
 

@@ -1,18 +1,35 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { Verb, cfApi } from '@XMLHTTP/API/api'
-import { ELibraryObject, EProject } from '@XMLHTTP/types/entity'
+import { ELibraryObject } from '@XMLHTTP/types/entity'
 import { generatePath } from 'react-router-dom'
 
 /*******************************************************
  * TYPES
  *******************************************************/
-export type GetProjectByIdQueryResp = {
-  message: string
-  dataPackage: EProject
+/** CourseFlow v2 ``ProjectDetailOut`` (GET/POST /api/project). */
+export type ProjectDetailOut = {
+  uuid: string
+  title: string
+  description: string
+  is_published: boolean
+  is_template: boolean
+  owner_id: number
+  date_created: string
+  modified_on: string
 }
 
-export type ListProjectsQueryResp = {
-  message: string
+export type ProjectDetailOutResp = {
+  item: ProjectDetailOut
+}
+
+export type ProjectLibraryResp = {
+  owned: ELibraryObject[]
+  editable: ELibraryObject[]
+  deleted: ELibraryObject[]
+}
+
+type LegacyProjectLibraryEnvelope = {
+  message?: string
   dataPackage: {
     ownedProjects: ELibraryObject[]
     editProjects: ELibraryObject[]
@@ -20,12 +37,7 @@ export type ListProjectsQueryResp = {
   }
 }
 
-export type CreateProjectResp = {
-  message: string
-  dataPackage: {
-    id: number
-  }
-}
+export type CreateProjectResp = ProjectDetailOut
 
 export interface CreateProjectArgs {
   description: string
@@ -33,7 +45,7 @@ export interface CreateProjectArgs {
   disciplines: number[]
 }
 export interface UpdateProjectArgs extends CreateProjectArgs {
-  id: number
+  projectUuid: string
 }
 
 /*******************************************************
@@ -44,23 +56,20 @@ const extendedApi = cfApi.injectEndpoints({
     /*******************************************************
      * QUERIES
      *******************************************************/
-    getProjectById: builder.query<
-      GetProjectByIdQueryResp,
-      {
-        id: number
-      }
+    getProjectByUuid: builder.query<
+      ProjectDetailOutResp,
+      { projectUuid: string }
     >({
       query: (args) => {
-        const base = apiPaths.json_api.project.detail
-        console.log('getting project by id', args.id, 'base', base)
+        const base = apiPaths.json_api_v2.project.detail
         return {
           method: Verb.GET,
-          url: generatePath(base, { id: args.id })
+          url: generatePath(base, { uuid: args.projectUuid })
         }
       }
     }),
     // @todo this query is probably better as a variation on common library search + arguments
-    listProjectsByCurrentUser: builder.query<ListProjectsQueryResp, any>({
+    listProjectsByCurrentUser: builder.query<ProjectLibraryResp, any>({
       query: (args) => {
         const base = apiPaths.json_api.project.list__by_current_user
         return {
@@ -68,14 +77,21 @@ const extendedApi = cfApi.injectEndpoints({
           url: base,
           body: args // not implemented
         }
-      }
+      },
+      transformResponse: (
+        response: LegacyProjectLibraryEnvelope
+      ): ProjectLibraryResp => ({
+        owned: response.dataPackage.ownedProjects,
+        editable: response.dataPackage.editProjects,
+        deleted: response.dataPackage.deletedProjects
+      })
     }),
     /*******************************************************
      * MUTATIONS
      *******************************************************/
     createProject: builder.mutation<CreateProjectResp, CreateProjectArgs>({
       query: (args) => {
-        const url = apiPaths.json_api.project.create
+        const url = apiPaths.json_api_v2.project.collection
         return {
           method: Verb.POST,
           url,
@@ -85,8 +101,8 @@ const extendedApi = cfApi.injectEndpoints({
     }),
     updateProject: builder.mutation<CreateProjectResp, UpdateProjectArgs>({
       query: (args) => {
-        const base = apiPaths.json_api.project.update
-        const url = generatePath(base, { id: args.id })
+        const base = apiPaths.json_api_v2.project.detail
+        const url = generatePath(base, { uuid: args.projectUuid })
         return {
           method: Verb.POST,
           url,
@@ -94,10 +110,10 @@ const extendedApi = cfApi.injectEndpoints({
         }
       }
     }),
-    duplicateProject: builder.mutation<CreateProjectResp, { id: number }>({
+    duplicateProject: builder.mutation<CreateProjectResp, { projectUuid: string }>({
       query: (args) => {
-        const base = apiPaths.json_api.project.update
-        const url = generatePath(base, { id: args.id })
+        const base = apiPaths.json_api_v2.project.detail
+        const url = generatePath(base, { uuid: args.projectUuid })
         return {
           method: Verb.POST,
           url
@@ -109,7 +125,7 @@ const extendedApi = cfApi.injectEndpoints({
 })
 
 export const {
-  useGetProjectByIdQuery,
+  useGetProjectByUuidQuery,
   // not sure we need this any more
   useListProjectsByCurrentUserQuery,
   useCreateProjectMutation,

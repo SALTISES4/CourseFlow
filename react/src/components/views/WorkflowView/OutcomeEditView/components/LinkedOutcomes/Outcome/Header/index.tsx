@@ -16,7 +16,7 @@ import { useDispatch } from 'react-redux'
 import { PropsType as LinkedOutcomesProps } from '../../index'
 
 type PropsType = {
-  id: number
+  id: string
   level: number
   linkParent?: LinkedOutcomesProps['parent']
   title: string

@@ -1,7 +1,7 @@
 export type Message = {
-  id: number
+  id: string
   author: {
-    id: number
+    id: string
     name: string
   }
   date: string

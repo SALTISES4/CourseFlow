@@ -4,9 +4,13 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
-import type { ChannelEntity, WorkflowId } from '../model/types'
+import type { ChannelEntity, ResourceUuid, WorkflowUuid } from '../model/types'
 
-export const channelsAdapter = createEntityAdapter<ChannelEntity>()
+export const channelsAdapter = createEntityAdapter<ChannelEntity, ResourceUuid>(
+  {
+    selectId: (c) => c.uuid
+  }
+)
 
 export type ChannelsState = ReturnType<typeof channelsAdapter.getInitialState>
 
@@ -19,10 +23,10 @@ const channelsSlice = createSlice({
     upsertMany(state, action: PayloadAction<ChannelEntity[]>) {
       channelsAdapter.upsertMany(state, action.payload)
     },
-    removeByWorkflowId(state, action: PayloadAction<WorkflowId>) {
+    removeByWorkflowUuid(state, action: PayloadAction<WorkflowUuid>) {
       const ids = state.ids.filter((id) => {
         const channel = state.entities[id]
-        return channel?.workflowId === action.payload
+        return channel?.workflowUuid === action.payload
       })
       channelsAdapter.removeMany(state, ids)
     },

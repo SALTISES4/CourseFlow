@@ -69,8 +69,9 @@ class ThreadCommentService:
 
         Raises ``PermissionError`` if the thread is in a workflow owned by another user.
         """
-        thread = Thread.objects.filter(uuid=thread_uuid).first()
-        if thread is None:
+        try:
+            thread = Thread.objects.get(uuid=thread_uuid)
+        except Thread.DoesNotExist:
             return None
 
         workflow = self._workflow_for_thread(thread)

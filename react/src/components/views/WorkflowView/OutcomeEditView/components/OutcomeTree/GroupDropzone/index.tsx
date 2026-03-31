@@ -12,7 +12,7 @@ const GroupDropzone = ({
   level,
   hasChildren
 }: {
-  id: number
+  id: string
   children: ReactNode
   level: number
   hasChildren: boolean

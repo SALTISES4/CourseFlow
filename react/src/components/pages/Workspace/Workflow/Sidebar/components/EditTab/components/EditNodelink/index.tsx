@@ -24,7 +24,7 @@ import Typography from '@mui/material/Typography'
 import { ChangeEvent, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-const EditNodeLink = ({ nodeLinkId }: { nodeLinkId: number }) => {
+const EditNodeLink = ({ nodeLinkId }: { nodeLinkid: string }) => {
   const dispatch = useDispatch()
   const nodeLink = useSelector((state: RootState) =>
     selectNodelinkById(state, nodeLinkId)

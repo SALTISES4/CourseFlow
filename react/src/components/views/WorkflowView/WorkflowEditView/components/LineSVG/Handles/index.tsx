@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import * as Styled from './styles'
 
 type PropsType = {
-  nodeId: number
+  nodeid: string
   nodeRef: MutableRefObject<HTMLDivElement>
   diameter?: number
 }

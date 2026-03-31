@@ -14,7 +14,7 @@ const RestoreDialog = ({
   id,
   callback
 }: {
-  id: number
+  id: string
   objectType: WorkspaceType
   callback?: () => void
 }) => {
@@ -32,7 +32,7 @@ const RestoreDialog = ({
 
   async function onSubmit() {
     const args = {
-      id: Number(id),
+      id: string(id),
       payload: {
         objectType: objectType
       }

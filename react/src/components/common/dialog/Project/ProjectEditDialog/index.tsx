@@ -1,11 +1,10 @@
 import * as SC from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { _t } from '@cf/utility/Utility.class'
 import ProjectForm from '@cfComponents/dialog/Project/components/ProjectForm'
 import { useGetHomeContextQuery } from '@XMLHTTP/API/library.rtk'
 import {
-  useGetProjectByIdQuery,
+  useGetProjectByUuidQuery,
   useUpdateProjectMutation
 } from '@XMLHTTP/API/project.rtk'
 import { useParams } from 'react-router-dom'
@@ -27,7 +26,8 @@ const ProjectEditDialog = () => {
    * HOOKS
    *******************************************************/
   const { show, onClose } = useDialog(DialogMode.PROJECT_EDIT)
-  const { id } = useParams()
+  const { uuid } = useParams()
+  const projectUuid = uuid ?? ''
 
   // TODO: grab amount of projects data from elsewhere?
   const homeContextQuery = useGetHomeContextQuery()
@@ -38,39 +38,35 @@ const ProjectEditDialog = () => {
   /*******************************************************
    * QUERY HOOK
    *******************************************************/
-  const { data, refetch, isLoading } = useGetProjectByIdQuery({
-    id: Number(id)
-  })
+  const { data, refetch, isLoading } = useGetProjectByUuidQuery(
+    { projectUuid },
+    { skip: !projectUuid }
+  )
 
-  const [mutate, { isSuccess, isError, error, data: updateData }] =
-    useUpdateProjectMutation()
+  const [mutate] = useUpdateProjectMutation()
   const { onError, onSuccess } = useGenericMsgHandler()
 
   /*******************************************************
    * RHF
    *******************************************************/
-  const defaultValues = {
-    title: data.dataPackage.title,
-    description: data.dataPackage.description,
-    disciplines: data.dataPackage.disciplines.map((item) => {
-      return String(item)
-    })
+  const defaultValues: ProjectFormValues = {
+    title: data?.item.title ?? '',
+    description: data?.item.description ?? '',
+    disciplines: []
   }
 
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  function onSubmit(data: ProjectFormValues) {
-    // remove null value first
-    // since the endpoint does not accept them
+  function onSubmit(formData: ProjectFormValues) {
     mutate({
-      id: Number(id),
-      ...data,
-      disciplines: data.disciplines.map((item) => Number(item))
+      projectUuid,
+      ...formData,
+      disciplines: formData.disciplines.map((item) => Number(item))
     })
       .unwrap()
-      .then((response) => {
-        onSuccess(response, onSuccessHandler)
+      .then(() => {
+        onSuccess({ message: 'Success' }, onSuccessHandler)
       })
       .catch((err) => {
         onError(err)
@@ -85,6 +81,10 @@ const ProjectEditDialog = () => {
   /*******************************************************
    * RENDER
    *******************************************************/
+  if (isLoading || !data) {
+    return null
+  }
+
   return (
     <SC.StyledDialog open={show} onClose={onClose} fullWidth maxWidth="sm">
       <ProjectForm

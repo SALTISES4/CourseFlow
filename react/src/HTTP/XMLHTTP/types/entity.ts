@@ -19,7 +19,7 @@ export type EDate = string
  * ABSTRACT
  *******************************************************/
 interface CourseFlowEntity {
-  id: number
+  id: string
   hash: string
   deleted: boolean
   deletedOn: EDate
@@ -30,7 +30,7 @@ interface CourseFlowEntity {
 }
 
 export type EUser = {
-  id: number
+  id: string
   username: string
   firstName: string
   lastName: string
@@ -181,17 +181,17 @@ export interface ENode extends CourseFlowEntity {
 }
 
 export type ETag = {
-  id: number
+  id: string
   title: string
 }
 
 export type EDiscipline = {
-  id: number
+  id: string
   title: string
 }
 
 export type EComment = {
-  id: number
+  id: string
   user: EUser
   createdOn: EDate
   text: string
@@ -200,7 +200,7 @@ export type EComment = {
 export type ENodelink = {
   deleted: boolean
   deletedOn: EDate
-  id: number
+  id: string
   title: string | null
   sourceNode: number
   targetNode: number
@@ -214,7 +214,7 @@ export type ENodelink = {
  * OUTCOME
  *******************************************************/
 export type EOutcome = {
-  id: number
+  id: string
   deleted: boolean
   deletedOn: EDate
   title: string
@@ -236,7 +236,7 @@ export type EOutcome = {
  * WORKFLOW RELATIONS
  *******************************************************/
 export type EWeekworkflow = {
-  id: number
+  id: string
   workflow: number
   week: number
   rank: number
@@ -245,7 +245,7 @@ export type EWeekworkflow = {
 export type EColumnworkflow = EOutcomeWorkflow
 
 export type EOutcomeWorkflow = {
-  id: number
+  id: string
   rank: number
   workflow: number
   outcome: number
@@ -255,7 +255,7 @@ export type EOutcomeHorizontalLink = {
   outcome: number
   parentOutcome: number
   rank: number
-  id: number
+  id: string
   degree: number
 }
 
@@ -263,7 +263,7 @@ export type EOutcomeOutcome = {
   parent: number
   child: number
   rank: number
-  id: number
+  id: string
 }
 
 export type ENodeweek = {
@@ -271,14 +271,14 @@ export type ENodeweek = {
   week: number
   node: number
   rank: number
-  id: number
+  id: string
 }
 
 export type EOutcomenode = {
   node: number
   outcome: number
   rank: number
-  id: number
+  id: string
   degree: number
 }
 
@@ -298,7 +298,7 @@ export type ESection = {
 }
 
 export type ENotification = {
-  id: number
+  id: string
   type: WorkspaceType
   unread: boolean
   from: string

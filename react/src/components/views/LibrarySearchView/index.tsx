@@ -48,8 +48,8 @@ type PropsType = {
   setSearchArgs: (args: LibraryObjectsSearchQueryArgs) => void
   config: Config
   override?: {
-    selectedId: number
-    onCardSelect: (id: number) => void
+    selectedid: string
+    onCardSelect: (id: string) => void
   }
 }
 

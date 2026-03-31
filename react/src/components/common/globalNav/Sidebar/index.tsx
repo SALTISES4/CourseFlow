@@ -2,7 +2,7 @@ import { CFRoutes } from '@cf/router/appRoutes'
 import strings from '@cf/utility/strings'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
-import ParentWorkflowIndicator from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ParentWorkflowIndicator'
+import RelatedWorkflowList from '@cfPages/Workspace/Workflow/WorkflowTabs/components/RelatedWorkflowList'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import FolderCopyIcon from '@mui/icons-material/FolderCopy'
 import HelpRoundedIcon from '@mui/icons-material/HelpRounded'
@@ -168,7 +168,7 @@ const Sidebar = () => {
         </SC.MainMenuWrap>
 
         <Favourites />
-        <ParentWorkflowIndicator />
+        <RelatedWorkflowList />
 
         <SC.HelpLink>
           <ListItem disablePadding dense>

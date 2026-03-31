@@ -22,7 +22,7 @@ class BetterSelectionManager {
     this.dispatch = dispatch
   }
 
-  updateSidebar(id: number, objectType: CfObjectType, parentId?: number) {
+  updateSidebar(id: string, objectType: CfObjectType, parentId?: number) {
     store.dispatch(sidebarEdit({ id, parentId, objectType }))
   }
 

@@ -32,7 +32,7 @@ type PonderationType = {
 }
 
 export type LinkedWorkflowType = {
-  id: number
+  id: string
   title: string
   ponderation?: PonderationType
 }

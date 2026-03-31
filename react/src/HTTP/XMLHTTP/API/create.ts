@@ -7,7 +7,7 @@ import { generatePath } from 'react-router-dom'
 
 //Add a new node to a week
 export function newNodeQuery(
-  weekId: number,
+  weekid: string,
   position = -1,
   column = -1,
   columnType = -1,
@@ -37,7 +37,7 @@ export function newNodeQuery(
  */
 export function newOutcomeQuery(
   workflowPk: number,
-  object_setId: number,
+  object_setid: string,
   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.new_outcome, {
@@ -67,8 +67,8 @@ export function addStrategyQuery(
 }
 
 export function newNodelinkQuery(
-  sourceNodeId: number,
-  targetNodeId: number,
+  sourceNodeid: string,
+  targetNodeid: string,
   sourcePort: number,
   targetPort: number,
   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
@@ -95,7 +95,7 @@ export function newNodelinkQuery(
  * @param callBackFunction
  */
 export function addObjectSetQuery(
-  id: number,
+  id: string,
   term: any,
   title: any,
   translationPlural: any,

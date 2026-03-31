@@ -5,7 +5,7 @@ import {
   canRenderNodes,
   canRenderShell,
   selectWorkflowLoadState,
-  selectWorkflowMetaById,
+  selectWorkflowMetaByUuid,
   useGraphBootstrap
 } from '@cf/features/graph/state'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -17,30 +17,30 @@ import { useParams } from 'react-router-dom'
 
 const Workflow = () => {
   const { id } = useParams<{ id: string }>()
-  const workflowId = id ?? null
+  const workflowUuid = id ?? null
 
-  useGraphBootstrap(workflowId)
+  useGraphBootstrap(workflowUuid)
 
   const shellReady = useSelector((state: RootState) =>
-    workflowId ? canRenderShell(workflowId)(state) : false
+    workflowUuid ? canRenderShell(workflowUuid)(state) : false
   )
   const channelsReady = useSelector((state: RootState) =>
-    workflowId ? canRenderChannels(workflowId)(state) : false
+    workflowUuid ? canRenderChannels(workflowUuid)(state) : false
   )
   const nodesReady = useSelector((state: RootState) =>
-    workflowId ? canRenderNodes(workflowId)(state) : false
+    workflowUuid ? canRenderNodes(workflowUuid)(state) : false
   )
   const edgesReady = useSelector((state: RootState) =>
-    workflowId ? canRenderEdges(workflowId)(state) : false
+    workflowUuid ? canRenderEdges(workflowUuid)(state) : false
   )
   const workflowMeta = useSelector((state: RootState) =>
-    workflowId ? selectWorkflowMetaById(workflowId)(state) : null
+    workflowUuid ? selectWorkflowMetaByUuid(workflowUuid)(state) : null
   )
   const loadState = useSelector((state: RootState) =>
-    workflowId ? selectWorkflowLoadState(workflowId)(state) : undefined
+    workflowUuid ? selectWorkflowLoadState(workflowUuid)(state) : undefined
   )
 
-  if (!workflowId) {
+  if (!workflowUuid) {
     return <ErrorView />
   }
 

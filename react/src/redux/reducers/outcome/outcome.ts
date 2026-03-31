@@ -24,32 +24,32 @@ interface RefreshStoreDataAction extends UnknownAction {
 // Outcome Actions
 interface CreateLockAction extends UnknownAction {
   type: OutcomeActions.CREATE_LOCK
-  payload: { id: number; lock: CfLock }
+  payload: { id: string; lock: CfLock }
 }
 
 interface RestoreSelfAction extends UnknownAction {
   type: OutcomeActions.RESTORE_SELF
   payload: {
-    id: number
-    parentId: number
+    id: string
+    parentid: string
     throughparentIndex: number
-    throughparentId: number
+    throughparentid: string
   }
 }
 
 interface DeleteSelfAction extends UnknownAction {
   type: OutcomeActions.DELETE_SELF
-  payload: { id: number; parentId: number }
+  payload: { id: string; parentid: string }
 }
 
 interface UpdateHorizontalLinkAction extends UnknownAction {
   type: OutcomeActions.UPDATE_HORIZONTAL_LINK
-  payload: { id: number; data: any[] } // Specify the data structure if possible
+  payload: { id: string; data: any[] } // Specify the data structure if possible
 }
 
 interface DeleteSelfSoftAction extends UnknownAction {
   type: OutcomeActions.DELETE_SELF_SOFT
-  payload: { id: number; parentId: number }
+  payload: { id: string; parentid: string }
 }
 
 interface NewOutcomeAction extends UnknownAction {
@@ -60,9 +60,9 @@ interface NewOutcomeAction extends UnknownAction {
 interface InsertChildAction extends UnknownAction {
   type: OutcomeActions.INSERT_CHILD
   payload: {
-    parentId: number
+    parentid: string
     newThrough: {
-      id: number
+      id: string
       rank: number
     }
     children?: { outcome: TOutcome[] }
@@ -72,9 +72,9 @@ interface InsertChildAction extends UnknownAction {
 interface InsertBelowAction extends UnknownAction {
   type: OutcomeActions.INSERT_BELOW
   payload: {
-    parentId: number
+    parentid: string
     newThrough: {
-      id: number
+      id: string
       rank: number
     }
     children?: { outcome: TOutcome[] }
@@ -83,12 +83,12 @@ interface InsertBelowAction extends UnknownAction {
 
 interface ReloadCommentsAction extends UnknownAction {
   type: OutcomeActions.RELOAD_COMMENTS
-  payload: { id: number; commentData: any[] } // Specify the structure of `commentData`
+  payload: { id: string; commentData: any[] } // Specify the structure of `commentData`
 }
 
 interface ChangeFieldAction extends UnknownAction {
   type: OutcomeActions.CHANGE_FIELD
-  payload: { id: number; json: any }
+  payload: { id: string; json: any }
 }
 
 interface ChangeFieldManyAction extends UnknownAction {
@@ -99,22 +99,22 @@ interface ChangeFieldManyAction extends UnknownAction {
 // Outcome Base Actions
 interface DeleteSelfBaseAction extends UnknownAction {
   type: OutcomeBaseActions.DELETE_SELF
-  payload: { id: number }
+  payload: { id: string }
 }
 
 interface DeleteSelfSoftBaseAction extends UnknownAction {
   type: OutcomeBaseActions.DELETE_SELF_SOFT
-  payload: { id: number }
+  payload: { id: string }
 }
 
 interface RestoreSelfBaseAction extends UnknownAction {
   type: OutcomeBaseActions.RESTORE_SELF
-  payload: { id: number }
+  payload: { id: string }
 }
 
 interface ReloadCommentsBaseAction extends UnknownAction {
   type: OutcomeBaseActions.RELOAD_COMMENTS
-  payload: { id: number; commentData: any[] }
+  payload: { id: string; commentData: any[] }
 }
 
 interface InsertBelowBaseAction extends UnknownAction {

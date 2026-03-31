@@ -51,12 +51,11 @@ class DjangoWorkflowRepository:
         return _to_dto(w)
 
     def get_by_uuid(self, uuid: UUID) -> WorkflowDTO | None:
-        w = (
-            Workflow.objects.select_related("unit", "project")
-            .filter(uuid=uuid)
-            .first()
-        )
-        return _to_dto(w) if w else None
+        try:
+            w = Workflow.objects.select_related("unit", "project").get(uuid=uuid)
+        except Workflow.DoesNotExist:
+            return None
+        return _to_dto(w)
 
     def list_for_owner(self, owner_id: int) -> list[WorkflowDTO]:
         qs = Workflow.objects.filter(owner_id=owner_id).select_related(
@@ -73,18 +72,14 @@ class DjangoWorkflowRepository:
         return [_to_dto(w) for w in qs]
 
     def update(self, uuid: UUID, updates: dict[str, Any]) -> WorkflowDTO | None:
-        w = Workflow.objects.filter(uuid=uuid).first()
-        if w is None:
+        try:
+            w = Workflow.objects.get(uuid=uuid)
+        except Workflow.DoesNotExist:
             return None
         allowed = {"title", "project_id"}
         for key, value in updates.items():
             if key in allowed:
                 setattr(w, key, value)
         w.save()
-        w = (
-            Workflow.objects.select_related("unit", "project")
-            .filter(pk=w.pk)
-            .first()
-        )
-        assert w is not None
+        w = Workflow.objects.select_related("unit", "project").get(pk=w.pk)
         return _to_dto(w)

@@ -124,7 +124,7 @@ export interface GlobalContextData {
     updateNotifications:
       | {
           title: string
-          id: number
+          id: string
         }
       | Record<string, never>
   }

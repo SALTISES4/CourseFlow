@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import OutcomeHeader from './Header'
 
-export const Outcome = ({ id }: { id: number }) => {
+export const Outcome = ({ id }: { id: string }) => {
   const outcome = useSelector((state: RootState) =>
     selectOutcomeById(state, id)
   )
@@ -112,7 +112,7 @@ const OutcomeBlock = ({ id, title, children, level }: OutcomeType) => {
   )
 }
 
-export const OutcomeChildren = ({ parentId }: { parentId: number | null }) => {
+export const OutcomeChildren = ({ parentId }: { parentid: string | null }) => {
   const childOutcomes = useSelector((state: RootState) =>
     selectOutcomeChildrenById(state, parentId)
   )

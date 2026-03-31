@@ -17,7 +17,7 @@ const OutcomeTree = ({ outcomes }: { outcomes: OutcomeType[] }) => (
   </GroupDropzone>
 )
 
-export const OutcomeGroup = ({ parentId }: { parentId: number | null }) => {
+export const OutcomeGroup = ({ parentId }: { parentid: string | null }) => {
   const childOutcomes = useSelector((state: RootState) =>
     selectOutcomeChildrenById(state, parentId)
   )

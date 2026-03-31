@@ -22,7 +22,7 @@ import { useCallback } from 'react'
 import * as SC from '../styles'
 
 type PropsType = {
-  workspaceId: number
+  workspaceid: string
   workspaceType: WorkspaceType
   author: EUser
 }
@@ -50,7 +50,7 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
     refetch()
   }
 
-  async function onChangeHandler(group: PermissionGroup, userId: number) {
+  async function onChangeHandler(group: PermissionGroup, userid: string) {
     const args = {
       id: workspaceId,
       payload: {
@@ -72,7 +72,7 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
   }, [dispatch])
 
   const onUserRemove = useCallback(
-    (userId: number, username: string) => {
+    (userid: string, username: string) => {
       return () => {
         dispatch(DialogMode.CONTRIBUTOR_REMOVE, {
           userId,

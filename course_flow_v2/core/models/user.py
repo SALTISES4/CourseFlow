@@ -41,8 +41,18 @@ class CourseFlowUserManager(BaseUserManager):
 
 
 class User(AbstractUser):
+    class LanguagePreference(models.TextChoices):
+        EN = "en", "English"
+        FR = "fr", "French"
+
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     email = models.EmailField(unique=True)
+    language_preference = models.CharField(
+        max_length=8,
+        choices=LanguagePreference.choices,
+        default=LanguagePreference.EN,
+    )
+    notifications_active = models.BooleanField(default=False)
     objects = CourseFlowUserManager()
 
     USERNAME_FIELD = "email"

@@ -40,7 +40,7 @@ export type LibraryObjectsSearchQueryArgs = {
 
 // @todo rename this, it's not toggling
 export type ToggleFavouriteMutationArgs = {
-  id: number
+  id: string
   objectType: LibraryObjectType
   favourite: boolean
 }

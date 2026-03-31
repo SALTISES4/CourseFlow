@@ -14,7 +14,7 @@ import { MouseEvent, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 type PropsType = {
-  nodeId: number
+  nodeid: string
   show: boolean
 }
 

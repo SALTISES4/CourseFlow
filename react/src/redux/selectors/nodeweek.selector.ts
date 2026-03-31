@@ -5,7 +5,7 @@ import { createSelector } from 'reselect'
 
 const selectNodeState = (state: AppState) => state.workspace.node
 const selectNodeWeekState = (state: AppState) => state.nodeweek
-const selectNodeWeekId = (_: AppState, id: number) => id
+const selectNodeWeekId = (_: AppState, id: string) => id
 
 /**
  * Memoized selector to find a node week by ID.

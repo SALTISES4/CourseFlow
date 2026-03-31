@@ -5,7 +5,7 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import { MouseEvent, MutableRefObject } from 'react'
 
 type PropsType = {
-  id: number
+  id: string
   level: number
   title: string
   dragRef: MutableRefObject<HTMLDivElement>

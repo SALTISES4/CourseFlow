@@ -13,8 +13,8 @@ import { MouseEvent, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 type PropsType = {
-  workflowId: number
-  weekId: number
+  workflowid: string
+  weekid: string
   show: boolean
 }
 

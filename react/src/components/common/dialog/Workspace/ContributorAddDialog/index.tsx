@@ -35,13 +35,13 @@ import { Controller, useForm } from 'react-hook-form'
 import dummyUserData from './dummyUserData'
 
 interface IFormInputs {
-  userId: number[] | null
+  userid: string[] | null
   group: PermissionGroup | null
 }
 
 type UserFormOption = {
   name: string
-  id: number
+  id: string
 }
 
 const ContributorAddDialog = ({
@@ -49,7 +49,7 @@ const ContributorAddDialog = ({
   type,
   refetch
 }: {
-  id: number
+  id: string
   type: WorkspaceType
   refetch: () => void
 }) => {
@@ -224,7 +224,7 @@ const ContributorAddDialog = ({
 //   type,
 //   refetch
 // }: {
-//   id: number
+//   id: string
 //   type: WorkspaceType
 //   refetch: () => void
 // }) => {

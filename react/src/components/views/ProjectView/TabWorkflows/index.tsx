@@ -4,10 +4,10 @@ import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
 import { useState } from 'react'
 
 type PropsType = {
-  projectId: number
+  projectUuid: string
 }
 
-const TabWorkflows = ({ projectId }: PropsType) => {
+const TabWorkflows = ({ projectUuid }: PropsType) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
@@ -23,7 +23,7 @@ const TabWorkflows = ({ projectId }: PropsType) => {
     keywordFilter: true
   }
 
-  const locked = [{ name: 'project', value: projectId }]
+  const locked = [{ name: 'project', value: projectUuid }]
 
   const [searchArgs, setSearchArgs] = useState<LibraryObjectsSearchQueryArgs>(
     {}

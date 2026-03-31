@@ -35,18 +35,18 @@ export enum DialogMode {
 }
 
 export type DialogPayloadMap = {
-  [DialogMode.CONTRIBUTOR_REMOVE]: { userId: number; username: string }
+  [DialogMode.CONTRIBUTOR_REMOVE]: { userid: string; username: string }
   [DialogMode.ARCHIVE]: { peopleId: string }
   [DialogMode.WORKFLOW_CREATE]: { workflowType: WorkflowType }
   [DialogMode.WORKFLOW_DELETE_SECTION]: {
-    sectionId: number
-    workflowId: number
+    sectionid: string
+    workflowid: string
   }
   [DialogMode.WORKFLOW_DELETE_NODE_CATEGORY]: {
-    id: number
+    id: string
   }
   [DialogMode.NODE_LINK_WORKFLOW]: {
-    id: number
+    id: string
   }
 
   /*******************************************************

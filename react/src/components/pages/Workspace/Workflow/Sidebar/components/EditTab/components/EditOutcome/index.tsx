@@ -25,7 +25,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import data from '../EditNode/optionsData'
 
-const EditOutcome = ({ outcomeId }: { outcomeId: number }) => {
+const EditOutcome = ({ outcomeId }: { outcomeid: string }) => {
   const dispatch = useDispatch()
   const outcome = useSelector((state: RootState) =>
     selectOutcomeById(state, outcomeId)

@@ -32,7 +32,7 @@ const extendedApi = cfApi.injectEndpoints({
       EmptyPostResp,
       {
         payload: {
-          objectId: number
+          objectid: string
           objectType: CfObjectType
           text: string
         }
@@ -51,8 +51,8 @@ const extendedApi = cfApi.injectEndpoints({
       EmptyPostResp,
       {
         payload: {
-          objectId: number
-          commentId: number // why do we need anything but this?
+          objectid: string
+          commentid: string // why do we need anything but this?
           objectType: CfObjectType
         }
       }
@@ -70,7 +70,7 @@ const extendedApi = cfApi.injectEndpoints({
       EmptyPostResp,
       {
         payload: {
-          objectId: number
+          objectid: string
           objectType: CfObjectType
         }
       }

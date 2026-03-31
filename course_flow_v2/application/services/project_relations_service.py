@@ -19,8 +19,9 @@ class ProjectRelationsService:
     """Read-side queries for project-related collections (not embedded on primary resources)."""
 
     def list_disciplines(self, project_uuid: UUID) -> list[DisciplineDTO] | None:
-        p = Project.objects.filter(uuid=project_uuid).first()
-        if p is None:
+        try:
+            p = Project.objects.get(uuid=project_uuid)
+        except Project.DoesNotExist:
             return None
         return [
             DisciplineDTO(
@@ -32,8 +33,9 @@ class ProjectRelationsService:
         ]
 
     def list_tags(self, project_uuid: UUID) -> list[TagDTO] | None:
-        p = Project.objects.filter(uuid=project_uuid).first()
-        if p is None:
+        try:
+            p = Project.objects.get(uuid=project_uuid)
+        except Project.DoesNotExist:
             return None
         return [
             TagDTO(
@@ -45,8 +47,9 @@ class ProjectRelationsService:
         ]
 
     def list_team_members(self, project_uuid: UUID) -> list[ProjectTeamMemberDTO] | None:
-        p = Project.objects.filter(uuid=project_uuid).first()
-        if p is None:
+        try:
+            p = Project.objects.get(uuid=project_uuid)
+        except Project.DoesNotExist:
             return None
         try:
             team: ProjectTeam = p.team

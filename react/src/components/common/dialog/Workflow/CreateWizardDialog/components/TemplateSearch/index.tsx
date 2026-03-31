@@ -11,8 +11,8 @@ import { useLibraryObjectsSearchQuery } from '@XMLHTTP/API/library.rtk'
 import { ChangeEvent } from 'react'
 
 type PropsType = {
-  selected?: number
-  onTemplateSelect: (id: number) => void
+  selected?: string
+  onTemplateSelect: (id: string) => void
 }
 
 const TemplateSearch = ({ selected, onTemplateSelect }: PropsType) => {

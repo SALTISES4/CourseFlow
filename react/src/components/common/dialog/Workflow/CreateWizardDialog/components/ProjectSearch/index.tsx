@@ -5,8 +5,8 @@ import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
 import { useState } from 'react'
 
 type PropsType = {
-  selected?: number
-  onProjectSelect: (id: number) => void
+  selected?: string
+  onProjectSelect: (id: string) => void
 }
 
 const ProjectSearch = ({ selected, onProjectSelect }: PropsType) => {
@@ -51,7 +51,7 @@ const ProjectSearch = ({ selected, onProjectSelect }: PropsType) => {
       setSearchArgs={updateSearchArgsHandler}
       override={{
         onCardSelect: onProjectSelect,
-        selectedId: selected
+        selectedid: selected
       }}
     />
   )

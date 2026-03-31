@@ -10,7 +10,7 @@ export const WorkflowConfigContext = React.createContext<WorkflowContextType>(
 export type WorkflowContextType = {
   editableMethods: {
     lockUpdate: (
-      obj: { objectId: number; objectType: CfObjectType },
+      obj: { objectid: string; objectType: CfObjectType },
       time: any,
       lock: boolean
     ) => void

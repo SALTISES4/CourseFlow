@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from uuid import UUID
 
 from ninja import Schema
@@ -21,7 +21,6 @@ class ProjectUpdateIn(Schema):
 class ProjectListItemOut(Schema):
     """List rows: compact project fields only."""
 
-    id: int
     uuid: UUID
     title: str
     owner_id: int
@@ -30,10 +29,18 @@ class ProjectListItemOut(Schema):
     modified_on: datetime
 
 
+class ProjectListMetaOut(Schema):
+    total: int
+
+
+class ProjectListOut(Schema):
+    items: list[ProjectListItemOut]
+    meta: ProjectListMetaOut
+
+
 class ProjectDetailOut(Schema):
     """Single project resource: persisted fields only (no related collections)."""
 
-    id: int
     uuid: UUID
     title: str
     description: str
@@ -42,3 +49,54 @@ class ProjectDetailOut(Schema):
     owner_id: int
     date_created: datetime
     modified_on: datetime
+    workflows: list["ProjectWorkflowOut"] = []
+
+
+class ProjectDetailOutResp(Schema):
+    item: ProjectDetailOut
+
+
+class TaskMetaOut(Schema):
+    kind: str = "task_meta"
+    context: str
+
+
+class ProgramMetaOut(Schema):
+    kind: str = "program_meta"
+    calculate_time: str
+    calculate_credits: str
+    calculate_ponderation: str
+    calculate_classification: str
+    classification_general_time: timedelta | None = None
+    classification_specific_time: timedelta | None = None
+
+
+class CourseMetaOut(Schema):
+    kind: str = "course_meta"
+    classification: str
+    code: str
+
+
+class ActivityMetaOut(Schema):
+    kind: str = "activity_meta"
+    context: str
+    classification: str
+
+
+class UnitOut(Schema):
+    uuid: UUID
+    title: str
+    description: str
+    unit_type: str
+    meta: TaskMetaOut | ProgramMetaOut | CourseMetaOut | ActivityMetaOut | None = None
+
+
+class ProjectWorkflowOut(Schema):
+    uuid: UUID
+    title: str
+    owner_id: int
+    project_id: int | None
+    revision_id: int
+    date_created: datetime
+    modified_on: datetime
+    unit: UnitOut

@@ -7,7 +7,7 @@ import { enqueueSnackbar } from 'notistack'
 import { MouseEvent, useCallback, useEffect, useState } from 'react'
 
 type PropsType = {
-  id: number
+  id: string
   isFavourite: boolean
   type: LibraryObjectType
 }

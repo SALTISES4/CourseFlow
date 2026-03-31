@@ -14,7 +14,7 @@ import Outcome from './Outcome'
 import * as Styled from '../../styles'
 
 const OutcomeTab = () => {
-  const { id } = useParams()
+  const { uuid } = useParams()
   const outcomeGroups = useSelector(selectOutcomeTagGroups)
   const context = useContext(WorkflowConfigContext)
   const navigate = useNavigate()

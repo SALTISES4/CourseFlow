@@ -31,7 +31,7 @@ const workflowSchema = z.object({
 })
 
 const WorkflowEditDialog = () => {
-  const { id } = useParams()
+  const { uuid } = useParams()
   const workflow = useSelector((state: RootState) => state.workspace.workflow)
   const { show, onClose } = useDialog(DialogMode.WORKFLOW_EDIT)
   const { onError, onSuccess } = useGenericMsgHandler()
@@ -57,7 +57,7 @@ const WorkflowEditDialog = () => {
   const onSubmit = useCallback(
     (data: WorkflowFormType) => {
       mutate({
-        id: Number(id),
+        uuid: String(id),
         payload: Utility.replaceEmptyStringsWithNull(data)
       })
         .unwrap()

@@ -12,7 +12,7 @@ export type ObjectPermission = {
 }
 
 export type ObjectLock = {
-  user_id: number
+  user_id: string
   user_colour: string
   userColour: string
 }
@@ -25,7 +25,7 @@ export type QueryPages = {
 }
 
 export type Discipline = {
-  id: number
+  id: string
   title: string
 }
 
@@ -37,8 +37,8 @@ export type FieldChoice = {
 }
 
 export type CfLock = {
-  userId: number
-  objectId: number
+  userid: string
+  objectid: string
   expires: number
   userColour?: string
   lock?: boolean
@@ -83,7 +83,7 @@ export enum PermissionGroup {
 }
 
 export type PermissionUserType = {
-  id: number
+  id: string
   name: string
   email: string
   permissionGroup: PermissionGroup
@@ -93,7 +93,8 @@ export type PermissionUserType = {
  * simplified project for UI
  *******************************************************/
 export type ProjectDetailsType = {
-  id: number
+  /** Public project UUID from the v2 API. */
+  uuid: string
   title: string
   description: string
   isFavourite: boolean

@@ -35,20 +35,20 @@ const columnSlice = createSlice({
   name: SliceNamespace.COLUMN,
   initialState,
   reducers: {
-    createLock(state, action: PayloadAction<{ id: number; lock: CfLock }>) {
+    createLock(state, action: PayloadAction<{ id: string; lock: CfLock }>) {
       const item = state.entities[action.payload.id]
       if (item) {
         item.lock = action.payload.lock
       }
     },
-    deleteSelf(state, action: PayloadAction<{ id: number }>) {
+    deleteSelf(state, action: PayloadAction<{ id: string }>) {
       columnAdapter.removeOne(state, action.payload.id)
     },
     insertBelow(
       state,
       action: PayloadAction<{
-        id: number | null
-        newId: number
+        id: string | null
+        newid: string
         duplicate?: number
       }>
     ) {
@@ -85,7 +85,7 @@ const columnSlice = createSlice({
     changeField(
       state,
       action: PayloadAction<{
-        id: number
+        id: string
         data: Partial<TColumn>
       }>
     ) {

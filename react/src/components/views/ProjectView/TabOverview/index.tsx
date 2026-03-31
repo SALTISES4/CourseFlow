@@ -18,8 +18,8 @@ const OverviewTab = ({
   tags,
   author
 }: ProjectDetailsType) => {
-  const { id } = useParams()
-  const projectId = Number(id)
+  const { uuid } = useParams()
+  const projectUuid = uuid
 
   return (
     <OuterContentWrap sx={{ pt: 4 }}>
@@ -54,7 +54,7 @@ const OverviewTab = ({
         <SC.InfoBlockTitle>{_t('Permissions')}</SC.InfoBlockTitle>
 
         <UserPermissions
-          workspaceId={projectId}
+          workspaceId={projectUuid}
           author={author}
           workspaceType={WorkspaceType.PROJECT}
         />

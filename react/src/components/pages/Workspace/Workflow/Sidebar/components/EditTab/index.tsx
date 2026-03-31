@@ -9,7 +9,7 @@ import EditSection from './components/EditSection'
 import EditTerm from './components/EditTerm'
 import { EditableType } from './types'
 
-const EditTab = ({ id, type }: { id: number; type: EditableType }) => {
+const EditTab = ({ id, type }: { id: string; type: EditableType }) => {
   if (!type) {
     return null
   }

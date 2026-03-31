@@ -11,7 +11,7 @@ import { WeekCellType } from '../Cell/types'
 import * as Styled from '../styles'
 
 type PropsType = {
-  weekId: number
+  weekid: string
   columnIds: WorkflowBoard['columns']['ids']
   columnColors: WorkflowBoard['columns']['colors']
   onNodeDrop: WeekPropsType['onNodeDrop']

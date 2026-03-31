@@ -4,34 +4,40 @@ import ArchiveDialog from '@cfComponents/dialog/Workspace/ArchiveDialog'
 import ContributorAddDialog from '@cfComponents/dialog/Workspace/ContributorAddDialog'
 import ContributorRemoveDialog from '@cfComponents/dialog/Workspace/ContributorRemoveDialog'
 import RestoreDialog from '@cfComponents/dialog/Workspace/RestoreDialog'
-import { useGetProjectByIdQuery } from '@XMLHTTP/API/project.rtk'
+import { useGetProjectByUuidQuery } from '@XMLHTTP/API/project.rtk'
 import { useParams } from 'react-router-dom'
 
 const ProjectDialogs = () => {
-  const { id } = useParams()
-  const projectId = Number(id)
-  const { refetch } = useGetProjectByIdQuery({ id: Number(id) })
+  const { uuid } = useParams()
+  const projectUuid = uuid ?? ''
+  const { refetch } = useGetProjectByUuidQuery(
+    { projectUuid },
+    { skip: !projectUuid }
+  )
 
   return (
     <>
-      <ProjectEditDialog />
+      {
+        // @todo fix the project edit dialog
+        // <ProjectEditDialog />
+      }
       <RestoreDialog
-        id={projectId}
+        id={projectUuid}
         objectType={WorkspaceType.PROJECT}
         callback={refetch}
       />
       <ArchiveDialog
-        id={projectId}
+        id={projectUuid}
         objectType={WorkspaceType.PROJECT}
         callback={refetch}
       />
 
       <ContributorAddDialog
-        id={projectId}
+        id={projectUuid}
         type={WorkspaceType.PROJECT}
         refetch={refetch}
       />
-      <ContributorRemoveDialog id={projectId} type={WorkspaceType.PROJECT} />
+      <ContributorRemoveDialog id={projectUuid} type={WorkspaceType.PROJECT} />
       {/*<ImportDialog />*/}
       {/*<ProjectExportDialog {...dummyProjectExportData} />*/}
     </>

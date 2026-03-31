@@ -19,7 +19,7 @@ import { debounce } from '@mui/material/utils'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-const EditColumn = ({ columnId }: { columnId: number }) => {
+const EditColumn = ({ columnId }: { columnid: string }) => {
   const dispatch = useDispatch()
   const column = useSelector((state: RootState) =>
     selectColumnById(state, columnId)

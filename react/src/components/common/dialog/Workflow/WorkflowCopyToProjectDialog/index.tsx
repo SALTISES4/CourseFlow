@@ -8,8 +8,8 @@ import { TargetProjectQueryResp } from '@XMLHTTP/types/query'
 import { useState } from 'react'
 
 // function copyToProject(
-//    workflowId: number,
-//    projectId: number,
+//    workflowid: string,
+//    projectid: string,
 //    workflowType: WorkflowType
 //  ) {
 //    loader.startLoad()

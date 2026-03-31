@@ -6,7 +6,7 @@ import React, { ReactNode } from 'react'
 import { useSelector } from 'react-redux'
 
 type UserContextType = {
-  id: number
+  id: string
   user: EUser
 }
 

@@ -19,7 +19,7 @@ import { useDispatch } from 'react-redux'
 
 // Props definition
 type PropsType = {
-  id: number
+  id: string
   setShow: (show: boolean) => void
   objectType: CfObjectType
 }
@@ -92,7 +92,7 @@ const CommentBox = ({ id, setShow, objectType }: PropsType) => {
     )
   }
 
-  const removeComment = async (commentId: number) => {
+  const removeComment = async (commentid: string) => {
     try {
       const resp = await deleteOneMutation({
         payload: {

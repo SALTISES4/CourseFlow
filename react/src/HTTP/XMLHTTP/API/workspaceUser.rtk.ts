@@ -10,7 +10,7 @@ import { generatePath } from 'react-router-dom'
  * TYPES
  *******************************************************/
 export type WorkspaceUser = {
-  userId: number
+  userid: string
   type: WorkspaceType
   group: PermissionGroup
 }
@@ -39,12 +39,12 @@ export type UserListQueryArgs = {
 }
 
 export type WorkspaceUserArgs = {
-  id: number // workspace id
+  id: string // workspace id
   payload: WorkspaceUser
 }
 
 export type WorkspaceDeleteUserArgs = {
-  id: number // workspace id
+  id: string // workspace id
   payload: WorkspaceSimpleUser
 }
 
@@ -68,7 +68,7 @@ const extendedApi = cfApi.injectEndpoints({
     getUsersForObject: builder.query<
       UsersForObjectQueryResp,
       {
-        id: number
+        id: string
         payload: {
           objectType: WorkspaceType
         }
@@ -88,7 +88,7 @@ const extendedApi = cfApi.injectEndpoints({
     getUsersForObjectAvailable: builder.query<
       UsersForObjectQueryResp,
       {
-        id: number
+        id: string
         payload: {
           objectType: WorkspaceType
           filter: string

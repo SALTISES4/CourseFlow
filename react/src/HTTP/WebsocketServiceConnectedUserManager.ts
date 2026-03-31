@@ -129,7 +129,7 @@ class WebSocketServiceConnectedUserManager {
     this.updateStateCallback(this.connectedUsers)
   }
 
-  private removeConnection(userId: number): void {
+  private removeConnection(userid: string): void {
     const index = this.connectedUsers.findIndex((u) => u.user.id === userId)
     if (index !== -1) {
       if (this.connectedUsers[index].timeout) {

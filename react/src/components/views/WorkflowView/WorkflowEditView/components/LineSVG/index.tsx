@@ -117,7 +117,7 @@ const BottomSVG = ({
 }: {
   svgRef: MutableRefObject<SVGSVGElement>
   connections: ConnectionType[]
-  selectedLinkId: number | null
+  selectedLinkid: string | null
 }) => {
   return (
     <Styled.BottomSVG id="line-svg" ref={svgRef}>

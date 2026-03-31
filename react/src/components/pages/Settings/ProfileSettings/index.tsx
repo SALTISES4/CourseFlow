@@ -44,7 +44,10 @@ type FormValues = ProfileSettingsArgs
 const projectSchema = z.object({
   firstName: z.string().min(1, { message: 'First Name is required' }).max(200),
   lastName: z.string().min(1, { message: 'Last Name is required' }).max(200),
-  language: z.string().min(1, { message: 'Language is required' }).max(200)
+  languagePreference: z
+    .string()
+    .min(1, { message: 'Language is required' })
+    .max(200)
 })
 
 const ProfileSettingsPage = () => {
@@ -78,9 +81,9 @@ const ProfileSettingsPage = () => {
   useEffect(() => {
     if (data) {
       reset({
-        firstName: data.dataPackage.firstName,
-        lastName: data.dataPackage.lastName,
-        language: data.dataPackage.language
+        firstName: data.item.first_name,
+        lastName: data.item.last_name,
+        languagePreference: data.item.language_preference
       })
     }
   }, [data, reset])
@@ -137,12 +140,12 @@ const ProfileSettingsPage = () => {
           </Box>
 
           <Box sx={{ mb: 8 }}>
-            <FormControl component="fieldset" error={!!errors.language}>
+            <FormControl component="fieldset" error={!!errors.languagePreference}>
               <FormLabel component="legend">
                 {strings.languagePreferences}
               </FormLabel>
               <Controller
-                name="language"
+                name="languagePreference"
                 control={control}
                 render={({ field }) => {
                   return (

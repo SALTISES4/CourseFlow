@@ -11,7 +11,7 @@ type PropsType = {
 }
 
 function findNearestRect(
-  coords: { anchorNodeId: number; x: number; y: number },
+  coords: { anchorNodeid: string; x: number; y: number },
   rects: Record<number, NodeBCR>
 ): DragPosition | null {
   const snapThreshold = 25

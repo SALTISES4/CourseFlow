@@ -6,12 +6,6 @@ import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
 
-// import { Verb, cfApi } from '@XMLHTTP/API/api'
-
-/*******************************************************
- * TYPES
- *******************************************************/
-
 /*******************************************************
  * QUERIES
  *******************************************************/
@@ -23,7 +17,7 @@ const extendedApi = cfApi.injectEndpoints({
     archive: builder.mutation<
       EmptyPostResp,
       {
-        id: number
+        id: string
         payload: {
           objectType: CfObjectType
         }
@@ -41,7 +35,7 @@ const extendedApi = cfApi.injectEndpoints({
     unarchive: builder.mutation<
       EmptyPostResp,
       {
-        id: number
+        id: string
         payload: {
           objectType: WorkspaceType
         }
@@ -49,24 +43,6 @@ const extendedApi = cfApi.injectEndpoints({
     >({
       query: (args) => {
         const base = apiPaths.json_api.workspace.restore
-        return {
-          method: Verb.POST,
-          url: generatePath(base, { id: args.id }),
-          body: args.payload
-        }
-      }
-    }),
-    deleteSelfHard: builder.mutation<
-      EmptyPostResp,
-      {
-        id: number
-        payload: {
-          objectType: LibraryObjectType
-        }
-      }
-    >({
-      query: (args) => {
-        const base = apiPaths.json_api.workspace.delete
         return {
           method: Verb.POST,
           url: generatePath(base, { id: args.id }),
@@ -82,7 +58,7 @@ const extendedApi = cfApi.injectEndpoints({
       EmptyPostResp,
       {
         payload: {
-          id: number
+          id: string
           objectType: CfObjectType
         }
       }
@@ -100,9 +76,9 @@ const extendedApi = cfApi.injectEndpoints({
       EmptyPostResp,
       {
         payload: {
-          id: number
+          id: string
           objectType: CfObjectType
-          parentId: number
+          parentid: string
           parentType: CfObjectType
           throughType: CfObjectType
         }
@@ -125,7 +101,6 @@ const extendedApi = cfApi.injectEndpoints({
 export const {
   useArchiveMutation,
   useUnarchiveMutation,
-  useDeleteSelfHardMutation,
   useInsertChildMutation,
   useInsertSiblingMutation
 } = extendedApi
@@ -150,7 +125,7 @@ export const {
  * deleteSelfQueryLegacy
  **/
 export function deleteSelfQueryLegacy(
-  objectId: number,
+  objectid: string,
   objectType: CfObjectType,
   soft = false,
   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
@@ -171,7 +146,7 @@ export function deleteSelfQueryLegacy(
  * restoreSelfQueryLegacy
  **/
 export function restoreSelfQueryLegacy(
-  objectId: number,
+  objectid: string,
   objectType: CfObjectType,
   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
@@ -185,53 +160,13 @@ export function restoreSelfQueryLegacy(
   })
 }
 
-/**
- * Causes the specified object to insert a child to itself
- **/
-// export function insertChildQuery(
-//   objectId: number,
-//   objectType: CfObjectType,
-//   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
-// ) {
-//   API_POST(apiPaths.json_api.workflow.object__insert_child, {
-//     objectId: objectId,
-//     objectType: objectType
-//   }).then((response: EmptyPostResp) => {
-//     callBackFunction(response)
-//   })
-// }
 
-/**
- *
- **/
-// export function insertSiblingQuery(
-//   objectId: number,
-//   objectType: CfObjectType,
-//   parentId: number,
-//   parentType: CfObjectType,
-//   throughType: CfObjectType,
-//   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
-// ) {
-//   API_POST(apiPaths.json_api.workflow.object__insert_sibling, {
-//     objectId,
-//     objectType,
-//     parentId,
-//     parentType,
-//     throughType
-//   })
-//     .then((response: EmptyPostResp) => {
-//       callBackFunction(response)
-//     })
-//     .catch((e) => {
-//       Utility.logger(e)
-//     })
-// }
 
 //Causes the specified object to insert a sibling after itself
 export function duplicateSelfQuery(
-  objectId: number,
+  objectid: string,
   objectType: CfObjectType,
-  parentId: number,
+  parentid: string,
   parentType: CfObjectType,
   throughType: CfObjectType,
   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')

@@ -21,10 +21,23 @@ Ambiguity / follow-up:
 
 from __future__ import annotations
 
-from django.db.models.signals import post_delete
+from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
-from course_flow_v2.core.models import Channel, Node, Section, Thread
+from course_flow_v2.core.models import (
+    ActivityMeta,
+    Channel,
+    CourseMeta,
+    Node,
+    Outcome,
+    ProgramMeta,
+    Project,
+    ProjectTeam,
+    Section,
+    TaskMeta,
+    Thread,
+    Unit,
+)
 
 
 @receiver(post_delete, sender=Channel)
@@ -46,3 +59,51 @@ def delete_thread_after_node_delete(sender, instance, **kwargs) -> None:
     tid = instance.thread_id
     if tid:
         Thread.objects.filter(pk=tid).delete()
+
+
+@receiver(pre_save, sender=Node)
+def ensure_thread_on_node_create(sender, instance: Node, **kwargs) -> None:
+    if instance._state.adding and instance.thread_id is None:
+        instance.thread = Thread.objects.create()
+
+
+@receiver(pre_save, sender=Channel)
+def ensure_thread_on_channel_create(sender, instance: Channel, **kwargs) -> None:
+    if instance._state.adding and instance.thread_id is None:
+        instance.thread = Thread.objects.create()
+
+
+@receiver(pre_save, sender=Section)
+def ensure_thread_on_section_create(sender, instance: Section, **kwargs) -> None:
+    if instance._state.adding and instance.thread_id is None:
+        instance.thread = Thread.objects.create()
+
+
+@receiver(pre_save, sender=Outcome)
+def ensure_thread_on_outcome_create(sender, instance: Outcome, **kwargs) -> None:
+    if instance._state.adding and instance.thread_id is None:
+        instance.thread = Thread.objects.create()
+
+
+@receiver(post_save, sender=Project)
+def ensure_project_team_on_project_create(
+    sender, instance: Project, created: bool, **kwargs
+) -> None:
+    if created:
+        ProjectTeam.objects.get_or_create(project=instance)
+
+
+@receiver(post_save, sender=Unit)
+def ensure_unit_typed_meta_on_unit_create(
+    sender, instance: Unit, created: bool, **kwargs
+) -> None:
+    if not created:
+        return
+    if instance.unit_type == Unit.UnitType.TASK:
+        TaskMeta.objects.get_or_create(unit=instance)
+    elif instance.unit_type == Unit.UnitType.PROGRAM:
+        ProgramMeta.objects.get_or_create(unit=instance)
+    elif instance.unit_type == Unit.UnitType.COURSE:
+        CourseMeta.objects.get_or_create(unit=instance)
+    elif instance.unit_type == Unit.UnitType.ACTIVITY:
+        ActivityMeta.objects.get_or_create(unit=instance)

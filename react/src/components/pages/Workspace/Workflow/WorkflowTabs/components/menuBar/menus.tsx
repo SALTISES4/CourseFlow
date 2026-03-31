@@ -262,7 +262,7 @@ const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
   const context = useContext(WorkflowConfigContext)
   const viewType = context.workflowView
 
-  const scrollToHandler = useCallback((objectId: number) => {
+  const scrollToHandler = useCallback((objectid: string) => {
     return () => {
       const weekEl = document.querySelector(`[data-week-id='${objectId}']`)
       weekEl?.scrollIntoView({

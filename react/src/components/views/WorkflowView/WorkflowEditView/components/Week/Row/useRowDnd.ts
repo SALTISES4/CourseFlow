@@ -21,7 +21,7 @@ import type { WeekRowPropsType } from './index'
 
 type StateType = {
   highlightRow: boolean
-  dragId: number | null
+  dragid: string | null
   closestEdge: Edge | null
 }
 

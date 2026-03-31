@@ -71,3 +71,25 @@ class CommentDTO:
     date_created: datetime
     modified_on: datetime
     author: CommentAuthorDTO
+
+
+@dataclass(frozen=True, slots=True)
+class ChannelDTO:
+    uuid: UUID
+    workflow_uuid: UUID
+    title: str
+    position: int
+    thread_uuid: UUID | None
+    date_created: datetime
+    modified_on: datetime
+
+
+@dataclass(frozen=True, slots=True)
+class SectionDTO:
+    uuid: UUID
+    workflow_uuid: UUID
+    title: str
+    position: int
+    thread_uuid: UUID | None
+    date_created: datetime
+    modified_on: datetime

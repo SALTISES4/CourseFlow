@@ -15,7 +15,7 @@ import {
 } from '@reduxjs/toolkit'
 
 interface WeekPayload {
-  id: number
+  id: string
   json?: any
   [key: string]: any
 }
@@ -25,21 +25,21 @@ interface InsertBelowPayload {
 }
 
 interface ChangeIdPayload {
-  oldId: number
-  newId: number
+  oldid: string
+  newid: string
 }
 
 interface MovedToPayload {
-  id: number
+  id: string
   newParent: number
   newIndex: number
 }
 
 interface NodeGenericPayload {
-  id: number
+  id: string
   index: number
-  parentId: number
-  newThrough: { id: number }
+  parentid: string
+  newThrough: { id: string }
 }
 
 export const weekAdapter = createEntityAdapter<TWeek>()
@@ -48,7 +48,7 @@ const initialState = weekAdapter.getInitialState()
 
 export const updateEntity = (
   state: WeekState,
-  action: PayloadAction<{ id: number; data: Partial<TWeek> }>
+  action: PayloadAction<{ id: string; data: Partial<TWeek> }>
 ) => {
   weekAdapter.updateOne(state, {
     id: action.payload.id,
@@ -72,7 +72,7 @@ const removeEntityById = (
 
 const toggleArchiveEntity = (
   state: WeekState,
-  action: PayloadAction<{ id: number }>
+  action: PayloadAction<{ id: string }>
 ) => {
   const entity = state.entities[action.payload.id]
   if (entity) {
@@ -158,7 +158,7 @@ const weekSlice = createSlice({
     },
     insertBelow(
       state,
-      action: PayloadAction<{ id: number; newId: number; duplicate?: boolean }>
+      action: PayloadAction<{ id: string; newid: string; duplicate?: boolean }>
     ) {
       const { id, newId, duplicate } = action.payload
 
@@ -208,7 +208,7 @@ const weekSlice = createSlice({
     // reorder week nodes on workflow view node drag
     moveNode: (
       state,
-      action: PayloadAction<{ id: number; fromWeek: number; toWeek: number }>
+      action: PayloadAction<{ id: string; fromWeek: number; toWeek: number }>
     ) => {
       const { id, fromWeek, toWeek } = action.payload
       const sourceIndex = state.entities[fromWeek].nodes.indexOf(id)

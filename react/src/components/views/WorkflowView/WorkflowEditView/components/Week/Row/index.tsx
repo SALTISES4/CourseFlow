@@ -16,13 +16,13 @@ import * as StyledWeek from '../styles'
 
 interface NonEmptyRowType {
   nodes: WorkflowBoard['weeks'][0]['rows'][0]
-  parentId: number
-  weekId: number
+  parentid: string
+  weekid: string
   rowIndex: number
   columnIds: WorkflowBoard['columns']['ids']
   columnColors: WorkflowBoard['columns']['colors']
   onNodeDrop: WeekPropsType['onNodeDrop']
-  onNodeClick: (e: MouseEvent<HTMLDivElement>, nodeId: number) => void
+  onNodeClick: (e: MouseEvent<HTMLDivElement>, nodeid: string) => void
 }
 
 interface EmptyRowType

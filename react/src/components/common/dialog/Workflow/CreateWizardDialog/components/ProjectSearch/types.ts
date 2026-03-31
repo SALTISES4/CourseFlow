@@ -2,7 +2,7 @@
 // import { ReactNode } from 'react'
 
 // export type ProjectType = {
-//   id: number
+//   id: string
 //   title: string | ReactNode
 //   description?: string
 //   isSelected?: boolean

@@ -1,13 +1,19 @@
-export type GraphId = string
-export type WorkflowId = string
-export type EntityId = string
+/** Workflow public identity from the v2 API (UUID string). */
+export type WorkflowUuid = string
+
+/** Node, section, channel, unit, thread, outcome: public UUID string from the API. */
+export type ResourceUuid = string
+
+/** Edge row identity from the API (integer primary key as string — edges have no UUID). */
+export type EdgeKey = string
 
 export type GraphLoadStatus = 'idle' | 'loading' | 'succeeded' | 'failed'
 
 export interface WorkflowMetaEntity {
-  id: WorkflowId
+  uuid: WorkflowUuid
   title: string
   ownerId: string | null
+  /** Nullable owning project FK from API (integer as string until project is UUID-only). */
   projectId: string | null
   revisionId: number
   dateCreated?: string
@@ -15,45 +21,45 @@ export interface WorkflowMetaEntity {
 }
 
 export interface SectionEntity {
-  id: EntityId
-  workflowId: WorkflowId
+  uuid: ResourceUuid
+  workflowUuid: WorkflowUuid
   title: string
   position: number
-  threadId: EntityId | null
+  threadUuid: ResourceUuid | null
 }
 
 export interface ChannelEntity {
-  id: EntityId
-  workflowId: WorkflowId
+  uuid: ResourceUuid
+  workflowUuid: WorkflowUuid
   title: string
   position: number
-  threadId: EntityId | null
+  threadUuid: ResourceUuid | null
 }
 
 export interface NodeEntity {
-  id: EntityId
-  workflowId: WorkflowId
-  sectionId: EntityId | null
-  channelId: EntityId | null
+  uuid: ResourceUuid
+  workflowUuid: WorkflowUuid
+  sectionUuid: ResourceUuid | null
+  channelUuid: ResourceUuid | null
   sectionRow: number | null
-  unitId: EntityId | null
-  threadId: EntityId | null
-  outcomeIds: EntityId[]
+  unitUuid: ResourceUuid | null
+  threadUuid: ResourceUuid | null
+  outcomeUuids: ResourceUuid[]
 }
 
 export interface EdgeEntity {
-  id: EntityId
-  workflowId: WorkflowId
-  sourceNodeId: EntityId
-  targetNodeId: EntityId
+  edgeId: EdgeKey
+  workflowUuid: WorkflowUuid
+  sourceNodeUuid: ResourceUuid
+  targetNodeUuid: ResourceUuid
   lineType: string
   sourcePort: string
   targetPort: string
 }
 
 export interface TagEntity {
-  id: EntityId
-  projectId: EntityId | null
+  tagId: string
+  projectId: string | null
   label: string
   translationPlural: string
 }
@@ -68,15 +74,15 @@ export interface GraphResourceLoadState {
 }
 
 export interface GraphUiState {
-  selectedNodeId: EntityId | null
-  selectedEdgeId: EntityId | null
-  hoveredNodeId: EntityId | null
-  hoveredEdgeId: EntityId | null
+  selectedNodeUuid: ResourceUuid | null
+  selectedEdgeId: EdgeKey | null
+  hoveredNodeUuid: ResourceUuid | null
+  hoveredEdgeId: EdgeKey | null
   activePanel: 'none' | 'properties' | 'inspector' | 'comments'
   edgeDraft: {
-    sourceNodeId: EntityId | null
+    sourceNodeUuid: ResourceUuid | null
     sourcePort: string | null
-    targetNodeId: EntityId | null
+    targetNodeUuid: ResourceUuid | null
     targetPort: string | null
   }
 }
@@ -93,34 +99,34 @@ export type GraphOpStatus = 'pending' | 'acked' | 'failed'
 
 export interface PendingGraphOperation {
   id: string
-  workflowId: WorkflowId
+  workflowUuid: WorkflowUuid
   type: GraphOpType
   status: GraphOpStatus
   submittedAt: string
-  targetIds: EntityId[]
+  targetIds: ResourceUuid[]
   payload: Record<string, unknown>
 }
 
 export interface GraphDeltaNodes {
   created: NodeEntity[]
   updated: NodeEntity[]
-  deleted: EntityId[]
+  deleted: ResourceUuid[]
 }
 
 export interface GraphDeltaEdges {
   created: EdgeEntity[]
   updated: EdgeEntity[]
-  deleted: EntityId[]
+  deleted: EdgeKey[]
 }
 
 export interface GraphDeltaTags {
   created: TagEntity[]
   updated: TagEntity[]
-  deleted: EntityId[]
+  deleted: string[]
 }
 
 export interface GraphMutationEnvelope {
-  workflowId: WorkflowId
+  workflowUuid: WorkflowUuid
   revisionId: number
   changes: {
     nodes: GraphDeltaNodes
@@ -134,34 +140,34 @@ export interface GraphMutationEnvelope {
 }
 
 export interface RenameNodeInput {
-  workflowId: WorkflowId
-  nodeId: EntityId
+  workflowUuid: WorkflowUuid
+  nodeUuid: ResourceUuid
   title: string
 }
 
 export interface MoveNodeInput {
-  workflowId: WorkflowId
-  nodeId: EntityId
-  sectionId: EntityId | null
-  channelId: EntityId | null
+  workflowUuid: WorkflowUuid
+  nodeUuid: ResourceUuid
+  sectionId: ResourceUuid | null
+  channelId: ResourceUuid | null
   sectionRow: number | null
 }
 
 export interface CreateEdgeInput {
-  workflowId: WorkflowId
-  sourceNodeId: EntityId
-  targetNodeId: EntityId
+  workflowUuid: WorkflowUuid
+  sourceNodeUuid: ResourceUuid
+  targetNodeUuid: ResourceUuid
   lineType?: string
   sourcePort?: string
   targetPort?: string
 }
 
 export interface DeleteEdgeInput {
-  workflowId: WorkflowId
-  edgeId: EntityId
+  workflowUuid: WorkflowUuid
+  edgeId: EdgeKey
 }
 
 export interface DeleteNodeInput {
-  workflowId: WorkflowId
-  nodeId: EntityId
+  workflowUuid: WorkflowUuid
+  nodeUuid: ResourceUuid
 }

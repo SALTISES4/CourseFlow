@@ -6,24 +6,27 @@ import NodeLinkWorkflowDialog from '@cfComponents/dialog/Workflow/WorkflowLinkDi
 import ArchiveDialog from '@cfComponents/dialog/Workspace/ArchiveDialog'
 import ContributorRemoveDialog from '@cfComponents/dialog/Workspace/ContributorRemoveDialog'
 import RestoreDialog from '@cfComponents/dialog/Workspace/RestoreDialog'
-import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflowObjects/workflow.rtk'
+import { useGetWorkflowByUuidQuery } from '@XMLHTTP/API/workflowObjects/workflow.rtk'
 import { useParams } from 'react-router-dom'
 
 const WorkflowDialogs = () => {
-  const { id } = useParams()
-  const workflowId = Number(id)
-  const { refetch } = useGetWorkflowByIdQuery({ id: workflowId })
+  const { uuid } = useParams()
+  const workflowUuid = uuid ?? ''
+  const { refetch } = useGetWorkflowByUuidQuery(
+    { uuid: workflowUuid },
+    { skip: !workflowUuid }
+  )
 
   return (
     <>
       {/* Shared */}
       <RestoreDialog
-        id={Number(id)}
+        id={workflowUuid}
         objectType={WorkspaceType.WORKFLOW}
         callback={refetch}
       />
       <ArchiveDialog
-        id={Number(id)}
+        id={workflowUuid}
         objectType={WorkspaceType.WORKFLOW}
         callback={refetch}
       />
@@ -33,11 +36,11 @@ const WorkflowDialogs = () => {
       <WorkflowCopyToProjectDialog />
       <NodeLinkWorkflowDialog />
       <ContributorAddDialog
-        id={workflowId}
+        id={workflowUuid}
         type={WorkspaceType.WORKFLOW}
         refetch={refetch}
       />
-      <ContributorRemoveDialog id={workflowId} type={WorkspaceType.WORKFLOW} />
+      <ContributorRemoveDialog id={workflowUuid} type={WorkspaceType.WORKFLOW} />
     </>
   )
 }

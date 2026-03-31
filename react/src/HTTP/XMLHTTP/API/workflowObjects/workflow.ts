@@ -3,7 +3,7 @@ import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
 import {
-  GetWorkflowByIdQueryResp,
+  GetWorkflowByUuidQueryResp,
   WorkflowChildDataQueryResp,
   WorkflowParentDataQueryResp
 } from '@XMLHTTP/API/workflowObjects/workflow.rtk'
@@ -29,14 +29,14 @@ import { generatePath } from 'react-router-dom'
 //Get the public data from the workflow
 export function getPublicWorkflowDataQuery(
   id,
-  callBackFunction = (_data: GetWorkflowByIdQueryResp) =>
+  callBackFunction = (_data: GetWorkflowByUuidQueryResp) =>
     Utility.logger('success')
 ) {
   const base = apiPaths.json_api.workflow.public__detail
   const url = generatePath(base, { id })
 
   try {
-    $.get(url).done(function (response: GetWorkflowByIdQueryResp) {
+    $.get(url).done(function (response: GetWorkflowByUuidQueryResp) {
       callBackFunction(response)
     })
   } catch (err) {
@@ -46,7 +46,7 @@ export function getPublicWorkflowDataQuery(
 
 //Get the data from all parent workflows
 export function getWorkflowParentDataQuery(
-  id: number
+  id: string
 ): Promise<WorkflowParentDataQueryResp> {
   const base = apiPaths.json_api.workflow.parent__detail
   const url = generatePath(base, { id })
@@ -111,7 +111,7 @@ export function getWorkflowChildDataQuery(
 //Get the public data from all child workflows,
 // it looks like apart from permissions the differnce with this is just rate limitingh
 export function getPublicWorkflowChildDataQuery(
-  nodeId: number,
+  nodeid: string,
   callBackFunction = (_data: WorkflowChildDataQueryResp) =>
     Utility.logger('success')
 ) {
@@ -182,45 +182,6 @@ export function getPublicParentWorkflowInfo(
 }
 
 /**
- * @getParentWorkflowInfo
- *
- * Get the info from the parent workflow
- *
- * endpoint course-flow/parentworkflows/get/
- *
- * @param workflowPk
- * @param callBackFunction
- */
-// export function getParentWorkflowInfoQuery(workflowPk: number): Promise<any> {
-//   const base = apiPaths.json_api.workflow.parent__detail__full
-//   const url = generatePath(base, { id: workflowPk })
-//   return API_GET<any>(url)
-// }
-
-/**
- * @getWorkflowsForProjectQuery
- *
- *
- *
- * Get the workflows for a project
- * @param projectPk
- * @param callBackFunction
- */
-// export function getWorkflowsForProjectQuery(
-//   projectPk,
-//   callBackFunction = (_data: WorkflowsForProjectQueryResp) =>
-//     Utility.logger('success')
-// ) {
-//   const url = apiPaths.json_api.project.workflows__list
-//   API_POST(url, {
-//     projectPk: projectPk
-//   }).then((response: WorkflowsForProjectQueryResp) => {
-//     callBackFunction(response)
-//   })
-// }
-
-//@TODO this needs to be fixed to not rely on $.post
-/**
  * Get the list of workflows we can link to a node
  *
  * endpoint: workflow/get-possible-linked-workflows
@@ -230,7 +191,7 @@ export function getPublicParentWorkflowInfo(
  * @param callBackFunction
  */
 export function getLinkedWorkflowMenuQuery(
-  nodeId: number,
+  nodeid: string,
   callBackFunction = (_data?: LinkedWorkflowMenuQueryResp) =>
     Utility.logger('success')
 ) {
@@ -238,41 +199,6 @@ export function getLinkedWorkflowMenuQuery(
   API_POST(url, {
     nodePk: nodeId
   }).then((response: LinkedWorkflowMenuQueryResp) => {
-    callBackFunction(response)
-  })
-}
-
-/**
- * Get the workflows that can be selected for the project, shaped for a menu
- * @param projectPk
- * @param typeFilter
- * @param getStrategies
- * @param selfOnly
- * @param callBackFunction
- */
-export function getWorkflowSelectMenuQuery(
-  projectPk: number,
-  typeFilter: CfObjectType,
-  getStrategies: boolean,
-  selfOnly: boolean,
-  callBackFunction: (_data: GetWorkflowSelectQueryResp) => void
-  // updateFunction,
-  //  receiptFunction
-) {
-  const url = apiPaths.json_api.workflow.list__possible_added
-  API_POST(
-    url,
-    {
-      projectPk: projectPk,
-      typeFilter: typeFilter,
-      getStrategies: getStrategies,
-      selfOnly: selfOnly
-    }
-    // (data) => {
-    //   // @TODO call to react render
-    //   receiptFunction(data)
-    // }
-  ).then((response: GetWorkflowSelectQueryResp) => {
     callBackFunction(response)
   })
 }

@@ -10,10 +10,10 @@ export type ConnectionEdge = (typeof edgeKeys)[number]
 export type ConnectionTargetType = [number, ConnectionEdge]
 
 export type ConnectionType = {
-  id: number
+  id: string
   dashed: boolean
-  fromId: number
+  fromid: string
   fromEdge: ConnectionEdge
-  toId: number
+  toid: string
   toEdge: ConnectionEdge
 }

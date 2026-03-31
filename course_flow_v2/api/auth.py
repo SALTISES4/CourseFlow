@@ -15,12 +15,11 @@ from course_flow_v2.core.models import AuthToken, User
 class BearerAuth(HttpBearer):
     def authenticate(self, request: HttpRequest, token: str) -> User | None:
         token_hash = hash_token(token)
-        auth_token = (
-            AuthToken.objects.select_related("user")
-            .filter(token_hash=token_hash)
-            .first()
-        )
-        if auth_token is None:
+        try:
+            auth_token = AuthToken.objects.select_related("user").get(
+                token_hash=token_hash
+            )
+        except AuthToken.DoesNotExist:
             return None
 
         now = timezone.now()

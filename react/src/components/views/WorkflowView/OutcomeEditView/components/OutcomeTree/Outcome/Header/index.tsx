@@ -27,7 +27,7 @@ import * as Styled from '../../styles'
 const tagsData = editTabNodeData.tags
 
 type PropsType = {
-  id: number
+  id: string
   level: number
   title: string
   tags: number[]

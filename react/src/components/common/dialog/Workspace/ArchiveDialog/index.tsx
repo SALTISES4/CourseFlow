@@ -14,7 +14,7 @@ const ArchiveDialog = ({
   id,
   callback
 }: {
-  id: number
+  id: string
   objectType: WorkspaceType
   callback?: () => void
 }) => {
@@ -34,7 +34,7 @@ const ArchiveDialog = ({
   async function onSubmit() {
     try {
       const resp = await mutate({
-        id: Number(id),
+        id: string(id),
         payload: {
           objectType: objectType
         }

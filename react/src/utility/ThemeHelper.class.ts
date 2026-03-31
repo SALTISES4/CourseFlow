@@ -193,7 +193,7 @@ class ThemeHelper {
     return colour ?? (defaultColumnSettings[columnType]?.colour || '')
   }
 
-  static generateColorFromIntToHex(id: number) {
+  static generateColorFromIntToHex(id: string) {
     // Use a large prime here to avoid having modulo 0
     const hue = (id * 41) % 360
 

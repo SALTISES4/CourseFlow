@@ -21,12 +21,12 @@ export const selectWorkflowColumnEntities = createSelector(
 )
 
 type Week = {
-  id: number
+  id: string
   rows: Record<number, number>[]
 }
 
 export type WorkflowBoard = {
-  id: number
+  id: string
   columns: {
     ids: number[]
     colors: Record<number, string>

@@ -98,7 +98,7 @@ def test_delete_node_returns_delta_with_cascaded_edges_and_bumps_revision(
     edge = Edge.objects.create(source_node=n1, target_node=n2)
 
     r = client.delete(
-        f"/api/workflow/{wf_uuid}/nodes/{n1.uuid}",
+        f"/api/node/{n1.uuid}",
         **_auth_header(raw),
     )
     assert r.status_code == 200
@@ -152,7 +152,7 @@ def test_create_and_delete_edge_envelopes(client: Client, user):
     assert b1["meta"]["trigger_entity_id"] == str(eid)
 
     r2 = client.delete(
-        f"/api/workflow/{wf_uuid}/edges/{eid}",
+        f"/api/edge/{eid}",
         **_auth_header(raw),
     )
     assert r2.status_code == 200
@@ -187,7 +187,7 @@ def test_create_node_and_update_node_envelopes(client: Client, user):
     assert b1["changes"]["nodes"]["created"][0]["section_row"] == 3
 
     r2 = client.patch(
-        f"/api/workflow/{wf_uuid}/nodes/{node_uuid}",
+        f"/api/node/{node_uuid}",
         data={"section_row": 7},
         content_type="application/json",
         **_auth_header(raw),
@@ -208,7 +208,7 @@ def test_graph_mutation_forbidden_for_non_owner(client: Client, user, other_user
 
     raw_other = _issue_token_for(other_user)
     r = client.delete(
-        f"/api/workflow/{wf_uuid}/nodes/{n.uuid}",
+        f"/api/node/{n.uuid}",
         **_auth_header(raw_other),
     )
     assert r.status_code == 403

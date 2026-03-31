@@ -1,14 +1,15 @@
 import { apiUrl } from '@cf/api/apiBaseUrl'
+import { apiPaths } from '@cf/router/apiRoutes'
 
 /**
  * CourseFlow v2 auth API — matches Django Ninja routes in course_flow_v2.api.routers.auth
  * (see tests: POST /api/auth/login, GET /api/auth/me).
- * Full URLs use `VITE_API_BASE_URL` via `apiUrl()`.
+ * Full URLs use `VITE_API_BASE_URL` via `apiUrl()` and `apiPaths.json_api_v2.auth.*`.
  */
 
 /** Mirrors UserSummaryOut from the backend. */
 export type CurrentUser = {
-  id: number
+  id: string
   uuid: string
   email: string
   first_name: string
@@ -47,7 +48,7 @@ export async function loginRequest(
   email: string,
   password: string
 ): Promise<LoginResponse> {
-  const response = await fetch(apiUrl('/api/auth/login'), {
+  const response = await fetch(apiUrl(apiPaths.json_api_v2.auth.login), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
@@ -65,7 +66,7 @@ export async function loginRequest(
 export async function fetchCurrentUser(
   accessToken: string
 ): Promise<CurrentUser> {
-  const response = await fetch(apiUrl('/api/auth/me'), {
+  const response = await fetch(apiUrl(apiPaths.json_api_v2.auth.me), {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

@@ -36,7 +36,7 @@ const extendedApi = cfApi.injectEndpoints({
     updatePosition: builder.mutation<
       EmptyPostResp,
       {
-        id: number
+        id: string
         payload: {
           rank: number
         }
@@ -54,7 +54,7 @@ const extendedApi = cfApi.injectEndpoints({
     delete: builder.mutation<
       EmptyPostResp,
       {
-        id: number
+        id: string
       }
     >({
       query: (args) => {

@@ -12,7 +12,7 @@ import { useCallback, useState } from 'react'
 import { FileRejection } from 'react-dropzone'
 
 type PropsType = {
-  workflowId: number
+  workflowid: string
 }
 
 type StateType = {

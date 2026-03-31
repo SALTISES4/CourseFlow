@@ -58,7 +58,7 @@ def test_project_delete_cascades_workflow_team_favorites_not_discipline_or_tag_r
     tag = Tag.objects.create(project=p, label="T")
     wf = _workflow_with_unit(user_a, project=p)
     FavoriteProject.objects.create(user=user_a, project=p)
-    ProjectTeam.objects.create(project=p)
+    ProjectTeam.objects.get_or_create(project=p)
 
     pid, did, tag_id, wf_id = p.id, d.id, tag.id, wf.id
     p.delete()

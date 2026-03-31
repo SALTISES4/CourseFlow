@@ -2,50 +2,44 @@ import { _t } from '@cf/utility/Utility.class'
 import * as SC from '@cfComponents/globalNav/Sidebar/styles'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { workflowUrl } from '@cfComponents/UIPrimitives/Titles'
-import { selectAllNodes } from '@cfRedux/selectors/node.selector'
-import { RootState } from '@cfRedux/store'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
-import { useGetParentWorkflowInfoQuery } from '@XMLHTTP/API/workflowObjects/workflow.rtk'
-import { useSelector } from 'react-redux'
+import {
+  useListRelatedWorkflowChildrenQuery,
+  useListRelatedWorkflowParentsQuery
+} from '@XMLHTTP/API/workflowObjects/workflow.rtk'
 import { Link, useParams } from 'react-router-dom'
 
 type WorkflowNode = {
-  id: number
+  id: string
   title: string
   description: string
   url: string
   deleted: boolean
 }
+/**
+ * https://courseflow-staging.mydalite.org/course-flow/workflow/19
+ * There are two parts:
+ *
+ * Child linked workflows: for current workflow context, show workflow linked to by nodes in current workflow
+ *  ex: if current workflow is course, and has a node which is linked to an activity, that activity is listed
+ *
+ * Parent linking workflows: for current workflow context, list any workflows that are linked to by nodes owned by current workflow
 
-const ParentWorkflowIndicator = () => {
-  const { id } = useParams()
-  const nodes = useSelector((state: RootState) => selectAllNodes(state))
+ */
+const RelatedWorkflowList = () => {
+  const { uuid } = useParams()
 
-  const childWorkflows = Array.from(
-    new Map(
-      nodes
-        .filter((node) => node.linkedWorkflowData)
-        .map((node) => [
-          node.linkedWorkflow,
-          {
-            id: node.linkedWorkflow,
-            title: node.linkedWorkflowData?.title || '',
-            url: node.linkedWorkflowData?.url || ''
-          }
-        ])
-    ).values()
-  )
+  const { data: childData, isLoading: childIsLoading } =
+    useListRelatedWorkflowParentsQuery({ uuid: uuid }, { skip: !uuid })
 
-  const { data, isLoading } = useGetParentWorkflowInfoQuery(
-    { id: Number(id) },
-    { skip: !id }
-  )
+  const { data: parentData, isLoading: parentIsLoading } =
+    useListRelatedWorkflowChildrenQuery({ uuid: uuid }, { skip: !uuid })
 
-  if (!id) {
+  if (!uuid) {
     return null
   }
 
@@ -53,17 +47,17 @@ const ParentWorkflowIndicator = () => {
    * RENDER COMPONENTS
    *******************************************************/
   const ParentWorkflows = () => {
-    if (isLoading) {
+    if (parentIsLoading) {
       return <Loader />
     }
 
-    if (!data || !data.parentWorkflows.length) {
+    if (!parentData || !parentData.parentWorkflows.length) {
       return <></>
     }
 
     const parentWorkflows = Array.from(
       new Map(
-        (data.parentWorkflows as WorkflowNode[]).map((workflow) => [
+        (parentData.parentWorkflows as WorkflowNode[]).map((workflow) => [
           workflow.id,
           workflow
         ])
@@ -97,7 +91,11 @@ const ParentWorkflowIndicator = () => {
   }
 
   const ChildWorkflows = () => {
-    if (!childWorkflows.length) {
+    if (childIsLoading) {
+      return <Loader />
+    }
+
+    if (!childData || childData?.length) {
       return <></>
     }
 
@@ -107,7 +105,7 @@ const ParentWorkflowIndicator = () => {
         <SC.SectionWrap>
           <SC.SectionLabel variant="body1">{_t('Contains')}</SC.SectionLabel>
           <List>
-            {childWorkflows.map((workflow) => {
+            {childData.map((workflow) => {
               const url = workflowUrl(workflow)
               return (
                 <ListItem disablePadding dense key={workflow.id}>
@@ -140,4 +138,4 @@ const ParentWorkflowIndicator = () => {
   )
 }
 
-export default ParentWorkflowIndicator
+export default RelatedWorkflowList

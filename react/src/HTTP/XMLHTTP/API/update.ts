@@ -16,7 +16,7 @@ import { generatePath } from 'react-router-dom'
  * @param callBackFunction
  */
 export function updateValueQuery(
-  objectId: number,
+  objectid: string,
   objectType: any,
   json: any,
   changeField = false,
@@ -39,7 +39,7 @@ export function updateValueQuery(
 
 //As above, but not debounced
 export function updateValueInstantQuery(
-  objectId: number,
+  objectid: string,
   objectType: any,
   json: any,
   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
@@ -104,8 +104,8 @@ export function updateValueInstantQuery(
 
 //Causes the specified throughmodel to update its degree
 export function updateOutcomenodeDegree(
-  nodeId: number,
-  outcomeID: number,
+  nodeid: string,
+  outcomeid: string,
   value,
   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {

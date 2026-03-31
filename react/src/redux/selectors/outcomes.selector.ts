@@ -43,7 +43,7 @@ export const isHighlightedViaOutcome = createSelector(
 const tagsData = editTabNodeData.tags
 
 type TagGroup = {
-  id: number
+  id: string
   title: string
   outcomes: number[]
 }
@@ -96,7 +96,7 @@ export const selectOutcomeChildrenById = createSelector(
   [
     selectAllOutcomes,
     selectOutcomeEntities,
-    (_: RootState, parentId: number | null) => parentId
+    (_: RootState, parentid: string | null) => parentId
   ],
   (allOutcomes, entities, parentId) => {
     if (parentId === null) {
@@ -118,7 +118,7 @@ export const getPrefixPath = createSelector(
   [
     selectRootOutcomeIds,
     selectOutcomeEntities,
-    (_: RootState, id: number) => id
+    (_: RootState, id: string) => id
   ],
   (rootIds, entities, outcomeId) => {
     const path: (number | string)[] = []

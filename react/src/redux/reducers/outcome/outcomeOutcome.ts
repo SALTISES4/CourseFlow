@@ -20,22 +20,22 @@ interface RefreshStoreDataAction extends UnknownAction {
 interface ChangeIdAction extends UnknownAction {
   type: OutcomeOutcomeActions.CHANGE_ID
   payload: {
-    oldId: number
-    newId: number
+    oldid: string
+    newid: string
   }
 }
 
 interface MovedToAction extends UnknownAction {
   type: OutcomeOutcomeActions.MOVED_TO
   payload: {
-    id: number
+    id: string
     newParent: number
   }
 }
 
 interface DeleteSelfAction extends UnknownAction {
   type: OutcomeActions.DELETE_SELF
-  payload: { parentId: number }
+  payload: { parentid: string }
 }
 
 interface InsertChildAction extends UnknownAction {

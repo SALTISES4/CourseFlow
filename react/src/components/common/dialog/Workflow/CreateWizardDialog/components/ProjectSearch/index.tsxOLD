@@ -12,7 +12,7 @@ import { ChangeEvent } from 'react'
 
 type PropsType = {
   selected?: number
-  onProjectSelect: (id: number) => void
+  onProjectSelect: (id: string) => void
 }
 
 const ProjectSearch = ({ selected, onProjectSelect }: PropsType) => {

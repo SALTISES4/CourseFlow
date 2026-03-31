@@ -2,28 +2,28 @@ import { createSelector } from 'reselect'
 
 import type { GraphState } from '../graphState'
 import { selectGraphState } from './canonical.selectors'
-import type { GraphResourceLoadState, WorkflowId } from '../model/types'
+import type { GraphResourceLoadState, WorkflowUuid } from '../model/types'
 
 export const selectGraphLoad = (state: { graph: GraphState }) =>
   selectGraphState(state).graphLoad
 
-export const selectWorkflowLoadState = (workflowId: WorkflowId) =>
+export const selectWorkflowLoadState = (workflowUuid: WorkflowUuid) =>
   createSelector(
     [selectGraphLoad],
-    (graphLoad) => graphLoad.byWorkflowId[workflowId]
+    (graphLoad) => graphLoad.byWorkflowUuid[workflowUuid]
   )
 
 const isSucceeded = (
   status: GraphResourceLoadState[keyof GraphResourceLoadState]
 ) => status === 'succeeded'
 
-export const selectIsWorkflowMetaReady = (workflowId: WorkflowId) =>
-  createSelector([selectWorkflowLoadState(workflowId)], (loadState) =>
+export const selectIsWorkflowMetaReady = (workflowUuid: WorkflowUuid) =>
+  createSelector([selectWorkflowLoadState(workflowUuid)], (loadState) =>
     loadState ? isSucceeded(loadState.workflowMeta) : false
   )
 
-export const selectIsGraphCoreReady = (workflowId: WorkflowId) =>
-  createSelector([selectWorkflowLoadState(workflowId)], (loadState) =>
+export const selectIsGraphCoreReady = (workflowUuid: WorkflowUuid) =>
+  createSelector([selectWorkflowLoadState(workflowUuid)], (loadState) =>
     loadState
       ? isSucceeded(loadState.sections) &&
         isSucceeded(loadState.channels) &&
@@ -32,34 +32,34 @@ export const selectIsGraphCoreReady = (workflowId: WorkflowId) =>
       : false
   )
 
-export const selectIsWorkflowGraphRenderable = (workflowId: WorkflowId) =>
+export const selectIsWorkflowGraphRenderable = (workflowUuid: WorkflowUuid) =>
   createSelector(
-    [selectIsWorkflowMetaReady(workflowId), selectIsGraphCoreReady(workflowId)],
+    [selectIsWorkflowMetaReady(workflowUuid), selectIsGraphCoreReady(workflowUuid)],
     (workflowMetaReady, graphCoreReady) => workflowMetaReady && graphCoreReady
   )
 
 // Workflow page can render top-level shell when metadata is available.
-export const canRenderShell = (workflowId: WorkflowId) =>
-  selectIsWorkflowMetaReady(workflowId)
+export const canRenderShell = (workflowUuid: WorkflowUuid) =>
+  selectIsWorkflowMetaReady(workflowUuid)
 
 // Channels can render once channel entities are loaded.
-export const canRenderChannels = (workflowId: WorkflowId) =>
-  createSelector([selectWorkflowLoadState(workflowId)], (loadState) =>
+export const canRenderChannels = (workflowUuid: WorkflowUuid) =>
+  createSelector([selectWorkflowLoadState(workflowUuid)], (loadState) =>
     loadState ? isSucceeded(loadState.channels) : false
   )
 
 // Nodes can render only when channels + nodes are loaded.
-export const canRenderNodes = (workflowId: WorkflowId) =>
+export const canRenderNodes = (workflowUuid: WorkflowUuid) =>
   createSelector(
-    [canRenderChannels(workflowId), selectWorkflowLoadState(workflowId)],
+    [canRenderChannels(workflowUuid), selectWorkflowLoadState(workflowUuid)],
     (channelsReady, loadState) =>
       channelsReady && (loadState ? isSucceeded(loadState.nodes) : false)
   )
 
 // Edges can render only when nodes + edges are loaded.
-export const canRenderEdges = (workflowId: WorkflowId) =>
+export const canRenderEdges = (workflowUuid: WorkflowUuid) =>
   createSelector(
-    [canRenderNodes(workflowId), selectWorkflowLoadState(workflowId)],
+    [canRenderNodes(workflowUuid), selectWorkflowLoadState(workflowUuid)],
     (nodesReady, loadState) =>
       nodesReady && (loadState ? isSucceeded(loadState.edges) : false)
   )

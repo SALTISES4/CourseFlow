@@ -35,7 +35,7 @@ export function setUserPermission(
  * @param callBackFunction
  */
 export function getUsersForObjectQueryLegacy(
-  objectId: number,
+  objectid: string,
   objectType: string,
   callBackFunction = (_data: UsersForObjectQueryResp) =>
     Utility.logger('success')

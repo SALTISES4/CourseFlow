@@ -1,17 +1,17 @@
 import { type PayloadAction, createSlice } from '@reduxjs/toolkit'
 
-import type { EntityId, GraphUiState } from './model/types'
+import type { EdgeKey, GraphUiState, ResourceUuid } from './model/types'
 
 const initialState: GraphUiState = {
-  selectedNodeId: null,
+  selectedNodeUuid: null,
   selectedEdgeId: null,
-  hoveredNodeId: null,
+  hoveredNodeUuid: null,
   hoveredEdgeId: null,
   activePanel: 'none',
   edgeDraft: {
-    sourceNodeId: null,
+    sourceNodeUuid: null,
     sourcePort: null,
-    targetNodeId: null,
+    targetNodeUuid: null,
     targetPort: null
   }
 }
@@ -20,22 +20,22 @@ const graphUiSlice = createSlice({
   name: 'graph/graphUi',
   initialState,
   reducers: {
-    selectNode(state, action: PayloadAction<EntityId | null>) {
-      state.selectedNodeId = action.payload
+    selectNode(state, action: PayloadAction<ResourceUuid | null>) {
+      state.selectedNodeUuid = action.payload
       if (action.payload !== null) {
         state.selectedEdgeId = null
       }
     },
-    selectEdge(state, action: PayloadAction<EntityId | null>) {
+    selectEdge(state, action: PayloadAction<EdgeKey | null>) {
       state.selectedEdgeId = action.payload
       if (action.payload !== null) {
-        state.selectedNodeId = null
+        state.selectedNodeUuid = null
       }
     },
-    setHoveredNode(state, action: PayloadAction<EntityId | null>) {
-      state.hoveredNodeId = action.payload
+    setHoveredNode(state, action: PayloadAction<ResourceUuid | null>) {
+      state.hoveredNodeUuid = action.payload
     },
-    setHoveredEdge(state, action: PayloadAction<EntityId | null>) {
+    setHoveredEdge(state, action: PayloadAction<EdgeKey | null>) {
       state.hoveredEdgeId = action.payload
     },
     setActivePanel(state, action: PayloadAction<GraphUiState['activePanel']>) {

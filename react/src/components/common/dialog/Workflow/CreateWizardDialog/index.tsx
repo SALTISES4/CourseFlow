@@ -2,13 +2,14 @@ import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
-import WorkflowForm, {
-  WorkflowFormValues
-} from '@cfComponents/dialog/Workflow/componnets/WorkflowForm'
+import WorkflowForm from '@cfComponents/dialog/Workflow/componnets/WorkflowForm'
 import ProjectSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/ProjectSearch'
 import TemplateSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TemplateSearch'
 import TypeSelect from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TypeSelect'
-import { CreateResourceOptions } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
+import {
+  CreateResourceOptions,
+  WorkflowFormType
+} from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -28,7 +29,7 @@ type StateType = {
   resourceType: CreateResourceOptions
   workflowType?: WorkflowType
   title?: string
-  template?: number
+  template?: string
 }
 
 const initialState: StateType = {
@@ -39,7 +40,7 @@ const initialState: StateType = {
 const CreateWizardDialog = () => {
   const formRef = useRef<HTMLFormElement>(null)
   const [state, setState] = useState<StateType>(initialState)
-  const [projectId, setProjectId] = useState<number>()
+  const [projectId, setProjectId] = useState<string>()
   const [templates, setTemplateData] = useState<TemplateType[]>(null)
   const [isFormReady, setIsFormReady] = useState<boolean>()
   const navigate = useNavigate()
@@ -107,7 +108,7 @@ const CreateWizardDialog = () => {
     )
   }
 
-  function onProjectSelect(id: number) {
+  function onProjectSelect(id: string) {
     setProjectId(id)
   }
 
@@ -119,7 +120,7 @@ const CreateWizardDialog = () => {
     )
   }
 
-  function onTemplateSelect(id: number) {
+  function onTemplateSelect(id: string) {
     setState(
       produce((draft) => {
         draft.template = id
@@ -159,18 +160,18 @@ const CreateWizardDialog = () => {
     // setErrors(error.name)
   }
 
-  async function onSubmit(data: WorkflowFormValues) {
+  async function onSubmit(data: WorkflowFormType) {
     // remove null values
 
     const payload = {
-      projectId,
+      projectId: projectId ? Number(projectId) : null,
       type: state.workflowType,
       ...data
     }
 
     try {
       const response = await mutate(payload).unwrap()
-      onSuccess(String(response.dataPackage.id))
+      onSuccess(String(response.uuid))
     } catch (err) {
       onError(err)
     }

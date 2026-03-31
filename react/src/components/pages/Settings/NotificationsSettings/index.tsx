@@ -57,7 +57,7 @@ const NotificationsSettingsPage = () => {
 
   useEffect(() => {
     if (data) {
-      reset({ notifications: data.dataPackage.receiveNotifications })
+      reset({ notifications: data.item.notifications_active })
     }
   }, [data, reset])
 

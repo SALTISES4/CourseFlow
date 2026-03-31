@@ -9,7 +9,7 @@ import * as Styled from './styles'
 
 export type PropsType = {
   parent: {
-    id: number
+    id: string
     type: 'node' | 'outcome'
   }
   outcomes: number[]
@@ -64,7 +64,7 @@ const LinkedOutcomes = ({ parent, outcomes, highlight }: PropsType) => {
   )
 }
 
-export const OutcomeGroup = ({ parentId }: { parentId: number }) => {
+export const OutcomeGroup = ({ parentId }: { parentid: string }) => {
   const childOutcomes = useSelector((state: RootState) =>
     selectOutcomeChildrenById(state, parentId)
   )

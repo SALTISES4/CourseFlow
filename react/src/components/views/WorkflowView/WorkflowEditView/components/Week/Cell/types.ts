@@ -18,7 +18,7 @@ interface WeekCellShared {
   coordsX: number
   coordsY: number
   borderColor: string
-  columnId: number
+  columnid: string
   onReorder: CellReorderCallbackFn
 }
 
@@ -31,7 +31,7 @@ export interface WeekCellPhantomType extends WeekCellShared {
 }
 
 export interface WeekCellNodeType extends WeekCellShared {
-  nodeId: number
+  nodeid: string
   type: WeekCellType.NODE
   onClick: CellClickCallbackFn
 }

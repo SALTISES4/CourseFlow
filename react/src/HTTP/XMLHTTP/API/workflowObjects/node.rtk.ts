@@ -36,7 +36,7 @@ const extendedApi = cfApi.injectEndpoints({
     deleteNode: builder.mutation<
       EmptyPostResp,
       {
-        id: number
+        id: string
       }
     >({
       query: (args) => {
@@ -50,7 +50,7 @@ const extendedApi = cfApi.injectEndpoints({
     duplicateNode: builder.mutation<
       EmptyPostResp,
       {
-        id: number
+        id: string
       }
     >({
       query: (args) => {
@@ -64,10 +64,10 @@ const extendedApi = cfApi.injectEndpoints({
     updatePositionNode: builder.mutation<
       EmptyPostResp,
       {
-        id: number
+        id: string
         payload: {
-          weekId: number
-          columnId: number
+          weekid: string
+          columnid: string
           rank: number
         }
       }
@@ -85,9 +85,9 @@ const extendedApi = cfApi.injectEndpoints({
     // toggleObjectSetNode: builder.mutation<
     //   EmptyPostResp,
     //   {
-    //     id: number
+    //     id: string
     //     payload: {
-    //       objectSetId: number
+    //       objectSetid: string
     //     }
     //   }
     // >({
@@ -103,9 +103,9 @@ const extendedApi = cfApi.injectEndpoints({
     linkToWorkflow: builder.mutation<
       EmptyPostResp,
       {
-        id: number
+        id: string
         payload: {
-          workflowId: number
+          workflowid: string
         }
       }
     >({
@@ -122,9 +122,9 @@ const extendedApi = cfApi.injectEndpoints({
     // nodelinkCreate: builder.mutation<
     //   EmptyPostResp,
     //   {
-    //     id: number
+    //     id: string
     //     payload: {
-    //       targetNodeId: number
+    //       targetNodeid: string
     //     }
     //   }
     // >({

@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux'
 import * as Styled from './styles'
 
 type PropsType = {
-  id: number | string
+  id: string | string
   type: DraggableType
   label: string
   typeColor?: string

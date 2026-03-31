@@ -16,12 +16,11 @@ class WorkflowGraphProjectionService:
     """
 
     def get_by_workflow_uuid(self, workflow_uuid: UUID) -> dict | None:
-        w = (
-            Workflow.objects.select_related("unit", "project")
-            .filter(uuid=workflow_uuid)
-            .first()
-        )
-        if w is None:
+        try:
+            w = Workflow.objects.select_related("unit", "project").get(
+                uuid=workflow_uuid
+            )
+        except Workflow.DoesNotExist:
             return None
 
         unit = getattr(w, "unit", None)

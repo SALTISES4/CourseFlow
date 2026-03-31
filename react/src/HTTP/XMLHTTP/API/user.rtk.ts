@@ -1,7 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { Verb, cfApi } from '@XMLHTTP/API/api'
 import { EUser } from '@XMLHTTP/types/entity'
-import { EmptyPostResp } from '@XMLHTTP/types/query'
 
 /*******************************************************
  * TYPES
@@ -15,23 +14,40 @@ export enum LanguageOptions {
  * RESP
  *******************************************************/
 export type CurrentUserQueryResp = {
-  message: string
-  dataPackage: EUser
+  message?: string
+  item: EUser
 }
 
 export type NotificationSettingsQueryResp = {
-  message: string
-  dataPackage: {
-    receiveNotifications: boolean
+  message?: string
+  item: {
+    notifications_active: boolean
   }
 }
 
 export type ProfileSettingsQueryResp = {
-  message: string
-  dataPackage: {
-    firstName: string
-    lastName: string
-    language: LanguageOptions
+  message?: string
+  item: {
+    uuid: string
+    email: string
+    first_name: string
+    last_name: string
+    language_preference: LanguageOptions
+  }
+}
+
+export type UserListItem = {
+  uuid: string
+  email: string
+  first_name: string
+  last_name: string
+}
+
+export type UserListQueryResp = {
+  message?: string
+  items: UserListItem[]
+  meta: {
+    total: number
   }
 }
 /*******************************************************
@@ -41,7 +57,7 @@ export type ProfileSettingsQueryResp = {
 export type ProfileSettingsArgs = {
   firstName: string
   lastName: string
-  language: LanguageOptions
+  languagePreference: LanguageOptions
 }
 
 /*******************************************************
@@ -56,7 +72,7 @@ const extendedApi = cfApi.injectEndpoints({
       query: () => {
         return {
           method: Verb.GET,
-          url: apiPaths.json_api.user.current_user
+          url: apiPaths.json_api_v2.auth.me
         }
       }
     }),
@@ -65,7 +81,7 @@ const extendedApi = cfApi.injectEndpoints({
         query: () => {
           return {
             method: Verb.GET,
-            url: apiPaths.json_api.user.notification_settings
+            url: apiPaths.json_api_v2.user.me_notification_settings
           }
         }
       }
@@ -74,7 +90,15 @@ const extendedApi = cfApi.injectEndpoints({
       query: () => {
         return {
           method: Verb.GET,
-          url: apiPaths.json_api.user.profile_settings
+          url: apiPaths.json_api_v2.user.me_profile_settings
+        }
+      }
+    }),
+    listUsers: builder.query<UserListQueryResp, void>({
+      query: () => {
+        return {
+          method: Verb.GET,
+          url: apiPaths.json_api_v2.user.collection
         }
       }
     }),
@@ -82,26 +106,35 @@ const extendedApi = cfApi.injectEndpoints({
      * MUTATIONS
      *******************************************************/
     updateNotificationSettings: builder.mutation<
-      EmptyPostResp,
+      NotificationSettingsQueryResp,
       {
         notifications: boolean
       }
     >({
       query: (args) => {
         return {
-          method: Verb.POST,
-          url: apiPaths.json_api.user.notification_settings__update,
-          body: args
+          method: Verb.PATCH,
+          url: apiPaths.json_api_v2.user.me_notification_settings,
+          body: {
+            notifications_active: args.notifications
+          }
         }
       }
     }),
-    updateProfileSettings: builder.mutation<EmptyPostResp, ProfileSettingsArgs>(
+    updateProfileSettings: builder.mutation<
+      ProfileSettingsQueryResp,
+      ProfileSettingsArgs
+    >(
       {
         query: (args) => {
           return {
-            method: Verb.POST,
-            url: apiPaths.json_api.user.profile_settings__update,
-            body: args
+            method: Verb.PATCH,
+            url: apiPaths.json_api_v2.user.me_profile_settings,
+            body: {
+              first_name: args.firstName,
+              last_name: args.lastName,
+              language_preference: args.languagePreference
+            }
           }
         }
       }
@@ -114,6 +147,7 @@ export const {
   useGetCurrentUserQuery,
   useGetNotificationSettingsQuery,
   useGetProfileSettingsQuery,
+  useListUsersQuery,
   useUpdateNotificationSettingsMutation,
   useUpdateProfileSettingsMutation
 } = extendedApi

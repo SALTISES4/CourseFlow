@@ -9,7 +9,7 @@ import {
   workflowMetaAdapter
 } from '../canonical'
 import type { GraphState } from '../graphState'
-import type { WorkflowId } from '../model/types'
+import type { WorkflowUuid } from '../model/types'
 
 type StateWithGraph = {
   graph: GraphState
@@ -49,27 +49,27 @@ export const selectAllNodes = nodeSelectors.selectAll
 export const selectAllEdges = edgeSelectors.selectAll
 export const selectAllTags = tagSelectors.selectAll
 
-export const selectWorkflowMetaById = (workflowId: WorkflowId) =>
-  createSelector([selectWorkflowMetaState], (metaState) =>
-    workflowMetaSelectors.selectById(metaState, workflowId)
+export const selectWorkflowMetaByUuid = (workflowUuid: WorkflowUuid) =>
+  createSelector([(state: StateWithGraph) => state], (state) =>
+    workflowMetaSelectors.selectById(state, workflowUuid)
   )
 
-export const selectSectionsByWorkflowId = (workflowId: WorkflowId) =>
+export const selectSectionsByWorkflowUuid = (workflowUuid: WorkflowUuid) =>
   createSelector([selectAllSections], (sections) =>
-    sections.filter((section) => section.workflowId === workflowId)
+    sections.filter((section) => section.workflowUuid === workflowUuid)
   )
 
-export const selectChannelsByWorkflowId = (workflowId: WorkflowId) =>
+export const selectChannelsByWorkflowUuid = (workflowUuid: WorkflowUuid) =>
   createSelector([selectAllChannels], (channels) =>
-    channels.filter((channel) => channel.workflowId === workflowId)
+    channels.filter((channel) => channel.workflowUuid === workflowUuid)
   )
 
-export const selectNodesByWorkflowId = (workflowId: WorkflowId) =>
+export const selectNodesByWorkflowUuid = (workflowUuid: WorkflowUuid) =>
   createSelector([selectAllNodes], (nodes) =>
-    nodes.filter((node) => node.workflowId === workflowId)
+    nodes.filter((node) => node.workflowUuid === workflowUuid)
   )
 
-export const selectEdgesByWorkflowId = (workflowId: WorkflowId) =>
+export const selectEdgesByWorkflowUuid = (workflowUuid: WorkflowUuid) =>
   createSelector([selectAllEdges], (edges) =>
-    edges.filter((edge) => edge.workflowId === workflowId)
+    edges.filter((edge) => edge.workflowUuid === workflowUuid)
   )

@@ -11,7 +11,7 @@ import { ReactNode } from 'react'
 import { Route, generatePath, useNavigate, useParams } from 'react-router-dom'
 
 const useWorkflowTabs = (workflow: EWorkflow, context: WorkflowContextType) => {
-  const { id } = useParams()
+  const { uuid } = useParams()
   const navigate = useNavigate()
 
   const tabs: {

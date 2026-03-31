@@ -1,5 +1,5 @@
 export type DraggableItemType = {
-  id: number
+  id: string
   label: string
   blocks?: DraggableItemType[]
 }

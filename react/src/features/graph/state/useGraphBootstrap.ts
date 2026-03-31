@@ -1,20 +1,17 @@
+import type { AppDispatch } from '@cfRedux/store'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { bootstrapWorkflowGraph } from './bootstrapGraph.thunk'
-import type { WorkflowId } from './model/types'
+import type { WorkflowUuid } from './model/types'
 
-/**
- * Lightweight bootstrap hook for workflow graph pages.
- * Starts parallel read-side resource loading for one workflow.
- */
-export const useGraphBootstrap = (workflowId: WorkflowId | null) => {
-  const dispatch = useDispatch<any>()
+export const useGraphBootstrap = (workflowUuid: WorkflowUuid | null) => {
+  const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
-    if (!workflowId) {
+    if (!workflowUuid) {
       return
     }
-    dispatch(bootstrapWorkflowGraph(workflowId))
-  }, [dispatch, workflowId])
+    dispatch(bootstrapWorkflowGraph(workflowUuid))
+  }, [dispatch, workflowUuid])
 }

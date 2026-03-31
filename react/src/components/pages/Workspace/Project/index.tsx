@@ -1,7 +1,7 @@
 import { OuterContentWrap } from '@cf/mui/helper'
 import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { ProjectDetailsType } from '@cf/types/common'
-import { formatProjectEntity } from '@cf/utility/marshalling/projectDetail'
+import { mapProjectV2ToProjectDetails } from '@cf/utility/marshalling/projectDetail'
 import { _t } from '@cf/utility/Utility.class'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -15,7 +15,7 @@ import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { getErrorMessage } from '@XMLHTTP/API/api'
-import { useGetProjectByIdQuery } from '@XMLHTTP/API/project.rtk'
+import { useGetProjectByUuidQuery } from '@XMLHTTP/API/project.rtk'
 import { useEffect, useState } from 'react'
 import {
   Route,
@@ -31,8 +31,8 @@ const ProjectDetails = () => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const { id } = useParams()
-  const projectId = Number(id)
+  const { uuid } = useParams()
+  const projectUuid = uuid
   const location = useLocation()
   const [activeTab, setActiveTab] = useState<RelativeRoutes>()
   const [project, setProject] = useState<ProjectDetailsType>()
@@ -41,8 +41,8 @@ const ProjectDetails = () => {
   /*******************************************************
    * QUERIES
    *******************************************************/
-  const { data, error, isLoading, isError } = useGetProjectByIdQuery({
-    id: projectId
+  const { data, error, isLoading, isError } = useGetProjectByUuidQuery({
+    projectUuid: projectUuid!
   })
 
   /*******************************************************
@@ -61,12 +61,11 @@ const ProjectDetails = () => {
   }, [])
 
   useEffect(() => {
-    if (!data?.dataPackage) {
+    if (!data) {
       return
     }
 
-    const project = formatProjectEntity(data.dataPackage)
-    setProject(project)
+    setProject(mapProjectV2ToProjectDetails(data.item))
   }, [data])
 
   /*******************************************************
@@ -79,7 +78,7 @@ const ProjectDetails = () => {
       label: _t('Overview'),
       action: () => {
         const path = generatePath(CFRoutes.PROJECT, {
-          id: String(projectId)
+          uuid: projectUuid
         })
         navigate(path)
       }
@@ -90,7 +89,7 @@ const ProjectDetails = () => {
       label: _t('Workflows'),
       action: () => {
         const path = generatePath(CFRoutes.PROJECT_WORKFLOW, {
-          id: String(projectId)
+          uuid: projectUuid
         })
         navigate(path)
       }
@@ -104,7 +103,7 @@ const ProjectDetails = () => {
         label={item.label}
         value={item.relativePath}
         onClick={() => {
-          const path = generatePath(item.path, { id })
+          const path = generatePath(item.path, { uuid: projectUuid })
           navigate(path)
         }}
       />
@@ -141,7 +140,7 @@ const ProjectDetails = () => {
           <Route index path="/" element={<TabOverview {...project} />} />
           <Route
             path={RelativeRoutes.WORKFLOW}
-            element={<TabWorkflows projectId={projectId} />}
+            element={<TabWorkflows projectUuid={projectUuid!} />}
           />
         </Routes>
       </>

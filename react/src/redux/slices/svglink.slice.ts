@@ -5,7 +5,7 @@ import { Position } from '@xyflow/react'
 import { AppDispatch, RootState } from '../store'
 
 export const svglinkDragEnd = createAction<{
-  id: number
+  id: string
   from: SVGLinkState['snap']['from']
   to: SVGLinkState['snap']['to']
 }>('svgLink/svglinkDragEnd')
@@ -23,7 +23,7 @@ export const dragEndThunk =
   }
 
 export type DragPosition = {
-  nodeId: number | null
+  nodeid: string | null
   x: number
   y: number
   edge: Position | null
@@ -31,13 +31,13 @@ export type DragPosition = {
 
 type SVGLinkState = {
   dragging: {
-    id: number | null
+    id: string | null
     from: DragPosition | null
     to: DragPosition | null
   }
   snap: {
-    from: { nodeId: number; edge: Position } | null
-    to: { nodeId: number; edge: Position } | null
+    from: { nodeid: string; edge: Position } | null
+    to: { nodeid: string; edge: Position } | null
   }
   editing: LineEdit['editing'] | null
 
@@ -47,7 +47,7 @@ type SVGLinkState = {
 }
 
 type LineEdit = {
-  id: number
+  id: string
   from: DragPosition
   to: DragPosition
   editing: 'from' | 'to'
@@ -74,7 +74,7 @@ const svgLinkSlice = createSlice({
     dragSnap(
       state,
       action: PayloadAction<{
-        id: number
+        id: string
         edge: Position
         editing: LineEdit['editing']
       }>

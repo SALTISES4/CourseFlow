@@ -1,11 +1,8 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
-import { TWorkflow } from '@cfRedux/types/type'
 import { Verb, cfApi } from '@XMLHTTP/API/api'
 import {
   WorkflowChildDataPackage,
-  WorkflowDataPackage,
   WorkflowParentDataPackage
 } from '@XMLHTTP/types'
 import { ELibraryObject } from '@XMLHTTP/types/entity'
@@ -15,17 +12,19 @@ import { generatePath } from 'react-router-dom'
 /*******************************************************
  * TYPES
  *******************************************************/
-export interface GetWorkflowByIdQueryResp {
-  message: string
-  dataPackage: WorkflowDataPackage
-}
-
-export interface GetWorkflowByIdQueryTransform {
-  message: string
-  dataPackage: Omit<WorkflowDataPackage, 'workflow'> & {
-    workflow: TWorkflow
+export interface GetWorkflowByUuidQueryResp {
+  item: {
+    uuid: string
+    title: string
+    owner_id: number
+    project_id: number | null
+    revision_id: number
+    date_created: string
+    modified_on: string
   }
 }
+
+export type GetWorkflowByUuidQueryTransform = GetWorkflowByUuidQueryResp
 
 type ParentWorkflowResp = any
 
@@ -40,10 +39,13 @@ export type WorkflowChildDataQueryResp = {
 }
 
 export type CreateWorkflowResp = {
-  message: string
-  dataPackage: {
-    id: number
-  }
+  uuid: string
+  title: string
+  owner_id: number
+  project_id: number | null
+  revision_id: number
+  date_created: string
+  modified_on: string
 }
 
 export type GetWorkflowTemplatesQueryResp = {
@@ -57,7 +59,7 @@ interface BaseUpsertWorkflowArgs {
   title?: string
   description?: string
   courseNumber?: string
-  duration?: string
+  duration?: number
   units?: number
   ponderation?: {
     theory: number
@@ -69,12 +71,12 @@ interface BaseUpsertWorkflowArgs {
 }
 
 export interface UpdateWorkflowArgs extends BaseUpsertWorkflowArgs {
-  id: number
+  uuid: string
 }
 
 export interface CreateWorkflowArgs extends BaseUpsertWorkflowArgs {
   title: string
-  projectId: number
+  projectId?: number | null
   type: WorkflowType
 }
 
@@ -86,40 +88,15 @@ const extendedApi = cfApi.injectEndpoints({
     /*******************************************************
      * QUERIES
      *******************************************************/
-    getWorkflowById: builder.query<
-      GetWorkflowByIdQueryTransform,
-      { id: number }
+    getWorkflowByUuid: builder.query<
+      GetWorkflowByUuidQueryTransform,
+      { uuid: string }
     >({
-      query: ({ id }) => {
-        const base = apiPaths.json_api.workflow.detail
+      query: ({ uuid }) => {
+        const base = apiPaths.json_api_v2.workflow.detail
         return {
           method: Verb.GET,
-          url: generatePath(base, { id })
-        }
-      },
-      transformResponse: (
-        response: GetWorkflowByIdQueryResp
-      ): GetWorkflowByIdQueryTransform => {
-        return {
-          ...response,
-          dataPackage: {
-            ...response.dataPackage,
-            workflow: {
-              ...response.dataPackage.workflow,
-              workflowPermissions: calcWorkflowPermissions(
-                response.dataPackage.workflow.userPermissions
-              )
-            }
-          }
-        }
-      }
-    }),
-    getParentWorkflowInfo: builder.query<ParentWorkflowResp, { id: number }>({
-      query: (args) => {
-        const base = apiPaths.json_api.workflow.parent__detail__full
-        return {
-          method: Verb.GET,
-          url: generatePath(base, { id: args.id })
+          url: generatePath(base, { uuid })
         }
       }
     }),
@@ -136,16 +113,47 @@ const extendedApi = cfApi.injectEndpoints({
         }
       }
     }),
+    listRelatedWorkflowParents: builder.query<
+      ParentWorkflowResp,
+      { uuid: string }
+    >({
+      query: (args) => {
+        const base = apiPaths.json_api_v2.workflow.related_parents
+        return {
+          method: Verb.GET,
+          url: generatePath(base, { uuid: args.uuid })
+        }
+      }
+    }),
+    listRelatedWorkflowChildren: builder.query<
+      ParentWorkflowResp,
+      { uuid: string }
+    >({
+      query: (args) => {
+        const base = apiPaths.json_api_v2.workflow.related_children
+        return {
+          method: Verb.GET,
+          url: generatePath(base, { uuid: args.uuid })
+        }
+      }
+    }),
     /*******************************************************
      * MUTATIONS
      *******************************************************/
     createWorkflow: builder.mutation<CreateWorkflowResp, CreateWorkflowArgs>({
       query: (args) => {
-        const url = apiPaths.json_api.workflow.create
+        const url = apiPaths.json_api_v2.workflow.collection
+        const body = {
+          project_id: args.projectId ?? null,
+          workflow_title: args.title,
+          unit_title: args.title,
+          unit_type: args.type,
+          unit_description: args.description ?? ''
+        }
         return {
           method: Verb.POST,
           url,
-          body: args
+          body
         }
       }
     }),
@@ -155,15 +163,15 @@ const extendedApi = cfApi.injectEndpoints({
     updateWorkflow: builder.mutation<
       EmptyPostResp,
       {
-        id: number
+        uuid: string
         payload: UpdateWorkflowArgs
       }
     >({
       query: (args) => {
-        const base = apiPaths.json_api.workflow.update
+        const base = apiPaths.json_api_v2.workflow.detail
         return {
-          method: Verb.POST,
-          url: generatePath(base, { id: args.id }),
+          method: Verb.PATCH,
+          url: generatePath(base, { uuid: args.uuid }),
           body: args.payload
         }
       }
@@ -173,8 +181,9 @@ const extendedApi = cfApi.injectEndpoints({
 })
 
 export const {
-  useGetParentWorkflowInfoQuery,
-  useGetWorkflowByIdQuery,
+  useListRelatedWorkflowChildrenQuery,
+  useListRelatedWorkflowParentsQuery,
+  useGetWorkflowByUuidQuery,
   useUpdateWorkflowMutation,
   useCreateWorkflowMutation,
   useListWorkflowTemplatesQuery

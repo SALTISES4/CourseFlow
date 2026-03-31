@@ -18,17 +18,17 @@ import {
 import { svglinkDragEnd } from './svglink.slice'
 
 interface CreateLockPayload {
-  id: number
+  id: string
   lock: CfLock
 }
 
 interface ChangeFieldPayload {
-  id: number
+  id: string
   json: Partial<TNodelink>
 }
 
 interface NodelinkByIdPayload {
-  id: number
+  id: string
 }
 
 export const nodelinkAdapter = createEntityAdapter<TNodelink>()

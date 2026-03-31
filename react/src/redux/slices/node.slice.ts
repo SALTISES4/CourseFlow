@@ -21,14 +21,14 @@ import {
 import { getNextLargestNumber } from '../selectors/helpers'
 
 interface DeleteColumnAction {
-  id: number
+  id: string
   extraData: any
 }
 
 export type NodeWorkflowReorderPayload = {
   mode?: 'row' | 'column'
   edge?: 'top' | 'bottom'
-  id: number
+  id: string
   fromWeek: number
   toWeek: number
   toColumn: number
@@ -51,7 +51,7 @@ const initialState: NodeState = {
  *******************************************************/
 const updateEntity = (
   state: NodeState,
-  action: PayloadAction<{ id: number; data: Partial<TNode> }>
+  action: PayloadAction<{ id: string; data: Partial<TNode> }>
 ) => {
   nodeAdapter.updateOne(state, {
     id: action.payload.id,
@@ -61,14 +61,14 @@ const updateEntity = (
 
 const removeEntityById = (
   state: NodeState,
-  action: PayloadAction<{ id: number }>
+  action: PayloadAction<{ id: string }>
 ) => {
   nodeAdapter.removeOne(state, action.payload.id)
 }
 
 const toggleArchiveEntity = (
   state: NodeState,
-  action: PayloadAction<{ id: number }>
+  action: PayloadAction<{ id: string }>
 ) => {
   const entity = state.entities[action.payload.id]
   if (entity) {
@@ -86,7 +86,7 @@ const updatingNodeSet = (
   state: NodeState,
   action: PayloadAction<{
     nodeUpdates: {
-      id: number
+      id: string
       outcomenodeSet: any[]
       outcomenodeUniqueSet: any[]
     }[]
@@ -217,7 +217,7 @@ const nodeSlice = createSlice({
     },
     reloadComments(
       state,
-      action: PayloadAction<{ id: number; commentData: any }>
+      action: PayloadAction<{ id: string; commentData: any }>
     ) {
       nodeAdapter.updateOne(state, {
         id: action.payload.id,
@@ -228,8 +228,8 @@ const nodeSlice = createSlice({
     setLinkedWorkflow(
       state,
       action: PayloadAction<{
-        nodeId: number
-        workflowId: number
+        nodeid: string
+        workflowid: string
         workflowData: ELibraryObject
         representsWorkflow?: boolean
       }>
@@ -258,14 +258,14 @@ const nodeSlice = createSlice({
       state,
       action: PayloadAction<
         | {
-            nodeId: number
+            nodeid: string
             mode: NodeWorkflowReorderPayload['mode']
             duplicate?: boolean
           }
         | {
             newColumn?: boolean
-            columnId: number
-            weekId: number
+            columnid: string
+            weekid: string
             row: number
           }
       >
@@ -339,7 +339,7 @@ const nodeSlice = createSlice({
       }
     },
 
-    workflowNodeDelete: (state, action: PayloadAction<{ id: number }>) => {
+    workflowNodeDelete: (state, action: PayloadAction<{ id: string }>) => {
       const { id } = action.payload
       const node = state.entities[id]
 
@@ -476,8 +476,8 @@ const nodeSlice = createSlice({
     workfowLinkOutcome: (
       state,
       action: PayloadAction<{
-        outcomeId: number
-        nodeId: number
+        outcomeid: string
+        nodeid: string
       }>
     ) => {
       const { outcomeId, nodeId } = action.payload

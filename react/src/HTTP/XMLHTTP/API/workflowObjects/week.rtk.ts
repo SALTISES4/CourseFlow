@@ -35,7 +35,7 @@ const extendedApi = cfApi.injectEndpoints({
     duplicateWeek: builder.mutation<
       EmptyPostResp,
       {
-        id: number
+        id: string
       }
     >({
       query: (args) => {
@@ -49,7 +49,7 @@ const extendedApi = cfApi.injectEndpoints({
     updatePositionWeek: builder.mutation<
       EmptyPostResp,
       {
-        id: number
+        id: string
         payload: {
           rank: number
         }
@@ -67,7 +67,7 @@ const extendedApi = cfApi.injectEndpoints({
     deleteWeek: builder.mutation<
       EmptyPostResp,
       {
-        id: number
+        id: string
       }
     >({
       query: (args) => {

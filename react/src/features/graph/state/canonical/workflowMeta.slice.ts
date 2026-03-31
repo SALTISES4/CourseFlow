@@ -4,9 +4,14 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
-import type { WorkflowId, WorkflowMetaEntity } from '../model/types'
+import type { WorkflowMetaEntity, WorkflowUuid } from '../model/types'
 
-export const workflowMetaAdapter = createEntityAdapter<WorkflowMetaEntity>()
+export const workflowMetaAdapter = createEntityAdapter<
+  WorkflowMetaEntity,
+  WorkflowUuid
+>({
+  selectId: (w) => w.uuid
+})
 
 export type WorkflowMetaState = ReturnType<
   typeof workflowMetaAdapter.getInitialState
@@ -24,16 +29,16 @@ const workflowMetaSlice = createSlice({
     upsertMany(state, action: PayloadAction<WorkflowMetaEntity[]>) {
       workflowMetaAdapter.upsertMany(state, action.payload)
     },
-    removeById(state, action: PayloadAction<WorkflowId>) {
+    removeByUuid(state, action: PayloadAction<WorkflowUuid>) {
       workflowMetaAdapter.removeOne(state, action.payload)
     },
     updateRevision(
       state,
-      action: PayloadAction<{ workflowId: WorkflowId; revisionId: number }>
+      action: PayloadAction<{ workflowUuid: WorkflowUuid; revisionId: number }>
     ) {
-      const { workflowId, revisionId } = action.payload
+      const { workflowUuid, revisionId } = action.payload
       workflowMetaAdapter.updateOne(state, {
-        id: workflowId,
+        id: workflowUuid,
         changes: { revisionId }
       })
     },

@@ -1,6 +1,16 @@
 from ninja import NinjaAPI, Schema
 
-from course_flow_v2.api.routers import auth, projects, threads, workflows
+from course_flow_v2.api.routers import (
+    auth,
+    channels,
+    edges,
+    nodes,
+    projects,
+    sections,
+    threads,
+    users,
+    workflows,
+)
 
 api = NinjaAPI(
     title="CourseFlow V2 API",
@@ -17,8 +27,17 @@ api = NinjaAPI(
 
 api.add_router("/project", projects.router)
 api.add_router("/workflow", workflows.router)
+api.add_router("/workflow", channels.workflow_collection_router)
+api.add_router("/workflow", sections.workflow_collection_router)
+api.add_router("/workflow", nodes.workflow_collection_router)
+api.add_router("/workflow", edges.workflow_edges_router)
+api.add_router("/channel", channels.resource_router)
+api.add_router("/section", sections.resource_router)
+api.add_router("/node", nodes.node_resource_router)
+api.add_router("/edge", edges.edge_resource_router)
 api.add_router("/thread", threads.router)
 api.add_router("/auth", auth.router)
+api.add_router("/user", users.router)
 
 
 class HealthResponse(Schema):

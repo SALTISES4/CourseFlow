@@ -19,17 +19,17 @@ interface RefreshStoreDataAction extends UnknownAction {
 
 interface MovedToAction extends UnknownAction {
   type: WeekWorkflowActions.MOVED_TO
-  payload: { id: number }
+  payload: { id: string }
 }
 
 interface ChangeIdAction extends UnknownAction {
   type: WeekWorkflowActions.CHANGE_ID
-  payload: { oldId: number; newId: number }
+  payload: { oldid: string; newid: string }
 }
 
 interface DeleteSelfWeekAction extends UnknownAction {
   type: WeekActions.DELETE_SELF
-  payload: { parentId: number }
+  payload: { parentid: string }
 }
 
 interface InsertBelowWeekAction extends UnknownAction {

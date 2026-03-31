@@ -19,7 +19,7 @@ const ContributorRemoveDialog = ({
   id,
   type
 }: {
-  id: number
+  id: string
   type: WorkspaceType
 }) => {
   const { show, onClose, payload } = useDialog<DialogMode.CONTRIBUTOR_REMOVE>(
@@ -50,7 +50,7 @@ const ContributorRemoveDialog = ({
 
   async function onSubmit() {
     const args: WorkspaceDeleteUserArgs = {
-      id: Number(id),
+      id: string(id),
       payload: {
         userId: payload.userId,
         type

@@ -21,11 +21,14 @@ class RegisterIn(Schema):
 
 
 class UserSummaryOut(Schema):
-    id: int
     uuid: UUID
     email: str
     first_name: str
     last_name: str
+
+
+class UserSummaryOutResp(Schema):
+    item: UserSummaryOut
 
 
 class LoginOut(Schema):

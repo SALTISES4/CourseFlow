@@ -19,7 +19,7 @@ import { DuplicateBaseItemQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
 export function duplicateBaseItemQuery(
   itemPk: number,
   objectType: string,
-  projectID: number,
+  projectid: string,
   callBackFunction = (_data: DuplicateBaseItemQueryResp) =>
     Utility.logger('success')
 ) {

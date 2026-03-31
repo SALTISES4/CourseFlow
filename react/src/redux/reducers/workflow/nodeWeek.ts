@@ -20,17 +20,17 @@ interface RefreshStoreDataAction extends UnknownAction {
 
 interface ChangeIdNodeWeekAction extends UnknownAction {
   type: NodeWeekActions.CHANGE_ID
-  payload: { oldId: number; newId: number }
+  payload: { oldid: string; newid: string }
 }
 
 interface MovedToNodeWeekAction extends UnknownAction {
   type: NodeWeekActions.MOVED_TO
-  payload: { id: number; newParent: number }
+  payload: { id: string; newParent: number }
 }
 
 interface DeleteSelfNodeAction extends UnknownAction {
   type: NodeActions.DELETE_SELF
-  payload: { parentId: number }
+  payload: { parentid: string }
 }
 
 interface InsertBelowNodeAction extends UnknownAction {

@@ -4,7 +4,7 @@ import { createEntityAdapter, createSlice } from '@reduxjs/toolkit'
 import { type PayloadAction } from '@reduxjs/toolkit'
 
 export type Outcome = {
-  id: number
+  id: string
   title: string
   description?: string
   code?: string
@@ -21,7 +21,7 @@ export const outcomeAdapter = createEntityAdapter<Outcome>()
 export type OutcomesState = ReturnType<
   typeof outcomeAdapter.getInitialState
 > & {
-  dragging: { id: number; level: number } | null
+  dragging: { id: string; level: number } | null
   highlighted: number[]
 }
 
@@ -96,7 +96,7 @@ export const outcomesSlice = createSlice({
       }
     },
 
-    deleteOutcome: (state, action: PayloadAction<{ id: number }>) => {
+    deleteOutcome: (state, action: PayloadAction<{ id: string }>) => {
       const outcomeId = action.payload.id
 
       // delete from parent
@@ -113,12 +113,12 @@ export const outcomesSlice = createSlice({
 
     // duplicates the outcome below the target
     // cloning the tree structure as well
-    duplicateOutcome: (state, action: PayloadAction<{ id: number }>) => {
+    duplicateOutcome: (state, action: PayloadAction<{ id: string }>) => {
       const target = state.entities[action.payload.id]
       const clonedIds: number[] = []
 
       // recursively go over the tree of outcomes and make updates
-      function cloneOutcome(outcome: Outcome, parentId: number | null = null) {
+      function cloneOutcome(outcome: Outcome, parentid: string | null = null) {
         const cloneId = getNextLargestNumber(state.ids)
         clonedIds.push(cloneId)
         const clone = {
@@ -160,7 +160,7 @@ export const outcomesSlice = createSlice({
 
     updateOutcome: (
       state,
-      action: PayloadAction<{ id: number; data: Partial<Outcome> }>
+      action: PayloadAction<{ id: string; data: Partial<Outcome> }>
     ) => {
       outcomeAdapter.updateOne(state, {
         id: action.payload.id,
@@ -173,8 +173,8 @@ export const outcomesSlice = createSlice({
     moveOutcome: (
       state,
       action: PayloadAction<{
-        targetId: number
-        destinationId: number
+        targetid: string
+        destinationid: string
         operation?: Instruction['operation']
       }>
     ) => {
@@ -267,7 +267,7 @@ export const outcomesSlice = createSlice({
     // set currently dragged outcome ID to better control pragmatic dropzones
     setDragging: (
       state,
-      action: PayloadAction<{ id: number; level: number } | null>
+      action: PayloadAction<{ id: string; level: number } | null>
     ) => {
       state.dragging = action.payload
     },
@@ -288,8 +288,8 @@ export const outcomesSlice = createSlice({
     linkOutcome: (
       state,
       action: PayloadAction<{
-        targetId: number
-        destinationId: number
+        targetid: string
+        destinationid: string
       }>
     ) => {
       const { targetId, destinationId } = action.payload
@@ -309,7 +309,7 @@ export const outcomesSlice = createSlice({
 })
 
 export function isOutcomeLink(data: Record<string | symbol, unknown>): data is {
-  id: number
+  id: string
   type: 'link_outcome'
 } {
   return 'id' in data && 'type' in data && data.type === 'link_outcome'

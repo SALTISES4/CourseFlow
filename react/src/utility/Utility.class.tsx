@@ -1,4 +1,4 @@
-import { CFRoutes } from '@cf/router/appRoutes'
+import { CFRoutes } from '@cf/router/cfRoutes'
 import { WorkspaceType } from '@cf/types/enum'
 import { MaybeWithId, hasId } from '@cf/types/typeGuards'
 import { EDate } from '@XMLHTTP/types/entity'
@@ -209,7 +209,7 @@ class Utility {
   /**
    * // @todo this is a mistake to include a react helper  here, this means it should be a hook probably
    **/
-  static getPathByObject(id: number, object: WorkspaceType): string {
+  static getPathByObject(id: string, object: WorkspaceType): string {
     switch (object) {
       case WorkspaceType.PROJECT:
         return generatePath(CFRoutes.PROJECT, { id: String(id) })

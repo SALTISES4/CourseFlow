@@ -50,7 +50,8 @@ interface SerializedError {
 export enum Verb {
   POST = 'POST',
   GET = 'GET',
-  PATCH = 'PATCH'
+  PATCH = 'PATCH',
+  DELETE = 'DELETE'
 }
 
 type ApiError = FetchBaseQueryError | HttpError | SerializedError

@@ -28,7 +28,7 @@ interface UpdateDegreeAction extends UnknownAction {
 
 interface DeleteSelfAction extends UnknownAction {
   type: OutcomeBaseActions.DELETE_SELF | OutcomeActions.DELETE_SELF
-  payload: { id: number }
+  payload: { id: string }
 }
 
 interface InsertChildAction extends UnknownAction {

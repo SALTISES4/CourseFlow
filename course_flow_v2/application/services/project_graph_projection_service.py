@@ -9,18 +9,14 @@ class ProjectGraphProjectionService:
     """Project-level projection: entity fields + workflow UUID references (no nested graphs)."""
 
     def get_by_project_uuid(self, project_uuid: UUID):
-        p = (
-            Project.objects.filter(uuid=project_uuid)
-            .prefetch_related("workflows")
-            .first()
-        )
-        if p is None:
+        try:
+            p = Project.objects.prefetch_related("workflows").get(uuid=project_uuid)
+        except Project.DoesNotExist:
             return None
 
         workflow_uuids = [w.uuid for w in p.workflows.all().order_by("id")]
 
         return {
-            "id": p.id,
             "uuid": p.uuid,
             "title": p.title,
             "description": p.description,

@@ -14,7 +14,6 @@ from ninja import Schema
 class ProjectGraphProjectionOut(Schema):
     """Project overview: entity fields + workflow UUID references only."""
 
-    id: int
     uuid: UUID
     title: str
     description: str

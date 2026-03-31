@@ -18,24 +18,24 @@ interface RefreshStoreDataAction extends UnknownAction {
 
 interface DeleteSelfOutcomeBaseAction extends UnknownAction {
   type: OutcomeBaseActions.DELETE_SELF | OutcomeBaseActions.DELETE_SELF_SOFT
-  payload: { parentId: number }
+  payload: { parentid: string }
 }
 
 interface RestoreSelfOutcomeBaseAction extends UnknownAction {
   type: OutcomeBaseActions.RESTORE_SELF
   payload: {
-    parentId: number
+    parentid: string
     throughparentIndex: number
-    throughparentId: number
+    throughparentid: string
   }
 }
 
 interface InsertBelowOutcomeBaseAction extends UnknownAction {
   type: OutcomeBaseActions.INSERT_BELOW
   payload: {
-    parentId: number
+    parentid: string
     newThrough: {
-      id: number
+      id: string
       workflow: number
       rank: number
     }
@@ -45,9 +45,9 @@ interface InsertBelowOutcomeBaseAction extends UnknownAction {
 interface NewOutcomeAction extends UnknownAction {
   type: OutcomeActions.NEW_OUTCOME
   payload: {
-    parentId: number
+    parentid: string
     newThrough: {
-      id: number
+      id: string
       workflow: number
     }
   }

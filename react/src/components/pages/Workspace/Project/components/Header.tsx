@@ -39,7 +39,7 @@ const Header = ({ project }: { project: ProjectDetailsType }) => (
 
       <Box>
         <Favourite
-          id={project.id}
+          id={project.uuid}
           isFavourite={project.isFavourite}
           type={LibraryObjectType.PROJECT}
         />

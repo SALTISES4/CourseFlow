@@ -49,7 +49,7 @@ function NodeLinkWorkflowDialog() {
     })
   }, [onClose])
 
-  const onWorkflowSelect = useCallback((id: number) => {
+  const onWorkflowSelect = useCallback((id: string) => {
     return () => {
       setState(
         produce((draft) => {

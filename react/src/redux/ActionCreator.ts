@@ -34,7 +34,7 @@ class ActionCreator {
    * COMMON / DYNAMIC OBJECT
    *******************************************************/
   static createLockAction = (
-    objectId: number,
+    objectid: string,
     objectType: CfObjectType,
     lock?: boolean,
     userId?: number,
@@ -61,7 +61,7 @@ class ActionCreator {
   }
 
   static reloadCommentsAction = (
-    id: number,
+    id: string,
     objectType: CfObjectType,
     commentData: EComment[]
   ) => {
@@ -75,9 +75,9 @@ class ActionCreator {
     }
   }
 
-  static changeField = <T>(id: number, objectType: CfObjectType, json: T) => {
+  static changeField = <T>(id: string, objectType: CfObjectType, json: T) => {
     console.log(
-      'what is  static changeField = (id: number, objectType: CfObjectType, json) => {'
+      'what is  static changeField = (id: string, objectType: CfObjectType, json) => {'
     )
     console.log(json)
     return {
@@ -114,7 +114,7 @@ class ActionCreator {
     }
   }
 
-  // static reloadAssignmentsAction = (id: number, hasAssignment) => {
+  // static reloadAssignmentsAction = (id: string, hasAssignment) => {
   //   return {
   //     type: NodeActions.RELOAD_ASSIGNMENTS,
   //     payload: { id: id, hasAssignment: hasAssignment }
@@ -122,10 +122,10 @@ class ActionCreator {
   // }
 
   static moveWeekWorkflow = (
-    id: number,
+    id: string,
     newIndex: number,
     newParent: number,
-    childId: number
+    childid: string
   ) => {
     return {
       type: WeekWorkflowActions.MOVED_TO,
@@ -138,7 +138,7 @@ class ActionCreator {
     }
   }
 
-  static columnChangeNode = (id: number, newColumn: number) => {
+  static columnChangeNode = (id: string, newColumn: number) => {
     return {
       type: NodeActions.CHANGED_COLUMN,
       payload: { id, newColumn }
@@ -146,10 +146,10 @@ class ActionCreator {
   }
 
   static moveNodeWeek = (
-    id: number,
+    id: string,
     newIndex: number,
     newParent: number,
-    childId: number
+    childid: string
   ) => {
     return {
       type: NodeWeekActions.MOVED_TO,
@@ -163,10 +163,10 @@ class ActionCreator {
   }
 
   static moveOutcomeOutcome = (
-    id: number,
+    id: string,
     newIndex: number,
     newParent: number,
-    childId: number
+    childid: string
   ) => {
     return {
       type: OutcomeOutcomeActions.MOVED_TO,
@@ -180,10 +180,10 @@ class ActionCreator {
   }
 
   static moveOutcomeWorkflow = (
-    id: number,
+    id: string,
     newIndex: number,
     newParent: number,
-    childId: number
+    childid: string
   ) => {
     return {
       type: OutcomeWorkflowActions.MOVED_TO,

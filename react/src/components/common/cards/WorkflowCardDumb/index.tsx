@@ -27,7 +27,7 @@ export type WorkflowCardChipType = {
 }
 
 export type PropsType = {
-  id: number
+  id: string
   ref?: RefObject<HTMLDivElement>
   className?: string
   title: string | ReactNode

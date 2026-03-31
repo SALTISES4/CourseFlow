@@ -161,7 +161,9 @@ def test_workflow_graph_node_includes_section_row(client: Client, user):
 
 
 @pytest.mark.django_db
-def test_workflow_graph_forbidden_for_non_owner(client: Client, user, other_user):
+def test_workflow_graph_allows_non_owner_with_placeholder_permissions(
+    client: Client, user, other_user
+):
     raw_owner = _issue_token_for(user)
     wf_uuid = _create_workflow(client, raw_owner)
 
@@ -170,4 +172,4 @@ def test_workflow_graph_forbidden_for_non_owner(client: Client, user, other_user
         f"/api/workflow/{wf_uuid}/graph",
         **_auth_header(raw_other),
     )
-    assert response.status_code == 403
+    assert response.status_code == 200

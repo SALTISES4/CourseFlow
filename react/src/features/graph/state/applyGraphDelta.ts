@@ -18,7 +18,7 @@ export const applyGraphDelta = (
 ) => {
   dispatch(
     workflowMetaActions.updateRevision({
-      workflowId: envelope.workflowId,
+      workflowUuid: envelope.workflowUuid,
       revisionId: envelope.revisionId
     })
   )
@@ -36,7 +36,7 @@ export const applyGraphDelta = (
   }
 
   if (envelope.changes.nodes.deleted.length) {
-    dispatch(nodesActions.removeManyById(envelope.changes.nodes.deleted))
+    dispatch(nodesActions.removeManyByUuid(envelope.changes.nodes.deleted))
   }
 
   if (
@@ -52,7 +52,7 @@ export const applyGraphDelta = (
   }
 
   if (envelope.changes.edges.deleted.length) {
-    dispatch(edgesActions.removeManyById(envelope.changes.edges.deleted))
+    dispatch(edgesActions.removeManyByEdgeId(envelope.changes.edges.deleted))
   }
 
   if (
@@ -68,6 +68,6 @@ export const applyGraphDelta = (
   }
 
   if (envelope.changes.tags.deleted.length) {
-    dispatch(tagsActions.removeManyById(envelope.changes.tags.deleted))
+    dispatch(tagsActions.removeManyByTagId(envelope.changes.tags.deleted))
   }
 }

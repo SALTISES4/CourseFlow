@@ -37,7 +37,7 @@ const CommentsTab = () => {
     )
   }, [])
 
-  const onCommentDelete = useCallback((id: number) => {
+  const onCommentDelete = useCallback((id: string) => {
     return () => {
       setState(
         produce((draft) => {

@@ -39,12 +39,18 @@ class DjangoProjectRepository:
         return _to_dto(p)
 
     def get_by_uuid(self, uuid: UUID) -> ProjectDTO | None:
-        p = Project.objects.filter(uuid=uuid).first()
-        return _to_dto(p) if p else None
+        try:
+            p = Project.objects.get(uuid=uuid)
+        except Project.DoesNotExist:
+            return None
+        return _to_dto(p)
 
     def get_by_id(self, id: int) -> ProjectDTO | None:
-        p = Project.objects.filter(id=id).first()
-        return _to_dto(p) if p else None
+        try:
+            p = Project.objects.get(pk=id)
+        except Project.DoesNotExist:
+            return None
+        return _to_dto(p)
 
     def list_for_owner(self, owner_id: int) -> list[ProjectDTO]:
         return [
@@ -53,8 +59,9 @@ class DjangoProjectRepository:
         ]
 
     def update(self, uuid: UUID, updates: dict[str, Any]) -> ProjectDTO | None:
-        p = Project.objects.filter(uuid=uuid).first()
-        if p is None:
+        try:
+            p = Project.objects.get(uuid=uuid)
+        except Project.DoesNotExist:
             return None
         allowed = {"title", "description", "is_published", "is_template"}
         for key, value in updates.items():

@@ -19,20 +19,6 @@ export const useMenuActions = () => {
     dispatchDialog(DialogMode.WORKFLOW_EDIT)
   }
 
-  // REFERENCE ORIGINAL DATA
-  //           data={{
-  //             objectId: this.data.id,
-  //             objectType: this.objectType,
-  //             importType: 'outcomes'
-  //           }}
-  //           actionFunction={this.closeModals}
-  //         />
-  //         <ImportMenu
-  //           data={{
-  //             objectId: this.data.id,
-  //             objectType: this.objectType,
-  //             importType: 'nodes'
-  //           }}
   function importOutcomes() {
     dispatchDialog(DialogMode.IMPORT_OUTCOMES)
   }
@@ -65,7 +51,7 @@ export const useMenuActions = () => {
    * TO PROCESS
    *******************************************************/
 
-  function deleteWorkflowHard(projectId: number, workflowId: number) {
+  function deleteWorkflowHard(projectid: string, workflowid: string) {
     if (
       window.confirm(
         _t('Are you sure you want to permanently delete this workflow?')
@@ -88,8 +74,8 @@ export const useMenuActions = () => {
   }
 
   function duplicateItem(
-    parentId: number,
-    workflowId: number,
+    parentid: string,
+    workflowid: string,
     workflowType: WorkflowType
   ) {
     if (parentId != null) {

@@ -7,7 +7,7 @@ import { CommentsForObjectQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
 
 //Get the comments for a particular object
 export function getCommentsForObjectQuery(
-  objectId: number,
+  objectid: string,
   objectType: any,
   callBackFunction = (_data: CommentsForObjectQueryResp) =>
     Utility.logger('success')

@@ -3,11 +3,11 @@ import { type PayloadAction, createSlice } from '@reduxjs/toolkit'
 import type {
   GraphLoadStatus,
   GraphResourceLoadState,
-  WorkflowId
+  WorkflowUuid
 } from './model/types'
 
 type GraphLoadState = {
-  byWorkflowId: Record<WorkflowId, GraphResourceLoadState>
+  byWorkflowUuid: Record<WorkflowUuid, GraphResourceLoadState>
 }
 
 const makeInitialResourceState = (): GraphResourceLoadState => ({
@@ -20,7 +20,7 @@ const makeInitialResourceState = (): GraphResourceLoadState => ({
 })
 
 const initialState: GraphLoadState = {
-  byWorkflowId: {}
+  byWorkflowUuid: {}
 }
 
 const graphLoadSlice = createSlice({
@@ -29,31 +29,31 @@ const graphLoadSlice = createSlice({
   reducers: {
     initializeWorkflowLoadState(
       state,
-      action: PayloadAction<{ workflowId: WorkflowId }>
+      action: PayloadAction<{ workflowUuid: WorkflowUuid }>
     ) {
-      const { workflowId } = action.payload
-      state.byWorkflowId[workflowId] ??= makeInitialResourceState()
+      const { workflowUuid } = action.payload
+      state.byWorkflowUuid[workflowUuid] ??= makeInitialResourceState()
     },
     setResourceStatus(
       state,
       action: PayloadAction<{
-        workflowId: WorkflowId
+        workflowUuid: WorkflowUuid
         resource: keyof GraphResourceLoadState
         status: GraphLoadStatus
       }>
     ) {
-      const { workflowId, resource, status } = action.payload
-      state.byWorkflowId[workflowId] ??= makeInitialResourceState()
-      state.byWorkflowId[workflowId][resource] = status
+      const { workflowUuid, resource, status } = action.payload
+      state.byWorkflowUuid[workflowUuid] ??= makeInitialResourceState()
+      state.byWorkflowUuid[workflowUuid][resource] = status
     },
     clearWorkflowLoadState(
       state,
-      action: PayloadAction<{ workflowId: WorkflowId }>
+      action: PayloadAction<{ workflowUuid: WorkflowUuid }>
     ) {
-      delete state.byWorkflowId[action.payload.workflowId]
+      delete state.byWorkflowUuid[action.payload.workflowUuid]
     },
     clearAllLoadState(state) {
-      state.byWorkflowId = {}
+      state.byWorkflowUuid = {}
     }
   }
 })

@@ -2,7 +2,6 @@ import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CFRoutes } from '@cf/router/appRoutes'
 import strings from '@cf/utility/strings'
-import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { MenuItemType, SimpleMenu, StaticMenu } from '@cfComponents/menu/Menu'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import ReturnLinks from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ReturnLinks'
@@ -11,12 +10,10 @@ import AddCircleIcon from '@mui/icons-material/AddCircle'
 import LogoutIcon from '@mui/icons-material/Logout'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import AppBar from '@mui/material/AppBar'
-import Avatar from '@mui/material/Avatar'
 import Badge from '@mui/material/Badge'
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
 import ListItem from '@mui/material/ListItem'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
@@ -159,23 +156,18 @@ const TopBar = () => {
         </SC.NotificationsHeader>
 
         <SC.NotificationsList>
-          {data.dataPackage.items.map((item, idx) => (
+          {data.items.map((item, idx) => (
             <ListItem
               key={idx}
               alignItems="flex-start"
               sx={{
-                backgroundColor: item.unread ? 'courseflow.lightest' : null
+                backgroundColor: !item.is_read ? 'courseflow.lightest' : null
               }}
             >
-              <ListItemButton component={RouterLink} to={item.url}>
-                {item.unread && <Badge color="primary" variant="dot" />}
-                <ListItemAvatar>
-                  <Avatar alt={item.from}>
-                    {ThemeHelper.getNameInitials(item.from)}
-                  </Avatar>
-                </ListItemAvatar>
+              <ListItemButton component={RouterLink} to={CFRoutes.NOTIFICATIONS}>
+                {!item.is_read && <Badge color="primary" variant="dot" />}
                 <ListItemText
-                  primary={item.date}
+                  primary={item.date_created}
                   secondary={
                     <Typography
                       sx={{ display: 'inline' }}
@@ -183,7 +175,7 @@ const TopBar = () => {
                       variant="body2"
                       color="text.primary"
                     >
-                      {item.text}
+                      {item.message}
                     </Typography>
                   }
                 />
@@ -194,7 +186,7 @@ const TopBar = () => {
       </>
     )
 
-    const unreadCount = data.dataPackage.meta.unreadCount
+    const unreadCount = data.meta.unread_count
 
     const header: MenuItemType = {
       iconButton: {

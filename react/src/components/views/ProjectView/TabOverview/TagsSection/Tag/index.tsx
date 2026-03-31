@@ -16,12 +16,12 @@ import {
 import * as Styled from './styles'
 
 type PropsType = {
-  id: number
+  id: string
   label?: string
   create?: boolean
   disabled?: boolean
-  onChange: (id: number, value: string, createNew: boolean) => void
-  onDelete?: (id: number) => void
+  onChange: (id: string, value: string, createNew: boolean) => void
+  onDelete?: (id: string) => void
 }
 
 type StateType = {

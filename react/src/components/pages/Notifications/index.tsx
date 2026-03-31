@@ -1,23 +1,22 @@
 import * as SCCommon from '@cf/mui/helper'
-import { apiPaths } from '@cf/router/apiRoutes'
 import strings from '@cf/utility/strings'
-import ThemeHelper from '@cf/utility/ThemeHelper.class'
-import Utility from '@cf/utility/Utility.class'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import DotsIcon from '@mui/icons-material/MoreHoriz'
-import Avatar from '@mui/material/Avatar'
 import Badge from '@mui/material/Badge'
 import IconButton from '@mui/material/IconButton'
 import Link from '@mui/material/Link'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Typography from '@mui/material/Typography'
 import { getErrorMessage } from '@XMLHTTP/API/api'
-import { useGetNotificationsQuery } from '@XMLHTTP/API/notifications.rtk'
-import { API_POST } from '@XMLHTTP/CallWrapper'
+import {
+  useDeleteNotificationMutation,
+  useGetNotificationsQuery,
+  useMarkAllNotificationsAsReadMutation,
+  useMarkNotificationAsReadMutation
+} from '@XMLHTTP/API/notifications.rtk'
 import { useState } from 'react'
 
 import * as SC from './style'
@@ -33,7 +32,10 @@ const NotificationsPage = (): JSX.Element => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const { data, error, isLoading, isError } = useGetNotificationsQuery()
+  const { data, error, isLoading, isError, refetch } = useGetNotificationsQuery()
+  const [markAllAsRead] = useMarkAllNotificationsAsReadMutation()
+  const [markAsRead] = useMarkNotificationAsReadMutation()
+  const [deleteNotification] = useDeleteNotificationMutation()
 
   const [pagination, setPagination] = useState<{
     page: number
@@ -44,13 +46,9 @@ const NotificationsPage = (): JSX.Element => {
   })
 
   const [pageState, setPageState] = useState<{
-    notifications: any
-    allRead: any
     menuAnchor: any
     notification: any
   }>({
-    notifications: [],
-    allRead: 0,
     menuAnchor: null,
     notification: null
   })
@@ -97,26 +95,10 @@ const NotificationsPage = (): JSX.Element => {
    */
   function onMarkAsReadClick() {
     const { notification } = pageState
-
-    const url = apiPaths.json_api.notification.mark_all_as_read
-    API_POST(url, {
-      notification_id: notification.id
-    })
-      .then(() => {
-        const updated = [...pageState.notifications]
-        const index = updated.findIndex((n) => n.id === notification.id)
-        updated[index].unread = false
-
-        setPageState({
-          ...pageState,
-          allRead: updated.every((n) => n.unread === false),
-          notifications: updated
-        })
-      })
-      .catch((err) => Utility.logger('error -', err))
-      .finally(() => {
-        handleMenuClose()
-      })
+    if (!notification) return
+    markAsRead({ uuid: notification.uuid })
+      .then(() => refetch())
+      .finally(() => handleMenuClose())
   }
 
   /**
@@ -124,26 +106,10 @@ const NotificationsPage = (): JSX.Element => {
    */
   function onDeleteClick() {
     const { notification } = pageState
-
-    const url = apiPaths.json_api.notification.delete
-    API_POST(url, {
-      notification_id: notification.id
-    })
-      .then(() => {
-        const updated = [...pageState.notifications]
-        const index = updated.findIndex((n) => n.id === notification.id)
-        updated.splice(index, 1)
-
-        setPageState({
-          ...pageState,
-          allRead: updated.every((n) => n.unread === false),
-          notifications: updated
-        })
-      })
-      .catch((err) => Utility.logger('error -', err))
-      .finally(() => {
-        handleMenuClose()
-      })
+    if (!notification) return
+    deleteNotification({ uuid: notification.uuid })
+      .then(() => refetch())
+      .finally(() => handleMenuClose())
   }
 
   /**
@@ -151,16 +117,7 @@ const NotificationsPage = (): JSX.Element => {
    */
   function onMarkAllAsReadClick(e) {
     e.preventDefault()
-    const url = apiPaths.json_api.notification.mark_all_as_read
-
-    API_POST(url)
-      .then(() => {
-        setPageState({
-          ...pageState,
-          allRead: true
-        })
-      })
-      .catch((err) => Utility.logger('error -', err))
+    markAllAsRead().then(() => refetch())
   }
 
   function onPaginationChange(e, page) {
@@ -180,9 +137,9 @@ const NotificationsPage = (): JSX.Element => {
     return <div>An error occurred: {getErrorMessage(error)}</div>
   }
 
-  const { items, meta } = data.dataPackage
+  const { items, meta } = data
   const totalPaginationPages = Math.ceil(
-    pageState.notifications.length / pagination.countPerPage
+    items.length / pagination.countPerPage
   )
   const paginateFrom = pagination.page * pagination.countPerPage
   const paginateTo = (pagination.page + 1) * pagination.countPerPage
@@ -190,13 +147,13 @@ const NotificationsPage = (): JSX.Element => {
   /*******************************************************
    * RENDER
    *******************************************************/
-  if (pageState.notifications.length > 0) {
+  if (items.length > 0) {
     return (
       <SCCommon.OuterContentWrap>
         <SC.NotificationsWrap>
           <SC.NotificationsHeader>
             <Typography variant="h1">{strings.notifications}</Typography>
-            {meta.unreadCount > 0 && !pageState?.allRead && (
+            {meta.unread_count > 0 && (
               <SC.MarkAsRead>
                 <Link
                   href="#"
@@ -210,7 +167,7 @@ const NotificationsPage = (): JSX.Element => {
           </SC.NotificationsHeader>
 
           <SC.NotificationsList>
-            {pageState.notifications
+            {items
               .slice(paginateFrom, paginateTo)
               .map((n, idx) => (
                 <SC.StyledListItem
@@ -218,7 +175,7 @@ const NotificationsPage = (): JSX.Element => {
                   alignItems="flex-start"
                   sx={{
                     backgroundColor:
-                      n.unread && !pageState.allRead
+                      !n.is_read
                         ? 'courseflow.lightest'
                         : null
                   }}
@@ -233,16 +190,11 @@ const NotificationsPage = (): JSX.Element => {
                   }
                 >
                   <ListItemButton>
-                    {n.unread && !pageState.allRead && (
+                    {!n.is_read && (
                       <Badge color="primary" variant="dot" />
                     )}
-                    <ListItemAvatar>
-                      <Avatar alt={n.from}>
-                        {ThemeHelper.getNameInitials(n.from)}
-                      </Avatar>
-                    </ListItemAvatar>
                     <ListItemText
-                      primary={n.date}
+                      primary={n.date_created}
                       secondary={
                         <Typography
                           sx={{ display: 'inline' }}
@@ -250,7 +202,7 @@ const NotificationsPage = (): JSX.Element => {
                           variant="body2"
                           color="text.primary"
                         >
-                          {n.text}
+                          {n.message}
                         </Typography>
                       }
                     />
@@ -276,7 +228,7 @@ const NotificationsPage = (): JSX.Element => {
               'aria-label': strings.notificationOptions
             }}
           >
-            {pageState.notification?.unread && !pageState.allRead && (
+            {pageState.notification && !pageState.notification.is_read && (
               <MenuItem onClick={onMarkAsReadClick}>
                 {strings.markAsRead}
               </MenuItem>

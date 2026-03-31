@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import InsertMenu from '../InsertMenu'
 
 type PropsType = {
-  nodeId: number
+  nodeid: string
   nodeRef: MutableRefObject<HTMLDivElement>
 }
 

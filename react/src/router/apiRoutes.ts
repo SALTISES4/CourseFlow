@@ -1,6 +1,7 @@
 import Utility from '@cf/utility/Utility.class'
 
-const apiPathBase = '/course-flow/json-api/v1'
+const apiPathBase = '/api'
+
 export const apiPathRoutes = {
   json_api: {
     user: {
@@ -23,13 +24,13 @@ export const apiPathRoutes = {
       library__favourites__projects: '/library/favourites',
       library__toggle_favourite__post: '/library/toggle-favourite'
     },
-    workspace: {
-      duplicate: '/workspace/:id/duplicate',
-      delete_soft: '/workspace/:id/delete-soft',
-      delete: '/workspace/:id/delete',
-      restore: '/workspace/:id/restore',
-      field__update: '/workspace/:id/update-field'
-    },
+    // workspace: {
+    //   duplicate: '/workspace/:id/duplicate',
+    //   delete_soft: '/workspace/:id/delete-soft',
+    //   delete: '/workspace/:id/delete',
+    //   restore: '/workspace/:id/restore',
+    //   field__update: '/workspace/:id/update-field'
+    // },
     workspaceUser: {
       list: '/workspace-user/:id/list',
       list_available: '/workspace-user/:id/list-available',
@@ -38,20 +39,20 @@ export const apiPathRoutes = {
       update: '/workspace-user/:id/update'
     },
     project: {
-      create: '/project/create',
-      detail: '/project/:id/detail',
-      update: '/project/:id/update',
+      // create: '/project/create',
+      // detail: '/project/:id/detail',
+      // update: '/project/:id/update',
       duplicate: '/project/:id/duplicate',
       object_set__create: '/project/:id/object-set/create',
       list__by_current_user: '/project/my-projects',
       workflows__list: '/project/:id/workflow'
     },
     workflow: {
-      detail: '/workflow/:id/detail',
-      parent__detail: '/workflow/:id/parent/detail',
-      parent__detail__full: '/workflow/:id/parent/detail-full',
-      child__detail: '/workflow/:id/child/detail',
-      list__possible_linked: '/workflow/linked',
+      // detail: '/workflow/:id/detail',
+      // parent__detail: '/workflow/:id/parent/detail',
+      // parent__detail__full: '/workflow/:id/parent/detail-full',
+      // child__detail: '/workflow/:id/child/detail',
+      // list__possible_linked: '/workflow/linked',
       list__possible_added: '/workflow/added',
       list_templates: '/workflow/template/list',
       public__detail: '/workflow/:id/public/detail',
@@ -59,9 +60,9 @@ export const apiPathRoutes = {
       public__parent__detail_full: '/workflow/:id/public/parent/detail-full',
       public__child__detail: '/workflow/:id/public/child/detail',
       // editing
-      create: '/workflow/create',
+      // create: '/workflow/create',
       duplicate: '/workflow/:id/duplicate-to-project',
-      update: '/workflow/:id/update',
+      // update: '/workflow/:id/update',
       //      link: '/workflow/:id/link-to-node',
       strategy__toggle: '/workflow/:id/strategy/toggle',
       strategy__duplicate: '/workflow/:id/strategy/duplicate',
@@ -73,12 +74,12 @@ export const apiPathRoutes = {
       object__order: '/workflow/object/order'
     },
     node: {
-      create: '/node/create',
-      delete: '/node/:id/delete',
-      delete_soft: '/node/:id/delete_soft',
-      restore: '/node/:id/restore',
-      duplicate: '/node/:id/duplicate',
-      update_position: '/node/:id/update-position',
+      // create: '/node/create',
+      // delete: '/node/:id/delete',
+      // delete_soft: '/node/:id/delete_soft',
+      // restore: '/node/:id/restore',
+      // duplicate: '/node/:id/duplicate',
+      // update_position: '/node/:id/update-position',
       // toggle_object_set: '/node/:id/toggle-object-set',
       link__create: '/node/node-link/create',
       link_to_workflow: '/node/:id/link-to-workflow'
@@ -104,6 +105,60 @@ export const apiPathRoutes = {
       import: '/import',
       export: '/export'
     }
+  },
+  /**
+   * CourseFlow v2 (Django Ninja) — mounted at `path("api/", api.urls)` in course_flow_v2/urls.py.
+   * Leaf paths are relative to `/api` (same prefix as `json_api` via `apiPathBase`).
+   * Use `generatePath()` for segments like `:workflowUuid`.
+   */
+  json_api_v2: {
+    meta: {
+      health: '/health',
+      docs: '/docs',
+      openapi_json: '/openapi.json'
+    },
+    auth: {
+      login: '/auth/login',
+      register: '/auth/register',
+      logout: '/auth/logout',
+      me: '/auth/me'
+    },
+    user: {
+      collection: '/user',
+      me_profile_settings: '/user/me/profile-settings',
+      me_notification_settings: '/user/me/notification-settings',
+      me_notifications: '/user/me/notifications',
+      me_notifications_mark_all_as_read:
+        '/user/me/notifications/mark-all-as-read',
+      me_notification_mark_as_read: '/user/me/notifications/:uuid/mark-as-read',
+      me_notification_detail: '/user/me/notifications/:uuid'
+    },
+    project: {
+      collection: '/project',
+      detail: '/project/:uuid',
+      graph: '/project/:uuid/graph'
+    },
+    workflow: {
+      collection: '/workflow',
+      detail: '/workflow/:uuid',
+      graph: '/workflow/:uuid/graph',
+      nodes: '/workflow/:uuid/nodes',
+      edges: '/workflow/:uuid/edges',
+      related_parents: '/workflow/:uuid/related/parents',
+      related_children: '/workflow/:uuid/related/children'
+    },
+    node: {
+      collection: '/node',
+      detail: '/node/:uuid'
+    },
+    edge: {
+      collection: '/edge',
+      detail: '/edge/:uuid'
+    },
+    thread: {
+      collection: '/thread',
+      comments: '/thread/:uuid/comments'
+    }
   }
 }
 
@@ -117,7 +172,6 @@ export const apiPaths = {
   external: {
     resetPasswordUrl: '/login/',
     logout: '/logout/',
-    daliteUrl: '/',
     static_assets: {
       icon: '/static/course_flow/img/images_svg/'
     }

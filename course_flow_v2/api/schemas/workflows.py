@@ -26,9 +26,10 @@ class WorkflowUpdateIn(Schema):
 
 
 class WorkflowListItemOut(Schema):
-    """List rows: workflow entity fields only."""
+    """
+    List rows: workflow entity fields only.
+    """
 
-    id: int
     uuid: UUID
     title: str
     owner_id: int
@@ -37,10 +38,20 @@ class WorkflowListItemOut(Schema):
     modified_on: datetime
 
 
-class WorkflowDetailOut(Schema):
-    """Single workflow resource: persisted fields only (no unit/sections/channels)."""
+class WorkflowListMetaOut(Schema):
+    total: int
 
-    id: int
+
+class WorkflowListOut(Schema):
+    items: list[WorkflowListItemOut]
+    meta: WorkflowListMetaOut
+
+
+class WorkflowDetailOut(Schema):
+    """
+    Single workflow resource: persisted fields only (no unit/sections/channels).
+    """
+
     uuid: UUID
     title: str
     owner_id: int
@@ -48,3 +59,7 @@ class WorkflowDetailOut(Schema):
     revision_id: int
     date_created: datetime
     modified_on: datetime
+
+
+class WorkflowDetailOutResp(Schema):
+    item: WorkflowDetailOut
