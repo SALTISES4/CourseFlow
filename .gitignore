@@ -47,7 +47,6 @@ dump.rdb
 setup-data.sh
 assets
 course_flow_legacy/collected_static_files
-/docs/
 /.cursorprompt
 /course_flow_legacy/
 /course_flow_legacy.zip
