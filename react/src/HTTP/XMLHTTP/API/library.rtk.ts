@@ -4,23 +4,17 @@ import {
   LibraryObjectsSearchQueryArgs,
   ToggleFavouriteMutationArgs
 } from '@XMLHTTP/types/args'
-import { ELibraryObject } from '@XMLHTTP/types/entity'
-import { EmptyPostResp, PageHomeQueryResp } from '@XMLHTTP/types/query'
+import {
+  EmptyPostResp,
+  PageHomeQueryResp,
+  type LibraryObjectsSearchQueryResp
+} from '@XMLHTTP/types/query'
+import {
+  buildV2LibrarySearchRequestBody,
+  transformV2LibrarySearchResponseToLegacy
+} from '@cf/utility/marshalling/libraryV2Search'
 
-/*******************************************************
- * TYPE
- *******************************************************/
-export type LibraryObjectsSearchQueryResp = {
-  message: string
-  dataPackage: {
-    items: ELibraryObject[]
-    meta: {
-      currentPage: number
-      count: number
-      pageCount: number
-    }
-  }
-}
+export type { LibraryObjectsSearchQueryResp } from '@XMLHTTP/types/query'
 
 /*******************************************************
  * QUERY
@@ -45,16 +39,26 @@ const extendedApi = cfApi.injectEndpoints({
       query: (args) => {
         return {
           method: Verb.POST,
-          url: apiPaths.json_api.library.library__objects_search,
-          body: args
+          url: apiPaths.json_api_v2.library.search,
+          body: buildV2LibrarySearchRequestBody(args)
         }
-      }
+      },
+      transformResponse: transformV2LibrarySearchResponseToLegacy
     }),
+    /** Favourites strip in sidebar — same v2 search with `favourited: true`. */
     libraryFavouriteObjects: builder.query<LibraryObjectsSearchQueryResp, void>(
       {
         query: () => {
-          return apiPaths.json_api.library.library__favourites__projects
-        }
+          return {
+            method: Verb.POST,
+            url: apiPaths.json_api_v2.library.search,
+            body: buildV2LibrarySearchRequestBody({
+              pagination: { page: 0, resultsPerPage: 10 },
+              filters: [{ name: 'favourited', value: true }]
+            })
+          }
+        },
+        transformResponse: transformV2LibrarySearchResponseToLegacy
       }
     ),
     /*******************************************************

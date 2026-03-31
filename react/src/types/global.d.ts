@@ -1,5 +1,4 @@
 import * as d3 from 'd3'
-import jQuery from 'jQuery'
 
 import {
   Discipline,
@@ -49,53 +48,6 @@ interface GenericPath {
   [key: string]: string
 }
 
-// interface JSONAPIPaths {
-//   create_project: string
-//   create_workflow: string
-//   update_profile: string
-//   get_notifications_page: string
-//   update_notifications_settings: string
-//   mark_all_notifications_as_read: string
-//   delete_notification: string
-//   library: {
-//     home: string
-//     explore: string
-//     library__objects_search: string
-//     library__favourites__projects: string
-//     library__library__projects: string
-//     library__toggle_favourite__post: string
-//   }
-//   user: {
-//     list: string
-//     profile_settings: string
-//     profile_settings__update: string
-//     notification_settings: string
-//     notification_settings__update: string
-//     favourite_toggle: string
-//   }
-//   project: {
-//     detail: string
-//     create: string
-//   }
-//   comment: {
-//     list_by_object: string
-//     create: string
-//     delete: string
-//     delete_all: string
-//   }
-//   notification: {
-//     list: string
-//     delete: string
-//     mark_all_as_read: string
-//   }
-// }
-
-// interface PublicUpdatePath {
-//   activity: string
-//   course: string
-//   program: string
-//   workflow: string
-// }
 
 interface UpdatePath {
   project: string
@@ -103,8 +55,6 @@ interface UpdatePath {
   course: string
   program: string
   workflow: string
-  liveproject: string
-  liveassignment: string
 }
 
 export interface GlobalContextData {

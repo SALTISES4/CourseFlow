@@ -58,7 +58,6 @@ export type FormFieldSerialized = {
 
 export type EventUnion =
   | ReactMouseEvent<HTMLDivElement>
-  | JQuery.Event
   | ReactMouseEvent<Element>
   | MouseEvent
 

@@ -83,11 +83,15 @@ export function formatLibraryObject(
   const typeChip = getTypeChip(libraryObject)
   const templateChip = getTemplateChip(libraryObject)
   const countChip = getWorkflowCountChip(libraryObject)
+  const descriptionFromEntity =
+    libraryObject.description?.trim() ||
+    (libraryObject.author?.name &&
+      `${_t('Owned by')} ${libraryObject.author.name}`)
+
   return {
     id: libraryObject.id,
     title: libraryObject.title,
-    description:
-      libraryObject.author && `${_t('Owned by')} ${libraryObject.author.name}`,
+    description: descriptionFromEntity ?? '',
     isFavourite: libraryObject.favourite,
     isLinked: libraryObject.isLinked,
     type: libraryObject.type,

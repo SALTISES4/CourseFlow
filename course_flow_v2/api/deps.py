@@ -1,5 +1,6 @@
 from course_flow_v2.application.services.auth_service import AuthService
 from course_flow_v2.application.services.channel_service import ChannelService
+from course_flow_v2.application.services.library_service import LibraryService
 from course_flow_v2.application.services.notification_service import (
     NotificationService,
 )
@@ -49,6 +50,7 @@ _section_service = SectionService(DjangoSectionRepository())
 _thread_comment_service = ThreadCommentService()
 _user_service = UserService()
 _notification_service = NotificationService()
+_library_service = LibraryService()
 
 
 def get_auth_service() -> AuthService:
@@ -97,3 +99,7 @@ def get_user_service() -> UserService:
 
 def get_notification_service() -> NotificationService:
     return _notification_service
+
+
+def get_library_service() -> LibraryService:
+    return _library_service

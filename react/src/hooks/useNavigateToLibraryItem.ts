@@ -11,7 +11,7 @@ const useNavigateToLibraryItem = () => {
       type === LibraryObjectType.PROJECT ? CFRoutes.PROJECT : CFRoutes.WORKFLOW
 
     const path = generatePath(basePath, {
-      id: String(id)
+      uuid: String(id)
     })
 
     navigate(path)

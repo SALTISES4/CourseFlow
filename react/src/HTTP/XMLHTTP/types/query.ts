@@ -153,3 +153,18 @@ export type WorkflowGroupsDataPackage = {
   currentProject: ESectionGroup
   allPublished: ESectionGroup
 }
+
+/*******************************************************
+ * library search (legacy envelope; v2 maps into this shape)
+ *******************************************************/
+export type LibraryObjectsSearchQueryResp = {
+  message: string
+  dataPackage: {
+    items: ELibraryObject[]
+    meta: {
+      currentPage: number
+      count: number
+      pageCount: number
+    }
+  }
+}

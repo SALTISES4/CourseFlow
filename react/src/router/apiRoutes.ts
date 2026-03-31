@@ -158,6 +158,9 @@ export const apiPathRoutes = {
     thread: {
       collection: '/thread',
       comments: '/thread/:uuid/comments'
+    },
+    library: {
+      search: '/library/search'
     }
   }
 }

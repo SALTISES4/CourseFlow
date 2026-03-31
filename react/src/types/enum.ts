@@ -38,7 +38,8 @@ export enum LibraryObjectType {
   PROJECT = 'project',
   PROGRAM = 'program',
   ACTIVITY = 'activity',
-  COURSE = 'course'
+  COURSE = 'course',
+  TASK = 'task'
 }
 
 // @todo unclear data type

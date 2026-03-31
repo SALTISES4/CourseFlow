@@ -4,6 +4,7 @@ from course_flow_v2.api.routers import (
     auth,
     channels,
     edges,
+    library,
     nodes,
     projects,
     sections,
@@ -38,6 +39,7 @@ api.add_router("/edge", edges.edge_resource_router)
 api.add_router("/thread", threads.router)
 api.add_router("/auth", auth.router)
 api.add_router("/user", users.router)
+api.add_router("/library", library.router)
 
 
 class HealthResponse(Schema):

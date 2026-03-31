@@ -1,6 +1,8 @@
 import { getAccessToken } from '@cf/api/authToken'
 
-/** Headers for fetch/RTK that include JSON + optional Bearer token. */
+/**
+ * Headers for fetch/RTK that include JSON + optional Bearer token.
+ * */
 export function getAuthFetchHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json'

@@ -1,4 +1,5 @@
 import { CFRoutes } from '@cf/router/appRoutes'
+import { LibraryObjectType } from '@cf/types/enum'
 import strings from '@cf/utility/strings'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
@@ -63,9 +64,10 @@ const Favourites = () => {
 
         <List>
           {data.dataPackage.items.map((item, id) => {
-            const url = generatePath(CFRoutes.WORKFLOW, {
-              id: String(item.id)
-            })
+            const url =
+              item.type === LibraryObjectType.PROJECT
+                ? generatePath(CFRoutes.PROJECT, { uuid: String(item.id) })
+                : generatePath(CFRoutes.WORKFLOW, { uuid: String(item.id) })
 
             return (
               <ListItem disablePadding dense key={id}>
