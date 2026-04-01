@@ -1,5 +1,6 @@
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import {
+  Edge,
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
@@ -23,10 +24,25 @@ const WeekCellPhantom = ({
   emptyRow,
   onDrop
 }: WeekCellPhantomTypeInternal) => {
-  const [state, setState] = useState({
+  const [state, setState] = useState<{
+    draggedOver: boolean
+    closestEdge: Edge | null
+  }>({
     draggedOver: false,
     closestEdge: null
   })
+
+  // only highlighting the border when we're not highligting the full cell
+  const edgeIndicator = highlight !== 'cell' && highlight
+  const rowInsertMode = insertMode === 'row'
+
+  // only showing background if there are no active edges (border)
+  // or we're supposed to do a cell highlight (from the row)
+  const backgroundIndicator =
+    !state.closestEdge && (state.draggedOver || highlight === 'cell')
+
+  // only showing border when there's the edge or we highlight it (from the row)
+  const lineIndicator = edgeIndicator || (state.closestEdge && !emptyRow)
 
   useEffect(() => {
     const el = wrapRef.current
@@ -52,7 +68,7 @@ const WeekCellPhantom = ({
         }
 
         if (
-          insertMode === 'row' &&
+          rowInsertMode &&
           isGridCell(source.data) &&
           source.data.coords.y !== coordsY
         ) {
@@ -67,10 +83,10 @@ const WeekCellPhantom = ({
         setState(
           produce((draft) => {
             draft.draggedOver = true
-            draft.closestEdge = false
+            draft.closestEdge = null
 
             if (
-              insertMode === 'row' &&
+              rowInsertMode &&
               isGridCell(source.data) &&
               source.data.coords.y !== coordsY
             ) {
@@ -110,16 +126,14 @@ const WeekCellPhantom = ({
         })
       }
     })
-  }, [wrapRef, columnId, coordsWeek, coordsY, insertMode, emptyRow, onDrop])
-
-  const backgroundIndicator =
-    !state.closestEdge && (state.draggedOver || highlight)
-  const lineIndicator = state.closestEdge && !emptyRow
+  }, [wrapRef, columnId, coordsWeek, coordsY, emptyRow, rowInsertMode, onDrop])
 
   return (
     <Box sx={{ height: '100%' }}>
       {backgroundIndicator && <DropIndicator color={alpha(borderColor, 0.2)} />}
-      {lineIndicator && <DropIndicator edge={state.closestEdge} />}
+      {lineIndicator && (
+        <DropIndicator edge={edgeIndicator || state.closestEdge} />
+      )}
     </Box>
   )
 }

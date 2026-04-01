@@ -14,12 +14,13 @@ import {
   isSidebarNode
 } from '@cfViews/WorkflowView/WorkflowEditView/types'
 import { produce } from 'immer'
-import { MutableRefObject, useEffect, useState } from 'react'
+import { MutableRefObject, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import type { WeekRowPropsType } from './index'
 
 type StateType = {
+  highlightEdge: Edge | null
   highlightRow: boolean
   dragId: number | null
   closestEdge: Edge | null
@@ -30,13 +31,22 @@ type PropsType = WeekRowPropsType & { rowRef: MutableRefObject<HTMLDivElement> }
 function useRowDnd(props: PropsType) {
   const dispatch = useDispatch()
   const wsColIds = useSelector((state: RootState) => state.workspace.column.ids)
+  const { weekId, rowIndex, rowRef } = props
   const [state, setState] = useState<StateType>({
     highlightRow: false,
+    highlightEdge: null,
     dragId: null,
     closestEdge: null
   })
 
-  const { weekId, rowIndex, rowRef } = props
+  const resetState = useCallback(() => {
+    setState({
+      highlightRow: false,
+      highlightEdge: null,
+      dragId: null,
+      closestEdge: null
+    })
+  }, [])
 
   useEffect(() => {
     return dropTargetForElements({
@@ -52,24 +62,38 @@ function useRowDnd(props: PropsType) {
         )
       },
       canDrop: ({ source }) => isSidebarNode(source.data),
-      onDragEnter: ({ source }) => {
+      onDragEnter: ({ source, self }) => {
         const dragging = source.data
         if (!isSidebarNode(dragging)) {
           return
         }
+
         setState(
           produce((draft) => {
             const columnMode =
               store.getState().workspace.node.insertMode === 'column'
             draft.highlightRow = columnMode && isSidebarCustomNode(dragging)
             draft.dragId = dragging.id
+
+            if (!columnMode && isSidebarCustomNode(dragging)) {
+              draft.highlightEdge = extractClosestEdge(self.data)
+            }
           })
         )
       },
-      onDragLeave: () => {
-        setState({ highlightRow: false, dragId: null, closestEdge: null })
-      },
+      onDragLeave: resetState,
       onDrag: ({ source, self }) => {
+        const columnMode =
+          store.getState().workspace.node.insertMode === 'column'
+
+        if (!columnMode && isSidebarCustomNode(source.data)) {
+          return setState(
+            produce((draft) => {
+              draft.highlightEdge = extractClosestEdge(self.data)
+            })
+          )
+        }
+
         if (!isSidebarNode(source.data) || isSidebarCustomNode(source.data)) {
           return
         }
@@ -90,12 +114,13 @@ function useRowDnd(props: PropsType) {
         let columnId = source.data.id as number
         let closestEdge = extractClosestEdge(self.data)
 
-        const columnMode =
-          store.getState().workspace.node.insertMode === 'column'
+        if (isSidebarCustomNode(source.data)) {
+          const columnMode =
+            store.getState().workspace.node.insertMode === 'column'
 
-        if (isSidebarCustomNode(source.data) && columnMode) {
           columnId = getNextLargestNumber(wsColIds)
-          closestEdge = 'top'
+          closestEdge = columnMode ? 'top' : state.highlightEdge
+
           dispatch(columnInsertBelow({ id: null, newId: columnId }))
         }
 
@@ -109,10 +134,18 @@ function useRowDnd(props: PropsType) {
           })
         )
 
-        setState({ highlightRow: false, dragId: null, closestEdge: null })
+        resetState()
       }
     })
-  }, [dispatch, wsColIds, weekId, rowIndex, rowRef])
+  }, [
+    dispatch,
+    resetState,
+    rowIndex,
+    rowRef,
+    state.highlightEdge,
+    weekId,
+    wsColIds
+  ])
 
   return state
 }

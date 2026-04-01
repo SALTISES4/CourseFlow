@@ -51,6 +51,7 @@ const WeekCellNode = ({
   coordsY,
   borderColor,
   wrapRef,
+  highlight,
   onClick,
   onDrop
 }: WeekCellNodeTypeTypeInternal) => {
@@ -71,6 +72,8 @@ const WeekCellNode = ({
   const highlighted = useSelector((state: RootState) =>
     isHighlightedViaOutcome(state, node.outcomenodeSet)
   )
+
+  const edgeIndicator = highlight !== 'cell' && highlight
 
   const [state, setState] = useState<NodeStateType>({
     dragging: false,
@@ -240,7 +243,9 @@ const WeekCellNode = ({
         {!state.dragging && <Handles nodeId={nodeId} nodeRef={wrapRef} />}
       </StyledNode.CellInner>
 
-      {state.closestEdge && <DropIndicator edge={state.closestEdge} />}
+      {(state.closestEdge || edgeIndicator) && (
+        <DropIndicator edge={edgeIndicator || state.closestEdge} />
+      )}
 
       {state.dragging &&
         state.previewTarget &&

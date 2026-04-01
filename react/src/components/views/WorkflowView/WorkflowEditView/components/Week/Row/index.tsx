@@ -40,6 +40,8 @@ const WeekRow = (props: WeekRowPropsType) => {
   const dnd = useRowDnd({ ...props, rowRef })
   const { weekId, rowIndex, columnIds, columnColors, onNodeDrop } = props
 
+  const draggingCustomNode = dnd.dragId === -1
+
   if (rowIndex === 'empty') {
     return (
       <StyledWorkflow.CellRow
@@ -47,7 +49,7 @@ const WeekRow = (props: WeekRowPropsType) => {
         style={{
           minHeight: 120,
           backgroundColor:
-            dnd.dragId === -1 &&
+            draggingCustomNode &&
             alpha(defaultColumnSettings['new-column'].colour, 0.2)
         }}
       >
@@ -60,7 +62,7 @@ const WeekRow = (props: WeekRowPropsType) => {
               coordsX={index}
               coordsY={0}
               columnId={columnId}
-              highlight={dnd.dragId === columnId}
+              highlight={dnd.dragId === columnId ? 'cell' : null}
               borderColor={columnColors[columnId]}
               onReorder={onNodeDrop}
               emptyRow
@@ -94,6 +96,7 @@ const WeekRow = (props: WeekRowPropsType) => {
             nodeId={nodeId}
             columnId={columnId}
             borderColor={columnColors[columnId]}
+            highlight={dnd.dragId === columnId ? dnd.closestEdge : null}
             onReorder={onNodeDrop}
             onClick={onNodeClick}
           />
@@ -105,12 +108,15 @@ const WeekRow = (props: WeekRowPropsType) => {
             coordsX={index}
             coordsY={rowIndex}
             columnId={columnId}
+            highlight={dnd.dragId === columnId ? 'cell' : null}
             borderColor={columnColors[columnId]}
             onReorder={onNodeDrop}
           />
         )
       })}
-      {dnd.closestEdge && <DropIndicator edge={dnd.closestEdge} offset={-3} />}
+      {dnd.highlightEdge && (
+        <DropIndicator edge={dnd.highlightEdge} offset={-3} />
+      )}
     </StyledWorkflow.CellRow>
   )
 }
