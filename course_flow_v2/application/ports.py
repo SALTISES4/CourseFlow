@@ -28,6 +28,8 @@ class ProjectRepositoryPort(Protocol):
 
     def update(self, uuid: UUID, updates: dict[str, Any]) -> ProjectDTO | None: ...
 
+    def delete(self, uuid: UUID) -> bool: ...
+
 
 class WorkflowRepositoryPort(Protocol):
     def create(

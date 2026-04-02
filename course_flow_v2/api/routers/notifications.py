@@ -28,7 +28,7 @@ from course_flow_v2.application.services.notification_service import (
 )
 from course_flow_v2.core.models import Notification
 
-router = Router(tags=["notifications"])
+router = Router(tags=["notifications"], by_alias=True)
 
 
 def _notification_item_out(notification: Notification) -> NotificationItemOut:

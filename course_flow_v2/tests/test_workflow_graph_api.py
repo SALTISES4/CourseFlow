@@ -54,11 +54,11 @@ def _create_workflow(client: Client, raw_token: str) -> str:
     response = client.post(
         "/api/workflow",
         data={
-            "project_id": None,
-            "workflow_title": "Graph Test",
-            "unit_title": "Root",
-            "unit_type": "course",
-            "unit_description": "",
+            "projectId": None,
+            "workflowTitle": "Graph Test",
+            "unitTitle": "Root",
+            "unitType": "course",
+            "unitDescription": "",
         },
         content_type="application/json",
         **_auth_header(raw_token),
@@ -85,20 +85,20 @@ def test_workflow_graph_top_level_shape_and_flat_collections(client: Client, use
         "sections",
         "nodes",
         "edges",
-        "thread_comment_counts",
+        "threadCommentCounts",
     }
     assert isinstance(body["channels"], list)
     assert isinstance(body["sections"], list)
     assert isinstance(body["nodes"], list)
     assert isinstance(body["edges"], list)
-    assert isinstance(body["thread_comment_counts"], list)
+    assert isinstance(body["threadCommentCounts"], list)
 
     wf = body["workflow"]
     assert wf["uuid"] == str(wf_uuid)
     assert wf["title"] == "Graph Test"
-    assert wf["revision_id"] == 0
-    assert "root_unit_uuid" in wf
-    assert "root_unit_type" in wf
+    assert wf["revisionId"] == 0
+    assert "rootUnitUuid" in wf
+    assert "rootUnitType" in wf
 
 
 @pytest.mark.django_db
@@ -114,21 +114,21 @@ def test_workflow_graph_uses_uuid_references_not_nested_entities(client: Client,
     for ch in body["channels"]:
         assert isinstance(ch, dict)
         assert "uuid" in ch
-        assert "workflow_uuid" in ch
-        assert ch["workflow_uuid"] == str(wf_uuid)
-        assert "thread_uuid" in ch
+        assert "workflowUuid" in ch
+        assert ch["workflowUuid"] == str(wf_uuid)
+        assert "threadUuid" in ch
 
     for node in body["nodes"]:
         assert isinstance(node, dict)
         assert "uuid" in node
-        for key in ("section_uuid", "channel_uuid", "section_row", "unit_uuid", "thread_uuid"):
+        for key in ("sectionUuid", "channelUuid", "sectionRow", "unitUuid", "threadUuid"):
             assert key in node
-        assert "outcome_uuids" in node
-        assert isinstance(node["outcome_uuids"], list)
+        assert "outcomeUuids" in node
+        assert isinstance(node["outcomeUuids"], list)
 
     for edge in body["edges"]:
-        assert "source_node_uuid" in edge
-        assert "target_node_uuid" in edge
+        assert "sourceNodeUuid" in edge
+        assert "targetNodeUuid" in edge
 
 
 @pytest.mark.django_db
@@ -155,9 +155,9 @@ def test_workflow_graph_node_includes_section_row(client: Client, user):
     ).json()
     assert len(body["nodes"]) == 1
     row = body["nodes"][0]
-    assert row["section_row"] == 4
-    assert row["section_uuid"] == str(section.uuid)
-    assert row["channel_uuid"] == str(channel.uuid)
+    assert row["sectionRow"] == 4
+    assert row["sectionUuid"] == str(section.uuid)
+    assert row["channelUuid"] == str(channel.uuid)
 
 
 @pytest.mark.django_db

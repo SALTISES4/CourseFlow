@@ -8,11 +8,12 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID
 
-from ninja import Schema
 from pydantic import Field
 
+from course_flow_v2.api.common.schemas import CamelSchema
 
-class WorkflowGraphMetaOut(Schema):
+
+class WorkflowGraphMetaOut(CamelSchema):
     """Workflow row + root unit identifiers needed for the editor shell (no nested unit object)."""
 
     uuid: UUID
@@ -27,7 +28,7 @@ class WorkflowGraphMetaOut(Schema):
     root_unit_title: str = ""
 
 
-class SectionGraphOut(Schema):
+class SectionGraphOut(CamelSchema):
     uuid: UUID
     workflow_uuid: UUID
     title: str
@@ -35,7 +36,7 @@ class SectionGraphOut(Schema):
     thread_uuid: UUID | None = None
 
 
-class ChannelGraphOut(Schema):
+class ChannelGraphOut(CamelSchema):
     uuid: UUID
     workflow_uuid: UUID
     title: str
@@ -43,7 +44,7 @@ class ChannelGraphOut(Schema):
     thread_uuid: UUID | None = None
 
 
-class NodeGraphOut(Schema):
+class NodeGraphOut(CamelSchema):
     uuid: UUID
     section_uuid: UUID | None = None
     channel_uuid: UUID | None = None
@@ -53,7 +54,7 @@ class NodeGraphOut(Schema):
     outcome_uuids: list[UUID] = Field(default_factory=list)
 
 
-class EdgeGraphOut(Schema):
+class EdgeGraphOut(CamelSchema):
     """Endpoints are node UUIDs; ``id`` distinguishes multiple edges between the same pair."""
 
     id: int
@@ -64,12 +65,12 @@ class EdgeGraphOut(Schema):
     target_port: str
 
 
-class ThreadCommentCountOut(Schema):
+class ThreadCommentCountOut(CamelSchema):
     thread_uuid: UUID
     comment_count: int
 
 
-class WorkflowGraphOut(Schema):
+class WorkflowGraphOut(CamelSchema):
     """Single round-trip projection for rendering the workflow graph (not nested entity trees)."""
 
     workflow: WorkflowGraphMetaOut

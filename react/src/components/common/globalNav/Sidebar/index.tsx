@@ -1,3 +1,4 @@
+import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { LibraryObjectType } from '@cf/types/enum'
 import strings from '@cf/utility/strings'
@@ -23,10 +24,21 @@ import { Link, generatePath, useLocation } from 'react-router-dom'
 import * as SC from './styles'
 
 const Favourites = () => {
-  const { data, isLoading, isError } = useLibraryFavouriteObjectsQuery()
+  const { data, isLoading, isError } = useLibrarySearch({
+    pagination: {
+      page: 0,
+      resultsPerPage: 10
+    },
+    filters: [
+      {
+        name: 'string',
+        value: 'string'
+      }
+    ]
+  })
 
   const SeeAll = () => {
-    if (!data || data.dataPackage.meta.count < 5) {
+    if (!data || data.meta.totalResults < 5) {
       return <></>
     }
 
@@ -62,11 +74,11 @@ const Favourites = () => {
         <SC.SectionLabel variant="body1">{strings.favourites}</SC.SectionLabel>
 
         <List>
-          {data.dataPackage.items.map((item, id) => {
+          {data.items.map((item, id) => {
             const url =
-              item.type === LibraryObjectType.PROJECT
-                ? generatePath(CFRoutes.PROJECT, { uuid: String(item.id) })
-                : generatePath(CFRoutes.WORKFLOW, { uuid: String(item.id) })
+              item.objectType === LibraryObjectType.PROJECT
+                ? generatePath(CFRoutes.PROJECT, { uuid: String(item.uuid) })
+                : generatePath(CFRoutes.WORKFLOW, { uuid: String(item.uuid) })
 
             return (
               <ListItem disablePadding dense key={id}>

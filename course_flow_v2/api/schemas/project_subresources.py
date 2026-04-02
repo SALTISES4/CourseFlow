@@ -1,21 +1,21 @@
 from uuid import UUID
 
-from ninja import Schema
+from course_flow_v2.api.common.schemas import CamelSchema
 
 
-class DisciplineListItemOut(Schema):
+class DisciplineListItemOut(CamelSchema):
     id: int
     label: str
     translation_plural: str
 
 
-class TagListItemOut(Schema):
+class TagListItemOut(CamelSchema):
     id: int
     label: str
     translation_plural: str
 
 
-class ProjectTeamMemberOut(Schema):
+class ProjectTeamMemberOut(CamelSchema):
     """Join row for project team membership; extend when role fields exist on the model."""
 
     id: int

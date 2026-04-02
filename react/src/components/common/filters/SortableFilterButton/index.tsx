@@ -1,25 +1,19 @@
+import { LibrarySortDirectionIn, LibrarySortValueIn } from '@cf/api/gen'
 import useMount from '@cf/hooks/useMount'
 import { SortOption } from '@cfComponents/filters/types'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import Button from '@mui/material/Button'
 import { produce } from 'immer'
-import { MouseEvent, ReactNode, useEffect, useState } from 'react'
+import { MouseEvent, ReactNode, useState } from 'react'
 
 import { StyledMenu, StyledMenuItem } from './styles'
 
-export enum SortValueOption {
-  A_Z = 'A_Z',
-  DATE_CREATED = 'DATE_CREATED',
-  DATE_MODIFIED = 'DATE_MODIFIED'
-}
-export enum SortDirection {
-  ASC = 'ASC',
-  DESC = 'DESC'
-}
-
 type SortableProps = {
-  onChange: (value: SortValueOption, direction: SortDirection) => void
+  onChange: (
+    value: LibrarySortValueIn,
+    direction: LibrarySortDirectionIn
+  ) => void
 }
 
 type PropsType = {
@@ -30,11 +24,13 @@ type PropsType = {
 
 type StateType = SortOption
 
-function toggleSortDirection(dir: SortDirection | null): SortDirection {
-  if (!dir || dir === SortDirection.ASC) {
-    return SortDirection.DESC
+function toggleSortDirection(
+  dir: LibrarySortDirectionIn | null
+): LibrarySortDirectionIn {
+  if (!dir || dir === LibrarySortDirectionIn.ASC) {
+    return LibrarySortDirectionIn.DESC
   }
-  return SortDirection.ASC
+  return LibrarySortDirectionIn.ASC
 }
 
 const SortableFilterButton = ({
@@ -50,7 +46,7 @@ const SortableFilterButton = ({
   const [enabledEl, setEnabledEl] = useState<StateType>({
     label: placeholder,
     value: enabledOption?.value ?? null,
-    direction: SortDirection.DESC
+    direction: LibrarySortDirectionIn.DESC
   })
 
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null)
@@ -113,10 +109,10 @@ const SortableFilterButton = ({
             {option.label}
             {option.value === enabledEl.value && (
               <>
-                {enabledEl.direction === SortDirection.ASC && (
+                {enabledEl.direction === LibrarySortDirectionIn.ASC && (
                   <ArrowUpwardIcon fontSize="small" />
                 )}
-                {enabledEl.direction === SortDirection.DESC && (
+                {enabledEl.direction === LibrarySortDirectionIn.DESC && (
                   <ArrowDownwardIcon fontSize="small" />
                 )}
               </>

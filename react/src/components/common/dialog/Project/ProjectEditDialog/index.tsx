@@ -1,9 +1,14 @@
-import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import {
+  getProjectOptions,
+  getProjectQueryKey,
+  listProjectsQueryKey,
+  updateProjectMutation
+} from '@cf/api/gen/@tanstack/react-query.gen'
 import * as SC from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import ProjectForm from '@cfComponents/dialog/Project/components/ProjectForm'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 type ProjectFormValues = {
@@ -25,12 +30,10 @@ const ProjectEditDialog = () => {
   const { show, onClose } = useDialog(DialogMode.PROJECT_EDIT)
   const { uuid } = useParams()
   const projectUuid = uuid ?? ''
+  const queryClient = useQueryClient()
 
   // TODO: grab amount of projects data from elsewhere?
-  const homeContextQuery = useGetHomeContextQuery()
-  const noProjects = homeContextQuery.isLoading
-    ? false
-    : homeContextQuery.data.dataPackage.projects.length === 0
+  const noProjects = true
 
   /*******************************************************
    * QUERY HOOK
@@ -44,7 +47,26 @@ const ProjectEditDialog = () => {
     enabled: Boolean(projectUuid)
   })
 
-  const [mutate] = useUpdateProjectMutation()
+  const updateProject = useMutation({
+    ...updateProjectMutation(),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: getProjectQueryKey({
+          path: { uuid: variables.path.uuid }
+        })
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: listProjectsQueryKey()
+      })
+
+      onSuccess({ message: 'Success' }, onSuccessHandler)
+    },
+    onError: (err) => {
+      onError(err)
+    }
+  })
+
   const { onError, onSuccess } = useGenericMsgHandler()
 
   /*******************************************************
@@ -60,18 +82,13 @@ const ProjectEditDialog = () => {
    * FUNCTIONS
    *******************************************************/
   function onSubmit(formData: ProjectFormValues) {
-    mutate({
-      projectUuid,
-      ...formData,
-      disciplines: formData.disciplines.map((item) => Number(item))
+    updateProject.mutate({
+      path: { uuid: projectUuid },
+      body: {
+        ...formData,
+        disciplines: formData.disciplines.map((item) => Number(item))
+      }
     })
-      .unwrap()
-      .then(() => {
-        onSuccess({ message: 'Success' }, onSuccessHandler)
-      })
-      .catch((err) => {
-        onError(err)
-      })
   }
 
   function onSuccessHandler() {

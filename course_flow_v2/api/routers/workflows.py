@@ -20,7 +20,7 @@ from course_flow_v2.api.schemas.workflows import (
 )
 from course_flow_v2.application.dto import WorkflowDTO
 
-router = Router(tags=["workflows"])
+router = Router(tags=["workflows"], by_alias=True)
 
 
 def _workflow_detail(dto: WorkflowDTO) -> WorkflowDetailOut:
@@ -86,12 +86,12 @@ def get_workflow_graph(request, uuid: UUID):
         raise HttpError(403, "Forbidden")
 
     graph_svc = get_workflow_graph_projection_service()
-    payload = graph_svc.get_by_uuid(uuid)
+    payload = graph_svc.get_by_workflow_uuid(uuid)
 
     if payload is None:
         raise HttpError(404, "Workflow not found")
 
-    return payload
+    return WorkflowGraphOut.model_validate(payload)
 
 
 @router.get(

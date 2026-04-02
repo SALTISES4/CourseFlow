@@ -1,6 +1,7 @@
+import {LibrarySortDirectionIn, LibrarySortValueIn} from '@cf/api/gen'
 import {
-  SortDirection,
-  SortValueOption
+  //  SortDirection,
+//  SortValueOption
 } from '@cfComponents/filters/SortableFilterButton'
 
 export type SearchFilterGroup = {
@@ -24,8 +25,8 @@ export type FilterOption = {
 }
 
 export type SortOption = {
-  value: SortValueOption
+  value: LibrarySortValueIn
   label: string
   enabled?: boolean
-  direction?: SortDirection
+  direction?: LibrarySortDirectionIn
 }

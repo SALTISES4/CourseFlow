@@ -8,10 +8,10 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID
 
-from ninja import Schema
+from course_flow_v2.api.common.schemas import CamelSchema
 
 
-class ProjectGraphProjectionOut(Schema):
+class ProjectGraphProjectionOut(CamelSchema):
     """Project overview: entity fields + workflow UUID references only."""
 
     uuid: UUID

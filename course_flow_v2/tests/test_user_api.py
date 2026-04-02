@@ -62,9 +62,9 @@ def test_get_profile_settings_returns_enveloped_profile(client: Client, user):
     body = response.json()["item"]
     assert body["uuid"] == str(user.uuid)
     assert body["email"] == user.email
-    assert body["first_name"] == "Owner"
-    assert body["last_name"] == "User"
-    assert body["language_preference"] == "en"
+    assert body["firstName"] == "Owner"
+    assert body["lastName"] == "User"
+    assert body["languagePreference"] == "en"
 
 
 @pytest.mark.django_db
@@ -73,18 +73,18 @@ def test_patch_profile_settings_updates_allowed_fields(client: Client, user):
     response = client.patch(
         "/api/user/me/profile-settings",
         data={
-            "first_name": "  Alex  ",
-            "last_name": "  Dray ",
-            "language_preference": "fr",
+            "firstName": "  Alex  ",
+            "lastName": "  Dray ",
+            "languagePreference": "fr",
         },
         content_type="application/json",
         **_auth_header(raw_token),
     )
     assert response.status_code == 200
     body = response.json()["item"]
-    assert body["first_name"] == "Alex"
-    assert body["last_name"] == "Dray"
-    assert body["language_preference"] == "fr"
+    assert body["firstName"] == "Alex"
+    assert body["lastName"] == "Dray"
+    assert body["languagePreference"] == "fr"
     user.refresh_from_db()
     assert user.first_name == "Alex"
     assert user.last_name == "Dray"
@@ -122,7 +122,7 @@ def test_get_notification_settings_returns_enveloped_item(client: Client, user):
         **_auth_header(raw_token),
     )
     assert response.status_code == 200
-    assert response.json()["item"]["notifications_active"] is True
+    assert response.json()["item"]["notificationsActive"] is True
 
 
 @pytest.mark.django_db
@@ -130,12 +130,12 @@ def test_patch_notification_settings_updates_boolean(client: Client, user):
     raw_token = _issue_token_for(user)
     response = client.patch(
         "/api/user/me/notification-settings",
-        data={"notifications_active": True},
+        data={"notificationsActive": True},
         content_type="application/json",
         **_auth_header(raw_token),
     )
     assert response.status_code == 200
-    assert response.json()["item"]["notifications_active"] is True
+    assert response.json()["item"]["notificationsActive"] is True
     user.refresh_from_db()
     assert user.notifications_active is True
 
@@ -157,7 +157,7 @@ def test_get_user_list_returns_items_and_meta(client: Client, user, other_user):
     assert body["meta"]["total"] == len(body["items"])
     assert len(body["items"]) >= 2
     first = body["items"][0]
-    assert {"uuid", "email", "first_name", "last_name"} == set(first.keys())
+    assert {"uuid", "email", "firstName", "lastName"} == set(first.keys())
 
 
 @pytest.mark.django_db
@@ -178,10 +178,10 @@ def test_list_notifications_only_for_current_user_ordered_newest_first(
     assert response.status_code == 200
     body = response.json()
     assert body["meta"]["total"] == 2
-    assert body["meta"]["unread_count"] == 1
-    assert body["meta"]["total_pages"] == 1
-    assert body["meta"]["current_page"] == 1
-    assert body["meta"]["page_size"] == 10
+    assert body["meta"]["unreadCount"] == 1
+    assert body["meta"]["totalPages"] == 1
+    assert body["meta"]["currentPage"] == 1
+    assert body["meta"]["pageSize"] == 10
     assert len(body["items"]) == 2
     assert body["items"][0]["uuid"] == str(newer.uuid)
     assert body["items"][1]["uuid"] == str(older.uuid)
@@ -199,9 +199,9 @@ def test_list_notifications_pagination_distinct_pages(client: Client, user):
     assert r1.status_code == 200
     b1 = r1.json()
     assert b1["meta"]["total"] == 11
-    assert b1["meta"]["total_pages"] == 2
-    assert b1["meta"]["current_page"] == 1
-    assert b1["meta"]["page_size"] == 10
+    assert b1["meta"]["totalPages"] == 2
+    assert b1["meta"]["currentPage"] == 1
+    assert b1["meta"]["pageSize"] == 10
     assert len(b1["items"]) == 10
 
     r2 = client.get(
@@ -211,9 +211,9 @@ def test_list_notifications_pagination_distinct_pages(client: Client, user):
     assert r2.status_code == 200
     b2 = r2.json()
     assert b2["meta"]["total"] == 11
-    assert b2["meta"]["total_pages"] == 2
-    assert b2["meta"]["current_page"] == 2
-    assert b2["meta"]["page_size"] == 10
+    assert b2["meta"]["totalPages"] == 2
+    assert b2["meta"]["currentPage"] == 2
+    assert b2["meta"]["pageSize"] == 10
     assert len(b2["items"]) == 1
 
     uuids_p1 = {row["uuid"] for row in b1["items"]}
@@ -232,8 +232,8 @@ def test_list_notifications_page_beyond_last_is_clamped(client: Client, user):
     assert response.status_code == 200
     body = response.json()
     assert body["meta"]["total"] == 1
-    assert body["meta"]["total_pages"] == 1
-    assert body["meta"]["current_page"] == 1
+    assert body["meta"]["totalPages"] == 1
+    assert body["meta"]["currentPage"] == 1
     assert len(body["items"]) == 1
 
 
@@ -267,7 +267,7 @@ def test_mark_one_notification_as_read(client: Client, user):
         **_auth_header(raw_token),
     )
     assert response.status_code == 200
-    assert response.json()["item"]["is_read"] is True
+    assert response.json()["item"]["isRead"] is True
     notification.refresh_from_db()
     assert notification.is_read is True
 
@@ -282,7 +282,7 @@ def test_mark_one_notification_as_read_already_read_noop(client: Client, user):
         **_auth_header(raw_token),
     )
     assert response.status_code == 200
-    assert response.json()["item"]["is_read"] is True
+    assert response.json()["item"]["isRead"] is True
 
 
 @pytest.mark.django_db
@@ -311,8 +311,8 @@ def test_mark_all_notifications_as_read_only_for_current_user(client: Client, us
         **_auth_header(raw_token),
     )
     assert response.status_code == 200
-    assert response.json()["meta"]["updated_count"] == 2
-    assert response.json()["meta"]["unread_count"] == 0
+    assert response.json()["meta"]["updatedCount"] == 2
+    assert response.json()["meta"]["unreadCount"] == 0
     assert Notification.objects.filter(user=user, is_read=False).count() == 0
     assert Notification.objects.filter(user=other_user, is_read=False).count() == 1
 

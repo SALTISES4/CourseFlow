@@ -5,10 +5,10 @@ from enum import Enum
 from typing import Any
 from uuid import UUID
 
-from ninja import Schema
+from course_flow_v2.api.common.schemas import CamelSchema
 
 
-class LibraryPaginationIn(Schema):
+class LibraryPaginationIn(CamelSchema):
     page: int = 0
     results_per_page: int = 10
 
@@ -24,23 +24,23 @@ class LibrarySortValueIn(str, Enum):
     A_Z = "A_Z"
 
 
-class LibrarySortIn(Schema):
+class LibrarySortIn(CamelSchema):
     value: LibrarySortValueIn = LibrarySortValueIn.DATE_CREATED
     direction: LibrarySortDirectionIn = LibrarySortDirectionIn.DESC
 
 
-class LibraryFilterIn(Schema):
+class LibraryFilterIn(CamelSchema):
     name: str
     value: Any
 
 
-class LibrarySearchIn(Schema):
+class LibrarySearchIn(CamelSchema):
     pagination: LibraryPaginationIn | None = None
     sort: LibrarySortIn | None = None
     filters: list[LibraryFilterIn] | None = None
 
 
-class LibraryItemOut(Schema):
+class LibraryItemOut(CamelSchema):
     object_type: str
     uuid: UUID | None = None
     workflow_uuid: UUID | None = None
@@ -54,13 +54,13 @@ class LibraryItemOut(Schema):
     is_favorite: bool
 
 
-class LibraryMetaOut(Schema):
+class LibraryMetaOut(CamelSchema):
     total_results: int
     page_count: int
     current_page: int
     results_per_page: int
 
 
-class LibrarySearchOut(Schema):
+class LibrarySearchOut(CamelSchema):
     items: list[LibraryItemOut]
     meta: LibraryMetaOut

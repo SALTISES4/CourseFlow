@@ -91,6 +91,11 @@ export const permissionKeys = {
  * FUNCTIONS
  *******************************************************/
 
+export enum LanguageOptions {
+  EN = 'en',
+  FR = 'fr'
+}
+
 export const languageOptions = [
   {
     label: 'English',

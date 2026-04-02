@@ -1,4 +1,4 @@
-import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
+import { LibrarySearchIn } from '@cf/api/gen'
 import { useState } from 'react'
 
 import LibrarySearchView from 'components/views/LibrarySearchView'
@@ -23,11 +23,9 @@ const LibraryPage = () => {
 
   const locked = []
 
-  const [searchArgs, setSearchArgs] = useState<LibraryObjectsSearchQueryArgs>(
-    {}
-  )
+  const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
 
-  const updateSearchArgsHandler = (args: LibraryObjectsSearchQueryArgs) => {
+  const updateSearchArgsHandler = (args: LibrarySearchIn) => {
     const newFilters = args.filters.map((item) => {
       for (const lockItem of locked) {
         if (lockItem.name == item.name) {

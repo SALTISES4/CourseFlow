@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 from uuid import UUID
 
-from ninja import Schema
+from course_flow_v2.api.common.schemas import CamelSchema
 
 
 class UnitTypeIn(str, Enum):
@@ -12,7 +12,7 @@ class UnitTypeIn(str, Enum):
     TASK = "task"
 
 
-class WorkflowCreateIn(Schema):
+class WorkflowCreateIn(CamelSchema):
     project_id: int | None = None
     workflow_title: str
     unit_title: str = ""
@@ -20,12 +20,12 @@ class WorkflowCreateIn(Schema):
     unit_description: str = ""
 
 
-class WorkflowUpdateIn(Schema):
+class WorkflowUpdateIn(CamelSchema):
     title: str | None = None
     project_id: int | None = None
 
 
-class WorkflowListItemOut(Schema):
+class WorkflowListItemOut(CamelSchema):
     """
     List rows: workflow entity fields only.
     """
@@ -38,16 +38,16 @@ class WorkflowListItemOut(Schema):
     modified_on: datetime
 
 
-class WorkflowListMetaOut(Schema):
+class WorkflowListMetaOut(CamelSchema):
     total: int
 
 
-class WorkflowListOut(Schema):
+class WorkflowListOut(CamelSchema):
     items: list[WorkflowListItemOut]
     meta: WorkflowListMetaOut
 
 
-class WorkflowDetailOut(Schema):
+class WorkflowDetailOut(CamelSchema):
     """
     Single workflow resource: persisted fields only (no unit/sections/channels).
     """
@@ -61,5 +61,5 @@ class WorkflowDetailOut(Schema):
     modified_on: datetime
 
 
-class WorkflowDetailOutResp(Schema):
+class WorkflowDetailOutResp(CamelSchema):
     item: WorkflowDetailOut

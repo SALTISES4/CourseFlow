@@ -1,24 +1,24 @@
 from datetime import datetime, timedelta
 from uuid import UUID
 
-from ninja import Schema
+from course_flow_v2.api.common.schemas import CamelSchema
 
 
-class ProjectCreateIn(Schema):
+class ProjectCreateIn(CamelSchema):
     title: str
     description: str = ""
     is_published: bool = False
     is_template: bool = False
 
 
-class ProjectUpdateIn(Schema):
+class ProjectUpdateIn(CamelSchema):
     title: str | None = None
     description: str | None = None
     is_published: bool | None = None
     is_template: bool | None = None
 
 
-class ProjectListItemOut(Schema):
+class ProjectListItemOut(CamelSchema):
     """List rows: compact project fields only."""
 
     uuid: UUID
@@ -29,16 +29,16 @@ class ProjectListItemOut(Schema):
     modified_on: datetime
 
 
-class ProjectListMetaOut(Schema):
+class ProjectListMetaOut(CamelSchema):
     total: int
 
 
-class ProjectListOut(Schema):
+class ProjectListOut(CamelSchema):
     items: list[ProjectListItemOut]
     meta: ProjectListMetaOut
 
 
-class ProjectDetailOut(Schema):
+class ProjectDetailOut(CamelSchema):
     """Single project resource: persisted fields only (no related collections)."""
 
     uuid: UUID
@@ -52,16 +52,16 @@ class ProjectDetailOut(Schema):
     workflows: list["ProjectWorkflowOut"] = []
 
 
-class ProjectDetailOutResp(Schema):
+class ProjectDetailOutResp(CamelSchema):
     item: ProjectDetailOut
 
 
-class TaskMetaOut(Schema):
+class TaskMetaOut(CamelSchema):
     kind: str = "task_meta"
     context: str
 
 
-class ProgramMetaOut(Schema):
+class ProgramMetaOut(CamelSchema):
     kind: str = "program_meta"
     calculate_time: str
     calculate_credits: str
@@ -71,19 +71,19 @@ class ProgramMetaOut(Schema):
     classification_specific_time: timedelta | None = None
 
 
-class CourseMetaOut(Schema):
+class CourseMetaOut(CamelSchema):
     kind: str = "course_meta"
     classification: str
     code: str
 
 
-class ActivityMetaOut(Schema):
+class ActivityMetaOut(CamelSchema):
     kind: str = "activity_meta"
     context: str
     classification: str
 
 
-class UnitOut(Schema):
+class UnitOut(CamelSchema):
     uuid: UUID
     title: str
     description: str
@@ -91,7 +91,7 @@ class UnitOut(Schema):
     meta: TaskMetaOut | ProgramMetaOut | CourseMetaOut | ActivityMetaOut | None = None
 
 
-class ProjectWorkflowOut(Schema):
+class ProjectWorkflowOut(CamelSchema):
     uuid: UUID
     title: str
     owner_id: int

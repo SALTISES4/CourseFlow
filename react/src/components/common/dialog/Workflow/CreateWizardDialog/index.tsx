@@ -1,3 +1,4 @@
+import { createWorkflowMutation } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
@@ -18,6 +19,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Step from '@mui/material/Step'
 import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
+import { useMutation } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { enqueueSnackbar } from 'notistack'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -44,7 +46,8 @@ const CreateWizardDialog = () => {
   const [isFormReady, setIsFormReady] = useState<boolean>()
   const navigate = useNavigate()
 
-  const [mutate] = useCreateWorkflowMutation()
+  //   const [mutate] = useCreateWorkflowMutation()
+  const createWorkflow = useMutation(createWorkflowMutation())
 
   const {
     show,
@@ -140,7 +143,7 @@ const CreateWizardDialog = () => {
 
   function onSuccess(id: string) {
     const path = generatePath(CFRoutes.WORKFLOW, {
-      id
+      uuid: uuid
     })
     onDialogClose()
     navigate(path)
@@ -160,8 +163,6 @@ const CreateWizardDialog = () => {
   }
 
   async function onSubmit(data: WorkflowFormType) {
-    // remove null values
-
     const payload = {
       projectId: projectId ? Number(projectId) : null,
       type: state.workflowType,
@@ -169,7 +170,10 @@ const CreateWizardDialog = () => {
     }
 
     try {
-      const response = await mutate(payload).unwrap()
+      const response = await createWorkflow.mutateAsync({
+        body: payload
+      })
+
       onSuccess(String(response.uuid))
     } catch (err) {
       onError(err)

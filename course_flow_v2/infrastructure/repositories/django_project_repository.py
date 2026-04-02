@@ -70,3 +70,7 @@ class DjangoProjectRepository:
         p.save()
         p.refresh_from_db()
         return _to_dto(p)
+
+    def delete(self, uuid: UUID) -> bool:
+        deleted, _ = Project.objects.filter(uuid=uuid).delete()
+        return deleted > 0

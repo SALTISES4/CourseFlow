@@ -28,8 +28,8 @@ from course_flow_v2.application.services.workflow_graph_mutation_service import 
 )
 from course_flow_v2.core.models import Edge
 
-workflow_edges_router = Router(tags=["edges"])
-edge_resource_router = Router(tags=["edges"])
+workflow_edges_router = Router(tags=["edges"], by_alias=True)
+edge_resource_router = Router(tags=["edges"], by_alias=True)
 
 
 def _ensure_workflow_owner(uuid: UUID, current_user) -> None:
@@ -50,7 +50,7 @@ def _ensure_workflow_owner(uuid: UUID, current_user) -> None:
 def list_workflow_edges(request, uuid: UUID):
     current_user = get_current_user(request)
     _ensure_workflow_owner(uuid, current_user)
-    proj = get_workflow_graph_projection_service().get_by_uuid(uuid)
+    proj = get_workflow_graph_projection_service().get_by_workflow_uuid(uuid)
     if proj is None:
         raise HttpError(404, "Workflow not found")
     return [EdgeGraphOut.model_validate(x) for x in proj["edges"]]
@@ -66,7 +66,7 @@ def create_workflow_edge(request, uuid: UUID, payload: GraphEdgeCreateIn):
     current_user = get_current_user(request)
     svc = get_workflow_graph_mutation_service()
     out, err = svc.create_edge(
-        uuid=uuid,
+        workflow_uuid=uuid,
         user_id=current_user.id,
         source_node_uuid=payload.source_node_uuid,
         target_node_uuid=payload.target_node_uuid,
@@ -115,16 +115,16 @@ def get_edge(request, uuid: int):
 
 
 @edge_resource_router.delete(
-    "/{edge_id}",
+    "/{uuid}",
     response=GraphMutationEnvelopeOut,
     auth=BearerAuth(),
     operation_id="deleteEdge",
 )
-def delete_edge(request, edge_id: int):
+def delete_edge(request, uuid: int):
     current_user = get_current_user(request)
     svc = get_workflow_graph_mutation_service()
     out, err = svc.delete_edge(
         user_id=current_user.id,
-        edge_id=edge_id,
+        edge_id=uuid,
     )
     return graph_mutation_http(out, err)

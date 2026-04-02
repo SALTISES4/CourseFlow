@@ -1,6 +1,6 @@
+import { LibrarySearchIn } from '@cf/api/gen'
 import LibrarySearchView from '@cfViews/LibrarySearchView'
 import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
-import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
 import { useState } from 'react'
 
 type PropsType = {
@@ -25,11 +25,9 @@ const TabWorkflows = ({ projectUuid }: PropsType) => {
 
   const locked = [{ name: 'project', value: projectUuid }]
 
-  const [searchArgs, setSearchArgs] = useState<LibraryObjectsSearchQueryArgs>(
-    {}
-  )
+  const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
 
-  const updateSearchArgsHandler = (args: LibraryObjectsSearchQueryArgs) => {
+  const updateSearchArgsHandler = (args: LibrarySearchIn) => {
     const merged = LibraryHelper.merger(locked, args.filters)
 
     setSearchArgs({

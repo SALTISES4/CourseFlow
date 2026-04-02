@@ -8,7 +8,7 @@ from course_flow_v2.api.deps import get_thread_comment_service
 from course_flow_v2.api.schemas.comments import CommentAuthorOut, CommentOut
 from course_flow_v2.application.dto import CommentDTO
 
-router = Router(tags=["threads"])
+router = Router(tags=["threads"], by_alias=True)
 
 
 def _comment_to_out(dto: CommentDTO) -> CommentOut:

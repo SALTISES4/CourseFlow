@@ -1,20 +1,21 @@
+import {
+  LibraryFilterIn,
+  LibrarySearchIn,
+  LibrarySortDirectionIn,
+  LibrarySortValueIn
+} from '@cf/api/gen'
 import { WorkspaceType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
-import {
-  SortDirection,
-  SortValueOption
-} from '@cfComponents/filters/SortableFilterButton'
+// import {
+//   SortDirection,
+//   SortValueOption
+// } from '@cfComponents/filters/SortableFilterButton'
 import {
   SearchFilterGroup,
   SearchFilterOption,
   SortOption
 } from '@cfComponents/filters/types'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
-import {
-  FilterResult,
-  LibraryObjectsSearchQueryArgs
-} from '@XMLHTTP/types/args'
-
 type FilterGroups = { [key: string]: SearchFilterGroup }
 
 type Option = any
@@ -46,15 +47,15 @@ class LibraryHelper {
     sortOptions: {
       options: [
         {
-          value: SortValueOption.DATE_MODIFIED,
+          value: LibrarySortValueIn.DATE_MODIFIED,
           label: 'Recent'
         },
         {
-          value: SortValueOption.A_Z,
+          value: LibrarySortValueIn.A_Z,
           label: 'A - Z'
         },
         {
-          value: SortValueOption.DATE_CREATED,
+          value: LibrarySortValueIn.DATE_CREATED,
           label: 'Creation date'
         }
       ]
@@ -167,8 +168,8 @@ class LibraryHelper {
   public static updateSortOptions(
     options: SortOption[],
     currentSelection: {
-      value: SortValueOption
-      direction?: SortDirection
+      value: LibrarySortValueIn
+      direction?: LibrarySortDirectionIn
     }
   ): SortOption[] {
     return options.map((option) => {
@@ -188,7 +189,7 @@ class LibraryHelper {
    **/
   public static processFilterGroups = (
     filterGroups: FilterGroups
-  ): FilterResult => {
+  ): LibraryFilterIn[] => {
     // Helper function to get enabled options for selectMultiple filters
     const getEnabledValues = (options: Option[]): any[] =>
       options.filter((option) => option.enabled).map((option) => option.value)
@@ -198,7 +199,7 @@ class LibraryHelper {
       options.find((option) => option.enabled)?.value
 
     return Object.values(filterGroups)
-      .reduce<FilterResult>((acc, filter) => {
+      .reduce<LibraryFilterIn[]>((acc, filter) => {
         const { name, options, selectMultiple, value } = filter
 
         /**
@@ -261,7 +262,10 @@ class LibraryHelper {
    **/
   public static getActiveSortOption = (
     sortOptions: SortOption[]
-  ): { value: SortValueOption; direction: SortDirection } | null => {
+  ): {
+    value: LibrarySortValueIn
+    direction: LibrarySortDirectionIn
+  } | null => {
     const activeSort = sortOptions.find((option) => option.enabled)
     return activeSort
       ? { value: activeSort.value, direction: activeSort.direction }
@@ -273,7 +277,7 @@ class LibraryHelper {
    **/
   public static reduceStateToSearchArgs(
     stateParams: SearchOptions
-  ): LibraryObjectsSearchQueryArgs {
+  ): LibrarySearchIn {
     const activeSort = LibraryHelper.getActiveSortOption(
       stateParams.sortOptions.options
     )

@@ -37,3 +37,6 @@ class ProjectService:
 
     def update(self, uuid: UUID, updates: dict[str, Any]) -> ProjectDTO | None:
         return self._repository.update(uuid, updates)
+
+    def delete(self, uuid: UUID) -> bool:
+        return self._repository.delete(uuid)

@@ -15,7 +15,12 @@ from course_flow_v2.core.models import (
 
 
 class LibraryService:
-    def search(self, *, user_id: int, payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    def search(
+        self,
+        *,
+        user_id: int,
+        payload: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         payload = payload or {}
         pagination = payload.get("pagination") or {}
         sort = payload.get("sort") or {}
@@ -55,8 +60,12 @@ class LibraryService:
             workflow_qs = workflow_qs.filter(project__uuid=project_filter_uuid)
 
         if discipline_ids:
-            project_qs = project_qs.filter(disciplines__id__in=discipline_ids).distinct()
-            workflow_qs = workflow_qs.filter(project__disciplines__id__in=discipline_ids).distinct()
+            project_qs = project_qs.filter(
+                disciplines__id__in=discipline_ids
+            ).distinct()
+            workflow_qs = workflow_qs.filter(
+                project__disciplines__id__in=discipline_ids
+            ).distinct()
 
         if is_template is not None:
             project_qs = project_qs.filter(is_template=is_template)
@@ -76,18 +85,26 @@ class LibraryService:
             project_qs = project_qs.filter(favorite_links__user_id=user_id)
             workflow_qs = workflow_qs.filter(favorite_links__user_id=user_id)
 
-        project_favorite_uuids = self._favorite_project_uuids(user_id=user_id, project_qs=project_qs)
+        project_favorite_uuids = self._favorite_project_uuids(
+            user_id=user_id, project_qs=project_qs
+        )
         workflow_favorite_uuids = self._favorite_workflow_uuids(
             user_id=user_id,
             workflow_qs=workflow_qs,
         )
 
         items = self._normalize_project_items(project_qs, project_favorite_uuids)
-        items.extend(self._normalize_workflow_items(workflow_qs, workflow_favorite_uuids))
+        items.extend(
+            self._normalize_workflow_items(workflow_qs, workflow_favorite_uuids)
+        )
 
-        items = self._sort_items(items, sort_value=sort_value, sort_direction=sort_direction)
+        items = self._sort_items(
+            items, sort_value=sort_value, sort_direction=sort_direction
+        )
         total_results = len(items)
-        page_count = math.ceil(total_results / results_per_page) if total_results > 0 else 0
+        page_count = (
+            math.ceil(total_results / results_per_page) if total_results > 0 else 0
+        )
         start_idx = page * results_per_page
         end_idx = start_idx + results_per_page
 
@@ -151,9 +168,13 @@ class LibraryService:
         except (TypeError, ValueError):
             return None
 
-    def _favorite_project_uuids(self, *, user_id: int, project_qs: QuerySet[Project]) -> set[UUID]:
+    def _favorite_project_uuids(
+        self, *, user_id: int, project_qs: QuerySet[Project]
+    ) -> set[UUID]:
         return set(
-            FavoriteProject.objects.filter(user_id=user_id, project__in=project_qs).values_list(
+            FavoriteProject.objects.filter(
+                user_id=user_id, project__in=project_qs
+            ).values_list(
                 "project__uuid",
                 flat=True,
             )
@@ -208,7 +229,9 @@ class LibraryService:
                     "description": unit.description,
                     "date_created": workflow.date_created,
                     "modified_on": workflow.modified_on,
-                    "is_template": bool(workflow.project and workflow.project.is_template),
+                    "is_template": bool(
+                        workflow.project and workflow.project.is_template
+                    ),
                     "is_favorite": workflow.uuid in favorite_uuids,
                 }
             )
@@ -220,7 +243,9 @@ class LibraryService:
         reverse = sort_direction != "ASC"
 
         if sort_value == "A_Z":
-            return sorted(items, key=lambda row: row["title"].casefold(), reverse=reverse)
+            return sorted(
+                items, key=lambda row: row["title"].casefold(), reverse=reverse
+            )
         if sort_value == "DATE_MODIFIED":
             return sorted(items, key=lambda row: row["modified_on"], reverse=reverse)
         return sorted(items, key=lambda row: row["date_created"], reverse=reverse)

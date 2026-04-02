@@ -1,25 +1,25 @@
 from uuid import UUID
 
-from ninja import Schema
+from course_flow_v2.api.common.schemas import CamelSchema
 
 
-class UserListItemOut(Schema):
+class UserListItemOut(CamelSchema):
     uuid: UUID
     email: str
     first_name: str
     last_name: str
 
 
-class UserListMetaOut(Schema):
+class UserListMetaOut(CamelSchema):
     total: int
 
 
-class UserListOut(Schema):
+class UserListOut(CamelSchema):
     items: list[UserListItemOut]
     meta: UserListMetaOut
 
 
-class UserProfileSettingsOut(Schema):
+class UserProfileSettingsOut(CamelSchema):
     uuid: UUID
     email: str
     first_name: str
@@ -27,24 +27,24 @@ class UserProfileSettingsOut(Schema):
     language_preference: str
 
 
-class UserProfileSettingsOutResp(Schema):
+class UserProfileSettingsOutResp(CamelSchema):
     item: UserProfileSettingsOut
 
 
-class UserProfileSettingsPatchIn(Schema):
+class UserProfileSettingsPatchIn(CamelSchema):
     first_name: str | None = None
     last_name: str | None = None
     language_preference: str | None = None
     email: str | None = None
 
 
-class UserNotificationSettingsOut(Schema):
+class UserNotificationSettingsOut(CamelSchema):
     notifications_active: bool
 
 
-class UserNotificationSettingsOutResp(Schema):
+class UserNotificationSettingsOutResp(CamelSchema):
     item: UserNotificationSettingsOut
 
 
-class UserNotificationSettingsPatchIn(Schema):
+class UserNotificationSettingsPatchIn(CamelSchema):
     notifications_active: bool | None = None

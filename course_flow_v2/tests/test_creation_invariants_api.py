@@ -89,11 +89,11 @@ def test_project_detail_includes_workflow_unit_and_typed_meta(client: Client, us
     create_workflow = client.post(
         "/api/workflow",
         data={
-            "project_id": project.id,
-            "workflow_title": "W",
-            "unit_title": "Task Unit",
-            "unit_type": "task",
-            "unit_description": "",
+            "projectId": project.id,
+            "workflowTitle": "W",
+            "unitTitle": "Task Unit",
+            "unitType": "task",
+            "unitDescription": "",
         },
         content_type="application/json",
         **_auth_header(raw),
@@ -106,7 +106,7 @@ def test_project_detail_includes_workflow_unit_and_typed_meta(client: Client, us
     assert "workflows" in item
     assert len(item["workflows"]) == 1
     wf = item["workflows"][0]
-    assert wf["unit"]["unit_type"] == "task"
+    assert wf["unit"]["unitType"] == "task"
     assert wf["unit"]["meta"]["kind"] == "task_meta"
     assert "context" in wf["unit"]["meta"]
 

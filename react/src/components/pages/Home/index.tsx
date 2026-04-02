@@ -1,3 +1,4 @@
+import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { CookieTypes } from '@cf/context/cookieContext'
 import { GridWrap, OuterContentWrap } from '@cf/mui/helper'
 import { CFRoutes } from '@cf/router/appRoutes'
@@ -14,16 +15,31 @@ const Home = () => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const { data, error, isLoading } = useGetHomeContextQuery()
+  // const { data, error, isLoading } = useGetHomeContextQuery()
+  const { data, isLoading, isError } = useLibrarySearch({
+    pagination: {
+      page: 0,
+      resultsPerPage: 10
+    },
+    filters: [
+      {
+        name: 'string',
+        value: 'string'
+      }
+    ]
+  })
 
   if (isLoading) {
     return <Loader />
   }
 
-  const { projects, templates } = data.dataPackage
+  //  const { projects, templates } = data.dataPackage
+  const projects = data.items
 
   const formattedProjects = formatLibraryObjects(projects)
-  const formattedTemplates = formatLibraryObjects(templates)
+
+  // const formattedTemplates = formatLibraryObjects(templates)
+  const formattedTemplates = []
 
   /*******************************************************
    * RENDER

@@ -3,16 +3,16 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID
 
-from ninja import Schema
+from course_flow_v2.api.common.schemas import CamelSchema
 
 
-class LoginIn(Schema):
+class LoginIn(CamelSchema):
     email: str
     password: str
     label: str = ""
 
 
-class RegisterIn(Schema):
+class RegisterIn(CamelSchema):
     email: str
     password: str
     first_name: str
@@ -20,23 +20,23 @@ class RegisterIn(Schema):
     label: str = ""
 
 
-class UserSummaryOut(Schema):
+class UserSummaryOut(CamelSchema):
     uuid: UUID
     email: str
     first_name: str
     last_name: str
 
 
-class UserSummaryOutResp(Schema):
+class UserSummaryOutResp(CamelSchema):
     item: UserSummaryOut
 
 
-class LoginOut(Schema):
+class LoginOut(CamelSchema):
     access_token: str
     token_type: str
     expires_at: datetime
     user: UserSummaryOut
 
 
-class LogoutOut(Schema):
+class LogoutOut(CamelSchema):
     success: bool

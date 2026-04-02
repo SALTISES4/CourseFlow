@@ -1,3 +1,5 @@
+import { LibrarySearchIn } from '@cf/api/gen'
+import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
 import { GridWrap, OuterContentWrap } from '@cf/mui/helper'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
@@ -23,7 +25,6 @@ import { Link, Skeleton, Typography } from '@mui/material'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import { getErrorMessage } from '@XMLHTTP/API/api'
-import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
 import { produce } from 'immer'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link as LinkRouter } from 'react-router-dom'
@@ -43,8 +44,8 @@ interface Config {
  * see:  https://docs.google.com/document/d/1LgSedmw-U6mDF8S48I3gMbaohfliZetki6AJAeIKKLw/edit?tab=t.0#heading=h.seafxrns9x1f
  *******************************************************/
 type PropsType = {
-  searchArgs: LibraryObjectsSearchQueryArgs
-  setSearchArgs: (args: LibraryObjectsSearchQueryArgs) => void
+  searchArgs: LibrarySearchIn
+  setSearchArgs: (args: LibrarySearchIn) => void
   config: Config
   override?: {
     selectedid: string
@@ -68,13 +69,15 @@ const FilterWorkflowResults = ({
   setSearchFilterState: React.Dispatch<React.SetStateAction<SearchOptions>>
 }) => {
   const navigateToItem = useNavigateToLibraryItem()
-  const { data, error, isLoading, isError } = useLibraryObjectsSearchQuery({})
+
+  //  const { data, error, isLoading, isError } = useLibraryObjectsSearchQuery({})
+  const { data, isLoading, isError } = useLibrarySearch({})
 
   if (isError) {
     return <div>error</div>
   }
 
-  const res = data?.dataPackage?.items || []
+  const res = data?.items || []
 
   return (
     <FilterWorkflows
@@ -89,8 +92,8 @@ const FilterWorkflowResults = ({
         )
       }}
       onChange={(workflow) => {
-        const match = data.dataPackage.items.find((el) => workflow.id === el.id)
-        navigateToItem(match.id, match.type)
+        const match = data.items.find((el) => workflow.uuid === el.uuid)
+        navigateToItem(match.uuid, match.type)
       }}
     />
   )
@@ -119,8 +122,10 @@ const LibrarySearchView = ({
   /*******************************************************
    * QUERY HOOKS
    *******************************************************/
-  const { data, error, isLoading, isError, isFetching } =
-    useLibraryObjectsSearchQuery(searchArgs)
+  // const { data, error, isLoading, isError, isFetching } =
+  //   useLibraryObjectsSearchQuery(searchArgs)
+
+  const { data, isLoading, isError } = useLibrarySearch(searchArgs)
 
   useEffect(() => {
     if (!defaultOptionsSearchOptions) {
@@ -333,14 +338,14 @@ const LibrarySearchView = ({
    *  Pagination
    *******************************************************/
   const renderPagination = () => {
-    if (!config.pagination || !data || data.dataPackage.meta.pageCount <= 1) {
+    if (!config.pagination || !data || data.meta.pageCount <= 1) {
       return <></>
     }
 
     return (
       <Pagination
-        current={data.dataPackage.meta.currentPage + 1}
-        pages={data.dataPackage.meta.pageCount}
+        current={data.meta.currentPage + 1}
+        pages={data.meta.pageCount}
         onChange={(page) =>
           setSearchFilterState(
             produce((draft) => {
@@ -375,7 +380,7 @@ const LibrarySearchView = ({
       )
     }
 
-    const cards = formatLibraryObjects(data.dataPackage.items)
+    const cards = formatLibraryObjects(data.items)
 
     return (
       <>
@@ -385,7 +390,7 @@ const LibrarySearchView = ({
           <WorkflowCardWrapper
             key={`workflow_${item.id}`}
             {...item}
-            isSelected={item.id === override?.selectedId}
+            isSelected={item.id === override?.uuid}
             onClick={() => override?.onCardSelect(item.id)}
           />
         ))}

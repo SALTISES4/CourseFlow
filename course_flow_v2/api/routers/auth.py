@@ -25,7 +25,7 @@ from course_flow_v2.application.services.auth_service import (
 )
 from course_flow_v2.core.models import AuthToken, User
 
-router = Router(tags=["auth"])
+router = Router(tags=["auth"], by_alias=True)
 
 
 def _to_user_summary(user: User) -> UserSummaryOut:

@@ -48,11 +48,11 @@ def _create_workflow(client: Client, raw_token: str) -> str:
     response = client.post(
         "/api/workflow",
         data={
-            "project_id": None,
-            "workflow_title": "Entity Test",
-            "unit_title": "Root",
-            "unit_type": "course",
-            "unit_description": "",
+            "projectId": None,
+            "workflowTitle": "Entity Test",
+            "unitTitle": "Root",
+            "unitType": "course",
+            "unitDescription": "",
         },
         content_type="application/json",
         **_auth_header(raw_token),
@@ -68,7 +68,7 @@ def test_channel_crud_and_workflow_collection(client: Client, user):
 
     created = client.post(
         "/api/channel",
-        data={"workflow_uuid": workflow_uuid, "title": "Channel A", "position": 2},
+        data={"workflowUuid": workflow_uuid, "title": "Channel A", "position": 2},
         content_type="application/json",
         **_auth_header(raw),
     )
@@ -78,7 +78,7 @@ def test_channel_crud_and_workflow_collection(client: Client, user):
     detail = client.get(f"/api/channel/{channel_uuid}", **_auth_header(raw))
     assert detail.status_code == 200
     assert detail.json()["item"]["uuid"] == channel_uuid
-    assert detail.json()["item"]["workflow_uuid"] == workflow_uuid
+    assert detail.json()["item"]["workflowUuid"] == workflow_uuid
 
     updated = client.patch(
         f"/api/channel/{channel_uuid}",

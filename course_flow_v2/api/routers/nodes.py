@@ -27,10 +27,10 @@ from course_flow_v2.application.services.workflow_graph_mutation_service import 
 from course_flow_v2.core.models import Node
 
 # Mounted at /workflow — collection list/create under parent context.
-workflow_collection_router = Router(tags=["nodes"])
+workflow_collection_router = Router(tags=["nodes"], by_alias=True)
 
 # Mounted at /node — direct resource by node UUID.
-node_resource_router = Router(tags=["nodes"])
+node_resource_router = Router(tags=["nodes"], by_alias=True)
 
 
 def _node_graph_out(n: Node) -> NodeGraphOut:
@@ -63,7 +63,7 @@ def _ensure_workflow_owner(uuid: UUID, current_user) -> None:
 def list_workflow_nodes(request, uuid: UUID):
     current_user = get_current_user(request)
     _ensure_workflow_owner(uuid, current_user)
-    proj = get_workflow_graph_projection_service().get_by_uuid(uuid)
+    proj = get_workflow_graph_projection_service().get_by_workflow_uuid(uuid)
     if proj is None:
         raise HttpError(404, "Workflow not found")
     return [NodeGraphOut.model_validate(x) for x in proj["nodes"]]
@@ -79,7 +79,7 @@ def create_workflow_node(request, uuid: UUID, payload: GraphNodeCreateIn):
     current_user = get_current_user(request)
     svc = get_workflow_graph_mutation_service()
     out, err = svc.create_node(
-        uuid=uuid,
+        workflow_uuid=uuid,
         user_id=current_user.id,
         section_uuid=payload.section_uuid,
         channel_uuid=payload.channel_uuid,

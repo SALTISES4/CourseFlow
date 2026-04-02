@@ -4,6 +4,7 @@ from ninja import Router
 from ninja.errors import HttpError
 
 from course_flow_v2.api.auth import BearerAuth, get_current_user
+from course_flow_v2.api.common.schemas import SuccessOut
 from course_flow_v2.api.deps import (
     get_project_detail_service,
     get_project_graph_projection_service,
@@ -20,9 +21,10 @@ from course_flow_v2.api.schemas.projects import (
     ProjectListItemOut,
     ProjectListMetaOut,
     ProjectListOut,
+    ProjectUpdateIn,
 )
 
-router = Router(tags=["projects"])
+router = Router(tags=["projects"], by_alias=True)
 
 
 @router.post(
@@ -75,7 +77,7 @@ def get_project_graph(request, uuid: UUID):
 
     if payload is None:
         raise HttpError(404, "Project not found")
-    return payload
+    return ProjectGraphProjectionOut.model_validate(payload)
 
 
 @router.get(
@@ -99,6 +101,60 @@ def get_project(request, uuid: UUID):
     if detail_payload is None:
         raise HttpError(404, "Project not found")
     return ProjectDetailOutResp(item=ProjectDetailOut.model_validate(detail_payload))
+
+
+@router.patch(
+    "/{uuid}",
+    response=ProjectDetailOutResp,
+    auth=BearerAuth(),
+    operation_id="updateProject",
+)
+def update_project(request, uuid: UUID, payload: ProjectUpdateIn):
+    current_user = get_current_user(request)
+    svc = get_project_service()
+    existing = svc.get_by_uuid(uuid)
+
+    if existing is None:
+        raise HttpError(404, "Project not found")
+
+    if not can_view_project(current_user=current_user, project=existing):
+        raise HttpError(403, "Forbidden")
+
+    updates = payload.model_dump(exclude_unset=True)
+    updated = svc.update(uuid, updates)
+
+    if updated is None:
+        raise HttpError(404, "Project not found")
+
+    detail_payload = get_project_detail_service().get_by_project_uuid(uuid)
+    if detail_payload is None:
+        raise HttpError(404, "Project not found")
+    return ProjectDetailOutResp(item=ProjectDetailOut.model_validate(detail_payload))
+
+
+@router.delete(
+    "/{uuid}",
+    response=SuccessOut,
+    auth=BearerAuth(),
+    operation_id="deleteProject",
+)
+def delete_project(request, uuid: UUID):
+    current_user = get_current_user(request)
+    svc = get_project_service()
+    existing = svc.get_by_uuid(uuid)
+
+    if existing is None:
+        raise HttpError(404, "Project not found")
+
+    if not can_view_project(current_user=current_user, project=existing):
+        raise HttpError(403, "Forbidden")
+
+    deleted = svc.delete(uuid)
+
+    if not deleted:
+        raise HttpError(404, "Project not found")
+
+    return SuccessOut()
 
 
 @router.get(

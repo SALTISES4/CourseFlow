@@ -25,10 +25,14 @@
 import { defineConfig } from '@hey-api/openapi-ts'
 
 export default defineConfig({
-  input: './openapi.json',
+  input: 'http://127.0.0.1:8000/api/openapi.json',
   output: 'src/api/gen',
   plugins: [
     '@hey-api/client-fetch',
+    {
+      name: '@hey-api/typescript',
+      enums: 'typescript'
+    },
     {
       name: '@hey-api/sdk',
       validator: 'zod'

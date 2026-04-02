@@ -80,15 +80,15 @@ def test_list_thread_comments_returns_flat_comment_rows(client: Client, user):
     assert len(data) == 1
     row = data[0]
     assert row["body"] == "First comment"
-    assert row["thread_uuid"] == str(thread.uuid)
+    assert row["threadUuid"] == str(thread.uuid)
     assert "uuid" in row
-    assert "date_created" in row
-    assert "modified_on" in row
+    assert "dateCreated" in row
+    assert "modifiedOn" in row
     author = row["author"]
     assert author["uuid"] == str(user.uuid)
     assert author["email"] == user.email
-    assert "first_name" in author
-    assert "last_name" in author
+    assert "firstName" in author
+    assert "lastName" in author
 
 
 @pytest.mark.django_db

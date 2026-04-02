@@ -7,7 +7,7 @@ from course_flow_v2.api.schemas.library import (
     LibrarySearchOut,
 )
 
-router = Router(tags=["library"])
+router = Router(tags=["library"], by_alias=True)
 
 
 @router.post(

@@ -2,12 +2,10 @@
  * Maps CourseFlow v2 `POST /api/library/search` JSON to the legacy library
  * envelope expected by LibrarySearchView / Sidebar (`dataPackage` + `ELibraryObject`).
  */
-import { LibraryObjectType } from '@cf/types/enum'
+import {LibraryFilterIn, LibrarySearchIn} from '@cf/api/gen'
 import { ObjectPermission } from '@cf/types/common'
-import { FilterResult } from '@XMLHTTP/types/args'
+import { LibraryObjectType } from '@cf/types/enum'
 import { ELibraryObject, EUser } from '@XMLHTTP/types/entity'
-
-import type { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
 import type { LibraryObjectsSearchQueryResp } from '@XMLHTTP/types/query'
 
 /** Raw item from Django Ninja `LibraryItemOut` (snake_case JSON). */
@@ -45,7 +43,9 @@ const emptyAuthor = (): EUser => ({
   name: ''
 })
 
-function mapObjectTypeToLibraryObjectType(objectType: string): LibraryObjectType {
+function mapObjectTypeToLibraryObjectType(
+  objectType: string
+): LibraryObjectType {
   switch (objectType) {
     case 'project':
       return LibraryObjectType.PROJECT
@@ -66,9 +66,13 @@ function mapObjectTypeToLibraryObjectType(objectType: string): LibraryObjectType
  * Navigation id: project UUID for projects; workflow UUID for unit-backed rows
  * (matches `useNavigateToLibraryItem` + workflow routes).
  */
-export function mapV2LibraryItemToELibraryObject(item: V2LibraryItemRaw): ELibraryObject {
+export function mapV2LibraryItemToELibraryObject(
+  item: V2LibraryItemRaw
+): ELibraryObject {
   const isProject = item.object_type === 'project'
-  const id = isProject ? String(item.uuid ?? '') : String(item.workflow_uuid ?? '')
+  const id = isProject
+    ? String(item.uuid ?? '')
+    : String(item.workflow_uuid ?? '')
 
   return {
     id,
@@ -97,11 +101,13 @@ export function mapV2LibraryItemToELibraryObject(item: V2LibraryItemRaw): ELibra
 }
 
 /** Legacy Favourites page used `{ name: 'type', value: 'favourited' }`; v2 expects `favourited: true`. */
-export function normalizeLibraryFiltersForV2(filters: FilterResult | undefined): FilterResult {
+export function normalizeLibraryFiltersForV2(
+  filters: LibraryFilterIn[] | undefined
+): LibraryFilterIn[] {
   if (!filters?.length) {
     return []
   }
-  const out: FilterResult = []
+  const out: LibraryFilterIn[] = []
   for (const f of filters) {
     if (f.name === 'type' && f.value === 'favourited') {
       out.push({ name: 'favourited', value: true })
@@ -113,7 +119,7 @@ export function normalizeLibraryFiltersForV2(filters: FilterResult | undefined):
 }
 
 export function buildV2LibrarySearchRequestBody(
-  args: LibraryObjectsSearchQueryArgs | Record<string, never>
+  args: LibrarySearchIn | Record<string, never>
 ): Record<string, unknown> {
   const pagination = args.pagination ?? { page: 0 }
   const sort = args.sort ?? undefined

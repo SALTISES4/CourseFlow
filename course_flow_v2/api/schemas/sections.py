@@ -1,29 +1,29 @@
 from datetime import datetime
 from uuid import UUID
 
-from ninja import Schema
+from course_flow_v2.api.common.schemas import CamelSchema
 
 
-class SectionCreateIn(Schema):
+class SectionCreateIn(CamelSchema):
     workflow_uuid: UUID
     title: str
     position: int = 0
     thread_uuid: UUID | None = None
 
 
-class WorkflowSectionCreateIn(Schema):
+class WorkflowSectionCreateIn(CamelSchema):
     title: str
     position: int = 0
     thread_uuid: UUID | None = None
 
 
-class SectionPatchIn(Schema):
+class SectionPatchIn(CamelSchema):
     title: str | None = None
     position: int | None = None
     thread_uuid: UUID | None = None
 
 
-class SectionOut(Schema):
+class SectionOut(CamelSchema):
     uuid: UUID
     workflow_uuid: UUID
     title: str
@@ -33,14 +33,14 @@ class SectionOut(Schema):
     modified_on: datetime
 
 
-class SectionOutResp(Schema):
+class SectionOutResp(CamelSchema):
     item: SectionOut
 
 
-class SectionListMetaOut(Schema):
+class SectionListMetaOut(CamelSchema):
     total: int
 
 
-class SectionListOut(Schema):
+class SectionListOut(CamelSchema):
     items: list[SectionOut]
     meta: SectionListMetaOut

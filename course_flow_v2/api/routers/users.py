@@ -16,7 +16,7 @@ from course_flow_v2.api.schemas.users import (
 )
 from course_flow_v2.core.models import User
 
-router = Router(tags=["users"])
+router = Router(tags=["users"], by_alias=True)
 
 
 def _user_list_item_out(user: User) -> UserListItemOut:

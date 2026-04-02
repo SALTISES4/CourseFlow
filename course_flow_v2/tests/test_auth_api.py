@@ -54,7 +54,7 @@ def test_login_returns_raw_token_and_stores_hash_only(client: Client, user):
     )
     assert response.status_code == 200
     payload = response.json()
-    raw_token = payload["access_token"]
+    raw_token = payload["accessToken"]
     assert raw_token
 
     token_row = AuthToken.objects.get(user=user)
@@ -69,25 +69,25 @@ def test_register_creates_user_and_returns_usable_token(client: Client):
         data={
             "email": "  NewUser@example.com  ",
             "password": "password123",
-            "first_name": "  New  ",
-            "last_name": "  User  ",
+            "firstName": "  New  ",
+            "lastName": "  User  ",
         },
         content_type="application/json",
     )
     assert response.status_code == 200
     body = response.json()
-    assert body["access_token"]
-    assert body["token_type"] == "Bearer"
+    assert body["accessToken"]
+    assert body["tokenType"] == "Bearer"
     assert body["user"]["email"] == "NewUser@example.com"
-    assert body["user"]["first_name"] == "New"
-    assert body["user"]["last_name"] == "User"
+    assert body["user"]["firstName"] == "New"
+    assert body["user"]["lastName"] == "User"
 
     user_model = get_user_model()
     db_user = user_model.objects.get(email="NewUser@example.com")
     assert db_user.password != "password123"
     assert db_user.check_password("password123")
 
-    me_response = client.get("/api/auth/me", **_auth_header(body["access_token"]))
+    me_response = client.get("/api/auth/me", **_auth_header(body["accessToken"]))
     assert me_response.status_code == 200
     assert me_response.json()["item"]["uuid"] == str(db_user.uuid)
 
@@ -99,8 +99,8 @@ def test_register_rejects_duplicate_email(client: Client, user):
         data={
             "email": user.email,
             "password": "password123",
-            "first_name": "Alex",
-            "last_name": "Dray",
+            "firstName": "Alex",
+            "lastName": "Dray",
         },
         content_type="application/json",
     )
@@ -115,8 +115,8 @@ def test_register_requires_all_fields(client: Client):
         data={
             "email": "new@example.com",
             "password": "",
-            "first_name": "Alex",
-            "last_name": "Dray",
+            "firstName": "Alex",
+            "lastName": "Dray",
         },
         content_type="application/json",
     )
@@ -175,11 +175,10 @@ def test_create_project_uses_authenticated_user_for_owner(
 ):
     raw_token, _ = _issue_token_for(user)
     payload = {
-        "owner_id": other_user.id,
         "title": "Secured Project",
         "description": "created by auth context",
-        "is_published": False,
-        "is_template": False,
+        "isPublished": False,
+        "isTemplate": False,
     }
 
     response = client.post(
@@ -190,7 +189,7 @@ def test_create_project_uses_authenticated_user_for_owner(
     )
     assert response.status_code == 200
     body = response.json()
-    assert body["owner_id"] == user.id
+    assert body["ownerId"] == user.id
     project = Project.objects.get(uuid=body["uuid"])
     assert project.owner_id == user.id
     assert project.owner_id != other_user.id

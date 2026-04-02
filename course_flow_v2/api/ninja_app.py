@@ -1,5 +1,6 @@
-from ninja import NinjaAPI, Schema
+from ninja import NinjaAPI, Router
 
+from course_flow_v2.api.common.schemas import CamelSchema
 from course_flow_v2.api.routers import (
     auth,
     channels,
@@ -25,6 +26,7 @@ api = NinjaAPI(
     ),
     docs_url="/docs",
     openapi_url="/openapi.json",
+    default_router=Router(by_alias=True),
 )
 
 api.add_router("/project", projects.router)
@@ -44,7 +46,7 @@ api.add_router("/user", notifications.router)
 api.add_router("/library", library.router)
 
 
-class HealthResponse(Schema):
+class HealthResponse(CamelSchema):
     status: str
 
 

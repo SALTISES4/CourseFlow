@@ -130,7 +130,7 @@ def test_stranger_sees_no_items_for_others_project(client: Client, user, strange
     )
     raw_stranger = _issue_token_for(stranger)
     body = _post_search(client, raw_stranger, {})
-    assert body["meta"]["total_results"] == 0
+    assert body["meta"]["totalResults"] == 0
     assert body["items"] == []
 
 
@@ -155,13 +155,13 @@ def test_owner_sees_own_project_and_child_unit_backed_items(client: Client, user
         unit_type=Unit.UnitType.TASK,
     )
     body = _post_search(client, raw, {})
-    assert body["meta"]["total_results"] == 3
-    types = {row["object_type"] for row in body["items"]}
+    assert body["meta"]["totalResults"] == 3
+    types = {row["objectType"] for row in body["items"]}
     assert types == {"project", "course", "task"}
-    proj_row = next(r for r in body["items"] if r["object_type"] == "project")
+    proj_row = next(r for r in body["items"] if r["objectType"] == "project")
     assert proj_row["uuid"] == str(project.uuid)
-    assert proj_row["project_uuid"] == str(project.uuid)
-    wf_uuids = {r["workflow_uuid"] for r in body["items"] if r["object_type"] != "project"}
+    assert proj_row["projectUuid"] == str(project.uuid)
+    wf_uuids = {r["workflowUuid"] for r in body["items"] if r["objectType"] != "project"}
     assert wf_uuids == {str(wf_course.uuid), str(wf_task.uuid)}
 
 
@@ -183,12 +183,12 @@ def test_team_member_sees_project_and_child_unit_backed_items(
         unit_type=Unit.UnitType.PROGRAM,
     )
     body = _post_search(client, raw_member, {})
-    assert body["meta"]["total_results"] == 2
-    assert {r["object_type"] for r in body["items"]} == {"project", "program"}
-    p_row = next(r for r in body["items"] if r["object_type"] == "project")
+    assert body["meta"]["totalResults"] == 2
+    assert {r["objectType"] for r in body["items"]} == {"project", "program"}
+    p_row = next(r for r in body["items"] if r["objectType"] == "project")
     assert p_row["uuid"] == str(project.uuid)
-    u_row = next(r for r in body["items"] if r["object_type"] == "program")
-    assert u_row["workflow_uuid"] == str(wf.uuid)
+    u_row = next(r for r in body["items"] if r["objectType"] == "program")
+    assert u_row["workflowUuid"] == str(wf.uuid)
     assert u_row["title"] == "Unit X"
     assert u_row["description"] == "desc"
 
@@ -205,7 +205,7 @@ def test_workflow_without_project_not_listed_even_for_owner(client: Client, user
         unit_type=Unit.UnitType.COURSE,
     )
     body = _post_search(client, raw, {})
-    assert body["meta"]["total_results"] == 0
+    assert body["meta"]["totalResults"] == 0
 
 
 # --- filters: workspaceType -------------------------------------------------
@@ -227,8 +227,8 @@ def test_workspace_type_project_returns_only_projects(client: Client, user):
         raw,
         {"filters": [{"name": "workspaceType", "value": "project"}]},
     )
-    assert body["meta"]["total_results"] == 1
-    assert body["items"][0]["object_type"] == "project"
+    assert body["meta"]["totalResults"] == 1
+    assert body["items"][0]["objectType"] == "project"
 
 
 @pytest.mark.parametrize(
@@ -265,9 +265,9 @@ def test_workspace_type_unit_filters_to_that_type_only(
         raw,
         {"filters": [{"name": "workspaceType", "value": workspace_value}]},
     )
-    assert body["meta"]["total_results"] == 1
-    assert body["items"][0]["workflow_uuid"] == str(target.uuid)
-    assert body["items"][0]["object_type"] == workspace_value
+    assert body["meta"]["totalResults"] == 1
+    assert body["items"][0]["workflowUuid"] == str(target.uuid)
+    assert body["items"][0]["objectType"] == workspace_value
 
 
 # --- filters: project, discipline, isTemplate, keyword ---------------------
@@ -289,9 +289,9 @@ def test_project_filter_limits_projects_and_workflows(client: Client, user):
         raw,
         {"filters": [{"name": "project", "value": str(p_keep.uuid)}]},
     )
-    assert body["meta"]["total_results"] == 2
-    uuids = {body["items"][i]["uuid"] for i in range(2) if body["items"][i]["object_type"] == "project"}
-    wf_ids = {body["items"][i]["workflow_uuid"] for i in range(2) if body["items"][i]["object_type"] != "project"}
+    assert body["meta"]["totalResults"] == 2
+    uuids = {body["items"][i]["uuid"] for i in range(2) if body["items"][i]["objectType"] == "project"}
+    wf_ids = {body["items"][i]["workflowUuid"] for i in range(2) if body["items"][i]["objectType"] != "project"}
     assert str(p_keep.uuid) in uuids
     assert wf_ids == {str(wf_keep.uuid)}
 
@@ -319,13 +319,13 @@ def test_discipline_filter_applies_via_parent_project(client: Client, user):
         raw,
         {"filters": [{"name": "discipline", "value": [d_match.id]}]},
     )
-    assert body["meta"]["total_results"] == 2
-    assert {r["project_uuid"] for r in body["items"]} == {str(p_ok.uuid)}
-    assert any(r["workflow_uuid"] == str(wf_ok.uuid) for r in body["items"])
+    assert body["meta"]["totalResults"] == 2
+    assert {r["projectUuid"] for r in body["items"]} == {str(p_ok.uuid)}
+    assert any(r["workflowUuid"] == str(wf_ok.uuid) for r in body["items"])
 
 
 @pytest.mark.django_db
-def test_is_template_filter_projects_and_unit_rows(client: Client, user):
+def test_isTemplate_filter_projects_and_unit_rows(client: Client, user):
     raw = _issue_token_for(user)
     p_t = Project.objects.create(owner=user, title="T", description="", is_template=True)
     p_f = Project.objects.create(owner=user, title="F", description="", is_template=False)
@@ -340,9 +340,9 @@ def test_is_template_filter_projects_and_unit_rows(client: Client, user):
         raw,
         {"filters": [{"name": "isTemplate", "value": True}]},
     )
-    assert body["meta"]["total_results"] == 2
-    assert all(r["is_template"] is True for r in body["items"])
-    assert {r["uuid"] for r in body["items"] if r["object_type"] == "project"} == {str(p_t.uuid)}
+    assert body["meta"]["totalResults"] == 2
+    assert all(r["isTemplate"] is True for r in body["items"])
+    assert {r["uuid"] for r in body["items"] if r["objectType"] == "project"} == {str(p_t.uuid)}
 
 
 @pytest.mark.django_db
@@ -358,8 +358,8 @@ def test_keyword_matches_project_title(client: Client, user):
         unit_type=Unit.UnitType.COURSE,
     )
     body = _post_search(client, raw, {"filters": [{"name": "keyword", "value": "Alpine"}]})
-    assert body["meta"]["total_results"] == 1
-    assert body["items"][0]["object_type"] == "project"
+    assert body["meta"]["totalResults"] == 1
+    assert body["items"][0]["objectType"] == "project"
     assert "Alpine" in body["items"][0]["title"]
 
 
@@ -376,8 +376,8 @@ def test_keyword_matches_project_description(client: Client, user):
         unit_type=Unit.UnitType.COURSE,
     )
     body = _post_search(client, raw, {"filters": [{"name": "keyword", "value": "ridge"}]})
-    assert body["meta"]["total_results"] == 1
-    assert body["items"][0]["object_type"] == "project"
+    assert body["meta"]["totalResults"] == 1
+    assert body["items"][0]["objectType"] == "project"
     assert "ridge" in body["items"][0]["description"].lower()
 
 
@@ -394,9 +394,9 @@ def test_keyword_matches_unit_title(client: Client, user):
         unit_type=Unit.UnitType.COURSE,
     )
     body = _post_search(client, raw, {"filters": [{"name": "keyword", "value": "Moss"}]})
-    assert body["meta"]["total_results"] == 1
-    assert body["items"][0]["object_type"] == "course"
-    assert body["items"][0]["workflow_uuid"] == str(wf.uuid)
+    assert body["meta"]["totalResults"] == 1
+    assert body["items"][0]["objectType"] == "course"
+    assert body["items"][0]["workflowUuid"] == str(wf.uuid)
     assert "Moss" in body["items"][0]["title"]
 
 
@@ -413,8 +413,8 @@ def test_keyword_matches_unit_description(client: Client, user):
         unit_type=Unit.UnitType.COURSE,
     )
     body = _post_search(client, raw, {"filters": [{"name": "keyword", "value": "peat"}]})
-    assert body["meta"]["total_results"] == 1
-    assert body["items"][0]["workflow_uuid"] == str(wf.uuid)
+    assert body["meta"]["totalResults"] == 1
+    assert body["items"][0]["workflowUuid"] == str(wf.uuid)
     assert "peat" in body["items"][0]["description"].lower()
 
 
@@ -431,8 +431,8 @@ def test_keyword_matches_workflow_title(client: Client, user):
         unit_type=Unit.UnitType.COURSE,
     )
     body = _post_search(client, raw, {"filters": [{"name": "keyword", "value": "GraphLabel"}]})
-    assert body["meta"]["total_results"] == 1
-    assert body["items"][0]["workflow_uuid"] == str(wf.uuid)
+    assert body["meta"]["totalResults"] == 1
+    assert body["items"][0]["workflowUuid"] == str(wf.uuid)
 
 
 # --- favorites --------------------------------------------------------------
@@ -454,7 +454,7 @@ def test_favourited_true_returns_only_favorited_rows(client: Client, user):
             ]
         },
     )
-    assert body["meta"]["total_results"] == 1
+    assert body["meta"]["totalResults"] == 1
     assert body["items"][0]["uuid"] == str(p1.uuid)
 
 
@@ -474,19 +474,19 @@ def test_project_favorite_and_workflow_favorite_are_independent_relations(
     FavoriteProject.objects.create(user=user, project=project)
 
     body = _post_search(client, raw, {})
-    p_row = next(r for r in body["items"] if r["object_type"] == "project")
-    u_row = next(r for r in body["items"] if r["object_type"] == "activity")
-    assert p_row["is_favorite"] is True
-    assert u_row["is_favorite"] is False
+    p_row = next(r for r in body["items"] if r["objectType"] == "project")
+    u_row = next(r for r in body["items"] if r["objectType"] == "activity")
+    assert p_row["isFavorite"] is True
+    assert u_row["isFavorite"] is False
 
     FavoriteProject.objects.filter(user=user, project=project).delete()
     FavoriteWorkflow.objects.create(user=user, workflow=wf)
 
     body2 = _post_search(client, raw, {})
-    p_row2 = next(r for r in body2["items"] if r["object_type"] == "project")
-    u_row2 = next(r for r in body2["items"] if r["object_type"] == "activity")
-    assert p_row2["is_favorite"] is False
-    assert u_row2["is_favorite"] is True
+    p_row2 = next(r for r in body2["items"] if r["objectType"] == "project")
+    u_row2 = next(r for r in body2["items"] if r["objectType"] == "activity")
+    assert p_row2["isFavorite"] is False
+    assert u_row2["isFavorite"] is True
 
 
 # --- pagination meta --------------------------------------------------------
@@ -508,20 +508,20 @@ def test_pagination_metadata_total_page_count_and_slice(client: Client, user):
     body = _post_search(
         client,
         raw,
-        {"pagination": {"page": 0, "results_per_page": 2}},
+        {"pagination": {"page": 0, "resultsPerPage": 2}},
     )
-    assert body["meta"]["total_results"] == 5
-    assert body["meta"]["page_count"] == 3
-    assert body["meta"]["current_page"] == 0
-    assert body["meta"]["results_per_page"] == 2
+    assert body["meta"]["totalResults"] == 5
+    assert body["meta"]["pageCount"] == 3
+    assert body["meta"]["currentPage"] == 0
+    assert body["meta"]["resultsPerPage"] == 2
     assert len(body["items"]) == 2
 
     last = _post_search(
         client,
         raw,
-        {"pagination": {"page": 2, "results_per_page": 2}},
+        {"pagination": {"page": 2, "resultsPerPage": 2}},
     )
-    assert last["meta"]["current_page"] == 2
+    assert last["meta"]["currentPage"] == 2
     assert len(last["items"]) == 1
 
 
@@ -617,23 +617,23 @@ def test_library_search_returns_accessible_project_and_unit_backed_items(client:
 
     body = _post_search(client, raw, {})
     assert set(body.keys()) == {"items", "meta"}
-    assert body["meta"]["total_results"] == 2
+    assert body["meta"]["totalResults"] == 2
 
-    project_row = next(row for row in body["items"] if row["object_type"] == "project")
+    project_row = next(row for row in body["items"] if row["objectType"] == "project")
     assert project_row["uuid"] == str(project.uuid)
     assert project_row["title"] == "Biology Project"
     assert project_row["description"] == "Project description"
-    assert project_row["is_template"] is True
-    assert project_row["is_favorite"] is True
+    assert project_row["isTemplate"] is True
+    assert project_row["isFavorite"] is True
 
-    unit_row = next(row for row in body["items"] if row["object_type"] == "activity")
-    assert unit_row["workflow_uuid"] == str(workflow.uuid)
-    assert unit_row["project_uuid"] == str(project.uuid)
-    assert unit_row["unit_uuid"] == str(workflow.unit.uuid)
+    unit_row = next(row for row in body["items"] if row["objectType"] == "activity")
+    assert unit_row["workflowUuid"] == str(workflow.uuid)
+    assert unit_row["projectUuid"] == str(project.uuid)
+    assert unit_row["unitUuid"] == str(workflow.unit.uuid)
     assert unit_row["title"] == "Biology Unit"
     assert unit_row["description"] == "Unit description"
-    assert unit_row["is_template"] is True
-    assert unit_row["is_favorite"] is True
+    assert unit_row["isTemplate"] is True
+    assert unit_row["isFavorite"] is True
 
 
 @pytest.mark.django_db
@@ -690,13 +690,13 @@ def test_library_search_applies_filters_including_favourited(client: Client, use
             ]
         },
     )
-    assert body["meta"]["total_results"] == 1
+    assert body["meta"]["totalResults"] == 1
     assert len(body["items"]) == 1
     row = body["items"][0]
-    assert row["object_type"] == "task"
-    assert row["workflow_uuid"] == str(wf_owned.uuid)
+    assert row["objectType"] == "task"
+    assert row["workflowUuid"] == str(wf_owned.uuid)
     assert row["title"] == "Chemistry Task"
-    assert row["is_favorite"] is True
+    assert row["isFavorite"] is True
 
 
 @pytest.mark.django_db
@@ -726,13 +726,13 @@ def test_library_search_supports_sorting_and_pagination(client: Client, user):
         {
             "filters": [{"name": "workspaceType", "value": "course"}],
             "sort": {"value": "A_Z", "direction": "ASC"},
-            "pagination": {"page": 0, "results_per_page": 1},
+            "pagination": {"page": 0, "resultsPerPage": 1},
         },
     )
-    assert body["meta"]["total_results"] == 2
-    assert body["meta"]["page_count"] == 2
-    assert body["meta"]["current_page"] == 0
-    assert body["meta"]["results_per_page"] == 1
+    assert body["meta"]["totalResults"] == 2
+    assert body["meta"]["pageCount"] == 2
+    assert body["meta"]["currentPage"] == 0
+    assert body["meta"]["resultsPerPage"] == 1
     assert len(body["items"]) == 1
     assert body["items"][0]["title"] == "Alpha"
 
@@ -746,5 +746,5 @@ def test_project_filter_rejects_invalid_uuid_returns_empty(client: Client, user)
         raw,
         {"filters": [{"name": "project", "value": str(uuid4())}]},
     )
-    assert body["meta"]["total_results"] == 0
+    assert body["meta"]["totalResults"] == 0
     assert body["items"] == []

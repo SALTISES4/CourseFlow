@@ -5,17 +5,17 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID
 
-from ninja import Schema
+from course_flow_v2.api.common.schemas import CamelSchema
 
 
-class CommentAuthorOut(Schema):
+class CommentAuthorOut(CamelSchema):
     uuid: UUID
     email: str
     first_name: str
     last_name: str
 
 
-class CommentOut(Schema):
+class CommentOut(CamelSchema):
     uuid: UUID
     thread_uuid: UUID
     body: str

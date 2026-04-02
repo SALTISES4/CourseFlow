@@ -1,29 +1,29 @@
 from datetime import datetime
 from uuid import UUID
 
-from ninja import Schema
+from course_flow_v2.api.common.schemas import CamelSchema
 
 
-class ChannelCreateIn(Schema):
+class ChannelCreateIn(CamelSchema):
     workflow_uuid: UUID
     title: str
     position: int = 0
     thread_uuid: UUID | None = None
 
 
-class WorkflowChannelCreateIn(Schema):
+class WorkflowChannelCreateIn(CamelSchema):
     title: str
     position: int = 0
     thread_uuid: UUID | None = None
 
 
-class ChannelPatchIn(Schema):
+class ChannelPatchIn(CamelSchema):
     title: str | None = None
     position: int | None = None
     thread_uuid: UUID | None = None
 
 
-class ChannelOut(Schema):
+class ChannelOut(CamelSchema):
     uuid: UUID
     workflow_uuid: UUID
     title: str
@@ -33,14 +33,14 @@ class ChannelOut(Schema):
     modified_on: datetime
 
 
-class ChannelOutResp(Schema):
+class ChannelOutResp(CamelSchema):
     item: ChannelOut
 
 
-class ChannelListMetaOut(Schema):
+class ChannelListMetaOut(CamelSchema):
     total: int
 
 
-class ChannelListOut(Schema):
+class ChannelListOut(CamelSchema):
     items: list[ChannelOut]
     meta: ChannelListMetaOut
