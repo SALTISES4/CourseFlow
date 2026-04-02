@@ -6,6 +6,7 @@ from course_flow_v2.api.routers import (
     edges,
     library,
     nodes,
+    notifications,
     projects,
     sections,
     threads,
@@ -39,6 +40,7 @@ api.add_router("/edge", edges.edge_resource_router)
 api.add_router("/thread", threads.router)
 api.add_router("/auth", auth.router)
 api.add_router("/user", users.router)
+api.add_router("/user", notifications.router)
 api.add_router("/library", library.router)
 
 

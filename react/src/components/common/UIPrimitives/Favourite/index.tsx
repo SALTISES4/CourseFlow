@@ -2,7 +2,6 @@ import { LibraryObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import StarIcon from '@mui/icons-material/Star'
 import IconButton from '@mui/material/IconButton'
-import { useToggleFavouriteMutation } from '@XMLHTTP/API/library.rtk'
 import { enqueueSnackbar } from 'notistack'
 import { MouseEvent, useCallback, useEffect, useState } from 'react'
 

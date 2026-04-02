@@ -126,7 +126,7 @@ We will replace the graph/editor state model with a new RTK architecture based o
 - explicit mutation flows
 - backend-authoritative delta application
 
-RTK Query may be used for transport/fetching where useful, but the graph editor will not be modeled primarily as a query cache.
+**Server-state and HTTP transport (settled policy):** ordinary pages use **TanStack Query** with types and clients generated from OpenAPI via **Hey API** (fetch-based SDK). The graph editor uses **generated SDK / fetch functions** for imperative bootstrap and mutations; **TanStack Query is not** the canonical store for graph/editor domain state. **Redux normalized slices** remain the source of truth for the graph; the graph is not modeled primarily as a query cache. See `docs/architecture/openapi_and_client_workflow.md` and `docs/architecture/adr_frontend_api_client.md`.
 
 ### 2.3 Legacy graph slices are not the migration target
 
@@ -720,6 +720,10 @@ We are not adopting Apollo Server or GraphQL at this time.
 * GraphQL would not remove the need for commands, deltas, revisions, or collaboration policy
 * it adds architecture surface area at the wrong stage
 * conventional HTTP endpoints are sufficient and lower risk
+
+### Decision: Hey API + Fetch + TanStack Query for non-graph server-state
+
+OpenAPI generated from Django Ninja is the contract input. **Hey API** generates TypeScript types, a **fetch** client/SDK, and **TanStack Query** integration for conventional server-state. **RTK Query** is not the strategic codegen or default server-state layer for new work. Graph/editor flows use the **generated fetch/SDK** with **Redux** as canonical graph state, not TanStack Query as the graph cache. Full rationale: `docs/architecture/adr_frontend_api_client.md`.
 
 ---
 

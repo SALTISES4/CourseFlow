@@ -16,8 +16,13 @@ class NotificationItemOutResp(Schema):
 
 
 class NotificationListMetaOut(Schema):
+    """List metadata for a paginated inbox (``page`` and ``current_page`` are 1-based)."""
+
     total: int
     unread_count: int
+    total_pages: int
+    current_page: int
+    page_size: int
 
 
 class NotificationListOut(Schema):

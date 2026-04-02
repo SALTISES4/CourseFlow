@@ -2,7 +2,6 @@ import { NumTuple } from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
-import { LanguageOptions } from '@XMLHTTP/API/user.rtk'
 
 /*
 Determines how long an action locks an object
@@ -182,52 +181,6 @@ export const defaultDropState = {
  * FUNCTIONS
  *******************************************************/
 
-/**
- * this should be simplified
- **/
-export const getLabelForCfObject = function ({
-  objectType
-}: {
-  objectType: CfObjectType
-}) {
-  return String(objectType)
-  // switch (objectType) {
-  //   case CfObjectType.NODE:
-  //     return data.nodeTypeDisplay
-  //
-  //   case CfObjectType.WORKFLOW:
-  //     return {
-  //       activity: _t('Activity'),
-  //       course: _t('Course'),
-  //       program: _t('Program'),
-  //       workflow: _t('Workflow')
-  //     }[data.type]
-  //
-  //   case CfObjectType.WEEK:
-  //     return data.weekTypeDisplay
-  // }
-  // return {
-  //   outcomeBase: _t('Outcome'),
-  //   nodelink: _t('Node Link'),
-  //   outcome: _t('Outcome'),
-  //   column: _t('Column'),
-  //   project: _t('Project'),
-  //   outcomehorizontallink: _t('Association to the parent outcome'),
-  //   outcomenode: _t('Association to the outcome')
-  // }[objectType]
-}
-
-export const getDefaultDropState = (objectId, objectType, depth = 1) => {
-  let defaultDrop = defaultDropState[objectType]
-  if (objectType === 'outcome') {
-    if (depth < defaultDrop.length) {
-      defaultDrop = defaultDrop[depth]
-    } else {
-      defaultDrop = false
-    }
-  }
-  return defaultDrop
-}
 
 /**
  * get all possible object sets

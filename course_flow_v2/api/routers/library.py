@@ -10,7 +10,12 @@ from course_flow_v2.api.schemas.library import (
 router = Router(tags=["library"])
 
 
-@router.post("/search", response=LibrarySearchOut, auth=BearerAuth())
+@router.post(
+    "/search",
+    response=LibrarySearchOut,
+    auth=BearerAuth(),
+    operation_id="searchLibrary",
+)
 def search_library(request, payload: LibrarySearchIn):
     current_user = get_current_user(request)
     svc = get_library_service()

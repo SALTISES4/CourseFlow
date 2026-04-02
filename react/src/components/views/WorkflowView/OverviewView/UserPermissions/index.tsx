@@ -11,10 +11,6 @@ import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
-import {
-  useGetUsersForObjectQuery,
-  useWorkspaceUserUpdateMutation
-} from '@XMLHTTP/API/workspaceUser.rtk'
 import { EUser } from '@XMLHTTP/types/entity'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { useCallback } from 'react'

@@ -1,11 +1,6 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { CFRoutes } from '@cf/router/appRoutes'
-import {
-  useCreateProjectMutation,
-  useDuplicateProjectMutation
-} from '@XMLHTTP/API/project.rtk'
-import { enqueueSnackbar } from 'notistack'
 import { generatePath, useNavigate } from 'react-router-dom'
 
 export const useMenuActions = () => {

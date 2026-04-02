@@ -153,6 +153,10 @@ Additional packages should be added only for a concrete need.
 
 API documentation and the machine-readable OpenAPI document are **generated** from Django Ninja routes and Ninja Schemas. Workflow and export expectations are described in [openapi_and_client_workflow.md](openapi_and_client_workflow.md).
 
+## Frontend client and server-state (React)
+
+The React app standardizes on **OpenAPI as input** to **Hey API**, which emits **TypeScript types**, a **fetch-based** client/SDK, and **TanStack Query** option helpers. **TanStack Query** is the strategic layer for **ordinary server-state**; the **workflow graph/editor** continues to use **generated plain fetch/SDK calls** for imperative flows while **normalized Redux slices** hold canonical graph state (not a query-cache-centric model). **RTK Query** is not the preferred long-term codegen or server-state stack for new work. Policy and anti-patterns: [openapi_and_client_workflow.md](openapi_and_client_workflow.md), [adr_frontend_api_client.md](adr_frontend_api_client.md).
+
 ## Stack Rules
 
 - do not introduce extra frameworks without explicit need

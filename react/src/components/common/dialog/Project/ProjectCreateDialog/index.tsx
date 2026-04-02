@@ -1,10 +1,11 @@
+import { createProjectMutation } from '@cf/api/gen/@tanstack/react-query.gen'
 import * as SC from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
 import ProjectForm, {
   ProjectFormValues
 } from '@cfComponents/dialog/Project/components/ProjectForm'
-import { useCreateProjectMutation } from '@XMLHTTP/API/project.rtk'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
 import { generatePath, useNavigate } from 'react-router-dom'
 
@@ -30,8 +31,16 @@ const ProjectCreateDialog = () => {
   /*******************************************************
    * QUERY HOOK
    *******************************************************/
-  const [mutate, { isSuccess, isError, error, data: updateData }] =
-    useCreateProjectMutation()
+  const queryClient = useQueryClient()
+
+  const createProject = useMutation({
+    ...createProjectMutation(),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['getMyProjects']
+      })
+    }
+  })
 
   function onSuccess(id: string) {
     const path = generatePath(CFRoutes.PROJECT, {
@@ -59,10 +68,11 @@ const ProjectCreateDialog = () => {
    *******************************************************/
   const onSubmit = async (data: ProjectFormValues) => {
     try {
-      const response = await mutate({
+      const response = await createProject.mutateAsync({
         ...data,
         disciplines: data.disciplines.map((item) => Number(item))
-      }).unwrap()
+      })
+
       onSuccess(String(response.uuid))
     } catch (err) {
       onError(err)

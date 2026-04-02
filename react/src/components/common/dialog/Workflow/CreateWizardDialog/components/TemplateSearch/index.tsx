@@ -7,7 +7,6 @@ import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { debounce } from '@mui/material/utils'
-import { useLibraryObjectsSearchQuery } from '@XMLHTTP/API/library.rtk'
 import { ChangeEvent } from 'react'
 
 type PropsType = {

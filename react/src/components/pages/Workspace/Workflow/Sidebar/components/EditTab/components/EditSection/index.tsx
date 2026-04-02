@@ -4,7 +4,6 @@ import { selectWeekById } from '@cf/redux/selectors/week.selector'
 import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
 import { weekInsertBelow } from '@cf/redux/slices/week.slice'
 import { TWeek } from '@cf/redux/types/type'
-import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { weekChangeField } from '@cfRedux/slices/week.slice'
 import { RootState } from '@cfRedux/store'
@@ -12,7 +11,6 @@ import * as SC from '@cfSidebar/styles'
 import { debounce } from '@mui/material'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
-import { updateValueQuery } from '@XMLHTTP/API/update'
 import { produce } from 'immer'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -83,7 +81,7 @@ const EditSectionForm = ({ week }: { week: TWeek }) => {
           })
         )
 
-        updateValueQuery(week.id, CfObjectType.WEEK, data, true)
+        // updateValueQuery(week.id, CfObjectType.WEEK, data, true)
 
         reset({}, { keepValues: true })
       }, 300),

@@ -45,9 +45,9 @@ def _node_graph_out(n: Node) -> NodeGraphOut:
     )
 
 
-def _ensure_workflow_owner(workflow_uuid: UUID, current_user) -> None:
+def _ensure_workflow_owner(uuid: UUID, current_user) -> None:
     svc = get_workflow_service()
-    dto = svc.get_by_uuid(workflow_uuid)
+    dto = svc.get_by_uuid(uuid)
     if dto is None:
         raise HttpError(404, "Workflow not found")
     if not can_view_workflow(current_user=current_user, workflow=dto):
@@ -55,29 +55,31 @@ def _ensure_workflow_owner(workflow_uuid: UUID, current_user) -> None:
 
 
 @workflow_collection_router.get(
-    "/{workflow_uuid}/nodes",
+    "/{uuid}/nodes",
     response=list[NodeGraphOut],
     auth=BearerAuth(),
+    operation_id="listWorkflowNodes",
 )
-def list_workflow_nodes(request, workflow_uuid: UUID):
+def list_workflow_nodes(request, uuid: UUID):
     current_user = get_current_user(request)
-    _ensure_workflow_owner(workflow_uuid, current_user)
-    proj = get_workflow_graph_projection_service().get_by_workflow_uuid(workflow_uuid)
+    _ensure_workflow_owner(uuid, current_user)
+    proj = get_workflow_graph_projection_service().get_by_uuid(uuid)
     if proj is None:
         raise HttpError(404, "Workflow not found")
     return [NodeGraphOut.model_validate(x) for x in proj["nodes"]]
 
 
 @workflow_collection_router.post(
-    "/{workflow_uuid}/nodes",
+    "/{uuid}/nodes",
     response=GraphMutationEnvelopeOut,
     auth=BearerAuth(),
+    operation_id="createWorkflowNode",
 )
-def create_workflow_node(request, workflow_uuid: UUID, payload: GraphNodeCreateIn):
+def create_workflow_node(request, uuid: UUID, payload: GraphNodeCreateIn):
     current_user = get_current_user(request)
     svc = get_workflow_graph_mutation_service()
     out, err = svc.create_node(
-        workflow_uuid=workflow_uuid,
+        uuid=uuid,
         user_id=current_user.id,
         section_uuid=payload.section_uuid,
         channel_uuid=payload.channel_uuid,
@@ -87,14 +89,16 @@ def create_workflow_node(request, workflow_uuid: UUID, payload: GraphNodeCreateI
     return graph_mutation_http(out, err)
 
 
-@node_resource_router.get("/{node_uuid}", response=NodeGraphOut, auth=BearerAuth())
-def get_node(request, node_uuid: UUID):
+@node_resource_router.get(
+    "/{uuid}", response=NodeGraphOut, auth=BearerAuth(), operation_id="getNode"
+)
+def get_node(request, uuid: UUID):
     current_user = get_current_user(request)
     try:
         n = (
             Node.objects.select_related("section", "channel", "unit", "thread")
             .prefetch_related("outcomes")
-            .get(uuid=node_uuid)
+            .get(uuid=uuid)
         )
     except Node.DoesNotExist:
         raise HttpError(404, "Not found")
@@ -107,32 +111,34 @@ def get_node(request, node_uuid: UUID):
 
 
 @node_resource_router.patch(
-    "/{node_uuid}",
+    "/{uuid}",
     response=GraphMutationEnvelopeOut,
     auth=BearerAuth(),
+    operation_id="patchNode",
 )
-def patch_node(request, node_uuid: UUID, payload: GraphNodePatchIn):
+def patch_node(request, uuid: UUID, payload: GraphNodePatchIn):
     current_user = get_current_user(request)
     patch = payload.model_dump(exclude_unset=True)
     svc = get_workflow_graph_mutation_service()
     out, err = svc.update_node(
         user_id=current_user.id,
-        node_uuid=node_uuid,
+        node_uuid=uuid,
         patch=patch,
     )
     return graph_mutation_http(out, err)
 
 
 @node_resource_router.delete(
-    "/{node_uuid}",
+    "/{uuid}",
     response=GraphMutationEnvelopeOut,
     auth=BearerAuth(),
+    operation_id="deleteNode",
 )
-def delete_node(request, node_uuid: UUID):
+def delete_node(request, uuid: UUID):
     current_user = get_current_user(request)
     svc = get_workflow_graph_mutation_service()
     payload, err = svc.delete_node(
         user_id=current_user.id,
-        node_uuid=node_uuid,
+        node_uuid=uuid,
     )
     return graph_mutation_http(payload, err)

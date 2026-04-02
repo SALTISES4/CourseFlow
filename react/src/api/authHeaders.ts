@@ -1,8 +1,9 @@
 import { getAccessToken } from '@cf/api/authToken'
 
 /**
- * Headers for fetch/RTK that include JSON + optional Bearer token.
- * */
+ * Headers for manual `fetch` (graph commands, legacy XMLHTTP) — JSON + optional Bearer.
+ * The Hey API client uses the same token via `configureCourseFlowClient` + `client.setConfig({ auth })`.
+ */
 export function getAuthFetchHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json'

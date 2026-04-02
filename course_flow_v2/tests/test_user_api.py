@@ -179,8 +179,82 @@ def test_list_notifications_only_for_current_user_ordered_newest_first(
     body = response.json()
     assert body["meta"]["total"] == 2
     assert body["meta"]["unread_count"] == 1
+    assert body["meta"]["total_pages"] == 1
+    assert body["meta"]["current_page"] == 1
+    assert body["meta"]["page_size"] == 10
+    assert len(body["items"]) == 2
     assert body["items"][0]["uuid"] == str(newer.uuid)
     assert body["items"][1]["uuid"] == str(older.uuid)
+
+
+@pytest.mark.django_db
+def test_list_notifications_pagination_distinct_pages(client: Client, user):
+    raw_token = _issue_token_for(user)
+    for i in range(11):
+        Notification.objects.create(user=user, message=f"n{i}", is_read=False)
+    r1 = client.get(
+        "/api/user/me/notifications?page=1&page_size=10",
+        **_auth_header(raw_token),
+    )
+    assert r1.status_code == 200
+    b1 = r1.json()
+    assert b1["meta"]["total"] == 11
+    assert b1["meta"]["total_pages"] == 2
+    assert b1["meta"]["current_page"] == 1
+    assert b1["meta"]["page_size"] == 10
+    assert len(b1["items"]) == 10
+
+    r2 = client.get(
+        "/api/user/me/notifications?page=2&page_size=10",
+        **_auth_header(raw_token),
+    )
+    assert r2.status_code == 200
+    b2 = r2.json()
+    assert b2["meta"]["total"] == 11
+    assert b2["meta"]["total_pages"] == 2
+    assert b2["meta"]["current_page"] == 2
+    assert b2["meta"]["page_size"] == 10
+    assert len(b2["items"]) == 1
+
+    uuids_p1 = {row["uuid"] for row in b1["items"]}
+    uuids_p2 = {row["uuid"] for row in b2["items"]}
+    assert not uuids_p1.intersection(uuids_p2)
+
+
+@pytest.mark.django_db
+def test_list_notifications_page_beyond_last_is_clamped(client: Client, user):
+    raw_token = _issue_token_for(user)
+    Notification.objects.create(user=user, message="only", is_read=False)
+    response = client.get(
+        "/api/user/me/notifications?page=5&page_size=10",
+        **_auth_header(raw_token),
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["meta"]["total"] == 1
+    assert body["meta"]["total_pages"] == 1
+    assert body["meta"]["current_page"] == 1
+    assert len(body["items"]) == 1
+
+
+@pytest.mark.django_db
+def test_list_notifications_rejects_invalid_page(client: Client, user):
+    raw_token = _issue_token_for(user)
+    response = client.get(
+        "/api/user/me/notifications?page=0",
+        **_auth_header(raw_token),
+    )
+    assert response.status_code == 422
+
+
+@pytest.mark.django_db
+def test_list_notifications_rejects_oversized_page_size(client: Client, user):
+    raw_token = _issue_token_for(user)
+    response = client.get(
+        "/api/user/me/notifications?page=1&page_size=500",
+        **_auth_header(raw_token),
+    )
+    assert response.status_code == 422
 
 
 @pytest.mark.django_db
@@ -212,7 +286,7 @@ def test_mark_one_notification_as_read_already_read_noop(client: Client, user):
 
 
 @pytest.mark.django_db
-def test_mark_one_notification_as_read_cross_user_404(client: Client, user, other_user):
+def test_mark_one_notification_as_read_cross_user_forbidden(client: Client, user, other_user):
     raw_token = _issue_token_for(user)
     other_notification = Notification.objects.create(
         user=other_user, message="private", is_read=False
@@ -222,7 +296,7 @@ def test_mark_one_notification_as_read_cross_user_404(client: Client, user, othe
         content_type="application/json",
         **_auth_header(raw_token),
     )
-    assert response.status_code == 404
+    assert response.status_code == 403
 
 
 @pytest.mark.django_db
@@ -256,7 +330,7 @@ def test_delete_notification_for_current_user_returns_204(client: Client, user):
 
 
 @pytest.mark.django_db
-def test_delete_notification_cross_user_returns_404(client: Client, user, other_user):
+def test_delete_notification_cross_user_forbidden(client: Client, user, other_user):
     raw_token = _issue_token_for(user)
     notification = Notification.objects.create(
         user=other_user, message="do not delete", is_read=False
@@ -265,4 +339,10 @@ def test_delete_notification_cross_user_returns_404(client: Client, user, other_
         f"/api/user/me/notifications/{notification.uuid}",
         **_auth_header(raw_token),
     )
-    assert response.status_code == 404
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_list_notifications_unauthorized_rejected(client: Client):
+    response = client.get("/api/user/me/notifications")
+    assert response.status_code == 401

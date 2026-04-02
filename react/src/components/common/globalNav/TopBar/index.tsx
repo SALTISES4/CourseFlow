@@ -19,10 +19,14 @@ import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { useGetNotificationsQuery } from '@XMLHTTP/API/notifications.rtk'
+import { listMyNotificationsOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import { useQuery } from '@tanstack/react-query'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import * as SC from './styles'
+
+/** First page only; large enough for the dropdown preview without loading the full inbox. */
+const TOPBAR_NOTIFICATION_PREVIEW_PAGE_SIZE = 40
 
 const TopBar = () => {
   const navigate = useNavigate()
@@ -133,14 +137,18 @@ const TopBar = () => {
   }
 
   const NotificationsMenu = () => {
-    const { data, error, isLoading, isError } = useGetNotificationsQuery()
+    const { data, isLoading } = useQuery({
+      ...listMyNotificationsOptions({
+        query: { page: 1, page_size: TOPBAR_NOTIFICATION_PREVIEW_PAGE_SIZE }
+      })
+    })
 
     if (isLoading) {
       return <></>
     }
-    if (!data) {
-      return <></>
-    }
+
+    const items = data?.items ?? []
+    const unreadCount = data?.meta.unread_count ?? 0
 
     const content = (
       <>
@@ -156,9 +164,9 @@ const TopBar = () => {
         </SC.NotificationsHeader>
 
         <SC.NotificationsList>
-          {data.items.map((item, idx) => (
+          {items.map((item) => (
             <ListItem
-              key={idx}
+              key={String(item.uuid)}
               alignItems="flex-start"
               sx={{
                 backgroundColor: !item.is_read ? 'courseflow.lightest' : null
@@ -185,8 +193,6 @@ const TopBar = () => {
         </SC.NotificationsList>
       </>
     )
-
-    const unreadCount = data.meta.unread_count
 
     const header: MenuItemType = {
       iconButton: {

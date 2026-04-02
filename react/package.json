@@ -17,7 +17,8 @@
     "unsafe-build": "vite build",
     "tsc-watch": "tsc --watch",
     "prettier": "prettier --write './src/**/*.{js,ts,jsx,tsx}' '!course_flow/static/**/dist/**/*.{js,ts,jsx,tsx}'",
-    "lint-quiet": "eslint --fix --quiet --max-warnings=-1  ./src --ext .js,.tsx,.ts -c ./.eslintrc.json"
+    "lint-quiet": "eslint --fix --quiet --max-warnings=-1  ./src --ext .js,.tsx,.ts -c ./.eslintrc.json",
+    "openapi-ts": "openapi-ts"
   },
   "browserslist": "last 4 versions and >=0.2% in CA and not ie <= 11",
   "devDependencies": {
@@ -28,6 +29,7 @@
     "@types/node": "^22.9.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "esbuild-runner": "^2.2.2",
     "eslint": "^9.15.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",
@@ -50,11 +52,12 @@
     "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator": "^3.2.1",
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
+    "@hey-api/openapi-ts": "^0.94.5",
     "@hookform/resolvers": "^3.9.1",
     "@mui/icons-material": "^5.14.14",
     "@mui/material": "^5.14.14",
     "@reduxjs/toolkit": "^2.3.0",
-    "@rtk-query/codegen-openapi": "^2.2.0",
+    "@tanstack/react-query": "^5.96.1",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
     "@typescript-eslint/parser": "^8.15.0",
     "@vitejs/plugin-react": "^4.3.3",

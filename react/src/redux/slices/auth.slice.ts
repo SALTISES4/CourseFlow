@@ -9,6 +9,9 @@ import {
   getAccessToken,
   setAccessToken
 } from '@cf/api/authToken'
+import { UserSummaryOutResp } from '@cf/api/gen'
+import { meQueryKey } from '@cf/api/gen/@tanstack/react-query.gen'
+import { courseFlowQueryClient } from '@cf/api/queryClient'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 export type AuthStatus = 'unknown' | 'authenticated' | 'unauthenticated'
@@ -36,14 +39,19 @@ export const bootstrapAuth = createAsyncThunk<
 >('auth/bootstrap', async (_, { rejectWithValue }) => {
   const token = getAccessToken()
   if (!token) {
+    courseFlowQueryClient.removeQueries({ queryKey: meQueryKey() })
     return { user: null }
   }
   try {
-    const user = await fetchCurrentUser(token)
+    const user = await fetchCurrentUser()
+    courseFlowQueryClient.setQueryData(meQueryKey(), {
+      item: user
+    } satisfies UserSummaryOutResp)
     return { user }
   } catch (e) {
     if (e instanceof AuthRequestError && e.status === 401) {
       clearAccessToken()
+      courseFlowQueryClient.removeQueries({ queryKey: meQueryKey() })
       return { user: null }
     }
     if (e instanceof AuthRequestError) {
@@ -62,6 +70,9 @@ export const login = createAsyncThunk<
   try {
     const data = await loginRequest(email.trim(), password)
     setAccessToken(data.access_token)
+    courseFlowQueryClient.setQueryData(meQueryKey(), {
+      item: data.user
+    } satisfies UserSummaryOutResp)
     return { user: data.user }
   } catch (e) {
     if (e instanceof AuthRequestError) {

@@ -1,9 +1,10 @@
+import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { _t } from '@cf/utility/Utility.class'
 import { MenuItemType, MenuWithOverflow } from '@cfComponents/menu/Menu'
 import { useMenuActions } from '@cfPages/Workspace/Project/hooks/useMenuActions'
 import EditIcon from '@mui/icons-material/Edit'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
-import { useGetProjectByUuidQuery } from '@XMLHTTP/API/project.rtk'
+import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 /** Until v2 exposes project ACLs, menu visibility assumes a writable project for authenticated users. */
@@ -19,10 +20,14 @@ const ActionMenu = () => {
   const { uuid } = useParams()
   const projectUuid = uuid ?? ''
 
-  const { data, isLoading } = useGetProjectByUuidQuery(
-    { projectUuid },
-    { skip: !projectUuid }
-  )
+  const { data, refetch, isLoading } = useQuery({
+    ...getProjectOptions({
+      path: {
+        uuid: projectUuid as string
+      }
+    }),
+    enabled: Boolean(projectUuid)
+  })
 
   const {
     openEditDialog,

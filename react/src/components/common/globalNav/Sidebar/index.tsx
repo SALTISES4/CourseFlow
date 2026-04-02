@@ -17,7 +17,6 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
-import { useLibraryFavouriteObjectsQuery } from '@XMLHTTP/API/library.rtk'
 import { useState } from 'react'
 import { Link, generatePath, useLocation } from 'react-router-dom'
 

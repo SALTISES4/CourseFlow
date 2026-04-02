@@ -1,3 +1,4 @@
+import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { ProjectDetailsType } from '@cf/types/common'
@@ -14,8 +15,8 @@ import TabWorkflows from '@cfViews/ProjectView/TabWorkflows'
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
+import { useQuery } from '@tanstack/react-query'
 import { getErrorMessage } from '@XMLHTTP/API/api'
-import { useGetProjectByUuidQuery } from '@XMLHTTP/API/project.rtk'
 import { useEffect, useState } from 'react'
 import {
   Route,
@@ -41,8 +42,13 @@ const ProjectDetails = () => {
   /*******************************************************
    * QUERIES
    *******************************************************/
-  const { data, error, isLoading, isError } = useGetProjectByUuidQuery({
-    projectUuid: projectUuid!
+  const { data, refetch, isLoading, isError } = useQuery({
+    ...getProjectOptions({
+      path: {
+        uuid: projectUuid as string
+      }
+    }),
+    enabled: Boolean(projectUuid)
   })
 
   /*******************************************************

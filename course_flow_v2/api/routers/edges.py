@@ -32,9 +32,9 @@ workflow_edges_router = Router(tags=["edges"])
 edge_resource_router = Router(tags=["edges"])
 
 
-def _ensure_workflow_owner(workflow_uuid: UUID, current_user) -> None:
+def _ensure_workflow_owner(uuid: UUID, current_user) -> None:
     svc = get_workflow_service()
-    dto = svc.get_by_uuid(workflow_uuid)
+    dto = svc.get_by_uuid(uuid)
     if dto is None:
         raise HttpError(404, "Workflow not found")
     if not can_view_workflow(current_user=current_user, workflow=dto):
@@ -42,29 +42,31 @@ def _ensure_workflow_owner(workflow_uuid: UUID, current_user) -> None:
 
 
 @workflow_edges_router.get(
-    "/{workflow_uuid}/edges",
+    "/{uuid}/edges",
     response=list[EdgeGraphOut],
     auth=BearerAuth(),
+    operation_id="listWorkflowEdges",
 )
-def list_workflow_edges(request, workflow_uuid: UUID):
+def list_workflow_edges(request, uuid: UUID):
     current_user = get_current_user(request)
-    _ensure_workflow_owner(workflow_uuid, current_user)
-    proj = get_workflow_graph_projection_service().get_by_workflow_uuid(workflow_uuid)
+    _ensure_workflow_owner(uuid, current_user)
+    proj = get_workflow_graph_projection_service().get_by_uuid(uuid)
     if proj is None:
         raise HttpError(404, "Workflow not found")
     return [EdgeGraphOut.model_validate(x) for x in proj["edges"]]
 
 
 @workflow_edges_router.post(
-    "/{workflow_uuid}/edges",
+    "/{uuid}/edges",
     response=GraphMutationEnvelopeOut,
     auth=BearerAuth(),
+    operation_id="createWorkflowEdge",
 )
-def create_workflow_edge(request, workflow_uuid: UUID, payload: GraphEdgeCreateIn):
+def create_workflow_edge(request, uuid: UUID, payload: GraphEdgeCreateIn):
     current_user = get_current_user(request)
     svc = get_workflow_graph_mutation_service()
     out, err = svc.create_edge(
-        workflow_uuid=workflow_uuid,
+        uuid=uuid,
         user_id=current_user.id,
         source_node_uuid=payload.source_node_uuid,
         target_node_uuid=payload.target_node_uuid,
@@ -75,8 +77,13 @@ def create_workflow_edge(request, workflow_uuid: UUID, payload: GraphEdgeCreateI
     return graph_mutation_http(out, err)
 
 
-@edge_resource_router.get("/{edge_id}", response=EdgeGraphOut, auth=BearerAuth())
-def get_edge(request, edge_id: int):
+@edge_resource_router.get(
+    "/{uuid}",
+    response=EdgeGraphOut,
+    auth=BearerAuth(),
+    operation_id="getEdge",
+)
+def get_edge(request, uuid: int):
     current_user = get_current_user(request)
     try:
         e = Edge.objects.select_related(
@@ -84,18 +91,21 @@ def get_edge(request, edge_id: int):
             "source_node__channel__workflow",
             "target_node__section__workflow",
             "target_node__channel__workflow",
-        ).get(pk=edge_id)
+        ).get(pk=uuid)
     except Edge.DoesNotExist:
         raise HttpError(404, "Not found")
 
     wf_s = workflow_from_node(e.source_node)
     wf_t = workflow_from_node(e.target_node)
+
     if wf_s is None or wf_t is None or wf_s.pk != wf_t.pk:
         raise HttpError(404, "Not found")
+
     if not can_view_workflow(current_user=current_user, workflow=wf_s):
         raise HttpError(403, "Forbidden")
+
     return EdgeGraphOut(
-        id=e.id,
+        uuid=e.uuid,
         source_node_uuid=e.source_node.uuid,
         target_node_uuid=e.target_node.uuid,
         line_type=e.line_type,
@@ -108,6 +118,7 @@ def get_edge(request, edge_id: int):
     "/{edge_id}",
     response=GraphMutationEnvelopeOut,
     auth=BearerAuth(),
+    operation_id="deleteEdge",
 )
 def delete_edge(request, edge_id: int):
     current_user = get_current_user(request)

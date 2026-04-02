@@ -1,12 +1,9 @@
+import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import * as SC from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import ProjectForm from '@cfComponents/dialog/Project/components/ProjectForm'
-import { useGetHomeContextQuery } from '@XMLHTTP/API/library.rtk'
-import {
-  useGetProjectByUuidQuery,
-  useUpdateProjectMutation
-} from '@XMLHTTP/API/project.rtk'
+import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 type ProjectFormValues = {
@@ -38,10 +35,14 @@ const ProjectEditDialog = () => {
   /*******************************************************
    * QUERY HOOK
    *******************************************************/
-  const { data, refetch, isLoading } = useGetProjectByUuidQuery(
-    { projectUuid },
-    { skip: !projectUuid }
-  )
+  const { data, refetch, isLoading } = useQuery({
+    ...getProjectOptions({
+      path: {
+        uuid: projectUuid as string
+      }
+    }),
+    enabled: Boolean(projectUuid)
+  })
 
   const [mutate] = useUpdateProjectMutation()
   const { onError, onSuccess } = useGenericMsgHandler()

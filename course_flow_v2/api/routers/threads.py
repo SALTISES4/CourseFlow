@@ -27,12 +27,17 @@ def _comment_to_out(dto: CommentDTO) -> CommentOut:
     )
 
 
-@router.get("/{thread_uuid}/comments", response=list[CommentOut], auth=BearerAuth())
-def list_thread_comments(request, thread_uuid: UUID):
+@router.get(
+    "/{uuid}/comments",
+    response=list[CommentOut],
+    auth=BearerAuth(),
+    operation_id="listThreadComments",
+)
+def list_thread_comments(request, uuid: UUID):
     current_user = get_current_user(request)
     svc = get_thread_comment_service()
     try:
-        rows = svc.list_comments_for_user(thread_uuid, current_user.id)
+        rows = svc.list_comments_for_user(uuid, current_user.id)
     except PermissionError:
         raise HttpError(403, "Forbidden")
     if rows is None:

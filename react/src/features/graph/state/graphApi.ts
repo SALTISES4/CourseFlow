@@ -130,20 +130,21 @@ export const fetchWorkflowMeta = async (
   workflowUuid: WorkflowUuid
 ): Promise<WorkflowMetaEntity> => {
   const response = await fetch(
-    apiUrl(
-      generatePath(v2Workflow.detail, { uuid: String(workflowUuid) })
-    ),
+    apiUrl(generatePath(v2Workflow.detail, { uuid: String(workflowUuid) })),
     withAuthFetch({ method: 'GET' })
   )
+
   await assertOk(response)
+
   const payload = (await response.json()) as WorkflowMetaResponse
+
   const item = payload.item
+
   return {
     uuid: item.uuid,
     title: item.title,
     ownerId: String(item.owner_id),
-    projectId:
-      item.project_id === null ? null : String(item.project_id),
+    projectId: item.project_id === null ? null : String(item.project_id),
     revisionId: item.revision_id,
     dateCreated: item.date_created,
     modifiedOn: item.modified_on
@@ -162,9 +163,7 @@ export const fetchWorkflowGraphBundle = async (
   workflowUuid: WorkflowUuid
 ): Promise<GraphResourceBundle> => {
   const response = await fetch(
-    apiUrl(
-      generatePath(v2Workflow.graph, { uuid: String(workflowUuid) })
-    ),
+    apiUrl(generatePath(v2Workflow.graph, { uuid: String(workflowUuid) })),
     withAuthFetch({ method: 'GET' })
   )
   await assertOk(response)

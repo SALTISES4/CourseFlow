@@ -1,6 +1,5 @@
 import { PermissionGroup, ProjectDetailsType } from '@cf/types/common'
 import Utility from '@cf/utility/Utility.class'
-import type { ProjectDetailOut } from '@XMLHTTP/API/project.rtk'
 import { EProject } from '@XMLHTTP/types/entity'
 
 export function formatProjectEntity(project: EProject): ProjectDetailsType {

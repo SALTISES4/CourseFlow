@@ -1,27 +1,14 @@
-import { apiUrl } from '@cf/api/apiBaseUrl'
-import { apiPaths } from '@cf/router/apiRoutes'
-
 /**
- * CourseFlow v2 auth API — matches Django Ninja routes in course_flow_v2.api.routers.auth
- * (see tests: POST /api/auth/login, GET /api/auth/me).
- * Full URLs use `VITE_API_BASE_URL` via `apiUrl()` and `apiPaths.json_api_v2.auth.*`.
+ * Auth helpers built on the Hey API generated client (`sdk.gen` + configured `client`).
+ * HTTP paths remain Django Ninja `course_flow_v2.api.routers.auth`.
  */
+import { login, me } from './gen/sdk.gen'
+import type { LoginOut, UserSummaryOut } from './gen/types.gen'
 
-/** Mirrors UserSummaryOut from the backend. */
-export type CurrentUser = {
-  id: string
-  uuid: string
-  email: string
-  first_name: string
-  last_name: string
-}
+/** Mirrors `UserSummaryOut` from the API; use `uuid` as stable identity (no numeric id in v2). */
+export type CurrentUser = UserSummaryOut
 
-export type LoginResponse = {
-  access_token: string
-  token_type: string
-  expires_at: string
-  user: CurrentUser
-}
+export type LoginResponse = LoginOut
 
 export class AuthRequestError extends Error {
   constructor(
@@ -41,6 +28,9 @@ function parseDetail(body: unknown): string {
       return d
     }
   }
+  if (typeof body === 'string' && body.length > 0) {
+    return body
+  }
   return 'Request failed'
 }
 
@@ -48,41 +38,29 @@ export async function loginRequest(
   email: string,
   password: string
 ): Promise<LoginResponse> {
-  const response = await fetch(apiUrl(apiPaths.json_api_v2.auth.login), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
+  const result = await login({
+    body: { email: email.trim(), password }
   })
 
-  const body = await response.json().catch(() => ({}))
-
-  if (!response.ok) {
-    throw new AuthRequestError(parseDetail(body), response.status, body)
+  if (result.error) {
+    const status = result.response?.status ?? 0
+    throw new AuthRequestError(parseDetail(result.error), status, result.error)
   }
 
-  return body as LoginResponse
+  return result.data
 }
 
-export async function fetchCurrentUser(
-  accessToken: string
-): Promise<CurrentUser> {
-  const response = await fetch(apiUrl(apiPaths.json_api_v2.auth.me), {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
+/**
+ * Resolves the current user via `GET /api/auth/me` using the shared client
+ * (Bearer from `getAccessToken()` — see `configureCourseFlowClient.ts`).
+ */
+export async function fetchCurrentUser(): Promise<CurrentUser> {
+  const result = await me({})
 
-  const body = await response.json().catch(() => ({}))
-
-  if (response.status === 401) {
-    throw new AuthRequestError(parseDetail(body), response.status, body)
+  if (result.error) {
+    const status = result.response?.status ?? 0
+    throw new AuthRequestError(parseDetail(result.error), status, result.error)
   }
 
-  if (!response.ok) {
-    throw new AuthRequestError(parseDetail(body), response.status, body)
-  }
-
-  return body as CurrentUser
+  return result.data.item
 }

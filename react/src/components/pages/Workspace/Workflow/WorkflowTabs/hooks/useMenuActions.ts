@@ -4,8 +4,6 @@ import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { AppDispatch } from '@cfRedux/store'
-import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
-import { deleteSelfQueryLegacy } from '@XMLHTTP/API/workspace.rtk'
 import { useDispatch } from 'react-redux'
 
 export const useMenuActions = () => {
@@ -79,14 +77,7 @@ export const useMenuActions = () => {
     workflowType: WorkflowType
   ) {
     if (parentId != null) {
-      duplicateBaseItemQuery(
-        workflowId,
-        workflowType,
-        parentId,
-        (responseData) => {
-          window.location.href = 'new item path '
-        }
-      )
+      // @todo
     }
   }
 

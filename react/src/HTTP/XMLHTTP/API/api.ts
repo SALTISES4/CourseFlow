@@ -47,12 +47,7 @@ interface SerializedError {
   stack?: string
 }
 
-export enum Verb {
-  POST = 'POST',
-  GET = 'GET',
-  PATCH = 'PATCH',
-  DELETE = 'DELETE'
-}
+
 
 type ApiError = FetchBaseQueryError | HttpError | SerializedError
 

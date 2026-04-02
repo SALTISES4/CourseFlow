@@ -1,4 +1,7 @@
 // import './wdyr'
+import '@cf/api/configureCourseFlowClient'
+import { courseFlowQueryClient } from '@cf/api/queryClient'
+import { QueryClientProvider } from '@tanstack/react-query'
 import createCache from '@emotion/cache'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
@@ -53,8 +56,9 @@ const root = ReactDOM.createRoot(rootElement)
 
 root.render(
   <Provider store={store}>
-    <AuthBootstrap />
-    <CookieProvider>
+    <QueryClientProvider client={courseFlowQueryClient}>
+      <AuthBootstrap />
+      <CookieProvider>
       <CacheProvider value={cache}>
         <SnackbarProvider
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
@@ -72,5 +76,6 @@ root.render(
         </SnackbarProvider>
       </CacheProvider>
     </CookieProvider>
+    </QueryClientProvider>
   </Provider>
 )

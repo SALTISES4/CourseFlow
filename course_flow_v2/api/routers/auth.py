@@ -37,7 +37,7 @@ def _to_user_summary(user: User) -> UserSummaryOut:
     )
 
 
-@router.post("/login", response=LoginOut)
+@router.post("/login", response=LoginOut, operation_id="login")
 def login(request, payload: LoginIn):
     svc = get_auth_service()
     try:
@@ -56,7 +56,7 @@ def login(request, payload: LoginIn):
     )
 
 
-@router.post("/register", response=LoginOut)
+@router.post("/register", response=LoginOut, operation_id="register")
 def register(request, payload: RegisterIn):
     svc = get_auth_service()
     try:
@@ -80,7 +80,7 @@ def register(request, payload: RegisterIn):
     )
 
 
-@router.post("/logout", response=LogoutOut, auth=BearerAuth())
+@router.post("/logout", response=LogoutOut, auth=BearerAuth(), operation_id="logout")
 def logout(request):
     auth_token = get_current_token(request)
     if auth_token.revoked_at is None:
@@ -89,6 +89,6 @@ def logout(request):
     return LogoutOut(success=True)
 
 
-@router.get("/me", response=UserSummaryOutResp, auth=BearerAuth())
+@router.get("/me", response=UserSummaryOutResp, auth=BearerAuth(), operation_id="me")
 def me(request):
     return UserSummaryOutResp(item=_to_user_summary(get_current_user(request)))

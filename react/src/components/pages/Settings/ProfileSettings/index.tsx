@@ -14,11 +14,6 @@ import RadioGroup from '@mui/material/RadioGroup'
 import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import {
-  ProfileSettingsArgs,
-  useGetProfileSettingsQuery,
-  useUpdateProfileSettingsMutation
-} from '@XMLHTTP/API/user.rtk'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'

@@ -1,13 +1,15 @@
-## Decision Matrix: RTK Query vs Thunks + Normalized Redux Slices
+## Decision matrix: TanStack Query vs thunks + normalized Redux slices (graph)
 
-Use this as a repo policy for Courseflow.
+**Policy:** CourseFlow’s strategic server-state layer is **TanStack Query** with **Hey API**–generated types and a **fetch**-based client (see [`../../docs/architecture/adr_frontend_api_client.md`](../../docs/architecture/adr_frontend_api_client.md)). This document replaces an earlier RTK Query–centric framing: the **same architectural split** applies—only the recommended **query/cache library** for ordinary remote state has changed.
 
 ### Core rule
 
 Choose based on the **canonical local representation**:
 
-- Use **RTK Query** when the canonical local representation is a **query result cache entry**, keyed by endpoint + args, with RTK Query owning dedupe, subscription lifetime, and invalidation/refetch behavior. ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/overview?utm_source=chatgpt.com))
-- Use **thunks / fetch helpers + normalized slices** when the canonical local representation is a **domain entity store** such as `nodes.byId`, `edges.byId`, `workflowMeta.byId`, with reducers owning merge semantics and long-lived state shape. RTK Query can be customized heavily, but its primary design goal is to eliminate hand-written fetching/cache logic for common cases, not to be the universal owner of every domain-specific projection. ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/overview?utm_source=chatgpt.com))
+- Use **TanStack Query** when the canonical local representation is a **server-state cache entry** keyed by query key, with TanStack Query owning dedupe, staleness, and invalidation/refetch behavior for **ordinary** resource reads/writes.
+- Use **thunks (or async command handlers) + fetch/SDK + normalized Redux slices** when the canonical local representation is a **domain entity store** such as `nodes.byId`, `edges.byId`, `workflowMeta`, with reducers owning merge semantics and long-lived state shape—the **workflow graph/editor**.
+
+The graph editor is **not** modeled as TanStack Query’s primary cache; **Redux** remains canonical for graph state.
 
 ---
 
@@ -15,138 +17,73 @@ Choose based on the **canonical local representation**:
 
 | Question | If yes | Default choice |
 |---|---|---|
-| Is the UI mostly reading “the result of query X with args Y”? | The query result itself is the useful unit of state | **RTK Query** |
-| Do multiple components need the same request result, with dedupe and shared loading/error state? | RTK Query is built for shared cached query results in Redux | **RTK Query** ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/usage/cache-behavior?utm_source=chatgpt.com)) |
-| Do you want tag invalidation and refetch to keep data current? | RTK Query provides this model directly | **RTK Query** ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/usage/automated-refetching?utm_source=chatgpt.com)) |
-| Is the local source of truth a normalized entity graph, not a request result? | State is organized by domain IDs, not query args | **Thunk + slices** |
-| Are responses from multiple endpoints being merged into one long-lived editor/domain model? | Reducers own merge semantics | **Thunk + slices** |
-| Will mutations apply deltas directly into entity adapters and selectors read those adapters? | Query cache is secondary at best | **Thunk + slices** |
-| Would using RTK Query create a second copy of the same canonical data? | Avoid duplicate ownership | **Thunk + slices** |
-| Is this ordinary list/detail CRUD with minimal transformation? | RTK Query removes boilerplate effectively | **RTK Query** ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/overview?utm_source=chatgpt.com)) |
+| Is the UI mostly reading “the result of query X with args Y”? | The cached query result is the useful unit of state | **TanStack Query** |
+| Do multiple components need the same request result, with dedupe and shared loading/error state? | Shared async state for a resource | **TanStack Query** |
+| Do you want invalidation and refetch to keep list/detail data current? | Standard CRUD / list pages | **TanStack Query** |
+| Is the local source of truth a normalized entity graph, not a request result? | State is organized by domain IDs, not query keys | **Thunk + Redux slices** |
+| Are responses merged into one long-lived editor model with reducer-owned merge? | Graph hydration and deltas | **Thunk + Redux slices** |
+| Will mutations apply deltas directly into entity adapters and selectors read those adapters? | Query cache is secondary at best | **Thunk + Redux slices** |
+| Would using TanStack Query create a second copy of the same canonical graph data? | Avoid duplicate ownership | **Thunk + Redux slices** |
 
 ---
 
 ## Precision rules
 
-### Prefer RTK Query when all or most of the following are true
+### Prefer TanStack Query when
 
-1. **Identity is naturally query-shaped**
-   - Example: `getProject(id)`, `listProjects(filters)`, `searchLibrary(params)`.
-   - The useful client object is “the result of this request”. RTK Query caches results by endpoint + serialized params and reuses existing cached data for the same request. ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/usage/cache-behavior?utm_source=chatgpt.com))
+1. **Identity is naturally query-shaped** — e.g. project list, library search, user profile settings.
+2. **You want shared async state** without hand-rolling dedupe and status for every screen.
+3. **Invalidation/refetch** after mutations is the right control plane for that feature.
+4. **OpenAPI-generated types** and Hey API helpers align with list/detail CRUD.
 
-2. **You want subscription-aware sharing**
-   - Multiple components may ask for the same data and should not trigger duplicate requests.
-   - RTK Query tracks active subscriptions and cache retention for those query results. ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/usage/cache-behavior?utm_source=chatgpt.com))
+### Prefer thunks + normalized Redux slices when
 
-3. **You want automated refetch semantics**
-   - Mutation invalidates tags; active queries refetch.
-   - RTK Query explicitly supports this as a first-class pattern. ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/usage/automated-refetching?utm_source=chatgpt.com))
-
-4. **Transform needs are modest**
-   - Some `transformResponse` is fine.
-   - But the endpoint result still remains the meaningful unit of local state. RTK Query supports customization, but that is still within a query-cache model. ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/usage/customizing-queries?utm_source=chatgpt.com))
-
-5. **You want less handwritten async boilerplate**
-   - RTK Query exists partly to eliminate hand-written thunks/reducers for common fetching cases. ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/overview?utm_source=chatgpt.com))
-
-### Prefer thunks + normalized slices when all or most of the following are true
-
-1. **Identity is domain-shaped, not query-shaped**
-   - Example: `nodes.byId`, `edges.byId`, `outcomes.byId`.
-   - The important local object is the entity graph, not “the response from endpoint X”.
-
-2. **Reducers own merge semantics**
-   - Payloads may be partial, overlapping, or arrive from multiple endpoints.
-   - You want one reducer-controlled merge path into entity adapters.
-
-3. **State must outlive individual query subscriptions**
-   - The editor/graph store should remain canonical regardless of whether a component using a hook is mounted.
-   - RTK Query is centered on query-cache lifecycle, whereas your domain store is intentionally long-lived. RTK Query docs also note that persisting API slices is generally not recommended because of staleness concerns. ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/usage/persistence-and-rehydration?utm_source=chatgpt.com))
-
-4. **Mutations apply domain deltas directly**
-   - You are not merely invalidating and refetching.
-   - You are applying authoritative deltas into normalized slices as the main mutation path.
-   - RTK Query supports manual cache updates, but the docs position those as targeted mechanisms for optimistic/pessimistic updates or lifecycle adjustments, not the default shape of all application state management. ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/usage/manual-cache-updates?utm_source=chatgpt.com))
-
-5. **RTK Query would become transport only**
-   - If the real source of truth is elsewhere, RTK Query may only wrap the HTTP call while the actual ownership stays in slices.
-   - In that case, much of RTK Query’s main value proposition is lost. RTK Query is optional and intended to simplify common fetching/caching use cases, not to be mandatory for every request. ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/overview?utm_source=chatgpt.com))
+1. **Identity is domain-shaped** — `nodes.byId`, `edges.byId`, workflow revision on the client.
+2. **Reducers own merge semantics** for partial/overlapping payloads and multi-endpoint hydration.
+3. **State must outlive** component mount; the editor store is intentionally long-lived.
+4. **Mutations apply authoritative deltas** into normalized entities; refetch-the-whole-graph is not the default mutation path.
+5. **Generated fetch/SDK** is called from command flows; **TanStack Query is not** the owner of canonical graph truth.
 
 ---
 
 ## Courseflow policy
 
-### Use RTK Query for
+### Use TanStack Query (with Hey API–generated client/types) for
 
-- Project detail pages
-- Library/search/list endpoints
-- Filtered collections
-- Simple tags/disciplines lookups
-- Standard CRUD forms where post-mutation invalidation/refetch is acceptable
-- Data that is naturally “request result shaped”
+- Project / workflow list and detail pages that are “ordinary” server-state
+- Library search
+- User settings, notifications, auth-adjacent resource reads
+- Standard CRUD where invalidate + refetch is acceptable
 
-Rationale: these are conventional server-resource queries, and RTK Query’s cache, dedupe, hooks, and invalidation model align directly with that usage. ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/overview?utm_source=chatgpt.com))
+### Use thunks + normalized Redux slices + generated fetch/SDK for
 
-### Use thunks + normalized slices for
-
-- Workflow graph bootstrap
-- Nodes / edges / outcomes / workflow meta as normalized entities
-- Graph hydration orchestration across multiple requests
-- Revision/delta application after mutations
+- Workflow graph bootstrap and multi-resource hydration
+- Nodes, edges, sections, channels as normalized entities
+- Revision/delta application after graph mutations
 - Long-lived workflow editor state
-- Any flow where selectors read entity adapters as the canonical graph model
 
-Rationale: the workflow graph is a reducer-owned domain store, not merely a cached query result. The client’s core abstraction is the normalized graph, so explicit writes into slices are the coherent ownership model.
-
----
-
-## Anti-patterns to avoid
-
-### 1. Dual canonical ownership
-Do not make both of these “truth” at the same time:
-
-- RTK Query cache entry for workflow graph
-- normalized graph slices for the same graph
-
-Pick one canonical owner. Otherwise invalidation, merge semantics, and stale-read debugging become ambiguous.
-
-### 2. Using RTK Query only as a thin fetch wrapper
-If every RTK Query endpoint immediately dispatches into slices and components never read RTK Query cache results, that is usually a sign the query cache is not the right owner.
-
-### 3. Forcing graph/editor state into tag invalidation semantics
-If the intended mutation path is “apply delta to normalized entities”, then invalidation + refetch may be the wrong default control plane.
+**Do not** duplicate canonical graph data in TanStack Query cache and Redux simultaneously.
 
 ---
 
-## Approved hybrid model
+## Anti-patterns
 
-A hybrid architecture is acceptable and likely optimal:
-
-- **RTK Query** for ordinary resource fetching and CRUD
-- **Thunk + normalized slices** for workflow graph domain state
-
-This is consistent with Redux Toolkit guidance that RTK Query is optional, powerful for common data fetching/caching, and can eliminate handwritten logic where the query-cache model is the right fit. ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/overview?utm_source=chatgpt.com))
+1. **Dual canonical ownership** — TanStack Query cache and Redux slices both “owning” the same graph.
+2. **TanStack Query only as a thin wrapper** that immediately dispatches everything into Redux without a clear reason—prefer calling the **generated SDK** from thunks when the cache adds no value.
+3. **Forcing graph/editor state into** generic **invalidation-only** semantics when the real mutation path is **delta application into slices**.
 
 ---
 
-## Short rule set for coding agents
+## Short rules for coding agents
 
-1. If the local state should be keyed by **endpoint + args**, use **RTK Query**. ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/usage/cache-behavior?utm_source=chatgpt.com))
-2. If the local state should be keyed by **domain entity IDs** and merged by reducers, use **thunks + slices**.
-3. If a mutation should usually cause **invalidate + refetch**, prefer **RTK Query**. ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/usage/automated-refetching?utm_source=chatgpt.com))
-4. If a mutation should usually cause **apply delta into normalized entities**, prefer **thunks + slices**.
-5. Do not maintain two canonical copies of the same graph data.
+1. Ordinary server-state pages → **TanStack Query** + generated types/client.
+2. Graph/editor domain state → **Redux** + **generated fetch/SDK** in orchestration code; **not** TanStack Query as the graph store.
+3. One canonical owner for the workflow graph.
 
 ---
 
 ## ADR-friendly summary
 
-**Decision:**
-Courseflow will use a hybrid data-access model.
+**Decision:** TanStack Query replaces RTK Query as the strategic server-state layer; **Hey API + OpenAPI** replace RTK Query codegen. **Redux Toolkit** remains for client and graph state; **graph** flows use **imperative generated clients**, not TanStack Query as canonical graph storage.
 
-**RTK Query** is the default for ordinary server-resource queries whose canonical local representation is a cached query result keyed by endpoint + args. It is preferred where deduplication, generated hooks, subscription-aware caching, and tag-based invalidation/refetch are the right operational model. ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/overview?utm_source=chatgpt.com))
-
-**Thunk/fetch orchestration with normalized Redux slices** is the default for workflow graph state, where the canonical local representation is a reducer-owned normalized entity graph keyed by domain IDs and updated via explicit merge/delta semantics.
-
-**Consequence:**
-The app will not force all HTTP traffic through RTK Query. RTK Query is a tool for query-result caching, not a mandatory wrapper for every backend interaction. ([redux-toolkit.js.org](https://redux-toolkit.js.org/rtk-query/overview?utm_source=chatgpt.com))
+**Canonical doc:** [`../../docs/architecture/adr_frontend_api_client.md`](../../docs/architecture/adr_frontend_api_client.md)

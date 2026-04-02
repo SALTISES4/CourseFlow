@@ -46,7 +46,12 @@ def _workflow_list_item(dto: WorkflowDTO) -> WorkflowListItemOut:
     )
 
 
-@router.post("", response=WorkflowDetailOut, auth=BearerAuth())
+@router.post(
+    "",
+    response=WorkflowDetailOut,
+    auth=BearerAuth(),
+    operation_id="createWorkflow",
+)
 def create_workflow(request, payload: WorkflowCreateIn):
 
     current_user = get_current_user(request)
@@ -63,11 +68,16 @@ def create_workflow(request, payload: WorkflowCreateIn):
     return _workflow_detail(dto)
 
 
-@router.get("/{workflow_uuid}/graph", response=WorkflowGraphOut, auth=BearerAuth())
-def get_workflow_graph(request, workflow_uuid: UUID):
+@router.get(
+    "/{uuid}/graph",
+    response=WorkflowGraphOut,
+    auth=BearerAuth(),
+    operation_id="getWorkflowGraph",
+)
+def get_workflow_graph(request, uuid: UUID):
     current_user = get_current_user(request)
     wf_svc = get_workflow_service()
-    wf = wf_svc.get_by_uuid(workflow_uuid)
+    wf = wf_svc.get_by_uuid(uuid)
 
     if wf is None:
         raise HttpError(404, "Workflow not found")
@@ -76,7 +86,7 @@ def get_workflow_graph(request, workflow_uuid: UUID):
         raise HttpError(403, "Forbidden")
 
     graph_svc = get_workflow_graph_projection_service()
-    payload = graph_svc.get_by_workflow_uuid(workflow_uuid)
+    payload = graph_svc.get_by_uuid(uuid)
 
     if payload is None:
         raise HttpError(404, "Workflow not found")
@@ -84,11 +94,16 @@ def get_workflow_graph(request, workflow_uuid: UUID):
     return payload
 
 
-@router.get("/{workflow_uuid}", response=WorkflowDetailOutResp, auth=BearerAuth())
-def get_workflow(request, workflow_uuid: UUID):
+@router.get(
+    "/{uuid}",
+    response=WorkflowDetailOutResp,
+    auth=BearerAuth(),
+    operation_id="getWorkflow",
+)
+def get_workflow(request, uuid: UUID):
     current_user = get_current_user(request)
     svc = get_workflow_service()
-    dto = svc.get_by_uuid(workflow_uuid)
+    dto = svc.get_by_uuid(uuid)
 
     if dto is None:
         raise HttpError(404, "Workflow not found")
@@ -99,7 +114,9 @@ def get_workflow(request, workflow_uuid: UUID):
     return WorkflowDetailOutResp(item=_workflow_detail(dto))
 
 
-@router.get("", response=WorkflowListOut, auth=BearerAuth())
+@router.get(
+    "", response=WorkflowListOut, auth=BearerAuth(), operation_id="listWorkflows"
+)
 def list_workflows(request):
     current_user = get_current_user(request)
     svc = get_workflow_service()

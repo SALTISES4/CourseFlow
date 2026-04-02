@@ -7,10 +7,6 @@ import FormGroup from '@mui/material/FormGroup'
 import { styled } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import {
-  useGetNotificationSettingsQuery,
-  useUpdateNotificationSettingsMutation
-} from '@XMLHTTP/API/user.rtk'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 

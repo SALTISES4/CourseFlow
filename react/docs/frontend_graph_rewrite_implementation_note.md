@@ -82,7 +82,7 @@ react/src/features/graph/
       graphUi.selectors.ts
       graphProjection.selectors.ts  # effective projection = canonical + pending ops
   api/
-    graphApi.ts                 # transport wrappers (REST/RTK Query integration)
+    graphApi.ts                 # imperative HTTP via generated fetch/SDK (Hey API); not TanStack Query as graph store
   model/
     graph.types.ts
     graphCommands.types.ts

@@ -157,6 +157,26 @@ Use `items` for canonical collection endpoints such as:
 
 when the endpoint is returning one collection of one resource type.
 
+#### Paginated list endpoints (mandatory)
+
+If the UI needs page-based navigation (or any bounded page of rows), **pagination is always server-side**:
+
+* The handler accepts paging inputs as query parameters (this repo uses **`page`** and **`page_size`** unless an endpoint-specific ADR says otherwise).
+* **`page` and `meta.current_page` are 1-based** and must stay consistent across the API and clients (including MUI `Pagination`).
+* The database query applies `LIMIT` / `OFFSET` (or equivalent), not “load all rows then slice in Python or TypeScript”.
+* The response stays a homogeneous collection: **`{ items: [...], meta: { ... } }`**. Pagination fields live in **`meta`**, for example:
+  * `total` — total rows matching the query (for the current user / filters)
+  * `total_pages`
+  * `current_page` — effective page after any clamping
+  * `page_size`
+* Additional list-level fields (e.g. `unread_count` for an inbox) also belong in **`meta`** when they describe the collection, not a single row.
+
+The frontend **must not** fetch the full list and use `Array.prototype.slice` (or equivalent) to simulate pages.
+
+Cursor-based pagination, if added later, should still use **`meta`** for cursors and related flags, not ad-hoc top-level fields.
+
+Reference implementation: `GET /api/user/me/notifications`.
+
 ---
 
 ### 5. Do not use `item` or `items` for grouped projection responses
@@ -220,18 +240,9 @@ Use `editable` instead.
 
 ## Naming rules
 
-Replace that section with this stricter wording:
-
-````md
 ### Rule A: singular canonical resource
 
-For a singular detail response, the payload must be of type envelope form :
-
-
-
-#### Envelope form:
-
-`item` is required, not optional.
+For a singular detail response that uses an envelope, **`item` is required**.
 
 ```ts
 type GetProjectResp = {
@@ -239,23 +250,7 @@ type GetProjectResp = {
 }
 ```
 
-
-
-There is no valid singular detail shape where `item` should be skipped.
-
-
-
-Do not use the term 'envelope' - for example
-
-ProjectDetailEnvelopeOut
-
-instead when using envelope shape
-you must use the pattern
-ProjectDetailOut:  for the domain entity fields
-and
-ProjectDetailOutResp: for the enveloped response
-
-
+Name domain payload types with an `Out` suffix and enveloped responses with an `OutResp` suffix (for example `ProjectDetailOut` and `ProjectDetailOutResp`), not vague names such as `ProjectDetailEnvelopeOut`.
 
 ---
 
@@ -301,20 +296,39 @@ because `items` incorrectly suggests a single homogeneous collection.
 
 ### Rule D: auxiliary non-resource metadata
 
-Use `meta` for machine-readable metadata.
+Use `meta` for machine-readable metadata (counts, pagination, flags). JSON field names follow the Python/Ninja schema (**`snake_case`**), for example:
 
 ```ts
 type ListProjectsResp = {
   items: ProjectSummary[]
   meta: {
     total: number
-    page: number
-    pageSize: number
   }
 }
 ```
 
 Do not use `message` for successful CRUD metadata.
+
+---
+
+### Rule E: paginated homogeneous collection
+
+Combine Rule B and Rule D: **`items`** is only the current page; **`meta`** carries pagination and any list-level aggregates.
+
+```ts
+type ListNotificationsResp = {
+  items: NotificationRow[]
+  meta: {
+    total: number
+    total_pages: number
+    current_page: number
+    page_size: number
+    unread_count: number
+  }
+}
+```
+
+Pagination is implemented in the backend query. Clients change `page` / `page_size` query parameters and refetch; they do not download all rows and paginate in memory.
 
 ---
 
@@ -448,6 +462,7 @@ This tradeoff is acceptable because semantic clarity is more important than arti
 4. Use `items` only for one homogeneous collection.
 5. Use domain-specific names for grouped or projected response shapes.
 6. Use `meta` for auxiliary machine-readable metadata.
+7. For paginated lists, paginate in the backend; return pagination fields in `meta`; use **1-based** `page` / `current_page` unless an ADR states otherwise; never fetch the full collection and slice on the client for page navigation.
 
 ````
 

@@ -123,7 +123,7 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
         )
 
         // update the server
-        updateValueQuery(node.id, CfObjectType.NODE, data, true)
+        // updateValueQuery(node.id, CfObjectType.NODE, data, true)
 
         reset({}, { keepValues: true })
       }, 300),

@@ -10,7 +10,7 @@ It is intentionally narrow in scope.
 - backend stack and layer boundaries
 - Editing rules
 - DTO / API contract rules
-- OpenAPI generation and client workflow
+- OpenAPI generation and **frontend client generation policy** (Hey API, Fetch SDK, TanStack Query)
 - current entity-documentation folder structure
 - starter runbooks for bootstrapping the new backend
 
@@ -18,7 +18,7 @@ It is intentionally narrow in scope.
 
 These topics are intentionally not ratified here:
 
-- frontend architecture
+- full frontend application architecture (routing, design system, etc.)
 - background jobs / workers
 - websocket or realtime design
 - deployment topology
@@ -26,6 +26,16 @@ These topics are intentionally not ratified here:
 - event-driven integration patterns
 - full permissions matrix
 - finalized folder contents for every future domain area
+
+## API contracts, OpenAPI, and frontend clients (canonical pointers)
+
+For **coding agents** and contributors implementing HTTP clients in `react/`:
+
+| Topic | Canonical doc |
+| --- | --- |
+| OpenAPI generation from Django Ninja, export, and **do-not** rules | [docs/architecture/openapi_and_client_workflow.md](architecture/openapi_and_client_workflow.md) |
+| **ADR:** Hey API + Fetch + TanStack Query; Redux graph store; not RTK Query as strategic codegen | [docs/architecture/adr_frontend_api_client.md](architecture/adr_frontend_api_client.md) |
+| Backend stack + short frontend summary | [docs/architecture/backend_stack.md](architecture/backend_stack.md) |
 
 ## Current Direction
 
@@ -47,6 +57,7 @@ Where possible, framework code remains at the boundary.
 3. `docs/architecture/llm_editing_rules.md`
 4. `docs/architecture/api_contracts.md`
 5. `docs/architecture/openapi_and_client_workflow.md`
+6. `docs/architecture/adr_frontend_api_client.md` (frontend API client and server-state decision)
 
 ## Working Rule
 

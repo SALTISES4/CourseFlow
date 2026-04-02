@@ -8,12 +8,6 @@ import AddIcon from '@mui/icons-material/Add'
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { getUsersForObjectQueryLegacy } from '@XMLHTTP/API/sharing'
-import {
-  useCreateCommentMutation,
-  useDeleteAllByObjectMutation,
-  useDeleteCommentMutation,
-  useFetchByObjectQuery
-} from '@XMLHTTP/API/workflowObjects/comment.rtk'
 import React, { useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 

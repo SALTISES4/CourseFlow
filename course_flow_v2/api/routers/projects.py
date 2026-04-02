@@ -25,7 +25,12 @@ from course_flow_v2.api.schemas.projects import (
 router = Router(tags=["projects"])
 
 
-@router.post("", response=ProjectDetailOut, auth=BearerAuth())
+@router.post(
+    "",
+    response=ProjectDetailOut,
+    auth=BearerAuth(),
+    operation_id="createProject",
+)
 def create_project(request, payload: ProjectCreateIn):
     current_user = get_current_user(request)
     svc = get_project_service()
@@ -48,11 +53,16 @@ def create_project(request, payload: ProjectCreateIn):
     )
 
 
-@router.get("/{project_uuid}/graph", response=ProjectGraphProjectionOut, auth=BearerAuth())
-def get_project_graph(request, project_uuid: UUID):
+@router.get(
+    "/{uuid}/graph",
+    response=ProjectGraphProjectionOut,
+    auth=BearerAuth(),
+    operation_id="getProjectGraph",
+)
+def get_project_graph(request, uuid: UUID):
     current_user = get_current_user(request)
     svc = get_project_service()
-    dto = svc.get_by_uuid(project_uuid)
+    dto = svc.get_by_uuid(uuid)
 
     if dto is None:
         raise HttpError(404, "Project not found")
@@ -61,18 +71,23 @@ def get_project_graph(request, project_uuid: UUID):
         raise HttpError(403, "Forbidden")
 
     proj = get_project_graph_projection_service()
-    payload = proj.get_by_project_uuid(project_uuid)
+    payload = proj.get_by_project_uuid(uuid)
 
     if payload is None:
         raise HttpError(404, "Project not found")
     return payload
 
 
-@router.get("/{project_uuid}", response=ProjectDetailOutResp, auth=BearerAuth())
-def get_project(request, project_uuid: UUID):
+@router.get(
+    "/{uuid}",
+    response=ProjectDetailOutResp,
+    auth=BearerAuth(),
+    operation_id="getProject",
+)
+def get_project(request, uuid: UUID):
     current_user = get_current_user(request)
     svc = get_project_service()
-    dto = svc.get_by_uuid(project_uuid)
+    dto = svc.get_by_uuid(uuid)
 
     if dto is None:
         raise HttpError(404, "Project not found")
@@ -80,13 +95,18 @@ def get_project(request, project_uuid: UUID):
     if not can_view_project(current_user=current_user, project=dto):
         raise HttpError(403, "Forbidden")
 
-    detail_payload = get_project_detail_service().get_by_project_uuid(project_uuid)
+    detail_payload = get_project_detail_service().get_by_project_uuid(uuid)
     if detail_payload is None:
         raise HttpError(404, "Project not found")
     return ProjectDetailOutResp(item=ProjectDetailOut.model_validate(detail_payload))
 
 
-@router.get("", response=ProjectListOut, auth=BearerAuth())
+@router.get(
+    "",
+    response=ProjectListOut,
+    auth=BearerAuth(),
+    operation_id="listProjects",
+)
 def list_projects(request):
     current_user = get_current_user(request)
     svc = get_project_service()
