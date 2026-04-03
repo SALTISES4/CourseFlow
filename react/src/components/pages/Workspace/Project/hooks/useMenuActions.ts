@@ -9,8 +9,11 @@ export const useMenuActions = () => {
   /*******************************************************
    * QUERY HOOK
    *******************************************************/
+
+  // @todo replace
   const [mutate, { isSuccess, isError, error, data: updateData }] =
     useDuplicateProjectMutation()
+
   const { onError, onSuccess } = useGenericMsgHandler()
   const navigate = useNavigate()
 

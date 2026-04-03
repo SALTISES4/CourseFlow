@@ -14,6 +14,7 @@ type PropsType = {
 const Favourite = ({ id, isFavourite, type }: PropsType) => {
   const [isFavouriteState, setFavouriteState] = useState<boolean>(isFavourite)
 
+  // @todo replace
   const [toggleMutate] = useToggleFavouriteMutation()
 
   const onSuccess = useCallback(() => {

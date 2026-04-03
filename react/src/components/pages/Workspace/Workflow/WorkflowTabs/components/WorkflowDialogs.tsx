@@ -11,6 +11,8 @@ import { useParams } from 'react-router-dom'
 const WorkflowDialogs = () => {
   const { uuid } = useParams()
   const workflowUuid = uuid ?? ''
+
+  // @todo replace
   const { refetch } = useGetWorkflowByUuidQuery(
     { uuid: workflowUuid },
     { skip: !workflowUuid }

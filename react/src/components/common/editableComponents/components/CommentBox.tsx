@@ -7,7 +7,6 @@ import { TComment, TUser } from '@cfRedux/types/type'
 import AddIcon from '@mui/icons-material/Add'
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { getUsersForObjectQueryLegacy } from '@XMLHTTP/API/sharing'
 import React, { useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
@@ -56,12 +55,19 @@ const CommentBox = ({ id, setShow, objectType }: PropsType) => {
   /**
    * get comments
    **/
+  // @todo replace
   const { data, refetch, isError, error } = useFetchByObjectQuery({
     objectId: id,
     objectType
   })
+
+  // @todo replace
   const [deleteOneMutation] = useDeleteCommentMutation()
+
+  // @todo replace
   const [deleteAllMutation] = useDeleteAllByObjectMutation()
+
+  // @todo replace
   const [createMutation] = useCreateCommentMutation()
 
   /*******************************************************
@@ -185,6 +191,7 @@ const CommentBox = ({ id, setShow, objectType }: PropsType) => {
     if (evt.nativeEvent?.data === '@') {
       setTagPosition(inputRef.current?.selectionStart || 0)
 
+    // @todo replace
       getUsersForObjectQueryLegacy(workflow.id, 'workflow', (response) => {
         setUserList(response.dataPackage)
         setTagging(true)

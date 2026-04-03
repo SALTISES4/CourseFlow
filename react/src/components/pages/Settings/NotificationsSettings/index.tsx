@@ -24,6 +24,8 @@ const NotificationsSettingsPage = () => {
   /*******************************************************
    * QUERY HOOKS
    *******************************************************/
+
+  // @todo replace
   const {
     data,
     error,
@@ -31,6 +33,7 @@ const NotificationsSettingsPage = () => {
     isError: isQueryError
   } = useGetNotificationSettingsQuery()
 
+  // @todo replace
   const [mutate, { isSuccess, isError, data: updateData }] =
     useUpdateNotificationSettingsMutation()
 

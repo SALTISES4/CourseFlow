@@ -25,7 +25,10 @@ const ContributorRemoveDialog = ({
   /*******************************************************
    * QUERIES
    *******************************************************/
+  // @todo replace
   const [mutate] = useWorkspaceUserDeleteMutation()
+
+  // @todo replace
   const { refetch } = useGetUsersForObjectQuery({
     id,
     payload: {
@@ -43,6 +46,7 @@ const ContributorRemoveDialog = ({
     refetch()
   }
 
+  // @todo replace
   async function onSubmit() {
     const args: WorkspaceDeleteUserArgs = {
       id: string(id),

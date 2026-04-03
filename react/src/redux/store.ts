@@ -10,7 +10,6 @@ import sidebarReducer from '@cfRedux/slices/sidebar.slice'
 import svgLinkReducer from '@cfRedux/slices/svglink.slice'
 import viewsettingsReducer from '@cfRedux/slices/viewsettings.slice'
 import { configureStore } from '@reduxjs/toolkit'
-import { cfApi } from '@XMLHTTP/API/api'
 
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
@@ -30,16 +29,13 @@ const store = configureStore({
     workspace: workspaceReducer,
     sidebar: sidebarReducer,
     svglink: svgLinkReducer,
-    viewsettings: viewsettingsReducer,
-    [cfApi.reducerPath]: cfApi.reducer
+    viewsettings: viewsettingsReducer
   },
   devTools: process.env.NODE_ENV !== 'production',
   // Adding the api middleware enables caching, invalidation, polling,
   // and other useful features of `rtk-query`.
   middleware: (getDefaultMiddleware) => {
-    return getDefaultMiddleware()
-      .prepend(listenerMiddleware.middleware)
-      .concat(cfApi.middleware)
+    return getDefaultMiddleware().prepend(listenerMiddleware.middleware)
   }
 })
 export type AppDispatch = typeof store.dispatch

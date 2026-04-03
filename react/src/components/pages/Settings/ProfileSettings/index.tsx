@@ -49,7 +49,10 @@ const ProfileSettingsPage = () => {
   /*******************************************************
    * QUERY HOOKS
    *******************************************************/
+  // @todo replace
   const { data, error, isLoading, isError } = useGetProfileSettingsQuery()
+
+  // @todo replace
   const [mutate] = useUpdateProfileSettingsMutation()
 
   const { onError, onSuccess } = useGenericMsgHandler()

@@ -22,6 +22,7 @@ const ArchiveDialog = ({
    *******************************************************/
   const { type, show, onClose } = useDialog(DialogMode.ARCHIVE)
 
+  // @todo replace
   const [mutate] = useArchiveMutation()
 
   const { onError, onSuccess } = useGenericMsgHandler()

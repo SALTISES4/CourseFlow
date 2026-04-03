@@ -28,6 +28,7 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
   const { dispatch } = useDialog()
 
   const { data, error, isLoading, isError, refetch } =
+   // @todo replace
     useGetUsersForObjectQuery({
       id: workspaceId,
       payload: {
@@ -38,6 +39,7 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
   // Utility.logger({ workspaceType })
   // Utility.logger({ data })
 
+  // @todo replace
   const [mutate, { isError: isMutateError, error: mutateError, isSuccess }] =
     useWorkspaceUserUpdateMutation()
 

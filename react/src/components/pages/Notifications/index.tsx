@@ -76,6 +76,7 @@ const NotificationsPage = (): JSX.Element => {
     }
   }, [data?.meta?.current_page, page])
 
+  // @todo replace
   const markAllMutation = useMutation({
     ...markAllMyNotificationsAsReadMutation(),
     onSuccess: () => {
@@ -83,6 +84,7 @@ const NotificationsPage = (): JSX.Element => {
     }
   })
 
+  // @todo replace
   const markOneMutation = useMutation({
     ...markOneNotificationAsReadMutation(),
     onSuccess: () => {
@@ -156,6 +158,7 @@ const NotificationsPage = (): JSX.Element => {
       { onSettled: () => handleMenuClose() }
     )
   }
+
 
   function onMarkAllAsReadClick(e: MouseEvent) {
     e.preventDefault()

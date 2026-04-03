@@ -1,3 +1,4 @@
+import { listWorkflowsOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { _t } from '@cf/utility/Utility.class'
 import * as SC from '@cfComponents/globalNav/Sidebar/styles'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -7,6 +8,7 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
+import { useQuery } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
 
 type WorkflowNode = {
@@ -29,11 +31,31 @@ type WorkflowNode = {
 const RelatedWorkflowList = () => {
   const { uuid } = useParams()
 
-  const { data: childData, isLoading: childIsLoading } =
-    useListRelatedWorkflowParentsQuery({ uuid: uuid }, { skip: !uuid })
+  // const { data: childData, isLoading: childIsLoading } =
+  //   useListRelatedWorkflowParentsQuery({ uuid: uuid }, { skip: !uuid })
+  //
+  // const { data: parentData, isLoading: parentIsLoading } =
+  //   useListRelatedWorkflowChildrenQuery({ uuid: uuid }, { skip: !uuid })
 
-  const { data: parentData, isLoading: parentIsLoading } =
-    useListRelatedWorkflowChildrenQuery({ uuid: uuid }, { skip: !uuid })
+  const childQuery = useQuery({
+    ...listWorkflowsOptions({
+      query: {
+        projectUuid: uuid,
+        page: 1
+      }
+    }),
+    enabled: false
+  })
+
+  const parentQuery = useQuery({
+    ...listWorkflowsOptions({
+      query: {
+        projectUuid: uuid,
+        page: 1
+      }
+    }),
+    enabled: false
+  })
 
   if (!uuid) {
     return null
@@ -43,17 +65,17 @@ const RelatedWorkflowList = () => {
    * RENDER COMPONENTS
    *******************************************************/
   const ParentWorkflows = () => {
-    if (parentIsLoading) {
+    if (parentQuery.isLoading) {
       return <Loader />
     }
 
-    if (!parentData || !parentData.parentWorkflows.length) {
+    if (!parentQuery.data || !parentQuery.data.items.length) {
       return <></>
     }
 
     const parentWorkflows = Array.from(
       new Map(
-        (parentData.parentWorkflows as WorkflowNode[]).map((workflow) => [
+        (parentQuery.data.items as WorkflowNode[]).map((workflow) => [
           workflow.id,
           workflow
         ])
@@ -87,11 +109,11 @@ const RelatedWorkflowList = () => {
   }
 
   const ChildWorkflows = () => {
-    if (childIsLoading) {
+    if (childQuery.isLoading) {
       return <Loader />
     }
 
-    if (!childData || childData?.length) {
+    if (!childQuery.data || childQuery.data.items.length) {
       return <></>
     }
 
@@ -101,10 +123,10 @@ const RelatedWorkflowList = () => {
         <SC.SectionWrap>
           <SC.SectionLabel variant="body1">{_t('Contains')}</SC.SectionLabel>
           <List>
-            {childData.map((workflow) => {
+            {childQuery.data.items.map((workflow) => {
               const url = workflowUrl(workflow)
               return (
-                <ListItem disablePadding dense key={workflow.id}>
+                <ListItem disablePadding dense key={workflow.uuid}>
                   <ListItemButton
                     component={Link}
                     to={url}
