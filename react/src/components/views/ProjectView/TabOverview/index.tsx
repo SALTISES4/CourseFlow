@@ -54,7 +54,7 @@ const OverviewTab = ({
         <SC.InfoBlockTitle>{_t('Permissions')}</SC.InfoBlockTitle>
 
         <UserPermissions
-          workspaceId={projectUuid}
+          workspaceId={projectUuid ?? ''}
           author={author}
           workspaceType={WorkspaceType.PROJECT}
         />

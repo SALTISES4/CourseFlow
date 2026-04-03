@@ -56,6 +56,14 @@ class ProjectDetailOutResp(CamelSchema):
     item: ProjectDetailOut
 
 
+class ProjectDuplicatePlaceholderOut(CamelSchema):
+    """Response for POST /project/{uuid}/duplicate while duplication is not implemented."""
+
+    success: bool = True
+    message: str
+    project_uuid: UUID
+
+
 class TaskMetaOut(CamelSchema):
     kind: str = "task_meta"
     context: str

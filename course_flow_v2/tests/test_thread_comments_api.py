@@ -129,3 +129,114 @@ def test_orphan_thread_without_workflow_context_returns_404(client: Client, user
         **_auth_header(raw_token),
     )
     assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_create_thread_comment_and_list_includes_it(client: Client, user):
+    raw_token = _issue_token_for(user)
+    _, thread = _workflow_with_section_thread(user)
+
+    create = client.post(
+        f"/api/thread/{thread.uuid}/comments",
+        data={"body": "New remark"},
+        content_type="application/json",
+        **_auth_header(raw_token),
+    )
+    assert create.status_code == 200, create.content
+    created = create.json()
+    assert created["body"] == "New remark"
+    assert created["threadUuid"] == str(thread.uuid)
+
+    listed = client.get(
+        f"/api/thread/{thread.uuid}/comments",
+        **_auth_header(raw_token),
+    )
+    assert listed.status_code == 200
+    bodies = [row["body"] for row in listed.json()]
+    assert "First comment" in bodies
+    assert "New remark" in bodies
+
+
+@pytest.mark.django_db
+def test_delete_one_thread_comment(client: Client, user):
+    raw_token = _issue_token_for(user)
+    _, thread = _workflow_with_section_thread(user)
+    listed = client.get(
+        f"/api/thread/{thread.uuid}/comments",
+        **_auth_header(raw_token),
+    )
+    comment_uuid = listed.json()[0]["uuid"]
+
+    deleted = client.delete(
+        f"/api/thread/{thread.uuid}/comments/{comment_uuid}",
+        **_auth_header(raw_token),
+    )
+    assert deleted.status_code == 200
+    assert deleted.json() == {"success": True}
+
+    listed_after = client.get(
+        f"/api/thread/{thread.uuid}/comments",
+        **_auth_header(raw_token),
+    )
+    assert listed_after.json() == []
+
+
+@pytest.mark.django_db
+def test_delete_all_thread_comments(client: Client, user):
+    raw_token = _issue_token_for(user)
+    _, thread = _workflow_with_section_thread(user)
+    client.post(
+        f"/api/thread/{thread.uuid}/comments",
+        data={"body": "Second"},
+        content_type="application/json",
+        **_auth_header(raw_token),
+    )
+
+    deleted = client.delete(
+        f"/api/thread/{thread.uuid}/comments",
+        **_auth_header(raw_token),
+    )
+    assert deleted.status_code == 200
+    body = deleted.json()
+    assert body["success"] is True
+    assert body["deletedCount"] == 2
+
+    listed = client.get(
+        f"/api/thread/{thread.uuid}/comments",
+        **_auth_header(raw_token),
+    )
+    assert listed.json() == []
+
+
+@pytest.mark.django_db
+def test_delete_comment_fails_when_comment_belongs_to_other_thread(
+    client: Client, user
+):
+    raw_token = _issue_token_for(user)
+    _, thread_a = _workflow_with_section_thread(user)
+    _, thread_b = _workflow_with_section_thread(user)
+
+    listed_b = client.get(
+        f"/api/thread/{thread_b.uuid}/comments",
+        **_auth_header(raw_token),
+    )
+    comment_on_b = listed_b.json()[0]["uuid"]
+
+    response = client.delete(
+        f"/api/thread/{thread_a.uuid}/comments/{comment_on_b}",
+        **_auth_header(raw_token),
+    )
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_create_thread_comment_rejects_empty_body(client: Client, user):
+    raw_token = _issue_token_for(user)
+    _, thread = _workflow_with_section_thread(user)
+    response = client.post(
+        f"/api/thread/{thread.uuid}/comments",
+        data={"body": "   "},
+        content_type="application/json",
+        **_auth_header(raw_token),
+    )
+    assert response.status_code == 400

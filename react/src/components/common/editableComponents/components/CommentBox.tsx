@@ -1,36 +1,37 @@
+import {
+  createThreadCommentMutation,
+  deleteAllThreadCommentsMutation,
+  deleteThreadCommentMutation,
+  listThreadCommentsOptions,
+  listThreadCommentsQueryKey
+} from '@cf/api/gen/@tanstack/react-query.gen'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
-import ActionCreator from '@cfRedux/ActionCreator'
-import { TComment, TUser } from '@cfRedux/types/type'
+import { TUser } from '@cfRedux/types/type'
 import AddIcon from '@mui/icons-material/Add'
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteIcon from '@mui/icons-material/Delete'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import React, { useRef, useState } from 'react'
-import { useDispatch } from 'react-redux'
 
-// Props definition
+// Props definition — `id` is the thread UUID for v2 thread comment endpoints
 type PropsType = {
   id: string
   setShow: (show: boolean) => void
   objectType: CfObjectType
 }
 
-type StateType = {
-  tagging: boolean
-  userList: TUser[]
-}
+const CommentBox = ({
+  id,
+  setShow: _setShow,
+  objectType: _objectType
+}: PropsType) => {
+  const queryClient = useQueryClient()
 
-const CommentBox = ({ id, setShow, objectType }: PropsType) => {
-  const dispatch = useDispatch()
-
-  /*******************************************************
-   * HOOKS: REDUX
-   *******************************************************/
-
-  const comments = []
-  const unreadComments: TComment[] = []
+  const readOnly = false
+  const addComments = true
 
   /*******************************************************
    * HOOKS: REFS
@@ -45,30 +46,42 @@ const CommentBox = ({ id, setShow, objectType }: PropsType) => {
   const [userList, setUserList] = useState<TUser[]>([])
   const [tagPosition, setTagPosition] = useState(0)
 
-  const readOnly = false
-  const addComments = true
-
   /*******************************************************
    * QUERIES
    *******************************************************/
   const { onError, onSuccess } = useGenericMsgHandler()
-  /**
-   * get comments
-   **/
-  // @todo replace
-  const { data, refetch, isError, error } = useFetchByObjectQuery({
-    objectId: id,
-    objectType
+
+  const { data: comments = [], refetch } = useQuery({
+    ...listThreadCommentsOptions({ path: { uuid: id } }),
+    enabled: Boolean(id)
   })
 
-  // @todo replace
-  const [deleteOneMutation] = useDeleteCommentMutation()
+  const invalidateThreadComments = async () => {
+    await queryClient.invalidateQueries({
+      queryKey: listThreadCommentsQueryKey({ path: { uuid: id } })
+    })
+  }
 
-  // @todo replace
-  const [deleteAllMutation] = useDeleteAllByObjectMutation()
+  const deleteOneMutation = useMutation({
+    ...deleteThreadCommentMutation(),
+    onSuccess: async () => {
+      await invalidateThreadComments()
+    }
+  })
 
-  // @todo replace
-  const [createMutation] = useCreateCommentMutation()
+  const deleteAllMutation = useMutation({
+    ...deleteAllThreadCommentsMutation(),
+    onSuccess: async () => {
+      await invalidateThreadComments()
+    }
+  })
+
+  const createMutation = useMutation({
+    ...createThreadCommentMutation(),
+    onSuccess: async () => {
+      await invalidateThreadComments()
+    }
+  })
 
   /*******************************************************
    * LIFE CYCLE HOOKS
@@ -85,42 +98,27 @@ const CommentBox = ({ id, setShow, objectType }: PropsType) => {
   /*******************************************************
    * COMMENT CRUD HANDLERS
    *******************************************************/
-  const reloadComments = async () => {
-    await refetch()
-    dispatch(
-      ActionCreator.reloadCommentsAction(id, objectType, data.dataPackage)
-    )
-  }
 
-  const removeComment = async (commentid: string) => {
+  const removeComment = async (commentUuid: string) => {
     try {
-      const resp = await deleteOneMutation({
-        payload: {
-          objectId: id,
-          commentId,
-          objectType
-        }
-      }).unwrap()
+      const resp = await deleteOneMutation.mutateAsync({
+        path: { uuid: id, comment_uuid: commentUuid }
+      })
       onSuccess(resp)
     } catch (e) {
       onError(e)
     }
-    reloadComments()
   }
 
   const removeAllCommentsHandler = async () => {
     try {
-      const resp = await deleteAllMutation({
-        payload: {
-          objectId: id,
-          objectType
-        }
-      }).unwrap()
+      const resp = await deleteAllMutation.mutateAsync({
+        path: { uuid: id }
+      })
       onSuccess(resp)
     } catch (e) {
       onError(e)
     }
-    reloadComments()
   }
 
   const createComment = async () => {
@@ -129,22 +127,17 @@ const CommentBox = ({ id, setShow, objectType }: PropsType) => {
       return
     }
 
-    inputRef.current.value = ''
-    submitRef.current?.classList.add('hidden') // why
-
     try {
-      const resp = await createMutation({
-        payload: {
-          objectId: id,
-          objectType,
-          text
-        }
-      }).unwrap()
+      const resp = await createMutation.mutateAsync({
+        path: { uuid: id },
+        body: { body: text }
+      })
       onSuccess(resp)
+      inputRef.current.value = ''
+      submitRef.current?.classList.add('hidden')
     } catch (e) {
       onError(e)
     }
-    reloadComments()
   }
 
   /*******************************************************
@@ -180,6 +173,7 @@ const CommentBox = ({ id, setShow, objectType }: PropsType) => {
 
   const textChange = (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
     return
+    /* eslint-disable no-undef -- legacy @todo (dead after early return) */
     const value = inputRef.current?.value || ''
 
     if (value) {
@@ -191,7 +185,7 @@ const CommentBox = ({ id, setShow, objectType }: PropsType) => {
     if (evt.nativeEvent?.data === '@') {
       setTagPosition(inputRef.current?.selectionStart || 0)
 
-    // @todo replace
+      // @todo replace
       getUsersForObjectQueryLegacy(workflow.id, 'workflow', (response) => {
         setUserList(response.dataPackage)
         setTagging(true)
@@ -199,6 +193,7 @@ const CommentBox = ({ id, setShow, objectType }: PropsType) => {
     } else if (tagging) {
       setTagging(false)
     }
+    /* eslint-enable no-undef */
   }
 
   const commentsSeen = () => {
@@ -226,20 +221,20 @@ const CommentBox = ({ id, setShow, objectType }: PropsType) => {
   const Comments = () => (
     <>
       {comments.map((comment, index) => {
-        const isUnread = unreadComments.includes(comment)
+        const isUnread = false
         const commentClass = isUnread ? 'comment unread' : 'comment'
-        const text = comment.text.replace(
+        const text = comment.body.replace(
           /@\w[@a-zA-Z0-9_.]{1,}/g,
           (val) => `<b>${val}</b>`
         )
 
         return (
-          <div className={commentClass} key={index}>
+          <div className={commentClass} key={comment.uuid ?? index}>
             <div className="comment-by">
               <div className="comment-user">
-                {Utility.getUserDisplay(comment.user)}
+                {Utility.getUserDisplay(comment.author)}
               </div>
-              <div className="comment-on">{comment.createdOn}</div>
+              <div className="comment-on">{comment.dateCreated}</div>
             </div>
             <div
               className="comment-text"
@@ -250,7 +245,7 @@ const CommentBox = ({ id, setShow, objectType }: PropsType) => {
                 <div
                   className="action-button"
                   title={_t('Delete Comment')}
-                  onClick={() => removeComment(comment.id)}
+                  onClick={() => removeComment(comment.uuid)}
                 >
                   <DeleteIcon />
                 </div>
@@ -270,7 +265,6 @@ const CommentBox = ({ id, setShow, objectType }: PropsType) => {
           <DeleteIcon onClick={removeAllCommentsHandler} />
         )}
       </div>
-      asdfasdf
       <hr />
       <Comments />
       {addComments && (

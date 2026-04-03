@@ -1,25 +1,17 @@
+import { duplicateProjectPlaceholderMutation } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { CFRoutes } from '@cf/router/appRoutes'
-import { generatePath, useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
 
 export const useMenuActions = () => {
   const { dispatch: dispatchDialog } = useDialog()
 
-  /*******************************************************
-   * QUERY HOOK
-   *******************************************************/
-
-  // @todo replace
-  const [mutate, { isSuccess, isError, error, data: updateData }] =
-    useDuplicateProjectMutation()
+  const duplicateProjectMutation = useMutation({
+    ...duplicateProjectPlaceholderMutation()
+  })
 
   const { onError, onSuccess } = useGenericMsgHandler()
-  const navigate = useNavigate()
 
-  /*******************************************************
-   * MENU HANDLERS
-   *******************************************************/
   /**
    *
    */
@@ -64,16 +56,14 @@ export const useMenuActions = () => {
 
   /**
    *
-   * @param id
+   * @param projectUuid — v2 project UUID (path param for POST /api/project/{uuid}/duplicate)
    */
   async function duplicateProject(projectUuid: string) {
     try {
-      const response = await mutate({ projectUuid }).unwrap()
-      onSuccess(response)
-      const url = generatePath(CFRoutes.PROJECT, {
-        id: String(response.uuid)
+      const response = await duplicateProjectMutation.mutateAsync({
+        path: { uuid: projectUuid }
       })
-      navigate(url)
+      onSuccess(response)
     } catch (err) {
       onError(err)
     }

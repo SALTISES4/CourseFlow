@@ -42,7 +42,7 @@ const ProjectDetails = () => {
   /*******************************************************
    * QUERIES
    *******************************************************/
-  const { data, refetch, isLoading, isError } = useQuery({
+  const { data, error, refetch, isLoading, isError } = useQuery({
     ...getProjectOptions({
       path: {
         uuid: projectUuid as string

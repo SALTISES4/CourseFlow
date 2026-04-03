@@ -1,3 +1,8 @@
+import {
+  getMyNotificationSettingsOptions,
+  getMyNotificationSettingsQueryKey,
+  patchMyNotificationSettingsMutation
+} from '@cf/api/gen/@tanstack/react-query.gen'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { OuterContentWrap } from '@cf/mui/helper'
 import strings from '@cf/utility/strings'
@@ -7,6 +12,7 @@ import FormGroup from '@mui/material/FormGroup'
 import { styled } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
@@ -21,33 +27,27 @@ const PageTitle = styled(Box)(({ theme }) => ({
 }))
 
 const NotificationsSettingsPage = () => {
-  /*******************************************************
-   * QUERY HOOKS
-   *******************************************************/
+  const queryClient = useQueryClient()
+  const { data } = useQuery({
+    ...getMyNotificationSettingsOptions()
+  })
 
-  // @todo replace
-  const {
-    data,
-    error,
-    isLoading,
-    isError: isQueryError
-  } = useGetNotificationSettingsQuery()
-
-  // @todo replace
-  const [mutate, { isSuccess, isError, data: updateData }] =
-    useUpdateNotificationSettingsMutation()
+  const patchNotificationSettings = useMutation({
+    ...patchMyNotificationSettingsMutation(),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: getMyNotificationSettingsQueryKey()
+      })
+    }
+  })
 
   const { onError, onSuccess } = useGenericMsgHandler()
 
-  /*******************************************************
-   * FORM HOOK
-   *******************************************************/
   const {
     control,
     handleSubmit,
     reset,
-    setValue,
-    formState: { errors }
+    setValue
   } = useForm({
     defaultValues: {
       notifications: false
@@ -55,19 +55,18 @@ const NotificationsSettingsPage = () => {
   })
 
   useEffect(() => {
-    if (data) {
-      reset({ notifications: data.item.notifications_active })
+    if (data?.item) {
+      reset({ notifications: data.item.notificationsActive })
     }
   }, [data, reset])
 
-  /*******************************************************
-   * HANDLERS
-   *******************************************************/
   const onSwitchChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue('notifications', event.target.checked)
-    await handleSubmit(async (data) => {
+    await handleSubmit(async (formData) => {
       try {
-        const resp = await mutate(data).unwrap()
+        const resp = await patchNotificationSettings.mutateAsync({
+          body: { notificationsActive: formData.notifications }
+        })
         onSuccess(resp)
       } catch (err) {
         onError(err)
@@ -75,9 +74,6 @@ const NotificationsSettingsPage = () => {
     })()
   }
 
-  /*******************************************************
-   * RENDER
-   *******************************************************/
   return (
     <OuterContentWrap>
       <PageTitle>

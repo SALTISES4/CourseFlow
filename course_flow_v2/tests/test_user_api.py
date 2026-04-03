@@ -161,6 +161,91 @@ def test_get_user_list_returns_items_and_meta(client: Client, user, other_user):
 
 
 @pytest.mark.django_db
+def test_get_user_list_filter_by_first_name(client: Client, user):
+    user_model = get_user_model()
+    user_model.objects.create_user(
+        email="zara.zed@example.com",
+        password="password123",
+        first_name="Zara",
+        last_name="Zed",
+    )
+    user_model.objects.create_user(
+        email="bee.unique@example.com",
+        password="password123",
+        first_name="Alpha",
+        last_name="Bee",
+    )
+    raw_token = _issue_token_for(user)
+    response = client.get(
+        "/api/user?filter=Alpha",
+        **_auth_header(raw_token),
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["meta"]["total"] == 1
+    assert body["items"][0]["firstName"] == "Alpha"
+
+
+@pytest.mark.django_db
+def test_get_user_list_filter_by_last_name(client: Client, user):
+    user_model = get_user_model()
+    user_model.objects.create_user(
+        email="ln-one@example.com",
+        password="password123",
+        first_name="X",
+        last_name="UniqueLast",
+    )
+    user_model.objects.create_user(
+        email="ln-two@example.com",
+        password="password123",
+        first_name="Y",
+        last_name="Other",
+    )
+    raw_token = _issue_token_for(user)
+    response = client.get(
+        "/api/user?filter=UniqueLast",
+        **_auth_header(raw_token),
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["meta"]["total"] == 1
+    assert body["items"][0]["lastName"] == "UniqueLast"
+
+
+@pytest.mark.django_db
+def test_get_user_list_filter_by_email(client: Client, user):
+    user_model = get_user_model()
+    user_model.objects.create_user(
+        email="very.special.email@example.com",
+        password="password123",
+        first_name="E",
+        last_name="M",
+    )
+    raw_token = _issue_token_for(user)
+    response = client.get(
+        "/api/user?filter=very.special",
+        **_auth_header(raw_token),
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["meta"]["total"] == 1
+    assert body["items"][0]["email"] == "very.special.email@example.com"
+
+
+@pytest.mark.django_db
+def test_get_user_list_blank_filter_same_as_unfiltered(client: Client, user, other_user):
+    raw_token = _issue_token_for(user)
+    unfiltered = client.get("/api/user", **_auth_header(raw_token))
+    blank = client.get("/api/user?filter=", **_auth_header(raw_token))
+    spaces = client.get("/api/user?filter=%20%20", **_auth_header(raw_token))
+    assert unfiltered.status_code == 200
+    assert blank.status_code == 200
+    assert spaces.status_code == 200
+    assert unfiltered.json()["meta"]["total"] == blank.json()["meta"]["total"]
+    assert unfiltered.json()["meta"]["total"] == spaces.json()["meta"]["total"]
+
+
+@pytest.mark.django_db
 def test_get_user_list_unauthorized_rejected(client: Client):
     response = client.get("/api/user")
     assert response.status_code == 401

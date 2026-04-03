@@ -32,6 +32,11 @@ class ProjectDiscipline(models.Model):
 
 
 class ProjectTeamMember(models.Model):
+    class Role(models.TextChoices):
+        EDITOR = "editor", "Editor"
+        COMMENTER = "commenter", "Commenter"
+        VIEWER = "viewer", "Viewer"
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -41,6 +46,11 @@ class ProjectTeamMember(models.Model):
         ProjectTeam,
         on_delete=models.CASCADE,
         related_name="members",
+    )
+    role = models.CharField(
+        max_length=32,
+        choices=Role.choices,
+        default=Role.VIEWER,
     )
 
     class Meta:

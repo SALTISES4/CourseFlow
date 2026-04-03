@@ -1,4 +1,9 @@
 import { StyledBox, StyledDialog } from '@cf/components/common/dialog/styles'
+import {
+  addProjectTeamMembersMutation,
+  listProjectTeamQueryKey,
+  listUsersOptions
+} from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { PermissionGroup } from '@cf/types/common'
@@ -15,22 +20,15 @@ import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormLabel from '@mui/material/FormLabel'
 import InputAdornment from '@mui/material/InputAdornment'
-import InputLabel from '@mui/material/InputLabel'
-import MenuItem from '@mui/material/MenuItem'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
-import Select from '@mui/material/Select'
 import TextField from '@mui/material/TextField'
-import { debounce } from '@mui/material/utils'
-import { EmptyPostResp } from '@XMLHTTP/types/query'
-import { isDraft, produce } from 'immer'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
-import dummyUserData from './dummyUserData'
-
 interface IFormInputs {
-  userid: string[] | null
+  userId: string[] | null
   group: PermissionGroup | null
 }
 
@@ -39,9 +37,24 @@ type UserFormOption = {
   id: string
 }
 
+function permissionGroupToRole(
+  group: PermissionGroup
+): 'editor' | 'commenter' | 'viewer' {
+  switch (group) {
+    case PermissionGroup.EDIT:
+      return 'editor'
+    case PermissionGroup.COMMENT:
+      return 'commenter'
+    case PermissionGroup.VIEW:
+      return 'viewer'
+    default:
+      return 'viewer'
+  }
+}
+
 const ContributorAddDialog = ({
   id,
-  type,
+  type: _type,
   refetch
 }: {
   id: string
@@ -49,13 +62,15 @@ const ContributorAddDialog = ({
   refetch: () => void
 }) => {
   const { show, onClose } = useDialog(DialogMode.CONTRIBUTOR_ADD)
-  const [state, setState] = useState<{
-    search: string
-    suggestions: UserFormOption[]
-  }>({
-    search: '',
-    suggestions: []
-  })
+  const { onError, onSuccess } = useGenericMsgHandler()
+  const queryClient = useQueryClient()
+  const [search, setSearch] = useState('')
+  const [debouncedFilter, setDebouncedFilter] = useState('')
+
+  useEffect(() => {
+    const t = window.setTimeout(() => setDebouncedFilter(search), 500)
+    return () => window.clearTimeout(t)
+  }, [search])
 
   const { control, reset, watch } = useForm<IFormInputs>({
     defaultValues: {
@@ -66,55 +81,59 @@ const ContributorAddDialog = ({
 
   const userIds = watch('userId')
   const role = watch('group')
-  const disableSubmit = !userIds || userIds?.length === 0 || !role
+  const disableSubmit = !userIds || userIds?.length === 0 || !role || !id
 
-  const debouncedSearch = useMemo(
+  const { data: listUsersData } = useQuery({
+    ...listUsersOptions({
+      query: debouncedFilter.trim()
+        ? { filter: debouncedFilter.trim() }
+        : undefined
+    }),
+    enabled: Boolean(show && id && debouncedFilter.trim())
+  })
+
+  const userOptions: UserFormOption[] = useMemo(
     () =>
-      debounce((search: string) => {
-        console.log('contributor debounced search', { search })
-
-        if (!search.trim().length) {
-          return setState(
-            produce((draft) => {
-              draft.suggestions = []
-            })
-          )
-        }
-
-        // NOTE: fake "user suggestion" list, just for preview
-        // actually fire off a request and save results to suggestions
-        setState(
-          produce((draft) => {
-            const start = Math.floor(Math.random() * dummyUserData.length)
-            const end =
-              start + Math.floor(Math.random() * (dummyUserData.length - start))
-
-            draft.suggestions = dummyUserData.slice(start, end + 1)
-          })
-        )
-      }, 500),
-    []
+      (listUsersData?.items ?? []).map((u) => ({
+        id: u.uuid,
+        name:
+          [u.firstName, u.lastName].filter(Boolean).join(' ').trim() || u.email
+      })),
+    [listUsersData]
   )
 
-  useEffect(() => {
-    if (show) {
-      debouncedSearch(state.search)
-    }
-  }, [show, state.search, debouncedSearch])
-
-  // sync autocomplete to local (uncontrolled) state
-  const onAutocompleteChange = useCallback((value: string) => {
-    setState(
-      produce((draft) => {
-        draft.search = value
+  const addMembers = useMutation({
+    ...addProjectTeamMembersMutation(),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: listProjectTeamQueryKey({ path: { uuid: id } })
       })
-    )
-  }, [])
+    }
+  })
 
-  // TODO: handle form submission
-  const onSubmit = useCallback(() => {
-    console.log('contributor add dialog submit', { userIds, role })
-  }, [userIds, role])
+  const onSubmit = useCallback(async () => {
+    if (!userIds?.length || role == null || !id) {
+      return
+    }
+    try {
+      await addMembers.mutateAsync({
+        path: { uuid: id },
+        body: {
+          userUuids: userIds,
+          role: permissionGroupToRole(role)
+        }
+      })
+      onSuccess({ message: _t('Success!') })
+      refetch()
+      onClose()
+    } catch (err) {
+      onError(err)
+    }
+  }, [addMembers, id, onClose, onError, onSuccess, refetch, role, userIds])
+
+  const onAutocompleteChange = useCallback((value: string) => {
+    setSearch(value)
+  }, [])
 
   return (
     <StyledDialog
@@ -137,7 +156,7 @@ const ContributorAddDialog = ({
               render={({ field }) => (
                 <Autocomplete
                   multiple
-                  options={state.suggestions}
+                  options={userOptions}
                   getOptionLabel={(user) => user.name}
                   onChange={(_, selectedUsers) =>
                     field.onChange(selectedUsers.map((user) => user.id))
@@ -209,189 +228,5 @@ const ContributorAddDialog = ({
     </StyledDialog>
   )
 }
-
-// // NOTE: original implementation without any debouncing / autocomplete
-// /**
-//  * @constructor
-//  */
-// const ContributorAddDialog = ({
-//   id,
-//   type,
-//   refetch
-// }: {
-//   id: string
-//   type: WorkspaceType
-//   refetch: () => void
-// }) => {
-//   /*******************************************************
-//    * HOOKS
-//    *******************************************************/
-//   const { show, onClose } = useDialog(DialogMode.CONTRIBUTOR_ADD)
-
-//   const [userFormOptions, setUserFormOptions] = useState<UserFormOption[]>([])
-//   const { onError, onSuccess } = useGenericMsgHandler()
-
-//   /*******************************************************
-//    * QUERIES
-//    *******************************************************/
-
-//   //@todo update this filter when we connect the search input
-//   const { data, isLoading } = useGetUsersForObjectAvailableQuery({
-//     id,
-//     payload: {
-//       filter: '',
-//       objectType: type
-//     }
-//   })
-
-//   const [mutate] = useWorkspaceUserCreateMutation()
-
-//   /*******************************************************
-//    * FORMS
-//    *******************************************************/
-//   const { control, handleSubmit, reset, watch } = useForm<IFormInputs>({
-//     defaultValues: {
-//       userId: null,
-//       group: null
-//     }
-//   })
-
-//   /*******************************************************
-//    * CONSTANTS
-//    *******************************************************/
-//   const contributor = watch('userId')
-//   const role = watch('group')
-//   const disableSubmit = !contributor || !role || isLoading
-
-//   /*******************************************************
-//    * FUNCTION
-//    *******************************************************/
-//   function onSuccessHandler(response: EmptyPostResp) {
-//     onSuccess(response)
-//     onClose()
-//     refetch()
-//   }
-
-//   async function onSubmit(data: IFormInputs) {
-//     const args: WorkspaceUserArgs = {
-//       id,
-//       payload: {
-//         userId: data.userId,
-//         type,
-//         group: data.group
-//       }
-//     }
-
-//     try {
-//       const response = await mutate(args).unwrap()
-//       onSuccessHandler(response)
-//     } catch (err) {
-//       onError(err)
-//     }
-//   }
-
-//   // https://github.com/mui/material-ui/issues/38489
-//   // TODO: Try to replace Select with an MUI Autocomplete
-//   // which currently breaks when Popover goes into too much recursion
-//   // (apparently when spreading props on top of the input)
-//   // but the real issue is `ref` (InputProps.ref) drilling and
-//   // causing a bunch of circular references which eventually kabooms
-
-//   useEffect(() => {
-//     const users = data
-//       ? data.dataPackage.map((item) => ({
-//           id: item.id,
-//           name: item.firstName + ' ' + item.lastName
-//         }))
-//       : []
-//     setUserFormOptions(users)
-//   }, [data])
-
-//   /*******************************************************
-//    * RENDER
-//    *******************************************************/
-//   return (
-//     <StyledDialog
-//       open={!!show}
-//       onClose={onClose}
-//       TransitionProps={{
-//         onExited: () => reset()
-//       }}
-//       fullWidth
-//       maxWidth="sm"
-//       aria-labelledby="add-contributor-modal"
-//     >
-//       <DialogTitle id="add-contributor-modal">
-//         {_t('Add contributor')}
-//       </DialogTitle>
-//       <DialogContent dividers>
-//         <StyledBox component="form">
-//           <FormControl variant="standard" fullWidth>
-//             <InputLabel>{_t('Courseflow Users')}</InputLabel>
-//             {/*
-//                   @todo
-//               *  this needs to be a search 'input' field as well like the library search |
-//               *  search input --> debounce -->  send query, present select list
-//               * */}
-//             <Controller
-//               name="userId"
-//               control={control}
-//               render={({ field }) => (
-//                 <Select
-//                   {...field}
-//                   value={field.value || ''}
-//                   label="Courseflow Users"
-//                 >
-//                   {userFormOptions.map((c, idx) => (
-//                     <MenuItem key={idx} value={c.id}>
-//                       {c.name}
-//                     </MenuItem>
-//                   ))}
-//                 </Select>
-//               )}
-//             />
-//           </FormControl>
-
-//           <FormControl>
-//             <FormLabel id="add-contributor-role-label">{_t('Role')}</FormLabel>
-//             <Controller
-//               name="group"
-//               control={control}
-//               render={({ field }) => (
-//                 <RadioGroup
-//                   aria-labelledby="add-contributor-role-label"
-//                   {...field}
-//                 >
-//                   {permissionGroupMenuOptions.map((permissionGroup, index) => (
-//                     <FormControlLabel
-//                       key={index}
-//                       value={permissionGroup.value}
-//                       label={permissionGroup.label}
-//                       control={<Radio />}
-//                     />
-//                   ))}
-//                 </RadioGroup>
-//               )}
-//             />
-//           </FormControl>
-//         </StyledBox>
-//       </DialogContent>
-
-//       <DialogActions>
-//         <Button variant="contained" color="secondary" onClick={onClose}>
-//           Cancel
-//         </Button>
-//         <Button
-//           type="submit"
-//           variant="contained"
-//           disabled={disableSubmit}
-//           onClick={handleSubmit(onSubmit)}
-//         >
-//           Add contributor
-//         </Button>
-//       </DialogActions>
-//     </StyledDialog>
-//   )
-// }
 
 export default ContributorAddDialog

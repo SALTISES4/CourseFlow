@@ -1,4 +1,4 @@
-from ninja import Router
+from ninja import Query, Router
 from ninja.errors import HttpError
 
 from course_flow_v2.api.auth import BearerAuth, get_current_user
@@ -110,9 +110,8 @@ def patch_my_notification_settings(request, payload: UserNotificationSettingsPat
 
 
 @router.get("", response=UserListOut, auth=BearerAuth(), operation_id="listUsers")
-def list_users(request):
+def list_users(request, filter_term: str | None = Query(None, alias="filter")):
     _ = get_current_user(request)
-    # TODO: add explicit search/filter query parameters for user list consumers.
-    rows = get_user_service().list_users()
+    rows = get_user_service().list_users(filter_term=filter_term)
     items = [_user_list_item_out(u) for u in rows]
     return UserListOut(items=items, meta=UserListMetaOut(total=len(items)))

@@ -1,3 +1,8 @@
+import {
+  getMyProfileSettingsOptions,
+  getMyProfileSettingsQueryKey,
+  patchMyProfileSettingsMutation
+} from '@cf/api/gen/@tanstack/react-query.gen'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { languageOptions } from '@cf/utility/constants'
@@ -14,6 +19,7 @@ import RadioGroup from '@mui/material/RadioGroup'
 import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -34,7 +40,11 @@ const StyledFormBox = styled(Box)({
   }
 })
 
-type FormValues = ProfileSettingsArgs
+type FormValues = {
+  firstName: string
+  lastName: string
+  languagePreference: string
+}
 
 const projectSchema = z.object({
   firstName: z.string().min(1, { message: 'First Name is required' }).max(200),
@@ -46,61 +56,58 @@ const projectSchema = z.object({
 })
 
 const ProfileSettingsPage = () => {
-  /*******************************************************
-   * QUERY HOOKS
-   *******************************************************/
-  // @todo replace
-  const { data, error, isLoading, isError } = useGetProfileSettingsQuery()
+  const queryClient = useQueryClient()
+  const { data, isLoading } = useQuery({
+    ...getMyProfileSettingsOptions()
+  })
 
-  // @todo replace
-  const [mutate] = useUpdateProfileSettingsMutation()
+  const patchProfileSettings = useMutation({
+    ...patchMyProfileSettingsMutation(),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: getMyProfileSettingsQueryKey()
+      })
+    }
+  })
 
   const { onError, onSuccess } = useGenericMsgHandler()
 
-  /*******************************************************
-   * FORM HOOK
-   *******************************************************/
   const {
     register,
     control,
     handleSubmit,
     reset,
-    getValues,
     formState: { errors, isDirty }
   } = useForm<FormValues>({
     resolver: zodResolver(projectSchema),
     defaultValues: {}
   })
 
-  /*******************************************************
-   * LIFE CYCLE HOOKS
-   *******************************************************/
-
   useEffect(() => {
-    if (data) {
+    if (data?.item) {
       reset({
-        firstName: data.item.first_name,
-        lastName: data.item.last_name,
-        languagePreference: data.item.language_preference
+        firstName: data.item.firstName,
+        lastName: data.item.lastName,
+        languagePreference: data.item.languagePreference
       })
     }
   }, [data, reset])
 
-  /*******************************************************
-   * HANDLERS
-   *******************************************************/
   const onFormSubmit = async (formData: FormValues) => {
     try {
-      const resp = await mutate(formData).unwrap()
+      const resp = await patchProfileSettings.mutateAsync({
+        body: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          languagePreference: formData.languagePreference
+        }
+      })
       onSuccess(resp)
     } catch (err) {
       onError(err)
     }
   }
 
-  /*******************************************************
-   * RENDER
-   *******************************************************/
   if (isLoading) {
     return <Loader />
   }
@@ -151,7 +158,6 @@ const ProfileSettingsPage = () => {
                       {...field}
                       value={field.value || ''}
                       onChange={(e) => field.onChange(e.target.value)}
-                      // Update the value on change
                     >
                       {languageOptions.map((item) => {
                         return (

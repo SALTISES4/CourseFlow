@@ -10,6 +10,9 @@ from course_flow_v2.application.services.project_detail_service import (
 from course_flow_v2.application.services.project_graph_projection_service import (
     ProjectGraphProjectionService,
 )
+from course_flow_v2.application.services.project_relations_service import (
+    ProjectRelationsService,
+)
 from course_flow_v2.application.services.project_service import ProjectService
 from course_flow_v2.application.services.section_service import SectionService
 from course_flow_v2.application.services.thread_comment_service import (
@@ -44,6 +47,7 @@ _project_detail_service = ProjectDetailService()
 _workflow_graph_projection_service = WorkflowGraphProjectionService()
 _workflow_graph_mutation_service = WorkflowGraphMutationService()
 _project_service = ProjectService(DjangoProjectRepository())
+_project_relations_service = ProjectRelationsService()
 _workflow_service = WorkflowService(DjangoWorkflowRepository())
 _channel_service = ChannelService(DjangoChannelRepository())
 _section_service = SectionService(DjangoSectionRepository())
@@ -75,6 +79,10 @@ def get_workflow_graph_mutation_service() -> WorkflowGraphMutationService:
 
 def get_project_service() -> ProjectService:
     return _project_service
+
+
+def get_project_relations_service() -> ProjectRelationsService:
+    return _project_relations_service
 
 
 def get_workflow_service() -> WorkflowService:

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from django.db.models import Q
+
 from course_flow_v2.core.models import User
 
 
@@ -56,5 +58,19 @@ class UserService:
             user.save(update_fields=["notifications_active"])
         return user
 
-    def list_users(self) -> list[User]:
-        return list(User.objects.order_by("first_name", "last_name", "id"))
+    def list_users(self, filter_term: str | None = None) -> list[User]:
+        """Return all users ordered by name, optionally restricted by a case-insensitive
+        substring match on ``first_name``, ``last_name``, or ``email``.
+
+        ``filter_term`` absent or blank (after strip) returns the full list.
+        """
+        qs = User.objects.all()
+        if filter_term is not None:
+            term = filter_term.strip()
+            if term:
+                qs = qs.filter(
+                    Q(first_name__icontains=term)
+                    | Q(last_name__icontains=term)
+                    | Q(email__icontains=term)
+                )
+        return list(qs.order_by("first_name", "last_name", "id"))

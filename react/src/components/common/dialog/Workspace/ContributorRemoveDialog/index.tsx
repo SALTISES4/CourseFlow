@@ -1,3 +1,7 @@
+import {
+  deleteProjectTeamMemberMutation,
+  listProjectTeamQueryKey
+} from '@cf/api/gen/@tanstack/react-query.gen'
 import { StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
@@ -8,11 +12,11 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
-import { EmptyPostResp } from '@XMLHTTP/types/query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 const ContributorRemoveDialog = ({
   id,
-  type
+  type: _type
 }: {
   id: string
   type: WorkspaceType
@@ -21,52 +25,35 @@ const ContributorRemoveDialog = ({
     DialogMode.CONTRIBUTOR_REMOVE
   )
   const { onError, onSuccess } = useGenericMsgHandler()
+  const queryClient = useQueryClient()
 
-  /*******************************************************
-   * QUERIES
-   *******************************************************/
-  // @todo replace
-  const [mutate] = useWorkspaceUserDeleteMutation()
-
-  // @todo replace
-  const { refetch } = useGetUsersForObjectQuery({
-    id,
-    payload: {
-      objectType: type
+  const deleteMember = useMutation({
+    ...deleteProjectTeamMemberMutation(),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: listProjectTeamQueryKey({ path: { uuid: id } })
+      })
     }
   })
 
-  /*******************************************************
-   * FUNCTION
-   *******************************************************/
-
-  function successHandler(response: EmptyPostResp) {
-    onSuccess(response)
-    onClose()
-    refetch()
-  }
-
-  // @todo replace
   async function onSubmit() {
-    const args: WorkspaceDeleteUserArgs = {
-      id: string(id),
-      payload: {
-        userId: payload.userId,
-        type
-      }
+    if (payload?.membershipId == null) {
+      return
     }
-
     try {
-      const response = await mutate(args).unwrap()
-      successHandler(response)
+      await deleteMember.mutateAsync({
+        path: {
+          uuid: id,
+          membership_id: payload.membershipId
+        }
+      })
+      onSuccess({ message: _t('Success!') })
+      onClose()
     } catch (err) {
       onError(err)
     }
   }
 
-  /*******************************************************
-   *
-   *******************************************************/
   return (
     <StyledDialog
       open={!!show}

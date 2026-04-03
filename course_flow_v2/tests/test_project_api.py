@@ -160,3 +160,32 @@ def test_delete_project_not_found(client: Client, user):
     raw = _issue_token_for(user)
     response = client.delete(f"/api/project/{uuid4()}", **_auth_header(raw))
     assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_duplicate_project_placeholder_returns_success(client: Client, user):
+    raw = _issue_token_for(user)
+    project_uuid = _create_project(client, raw)
+
+    response = client.post(
+        f"/api/project/{project_uuid}/duplicate",
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert response.status_code == 200, response.content
+    body = response.json()
+    assert body["success"] is True
+    assert body["message"] == "Project duplication placeholder executed"
+    assert body["projectUuid"] == project_uuid
+
+
+@pytest.mark.django_db
+def test_duplicate_project_placeholder_not_found(client: Client, user):
+    raw = _issue_token_for(user)
+    missing = uuid4()
+    response = client.post(
+        f"/api/project/{missing}/duplicate",
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert response.status_code == 404

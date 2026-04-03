@@ -17,6 +17,13 @@ class ProjectDTO:
 
 
 @dataclass(frozen=True, slots=True)
+class ProjectDuplicatePlaceholderDTO:
+    """Echoes the source project UUID for the duplicate placeholder endpoint only."""
+
+    project_uuid: UUID
+
+
+@dataclass(frozen=True, slots=True)
 class WorkflowDTO:
     id: int
     uuid: UUID
@@ -47,12 +54,15 @@ class TagDTO:
 
 @dataclass(frozen=True, slots=True)
 class ProjectTeamMemberDTO:
-    """Membership row (join); extend when role/metadata is added to the model."""
+    """Membership row (join) for project team API."""
 
     id: int
     project_team_uuid: UUID
     user_uuid: UUID
     user_email: str
+    user_first_name: str
+    user_last_name: str
+    role: str
 
 
 @dataclass(frozen=True, slots=True)
