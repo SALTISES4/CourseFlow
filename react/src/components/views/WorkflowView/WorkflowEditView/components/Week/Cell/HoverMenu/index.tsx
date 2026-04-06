@@ -4,16 +4,16 @@ import {
   nodeWorkflowDelete,
   nodeWorkflowInsert
 } from '@cf/redux/slices/node.slice'
-import { RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
+import store from '@cfRedux/store'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import { MouseEvent, MutableRefObject, useCallback, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 import InsertMenu from '../InsertMenu'
 
@@ -36,14 +36,13 @@ const HoverMenu = ({ nodeId, nodeRef }: PropsType) => {
     duplicate: false
   })
   const [, hovering] = useHover(nodeRef)
-  const insertMode = useSelector(
-    (state: RootState) => state.workspace.node.insertMode
-  )
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {
       return (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
+        // read from the store API to avoid expensive useSelector subscription
+        const insertMode = store.getState().workspace.node.insertMode
         switch (action) {
           case 'insert':
           case 'duplicate':
@@ -79,7 +78,7 @@ const HoverMenu = ({ nodeId, nodeRef }: PropsType) => {
         }
       }
     },
-    [dispatch, insertMode, nodeId, nodeRef]
+    [dispatch, nodeId, nodeRef]
   )
 
   const onInsertCancel = useCallback(

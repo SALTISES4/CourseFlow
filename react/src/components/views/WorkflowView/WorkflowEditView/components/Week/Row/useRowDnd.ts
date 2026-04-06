@@ -19,6 +19,11 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import type { WeekRowPropsType } from './index'
 
+// read from the store API to avoid expensive useSelector subscription
+function getIsColumnInsert() {
+  return store.getState().workspace.node.insertMode === 'column'
+}
+
 type StateType = {
   highlightEdge: Edge | null
   highlightRow: boolean
@@ -70,11 +75,9 @@ function useRowDnd(props: PropsType) {
 
         setState(
           produce((draft) => {
-            const columnMode =
-              store.getState().workspace.node.insertMode === 'column'
+            const columnMode = getIsColumnInsert()
             draft.highlightRow = columnMode && isSidebarCustomNode(dragging)
             draft.dragId = dragging.id
-
             if (!columnMode && isSidebarCustomNode(dragging)) {
               draft.highlightEdge = extractClosestEdge(self.data)
             }
@@ -83,10 +86,7 @@ function useRowDnd(props: PropsType) {
       },
       onDragLeave: resetState,
       onDrag: ({ source, self }) => {
-        const columnMode =
-          store.getState().workspace.node.insertMode === 'column'
-
-        if (!columnMode && isSidebarCustomNode(source.data)) {
+        if (!getIsColumnInsert() && isSidebarCustomNode(source.data)) {
           return setState(
             produce((draft) => {
               draft.highlightEdge = extractClosestEdge(self.data)
@@ -115,11 +115,8 @@ function useRowDnd(props: PropsType) {
         let closestEdge = extractClosestEdge(self.data)
 
         if (isSidebarCustomNode(source.data)) {
-          const columnMode =
-            store.getState().workspace.node.insertMode === 'column'
-
           columnId = getNextLargestNumber(wsColIds)
-          closestEdge = columnMode ? 'top' : state.highlightEdge
+          closestEdge = getIsColumnInsert() ? 'top' : state.highlightEdge
 
           dispatch(columnInsertBelow({ id: null, newId: columnId }))
         }

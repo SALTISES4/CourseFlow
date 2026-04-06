@@ -48,9 +48,7 @@ interface InternalShared {
 
 export interface WeekCellPhantomTypeInternal
   extends WeekCellPhantomType,
-    InternalShared {
-  insertMode: NodeInsertMode
-}
+    InternalShared {}
 
 export interface WeekCellNodeTypeTypeInternal
   extends WeekCellNodeType,

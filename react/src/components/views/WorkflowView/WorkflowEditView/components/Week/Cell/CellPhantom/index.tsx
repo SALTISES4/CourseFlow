@@ -4,6 +4,7 @@ import {
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
+import store from '@cfRedux/store'
 import { isGridCell } from '@cfViews/WorkflowView/WorkflowEditView/types'
 import { alpha } from '@mui/material'
 import Box from '@mui/material/Box'
@@ -13,6 +14,11 @@ import { useEffect, useState } from 'react'
 import DropIndicator from '../DropIndicator'
 import { WeekCellPhantomTypeInternal, WeekCellType } from '../types'
 
+// read from the store API to avoid expensive useSelector subscription
+function getIsRowInsert() {
+  return store.getState().workspace.node.insertMode === 'row'
+}
+
 const WeekCellPhantom = ({
   columnId,
   coordsY,
@@ -20,7 +26,6 @@ const WeekCellPhantom = ({
   highlight,
   borderColor,
   wrapRef,
-  insertMode,
   emptyRow,
   onDrop
 }: WeekCellPhantomTypeInternal) => {
@@ -34,7 +39,6 @@ const WeekCellPhantom = ({
 
   // only highlighting the border when we're not highligting the full cell
   const edgeIndicator = highlight !== 'cell' && highlight
-  const rowInsertMode = insertMode === 'row'
 
   // only showing background if there are no active edges (border)
   // or we're supposed to do a cell highlight (from the row)
@@ -68,7 +72,7 @@ const WeekCellPhantom = ({
         }
 
         if (
-          rowInsertMode &&
+          getIsRowInsert() &&
           isGridCell(source.data) &&
           source.data.coords.y !== coordsY
         ) {
@@ -86,7 +90,7 @@ const WeekCellPhantom = ({
             draft.closestEdge = null
 
             if (
-              rowInsertMode &&
+              getIsRowInsert() &&
               isGridCell(source.data) &&
               source.data.coords.y !== coordsY
             ) {
@@ -126,7 +130,7 @@ const WeekCellPhantom = ({
         })
       }
     })
-  }, [wrapRef, columnId, coordsWeek, coordsY, emptyRow, rowInsertMode, onDrop])
+  }, [wrapRef, columnId, coordsWeek, coordsY, emptyRow, onDrop])
 
   return (
     <Box sx={{ height: '100%' }}>
