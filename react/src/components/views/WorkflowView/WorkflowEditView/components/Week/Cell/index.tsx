@@ -6,8 +6,8 @@ import store from '@cfRedux/store'
 import * as Styled from '@cfViews/WorkflowView/WorkflowEditView/styles'
 import { memo, useCallback, useRef, useState } from 'react'
 
-import WeekCellNode from './CellNode'
 import WeekCellEmpty from './CellEmpty'
+import WeekCellNode from './CellNode'
 import InsertMenu from './InsertMenu'
 import { WeekCellProps, WeekCellType } from './types'
 
