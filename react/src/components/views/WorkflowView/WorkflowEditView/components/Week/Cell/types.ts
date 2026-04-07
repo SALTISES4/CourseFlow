@@ -24,9 +24,9 @@ interface WeekCellShared {
   highlight?: Edge | 'cell'
 }
 
-export type WeekCellProps = WeekCellPhantomType | WeekCellNodeType
+export type WeekCellProps = WeekCellEmptyType | WeekCellNodeType
 
-export interface WeekCellPhantomType extends WeekCellShared {
+export interface WeekCellEmptyType extends WeekCellShared {
   type: WeekCellType.PHANTOM
   emptyRow?: boolean
 }
@@ -46,8 +46,8 @@ interface InternalShared {
   ) => void
 }
 
-export interface WeekCellPhantomTypeInternal
-  extends WeekCellPhantomType,
+export interface WeekCellEmptyTypeInternal
+  extends WeekCellEmptyType,
     InternalShared {}
 
 export interface WeekCellNodeTypeTypeInternal

@@ -2,10 +2,10 @@ import { alpha } from '@mui/material'
 import Box from '@mui/material/Box'
 
 import DropIndicator from '../DropIndicator'
-import useEmptyCellDnd from './useEmptyCellDnd'
-import { WeekCellPhantomTypeInternal } from '../types'
+import useCellEmptyDnd from './useCellEmptyDnd'
+import { WeekCellEmptyTypeInternal } from '../types'
 
-const WeekCellPhantom = ({
+const WeekCellEmpty = ({
   columnId,
   coordsY,
   coordsWeek,
@@ -14,8 +14,8 @@ const WeekCellPhantom = ({
   wrapRef,
   emptyRow,
   onDrop
-}: WeekCellPhantomTypeInternal) => {
-  const dnd = useEmptyCellDnd({
+}: WeekCellEmptyTypeInternal) => {
+  const dnd = useCellEmptyDnd({
     wrapRef,
     columnId,
     coordsWeek,
@@ -45,4 +45,4 @@ const WeekCellPhantom = ({
   )
 }
 
-export default WeekCellPhantom
+export default WeekCellEmpty

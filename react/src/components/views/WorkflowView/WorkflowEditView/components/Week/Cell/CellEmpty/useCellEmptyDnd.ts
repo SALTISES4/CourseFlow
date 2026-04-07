@@ -9,10 +9,10 @@ import { isGridCell } from '@cfViews/WorkflowView/WorkflowEditView/types'
 import { produce } from 'immer'
 import { useEffect, useState } from 'react'
 
-import { WeekCellPhantomTypeInternal, WeekCellType } from '../types'
+import { WeekCellEmptyTypeInternal, WeekCellType } from '../types'
 
 type PropsType = Pick<
-  WeekCellPhantomTypeInternal,
+  WeekCellEmptyTypeInternal,
   'wrapRef' | 'columnId' | 'coordsWeek' | 'coordsY' | 'emptyRow' | 'onDrop'
 >
 
@@ -21,7 +21,7 @@ function getIsRowInsert() {
   return store.getState().workspace.node.insertMode === 'row'
 }
 
-function useEmptyCellDnd({
+function useCellEmptyDnd({
   wrapRef,
   columnId,
   coordsWeek,
@@ -124,4 +124,4 @@ function useEmptyCellDnd({
   return state
 }
 
-export default useEmptyCellDnd
+export default useCellEmptyDnd

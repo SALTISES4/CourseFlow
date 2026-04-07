@@ -7,7 +7,7 @@ import * as Styled from '@cfViews/WorkflowView/WorkflowEditView/styles'
 import { memo, useCallback, useRef, useState } from 'react'
 
 import WeekCellNode from './CellNode'
-import WeekCellPhantom from './CellPhantom'
+import WeekCellEmpty from './CellEmpty'
 import InsertMenu from './InsertMenu'
 import { WeekCellProps, WeekCellType } from './types'
 
@@ -78,7 +78,7 @@ const WeekCell = (props: WeekCellProps) => {
   return (
     <Styled.Cell ref={ref}>
       {type === WeekCellType.PHANTOM ? (
-        <WeekCellPhantom {...props} wrapRef={ref} onDrop={onDrop} />
+        <WeekCellEmpty {...props} wrapRef={ref} onDrop={onDrop} />
       ) : (
         <WeekCellNode {...props} wrapRef={ref} onDrop={onDrop} />
       )}
