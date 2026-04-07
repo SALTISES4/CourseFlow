@@ -20,9 +20,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import type { WeekRowPropsType } from './index'
 
 // read from the store API to avoid expensive useSelector subscription
-function getIsColumnInsert() {
-  return store.getState().workspace.node.insertMode === 'column'
-}
+const getInsertMode = () => store.getState().workspace.node.insertMode
 
 type StateType = {
   highlightEdge: Edge | null
@@ -36,7 +34,7 @@ type PropsType = WeekRowPropsType & { rowRef: MutableRefObject<HTMLDivElement> }
 function useRowDnd(props: PropsType) {
   const dispatch = useDispatch()
   const wsColIds = useSelector((state: RootState) => state.workspace.column.ids)
-  const { weekId, rowIndex, rowRef } = props
+  const { weekId, rowIndex, rowRef, onNodeDrop } = props
   const [state, setState] = useState<StateType>({
     highlightRow: false,
     highlightEdge: null,
@@ -66,7 +64,6 @@ function useRowDnd(props: PropsType) {
           }
         )
       },
-      canDrop: ({ source }) => isSidebarNode(source.data),
       onDragEnter: ({ source, self }) => {
         const dragging = source.data
         if (!isSidebarNode(dragging)) {
@@ -75,10 +72,13 @@ function useRowDnd(props: PropsType) {
 
         setState(
           produce((draft) => {
-            const columnMode = getIsColumnInsert()
-            draft.highlightRow = columnMode && isSidebarCustomNode(dragging)
+            const columnMode = getInsertMode() === 'column'
+            const isCustom = isSidebarCustomNode(dragging)
+
             draft.dragId = dragging.id
-            if (!columnMode && isSidebarCustomNode(dragging)) {
+            draft.highlightRow = columnMode && isCustom
+
+            if (!columnMode && isCustom) {
               draft.highlightEdge = extractClosestEdge(self.data)
             }
           })
@@ -86,7 +86,11 @@ function useRowDnd(props: PropsType) {
       },
       onDragLeave: resetState,
       onDrag: ({ source, self }) => {
-        if (!getIsColumnInsert() && isSidebarCustomNode(source.data)) {
+        const columnMode = getInsertMode() === 'column'
+        const isSidebar = isSidebarNode(source.data)
+        const isCustom = isSidebarCustomNode(source.data)
+
+        if (!columnMode && isCustom) {
           return setState(
             produce((draft) => {
               draft.highlightEdge = extractClosestEdge(self.data)
@@ -94,7 +98,7 @@ function useRowDnd(props: PropsType) {
           )
         }
 
-        if (!isSidebarNode(source.data) || isSidebarCustomNode(source.data)) {
+        if (!isSidebar || isCustom) {
           return
         }
 
@@ -109,22 +113,31 @@ function useRowDnd(props: PropsType) {
           })
         )
       },
+      canDrop: ({ source }) => isSidebarNode(source.data),
       onDrop: ({ source, self }) => {
+        const insertMode = getInsertMode()
+        const isCustom = isSidebarCustomNode(source.data)
         const row = self.data.row as number
-        let columnId = source.data.id as number
+        let channelId = source.data.id as number
         let closestEdge = extractClosestEdge(self.data)
 
-        if (isSidebarCustomNode(source.data)) {
-          columnId = getNextLargestNumber(wsColIds)
-          closestEdge = getIsColumnInsert() ? 'top' : state.highlightEdge
+        if (isCustom) {
+          channelId = getNextLargestNumber(wsColIds)
+          closestEdge = insertMode === 'column' ? 'top' : state.highlightEdge
+          dispatch(columnInsertBelow({ id: null, newId: channelId }))
+        }
 
-          dispatch(columnInsertBelow({ id: null, newId: columnId }))
+        // TODO: handle manual insert mode
+        if (insertMode === 'manual') {
+          console.log('TODO: Implement manual insert mode')
+          return resetState()
         }
 
         dispatch(
           nodeWorkflowInsert({
-            newColumn: isSidebarCustomNode(source.data),
-            columnId,
+            mode: insertMode,
+            newColumn: isCustom,
+            columnId: channelId,
             weekId,
             row:
               rowIndex === 'empty' ? 0 : closestEdge === 'top' ? row : row + 1
@@ -137,6 +150,7 @@ function useRowDnd(props: PropsType) {
   }, [
     dispatch,
     resetState,
+    onNodeDrop,
     rowIndex,
     rowRef,
     state.highlightEdge,
