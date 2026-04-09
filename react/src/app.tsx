@@ -1,22 +1,22 @@
 // import './wdyr'
 import '@cf/api/configureCourseFlowClient'
 import { courseFlowQueryClient } from '@cf/api/queryClient'
-import { QueryClientProvider } from '@tanstack/react-query'
+import AuthBootstrap from '@cf/components/auth/AuthBootstrap'
+import { CookieProvider } from '@cf/context/cookieContext'
+import { DialogContextProvider } from '@cf/context/dialogContext'
+import CfRouter from '@cf/router/appRoutes'
+import { SidebarRootStyles } from '@cfComponents/globalNav/Sidebar/styles'
 import createCache from '@emotion/cache'
+import { CacheProvider } from '@emotion/react'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
+import { QueryClientProvider } from '@tanstack/react-query'
 import { SnackbarProvider } from 'notistack'
 import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { RouterProvider } from 'react-router-dom'
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
-import AuthBootstrap from '@cf/components/auth/AuthBootstrap'
-import CfRouter from '@cf/router/appRoutes'
-import { CookieProvider } from '@cf/context/cookieContext'
-import { DialogContextProvider } from '@cf/context/dialogContext'
-import { SidebarRootStyles } from '@cfComponents/globalNav/Sidebar/styles'
-import { CacheProvider } from '@emotion/react'
 
 import theme from './mui/theme'
 import store from './redux/store'
@@ -59,23 +59,23 @@ root.render(
     <QueryClientProvider client={courseFlowQueryClient}>
       <AuthBootstrap />
       <CookieProvider>
-      <CacheProvider value={cache}>
-        <SnackbarProvider
-          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        >
-          <DialogContextProvider>
-            <ThemeProvider theme={theme}>
-              <ScopedCssBaseline sx={SidebarRootStyles}>
-                <RouterProvider
-                  router={CfRouter}
-                  future={{ v7_startTransition: true }}
-                />
-              </ScopedCssBaseline>
-            </ThemeProvider>
-          </DialogContextProvider>
-        </SnackbarProvider>
-      </CacheProvider>
-    </CookieProvider>
+        <CacheProvider value={cache}>
+          <SnackbarProvider
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          >
+            <DialogContextProvider>
+              <ThemeProvider theme={theme}>
+                <ScopedCssBaseline sx={SidebarRootStyles}>
+                  <RouterProvider
+                    router={CfRouter}
+                    future={{ v7_startTransition: true }}
+                  />
+                </ScopedCssBaseline>
+              </ThemeProvider>
+            </DialogContextProvider>
+          </SnackbarProvider>
+        </CacheProvider>
+      </CookieProvider>
     </QueryClientProvider>
   </Provider>
 )
