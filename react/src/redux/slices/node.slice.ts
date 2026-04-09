@@ -266,12 +266,15 @@ const nodeSlice = createSlice({
             newColumn?: boolean
             columnid: string
             weekid: string
+            mode: NodeWorkflowReorderPayload['mode']
+            columnId: number
+            weekId: number
             row: number
           }
       >
     ) => {
       if ('columnId' in action.payload) {
-        const { newColumn, columnId, weekId, row } = action.payload
+        const { newColumn, mode, columnId, weekId, row } = action.payload
         const weekNodes = state.ids.filter(
           (nodeId) => state.entities[nodeId].week === weekId
         )
@@ -280,7 +283,7 @@ const nodeSlice = createSlice({
           ids: weekNodes,
           entities: state.entities,
           newRow: row,
-          column: newColumn ? -1 : undefined
+          column: mode === 'row' ? undefined : newColumn ? -1 : columnId
         })
 
         // grab any existing node

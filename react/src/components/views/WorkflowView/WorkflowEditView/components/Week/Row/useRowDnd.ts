@@ -14,12 +14,16 @@ import {
   isSidebarNode
 } from '@cfViews/WorkflowView/WorkflowEditView/types'
 import { produce } from 'immer'
-import { MutableRefObject, useEffect, useState } from 'react'
+import { MutableRefObject, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import type { WeekRowPropsType } from './index'
 
+// read from the store API to avoid expensive useSelector subscription
+const getInsertMode = () => store.getState().workspace.node.insertMode
+
 type StateType = {
+  highlightEdge: Edge | null
   highlightRow: boolean
   dragid: string | null
   closestEdge: Edge | null
@@ -30,13 +34,22 @@ type PropsType = WeekRowPropsType & { rowRef: MutableRefObject<HTMLDivElement> }
 function useRowDnd(props: PropsType) {
   const dispatch = useDispatch()
   const wsColIds = useSelector((state: RootState) => state.workspace.column.ids)
+  const { weekId, rowIndex, rowRef, onNodeDrop } = props
   const [state, setState] = useState<StateType>({
     highlightRow: false,
+    highlightEdge: null,
     dragId: null,
     closestEdge: null
   })
 
-  const { weekId, rowIndex, rowRef } = props
+  const resetState = useCallback(() => {
+    setState({
+      highlightRow: false,
+      highlightEdge: null,
+      dragId: null,
+      closestEdge: null
+    })
+  }, [])
 
   useEffect(() => {
     return dropTargetForElements({
@@ -51,26 +64,41 @@ function useRowDnd(props: PropsType) {
           }
         )
       },
-      canDrop: ({ source }) => isSidebarNode(source.data),
-      onDragEnter: ({ source }) => {
+      onDragEnter: ({ source, self }) => {
         const dragging = source.data
         if (!isSidebarNode(dragging)) {
           return
         }
+
         setState(
           produce((draft) => {
-            const columnMode =
-              store.getState().workspace.node.insertMode === 'column'
-            draft.highlightRow = columnMode && isSidebarCustomNode(dragging)
+            const columnMode = getInsertMode() === 'column'
+            const isCustom = isSidebarCustomNode(dragging)
+
             draft.dragId = dragging.id
+            draft.highlightRow = columnMode && isCustom
+
+            if (!columnMode && isCustom) {
+              draft.highlightEdge = extractClosestEdge(self.data)
+            }
           })
         )
       },
-      onDragLeave: () => {
-        setState({ highlightRow: false, dragId: null, closestEdge: null })
-      },
+      onDragLeave: resetState,
       onDrag: ({ source, self }) => {
-        if (!isSidebarNode(source.data) || isSidebarCustomNode(source.data)) {
+        const columnMode = getInsertMode() === 'column'
+        const isSidebar = isSidebarNode(source.data)
+        const isCustom = isSidebarCustomNode(source.data)
+
+        if (!columnMode && isCustom) {
+          return setState(
+            produce((draft) => {
+              draft.highlightEdge = extractClosestEdge(self.data)
+            })
+          )
+        }
+
+        if (!isSidebar || isCustom) {
           return
         }
 
@@ -85,34 +113,50 @@ function useRowDnd(props: PropsType) {
           })
         )
       },
+      canDrop: ({ source }) => isSidebarNode(source.data),
       onDrop: ({ source, self }) => {
+        const insertMode = getInsertMode()
+        const isCustom = isSidebarCustomNode(source.data)
         const row = self.data.row as number
-        let columnId = source.data.id as number
+        let channelId = source.data.id as number
         let closestEdge = extractClosestEdge(self.data)
 
-        const columnMode =
-          store.getState().workspace.node.insertMode === 'column'
+        if (isCustom) {
+          channelId = getNextLargestNumber(wsColIds)
+          closestEdge = insertMode === 'column' ? 'top' : state.highlightEdge
+          dispatch(columnInsertBelow({ id: null, newId: channelId }))
+        }
 
-        if (isSidebarCustomNode(source.data) && columnMode) {
-          columnId = getNextLargestNumber(wsColIds)
-          closestEdge = 'top'
-          dispatch(columnInsertBelow({ id: null, newId: columnId }))
+        // TODO: handle manual insert mode
+        if (insertMode === 'manual') {
+          console.log('TODO: Implement manual insert mode')
+          return resetState()
         }
 
         dispatch(
           nodeWorkflowInsert({
-            newColumn: isSidebarCustomNode(source.data),
-            columnId,
+            mode: insertMode,
+            newColumn: isCustom,
+            columnId: channelId,
             weekId,
             row:
               rowIndex === 'empty' ? 0 : closestEdge === 'top' ? row : row + 1
           })
         )
 
-        setState({ highlightRow: false, dragId: null, closestEdge: null })
+        resetState()
       }
     })
-  }, [dispatch, wsColIds, weekId, rowIndex, rowRef])
+  }, [
+    dispatch,
+    resetState,
+    onNodeDrop,
+    rowIndex,
+    rowRef,
+    state.highlightEdge,
+    weekId,
+    wsColIds
+  ])
 
   return state
 }

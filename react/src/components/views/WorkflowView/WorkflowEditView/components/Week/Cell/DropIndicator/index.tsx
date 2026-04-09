@@ -1,5 +1,4 @@
 import { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import { SxProps } from '@mui/material'
 
 import * as Styled from './styles'
 

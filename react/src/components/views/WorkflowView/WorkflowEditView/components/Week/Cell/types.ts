@@ -1,3 +1,4 @@
+import { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import {
   NodeInsertMode,
   NodeWorkflowReorderPayload
@@ -20,14 +21,14 @@ interface WeekCellShared {
   borderColor: string
   columnid: string
   onReorder: CellReorderCallbackFn
+  highlight?: Edge | 'cell'
 }
 
-export type WeekCellProps = WeekCellPhantomType | WeekCellNodeType
+export type WeekCellProps = WeekCellEmptyType | WeekCellNodeType
 
-export interface WeekCellPhantomType extends WeekCellShared {
+export interface WeekCellEmptyType extends WeekCellShared {
   type: WeekCellType.PHANTOM
   emptyRow?: boolean
-  highlight?: boolean
 }
 
 export interface WeekCellNodeType extends WeekCellShared {
@@ -45,11 +46,9 @@ interface InternalShared {
   ) => void
 }
 
-export interface WeekCellPhantomTypeInternal
-  extends WeekCellPhantomType,
-    InternalShared {
-  insertMode: NodeInsertMode
-}
+export interface WeekCellEmptyTypeInternal
+  extends WeekCellEmptyType,
+    InternalShared {}
 
 export interface WeekCellNodeTypeTypeInternal
   extends WeekCellNodeType,

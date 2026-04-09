@@ -1,47 +1,20 @@
-import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
-import {
-  draggable,
-  dropTargetForElements
-} from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/element/pointer-outside-of-preview'
-import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview'
-import {
-  Edge,
-  attachClosestEdge,
-  extractClosestEdge
-} from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import { selectNodeById } from '@cf/redux/selectors/node.selector'
 import { isHighlightedViaOutcome } from '@cf/redux/selectors/outcomes.selector'
-import { svglinkAllowDND } from '@cf/redux/slices/svglink.slice'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
-import { nodelinkOutcome } from '@cfRedux/slices/node.slice'
-import { isOutcomeLink } from '@cfRedux/slices/outcomes.slice'
 import { RootState } from '@cfRedux/store'
 import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
 import Handles from '@cfViews/WorkflowView/WorkflowEditView/components/LineSVG/Handles'
-import {
-  CellDataType,
-  DraggableType,
-  isGridCell
-} from '@cfViews/WorkflowView/WorkflowEditView/types'
-import { produce } from 'immer'
-import { MouseEvent, useCallback, useEffect, useState } from 'react'
+import { MouseEvent, useCallback } from 'react'
 import { createPortal } from 'react-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import DropIndicator from '../DropIndicator'
 import HoverMenu from '../HoverMenu'
 import Meta from '../Meta'
 import * as StyledNode from '../styles'
 import { WeekCellNodeTypeTypeInternal, WeekCellType } from '../types'
-
-type NodeStateType = {
-  dragging: boolean
-  dropHighlight: boolean
-  closestEdge: Edge | null
-  previewTarget?: HTMLElement | null
-}
+import useCellNodeDnd from './useCellNodeDnd'
 
 const WeekCellNode = ({
   nodeId,
@@ -51,11 +24,20 @@ const WeekCellNode = ({
   coordsY,
   borderColor,
   wrapRef,
+  highlight,
   onClick,
   onDrop
 }: WeekCellNodeTypeTypeInternal) => {
-  const dispatch = useDispatch()
   const node = useSelector((state: RootState) => selectNodeById(state, nodeId))
+  const dnd = useCellNodeDnd({
+    wrapRef,
+    nodeId,
+    columnId,
+    coordsWeek,
+    coordsX,
+    coordsY,
+    onDrop
+  })
 
   const onNodeClicked = useCallback(
     (e: MouseEvent<HTMLDivElement>) => onClick(e, nodeId),
@@ -72,134 +54,7 @@ const WeekCellNode = ({
     isHighlightedViaOutcome(state, node.outcomenodeSet)
   )
 
-  const [state, setState] = useState<NodeStateType>({
-    dragging: false,
-    dropHighlight: false,
-    closestEdge: null
-  })
-
-  const toggleState = useCallback(
-    (newState: Partial<NodeStateType>) => {
-      if ('dragging' in newState) {
-        dispatch(svglinkAllowDND(newState.dragging ?? false))
-      }
-
-      setState(
-        produce((draft) => {
-          for (const [key, value] of Object.entries(newState)) {
-            draft[key] = value ?? !draft[key]
-          }
-        })
-      )
-    },
-    [dispatch]
-  )
-
-  useEffect(() => {
-    const el = wrapRef.current
-    if (!el) {
-      return
-    }
-
-    return combine(
-      dropTargetForElements({
-        element: el,
-        getData: ({ input, element }) => {
-          return attachClosestEdge(
-            {},
-            {
-              input,
-              element,
-              allowedEdges: ['top', 'bottom']
-            }
-          )
-        },
-        canDrop: ({ source }) =>
-          isOutcomeLink(source.data) || isGridCell(source.data),
-        onDragEnter: ({ source }) => {
-          if (isOutcomeLink(source.data)) {
-            toggleState({ dropHighlight: true })
-          }
-        },
-        onDragLeave: ({ source }) => {
-          if (isOutcomeLink(source.data)) {
-            toggleState({ dropHighlight: false })
-          }
-          toggleState({ closestEdge: null })
-        },
-        onDrag: ({ source, self }) => {
-          const dragging = source.data
-          if (isGridCell(dragging) && dragging.id !== nodeId) {
-            setState(
-              produce((draft) => {
-                draft.closestEdge = extractClosestEdge(self.data)
-              })
-            )
-          }
-        },
-        onDrop: ({ source, self }) => {
-          const dropped = source.data
-          if (isOutcomeLink(dropped)) {
-            dispatch(nodelinkOutcome({ outcomeId: dropped.id, nodeId }))
-          }
-
-          if (isGridCell(dropped) && dropped.id !== nodeId) {
-            onDrop({
-              type: WeekCellType.NODE,
-              edge: extractClosestEdge(self.data) as 'top' | 'bottom',
-              id: dropped.id,
-              fromWeek: dropped.coords.week,
-              toWeek: coordsWeek,
-              toColumn: columnId,
-              toRow: coordsY
-            })
-          }
-
-          toggleState({ dropHighlight: false, closestEdge: null })
-        }
-      }),
-      draggable({
-        element: el,
-        onGenerateDragPreview: ({ nativeSetDragImage }) => {
-          setCustomNativeDragPreview({
-            getOffset: pointerOutsideOfPreview({
-              x: '16px',
-              y: '10px'
-            }),
-            render({ container }) {
-              toggleState({ dragging: true, previewTarget: container })
-              // cleanup, docs?
-              // return () => {
-              //   return toggleState({ dragging: false, preview: null })
-              // }
-            },
-            nativeSetDragImage
-          })
-        },
-        getInitialData: (): CellDataType => ({
-          id: nodeId,
-          coords: {
-            week: coordsWeek,
-            x: coordsX,
-            y: coordsY
-          },
-          type: DraggableType.CELL
-        }),
-        onDragStart: () => toggleState({ dragging: true }),
-        onDrop: () => toggleState({ dragging: false, previewTarget: null })
-      })
-    )
-  }, [
-    columnId,
-    coordsWeek,
-    coordsX,
-    coordsY,
-    nodeId,
-    wrapRef,
-    dispatch,
-    toggleState,
-    onDrop
-  ])
+  const edgeIndicator = highlight !== 'cell' && highlight
 
   return (
     <>
@@ -207,10 +62,10 @@ const WeekCellNode = ({
         id={`node-${nodeId}`}
         selected={selected}
         highlighted={highlighted}
-        dropHighlight={state.dropHighlight}
-        dragging={state.dragging}
+        dropHighlight={dnd.dropHighlight}
+        dragging={dnd.dragging}
       >
-        {!state.dragging && <HoverMenu nodeId={nodeId} nodeRef={wrapRef} />}
+        {!dnd.dragging && <HoverMenu nodeId={nodeId} nodeRef={wrapRef} />}
 
         {!!node.outcomenodeSet?.length && (
           <LinkedOutcomes
@@ -220,7 +75,7 @@ const WeekCellNode = ({
           />
         )}
 
-        <StyledNode.Border sx={{ backgroundColor: borderColor }} />
+        <StyledNode.Border style={{ backgroundColor: borderColor }} />
         <StyledNode.Content onClick={onNodeClicked}>
           <StyledNode.Title variant="body2">
             {node.title || _t('Blank title')} <br />
@@ -237,23 +92,25 @@ const WeekCellNode = ({
           />
         </StyledNode.Content>
 
-        {!state.dragging && <Handles nodeId={nodeId} nodeRef={wrapRef} />}
+        {!dnd.dragging && <Handles nodeId={nodeId} nodeRef={wrapRef} />}
       </StyledNode.CellInner>
 
-      {state.closestEdge && <DropIndicator edge={state.closestEdge} />}
+      {(dnd.closestEdge || edgeIndicator) && (
+        <DropIndicator edge={edgeIndicator || dnd.closestEdge} />
+      )}
 
-      {state.dragging &&
-        state.previewTarget &&
+      {dnd.dragging &&
+        dnd.previewTarget &&
         createPortal(
-          <StyledNode.CellInner sx={{ width: '180px', minHeight: '70px' }}>
-            <StyledNode.Border sx={{ backgroundColor: borderColor }} />
+          <StyledNode.CellInner style={{ width: '180px', minHeight: '70px' }}>
+            <StyledNode.Border style={{ backgroundColor: borderColor }} />
             <StyledNode.Content>
               <StyledNode.Title variant="body2">
                 {node.title || _t('Blank title')}
               </StyledNode.Title>
             </StyledNode.Content>
           </StyledNode.CellInner>,
-          state.previewTarget
+          dnd.previewTarget
         )}
     </>
   )

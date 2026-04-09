@@ -2,13 +2,12 @@ import {
   NodeInsertMode,
   NodeWorkflowReorderPayload
 } from '@cf/redux/slices/node.slice'
-import { RootState } from '@cf/redux/store'
+import store from '@cfRedux/store'
 import * as Styled from '@cfViews/WorkflowView/WorkflowEditView/styles'
 import { memo, useCallback, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 
+import WeekCellEmpty from './CellEmpty'
 import WeekCellNode from './CellNode'
-import WeekCellPhantom from './CellPhantom'
 import InsertMenu from './InsertMenu'
 import { WeekCellProps, WeekCellType } from './types'
 
@@ -29,9 +28,6 @@ const WeekCell = (props: WeekCellProps) => {
     dropData: null
   })
   const ref = useRef<HTMLDivElement>(null)
-  const insertMode = useSelector(
-    (state: RootState) => state.workspace.node.insertMode
-  )
 
   const onDrop = useCallback(
     (
@@ -39,6 +35,8 @@ const WeekCell = (props: WeekCellProps) => {
         type: WeekCellType.NODE | WeekCellType.PHANTOM
       }
     ) => {
+      // read from the store API to avoid expensive useSelector subscription
+      const insertMode = store.getState().workspace.node.insertMode
       if (insertMode === 'manual') {
         setState({
           anchor: ref.current,
@@ -48,7 +46,7 @@ const WeekCell = (props: WeekCellProps) => {
         onReorder(data)
       }
     },
-    [onReorder, insertMode]
+    [onReorder]
   )
 
   const onOption = useCallback(
@@ -80,12 +78,7 @@ const WeekCell = (props: WeekCellProps) => {
   return (
     <Styled.Cell ref={ref}>
       {type === WeekCellType.PHANTOM ? (
-        <WeekCellPhantom
-          {...props}
-          wrapRef={ref}
-          onDrop={onDrop}
-          insertMode={insertMode}
-        />
+        <WeekCellEmpty {...props} wrapRef={ref} onDrop={onDrop} />
       ) : (
         <WeekCellNode {...props} wrapRef={ref} onDrop={onDrop} />
       )}

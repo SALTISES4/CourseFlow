@@ -1,29 +1,38 @@
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import {
+  Edge,
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
+import store from '@cfRedux/store'
 import { isGridCell } from '@cfViews/WorkflowView/WorkflowEditView/types'
-import { alpha } from '@mui/material'
-import Box from '@mui/material/Box'
 import { produce } from 'immer'
 import { useEffect, useState } from 'react'
 
-import DropIndicator from '../DropIndicator'
-import { WeekCellPhantomTypeInternal, WeekCellType } from '../types'
+import { WeekCellEmptyTypeInternal, WeekCellType } from '../types'
 
-const WeekCellPhantom = ({
-  columnId,
-  coordsY,
-  coordsWeek,
-  highlight,
-  borderColor,
+type PropsType = Pick<
+  WeekCellEmptyTypeInternal,
+  'wrapRef' | 'columnId' | 'coordsWeek' | 'coordsY' | 'emptyRow' | 'onDrop'
+>
+
+// read from the store API to avoid expensive useSelector subscription
+function getIsRowInsert() {
+  return store.getState().workspace.node.insertMode === 'row'
+}
+
+function useCellEmptyDnd({
   wrapRef,
-  insertMode,
+  columnId,
+  coordsWeek,
+  coordsY,
   emptyRow,
   onDrop
-}: WeekCellPhantomTypeInternal) => {
-  const [state, setState] = useState({
+}: PropsType) {
+  const [state, setState] = useState<{
+    draggedOver: boolean
+    closestEdge: Edge | null
+  }>({
     draggedOver: false,
     closestEdge: null
   })
@@ -52,7 +61,7 @@ const WeekCellPhantom = ({
         }
 
         if (
-          insertMode === 'row' &&
+          getIsRowInsert() &&
           isGridCell(source.data) &&
           source.data.coords.y !== coordsY
         ) {
@@ -67,10 +76,10 @@ const WeekCellPhantom = ({
         setState(
           produce((draft) => {
             draft.draggedOver = true
-            draft.closestEdge = false
+            draft.closestEdge = null
 
             if (
-              insertMode === 'row' &&
+              getIsRowInsert() &&
               isGridCell(source.data) &&
               source.data.coords.y !== coordsY
             ) {
@@ -110,18 +119,9 @@ const WeekCellPhantom = ({
         })
       }
     })
-  }, [wrapRef, columnId, coordsWeek, coordsY, insertMode, emptyRow, onDrop])
+  }, [wrapRef, columnId, coordsWeek, coordsY, emptyRow, onDrop])
 
-  const backgroundIndicator =
-    !state.closestEdge && (state.draggedOver || highlight)
-  const lineIndicator = state.closestEdge && !emptyRow
-
-  return (
-    <Box sx={{ height: '100%' }}>
-      {backgroundIndicator && <DropIndicator color={alpha(borderColor, 0.2)} />}
-      {lineIndicator && <DropIndicator edge={state.closestEdge} />}
-    </Box>
-  )
+  return state
 }
 
-export default WeekCellPhantom
+export default useCellEmptyDnd
