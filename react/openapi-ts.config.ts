@@ -1,27 +1,3 @@
-// import type { ConfigFile } from '@rtk-query/codegen-openapi'
-//
-// const config: ConfigFile = {
-//   schemaFile: 'http://127.0.0.1:8000/api/openapi.json',
-//   apiFile: './src/api/store/emptyApi.ts',
-//   apiImport: 'emptyApi',
-//   outputFile: './src/api/store/cfApi.ts',
-//   outputFiles: {
-//     './src/api/store/project.ts': {
-//       filterEndpoints: [/project/i]
-//     },
-//     './src/api/store/workflow.ts': {
-//       filterEndpoints: [/workflow/i]
-//     },
-//     './src/api/store/node.ts': {
-//       filterEndpoints: [/node/i]
-//     }
-//   },
-//   exportName: 'cf',
-//   hooks: true
-// }
-//
-// export default config
-
 import { defineConfig } from '@hey-api/openapi-ts'
 
 export default defineConfig({
