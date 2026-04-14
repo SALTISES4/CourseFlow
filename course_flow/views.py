@@ -2005,6 +2005,7 @@ def get_export(request: HttpRequest) -> HttpResponse:
                 allowed_sets,
                 dir_path,
             )
+            print("sent to async")
 
         except AttributeError:
             return JsonResponse({"action": "error"})

@@ -3,7 +3,9 @@ from smtplib import SMTPException
 import pandas as pd
 import os
 import json
+import threading
 import traceback
+from functools import wraps
 from celery import shared_task
 from django.conf import settings
 from django.core.cache import cache
@@ -18,6 +20,16 @@ from .celery import logger, try_async
 from .models import ObjectSet, User
 from .utils import dateTimeFormatNoSpace, get_model_from_str
 
+def async_execute(func):
+    """
+    Executes a function asynchronously using a thread.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+            # Create a thread to run the function asynchronously
+            thread = threading.Thread(target=func, args=args, kwargs=kwargs)
+            thread.start()
+    return wrapper
 
 @try_async
 @shared_task
@@ -115,8 +127,7 @@ def async_send_export_email(
             f"Email - {email_subject} - {filename} - could NOT be sent to {user_email}"
         )
 
-@try_async
-@shared_task
+@async_execute
 def async_create_export_file(
     job_data,
     allowed_sets,
@@ -181,7 +192,6 @@ def async_create_export_file(
         )
         
         file_path = os.path.join(dir_path,filename)
-
         with open(file_path, "wb") as out_file:
             out_file.write(file)
         job_data["status"] = "success"
