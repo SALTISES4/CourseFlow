@@ -1,6 +1,7 @@
 import { _t } from '@cf/utility/Utility.class'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
 import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
 import Link from '@mui/material/Link'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -12,9 +13,10 @@ import * as Styled from '../styles'
 type StateType = {
   pending: boolean
   user: {
-    username: string
-    password: string
+    firstName: string
+    lastName: string
     email: string
+    password: string
   }
 }
 
@@ -22,15 +24,16 @@ function RegisterPage() {
   const [state, setState] = useState<StateType>({
     pending: false,
     user: {
-      username: '',
-      password: '',
-      email: ''
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: ''
     }
   })
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
-    console.log('submitted register form', e.target)
+    console.log('submitted register form with', state.user)
   }
 
   const onChange = useCallback((type: keyof StateType['user']) => {
@@ -54,21 +57,34 @@ function RegisterPage() {
           <Typography variant="body1">
             {_t('Create your CourseFlow account')}
           </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                label={_t('First Name')}
+                type="text"
+                name="firstName"
+                value={state.user.firstName}
+                onChange={onChange('firstName')}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label={_t('Last Name')}
+                type="text"
+                name="lastName"
+                value={state.user.lastName}
+                onChange={onChange('lastName')}
+                fullWidth
+              />
+            </Grid>
+          </Grid>
           <TextField
             label={_t('Email')}
             type="email"
             name="email"
             value={state.user.email}
             onChange={onChange('email')}
-            fullWidth
-            required
-          />
-          <TextField
-            label={_t('Username')}
-            type="text"
-            name="username"
-            value={state.user.username}
-            onChange={onChange('username')}
             fullWidth
             required
           />
