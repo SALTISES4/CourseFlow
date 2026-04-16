@@ -1,4 +1,4 @@
-"""Structural invariants for ``workflow_shape`` layout + edge generation."""
+"""Structural invariants for ``graph_shape`` layout + edge generation."""
 
 from __future__ import annotations
 
@@ -7,18 +7,18 @@ from django.db.models import Count
 
 from course_flow_v2.core.models import Edge, Node, Project
 from course_flow_v2.dev_seed.constants import DEV_SEED_PROJECT_TITLE_PREFIX
-from course_flow_v2.dev_seed.orchestrator import SeedConfig, generate_dev_seed
-from course_flow_v2.dev_seed.rng import SeededRNG
-from course_flow_v2.dev_seed.workflow_shape import (
-    WorkflowShapeParams,
+from course_flow_v2.dev_seed.graph_shape import (
+    GraphShapeParams,
     generate_edge_pairs,
-    generate_workflow_layout,
+    generate_graph_layout,
     iter_layout_node_meta,
 )
+from course_flow_v2.dev_seed.orchestrator import SeedConfig, generate_dev_seed
+from course_flow_v2.dev_seed.rng import SeededRNG
 
 
 def test_pure_layout_and_edges_deterministic():
-    p = WorkflowShapeParams(
+    p = GraphShapeParams(
         section_count=3,
         channel_count=3,
         min_nodes_per_section=4,
@@ -28,29 +28,29 @@ def test_pure_layout_and_edges_deterministic():
     )
     rng_a = SeededRNG.from_seed(9001)
     rng_b = SeededRNG.from_seed(9001)
-    la = generate_workflow_layout(rng_a, p)
-    lb = generate_workflow_layout(rng_b, p)
+    la = generate_graph_layout(rng_a, p)
+    lb = generate_graph_layout(rng_b, p)
     assert len(la.sections) == len(lb.sections)
     for sa, sb in zip(la.sections, lb.sections, strict=True):
         assert sa.placements == sb.placements
 
     r1 = SeededRNG.from_seed(9001)
     r2 = SeededRNG.from_seed(9001)
-    la = generate_workflow_layout(r1, p)
-    lb = generate_workflow_layout(r2, p)
+    la = generate_graph_layout(r1, p)
+    lb = generate_graph_layout(r2, p)
     ea = generate_edge_pairs(r1, la, max_cross_section_edges=3)
     eb = generate_edge_pairs(r2, lb, max_cross_section_edges=3)
     assert ea == eb
 
 
 def test_edge_invariants_pure():
-    p = WorkflowShapeParams(
+    p = GraphShapeParams(
         section_count=4,
         channel_count=3,
         max_cross_section_edges=4,
     )
     rng = SeededRNG.from_seed(404)
-    layout = generate_workflow_layout(rng, p)
+    layout = generate_graph_layout(rng, p)
     meta = iter_layout_node_meta(layout)
     n = len(meta)
     pairs = generate_edge_pairs(rng, layout, max_cross_section_edges=p.max_cross_section_edges)
@@ -78,7 +78,7 @@ def test_db_nodes_one_per_cell_and_compact_rows():
     cfg = SeedConfig(seed=2020, section_count=3, channel_count=3)
     generate_dev_seed(cfg)
     p = Project.objects.get(title__startswith=DEV_SEED_PROJECT_TITLE_PREFIX)
-    wf = p.workflows.first()
+    wf = p.graphs.first()
     for sec in wf.sections.all():
         dups = (
             Node.objects.filter(section=sec)
@@ -99,8 +99,8 @@ def test_db_nodes_one_per_cell_and_compact_rows():
 def test_db_edge_out_degrees_and_no_self_loop():
     generate_dev_seed(SeedConfig(seed=77, section_count=3, channel_count=3))
     p = Project.objects.get(title__startswith=DEV_SEED_PROJECT_TITLE_PREFIX)
-    wf = p.workflows.first()
-    edges = Edge.objects.filter(source_node__section__workflow=wf)
+    wf = p.graphs.first()
+    edges = Edge.objects.filter(source_node__section__graph=wf)
     assert edges.exists()
     for e in edges:
         assert e.source_node_id != e.target_node_id

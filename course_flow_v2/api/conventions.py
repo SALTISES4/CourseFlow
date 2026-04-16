@@ -18,13 +18,13 @@ JSON transport naming
     (``page``, ``page_size``) unless a future change standardizes otherwise.
 
 Entity resources
-    Primary CRUD routes (e.g. ``/project``, ``/workflow``) return *entity* payloads
+    Primary CRUD routes (e.g. ``/project``, ``/graph``) return *entity* payloads
     only: fields that belong to the persisted resource, without embedding related
     graphs or editor-specific joins.
 
 Graph / editor projections
-    Loading everything needed to render the workflow graph in one round trip uses
-    dedicated *projection* routes (e.g. ``GET .../workflow/{uuid}/graph``).
+    Loading everything needed to render the graph in one round trip uses
+    dedicated *projection* routes (e.g. ``GET .../graph/{uuid}/view``).
     Projections return **flat** top-level collections (lists) keyed by type, linked by
     **UUID references** between rows—not nested trees.
 

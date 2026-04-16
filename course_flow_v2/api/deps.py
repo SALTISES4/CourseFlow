@@ -1,5 +1,12 @@
 from course_flow_v2.application.services.auth_service import AuthService
 from course_flow_v2.application.services.channel_service import ChannelService
+from course_flow_v2.application.services.graph_mutation_service import (
+    GraphMutationService,
+)
+from course_flow_v2.application.services.graph_projection_service import (
+    GraphProjectionService,
+)
+from course_flow_v2.application.services.graph_service import GraphService
 from course_flow_v2.application.services.library_service import LibraryService
 from course_flow_v2.application.services.notification_service import (
     NotificationService,
@@ -19,17 +26,11 @@ from course_flow_v2.application.services.thread_comment_service import (
     ThreadCommentService,
 )
 from course_flow_v2.application.services.user_service import UserService
-from course_flow_v2.application.services.workflow_graph_mutation_service import (
-    WorkflowGraphMutationService,
-)
-from course_flow_v2.application.services.workflow_graph_projection_service import (
-    WorkflowGraphProjectionService,
-)
-from course_flow_v2.application.services.workflow_service import (
-    WorkflowService,
-)
 from course_flow_v2.infrastructure.repositories.django_channel_repository import (
     DjangoChannelRepository,
+)
+from course_flow_v2.infrastructure.repositories.django_graph_repository import (
+    DjangoGraphRepository,
 )
 from course_flow_v2.infrastructure.repositories.django_project_repository import (
     DjangoProjectRepository,
@@ -37,18 +38,15 @@ from course_flow_v2.infrastructure.repositories.django_project_repository import
 from course_flow_v2.infrastructure.repositories.django_section_repository import (
     DjangoSectionRepository,
 )
-from course_flow_v2.infrastructure.repositories.django_workflow_repository import (
-    DjangoWorkflowRepository,
-)
 
 _auth_service = AuthService()
 _project_graph_projection_service = ProjectGraphProjectionService()
 _project_detail_service = ProjectDetailService()
-_workflow_graph_projection_service = WorkflowGraphProjectionService()
-_workflow_graph_mutation_service = WorkflowGraphMutationService()
+_graph_projection_service = GraphProjectionService()
+_graph_mutation_service = GraphMutationService()
 _project_service = ProjectService(DjangoProjectRepository())
 _project_relations_service = ProjectRelationsService()
-_workflow_service = WorkflowService(DjangoWorkflowRepository())
+_graph_service = GraphService(DjangoGraphRepository())
 _channel_service = ChannelService(DjangoChannelRepository())
 _section_service = SectionService(DjangoSectionRepository())
 _thread_comment_service = ThreadCommentService()
@@ -69,12 +67,12 @@ def get_project_detail_service() -> ProjectDetailService:
     return _project_detail_service
 
 
-def get_workflow_graph_projection_service() -> WorkflowGraphProjectionService:
-    return _workflow_graph_projection_service
+def get_graph_projection_service() -> GraphProjectionService:
+    return _graph_projection_service
 
 
-def get_workflow_graph_mutation_service() -> WorkflowGraphMutationService:
-    return _workflow_graph_mutation_service
+def get_graph_mutation_service() -> GraphMutationService:
+    return _graph_mutation_service
 
 
 def get_project_service() -> ProjectService:
@@ -85,8 +83,8 @@ def get_project_relations_service() -> ProjectRelationsService:
     return _project_relations_service
 
 
-def get_workflow_service() -> WorkflowService:
-    return _workflow_service
+def get_graph_service() -> GraphService:
+    return _graph_service
 
 
 def get_channel_service() -> ChannelService:

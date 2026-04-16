@@ -45,33 +45,33 @@ export const apiPathRoutes = {
       duplicate: '/project/:id/duplicate',
       object_set__create: '/project/:id/object-set/create',
       list__by_current_user: '/project/my-projects',
-      workflows__list: '/project/:id/workflow'
+      graphs__list: '/project/:id/graph'
     },
-    workflow: {
-      // detail: '/workflow/:id/detail',
-      // parent__detail: '/workflow/:id/parent/detail',
-      // parent__detail__full: '/workflow/:id/parent/detail-full',
-      // child__detail: '/workflow/:id/child/detail',
-      // list__possible_linked: '/workflow/linked',
-      list__possible_added: '/workflow/added',
-      list_templates: '/workflow/template/list',
-      public__detail: '/workflow/:id/public/detail',
-      public__parent__detail: '/workflow/:id/public/parent/detail',
-      public__parent__detail_full: '/workflow/:id/public/parent/detail-full',
-      public__child__detail: '/workflow/:id/public/child/detail',
+    graph: {
+      // detail: '/graph/:id/detail',
+      // parent__detail: '/graph/:id/parent/detail',
+      // parent__detail__full: '/graph/:id/parent/detail-full',
+      // child__detail: '/graph/:id/child/detail',
+      // list__possible_linked: '/graph/linked',
+      list__possible_added: '/graph/added',
+      list_templates: '/graph/template/list',
+      public__detail: '/graph/:id/public/detail',
+      public__parent__detail: '/graph/:id/public/parent/detail',
+      public__parent__detail_full: '/graph/:id/public/parent/detail-full',
+      public__child__detail: '/graph/:id/public/child/detail',
       // editing
-      // create: '/workflow/create',
-      duplicate: '/workflow/:id/duplicate-to-project',
-      // update: '/workflow/:id/update',
-      //      link: '/workflow/:id/link-to-node',
-      strategy__toggle: '/workflow/:id/strategy/toggle',
-      strategy__duplicate: '/workflow/:id/strategy/duplicate',
-      strategy__add_to_workflow: '/workflow/:id/strategy/add-to-workflow',
+      // create: '/graph/create',
+      duplicate: '/graph/:id/duplicate-to-project',
+      // update: '/graph/:id/update',
+      //      link: '/graph/:id/link-to-node',
+      strategy__toggle: '/graph/:id/strategy/toggle',
+      strategy__duplicate: '/graph/:id/strategy/duplicate',
+      strategy__add_to_graph: '/graph/:id/strategy/add-to-graph',
       // child objects
-      object__duplicate: '/workflow/object/duplicate',
-      object__insert_sibling: '/workflow/object/insert-sibling',
-      object__insert_child: '/workflow/object/insert-sibling',
-      object__order: '/workflow/object/order'
+      object__duplicate: '/graph/object/duplicate',
+      object__insert_sibling: '/graph/object/insert-sibling',
+      object__insert_child: '/graph/object/insert-sibling',
+      object__order: '/graph/object/order'
     },
     node: {
       // create: '/node/create',
@@ -82,7 +82,7 @@ export const apiPathRoutes = {
       // update_position: '/node/:id/update-position',
       // toggle_object_set: '/node/:id/toggle-object-set',
       link__create: '/node/node-link/create',
-      link_to_workflow: '/node/:id/link-to-workflow'
+      link_to_graph: '/node/:id/link-to-graph'
     },
     week: {
       create: '/week/create',
@@ -109,7 +109,7 @@ export const apiPathRoutes = {
   /**
    * CourseFlow v2 (Django Ninja) — mounted at `path("api/", api.urls)` in course_flow_v2/urls.py.
    * Leaf paths are relative to `/api` (same prefix as `json_api` via `apiPathBase`).
-   * Use `generatePath()` for segments like `:workflowUuid`.
+   * Use `generatePath()` for segments like `:graphUuid`.
    */
   json_api_v2: {
     meta: {
@@ -138,14 +138,14 @@ export const apiPathRoutes = {
       detail: '/project/:uuid',
       graph: '/project/:uuid/graph'
     },
-    workflow: {
-      collection: '/workflow',
-      detail: '/workflow/:uuid',
-      graph: '/workflow/:uuid/graph',
-      nodes: '/workflow/:uuid/nodes',
-      edges: '/workflow/:uuid/edges',
-      related_parents: '/workflow/:uuid/related/parents',
-      related_children: '/workflow/:uuid/related/children'
+    graph: {
+      collection: '/graph',
+      detail: '/graph/:uuid',
+      graph: '/graph/:uuid/graph',
+      nodes: '/graph/:uuid/nodes',
+      edges: '/graph/:uuid/edges',
+      related_parents: '/graph/:uuid/related/parents',
+      related_children: '/graph/:uuid/related/children'
     },
     node: {
       collection: '/node',

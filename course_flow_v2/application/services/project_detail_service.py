@@ -6,7 +6,7 @@ from course_flow_v2.core.models import Project
 
 
 class ProjectDetailService:
-    """Assemble project detail with workflows, units, and typed unit meta."""
+    """Assemble project detail with graphs, workflows, and typed workflow meta."""
 
     def get_by_project_uuid(self, project_uuid: UUID):
         try:
@@ -14,27 +14,27 @@ class ProjectDetailService:
         except Project.DoesNotExist:
             return None
 
-        workflows = list(
-            p.workflows.select_related("unit")
+        graphs = list(
+            p.graphs.select_related("workflow")
             .prefetch_related(
-                "unit__task_meta",
-                "unit__program_meta",
-                "unit__course_meta",
-                "unit__activity_meta",
+                "workflow__task_meta",
+                "workflow__program_meta",
+                "workflow__course_meta",
+                "workflow__activity_meta",
             )
             .order_by("-modified_on", "-id")
         )
 
-        workflow_items: list[dict] = []
-        for wf in workflows:
-            unit = wf.unit
+        graph_items: list[dict] = []
+        for wf in graphs:
+            workflow = wf.workflow
             meta: dict | None = None
-            if unit.unit_type == unit.UnitType.TASK and hasattr(unit, "task_meta"):
-                meta = {"kind": "task_meta", "context": unit.task_meta.context}
-            elif unit.unit_type == unit.UnitType.PROGRAM and hasattr(
-                unit, "program_meta"
+            if workflow.workflow_type == workflow.WorkflowType.TASK and hasattr(workflow, "task_meta"):
+                meta = {"kind": "task_meta", "context": workflow.task_meta.context}
+            elif workflow.workflow_type == workflow.WorkflowType.PROGRAM and hasattr(
+                workflow, "program_meta"
             ):
-                pm = unit.program_meta
+                pm = workflow.program_meta
                 meta = {
                     "kind": "program_meta",
                     "calculate_time": pm.calculate_time,
@@ -44,22 +44,22 @@ class ProjectDetailService:
                     "classification_general_time": pm.classification_general_time,
                     "classification_specific_time": pm.classification_specific_time,
                 }
-            elif unit.unit_type == unit.UnitType.COURSE and hasattr(unit, "course_meta"):
+            elif workflow.workflow_type == workflow.WorkflowType.COURSE and hasattr(workflow, "course_meta"):
                 meta = {
                     "kind": "course_meta",
-                    "classification": unit.course_meta.classification,
-                    "code": unit.course_meta.code,
+                    "classification": workflow.course_meta.classification,
+                    "code": workflow.course_meta.code,
                 }
-            elif unit.unit_type == unit.UnitType.ACTIVITY and hasattr(
-                unit, "activity_meta"
+            elif workflow.workflow_type == workflow.WorkflowType.ACTIVITY and hasattr(
+                workflow, "activity_meta"
             ):
                 meta = {
                     "kind": "activity_meta",
-                    "context": unit.activity_meta.context,
-                    "classification": unit.activity_meta.classification,
+                    "context": workflow.activity_meta.context,
+                    "classification": workflow.activity_meta.classification,
                 }
 
-            workflow_items.append(
+            graph_items.append(
                 {
                     "uuid": wf.uuid,
                     "title": wf.title,
@@ -68,11 +68,11 @@ class ProjectDetailService:
                     "revision_id": wf.revision_id,
                     "date_created": wf.date_created,
                     "modified_on": wf.modified_on,
-                    "unit": {
-                        "uuid": unit.uuid,
-                        "title": unit.title,
-                        "description": unit.description,
-                        "unit_type": unit.unit_type,
+                    "workflow": {
+                        "uuid": workflow.uuid,
+                        "title": workflow.title,
+                        "description": workflow.description,
+                        "workflow_type": workflow.workflow_type,
                         "meta": meta,
                     },
                 }
@@ -87,5 +87,5 @@ class ProjectDetailService:
             "owner_id": p.owner_id,
             "date_created": p.date_created,
             "modified_on": p.modified_on,
-            "workflows": workflow_items,
+            "graphs": graph_items,
         }

@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { addProjectTeamMembers, courseFlowV2ApiNinjaAppHealth, createChannel, createProject, createSection, createThreadComment, createWorkflow, createWorkflowEdge, createWorkflowNode, createWorkflowSection, deleteAllThreadComments, deleteChannel, deleteEdge, deleteNode, deleteOneNotification, deleteProject, deleteProjectTeamMember, deleteSection, deleteThreadComment, duplicateProjectPlaceholder, getChannel, getEdge, getMyNotificationSettings, getMyProfileSettings, getNode, getProject, getProjectGraph, getSection, getWorkflow, getWorkflowGraph, listMyNotifications, listProjects, listProjectTeam, listThreadComments, listUsers, listWorkflowChannels, listWorkflowEdges, listWorkflowNodes, listWorkflows, listWorkflowSections, login, logout, markAllMyNotificationsAsRead, markOneNotificationAsRead, me, type Options, patchMyNotificationSettings, patchMyProfileSettings, patchNode, register, searchLibrary, updateChannel, updateProject, updateProjectTeamMember, updateSection } from '../sdk.gen';
-import type { AddProjectTeamMembersData, AddProjectTeamMembersResponse, CourseFlowV2ApiNinjaAppHealthData, CourseFlowV2ApiNinjaAppHealthResponse, CreateChannelData, CreateChannelResponse, CreateProjectData, CreateProjectResponse, CreateSectionData, CreateSectionResponse, CreateThreadCommentData, CreateThreadCommentResponse, CreateWorkflowData, CreateWorkflowEdgeData, CreateWorkflowEdgeResponse, CreateWorkflowNodeData, CreateWorkflowNodeResponse, CreateWorkflowResponse, CreateWorkflowSectionData, CreateWorkflowSectionResponse, DeleteAllThreadCommentsData, DeleteAllThreadCommentsResponse, DeleteChannelData, DeleteChannelResponse, DeleteEdgeData, DeleteEdgeResponse, DeleteNodeData, DeleteNodeResponse, DeleteOneNotificationData, DeleteOneNotificationResponse, DeleteProjectData, DeleteProjectResponse, DeleteProjectTeamMemberData, DeleteProjectTeamMemberResponse, DeleteSectionData, DeleteSectionResponse, DeleteThreadCommentData, DeleteThreadCommentResponse, DuplicateProjectPlaceholderData, DuplicateProjectPlaceholderResponse, GetChannelData, GetChannelResponse, GetEdgeData, GetEdgeResponse, GetMyNotificationSettingsData, GetMyNotificationSettingsResponse, GetMyProfileSettingsData, GetMyProfileSettingsResponse, GetNodeData, GetNodeResponse, GetProjectData, GetProjectGraphData, GetProjectGraphResponse, GetProjectResponse, GetSectionData, GetSectionResponse, GetWorkflowData, GetWorkflowGraphData, GetWorkflowGraphResponse, GetWorkflowResponse, ListMyNotificationsData, ListMyNotificationsResponse, ListProjectsData, ListProjectsResponse, ListProjectTeamData, ListProjectTeamResponse, ListThreadCommentsData, ListThreadCommentsResponse, ListUsersData, ListUsersResponse, ListWorkflowChannelsData, ListWorkflowChannelsResponse, ListWorkflowEdgesData, ListWorkflowEdgesResponse, ListWorkflowNodesData, ListWorkflowNodesResponse, ListWorkflowsData, ListWorkflowSectionsData, ListWorkflowSectionsResponse, ListWorkflowsResponse, LoginData, LoginResponse, LogoutData, LogoutResponse, MarkAllMyNotificationsAsReadData, MarkAllMyNotificationsAsReadResponse, MarkOneNotificationAsReadData, MarkOneNotificationAsReadResponse, MeData, MeResponse, PatchMyNotificationSettingsData, PatchMyNotificationSettingsResponse, PatchMyProfileSettingsData, PatchMyProfileSettingsResponse, PatchNodeData, PatchNodeResponse, RegisterData, RegisterResponse, SearchLibraryData, SearchLibraryResponse, UpdateChannelData, UpdateChannelResponse, UpdateProjectData, UpdateProjectResponse, UpdateProjectTeamMemberData, UpdateProjectTeamMemberResponse, UpdateSectionData, UpdateSectionResponse } from '../types.gen';
+import { addProjectTeamMembers, courseFlowV2ApiNinjaAppHealth, createChannel, createProject, createSection, createThreadComment, createGraph, createGraphEdge, createGraphNode, createGraphSection, deleteAllThreadComments, deleteChannel, deleteEdge, deleteNode, deleteOneNotification, deleteProject, deleteProjectTeamMember, deleteSection, deleteThreadComment, duplicateProjectPlaceholder, getChannel, getEdge, getMyNotificationSettings, getMyProfileSettings, getNode, getProject, getProjectGraph, getSection, getGraph, getGraphView, listMyNotifications, listProjects, listProjectTeam, listThreadComments, listUsers, listGraphChannels, listGraphEdges, listGraphNodes, listGraphs, listGraphSections, login, logout, markAllMyNotificationsAsRead, markOneNotificationAsRead, me, type Options, patchMyNotificationSettings, patchMyProfileSettings, patchNode, register, searchLibrary, updateChannel, updateProject, updateProjectTeamMember, updateSection } from '../sdk.gen';
+import type { AddProjectTeamMembersData, AddProjectTeamMembersResponse, CourseFlowV2ApiNinjaAppHealthData, CourseFlowV2ApiNinjaAppHealthResponse, CreateChannelData, CreateChannelResponse, CreateProjectData, CreateProjectResponse, CreateSectionData, CreateSectionResponse, CreateThreadCommentData, CreateThreadCommentResponse, CreateGraphData, CreateGraphEdgeData, CreateGraphEdgeResponse, CreateGraphNodeData, CreateGraphNodeResponse, CreateGraphResponse, CreateGraphSectionData, CreateGraphSectionResponse, DeleteAllThreadCommentsData, DeleteAllThreadCommentsResponse, DeleteChannelData, DeleteChannelResponse, DeleteEdgeData, DeleteEdgeResponse, DeleteNodeData, DeleteNodeResponse, DeleteOneNotificationData, DeleteOneNotificationResponse, DeleteProjectData, DeleteProjectResponse, DeleteProjectTeamMemberData, DeleteProjectTeamMemberResponse, DeleteSectionData, DeleteSectionResponse, DeleteThreadCommentData, DeleteThreadCommentResponse, DuplicateProjectPlaceholderData, DuplicateProjectPlaceholderResponse, GetChannelData, GetChannelResponse, GetEdgeData, GetEdgeResponse, GetMyNotificationSettingsData, GetMyNotificationSettingsResponse, GetMyProfileSettingsData, GetMyProfileSettingsResponse, GetNodeData, GetNodeResponse, GetProjectData, GetProjectGraphData, GetProjectGraphResponse, GetProjectResponse, GetSectionData, GetSectionResponse, GetGraphData, GetGraphViewData, GetGraphViewResponse, GetGraphResponse, ListMyNotificationsData, ListMyNotificationsResponse, ListProjectsData, ListProjectsResponse, ListProjectTeamData, ListProjectTeamResponse, ListThreadCommentsData, ListThreadCommentsResponse, ListUsersData, ListUsersResponse, ListGraphChannelsData, ListGraphChannelsResponse, ListGraphEdgesData, ListGraphEdgesResponse, ListGraphNodesData, ListGraphNodesResponse, ListGraphsData, ListGraphSectionsData, ListGraphSectionsResponse, ListGraphsResponse, LoginData, LoginResponse, LogoutData, LogoutResponse, MarkAllMyNotificationsAsReadData, MarkAllMyNotificationsAsReadResponse, MarkOneNotificationAsReadData, MarkOneNotificationAsReadResponse, MeData, MeResponse, PatchMyNotificationSettingsData, PatchMyNotificationSettingsResponse, PatchMyProfileSettingsData, PatchMyProfileSettingsResponse, PatchNodeData, PatchNodeResponse, RegisterData, RegisterResponse, SearchLibraryData, SearchLibraryResponse, UpdateChannelData, UpdateChannelResponse, UpdateProjectData, UpdateProjectResponse, UpdateProjectTeamMemberData, UpdateProjectTeamMemberResponse, UpdateSectionData, UpdateSectionResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -250,14 +250,14 @@ export const updateProjectMutation = (options?: Partial<Options<UpdateProjectDat
     return mutationOptions;
 };
 
-export const listWorkflowsQueryKey = (options?: Options<ListWorkflowsData>) => createQueryKey('listWorkflows', options);
+export const listGraphsQueryKey = (options?: Options<ListGraphsData>) => createQueryKey('listGraphs', options);
 
 /**
- * List Workflows
+ * List Graphs
  */
-export const listWorkflowsOptions = (options?: Options<ListWorkflowsData>) => queryOptions<ListWorkflowsResponse, DefaultError, ListWorkflowsResponse, ReturnType<typeof listWorkflowsQueryKey>>({
+export const listGraphsOptions = (options?: Options<ListGraphsData>) => queryOptions<ListGraphsResponse, DefaultError, ListGraphsResponse, ReturnType<typeof listGraphsQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
-        const { data } = await listWorkflows({
+        const { data } = await listGraphs({
             ...options,
             ...queryKey[0],
             signal,
@@ -265,16 +265,16 @@ export const listWorkflowsOptions = (options?: Options<ListWorkflowsData>) => qu
         });
         return data;
     },
-    queryKey: listWorkflowsQueryKey(options)
+    queryKey: listGraphsQueryKey(options)
 });
 
 /**
- * Create Workflow
+ * Create Graph
  */
-export const createWorkflowMutation = (options?: Partial<Options<CreateWorkflowData>>): UseMutationOptions<CreateWorkflowResponse, DefaultError, Options<CreateWorkflowData>> => {
-    const mutationOptions: UseMutationOptions<CreateWorkflowResponse, DefaultError, Options<CreateWorkflowData>> = {
+export const createGraphMutation = (options?: Partial<Options<CreateGraphData>>): UseMutationOptions<CreateGraphResponse, DefaultError, Options<CreateGraphData>> => {
+    const mutationOptions: UseMutationOptions<CreateGraphResponse, DefaultError, Options<CreateGraphData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await createWorkflow({
+            const { data } = await createGraph({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -285,14 +285,14 @@ export const createWorkflowMutation = (options?: Partial<Options<CreateWorkflowD
     return mutationOptions;
 };
 
-export const getWorkflowGraphQueryKey = (options: Options<GetWorkflowGraphData>) => createQueryKey('getWorkflowGraph', options);
+export const getGraphViewQueryKey = (options: Options<GetGraphViewData>) => createQueryKey('getGraphView', options);
 
 /**
- * Get Workflow Graph
+ * Get Graph Graph
  */
-export const getWorkflowGraphOptions = (options: Options<GetWorkflowGraphData>) => queryOptions<GetWorkflowGraphResponse, DefaultError, GetWorkflowGraphResponse, ReturnType<typeof getWorkflowGraphQueryKey>>({
+export const getGraphViewOptions = (options: Options<GetGraphViewData>) => queryOptions<GetGraphViewResponse, DefaultError, GetGraphViewResponse, ReturnType<typeof getGraphViewQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
-        const { data } = await getWorkflowGraph({
+        const { data } = await getGraphView({
             ...options,
             ...queryKey[0],
             signal,
@@ -300,17 +300,17 @@ export const getWorkflowGraphOptions = (options: Options<GetWorkflowGraphData>) 
         });
         return data;
     },
-    queryKey: getWorkflowGraphQueryKey(options)
+    queryKey: getGraphViewQueryKey(options)
 });
 
-export const getWorkflowQueryKey = (options: Options<GetWorkflowData>) => createQueryKey('getWorkflow', options);
+export const getGraphQueryKey = (options: Options<GetGraphData>) => createQueryKey('getGraph', options);
 
 /**
- * Get Workflow
+ * Get Graph
  */
-export const getWorkflowOptions = (options: Options<GetWorkflowData>) => queryOptions<GetWorkflowResponse, DefaultError, GetWorkflowResponse, ReturnType<typeof getWorkflowQueryKey>>({
+export const getGraphOptions = (options: Options<GetGraphData>) => queryOptions<GetGraphResponse, DefaultError, GetGraphResponse, ReturnType<typeof getGraphQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
-        const { data } = await getWorkflow({
+        const { data } = await getGraph({
             ...options,
             ...queryKey[0],
             signal,
@@ -318,17 +318,17 @@ export const getWorkflowOptions = (options: Options<GetWorkflowData>) => queryOp
         });
         return data;
     },
-    queryKey: getWorkflowQueryKey(options)
+    queryKey: getGraphQueryKey(options)
 });
 
-export const listWorkflowChannelsQueryKey = (options: Options<ListWorkflowChannelsData>) => createQueryKey('listWorkflowChannels', options);
+export const listGraphChannelsQueryKey = (options: Options<ListGraphChannelsData>) => createQueryKey('listGraphChannels', options);
 
 /**
- * List Workflow Channels
+ * List Graph Channels
  */
-export const listWorkflowChannelsOptions = (options: Options<ListWorkflowChannelsData>) => queryOptions<ListWorkflowChannelsResponse, DefaultError, ListWorkflowChannelsResponse, ReturnType<typeof listWorkflowChannelsQueryKey>>({
+export const listGraphChannelsOptions = (options: Options<ListGraphChannelsData>) => queryOptions<ListGraphChannelsResponse, DefaultError, ListGraphChannelsResponse, ReturnType<typeof listGraphChannelsQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
-        const { data } = await listWorkflowChannels({
+        const { data } = await listGraphChannels({
             ...options,
             ...queryKey[0],
             signal,
@@ -336,17 +336,17 @@ export const listWorkflowChannelsOptions = (options: Options<ListWorkflowChannel
         });
         return data;
     },
-    queryKey: listWorkflowChannelsQueryKey(options)
+    queryKey: listGraphChannelsQueryKey(options)
 });
 
-export const listWorkflowSectionsQueryKey = (options: Options<ListWorkflowSectionsData>) => createQueryKey('listWorkflowSections', options);
+export const listGraphSectionsQueryKey = (options: Options<ListGraphSectionsData>) => createQueryKey('listGraphSections', options);
 
 /**
- * List Workflow Sections
+ * List Graph Sections
  */
-export const listWorkflowSectionsOptions = (options: Options<ListWorkflowSectionsData>) => queryOptions<ListWorkflowSectionsResponse, DefaultError, ListWorkflowSectionsResponse, ReturnType<typeof listWorkflowSectionsQueryKey>>({
+export const listGraphSectionsOptions = (options: Options<ListGraphSectionsData>) => queryOptions<ListGraphSectionsResponse, DefaultError, ListGraphSectionsResponse, ReturnType<typeof listGraphSectionsQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
-        const { data } = await listWorkflowSections({
+        const { data } = await listGraphSections({
             ...options,
             ...queryKey[0],
             signal,
@@ -354,16 +354,16 @@ export const listWorkflowSectionsOptions = (options: Options<ListWorkflowSection
         });
         return data;
     },
-    queryKey: listWorkflowSectionsQueryKey(options)
+    queryKey: listGraphSectionsQueryKey(options)
 });
 
 /**
- * Create Workflow Section
+ * Create Graph Section
  */
-export const createWorkflowSectionMutation = (options?: Partial<Options<CreateWorkflowSectionData>>): UseMutationOptions<CreateWorkflowSectionResponse, DefaultError, Options<CreateWorkflowSectionData>> => {
-    const mutationOptions: UseMutationOptions<CreateWorkflowSectionResponse, DefaultError, Options<CreateWorkflowSectionData>> = {
+export const createGraphSectionMutation = (options?: Partial<Options<CreateGraphSectionData>>): UseMutationOptions<CreateGraphSectionResponse, DefaultError, Options<CreateGraphSectionData>> => {
+    const mutationOptions: UseMutationOptions<CreateGraphSectionResponse, DefaultError, Options<CreateGraphSectionData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await createWorkflowSection({
+            const { data } = await createGraphSection({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -374,14 +374,14 @@ export const createWorkflowSectionMutation = (options?: Partial<Options<CreateWo
     return mutationOptions;
 };
 
-export const listWorkflowNodesQueryKey = (options: Options<ListWorkflowNodesData>) => createQueryKey('listWorkflowNodes', options);
+export const listGraphNodesQueryKey = (options: Options<ListGraphNodesData>) => createQueryKey('listGraphNodes', options);
 
 /**
- * List Workflow Nodes
+ * List Graph Nodes
  */
-export const listWorkflowNodesOptions = (options: Options<ListWorkflowNodesData>) => queryOptions<ListWorkflowNodesResponse, DefaultError, ListWorkflowNodesResponse, ReturnType<typeof listWorkflowNodesQueryKey>>({
+export const listGraphNodesOptions = (options: Options<ListGraphNodesData>) => queryOptions<ListGraphNodesResponse, DefaultError, ListGraphNodesResponse, ReturnType<typeof listGraphNodesQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
-        const { data } = await listWorkflowNodes({
+        const { data } = await listGraphNodes({
             ...options,
             ...queryKey[0],
             signal,
@@ -389,16 +389,16 @@ export const listWorkflowNodesOptions = (options: Options<ListWorkflowNodesData>
         });
         return data;
     },
-    queryKey: listWorkflowNodesQueryKey(options)
+    queryKey: listGraphNodesQueryKey(options)
 });
 
 /**
- * Create Workflow Node
+ * Create Graph Node
  */
-export const createWorkflowNodeMutation = (options?: Partial<Options<CreateWorkflowNodeData>>): UseMutationOptions<CreateWorkflowNodeResponse, DefaultError, Options<CreateWorkflowNodeData>> => {
-    const mutationOptions: UseMutationOptions<CreateWorkflowNodeResponse, DefaultError, Options<CreateWorkflowNodeData>> = {
+export const createGraphNodeMutation = (options?: Partial<Options<CreateGraphNodeData>>): UseMutationOptions<CreateGraphNodeResponse, DefaultError, Options<CreateGraphNodeData>> => {
+    const mutationOptions: UseMutationOptions<CreateGraphNodeResponse, DefaultError, Options<CreateGraphNodeData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await createWorkflowNode({
+            const { data } = await createGraphNode({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -409,14 +409,14 @@ export const createWorkflowNodeMutation = (options?: Partial<Options<CreateWorkf
     return mutationOptions;
 };
 
-export const listWorkflowEdgesQueryKey = (options: Options<ListWorkflowEdgesData>) => createQueryKey('listWorkflowEdges', options);
+export const listGraphEdgesQueryKey = (options: Options<ListGraphEdgesData>) => createQueryKey('listGraphEdges', options);
 
 /**
- * List Workflow Edges
+ * List Graph Edges
  */
-export const listWorkflowEdgesOptions = (options: Options<ListWorkflowEdgesData>) => queryOptions<ListWorkflowEdgesResponse, DefaultError, ListWorkflowEdgesResponse, ReturnType<typeof listWorkflowEdgesQueryKey>>({
+export const listGraphEdgesOptions = (options: Options<ListGraphEdgesData>) => queryOptions<ListGraphEdgesResponse, DefaultError, ListGraphEdgesResponse, ReturnType<typeof listGraphEdgesQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
-        const { data } = await listWorkflowEdges({
+        const { data } = await listGraphEdges({
             ...options,
             ...queryKey[0],
             signal,
@@ -424,16 +424,16 @@ export const listWorkflowEdgesOptions = (options: Options<ListWorkflowEdgesData>
         });
         return data;
     },
-    queryKey: listWorkflowEdgesQueryKey(options)
+    queryKey: listGraphEdgesQueryKey(options)
 });
 
 /**
- * Create Workflow Edge
+ * Create Graph Edge
  */
-export const createWorkflowEdgeMutation = (options?: Partial<Options<CreateWorkflowEdgeData>>): UseMutationOptions<CreateWorkflowEdgeResponse, DefaultError, Options<CreateWorkflowEdgeData>> => {
-    const mutationOptions: UseMutationOptions<CreateWorkflowEdgeResponse, DefaultError, Options<CreateWorkflowEdgeData>> = {
+export const createGraphEdgeMutation = (options?: Partial<Options<CreateGraphEdgeData>>): UseMutationOptions<CreateGraphEdgeResponse, DefaultError, Options<CreateGraphEdgeData>> => {
+    const mutationOptions: UseMutationOptions<CreateGraphEdgeResponse, DefaultError, Options<CreateGraphEdgeData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await createWorkflowEdge({
+            const { data } = await createGraphEdge({
                 ...options,
                 ...fnOptions,
                 throwOnError: true

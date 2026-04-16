@@ -38,7 +38,7 @@ class GraphMutationDeltaBuilder:
     def build_envelope(
         self,
         *,
-        workflow_uuid: UUID,
+        graph_uuid: UUID,
         revision_id: int,
         triggered_by: str,
         trigger_entity_id: str,
@@ -46,7 +46,7 @@ class GraphMutationDeltaBuilder:
         """Return a dict matching ``GraphMutationEnvelopeOut`` (snake_case JSON keys)."""
 
         return {
-            "workflow_id": workflow_uuid,
+            "graph_id": graph_uuid,
             "revision_id": revision_id,
             "changes": {
                 "nodes": {

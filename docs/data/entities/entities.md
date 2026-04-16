@@ -50,16 +50,16 @@ assumptions:
       Mermaid uses PROJECTTEAM_USER while the workbook uses projectteam_member.
       This YAML adopts `projectteam_member` as canonical and records `projectteam_user`
       as an alias.
-  - id: unit_meta_polymorphism
+  - id: workflow_meta_polymorphism
     status: provisional
     description: >
-      A unit has exactly one typed meta record matching unit_type, rather than all
+      A workflow has exactly one typed meta record matching workflow_type, rather than all
       four meta records simultaneously.
-  - id: workflow_unit_one_to_one
+  - id: graph_workflow_one_to_one
     status: provisional
     description: >
-      Mermaid shows WORKFLOW ||--|| UNIT while workbook labels workflow.unit_fk as m:1.
-      This YAML treats workflow <-> unit as one-to-one because that is the stronger
+      Mermaid shows WORKFLOW ||--|| UNIT while workbook labels graph.workflow_fk as m:1.
+      This YAML treats graph <-> workflow as one-to-one because that is the stronger
       and more plausible interpretation for the current design.
   - id: thread_attachment_model
     status: provisional
@@ -79,11 +79,11 @@ assumptions:
       Mermaid and workbook together imply node may belong to section and may also
       belong to channel. This may represent two parallel contexts rather than both
       being mandatory simultaneously.
-  - id: user_workflow_join_unclear
+  - id: user_graph_join_unclear
     status: provisional
     description: >
-      Workbook lists workflow.users as a join-style relationship, but Mermaid does not
-      define a workflow-user collaboration join table. This is not modeled as canonical
+      Workbook lists graph.users as a join-style relationship, but Mermaid does not
+      define a graph-user collaboration join table. This is not modeled as canonical
       until a real join entity is defined.
   - id: notification_read_field
     status: provisional
@@ -102,13 +102,13 @@ assumptions:
       This YAML expands shared fields explicitly per entity where they appear to apply.
 
 enums:
-  unit_type:
+  workflow_type:
     values:
       - program
       - course
       - activity
       - task
-    description: Typed academic abstraction represented by unit.
+    description: Typed academic abstraction represented by workflow.
 
   line_type:
     values: []
@@ -158,11 +158,11 @@ entities:
         cardinality: one-to-many
         inverse_of: owner
         description: Projects owned by the user.
-      workflows:
-        target: workflow
+      graphs:
+        target: graph
         cardinality: one-to-many
         inverse_of: owner
-        description: Workflows owned by the user.
+        description: Graphs owned by the user.
       comments:
         target: comment
         cardinality: one-to-many
@@ -175,8 +175,8 @@ entities:
         target: favorite_project
         cardinality: one-to-many
         inverse_of: user
-      favorite_workflows:
-        target: favorite_workflow
+      favorite_graphs:
+        target: favorite_graph
         cardinality: one-to-many
         inverse_of: user
       projectteam_memberships:
@@ -187,7 +187,7 @@ entities:
   project:
     kind: entity
     aliases: []
-    description: Top-level owned workspace container for workflows.
+    description: Top-level owned workspace container for graphs.
     fields:
       id:
         label: ID
@@ -232,8 +232,8 @@ entities:
         cardinality: many-to-one
         fk: user_fk
         required: true
-      workflows:
-        target: workflow
+      graphs:
+        target: graph
         cardinality: one-to-many
         inverse_of: project
       disciplines:
@@ -258,7 +258,7 @@ entities:
         cardinality: none
         description: Not a direct relationship; tags attached to nodes remain project-scoped through tag.project.
 
-  workflow:
+  graph:
     kind: entity
     aliases: []
     description: Structured academic flow contained optionally within a project.
@@ -300,31 +300,31 @@ entities:
       sections:
         target: section
         cardinality: one-to-many
-        inverse_of: workflow
+        inverse_of: graph
       channels:
         target: channel
         cardinality: one-to-many
-        inverse_of: workflow
-      unit:
-        target: unit
+        inverse_of: graph
+      workflow:
+        target: workflow
         cardinality: one-to-one
-        inverse_of: workflow
+        inverse_of: graph
         required: true
       favorite_links:
-        target: favorite_workflow
+        target: favorite_graph
         cardinality: one-to-many
-        inverse_of: workflow
+        inverse_of: graph
       outcomes:
         target: outcome
         cardinality: one-to-many
-        inverse_of: workflow
+        inverse_of: graph
 
-  unit:
+  workflow:
     kind: entity
     aliases: []
     description: >
-      Typed academic abstraction attached one-to-one to a workflow.
-      A unit may represent program, course, activity, or task.
+      Typed academic abstraction attached one-to-one to a graph.
+      A workflow may represent program, course, activity, or task.
     fields:
       id:
         label: ID
@@ -354,21 +354,21 @@ entities:
         type: wysiwyg
         writable: true
         comments: Filled by user.
-      unit_type:
+      workflow_type:
         label: Type
         type: enum
-        enum: unit_type
+        enum: workflow_type
         comments: ACTIVITY | COURSE | PROGRAM | TASK
     relationships:
-      workflow:
-        target: workflow
+      graph:
+        target: graph
         cardinality: one-to-one
-        fk: workflow_fk
+        fk: graph_fk
         required: true
       nodes:
         target: node
         cardinality: one-to-many
-        inverse_of: unit
+        inverse_of: workflow
       programmeta:
         target: programmeta
         cardinality: one-to-one
@@ -389,7 +389,7 @@ entities:
   section:
     kind: entity
     aliases: []
-    description: Ordered structural grouping within a workflow.
+    description: Ordered structural grouping within a graph.
     fields:
       id:
         label: ID
@@ -420,10 +420,10 @@ entities:
         writable: true
         comments: User can reorder the section by drag and drop.
     relationships:
-      workflow:
-        target: workflow
+      graph:
+        target: graph
         cardinality: many-to-one
-        fk: workflow_fk
+        fk: graph_fk
         required: true
       nodes:
         target: node
@@ -438,7 +438,7 @@ entities:
   channel:
     kind: entity
     aliases: []
-    description: Ordered workflow channel that can contain nodes and has an attached comment thread.
+    description: Ordered graph channel that can contain nodes and has an attached comment thread.
     fields:
       id:
         label: ID
@@ -469,10 +469,10 @@ entities:
         writable: true
         comments: User can reorder the section by drag and drop.
     relationships:
-      workflow:
-        target: workflow
+      graph:
+        target: graph
         cardinality: many-to-one
-        fk: workflow_fk
+        fk: graph_fk
         required: true
       nodes:
         target: node
@@ -487,7 +487,7 @@ entities:
   node:
     kind: entity
     aliases: []
-    description: Graph/content node attached to section and/or channel, optionally linked to unit and outcomes.
+    description: Graph/content node attached to section and/or channel, optionally linked to workflow and outcomes.
     fields:
       id:
         label: ID
@@ -510,10 +510,10 @@ entities:
         cardinality: many-to-one
         fk: channel_fk
         required: false
-      unit:
-        target: unit
+      workflow:
+        target: workflow
         cardinality: many-to-one
-        fk: unit_fk
+        fk: workflow_fk
         required: false
       thread:
         target: thread
@@ -660,10 +660,10 @@ entities:
     description: Outcome object attachable to nodes, tags, threads, and horizontal links.
     fields: {}
     relationships:
-      workflow:
-        target: workflow
+      graph:
+        target: graph
         cardinality: many-to-one
-        fk: workflow_fk
+        fk: graph_fk
         required: true
       thread:
         target: thread
@@ -810,10 +810,10 @@ entities:
         fk: project_fk
         required: true
 
-  favorite_workflow:
+  favorite_graph:
     kind: join
     aliases: []
-    description: Join entity linking user and workflow for favorites.
+    description: Join entity linking user and graph for favorites.
     fields: {}
     relationships:
       user:
@@ -821,10 +821,10 @@ entities:
         cardinality: many-to-one
         fk: user_fk
         required: true
-      workflow:
-        target: workflow
+      graph:
+        target: graph
         cardinality: many-to-one
-        fk: workflow_fk
+        fk: graph_fk
         required: true
 
   projectteam:
@@ -874,11 +874,11 @@ entities:
   programmeta:
     kind: meta
     aliases: []
-    description: Program-specific meta fields for a unit where unit_type = program.
+    description: Program-specific meta fields for a workflow where workflow_type = program.
     fields:
       calculate_time:
         type: derived
-        comments: Applies to all workflow types, filled by user.
+        comments: Applies to all graph types, filled by user.
       calculate_credits:
         type: derived
         comments: Applies only to Programs, filled by user.
@@ -895,15 +895,15 @@ entities:
         type: duration
         comments: Applies only to Programs only, filled by user or calculated automatically.
     relationships:
-      unit:
-        target: unit
+      workflow:
+        target: workflow
         cardinality: one-to-one
         required: true
 
   coursemeta:
     kind: meta
     aliases: []
-    description: Course-specific meta fields for a unit where unit_type = course.
+    description: Course-specific meta fields for a workflow where workflow_type = course.
     fields:
       classification:
         type: string
@@ -911,29 +911,29 @@ entities:
         type: string
         comments: Applies only to Courses, filled by user.
     relationships:
-      unit:
-        target: unit
+      workflow:
+        target: workflow
         cardinality: one-to-one
         required: true
 
   taskmeta:
     kind: meta
     aliases: []
-    description: Task-specific meta fields for a unit where unit_type = task.
+    description: Task-specific meta fields for a workflow where workflow_type = task.
     fields:
       context:
         type: string
         writable: true
     relationships:
-      unit:
-        target: unit
+      workflow:
+        target: workflow
         cardinality: one-to-one
         required: true
 
   activitymeta:
     kind: meta
     aliases: []
-    description: Activity-specific meta fields for a unit where unit_type = activity.
+    description: Activity-specific meta fields for a workflow where workflow_type = activity.
     fields:
       context:
         type: string
@@ -942,8 +942,8 @@ entities:
         type: string
         writable: true
     relationships:
-      unit:
-        target: unit
+      workflow:
+        target: workflow
         cardinality: one-to-one
         required: true
 
@@ -985,24 +985,24 @@ joins:
     description: Associative relationship for horizontal outcome grouping.
 
 rules:
-  - id: unit_requires_matching_meta
+  - id: workflow_requires_matching_meta
     status: provisional
     description: >
-      A unit must have exactly one typed meta record matching unit_type:
+      A workflow must have exactly one typed meta record matching workflow_type:
       - program -> programmeta
       - course -> coursemeta
       - activity -> activitymeta
       - task -> taskmeta
 
-  - id: unit_forbids_nonmatching_meta
+  - id: workflow_forbids_nonmatching_meta
     status: provisional
     description: >
-      A unit must not have meta rows for types other than its own unit_type.
+      A workflow must not have meta rows for types other than its own workflow_type.
 
-  - id: workflow_has_one_unit
+  - id: graph_has_one_workflow
     status: provisional
     description: >
-      Each workflow must be attached to exactly one unit, and each unit belongs to exactly one workflow.
+      Each graph must be attached to exactly one workflow, and each workflow belongs to exactly one graph.
 
   - id: thread_single_owner
     status: provisional
@@ -1039,7 +1039,7 @@ rules:
   - id: favorites_are_join_entities
     status: ratified
     description: >
-      Project and workflow favorites are separate join entities rather than a generic polymorphic favorite table.
+      Project and graph favorites are separate join entities rather than a generic polymorphic favorite table.
 
   - id: node_context_ownership
     status: provisional
@@ -1062,7 +1062,7 @@ views:
     include_entities:
       - user
       - project
-      - workflow
+      - graph
       - section
       - channel
       - node
@@ -1071,7 +1071,7 @@ views:
       - horizontaloutcome
       - thread
       - comment
-      - unit
+      - workflow
       - programmeta
       - coursemeta
       - taskmeta
@@ -1080,10 +1080,10 @@ views:
       - tag
       - notification
       - favorite_project
-      - favorite_workflow
+      - favorite_graph
       - projectteam
       - projectteam_member
     notes:
       - Render projectteam_member as PROJECTTEAM_USER if backward compatibility with existing Mermaid is required.
-      - Render workflow-unit as one-to-one unless ratified otherwise.
-      - Render unit-meta relationships as optional one-to-one; semantic exclusivity is enforced by rules, not by Mermaid alone.
+      - Render graph-workflow as one-to-one unless ratified otherwise.
+      - Render workflow-meta relationships as optional one-to-one; semantic exclusivity is enforced by rules, not by Mermaid alone.

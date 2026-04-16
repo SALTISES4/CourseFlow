@@ -1,4 +1,4 @@
-# OpenAPI and Client Workflow
+# OpenAPI and Client Graph
 
 The API specification must be generated from the actual Django Ninja endpoints and schemas.
 
@@ -57,9 +57,9 @@ Examples only; adapt to actual project wiring:
 - API docs UI available at a route such as `/api/docs`
 - OpenAPI JSON available at a route such as `/api/openapi.json`
 
-## Postman / manual workflow
+## Postman / manual graph
 
-Preferred workflow:
+Preferred graph:
 
 1. implement or update endpoint
 2. declare request schema
@@ -70,7 +70,7 @@ Preferred workflow:
 
 ---
 
-## Selected client workflow (frontend)
+## Selected client graph (frontend)
 
 This is the **current, firm decision** for the React app. It is not an optional future experiment.
 
@@ -83,7 +83,7 @@ This is the **current, firm decision** for the React app. It is not an optional 
 4. **Frontend usage policy**
    - **TanStack Query** — default for **ordinary server-state** (lists, detail views, standard CRUD, search) where data is naturally modeled as cached queries and mutations.
    - **Generated SDK / fetch functions** — use **directly** inside graph/editor **orchestration** (e.g. thunks, command flows): bootstrap, multi-request hydration, and mutation flows that apply **canonical deltas into normalized Redux**, not into a query cache.
-   - **Redux normalized slices** — remain the **canonical client-side store** for workflow graph/editor domain state; TanStack Query is **not** the primary owner of that graph (see [adr_frontend_api_client.md](adr_frontend_api_client.md)).
+   - **Redux normalized slices** — remain the **canonical client-side store** for graph graph/editor domain state; TanStack Query is **not** the primary owner of that graph (see [adr_frontend_api_client.md](adr_frontend_api_client.md)).
 
 Strategic direction: **not** RTK Query codegen or RTK Query as the long-term default API surface for new work.
 

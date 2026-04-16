@@ -12,13 +12,13 @@ class ChannelService:
     def create(
         self,
         *,
-        workflow_uuid: UUID,
+        graph_uuid: UUID,
         title: str,
         position: int = 0,
         thread_uuid: UUID | None = None,
     ) -> ChannelDTO | None:
         return self._repository.create(
-            workflow_uuid=workflow_uuid,
+            graph_uuid=graph_uuid,
             title=title,
             position=position,
             thread_uuid=thread_uuid,
@@ -27,8 +27,8 @@ class ChannelService:
     def get_by_uuid(self, uuid: UUID) -> ChannelDTO | None:
         return self._repository.get_by_uuid(uuid)
 
-    def list_for_workflow_uuid(self, workflow_uuid: UUID) -> list[ChannelDTO]:
-        return self._repository.list_for_workflow_uuid(workflow_uuid)
+    def list_for_graph_uuid(self, graph_uuid: UUID) -> list[ChannelDTO]:
+        return self._repository.list_for_graph_uuid(graph_uuid)
 
     def update(self, uuid: UUID, updates: dict[str, Any]) -> ChannelDTO | None:
         return self._repository.update(uuid, updates)

@@ -12,14 +12,14 @@ from course_flow_v2.core.auth import generate_raw_token, hash_token
 from course_flow_v2.core.models import (
     AuthToken,
     Discipline,
+    Graph,
     Project,
     ProjectTeam,
-    Unit,
     Workflow,
 )
 from course_flow_v2.core.models.rel import (
+    FavoriteGraph,
     FavoriteProject,
-    FavoriteWorkflow,
     ProjectDiscipline,
     ProjectTeamMember,
 )
@@ -81,21 +81,21 @@ def _post_search(client: Client, raw_token: str, payload: dict) -> dict:
     return response.json()
 
 
-def _workflow_with_unit(
+def _graph_with_workflow(
     owner,
     *,
     project: Project | None,
+    graph_title: str,
     workflow_title: str,
-    unit_title: str,
-    unit_description: str = "",
-    unit_type: str = Unit.UnitType.COURSE,
-) -> Workflow:
-    wf = Workflow.objects.create(owner=owner, project=project, title=workflow_title)
-    Unit.objects.create(
-        workflow=wf,
-        title=unit_title,
-        description=unit_description,
-        unit_type=unit_type,
+    workflow_description: str = "",
+    workflow_type: str = Workflow.WorkflowType.COURSE,
+) -> Graph:
+    wf = Graph.objects.create(owner=owner, project=project, title=graph_title)
+    Workflow.objects.create(
+        graph=wf,
+        title=workflow_title,
+        description=workflow_description,
+        workflow_type=workflow_type,
     )
     return wf
 
@@ -120,13 +120,13 @@ def test_library_search_requires_auth(client: Client):
 @pytest.mark.django_db
 def test_stranger_sees_no_items_for_others_project(client: Client, user, stranger):
     project = Project.objects.create(owner=user, title="Secret", description="")
-    _workflow_with_unit(
+    _graph_with_workflow(
         user,
         project=project,
-        workflow_title="wf",
-        unit_title="Hidden Unit",
-        unit_description="",
-        unit_type=Unit.UnitType.TASK,
+        graph_title="wf",
+        workflow_title="Hidden Workflow",
+        workflow_description="",
+        workflow_type=Workflow.WorkflowType.TASK,
     )
     raw_stranger = _issue_token_for(stranger)
     body = _post_search(client, raw_stranger, {})
@@ -135,24 +135,24 @@ def test_stranger_sees_no_items_for_others_project(client: Client, user, strange
 
 
 @pytest.mark.django_db
-def test_owner_sees_own_project_and_child_unit_backed_items(client: Client, user):
+def test_owner_sees_own_project_and_child_workflow_backed_items(client: Client, user):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="My Project", description="d")
-    wf_course = _workflow_with_unit(
+    wf_course = _graph_with_workflow(
         user,
         project=project,
-        workflow_title="wf1",
-        unit_title="Course A",
-        unit_description="",
-        unit_type=Unit.UnitType.COURSE,
+        graph_title="wf1",
+        workflow_title="Course A",
+        workflow_description="",
+        workflow_type=Workflow.WorkflowType.COURSE,
     )
-    wf_task = _workflow_with_unit(
+    wf_task = _graph_with_workflow(
         user,
         project=project,
-        workflow_title="wf2",
-        unit_title="Task B",
-        unit_description="",
-        unit_type=Unit.UnitType.TASK,
+        graph_title="wf2",
+        workflow_title="Task B",
+        workflow_description="",
+        workflow_type=Workflow.WorkflowType.TASK,
     )
     body = _post_search(client, raw, {})
     assert body["meta"]["totalResults"] == 3
@@ -161,12 +161,12 @@ def test_owner_sees_own_project_and_child_unit_backed_items(client: Client, user
     proj_row = next(r for r in body["items"] if r["objectType"] == "project")
     assert proj_row["uuid"] == str(project.uuid)
     assert proj_row["projectUuid"] == str(project.uuid)
-    wf_uuids = {r["workflowUuid"] for r in body["items"] if r["objectType"] != "project"}
+    wf_uuids = {r["graphUuid"] for r in body["items"] if r["objectType"] != "project"}
     assert wf_uuids == {str(wf_course.uuid), str(wf_task.uuid)}
 
 
 @pytest.mark.django_db
-def test_team_member_sees_project_and_child_unit_backed_items(
+def test_team_member_sees_project_and_child_workflow_backed_items(
     client: Client, user, teammate
 ):
     """User is on the project team (not owner) and should see the same library rows."""
@@ -174,13 +174,13 @@ def test_team_member_sees_project_and_child_unit_backed_items(
     project = Project.objects.create(owner=user, title="Shared", description="")
     team = ProjectTeam.objects.get(project=project)
     ProjectTeamMember.objects.create(projectteam=team, user=teammate)
-    wf = _workflow_with_unit(
+    wf = _graph_with_workflow(
         user,
         project=project,
-        workflow_title="member-wf",
-        unit_title="Unit X",
-        unit_description="desc",
-        unit_type=Unit.UnitType.PROGRAM,
+        graph_title="member-wf",
+        workflow_title="Workflow X",
+        workflow_description="desc",
+        workflow_type=Workflow.WorkflowType.PROGRAM,
     )
     body = _post_search(client, raw_member, {})
     assert body["meta"]["totalResults"] == 2
@@ -188,21 +188,21 @@ def test_team_member_sees_project_and_child_unit_backed_items(
     p_row = next(r for r in body["items"] if r["objectType"] == "project")
     assert p_row["uuid"] == str(project.uuid)
     u_row = next(r for r in body["items"] if r["objectType"] == "program")
-    assert u_row["workflowUuid"] == str(wf.uuid)
-    assert u_row["title"] == "Unit X"
+    assert u_row["graphUuid"] == str(wf.uuid)
+    assert u_row["title"] == "Workflow X"
     assert u_row["description"] == "desc"
 
 
 @pytest.mark.django_db
-def test_workflow_without_project_not_listed_even_for_owner(client: Client, user):
-    """Library only surfaces workflows tied to an accessible project."""
+def test_graph_without_project_not_listed_even_for_owner(client: Client, user):
+    """Library only surfaces graphs tied to an accessible project."""
     raw = _issue_token_for(user)
-    _workflow_with_unit(
+    _graph_with_workflow(
         user,
         project=None,
-        workflow_title="orphan",
-        unit_title="Orphan Unit",
-        unit_type=Unit.UnitType.COURSE,
+        graph_title="orphan",
+        workflow_title="Orphan Workflow",
+        workflow_type=Workflow.WorkflowType.COURSE,
     )
     body = _post_search(client, raw, {})
     assert body["meta"]["totalResults"] == 0
@@ -215,12 +215,12 @@ def test_workflow_without_project_not_listed_even_for_owner(client: Client, user
 def test_workspace_type_project_returns_only_projects(client: Client, user):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="P", description="")
-    _workflow_with_unit(
+    _graph_with_workflow(
         user,
         project=project,
-        workflow_title="w",
-        unit_title="U",
-        unit_type=Unit.UnitType.ACTIVITY,
+        graph_title="w",
+        workflow_title="U",
+        workflow_type=Workflow.WorkflowType.ACTIVITY,
     )
     body = _post_search(
         client,
@@ -232,33 +232,33 @@ def test_workspace_type_project_returns_only_projects(client: Client, user):
 
 
 @pytest.mark.parametrize(
-    "unit_type,workspace_value",
+    "workflow_type,workspace_value",
     [
-        (Unit.UnitType.ACTIVITY, "activity"),
-        (Unit.UnitType.COURSE, "course"),
-        (Unit.UnitType.PROGRAM, "program"),
-        (Unit.UnitType.TASK, "task"),
+        (Workflow.WorkflowType.ACTIVITY, "activity"),
+        (Workflow.WorkflowType.COURSE, "course"),
+        (Workflow.WorkflowType.PROGRAM, "program"),
+        (Workflow.WorkflowType.TASK, "task"),
     ],
 )
 @pytest.mark.django_db
-def test_workspace_type_unit_filters_to_that_type_only(
-    client: Client, user, unit_type, workspace_value
+def test_workspace_type_workflow_filters_to_that_type_only(
+    client: Client, user, workflow_type, workspace_value
 ):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="P", description="")
-    target = _workflow_with_unit(
+    target = _graph_with_workflow(
         user,
         project=project,
-        workflow_title="t",
-        unit_title="want",
-        unit_type=unit_type,
+        graph_title="t",
+        workflow_title="want",
+        workflow_type=workflow_type,
     )
-    _workflow_with_unit(
+    _graph_with_workflow(
         user,
         project=project,
-        workflow_title="other",
-        unit_title="noise",
-        unit_type=Unit.UnitType.TASK if unit_type != Unit.UnitType.TASK else Unit.UnitType.COURSE,
+        graph_title="other",
+        workflow_title="noise",
+        workflow_type=Workflow.WorkflowType.TASK if workflow_type != Workflow.WorkflowType.TASK else Workflow.WorkflowType.COURSE,
     )
     body = _post_search(
         client,
@@ -266,7 +266,7 @@ def test_workspace_type_unit_filters_to_that_type_only(
         {"filters": [{"name": "workspaceType", "value": workspace_value}]},
     )
     assert body["meta"]["totalResults"] == 1
-    assert body["items"][0]["workflowUuid"] == str(target.uuid)
+    assert body["items"][0]["graphUuid"] == str(target.uuid)
     assert body["items"][0]["objectType"] == workspace_value
 
 
@@ -274,15 +274,15 @@ def test_workspace_type_unit_filters_to_that_type_only(
 
 
 @pytest.mark.django_db
-def test_project_filter_limits_projects_and_workflows(client: Client, user):
+def test_project_filter_limits_projects_and_graphs(client: Client, user):
     raw = _issue_token_for(user)
     p_keep = Project.objects.create(owner=user, title="Keep", description="")
     p_drop = Project.objects.create(owner=user, title="Drop", description="")
-    wf_keep = _workflow_with_unit(
-        user, project=p_keep, workflow_title="wk", unit_title="u", unit_type=Unit.UnitType.TASK
+    wf_keep = _graph_with_workflow(
+        user, project=p_keep, graph_title="wk", workflow_title="u", workflow_type=Workflow.WorkflowType.TASK
     )
-    _workflow_with_unit(
-        user, project=p_drop, workflow_title="wj", unit_title="v", unit_type=Unit.UnitType.TASK
+    _graph_with_workflow(
+        user, project=p_drop, graph_title="wj", workflow_title="v", workflow_type=Workflow.WorkflowType.TASK
     )
     body = _post_search(
         client,
@@ -291,7 +291,7 @@ def test_project_filter_limits_projects_and_workflows(client: Client, user):
     )
     assert body["meta"]["totalResults"] == 2
     uuids = {body["items"][i]["uuid"] for i in range(2) if body["items"][i]["objectType"] == "project"}
-    wf_ids = {body["items"][i]["workflowUuid"] for i in range(2) if body["items"][i]["objectType"] != "project"}
+    wf_ids = {body["items"][i]["graphUuid"] for i in range(2) if body["items"][i]["objectType"] != "project"}
     assert str(p_keep.uuid) in uuids
     assert wf_ids == {str(wf_keep.uuid)}
 
@@ -304,14 +304,14 @@ def test_discipline_filter_applies_via_parent_project(client: Client, user):
 
     p_ok = Project.objects.create(owner=user, title="Ok", description="")
     ProjectDiscipline.objects.create(project=p_ok, discipline=d_match)
-    wf_ok = _workflow_with_unit(
-        user, project=p_ok, workflow_title="w", unit_title="u", unit_type=Unit.UnitType.COURSE
+    wf_ok = _graph_with_workflow(
+        user, project=p_ok, graph_title="w", workflow_title="u", workflow_type=Workflow.WorkflowType.COURSE
     )
 
     p_bad = Project.objects.create(owner=user, title="Bad", description="")
     ProjectDiscipline.objects.create(project=p_bad, discipline=d_other)
-    _workflow_with_unit(
-        user, project=p_bad, workflow_title="w2", unit_title="u2", unit_type=Unit.UnitType.COURSE
+    _graph_with_workflow(
+        user, project=p_bad, graph_title="w2", workflow_title="u2", workflow_type=Workflow.WorkflowType.COURSE
     )
 
     body = _post_search(
@@ -321,19 +321,19 @@ def test_discipline_filter_applies_via_parent_project(client: Client, user):
     )
     assert body["meta"]["totalResults"] == 2
     assert {r["projectUuid"] for r in body["items"]} == {str(p_ok.uuid)}
-    assert any(r["workflowUuid"] == str(wf_ok.uuid) for r in body["items"])
+    assert any(r["graphUuid"] == str(wf_ok.uuid) for r in body["items"])
 
 
 @pytest.mark.django_db
-def test_isTemplate_filter_projects_and_unit_rows(client: Client, user):
+def test_isTemplate_filter_projects_and_workflow_rows(client: Client, user):
     raw = _issue_token_for(user)
     p_t = Project.objects.create(owner=user, title="T", description="", is_template=True)
     p_f = Project.objects.create(owner=user, title="F", description="", is_template=False)
-    _workflow_with_unit(
-        user, project=p_t, workflow_title="w1", unit_title="u1", unit_type=Unit.UnitType.TASK
+    _graph_with_workflow(
+        user, project=p_t, graph_title="w1", workflow_title="u1", workflow_type=Workflow.WorkflowType.TASK
     )
-    _workflow_with_unit(
-        user, project=p_f, workflow_title="w2", unit_title="u2", unit_type=Unit.UnitType.TASK
+    _graph_with_workflow(
+        user, project=p_f, graph_title="w2", workflow_title="u2", workflow_type=Workflow.WorkflowType.TASK
     )
     body = _post_search(
         client,
@@ -349,13 +349,13 @@ def test_isTemplate_filter_projects_and_unit_rows(client: Client, user):
 def test_keyword_matches_project_title(client: Client, user):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="X Alpine Y", description="other")
-    _workflow_with_unit(
+    _graph_with_workflow(
         user,
         project=project,
-        workflow_title="WF",
-        unit_title="No match here",
-        unit_description="",
-        unit_type=Unit.UnitType.COURSE,
+        graph_title="WF",
+        workflow_title="No match here",
+        workflow_description="",
+        workflow_type=Workflow.WorkflowType.COURSE,
     )
     body = _post_search(client, raw, {"filters": [{"name": "keyword", "value": "Alpine"}]})
     assert body["meta"]["totalResults"] == 1
@@ -367,13 +367,13 @@ def test_keyword_matches_project_title(client: Client, user):
 def test_keyword_matches_project_description(client: Client, user):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="T", description="ridge line facts")
-    _workflow_with_unit(
+    _graph_with_workflow(
         user,
         project=project,
-        workflow_title="WF",
-        unit_title="U",
-        unit_description="",
-        unit_type=Unit.UnitType.COURSE,
+        graph_title="WF",
+        workflow_title="U",
+        workflow_description="",
+        workflow_type=Workflow.WorkflowType.COURSE,
     )
     body = _post_search(client, raw, {"filters": [{"name": "keyword", "value": "ridge"}]})
     assert body["meta"]["totalResults"] == 1
@@ -382,57 +382,57 @@ def test_keyword_matches_project_description(client: Client, user):
 
 
 @pytest.mark.django_db
-def test_keyword_matches_unit_title(client: Client, user):
+def test_keyword_matches_workflow_title(client: Client, user):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="Unrelated", description="")
-    wf = _workflow_with_unit(
+    wf = _graph_with_workflow(
         user,
         project=project,
-        workflow_title="WF",
-        unit_title="Moss survey",
-        unit_description="",
-        unit_type=Unit.UnitType.COURSE,
+        graph_title="WF",
+        workflow_title="Moss survey",
+        workflow_description="",
+        workflow_type=Workflow.WorkflowType.COURSE,
     )
     body = _post_search(client, raw, {"filters": [{"name": "keyword", "value": "Moss"}]})
     assert body["meta"]["totalResults"] == 1
     assert body["items"][0]["objectType"] == "course"
-    assert body["items"][0]["workflowUuid"] == str(wf.uuid)
+    assert body["items"][0]["graphUuid"] == str(wf.uuid)
     assert "Moss" in body["items"][0]["title"]
 
 
 @pytest.mark.django_db
-def test_keyword_matches_unit_description(client: Client, user):
+def test_keyword_matches_workflow_description(client: Client, user):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="Unrelated", description="")
-    wf = _workflow_with_unit(
+    wf = _graph_with_workflow(
         user,
         project=project,
-        workflow_title="WF",
-        unit_title="U",
-        unit_description="peat soil notes",
-        unit_type=Unit.UnitType.COURSE,
+        graph_title="WF",
+        workflow_title="U",
+        workflow_description="peat soil notes",
+        workflow_type=Workflow.WorkflowType.COURSE,
     )
     body = _post_search(client, raw, {"filters": [{"name": "keyword", "value": "peat"}]})
     assert body["meta"]["totalResults"] == 1
-    assert body["items"][0]["workflowUuid"] == str(wf.uuid)
+    assert body["items"][0]["graphUuid"] == str(wf.uuid)
     assert "peat" in body["items"][0]["description"].lower()
 
 
 @pytest.mark.django_db
-def test_keyword_matches_workflow_title(client: Client, user):
+def test_keyword_matches_graph_title(client: Client, user):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="Unrelated", description="")
-    wf = _workflow_with_unit(
+    wf = _graph_with_workflow(
         user,
         project=project,
-        workflow_title="GraphLabel special",
-        unit_title="Generic",
-        unit_description="",
-        unit_type=Unit.UnitType.COURSE,
+        graph_title="GraphLabel special",
+        workflow_title="Generic",
+        workflow_description="",
+        workflow_type=Workflow.WorkflowType.COURSE,
     )
     body = _post_search(client, raw, {"filters": [{"name": "keyword", "value": "GraphLabel"}]})
     assert body["meta"]["totalResults"] == 1
-    assert body["items"][0]["workflowUuid"] == str(wf.uuid)
+    assert body["items"][0]["graphUuid"] == str(wf.uuid)
 
 
 # --- favorites --------------------------------------------------------------
@@ -459,17 +459,17 @@ def test_favourited_true_returns_only_favorited_rows(client: Client, user):
 
 
 @pytest.mark.django_db
-def test_project_favorite_and_workflow_favorite_are_independent_relations(
+def test_project_favorite_and_graph_favorite_are_independent_relations(
     client: Client, user
 ):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="P", description="")
-    wf = _workflow_with_unit(
+    wf = _graph_with_workflow(
         user,
         project=project,
-        workflow_title="W",
-        unit_title="U",
-        unit_type=Unit.UnitType.ACTIVITY,
+        graph_title="W",
+        workflow_title="U",
+        workflow_type=Workflow.WorkflowType.ACTIVITY,
     )
     FavoriteProject.objects.create(user=user, project=project)
 
@@ -480,7 +480,7 @@ def test_project_favorite_and_workflow_favorite_are_independent_relations(
     assert u_row["isFavorite"] is False
 
     FavoriteProject.objects.filter(user=user, project=project).delete()
-    FavoriteWorkflow.objects.create(user=user, workflow=wf)
+    FavoriteGraph.objects.create(user=user, graph=wf)
 
     body2 = _post_search(client, raw, {})
     p_row2 = next(r for r in body2["items"] if r["objectType"] == "project")
@@ -497,12 +497,12 @@ def test_pagination_metadata_total_page_count_and_slice(client: Client, user):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="P", description="")
     for i in range(4):
-        _workflow_with_unit(
+        _graph_with_workflow(
             user,
             project=project,
-            workflow_title=f"w{i}",
-            unit_title=f"U{i}",
-            unit_type=Unit.UnitType.TASK,
+            graph_title=f"w{i}",
+            workflow_title=f"U{i}",
+            workflow_type=Workflow.WorkflowType.TASK,
         )
     # 1 project + 4 tasks = 5 rows
     body = _post_search(
@@ -532,11 +532,11 @@ def test_pagination_metadata_total_page_count_and_slice(client: Client, user):
 def test_sort_a_z_direction(client: Client, user):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="P", description="")
-    _workflow_with_unit(
-        user, project=project, workflow_title="w1", unit_title="Zebra", unit_type=Unit.UnitType.COURSE
+    _graph_with_workflow(
+        user, project=project, graph_title="w1", workflow_title="Zebra", workflow_type=Workflow.WorkflowType.COURSE
     )
-    _workflow_with_unit(
-        user, project=project, workflow_title="w2", unit_title="Alpha", unit_type=Unit.UnitType.COURSE
+    _graph_with_workflow(
+        user, project=project, graph_title="w2", workflow_title="Alpha", workflow_type=Workflow.WorkflowType.COURSE
     )
     asc = _post_search(
         client,
@@ -596,7 +596,7 @@ def test_sort_date_created_orders_projects(client: Client, user):
 
 
 @pytest.mark.django_db
-def test_library_search_returns_accessible_project_and_unit_backed_items(client: Client, user):
+def test_library_search_returns_accessible_project_and_workflow_backed_items(client: Client, user):
     raw = _issue_token_for(user)
     project = Project.objects.create(
         owner=user,
@@ -604,16 +604,16 @@ def test_library_search_returns_accessible_project_and_unit_backed_items(client:
         description="Project description",
         is_template=True,
     )
-    workflow = _workflow_with_unit(
+    graph = _graph_with_workflow(
         user,
         project=project,
-        workflow_title="Legacy Workflow Name",
-        unit_title="Biology Unit",
-        unit_description="Unit description",
-        unit_type=Unit.UnitType.ACTIVITY,
+        graph_title="Legacy Graph Name",
+        workflow_title="Biology Workflow",
+        workflow_description="Workflow description",
+        workflow_type=Workflow.WorkflowType.ACTIVITY,
     )
     FavoriteProject.objects.create(user=user, project=project)
-    FavoriteWorkflow.objects.create(user=user, workflow=workflow)
+    FavoriteGraph.objects.create(user=user, graph=graph)
 
     body = _post_search(client, raw, {})
     assert set(body.keys()) == {"items", "meta"}
@@ -626,14 +626,14 @@ def test_library_search_returns_accessible_project_and_unit_backed_items(client:
     assert project_row["isTemplate"] is True
     assert project_row["isFavorite"] is True
 
-    unit_row = next(row for row in body["items"] if row["objectType"] == "activity")
-    assert unit_row["workflowUuid"] == str(workflow.uuid)
-    assert unit_row["projectUuid"] == str(project.uuid)
-    assert unit_row["unitUuid"] == str(workflow.unit.uuid)
-    assert unit_row["title"] == "Biology Unit"
-    assert unit_row["description"] == "Unit description"
-    assert unit_row["isTemplate"] is True
-    assert unit_row["isFavorite"] is True
+    workflow_row = next(row for row in body["items"] if row["objectType"] == "activity")
+    assert workflow_row["graphUuid"] == str(graph.uuid)
+    assert workflow_row["projectUuid"] == str(project.uuid)
+    assert workflow_row["workflowUuid"] == str(graph.workflow.uuid)
+    assert workflow_row["title"] == "Biology Workflow"
+    assert workflow_row["description"] == "Workflow description"
+    assert workflow_row["isTemplate"] is True
+    assert workflow_row["isFavorite"] is True
 
 
 @pytest.mark.django_db
@@ -649,15 +649,15 @@ def test_library_search_applies_filters_including_favourited(client: Client, use
         is_template=False,
     )
     ProjectDiscipline.objects.create(project=owned_project, discipline=discipline_a)
-    wf_owned = _workflow_with_unit(
+    wf_owned = _graph_with_workflow(
         user,
         project=owned_project,
-        workflow_title="Owned wf",
-        unit_title="Chemistry Task",
-        unit_description="Lab",
-        unit_type=Unit.UnitType.TASK,
+        graph_title="Owned wf",
+        workflow_title="Chemistry Task",
+        workflow_description="Lab",
+        workflow_type=Workflow.WorkflowType.TASK,
     )
-    FavoriteWorkflow.objects.create(user=user, workflow=wf_owned)
+    FavoriteGraph.objects.create(user=user, graph=wf_owned)
 
     team_project = Project.objects.create(
         owner=teammate,
@@ -668,13 +668,13 @@ def test_library_search_applies_filters_including_favourited(client: Client, use
     team, _ = ProjectTeam.objects.get_or_create(project=team_project)
     ProjectTeamMember.objects.create(projectteam=team, user=user)
     ProjectDiscipline.objects.create(project=team_project, discipline=discipline_b)
-    _workflow_with_unit(
+    _graph_with_workflow(
         teammate,
         project=team_project,
-        workflow_title="Team wf",
-        unit_title="Physics Task",
-        unit_description="",
-        unit_type=Unit.UnitType.TASK,
+        graph_title="Team wf",
+        workflow_title="Physics Task",
+        workflow_description="",
+        workflow_type=Workflow.WorkflowType.TASK,
     )
 
     body = _post_search(
@@ -694,7 +694,7 @@ def test_library_search_applies_filters_including_favourited(client: Client, use
     assert len(body["items"]) == 1
     row = body["items"][0]
     assert row["objectType"] == "task"
-    assert row["workflowUuid"] == str(wf_owned.uuid)
+    assert row["graphUuid"] == str(wf_owned.uuid)
     assert row["title"] == "Chemistry Task"
     assert row["isFavorite"] is True
 
@@ -703,21 +703,21 @@ def test_library_search_applies_filters_including_favourited(client: Client, use
 def test_library_search_supports_sorting_and_pagination(client: Client, user):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="P")
-    _workflow_with_unit(
+    _graph_with_workflow(
         user,
         project=project,
-        workflow_title="wf-a",
-        unit_title="Zulu",
-        unit_description="",
-        unit_type=Unit.UnitType.COURSE,
+        graph_title="wf-a",
+        workflow_title="Zulu",
+        workflow_description="",
+        workflow_type=Workflow.WorkflowType.COURSE,
     )
-    _workflow_with_unit(
+    _graph_with_workflow(
         user,
         project=project,
-        workflow_title="wf-b",
-        unit_title="Alpha",
-        unit_description="",
-        unit_type=Unit.UnitType.COURSE,
+        graph_title="wf-b",
+        workflow_title="Alpha",
+        workflow_description="",
+        workflow_type=Workflow.WorkflowType.COURSE,
     )
 
     body = _post_search(

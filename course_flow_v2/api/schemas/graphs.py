@@ -5,29 +5,29 @@ from uuid import UUID
 from course_flow_v2.api.common.schemas import CamelSchema
 
 
-class UnitTypeIn(str, Enum):
+class WorkflowTypeIn(str, Enum):
     PROGRAM = "program"
     COURSE = "course"
     ACTIVITY = "activity"
     TASK = "task"
 
 
-class WorkflowCreateIn(CamelSchema):
+class GraphCreateIn(CamelSchema):
     project_id: int | None = None
-    workflow_title: str
-    unit_title: str = ""
-    unit_type: UnitTypeIn
-    unit_description: str = ""
+    graph_title: str
+    workflow_title: str = ""
+    workflow_type: WorkflowTypeIn
+    workflow_description: str = ""
 
 
-class WorkflowUpdateIn(CamelSchema):
+class GraphUpdateIn(CamelSchema):
     title: str | None = None
     project_id: int | None = None
 
 
-class WorkflowListItemOut(CamelSchema):
+class GraphListItemOut(CamelSchema):
     """
-    List rows: workflow entity fields only.
+    List rows: graph entity fields only.
     """
 
     uuid: UUID
@@ -38,18 +38,18 @@ class WorkflowListItemOut(CamelSchema):
     modified_on: datetime
 
 
-class WorkflowListMetaOut(CamelSchema):
+class GraphListMetaOut(CamelSchema):
     total: int
 
 
-class WorkflowListOut(CamelSchema):
-    items: list[WorkflowListItemOut]
-    meta: WorkflowListMetaOut
+class GraphListOut(CamelSchema):
+    items: list[GraphListItemOut]
+    meta: GraphListMetaOut
 
 
-class WorkflowDetailOut(CamelSchema):
+class GraphDetailOut(CamelSchema):
     """
-    Single workflow resource: persisted fields only (no unit/sections/channels).
+    Single graph resource: persisted fields only (no workflow/sections/channels).
     """
 
     uuid: UUID
@@ -61,5 +61,5 @@ class WorkflowDetailOut(CamelSchema):
     modified_on: datetime
 
 
-class WorkflowDetailOutResp(CamelSchema):
-    item: WorkflowDetailOut
+class GraphDetailOutResp(CamelSchema):
+    item: GraphDetailOut

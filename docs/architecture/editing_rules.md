@@ -60,14 +60,14 @@ When information is missing:
 3. endpoints must remain thin.
 4. repositories must be defined as application-facing interfaces and implemented in infrastructure.
 5. ORM models must not become the de facto domain model.
-6. Ninja Schemas must not implement business workflow.
+6. Ninja Schemas must not implement business graph.
 7. use Django Ninja `Schema` classes as the default API contract type.
 
 ### Explicit anti-patterns
 
 Do not introduce:
 
-- business-heavy methods on Django models as the main workflow
+- business-heavy methods on Django models as the main graph
 - endpoint functions that directly query many models and orchestrate a full use case inline
 - response schemas used as internal domain state containers
 - feature code that mixes Django ORM and speculative SQLAlchemy usage

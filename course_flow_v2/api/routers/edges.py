@@ -1,4 +1,4 @@
-"""Edge collection (workflow-scoped) and singular edge resource routes.
+"""Edge collection (graph-scoped) and singular edge resource routes.
 
 Edges use integer primary keys (no UUID column on ``Edge``); flat routes use ``/edge/{edge_id}``.
 """
@@ -12,61 +12,61 @@ from ninja.errors import HttpError
 
 from course_flow_v2.api.auth import BearerAuth, get_current_user
 from course_flow_v2.api.deps import (
-    get_workflow_graph_mutation_service,
-    get_workflow_graph_projection_service,
-    get_workflow_service,
+    get_graph_mutation_service,
+    get_graph_projection_service,
+    get_graph_service,
 )
 from course_flow_v2.api.graph_common import graph_mutation_http
-from course_flow_v2.api.permissions import can_view_workflow
+from course_flow_v2.api.permissions import can_view_graph
 from course_flow_v2.api.schemas.graph_mutation import (
     GraphEdgeCreateIn,
     GraphMutationEnvelopeOut,
 )
-from course_flow_v2.api.schemas.workflow_graph import EdgeGraphOut
-from course_flow_v2.application.services.workflow_graph_mutation_service import (
-    workflow_from_node,
+from course_flow_v2.api.schemas.graph_view import EdgeGraphOut
+from course_flow_v2.application.services.graph_mutation_service import (
+    graph_from_node,
 )
 from course_flow_v2.core.models import Edge
 
-workflow_edges_router = Router(tags=["edges"], by_alias=True)
+graph_edges_router = Router(tags=["edges"], by_alias=True)
 edge_resource_router = Router(tags=["edges"], by_alias=True)
 
 
-def _ensure_workflow_owner(uuid: UUID, current_user) -> None:
-    svc = get_workflow_service()
+def _ensure_graph_owner(uuid: UUID, current_user) -> None:
+    svc = get_graph_service()
     dto = svc.get_by_uuid(uuid)
     if dto is None:
-        raise HttpError(404, "Workflow not found")
-    if not can_view_workflow(current_user=current_user, workflow=dto):
+        raise HttpError(404, "Graph not found")
+    if not can_view_graph(current_user=current_user, graph=dto):
         raise HttpError(403, "Forbidden")
 
 
-@workflow_edges_router.get(
+@graph_edges_router.get(
     "/{uuid}/edges",
     response=list[EdgeGraphOut],
     auth=BearerAuth(),
-    operation_id="listWorkflowEdges",
+    operation_id="listGraphEdges",
 )
-def list_workflow_edges(request, uuid: UUID):
+def list_graph_edges(request, uuid: UUID):
     current_user = get_current_user(request)
-    _ensure_workflow_owner(uuid, current_user)
-    proj = get_workflow_graph_projection_service().get_by_workflow_uuid(uuid)
+    _ensure_graph_owner(uuid, current_user)
+    proj = get_graph_projection_service().get_by_graph_uuid(uuid)
     if proj is None:
-        raise HttpError(404, "Workflow not found")
+        raise HttpError(404, "Graph not found")
     return [EdgeGraphOut.model_validate(x) for x in proj["edges"]]
 
 
-@workflow_edges_router.post(
+@graph_edges_router.post(
     "/{uuid}/edges",
     response=GraphMutationEnvelopeOut,
     auth=BearerAuth(),
-    operation_id="createWorkflowEdge",
+    operation_id="createGraphEdge",
 )
-def create_workflow_edge(request, uuid: UUID, payload: GraphEdgeCreateIn):
+def create_graph_edge(request, uuid: UUID, payload: GraphEdgeCreateIn):
     current_user = get_current_user(request)
-    svc = get_workflow_graph_mutation_service()
+    svc = get_graph_mutation_service()
     out, err = svc.create_edge(
-        workflow_uuid=uuid,
+        graph_uuid=uuid,
         user_id=current_user.id,
         source_node_uuid=payload.source_node_uuid,
         target_node_uuid=payload.target_node_uuid,
@@ -87,21 +87,21 @@ def get_edge(request, uuid: int):
     current_user = get_current_user(request)
     try:
         e = Edge.objects.select_related(
-            "source_node__section__workflow",
-            "source_node__channel__workflow",
-            "target_node__section__workflow",
-            "target_node__channel__workflow",
+            "source_node__section__graph",
+            "source_node__channel__graph",
+            "target_node__section__graph",
+            "target_node__channel__graph",
         ).get(pk=uuid)
     except Edge.DoesNotExist:
         raise HttpError(404, "Not found")
 
-    wf_s = workflow_from_node(e.source_node)
-    wf_t = workflow_from_node(e.target_node)
+    wf_s = graph_from_node(e.source_node)
+    wf_t = graph_from_node(e.target_node)
 
     if wf_s is None or wf_t is None or wf_s.pk != wf_t.pk:
         raise HttpError(404, "Not found")
 
-    if not can_view_workflow(current_user=current_user, workflow=wf_s):
+    if not can_view_graph(current_user=current_user, graph=wf_s):
         raise HttpError(403, "Forbidden")
 
     return EdgeGraphOut(
@@ -122,7 +122,7 @@ def get_edge(request, uuid: int):
 )
 def delete_edge(request, uuid: int):
     current_user = get_current_user(request)
-    svc = get_workflow_graph_mutation_service()
+    svc = get_graph_mutation_service()
     out, err = svc.delete_edge(
         user_id=current_user.id,
         edge_id=uuid,

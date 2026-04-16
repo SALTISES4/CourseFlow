@@ -1,6 +1,6 @@
 version: 1
 
-resource: workflow
+resource: graph
 
 states:
   - active

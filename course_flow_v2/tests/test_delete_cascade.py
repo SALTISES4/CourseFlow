@@ -14,6 +14,7 @@ from course_flow_v2.core.models import (
     Comment,
     Discipline,
     Edge,
+    Graph,
     Node,
     Notification,
     Project,
@@ -21,7 +22,6 @@ from course_flow_v2.core.models import (
     Section,
     Tag,
     Thread,
-    Unit,
     Workflow,
 )
 from course_flow_v2.core.models.rel import FavoriteProject, ProjectDiscipline
@@ -37,26 +37,26 @@ def user_b():
     return get_user_model().objects.create_user(email="cascade-b@example.com", password="x")
 
 
-def _workflow_with_unit(owner, *, project=None):
-    wf = Workflow.objects.create(owner=owner, title="W", project=project)
-    Unit.objects.create(
-        workflow=wf,
+def _graph_with_workflow(owner, *, project=None):
+    wf = Graph.objects.create(owner=owner, title="W", project=project)
+    Workflow.objects.create(
+        graph=wf,
         title="",
         description="",
-        unit_type=Unit.UnitType.COURSE,
+        workflow_type=Workflow.WorkflowType.COURSE,
     )
     return wf
 
 
 @pytest.mark.django_db
-def test_project_delete_cascades_workflow_team_favorites_not_discipline_or_tag_rows(
+def test_project_delete_cascades_graph_team_favorites_not_discipline_or_tag_rows(
     user_a,
 ):
     p = Project.objects.create(owner=user_a, title="P")
     d = Discipline.objects.create(label="D")
     ProjectDiscipline.objects.create(project=p, discipline=d)
     tag = Tag.objects.create(project=p, label="T")
-    wf = _workflow_with_unit(user_a, project=p)
+    wf = _graph_with_workflow(user_a, project=p)
     FavoriteProject.objects.create(user=user_a, project=p)
     ProjectTeam.objects.get_or_create(project=p)
 
@@ -64,7 +64,7 @@ def test_project_delete_cascades_workflow_team_favorites_not_discipline_or_tag_r
     p.delete()
 
     assert not Project.objects.filter(pk=pid).exists()
-    assert not Workflow.objects.filter(pk=wf_id).exists()
+    assert not Graph.objects.filter(pk=wf_id).exists()
     assert not FavoriteProject.objects.filter(project_id=pid).exists()
     assert not ProjectTeam.objects.filter(project_id=pid).exists()
     assert not ProjectDiscipline.objects.filter(project_id=pid).exists()
@@ -74,11 +74,11 @@ def test_project_delete_cascades_workflow_team_favorites_not_discipline_or_tag_r
 
 
 @pytest.mark.django_db
-def test_user_delete_cascades_owned_projects_workflows_notifications_favorites_comments_tokens(
+def test_user_delete_cascades_owned_projects_graphs_notifications_favorites_comments_tokens(
     user_a,
 ):
     p = Project.objects.create(owner=user_a, title="P")
-    wf = _workflow_with_unit(user_a, project=p)
+    wf = _graph_with_workflow(user_a, project=p)
     Notification.objects.create(user=user_a, message="hi")
     FavoriteProject.objects.create(user=user_a, project=p)
     thread = Thread.objects.create()
@@ -96,7 +96,7 @@ def test_user_delete_cascades_owned_projects_workflows_notifications_favorites_c
 
     assert not get_user_model().objects.filter(pk=uid).exists()
     assert not Project.objects.filter(owner_id=uid).exists()
-    assert not Workflow.objects.filter(owner_id=uid).exists()
+    assert not Graph.objects.filter(owner_id=uid).exists()
     assert not Notification.objects.filter(user_id=uid).exists()
     assert not FavoriteProject.objects.filter(user_id=uid).exists()
     assert not Comment.objects.filter(owner_id=uid).exists()
@@ -105,9 +105,9 @@ def test_user_delete_cascades_owned_projects_workflows_notifications_favorites_c
 
 @pytest.mark.django_db
 def test_channel_delete_cascades_nodes_and_linked_thread(user_a):
-    wf = _workflow_with_unit(user_a)
+    wf = _graph_with_workflow(user_a)
     thread = Thread.objects.create()
-    ch = Channel.objects.create(workflow=wf, title="C", position=0, thread=thread)
+    ch = Channel.objects.create(graph=wf, title="C", position=0, thread=thread)
     node = Node.objects.create(channel=ch, section=None)
 
     nid, tid = node.id, thread.id
@@ -119,9 +119,9 @@ def test_channel_delete_cascades_nodes_and_linked_thread(user_a):
 
 @pytest.mark.django_db
 def test_section_delete_cascades_nodes_and_linked_thread(user_a):
-    wf = _workflow_with_unit(user_a)
+    wf = _graph_with_workflow(user_a)
     thread = Thread.objects.create()
-    sec = Section.objects.create(workflow=wf, title="S", position=0, thread=thread)
+    sec = Section.objects.create(graph=wf, title="S", position=0, thread=thread)
     node = Node.objects.create(section=sec, channel=None)
 
     nid, tid = node.id, thread.id
@@ -132,25 +132,25 @@ def test_section_delete_cascades_nodes_and_linked_thread(user_a):
 
 
 @pytest.mark.django_db
-def test_workflow_delete_cascades_unit(user_a):
-    wf = _workflow_with_unit(user_a)
-    uid = wf.unit.id
+def test_graph_delete_cascades_workflow(user_a):
+    wf = _graph_with_workflow(user_a)
+    uid = wf.workflow.id
     wid = wf.id
     wf.delete()
-    assert not Workflow.objects.filter(pk=wid).exists()
-    assert not Unit.objects.filter(pk=uid).exists()
+    assert not Graph.objects.filter(pk=wid).exists()
+    assert not Workflow.objects.filter(pk=uid).exists()
 
 
 @pytest.mark.django_db
-def test_unit_delete_cascades_nodes_and_activity_meta(user_a):
-    wf = _workflow_with_unit(user_a)
-    unit = wf.unit
-    node = Node.objects.create(unit=unit, section=None, channel=None)
-    ActivityMeta.objects.create(unit=unit)
-    nid, unit_pk = node.id, unit.pk
-    unit.delete()
+def test_workflow_delete_cascades_nodes_and_activity_meta(user_a):
+    wf = _graph_with_workflow(user_a)
+    workflow = wf.workflow
+    node = Node.objects.create(workflow=workflow, section=None, channel=None)
+    ActivityMeta.objects.create(workflow=workflow)
+    nid, workflow_pk = node.id, workflow.pk
+    workflow.delete()
     assert not Node.objects.filter(pk=nid).exists()
-    assert not ActivityMeta.objects.filter(unit_id=unit_pk).exists()
+    assert not ActivityMeta.objects.filter(workflow_id=workflow_pk).exists()
 
 
 @pytest.mark.django_db
@@ -164,9 +164,9 @@ def test_thread_delete_cascades_comments(user_a):
 
 @pytest.mark.django_db
 def test_node_delete_cascades_edges_and_thread(user_a):
-    wf = _workflow_with_unit(user_a)
-    sec = Section.objects.create(workflow=wf, title="S", position=0)
-    ch = Channel.objects.create(workflow=wf, title="C", position=0)
+    wf = _graph_with_workflow(user_a)
+    sec = Section.objects.create(graph=wf, title="S", position=0)
+    ch = Channel.objects.create(graph=wf, title="C", position=0)
     n1 = Node.objects.create(section=sec, channel=ch)
     n2 = Node.objects.create(section=sec, channel=ch)
     Edge.objects.create(source_node=n1, target_node=n2)

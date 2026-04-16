@@ -49,7 +49,7 @@ class ProjectDetailOut(CamelSchema):
     owner_id: int
     date_created: datetime
     modified_on: datetime
-    workflows: list["ProjectWorkflowOut"] = []
+    graphs: list["ProjectGraphOut"] = []
 
 
 class ProjectDetailOutResp(CamelSchema):
@@ -91,15 +91,15 @@ class ActivityMetaOut(CamelSchema):
     classification: str
 
 
-class UnitOut(CamelSchema):
+class WorkflowOut(CamelSchema):
     uuid: UUID
     title: str
     description: str
-    unit_type: str
+    workflow_type: str
     meta: TaskMetaOut | ProgramMetaOut | CourseMetaOut | ActivityMetaOut | None = None
 
 
-class ProjectWorkflowOut(CamelSchema):
+class ProjectGraphOut(CamelSchema):
     uuid: UUID
     title: str
     owner_id: int
@@ -107,4 +107,4 @@ class ProjectWorkflowOut(CamelSchema):
     revision_id: int
     date_created: datetime
     modified_on: datetime
-    unit: UnitOut
+    workflow: WorkflowOut

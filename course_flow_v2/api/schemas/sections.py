@@ -5,13 +5,13 @@ from course_flow_v2.api.common.schemas import CamelSchema
 
 
 class SectionCreateIn(CamelSchema):
-    workflow_uuid: UUID
+    graph_uuid: UUID
     title: str
     position: int = 0
     thread_uuid: UUID | None = None
 
 
-class WorkflowSectionCreateIn(CamelSchema):
+class GraphSectionCreateIn(CamelSchema):
     title: str
     position: int = 0
     thread_uuid: UUID | None = None
@@ -25,7 +25,7 @@ class SectionPatchIn(CamelSchema):
 
 class SectionOut(CamelSchema):
     uuid: UUID
-    workflow_uuid: UUID
+    graph_uuid: UUID
     title: str
     position: int
     thread_uuid: UUID | None

@@ -12,9 +12,9 @@ from course_flow_v2.core.models import (
     AuthToken,
     Channel,
     Edge,
+    Graph,
     Node,
     Section,
-    Workflow,
 )
 
 
@@ -51,15 +51,15 @@ def _issue_token_for(user, *, expires_delta: timedelta = timedelta(hours=1)):
     return raw_token
 
 
-def _create_workflow(client: Client, raw_token: str) -> str:
+def _create_graph(client: Client, raw_token: str) -> str:
     response = client.post(
-        "/api/workflow",
+        "/api/graph",
         data={
             "projectId": None,
-            "workflowTitle": "Mut Test",
-            "unitTitle": "Root",
-            "unitType": "course",
-            "unitDescription": "",
+            "graphTitle": "Mut Test",
+            "workflowTitle": "Root",
+            "workflowType": "course",
+            "workflowDescription": "",
         },
         content_type="application/json",
         **_auth_header(raw_token),
@@ -69,14 +69,14 @@ def _create_workflow(client: Client, raw_token: str) -> str:
 
 
 def _section_and_channel(wf_uuid: str):
-    wf = Workflow.objects.get(uuid=wf_uuid)
-    section = Section.objects.create(workflow=wf, title="S", position=0)
-    channel = Channel.objects.create(workflow=wf, title="C", position=0)
+    wf = Graph.objects.get(uuid=wf_uuid)
+    section = Section.objects.create(graph=wf, title="S", position=0)
+    channel = Channel.objects.create(graph=wf, title="C", position=0)
     return section, channel
 
 
 def _assert_envelope_shape(body: dict) -> None:
-    assert set(body.keys()) == {"workflowId", "revisionId", "changes", "meta"}
+    assert set(body.keys()) == {"graphId", "revisionId", "changes", "meta"}
     ch = body["changes"]
     assert set(ch.keys()) == {"nodes", "edges", "tags"}
     for entity in ("nodes", "edges", "tags"):
@@ -91,7 +91,7 @@ def test_delete_node_returns_delta_with_cascaded_edges_and_bumps_revision(
     user,
 ):
     raw = _issue_token_for(user)
-    wf_uuid = _create_workflow(client, raw)
+    wf_uuid = _create_graph(client, raw)
     section, channel = _section_and_channel(wf_uuid)
     n1 = Node.objects.create(section=section, channel=channel, section_row=0)
     n2 = Node.objects.create(section=section, channel=channel, section_row=1)
@@ -104,7 +104,7 @@ def test_delete_node_returns_delta_with_cascaded_edges_and_bumps_revision(
     assert r.status_code == 200
     body = r.json()
     _assert_envelope_shape(body)
-    assert body["workflowId"] == str(wf_uuid)
+    assert body["graphId"] == str(wf_uuid)
     assert body["revisionId"] == 1
     assert body["meta"]["triggeredBy"] == "delete_node"
     assert body["meta"]["triggerEntityId"] == str(n1.uuid)
@@ -113,25 +113,25 @@ def test_delete_node_returns_delta_with_cascaded_edges_and_bumps_revision(
     assert body["changes"]["nodes"]["created"] == []
     assert body["changes"]["tags"]["deleted"] == []
 
-    wf = Workflow.objects.get(uuid=wf_uuid)
+    wf = Graph.objects.get(uuid=wf_uuid)
     assert wf.revision_id == 1
     graph = client.get(
-        f"/api/workflow/{wf_uuid}/graph",
+        f"/api/graph/{wf_uuid}/view",
         **_auth_header(raw),
     ).json()
-    assert graph["workflow"]["revisionId"] == 1
+    assert graph["graph"]["revisionId"] == 1
 
 
 @pytest.mark.django_db
 def test_create_and_delete_edge_envelopes(client: Client, user):
     raw = _issue_token_for(user)
-    wf_uuid = _create_workflow(client, raw)
+    wf_uuid = _create_graph(client, raw)
     section, channel = _section_and_channel(wf_uuid)
     n1 = Node.objects.create(section=section, channel=channel, section_row=0)
     n2 = Node.objects.create(section=section, channel=channel, section_row=1)
 
     r1 = client.post(
-        f"/api/workflow/{wf_uuid}/edges",
+        f"/api/graph/{wf_uuid}/edges",
         data={
             "sourceNodeUuid": str(n1.uuid),
             "targetNodeUuid": str(n2.uuid),
@@ -165,11 +165,11 @@ def test_create_and_delete_edge_envelopes(client: Client, user):
 @pytest.mark.django_db
 def test_create_node_and_update_node_envelopes(client: Client, user):
     raw = _issue_token_for(user)
-    wf_uuid = _create_workflow(client, raw)
+    wf_uuid = _create_graph(client, raw)
     section, channel = _section_and_channel(wf_uuid)
 
     r1 = client.post(
-        f"/api/workflow/{wf_uuid}/nodes",
+        f"/api/graph/{wf_uuid}/nodes",
         data={
             "sectionUuid": str(section.uuid),
             "channelUuid": str(channel.uuid),
@@ -202,7 +202,7 @@ def test_create_node_and_update_node_envelopes(client: Client, user):
 @pytest.mark.django_db
 def test_graph_mutation_forbidden_for_non_owner(client: Client, user, other_user):
     raw_owner = _issue_token_for(user)
-    wf_uuid = _create_workflow(client, raw_owner)
+    wf_uuid = _create_graph(client, raw_owner)
     section, channel = _section_and_channel(wf_uuid)
     n = Node.objects.create(section=section, channel=channel, section_row=0)
 

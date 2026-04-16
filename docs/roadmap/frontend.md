@@ -15,7 +15,7 @@ tags:
 
 # Graph State Re-Architecture Roadmap
 
-> This document formalizes the architectural decisions for the workflow graph/editor rewrite and defines a phased implementation roadmap. :contentReference[oaicite:0]{index=0}
+> This document formalizes the architectural decisions for the graph graph/editor rewrite and defines a phased implementation roadmap. :contentReference[oaicite:0]{index=0}
 
 ## Table of Contents
 
@@ -110,7 +110,7 @@ The backend determines:
 - whether the command is valid
 - what side effects occur
 - what entities are created, updated, or deleted
-- the canonical resulting workflow revision
+- the canonical resulting graph revision
 
 ### 2.2 Redux Toolkit remains the frontend state foundation
 
@@ -126,7 +126,7 @@ We will replace the graph/editor state model with a new RTK architecture based o
 - explicit mutation flows
 - backend-authoritative delta application
 
-**Server-state and HTTP transport (settled policy):** ordinary pages use **TanStack Query** with types and clients generated from OpenAPI via **Hey API** (fetch-based SDK). The graph editor uses **generated SDK / fetch functions** for imperative bootstrap and mutations; **TanStack Query is not** the canonical store for graph/editor domain state. **Redux normalized slices** remain the source of truth for the graph; the graph is not modeled primarily as a query cache. See `docs/architecture/openapi_and_client_workflow.md` and `docs/architecture/adr_frontend_api_client.md`.
+**Server-state and HTTP transport (settled policy):** ordinary pages use **TanStack Query** with types and clients generated from OpenAPI via **Hey API** (fetch-based SDK). The graph editor uses **generated SDK / fetch functions** for imperative bootstrap and mutations; **TanStack Query is not** the canonical store for graph/editor domain state. **Redux normalized slices** remain the source of truth for the graph; the graph is not modeled primarily as a query cache. See `docs/architecture/openapi_and_client_graph.md` and `docs/architecture/adr_frontend_api_client.md`.
 
 ### 2.3 Legacy graph slices are not the migration target
 
@@ -166,7 +166,7 @@ This preserves responsiveness without reintroducing client-owned mutation semant
 
 This architecture is being designed so that later we can add:
 
-* workflow-scoped realtime subscriptions
+* graph-scoped realtime subscriptions
 * remote delta application
 * presence/awareness features
 * version/revision-based concurrency handling
@@ -221,12 +221,12 @@ The current slice boundaries and naming reflect the old backend and old product 
 
 They are not cleanly aligned to the new entities such as:
 
-* workflow
+* graph
 * sections
 * channels
 * nodes
 * edges
-* units
+* workflows
 * tags
 
 ### 3.4 The system is hard to evolve toward collaboration
@@ -269,13 +269,13 @@ This is the backend-authoritative state currently known by the client.
 
 Examples:
 
-* workflow metadata
+* graph metadata
 * sections
 * channels
 * nodes
 * edges
 * tags
-* workflow revision
+* graph revision
 
 This state is updated only by:
 
@@ -374,7 +374,7 @@ Example shape:
 
 ```json
 {
-  "workflowId": "wf_123",
+  "graphId": "wf_123",
   "revision": 42,
   "changes": {
     "nodes": {
@@ -409,7 +409,7 @@ We should prefer state deltas, not imperative UI instructions.
 
 ### 5.5 Revision model
 
-Every workflow graph mutation should produce or reference a workflow revision/version.
+Every graph graph mutation should produce or reference a graph revision/version.
 
 This is required for:
 
@@ -419,7 +419,7 @@ This is required for:
 * fallback reconciliation
 * audit/debugging clarity
 
-The frontend must store workflow revision alongside canonical graph state.
+The frontend must store graph revision alongside canonical graph state.
 
 ---
 
@@ -431,7 +431,7 @@ Illustrative target shape:
 
 ```ts
 interface GraphState {
-  workflowMeta: WorkflowMetaState
+  graphMeta: GraphMetaState
   sections: SectionsState
   channels: ChannelsState
   nodes: NodesState
@@ -457,9 +457,9 @@ Examples:
 
 Relationship maps that are single-entity in nature may be stored if useful, such as:
 
-* `nodeIdsByWorkflowId`
-* `edgeIdsByWorkflowId`
-* `channelIdsByWorkflowId`
+* `nodeIdsByGraphId`
+* `edgeIdsByGraphId`
+* `channelIdsByGraphId`
 
 Cross-entity projections should generally be selectors first, not reducer-maintained derived state.
 
@@ -473,7 +473,7 @@ Example:
 type LoadStatus = 'idle' | 'loading' | 'succeeded' | 'failed'
 ```
 
-Per workflow:
+Per graph:
 
 * channels load status
 * nodes load status
@@ -508,7 +508,7 @@ Example:
 ```ts
 interface PendingOperation {
   id: string
-  workflowId: string
+  graphId: string
   type: 'deleteNode' | 'moveNode' | 'renameNode' | 'createEdge'
   targetIds: string[]
   status: 'pending' | 'failed'
@@ -568,7 +568,7 @@ This is a projection concern, not a canonical mutation concern.
 
 We will keep separate `GET`s for graph resources, such as:
 
-* workflow metadata
+* graph metadata
 * sections
 * channels
 * nodes
@@ -599,7 +599,7 @@ The page can render progressively.
 
 Example:
 
-* graph shell after workflow metadata
+* graph shell after graph metadata
 * channel structure after channels
 * nodes after channels + nodes
 * edges after channels + nodes + edges
@@ -672,7 +672,7 @@ We are preserving the architecture required to add it later.
 The following must be supported by design:
 
 * canonical delta envelopes
-* workflow revisions
+* graph revisions
 * explicit mutation commands
 * canonical state separate from optimistic local overlay
 * canonical state separate from ephemeral presence state
@@ -681,7 +681,7 @@ The following must be supported by design:
 
 Later, we can add:
 
-* workflow-scoped realtime channel
+* graph-scoped realtime channel
 * backend event emission after committed mutations
 * remote delta broadcasting to subscribed clients
 * presence events
@@ -760,7 +760,7 @@ Finalize assumptions about read endpoints and mutation response envelopes.
 **Tasks**
 
 * confirm graph resource endpoints
-* define workflow revision semantics
+* define graph revision semantics
 * define mutation delta envelope format
 * identify operations needing optimistic UX
 * identify mutation operations requiring conservative handling
@@ -795,7 +795,7 @@ Create the new RTK graph state structure with no legacy mutation logic.
 
 **Goal**
 
-Load workflow graph resources into the new canonical store.
+Load graph graph resources into the new canonical store.
 
 **Tasks**
 
@@ -870,7 +870,7 @@ Finish moving graph/editor UI components onto the new store model.
 
 **Acceptance criteria**
 
-* workflow editor uses only new graph state module
+* graph editor uses only new graph state module
 * legacy graph Redux is no longer in active path
 * no hidden dependencies on old graph slices remain
 
@@ -954,13 +954,13 @@ Because this is a conceptual rewrite, it may sprawl.
 
 The rewrite is successful when all of the following are true:
 
-* The workflow graph page loads from the new canonical graph store.
+* The graph graph page loads from the new canonical graph store.
 * Graph rendering no longer depends on legacy websocket/refresh architecture.
 * Graph mutations are initiated by explicit command flows, not store-diff listeners.
 * Backend mutation responses apply canonical deltas to the store.
 * Optimistic local UX exists through pending overlays, not client-owned mutation semantics.
 * Canonical graph state, optimistic overlay state, and UI/editor state are cleanly separated.
-* Workflow revision is tracked in the frontend.
+* Graph revision is tracked in the frontend.
 * The architecture can later accept remote deltas without redesigning the store model.
 
 ---

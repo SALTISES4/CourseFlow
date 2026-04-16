@@ -54,7 +54,7 @@ class ProjectService:
     ) -> ProjectDuplicatePlaceholderDTO | None:
         """Placeholder for project duplication: verifies the project exists only.
 
-        Does **not** clone the project, workflows, tags, team members, or any related
+        Does **not** clone the project, graphs, tags, team members, or any related
         data. Full Django-side duplication is intentionally deferred (TODO).
 
         ``actor_user_id`` is accepted for future authorization/audit when real

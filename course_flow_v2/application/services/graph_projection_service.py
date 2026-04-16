@@ -4,35 +4,35 @@ from uuid import UUID
 
 from django.db.models import Count, Q
 
-from course_flow_v2.core.models import Comment, Edge, Node, Outcome, Workflow
+from course_flow_v2.core.models import Comment, Edge, Graph, Node, Outcome
 
 
-class WorkflowGraphProjectionService:
+class GraphProjectionService:
     """
-    Bounded read-model assembly for ``GET /workflows/{uuid}/graph``.
+    Bounded read-model assembly for ``GET /graphs/{uuid}/view``.
 
-    Loads workflow metadata, channels, sections, nodes, edges, and thread comment
+    Loads graph metadata, channels, sections, nodes, edges, and thread comment
     summaries in separate queries (no recursive ORM trees, no mega-join).
     """
 
-    def get_by_workflow_uuid(self, workflow_uuid: UUID) -> dict | None:
+    def get_by_graph_uuid(self, graph_uuid: UUID) -> dict | None:
         try:
-            w = Workflow.objects.select_related("unit", "project").get(
-                uuid=workflow_uuid
+            w = Graph.objects.select_related("workflow", "project").get(
+                uuid=graph_uuid
             )
-        except Workflow.DoesNotExist:
+        except Graph.DoesNotExist:
             return None
 
-        unit = getattr(w, "unit", None)
+        workflow = getattr(w, "workflow", None)
 
         sections = list(w.sections.all().order_by("position", "id"))
         channels = list(w.channels.all().order_by("position", "id"))
 
         node_qs = (
             Node.objects.filter(
-                Q(section__workflow_id=w.id) | Q(channel__workflow_id=w.id),
+                Q(section__graph_id=w.id) | Q(channel__graph_id=w.id),
             )
-            .select_related("section", "channel", "unit", "thread")
+            .select_related("section", "channel", "workflow", "thread")
             .prefetch_related("outcomes")
             .order_by("section_id", "channel_id", "section_row", "id")
         )
@@ -63,7 +63,7 @@ class WorkflowGraphProjectionService:
         for n in nodes:
             add_thread(n.thread)
 
-        for o in Outcome.objects.filter(workflow=w).select_related("thread"):
+        for o in Outcome.objects.filter(graph=w).select_related("thread"):
             add_thread(o.thread)
 
         comment_counts = {tu: 0 for tu in thread_uuids}
@@ -76,7 +76,7 @@ class WorkflowGraphProjectionService:
                 comment_counts[row["thread__uuid"]] = row["comment_count"]
 
         return {
-            "workflow": {
+            "graph": {
                 "uuid": w.uuid,
                 "title": w.title,
                 "owner_id": w.owner_id,
@@ -84,14 +84,14 @@ class WorkflowGraphProjectionService:
                 "revision_id": w.revision_id,
                 "date_created": w.date_created,
                 "modified_on": w.modified_on,
-                "root_unit_uuid": unit.uuid if unit is not None else None,
-                "root_unit_type": unit.unit_type if unit is not None else None,
-                "root_unit_title": unit.title if unit is not None else "",
+                "root_workflow_uuid": workflow.uuid if workflow is not None else None,
+                "root_workflow_type": workflow.workflow_type if workflow is not None else None,
+                "root_workflow_title": workflow.title if workflow is not None else "",
             },
             "sections": [
                 {
                     "uuid": s.uuid,
-                    "workflow_uuid": w.uuid,
+                    "graph_uuid": w.uuid,
                     "title": s.title,
                     "position": s.position,
                     "thread_uuid": s.thread.uuid if s.thread_id else None,
@@ -101,7 +101,7 @@ class WorkflowGraphProjectionService:
             "channels": [
                 {
                     "uuid": c.uuid,
-                    "workflow_uuid": w.uuid,
+                    "graph_uuid": w.uuid,
                     "title": c.title,
                     "position": c.position,
                     "thread_uuid": c.thread.uuid if c.thread_id else None,
@@ -114,7 +114,7 @@ class WorkflowGraphProjectionService:
                     "section_uuid": n.section.uuid if n.section_id else None,
                     "channel_uuid": n.channel.uuid if n.channel_id else None,
                     "section_row": n.section_row,
-                    "unit_uuid": n.unit.uuid if n.unit_id else None,
+                    "workflow_uuid": n.workflow.uuid if n.workflow_id else None,
                     "thread_uuid": n.thread.uuid if n.thread_id else None,
                     "outcome_uuids": [o.uuid for o in n.outcomes.all()],
                 }

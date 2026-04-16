@@ -7,10 +7,10 @@ from uuid import UUID
 from django.db.models import Q, QuerySet
 
 from course_flow_v2.core.models import (
+    FavoriteGraph,
     FavoriteProject,
-    FavoriteWorkflow,
+    Graph,
     Project,
-    Workflow,
 )
 
 
@@ -44,58 +44,58 @@ class LibraryService:
         ).distinct()
 
         project_qs = accessible_projects
-        workflow_qs = Workflow.objects.select_related("project", "unit").filter(
+        graph_qs = Graph.objects.select_related("project", "workflow").filter(
             project_id__in=accessible_projects.values("id"),
-            unit__isnull=False,
+            workflow__isnull=False,
         )
 
         if workspace_type == "project":
-            workflow_qs = workflow_qs.none()
+            graph_qs = graph_qs.none()
         elif workspace_type in {"activity", "course", "program", "task"}:
             project_qs = project_qs.none()
-            workflow_qs = workflow_qs.filter(unit__unit_type=workspace_type)
+            graph_qs = graph_qs.filter(workflow__workflow_type=workspace_type)
 
         if project_filter_uuid is not None:
             project_qs = project_qs.filter(uuid=project_filter_uuid)
-            workflow_qs = workflow_qs.filter(project__uuid=project_filter_uuid)
+            graph_qs = graph_qs.filter(project__uuid=project_filter_uuid)
 
         if discipline_ids:
             project_qs = project_qs.filter(
                 disciplines__id__in=discipline_ids
             ).distinct()
-            workflow_qs = workflow_qs.filter(
+            graph_qs = graph_qs.filter(
                 project__disciplines__id__in=discipline_ids
             ).distinct()
 
         if is_template is not None:
             project_qs = project_qs.filter(is_template=is_template)
-            workflow_qs = workflow_qs.filter(project__is_template=is_template)
+            graph_qs = graph_qs.filter(project__is_template=is_template)
 
         if keyword:
             project_qs = project_qs.filter(
                 Q(title__icontains=keyword) | Q(description__icontains=keyword)
             )
-            workflow_qs = workflow_qs.filter(
-                Q(unit__title__icontains=keyword)
-                | Q(unit__description__icontains=keyword)
+            graph_qs = graph_qs.filter(
+                Q(workflow__title__icontains=keyword)
+                | Q(workflow__description__icontains=keyword)
                 | Q(title__icontains=keyword)
             )
 
         if favourited is True:
             project_qs = project_qs.filter(favorite_links__user_id=user_id)
-            workflow_qs = workflow_qs.filter(favorite_links__user_id=user_id)
+            graph_qs = graph_qs.filter(favorite_links__user_id=user_id)
 
         project_favorite_uuids = self._favorite_project_uuids(
             user_id=user_id, project_qs=project_qs
         )
-        workflow_favorite_uuids = self._favorite_workflow_uuids(
+        graph_favorite_uuids = self._favorite_graph_uuids(
             user_id=user_id,
-            workflow_qs=workflow_qs,
+            graph_qs=graph_qs,
         )
 
         items = self._normalize_project_items(project_qs, project_favorite_uuids)
         items.extend(
-            self._normalize_workflow_items(workflow_qs, workflow_favorite_uuids)
+            self._normalize_graph_items(graph_qs, graph_favorite_uuids)
         )
 
         items = self._sort_items(
@@ -180,14 +180,14 @@ class LibraryService:
             )
         )
 
-    def _favorite_workflow_uuids(
-        self, *, user_id: int, workflow_qs: QuerySet[Workflow]
+    def _favorite_graph_uuids(
+        self, *, user_id: int, graph_qs: QuerySet[Graph]
     ) -> set[UUID]:
         return set(
-            FavoriteWorkflow.objects.filter(
+            FavoriteGraph.objects.filter(
                 user_id=user_id,
-                workflow__in=workflow_qs,
-            ).values_list("workflow__uuid", flat=True)
+                graph__in=graph_qs,
+            ).values_list("graph__uuid", flat=True)
         )
 
     def _normalize_project_items(
@@ -199,9 +199,9 @@ class LibraryService:
                 {
                     "object_type": "project",
                     "uuid": project.uuid,
-                    "workflow_uuid": None,
+                    "graph_uuid": None,
                     "project_uuid": project.uuid,
-                    "unit_uuid": None,
+                    "workflow_uuid": None,
                     "title": project.title,
                     "description": project.description,
                     "date_created": project.date_created,
@@ -212,27 +212,27 @@ class LibraryService:
             )
         return rows
 
-    def _normalize_workflow_items(
-        self, workflow_qs: QuerySet[Workflow], favorite_uuids: set[UUID]
+    def _normalize_graph_items(
+        self, graph_qs: QuerySet[Graph], favorite_uuids: set[UUID]
     ) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
-        for workflow in workflow_qs:
-            unit = workflow.unit
+        for graph in graph_qs:
+            workflow = graph.workflow
             rows.append(
                 {
-                    "object_type": unit.unit_type,
+                    "object_type": workflow.workflow_type,
                     "uuid": None,
+                    "graph_uuid": graph.uuid,
+                    "project_uuid": graph.project.uuid if graph.project else None,
                     "workflow_uuid": workflow.uuid,
-                    "project_uuid": workflow.project.uuid if workflow.project else None,
-                    "unit_uuid": unit.uuid,
-                    "title": unit.title,
-                    "description": unit.description,
-                    "date_created": workflow.date_created,
-                    "modified_on": workflow.modified_on,
+                    "title": workflow.title,
+                    "description": workflow.description,
+                    "date_created": graph.date_created,
+                    "modified_on": graph.modified_on,
                     "is_template": bool(
-                        workflow.project and workflow.project.is_template
+                        graph.project and graph.project.is_template
                     ),
-                    "is_favorite": workflow.uuid in favorite_uuids,
+                    "is_favorite": graph.uuid in favorite_uuids,
                 }
             )
         return rows

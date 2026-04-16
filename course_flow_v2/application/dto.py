@@ -24,16 +24,16 @@ class ProjectDuplicatePlaceholderDTO:
 
 
 @dataclass(frozen=True, slots=True)
-class WorkflowDTO:
+class GraphDTO:
     id: int
     uuid: UUID
     title: str
     owner_id: int
     project_id: int | None
     revision_id: int
-    unit_uuid: UUID
-    unit_type: str
-    unit_title: str
+    workflow_uuid: UUID
+    workflow_type: str
+    workflow_title: str
     date_created: datetime
     modified_on: datetime
 
@@ -86,7 +86,7 @@ class CommentDTO:
 @dataclass(frozen=True, slots=True)
 class ChannelDTO:
     uuid: UUID
-    workflow_uuid: UUID
+    graph_uuid: UUID
     title: str
     position: int
     thread_uuid: UUID | None
@@ -97,7 +97,7 @@ class ChannelDTO:
 @dataclass(frozen=True, slots=True)
 class SectionDTO:
     uuid: UUID
-    workflow_uuid: UUID
+    graph_uuid: UUID
     title: str
     position: int
     thread_uuid: UUID | None

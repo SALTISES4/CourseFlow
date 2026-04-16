@@ -6,15 +6,15 @@ from course_flow_v2.core.models import Project
 
 
 class ProjectGraphProjectionService:
-    """Project-level projection: entity fields + workflow UUID references (no nested graphs)."""
+    """Project-level projection: entity fields + graph UUID references (no nested graphs)."""
 
     def get_by_project_uuid(self, project_uuid: UUID):
         try:
-            p = Project.objects.prefetch_related("workflows").get(uuid=project_uuid)
+            p = Project.objects.prefetch_related("graphs").get(uuid=project_uuid)
         except Project.DoesNotExist:
             return None
 
-        workflow_uuids = [w.uuid for w in p.workflows.all().order_by("id")]
+        graph_uuids = [w.uuid for w in p.graphs.all().order_by("id")]
 
         return {
             "uuid": p.uuid,
@@ -25,5 +25,5 @@ class ProjectGraphProjectionService:
             "owner_id": p.owner_id,
             "date_created": p.date_created,
             "modified_on": p.modified_on,
-            "workflow_uuids": workflow_uuids,
+            "graph_uuids": graph_uuids,
         }

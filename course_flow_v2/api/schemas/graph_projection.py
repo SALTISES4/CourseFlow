@@ -1,6 +1,6 @@
 """Project-level projection schemas (non-CRUD read models).
 
-Workflow graph shapes live in ``course_flow_v2.api.schemas.workflow_graph``.
+Graph graph shapes live in ``course_flow_v2.api.schemas.graph_view``.
 """
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ from course_flow_v2.api.common.schemas import CamelSchema
 
 
 class ProjectGraphProjectionOut(CamelSchema):
-    """Project overview: entity fields + workflow UUID references only."""
+    """Project overview: entity fields + graph UUID references only."""
 
     uuid: UUID
     title: str
@@ -22,4 +22,4 @@ class ProjectGraphProjectionOut(CamelSchema):
     owner_id: int
     date_created: datetime
     modified_on: datetime
-    workflow_uuids: list[UUID]
+    graph_uuids: list[UUID]

@@ -7,76 +7,76 @@ from course_flow_v2.application.dto import CommentAuthorDTO, CommentDTO
 from course_flow_v2.core.models import (
     Channel,
     Comment,
+    Graph,
     Node,
     Outcome,
     Section,
     Thread,
-    Workflow,
 )
 
 
 class ThreadCommentService:
     """
-    Lazy-load comments for a thread; authorization matches workflow ownership
-    (same mental model as ``GET /workflows/{uuid}/graph``).
+    Lazy-load comments for a thread; authorization matches graph ownership
+    (same mental model as ``GET /graphs/{uuid}/view``).
     """
 
-    def _workflow_for_thread(self, thread: Thread) -> Workflow | None:
+    def _graph_for_thread(self, thread: Thread) -> Graph | None:
         s = (
             Section.objects.filter(thread_id=thread.id)
-            .select_related("workflow")
+            .select_related("graph")
             .first()
         )
         if s is not None:
-            return s.workflow
+            return s.graph
 
         c = (
             Channel.objects.filter(thread_id=thread.id)
-            .select_related("workflow")
+            .select_related("graph")
             .first()
         )
         if c is not None:
-            return c.workflow
+            return c.graph
 
         n = (
             Node.objects.filter(thread_id=thread.id)
-            .select_related("section__workflow", "channel__workflow")
+            .select_related("section__graph", "channel__graph")
             .first()
         )
         if n is not None:
             if n.section_id is not None:
-                return n.section.workflow
+                return n.section.graph
             if n.channel_id is not None:
-                return n.channel.workflow
+                return n.channel.graph
 
         o = (
             Outcome.objects.filter(thread_id=thread.id)
-            .select_related("workflow")
+            .select_related("graph")
             .first()
         )
         if o is not None:
-            return o.workflow
+            return o.graph
 
         return None
 
     def _get_authorized_thread(
         self, thread_uuid: UUID, requester_user_id: int
     ) -> Thread | None:
-        """Return the thread if it exists, is in a workflow context, and requester owns the workflow.
+        """Return the thread if it exists, is in a graph context, and requester owns the graph.
 
-        Returns ``None`` if the thread does not exist or has no workflow context.
-        Raises ``PermissionError`` if the workflow is owned by another user.
+        Returns ``None`` if the thread does not exist or has no graph context.
+        Raises ``PermissionError`` if the graph is owned by another user.
         """
         try:
             thread = Thread.objects.get(uuid=thread_uuid)
         except Thread.DoesNotExist:
             return None
 
-        workflow = self._workflow_for_thread(thread)
-        if workflow is None:
+        graph = self._graph_for_thread(thread)
+        if graph is None:
             return None
 
-        if workflow.owner_id != requester_user_id:
+        if graph.owner_id != requester_user_id:
             raise PermissionError
 
         return thread
@@ -87,10 +87,10 @@ class ThreadCommentService:
         requester_user_id: int,
     ) -> list[CommentDTO] | None:
         """
-        Returns ``None`` if the thread does not exist or is not attached to any workflow
+        Returns ``None`` if the thread does not exist or is not attached to any graph
         context we can authorize (treated as not found).
 
-        Raises ``PermissionError`` if the thread is in a workflow owned by another user.
+        Raises ``PermissionError`` if the thread is in a graph owned by another user.
         """
         try:
             thread = self._get_authorized_thread(thread_uuid, requester_user_id)
@@ -116,7 +116,7 @@ class ThreadCommentService:
 
         Returns ``None`` if the thread cannot be resolved or authorized like list.
         Raises ``ValueError`` if ``body`` is empty after strip.
-        Raises ``PermissionError`` if the workflow is owned by another user.
+        Raises ``PermissionError`` if the graph is owned by another user.
         """
         text = body.strip()
         if not text:
@@ -143,7 +143,7 @@ class ThreadCommentService:
         comment_uuid: UUID,
         requester_user_id: int,
     ) -> Literal["deleted", "not_found", "comment_not_found", "wrong_thread"]:
-        """Delete a single comment. Raises ``PermissionError`` if not workflow owner."""
+        """Delete a single comment. Raises ``PermissionError`` if not graph owner."""
         try:
             thread = self._get_authorized_thread(thread_uuid, requester_user_id)
         except PermissionError:
@@ -164,7 +164,7 @@ class ThreadCommentService:
     ) -> int | None:
         """Delete all comments on the thread. Returns deleted row count, or ``None`` if thread not found.
 
-        Raises ``PermissionError`` if not workflow owner.
+        Raises ``PermissionError`` if not graph owner.
         """
         try:
             thread = self._get_authorized_thread(thread_uuid, requester_user_id)

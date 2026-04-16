@@ -13,7 +13,7 @@ The default Django project is **V2**: `manage.py` uses `course_flow_v2.settings`
 | Django Ninja routes (`course_flow_v2/api/routers/`) | HTTP API; OpenAPI is generated from routes + schemas |
 | Application services (`course_flow_v2/application/`) | Thin orchestration; persistence via repository implementations |
 
-Do not hand-maintain a parallel OpenAPI document as the source of truth; export the generated spec when tooling needs it (see [OpenAPI and client workflow](../architecture/openapi_and_client_workflow.md)).
+Do not hand-maintain a parallel OpenAPI document as the source of truth; export the generated spec when tooling needs it (see [OpenAPI and client graph](../architecture/openapi_and_client_graph.md)).
 
 ## 1. Environment file
 
@@ -63,9 +63,9 @@ With the dev server running:
 
 - Docs UI: `http://127.0.0.1:8000/api/docs`
 - OpenAPI JSON: `http://127.0.0.1:8000/api/openapi.json`
-- Example routes: `GET/POST /api/project`, `GET/POST /api/workflow` (see OpenAPI for exact paths)
+- Example routes: `GET/POST /api/project`, `GET/POST /api/graph` (see OpenAPI for exact paths)
 
-**Note:** Authenticated workflow/project writes derive the owner from the bearer token; register or log in to obtain a token before calling protected routes.
+**Note:** Authenticated graph/project writes derive the owner from the bearer token; register or log in to obtain a token before calling protected routes.
 
 ## 6. Canonical data model
 

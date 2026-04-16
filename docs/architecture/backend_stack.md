@@ -38,7 +38,7 @@ Django is retained for:
 - authentication / permission integration
 - ORM-backed persistence
 
-Django is not the intended home for business workflow.
+Django is not the intended home for business graph.
 
 ## Django Ninja
 
@@ -79,8 +79,8 @@ The application layer may use explicit command/query/result objects when a use c
 
 Examples:
 
-- `CreateWorkflowCommand`
-- `WorkflowResult`
+- `CreateGraphCommand`
+- `GraphResult`
 - `ProjectSummaryResult`
 
 These should live in application-owned modules, not in infrastructure.
@@ -151,11 +151,11 @@ Additional packages should be added only for a concrete need.
 
 ## OpenAPI
 
-API documentation and the machine-readable OpenAPI document are **generated** from Django Ninja routes and Ninja Schemas. Workflow and export expectations are described in [openapi_and_client_workflow.md](openapi_and_client_workflow.md).
+API documentation and the machine-readable OpenAPI document are **generated** from Django Ninja routes and Ninja Schemas. Graph and export expectations are described in [openapi_and_client_graph.md](openapi_and_client_graph.md).
 
 ## Frontend client and server-state (React)
 
-The React app standardizes on **OpenAPI as input** to **Hey API**, which emits **TypeScript types**, a **fetch-based** client/SDK, and **TanStack Query** option helpers. **TanStack Query** is the strategic layer for **ordinary server-state**; the **workflow graph/editor** continues to use **generated plain fetch/SDK calls** for imperative flows while **normalized Redux slices** hold canonical graph state (not a query-cache-centric model). **RTK Query** is not the preferred long-term codegen or server-state stack for new work. Policy and anti-patterns: [openapi_and_client_workflow.md](openapi_and_client_workflow.md), [adr_frontend_api_client.md](adr_frontend_api_client.md).
+The React app standardizes on **OpenAPI as input** to **Hey API**, which emits **TypeScript types**, a **fetch-based** client/SDK, and **TanStack Query** option helpers. **TanStack Query** is the strategic layer for **ordinary server-state**; the **graph graph/editor** continues to use **generated plain fetch/SDK calls** for imperative flows while **normalized Redux slices** hold canonical graph state (not a query-cache-centric model). **RTK Query** is not the preferred long-term codegen or server-state stack for new work. Policy and anti-patterns: [openapi_and_client_graph.md](openapi_and_client_graph.md), [adr_frontend_api_client.md](adr_frontend_api_client.md).
 
 ## Stack Rules
 

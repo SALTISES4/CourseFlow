@@ -153,8 +153,8 @@ The following are not allowed:
 - `domain/` importing Django
 - `application/` importing Django ORM models directly
 - business rules implemented primarily in Django models
-- endpoint functions orchestrating multi-step workflows inline
-- serializer or schema save hooks acting as the main application workflow
+- endpoint functions orchestrating multi-step graphs inline
+- serializer or schema save hooks acting as the main application graph
 - ORM instances passed directly into domain logic
 
 ## Dependency Direction
@@ -188,18 +188,18 @@ All persistence access must be mediated through repository or gateway interfaces
 
 Mapping between these shapes must be explicit.
 
-## Example Vertical Slice: Create Workflow
+## Example Vertical Slice: Create Graph
 
 ```text
-POST /api/workflow
-    -> src/api/endpoints/workflows.py
-    -> src/schemas/requests/workflow.py
-    -> src/application/commands/create_workflow.py
-    -> src/application/services/workflow_service.py
-    -> src/domain/models/workflow.py
-    -> src/application/ports/workflow_repository.py
-    -> src/infrastructure/orm/repositories/workflow_repository.py
-    -> src/infrastructure/orm/mappers/workflow_mapper.py
+POST /api/graph
+    -> src/api/endpoints/graphs.py
+    -> src/schemas/requests/graph.py
+    -> src/application/commands/create_graph.py
+    -> src/application/services/graph_service.py
+    -> src/domain/models/graph.py
+    -> src/application/ports/graph_repository.py
+    -> src/infrastructure/orm/repositories/graph_repository.py
+    -> src/infrastructure/orm/mappers/graph_mapper.py
     -> Django ORM model
     -> PostgreSQL
 ```
@@ -212,7 +212,7 @@ Do not collapse a feature into:
 APIView / Ninja endpoint -> schema save logic -> ORM model save
 ```
 
-That pattern hides business workflow inside transport and persistence code.
+That pattern hides business graph inside transport and persistence code.
 
 ## Why This Layout Is Good for Editing
 

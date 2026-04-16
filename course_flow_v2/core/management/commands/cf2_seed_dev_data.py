@@ -52,10 +52,10 @@ class Command(BaseCommand):
             help="How many DEV SEED projects to create (default: 1).",
         )
         parser.add_argument(
-            "--workflows-per-project",
+            "--graphs-per-project",
             type=int,
             default=1,
-            help="Workflows per project (default: 1).",
+            help="Graphs per project (default: 1).",
         )
         parser.add_argument(
             "--section-count",
@@ -104,7 +104,7 @@ class Command(BaseCommand):
         cfg = SeedConfig(
             seed=options["seed"],
             project_count=options["project_count"],
-            workflows_per_project=options["workflows_per_project"],
+            graphs_per_project=options["graphs_per_project"],
             section_count=options["section_count"],
             channel_count=options["channel_count"],
             team_size=options["team_size"],

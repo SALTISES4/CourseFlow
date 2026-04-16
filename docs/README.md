@@ -33,7 +33,7 @@ For **coding agents** and contributors implementing HTTP clients in `react/`:
 
 | Topic | Canonical doc |
 | --- | --- |
-| OpenAPI generation from Django Ninja, export, and **do-not** rules | [docs/architecture/openapi_and_client_workflow.md](architecture/openapi_and_client_workflow.md) |
+| OpenAPI generation from Django Ninja, export, and **do-not** rules | [docs/architecture/openapi_and_client_graph.md](architecture/openapi_and_client_graph.md) |
 | **ADR:** Hey API + Fetch + TanStack Query; Redux graph store; not RTK Query as strategic codegen | [docs/architecture/adr_frontend_api_client.md](architecture/adr_frontend_api_client.md) |
 | Backend stack + short frontend summary | [docs/architecture/backend_stack.md](architecture/backend_stack.md) |
 
@@ -56,7 +56,7 @@ Where possible, framework code remains at the boundary.
 2. `docs/architecture/backend_stack.md`
 3. `docs/architecture/llm_editing_rules.md`
 4. `docs/architecture/api_contracts.md`
-5. `docs/architecture/openapi_and_client_workflow.md`
+5. `docs/architecture/openapi_and_client_graph.md`
 6. `docs/architecture/adr_frontend_api_client.md` (frontend API client and server-state decision)
 
 ## Working Rule

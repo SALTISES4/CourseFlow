@@ -2,13 +2,13 @@ from typing import Any
 from uuid import UUID
 
 from course_flow_v2.application.dto import SectionDTO
-from course_flow_v2.core.models import Section, Thread, Workflow
+from course_flow_v2.core.models import Graph, Section, Thread
 
 
 def _to_dto(sec: Section) -> SectionDTO:
     return SectionDTO(
         uuid=sec.uuid,
-        workflow_uuid=sec.workflow.uuid,
+        graph_uuid=sec.graph.uuid,
         title=sec.title,
         position=sec.position,
         thread_uuid=sec.thread.uuid if sec.thread_id else None,
@@ -21,14 +21,14 @@ class DjangoSectionRepository:
     def create(
         self,
         *,
-        workflow_uuid: UUID,
+        graph_uuid: UUID,
         title: str,
         position: int,
         thread_uuid: UUID | None = None,
     ) -> SectionDTO | None:
         try:
-            wf = Workflow.objects.get(uuid=workflow_uuid)
-        except Workflow.DoesNotExist:
+            wf = Graph.objects.get(uuid=graph_uuid)
+        except Graph.DoesNotExist:
             return None
 
         thread_id: int | None = None
@@ -39,25 +39,25 @@ class DjangoSectionRepository:
                 return None
 
         sec = Section.objects.create(
-            workflow=wf,
+            graph=wf,
             title=title,
             position=position,
             thread_id=thread_id,
         )
-        sec = Section.objects.select_related("workflow", "thread").get(pk=sec.pk)
+        sec = Section.objects.select_related("graph", "thread").get(pk=sec.pk)
         return _to_dto(sec)
 
     def get_by_uuid(self, uuid: UUID) -> SectionDTO | None:
         try:
-            sec = Section.objects.select_related("workflow", "thread").get(uuid=uuid)
+            sec = Section.objects.select_related("graph", "thread").get(uuid=uuid)
         except Section.DoesNotExist:
             return None
         return _to_dto(sec)
 
-    def list_for_workflow_uuid(self, workflow_uuid: UUID) -> list[SectionDTO]:
+    def list_for_graph_uuid(self, graph_uuid: UUID) -> list[SectionDTO]:
         qs = (
-            Section.objects.filter(workflow__uuid=workflow_uuid)
-            .select_related("workflow", "thread")
+            Section.objects.filter(graph__uuid=graph_uuid)
+            .select_related("graph", "thread")
             .order_by("position", "id")
         )
         return [_to_dto(sec) for sec in qs]
@@ -83,7 +83,7 @@ class DjangoSectionRepository:
                     return None
 
         sec.save()
-        sec = Section.objects.select_related("workflow", "thread").get(pk=sec.pk)
+        sec = Section.objects.select_related("graph", "thread").get(pk=sec.pk)
         return _to_dto(sec)
 
     def delete(self, uuid: UUID) -> bool:

@@ -8,23 +8,23 @@ Scope: `react/src` graph/editor Redux architecture inventory for rewrite plannin
 These parts are tightly coupled to the legacy local-first + websocket-driven model and should be treated as reference only.
 
 - `react/src/redux/store.ts`
-  - Registers `legacyWorkflowReducers` + `workspaceReducer` + `dummyReducers` as the active graph state backbone.
+  - Registers `legacyGraphReducers` + `workspaceReducer` + `dummyReducers` as the active graph state backbone.
 - `react/src/redux/Reducers.ts`
-  - Aggregates legacy relation reducers (`nodeweek`, `weekworkflow`, `outcomeworkflow`, `parentNode`, `childWorkflow`, etc).
+  - Aggregates legacy relation reducers (`nodeweek`, `weekgraph`, `outcomegraph`, `parentNode`, `childGraph`, etc).
   - Explicitly documents websocket/publisher filtering assumptions.
 - `react/src/redux/ActionCreator.ts`
   - Dynamic string action dispatch (`objectType + '/changeField'`, `createLock`) and global refresh/replace action bus.
   - Architecture assumes generic action routing rather than explicit intent commands.
-- `react/src/components/pages/Workspace/Workflow/hooks/useWorkflowWebsocketManager.tsx`
+- `react/src/components/pages/Workspace/Graph/hooks/useGraphWebsocketManager.tsx`
   - Mixes websocket lifecycle, initial hydration, queueing/replay, lock updates, and optimistic field writes.
   - Dispatches raw server actions and `refresh/replace` payload dumps into Redux.
 - Graph domain slices with client-owned mutation semantics:
-  - `react/src/redux/slices/node.slice.ts` (`workflowNodeReorder`, `workflowNodeInsert`, `workflowNodeDelete`, row-collapse/chain-bump logic).
-  - `react/src/redux/slices/workflow.slice.ts` (local structural reorder semantics for sections/columns + relation mutation handlers).
+  - `react/src/redux/slices/node.slice.ts` (`graphNodeReorder`, `graphNodeInsert`, `graphNodeDelete`, row-collapse/chain-bump logic).
+  - `react/src/redux/slices/graph.slice.ts` (local structural reorder semantics for sections/columns + relation mutation handlers).
   - `react/src/redux/slices/week.slice.ts` (through-set mutation logic tied to legacy `week/nodeweek` model).
   - `react/src/redux/slices/nodelink.slice.ts` (edge create/update semantics in reducer via `svglinkDragEnd`).
   - `react/src/redux/slices/column.slice.ts` (local clone/insert semantics).
-- Legacy relation reducers under `react/src/redux/reducers/workflow/*` and `react/src/redux/reducers/outcome/*`
+- Legacy relation reducers under `react/src/redux/reducers/graph/*` and `react/src/redux/reducers/outcome/*`
   - Reducer boundaries mirror legacy through-tables and old backend shape.
 
 ## 2) Safe reuse candidates
@@ -32,7 +32,7 @@ These parts are tightly coupled to the legacy local-first + websocket-driven mod
 Safe to reuse only after rewiring to new selectors/actions (not by keeping old store contracts).
 
 - Presentational/editor UI components (view layer):
-  - `react/src/components/views/WorkflowView/WorkflowEditView/components/**`
+  - `react/src/components/views/GraphView/GraphEditView/components/**`
   - `ColumnsHeader`, `Week`, `Cell`, `LineSVG` visual components and styles.
 - UI-only Redux state patterns:
   - `react/src/redux/slices/svglink.slice.ts` (drag gesture/preview state) as ephemeral editor state pattern.
@@ -48,8 +48,8 @@ Safe to reuse only after rewiring to new selectors/actions (not by keeping old s
 - Any reducer that computes canonical graph mutation consequences client-side.
 - Any generic `changeField`/`createLock` action bus dispatch model for graph domain writes.
 - `CommonActions.REPLACE_STOREDATA` / `REFRESH_STOREDATA` as graph synchronization mechanism.
-- Websocket-driven graph synchronization assumptions (`useWorkflowWebsocketManager`, queue replay, remote action passthrough).
-- Legacy entity boundaries tied to `week/column/nodeweek/weekworkflow/...` as canonical model for the rewrite.
+- Websocket-driven graph synchronization assumptions (`useGraphWebsocketManager`, queue replay, remote action passthrough).
+- Legacy entity boundaries tied to `week/column/nodeweek/weekgraph/...` as canonical model for the rewrite.
 - Selector contracts that assume old board shape (`weeks/columns/order`) as canonical storage model.
 
 ## 4) Proposed new graph state module structure
@@ -60,7 +60,7 @@ Suggested minimal structure under `react/src/features/graph/`:
 react/src/features/graph/
   state/
     graphCanonical/
-      graphMeta.slice.ts        # workflow id/revision/load flags
+      graphMeta.slice.ts        # graph id/revision/load flags
       sections.slice.ts         # normalized entities only
       channels.slice.ts         # normalized entities only
       nodes.slice.ts            # normalized entities only

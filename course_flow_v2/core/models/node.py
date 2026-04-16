@@ -5,7 +5,7 @@ from course_flow_v2.core.models.channel import Channel
 from course_flow_v2.core.models.outcome import Outcome
 from course_flow_v2.core.models.section import Section
 from course_flow_v2.core.models.thread import Thread
-from course_flow_v2.core.models.unit import Unit
+from course_flow_v2.core.models.workflow import Workflow
 
 
 class Node(UUIDModel):
@@ -23,8 +23,8 @@ class Node(UUIDModel):
         blank=True,
         related_name="nodes",
     )
-    unit = models.ForeignKey(
-        Unit,
+    workflow = models.ForeignKey(
+        Workflow,
         on_delete=models.CASCADE,
         null=True,
         blank=True,

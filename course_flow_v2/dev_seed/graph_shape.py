@@ -1,5 +1,5 @@
 """
-Deterministic workflow graph shape (layout + edges) for dev seed data.
+Deterministic graph shape (layout + edges) for dev seed data.
 
 Layout: section-local 2D grids — one node per (section, channel, section_row),
 compact row indices, structured channel spread. Edges: weighted out-degrees,
@@ -16,8 +16,8 @@ from course_flow_v2.dev_seed.rng import SeededRNG
 
 
 @dataclass(frozen=True)
-class WorkflowShapeParams:
-    """Bounds for one workflow graph."""
+class GraphShapeParams:
+    """Bounds for one graph graph."""
 
     section_count: int  # 1–5
     channel_count: int  # 2–5
@@ -36,7 +36,7 @@ class SectionLayoutPlan:
 
 
 @dataclass(frozen=True)
-class WorkflowLayoutPlan:
+class GraphLayoutPlan:
     sections: list[SectionLayoutPlan]
 
 
@@ -44,7 +44,7 @@ def _clamp(n: int, lo: int, hi: int) -> int:
     return max(lo, min(hi, n))
 
 
-def iter_layout_node_meta(layout: WorkflowLayoutPlan) -> list[tuple[int, int, int]]:
+def iter_layout_node_meta(layout: GraphLayoutPlan) -> list[tuple[int, int, int]]:
     """
     Global node order: section index, then row-major within section.
 
@@ -60,7 +60,7 @@ def iter_layout_node_meta(layout: WorkflowLayoutPlan) -> list[tuple[int, int, in
 def choose_section_node_count(
     rng: SeededRNG,
     *,
-    p: WorkflowShapeParams,
+    p: GraphShapeParams,
 ) -> int:
     """4–12 nodes per section, usually medium-sized."""
     lo = _clamp(p.min_nodes_per_section, 1, 12)
@@ -118,10 +118,10 @@ def generate_section_placements(
     return sorted(chosen, key=lambda t: (t[1], t[0]))
 
 
-def generate_workflow_layout(
+def generate_graph_layout(
     rng: SeededRNG,
-    p: WorkflowShapeParams,
-) -> WorkflowLayoutPlan:
+    p: GraphShapeParams,
+) -> GraphLayoutPlan:
     n_sec = _clamp(p.section_count, 1, 5)
     n_ch = _clamp(p.channel_count, 2, 5)
     section_plans: list[SectionLayoutPlan] = []
@@ -133,7 +133,7 @@ def generate_workflow_layout(
             node_count=n_nodes,
         )
         section_plans.append(SectionLayoutPlan(placements=placements))
-    return WorkflowLayoutPlan(sections=section_plans)
+    return GraphLayoutPlan(sections=section_plans)
 
 
 def weighted_out_degree(rng: SeededRNG) -> int:
@@ -157,7 +157,7 @@ def _node_key(meta: list[tuple[int, int, int]], i: int) -> tuple[int, int, int]:
 
 def generate_edge_pairs(
     rng: SeededRNG,
-    layout: WorkflowLayoutPlan,
+    layout: GraphLayoutPlan,
     *,
     max_cross_section_edges: int,
 ) -> list[tuple[int, int]]:

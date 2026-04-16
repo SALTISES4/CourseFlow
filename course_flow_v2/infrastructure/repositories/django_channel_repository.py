@@ -2,13 +2,13 @@ from typing import Any
 from uuid import UUID
 
 from course_flow_v2.application.dto import ChannelDTO
-from course_flow_v2.core.models import Channel, Thread, Workflow
+from course_flow_v2.core.models import Channel, Graph, Thread
 
 
 def _to_dto(ch: Channel) -> ChannelDTO:
     return ChannelDTO(
         uuid=ch.uuid,
-        workflow_uuid=ch.workflow.uuid,
+        graph_uuid=ch.graph.uuid,
         title=ch.title,
         position=ch.position,
         thread_uuid=ch.thread.uuid if ch.thread_id else None,
@@ -21,14 +21,14 @@ class DjangoChannelRepository:
     def create(
         self,
         *,
-        workflow_uuid: UUID,
+        graph_uuid: UUID,
         title: str,
         position: int,
         thread_uuid: UUID | None = None,
     ) -> ChannelDTO | None:
         try:
-            wf = Workflow.objects.get(uuid=workflow_uuid)
-        except Workflow.DoesNotExist:
+            wf = Graph.objects.get(uuid=graph_uuid)
+        except Graph.DoesNotExist:
             return None
 
         thread_id: int | None = None
@@ -39,25 +39,25 @@ class DjangoChannelRepository:
                 return None
 
         ch = Channel.objects.create(
-            workflow=wf,
+            graph=wf,
             title=title,
             position=position,
             thread_id=thread_id,
         )
-        ch = Channel.objects.select_related("workflow", "thread").get(pk=ch.pk)
+        ch = Channel.objects.select_related("graph", "thread").get(pk=ch.pk)
         return _to_dto(ch)
 
     def get_by_uuid(self, uuid: UUID) -> ChannelDTO | None:
         try:
-            ch = Channel.objects.select_related("workflow", "thread").get(uuid=uuid)
+            ch = Channel.objects.select_related("graph", "thread").get(uuid=uuid)
         except Channel.DoesNotExist:
             return None
         return _to_dto(ch)
 
-    def list_for_workflow_uuid(self, workflow_uuid: UUID) -> list[ChannelDTO]:
+    def list_for_graph_uuid(self, graph_uuid: UUID) -> list[ChannelDTO]:
         qs = (
-            Channel.objects.filter(workflow__uuid=workflow_uuid)
-            .select_related("workflow", "thread")
+            Channel.objects.filter(graph__uuid=graph_uuid)
+            .select_related("graph", "thread")
             .order_by("position", "id")
         )
         return [_to_dto(ch) for ch in qs]
@@ -83,7 +83,7 @@ class DjangoChannelRepository:
                     return None
 
         ch.save()
-        ch = Channel.objects.select_related("workflow", "thread").get(pk=ch.pk)
+        ch = Channel.objects.select_related("graph", "thread").get(pk=ch.pk)
         return _to_dto(ch)
 
     def delete(self, uuid: UUID) -> bool:

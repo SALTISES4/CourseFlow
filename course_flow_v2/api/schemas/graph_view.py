@@ -1,6 +1,6 @@
-"""Workflow graph/editor read model (flat collections, UUID references).
+"""Graph graph/editor read model (flat collections, UUID references).
 
-Not a CRUD entity payload — use primary workflow routes for resource fields only.
+Not a CRUD entity payload — use primary graph routes for resource fields only.
 """
 
 from __future__ import annotations
@@ -13,8 +13,8 @@ from pydantic import Field
 from course_flow_v2.api.common.schemas import CamelSchema
 
 
-class WorkflowGraphMetaOut(CamelSchema):
-    """Workflow row + root unit identifiers needed for the editor shell (no nested unit object)."""
+class GraphMetaOut(CamelSchema):
+    """Graph row + root workflow identifiers needed for the editor shell (no nested workflow object)."""
 
     uuid: UUID
     title: str
@@ -23,14 +23,14 @@ class WorkflowGraphMetaOut(CamelSchema):
     revision_id: int
     date_created: datetime
     modified_on: datetime
-    root_unit_uuid: UUID | None = None
-    root_unit_type: str | None = None
-    root_unit_title: str = ""
+    root_workflow_uuid: UUID | None = None
+    root_workflow_type: str | None = None
+    root_workflow_title: str = ""
 
 
 class SectionGraphOut(CamelSchema):
     uuid: UUID
-    workflow_uuid: UUID
+    graph_uuid: UUID
     title: str
     position: int
     thread_uuid: UUID | None = None
@@ -38,7 +38,7 @@ class SectionGraphOut(CamelSchema):
 
 class ChannelGraphOut(CamelSchema):
     uuid: UUID
-    workflow_uuid: UUID
+    graph_uuid: UUID
     title: str
     position: int
     thread_uuid: UUID | None = None
@@ -49,7 +49,7 @@ class NodeGraphOut(CamelSchema):
     section_uuid: UUID | None = None
     channel_uuid: UUID | None = None
     section_row: int | None = None
-    unit_uuid: UUID | None = None
+    workflow_uuid: UUID | None = None
     thread_uuid: UUID | None = None
     outcome_uuids: list[UUID] = Field(default_factory=list)
 
@@ -70,10 +70,10 @@ class ThreadCommentCountOut(CamelSchema):
     comment_count: int
 
 
-class WorkflowGraphOut(CamelSchema):
-    """Single round-trip projection for rendering the workflow graph (not nested entity trees)."""
+class GraphViewOut(CamelSchema):
+    """Single round-trip projection for rendering the graph (not nested entity trees)."""
 
-    workflow: WorkflowGraphMetaOut
+    graph: GraphMetaOut
     channels: list[ChannelGraphOut]
     sections: list[SectionGraphOut]
     nodes: list[NodeGraphOut]

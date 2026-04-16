@@ -8,7 +8,7 @@ The code is the source of truth.
 
 Routes plus request/response schemas must generate the OpenAPI artifact.
 
-## Development Workflow
+## Development Graph
 
 1. add or update an endpoint
 2. add or update request schema

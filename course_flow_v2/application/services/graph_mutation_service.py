@@ -1,5 +1,5 @@
 """
-Graph-affecting mutations: cascades, revision bump, delta envelope (workflow aggregate root).
+Graph-affecting mutations: cascades, revision bump, delta envelope (graph aggregate root).
 """
 
 from __future__ import annotations
@@ -16,37 +16,37 @@ from course_flow_v2.application.graph_mutation_delta import (
 from course_flow_v2.core.models import (
     Channel,
     Edge,
+    Graph,
     Node,
     Section,
-    Unit,
     Workflow,
 )
 
 MutationError = Literal["not_found", "forbidden", "bad_request"]
 
 
-def workflow_from_node(node: Node) -> Workflow | None:
+def graph_from_node(node: Node) -> Graph | None:
     """
-    Owning workflow for a node placed in a section or channel grid.
+    Owning graph for a node placed in a section or channel grid.
     """
     if node.section_id:
         if node.section is None:
-            node = Node.objects.select_related("section__workflow").get(pk=node.pk)
-        return node.section.workflow
+            node = Node.objects.select_related("section__graph").get(pk=node.pk)
+        return node.section.graph
 
     if node.channel_id:
         if node.channel is None:
-            node = Node.objects.select_related("channel__workflow").get(pk=node.pk)
-        return node.channel.workflow
+            node = Node.objects.select_related("channel__graph").get(pk=node.pk)
+        return node.channel.graph
 
     return None
 
 
-def _node_in_workflow(node: Node, workflow_pk: int) -> bool:
-    if node.section_id and node.section.workflow_id == workflow_pk:
+def _node_in_graph(node: Node, graph_pk: int) -> bool:
+    if node.section_id and node.section.graph_id == graph_pk:
         return True
 
-    if node.channel_id and node.channel.workflow_id == workflow_pk:
+    if node.channel_id and node.channel.graph_id == graph_pk:
         return True
 
     return False
@@ -58,7 +58,7 @@ def _node_payload(n: Node) -> dict:
         "section_uuid": n.section.uuid if n.section_id else None,
         "channel_uuid": n.channel.uuid if n.channel_id else None,
         "section_row": n.section_row,
-        "unit_uuid": n.unit.uuid if n.unit_id else None,
+        "workflow_uuid": n.workflow.uuid if n.workflow_id else None,
         "thread_uuid": n.thread.uuid if n.thread_id else None,
         "outcome_uuids": [o.uuid for o in n.outcomes.all()],
     }
@@ -75,20 +75,20 @@ def _edge_payload(e: Edge) -> dict:
     }
 
 
-def _bump_revision(wf: Workflow) -> None:
-    Workflow.objects.filter(pk=wf.pk).update(revision_id=F("revision_id") + 1)
+def _bump_revision(wf: Graph) -> None:
+    Graph.objects.filter(pk=wf.pk).update(revision_id=F("revision_id") + 1)
     wf.refresh_from_db(fields=["revision_id", "modified_on"])
 
 
-class WorkflowGraphMutationService:
-    def _lock_workflow(
+class GraphMutationService:
+    def _lock_graph(
         self,
-        workflow_uuid: UUID,
+        graph_uuid: UUID,
         user_id: int,
-    ) -> tuple[Workflow | None, MutationError | None]:
+    ) -> tuple[Graph | None, MutationError | None]:
         try:
-            wf = Workflow.objects.select_for_update().get(uuid=workflow_uuid)
-        except Workflow.DoesNotExist:
+            wf = Graph.objects.select_for_update().get(uuid=graph_uuid)
+        except Graph.DoesNotExist:
             return None, "not_found"
 
         if wf.owner_id != user_id:
@@ -105,35 +105,35 @@ class WorkflowGraphMutationService:
     ) -> tuple[dict | None, MutationError | None]:
         try:
             node = Node.objects.select_related(
-                "section__workflow",
-                "channel__workflow",
-                "unit",
+                "section__graph",
+                "channel__graph",
+                "workflow",
                 "thread",
             ).get(uuid=node_uuid)
         except Node.DoesNotExist:
             return None, "not_found"
 
-        wf = workflow_from_node(node)
+        wf = graph_from_node(node)
 
         if wf is None:
             return None, "bad_request"
 
         try:
-            wf_locked = Workflow.objects.select_for_update().get(pk=wf.pk)
-        except Workflow.DoesNotExist:
+            wf_locked = Graph.objects.select_for_update().get(pk=wf.pk)
+        except Graph.DoesNotExist:
             return None, "not_found"
 
         if wf_locked.owner_id != user_id:
             return None, "forbidden"
         try:
             node = (
-                Node.objects.select_related("section", "channel", "unit", "thread")
+                Node.objects.select_related("section", "channel", "workflow", "thread")
                 .get(uuid=node_uuid)
             )
         except Node.DoesNotExist:
             return None, "not_found"
 
-        if not _node_in_workflow(node, wf_locked.id):
+        if not _node_in_graph(node, wf_locked.id):
             return None, "not_found"
 
         builder = GraphMutationDeltaBuilder()
@@ -152,7 +152,7 @@ class WorkflowGraphMutationService:
         _bump_revision(wf_locked)
 
         env = builder.build_envelope(
-            workflow_uuid=wf_locked.uuid,
+            graph_uuid=wf_locked.uuid,
             revision_id=wf_locked.revision_id,
             triggered_by="delete_node",
             trigger_entity_id=str(node_uuid),
@@ -164,7 +164,7 @@ class WorkflowGraphMutationService:
     def create_edge(
         self,
         *,
-        workflow_uuid: UUID,
+        graph_uuid: UUID,
         user_id: int,
         source_node_uuid: UUID,
         target_node_uuid: UUID,
@@ -172,7 +172,7 @@ class WorkflowGraphMutationService:
         source_port: str = "",
         target_port: str = "",
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_workflow(workflow_uuid, user_id)
+        wf, err = self._lock_graph(graph_uuid, user_id)
 
         if err:
             return None, err
@@ -191,7 +191,7 @@ class WorkflowGraphMutationService:
         except Node.DoesNotExist:
             return None, "bad_request"
 
-        if not _node_in_workflow(sn, wf.id) or not _node_in_workflow(tn, wf.id):
+        if not _node_in_graph(sn, wf.id) or not _node_in_graph(tn, wf.id):
             return None, "bad_request"
 
         e = Edge.objects.create(
@@ -209,7 +209,7 @@ class WorkflowGraphMutationService:
         _bump_revision(wf)
 
         env = builder.build_envelope(
-            workflow_uuid=wf.uuid,
+            graph_uuid=wf.uuid,
             revision_id=wf.revision_id,
             triggered_by="create_edge",
             trigger_entity_id=str(e.id),
@@ -225,29 +225,29 @@ class WorkflowGraphMutationService:
     ) -> tuple[dict | None, MutationError | None]:
         try:
             e = Edge.objects.select_related(
-                "source_node__section__workflow",
-                "source_node__channel__workflow",
-                "target_node__section__workflow",
-                "target_node__channel__workflow",
+                "source_node__section__graph",
+                "source_node__channel__graph",
+                "target_node__section__graph",
+                "target_node__channel__graph",
             ).get(pk=edge_id)
         except Edge.DoesNotExist:
             return None, "not_found"
 
-        wf_s = workflow_from_node(e.source_node)
-        wf_t = workflow_from_node(e.target_node)
+        wf_s = graph_from_node(e.source_node)
+        wf_t = graph_from_node(e.target_node)
 
         if (
             wf_s is None
             or wf_t is None
             or wf_s.pk != wf_t.pk
-            or not _node_in_workflow(e.source_node, wf_s.id)
-            or not _node_in_workflow(e.target_node, wf_s.id)
+            or not _node_in_graph(e.source_node, wf_s.id)
+            or not _node_in_graph(e.target_node, wf_s.id)
         ):
             return None, "not_found"
 
         try:
-            wf_locked = Workflow.objects.select_for_update().get(pk=wf_s.pk)
-        except Workflow.DoesNotExist:
+            wf_locked = Graph.objects.select_for_update().get(pk=wf_s.pk)
+        except Graph.DoesNotExist:
             return None, "not_found"
 
         if wf_locked.owner_id != user_id:
@@ -264,7 +264,7 @@ class WorkflowGraphMutationService:
         except Edge.DoesNotExist:
             return None, "not_found"
 
-        if not _node_in_workflow(e.source_node, wf_locked.id) or not _node_in_workflow(
+        if not _node_in_graph(e.source_node, wf_locked.id) or not _node_in_graph(
             e.target_node,
             wf_locked.id,
         ):
@@ -279,7 +279,7 @@ class WorkflowGraphMutationService:
         _bump_revision(wf_locked)
 
         env = builder.build_envelope(
-            workflow_uuid=wf_locked.uuid,
+            graph_uuid=wf_locked.uuid,
             revision_id=wf_locked.revision_id,
             triggered_by="delete_edge",
             trigger_entity_id=eid_str,
@@ -290,14 +290,14 @@ class WorkflowGraphMutationService:
     def create_node(
         self,
         *,
-        workflow_uuid: UUID,
+        graph_uuid: UUID,
         user_id: int,
         section_uuid: UUID | None,
         channel_uuid: UUID | None,
         section_row: int | None,
-        unit_uuid: UUID | None,
+        workflow_uuid: UUID | None,
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_workflow(workflow_uuid, user_id)
+        wf, err = self._lock_graph(graph_uuid, user_id)
         if err:
             return None, err
 
@@ -308,7 +308,7 @@ class WorkflowGraphMutationService:
             try:
                 section = Section.objects.get(
                     uuid=section_uuid,
-                    workflow_id=wf.id,
+                    graph_id=wf.id,
                 )
             except Section.DoesNotExist:
                 return None, "bad_request"
@@ -317,17 +317,17 @@ class WorkflowGraphMutationService:
             try:
                 channel = Channel.objects.get(
                     uuid=channel_uuid,
-                    workflow_id=wf.id,
+                    graph_id=wf.id,
                 )
             except Channel.DoesNotExist:
                 return None, "bad_request"
 
-        unit = None
+        workflow = None
 
-        if unit_uuid is not None:
+        if workflow_uuid is not None:
             try:
-                unit = Unit.objects.get(uuid=unit_uuid, workflow_id=wf.id)
-            except Unit.DoesNotExist:
+                workflow = Workflow.objects.get(uuid=workflow_uuid, graph_id=wf.id)
+            except Workflow.DoesNotExist:
                 return None, "bad_request"
 
         if section is None and channel is None:
@@ -337,10 +337,10 @@ class WorkflowGraphMutationService:
             section=section,
             channel=channel,
             section_row=section_row,
-            unit=unit,
+            workflow=workflow,
         )
         n = (
-            Node.objects.select_related("section", "channel", "unit", "thread")
+            Node.objects.select_related("section", "channel", "workflow", "thread")
             .prefetch_related("outcomes")
             .get(pk=n.pk)
         )
@@ -351,7 +351,7 @@ class WorkflowGraphMutationService:
         _bump_revision(wf)
 
         env = builder.build_envelope(
-            workflow_uuid=wf.uuid,
+            graph_uuid=wf.uuid,
             revision_id=wf.revision_id,
             triggered_by="create_node",
             trigger_entity_id=str(n.uuid),
@@ -368,29 +368,29 @@ class WorkflowGraphMutationService:
     ) -> tuple[dict | None, MutationError | None]:
         try:
             n = Node.objects.select_related(
-                "section__workflow",
-                "channel__workflow",
-                "unit",
+                "section__graph",
+                "channel__graph",
+                "workflow",
                 "thread",
             ).get(uuid=node_uuid)
         except Node.DoesNotExist:
             return None, "not_found"
-        wf = workflow_from_node(n)
+        wf = graph_from_node(n)
         if wf is None:
             return None, "bad_request"
         try:
-            wf_locked = Workflow.objects.select_for_update().get(pk=wf.pk)
-        except Workflow.DoesNotExist:
+            wf_locked = Graph.objects.select_for_update().get(pk=wf.pk)
+        except Graph.DoesNotExist:
             return None, "not_found"
         if wf_locked.owner_id != user_id:
             return None, "forbidden"
         try:
             n = Node.objects.select_related(
-                "section", "channel", "unit", "thread"
+                "section", "channel", "workflow", "thread"
             ).get(uuid=node_uuid)
         except Node.DoesNotExist:
             return None, "not_found"
-        if not _node_in_workflow(n, wf_locked.id):
+        if not _node_in_graph(n, wf_locked.id):
             return None, "not_found"
 
         if "section_uuid" in patch:
@@ -399,7 +399,7 @@ class WorkflowGraphMutationService:
                 n.section = None
             else:
                 try:
-                    section = Section.objects.get(uuid=v, workflow_id=wf_locked.id)
+                    section = Section.objects.get(uuid=v, graph_id=wf_locked.id)
                 except Section.DoesNotExist:
                     return None, "bad_request"
                 n.section = section
@@ -410,28 +410,28 @@ class WorkflowGraphMutationService:
                 n.channel = None
             else:
                 try:
-                    channel = Channel.objects.get(uuid=v, workflow_id=wf_locked.id)
+                    channel = Channel.objects.get(uuid=v, graph_id=wf_locked.id)
                 except Channel.DoesNotExist:
                     return None, "bad_request"
                 n.channel = channel
 
-        if "unit_uuid" in patch:
-            v = patch["unit_uuid"]
+        if "workflow_uuid" in patch:
+            v = patch["workflow_uuid"]
             if v is None:
-                n.unit = None
+                n.workflow = None
             else:
                 try:
-                    unit = Unit.objects.get(uuid=v, workflow_id=wf_locked.id)
-                except Unit.DoesNotExist:
+                    workflow = Workflow.objects.get(uuid=v, graph_id=wf_locked.id)
+                except Workflow.DoesNotExist:
                     return None, "bad_request"
-                n.unit = unit
+                n.workflow = workflow
 
         if "section_row" in patch:
             n.section_row = patch["section_row"]
 
         n.save()
         n = (
-            Node.objects.select_related("section", "channel", "unit", "thread")
+            Node.objects.select_related("section", "channel", "workflow", "thread")
             .prefetch_related("outcomes")
             .get(pk=n.pk)
         )
@@ -443,7 +443,7 @@ class WorkflowGraphMutationService:
         _bump_revision(wf_locked)
 
         env = builder.build_envelope(
-            workflow_uuid=wf_locked.uuid,
+            graph_uuid=wf_locked.uuid,
             revision_id=wf_locked.revision_id,
             triggered_by="update_node",
             trigger_entity_id=str(node_uuid),

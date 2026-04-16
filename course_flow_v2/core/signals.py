@@ -15,7 +15,7 @@ Audit (Part A):
   are not deleted when a node is deleted—only join rows are.
 
 Ambiguity / follow-up:
-- Outcomes can orphan their threads when the outcome row is removed (e.g. workflow
+- Outcomes can orphan their threads when the outcome row is removed (e.g. graph
   cascade). Cleaning those threads is a separate schema/task.
 """
 
@@ -36,7 +36,7 @@ from course_flow_v2.core.models import (
     Section,
     TaskMeta,
     Thread,
-    Unit,
+    Workflow,
 )
 
 
@@ -93,17 +93,17 @@ def ensure_project_team_on_project_create(
         ProjectTeam.objects.get_or_create(project=instance)
 
 
-@receiver(post_save, sender=Unit)
-def ensure_unit_typed_meta_on_unit_create(
-    sender, instance: Unit, created: bool, **kwargs
+@receiver(post_save, sender=Workflow)
+def ensure_workflow_typed_meta_on_workflow_create(
+    sender, instance: Workflow, created: bool, **kwargs
 ) -> None:
     if not created:
         return
-    if instance.unit_type == Unit.UnitType.TASK:
-        TaskMeta.objects.get_or_create(unit=instance)
-    elif instance.unit_type == Unit.UnitType.PROGRAM:
-        ProgramMeta.objects.get_or_create(unit=instance)
-    elif instance.unit_type == Unit.UnitType.COURSE:
-        CourseMeta.objects.get_or_create(unit=instance)
-    elif instance.unit_type == Unit.UnitType.ACTIVITY:
-        ActivityMeta.objects.get_or_create(unit=instance)
+    if instance.workflow_type == Workflow.WorkflowType.TASK:
+        TaskMeta.objects.get_or_create(workflow=instance)
+    elif instance.workflow_type == Workflow.WorkflowType.PROGRAM:
+        ProgramMeta.objects.get_or_create(workflow=instance)
+    elif instance.workflow_type == Workflow.WorkflowType.COURSE:
+        CourseMeta.objects.get_or_create(workflow=instance)
+    elif instance.workflow_type == Workflow.WorkflowType.ACTIVITY:
+        ActivityMeta.objects.get_or_create(workflow=instance)

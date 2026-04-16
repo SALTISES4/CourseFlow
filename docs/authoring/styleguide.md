@@ -78,7 +78,7 @@ def example():
 
 ### Rule intent
 
-Blank lines inside functions are not decorative. They should mark a boundary between distinct units of thought.
+Blank lines inside functions are not decorative. They should mark a boundary between distinct workflows of thought.
 
 Use a blank line when:
 

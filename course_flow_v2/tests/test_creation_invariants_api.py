@@ -11,12 +11,12 @@ from course_flow_v2.core.auth import generate_raw_token, hash_token
 from course_flow_v2.core.models import (
     AuthToken,
     Channel,
+    Graph,
     Node,
     Outcome,
     Project,
     ProjectTeam,
     Section,
-    Unit,
     Workflow,
 )
 
@@ -69,7 +69,7 @@ def test_project_create_initializes_project_team(client: Client, user):
 
 
 @pytest.mark.django_db
-def test_project_detail_includes_workflow_unit_and_typed_meta(client: Client, user):
+def test_project_detail_includes_graph_workflow_and_typed_meta(client: Client, user):
     raw = _issue_token_for(user)
     create_project = client.post(
         "/api/project",
@@ -86,47 +86,47 @@ def test_project_detail_includes_workflow_unit_and_typed_meta(client: Client, us
     project_uuid = create_project.json()["uuid"]
     project = Project.objects.get(uuid=project_uuid)
 
-    create_workflow = client.post(
-        "/api/workflow",
+    create_graph = client.post(
+        "/api/graph",
         data={
             "projectId": project.id,
-            "workflowTitle": "W",
-            "unitTitle": "Task Unit",
-            "unitType": "task",
-            "unitDescription": "",
+            "graphTitle": "W",
+            "workflowTitle": "Task Workflow",
+            "workflowType": "task",
+            "workflowDescription": "",
         },
         content_type="application/json",
         **_auth_header(raw),
     )
-    assert create_workflow.status_code == 200, create_workflow.content
+    assert create_graph.status_code == 200, create_graph.content
 
     detail = client.get(f"/api/project/{project_uuid}", **_auth_header(raw))
     assert detail.status_code == 200, detail.content
     item = detail.json()["item"]
-    assert "workflows" in item
-    assert len(item["workflows"]) == 1
-    wf = item["workflows"][0]
-    assert wf["unit"]["unitType"] == "task"
-    assert wf["unit"]["meta"]["kind"] == "task_meta"
-    assert "context" in wf["unit"]["meta"]
+    assert "graphs" in item
+    assert len(item["graphs"]) == 1
+    wf = item["graphs"][0]
+    assert wf["workflow"]["workflowType"] == "task"
+    assert wf["workflow"]["meta"]["kind"] == "task_meta"
+    assert "context" in wf["workflow"]["meta"]
 
 
 @pytest.mark.django_db
-def test_create_invariants_auto_create_threads_and_unit_meta(user):
-    wf = Workflow.objects.create(owner=user, title="WF")
-    unit = Unit.objects.create(
-        workflow=wf,
-        title="Activity Unit",
+def test_create_invariants_auto_create_threads_and_workflow_meta(user):
+    wf = Graph.objects.create(owner=user, title="WF")
+    workflow = Workflow.objects.create(
+        graph=wf,
+        title="Activity Workflow",
         description="",
-        unit_type=Unit.UnitType.ACTIVITY,
+        workflow_type=Workflow.WorkflowType.ACTIVITY,
     )
-    unit.refresh_from_db()
-    assert hasattr(unit, "activity_meta")
+    workflow.refresh_from_db()
+    assert hasattr(workflow, "activity_meta")
 
-    channel = Channel.objects.create(workflow=wf, title="C", position=0)
-    section = Section.objects.create(workflow=wf, title="S", position=0)
+    channel = Channel.objects.create(graph=wf, title="C", position=0)
+    section = Section.objects.create(graph=wf, title="S", position=0)
     node = Node.objects.create(section=section, channel=channel, section_row=0)
-    outcome = Outcome.objects.create(workflow=wf)
+    outcome = Outcome.objects.create(graph=wf)
 
     assert channel.thread_id is not None
     assert section.thread_id is not None

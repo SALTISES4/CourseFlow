@@ -44,15 +44,15 @@ def _issue_token_for(user, *, expires_delta: timedelta = timedelta(hours=1)):
     return raw_token
 
 
-def _create_workflow(client: Client, raw_token: str) -> str:
+def _create_graph(client: Client, raw_token: str) -> str:
     response = client.post(
-        "/api/workflow",
+        "/api/graph",
         data={
             "projectId": None,
-            "workflowTitle": "Entity Test",
-            "unitTitle": "Root",
-            "unitType": "course",
-            "unitDescription": "",
+            "graphTitle": "Entity Test",
+            "workflowTitle": "Root",
+            "workflowType": "course",
+            "workflowDescription": "",
         },
         content_type="application/json",
         **_auth_header(raw_token),
@@ -62,13 +62,13 @@ def _create_workflow(client: Client, raw_token: str) -> str:
 
 
 @pytest.mark.django_db
-def test_channel_crud_and_workflow_collection(client: Client, user):
+def test_channel_crud_and_graph_collection(client: Client, user):
     raw = _issue_token_for(user)
-    workflow_uuid = _create_workflow(client, raw)
+    graph_uuid = _create_graph(client, raw)
 
     created = client.post(
         "/api/channel",
-        data={"workflowUuid": workflow_uuid, "title": "Channel A", "position": 2},
+        data={"graphUuid": graph_uuid, "title": "Channel A", "position": 2},
         content_type="application/json",
         **_auth_header(raw),
     )
@@ -78,7 +78,7 @@ def test_channel_crud_and_workflow_collection(client: Client, user):
     detail = client.get(f"/api/channel/{channel_uuid}", **_auth_header(raw))
     assert detail.status_code == 200
     assert detail.json()["item"]["uuid"] == channel_uuid
-    assert detail.json()["item"]["workflowUuid"] == workflow_uuid
+    assert detail.json()["item"]["graphUuid"] == graph_uuid
 
     updated = client.patch(
         f"/api/channel/{channel_uuid}",
@@ -90,7 +90,7 @@ def test_channel_crud_and_workflow_collection(client: Client, user):
     assert updated.json()["item"]["title"] == "Channel B"
     assert updated.json()["item"]["position"] == 7
 
-    listing = client.get(f"/api/workflow/{workflow_uuid}/channels", **_auth_header(raw))
+    listing = client.get(f"/api/graph/{graph_uuid}/channels", **_auth_header(raw))
     assert listing.status_code == 200
     assert listing.json()["meta"]["total"] == 1
     assert listing.json()["items"][0]["uuid"] == channel_uuid
@@ -108,10 +108,10 @@ def test_section_crud_allows_cross_owner_with_placeholder_permissions(
     client: Client, user, other_user
 ):
     raw_owner = _issue_token_for(user)
-    workflow_uuid = _create_workflow(client, raw_owner)
+    graph_uuid = _create_graph(client, raw_owner)
 
     created = client.post(
-        f"/api/workflow/{workflow_uuid}/sections",
+        f"/api/graph/{graph_uuid}/sections",
         data={"title": "Section A", "position": 0},
         content_type="application/json",
         **_auth_header(raw_owner),
@@ -125,7 +125,7 @@ def test_section_crud_allows_cross_owner_with_placeholder_permissions(
     assert forbidden_detail.status_code == 200
 
     forbidden_list = client.get(
-        f"/api/workflow/{workflow_uuid}/sections", **_auth_header(raw_other)
+        f"/api/graph/{graph_uuid}/sections", **_auth_header(raw_other)
     )
     assert forbidden_list.status_code == 200
 

@@ -2,8 +2,8 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AddProjectTeamMembersData, AddProjectTeamMembersResponses, CourseFlowV2ApiNinjaAppHealthData, CourseFlowV2ApiNinjaAppHealthResponses, CreateChannelData, CreateChannelResponses, CreateProjectData, CreateProjectResponses, CreateSectionData, CreateSectionResponses, CreateThreadCommentData, CreateThreadCommentResponses, CreateWorkflowData, CreateWorkflowEdgeData, CreateWorkflowEdgeResponses, CreateWorkflowNodeData, CreateWorkflowNodeResponses, CreateWorkflowResponses, CreateWorkflowSectionData, CreateWorkflowSectionResponses, DeleteAllThreadCommentsData, DeleteAllThreadCommentsResponses, DeleteChannelData, DeleteChannelResponses, DeleteEdgeData, DeleteEdgeResponses, DeleteNodeData, DeleteNodeResponses, DeleteOneNotificationData, DeleteOneNotificationResponses, DeleteProjectData, DeleteProjectResponses, DeleteProjectTeamMemberData, DeleteProjectTeamMemberResponses, DeleteSectionData, DeleteSectionResponses, DeleteThreadCommentData, DeleteThreadCommentResponses, DuplicateProjectPlaceholderData, DuplicateProjectPlaceholderResponses, GetChannelData, GetChannelResponses, GetEdgeData, GetEdgeResponses, GetMyNotificationSettingsData, GetMyNotificationSettingsResponses, GetMyProfileSettingsData, GetMyProfileSettingsResponses, GetNodeData, GetNodeResponses, GetProjectData, GetProjectGraphData, GetProjectGraphResponses, GetProjectResponses, GetSectionData, GetSectionResponses, GetWorkflowData, GetWorkflowGraphData, GetWorkflowGraphResponses, GetWorkflowResponses, ListMyNotificationsData, ListMyNotificationsResponses, ListProjectsData, ListProjectsResponses, ListProjectTeamData, ListProjectTeamResponses, ListThreadCommentsData, ListThreadCommentsResponses, ListUsersData, ListUsersResponses, ListWorkflowChannelsData, ListWorkflowChannelsResponses, ListWorkflowEdgesData, ListWorkflowEdgesResponses, ListWorkflowNodesData, ListWorkflowNodesResponses, ListWorkflowsData, ListWorkflowSectionsData, ListWorkflowSectionsResponses, ListWorkflowsResponses, LoginData, LoginResponses, LogoutData, LogoutResponses, MarkAllMyNotificationsAsReadData, MarkAllMyNotificationsAsReadResponses, MarkOneNotificationAsReadData, MarkOneNotificationAsReadResponses, MeData, MeResponses, PatchMyNotificationSettingsData, PatchMyNotificationSettingsResponses, PatchMyProfileSettingsData, PatchMyProfileSettingsResponses, PatchNodeData, PatchNodeResponses, RegisterData, RegisterResponses, SearchLibraryData, SearchLibraryResponses, UpdateChannelData, UpdateChannelResponses, UpdateProjectData, UpdateProjectResponses, UpdateProjectTeamMemberData, UpdateProjectTeamMemberResponses, UpdateSectionData, UpdateSectionResponses } from './types.gen';
-import { zAddProjectTeamMembersData, zAddProjectTeamMembersResponse, zCourseFlowV2ApiNinjaAppHealthData, zCourseFlowV2ApiNinjaAppHealthResponse, zCreateChannelData, zCreateChannelResponse, zCreateProjectData, zCreateProjectResponse, zCreateSectionData, zCreateSectionResponse, zCreateThreadCommentData, zCreateThreadCommentResponse, zCreateWorkflowData, zCreateWorkflowEdgeData, zCreateWorkflowEdgeResponse, zCreateWorkflowNodeData, zCreateWorkflowNodeResponse, zCreateWorkflowResponse, zCreateWorkflowSectionData, zCreateWorkflowSectionResponse, zDeleteAllThreadCommentsData, zDeleteAllThreadCommentsResponse, zDeleteChannelData, zDeleteChannelResponse, zDeleteEdgeData, zDeleteEdgeResponse, zDeleteNodeData, zDeleteNodeResponse, zDeleteOneNotificationData, zDeleteOneNotificationResponse, zDeleteProjectData, zDeleteProjectResponse, zDeleteProjectTeamMemberData, zDeleteProjectTeamMemberResponse, zDeleteSectionData, zDeleteSectionResponse, zDeleteThreadCommentData, zDeleteThreadCommentResponse, zDuplicateProjectPlaceholderData, zDuplicateProjectPlaceholderResponse, zGetChannelData, zGetChannelResponse, zGetEdgeData, zGetEdgeResponse, zGetMyNotificationSettingsData, zGetMyNotificationSettingsResponse, zGetMyProfileSettingsData, zGetMyProfileSettingsResponse, zGetNodeData, zGetNodeResponse, zGetProjectData, zGetProjectGraphData, zGetProjectGraphResponse, zGetProjectResponse, zGetSectionData, zGetSectionResponse, zGetWorkflowData, zGetWorkflowGraphData, zGetWorkflowGraphResponse, zGetWorkflowResponse, zListMyNotificationsData, zListMyNotificationsResponse, zListProjectsData, zListProjectsResponse, zListProjectTeamData, zListProjectTeamResponse, zListThreadCommentsData, zListThreadCommentsResponse, zListUsersData, zListUsersResponse, zListWorkflowChannelsData, zListWorkflowChannelsResponse, zListWorkflowEdgesData, zListWorkflowEdgesResponse, zListWorkflowNodesData, zListWorkflowNodesResponse, zListWorkflowsData, zListWorkflowSectionsData, zListWorkflowSectionsResponse, zListWorkflowsResponse, zLoginData, zLoginResponse, zLogoutData, zLogoutResponse, zMarkAllMyNotificationsAsReadData, zMarkAllMyNotificationsAsReadResponse, zMarkOneNotificationAsReadData, zMarkOneNotificationAsReadResponse, zMeData, zMeResponse, zPatchMyNotificationSettingsData, zPatchMyNotificationSettingsResponse, zPatchMyProfileSettingsData, zPatchMyProfileSettingsResponse, zPatchNodeData, zPatchNodeResponse, zRegisterData, zRegisterResponse, zSearchLibraryData, zSearchLibraryResponse, zUpdateChannelData, zUpdateChannelResponse, zUpdateProjectData, zUpdateProjectResponse, zUpdateProjectTeamMemberData, zUpdateProjectTeamMemberResponse, zUpdateSectionData, zUpdateSectionResponse } from './zod.gen';
+import type { AddProjectTeamMembersData, AddProjectTeamMembersResponses, CourseFlowV2ApiNinjaAppHealthData, CourseFlowV2ApiNinjaAppHealthResponses, CreateChannelData, CreateChannelResponses, CreateProjectData, CreateProjectResponses, CreateSectionData, CreateSectionResponses, CreateThreadCommentData, CreateThreadCommentResponses, CreateGraphData, CreateGraphEdgeData, CreateGraphEdgeResponses, CreateGraphNodeData, CreateGraphNodeResponses, CreateGraphResponses, CreateGraphSectionData, CreateGraphSectionResponses, DeleteAllThreadCommentsData, DeleteAllThreadCommentsResponses, DeleteChannelData, DeleteChannelResponses, DeleteEdgeData, DeleteEdgeResponses, DeleteNodeData, DeleteNodeResponses, DeleteOneNotificationData, DeleteOneNotificationResponses, DeleteProjectData, DeleteProjectResponses, DeleteProjectTeamMemberData, DeleteProjectTeamMemberResponses, DeleteSectionData, DeleteSectionResponses, DeleteThreadCommentData, DeleteThreadCommentResponses, DuplicateProjectPlaceholderData, DuplicateProjectPlaceholderResponses, GetChannelData, GetChannelResponses, GetEdgeData, GetEdgeResponses, GetMyNotificationSettingsData, GetMyNotificationSettingsResponses, GetMyProfileSettingsData, GetMyProfileSettingsResponses, GetNodeData, GetNodeResponses, GetProjectData, GetProjectGraphData, GetProjectGraphResponses, GetProjectResponses, GetSectionData, GetSectionResponses, GetGraphData, GetGraphViewData, GetGraphViewResponses, GetGraphResponses, ListMyNotificationsData, ListMyNotificationsResponses, ListProjectsData, ListProjectsResponses, ListProjectTeamData, ListProjectTeamResponses, ListThreadCommentsData, ListThreadCommentsResponses, ListUsersData, ListUsersResponses, ListGraphChannelsData, ListGraphChannelsResponses, ListGraphEdgesData, ListGraphEdgesResponses, ListGraphNodesData, ListGraphNodesResponses, ListGraphsData, ListGraphSectionsData, ListGraphSectionsResponses, ListGraphsResponses, LoginData, LoginResponses, LogoutData, LogoutResponses, MarkAllMyNotificationsAsReadData, MarkAllMyNotificationsAsReadResponses, MarkOneNotificationAsReadData, MarkOneNotificationAsReadResponses, MeData, MeResponses, PatchMyNotificationSettingsData, PatchMyNotificationSettingsResponses, PatchMyProfileSettingsData, PatchMyProfileSettingsResponses, PatchNodeData, PatchNodeResponses, RegisterData, RegisterResponses, SearchLibraryData, SearchLibraryResponses, UpdateChannelData, UpdateChannelResponses, UpdateProjectData, UpdateProjectResponses, UpdateProjectTeamMemberData, UpdateProjectTeamMemberResponses, UpdateSectionData, UpdateSectionResponses } from './types.gen';
+import { zAddProjectTeamMembersData, zAddProjectTeamMembersResponse, zCourseFlowV2ApiNinjaAppHealthData, zCourseFlowV2ApiNinjaAppHealthResponse, zCreateChannelData, zCreateChannelResponse, zCreateProjectData, zCreateProjectResponse, zCreateSectionData, zCreateSectionResponse, zCreateThreadCommentData, zCreateThreadCommentResponse, zCreateGraphData, zCreateGraphEdgeData, zCreateGraphEdgeResponse, zCreateGraphNodeData, zCreateGraphNodeResponse, zCreateGraphResponse, zCreateGraphSectionData, zCreateGraphSectionResponse, zDeleteAllThreadCommentsData, zDeleteAllThreadCommentsResponse, zDeleteChannelData, zDeleteChannelResponse, zDeleteEdgeData, zDeleteEdgeResponse, zDeleteNodeData, zDeleteNodeResponse, zDeleteOneNotificationData, zDeleteOneNotificationResponse, zDeleteProjectData, zDeleteProjectResponse, zDeleteProjectTeamMemberData, zDeleteProjectTeamMemberResponse, zDeleteSectionData, zDeleteSectionResponse, zDeleteThreadCommentData, zDeleteThreadCommentResponse, zDuplicateProjectPlaceholderData, zDuplicateProjectPlaceholderResponse, zGetChannelData, zGetChannelResponse, zGetEdgeData, zGetEdgeResponse, zGetMyNotificationSettingsData, zGetMyNotificationSettingsResponse, zGetMyProfileSettingsData, zGetMyProfileSettingsResponse, zGetNodeData, zGetNodeResponse, zGetProjectData, zGetProjectGraphData, zGetProjectGraphResponse, zGetProjectResponse, zGetSectionData, zGetSectionResponse, zGetGraphData, zGetGraphViewData, zGetGraphViewResponse, zGetGraphResponse, zListMyNotificationsData, zListMyNotificationsResponse, zListProjectsData, zListProjectsResponse, zListProjectTeamData, zListProjectTeamResponse, zListThreadCommentsData, zListThreadCommentsResponse, zListUsersData, zListUsersResponse, zListGraphChannelsData, zListGraphChannelsResponse, zListGraphEdgesData, zListGraphEdgesResponse, zListGraphNodesData, zListGraphNodesResponse, zListGraphsData, zListGraphSectionsData, zListGraphSectionsResponse, zListGraphsResponse, zLoginData, zLoginResponse, zLogoutData, zLogoutResponse, zMarkAllMyNotificationsAsReadData, zMarkAllMyNotificationsAsReadResponse, zMarkOneNotificationAsReadData, zMarkOneNotificationAsReadResponse, zMeData, zMeResponse, zPatchMyNotificationSettingsData, zPatchMyNotificationSettingsResponse, zPatchMyProfileSettingsData, zPatchMyProfileSettingsResponse, zPatchNodeData, zPatchNodeResponse, zRegisterData, zRegisterResponse, zSearchLibraryData, zSearchLibraryResponse, zUpdateChannelData, zUpdateChannelResponse, zUpdateProjectData, zUpdateProjectResponse, zUpdateProjectTeamMemberData, zUpdateProjectTeamMemberResponse, zUpdateSectionData, zUpdateSectionResponse } from './zod.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -169,24 +169,24 @@ export const updateProject = <ThrowOnError extends boolean = false>(options: Opt
 });
 
 /**
- * List Workflows
+ * List Graphs
  */
-export const listWorkflows = <ThrowOnError extends boolean = false>(options?: Options<ListWorkflowsData, ThrowOnError>) => (options?.client ?? client).get<ListWorkflowsResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await zListWorkflowsData.parseAsync(data),
-    responseValidator: async (data) => await zListWorkflowsResponse.parseAsync(data),
+export const listGraphs = <ThrowOnError extends boolean = false>(options?: Options<ListGraphsData, ThrowOnError>) => (options?.client ?? client).get<ListGraphsResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await zListGraphsData.parseAsync(data),
+    responseValidator: async (data) => await zListGraphsResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/workflow',
+    url: '/api/graph',
     ...options
 });
 
 /**
- * Create Workflow
+ * Create Graph
  */
-export const createWorkflow = <ThrowOnError extends boolean = false>(options: Options<CreateWorkflowData, ThrowOnError>) => (options.client ?? client).post<CreateWorkflowResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await zCreateWorkflowData.parseAsync(data),
-    responseValidator: async (data) => await zCreateWorkflowResponse.parseAsync(data),
+export const createGraph = <ThrowOnError extends boolean = false>(options: Options<CreateGraphData, ThrowOnError>) => (options.client ?? client).post<CreateGraphResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await zCreateGraphData.parseAsync(data),
+    responseValidator: async (data) => await zCreateGraphResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/workflow',
+    url: '/api/graph',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -195,57 +195,57 @@ export const createWorkflow = <ThrowOnError extends boolean = false>(options: Op
 });
 
 /**
- * Get Workflow Graph
+ * Get Graph Graph
  */
-export const getWorkflowGraph = <ThrowOnError extends boolean = false>(options: Options<GetWorkflowGraphData, ThrowOnError>) => (options.client ?? client).get<GetWorkflowGraphResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await zGetWorkflowGraphData.parseAsync(data),
-    responseValidator: async (data) => await zGetWorkflowGraphResponse.parseAsync(data),
+export const getGraphView = <ThrowOnError extends boolean = false>(options: Options<GetGraphViewData, ThrowOnError>) => (options.client ?? client).get<GetGraphViewResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await zGetGraphViewData.parseAsync(data),
+    responseValidator: async (data) => await zGetGraphViewResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/workflow/{uuid}/graph',
+    url: '/api/graph/{uuid}/view',
     ...options
 });
 
 /**
- * Get Workflow
+ * Get Graph
  */
-export const getWorkflow = <ThrowOnError extends boolean = false>(options: Options<GetWorkflowData, ThrowOnError>) => (options.client ?? client).get<GetWorkflowResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await zGetWorkflowData.parseAsync(data),
-    responseValidator: async (data) => await zGetWorkflowResponse.parseAsync(data),
+export const getGraph = <ThrowOnError extends boolean = false>(options: Options<GetGraphData, ThrowOnError>) => (options.client ?? client).get<GetGraphResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await zGetGraphData.parseAsync(data),
+    responseValidator: async (data) => await zGetGraphResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/workflow/{uuid}',
+    url: '/api/graph/{uuid}',
     ...options
 });
 
 /**
- * List Workflow Channels
+ * List Graph Channels
  */
-export const listWorkflowChannels = <ThrowOnError extends boolean = false>(options: Options<ListWorkflowChannelsData, ThrowOnError>) => (options.client ?? client).get<ListWorkflowChannelsResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await zListWorkflowChannelsData.parseAsync(data),
-    responseValidator: async (data) => await zListWorkflowChannelsResponse.parseAsync(data),
+export const listGraphChannels = <ThrowOnError extends boolean = false>(options: Options<ListGraphChannelsData, ThrowOnError>) => (options.client ?? client).get<ListGraphChannelsResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await zListGraphChannelsData.parseAsync(data),
+    responseValidator: async (data) => await zListGraphChannelsResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/workflow/{uuid}/channels',
+    url: '/api/graph/{uuid}/channels',
     ...options
 });
 
 /**
- * List Workflow Sections
+ * List Graph Sections
  */
-export const listWorkflowSections = <ThrowOnError extends boolean = false>(options: Options<ListWorkflowSectionsData, ThrowOnError>) => (options.client ?? client).get<ListWorkflowSectionsResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await zListWorkflowSectionsData.parseAsync(data),
-    responseValidator: async (data) => await zListWorkflowSectionsResponse.parseAsync(data),
+export const listGraphSections = <ThrowOnError extends boolean = false>(options: Options<ListGraphSectionsData, ThrowOnError>) => (options.client ?? client).get<ListGraphSectionsResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await zListGraphSectionsData.parseAsync(data),
+    responseValidator: async (data) => await zListGraphSectionsResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/workflow/{uuid}/sections',
+    url: '/api/graph/{uuid}/sections',
     ...options
 });
 
 /**
- * Create Workflow Section
+ * Create Graph Section
  */
-export const createWorkflowSection = <ThrowOnError extends boolean = false>(options: Options<CreateWorkflowSectionData, ThrowOnError>) => (options.client ?? client).post<CreateWorkflowSectionResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await zCreateWorkflowSectionData.parseAsync(data),
-    responseValidator: async (data) => await zCreateWorkflowSectionResponse.parseAsync(data),
+export const createGraphSection = <ThrowOnError extends boolean = false>(options: Options<CreateGraphSectionData, ThrowOnError>) => (options.client ?? client).post<CreateGraphSectionResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await zCreateGraphSectionData.parseAsync(data),
+    responseValidator: async (data) => await zCreateGraphSectionResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/workflow/{uuid}/sections',
+    url: '/api/graph/{uuid}/sections',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -254,24 +254,24 @@ export const createWorkflowSection = <ThrowOnError extends boolean = false>(opti
 });
 
 /**
- * List Workflow Nodes
+ * List Graph Nodes
  */
-export const listWorkflowNodes = <ThrowOnError extends boolean = false>(options: Options<ListWorkflowNodesData, ThrowOnError>) => (options.client ?? client).get<ListWorkflowNodesResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await zListWorkflowNodesData.parseAsync(data),
-    responseValidator: async (data) => await zListWorkflowNodesResponse.parseAsync(data),
+export const listGraphNodes = <ThrowOnError extends boolean = false>(options: Options<ListGraphNodesData, ThrowOnError>) => (options.client ?? client).get<ListGraphNodesResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await zListGraphNodesData.parseAsync(data),
+    responseValidator: async (data) => await zListGraphNodesResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/workflow/{uuid}/nodes',
+    url: '/api/graph/{uuid}/nodes',
     ...options
 });
 
 /**
- * Create Workflow Node
+ * Create Graph Node
  */
-export const createWorkflowNode = <ThrowOnError extends boolean = false>(options: Options<CreateWorkflowNodeData, ThrowOnError>) => (options.client ?? client).post<CreateWorkflowNodeResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await zCreateWorkflowNodeData.parseAsync(data),
-    responseValidator: async (data) => await zCreateWorkflowNodeResponse.parseAsync(data),
+export const createGraphNode = <ThrowOnError extends boolean = false>(options: Options<CreateGraphNodeData, ThrowOnError>) => (options.client ?? client).post<CreateGraphNodeResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await zCreateGraphNodeData.parseAsync(data),
+    responseValidator: async (data) => await zCreateGraphNodeResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/workflow/{uuid}/nodes',
+    url: '/api/graph/{uuid}/nodes',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -280,24 +280,24 @@ export const createWorkflowNode = <ThrowOnError extends boolean = false>(options
 });
 
 /**
- * List Workflow Edges
+ * List Graph Edges
  */
-export const listWorkflowEdges = <ThrowOnError extends boolean = false>(options: Options<ListWorkflowEdgesData, ThrowOnError>) => (options.client ?? client).get<ListWorkflowEdgesResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await zListWorkflowEdgesData.parseAsync(data),
-    responseValidator: async (data) => await zListWorkflowEdgesResponse.parseAsync(data),
+export const listGraphEdges = <ThrowOnError extends boolean = false>(options: Options<ListGraphEdgesData, ThrowOnError>) => (options.client ?? client).get<ListGraphEdgesResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await zListGraphEdgesData.parseAsync(data),
+    responseValidator: async (data) => await zListGraphEdgesResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/workflow/{uuid}/edges',
+    url: '/api/graph/{uuid}/edges',
     ...options
 });
 
 /**
- * Create Workflow Edge
+ * Create Graph Edge
  */
-export const createWorkflowEdge = <ThrowOnError extends boolean = false>(options: Options<CreateWorkflowEdgeData, ThrowOnError>) => (options.client ?? client).post<CreateWorkflowEdgeResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await zCreateWorkflowEdgeData.parseAsync(data),
-    responseValidator: async (data) => await zCreateWorkflowEdgeResponse.parseAsync(data),
+export const createGraphEdge = <ThrowOnError extends boolean = false>(options: Options<CreateGraphEdgeData, ThrowOnError>) => (options.client ?? client).post<CreateGraphEdgeResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await zCreateGraphEdgeData.parseAsync(data),
+    responseValidator: async (data) => await zCreateGraphEdgeResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/workflow/{uuid}/edges',
+    url: '/api/graph/{uuid}/edges',
     ...options,
     headers: {
         'Content-Type': 'application/json',

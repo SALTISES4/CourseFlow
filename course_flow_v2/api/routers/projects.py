@@ -80,7 +80,7 @@ def create_project(request, payload: ProjectCreateIn):
 
 
 @router.get(
-    "/{uuid}/graph",
+    "/{uuid}/view",
     response=ProjectGraphProjectionOut,
     auth=BearerAuth(),
     operation_id="getProjectGraph",

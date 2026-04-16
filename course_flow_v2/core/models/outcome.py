@@ -1,13 +1,13 @@
 from django.db import models
 
 from course_flow_v2.core.models.base import UUIDModel
+from course_flow_v2.core.models.graph import Graph
 from course_flow_v2.core.models.thread import Thread
-from course_flow_v2.core.models.workflow import Workflow
 
 
 class Outcome(UUIDModel):
-    workflow = models.ForeignKey(
-        Workflow,
+    graph = models.ForeignKey(
+        Graph,
         on_delete=models.CASCADE,
         related_name="outcomes",
     )

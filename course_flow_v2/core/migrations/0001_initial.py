@@ -93,7 +93,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='Unit',
+            name='Workflow',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('uuid', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
@@ -101,10 +101,10 @@ class Migration(migrations.Migration):
                 ('modified_on', models.DateTimeField(auto_now=True)),
                 ('title', models.CharField(blank=True, max_length=200)),
                 ('description', models.TextField(blank=True)),
-                ('unit_type', models.CharField(choices=[('program', 'Program'), ('course', 'Course'), ('activity', 'Activity'), ('task', 'Task')], max_length=32)),
+                ('workflow_type', models.CharField(choices=[('program', 'Program'), ('course', 'Course'), ('activity', 'Activity'), ('task', 'Task')], max_length=32)),
             ],
             options={
-                'db_table': 'cf2_unit',
+                'db_table': 'cf2_workflow',
             },
         ),
         migrations.CreateModel(
@@ -376,7 +376,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('context', models.CharField(blank=True, max_length=1024)),
-                ('unit', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='task_meta', to='cf2_core.unit')),
+                ('workflow', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='task_meta', to='cf2_core.workflow')),
             ],
             options={
                 'db_table': 'cf2_task_meta',
@@ -392,7 +392,7 @@ class Migration(migrations.Migration):
                 ('calculate_classification', models.TextField(blank=True)),
                 ('classification_general_time', models.DurationField(blank=True, null=True)),
                 ('classification_specific_time', models.DurationField(blank=True, null=True)),
-                ('unit', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='program_meta', to='cf2_core.unit')),
+                ('workflow', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='program_meta', to='cf2_core.workflow')),
             ],
             options={
                 'db_table': 'cf2_program_meta',
@@ -400,8 +400,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='node',
-            name='unit',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='nodes', to='cf2_core.unit'),
+            name='workflow',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='nodes', to='cf2_core.workflow'),
         ),
         migrations.CreateModel(
             name='CourseMeta',
@@ -409,7 +409,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('classification', models.CharField(blank=True, max_length=255)),
                 ('code', models.CharField(blank=True, max_length=255)),
-                ('unit', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='course_meta', to='cf2_core.unit')),
+                ('workflow', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='course_meta', to='cf2_core.workflow')),
             ],
             options={
                 'db_table': 'cf2_course_meta',
@@ -421,57 +421,57 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('context', models.CharField(blank=True, max_length=1024)),
                 ('classification', models.CharField(blank=True, max_length=255)),
-                ('unit', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='activity_meta', to='cf2_core.unit')),
+                ('workflow', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='activity_meta', to='cf2_core.workflow')),
             ],
             options={
                 'db_table': 'cf2_activity_meta',
             },
         ),
         migrations.CreateModel(
-            name='Workflow',
+            name='Graph',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('uuid', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
                 ('date_created', models.DateTimeField(auto_now_add=True)),
                 ('modified_on', models.DateTimeField(auto_now=True)),
                 ('title', models.CharField(max_length=200)),
-                ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='owned_workflows', to=settings.AUTH_USER_MODEL)),
-                ('project', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='workflows', to='cf2_core.project')),
+                ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='owned_graphs', to=settings.AUTH_USER_MODEL)),
+                ('project', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='graphs', to='cf2_core.project')),
             ],
             options={
-                'db_table': 'cf2_workflow',
+                'db_table': 'cf2_graph',
             },
         ),
         migrations.AddField(
-            model_name='unit',
-            name='workflow',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='unit', to='cf2_core.workflow'),
+            model_name='workflow',
+            name='graph',
+            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='workflow', to='cf2_core.graph'),
         ),
         migrations.AddField(
             model_name='section',
-            name='workflow',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sections', to='cf2_core.workflow'),
+            name='graph',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sections', to='cf2_core.graph'),
         ),
         migrations.AddField(
             model_name='outcome',
-            name='workflow',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='outcomes', to='cf2_core.workflow'),
+            name='graph',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='outcomes', to='cf2_core.graph'),
         ),
         migrations.CreateModel(
-            name='FavoriteWorkflow',
+            name='FavoriteGraph',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='favorite_workflows', to=settings.AUTH_USER_MODEL)),
-                ('workflow', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='favorite_links', to='cf2_core.workflow')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='favorite_graphs', to=settings.AUTH_USER_MODEL)),
+                ('graph', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='favorite_links', to='cf2_core.graph')),
             ],
             options={
-                'db_table': 'cf2_favorite_workflow',
+                'db_table': 'cf2_favorite_graph',
             },
         ),
         migrations.AddField(
             model_name='channel',
-            name='workflow',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='channels', to='cf2_core.workflow'),
+            name='graph',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='channels', to='cf2_core.graph'),
         ),
         migrations.AddConstraint(
             model_name='nodeoutcome',
@@ -506,7 +506,7 @@ class Migration(migrations.Migration):
             constraint=models.UniqueConstraint(fields=('node', 'tag'), name='cf2_node_tag_unique'),
         ),
         migrations.AddConstraint(
-            model_name='favoriteworkflow',
-            constraint=models.UniqueConstraint(fields=('user', 'workflow'), name='cf2_favorite_workflow_unique'),
+            model_name='favoritegraph',
+            constraint=models.UniqueConstraint(fields=('user', 'graph'), name='cf2_favorite_graph_unique'),
         ),
     ]

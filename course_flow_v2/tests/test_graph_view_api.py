@@ -8,13 +8,7 @@ from django.test import Client
 from django.utils import timezone
 
 from course_flow_v2.core.auth import generate_raw_token, hash_token
-from course_flow_v2.core.models import (
-    AuthToken,
-    Channel,
-    Node,
-    Section,
-    Workflow,
-)
+from course_flow_v2.core.models import AuthToken, Channel, Graph, Node, Section
 
 
 @pytest.fixture
@@ -50,15 +44,15 @@ def _issue_token_for(user, *, expires_delta: timedelta = timedelta(hours=1)):
     return raw_token
 
 
-def _create_workflow(client: Client, raw_token: str) -> str:
+def _create_graph(client: Client, raw_token: str) -> str:
     response = client.post(
-        "/api/workflow",
+        "/api/graph",
         data={
             "projectId": None,
-            "workflowTitle": "Graph Test",
-            "unitTitle": "Root",
-            "unitType": "course",
-            "unitDescription": "",
+            "graphTitle": "Graph Test",
+            "workflowTitle": "Root",
+            "workflowType": "course",
+            "workflowDescription": "",
         },
         content_type="application/json",
         **_auth_header(raw_token),
@@ -68,19 +62,19 @@ def _create_workflow(client: Client, raw_token: str) -> str:
 
 
 @pytest.mark.django_db
-def test_workflow_graph_top_level_shape_and_flat_collections(client: Client, user):
+def test_graph_view_top_level_shape_and_flat_collections(client: Client, user):
     raw_token = _issue_token_for(user)
-    wf_uuid = _create_workflow(client, raw_token)
+    wf_uuid = _create_graph(client, raw_token)
 
     response = client.get(
-        f"/api/workflow/{wf_uuid}/graph",
+        f"/api/graph/{wf_uuid}/view",
         **_auth_header(raw_token),
     )
     assert response.status_code == 200
     body = response.json()
 
     assert set(body.keys()) == {
-        "workflow",
+        "graph",
         "channels",
         "sections",
         "nodes",
@@ -93,35 +87,35 @@ def test_workflow_graph_top_level_shape_and_flat_collections(client: Client, use
     assert isinstance(body["edges"], list)
     assert isinstance(body["threadCommentCounts"], list)
 
-    wf = body["workflow"]
+    wf = body["graph"]
     assert wf["uuid"] == str(wf_uuid)
     assert wf["title"] == "Graph Test"
     assert wf["revisionId"] == 0
-    assert "rootUnitUuid" in wf
-    assert "rootUnitType" in wf
+    assert "rootWorkflowUuid" in wf
+    assert "rootWorkflowType" in wf
 
 
 @pytest.mark.django_db
-def test_workflow_graph_uses_uuid_references_not_nested_entities(client: Client, user):
+def test_graph_view_uses_uuid_references_not_nested_entities(client: Client, user):
     raw_token = _issue_token_for(user)
-    wf_uuid = _create_workflow(client, raw_token)
+    wf_uuid = _create_graph(client, raw_token)
 
     body = client.get(
-        f"/api/workflow/{wf_uuid}/graph",
+        f"/api/graph/{wf_uuid}/view",
         **_auth_header(raw_token),
     ).json()
 
     for ch in body["channels"]:
         assert isinstance(ch, dict)
         assert "uuid" in ch
-        assert "workflowUuid" in ch
-        assert ch["workflowUuid"] == str(wf_uuid)
+        assert "graphUuid" in ch
+        assert ch["graphUuid"] == str(wf_uuid)
         assert "threadUuid" in ch
 
     for node in body["nodes"]:
         assert isinstance(node, dict)
         assert "uuid" in node
-        for key in ("sectionUuid", "channelUuid", "sectionRow", "unitUuid", "threadUuid"):
+        for key in ("sectionUuid", "channelUuid", "sectionRow", "workflowUuid", "threadUuid"):
             assert key in node
         assert "outcomeUuids" in node
         assert isinstance(node["outcomeUuids"], list)
@@ -132,25 +126,25 @@ def test_workflow_graph_uses_uuid_references_not_nested_entities(client: Client,
 
 
 @pytest.mark.django_db
-def test_workflow_graph_requires_auth(client: Client, user):
+def test_graph_view_requires_auth(client: Client, user):
     raw_token = _issue_token_for(user)
-    wf_uuid = _create_workflow(client, raw_token)
+    wf_uuid = _create_graph(client, raw_token)
 
-    response = client.get(f"/api/workflow/{wf_uuid}/graph")
+    response = client.get(f"/api/graph/{wf_uuid}/view")
     assert response.status_code == 401
 
 
 @pytest.mark.django_db
-def test_workflow_graph_node_includes_section_row(client: Client, user):
+def test_graph_view_node_includes_section_row(client: Client, user):
     raw_token = _issue_token_for(user)
-    wf_uuid = _create_workflow(client, raw_token)
-    wf = Workflow.objects.get(uuid=wf_uuid)
-    channel = Channel.objects.create(workflow=wf, title="Col A", position=0)
-    section = Section.objects.create(workflow=wf, title="Grid 1", position=0)
+    wf_uuid = _create_graph(client, raw_token)
+    wf = Graph.objects.get(uuid=wf_uuid)
+    channel = Channel.objects.create(graph=wf, title="Col A", position=0)
+    section = Section.objects.create(graph=wf, title="Grid 1", position=0)
     Node.objects.create(section=section, channel=channel, section_row=4)
 
     body = client.get(
-        f"/api/workflow/{wf_uuid}/graph",
+        f"/api/graph/{wf_uuid}/view",
         **_auth_header(raw_token),
     ).json()
     assert len(body["nodes"]) == 1
@@ -161,15 +155,15 @@ def test_workflow_graph_node_includes_section_row(client: Client, user):
 
 
 @pytest.mark.django_db
-def test_workflow_graph_allows_non_owner_with_placeholder_permissions(
+def test_graph_view_allows_non_owner_with_placeholder_permissions(
     client: Client, user, other_user
 ):
     raw_owner = _issue_token_for(user)
-    wf_uuid = _create_workflow(client, raw_owner)
+    wf_uuid = _create_graph(client, raw_owner)
 
     raw_other = _issue_token_for(other_user)
     response = client.get(
-        f"/api/workflow/{wf_uuid}/graph",
+        f"/api/graph/{wf_uuid}/view",
         **_auth_header(raw_other),
     )
     assert response.status_code == 200

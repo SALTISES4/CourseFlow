@@ -1,4 +1,4 @@
-"""Canonical delta envelope for workflow graph mutations."""
+"""Canonical delta envelope for graph mutations."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ class GraphNodeMutationOut(CamelSchema):
     section_uuid: UUID | None = None
     channel_uuid: UUID | None = None
     section_row: int | None = None
-    unit_uuid: UUID | None = None
+    workflow_uuid: UUID | None = None
     thread_uuid: UUID | None = None
     outcome_uuids: list[UUID] = Field(default_factory=list)
 
@@ -68,7 +68,7 @@ class GraphMutationMetaOut(CamelSchema):
 
 
 class GraphMutationEnvelopeOut(CamelSchema):
-    workflow_id: UUID
+    graph_id: UUID
     revision_id: int
     changes: GraphMutationChangesOut
     meta: GraphMutationMetaOut
@@ -78,7 +78,7 @@ class GraphNodeCreateIn(CamelSchema):
     section_uuid: UUID | None = None
     channel_uuid: UUID | None = None
     section_row: int | None = None
-    unit_uuid: UUID | None = None
+    workflow_uuid: UUID | None = None
 
 
 class GraphNodePatchIn(CamelSchema):
@@ -87,7 +87,7 @@ class GraphNodePatchIn(CamelSchema):
     section_uuid: UUID | None = None
     channel_uuid: UUID | None = None
     section_row: int | None = None
-    unit_uuid: UUID | None = None
+    workflow_uuid: UUID | None = None
 
 
 class GraphEdgeCreateIn(CamelSchema):

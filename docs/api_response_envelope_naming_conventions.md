@@ -4,13 +4,13 @@ This document records naming decisions for headless / OpenAPI-facing contracts.
 
 ## Public resource identity
 
-- **UUID** is the canonical public identifier for domain entities that have one (project, workflow, node, user, etc.).
+- **UUID** is the canonical public identifier for domain entities that have one (project, graph, node, user, etc.).
 - **Do not** expose integer database primary keys (`id`) on those JSON response models unless there is a specific, documented exception.
 - **Edges** have no UUID column; the public edge key remains the integer primary key exposed as `id` in graph payloads (and as `edgeId` in client code where disambiguation helps).
 
 ## Routes
 
-- Path segments use explicit names (`:uuid`, `:nodeUuid`, `:workflowUuid`, `:edgeId`) matching `generatePath` parameter objects in clients.
+- Path segments use explicit names (`:uuid`, `:nodeUuid`, `:graphUuid`, `:edgeId`) matching `generatePath` parameter objects in clients.
 
 ## Paginated collections
 

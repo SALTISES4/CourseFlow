@@ -12,9 +12,9 @@ from course_flow_v2.core.auth import generate_raw_token, hash_token
 from course_flow_v2.core.models import (
     AuthToken,
     Comment,
+    Graph,
     Section,
     Thread,
-    Unit,
     Workflow,
 )
 
@@ -52,16 +52,16 @@ def _issue_token_for(user, *, expires_delta: timedelta = timedelta(hours=1)):
     return raw_token
 
 
-def _workflow_with_section_thread(user):
-    wf = Workflow.objects.create(owner=user, title="WF", project_id=None)
-    Unit.objects.create(
-        workflow=wf,
+def _graph_with_section_thread(user):
+    wf = Graph.objects.create(owner=user, title="WF", project_id=None)
+    Workflow.objects.create(
+        graph=wf,
         title="",
         description="",
-        unit_type=Unit.UnitType.COURSE,
+        workflow_type=Workflow.WorkflowType.COURSE,
     )
     thread = Thread.objects.create()
-    Section.objects.create(workflow=wf, title="S1", position=0, thread=thread)
+    Section.objects.create(graph=wf, title="S1", position=0, thread=thread)
     Comment.objects.create(thread=thread, owner=user, body="First comment")
     return wf, thread
 
@@ -69,7 +69,7 @@ def _workflow_with_section_thread(user):
 @pytest.mark.django_db
 def test_list_thread_comments_returns_flat_comment_rows(client: Client, user):
     raw_token = _issue_token_for(user)
-    _, thread = _workflow_with_section_thread(user)
+    _, thread = _graph_with_section_thread(user)
 
     response = client.get(
         f"/api/thread/{thread.uuid}/comments",
@@ -93,7 +93,7 @@ def test_list_thread_comments_returns_flat_comment_rows(client: Client, user):
 
 @pytest.mark.django_db
 def test_list_thread_comments_requires_auth(client: Client, user):
-    _, thread = _workflow_with_section_thread(user)
+    _, thread = _graph_with_section_thread(user)
     response = client.get(f"/api/thread/{thread.uuid}/comments")
     assert response.status_code == 401
 
@@ -101,7 +101,7 @@ def test_list_thread_comments_requires_auth(client: Client, user):
 @pytest.mark.django_db
 def test_list_thread_comments_forbidden_for_non_owner(client: Client, user, other_user):
     raw_other = _issue_token_for(other_user)
-    _, thread = _workflow_with_section_thread(user)
+    _, thread = _graph_with_section_thread(user)
 
     response = client.get(
         f"/api/thread/{thread.uuid}/comments",
@@ -121,7 +121,7 @@ def test_list_thread_comments_unknown_thread(client: Client, user):
 
 
 @pytest.mark.django_db
-def test_orphan_thread_without_workflow_context_returns_404(client: Client, user):
+def test_orphan_thread_without_graph_context_returns_404(client: Client, user):
     raw_token = _issue_token_for(user)
     orphan = Thread.objects.create()
     response = client.get(
@@ -134,7 +134,7 @@ def test_orphan_thread_without_workflow_context_returns_404(client: Client, user
 @pytest.mark.django_db
 def test_create_thread_comment_and_list_includes_it(client: Client, user):
     raw_token = _issue_token_for(user)
-    _, thread = _workflow_with_section_thread(user)
+    _, thread = _graph_with_section_thread(user)
 
     create = client.post(
         f"/api/thread/{thread.uuid}/comments",
@@ -160,7 +160,7 @@ def test_create_thread_comment_and_list_includes_it(client: Client, user):
 @pytest.mark.django_db
 def test_delete_one_thread_comment(client: Client, user):
     raw_token = _issue_token_for(user)
-    _, thread = _workflow_with_section_thread(user)
+    _, thread = _graph_with_section_thread(user)
     listed = client.get(
         f"/api/thread/{thread.uuid}/comments",
         **_auth_header(raw_token),
@@ -184,7 +184,7 @@ def test_delete_one_thread_comment(client: Client, user):
 @pytest.mark.django_db
 def test_delete_all_thread_comments(client: Client, user):
     raw_token = _issue_token_for(user)
-    _, thread = _workflow_with_section_thread(user)
+    _, thread = _graph_with_section_thread(user)
     client.post(
         f"/api/thread/{thread.uuid}/comments",
         data={"body": "Second"},
@@ -213,8 +213,8 @@ def test_delete_comment_fails_when_comment_belongs_to_other_thread(
     client: Client, user
 ):
     raw_token = _issue_token_for(user)
-    _, thread_a = _workflow_with_section_thread(user)
-    _, thread_b = _workflow_with_section_thread(user)
+    _, thread_a = _graph_with_section_thread(user)
+    _, thread_b = _graph_with_section_thread(user)
 
     listed_b = client.get(
         f"/api/thread/{thread_b.uuid}/comments",
@@ -232,7 +232,7 @@ def test_delete_comment_fails_when_comment_belongs_to_other_thread(
 @pytest.mark.django_db
 def test_create_thread_comment_rejects_empty_body(client: Client, user):
     raw_token = _issue_token_for(user)
-    _, thread = _workflow_with_section_thread(user)
+    _, thread = _graph_with_section_thread(user)
     response = client.post(
         f"/api/thread/{thread.uuid}/comments",
         data={"body": "   "},

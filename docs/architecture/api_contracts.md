@@ -77,27 +77,27 @@ Place command/query/result objects near the use case or in a clearly scoped appl
 
 Use explicit names such as:
 
-- `CreateWorkflowRequest`
-- `UpdateWorkflowRequest`
-- `WorkflowResponse`
-- `WorkflowListItemResponse`
-- `CreateWorkflowCommand`
-- `WorkflowResult`
+- `CreateGraphRequest`
+- `UpdateGraphRequest`
+- `GraphResponse`
+- `GraphListItemResponse`
+- `CreateGraphCommand`
+- `GraphResult`
 
 ## API Endpoint Pattern
 
 Recommended endpoint flow:
 
 ```python
-@router.post("/workflows", response=WorkflowResponse)
-def create_workflow(request, payload: CreateWorkflowRequest):
-    command = CreateWorkflowCommand(
+@router.post("/graphs", response=GraphResponse)
+def create_graph(request, payload: CreateGraphRequest):
+    command = CreateGraphCommand(
         title=payload.title,
         project_id=payload.project_id,
         actor_id=request.user.id,
     )
-    result = workflow_service.create_workflow(command)
-    return WorkflowResponse.model_validate(result)
+    result = graph_service.create_graph(command)
+    return GraphResponse.model_validate(result)
 ```
 
 ## Rules
@@ -124,7 +124,7 @@ Business validation belongs in application/domain layers.
 
 Examples:
 
-- whether a workflow can be created under a given project
+- whether a graph can be created under a given project
 - whether a node transition is valid
 - whether the actor has permission to perform a domain action
 

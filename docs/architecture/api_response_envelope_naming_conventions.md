@@ -152,7 +152,7 @@ type ListProjectsResp = {
 Use `items` for canonical collection endpoints such as:
 
 * `GET /project`
-* `GET /workflow`
+* `GET /graph`
 * `GET /project/:uuid/nodes`
 
 when the endpoint is returning one collection of one resource type.

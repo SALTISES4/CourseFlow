@@ -1,4 +1,4 @@
-"""Persist workflow graph: sections, channels, nodes, edges, light metadata."""
+"""Persist graph graph: sections, channels, nodes, edges, light metadata."""
 
 from __future__ import annotations
 
@@ -6,46 +6,46 @@ from course_flow_v2.core.models import (
     Channel,
     Comment,
     Edge,
+    Graph,
     Node,
     Outcome,
     Section,
     Thread,
-    Unit,
     Workflow,
 )
 from course_flow_v2.dev_seed.constants import DEV_SEED_TAG_LABEL_PREFIX
-from course_flow_v2.dev_seed.rng import SeededRNG
-from course_flow_v2.dev_seed.workflow_shape import (
-    WorkflowLayoutPlan,
-    WorkflowShapeParams,
+from course_flow_v2.dev_seed.graph_shape import (
+    GraphLayoutPlan,
+    GraphShapeParams,
     generate_edge_pairs,
-    generate_workflow_layout,
+    generate_graph_layout,
 )
+from course_flow_v2.dev_seed.rng import SeededRNG
 
 
 def _thread() -> Thread:
     return Thread.objects.create()
 
 
-def build_unit_for_workflow(
-    workflow: Workflow,
+def build_workflow_for_graph(
+    graph: Graph,
     *,
     fake,
     rng: SeededRNG,
-) -> Unit:
+) -> Workflow:
     root_type = rng.choice(
-        [Unit.UnitType.PROGRAM, Unit.UnitType.COURSE],
+        [Workflow.WorkflowType.PROGRAM, Workflow.WorkflowType.COURSE],
     )
-    return Unit.objects.create(
-        workflow=workflow,
+    return Workflow.objects.create(
+        graph=graph,
         title=fake.sentence(nb_words=4).rstrip("."),
         description=fake.text(max_nb_chars=200),
-        unit_type=root_type,
+        workflow_type=root_type,
     )
 
 
 def build_sections_and_channels(
-    workflow: Workflow,
+    graph: Graph,
     *,
     fake,
     rng: SeededRNG,
@@ -57,7 +57,7 @@ def build_sections_and_channels(
         th = _thread()
         sections.append(
             Section.objects.create(
-                workflow=workflow,
+                graph=graph,
                 title=fake.sentence(nb_words=3).rstrip("."),
                 position=i,
                 thread=th,
@@ -69,7 +69,7 @@ def build_sections_and_channels(
         th = _thread()
         channels.append(
             Channel.objects.create(
-                workflow=workflow,
+                graph=graph,
                 title=fake.word().title() + " lane",
                 position=j,
                 thread=th,
@@ -81,7 +81,7 @@ def build_sections_and_channels(
 def build_nodes_from_layout(
     sections: list[Section],
     channels: list[Channel],
-    layout: WorkflowLayoutPlan,
+    layout: GraphLayoutPlan,
 ) -> list[Node]:
     """Create nodes in the same global order as ``iter_layout_node_meta``."""
     nodes: list[Node] = []
@@ -118,7 +118,7 @@ def persist_edges_from_pairs(
 
 
 def build_outcomes(
-    workflow: Workflow,
+    graph: Graph,
     nodes: list[Node],
     *,
     rng: SeededRNG,
@@ -132,7 +132,7 @@ def build_outcomes(
     chosen = nodes[:take]
     for _ in chosen:
         th = _thread()
-        o = Outcome.objects.create(workflow=workflow, thread=th)
+        o = Outcome.objects.create(graph=graph, thread=th)
         outcomes.append(o)
 
     for node, out in zip(chosen, outcomes, strict=True):
@@ -141,17 +141,17 @@ def build_outcomes(
     return outcomes
 
 
-def generate_workflow_shape(
+def generate_graph_shape(
     rng: SeededRNG,
-    shape: WorkflowShapeParams,
-) -> tuple[WorkflowLayoutPlan, list[tuple[int, int]]]:
+    shape: GraphShapeParams,
+) -> tuple[GraphLayoutPlan, list[tuple[int, int]]]:
     """
-    Deterministic layout + edge list for one workflow.
+    Deterministic layout + edge list for one graph.
 
     Returns the layout plan and global edge index pairs (into the node list
     produced from the layout).
     """
-    layout = generate_workflow_layout(rng, shape)
+    layout = generate_graph_layout(rng, shape)
     pairs = generate_edge_pairs(
         rng,
         layout,

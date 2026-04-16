@@ -7,19 +7,19 @@ It is intentionally high-level and should be refined only from ratified model de
 ## Core Ownership
 
 - a user owns many projects
-- a user owns many workflows
-- a project contains many workflows
+- a user owns many graphs
+- a project contains many graphs
 
 ## Project Classification
 
 - a project may be associated with many disciplines
 - a discipline may classify many projects
 
-## Workflow Structure
+## Graph Structure
 
-- a workflow contains many sections
-- a workflow has one unit
-- a workflow may contain many channels
+- a graph contains many sections
+- a graph has one workflow
+- a graph may contain many channels
 
 ## Section / Channel / Node
 
@@ -30,11 +30,11 @@ It is intentionally high-level and should be refined only from ratified model de
 
 - a node may connect to many outcomes
 - a node may have many edges
-- a node may be associated to a unit where that relation is defined by the canonical model
+- a node may be associated to a workflow where that relation is defined by the canonical model
 
 ## Outcome Structure
 
-- an outcome belongs to a workflow
+- an outcome belongs to a graph
 - an outcome has one thread
 - an outcome may link to other outcomes where that self-relation is defined by the canonical model
 
@@ -43,7 +43,7 @@ It is intentionally high-level and should be refined only from ratified model de
 - comments are owned by users
 - notifications belong to users
 - favorite projects belong to users
-- favorite workflows belong to users
+- favorite graphs belong to users
 - project-team membership links users into projects where that join model applies
 
 ## Current Documentation Rule

@@ -1,4 +1,4 @@
-# ADR Companion: Backend Contract for Workflow Graph State
+# ADR Companion: Backend Contract for Graph Graph State
 
 ## Status
 
@@ -6,7 +6,7 @@ Proposed
 
 ## Purpose
 
-This document defines the backend contract required by the frontend workflow graph state rewrite.
+This document defines the backend contract required by the frontend graph graph state rewrite.
 
 Its purpose is to make the frontend migration executable against a stable and explicit API contract rather than informal assumptions.
 
@@ -28,12 +28,12 @@ This contract is HTTP-first and collaboration-ready, but it does not yet define 
 
 ### 1.1 In Scope
 
-This contract applies to the workflow graph editor domain, including:
+This contract applies to the graph graph editor domain, including:
 
-- workflow graph resource loading
+- graph graph resource loading
 - explicit graph mutation operations
 - mutation responses as canonical deltas
-- workflow revision handling
+- graph revision handling
 - repair and refetch behavior
 
 ### 1.2 Out of Scope
@@ -67,7 +67,7 @@ The backend **MUST** be responsible for:
 - applying domain rules
 - determining cascades and side effects
 - normalizing resulting state
-- incrementing workflow revision
+- incrementing graph revision
 - returning canonical mutation deltas
 
 The frontend **MUST NOT** be required to authoritatively derive graph mutation consequences.
@@ -102,9 +102,9 @@ Mutation responses **MUST NOT** contain UI-imperative instructions such as:
 
 The frontend **MUST** map backend deltas into client state.
 
-### 3.4 Workflow Revision
+### 3.4 Graph Revision
 
-Every successful mutation response **MUST** include a workflow revision/version.
+Every successful mutation response **MUST** include a graph revision/version.
 
 Revision exists to support:
 
@@ -124,9 +124,9 @@ These boundaries **SHOULD** remain stable enough for the frontend to bootstrap t
 
 ### 4.1 Expected Read Resources
 
-At minimum, the frontend expects read access to the following workflow graph resources:
+At minimum, the frontend expects read access to the following graph graph resources:
 
-- workflow metadata
+- graph metadata
 - sections
 - channels
 - nodes
@@ -143,7 +143,7 @@ Read endpoints **MUST** return canonical entities, not frontend action streams.
 
 #### Idempotent reads
 
-Repeated reads for the same workflow/resource **MUST** be safe and **MUST** support replacement of canonical client state.
+Repeated reads for the same graph/resource **MUST** be safe and **MUST** support replacement of canonical client state.
 
 #### Independent fetchability
 
@@ -151,7 +151,7 @@ The frontend **MAY** request graph resources independently and in parallel.
 
 #### Revision context
 
-Read payloads **SHOULD** include workflow revision where practical.
+Read payloads **SHOULD** include graph revision where practical.
 
 ---
 
@@ -159,24 +159,24 @@ Read payloads **SHOULD** include workflow revision where practical.
 
 These endpoint shapes are conceptual. URI naming **MAY** change, but the payload pattern **SHOULD** remain stable.
 
-### 5.1 Workflow Metadata
+### 5.1 Graph Metadata
 
 **Endpoint**
 
-`GET /workflows/{workflowId}`
+`GET /graphs/{graphId}`
 
 **Purpose**
 
-Returns workflow-level metadata required to bootstrap the editor shell.
+Returns graph-level metadata required to bootstrap the editor shell.
 
 **Response**
 
 ```json
 {
-  "workflow": {
+  "graph": {
     "id": "wf_123",
     "title": "Semester Planning",
-    "unitId": "unit_1",
+    "workflowId": "workflow_1",
     "revision": 17,
     "updatedAt": "2026-03-30T12:00:00Z"
   }
@@ -186,24 +186,24 @@ Returns workflow-level metadata required to bootstrap the editor shell.
 **Requirements**
 
 * The response **SHOULD** include `revision`.
-* The `workflow` object **MUST** be canonical.
+* The `graph` object **MUST** be canonical.
 
 ### 5.2 Sections
 
 **Endpoint**
 
-`GET /workflows/{workflowId}/sections`
+`GET /graphs/{graphId}/sections`
 
 **Response**
 
 ```json
 {
-  "workflowId": "wf_123",
+  "graphId": "wf_123",
   "revision": 17,
   "sections": [
     {
       "id": "sec_1",
-      "workflowId": "wf_123",
+      "graphId": "wf_123",
       "title": "Term 1",
       "position": 1
     }
@@ -214,25 +214,25 @@ Returns workflow-level metadata required to bootstrap the editor shell.
 **Requirements**
 
 * `sections` **MUST** contain canonical section entities.
-* `workflowId` **MUST** identify graph scope.
+* `graphId` **MUST** identify graph scope.
 * `revision` **SHOULD** be included.
 
 ### 5.3 Channels
 
 **Endpoint**
 
-`GET /workflows/{workflowId}/channels`
+`GET /graphs/{graphId}/channels`
 
 **Response**
 
 ```json
 {
-  "workflowId": "wf_123",
+  "graphId": "wf_123",
   "revision": 17,
   "channels": [
     {
       "id": "ch_1",
-      "workflowId": "wf_123",
+      "graphId": "wf_123",
       "sectionId": "sec_1",
       "title": "Assessment",
       "position": 1
@@ -244,27 +244,27 @@ Returns workflow-level metadata required to bootstrap the editor shell.
 **Requirements**
 
 * `channels` **MUST** contain canonical channel entities.
-* `workflowId` **MUST** identify graph scope.
+* `graphId` **MUST** identify graph scope.
 * `revision` **SHOULD** be included.
 
 ### 5.4 Nodes
 
 **Endpoint**
 
-`GET /workflows/{workflowId}/nodes`
+`GET /graphs/{graphId}/nodes`
 
 **Response**
 
 ```json
 {
-  "workflowId": "wf_123",
+  "graphId": "wf_123",
   "revision": 17,
   "nodes": [
     {
       "id": "node_1",
-      "workflowId": "wf_123",
+      "graphId": "wf_123",
       "channelId": "ch_1",
-      "unitId": "unit_10",
+      "workflowId": "workflow_10",
       "title": "Essay Draft",
       "positionX": 120,
       "positionY": 240
@@ -276,25 +276,25 @@ Returns workflow-level metadata required to bootstrap the editor shell.
 **Requirements**
 
 * `nodes` **MUST** contain canonical node entities.
-* `workflowId` **MUST** identify graph scope.
+* `graphId` **MUST** identify graph scope.
 * `revision` **SHOULD** be included.
 
 ### 5.5 Edges
 
 **Endpoint**
 
-`GET /workflows/{workflowId}/edges`
+`GET /graphs/{graphId}/edges`
 
 **Response**
 
 ```json
 {
-  "workflowId": "wf_123",
+  "graphId": "wf_123",
   "revision": 17,
   "edges": [
     {
       "id": "edge_1",
-      "workflowId": "wf_123",
+      "graphId": "wf_123",
       "sourceNodeId": "node_1",
       "targetNodeId": "node_2",
       "kind": "dependency"
@@ -306,20 +306,20 @@ Returns workflow-level metadata required to bootstrap the editor shell.
 **Requirements**
 
 * `edges` **MUST** contain canonical edge entities.
-* `workflowId` **MUST** identify graph scope.
+* `graphId` **MUST** identify graph scope.
 * `revision` **SHOULD** be included.
 
 ### 5.6 Tags
 
 **Endpoint**
 
-`GET /workflows/{workflowId}/tags`
+`GET /graphs/{graphId}/tags`
 
 **Response**
 
 ```json
 {
-  "workflowId": "wf_123",
+  "graphId": "wf_123",
   "revision": 17,
   "tags": [
     {
@@ -412,7 +412,7 @@ Every successful graph mutation **MUST** return a response conforming to this sh
 
 ```json
 {
-  "workflowId": "wf_123",
+  "graphId": "wf_123",
   "revision": 18,
   "changes": {
     "sections": {
@@ -450,7 +450,7 @@ Every successful graph mutation **MUST** return a response conforming to this sh
 
 ### 7.2 Required Semantics
 
-* `workflowId` **MUST** identify graph scope.
+* `graphId` **MUST** identify graph scope.
 * `revision` **MUST** be the canonical post-mutation revision.
 * `changes` **MUST** contain the exact entities created, updated, and deleted.
 * `meta` **MAY** be included for debugging, analytics, and future collaboration.
@@ -491,7 +491,7 @@ This reduces ambiguity around:
 
 **Endpoint**
 
-`PATCH /workflows/{workflowId}/nodes/{nodeId}`
+`PATCH /graphs/{graphId}/nodes/{nodeId}`
 
 **Request**
 
@@ -505,7 +505,7 @@ This reduces ambiguity around:
 
 ```json
 {
-  "workflowId": "wf_123",
+  "graphId": "wf_123",
   "revision": 18,
   "changes": {
     "nodes": {
@@ -513,9 +513,9 @@ This reduces ambiguity around:
       "updated": [
         {
           "id": "node_1",
-          "workflowId": "wf_123",
+          "graphId": "wf_123",
           "channelId": "ch_1",
-          "unitId": "unit_10",
+          "workflowId": "workflow_10",
           "title": "Essay Draft v2",
           "positionX": 120,
           "positionY": 240
@@ -540,7 +540,7 @@ This reduces ambiguity around:
 
 **Endpoint**
 
-`PATCH /workflows/{workflowId}/nodes/{nodeId}`
+`PATCH /graphs/{graphId}/nodes/{nodeId}`
 
 **Request**
 
@@ -555,7 +555,7 @@ This reduces ambiguity around:
 
 ```json
 {
-  "workflowId": "wf_123",
+  "graphId": "wf_123",
   "revision": 19,
   "changes": {
     "nodes": {
@@ -563,9 +563,9 @@ This reduces ambiguity around:
       "updated": [
         {
           "id": "node_1",
-          "workflowId": "wf_123",
+          "graphId": "wf_123",
           "channelId": "ch_1",
-          "unitId": "unit_10",
+          "workflowId": "workflow_10",
           "title": "Essay Draft v2",
           "positionX": 280,
           "positionY": 310
@@ -590,7 +590,7 @@ This reduces ambiguity around:
 
 **Endpoint**
 
-`POST /workflows/{workflowId}/edges`
+`POST /graphs/{graphId}/edges`
 
 **Request**
 
@@ -606,14 +606,14 @@ This reduces ambiguity around:
 
 ```json
 {
-  "workflowId": "wf_123",
+  "graphId": "wf_123",
   "revision": 20,
   "changes": {
     "edges": {
       "created": [
         {
           "id": "edge_10",
-          "workflowId": "wf_123",
+          "graphId": "wf_123",
           "sourceNodeId": "node_1",
           "targetNodeId": "node_2",
           "kind": "dependency"
@@ -633,13 +633,13 @@ This reduces ambiguity around:
 
 **Endpoint**
 
-`DELETE /workflows/{workflowId}/edges/{edgeId}`
+`DELETE /graphs/{graphId}/edges/{edgeId}`
 
 **Response**
 
 ```json
 {
-  "workflowId": "wf_123",
+  "graphId": "wf_123",
   "revision": 21,
   "changes": {
     "edges": {
@@ -659,13 +659,13 @@ This reduces ambiguity around:
 
 **Endpoint**
 
-`DELETE /workflows/{workflowId}/nodes/{nodeId}`
+`DELETE /graphs/{graphId}/nodes/{nodeId}`
 
 **Response**
 
 ```json
 {
-  "workflowId": "wf_123",
+  "graphId": "wf_123",
   "revision": 22,
   "changes": {
     "nodes": {
@@ -694,7 +694,7 @@ This is the canonical example of backend-owned mutation consequences.
 
 ### 9.1 Required Behavior
 
-The backend **MUST** maintain a revision/version for each workflow graph.
+The backend **MUST** maintain a revision/version for each graph graph.
 
 Revision **MUST** change whenever a mutation changes canonical graph state relevant to the editor.
 
@@ -704,7 +704,7 @@ The frontend expects:
 
 1. read responses **MAY** include the current revision
 2. mutation responses **MUST** include the post-mutation revision
-3. revisions **MUST** be monotonic for a given workflow
+3. revisions **MUST** be monotonic for a given graph
 4. revision **MUST** be usable to detect stale client assumptions
 
 ### 9.3 Request-Side Revision Handling
@@ -764,7 +764,7 @@ Stable error categories **SHOULD** include:
 * `permission_denied`
 * `not_found`
 * `revision_conflict`
-* `workflow_locked`
+* `graph_locked`
 * `domain_constraint_violation`
 * `server_error`
 
@@ -778,8 +778,8 @@ Exact naming **MAY** vary, but semantics **SHOULD** remain stable.
 {
   "error": {
     "code": "revision_conflict",
-    "message": "Workflow revision is stale.",
-    "workflowId": "wf_123",
+    "message": "Graph revision is stale.",
+    "graphId": "wf_123",
     "currentRevision": 22
   }
 }
@@ -875,7 +875,7 @@ The delta envelope returned from HTTP mutations **SHOULD** later be reusable as 
 
 That requires stable:
 
-* `workflowId`
+* `graphId`
 * `revision`
 * `changes`
 
@@ -889,7 +889,7 @@ Future presence or awareness events **MUST** remain distinct from canonical muta
 
 Examples include:
 
-* user joined workflow
+* user joined graph
 * user selected node
 * user started editing a field
 * user moved cursor or viewport
@@ -915,7 +915,7 @@ That future path **MUST NOT** require a different mutation semantic model.
 1. stable graph read endpoints by resource
 2. stable explicit mutation endpoints for the initial operation set
 3. canonical mutation delta envelopes
-4. workflow revision in mutation responses
+4. graph revision in mutation responses
 5. machine-readable error codes
 6. clean idempotent refetch behavior
 
@@ -939,12 +939,12 @@ That future path **MUST NOT** require a different mutation semantic model.
 
 This contract is sufficient for the frontend rewrite only if all of the following are true:
 
-1. the frontend can bootstrap a workflow graph page by fetching split graph resources
+1. the frontend can bootstrap a graph graph page by fetching split graph resources
 2. the frontend can normalize those resources independently
 3. a user intent such as `delete node` maps to one backend command
 4. the backend returns canonical resulting deletions, updates, and creations
 5. the frontend does not need to infer authoritative cascades
-6. mutation responses include workflow revision
+6. mutation responses include graph revision
 7. error responses allow the frontend to distinguish rollback vs refetch vs validation feedback
 8. the same mutation delta envelope can later be reused for realtime fan-out
 

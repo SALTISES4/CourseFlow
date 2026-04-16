@@ -29,11 +29,11 @@ The system currently defines permission matrices for:
 
 ### Project
 
-Represents a container for workflows and collaborators.
+Represents a container for graphs and collaborators.
 
-### Workflow
+### Graph
 
-Represents an instructional workflow authored within a project.
+Represents an instructional graph authored within a project.
 
 Each resource type has **its own permission matrix**.
 
@@ -49,7 +49,7 @@ Typical project states include:
 - **Published**
 - **Archived**
 
-Typical workflow states include:
+Typical graph states include:
 
 - **Draft**
 - **Published**
@@ -63,7 +63,7 @@ These states determine whether editing or publishing operations are allowed.
 
 Users interact with resources under a role.
 
-Roles differ depending on whether the resource is a **project** or a **workflow**.
+Roles differ depending on whether the resource is a **project** or a **graph**.
 
 ## Project Roles
 
@@ -87,9 +87,9 @@ Additional organizational roles may include:
 
 ---
 
-## Workflow Roles
+## Graph Roles
 
-Workflow permissions are usually derived from **project membership** but may have additional rules depending on workflow ownership.
+Graph permissions are usually derived from **project membership** but may have additional rules depending on graph ownership.
 
 ---
 
@@ -126,16 +126,16 @@ Typical project-level actions include:
 | Archive project | Move project to archived state |
 | Manage collaborators | Add/remove members |
 
-Typical workflow-level actions include:
+Typical graph-level actions include:
 
 | Action | Description |
 |------|------|
-| View workflow | Open workflow |
-| Edit workflow | Modify workflow structure |
-| Create workflow | Create new workflow |
-| Delete workflow | Remove workflow |
-| Publish workflow | Publish workflow |
-| Duplicate workflow | Clone workflow |
+| View graph | Open graph |
+| Edit graph | Modify graph structure |
+| Create graph | Create new graph |
+| Delete graph | Remove graph |
+| Publish graph | Publish graph |
+| Duplicate graph | Clone graph |
 
 ---
 
@@ -204,21 +204,21 @@ Backend must always enforce permissions.
 
 ---
 
-# Relationship Between Project and Workflow Permissions
+# Relationship Between Project and Graph Permissions
 
-Workflow permissions usually inherit from **project membership**.
+Graph permissions usually inherit from **project membership**.
 
 Typical rule:
 ```
-WorkflowPermission = ProjectRole + WorkflowState
+GraphPermission = ProjectRole + GraphState
 ```
 
 
 Examples:
 
-- project owners can edit all workflows
-- project editors can edit workflows
-- viewers cannot modify workflows
+- project owners can edit all graphs
+- project editors can edit graphs
+- viewers cannot modify graphs
 
 However:
 
@@ -246,9 +246,9 @@ Create explicit permission helpers.
 
 Example pattern:
 ```
-can_edit_workflow(user, workflow)
+can_edit_graph(user, graph)
 can_publish_project(user, project)
-can_delete_workflow(user, workflow)
+can_delete_graph(user, graph)
 ```
 
 

@@ -20,18 +20,18 @@ def _clear_seed_before_each(django_db_blocker):
 
 @pytest.mark.django_db
 def test_generate_twice_same_seed_same_title_and_counts():
-    cfg = SeedConfig(seed=4242, project_count=1, workflows_per_project=1)
+    cfg = SeedConfig(seed=4242, project_count=1, graphs_per_project=1)
     clear_dev_seed_projects()
     r1 = generate_dev_seed(cfg)
     title1 = r1["projects"][0]["project_title"]
-    node1 = r1["projects"][0]["workflows"][0]["node_count"]
-    edge1 = r1["projects"][0]["workflows"][0]["edge_count"]
+    node1 = r1["projects"][0]["graphs"][0]["node_count"]
+    edge1 = r1["projects"][0]["graphs"][0]["edge_count"]
 
     clear_dev_seed_projects()
     r2 = generate_dev_seed(cfg)
     title2 = r2["projects"][0]["project_title"]
-    node2 = r2["projects"][0]["workflows"][0]["node_count"]
-    edge2 = r2["projects"][0]["workflows"][0]["edge_count"]
+    node2 = r2["projects"][0]["graphs"][0]["node_count"]
+    edge2 = r2["projects"][0]["graphs"][0]["edge_count"]
 
     assert title1 == title2
     assert title1.startswith(DEV_SEED_PROJECT_TITLE_PREFIX)
@@ -49,28 +49,28 @@ def test_bounded_shape_and_graph_parts():
     )
     generate_dev_seed(cfg)
     p = Project.objects.get(title__startswith=DEV_SEED_PROJECT_TITLE_PREFIX)
-    wf = p.workflows.first()
+    wf = p.graphs.first()
     assert wf is not None
-    assert wf.unit is not None
+    assert wf.workflow is not None
 
     assert 1 <= wf.sections.count() <= 5
     assert 2 <= wf.channels.count() <= 5
 
-    total_nodes = Node.objects.filter(section__workflow=wf).count()
+    total_nodes = Node.objects.filter(section__graph=wf).count()
     assert 4 * wf.sections.count() <= total_nodes <= 12 * wf.sections.count()
 
-    for n in Node.objects.filter(section__workflow=wf):
+    for n in Node.objects.filter(section__graph=wf):
         assert n.section_id is not None
         assert n.channel_id is not None
         assert n.section_row is not None
 
-    edges = Edge.objects.filter(source_node__section__workflow=wf)
+    edges = Edge.objects.filter(source_node__section__graph=wf)
     assert edges.exists()
     for e in edges:
         assert e.source_node_id != e.target_node_id
 
     out_counts = (
-        Edge.objects.filter(source_node__section__workflow=wf)
+        Edge.objects.filter(source_node__section__graph=wf)
         .values("source_node_id")
         .annotate(c=Count("id"))
     )
@@ -83,10 +83,10 @@ def test_same_section_edges_are_majority():
     cfg = SeedConfig(seed=11, section_count=4, channel_count=3)
     generate_dev_seed(cfg)
     p = Project.objects.get(title__startswith=DEV_SEED_PROJECT_TITLE_PREFIX)
-    wf = p.workflows.first()
+    wf = p.graphs.first()
     edges = Edge.objects.filter(
-        source_node__section__workflow=wf,
-        target_node__section__workflow=wf,
+        source_node__section__graph=wf,
+        target_node__section__graph=wf,
     )
     total = edges.count()
     same = sum(

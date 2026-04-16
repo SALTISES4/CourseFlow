@@ -49,13 +49,13 @@ export const zTaskMetaOut = z.object({
 });
 
 /**
- * UnitOut
+ * WorkflowOut
  */
-export const zUnitOut = z.object({
+export const zWorkflowOut = z.object({
     uuid: z.string().uuid(),
     title: z.string(),
     description: z.string(),
-    unitType: z.string(),
+    workflowType: z.string(),
     meta: z.union([
         zTaskMetaOut,
         zProgramMetaOut,
@@ -65,9 +65,9 @@ export const zUnitOut = z.object({
 });
 
 /**
- * ProjectWorkflowOut
+ * ProjectGraphOut
  */
-export const zProjectWorkflowOut = z.object({
+export const zProjectGraphOut = z.object({
     uuid: z.string().uuid(),
     title: z.string(),
     ownerId: z.number().int(),
@@ -75,7 +75,7 @@ export const zProjectWorkflowOut = z.object({
     revisionId: z.number().int(),
     dateCreated: z.string().datetime(),
     modifiedOn: z.string().datetime(),
-    unit: zUnitOut
+    workflow: zWorkflowOut
 });
 
 /**
@@ -92,7 +92,7 @@ export const zProjectDetailOut = z.object({
     ownerId: z.number().int(),
     dateCreated: z.string().datetime(),
     modifiedOn: z.string().datetime(),
-    workflows: z.array(zProjectWorkflowOut).optional().default([])
+    graphs: z.array(zProjectGraphOut).optional().default([])
 });
 
 /**
@@ -137,7 +137,7 @@ export const zProjectListOut = z.object({
 /**
  * ProjectGraphProjectionOut
  *
- * Project overview: entity fields + workflow UUID references only.
+ * Project overview: entity fields + graph UUID references only.
  */
 export const zProjectGraphProjectionOut = z.object({
     uuid: z.string().uuid(),
@@ -148,7 +148,7 @@ export const zProjectGraphProjectionOut = z.object({
     ownerId: z.number().int(),
     dateCreated: z.string().datetime(),
     modifiedOn: z.string().datetime(),
-    workflowUuids: z.array(z.string().uuid())
+    graphUuids: z.array(z.string().uuid())
 });
 
 /**
@@ -248,11 +248,11 @@ export const zProjectUpdateIn = z.object({
 });
 
 /**
- * WorkflowDetailOut
+ * GraphDetailOut
  *
- * Single workflow resource: persisted fields only (no unit/sections/channels).
+ * Single graph resource: persisted fields only (no workflow/sections/channels).
  */
-export const zWorkflowDetailOut = z.object({
+export const zGraphDetailOut = z.object({
     uuid: z.string().uuid(),
     title: z.string(),
     ownerId: z.number().int(),
@@ -263,9 +263,9 @@ export const zWorkflowDetailOut = z.object({
 });
 
 /**
- * UnitTypeIn
+ * WorkflowTypeIn
  */
-export const zUnitTypeIn = z.enum([
+export const zWorkflowTypeIn = z.enum([
     'program',
     'course',
     'activity',
@@ -273,22 +273,22 @@ export const zUnitTypeIn = z.enum([
 ]);
 
 /**
- * WorkflowCreateIn
+ * GraphCreateIn
  */
-export const zWorkflowCreateIn = z.object({
+export const zGraphCreateIn = z.object({
     projectId: z.number().int().nullish(),
-    workflowTitle: z.string(),
-    unitTitle: z.string().optional().default(''),
-    unitType: zUnitTypeIn,
-    unitDescription: z.string().optional().default('')
+    graphTitle: z.string(),
+    workflowTitle: z.string().optional().default(''),
+    workflowType: zWorkflowTypeIn,
+    workflowDescription: z.string().optional().default('')
 });
 
 /**
- * WorkflowListItemOut
+ * GraphListItemOut
  *
- * List rows: workflow entity fields only.
+ * List rows: graph entity fields only.
  */
-export const zWorkflowListItemOut = z.object({
+export const zGraphListItemOut = z.object({
     uuid: z.string().uuid(),
     title: z.string(),
     ownerId: z.number().int(),
@@ -298,18 +298,18 @@ export const zWorkflowListItemOut = z.object({
 });
 
 /**
- * WorkflowListMetaOut
+ * GraphListMetaOut
  */
-export const zWorkflowListMetaOut = z.object({
+export const zGraphListMetaOut = z.object({
     total: z.number().int()
 });
 
 /**
- * WorkflowListOut
+ * GraphListOut
  */
-export const zWorkflowListOut = z.object({
-    items: z.array(zWorkflowListItemOut),
-    meta: zWorkflowListMetaOut
+export const zGraphListOut = z.object({
+    items: z.array(zGraphListItemOut),
+    meta: zGraphListMetaOut
 });
 
 /**
@@ -317,7 +317,7 @@ export const zWorkflowListOut = z.object({
  */
 export const zChannelGraphOut = z.object({
     uuid: z.string().uuid(),
-    workflowUuid: z.string().uuid(),
+    graphUuid: z.string().uuid(),
     title: z.string(),
     position: z.number().int(),
     threadUuid: z.string().uuid().nullish()
@@ -345,7 +345,7 @@ export const zNodeGraphOut = z.object({
     sectionUuid: z.string().uuid().nullish(),
     channelUuid: z.string().uuid().nullish(),
     sectionRow: z.number().int().nullish(),
-    unitUuid: z.string().uuid().nullish(),
+    workflowUuid: z.string().uuid().nullish(),
     threadUuid: z.string().uuid().nullish(),
     outcomeUuids: z.array(z.string().uuid()).optional()
 });
@@ -355,7 +355,7 @@ export const zNodeGraphOut = z.object({
  */
 export const zSectionGraphOut = z.object({
     uuid: z.string().uuid(),
-    workflowUuid: z.string().uuid(),
+    graphUuid: z.string().uuid(),
     title: z.string(),
     position: z.number().int(),
     threadUuid: z.string().uuid().nullish()
@@ -370,11 +370,11 @@ export const zThreadCommentCountOut = z.object({
 });
 
 /**
- * WorkflowGraphMetaOut
+ * GraphMetaOut
  *
- * Workflow row + root unit identifiers needed for the editor shell (no nested unit object).
+ * Graph row + root workflow identifiers needed for the editor shell (no nested workflow object).
  */
-export const zWorkflowGraphMetaOut = z.object({
+export const zGraphMetaOut = z.object({
     uuid: z.string().uuid(),
     title: z.string(),
     ownerId: z.number().int(),
@@ -382,18 +382,18 @@ export const zWorkflowGraphMetaOut = z.object({
     revisionId: z.number().int(),
     dateCreated: z.string().datetime(),
     modifiedOn: z.string().datetime(),
-    rootUnitUuid: z.string().uuid().nullish(),
-    rootUnitType: z.string().nullish(),
-    rootUnitTitle: z.string().optional().default('')
+    rootWorkflowUuid: z.string().uuid().nullish(),
+    rootWorkflowType: z.string().nullish(),
+    rootWorkflowTitle: z.string().optional().default('')
 });
 
 /**
- * WorkflowGraphOut
+ * GraphViewOut
  *
- * Single round-trip projection for rendering the workflow graph (not nested entity trees).
+ * Single round-trip projection for rendering the graph graph (not nested entity trees).
  */
-export const zWorkflowGraphOut = z.object({
-    workflow: zWorkflowGraphMetaOut,
+export const zGraphViewOut = z.object({
+    graph: zGraphMetaOut,
     channels: z.array(zChannelGraphOut),
     sections: z.array(zSectionGraphOut),
     nodes: z.array(zNodeGraphOut),
@@ -402,10 +402,10 @@ export const zWorkflowGraphOut = z.object({
 });
 
 /**
- * WorkflowDetailOutResp
+ * GraphDetailOutResp
  */
-export const zWorkflowDetailOutResp = z.object({
-    item: zWorkflowDetailOut
+export const zGraphDetailOutResp = z.object({
+    item: zGraphDetailOut
 });
 
 /**
@@ -420,7 +420,7 @@ export const zChannelListMetaOut = z.object({
  */
 export const zChannelOut = z.object({
     uuid: z.string().uuid(),
-    workflowUuid: z.string().uuid(),
+    graphUuid: z.string().uuid(),
     title: z.string(),
     position: z.number().int(),
     threadUuid: z.string().uuid().nullable(),
@@ -448,7 +448,7 @@ export const zSectionListMetaOut = z.object({
  */
 export const zSectionOut = z.object({
     uuid: z.string().uuid(),
-    workflowUuid: z.string().uuid(),
+    graphUuid: z.string().uuid(),
     title: z.string(),
     position: z.number().int(),
     threadUuid: z.string().uuid().nullable(),
@@ -465,9 +465,9 @@ export const zSectionListOut = z.object({
 });
 
 /**
- * WorkflowSectionCreateIn
+ * GraphSectionCreateIn
  */
-export const zWorkflowSectionCreateIn = z.object({
+export const zGraphSectionCreateIn = z.object({
     title: z.string(),
     position: z.number().int().optional().default(0),
     threadUuid: z.string().uuid().nullish()
@@ -514,7 +514,7 @@ export const zGraphNodeMutationOut = z.object({
     sectionUuid: z.string().uuid().nullish(),
     channelUuid: z.string().uuid().nullish(),
     sectionRow: z.number().int().nullish(),
-    unitUuid: z.string().uuid().nullish(),
+    workflowUuid: z.string().uuid().nullish(),
     threadUuid: z.string().uuid().nullish(),
     outcomeUuids: z.array(z.string().uuid()).optional()
 });
@@ -559,7 +559,7 @@ export const zGraphMutationChangesOut = z.object({
  * GraphMutationEnvelopeOut
  */
 export const zGraphMutationEnvelopeOut = z.object({
-    workflowId: z.string().uuid(),
+    graphId: z.string().uuid(),
     revisionId: z.number().int(),
     changes: zGraphMutationChangesOut,
     meta: zGraphMutationMetaOut
@@ -572,7 +572,7 @@ export const zGraphNodeCreateIn = z.object({
     sectionUuid: z.string().uuid().nullish(),
     channelUuid: z.string().uuid().nullish(),
     sectionRow: z.number().int().nullish(),
-    unitUuid: z.string().uuid().nullish()
+    workflowUuid: z.string().uuid().nullish()
 });
 
 /**
@@ -590,7 +590,7 @@ export const zGraphEdgeCreateIn = z.object({
  * ChannelCreateIn
  */
 export const zChannelCreateIn = z.object({
-    workflowUuid: z.string().uuid(),
+    graphUuid: z.string().uuid(),
     title: z.string(),
     position: z.number().int().optional().default(0),
     threadUuid: z.string().uuid().nullish()
@@ -616,7 +616,7 @@ export const zChannelPatchIn = z.object({
  * SectionCreateIn
  */
 export const zSectionCreateIn = z.object({
-    workflowUuid: z.string().uuid(),
+    graphUuid: z.string().uuid(),
     title: z.string(),
     position: z.number().int().optional().default(0),
     threadUuid: z.string().uuid().nullish()
@@ -647,7 +647,7 @@ export const zGraphNodePatchIn = z.object({
     sectionUuid: z.string().uuid().nullish(),
     channelUuid: z.string().uuid().nullish(),
     sectionRow: z.number().int().nullish(),
-    unitUuid: z.string().uuid().nullish()
+    workflowUuid: z.string().uuid().nullish()
 });
 
 /**
@@ -874,9 +874,9 @@ export const zNotificationItemOutResp = z.object({
 export const zLibraryItemOut = z.object({
     objectType: z.string(),
     uuid: z.string().uuid().nullish(),
-    workflowUuid: z.string().uuid().nullish(),
+    graphUuid: z.string().uuid().nullish(),
     projectUuid: z.string().uuid().nullish(),
-    unitUuid: z.string().uuid().nullish(),
+    workflowUuid: z.string().uuid().nullish(),
     title: z.string(),
     description: z.string(),
     dateCreated: z.string().datetime(),
@@ -1102,7 +1102,7 @@ export const zUpdateProjectData = z.object({
  */
 export const zUpdateProjectResponse = zProjectDetailOutResp;
 
-export const zListWorkflowsData = z.object({
+export const zListGraphsData = z.object({
     body: z.never().optional(),
     path: z.never().optional(),
     query: z.never().optional()
@@ -1111,10 +1111,10 @@ export const zListWorkflowsData = z.object({
 /**
  * OK
  */
-export const zListWorkflowsResponse = zWorkflowListOut;
+export const zListGraphsResponse = zGraphListOut;
 
-export const zCreateWorkflowData = z.object({
-    body: zWorkflowCreateIn,
+export const zCreateGraphData = z.object({
+    body: zGraphCreateIn,
     path: z.never().optional(),
     query: z.never().optional()
 });
@@ -1122,9 +1122,9 @@ export const zCreateWorkflowData = z.object({
 /**
  * OK
  */
-export const zCreateWorkflowResponse = zWorkflowDetailOut;
+export const zCreateGraphResponse = zGraphDetailOut;
 
-export const zGetWorkflowGraphData = z.object({
+export const zGetGraphViewData = z.object({
     body: z.never().optional(),
     path: z.object({
         uuid: z.string().uuid()
@@ -1135,9 +1135,9 @@ export const zGetWorkflowGraphData = z.object({
 /**
  * OK
  */
-export const zGetWorkflowGraphResponse = zWorkflowGraphOut;
+export const zGetGraphViewResponse = zGraphViewOut;
 
-export const zGetWorkflowData = z.object({
+export const zGetGraphData = z.object({
     body: z.never().optional(),
     path: z.object({
         uuid: z.string().uuid()
@@ -1148,9 +1148,9 @@ export const zGetWorkflowData = z.object({
 /**
  * OK
  */
-export const zGetWorkflowResponse = zWorkflowDetailOutResp;
+export const zGetGraphResponse = zGraphDetailOutResp;
 
-export const zListWorkflowChannelsData = z.object({
+export const zListGraphChannelsData = z.object({
     body: z.never().optional(),
     path: z.object({
         uuid: z.string().uuid()
@@ -1161,9 +1161,9 @@ export const zListWorkflowChannelsData = z.object({
 /**
  * OK
  */
-export const zListWorkflowChannelsResponse = zChannelListOut;
+export const zListGraphChannelsResponse = zChannelListOut;
 
-export const zListWorkflowSectionsData = z.object({
+export const zListGraphSectionsData = z.object({
     body: z.never().optional(),
     path: z.object({
         uuid: z.string().uuid()
@@ -1174,10 +1174,10 @@ export const zListWorkflowSectionsData = z.object({
 /**
  * OK
  */
-export const zListWorkflowSectionsResponse = zSectionListOut;
+export const zListGraphSectionsResponse = zSectionListOut;
 
-export const zCreateWorkflowSectionData = z.object({
-    body: zWorkflowSectionCreateIn,
+export const zCreateGraphSectionData = z.object({
+    body: zGraphSectionCreateIn,
     path: z.object({
         uuid: z.string().uuid()
     }),
@@ -1187,9 +1187,9 @@ export const zCreateWorkflowSectionData = z.object({
 /**
  * OK
  */
-export const zCreateWorkflowSectionResponse = zSectionOut;
+export const zCreateGraphSectionResponse = zSectionOut;
 
-export const zListWorkflowNodesData = z.object({
+export const zListGraphNodesData = z.object({
     body: z.never().optional(),
     path: z.object({
         uuid: z.string().uuid()
@@ -1202,9 +1202,9 @@ export const zListWorkflowNodesData = z.object({
  *
  * OK
  */
-export const zListWorkflowNodesResponse = z.array(zNodeGraphOut);
+export const zListGraphNodesResponse = z.array(zNodeGraphOut);
 
-export const zCreateWorkflowNodeData = z.object({
+export const zCreateGraphNodeData = z.object({
     body: zGraphNodeCreateIn,
     path: z.object({
         uuid: z.string().uuid()
@@ -1215,9 +1215,9 @@ export const zCreateWorkflowNodeData = z.object({
 /**
  * OK
  */
-export const zCreateWorkflowNodeResponse = zGraphMutationEnvelopeOut;
+export const zCreateGraphNodeResponse = zGraphMutationEnvelopeOut;
 
-export const zListWorkflowEdgesData = z.object({
+export const zListGraphEdgesData = z.object({
     body: z.never().optional(),
     path: z.object({
         uuid: z.string().uuid()
@@ -1230,9 +1230,9 @@ export const zListWorkflowEdgesData = z.object({
  *
  * OK
  */
-export const zListWorkflowEdgesResponse = z.array(zEdgeGraphOut);
+export const zListGraphEdgesResponse = z.array(zEdgeGraphOut);
 
-export const zCreateWorkflowEdgeData = z.object({
+export const zCreateGraphEdgeData = z.object({
     body: zGraphEdgeCreateIn,
     path: z.object({
         uuid: z.string().uuid()
@@ -1243,7 +1243,7 @@ export const zCreateWorkflowEdgeData = z.object({
 /**
  * OK
  */
-export const zCreateWorkflowEdgeResponse = zGraphMutationEnvelopeOut;
+export const zCreateGraphEdgeResponse = zGraphMutationEnvelopeOut;
 
 export const zCreateChannelData = z.object({
     body: zChannelCreateIn,

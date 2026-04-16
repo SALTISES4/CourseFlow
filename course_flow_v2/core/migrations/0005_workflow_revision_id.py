@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name="workflow",
+            model_name="graph",
             name="revision_id",
             field=models.PositiveIntegerField(
                 default=0,

@@ -1,11 +1,11 @@
 from django.db import models
 
-from course_flow_v2.core.models.unit import Unit
+from course_flow_v2.core.models.workflow import Workflow
 
 
 class ProgramMeta(models.Model):
-    unit = models.OneToOneField(
-        Unit,
+    workflow = models.OneToOneField(
+        Workflow,
         on_delete=models.CASCADE,
         related_name="program_meta",
     )

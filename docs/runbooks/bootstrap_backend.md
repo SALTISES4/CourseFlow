@@ -38,7 +38,7 @@ The first backend slice is now represented in the active V2 codebase:
 - confirmed core ORM models live in `course_flow_v2/core/models/`
 - shared persistence conventions use UUIDs plus `date_created` / `modified_on` where the canonical entity docs define them
 - explicit through models capture project-discipline, project-team membership, node/outcome/tag links, favorites, and horizontal outcome links
-- the initial Ninja API slice exposes `POST/GET/LIST` endpoints for projects and workflows
+- the initial Ninja API slice exposes `POST/GET/LIST` endpoints for projects and graphs
 - generated API docs are wired through Django Ninja at `/api/docs`
 - generated OpenAPI JSON is wired at `/api/openapi.json`
 

@@ -8,13 +8,13 @@ from django.conf import settings
 from django.db import models
 
 from course_flow_v2.core.models.discipline import Discipline
+from course_flow_v2.core.models.graph import Graph
 from course_flow_v2.core.models.horizontal_outcome import HorizontalOutcome
 from course_flow_v2.core.models.node import Node
 from course_flow_v2.core.models.outcome import Outcome
 from course_flow_v2.core.models.project import Project
 from course_flow_v2.core.models.project_team import ProjectTeam
 from course_flow_v2.core.models.tag import Tag
-from course_flow_v2.core.models.workflow import Workflow
 
 
 class ProjectDiscipline(models.Model):
@@ -171,23 +171,23 @@ class FavoriteProject(models.Model):
         ]
 
 
-class FavoriteWorkflow(models.Model):
+class FavoriteGraph(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="favorite_workflows",
+        related_name="favorite_graphs",
     )
-    workflow = models.ForeignKey(
-        Workflow,
+    graph = models.ForeignKey(
+        Graph,
         on_delete=models.CASCADE,
         related_name="favorite_links",
     )
 
     class Meta:
-        db_table = "cf2_favorite_workflow"
+        db_table = "cf2_favorite_graph"
         constraints = [
             models.UniqueConstraint(
-                fields=["user", "workflow"],
-                name="cf2_favorite_workflow_unique",
+                fields=["user", "graph"],
+                name="cf2_favorite_graph_unique",
             )
         ]

@@ -123,15 +123,15 @@ export type ProjectDetailOut = {
      */
     modifiedOn: string;
     /**
-     * Workflows
+     * Graphs
      */
-    workflows?: Array<ProjectWorkflowOut>;
+    graphs?: Array<ProjectGraphOut>;
 };
 
 /**
- * ProjectWorkflowOut
+ * ProjectGraphOut
  */
-export type ProjectWorkflowOut = {
+export type ProjectGraphOut = {
     /**
      * Uuid
      */
@@ -160,7 +160,7 @@ export type ProjectWorkflowOut = {
      * Modifiedon
      */
     modifiedOn: string;
-    unit: UnitOut;
+    workflow: WorkflowOut;
 };
 
 /**
@@ -178,9 +178,9 @@ export type TaskMetaOut = {
 };
 
 /**
- * UnitOut
+ * WorkflowOut
  */
-export type UnitOut = {
+export type WorkflowOut = {
     /**
      * Uuid
      */
@@ -194,9 +194,9 @@ export type UnitOut = {
      */
     description: string;
     /**
-     * Unittype
+     * Workflowtype
      */
-    unitType: string;
+    workflowType: string;
     /**
      * Meta
      */
@@ -281,7 +281,7 @@ export type ProjectListOut = {
 /**
  * ProjectGraphProjectionOut
  *
- * Project overview: entity fields + workflow UUID references only.
+ * Project overview: entity fields + graph UUID references only.
  */
 export type ProjectGraphProjectionOut = {
     /**
@@ -317,9 +317,9 @@ export type ProjectGraphProjectionOut = {
      */
     modifiedOn: string;
     /**
-     * Workflowuuids
+     * Graphuuids
      */
-    workflowUuids: Array<string>;
+    graphUuids: Array<string>;
 };
 
 /**
@@ -467,11 +467,11 @@ export type ProjectUpdateIn = {
 };
 
 /**
- * WorkflowDetailOut
+ * GraphDetailOut
  *
- * Single workflow resource: persisted fields only (no unit/sections/channels).
+ * Single graph resource: persisted fields only (no workflow/sections/channels).
  */
-export type WorkflowDetailOut = {
+export type GraphDetailOut = {
     /**
      * Uuid
      */
@@ -503,9 +503,9 @@ export type WorkflowDetailOut = {
 };
 
 /**
- * UnitTypeIn
+ * WorkflowTypeIn
  */
-export enum UnitTypeIn {
+export enum WorkflowTypeIn {
     PROGRAM = 'program',
     COURSE = 'course',
     ACTIVITY = 'activity',
@@ -513,34 +513,34 @@ export enum UnitTypeIn {
 }
 
 /**
- * WorkflowCreateIn
+ * GraphCreateIn
  */
-export type WorkflowCreateIn = {
+export type GraphCreateIn = {
     /**
      * Projectid
      */
     projectId?: number | null;
     /**
+     * Graphtitle
+     */
+    graphTitle: string;
+    /**
      * Workflowtitle
      */
-    workflowTitle: string;
+    workflowTitle?: string;
+    workflowType: WorkflowTypeIn;
     /**
-     * Unittitle
+     * Workflowdescription
      */
-    unitTitle?: string;
-    unitType: UnitTypeIn;
-    /**
-     * Unitdescription
-     */
-    unitDescription?: string;
+    workflowDescription?: string;
 };
 
 /**
- * WorkflowListItemOut
+ * GraphListItemOut
  *
- * List rows: workflow entity fields only.
+ * List rows: graph entity fields only.
  */
-export type WorkflowListItemOut = {
+export type GraphListItemOut = {
     /**
      * Uuid
      */
@@ -568,9 +568,9 @@ export type WorkflowListItemOut = {
 };
 
 /**
- * WorkflowListMetaOut
+ * GraphListMetaOut
  */
-export type WorkflowListMetaOut = {
+export type GraphListMetaOut = {
     /**
      * Total
      */
@@ -578,14 +578,14 @@ export type WorkflowListMetaOut = {
 };
 
 /**
- * WorkflowListOut
+ * GraphListOut
  */
-export type WorkflowListOut = {
+export type GraphListOut = {
     /**
      * Items
      */
-    items: Array<WorkflowListItemOut>;
-    meta: WorkflowListMetaOut;
+    items: Array<GraphListItemOut>;
+    meta: GraphListMetaOut;
 };
 
 /**
@@ -597,9 +597,9 @@ export type ChannelGraphOut = {
      */
     uuid: string;
     /**
-     * Workflowuuid
+     * Graphuuid
      */
-    workflowUuid: string;
+    graphUuid: string;
     /**
      * Title
      */
@@ -667,9 +667,9 @@ export type NodeGraphOut = {
      */
     sectionRow?: number | null;
     /**
-     * Unituuid
+     * Workflowuuid
      */
-    unitUuid?: string | null;
+    workflowUuid?: string | null;
     /**
      * Threaduuid
      */
@@ -689,9 +689,9 @@ export type SectionGraphOut = {
      */
     uuid: string;
     /**
-     * Workflowuuid
+     * Graphuuid
      */
-    workflowUuid: string;
+    graphUuid: string;
     /**
      * Title
      */
@@ -721,11 +721,11 @@ export type ThreadCommentCountOut = {
 };
 
 /**
- * WorkflowGraphMetaOut
+ * GraphMetaOut
  *
- * Workflow row + root unit identifiers needed for the editor shell (no nested unit object).
+ * Graph row + root workflow identifiers needed for the editor shell (no nested workflow object).
  */
-export type WorkflowGraphMetaOut = {
+export type GraphMetaOut = {
     /**
      * Uuid
      */
@@ -755,26 +755,26 @@ export type WorkflowGraphMetaOut = {
      */
     modifiedOn: string;
     /**
-     * Rootunituuid
+     * Rootworkflowuuid
      */
-    rootUnitUuid?: string | null;
+    rootWorkflowUuid?: string | null;
     /**
-     * Rootunittype
+     * Rootworkflowtype
      */
-    rootUnitType?: string | null;
+    rootWorkflowType?: string | null;
     /**
-     * Rootunittitle
+     * Rootworkflowtitle
      */
-    rootUnitTitle?: string;
+    rootWorkflowTitle?: string;
 };
 
 /**
- * WorkflowGraphOut
+ * GraphViewOut
  *
- * Single round-trip projection for rendering the workflow graph (not nested entity trees).
+ * Single round-trip projection for rendering the graph graph (not nested entity trees).
  */
-export type WorkflowGraphOut = {
-    workflow: WorkflowGraphMetaOut;
+export type GraphViewOut = {
+    graph: GraphMetaOut;
     /**
      * Channels
      */
@@ -798,10 +798,10 @@ export type WorkflowGraphOut = {
 };
 
 /**
- * WorkflowDetailOutResp
+ * GraphDetailOutResp
  */
-export type WorkflowDetailOutResp = {
-    item: WorkflowDetailOut;
+export type GraphDetailOutResp = {
+    item: GraphDetailOut;
 };
 
 /**
@@ -834,9 +834,9 @@ export type ChannelOut = {
      */
     uuid: string;
     /**
-     * Workflowuuid
+     * Graphuuid
      */
-    workflowUuid: string;
+    graphUuid: string;
     /**
      * Title
      */
@@ -889,9 +889,9 @@ export type SectionOut = {
      */
     uuid: string;
     /**
-     * Workflowuuid
+     * Graphuuid
      */
-    workflowUuid: string;
+    graphUuid: string;
     /**
      * Title
      */
@@ -915,9 +915,9 @@ export type SectionOut = {
 };
 
 /**
- * WorkflowSectionCreateIn
+ * GraphSectionCreateIn
  */
-export type WorkflowSectionCreateIn = {
+export type GraphSectionCreateIn = {
     /**
      * Title
      */
@@ -996,9 +996,9 @@ export type GraphMutationChangesOut = {
  */
 export type GraphMutationEnvelopeOut = {
     /**
-     * Workflowid
+     * Graphid
      */
-    workflowId: string;
+    graphId: string;
     /**
      * Revisionid
      */
@@ -1044,9 +1044,9 @@ export type GraphNodeMutationOut = {
      */
     sectionRow?: number | null;
     /**
-     * Unituuid
+     * Workflowuuid
      */
-    unitUuid?: string | null;
+    workflowUuid?: string | null;
     /**
      * Threaduuid
      */
@@ -1122,9 +1122,9 @@ export type GraphNodeCreateIn = {
      */
     sectionRow?: number | null;
     /**
-     * Unituuid
+     * Workflowuuid
      */
-    unitUuid?: string | null;
+    workflowUuid?: string | null;
 };
 
 /**
@@ -1158,9 +1158,9 @@ export type GraphEdgeCreateIn = {
  */
 export type ChannelCreateIn = {
     /**
-     * Workflowuuid
+     * Graphuuid
      */
-    workflowUuid: string;
+    graphUuid: string;
     /**
      * Title
      */
@@ -1205,9 +1205,9 @@ export type ChannelPatchIn = {
  */
 export type SectionCreateIn = {
     /**
-     * Workflowuuid
+     * Graphuuid
      */
-    workflowUuid: string;
+    graphUuid: string;
     /**
      * Title
      */
@@ -1266,9 +1266,9 @@ export type GraphNodePatchIn = {
      */
     sectionRow?: number | null;
     /**
-     * Unituuid
+     * Workflowuuid
      */
-    unitUuid?: string | null;
+    workflowUuid?: string | null;
 };
 
 /**
@@ -1673,17 +1673,17 @@ export type LibraryItemOut = {
      */
     uuid?: string | null;
     /**
-     * Workflowuuid
+     * Graphuuid
      */
-    workflowUuid?: string | null;
+    graphUuid?: string | null;
     /**
      * Projectuuid
      */
     projectUuid?: string | null;
     /**
-     * Unituuid
+     * Workflowuuid
      */
-    unitUuid?: string | null;
+    workflowUuid?: string | null;
     /**
      * Title
      */
@@ -2053,39 +2053,39 @@ export type UpdateProjectResponses = {
 
 export type UpdateProjectResponse = UpdateProjectResponses[keyof UpdateProjectResponses];
 
-export type ListWorkflowsData = {
+export type ListGraphsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/workflow';
+    url: '/api/graph';
 };
 
-export type ListWorkflowsResponses = {
+export type ListGraphsResponses = {
     /**
      * OK
      */
-    200: WorkflowListOut;
+    200: GraphListOut;
 };
 
-export type ListWorkflowsResponse = ListWorkflowsResponses[keyof ListWorkflowsResponses];
+export type ListGraphsResponse = ListGraphsResponses[keyof ListGraphsResponses];
 
-export type CreateWorkflowData = {
-    body: WorkflowCreateIn;
+export type CreateGraphData = {
+    body: GraphCreateIn;
     path?: never;
     query?: never;
-    url: '/api/workflow';
+    url: '/api/graph';
 };
 
-export type CreateWorkflowResponses = {
+export type CreateGraphResponses = {
     /**
      * OK
      */
-    200: WorkflowDetailOut;
+    200: GraphDetailOut;
 };
 
-export type CreateWorkflowResponse = CreateWorkflowResponses[keyof CreateWorkflowResponses];
+export type CreateGraphResponse = CreateGraphResponses[keyof CreateGraphResponses];
 
-export type GetWorkflowGraphData = {
+export type GetGraphViewData = {
     body?: never;
     path: {
         /**
@@ -2094,19 +2094,19 @@ export type GetWorkflowGraphData = {
         uuid: string;
     };
     query?: never;
-    url: '/api/workflow/{uuid}/graph';
+    url: '/api/graph/{uuid}/view';
 };
 
-export type GetWorkflowGraphResponses = {
+export type GetGraphViewResponses = {
     /**
      * OK
      */
-    200: WorkflowGraphOut;
+    200: GraphViewOut;
 };
 
-export type GetWorkflowGraphResponse = GetWorkflowGraphResponses[keyof GetWorkflowGraphResponses];
+export type GetGraphViewResponse = GetGraphViewResponses[keyof GetGraphViewResponses];
 
-export type GetWorkflowData = {
+export type GetGraphData = {
     body?: never;
     path: {
         /**
@@ -2115,19 +2115,19 @@ export type GetWorkflowData = {
         uuid: string;
     };
     query?: never;
-    url: '/api/workflow/{uuid}';
+    url: '/api/graph/{uuid}';
 };
 
-export type GetWorkflowResponses = {
+export type GetGraphResponses = {
     /**
      * OK
      */
-    200: WorkflowDetailOutResp;
+    200: GraphDetailOutResp;
 };
 
-export type GetWorkflowResponse = GetWorkflowResponses[keyof GetWorkflowResponses];
+export type GetGraphResponse = GetGraphResponses[keyof GetGraphResponses];
 
-export type ListWorkflowChannelsData = {
+export type ListGraphChannelsData = {
     body?: never;
     path: {
         /**
@@ -2136,19 +2136,19 @@ export type ListWorkflowChannelsData = {
         uuid: string;
     };
     query?: never;
-    url: '/api/workflow/{uuid}/channels';
+    url: '/api/graph/{uuid}/channels';
 };
 
-export type ListWorkflowChannelsResponses = {
+export type ListGraphChannelsResponses = {
     /**
      * OK
      */
     200: ChannelListOut;
 };
 
-export type ListWorkflowChannelsResponse = ListWorkflowChannelsResponses[keyof ListWorkflowChannelsResponses];
+export type ListGraphChannelsResponse = ListGraphChannelsResponses[keyof ListGraphChannelsResponses];
 
-export type ListWorkflowSectionsData = {
+export type ListGraphSectionsData = {
     body?: never;
     path: {
         /**
@@ -2157,20 +2157,20 @@ export type ListWorkflowSectionsData = {
         uuid: string;
     };
     query?: never;
-    url: '/api/workflow/{uuid}/sections';
+    url: '/api/graph/{uuid}/sections';
 };
 
-export type ListWorkflowSectionsResponses = {
+export type ListGraphSectionsResponses = {
     /**
      * OK
      */
     200: SectionListOut;
 };
 
-export type ListWorkflowSectionsResponse = ListWorkflowSectionsResponses[keyof ListWorkflowSectionsResponses];
+export type ListGraphSectionsResponse = ListGraphSectionsResponses[keyof ListGraphSectionsResponses];
 
-export type CreateWorkflowSectionData = {
-    body: WorkflowSectionCreateIn;
+export type CreateGraphSectionData = {
+    body: GraphSectionCreateIn;
     path: {
         /**
          * Uuid
@@ -2178,19 +2178,19 @@ export type CreateWorkflowSectionData = {
         uuid: string;
     };
     query?: never;
-    url: '/api/workflow/{uuid}/sections';
+    url: '/api/graph/{uuid}/sections';
 };
 
-export type CreateWorkflowSectionResponses = {
+export type CreateGraphSectionResponses = {
     /**
      * OK
      */
     200: SectionOut;
 };
 
-export type CreateWorkflowSectionResponse = CreateWorkflowSectionResponses[keyof CreateWorkflowSectionResponses];
+export type CreateGraphSectionResponse = CreateGraphSectionResponses[keyof CreateGraphSectionResponses];
 
-export type ListWorkflowNodesData = {
+export type ListGraphNodesData = {
     body?: never;
     path: {
         /**
@@ -2199,10 +2199,10 @@ export type ListWorkflowNodesData = {
         uuid: string;
     };
     query?: never;
-    url: '/api/workflow/{uuid}/nodes';
+    url: '/api/graph/{uuid}/nodes';
 };
 
-export type ListWorkflowNodesResponses = {
+export type ListGraphNodesResponses = {
     /**
      * Response
      *
@@ -2211,9 +2211,9 @@ export type ListWorkflowNodesResponses = {
     200: Array<NodeGraphOut>;
 };
 
-export type ListWorkflowNodesResponse = ListWorkflowNodesResponses[keyof ListWorkflowNodesResponses];
+export type ListGraphNodesResponse = ListGraphNodesResponses[keyof ListGraphNodesResponses];
 
-export type CreateWorkflowNodeData = {
+export type CreateGraphNodeData = {
     body: GraphNodeCreateIn;
     path: {
         /**
@@ -2222,19 +2222,19 @@ export type CreateWorkflowNodeData = {
         uuid: string;
     };
     query?: never;
-    url: '/api/workflow/{uuid}/nodes';
+    url: '/api/graph/{uuid}/nodes';
 };
 
-export type CreateWorkflowNodeResponses = {
+export type CreateGraphNodeResponses = {
     /**
      * OK
      */
     200: GraphMutationEnvelopeOut;
 };
 
-export type CreateWorkflowNodeResponse = CreateWorkflowNodeResponses[keyof CreateWorkflowNodeResponses];
+export type CreateGraphNodeResponse = CreateGraphNodeResponses[keyof CreateGraphNodeResponses];
 
-export type ListWorkflowEdgesData = {
+export type ListGraphEdgesData = {
     body?: never;
     path: {
         /**
@@ -2243,10 +2243,10 @@ export type ListWorkflowEdgesData = {
         uuid: string;
     };
     query?: never;
-    url: '/api/workflow/{uuid}/edges';
+    url: '/api/graph/{uuid}/edges';
 };
 
-export type ListWorkflowEdgesResponses = {
+export type ListGraphEdgesResponses = {
     /**
      * Response
      *
@@ -2255,9 +2255,9 @@ export type ListWorkflowEdgesResponses = {
     200: Array<EdgeGraphOut>;
 };
 
-export type ListWorkflowEdgesResponse = ListWorkflowEdgesResponses[keyof ListWorkflowEdgesResponses];
+export type ListGraphEdgesResponse = ListGraphEdgesResponses[keyof ListGraphEdgesResponses];
 
-export type CreateWorkflowEdgeData = {
+export type CreateGraphEdgeData = {
     body: GraphEdgeCreateIn;
     path: {
         /**
@@ -2266,17 +2266,17 @@ export type CreateWorkflowEdgeData = {
         uuid: string;
     };
     query?: never;
-    url: '/api/workflow/{uuid}/edges';
+    url: '/api/graph/{uuid}/edges';
 };
 
-export type CreateWorkflowEdgeResponses = {
+export type CreateGraphEdgeResponses = {
     /**
      * OK
      */
     200: GraphMutationEnvelopeOut;
 };
 
-export type CreateWorkflowEdgeResponse = CreateWorkflowEdgeResponses[keyof CreateWorkflowEdgeResponses];
+export type CreateGraphEdgeResponse = CreateGraphEdgeResponses[keyof CreateGraphEdgeResponses];
 
 export type CreateChannelData = {
     body: ChannelCreateIn;

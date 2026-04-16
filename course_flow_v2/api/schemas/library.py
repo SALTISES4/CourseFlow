@@ -43,9 +43,9 @@ class LibrarySearchIn(CamelSchema):
 class LibraryItemOut(CamelSchema):
     object_type: str
     uuid: UUID | None = None
-    workflow_uuid: UUID | None = None
+    graph_uuid: UUID | None = None
     project_uuid: UUID | None = None
-    unit_uuid: UUID | None = None
+    workflow_uuid: UUID | None = None
     title: str
     description: str
     date_created: datetime

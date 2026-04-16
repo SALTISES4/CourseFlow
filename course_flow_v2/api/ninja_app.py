@@ -5,6 +5,7 @@ from course_flow_v2.api.routers import (
     auth,
     channels,
     edges,
+    graphs,
     library,
     nodes,
     notifications,
@@ -12,7 +13,6 @@ from course_flow_v2.api.routers import (
     sections,
     threads,
     users,
-    workflows,
 )
 
 api = NinjaAPI(
@@ -21,8 +21,8 @@ api = NinjaAPI(
     description=(
         "OpenAPI is generated from Ninja routes and schemas. "
         "Primary CRUD routes return entity fields only. "
-        "Workflow graph/editor loads use ``GET /workflow/{uuid}/graph`` (flat projection). "
-        "See ``course_flow_v2.api.conventions`` and ``course_flow_v2.api.schemas.workflow_graph``."
+        "Graph graph/editor loads use ``GET /graph/{uuid}/view`` (flat projection). "
+        "See ``course_flow_v2.api.conventions`` and ``course_flow_v2.api.schemas.graph_view``."
     ),
     docs_url="/docs",
     openapi_url="/openapi.json",
@@ -30,11 +30,11 @@ api = NinjaAPI(
 )
 
 api.add_router("/project", projects.router)
-api.add_router("/workflow", workflows.router)
-api.add_router("/workflow", channels.workflow_collection_router)
-api.add_router("/workflow", sections.workflow_collection_router)
-api.add_router("/workflow", nodes.workflow_collection_router)
-api.add_router("/workflow", edges.workflow_edges_router)
+api.add_router("/graph", graphs.router)
+api.add_router("/graph", channels.graph_collection_router)
+api.add_router("/graph", sections.graph_collection_router)
+api.add_router("/graph", nodes.graph_collection_router)
+api.add_router("/graph", edges.graph_edges_router)
 api.add_router("/channel", channels.resource_router)
 api.add_router("/section", sections.resource_router)
 api.add_router("/node", nodes.node_resource_router)

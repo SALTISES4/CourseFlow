@@ -3,9 +3,9 @@ from uuid import UUID
 
 from course_flow_v2.application.dto import (
     ChannelDTO,
+    GraphDTO,
     ProjectDTO,
     SectionDTO,
-    WorkflowDTO,
 )
 
 
@@ -31,32 +31,32 @@ class ProjectRepositoryPort(Protocol):
     def delete(self, uuid: UUID) -> bool: ...
 
 
-class WorkflowRepositoryPort(Protocol):
+class GraphRepositoryPort(Protocol):
     def create(
         self,
         *,
         owner_id: int,
         project_id: int | None,
+        graph_title: str,
         workflow_title: str,
-        unit_title: str,
-        unit_type: str,
-        unit_description: str,
-    ) -> WorkflowDTO: ...
+        workflow_type: str,
+        workflow_description: str,
+    ) -> GraphDTO: ...
 
-    def get_by_uuid(self, uuid: UUID) -> WorkflowDTO | None: ...
+    def get_by_uuid(self, uuid: UUID) -> GraphDTO | None: ...
 
-    def list_for_owner(self, owner_id: int) -> list[WorkflowDTO]: ...
+    def list_for_owner(self, owner_id: int) -> list[GraphDTO]: ...
 
-    def list_for_project(self, project_id: int) -> list[WorkflowDTO]: ...
+    def list_for_project(self, project_id: int) -> list[GraphDTO]: ...
 
-    def update(self, uuid: UUID, updates: dict[str, Any]) -> WorkflowDTO | None: ...
+    def update(self, uuid: UUID, updates: dict[str, Any]) -> GraphDTO | None: ...
 
 
 class ChannelRepositoryPort(Protocol):
     def create(
         self,
         *,
-        workflow_uuid: UUID,
+        graph_uuid: UUID,
         title: str,
         position: int,
         thread_uuid: UUID | None = None,
@@ -64,7 +64,7 @@ class ChannelRepositoryPort(Protocol):
 
     def get_by_uuid(self, uuid: UUID) -> ChannelDTO | None: ...
 
-    def list_for_workflow_uuid(self, workflow_uuid: UUID) -> list[ChannelDTO]: ...
+    def list_for_graph_uuid(self, graph_uuid: UUID) -> list[ChannelDTO]: ...
 
     def update(self, uuid: UUID, updates: dict[str, Any]) -> ChannelDTO | None: ...
 
@@ -75,7 +75,7 @@ class SectionRepositoryPort(Protocol):
     def create(
         self,
         *,
-        workflow_uuid: UUID,
+        graph_uuid: UUID,
         title: str,
         position: int,
         thread_uuid: UUID | None = None,
@@ -83,7 +83,7 @@ class SectionRepositoryPort(Protocol):
 
     def get_by_uuid(self, uuid: UUID) -> SectionDTO | None: ...
 
-    def list_for_workflow_uuid(self, workflow_uuid: UUID) -> list[SectionDTO]: ...
+    def list_for_graph_uuid(self, graph_uuid: UUID) -> list[SectionDTO]: ...
 
     def update(self, uuid: UUID, updates: dict[str, Any]) -> SectionDTO | None: ...
 
