@@ -153,9 +153,6 @@ uv-sync:
 logs:
   tail -f -n50 {{ py_log_file }}
 
-[group: 'Backend']
-ws-logs:
-  tail -f -n50 {{ ws_log_file }}
 
 # ----------------------------
 # Frontend
@@ -265,6 +262,7 @@ dev:
   just uv-sync
   just docker-up
   just migrate
+  just django-run
   just iterm
   just browsers
 

@@ -338,6 +338,24 @@ export const zEdgeGraphOut = z.object({
 });
 
 /**
+ * GraphMetaOut
+ *
+ * Graph row + root workflow identifiers needed for the editor shell (no nested workflow object).
+ */
+export const zGraphMetaOut = z.object({
+    uuid: z.string().uuid(),
+    title: z.string(),
+    ownerId: z.number().int(),
+    projectId: z.number().int().nullable(),
+    revisionId: z.number().int(),
+    dateCreated: z.string().datetime(),
+    modifiedOn: z.string().datetime(),
+    rootWorkflowUuid: z.string().uuid().nullish(),
+    rootWorkflowType: z.string().nullish(),
+    rootWorkflowTitle: z.string().optional().default('')
+});
+
+/**
  * NodeGraphOut
  */
 export const zNodeGraphOut = z.object({
@@ -370,27 +388,9 @@ export const zThreadCommentCountOut = z.object({
 });
 
 /**
- * GraphMetaOut
- *
- * Graph row + root workflow identifiers needed for the editor shell (no nested workflow object).
- */
-export const zGraphMetaOut = z.object({
-    uuid: z.string().uuid(),
-    title: z.string(),
-    ownerId: z.number().int(),
-    projectId: z.number().int().nullable(),
-    revisionId: z.number().int(),
-    dateCreated: z.string().datetime(),
-    modifiedOn: z.string().datetime(),
-    rootWorkflowUuid: z.string().uuid().nullish(),
-    rootWorkflowType: z.string().nullish(),
-    rootWorkflowTitle: z.string().optional().default('')
-});
-
-/**
  * GraphViewOut
  *
- * Single round-trip projection for rendering the graph graph (not nested entity trees).
+ * Single round-trip projection for rendering the graph (not nested entity trees).
  */
 export const zGraphViewOut = z.object({
     graph: zGraphMetaOut,
@@ -674,6 +674,8 @@ export const zCommentOut = z.object({
 
 /**
  * CommentCreateIn
+ *
+ * Body for POST /thread/{uuid}/comments.
  */
 export const zCommentCreateIn = z.object({
     body: z.string()
@@ -681,9 +683,11 @@ export const zCommentCreateIn = z.object({
 
 /**
  * ThreadCommentsBulkDeleteOut
+ *
+ * Response for DELETE /thread/{uuid}/comments (delete all).
  */
 export const zThreadCommentsBulkDeleteOut = z.object({
-    success: z.boolean().optional(),
+    success: z.boolean().optional().default(true),
     deletedCount: z.number().int()
 });
 
@@ -1410,6 +1414,19 @@ export const zGetEdgeData = z.object({
  */
 export const zGetEdgeResponse = zEdgeGraphOut;
 
+export const zDeleteAllThreadCommentsData = z.object({
+    body: z.never().optional(),
+    path: z.object({
+        uuid: z.string().uuid()
+    }),
+    query: z.never().optional()
+});
+
+/**
+ * OK
+ */
+export const zDeleteAllThreadCommentsResponse = zThreadCommentsBulkDeleteOut;
+
 export const zListThreadCommentsData = z.object({
     body: z.never().optional(),
     path: z.object({
@@ -1447,17 +1464,10 @@ export const zDeleteThreadCommentData = z.object({
     query: z.never().optional()
 });
 
+/**
+ * OK
+ */
 export const zDeleteThreadCommentResponse = zSuccessOut;
-
-export const zDeleteAllThreadCommentsData = z.object({
-    body: z.never().optional(),
-    path: z.object({
-        uuid: z.string().uuid()
-    }),
-    query: z.never().optional()
-});
-
-export const zDeleteAllThreadCommentsResponse = zThreadCommentsBulkDeleteOut;
 
 export const zLoginData = z.object({
     body: zLoginIn,

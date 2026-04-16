@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { addProjectTeamMembers, courseFlowV2ApiNinjaAppHealth, createChannel, createProject, createSection, createThreadComment, createGraph, createGraphEdge, createGraphNode, createGraphSection, deleteAllThreadComments, deleteChannel, deleteEdge, deleteNode, deleteOneNotification, deleteProject, deleteProjectTeamMember, deleteSection, deleteThreadComment, duplicateProjectPlaceholder, getChannel, getEdge, getMyNotificationSettings, getMyProfileSettings, getNode, getProject, getProjectGraph, getSection, getGraph, getGraphView, listMyNotifications, listProjects, listProjectTeam, listThreadComments, listUsers, listGraphChannels, listGraphEdges, listGraphNodes, listGraphs, listGraphSections, login, logout, markAllMyNotificationsAsRead, markOneNotificationAsRead, me, type Options, patchMyNotificationSettings, patchMyProfileSettings, patchNode, register, searchLibrary, updateChannel, updateProject, updateProjectTeamMember, updateSection } from '../sdk.gen';
-import type { AddProjectTeamMembersData, AddProjectTeamMembersResponse, CourseFlowV2ApiNinjaAppHealthData, CourseFlowV2ApiNinjaAppHealthResponse, CreateChannelData, CreateChannelResponse, CreateProjectData, CreateProjectResponse, CreateSectionData, CreateSectionResponse, CreateThreadCommentData, CreateThreadCommentResponse, CreateGraphData, CreateGraphEdgeData, CreateGraphEdgeResponse, CreateGraphNodeData, CreateGraphNodeResponse, CreateGraphResponse, CreateGraphSectionData, CreateGraphSectionResponse, DeleteAllThreadCommentsData, DeleteAllThreadCommentsResponse, DeleteChannelData, DeleteChannelResponse, DeleteEdgeData, DeleteEdgeResponse, DeleteNodeData, DeleteNodeResponse, DeleteOneNotificationData, DeleteOneNotificationResponse, DeleteProjectData, DeleteProjectResponse, DeleteProjectTeamMemberData, DeleteProjectTeamMemberResponse, DeleteSectionData, DeleteSectionResponse, DeleteThreadCommentData, DeleteThreadCommentResponse, DuplicateProjectPlaceholderData, DuplicateProjectPlaceholderResponse, GetChannelData, GetChannelResponse, GetEdgeData, GetEdgeResponse, GetMyNotificationSettingsData, GetMyNotificationSettingsResponse, GetMyProfileSettingsData, GetMyProfileSettingsResponse, GetNodeData, GetNodeResponse, GetProjectData, GetProjectGraphData, GetProjectGraphResponse, GetProjectResponse, GetSectionData, GetSectionResponse, GetGraphData, GetGraphViewData, GetGraphViewResponse, GetGraphResponse, ListMyNotificationsData, ListMyNotificationsResponse, ListProjectsData, ListProjectsResponse, ListProjectTeamData, ListProjectTeamResponse, ListThreadCommentsData, ListThreadCommentsResponse, ListUsersData, ListUsersResponse, ListGraphChannelsData, ListGraphChannelsResponse, ListGraphEdgesData, ListGraphEdgesResponse, ListGraphNodesData, ListGraphNodesResponse, ListGraphsData, ListGraphSectionsData, ListGraphSectionsResponse, ListGraphsResponse, LoginData, LoginResponse, LogoutData, LogoutResponse, MarkAllMyNotificationsAsReadData, MarkAllMyNotificationsAsReadResponse, MarkOneNotificationAsReadData, MarkOneNotificationAsReadResponse, MeData, MeResponse, PatchMyNotificationSettingsData, PatchMyNotificationSettingsResponse, PatchMyProfileSettingsData, PatchMyProfileSettingsResponse, PatchNodeData, PatchNodeResponse, RegisterData, RegisterResponse, SearchLibraryData, SearchLibraryResponse, UpdateChannelData, UpdateChannelResponse, UpdateProjectData, UpdateProjectResponse, UpdateProjectTeamMemberData, UpdateProjectTeamMemberResponse, UpdateSectionData, UpdateSectionResponse } from '../types.gen';
+import { addProjectTeamMembers, courseFlowV2ApiNinjaAppHealth, createChannel, createGraph, createGraphEdge, createGraphNode, createGraphSection, createProject, createSection, createThreadComment, deleteAllThreadComments, deleteChannel, deleteEdge, deleteNode, deleteOneNotification, deleteProject, deleteProjectTeamMember, deleteSection, deleteThreadComment, duplicateProjectPlaceholder, getChannel, getEdge, getGraph, getGraphView, getMyNotificationSettings, getMyProfileSettings, getNode, getProject, getProjectGraph, getSection, listGraphChannels, listGraphEdges, listGraphNodes, listGraphs, listGraphSections, listMyNotifications, listProjects, listProjectTeam, listThreadComments, listUsers, login, logout, markAllMyNotificationsAsRead, markOneNotificationAsRead, me, type Options, patchMyNotificationSettings, patchMyProfileSettings, patchNode, register, searchLibrary, updateChannel, updateProject, updateProjectTeamMember, updateSection } from '../sdk.gen';
+import type { AddProjectTeamMembersData, AddProjectTeamMembersResponse, CourseFlowV2ApiNinjaAppHealthData, CourseFlowV2ApiNinjaAppHealthResponse, CreateChannelData, CreateChannelResponse, CreateGraphData, CreateGraphEdgeData, CreateGraphEdgeResponse, CreateGraphNodeData, CreateGraphNodeResponse, CreateGraphResponse, CreateGraphSectionData, CreateGraphSectionResponse, CreateProjectData, CreateProjectResponse, CreateSectionData, CreateSectionResponse, CreateThreadCommentData, CreateThreadCommentResponse, DeleteAllThreadCommentsData, DeleteAllThreadCommentsResponse, DeleteChannelData, DeleteChannelResponse, DeleteEdgeData, DeleteEdgeResponse, DeleteNodeData, DeleteNodeResponse, DeleteOneNotificationData, DeleteOneNotificationResponse, DeleteProjectData, DeleteProjectResponse, DeleteProjectTeamMemberData, DeleteProjectTeamMemberResponse, DeleteSectionData, DeleteSectionResponse, DeleteThreadCommentData, DeleteThreadCommentResponse, DuplicateProjectPlaceholderData, DuplicateProjectPlaceholderResponse, GetChannelData, GetChannelResponse, GetEdgeData, GetEdgeResponse, GetGraphData, GetGraphResponse, GetGraphViewData, GetGraphViewResponse, GetMyNotificationSettingsData, GetMyNotificationSettingsResponse, GetMyProfileSettingsData, GetMyProfileSettingsResponse, GetNodeData, GetNodeResponse, GetProjectData, GetProjectGraphData, GetProjectGraphResponse, GetProjectResponse, GetSectionData, GetSectionResponse, ListGraphChannelsData, ListGraphChannelsResponse, ListGraphEdgesData, ListGraphEdgesResponse, ListGraphNodesData, ListGraphNodesResponse, ListGraphsData, ListGraphSectionsData, ListGraphSectionsResponse, ListGraphsResponse, ListMyNotificationsData, ListMyNotificationsResponse, ListProjectsData, ListProjectsResponse, ListProjectTeamData, ListProjectTeamResponse, ListThreadCommentsData, ListThreadCommentsResponse, ListUsersData, ListUsersResponse, LoginData, LoginResponse, LogoutData, LogoutResponse, MarkAllMyNotificationsAsReadData, MarkAllMyNotificationsAsReadResponse, MarkOneNotificationAsReadData, MarkOneNotificationAsReadResponse, MeData, MeResponse, PatchMyNotificationSettingsData, PatchMyNotificationSettingsResponse, PatchMyProfileSettingsData, PatchMyProfileSettingsResponse, PatchNodeData, PatchNodeResponse, RegisterData, RegisterResponse, SearchLibraryData, SearchLibraryResponse, UpdateChannelData, UpdateChannelResponse, UpdateProjectData, UpdateProjectResponse, UpdateProjectTeamMemberData, UpdateProjectTeamMemberResponse, UpdateSectionData, UpdateSectionResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -288,7 +288,7 @@ export const createGraphMutation = (options?: Partial<Options<CreateGraphData>>)
 export const getGraphViewQueryKey = (options: Options<GetGraphViewData>) => createQueryKey('getGraphView', options);
 
 /**
- * Get Graph Graph
+ * Get Graph View
  */
 export const getGraphViewOptions = (options: Options<GetGraphViewData>) => queryOptions<GetGraphViewResponse, DefaultError, GetGraphViewResponse, ReturnType<typeof getGraphViewQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -669,6 +669,23 @@ export const getEdgeOptions = (options: Options<GetEdgeData>) => queryOptions<Ge
     queryKey: getEdgeQueryKey(options)
 });
 
+/**
+ * Delete All Thread Comments
+ */
+export const deleteAllThreadCommentsMutation = (options?: Partial<Options<DeleteAllThreadCommentsData>>): UseMutationOptions<DeleteAllThreadCommentsResponse, DefaultError, Options<DeleteAllThreadCommentsData>> => {
+    const mutationOptions: UseMutationOptions<DeleteAllThreadCommentsResponse, DefaultError, Options<DeleteAllThreadCommentsData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await deleteAllThreadComments({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
 export const listThreadCommentsQueryKey = (options: Options<ListThreadCommentsData>) => createQueryKey('listThreadComments', options);
 
 /**
@@ -711,23 +728,6 @@ export const deleteThreadCommentMutation = (options?: Partial<Options<DeleteThre
     const mutationOptions: UseMutationOptions<DeleteThreadCommentResponse, DefaultError, Options<DeleteThreadCommentData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await deleteThreadComment({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
-/**
- * Delete All Thread Comments
- */
-export const deleteAllThreadCommentsMutation = (options?: Partial<Options<DeleteAllThreadCommentsData>>): UseMutationOptions<DeleteAllThreadCommentsResponse, DefaultError, Options<DeleteAllThreadCommentsData>> => {
-    const mutationOptions: UseMutationOptions<DeleteAllThreadCommentsResponse, DefaultError, Options<DeleteAllThreadCommentsData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await deleteAllThreadComments({
                 ...options,
                 ...fnOptions,
                 throwOnError: true

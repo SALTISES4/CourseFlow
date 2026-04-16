@@ -503,16 +503,6 @@ export type GraphDetailOut = {
 };
 
 /**
- * WorkflowTypeIn
- */
-export enum WorkflowTypeIn {
-    PROGRAM = 'program',
-    COURSE = 'course',
-    ACTIVITY = 'activity',
-    TASK = 'task'
-}
-
-/**
  * GraphCreateIn
  */
 export type GraphCreateIn = {
@@ -534,6 +524,16 @@ export type GraphCreateIn = {
      */
     workflowDescription?: string;
 };
+
+/**
+ * WorkflowTypeIn
+ */
+export enum WorkflowTypeIn {
+    PROGRAM = 'program',
+    COURSE = 'course',
+    ACTIVITY = 'activity',
+    TASK = 'task'
+}
 
 /**
  * GraphListItemOut
@@ -647,6 +647,83 @@ export type EdgeGraphOut = {
 };
 
 /**
+ * GraphMetaOut
+ *
+ * Graph row + root workflow identifiers needed for the editor shell (no nested workflow object).
+ */
+export type GraphMetaOut = {
+    /**
+     * Uuid
+     */
+    uuid: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Ownerid
+     */
+    ownerId: number;
+    /**
+     * Projectid
+     */
+    projectId: number | null;
+    /**
+     * Revisionid
+     */
+    revisionId: number;
+    /**
+     * Datecreated
+     */
+    dateCreated: string;
+    /**
+     * Modifiedon
+     */
+    modifiedOn: string;
+    /**
+     * Rootworkflowuuid
+     */
+    rootWorkflowUuid?: string | null;
+    /**
+     * Rootworkflowtype
+     */
+    rootWorkflowType?: string | null;
+    /**
+     * Rootworkflowtitle
+     */
+    rootWorkflowTitle?: string;
+};
+
+/**
+ * GraphViewOut
+ *
+ * Single round-trip projection for rendering the graph (not nested entity trees).
+ */
+export type GraphViewOut = {
+    graph: GraphMetaOut;
+    /**
+     * Channels
+     */
+    channels: Array<ChannelGraphOut>;
+    /**
+     * Sections
+     */
+    sections: Array<SectionGraphOut>;
+    /**
+     * Nodes
+     */
+    nodes: Array<NodeGraphOut>;
+    /**
+     * Edges
+     */
+    edges: Array<EdgeGraphOut>;
+    /**
+     * Threadcommentcounts
+     */
+    threadCommentCounts?: Array<ThreadCommentCountOut>;
+};
+
+/**
  * NodeGraphOut
  */
 export type NodeGraphOut = {
@@ -718,83 +795,6 @@ export type ThreadCommentCountOut = {
      * Commentcount
      */
     commentCount: number;
-};
-
-/**
- * GraphMetaOut
- *
- * Graph row + root workflow identifiers needed for the editor shell (no nested workflow object).
- */
-export type GraphMetaOut = {
-    /**
-     * Uuid
-     */
-    uuid: string;
-    /**
-     * Title
-     */
-    title: string;
-    /**
-     * Ownerid
-     */
-    ownerId: number;
-    /**
-     * Projectid
-     */
-    projectId: number | null;
-    /**
-     * Revisionid
-     */
-    revisionId: number;
-    /**
-     * Datecreated
-     */
-    dateCreated: string;
-    /**
-     * Modifiedon
-     */
-    modifiedOn: string;
-    /**
-     * Rootworkflowuuid
-     */
-    rootWorkflowUuid?: string | null;
-    /**
-     * Rootworkflowtype
-     */
-    rootWorkflowType?: string | null;
-    /**
-     * Rootworkflowtitle
-     */
-    rootWorkflowTitle?: string;
-};
-
-/**
- * GraphViewOut
- *
- * Single round-trip projection for rendering the graph graph (not nested entity trees).
- */
-export type GraphViewOut = {
-    graph: GraphMetaOut;
-    /**
-     * Channels
-     */
-    channels: Array<ChannelGraphOut>;
-    /**
-     * Sections
-     */
-    sections: Array<SectionGraphOut>;
-    /**
-     * Nodes
-     */
-    nodes: Array<NodeGraphOut>;
-    /**
-     * Edges
-     */
-    edges: Array<EdgeGraphOut>;
-    /**
-     * Threadcommentcounts
-     */
-    threadCommentCounts?: Array<ThreadCommentCountOut>;
 };
 
 /**
@@ -1322,6 +1322,8 @@ export type CommentOut = {
 
 /**
  * CommentCreateIn
+ *
+ * Body for POST /thread/{uuid}/comments.
  */
 export type CommentCreateIn = {
     /**
@@ -1332,6 +1334,8 @@ export type CommentCreateIn = {
 
 /**
  * ThreadCommentsBulkDeleteOut
+ *
+ * Response for DELETE /thread/{uuid}/comments (delete all).
  */
 export type ThreadCommentsBulkDeleteOut = {
     /**
@@ -1865,7 +1869,7 @@ export type GetProjectGraphData = {
         uuid: string;
     };
     query?: never;
-    url: '/api/project/{uuid}/graph';
+    url: '/api/project/{uuid}/view';
 };
 
 export type GetProjectGraphResponses = {
@@ -2541,6 +2545,27 @@ export type GetEdgeResponses = {
 
 export type GetEdgeResponse = GetEdgeResponses[keyof GetEdgeResponses];
 
+export type DeleteAllThreadCommentsData = {
+    body?: never;
+    path: {
+        /**
+         * Uuid
+         */
+        uuid: string;
+    };
+    query?: never;
+    url: '/api/thread/{uuid}/comments';
+};
+
+export type DeleteAllThreadCommentsResponses = {
+    /**
+     * OK
+     */
+    200: ThreadCommentsBulkDeleteOut;
+};
+
+export type DeleteAllThreadCommentsResponse = DeleteAllThreadCommentsResponses[keyof DeleteAllThreadCommentsResponses];
+
 export type ListThreadCommentsData = {
     body?: never;
     path: {
@@ -2609,27 +2634,6 @@ export type DeleteThreadCommentResponses = {
 };
 
 export type DeleteThreadCommentResponse = DeleteThreadCommentResponses[keyof DeleteThreadCommentResponses];
-
-export type DeleteAllThreadCommentsData = {
-    body?: never;
-    path: {
-        /**
-         * Uuid
-         */
-        uuid: string;
-    };
-    query?: never;
-    url: '/api/thread/{uuid}/comments';
-};
-
-export type DeleteAllThreadCommentsResponses = {
-    /**
-     * OK
-     */
-    200: ThreadCommentsBulkDeleteOut;
-};
-
-export type DeleteAllThreadCommentsResponse = DeleteAllThreadCommentsResponses[keyof DeleteAllThreadCommentsResponses];
 
 export type LoginData = {
     body: LoginIn;
