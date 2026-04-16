@@ -69,7 +69,7 @@ export const login = createAsyncThunk<
 >('auth/login', async ({ email, password }, { rejectWithValue }) => {
   try {
     const data = await loginRequest(email.trim(), password)
-    setAccessToken(data.access_token)
+    setAccessToken(data.accessToken)
     courseFlowQueryClient.setQueryData(meQueryKey(), {
       item: data.user
     } satisfies UserSummaryOutResp)
