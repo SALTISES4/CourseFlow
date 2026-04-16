@@ -1,6 +1,7 @@
 import Base from '@cf/base'
+import UserRegisterPage from '@cf/components/pages/SignIn/Register'
 import { CFRoutes, RelativeRoutes } from '@cf/router/cfRoutes'
-import LoginRoute from '@cf/router/LoginRoute'
+import UserLoginPage from '@cf/router/LoginPage'
 import { RequireAuth } from '@cf/router/RequireAuth'
 import Home from '@cfPages/Home'
 import Explore from '@cfPages/Library/Explore'
@@ -26,7 +27,11 @@ export { CFRoutes, RelativeRoutes }
 export const CFRouter = createBrowserRouter([
   {
     path: '/login',
-    element: <LoginRoute />
+    element: <UserLoginPage />
+  },
+  {
+    path: '/register',
+    element: <UserRegisterPage />
   },
   {
     path: '/',

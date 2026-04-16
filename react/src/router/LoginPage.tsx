@@ -1,4 +1,4 @@
-import LoginPage from '@cfPages/Login'
+import Login from '@cf/components/pages/SignIn/Login'
 import {
   selectAuthStatus,
   selectIsBootstrapping
@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'
 
 /** /login: loading gate + redirect authenticated users to home shell. */
-export default function LoginRoute() {
+export default function LoginPage() {
   const bootstrapping = useSelector(selectIsBootstrapping)
   const status = useSelector(selectAuthStatus)
 
@@ -19,5 +19,5 @@ export default function LoginRoute() {
     return <Navigate to="/" replace />
   }
 
-  return <LoginPage />
+  return <Login />
 }

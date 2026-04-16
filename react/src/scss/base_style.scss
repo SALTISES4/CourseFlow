@@ -14,42 +14,16 @@ html {
   font-size: 16px;
 }
 
+#root {
+  height: 100%;
+}
+
 hr {
   margin: 4px;
   margin-left: 10%;
   margin-right: 10%;
   border-top: 1px solid $color-white-gray;
   border-left: 0px;
-}
-
-h2 {
-  font-size: 28px;
-  font-weight: 500;
-}
-
-h3 {
-  color: $color-text;
-}
-
-h4 {
-  margin-top: 10px;
-  margin-bottom: 5px;
-  color: $color-text;
-  font-weight: 600;
-  // color: $color-primary-green;
-}
-h5 {
-  margin-top: 8px;
-  margin-bottom: 8px;
-  color: $color-primary-green;
-}
-
-h4.drag-and-drop::after,
-h3.drag-and-drop::after {
-  content: "\A Drag and drop to add";
-  font-size: 10px;
-  color: $color-gray;
-  white-space: pre;
 }
 
 body.printing {
