@@ -1,7 +1,5 @@
-import React from 'react'
-
 const CFLogo = () => (
-  <svg width="40" height="40" fill="none">
+  <svg viewBox="0 0 40 40" fill="none">
     <rect width="40" height="40" rx="3" fill="#027A4C" />
     <mask
       id="cf-logo-a"
