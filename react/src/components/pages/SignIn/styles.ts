@@ -3,15 +3,17 @@ import MuiPaper from '@mui/material/Paper'
 import { styled } from '@mui/material/styles'
 
 export const Page = styled(Box)(({ theme }) => ({
-  display: 'flex',
+  display: 'grid',
   justifyContent: 'center',
   alignItems: 'center',
-  height: '100%'
+  height: '100%',
+  overflow: 'auto'
 }))
 
 export const Paper = styled(MuiPaper)(({ theme }) => ({
-  width: '100%',
-  maxWidth: '400px',
+  width: '400px',
+  marginTop: theme.spacing(4),
+  marginBottom: theme.spacing(4),
   padding: theme.spacing(3)
 }))
 
