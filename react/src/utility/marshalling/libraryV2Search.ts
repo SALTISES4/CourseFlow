@@ -2,7 +2,7 @@
  * Maps CourseFlow v2 `POST /api/library/search` JSON to the legacy library
  * envelope expected by LibrarySearchView / Sidebar (`dataPackage` + `ELibraryObject`).
  */
-import {LibraryFilterIn, LibrarySearchIn} from '@cf/api/gen'
+import { LibraryFilterIn, LibrarySearchIn } from '@cf/api/gen'
 import { ObjectPermission } from '@cf/types/common'
 import { LibraryObjectType } from '@cf/types/enum'
 import { ELibraryObject, EUser } from '@XMLHTTP/types/entity'

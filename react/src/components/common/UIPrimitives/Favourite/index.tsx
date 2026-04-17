@@ -15,7 +15,7 @@ const Favourite = ({ id, isFavourite, type }: PropsType) => {
   const [isFavouriteState, setFavouriteState] = useState<boolean>(isFavourite)
 
   // @todo replace
-  const [toggleMutate] = useToggleFavouriteMutation()
+  // const [toggleMutate] = useToggleFavouriteMutation()
 
   const onSuccess = useCallback(() => {
     setFavouriteState(!isFavouriteState)
@@ -31,22 +31,22 @@ const Favourite = ({ id, isFavourite, type }: PropsType) => {
     })
   }, [])
 
-  const onStarClick = useCallback(
-    (e: MouseEvent<HTMLButtonElement>) => {
-      e.stopPropagation()
-      e.preventDefault()
+  const onStarClick = useCallback((e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    e.preventDefault()
 
-      toggleMutate({
-        id,
-        objectType: type,
-        favourite: !isFavouriteState
-      })
-        .unwrap()
-        .then(() => onSuccess())
-        .catch((err) => onError(err))
-    },
-    [id, type, isFavouriteState, onError, onSuccess, toggleMutate]
-  )
+    // TODO:
+    console.log('on star click, toggle favorite mutation')
+
+    // toggleMutate({
+    //   id,
+    //   objectType: type,
+    //   favourite: !isFavouriteState
+    // })
+    //   .unwrap()
+    //   .then(() => onSuccess())
+    //   .catch((err) => onError(err))
+  }, [])
 
   return (
     <IconButton

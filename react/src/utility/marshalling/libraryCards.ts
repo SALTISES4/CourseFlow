@@ -1,3 +1,4 @@
+import { LibraryItemOut } from '@cf/api/gen'
 import { LibraryObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Utility, { _t } from '@cf/utility/Utility.class'
@@ -20,9 +21,12 @@ function mapChipType(type: LibraryObjectType): ChipOptions {
   )
 }
 
-function getTypeChip(workflow: ELibraryObject): WorkflowCardChipType {
-  const { type, isStrategy } = workflow
-  let typeText = _t(type)
+function getTypeChip(workflow: LibraryItemOut): WorkflowCardChipType {
+  const { objectType } = workflow
+  let typeText = _t(objectType)
+
+  // TODO: figure out wheee this is coming from with the new v2 data
+  const isStrategy = false
 
   // no
   // if (type === LibraryObjectType.LIVE_PROJECT) {
@@ -33,10 +37,8 @@ function getTypeChip(workflow: ELibraryObject): WorkflowCardChipType {
     typeText += ` ${_t('strategy')}`
   }
 
-  const chipType = mapChipType(type)
-
   return {
-    type: chipType,
+    type: mapChipType(objectType as LibraryObjectType),
     label: ThemeHelper.capWords(typeText)
   }
 }
@@ -80,7 +82,9 @@ export function formatLibraryObject(
   WorkflowCardWrapperPropsType,
   'id' | 'title' | 'description' | 'isFavourite' | 'chips' | 'isLinked' | 'type'
 > {
-  const typeChip = getTypeChip(libraryObject)
+  // TODO: convert from ELibraryObject into LibraryItemOut
+  // const typeChip = getTypeChip(libraryObject)
+  const typeChip = null
   const templateChip = getTemplateChip(libraryObject)
   const countChip = getWorkflowCountChip(libraryObject)
   const descriptionFromEntity =
