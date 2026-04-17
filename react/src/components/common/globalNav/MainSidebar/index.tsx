@@ -62,7 +62,7 @@ const Favourites = () => {
     return <Loader />
   }
 
-  if (!data || isError) {
+  if (!data || !data.items.length || isError) {
     return <></>
   }
 

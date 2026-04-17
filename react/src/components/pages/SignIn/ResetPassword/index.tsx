@@ -66,10 +66,10 @@ function RegisterPage() {
           >
             {_t('Reset password')}
           </Button>
+          <Typography variant="body1">
+            {_t('Back to')} <Link href="/login">{_t('Login')}</Link>
+          </Typography>
         </Styled.Form>
-        <Typography variant="body1">
-          {_t('Back to')} <Link href="/login">{_t('Login')}</Link>
-        </Typography>
       </Styled.Paper>
     </Styled.Page>
   )

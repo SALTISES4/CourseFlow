@@ -1,8 +1,11 @@
 import {
   AuthRequestError,
   type CurrentUser,
+  type UserLoginPayload,
+  type UserRegisterPayload,
   fetchCurrentUser,
-  loginRequest
+  loginRequest,
+  registerRequest
 } from '@cf/api/auth'
 import {
   clearAccessToken,
@@ -12,6 +15,7 @@ import {
 import { UserSummaryOutResp } from '@cf/api/gen'
 import { meQueryKey } from '@cf/api/gen/@tanstack/react-query.gen'
 import { courseFlowQueryClient } from '@cf/api/queryClient'
+import { _t } from '@cf/utility/Utility.class'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 export type AuthStatus = 'unknown' | 'authenticated' | 'unauthenticated'
@@ -57,18 +61,19 @@ export const bootstrapAuth = createAsyncThunk<
     if (e instanceof AuthRequestError) {
       return rejectWithValue(e.message)
     }
-    const message = e instanceof Error ? e.message : 'Unable to verify session'
+    const message =
+      e instanceof Error ? e.message : _t('Unable to verify session')
     return rejectWithValue(message)
   }
 })
 
 export const login = createAsyncThunk<
   { user: CurrentUser },
-  { email: string; password: string },
+  UserLoginPayload,
   { rejectValue: string }
->('auth/login', async ({ email, password }, { rejectWithValue }) => {
+>('auth/login', async (payload, { rejectWithValue }) => {
   try {
-    const data = await loginRequest(email.trim(), password)
+    const data = await loginRequest(payload)
     setAccessToken(data.accessToken)
     courseFlowQueryClient.setQueryData(meQueryKey(), {
       item: data.user
@@ -78,7 +83,29 @@ export const login = createAsyncThunk<
     if (e instanceof AuthRequestError) {
       return rejectWithValue(e.message)
     }
-    const message = e instanceof Error ? e.message : 'Login failed'
+    const message = e instanceof Error ? e.message : _t('Login failed')
+    return rejectWithValue(message)
+  }
+})
+
+export const register = createAsyncThunk<
+  { user: CurrentUser },
+  UserRegisterPayload,
+  { rejectValue: string }
+>('auth/register', async (payload, { rejectWithValue }) => {
+  try {
+    console.log('attempting to register with', payload)
+    const data = await registerRequest(payload)
+    setAccessToken(data.accessToken)
+    courseFlowQueryClient.setQueryData(meQueryKey(), {
+      item: data.user
+    } satisfies UserSummaryOutResp)
+    return { user: data.user }
+  } catch (e) {
+    if (e instanceof AuthRequestError) {
+      return rejectWithValue(e.message)
+    }
+    const message = e instanceof Error ? e.message : _t('Registration failed')
     return rejectWithValue(message)
   }
 })

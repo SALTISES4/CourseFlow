@@ -1,9 +1,9 @@
 import { _t } from '@cf/utility/Utility.class'
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
-import { styled } from '@mui/material/styles'
+import { SxProps, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 
 const SectionWrap = styled(Box)(({ theme }) => ({
@@ -31,10 +31,11 @@ type PropsType = {
     }
   }
   children: ReactNode
+  sx?: SxProps
 }
 
-const Section = ({ header, children }: PropsType) => (
-  <SectionWrap>
+const Section = ({ sx, header, children }: PropsType) => (
+  <SectionWrap sx={sx}>
     {header && (
       <SectionHeader>
         <Typography variant="h5">{_t(header.title)}</Typography>

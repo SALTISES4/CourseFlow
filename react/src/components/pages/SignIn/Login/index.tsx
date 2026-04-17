@@ -11,7 +11,14 @@ import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { FormEvent, MouseEvent, useCallback, useState } from 'react'
+import { produce } from 'immer'
+import {
+  ChangeEvent,
+  FormEvent,
+  MouseEvent,
+  useCallback,
+  useState
+} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -19,24 +26,40 @@ import * as Styled from '../styles'
 
 function LoginPage() {
   const dispatch = useDispatch<AppDispatch>()
-  const pending = useSelector(selectLoginPending)
-  const error = useSelector(selectAuthError)
   const navigate = useNavigate()
   const location = useLocation()
-  const from =
-    (location.state as { from?: { pathname: string } })?.from?.pathname ?? '/'
+  const pending = useSelector(selectLoginPending)
+  const error = useSelector(selectAuthError)
+  const from = location.state?.from?.pathname ?? '/'
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [state, setState] = useState({
+    email: '',
+    password: ''
+  })
 
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    dispatch(clearAuthError())
-    const result = await dispatch(login({ email, password }))
-    if (login.fulfilled.match(result)) {
-      navigate(from, { replace: true })
+  const onSubmit = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault()
+      dispatch(clearAuthError())
+      const result = await dispatch(
+        login({ email: state.email, password: state.password })
+      )
+      if (login.fulfilled.match(result)) {
+        navigate(from, { replace: true })
+      }
+    },
+    [dispatch, navigate, from, state.email, state.password]
+  )
+
+  const onInputChange = useCallback((field: keyof typeof state) => {
+    return (e: ChangeEvent<HTMLInputElement>) => {
+      setState(
+        produce((draft) => {
+          draft[field] = e.target.value
+        })
+      )
     }
-  }
+  }, [])
 
   const onResetPasswordClick = useCallback(
     (e: MouseEvent<HTMLAnchorElement>) => {
@@ -66,8 +89,8 @@ function LoginPage() {
             label={_t('Email')}
             type="email"
             name="email"
-            value={email}
-            onChange={(ev) => setEmail(ev.target.value)}
+            value={state.email}
+            onChange={onInputChange('email')}
             fullWidth
             required
           />
@@ -75,8 +98,8 @@ function LoginPage() {
             label={_t('Password')}
             type="password"
             name="password"
-            value={password}
-            onChange={(ev) => setPassword(ev.target.value)}
+            value={state.password}
+            onChange={onInputChange('password')}
             fullWidth
             required
           />

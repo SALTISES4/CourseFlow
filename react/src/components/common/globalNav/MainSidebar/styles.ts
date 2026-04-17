@@ -6,7 +6,7 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { Link as RouterLink } from 'react-router-dom'
 
-export const SidebarRootStyles = {
+export const MainSidebarRootStyles = {
   height: '100%'
 }
 

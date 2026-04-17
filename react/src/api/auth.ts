@@ -2,13 +2,21 @@
  * Auth helpers built on the Hey API generated client (`sdk.gen` + configured `client`).
  * HTTP paths remain Django Ninja `course_flow_v2.api.routers.auth`.
  */
-import { login, me } from './gen/sdk.gen'
-import type { LoginOut, UserSummaryOut } from './gen/types.gen'
+import { login, logout, me, register } from './gen/sdk.gen'
+import type {
+  LoginIn,
+  LoginOut,
+  LogoutOut,
+  RegisterIn,
+  UserSummaryOut
+} from './gen/types.gen'
 
 /** Mirrors `UserSummaryOut` from the API; use `uuid` as stable identity (no numeric id in v2). */
 export type CurrentUser = UserSummaryOut
 
 export type LoginResponse = LoginOut
+export type UserLoginPayload = LoginIn
+export type UserRegisterPayload = RegisterIn
 
 export class AuthRequestError extends Error {
   constructor(
@@ -35,12 +43,45 @@ function parseDetail(body: unknown): string {
 }
 
 export async function loginRequest(
-  email: string,
-  password: string
+  data: UserLoginPayload
 ): Promise<LoginResponse> {
   const result = await login({
-    body: { email: email.trim(), password }
+    body: {
+      email: data.email.trim(),
+      password: data.password
+    }
   })
+
+  if (result.error) {
+    const status = result.response?.status ?? 0
+    throw new AuthRequestError(parseDetail(result.error), status, result.error)
+  }
+
+  return result.data
+}
+
+export async function registerRequest(
+  data: UserRegisterPayload
+): Promise<LoginResponse> {
+  const result = await register({
+    body: {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email.trim(),
+      password: data.password
+    }
+  })
+
+  if (result.error) {
+    const status = result.response?.status ?? 0
+    throw new AuthRequestError(parseDetail(result.error), status, result.error)
+  }
+
+  return result.data
+}
+
+export async function logoutRequest(): Promise<LogoutOut> {
+  const result = await logout()
 
   if (result.error) {
     const status = result.response?.status ?? 0

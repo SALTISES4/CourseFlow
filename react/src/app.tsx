@@ -5,7 +5,7 @@ import AuthBootstrap from '@cf/components/auth/AuthBootstrap'
 import { CookieProvider } from '@cf/context/cookieContext'
 import { DialogContextProvider } from '@cf/context/dialogContext'
 import CfRouter from '@cf/router/appRoutes'
-import { SidebarRootStyles } from '@cfComponents/globalNav/Sidebar/styles'
+import { MainSidebarRootStyles } from '@cfComponents/globalNav/MainSidebar/styles'
 import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
@@ -65,7 +65,7 @@ root.render(
           >
             <DialogContextProvider>
               <ThemeProvider theme={theme}>
-                <ScopedCssBaseline sx={SidebarRootStyles}>
+                <ScopedCssBaseline sx={MainSidebarRootStyles}>
                   <RouterProvider
                     router={CfRouter}
                     future={{ v7_startTransition: true }}

@@ -2,7 +2,7 @@ import UserProvider from '@cf/context/userContext'
 import NetworkActivityProvider from '@cf/HTTP/NetworkActivityProvider'
 import { OuterContentWrap } from '@cf/mui/helper'
 import GlobalDialogs from '@cfComponents/globalNav/GlobalDialogs'
-import Sidebar from '@cfComponents/globalNav/Sidebar'
+import MainSidebar from '@cfComponents/globalNav/MainSidebar'
 import TopBar from '@cfComponents/globalNav/TopBar'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import HtmlReactParser from 'html-react-parser'
@@ -20,7 +20,7 @@ const NotificationsAlert = ({ show }: { show: boolean }) => {
     return <></>
   }
   return (
-    <OuterContentWrap sx={{ pb: 0 }}>
+    <OuterContentWrap sx={{ pb: 1 }}>
       <Alert
         sx={{ mt: 3 }}
         severity="update"
@@ -35,7 +35,7 @@ const Base = ({ showNotifications, children }: PropsType) => {
   return (
     <UserProvider>
       <div className="main-wrapper">
-        <Sidebar />
+        <MainSidebar />
 
         <div className="main-block">
           <TopBar />
