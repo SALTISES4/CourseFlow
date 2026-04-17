@@ -71,6 +71,7 @@ const Home = () => {
             ? _t('Explore templates')
             : _t('Get started with templates')
         }}
+        sx={{ marginTop: projects.length ? 0 : 4 }}
       >
         <Alert
           sx={{ mb: 3 }}
