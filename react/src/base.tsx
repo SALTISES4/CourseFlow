@@ -20,7 +20,7 @@ const NotificationsAlert = ({ show }: { show: boolean }) => {
     return <></>
   }
   return (
-    <OuterContentWrap sx={{ pb: 0 }}>
+    <OuterContentWrap sx={{ pb: 1 }}>
       <Alert
         sx={{ mt: 3 }}
         severity="update"
