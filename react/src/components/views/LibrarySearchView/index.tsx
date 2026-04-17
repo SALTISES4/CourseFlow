@@ -93,7 +93,7 @@ const FilterWorkflowResults = ({
       }}
       onChange={(workflow) => {
         const match = data.items.find((el) => workflow.uuid === el.uuid)
-        navigateToItem(match.uuid, match.type)
+        navigateToItem(match.uuid, match.objectType)
       }}
     />
   )

@@ -7,7 +7,6 @@ import {
   WorkflowCardChipType
 } from '@cfComponents/cards/WorkflowCardDumb'
 import { WorkflowCardWrapperPropsType } from '@cfComponents/cards/WorkflowCardWrapper'
-import { ELibraryObject } from '@XMLHTTP/types/entity'
 
 /**
  * this thin wrapper is for when we move CHIP_TYPE away from the domain
@@ -43,7 +42,7 @@ function getTypeChip(workflow: LibraryItemOut): WorkflowCardChipType {
   }
 }
 
-function getTemplateChip(workflow: ELibraryObject): WorkflowCardChipType {
+function getTemplateChip(workflow: LibraryItemOut): WorkflowCardChipType {
   const isTemplate = workflow.isTemplate
   if (isTemplate) {
     return {
@@ -54,51 +53,53 @@ function getTemplateChip(workflow: ELibraryObject): WorkflowCardChipType {
   return null
 }
 
-function getWorkflowCountChip(workflow: ELibraryObject): WorkflowCardChipType {
-  if (
-    workflow.type === LibraryObjectType.PROJECT &&
-    workflow.workflowCount !== null &&
-    workflow.workflowCount > 0
-  ) {
-    return {
-      type: ChipOptions.DEFAULT,
-      label: `${workflow.workflowCount} ${_t(
-        `workflow` + (workflow.workflowCount > 1 ? 's' : '')
-      )}`
-    }
-  }
+function getWorkflowCountChip(workflow: LibraryItemOut): WorkflowCardChipType {
+  console.log({ workflow })
+  // TODO:
+  // if (
+  //   workflow.objectType === LibraryObjectType.PROJECT &&
+  //   workflow.workflowCount !== null &&
+  //   workflow.workflowCount > 0
+  // ) {
+  //   return {
+  //     type: ChipOptions.DEFAULT,
+  //     label: `${workflow.workflowCount} ${_t(
+  //       `workflow` + (workflow.workflowCount > 1 ? 's' : '')
+  //     )}`
+  //   }
+  // }
   return null
 }
 
-export function formatLibraryObjects(data: ELibraryObject[]) {
-  return data.map((item: ELibraryObject) => {
-    return formatLibraryObject(item)
-  })
+export function formatLibraryObjects(data: LibraryItemOut[]) {
+  return data.map((item) => formatLibraryObject(item))
 }
 
+// TODO: should this whole thing be a selector instead?
 export function formatLibraryObject(
-  libraryObject: ELibraryObject
+  libraryObject: LibraryItemOut
 ): Pick<
   WorkflowCardWrapperPropsType,
   'id' | 'title' | 'description' | 'isFavourite' | 'chips' | 'isLinked' | 'type'
 > {
-  // TODO: convert from ELibraryObject into LibraryItemOut
-  // const typeChip = getTypeChip(libraryObject)
-  const typeChip = null
+  const typeChip = getTypeChip(libraryObject)
   const templateChip = getTemplateChip(libraryObject)
   const countChip = getWorkflowCountChip(libraryObject)
-  const descriptionFromEntity =
-    libraryObject.description?.trim() ||
-    (libraryObject.author?.name &&
-      `${_t('Owned by')} ${libraryObject.author.name}`)
+  // TODO: figure out where this comes from
+  // const descriptionFromEntity =
+  //   libraryObject.description?.trim() ||
+  //   (libraryObject.author?.name &&
+  //     `${_t('Owned by')} ${libraryObject.author.name}`)
 
   return {
-    id: libraryObject.id,
+    id: libraryObject.uuid,
     title: libraryObject.title,
-    description: descriptionFromEntity ?? '',
-    isFavourite: libraryObject.favourite,
-    isLinked: libraryObject.isLinked,
-    type: libraryObject.type,
+    description: libraryObject.description,
+    isFavourite: libraryObject.isFavorite,
+    // TODO: figure out where this comes from
+    // isLinked: libraryObject.isLinked,
+    isLinked: false,
+    type: libraryObject.objectType as LibraryObjectType,
     chips: [typeChip, templateChip, countChip].filter((entry) => entry != null)
   }
 }
