@@ -1,3 +1,10 @@
+import { UserRegisterPayload } from '@cf/api/auth'
+import {
+  clearAuthError,
+  register,
+  selectAuthError
+} from '@cf/redux/slices/auth.slice'
+import { AppDispatch } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
 import Button from '@mui/material/Button'
@@ -7,20 +14,20 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
 import { ChangeEvent, FormEvent, useCallback, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 import * as Styled from '../styles'
 
 type StateType = {
   pending: boolean
-  user: {
-    firstName: string
-    lastName: string
-    email: string
-    password: string
-  }
+  user: UserRegisterPayload
 }
 
 function RegisterPage() {
+  const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
+  const error = useSelector(selectAuthError)
   const [state, setState] = useState<StateType>({
     pending: false,
     user: {
@@ -31,16 +38,23 @@ function RegisterPage() {
     }
   })
 
-  const onSubmit = (e: FormEvent) => {
-    e.preventDefault()
-    console.log('submitted register form with', state.user)
-  }
+  const onSubmit = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault()
+      dispatch(clearAuthError())
+      const result = await dispatch(register(state.user))
+      if (register.fulfilled.match(result)) {
+        navigate('/', { replace: true })
+      }
+    },
+    [dispatch, navigate, state.user]
+  )
 
-  const onChange = useCallback((type: keyof StateType['user']) => {
+  const onInputChange = useCallback((field: keyof StateType['user']) => {
     return (e: ChangeEvent<HTMLInputElement>) => {
       setState(
         produce((draft) => {
-          draft.user[type] = e.target.value
+          draft.user[field] = e.target.value
         })
       )
     }
@@ -57,6 +71,11 @@ function RegisterPage() {
           <Typography variant="body1">
             {_t('Create your CourseFlow account')}
           </Typography>
+          {error ? (
+            <Typography color="error" role="alert">
+              {error}
+            </Typography>
+          ) : null}
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <TextField
@@ -64,7 +83,7 @@ function RegisterPage() {
                 type="text"
                 name="firstName"
                 value={state.user.firstName}
-                onChange={onChange('firstName')}
+                onChange={onInputChange('firstName')}
                 fullWidth
               />
             </Grid>
@@ -74,7 +93,7 @@ function RegisterPage() {
                 type="text"
                 name="lastName"
                 value={state.user.lastName}
-                onChange={onChange('lastName')}
+                onChange={onInputChange('lastName')}
                 fullWidth
               />
             </Grid>
@@ -84,7 +103,7 @@ function RegisterPage() {
             type="email"
             name="email"
             value={state.user.email}
-            onChange={onChange('email')}
+            onChange={onInputChange('email')}
             fullWidth
             required
           />
@@ -93,7 +112,7 @@ function RegisterPage() {
             type="password"
             name="password"
             value={state.user.password}
-            onChange={onChange('password')}
+            onChange={onInputChange('password')}
             fullWidth
             required
           />
