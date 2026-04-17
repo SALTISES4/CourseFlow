@@ -2,10 +2,11 @@
  * Auth helpers built on the Hey API generated client (`sdk.gen` + configured `client`).
  * HTTP paths remain Django Ninja `course_flow_v2.api.routers.auth`.
  */
-import { login, me, register } from './gen/sdk.gen'
+import { login, logout, me, register } from './gen/sdk.gen'
 import type {
   LoginIn,
   LoginOut,
+  LogoutOut,
   RegisterIn,
   UserSummaryOut
 } from './gen/types.gen'
@@ -70,6 +71,17 @@ export async function registerRequest(
       password: data.password
     }
   })
+
+  if (result.error) {
+    const status = result.response?.status ?? 0
+    throw new AuthRequestError(parseDetail(result.error), status, result.error)
+  }
+
+  return result.data
+}
+
+export async function logoutRequest(): Promise<LogoutOut> {
+  const result = await logout()
 
   if (result.error) {
     const status = result.response?.status ?? 0

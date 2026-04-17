@@ -174,7 +174,6 @@ export const apiPaths = {
   ...apiPathsReplaced,
   external: {
     resetPasswordUrl: '/login/',
-    logout: '/logout/',
     static_assets: {
       icon: '/static/course_flow/img/images_svg/'
     }

@@ -1,5 +1,6 @@
+import { logoutRequest } from '@cf/api/auth'
+import { listMyNotificationsOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { apiPaths } from '@cf/router/apiRoutes'
 import { CFRoutes } from '@cf/router/appRoutes'
 import strings from '@cf/utility/strings'
 import { MenuItemType, SimpleMenu, StaticMenu } from '@cfComponents/menu/Menu'
@@ -19,8 +20,8 @@ import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { listMyNotificationsOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { useQuery } from '@tanstack/react-query'
+import { useCallback } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import * as SC from './styles'
@@ -32,12 +33,11 @@ const TopBar = () => {
   const navigate = useNavigate()
   const { dispatch } = useDialog()
 
-  const handleLogout = () => {
-    // not sure navigate can handle this
-    navigate(apiPaths.external.logout, {
-      replace: true
+  const handleLogout = useCallback(() => {
+    logoutRequest().then(() => {
+      window.location.pathname = '/'
     })
-  }
+  }, [])
 
   /*******************************************************
    * MENUS
@@ -172,7 +172,10 @@ const TopBar = () => {
                 backgroundColor: !item.is_read ? 'courseflow.lightest' : null
               }}
             >
-              <ListItemButton component={RouterLink} to={CFRoutes.NOTIFICATIONS}>
+              <ListItemButton
+                component={RouterLink}
+                to={CFRoutes.NOTIFICATIONS}
+              >
                 {!item.is_read && <Badge color="primary" variant="dot" />}
                 <ListItemText
                   primary={item.date_created}
