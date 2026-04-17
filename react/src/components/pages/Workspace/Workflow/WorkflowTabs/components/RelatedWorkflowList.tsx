@@ -1,6 +1,6 @@
 import { listWorkflowsOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import * as MainSidebar from '@cf/components/common/globalNav/MainSidebar/styles'
 import { _t } from '@cf/utility/Utility.class'
-import * as SC from '@cfComponents/globalNav/Sidebar/styles'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { workflowUrl } from '@cfComponents/UIPrimitives/Titles'
 import Divider from '@mui/material/Divider'
@@ -85,8 +85,10 @@ const RelatedWorkflowList = () => {
     return (
       <>
         <Divider sx={{ mt: 2 }} />
-        <SC.SectionWrap>
-          <SC.SectionLabel variant="body1">{_t('Appears in')}</SC.SectionLabel>
+        <MainSidebar.SectionWrap>
+          <MainSidebar.SectionLabel variant="body1">
+            {_t('Appears in')}
+          </MainSidebar.SectionLabel>
           <List data-test-id="panel-other-worflows">
             {parentWorkflows.map((workflow) => {
               const url = workflowUrl(workflow)
@@ -103,7 +105,7 @@ const RelatedWorkflowList = () => {
               )
             })}
           </List>
-        </SC.SectionWrap>
+        </MainSidebar.SectionWrap>
       </>
     )
   }
@@ -120,8 +122,10 @@ const RelatedWorkflowList = () => {
     return (
       <>
         <Divider sx={{ mt: 2 }} />
-        <SC.SectionWrap>
-          <SC.SectionLabel variant="body1">{_t('Contains')}</SC.SectionLabel>
+        <MainSidebar.SectionWrap>
+          <MainSidebar.SectionLabel variant="body1">
+            {_t('Contains')}
+          </MainSidebar.SectionLabel>
           <List>
             {childQuery.data.items.map((workflow) => {
               const url = workflowUrl(workflow)
@@ -139,7 +143,7 @@ const RelatedWorkflowList = () => {
               )
             })}
           </List>
-        </SC.SectionWrap>
+        </MainSidebar.SectionWrap>
       </>
     )
   }
