@@ -1322,6 +1322,8 @@ export type CommentOut = {
 
 /**
  * CommentCreateIn
+ *
+ * Body for POST /thread/{uuid}/comments.
  */
 export type CommentCreateIn = {
     /**
@@ -1332,6 +1334,8 @@ export type CommentCreateIn = {
 
 /**
  * ThreadCommentsBulkDeleteOut
+ *
+ * Response for DELETE /thread/{uuid}/comments (delete all).
  */
 export type ThreadCommentsBulkDeleteOut = {
     /**
@@ -2541,6 +2545,27 @@ export type GetEdgeResponses = {
 
 export type GetEdgeResponse = GetEdgeResponses[keyof GetEdgeResponses];
 
+export type DeleteAllThreadCommentsData = {
+    body?: never;
+    path: {
+        /**
+         * Uuid
+         */
+        uuid: string;
+    };
+    query?: never;
+    url: '/api/thread/{uuid}/comments';
+};
+
+export type DeleteAllThreadCommentsResponses = {
+    /**
+     * OK
+     */
+    200: ThreadCommentsBulkDeleteOut;
+};
+
+export type DeleteAllThreadCommentsResponse = DeleteAllThreadCommentsResponses[keyof DeleteAllThreadCommentsResponses];
+
 export type ListThreadCommentsData = {
     body?: never;
     path: {
@@ -2609,27 +2634,6 @@ export type DeleteThreadCommentResponses = {
 };
 
 export type DeleteThreadCommentResponse = DeleteThreadCommentResponses[keyof DeleteThreadCommentResponses];
-
-export type DeleteAllThreadCommentsData = {
-    body?: never;
-    path: {
-        /**
-         * Uuid
-         */
-        uuid: string;
-    };
-    query?: never;
-    url: '/api/thread/{uuid}/comments';
-};
-
-export type DeleteAllThreadCommentsResponses = {
-    /**
-     * OK
-     */
-    200: ThreadCommentsBulkDeleteOut;
-};
-
-export type DeleteAllThreadCommentsResponse = DeleteAllThreadCommentsResponses[keyof DeleteAllThreadCommentsResponses];
 
 export type LoginData = {
     body: LoginIn;

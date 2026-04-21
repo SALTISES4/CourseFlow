@@ -674,6 +674,8 @@ export const zCommentOut = z.object({
 
 /**
  * CommentCreateIn
+ *
+ * Body for POST /thread/{uuid}/comments.
  */
 export const zCommentCreateIn = z.object({
     body: z.string()
@@ -681,9 +683,11 @@ export const zCommentCreateIn = z.object({
 
 /**
  * ThreadCommentsBulkDeleteOut
+ *
+ * Response for DELETE /thread/{uuid}/comments (delete all).
  */
 export const zThreadCommentsBulkDeleteOut = z.object({
-    success: z.boolean().optional(),
+    success: z.boolean().optional().default(true),
     deletedCount: z.number().int()
 });
 
@@ -1410,6 +1414,19 @@ export const zGetEdgeData = z.object({
  */
 export const zGetEdgeResponse = zEdgeGraphOut;
 
+export const zDeleteAllThreadCommentsData = z.object({
+    body: z.never().optional(),
+    path: z.object({
+        uuid: z.string().uuid()
+    }),
+    query: z.never().optional()
+});
+
+/**
+ * OK
+ */
+export const zDeleteAllThreadCommentsResponse = zThreadCommentsBulkDeleteOut;
+
 export const zListThreadCommentsData = z.object({
     body: z.never().optional(),
     path: z.object({
@@ -1447,17 +1464,10 @@ export const zDeleteThreadCommentData = z.object({
     query: z.never().optional()
 });
 
+/**
+ * OK
+ */
 export const zDeleteThreadCommentResponse = zSuccessOut;
-
-export const zDeleteAllThreadCommentsData = z.object({
-    body: z.never().optional(),
-    path: z.object({
-        uuid: z.string().uuid()
-    }),
-    query: z.never().optional()
-});
-
-export const zDeleteAllThreadCommentsResponse = zThreadCommentsBulkDeleteOut;
 
 export const zLoginData = z.object({
     body: zLoginIn,

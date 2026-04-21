@@ -469,6 +469,17 @@ export const getEdge = <ThrowOnError extends boolean = false>(options: Options<G
 });
 
 /**
+ * Delete All Thread Comments
+ */
+export const deleteAllThreadComments = <ThrowOnError extends boolean = false>(options: Options<DeleteAllThreadCommentsData, ThrowOnError>) => (options.client ?? client).delete<DeleteAllThreadCommentsResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await zDeleteAllThreadCommentsData.parseAsync(data),
+    responseValidator: async (data) => await zDeleteAllThreadCommentsResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/thread/{uuid}/comments',
+    ...options
+});
+
+/**
  * List Thread Comments
  */
 export const listThreadComments = <ThrowOnError extends boolean = false>(options: Options<ListThreadCommentsData, ThrowOnError>) => (options.client ?? client).get<ListThreadCommentsResponses, unknown, ThrowOnError>({
@@ -502,17 +513,6 @@ export const deleteThreadComment = <ThrowOnError extends boolean = false>(option
     responseValidator: async (data) => await zDeleteThreadCommentResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/thread/{uuid}/comments/{comment_uuid}',
-    ...options
-});
-
-/**
- * Delete All Thread Comments
- */
-export const deleteAllThreadComments = <ThrowOnError extends boolean = false>(options: Options<DeleteAllThreadCommentsData, ThrowOnError>) => (options.client ?? client).delete<DeleteAllThreadCommentsResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await zDeleteAllThreadCommentsData.parseAsync(data),
-    responseValidator: async (data) => await zDeleteAllThreadCommentsResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/thread/{uuid}/comments',
     ...options
 });
 
