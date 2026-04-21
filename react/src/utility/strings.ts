@@ -32,9 +32,6 @@ const stringsRoot = {
   markAsRead: 'Mark as read',
   markAllAsRead: 'Mark all as read',
   noNotificationsYet: 'You have no notifications yet.',
-  profileSettings: 'Profile settings',
-  updateProfile: 'Update profile',
-  updateProfileSuccess: 'User details updated!',
   workflowArchiveSuccess: 'The Workflow has been archived',
   projectArchiveSuccess: 'The Project has been archived',
   projectArchiveFailure: 'There was an error archiving your project',
@@ -42,10 +39,7 @@ const stringsRoot = {
   workflowUnarchiveFailure: 'There was an error unarchiving your workflow',
   projectUnarchiveFailure: 'There was an error unarchiving your project',
   projectUnarchiveSuccess: 'The Project has been unarchived',
-  workflowUnarchiveSuccess: 'The Workflow has been unarchived',
-  firstName: 'First Name',
-  lastName: 'Last Name',
-  languagePreferences: 'Language Preferences'
+  workflowUnarchiveSuccess: 'The Workflow has been unarchived'
 }
 
 export default Utility.wrapLeafStrings<typeof stringsRoot>(stringsRoot)

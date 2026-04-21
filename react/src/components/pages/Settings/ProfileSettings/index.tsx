@@ -6,7 +6,7 @@ import {
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { languageOptions } from '@cf/utility/constants'
-import strings from '@cf/utility/strings'
+import { _t } from '@cf/utility/Utility.class'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Box from '@mui/material/Box'
@@ -47,11 +47,19 @@ type FormValues = {
 }
 
 const projectSchema = z.object({
-  firstName: z.string().min(1, { message: 'First Name is required' }).max(200),
-  lastName: z.string().min(1, { message: 'Last Name is required' }).max(200),
+  firstName: z
+    .string()
+    .min(1, { message: _t('First Name is required') })
+    .max(200),
+
+  lastName: z
+    .string()
+    .min(1, { message: _t('Last Name is required') })
+    .max(200),
+
   languagePreference: z
     .string()
-    .min(1, { message: 'Language is required' })
+    .min(1, { message: _t('Language is required') })
     .max(200)
 })
 
@@ -95,14 +103,15 @@ const ProfileSettingsPage = () => {
 
   const onFormSubmit = async (formData: FormValues) => {
     try {
-      const resp = await patchProfileSettings.mutateAsync({
+      await patchProfileSettings.mutateAsync({
         body: {
           firstName: formData.firstName,
           lastName: formData.lastName,
           languagePreference: formData.languagePreference
         }
       })
-      onSuccess(resp)
+
+      onSuccess({ message: _t('User details updated!') })
     } catch (err) {
       onError(err)
     }
@@ -115,7 +124,7 @@ const ProfileSettingsPage = () => {
   return (
     <OuterContentWrap narrow>
       <StyledTitleBox>
-        <Typography variant="h1">{strings.profileSettings}</Typography>
+        <Typography variant="h1">{_t('Profile settings')}</Typography>
       </StyledTitleBox>
 
       <StyledFormBox>
@@ -123,7 +132,7 @@ const ProfileSettingsPage = () => {
           <Box sx={{ mb: 4 }}>
             <FormControl>
               <TextField
-                label={strings.firstName}
+                label={_t('First Name')}
                 {...register('firstName')}
                 error={!!errors.firstName}
                 helperText={errors && errors.firstName?.message}
@@ -136,7 +145,7 @@ const ProfileSettingsPage = () => {
             <FormControl>
               <TextField
                 {...register('lastName')}
-                label={strings.lastName}
+                label={_t('Last Name')}
                 error={!!errors.lastName}
                 helperText={errors && errors.lastName?.message}
                 variant="standard"
@@ -145,9 +154,12 @@ const ProfileSettingsPage = () => {
           </Box>
 
           <Box sx={{ mb: 8 }}>
-            <FormControl component="fieldset" error={!!errors.languagePreference}>
+            <FormControl
+              component="fieldset"
+              error={!!errors.languagePreference}
+            >
               <FormLabel component="legend">
-                {strings.languagePreferences}
+                {_t('Language Preferences')}
               </FormLabel>
               <Controller
                 name="languagePreference"
@@ -177,8 +189,12 @@ const ProfileSettingsPage = () => {
           </Box>
 
           <Box>
-            <Button variant="contained" type="submit" disabled={!isDirty}>
-              {strings.updateProfile}
+            <Button
+              variant="contained"
+              type="submit"
+              disabled={!isDirty || !!Object.keys(errors).length}
+            >
+              {_t('Update profile')}
             </Button>
           </Box>
         </form>
