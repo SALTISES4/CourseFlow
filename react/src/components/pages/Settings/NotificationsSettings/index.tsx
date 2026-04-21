@@ -43,12 +43,7 @@ const NotificationsSettingsPage = () => {
 
   const { onError, onSuccess } = useGenericMsgHandler()
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    setValue
-  } = useForm({
+  const { control, handleSubmit, reset, setValue } = useForm({
     defaultValues: {
       notifications: false
     }
@@ -64,10 +59,12 @@ const NotificationsSettingsPage = () => {
     setValue('notifications', event.target.checked)
     await handleSubmit(async (formData) => {
       try {
-        const resp = await patchNotificationSettings.mutateAsync({
-          body: { notificationsActive: formData.notifications }
+        await patchNotificationSettings.mutateAsync({
+          body: {
+            notificationsActive: formData.notifications
+          }
         })
-        onSuccess(resp)
+        onSuccess({})
       } catch (err) {
         onError(err)
       }

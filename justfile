@@ -21,16 +21,12 @@ repo_root := `pwd`
 compose_cmd := "docker compose"
 dev_profile := "dev"
 
-# Update these to match your repo
-
 frontend_dir := "react"
 
 # Dedicated websocket/app log files (outside docker stderr)
-
 py_log_file := "logs/python.log"
 
 # Infra services you want Compose to manage in dev
-
 infra_services := "postgres"
 
 # replade this with volta
@@ -40,6 +36,11 @@ frontend_bootstrap := 'cd {{ frontend_dir }} && export NVM_DIR="$HOME/.nvm" && .
 #########################################################
 #  SINGLE COMMAND GROUPS
 #########################################################
+
+
+commamd-confirm:
+  @read -p "Press enter to continue or Ctrl+C to cancel..."
+  @echo "Continuing..."
 
 # ----------------------------
 # Help / inspection
@@ -69,12 +70,6 @@ init-env:
     cp .env.default .env \
   fi
 
-# copy the default main.py file template to main.py
-[group: 'template init']
-init-main:
-  if [ ! -f src/entrypoints/main.py ]; then \
-    cp src/entrypoints/main.default.py src/entrypoints/main.py \
-  fi
 
 # copy the vite .env file template
 [group: 'template init']
@@ -160,7 +155,7 @@ logs:
 
 [group: 'Frontend']
 frontend-install:
-  {{ frontend_bootstrap }} && yarn install
+  {{ frontend_bootstrap }} && yarn
 
 
 [group: 'Frontend']
@@ -170,7 +165,7 @@ frontend-dev:
 
 [group: 'Frontend']
 frontend-gen-openapi:
-  {{ frontend_bootstrap }} && yarn run openapi-ts
+  {{ frontend_bootstrap }} && yarn run openapi-ts && yarn run eslint --fix ./src/api/gen
 
 # ----------------------------
 # Quality / validation
@@ -225,13 +220,11 @@ browsers:
 init:
   just checkout-dev
   just init-env
-  just init-main
 
   # user needs to fill out .env values before continuing
   @echo "Before continuing you must fill out the appropriate values in your .env file"
   @echo "see: https://docs.google.com/spreadsheets/d/1yyOEbXIDyuK4Mr1OmnEuCDZtw7Ym2Hi8AB5QSvuKlHU/edit?gid=0#gid=0"
-  @read -p "Press enter to continue or Ctrl+C to cancel..."
-  @echo "Continuing..."
+  just commamd-confirm
 
   just docker-build
   just create-venv
@@ -243,8 +236,7 @@ init:
   just init-env-frontend
   @echo ""
   @echo "Before continuing you must fill out the appropriate frontend values in your client/.env file"
-  @read -p "Press enter to continue or Ctrl+C to cancel..."
-  @echo "Continuing..."
+  just commamd-confirm
 
   just frontend-install
 
