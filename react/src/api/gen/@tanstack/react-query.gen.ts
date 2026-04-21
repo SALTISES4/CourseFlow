@@ -669,6 +669,23 @@ export const getEdgeOptions = (options: Options<GetEdgeData>) => queryOptions<Ge
     queryKey: getEdgeQueryKey(options)
 });
 
+/**
+ * Delete All Thread Comments
+ */
+export const deleteAllThreadCommentsMutation = (options?: Partial<Options<DeleteAllThreadCommentsData>>): UseMutationOptions<DeleteAllThreadCommentsResponse, DefaultError, Options<DeleteAllThreadCommentsData>> => {
+    const mutationOptions: UseMutationOptions<DeleteAllThreadCommentsResponse, DefaultError, Options<DeleteAllThreadCommentsData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await deleteAllThreadComments({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
 export const listThreadCommentsQueryKey = (options: Options<ListThreadCommentsData>) => createQueryKey('listThreadComments', options);
 
 /**
@@ -711,23 +728,6 @@ export const deleteThreadCommentMutation = (options?: Partial<Options<DeleteThre
     const mutationOptions: UseMutationOptions<DeleteThreadCommentResponse, DefaultError, Options<DeleteThreadCommentData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await deleteThreadComment({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
-/**
- * Delete All Thread Comments
- */
-export const deleteAllThreadCommentsMutation = (options?: Partial<Options<DeleteAllThreadCommentsData>>): UseMutationOptions<DeleteAllThreadCommentsResponse, DefaultError, Options<DeleteAllThreadCommentsData>> => {
-    const mutationOptions: UseMutationOptions<DeleteAllThreadCommentsResponse, DefaultError, Options<DeleteAllThreadCommentsData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await deleteAllThreadComments({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
