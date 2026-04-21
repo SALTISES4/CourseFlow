@@ -43,23 +43,18 @@ const emptyAuthor = (): EUser => ({
   name: ''
 })
 
-function mapObjectTypeToLibraryObjectType(
+export function mapObjectTypeToLibraryObjectType(
   objectType: string
 ): LibraryObjectType {
-  switch (objectType) {
-    case 'project':
-      return LibraryObjectType.PROJECT
-    case 'program':
-      return LibraryObjectType.PROGRAM
-    case 'course':
-      return LibraryObjectType.COURSE
-    case 'activity':
-      return LibraryObjectType.ACTIVITY
-    case 'task':
-      return LibraryObjectType.TASK
-    default:
-      return LibraryObjectType.COURSE
+  const validTypes = {
+    project: LibraryObjectType.PROJECT,
+    program: LibraryObjectType.PROGRAM,
+    course: LibraryObjectType.COURSE,
+    activity: LibraryObjectType.ACTIVITY,
+    task: LibraryObjectType.TASK
   }
+
+  return validTypes[objectType] ?? LibraryObjectType.COURSE
 }
 
 /**

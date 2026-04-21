@@ -8,6 +8,8 @@ import {
 } from '@cfComponents/cards/WorkflowCardDumb'
 import { WorkflowCardWrapperPropsType } from '@cfComponents/cards/WorkflowCardWrapper'
 
+import { mapObjectTypeToLibraryObjectType } from './libraryV2Search'
+
 /**
  * this thin wrapper is for when we move CHIP_TYPE away from the domain
  * @param type
@@ -37,7 +39,7 @@ function getTypeChip(workflow: LibraryItemOut): WorkflowCardChipType {
   }
 
   return {
-    type: mapChipType(objectType as LibraryObjectType),
+    type: mapChipType(mapObjectTypeToLibraryObjectType(objectType)),
     label: ThemeHelper.capWords(typeText)
   }
 }
@@ -54,7 +56,6 @@ function getTemplateChip(workflow: LibraryItemOut): WorkflowCardChipType {
 }
 
 function getWorkflowCountChip(workflow: LibraryItemOut): WorkflowCardChipType {
-  console.log({ workflow })
   // TODO:
   // if (
   //   workflow.objectType === LibraryObjectType.PROJECT &&
@@ -99,7 +100,7 @@ export function formatLibraryObject(
     // TODO: figure out where this comes from
     // isLinked: libraryObject.isLinked,
     isLinked: false,
-    type: libraryObject.objectType as LibraryObjectType,
+    type: mapObjectTypeToLibraryObjectType(libraryObject.objectType),
     chips: [typeChip, templateChip, countChip].filter((entry) => entry != null)
   }
 }

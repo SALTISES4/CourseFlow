@@ -1,3 +1,4 @@
+import { ProjectDetailOut } from '@cf/api/gen'
 import { PermissionGroup, ProjectDetailsType } from '@cf/types/common'
 import Utility from '@cf/utility/Utility.class'
 import { EProject } from '@XMLHTTP/types/entity'
@@ -35,7 +36,7 @@ export function mapProjectV2ToProjectDetails(
     description: p.description,
     isFavourite: false,
     isDeleted: false,
-    created: p.date_created,
+    created: p.dateCreated,
     disciplines: [],
     author: {
       id: '',
