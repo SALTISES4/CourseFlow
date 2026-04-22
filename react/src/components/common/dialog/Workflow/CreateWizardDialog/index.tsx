@@ -1,4 +1,4 @@
-import { createWorkflowMutation } from '@cf/api/gen/@tanstack/react-query.gen'
+// import { createWorkflowMutation } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
@@ -47,7 +47,8 @@ const CreateWizardDialog = () => {
   const navigate = useNavigate()
 
   //   const [mutate] = useCreateWorkflowMutation()
-  const createWorkflow = useMutation(createWorkflowMutation())
+  // TODO:
+  // const createWorkflow = useMutation(createWorkflowMutation())
 
   const {
     show,
@@ -141,10 +142,8 @@ const CreateWizardDialog = () => {
     onDialogClose()
   }
 
-  function onSuccess(id: string) {
-    const path = generatePath(CFRoutes.WORKFLOW, {
-      uuid: uuid
-    })
+  function onSuccess(uuid: string) {
+    const path = generatePath(CFRoutes.WORKFLOW, { uuid })
     onDialogClose()
     navigate(path)
     enqueueSnackbar('created project success', {
@@ -169,15 +168,18 @@ const CreateWizardDialog = () => {
       ...data
     }
 
-    try {
-      const response = await createWorkflow.mutateAsync({
-        body: payload
-      })
+    // TODO:
+    console.log('onSubmit with', payload)
 
-      onSuccess(String(response.uuid))
-    } catch (err) {
-      onError(err)
-    }
+    // try {
+    //   const response = await createWorkflow.mutateAsync({
+    //     body: payload
+    //   })
+
+    //   onSuccess(String(response.uuid))
+    // } catch (err) {
+    //   onError(err)
+    // }
   }
 
   /**

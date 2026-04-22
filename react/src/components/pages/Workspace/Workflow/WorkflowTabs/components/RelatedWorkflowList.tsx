@@ -1,4 +1,4 @@
-import { listWorkflowsOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+// import { listWorkflowsOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import * as MainSidebar from '@cf/components/common/globalNav/MainSidebar/styles'
 import { _t } from '@cf/utility/Utility.class'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -29,6 +29,23 @@ type WorkflowNode = {
 
  */
 const RelatedWorkflowList = () => {
+  // TODO:
+  return (
+    <>
+      <Divider sx={{ mt: 2 }} />
+      <MainSidebar.SectionWrap>
+        <MainSidebar.SectionLabel variant="body1">
+          {_t('RelatedWorkflowList:')}
+        </MainSidebar.SectionLabel>
+        <List>
+          <ListItem dense>
+            <ListItemText primary={'TODO: Review this'} />
+          </ListItem>
+        </List>
+      </MainSidebar.SectionWrap>
+    </>
+  )
+
   const { uuid } = useParams()
 
   // const { data: childData, isLoading: childIsLoading } =
