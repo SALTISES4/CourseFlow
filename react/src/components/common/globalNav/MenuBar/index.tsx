@@ -1,4 +1,4 @@
-import { OuterContentWrap } from '@cf/mui/helper'
+import { OuterContentWrap } from '@cfMUI/helper'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 

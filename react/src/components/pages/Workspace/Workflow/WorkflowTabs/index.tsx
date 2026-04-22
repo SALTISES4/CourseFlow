@@ -1,6 +1,6 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
-import { OuterContentWrap } from '@cf/mui/helper'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
+import { OuterContentWrap } from '@cfMUI/helper'
 import WorkspaceSidebar from '@cfPages/Workspace/Workflow/Sidebar'
 import { useWorkflowSidebar } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useSidebar'
 import Header from '@cfPages/Workspace/Workflow/WorkflowTabs/components/Header'

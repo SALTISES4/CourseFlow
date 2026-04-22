@@ -1,7 +1,7 @@
-import { GridWrap } from '@cf/mui/helper'
 import { formatLibraryObject } from '@cf/utility/marshalling/libraryCards'
 import WorkflowCardDumb from '@cfComponents/cards/WorkflowCardDumb'
 import Loader from '@cfComponents/UIPrimitives/Loader'
+import { GridWrap } from '@cfMUI/helper'
 import SearchIcon from '@mui/icons-material/Search'
 import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'

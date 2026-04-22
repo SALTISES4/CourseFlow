@@ -1,7 +1,6 @@
 import { LibrarySearchIn } from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
-import { GridWrap, OuterContentWrap } from '@cf/mui/helper'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
 import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
@@ -12,6 +11,7 @@ import FilterWorkflows from '@cfComponents/filters/FilterWorkflows'
 import SortableFilterButton from '@cfComponents/filters/SortableFilterButton'
 import { SearchFilterOption } from '@cfComponents/filters/types'
 import Pagination from '@cfComponents/UIPrimitives/Pagination'
+import { GridWrap, OuterContentWrap } from '@cfMUI/helper'
 import LibraryHelper, {
   SearchOptions
 } from '@cfViews/LibrarySearchView/LibraryHelper.Class'

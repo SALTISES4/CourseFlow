@@ -1,6 +1,6 @@
-import { OuterContentWrap } from '@cf/mui/helper'
 import { WorkspaceType } from '@cf/types/enum'
 import Utility, { _t } from '@cf/utility/Utility.class'
+import { OuterContentWrap } from '@cfMUI/helper'
 import { RootState } from '@cfRedux/store'
 import LinkIcon from '@mui/icons-material/Link'
 import Button from '@mui/material/Button'

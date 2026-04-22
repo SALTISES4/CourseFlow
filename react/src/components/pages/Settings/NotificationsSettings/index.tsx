@@ -4,8 +4,8 @@ import {
   patchMyNotificationSettingsMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { OuterContentWrap } from '@cf/mui/helper'
 import strings from '@cf/utility/strings'
+import { OuterContentWrap } from '@cfMUI/helper'
 import Box from '@mui/material/Box'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'

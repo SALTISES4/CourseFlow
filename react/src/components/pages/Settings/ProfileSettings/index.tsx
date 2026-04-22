@@ -4,10 +4,10 @@ import {
   patchMyProfileSettingsMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { OuterContentWrap } from '@cf/mui/helper'
 import { languageOptions } from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
 import Loader from '@cfComponents/UIPrimitives/Loader'
+import { OuterContentWrap } from '@cfMUI/helper'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'

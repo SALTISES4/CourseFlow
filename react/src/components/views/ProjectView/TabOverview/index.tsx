@@ -1,7 +1,7 @@
-import { OuterContentWrap } from '@cf/mui/helper'
 import { ProjectDetailsType } from '@cf/types/common'
 import { WorkspaceType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
+import { OuterContentWrap } from '@cfMUI/helper'
 import Tags from '@cfViews/ProjectView/TabOverview/TagsSection'
 import * as SC from '@cfViews/WorkflowView/OverviewView/styles'
 import UserPermissions from '@cfViews/WorkflowView/OverviewView/UserPermissions'

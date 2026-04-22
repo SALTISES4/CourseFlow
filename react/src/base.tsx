@@ -1,10 +1,10 @@
 import UserProvider from '@cf/context/userContext'
 import NetworkActivityProvider from '@cf/HTTP/NetworkActivityProvider'
-import { OuterContentWrap } from '@cf/mui/helper'
 import GlobalDialogs from '@cfComponents/globalNav/GlobalDialogs'
 import MainSidebar from '@cfComponents/globalNav/MainSidebar'
 import TopBar from '@cfComponents/globalNav/TopBar'
 import Alert from '@cfComponents/UIPrimitives/Alert'
+import { OuterContentWrap } from '@cfMUI/helper'
 import HtmlReactParser from 'html-react-parser'
 import { ReactNode } from 'react'
 

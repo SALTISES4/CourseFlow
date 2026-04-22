@@ -78,8 +78,11 @@
       "@XMLHTTP/*": [
         "./HTTP/XMLHTTP/*"
       ],
+      "@cfMUI/*": [
+        "./styles/mui/*"
+      ],
       "@cfSCSS/*": [
-        "./scss/*"
+        "./styles/scss/*"
       ],
       "@cfSidebar": [
         "./components/pages/Workspace/Workflow/Sidebar/"

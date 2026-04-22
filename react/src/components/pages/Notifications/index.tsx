@@ -19,9 +19,9 @@ import {
   markOneNotificationAsReadMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import type { NotificationItemOut } from '@cf/api/gen/types.gen'
-import * as SCCommon from '@cf/mui/helper'
 import strings from '@cf/utility/strings'
 import Loader from '@cfComponents/UIPrimitives/Loader'
+import * as SCCommon from '@cfMUI/helper'
 import DotsIcon from '@mui/icons-material/MoreHoriz'
 import Badge from '@mui/material/Badge'
 import IconButton from '@mui/material/IconButton'

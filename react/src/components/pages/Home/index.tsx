@@ -1,12 +1,12 @@
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { CookieTypes } from '@cf/context/cookieContext'
-import { GridWrap, OuterContentWrap } from '@cf/mui/helper'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
 import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import Loader from '@cfComponents/UIPrimitives/Loader'
+import { GridWrap, OuterContentWrap } from '@cfMUI/helper'
 
 import Section from './components/Section'
 import Welcome from './components/Welcome'

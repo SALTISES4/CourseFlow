@@ -6,6 +6,7 @@ import { CookieProvider } from '@cf/context/cookieContext'
 import { DialogContextProvider } from '@cf/context/dialogContext'
 import CfRouter from '@cf/router/appRoutes'
 import { MainSidebarRootStyles } from '@cfComponents/globalNav/MainSidebar/styles'
+import theme from '@cfMUI/theme'
 import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
@@ -18,7 +19,6 @@ import { RouterProvider } from 'react-router-dom'
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
 
-import theme from './mui/theme'
 import store from './redux/store'
 
 /*******************************************************

@@ -1,4 +1,4 @@
-import { OuterContentWrap } from '@cf/mui/helper'
+import { OuterContentWrap } from '@cfMUI/helper'
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 

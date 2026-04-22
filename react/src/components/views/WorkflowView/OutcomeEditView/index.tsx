@@ -1,7 +1,7 @@
-import { OuterContentWrap } from '@cf/mui/helper'
 import { RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
+import { OuterContentWrap } from '@cfMUI/helper'
 import { selectOutcomeChildrenById } from '@cfRedux/selectors/outcomes.selector'
 import { addOutcome } from '@cfRedux/slices/outcomes.slice'
 import Box from '@mui/material/Box'
