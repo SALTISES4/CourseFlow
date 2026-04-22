@@ -1,4 +1,4 @@
-@import './utility/variables';
+@use './utility/variables' as *;
 
 // pragmatic drag and DropIndicator border color
 :root {
