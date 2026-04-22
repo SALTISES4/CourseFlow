@@ -3,8 +3,8 @@ import type { EUser } from '@XMLHTTP/types/entity'
 
 /** Maps v2 API user summary into legacy EUser shape for existing consumers. */
 export function mapCurrentUserToEUser(u: CurrentUser): EUser {
-  const firstName = u.first_name ?? ''
-  const lastName = u.last_name ?? ''
+  const firstName = u.firstName ?? ''
+  const lastName = u.lastName ?? ''
   return {
     id: u.uuid,
     username: u.email,

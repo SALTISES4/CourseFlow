@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie'
-import React, { ReactNode, createContext, useContext, useState } from 'react'
+import { ReactNode, createContext, useContext, useState } from 'react'
 
 export enum CookieTypes {
   HIDE_HOME_WELCOME_MESSAGE = 'hide_home_welcome_message',
@@ -18,11 +18,7 @@ interface CookieContextType {
 
 const CookieContext = createContext<CookieContextType | null>(null)
 
-interface CookieProviderProps {
-  children: ReactNode
-}
-
-export const CookieProvider: React.FC<CookieProviderProps> = ({ children }) => {
+export const CookieProvider = ({ children }: { children: ReactNode }) => {
   const [cookies, setCookies] = useState<{ [key: string]: string }>(() =>
     Cookies.get()
   )
@@ -48,7 +44,7 @@ export const CookieProvider: React.FC<CookieProviderProps> = ({ children }) => {
   )
 }
 
-export const useCookies = (): CookieContextType => {
+export const useCookies = () => {
   const context = useContext(CookieContext)
   if (!context) {
     throw new Error('useCookies must be used within a CookieProvider')

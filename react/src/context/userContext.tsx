@@ -2,7 +2,7 @@ import { mapCurrentUserToEUser } from '@cf/context/mapCurrentUserToEUser'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { selectAuthStatus, selectAuthUser } from '@cfRedux/slices/auth.slice'
 import { EUser } from '@XMLHTTP/types/entity'
-import React, { ReactNode } from 'react'
+import { ReactNode, createContext } from 'react'
 import { useSelector } from 'react-redux'
 
 type UserContextType = {
@@ -10,9 +10,10 @@ type UserContextType = {
   user: EUser
 }
 
-export const UserContext = React.createContext<UserContextType>(
-  {} as UserContextType
-)
+export const UserContext = createContext<UserContextType>({
+  id: '',
+  user: null
+})
 
 interface UserProviderProps {
   children: ReactNode
@@ -24,17 +25,17 @@ interface UserProviderProps {
  */
 const UserProvider = ({ children }: UserProviderProps) => {
   const status = useSelector(selectAuthStatus)
-  const current = useSelector(selectAuthUser)
+  const user = useSelector(selectAuthUser)
 
-  if (status === 'authenticated' && !current) {
+  if (status === 'authenticated' && !user) {
     return <Loader />
   }
 
-  if (status !== 'authenticated' || !current) {
+  if (status !== 'authenticated' || !user) {
     return <>{children}</>
   }
 
-  const eUser = mapCurrentUserToEUser(current)
+  const eUser = mapCurrentUserToEUser(user)
 
   return (
     <UserContext.Provider
