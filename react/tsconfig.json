@@ -60,15 +60,6 @@
       "@cfPages/*": [
         "./components/pages/*"
       ],
-      "@cfEditableComponents": [
-        "./components/common/editableComponents"
-      ],
-      "@cfEditableComponents/*": [
-        "./components/common/editableComponents/*"
-      ],
-      "@cfFindState": [
-        "./redux/findState.ts"
-      ],
       "@cfRedux/*": [
         "./redux/*"
       ],
@@ -83,9 +74,6 @@
       ],
       "@cfSCSS/*": [
         "./styles/scss/*"
-      ],
-      "@cfSidebar": [
-        "./components/pages/Workspace/Workflow/Sidebar/"
       ],
       "@cfSidebar/*": [
           "./components/pages/Workspace/Workflow/Sidebar/*",

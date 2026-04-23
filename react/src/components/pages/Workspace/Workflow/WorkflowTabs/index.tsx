@@ -1,15 +1,15 @@
+import ConnectionBar from '@cf/components/pages/Workspace/Workflow/WorkflowTabs/components/MenuBar/ConnectionBar'
+import {
+  ActionMenu,
+  ExpandCollapseMenu,
+  JumpToMenu
+} from '@cf/components/pages/Workspace/Workflow/WorkflowTabs/components/MenuBar/menus'
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
 import { OuterContentWrap } from '@cfMUI/helper'
 import WorkspaceSidebar from '@cfPages/Workspace/Workflow/Sidebar'
 import { useWorkflowSidebar } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useSidebar'
 import Header from '@cfPages/Workspace/Workflow/WorkflowTabs/components/Header'
-import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
-import {
-  ActionMenu,
-  ExpandCollapseMenu,
-  JumpToMenu
-} from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/menus'
 import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/WorkflowDialogs'
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
 import { RootState } from '@cfRedux/store'

@@ -1,7 +1,7 @@
+import { _t } from '@cf/utility/Utility.class'
 import React, { useEffect, useRef, useState } from 'react'
 import ReactQuill, { Quill } from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { _t } from '@cf/utility/Utility.class'
 
 // Fix Quilljs's link sanitization
 const QuillLink = Quill.import('formats/link')
