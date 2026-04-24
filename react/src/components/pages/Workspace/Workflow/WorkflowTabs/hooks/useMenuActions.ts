@@ -1,19 +1,15 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { EventUnion } from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
-import { AppDispatch } from '@cfRedux/store'
-import { useDispatch } from 'react-redux'
 
 export const useMenuActions = () => {
-  const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dispatchDialog } = useDialog()
 
   /*******************************************************
    * MENU HANDLERS
    *******************************************************/
-  function openEditMenu(evt: EventUnion) {
+  function openEditMenu() {
     dispatchDialog(DialogMode.WORKFLOW_EDIT)
   }
 
@@ -49,36 +45,35 @@ export const useMenuActions = () => {
    * TO PROCESS
    *******************************************************/
 
-  function deleteWorkflowHard(projectid: string, workflowid: string) {
+  function deleteWorkflowHard(projectId: string, workflowId: string) {
     if (
       window.confirm(
         _t('Are you sure you want to permanently delete this workflow?')
       )
     ) {
-      deleteSelfQueryLegacy(workflowId, CfObjectType.WORKFLOW, false, () => {
-        window.location.href = 'path to wherever you go after deletion'
-      })
+      console.log('TODO: delete workflow', { projectId, workflowId })
+      // deleteSelfQueryLegacy(workflowId, CfObjectType.WORKFLOW, false, () => {
+      //   window.location.href = 'path to wherever you go after deletion'
+      // })
     }
   }
 
   // TODO: verify Nodes, Outcomes(?) still need to support this, reimplement
   function expandAll(type: CfObjectType) {
-    console.log('expand all', type)
+    console.log('TODO: expand all', type)
   }
 
   // TODO: verify Nodes, Outcomes(?) still need to support this, reimplement
   function collapseAll(type: CfObjectType) {
-    console.log('collapse all', type)
+    console.log('TODO: collapse all', type)
   }
 
   function duplicateItem(
-    parentid: string,
-    workflowid: string,
+    parentId: string,
+    workflowId: string,
     workflowType: WorkflowType
   ) {
-    if (parentId != null) {
-      // @todo
-    }
+    console.log('TODO: duplicate item', { parentId, workflowId, workflowType })
   }
 
   return {

@@ -58,7 +58,7 @@ const useWorkflowTabs = (workflow: EWorkflow, context: WorkflowContextType) => {
         value={item.type}
         onClick={() => {
           context.setWorkflowView(item.type)
-          const path = generatePath(item.route, { id })
+          const path = generatePath(item.route, { uuid })
           navigate(path)
         }}
       />

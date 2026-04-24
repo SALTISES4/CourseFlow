@@ -258,11 +258,11 @@ const ExpandCollapseMenu = ({ legend }: { legend?: ReactElement }) => {
 /*******************************************************
  * JUMP MENU
  *******************************************************/
-const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
+const JumpToMenu = ({ weekIds }: { weekIds: string[] }) => {
   const context = useContext(WorkflowConfigContext)
   const viewType = context.workflowView
 
-  const scrollToHandler = useCallback((objectid: string) => {
+  const scrollToHandler = useCallback((objectId: string) => {
     return () => {
       const weekEl = document.querySelector(`[data-week-id='${objectId}']`)
       weekEl?.scrollIntoView({

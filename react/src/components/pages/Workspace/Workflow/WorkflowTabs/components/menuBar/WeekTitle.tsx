@@ -4,7 +4,7 @@ import { RootState } from '@cfRedux/store'
 import { useSelector } from 'react-redux'
 
 type PropsType = {
-  objectid: string
+  objectId: string
 }
 
 const WeekTitle = ({ objectId }: PropsType) => {

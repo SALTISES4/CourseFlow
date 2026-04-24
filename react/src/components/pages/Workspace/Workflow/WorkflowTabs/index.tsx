@@ -58,7 +58,7 @@ const WorkflowTabs = () => {
 
   const ViewBar = () => (
     <Stack direction="row" spacing={2}>
-      <JumpToMenu weekIds={workflow.weeks} />
+      <JumpToMenu weekIds={workflow.weeks.map((w) => w.toString())} />
       <ExpandCollapseMenu legend={<Index />} />
     </Stack>
   )
