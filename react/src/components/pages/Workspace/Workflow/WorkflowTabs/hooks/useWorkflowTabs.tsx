@@ -32,9 +32,9 @@ const useWorkflowTabs = (workflow: EWorkflow, context: WorkflowContextType) => {
       allowedTabs: [3]
     },
     {
-      type: WorkflowViewType.WORKFLOW,
-      route: CFRoutes.WORKFLOW_WORKFLOW,
-      relRoute: RelativeRoutes.WORKFLOW,
+      type: WorkflowViewType.GRAPH,
+      route: CFRoutes.WORKFLOW_GRAPH,
+      relRoute: RelativeRoutes.GRAPH,
       label: _t('Workflow'),
       content: <WorkflowEditView />,
       allowedTabs: [1, 2, 3, 4]

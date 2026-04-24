@@ -5,7 +5,7 @@
  *******************************************************/
 export enum WorkflowViewType {
   OVERVIEW = 'workflowoverview',
-  WORKFLOW = 'workflowview',
+  GRAPH = 'graphview',
   OUTCOME_EDIT = 'outcomeedit',
   GRID_VIEW = 'grid',
   OUTCOME_TABLE = 'outcometable',

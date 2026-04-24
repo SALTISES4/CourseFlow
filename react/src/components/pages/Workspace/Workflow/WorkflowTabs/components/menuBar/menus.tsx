@@ -272,7 +272,7 @@ const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
     }
   }, [])
 
-  if (viewType !== WorkflowViewType.WORKFLOW || !weekIds.length) {
+  if (viewType !== WorkflowViewType.GRAPH || !weekIds.length) {
     return null
   }
 

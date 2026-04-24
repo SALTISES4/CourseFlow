@@ -91,7 +91,7 @@ const ProjectDetails = () => {
     },
     {
       path: CFRoutes.PROJECT_WORKFLOW,
-      relativePath: RelativeRoutes.WORKFLOW,
+      relativePath: RelativeRoutes.WORKFLOWS,
       label: _t('Workflows'),
       action: () => {
         const path = generatePath(CFRoutes.PROJECT_WORKFLOW, {

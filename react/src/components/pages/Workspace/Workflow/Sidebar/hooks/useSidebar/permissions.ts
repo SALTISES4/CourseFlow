@@ -20,44 +20,44 @@ type PermissionMatrixType = Record<
 const permissionMatrix: PermissionMatrixType = {
   edit: {
     [WorkflowType.ACTIVITY]: [
-      WorkflowViewType.WORKFLOW,
+      WorkflowViewType.GRAPH,
       WorkflowViewType.OUTCOME_EDIT
     ],
     [WorkflowType.COURSE]: [
-      WorkflowViewType.WORKFLOW,
+      WorkflowViewType.GRAPH,
       WorkflowViewType.OUTCOME_EDIT,
       WorkflowViewType.OUTCOME_ANALYTICS
     ],
     [WorkflowType.PROGRAM]: [
-      WorkflowViewType.WORKFLOW,
+      WorkflowViewType.GRAPH,
       WorkflowViewType.OUTCOME_EDIT,
       WorkflowViewType.OUTCOME_ANALYTICS,
       WorkflowViewType.GRID_VIEW
     ]
   },
   add: {
-    [WorkflowType.ACTIVITY]: [WorkflowViewType.WORKFLOW],
-    [WorkflowType.COURSE]: [WorkflowViewType.WORKFLOW],
-    [WorkflowType.PROGRAM]: [WorkflowViewType.WORKFLOW]
+    [WorkflowType.ACTIVITY]: [WorkflowViewType.GRAPH],
+    [WorkflowType.COURSE]: [WorkflowViewType.GRAPH],
+    [WorkflowType.PROGRAM]: [WorkflowViewType.GRAPH]
   },
   comments: {
     [WorkflowType.ACTIVITY]: [
-      WorkflowViewType.WORKFLOW,
+      WorkflowViewType.GRAPH,
       WorkflowViewType.OUTCOME_EDIT
     ],
     [WorkflowType.COURSE]: [
-      WorkflowViewType.WORKFLOW,
+      WorkflowViewType.GRAPH,
       WorkflowViewType.OUTCOME_EDIT
     ],
     [WorkflowType.PROGRAM]: [
-      WorkflowViewType.WORKFLOW,
+      WorkflowViewType.GRAPH,
       WorkflowViewType.OUTCOME_EDIT
     ]
   },
   outcomes: {
-    [WorkflowType.ACTIVITY]: [WorkflowViewType.WORKFLOW],
-    [WorkflowType.COURSE]: [WorkflowViewType.WORKFLOW],
-    [WorkflowType.PROGRAM]: [WorkflowViewType.WORKFLOW]
+    [WorkflowType.ACTIVITY]: [WorkflowViewType.GRAPH],
+    [WorkflowType.COURSE]: [WorkflowViewType.GRAPH],
+    [WorkflowType.PROGRAM]: [WorkflowViewType.GRAPH]
   },
   related: {
     [WorkflowType.ACTIVITY]: [WorkflowViewType.OUTCOME_EDIT],
