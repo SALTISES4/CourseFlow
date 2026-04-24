@@ -10,7 +10,7 @@ export type SidebarState = {
 
 export type EditTabState = {
   id: string
-  parentid: string
+  parentId: string
   objectType: CfObjectType
 }
 

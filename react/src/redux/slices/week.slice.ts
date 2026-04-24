@@ -25,8 +25,8 @@ interface InsertBelowPayload {
 }
 
 interface ChangeIdPayload {
-  oldid: string
-  newid: string
+  oldId: string
+  newId: string
 }
 
 interface MovedToPayload {
@@ -38,7 +38,7 @@ interface MovedToPayload {
 interface NodeGenericPayload {
   id: string
   index: number
-  parentid: string
+  parentId: string
   newThrough: { id: string }
 }
 
@@ -158,7 +158,7 @@ const weekSlice = createSlice({
     },
     insertBelow(
       state,
-      action: PayloadAction<{ id: string; newid: string; duplicate?: boolean }>
+      action: PayloadAction<{ id: string; newId: string; duplicate?: boolean }>
     ) {
       const { id, newId, duplicate } = action.payload
 
@@ -208,7 +208,7 @@ const weekSlice = createSlice({
     // reorder week nodes on workflow view node drag
     moveNode: (
       state,
-      action: PayloadAction<{ id: string; fromWeek: number; toWeek: number }>
+      action: PayloadAction<{ id: string; fromWeek: string; toWeek: string }>
     ) => {
       const { id, fromWeek, toWeek } = action.payload
       const sourceIndex = state.entities[fromWeek].nodes.indexOf(id)

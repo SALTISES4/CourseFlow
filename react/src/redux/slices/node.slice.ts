@@ -18,8 +18,6 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
-import { getNextLargestNumber } from '../selectors/helpers'
-
 interface DeleteColumnAction {
   id: string
   extraData: any
@@ -116,13 +114,13 @@ const splitWorkflowGridNodes = ({
   column,
   newRow
 }: {
-  ids: number[]
+  ids: string[]
   entities: typeof initialState.entities
-  column?: number
+  column?: string
   newRow: number
 }) => {
-  const before: number[] = []
-  const after: number[] = []
+  const before: string[] = []
+  const after: string[] = []
 
   ids.forEach((nodeId) => {
     const n = entities[nodeId]
@@ -130,7 +128,8 @@ const splitWorkflowGridNodes = ({
       return
     }
 
-    const columnMatch = column !== undefined ? n.column === column : true
+    const columnMatch =
+      column !== undefined ? n.column.toString() === column : true
 
     if (columnMatch && n.order >= newRow) {
       after.push(nodeId)
@@ -152,10 +151,10 @@ const getCollapsedWeekRow = ({
   to,
   columnMode
 }: {
-  ids: number[]
+  ids: string[]
   entities: typeof initialState.entities
-  from: { week: number; row: number }
-  to: { week: number; row: number }
+  from: { week: string; row: number }
+  to: { week: string; row: number }
   columnMode?: boolean
 }): number | null => {
   const sameRow = ids.filter((nodeId) => {
@@ -228,8 +227,8 @@ const nodeSlice = createSlice({
     setLinkedWorkflow(
       state,
       action: PayloadAction<{
-        nodeid: string
-        workflowid: string
+        nodeId: string
+        workflowId: string
         workflowData: ELibraryObject
         representsWorkflow?: boolean
       }>
@@ -237,16 +236,18 @@ const nodeSlice = createSlice({
       const { nodeId, workflowId, workflowData, representsWorkflow } =
         action.payload
 
-      nodeAdapter.updateOne(state, {
-        id: nodeId,
-        changes: {
-          linkedWorkflow: workflowId,
-          linkedWorkflowData: workflowData,
-          ...(representsWorkflow !== undefined && {
-            representsWorkflow
-          })
-        }
-      })
+      // TODO: refactor ID being a string
+      console.log('TOOD: setLinkedWorkflow', action.payload)
+      // nodeAdapter.updateOne(state, {
+      //   id: nodeId,
+      //   changes: {
+      //     linkedWorkflow: workflowId,
+      //     linkedWorkflowData: workflowData,
+      //     ...(representsWorkflow !== undefined && {
+      //       representsWorkflow
+      //     })
+      //   }
+      // })
     },
 
     // with nodeId
@@ -258,39 +259,41 @@ const nodeSlice = createSlice({
       state,
       action: PayloadAction<
         | {
-            nodeid: string
+            nodeId: string
             mode: NodeWorkflowReorderPayload['mode']
             duplicate?: boolean
           }
         | {
             newColumn?: boolean
-            columnid: string
-            weekid: string
+            columnId: string
+            weekId: string
             mode: NodeWorkflowReorderPayload['mode']
-            columnId: number
-            weekId: number
             row: number
           }
       >
     ) => {
+      console.log('TODO: review workflowNodeInsert', action.payload)
+      return state
+
       if ('columnId' in action.payload) {
         const { newColumn, mode, columnId, weekId, row } = action.payload
         const weekNodes = state.ids.filter(
-          (nodeId) => state.entities[nodeId].week === weekId
+          (nodeId) => state.entities[nodeId].week.toString() === weekId
         )
 
         const gridSplits = splitWorkflowGridNodes({
           ids: weekNodes,
           entities: state.entities,
           newRow: row,
-          column: mode === 'row' ? undefined : newColumn ? -1 : columnId
+          column: mode === 'row' ? undefined : newColumn ? '-1' : columnId
         })
 
         // grab any existing node
         const clone = state.entities[state.ids[0]]
         nodeAdapter.addOne(state, {
           ...clone,
-          id: getNextLargestNumber(state.ids),
+          // TODO: not gonna quite work, review
+          // id: getNextLargestNumber(state.ids),
           title: _t('Blank title'),
           order: row,
           week: weekId,
@@ -320,13 +323,14 @@ const nodeSlice = createSlice({
           ids: weekNodes,
           entities: state.entities,
           newRow: node.order + 1,
-          column: mode === 'column' ? node.column : undefined
+          column: mode === 'column' ? node.column.toString() : undefined
         })
 
         const clone = { ...node }
         nodeAdapter.addOne(state, {
           ...clone,
-          id: getNextLargestNumber(state.ids),
+          // id: getNextLargestNumber(state.ids),
+          id: 'hello-there',
           title: _t('Blank title'),
           order: clone.order + 1,
           comments: [],
@@ -354,8 +358,8 @@ const nodeSlice = createSlice({
       const collapseRow = getCollapsedWeekRow({
         ids: weekNodes,
         entities: state.entities,
-        from: { week: node.week, row: node.order },
-        to: { week: node.week, row: node.order }
+        from: { week: node.week.toString(), row: node.order },
+        to: { week: node.week.toString(), row: node.order }
       })
 
       nodeAdapter.removeOne(state, action.payload.id)
@@ -415,14 +419,14 @@ const nodeSlice = createSlice({
         ids: toWeekNodes,
         entities: state.entities,
         newRow,
-        column: insertModeColumn ? toColumn : undefined
+        column: insertModeColumn ? toColumn.toString() : undefined
       })
 
       const collapseRow = getCollapsedWeekRow({
         ids: fromWeekNodes,
         entities: state.entities,
-        from: { week: fromWeek, row: oldRow },
-        to: { week: toWeek, row: newRow },
+        from: { week: fromWeek.toString(), row: oldRow },
+        to: { week: toWeek.toString(), row: newRow },
         columnMode: insertModeColumn
       })
 
@@ -479,8 +483,8 @@ const nodeSlice = createSlice({
     workfowLinkOutcome: (
       state,
       action: PayloadAction<{
-        outcomeid: string
-        nodeid: string
+        outcomeId: string
+        nodeId: string
       }>
     ) => {
       const { outcomeId, nodeId } = action.payload
@@ -490,16 +494,19 @@ const nodeSlice = createSlice({
         return
       }
 
-      if (!node.outcomenodeSet) {
-        node.outcomenodeSet = [outcomeId]
-      } else {
-        const index = node.outcomenodeSet?.indexOf(outcomeId)
-        if (index !== -1) {
-          node.outcomenodeSet.splice(index, 1)
-        } else {
-          node.outcomenodeSet.push(outcomeId)
-        }
-      }
+      // TODO: mixing string/number for the ID field won't cut it, review
+      console.log('TODO: workfowLinkOutcome', action.payload)
+
+      // if (!node.outcomenodeSet) {
+      //   node.outcomenodeSet = [outcomeId]
+      // } else {
+      //   const index = node.outcomenodeSet?.indexOf(outcomeId)
+      //   if (index !== -1) {
+      //     node.outcomenodeSet.splice(index, 1)
+      //   } else {
+      //     node.outcomenodeSet.push(outcomeId)
+      //   }
+      // }
     },
 
     // this one had a jquery update side effect
@@ -555,7 +562,7 @@ const nodeSlice = createSlice({
           state.ids.forEach((nodeId) => {
             const node = state.entities[nodeId]
             // TODO: mmmm, should we delete nodes if associated column is deleted?
-            if (node.column === action.payload.id) {
+            if (node.column.toString() === action.payload.id) {
               node.deleted = true
               node.column = -1
             }

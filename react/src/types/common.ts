@@ -12,8 +12,7 @@ export type ObjectPermission = {
 }
 
 export type ObjectLock = {
-  user_id: string
-  user_colour: string
+  userId: string
   userColour: string
 }
 
@@ -37,8 +36,8 @@ export type FieldChoice = {
 }
 
 export type CfLock = {
-  userid: string
-  objectid: string
+  userId: string
+  objectId: string
   expires: number
   userColour?: string
   lock?: boolean

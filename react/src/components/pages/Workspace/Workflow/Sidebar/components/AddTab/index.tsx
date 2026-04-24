@@ -15,7 +15,7 @@ import Typography from '@mui/material/Typography'
 import { MouseEvent, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import data, { getColumnData } from './data'
+import data, { getChannelData } from './data'
 import DraggableItem from './Draggable'
 import * as Styled from './styles'
 
@@ -25,7 +25,7 @@ const AddTab = () => {
   const { title, subtitle, groups } = data
 
   const workflowColumns = useSelector(selectWorkflowColumnEntities)
-  const nodeCategories = getColumnData(workflowColumns)
+  const nodeCategories = getChannelData(workflowColumns)
 
   const insertMode = useSelector(
     (state: RootState) => state.workspace.node.insertMode
@@ -108,7 +108,7 @@ const AddTab = () => {
               ))}
               <DraggableItem
                 component="li"
-                id={-1}
+                id={'-1'}
                 label={_t('Custom node category')}
                 type={DraggableType.SIDEBAR_NODE_CUSTOM}
                 dashed

@@ -4,7 +4,6 @@ import {
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import { getNextLargestNumber } from '@cf/redux/selectors/helpers'
 import { columnInsertBelow } from '@cf/redux/slices/column.slice'
 import { nodeWorkflowInsert } from '@cf/redux/slices/node.slice'
 import store from '@cf/redux/store'
@@ -25,7 +24,7 @@ const getInsertMode = () => store.getState().workspace.node.insertMode
 type StateType = {
   highlightEdge: Edge | null
   highlightRow: boolean
-  dragid: string | null
+  dragId: string | null
   closestEdge: Edge | null
 }
 
@@ -118,11 +117,11 @@ function useRowDnd(props: PropsType) {
         const insertMode = getInsertMode()
         const isCustom = isSidebarCustomNode(source.data)
         const row = self.data.row as number
-        let channelId = source.data.id as number
+        let channelId = source.data.id as string
         let closestEdge = extractClosestEdge(self.data)
 
         if (isCustom) {
-          channelId = getNextLargestNumber(wsColIds)
+          channelId = 'new-column-here'
           closestEdge = insertMode === 'column' ? 'top' : state.highlightEdge
           dispatch(columnInsertBelow({ id: null, newId: channelId }))
         }

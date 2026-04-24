@@ -9,10 +9,10 @@ export type Outcome = {
   description?: string
   code?: string
 
-  parent: number | null
-  children?: number[]
+  parent: string | null
+  children?: string[]
   level: number
-  linkedOutcomes?: number[]
+  linkedOutcomes?: string[]
   tags?: number[]
 }
 
@@ -40,7 +40,9 @@ export const outcomesSlice = createSlice({
   reducers: {
     // add outcome to a specific parent
     addOutcome: (state, action: PayloadAction<AddOutcomeType>) => {
-      const outcomeId = getNextLargestNumber(state.ids)
+      // const outcomeId = getNextLargestNumber(state.ids)
+      // TODO: nope
+      const outcomeId = 'new-outcome-id'
 
       const newOutcomeData: Outcome = {
         id: outcomeId,
@@ -115,11 +117,12 @@ export const outcomesSlice = createSlice({
     // cloning the tree structure as well
     duplicateOutcome: (state, action: PayloadAction<{ id: string }>) => {
       const target = state.entities[action.payload.id]
-      const clonedIds: number[] = []
+      const clonedIds: string[] = []
 
       // recursively go over the tree of outcomes and make updates
-      function cloneOutcome(outcome: Outcome, parentid: string | null = null) {
-        const cloneId = getNextLargestNumber(state.ids)
+      function cloneOutcome(outcome: Outcome, parentId: string | null = null) {
+        // const cloneId = getNextLargestNumber(state.ids)
+        const cloneId = 'new-clone-id'
         clonedIds.push(cloneId)
         const clone = {
           ...outcome,
@@ -173,8 +176,8 @@ export const outcomesSlice = createSlice({
     moveOutcome: (
       state,
       action: PayloadAction<{
-        targetid: string
-        destinationid: string
+        targetId: string
+        destinationId: string
         operation?: Instruction['operation']
       }>
     ) => {
@@ -288,8 +291,8 @@ export const outcomesSlice = createSlice({
     linkOutcome: (
       state,
       action: PayloadAction<{
-        targetid: string
-        destinationid: string
+        targetId: string
+        destinationId: string
       }>
     ) => {
       const { targetId, destinationId } = action.payload

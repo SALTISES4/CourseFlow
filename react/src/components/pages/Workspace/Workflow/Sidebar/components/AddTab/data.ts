@@ -4,14 +4,15 @@ import { DraggableType } from '@cfViews/WorkflowView/WorkflowEditView/types'
 
 import { AddTabType } from '../../types'
 
-// Prepare the workflow node categories (columns) data
-export function getColumnData(columns: TColumn[]) {
-  return columns.map((column) => ({
-    id: column.id,
-    title: column.title ?? column.columnTypeDisplay,
+// TODO: move this to a real selector or something
+// Prepare the graph channel data
+export function getChannelData(channels: TColumn[]) {
+  return channels.map((channel) => ({
+    id: channel.id,
+    title: channel.title ?? channel.columnTypeDisplay,
     color: ThemeHelper.getColumnColour({
-      columnType: column.columnType,
-      colour: column.colour
+      columnType: channel.columnType,
+      colour: channel.colour
     })
   }))
 }
@@ -25,15 +26,15 @@ const data: AddTabType = {
       title: 'Reusable blocks',
       blocks: [
         {
-          id: 1,
+          id: '1',
           label: 'Block 1'
         },
         {
-          id: 2,
+          id: '2',
           label: 'Block 2'
         },
         {
-          id: 3,
+          id: '3',
           label: 'Block 3'
         }
       ]
@@ -43,31 +44,31 @@ const data: AddTabType = {
       title: 'Strategies',
       blocks: [
         {
-          id: 1,
+          id: '1',
           label: 'Jigsaw'
         },
         {
-          id: 2,
+          id: '2',
           label: 'Peer instruction'
         },
         {
-          id: 3,
+          id: '3',
           label: 'Toolkit'
         },
         {
-          id: 4,
+          id: '4',
           label: 'Case studies'
         },
         {
-          id: 5,
+          id: '5',
           label: 'Gallery walk'
         },
         {
-          id: 6,
+          id: '6',
           label: 'Reflective writing'
         },
         {
-          id: 7,
+          id: '7',
           label: 'Two stage exam'
         }
       ]

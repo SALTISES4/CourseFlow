@@ -16,8 +16,8 @@ import * as StyledWeek from '../styles'
 
 interface NonEmptyRowType {
   nodes: WorkflowBoard['weeks'][0]['rows'][0]
-  parentid: string
-  weekid: string
+  parentId: string
+  weekId: string
   rowIndex: number
   columnIds: WorkflowBoard['columns']['ids']
   columnColors: WorkflowBoard['columns']['colors']
@@ -40,7 +40,7 @@ const WeekRow = (props: WeekRowPropsType) => {
   const dnd = useRowDnd({ ...props, rowRef })
   const { weekId, rowIndex, columnIds, columnColors, onNodeDrop } = props
 
-  const draggingCustomNode = dnd.dragId === -1
+  const draggingCustomNode = dnd.dragId === '-1'
 
   if (rowIndex === 'empty') {
     return (

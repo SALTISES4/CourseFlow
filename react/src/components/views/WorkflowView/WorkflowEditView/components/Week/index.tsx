@@ -42,13 +42,13 @@ import {
 
 export type WeekPropsType = {
   index: number
-  weekid: string
+  weekId: string
   weekRows: WorkflowBoard['weeks'][0]['rows']
   condensed: boolean
   boardId: WorkflowBoard['id']
   columnIds: WorkflowBoard['columns']['ids']
   columnColors: WorkflowBoard['columns']['colors']
-  onWeekCollapse: (weekid: string) => void
+  onWeekCollapse: (weekId: string) => void
   onNodeDrop: CellReorderCallbackFn
   onWeekReorder: WeekReorderCallbackFn
   onWeekInsert: WeekInsertCallbackFn
@@ -201,7 +201,7 @@ const Week = (props: WeekPropsType) => {
   )
 
   const onNodeClick = useCallback(
-    (e: MouseEvent<HTMLDivElement>, nodeid: string) => {
+    (e: MouseEvent<HTMLDivElement>, nodeId: string) => {
       e.stopPropagation()
       manager.current.updateSidebar(nodeId, CfObjectType.NODE, props.boardId)
     },

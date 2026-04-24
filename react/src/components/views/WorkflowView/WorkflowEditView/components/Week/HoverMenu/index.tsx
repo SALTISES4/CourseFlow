@@ -13,8 +13,8 @@ import { MouseEvent, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 type PropsType = {
-  workflowid: string
-  weekid: string
+  workflowId: string
+  weekId: string
   show: boolean
 }
 
@@ -24,7 +24,9 @@ const HoverMenu = ({ workflowId, weekId, show }: PropsType) => {
   const dispatch = useDispatch()
   const { dispatch: dialogDispatch } = useDialog()
   const ids = useSelector((state: RootState) => state.workspace.week.ids)
-  const newWeekId = getNextLargestNumber(ids)
+  // const newWeekId = getNextLargestNumber(ids)
+  console.log('TODO: review section hover menu')
+  const newWeekId = 'new-week-id'
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {

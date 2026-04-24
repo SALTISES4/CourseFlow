@@ -15,11 +15,11 @@ export enum WeekCellType {
 }
 
 interface WeekCellShared {
-  coordsWeek: number
+  coordsWeek: string
   coordsX: number
   coordsY: number
   borderColor: string
-  columnid: string
+  columnId: string
   onReorder: CellReorderCallbackFn
   highlight?: Edge | 'cell'
 }
@@ -32,7 +32,7 @@ export interface WeekCellEmptyType extends WeekCellShared {
 }
 
 export interface WeekCellNodeType extends WeekCellShared {
-  nodeid: string
+  nodeId: string
   type: WeekCellType.NODE
   onClick: CellClickCallbackFn
 }

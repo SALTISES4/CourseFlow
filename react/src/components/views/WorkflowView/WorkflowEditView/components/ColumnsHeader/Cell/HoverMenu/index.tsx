@@ -14,7 +14,7 @@ import { MouseEvent, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 type PropsType = {
-  nodeid: string
+  nodeId: string
   show: boolean
 }
 
@@ -24,7 +24,8 @@ const HoverMenu = ({ nodeId, show }: PropsType) => {
   const dispatch = useDispatch()
   const { dispatch: dialogDispatch } = useDialog()
   const ids = useSelector((state: RootState) => state.workspace.column.ids)
-  const newColumnId = getNextLargestNumber(ids)
+  // const newColumnId = getNextLargestNumber(ids)
+  const newColumnId = 'please-work-god'
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {

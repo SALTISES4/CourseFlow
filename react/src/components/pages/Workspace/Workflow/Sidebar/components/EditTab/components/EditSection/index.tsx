@@ -22,7 +22,7 @@ type SectionFormType = {
   title: string
 }
 
-const EditSection = ({ sectionId }: { sectionid: string }) => {
+const EditSection = ({ sectionId }: { sectionId: string }) => {
   const dispatch = useDispatch()
   const week = useSelector((state: RootState) =>
     selectWeekById(state, sectionId)
@@ -40,7 +40,8 @@ const EditSectionForm = ({ week }: { week: TWeek }) => {
   const dispatch = useDispatch()
   const { dispatch: dialogDispatch } = useDialog()
   const ids = useSelector((state: RootState) => state.workspace.week.ids)
-  const newWeekId = getNextLargestNumber(ids)
+  // const newWeekId = getNextLargestNumber(ids)
+  const newWeekId = 'new-week-id'
   const workflowId = useSelector(
     (state: RootState) => state.workspace.workflow.id
   )

@@ -23,7 +23,7 @@ export const dragEndThunk =
   }
 
 export type DragPosition = {
-  nodeid: string | null
+  nodeId: string | null
   x: number
   y: number
   edge: Position | null
@@ -36,8 +36,8 @@ type SVGLinkState = {
     to: DragPosition | null
   }
   snap: {
-    from: { nodeid: string; edge: Position } | null
-    to: { nodeid: string; edge: Position } | null
+    from: { nodeId: string; edge: Position } | null
+    to: { nodeId: string; edge: Position } | null
   }
   editing: LineEdit['editing'] | null
 

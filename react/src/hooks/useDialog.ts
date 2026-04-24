@@ -39,8 +39,8 @@ export type DialogPayloadMap = {
   [DialogMode.ARCHIVE]: { peopleId: string }
   [DialogMode.WORKFLOW_CREATE]: { workflowType: WorkflowType }
   [DialogMode.WORKFLOW_DELETE_SECTION]: {
-    sectionid: string
-    workflowid: string
+    sectionId: string
+    workflowId: string
   }
   [DialogMode.WORKFLOW_DELETE_NODE_CATEGORY]: {
     id: string

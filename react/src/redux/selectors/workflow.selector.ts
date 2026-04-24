@@ -1,5 +1,5 @@
 import { RootState } from '@cfRedux/store'
-import { getColumnData } from '@cfSidebar/components/AddTab/data'
+import { getChannelData } from '@cfSidebar/components/AddTab/data'
 import { createSelector } from 'reselect'
 
 import { selectColumnEntities } from './column.selector'
@@ -20,18 +20,18 @@ export const selectWorkflowColumnEntities = createSelector(
   }
 )
 
-type Week = {
+type Section = {
   id: string
-  rows: Record<number, number>[]
+  rows: Record<string, string>[]
 }
 
 export type WorkflowBoard = {
   id: string
   columns: {
-    ids: number[]
-    colors: Record<number, string>
+    ids: string[]
+    colors: Record<string, string>
   }
-  weeks: Week[]
+  weeks: Section[]
 }
 
 // WEEK ROW EXAMPLE
@@ -49,7 +49,7 @@ export const selectWorkflowBoard = createSelector(
   (workflow, nodes, columns) => {
     // prepare column colors
     const colors: WorkflowBoard['columns']['colors'] = {}
-    getColumnData(columns).forEach((col) => {
+    getChannelData(columns).forEach((col) => {
       colors[col.id] = col.color
     })
 
@@ -61,12 +61,12 @@ export const selectWorkflowBoard = createSelector(
         colors
       },
       weeks: workflow.weeks.map((weekId) => {
-        const rows: Week['rows'] = []
+        const rows: Section['rows'] = []
         const weekNodes = nodes.filter((n) => n.week === weekId && !n.deleted)
         weekNodes
           .sort((a, b) => a.order - b.order)
           .forEach((node) => {
-            const x = columns.findIndex((c) => c.id === node.column)
+            const x = columns.findIndex((c) => c.id === node.column.toString())
             const y = node.order
 
             // place the node into the corresponding row/cell
@@ -85,7 +85,10 @@ export const selectWorkflowBoard = createSelector(
             }
           })
 
-        return { id: weekId, rows }
+        return {
+          id: weekId.toString(),
+          rows
+        }
       })
     }
 

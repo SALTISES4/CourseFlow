@@ -64,7 +64,10 @@ const Outcome = ({
   const selected =
     sidebarData.objectType === CfObjectType.OUTCOME && sidebarData.id === id
 
-  const highlighted = linkedOutcomes?.some((o) => highlight.includes(o))
+  // TODO: not gonna quite cut it, id is now a string (uuid)
+  const highlighted = linkedOutcomes?.some((o) =>
+    highlight.includes(parseInt(o, 10))
+  )
 
   useEffect(() => {
     const el = dragHandleRef.current
@@ -165,7 +168,7 @@ const Outcome = ({
 
             dispatch(
               moveOutcome({
-                targetId: args.source.data.id as number,
+                targetId: args.source.data.id as string,
                 destinationId: id,
                 operation: instruction.operation
               })
@@ -181,7 +184,7 @@ const Outcome = ({
         }
       })
     )
-  }, [dispatch, dragHandleRef, dragging, id, level])
+  }, [dispatch, dragging?.id, dragging?.level, id, level, children])
 
   const setCollapsed = useCallback((value: boolean) => {
     setState(
@@ -203,7 +206,7 @@ const Outcome = ({
     if (selected) {
       manager.current.clearSidebar()
     } else {
-      manager.current.updateSidebar(id, CfObjectType.OUTCOME, -1)
+      manager.current.updateSidebar(id, CfObjectType.OUTCOME, '-1')
     }
   }, [id, selected])
 

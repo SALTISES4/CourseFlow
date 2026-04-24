@@ -48,8 +48,8 @@ const columnSlice = createSlice({
       state,
       action: PayloadAction<{
         id: string | null
-        newid: string
-        duplicate?: number
+        newId: string
+        duplicate?: string
       }>
     ) {
       const { newId, duplicate } = action.payload

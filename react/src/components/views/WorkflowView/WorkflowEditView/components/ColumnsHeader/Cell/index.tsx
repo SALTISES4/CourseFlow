@@ -28,8 +28,8 @@ import * as Styled from './styles'
 
 type CellProps = {
   index: number
-  columnid: string
-  parentid: string
+  columnId: string
+  parentId: string
   onReorder: ColumnReorderCallbackFn
 }
 
