@@ -1,9 +1,9 @@
-import ConnectionBar from '@cf/components/pages/Workspace/Workflow/WorkflowTabs/components/MenuBar/ConnectionBar'
 import {
   ActionMenu,
   ExpandCollapseMenu,
   JumpToMenu
-} from '@cf/components/pages/Workspace/Workflow/WorkflowTabs/components/MenuBar/menus'
+} from '@cf/components/pages/Workspace/Workflow/WorkflowTabs/components/MenuBar'
+import ConnectionBar from '@cf/components/pages/Workspace/Workflow/WorkflowTabs/components/MenuBar/ConnectionBar'
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
 import { OuterContentWrap } from '@cfMUI/helper'

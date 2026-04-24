@@ -1,5 +1,5 @@
 import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
-import { ActionMenu } from '@cf/components/pages/Workspace/Project/components/MenuBar/menus'
+import { ActionMenu } from '@cf/components/pages/Workspace/Project/components/MenuBar'
 import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { ProjectDetailsType } from '@cf/types/common'
 import { mapProjectV2ToProjectDetails } from '@cf/utility/marshalling/projectDetail'
