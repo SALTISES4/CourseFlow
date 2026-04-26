@@ -3,13 +3,12 @@ from smtplib import SMTPException
 import pandas as pd
 import os
 import json
-import threading
 import traceback
-from functools import wraps
 from celery import shared_task
 from django.conf import settings
 from django.core.cache import cache
 from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.core.mail import EmailMessage
 from django.utils import timezone
 
@@ -20,16 +19,7 @@ from .celery import logger, try_async
 from .models import ObjectSet, User
 from .utils import dateTimeFormatNoSpace, get_model_from_str
 
-def async_execute(func):
-    """
-    Executes a function asynchronously using a thread.
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-            # Create a thread to run the function asynchronously
-            thread = threading.Thread(target=func, args=args, kwargs=kwargs)
-            thread.start()
-    return wrapper
+
 
 @try_async
 @shared_task
@@ -127,7 +117,8 @@ def async_send_export_email(
             f"Email - {email_subject} - {filename} - could NOT be sent to {user_email}"
         )
 
-@async_execute
+@try_async
+@shared_task
 def async_create_export_file(
     job_data,
     allowed_sets,
@@ -192,16 +183,21 @@ def async_create_export_file(
         )
         
         file_path = os.path.join(dir_path,filename)
-        with open(file_path, "wb") as out_file:
-            out_file.write(file)
+
+        default_storage.save(file_path, ContentFile(file))
         job_data["status"] = "success"
         job_data["filename"] = filename
     except Exception as err:
         job_data["status"] = "failed"
         job_data["error"] = str(err)
         job_data['debug_info'] = traceback.format_exc()  # not exposed to users
-    with open(f'{dir_path}/job_{job_id}.json', 'w') as f:
-        json.dump(job_data, f)
+    job_file_path = f"{dir_path}/job_{job_id}.json"
+    if default_storage.exists(job_file_path):
+        default_storage.delete(job_file_path)
+    default_storage.save(
+        job_file_path,
+        ContentFile(json.dumps(job_data))
+    )
 
 
 
