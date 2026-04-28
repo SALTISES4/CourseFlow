@@ -67,15 +67,17 @@ const NotificationsPage = (): JSX.Element => {
     })
   })
 
+  const meta = data?.meta
+
   useEffect(() => {
-    if (!data?.meta) {
+    if (!meta) {
       return
     }
-    if (data.meta.current_page !== page) {
-      setPage(data.meta.current_page)
-    }
-  }, [data?.meta?.current_page, page])
 
+    if (meta.currentPage !== page) {
+      setPage(meta.currentPage)
+    }
+  }, [meta, page])
 
   const markAllMutation = useMutation({
     ...markAllMyNotificationsAsReadMutation(),
@@ -83,7 +85,6 @@ const NotificationsPage = (): JSX.Element => {
       void invalidateAllNotificationListQueries(queryClient)
     }
   })
-
 
   const markOneMutation = useMutation({
     ...markOneNotificationAsReadMutation(),
@@ -108,7 +109,6 @@ const NotificationsPage = (): JSX.Element => {
   })
 
   const items = data?.items ?? []
-  const meta = data?.meta
 
   function handleMenuOpen(
     event: MouseEvent<HTMLElement>,
@@ -154,11 +154,10 @@ const NotificationsPage = (): JSX.Element => {
       return
     }
     deleteMutation.mutate(
-      { path: { uuid: String(notification.uuid) } },
+      { path: { uuid: notification.uuid } },
       { onSettled: () => handleMenuClose() }
     )
   }
-
 
   function onMarkAllAsReadClick(e: MouseEvent) {
     e.preventDefault()
@@ -196,7 +195,7 @@ const NotificationsPage = (): JSX.Element => {
       <SC.NotificationsWrap>
         <SC.NotificationsHeader>
           <Typography variant="h1">{strings.notifications}</Typography>
-          {meta.unread_count > 0 && (
+          {meta.unreadCount > 0 && (
             <SC.MarkAsRead>
               <Link href="#" underline="always" onClick={onMarkAllAsReadClick}>
                 {strings.markAllAsRead}
@@ -211,7 +210,7 @@ const NotificationsPage = (): JSX.Element => {
               key={String(n.uuid)}
               alignItems="flex-start"
               sx={{
-                backgroundColor: !n.is_read ? 'courseflow.lightest' : null
+                backgroundColor: !n.isRead ? 'courseflow.lightest' : null
               }}
               secondaryAction={
                 <IconButton
@@ -224,9 +223,9 @@ const NotificationsPage = (): JSX.Element => {
               }
             >
               <ListItemButton>
-                {!n.is_read && <Badge color="primary" variant="dot" />}
+                {!n.isRead && <Badge color="primary" variant="dot" />}
                 <ListItemText
-                  primary={n.date_created}
+                  primary={n.dateCreated}
                   secondary={
                     <Typography
                       sx={{ display: 'inline' }}
@@ -260,7 +259,7 @@ const NotificationsPage = (): JSX.Element => {
             'aria-label': strings.notificationOptions
           }}
         >
-          {pageState.notification && !pageState.notification.is_read && (
+          {pageState.notification && !pageState.notification.isRead && (
             <MenuItem onClick={onMarkAsReadClick}>
               {strings.markAsRead}
             </MenuItem>
@@ -269,9 +268,9 @@ const NotificationsPage = (): JSX.Element => {
         </Menu>
       </SC.NotificationsWrap>
 
-      {meta.total_pages > 1 && (
+      {meta.totalPages > 1 && (
         <SC.StyledPagination
-          count={meta.total_pages}
+          count={meta.totalPages}
           page={page}
           onChange={onPaginationChange}
           showFirstButton
