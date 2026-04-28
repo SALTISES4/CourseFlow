@@ -18,7 +18,8 @@
     "tsc-watch": "tsc --watch",
     "prettier": "prettier --write './src/**/*.{js,ts,jsx,tsx}' '!course_flow/static/**/dist/**/*.{js,ts,jsx,tsx}'",
     "lint-quiet": "eslint --fix --quiet --max-warnings=-1  ./src --ext .js,.tsx,.ts -c ./.eslintrc.json",
-    "openapi-ts": "openapi-ts"
+    "openapi-ts": "openapi-ts",
+    "openapi-gen": "openapi-ts && eslint --fix ./src/api/gen"
   },
   "browserslist": "last 4 versions and >=0.2% in CA and not ie <= 11",
   "devDependencies": {
