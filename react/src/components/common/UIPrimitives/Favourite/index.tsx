@@ -1,11 +1,11 @@
 import { LibrarySearchOut } from '@cf/api/gen'
 import { libraryItemFavoriteToggleMutation } from '@cf/api/gen/@tanstack/react-query.gen'
+import { usePatchQueryCache } from '@cf/api/wrappedHooks'
 import { LibraryObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import StarIcon from '@mui/icons-material/Star'
 import IconButton from '@mui/material/IconButton'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { produce } from 'immer'
+import { useMutation } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
 import { MouseEvent, useCallback, useState } from 'react'
 
@@ -17,28 +17,21 @@ type PropsType = {
 
 const Favourite = ({ id, isFavourite, type }: PropsType) => {
   const [isFavouriteState, setFavouriteState] = useState<boolean>(isFavourite)
-  const queryClient = useQueryClient()
+  const patchQueryCache = usePatchQueryCache()
   const toggleFavorite = useMutation({
     ...libraryItemFavoriteToggleMutation(),
-    onSuccess: async (resp) => {
-      // patch the cache instead of invalidating all library-search queries
-      // and triggering multiple fetches
-      queryClient
-        .getQueriesData<LibrarySearchOut>({ queryKey: ['library-search'] })
-        .forEach(([queryKey, oldData]) => {
-          if (!oldData) {
-            return
+    onSuccess: async (response) => {
+      patchQueryCache<LibrarySearchOut>({
+        queryKey: ['library-search'],
+        callback: (draft) => {
+          const workflow = draft.items.find((w) => w.uuid === id)
+          if (workflow) {
+            // TODO: actually replace the workflow with the response
+            // once it returns a real workflow/LibraryItemOut
+            workflow.isFavorite = !workflow.isFavorite
           }
-          queryClient.setQueryData(
-            queryKey,
-            produce(oldData, (draft) => {
-              const workflow = draft.items.find((w) => w.uuid === id)
-              if (workflow) {
-                workflow.isFavorite = !workflow.isFavorite
-              }
-            })
-          )
-        })
+        }
+      })
     }
   })
 
