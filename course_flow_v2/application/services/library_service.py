@@ -6,6 +6,10 @@ from uuid import UUID
 
 from django.db.models import Q, QuerySet
 
+from course_flow_v2.api.schemas.library import (
+    LibraryFavoriteOut
+)
+
 from course_flow_v2.core.models import (
     FavoriteGraph,
     FavoriteProject,
@@ -188,6 +192,13 @@ class LibraryService:
                 user_id=user_id,
                 graph__in=graph_qs,
             ).values_list("graph__uuid", flat=True)
+        )
+
+    def toggle_favorite(self, *, user_id: int, uuid: UUID):
+        return LibraryFavoriteOut(
+            user_id=user_id,
+            uuid=uuid,
+            message="TODO: implement toggle_favorite"
         )
 
     def _normalize_project_items(

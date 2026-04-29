@@ -20,7 +20,7 @@ const Header = ({ project }: { project: ProjectDetailsType }) => (
       // @todo selection manager is only defined in workflow currently so we'll need to go get that
     >
       <Typography
-        sx={{
+        style={{
           display: 'flex',
           alignItems: 'center'
         }}
@@ -30,7 +30,7 @@ const Header = ({ project }: { project: ProjectDetailsType }) => (
         {project.title}
         {project.isDeleted && (
           <CardChip
-            sx={{ display: 'flex', alignItems: 'center' }}
+            style={{ display: 'flex', alignItems: 'center' }}
             className={ChipOptions.ACTIVITY as string}
             label={_t('Archived')}
           />

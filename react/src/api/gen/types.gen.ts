@@ -1812,6 +1812,34 @@ export enum LibrarySortValueIn {
   A_Z = 'A_Z'
 }
 
+/**
+ * LibraryFavoriteOut
+ */
+export type LibraryFavoriteOut = {
+  /**
+   * Userid
+   */
+  userId: number
+  /**
+   * Uuid
+   */
+  uuid: string
+  /**
+   * Message
+   */
+  message: string
+}
+
+/**
+ * LibraryFavoriteIn
+ */
+export type LibraryFavoriteIn = {
+  /**
+   * Uuid
+   */
+  uuid?: string | null
+}
+
 export type CourseFlowV2ApiNinjaAppHealthData = {
   body?: never
   path?: never
@@ -2921,3 +2949,20 @@ export type SearchLibraryResponses = {
 
 export type SearchLibraryResponse =
   SearchLibraryResponses[keyof SearchLibraryResponses]
+
+export type LibraryItemFavoriteToggleData = {
+  body: LibraryFavoriteIn
+  path?: never
+  query?: never
+  url: '/api/library/favorite'
+}
+
+export type LibraryItemFavoriteToggleResponses = {
+  /**
+   * OK
+   */
+  200: LibraryFavoriteOut
+}
+
+export type LibraryItemFavoriteToggleResponse =
+  LibraryItemFavoriteToggleResponses[keyof LibraryItemFavoriteToggleResponses]

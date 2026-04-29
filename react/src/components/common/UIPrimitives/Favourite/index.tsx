@@ -1,9 +1,11 @@
+import { libraryItemFavoriteToggleMutation } from '@cf/api/gen/@tanstack/react-query.gen'
 import { LibraryObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import StarIcon from '@mui/icons-material/Star'
 import IconButton from '@mui/material/IconButton'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
-import { MouseEvent, useCallback, useEffect, useState } from 'react'
+import { MouseEvent, useCallback, useState } from 'react'
 
 type PropsType = {
   id: string
@@ -13,13 +15,22 @@ type PropsType = {
 
 const Favourite = ({ id, isFavourite, type }: PropsType) => {
   const [isFavouriteState, setFavouriteState] = useState<boolean>(isFavourite)
-
-  // @todo replace
-  // const [toggleMutate] = useToggleFavouriteMutation()
+  const queryClient = useQueryClient()
+  const toggleFavorite = useMutation({
+    ...libraryItemFavoriteToggleMutation(),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['favorite', id, type]
+      })
+    }
+  })
 
   const onSuccess = useCallback(() => {
+    const msg = isFavouriteState
+      ? _t('Removed from favorites')
+      : _t('Saved to favorites')
     setFavouriteState(!isFavouriteState)
-    enqueueSnackbar('Success toggling favourites', {
+    enqueueSnackbar(msg, {
       variant: 'success'
     })
   }, [isFavouriteState])
@@ -31,22 +42,21 @@ const Favourite = ({ id, isFavourite, type }: PropsType) => {
     })
   }, [])
 
-  const onStarClick = useCallback((e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation()
-    e.preventDefault()
-
-    // TODO:
-    console.log('on star click, toggle favorite mutation')
-
-    // toggleMutate({
-    //   id,
-    //   objectType: type,
-    //   favourite: !isFavouriteState
-    // })
-    //   .unwrap()
-    //   .then(() => onSuccess())
-    //   .catch((err) => onError(err))
-  }, [])
+  const onStarClick = useCallback(
+    async (e: MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation()
+      e.preventDefault()
+      try {
+        await toggleFavorite.mutateAsync({
+          body: { uuid: id }
+        })
+        onSuccess()
+      } catch (err) {
+        onError(err)
+      }
+    },
+    [id, onSuccess, onError, toggleFavorite]
+  )
 
   return (
     <IconButton

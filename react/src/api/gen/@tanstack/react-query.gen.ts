@@ -41,6 +41,7 @@ import {
   getProject,
   getProjectGraph,
   getSection,
+  libraryItemFavoriteToggle,
   listGraphChannels,
   listGraphEdges,
   listGraphNodes,
@@ -127,6 +128,8 @@ import type {
   GetProjectResponse,
   GetSectionData,
   GetSectionResponse,
+  LibraryItemFavoriteToggleData,
+  LibraryItemFavoriteToggleResponse,
   ListGraphChannelsData,
   ListGraphChannelsResponse,
   ListGraphEdgesData,
@@ -1721,6 +1724,33 @@ export const searchLibraryMutation = (
   > = {
     mutationFn: async (fnOptions) => {
       const { data } = await searchLibrary({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Library Item Favorite Toggle
+ */
+export const libraryItemFavoriteToggleMutation = (
+  options?: Partial<Options<LibraryItemFavoriteToggleData>>
+): UseMutationOptions<
+  LibraryItemFavoriteToggleResponse,
+  DefaultError,
+  Options<LibraryItemFavoriteToggleData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    LibraryItemFavoriteToggleResponse,
+    DefaultError,
+    Options<LibraryItemFavoriteToggleData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await libraryItemFavoriteToggle({
         ...options,
         ...fnOptions,
         throwOnError: true

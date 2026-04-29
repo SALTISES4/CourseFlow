@@ -934,6 +934,22 @@ export const zLibrarySearchIn = z.object({
   filters: z.array(zLibraryFilterIn).nullish()
 })
 
+/**
+ * LibraryFavoriteOut
+ */
+export const zLibraryFavoriteOut = z.object({
+  userId: z.number().int(),
+  uuid: z.string().uuid(),
+  message: z.string()
+})
+
+/**
+ * LibraryFavoriteIn
+ */
+export const zLibraryFavoriteIn = z.object({
+  uuid: z.string().uuid().nullish()
+})
+
 export const zCourseFlowV2ApiNinjaAppHealthData = z.object({
   body: z.never().optional(),
   path: z.never().optional(),
@@ -1619,3 +1635,14 @@ export const zSearchLibraryData = z.object({
  * OK
  */
 export const zSearchLibraryResponse = zLibrarySearchOut
+
+export const zLibraryItemFavoriteToggleData = z.object({
+  body: zLibraryFavoriteIn,
+  path: z.never().optional(),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zLibraryItemFavoriteToggleResponse = zLibraryFavoriteOut

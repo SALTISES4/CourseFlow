@@ -63,6 +63,8 @@ import type {
   GetProjectResponses,
   GetSectionData,
   GetSectionResponses,
+  LibraryItemFavoriteToggleData,
+  LibraryItemFavoriteToggleResponses,
   ListGraphChannelsData,
   ListGraphChannelsResponses,
   ListGraphEdgesData,
@@ -173,6 +175,8 @@ import {
   zGetProjectResponse,
   zGetSectionData,
   zGetSectionResponse,
+  zLibraryItemFavoriteToggleData,
+  zLibraryItemFavoriteToggleResponse,
   zListGraphChannelsData,
   zListGraphChannelsResponse,
   zListGraphEdgesData,
@@ -1296,6 +1300,30 @@ export const searchLibrary = <ThrowOnError extends boolean = false>(
       await zSearchLibraryResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/library/search',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Library Item Favorite Toggle
+ */
+export const libraryItemFavoriteToggle = <ThrowOnError extends boolean = false>(
+  options: Options<LibraryItemFavoriteToggleData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    LibraryItemFavoriteToggleResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zLibraryItemFavoriteToggleData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zLibraryItemFavoriteToggleResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/library/favorite',
     ...options,
     headers: {
       'Content-Type': 'application/json',
