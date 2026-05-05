@@ -947,7 +947,8 @@ export const zLibraryFavoriteOut = z.object({
  * LibraryFavoriteIn
  */
 export const zLibraryFavoriteIn = z.object({
-  uuid: z.string().uuid().nullish()
+  uuid: z.string().uuid().nullish(),
+  targetType: z.string()
 })
 
 export const zCourseFlowV2ApiNinjaAppHealthData = z.object({

@@ -42,4 +42,5 @@ def library_item_favorite_toggle(request, payload: LibraryFavoriteIn):
     return svc.toggle_favorite(
         user_id=user.id,
         uuid=payload.uuid,
+        target_type=payload.target_type,
     )

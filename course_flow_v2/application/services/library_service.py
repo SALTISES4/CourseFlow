@@ -194,11 +194,38 @@ class LibraryService:
             ).values_list("graph__uuid", flat=True)
         )
 
-    def toggle_favorite(self, *, user_id: int, uuid: UUID):
+    def toggle_favorite(self, *, user_id: int, uuid: UUID, target_type: str):
+        if target_type not in {"workflow", "project"}:
+            raise ValueError("target_type must be 'workflow' or 'project'")
+
+        if target_type == "workflow":
+            # uhhh, first resolve the ID from UUID
+            graph_id = Graph.objects.values_list("id", flat=True).get(uuid=uuid)
+
+            # then add/remove from favorites table
+            obj, created = FavoriteGraph.objects.get_or_create(
+                user_id=user_id,
+                graph_id=graph_id,
+            )
+            if not created:
+                obj.delete()
+
+        elif target_type == "project":
+            # uhhh, first resolve the ID from UUID
+            project_id = Project.objects.values_list("id", flat=True).get(uuid=uuid)
+
+            # then add/remove from favorites table
+            obj, created = FavoriteProject.objects.get_or_create(
+                user_id=user_id,
+                project_id=project_id,
+            )
+            if not created:
+                obj.delete()
+
         return LibraryFavoriteOut(
             user_id=user_id,
             uuid=uuid,
-            message="TODO: implement toggle_favorite"
+            message="added" if created else "removed",
         )
 
     def _normalize_project_items(

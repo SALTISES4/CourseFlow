@@ -92,15 +92,20 @@ export function formatLibraryObject(
   //   (libraryObject.author?.name &&
   //     `${_t('Owned by')} ${libraryObject.author.name}`)
 
+  const type = mapObjectTypeToLibraryObjectType(libraryObject.objectType)
+
   return {
-    id: libraryObject.uuid,
+    id:
+      type === LibraryObjectType.PROJECT
+        ? libraryObject.uuid
+        : libraryObject.graphUuid,
     title: libraryObject.title,
     description: libraryObject.description,
     isFavourite: libraryObject.isFavorite,
     // TODO: figure out where this comes from
     // isLinked: libraryObject.isLinked,
     isLinked: false,
-    type: mapObjectTypeToLibraryObjectType(libraryObject.objectType),
+    type,
     chips: [typeChip, templateChip, countChip].filter((entry) => entry != null)
   }
 }

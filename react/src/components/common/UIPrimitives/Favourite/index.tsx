@@ -58,14 +58,18 @@ const Favourite = ({ id, isFavourite, type }: PropsType) => {
       e.preventDefault()
       try {
         await toggleFavorite.mutateAsync({
-          body: { uuid: id }
+          body: {
+            uuid: id,
+            targetType:
+              type === LibraryObjectType.PROJECT ? 'project' : 'workflow'
+          }
         })
         onSuccess()
       } catch (err) {
         onError(err)
       }
     },
-    [id, onSuccess, onError, toggleFavorite]
+    [id, type, onSuccess, onError, toggleFavorite]
   )
 
   return (

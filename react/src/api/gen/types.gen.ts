@@ -1838,6 +1838,10 @@ export type LibraryFavoriteIn = {
    * Uuid
    */
   uuid?: string | null
+  /**
+   * Targettype
+   */
+  targetType: string
 }
 
 export type CourseFlowV2ApiNinjaAppHealthData = {
