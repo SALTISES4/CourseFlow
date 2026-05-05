@@ -77,8 +77,12 @@ const Favourites = () => {
           {data.items.map((item, id) => {
             const url =
               item.objectType === LibraryObjectType.PROJECT
-                ? generatePath(CFRoutes.PROJECT, { uuid: String(item.uuid) })
-                : generatePath(CFRoutes.WORKFLOW, { uuid: String(item.uuid) })
+                ? generatePath(CFRoutes.PROJECT, {
+                    uuid: String(item.uuid)
+                  })
+                : generatePath(CFRoutes.WORKFLOW, {
+                    uuid: String(item.workflowUuid)
+                  })
 
             return (
               <ListItem disablePadding dense key={id}>
