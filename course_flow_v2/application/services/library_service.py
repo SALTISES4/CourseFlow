@@ -39,9 +39,9 @@ class LibraryService:
         workspace_type = normalized_filters.get("workspacetype")
         project_filter_uuid = self._parse_uuid(normalized_filters.get("project"))
         discipline_ids = self._normalize_int_list(normalized_filters.get("discipline"))
-        is_template = self._normalize_bool(normalized_filters.get("istemplate"))
         keyword = self._normalize_keyword(normalized_filters.get("keyword"))
-        favourited = self._normalize_bool(normalized_filters.get("favourited"))
+        is_template = self._normalize_bool(normalized_filters.get("istemplate"))
+        is_favorite = self._normalize_bool(normalized_filters.get("isfavorite"))
 
         accessible_projects = Project.objects.filter(
             Q(owner_id=user_id) | Q(team__members__user_id=user_id)
@@ -85,13 +85,14 @@ class LibraryService:
                 | Q(title__icontains=keyword)
             )
 
-        if favourited is True:
+        if is_favorite is True:
             project_qs = project_qs.filter(favorite_links__user_id=user_id)
             graph_qs = graph_qs.filter(favorite_links__user_id=user_id)
 
         project_favorite_uuids = self._favorite_project_uuids(
             user_id=user_id, project_qs=project_qs
         )
+
         graph_favorite_uuids = self._favorite_graph_uuids(
             user_id=user_id,
             graph_qs=graph_qs,

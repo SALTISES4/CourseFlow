@@ -27,12 +27,12 @@ const Favourites = () => {
   const { data, isLoading, isError } = useLibrarySearch({
     pagination: {
       page: 0,
-      resultsPerPage: 10
+      resultsPerPage: 5
     },
     filters: [
       {
-        name: 'string',
-        value: 'string'
+        name: 'isFavorite',
+        value: true
       }
     ]
   })

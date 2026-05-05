@@ -12,21 +12,11 @@ import Section from './components/Section'
 import Welcome from './components/Welcome'
 
 const Home = () => {
-  /*******************************************************
-   * HOOKS
-   *******************************************************/
-  // const { data, error, isLoading } = useGetHomeContextQuery()
-  const { data, isLoading, isError } = useLibrarySearch({
+  const { data, isLoading } = useLibrarySearch({
     pagination: {
       page: 0,
       resultsPerPage: 10
-    },
-    filters: [
-      {
-        name: 'string',
-        value: 'string'
-      }
-    ]
+    }
   })
 
   if (isLoading) {
