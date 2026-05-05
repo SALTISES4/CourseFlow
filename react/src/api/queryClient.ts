@@ -6,7 +6,8 @@ import { QueryClient } from '@tanstack/react-query'
 export const courseFlowQueryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: false
+      retry: false,
+      staleTime: 1000 * 60
     }
   }
 })
