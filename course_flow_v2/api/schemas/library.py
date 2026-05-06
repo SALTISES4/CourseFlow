@@ -41,7 +41,6 @@ class LibrarySearchIn(CamelSchema):
 
 class LibraryFavoriteIn(CamelSchema):
     uuid: UUID | None = None
-    target_type: str
 
 # TODO: this is temporary, should actually be LibraryItemOut
 # so that the rsponse is the workflow item that was favorited

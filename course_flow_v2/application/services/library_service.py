@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import math
+from enum import Enum
 from typing import Any
 from uuid import UUID
+from dataclasses import dataclass
 
 from django.db.models import Q, QuerySet
 
@@ -17,6 +19,15 @@ from course_flow_v2.core.models import (
     Project,
 )
 
+class LibraryObjectType(str, Enum):
+    PROJECT = "project"
+    WORKFLOW = "workflow"
+
+@dataclass
+class LibraryObject:
+    id: int
+    type: LibraryObjectType
+    uuid: UUID
 
 class LibraryService:
     def search(
@@ -123,6 +134,51 @@ class LibraryService:
             },
         }
 
+    def toggle_favorite(self, *, user_id: int, uuid: UUID):
+        library_item = self._find_from_uuid(uuid)
+
+        TYPE_TO_MODEL_MAP = {
+            LibraryObjectType.WORKFLOW: (FavoriteGraph, "graph_id"),
+            LibraryObjectType.PROJECT: (FavoriteProject, "project_id"),
+        }
+
+        model, field = TYPE_TO_MODEL_MAP[library_item.type]
+        obj, created = model.objects.get_or_create(
+            user_id=user_id,
+            **{field: library_item.id}
+        )
+
+        if not created:
+            obj.delete()
+
+        return LibraryFavoriteOut(
+            user_id=user_id,
+            uuid=uuid,
+            message="added" if created else "deleted",
+        )
+
+    def _find_from_uuid(self, uuid: UUID):
+        if uuid is None:
+            raise ValueError("UUID is required")
+
+        graph = Graph.objects.filter(uuid=uuid).only("id").first()
+        if graph:
+            return LibraryObject(
+                id=graph.id,
+                type=LibraryObjectType.WORKFLOW,
+                uuid=uuid,
+            )
+
+        project = Project.objects.filter(uuid=uuid).only("id").first()
+        if project:
+            return LibraryObject(
+                id=project.id,
+                type=LibraryObjectType.PROJECT,
+                uuid=uuid,
+            )
+
+        raise ValueError(f"Couldn't find UUID: {uuid}")
+
     def _normalize_filters(self, filters: list[Any]) -> dict[str, Any]:
         output: dict[str, Any] = {}
         for raw in filters:
@@ -193,40 +249,6 @@ class LibraryService:
                 user_id=user_id,
                 graph__in=graph_qs,
             ).values_list("graph__uuid", flat=True)
-        )
-
-    def toggle_favorite(self, *, user_id: int, uuid: UUID, target_type: str):
-        if target_type not in {"workflow", "project"}:
-            raise ValueError("target_type must be 'workflow' or 'project'")
-
-        if target_type == "workflow":
-            # uhhh, first resolve the ID from UUID
-            graph_id = Graph.objects.values_list("id", flat=True).get(uuid=uuid)
-
-            # then add/remove from favorites table
-            obj, created = FavoriteGraph.objects.get_or_create(
-                user_id=user_id,
-                graph_id=graph_id,
-            )
-            if not created:
-                obj.delete()
-
-        elif target_type == "project":
-            # uhhh, first resolve the ID from UUID
-            project_id = Project.objects.values_list("id", flat=True).get(uuid=uuid)
-
-            # then add/remove from favorites table
-            obj, created = FavoriteProject.objects.get_or_create(
-                user_id=user_id,
-                project_id=project_id,
-            )
-            if not created:
-                obj.delete()
-
-        return LibraryFavoriteOut(
-            user_id=user_id,
-            uuid=uuid,
-            message="added" if created else "removed",
         )
 
     def _normalize_project_items(

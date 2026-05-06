@@ -22,44 +22,28 @@ const Favourite = ({ id, isFavourite, type }: PropsType) => {
       await queryClient.invalidateQueries({
         queryKey: ['library-search']
       })
+
+      const msg = isFavouriteState
+        ? _t('Removed from favorites')
+        : _t('Saved to favorites')
+      setFavouriteState(!isFavouriteState)
+      enqueueSnackbar(msg, { variant: 'success' })
+    },
+    onError: (error) => {
+      console.error('Error updating toggle:', error)
+      enqueueSnackbar('Error toggling favourites', { variant: 'error' })
     }
   })
 
-  const onSuccess = useCallback(() => {
-    const msg = isFavouriteState
-      ? _t('Removed from favorites')
-      : _t('Saved to favorites')
-    setFavouriteState(!isFavouriteState)
-    enqueueSnackbar(msg, {
-      variant: 'success'
-    })
-  }, [isFavouriteState])
-
-  const onError = useCallback((error) => {
-    console.error('Error updating toggle:', error)
-    enqueueSnackbar('Error toggling favourites', {
-      variant: 'error'
-    })
-  }, [])
-
   const onStarClick = useCallback(
-    async (e: MouseEvent<HTMLButtonElement>) => {
+    (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation()
       e.preventDefault()
-      try {
-        await toggleFavorite.mutateAsync({
-          body: {
-            uuid: id,
-            targetType:
-              type === LibraryObjectType.PROJECT ? 'project' : 'workflow'
-          }
-        })
-        onSuccess()
-      } catch (err) {
-        onError(err)
-      }
+      toggleFavorite.mutateAsync({
+        body: { uuid: id }
+      })
     },
-    [id, type, onSuccess, onError, toggleFavorite]
+    [id, toggleFavorite]
   )
 
   return (
