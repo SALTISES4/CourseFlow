@@ -12,7 +12,7 @@ export class ExportMenu extends React.Component{
 
     componentDidMount() {
         this.fetchJobs();
-        this.intervalId = setInterval(this.fetchJobs, 30000); // every 30 seconds
+        this.intervalId = setInterval(this.fetchJobs.bind(this), 30000); // every 30 seconds
     }
 
     componentWillUnmount() {
