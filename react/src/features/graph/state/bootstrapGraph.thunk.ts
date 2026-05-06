@@ -64,9 +64,7 @@ export const bootstrapWorkflowGraph = (
   workflowUuid: WorkflowUuid
 ): GraphThunk<Promise<BootstrapGraphResult>> => {
   return async (dispatch) => {
-    dispatch(
-      graphLoadActions.initializeWorkflowLoadState({ workflowUuid })
-    )
+    dispatch(graphLoadActions.initializeWorkflowLoadState({ workflowUuid }))
 
     dispatch(setLoading(workflowUuid, 'workflowMeta'))
     dispatch(setLoading(workflowUuid, 'sections'))

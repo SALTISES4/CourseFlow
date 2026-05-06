@@ -17,7 +17,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { useQuery } from '@tanstack/react-query'
 import { getErrorMessage } from '@XMLHTTP/API/api'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Route,
   Routes,
@@ -39,17 +39,52 @@ const ProjectDetails = () => {
   const [project, setProject] = useState<ProjectDetailsType>()
   const navigate = useNavigate()
 
-  /*******************************************************
-   * QUERIES
-   *******************************************************/
-  const { data, error, refetch, isLoading, isError } = useQuery({
+  const { data, error, isLoading, isError } = useQuery({
     ...getProjectOptions({
-      path: {
-        uuid: projectUuid as string
-      }
+      path: { uuid: projectUuid as string }
     }),
     enabled: Boolean(projectUuid)
   })
+
+  const tabsObject = useMemo(
+    () => [
+      {
+        path: CFRoutes.PROJECT,
+        relativePath: RelativeRoutes.INDEX,
+        label: _t('Overview'),
+        action: () => {
+          const path = generatePath(CFRoutes.PROJECT, {
+            uuid: projectUuid
+          })
+          navigate(path)
+        }
+      },
+      {
+        path: CFRoutes.PROJECT_WORKFLOW,
+        relativePath: RelativeRoutes.WORKFLOWS,
+        label: _t('Workflows'),
+        action: () => {
+          const path = generatePath(CFRoutes.PROJECT_WORKFLOW, {
+            uuid: projectUuid
+          })
+          navigate(path)
+        }
+      }
+    ],
+    [navigate, projectUuid]
+  )
+
+  const tabs = tabsObject.map((item) => (
+    <Tab
+      key={item.relativePath}
+      label={item.label}
+      value={item.relativePath}
+      onClick={() => {
+        const path = generatePath(item.path, { uuid: projectUuid })
+        navigate(path)
+      }}
+    />
+  ))
 
   /*******************************************************
    * LIFE CYCLE
@@ -64,7 +99,7 @@ const ProjectDetails = () => {
       matchPath({ path: tab.path, end: true }, location.pathname)
     )
     setActiveTab(match.relativePath)
-  }, [])
+  }, [tabsObject, location.pathname])
 
   useEffect(() => {
     if (!data) {
@@ -74,54 +109,10 @@ const ProjectDetails = () => {
     setProject(mapProjectV2ToProjectDetails(data.item))
   }, [data])
 
-  /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-  const tabsObject = [
-    {
-      path: CFRoutes.PROJECT,
-      relativePath: RelativeRoutes.INDEX,
-      label: _t('Overview'),
-      action: () => {
-        const path = generatePath(CFRoutes.PROJECT, {
-          uuid: projectUuid
-        })
-        navigate(path)
-      }
-    },
-    {
-      path: CFRoutes.PROJECT_WORKFLOW,
-      relativePath: RelativeRoutes.WORKFLOWS,
-      label: _t('Workflows'),
-      action: () => {
-        const path = generatePath(CFRoutes.PROJECT_WORKFLOW, {
-          uuid: projectUuid
-        })
-        navigate(path)
-      }
-    }
-  ]
-
-  const tabs = tabsObject.map((item, index) => {
-    return (
-      <Tab
-        key={item.relativePath}
-        label={item.label}
-        value={item.relativePath}
-        onClick={() => {
-          const path = generatePath(item.path, { uuid: projectUuid })
-          navigate(path)
-        }}
-      />
-    )
-  })
-
-  /*******************************************************
-   * CONSTANTS
-   *******************************************************/
   if (isLoading || !project) {
     return <Loader />
   }
+
   if (isError) {
     return (
       <ErrorView message={`An error occurred: ${getErrorMessage(error)}`} />
@@ -132,7 +123,7 @@ const ProjectDetails = () => {
     return (
       <>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <OuterContentWrap sx={{ pb: 0 }}>
+          <OuterContentWrap style={{ paddingBottom: 0 }}>
             <Tabs
               value={activeTab}
               onChange={(_, newValue: RelativeRoutes) => setActiveTab(newValue)}
@@ -145,7 +136,7 @@ const ProjectDetails = () => {
         <Routes>
           <Route index path="/" element={<TabOverview {...project} />} />
           <Route
-            path={RelativeRoutes.WORKFLOW}
+            path={RelativeRoutes.WORKFLOWS}
             element={<TabWorkflows projectUuid={projectUuid!} />}
           />
         </Routes>

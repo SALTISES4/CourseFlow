@@ -34,7 +34,10 @@ export const selectIsGraphCoreReady = (workflowUuid: WorkflowUuid) =>
 
 export const selectIsWorkflowGraphRenderable = (workflowUuid: WorkflowUuid) =>
   createSelector(
-    [selectIsWorkflowMetaReady(workflowUuid), selectIsGraphCoreReady(workflowUuid)],
+    [
+      selectIsWorkflowMetaReady(workflowUuid),
+      selectIsGraphCoreReady(workflowUuid)
+    ],
     (workflowMetaReady, graphCoreReady) => workflowMetaReady && graphCoreReady
   )
 
