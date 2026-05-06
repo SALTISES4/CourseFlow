@@ -17,6 +17,9 @@ const RestoreDialog = ({
   objectType: WorkspaceType
   callback?: () => void
 }) => {
+  // TODO: reimplement
+  return null
+
   /*******************************************************
    * HOOKS
    *******************************************************/

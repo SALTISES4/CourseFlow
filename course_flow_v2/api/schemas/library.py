@@ -39,8 +39,10 @@ class LibrarySearchIn(CamelSchema):
     sort: LibrarySortIn | None = None
     filters: list[LibraryFilterIn] | None = None
 
+
 class LibraryFavoriteIn(CamelSchema):
     uuid: UUID | None = None
+
 
 # TODO: this is temporary, should actually be LibraryItemOut
 # so that the rsponse is the workflow item that was favorited
@@ -48,6 +50,7 @@ class LibraryFavoriteOut(CamelSchema):
     user_id: int
     uuid: UUID
     message: str
+
 
 class LibraryItemOut(CamelSchema):
     object_type: str
