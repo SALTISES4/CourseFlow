@@ -36,10 +36,10 @@ class CourseFlowUserManager(BaseUserManager):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
-        if extra_fields.get("is_staff"):
+        if extra_fields.get("is_staff") is not True:
             raise ValueError("Superuser must have is_staff=True.")
 
-        if extra_fields.get("is_superuser"):
+        if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
 
         return self._create_user(email, password, **extra_fields)
@@ -49,7 +49,7 @@ class User(AbstractUser):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     email = models.EmailField(unique=True)
     language_preference = models.CharField(
-        max_length=2,
+        max_length=8,
         choices=LANGUAGE_PREFERENCES_CHOICES,
     )
     notifications_active = models.BooleanField(default=False)

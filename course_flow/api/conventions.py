@@ -5,7 +5,7 @@ JSON transport naming
     Public HTTP JSON bodies (request and response) use **camelCase** field names.
 
     API request/response models inherit from ``CamelSchema`` in
-    ``course_flow_v2.api.common.schemas``, which applies a Pydantic v2
+    ``course_flow.api.common.schemas``, which applies a Pydantic v2
     ``alias_generator`` so ORM-friendly snake_case attributes map to camelCase in
     JSON. Avoid per-field ``Field(alias=...)`` unless the alias generator cannot
     express an exception. Prefer typed ``CamelSchema`` (or nested schemas) over
@@ -33,5 +33,5 @@ Comments / threads
     badges. Full comment bodies stay behind separate thread/comment endpoints.
 
 This module documents the contract; enforcement is by schema placement and route
-naming under ``course_flow_v2.api``.
+naming under ``course_flow.api``.
 """

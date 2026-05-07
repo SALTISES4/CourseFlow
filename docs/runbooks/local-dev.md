@@ -2,16 +2,16 @@
 
 Python runs on the host. Docker Compose provides **PostgreSQL only**.
 
-The default Django project is **V2**: `manage.py` uses `course_flow_v2.settings`. The `course_flow/` package is legacy reference code only.
+The default Django project uses `manage.py` → `course_flow.settings`. Active backend code lives in the `course_flow/` Python package (Django app `course_flow.core`).
 
 ## Stack roles (short)
 
 | Layer | Role |
 | --- | --- |
-| Django ORM models (`course_flow_v2/core/models/`) | Persistence |
-| Ninja `Schema` classes (`course_flow_v2/api/schemas/`) | API request/response DTOs (Pydantic-backed) |
-| Django Ninja routes (`course_flow_v2/api/routers/`) | HTTP API; OpenAPI is generated from routes + schemas |
-| Application services (`course_flow_v2/application/`) | Thin orchestration; persistence via repository implementations |
+| Django ORM models (`course_flow/core/models/`) | Persistence — **canonical schema** |
+| Ninja `Schema` classes (`course_flow/api/schemas/`) | API request/response DTOs (Pydantic-backed) |
+| Django Ninja routes (`course_flow/api/routers/`) | HTTP API; OpenAPI is generated from routes + schemas |
+| Application services (`course_flow/application/`) | Thin orchestration; persistence via repository implementations |
 
 Do not hand-maintain a parallel OpenAPI document as the source of truth; export the generated spec when tooling needs it (see [OpenAPI and client graph](../architecture/openapi_and_client_graph.md)).
 
@@ -29,7 +29,7 @@ Variables:
 - **Django (host → container)**: `POSTGRES_HOST` (default `127.0.0.1`); database name/user/password/port align with the same values Compose uses
 - **Optional**: `DJANGO_SECRET_KEY`, `DJANGO_DEBUG`, `DJANGO_ALLOWED_HOSTS`
 
-`course_flow_v2/settings.py` loads `.env` from the repository root via `python-dotenv`.
+`course_flow/settings.py` loads `.env` from the repository root via `python-dotenv`.
 
 ## 2. Start Postgres
 
@@ -69,4 +69,4 @@ With the dev server running:
 
 ## 6. Canonical data model
 
-Persistence shapes are defined to match `docs/data/entities/entities.md` (authoritative YAML). When in doubt, update that document before changing ORM fields.
+Persistence shapes are defined in **`course_flow/core/models/`**. Documents under `docs/data/entities/` are derived summaries and Mermaid ERDs; update them when models change (not the other way around).

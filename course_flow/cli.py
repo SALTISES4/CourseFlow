@@ -7,7 +7,7 @@ import sys
 
 
 def main() -> None:
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "course_flow_v2.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "course_flow.settings")
     import django
 
     django.setup()

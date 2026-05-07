@@ -27,6 +27,8 @@ class Node(UUIDModel):
     thread = models.OneToOneField(
         Thread,
         on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name="node",
     )
     section_row = models.PositiveIntegerField(

@@ -1,1089 +1,157 @@
-version: 1
+# CourseFlow core entities (implementation source of truth)
 
-meta:
-  name: courseflow_vnext
-  status: draft
-  authoritative: true
-  description: >
-    Canonical source-of-truth schema for Courseflow vNext.
-    This file is intended to be the primary model source for:
-    - generated Mermaid ERDs
-    - documentation packs
-    - implementation planning
-    - DTO / API contract derivation
-  conventions:
-    entity_keys: lowercase_singular
-    relationship_cardinality_values:
-      - one-to-one
-      - one-to-many
-      - many-to-one
-      - many-to-many
-    field_type_values:
-      - int
-      - uuid
-      - string
-      - text
-      - wysiwyg
-      - boolean
-      - datetime
-      - duration
-      - enum
-      - password
-      - fk
-      - join
-      - derived
-    nullability_policy: >
-      Omitted `nullable` means unknown or not yet ratified.
-      Omitted `required` means not yet ratified.
-    writable_marker: >
-      `writable: true` indicates the workbook explicitly marked the field as writeable
-      or the field is clearly user-authored from surrounding context.
-    source_priority:
-      - canonical_yaml
-      - mermaid_erd
-      - fields_workbook
+**Canonical schema:** Django ORM models under `course_flow/core/models/` in this repository.  
+This document is a **derived** view of that code. When code and prose disagree, **trust the models**.
 
-assumptions:
-  - id: projectteam_member_alias
-    status: provisional
-    description: >
-      Mermaid uses PROJECTTEAM_USER while the workbook uses projectteam_member.
-      This YAML adopts `projectteam_member` as canonical and records `projectteam_user`
-      as an alias.
-  - id: workflow_meta_polymorphism
-    status: provisional
-    description: >
-      A workflow has exactly one typed meta record matching workflow_type, rather than all
-      four meta records simultaneously.
-  - id: graph_workflow_one_to_one
-    status: provisional
-    description: >
-      Mermaid shows WORKFLOW ||--|| UNIT while workbook labels graph.workflow_fk as m:1.
-      This YAML treats graph <-> workflow as one-to-one because that is the stronger
-      and more plausible interpretation for the current design.
-  - id: thread_attachment_model
-    status: provisional
-    description: >
-      Thread appears to be a reusable comment container attachable one-to-one to
-      channel, section, node, and outcome; comment belongs many-to-one to thread.
-      Workbook also contains a suspicious thread.thread_fk row, which is ignored here.
-  - id: outcome_self_relation
-    status: provisional
-    description: >
-      Mermaid shows OUTCOME ||--o{ OUTCOME as an outcome link, while workbook models
-      parentoutcome_fk as n:m. This YAML keeps the self-relationship as many-to-many
-      until the real semantics are finalized.
-  - id: node_section_channel_ownership
-    status: provisional
-    description: >
-      Mermaid and workbook together imply node may belong to section and may also
-      belong to channel. This may represent two parallel contexts rather than both
-      being mandatory simultaneously.
-  - id: user_graph_join_unclear
-    status: provisional
-    description: >
-      Workbook lists graph.users as a join-style relationship, but Mermaid does not
-      define a graph-user collaboration join table. This is not modeled as canonical
-      until a real join entity is defined.
-  - id: notification_read_field
-    status: provisional
-    description: >
-      Workbook has a 'read' row with missing machine name/type. This YAML normalizes it
-      to `is_read: boolean`.
-  - id: comment_uuid_name
-    status: provisional
-    description: >
-      Workbook sometimes uses `hash` and sometimes `uuid`. This YAML normalizes all UUID
-      identity fields to `uuid`.
-  - id: common_field_inheritance
-    status: provisional
-    description: >
-      Workbook includes a `common` tab but does not consistently apply inheritance.
-      This YAML expands shared fields explicitly per entity where they appear to apply.
+**Naming note:** the legacy “unit” concept is the **`Workflow`** model; the editable graph projection container is **`Graph`**. `Graph` currently stores revision metadata (`revision_id`); sections, channels, and outcomes attach to `Graph`. `Workflow` is one-to-one with `Graph` and carries typed domain fields (`workflow_type`, title, description, `author`).
 
-enums:
-  workflow_type:
-    values:
-      - program
-      - course
-      - activity
-      - task
-    description: Typed academic abstraction represented by workflow.
+**Database tables** use the `cf_` prefix as declared in each model’s `Meta.db_table`.
 
-  line_type:
-    values: []
-    description: >
-      Placeholder enum from workbook (`LINE_TYPE`). Concrete values not yet provided.
+---
 
-  port_id:
-    values: []
-    description: >
-      Placeholder enum from workbook (`PORT_ID`). Concrete values not yet provided.
+## Abstract bases
 
-entities:
-  user:
-    kind: entity
-    aliases: []
-    description: Authenticated platform user.
-    fields:
-      id:
-        label: ID
-        type: int
-        required: true
-        generated: true
-      uuid:
-        label: UUID
-        type: uuid
-        required: true
-        generated: true
-      first_name:
-        label: First Name
-        type: string
-        writable: true
-      last_name:
-        label: Last Name
-        type: string
-        writable: true
-      password:
-        label: Password
-        type: password
-        writable: true
-      email:
-        label: Email
-        type: string
-        writable: true
-    relationships:
-      projects:
-        target: project
-        cardinality: one-to-many
-        inverse_of: owner
-        description: Projects owned by the user.
-      graphs:
-        target: graph
-        cardinality: one-to-many
-        inverse_of: owner
-        description: Graphs owned by the user.
-      comments:
-        target: comment
-        cardinality: one-to-many
-        inverse_of: owner
-      notifications:
-        target: notification
-        cardinality: one-to-many
-        inverse_of: user
-      favorite_projects:
-        target: favorite_project
-        cardinality: one-to-many
-        inverse_of: user
-      favorite_graphs:
-        target: favorite_graph
-        cardinality: one-to-many
-        inverse_of: user
-      projectteam_memberships:
-        target: projectteam_member
-        cardinality: one-to-many
-        inverse_of: user
+| Concern | Model |
+|--------|--------|
+| UUID + `date_created` / `modified_on` | `TimeStampedUUIDModel` |
+| UUID only | `UUIDModel` |
 
-  project:
-    kind: entity
-    aliases: []
-    description: Top-level owned workspace container for graphs.
-    fields:
-      id:
-        label: ID
-        type: int
-        required: true
-        generated: true
-      uuid:
-        label: UUID
-        type: uuid
-        required: true
-        generated: true
-      title:
-        label: Title
-        type: string
-        writable: true
-        max_length: 200
-      modified_on:
-        label: Last modified
-        type: datetime
-        comments: Used for sorting.
-      date_created:
-        label: Created on
-        type: datetime
-        comments: Displayed on thumbnail, used for sorting.
-      is_published:
-        label: Published
-        type: boolean
-        writable: true
-        comments: Set by the user, determines if it displays in EXPLORE section.
-      is_template:
-        label: Is template
-        type: boolean
-        comments: Any super admin can toggle this flag on or off.
-      description:
-        label: Description
-        type: wysiwyg
-        writable: true
-        comments: Filled by user.
-    relationships:
-      owner:
-        target: user
-        cardinality: many-to-one
-        fk: user_fk
-        required: true
-      graphs:
-        target: graph
-        cardinality: one-to-many
-        inverse_of: project
-      disciplines:
-        target: discipline
-        cardinality: many-to-many
-        through: project_discipline
-        writable: true
-      favorite_links:
-        target: favorite_project
-        cardinality: one-to-many
-        inverse_of: project
-      team:
-        target: projectteam
-        cardinality: one-to-one
-        inverse_of: project
-      tags:
-        target: tag
-        cardinality: one-to-many
-        inverse_of: project
-      node_tags:
-        target: node
-        cardinality: none
-        description: Not a direct relationship; tags attached to nodes remain project-scoped through tag.project.
+---
 
-  graph:
-    kind: entity
-    aliases: []
-    description: Structured academic flow contained optionally within a project.
-    fields:
-      id:
-        label: ID
-        type: int
-        required: true
-        generated: true
-      uuid:
-        label: UUID
-        type: uuid
-        required: true
-        generated: true
-      title:
-        label: Title
-        type: string
-        writable: true
-        max_length: 200
-      modified_on:
-        label: Last modified
-        type: datetime
-        comments: Used for sorting.
-      date_created:
-        label: Created on
-        type: datetime
-        comments: Displayed on thumbnail, used for sorting.
-    relationships:
-      owner:
-        target: user
-        cardinality: many-to-one
-        fk: user_fk
-        required: true
-      project:
-        target: project
-        cardinality: many-to-one
-        fk: project_fk
-        required: false
-      sections:
-        target: section
-        cardinality: one-to-many
-        inverse_of: graph
-      channels:
-        target: channel
-        cardinality: one-to-many
-        inverse_of: graph
-      workflow:
-        target: workflow
-        cardinality: one-to-one
-        inverse_of: graph
-        required: true
-      favorite_links:
-        target: favorite_graph
-        cardinality: one-to-many
-        inverse_of: graph
-      outcomes:
-        target: outcome
-        cardinality: one-to-many
-        inverse_of: graph
+## Core entities
 
-  workflow:
-    kind: entity
-    aliases: []
-    description: >
-      Typed academic abstraction attached one-to-one to a graph.
-      A workflow may represent program, course, activity, or task.
-    fields:
-      id:
-        label: ID
-        type: int
-        required: true
-        generated: true
-      uuid:
-        label: UUID
-        type: uuid
-        required: true
-        generated: true
-      title:
-        label: Title
-        type: string
-        writable: true
-        max_length: 200
-      modified_on:
-        label: Last modified
-        type: datetime
-        comments: Used for sorting.
-      date_created:
-        label: Created on
-        type: datetime
-        comments: Displayed on thumbnail, used for sorting.
-      description:
-        label: Description
-        type: wysiwyg
-        writable: true
-        comments: Filled by user.
-      workflow_type:
-        label: Type
-        type: enum
-        enum: workflow_type
-        comments: ACTIVITY | COURSE | PROGRAM | TASK
-    relationships:
-      graph:
-        target: graph
-        cardinality: one-to-one
-        fk: graph_fk
-        required: true
-      nodes:
-        target: node
-        cardinality: one-to-many
-        inverse_of: workflow
-      programmeta:
-        target: programmeta
-        cardinality: one-to-one
-        required: false
-      coursemeta:
-        target: coursemeta
-        cardinality: one-to-one
-        required: false
-      activitymeta:
-        target: activitymeta
-        cardinality: one-to-one
-        required: false
-      taskmeta:
-        target: taskmeta
-        cardinality: one-to-one
-        required: false
+### User (`cf_user`)
 
-  section:
-    kind: entity
-    aliases: []
-    description: Ordered structural grouping within a graph.
-    fields:
-      id:
-        label: ID
-        type: int
-        required: true
-        generated: true
-      uuid:
-        label: UUID
-        type: uuid
-        required: true
-        generated: true
-      title:
-        label: Title
-        type: string
-        writable: true
-        max_length: 200
-      modified_on:
-        label: Last modified
-        type: datetime
-        comments: Used for sorting.
-      date_created:
-        label: Created on
-        type: datetime
-        comments: Displayed on thumbnail, used for sorting.
-      position:
-        label: Position
-        type: int
-        writable: true
-        comments: User can reorder the section by drag and drop.
-    relationships:
-      graph:
-        target: graph
-        cardinality: many-to-one
-        fk: graph_fk
-        required: true
-      nodes:
-        target: node
-        cardinality: one-to-many
-        inverse_of: section
-      thread:
-        target: thread
-        cardinality: one-to-one
-        fk: thread_fk
-        required: false
+- Extends `AbstractUser`; login field is `email` (`USERNAME_FIELD`).
+- Extra fields: `uuid`, `language_preference` (see `course_flow.core.enum.LanguagePreference`), `notifications_active`.
+- Typical reverse relations: `owned_projects`, `created_graphs` (FK from `Workflow`; name is historical), `comments`, `notifications`, `favorite_projects`, `favorite_graphs`, `team_users`, `authtokens`.
 
-  channel:
-    kind: entity
-    aliases: []
-    description: Ordered graph channel that can contain nodes and has an attached comment thread.
-    fields:
-      id:
-        label: ID
-        type: int
-        required: true
-        generated: true
-      uuid:
-        label: UUID
-        type: uuid
-        required: true
-        generated: true
-      title:
-        label: Title
-        type: string
-        writable: true
-        max_length: 200
-      modified_on:
-        label: Last modified
-        type: datetime
-        comments: Used for sorting.
-      date_created:
-        label: Created on
-        type: datetime
-        comments: Displayed on thumbnail, used for sorting.
-      position:
-        label: Position
-        type: int
-        writable: true
-        comments: User can reorder the section by drag and drop.
-    relationships:
-      graph:
-        target: graph
-        cardinality: many-to-one
-        fk: graph_fk
-        required: true
-      nodes:
-        target: node
-        cardinality: one-to-many
-        inverse_of: channel
-      thread:
-        target: thread
-        cardinality: one-to-one
-        fk: thread_fk
-        required: false
+### Project (`cf_project`)
 
-  node:
-    kind: entity
-    aliases: []
-    description: Graph/content node attached to section and/or channel, optionally linked to workflow and outcomes.
-    fields:
-      id:
-        label: ID
-        type: int
-        required: true
-        generated: true
-      uuid:
-        label: UUID
-        type: uuid
-        required: true
-        generated: true
-    relationships:
-      section:
-        target: section
-        cardinality: many-to-one
-        fk: section_fk
-        required: false
-      channel:
-        target: channel
-        cardinality: many-to-one
-        fk: channel_fk
-        required: false
-      workflow:
-        target: workflow
-        cardinality: many-to-one
-        fk: workflow_fk
-        required: false
-      thread:
-        target: thread
-        cardinality: one-to-one
-        fk: thread_fk
-        required: false
-      outcomes:
-        target: outcome
-        cardinality: many-to-many
-        through: node_outcome
-      tags:
-        target: tag
-        cardinality: many-to-many
-        through: node_tag
-      outgoing_edges:
-        target: edge
-        cardinality: one-to-many
-        inverse_of: source_node
-      incoming_edges:
-        target: edge
-        cardinality: one-to-many
-        inverse_of: target_node
+- `owner` → `User`
+- `title`, `description`, `is_published`, `is_template`
+- M2M `disciplines` through `ProjectDiscipline`
 
-  edge:
-    kind: entity
-    aliases: []
-    description: Directed connection between two nodes.
-    fields:
-      line_type:
-        label: Line Type
-        type: enum
-        enum: line_type
-      target_port:
-        label: Target Port
-        type: enum
-        enum: port_id
-      source_port:
-        label: Source Port
-        type: enum
-        enum: port_id
-    relationships:
-      source_node:
-        target: node
-        cardinality: many-to-one
-        fk: sourcenode_fk
-        required: true
-      target_node:
-        target: node
-        cardinality: many-to-one
-        fk: targetnode_fk
-        required: true
+### Graph (`cf_graph`)
 
-  thread:
-    kind: entity
-    aliases: []
-    description: Reusable comment-thread container attachable to one owning domain object.
-    fields:
-      id:
-        label: ID
-        type: int
-        required: true
-        generated: true
-      uuid:
-        label: UUID
-        type: uuid
-        required: true
-        generated: true
-      modified_on:
-        label: Last modified
-        type: datetime
-        comments: Used for sorting.
-      date_created:
-        label: Created on
-        type: datetime
-        comments: Displayed on thumbnail, used for sorting.
-    relationships:
-      comments:
-        target: comment
-        cardinality: one-to-many
-        inverse_of: thread
-      outcome:
-        target: outcome
-        cardinality: one-to-one
-        inverse_of: thread
-        required: false
-      channel:
-        target: channel
-        cardinality: one-to-one
-        inverse_of: thread
-        required: false
-      node:
-        target: node
-        cardinality: one-to-one
-        inverse_of: thread
-        required: false
-      section:
-        target: section
-        cardinality: one-to-one
-        inverse_of: thread
-        required: false
+- `TimeStampedUUIDModel` fields + `revision_id`
+- **No** `project` or `owner` FK in the current model; graph ownership / project attachment, if needed, must be inferred from related `Workflow` or application logic until modeled.
 
-  comment:
-    kind: entity
-    aliases: []
-    description: User-authored comment belonging to a thread.
-    fields:
-      id:
-        label: ID
-        type: int
-        required: true
-        generated: true
-      uuid:
-        label: UUID
-        type: uuid
-        required: true
-        generated: true
-      modified_on:
-        label: Last modified
-        type: datetime
-        comments: Used for sorting.
-      date_created:
-        label: Created on
-        type: datetime
-        comments: Displayed on thumbnail, used for sorting.
-      body:
-        label: Body
-        type: text
-        writable: true
-    relationships:
-      owner:
-        target: user
-        cardinality: many-to-one
-        fk: user_fk
-        required: true
-      thread:
-        target: thread
-        cardinality: many-to-one
-        fk: thread_fk
-        required: true
+### Workflow (`cf_workflow`)
 
-  outcome:
-    kind: entity
-    aliases: []
-    description: Outcome object attachable to nodes, tags, threads, and horizontal links.
-    fields: {}
-    relationships:
-      graph:
-        target: graph
-        cardinality: many-to-one
-        fk: graph_fk
-        required: true
-      thread:
-        target: thread
-        cardinality: one-to-one
-        fk: thread_fk
-        required: true
-      nodes:
-        target: node
-        cardinality: many-to-many
-        through: node_outcome
-      tags:
-        target: tag
-        cardinality: many-to-many
-        through: outcome_tag
-      parent_outcomes:
-        target: outcome
-        cardinality: many-to-many
-        through: outcome_outcome
-        description: Provisional self-link relationship; exact semantics not yet ratified.
-      horizontal_links:
-        target: horizontaloutcome
-        cardinality: many-to-many
-        through: horizontaloutcome_outcome
+- `author` → `User` (`SET_NULL`, optional; `related_name="created_graphs"`)
+- `graph` → `Graph` (`OneToOne`, `related_name="workflow"`)
+- `title`, `description`, `workflow_type` (`WorkflowType` enum)
+- Typed meta (each `OneToOne` from meta model): `taskmeta`, `programmeta`, `coursemeta`, `activitymeta`
 
-  horizontaloutcome:
-    kind: entity
-    aliases:
-      - horizontal_outcome
-    description: Join-like grouping structure connecting outcomes horizontally.
-    fields: {}
-    relationships:
-      outcomes:
-        target: outcome
-        cardinality: many-to-many
-        through: horizontaloutcome_outcome
+### Section (`cf_section`)
 
-  discipline:
-    kind: taxonomy
-    aliases: []
-    description: Project classification taxonomy.
-    fields:
-      id:
-        label: ID
-        type: int
-        required: true
-        generated: true
-      label:
-        label: Label
-        type: string
-        writable: true
-      translation_plural:
-        label: translation_plural
-        type: string
-        writable: true
-    relationships:
-      projects:
-        target: project
-        cardinality: many-to-many
-        through: project_discipline
-        writable: true
+- `graph` → `Graph`
+- `title`, `position`
+- `thread` → `Thread` (`OneToOne`, `SET_NULL`, optional)
 
-  tag:
-    kind: taxonomy
-    aliases: []
-    description: Flat taxonomy scoped to a project and attachable to nodes and outcomes.
-    fields:
-      id:
-        label: ID
-        type: int
-        required: true
-        generated: true
-      label:
-        label: Label
-        type: string
-        writable: true
-      translation_plural:
-        label: translation_plural
-        type: string
-        writable: true
-    relationships:
-      project:
-        target: project
-        cardinality: many-to-one
-        fk: project_fk
-        required: true
-      outcomes:
-        target: outcome
-        cardinality: many-to-many
-        through: outcome_tag
-      nodes:
-        target: node
-        cardinality: many-to-many
-        through: node_tag
+### Channel (`cf_channel`)
 
-  notification:
-    kind: entity
-    aliases: []
-    description: User notification record.
-    fields:
-      id:
-        label: ID
-        type: int
-        required: true
-        generated: true
-      uuid:
-        label: UUID
-        type: uuid
-        required: true
-        generated: true
-      message:
-        label: Message
-        type: string
-        writable: true
-      is_read:
-        label: Read
-        type: boolean
-        writable: true
-        comments: Normalized from incomplete workbook row.
-      date_created:
-        label: Created on
-        type: datetime
-        comments: Displayed on thumbnail, used for sorting.
-    relationships:
-      user:
-        target: user
-        cardinality: many-to-one
-        fk: user_fk
-        required: true
+- `graph` → `Graph`
+- `title`, `position`
+- `thread` → `Thread` (`OneToOne`, `SET_NULL`, optional)
 
-  favorite_project:
-    kind: join
-    aliases: []
-    description: Join entity linking user and project for favorites.
-    fields: {}
-    relationships:
-      user:
-        target: user
-        cardinality: many-to-one
-        fk: user_fk
-        required: true
-      project:
-        target: project
-        cardinality: many-to-one
-        fk: project_fk
-        required: true
+### Node (`cf_node`)
 
-  favorite_graph:
-    kind: join
-    aliases: []
-    description: Join entity linking user and graph for favorites.
-    fields: {}
-    relationships:
-      user:
-        target: user
-        cardinality: many-to-one
-        fk: user_fk
-        required: true
-      graph:
-        target: graph
-        cardinality: many-to-one
-        fk: graph_fk
-        required: true
+- `section` → `Section`, `channel` → `Channel`, `workflow` → `Workflow` (all required in code)
+- `thread` → `Thread` (`OneToOne`, `SET_NULL`, optional)
+- `section_row` — grid row index
+- M2M `outcomes` through `NodeOutcome`, M2M `tags` through `NodeTag`
 
-  projectteam:
-    kind: entity
-    aliases: []
-    description: Per-project team container.
-    fields:
-      id:
-        label: ID
-        type: int
-        required: true
-        generated: true
-      uuid:
-        label: UUID
-        type: uuid
-        required: true
-        generated: true
-    relationships:
-      project:
-        target: project
-        cardinality: one-to-one
-        fk: project_fk
-        required: true
-      members:
-        target: projectteam_member
-        cardinality: one-to-many
-        inverse_of: projectteam
+### Edge (`cf_edge`)
 
-  projectteam_member:
-    kind: join
-    aliases:
-      - projectteam_user
-    description: Join entity linking user into a project team.
-    fields: {}
-    relationships:
-      user:
-        target: user
-        cardinality: many-to-one
-        fk: user_fk
-        required: true
-      projectteam:
-        target: projectteam
-        cardinality: many-to-one
-        fk: projectteam_fk
-        required: true
+- `source_node`, `target_node` → `Node`
+- `line_type`, `source_port`, `target_port` (strings)
 
-  programmeta:
-    kind: meta
-    aliases: []
-    description: Program-specific meta fields for a workflow where workflow_type = program.
-    fields:
-      calculate_time:
-        type: derived
-        comments: Applies to all graph types, filled by user.
-      calculate_credits:
-        type: derived
-        comments: Applies only to Programs, filled by user.
-      calculate_ponderation:
-        type: derived
-        comments: Applies only to Programs.
-      calculate_classification:
-        type: derived
-        comments: Applies only to Programs only, filled by user.
-      classification_general_time:
-        type: duration
-        comments: Applies only to Programs only, filled by user or calculated automatically.
-      classification_specific_time:
-        type: duration
-        comments: Applies only to Programs only, filled by user or calculated automatically.
-    relationships:
-      workflow:
-        target: workflow
-        cardinality: one-to-one
-        required: true
+### Outcome (`cf_outcome`)
 
-  coursemeta:
-    kind: meta
-    aliases: []
-    description: Course-specific meta fields for a workflow where workflow_type = course.
-    fields:
-      classification:
-        type: string
-      code:
-        type: string
-        comments: Applies only to Courses, filled by user.
-    relationships:
-      workflow:
-        target: workflow
-        cardinality: one-to-one
-        required: true
+- `graph` → `Graph`
+- `thread` → `Thread` (`OneToOne`, `PROTECT`)
+- Tree ordering among outcomes: `parent` → `self` (`SET_NULL` for roots), `order` (`PositiveIntegerField`)
+- Partial unique constraint on `(parent, order)` when `parent` is not null
+- M2M `tags` through `OutcomeTag`
 
-  taskmeta:
-    kind: meta
-    aliases: []
-    description: Task-specific meta fields for a workflow where workflow_type = task.
-    fields:
-      context:
-        type: string
-        writable: true
-    relationships:
-      workflow:
-        target: workflow
-        cardinality: one-to-one
-        required: true
+### Thread (`cf_thread`)
 
-  activitymeta:
-    kind: meta
-    aliases: []
-    description: Activity-specific meta fields for a workflow where workflow_type = activity.
-    fields:
-      context:
-        type: string
-        writable: true
-      classification:
-        type: string
-        writable: true
-    relationships:
-      workflow:
-        target: workflow
-        cardinality: one-to-one
-        required: true
+- Timestamped UUID container for comments attached to section, channel, node, or outcome.
 
-joins:
-  project_discipline:
-    left: project
-    right: discipline
-    cardinality: many-to-many
-    description: Associative relationship between project and discipline.
+### Comment (`cf_comment`)
 
-  node_tag:
-    left: node
-    right: tag
-    cardinality: many-to-many
-    description: Associative relationship between node and tag.
+- `author` → `User`
+- `thread` → `Thread`
+- `body`
 
-  outcome_tag:
-    left: outcome
-    right: tag
-    cardinality: many-to-many
-    description: Associative relationship between outcome and tag.
+### Tag (`cf_tag`)
 
-  node_outcome:
-    left: node
-    right: outcome
-    cardinality: many-to-many
-    description: Associative relationship between node and outcome.
+- `project` → `Project` (`SET_NULL`, optional tag without project)
+- `label`, `translation_plural`
 
-  outcome_outcome:
-    left: outcome
-    right: outcome
-    cardinality: many-to-many
-    description: Provisional self-referential outcome linking model.
+### Discipline (`cf_discipline`)
 
-  horizontaloutcome_outcome:
-    left: horizontaloutcome
-    right: outcome
-    cardinality: many-to-many
-    description: Associative relationship for horizontal outcome grouping.
+- `label`, `translation_plural`
 
-rules:
-  - id: workflow_requires_matching_meta
-    status: provisional
-    description: >
-      A workflow must have exactly one typed meta record matching workflow_type:
-      - program -> programmeta
-      - course -> coursemeta
-      - activity -> activitymeta
-      - task -> taskmeta
+### Notification (`cf_notification`)
 
-  - id: workflow_forbids_nonmatching_meta
-    status: provisional
-    description: >
-      A workflow must not have meta rows for types other than its own workflow_type.
+- `user` → `User`
+- `message`, `is_read`, `date_created`
 
-  - id: graph_has_one_workflow
-    status: provisional
-    description: >
-      Each graph must be attached to exactly one workflow, and each workflow belongs to exactly one graph.
+### Team (`cf_project_team`)
 
-  - id: thread_single_owner
-    status: provisional
-    description: >
-      A thread should be owned by exactly one of:
-      - channel
-      - section
-      - node
-      - outcome
-      Thread must not simultaneously be attached as the canonical thread of multiple owner entities.
+- `project` → `Project` (`OneToOne`, `related_name="team"`)
 
-  - id: comment_belongs_to_thread
-    status: ratified
-    description: Every comment belongs to exactly one thread.
+### Horizontaloutcome (`cf_horizontaloutcome`)
 
-  - id: comment_owned_by_user
-    status: ratified
-    description: Every comment is authored by exactly one user.
+- M2M to `Outcome` through `HorizontaloutcomeOutcome` (`related_name="horizontal_groups"` on outcome side)
 
-  - id: tag_scoped_to_project
-    status: provisional
-    description: >
-      Tags are project-scoped. Node-tag and outcome-tag associations must only reference tags
-      belonging to the same project context as the owning content.
+### Authtoken (`cf_authtoken`)
 
-  - id: project_has_single_team_container
-    status: provisional
-    description: Each project has exactly one projectteam container.
+- `user`, `token_hash`, `label`, `created_at`, `expires_at`, `last_used_at`, `revoked_at`
 
-  - id: projectteam_membership_is_join
-    status: ratified
-    description: Project team membership is modeled as a join entity between projectteam and user.
+---
 
-  - id: favorites_are_join_entities
-    status: ratified
-    description: >
-      Project and graph favorites are separate join entities rather than a generic polymorphic favorite table.
+## Join / through models (`course_flow/core/models/relations.py`)
 
-  - id: node_context_ownership
-    status: provisional
-    description: >
-      A node may belong to a section, a channel, or both, depending on final graph/content rules.
-      Minimum ownership constraints are not yet ratified.
+| Model | Table | Role |
+|-------|--------|------|
+| `ProjectDiscipline` | `cf_project_discipline` | Project ↔ Discipline |
+| `TeamUser` | `cf_team_user` | User + `Team` + `role` |
+| `NodeTag` | `cf_node_tag` | Node ↔ Tag |
+| `OutcomeTag` | `cf_outcome_tag` | Outcome ↔ Tag |
+| `NodeOutcome` | `cf_node_outcome` | Node ↔ Outcome |
+| `HorizontaloutcomeOutcome` | `cf_horizontaloutcome_outcome` | Horizontal group ↔ Outcome |
+| `FavoriteProject` | `cf_favorite_project` | User ↔ Project |
+| `FavoriteGraph` | `cf_favorite_graph` | User ↔ Graph |
 
-  - id: outcome_self_links_unsettled
-    status: provisional
-    description: >
-      Outcome-to-outcome relationship semantics are not finalized. Current model preserves the relation
-      without asserting whether it is hierarchy, prerequisite, dependency, or generic link.
+---
 
-  - id: generated_mermaid_must_follow_yaml
-    status: ratified
-    description: Mermaid diagrams are derived views and must not override this YAML.
+## Meta models (typed workflow extensions)
 
-views:
-  mermaid_generation:
-    include_entities:
-      - user
-      - project
-      - graph
-      - section
-      - channel
-      - node
-      - edge
-      - outcome
-      - horizontaloutcome
-      - thread
-      - comment
-      - workflow
-      - programmeta
-      - coursemeta
-      - taskmeta
-      - activitymeta
-      - discipline
-      - tag
-      - notification
-      - favorite_project
-      - favorite_graph
-      - projectteam
-      - projectteam_member
-    notes:
-      - Render projectteam_member as PROJECTTEAM_USER if backward compatibility with existing Mermaid is required.
-      - Render graph-workflow as one-to-one unless ratified otherwise.
-      - Render workflow-meta relationships as optional one-to-one; semantic exclusivity is enforced by rules, not by Mermaid alone.
+Each is `OneToOne` to `Workflow`:
+
+| Model | Table | Related name on `Workflow` |
+|-------|--------|------------------------------|
+| `Programmeta` | `cf_programmeta` | `programmeta` |
+| `Coursemeta` | `cf_coursemeta` | `coursemeta` |
+| `Activitymeta` | `cf_activitymeta` | `activitymeta` |
+| `Taskmeta` | `cf_taskmeta` | `taskmeta` |
+
+---
+
+## Enums (`course_flow/core/enum.py`)
+
+- **WorkflowType:** `program`, `course`, `activity`, `task`
+- **Role:** `editor`, `commenter`, `viewer`
+- **LanguagePreference:** `en-ca`, `fr-ca` (values stored on `User.language_preference`)
+
+---
+
+## Django app
+
+- App config: `course_flow.core.apps.CoreConfig`
+- Label: `cf2_core`
+- Models module: `course_flow.core.models`

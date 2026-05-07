@@ -22,7 +22,7 @@ api = NinjaAPI(
         "OpenAPI is generated from Ninja routes and schemas. "
         "Primary CRUD routes return entity fields only. "
         "Graph graph/editor loads use 'GET /graph/{uuid}/view' (flat projection). "
-        "See 'course_flow_v2.api.conventions' and 'course_flow_v2.api.schemas.graph_view'."
+        "See 'course_flow.api.conventions' and 'course_flow.api.schemas.graph_view'."
     ),
     docs_url="/docs",
     openapi_url="/openapi.json",

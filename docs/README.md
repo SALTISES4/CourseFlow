@@ -46,7 +46,7 @@ The backend is being rebuilt around:
 - explicit DTOs / schemas for request and response contracts
 - pure Python application and domain layers
 - PostgreSQL as the primary database
-- `course_flow_v2/` as the active implementation target (`course_flow_legacy/` is reference-only)
+- `course_flow/` as the active backend package (`course_flow_legacy/` is reference-only). ORM source of truth: `course_flow/core/models/`.
 
 Where possible, framework code remains at the boundary.
 

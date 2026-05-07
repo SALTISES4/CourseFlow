@@ -1,4 +1,7 @@
-"""Shared persistence conventions (see docs/data/entities/entities.md)."""
+"""Shared persistence conventions.
+
+See ``course_flow/core/models/`` for the canonical ORM schema documentation.
+"""
 
 import uuid
 

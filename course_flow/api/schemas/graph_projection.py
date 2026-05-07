@@ -1,6 +1,6 @@
 """Project-level projection schemas (non-CRUD read models).
 
-Graph graph shapes live in ``course_flow_v2.api.schemas.graph_view``.
+Graph editor shapes live in ``course_flow.api.schemas.graph_view``.
 """
 
 from __future__ import annotations

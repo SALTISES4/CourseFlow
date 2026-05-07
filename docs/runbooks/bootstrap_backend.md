@@ -21,21 +21,21 @@ Do not add speculative packages.
 
 ## Implemented layout (V2)
 
-Active code lives under `course_flow_v2/` (see `manage.py` → `course_flow_v2.settings`):
+Active code lives under `course_flow/` (see `manage.py` → `course_flow.settings`):
 
-- `course_flow_v2/core/models/` — persistence (maps to `docs/data/entities/entities.md`)
-- `course_flow_v2/application/` — services and ports (DTOs, protocols)
-- `course_flow_v2/infrastructure/repositories/` — Django ORM repository implementations wired from `course_flow_v2/api/deps.py`
-- `course_flow_v2/api/` — Ninja routers and request/response schemas
-- `course_flow_v2/core/migrations/0001_initial.py` — initial schema migration for the confirmed core entities
+- `course_flow/core/models/` — persistence (**source of truth** for the schema)
+- `course_flow/application/` — services and ports (DTOs, protocols)
+- `course_flow/infrastructure/repositories/` — Django ORM repository implementations wired from `course_flow/api/deps.py`
+- `course_flow/api/` — Ninja routers and request/response schemas
+- `course_flow/core/migrations/` — Django migrations (regenerate as needed during active rewrite)
 
-The long-term `src/` layout described in [repository_layout.md](../architecture/repository_layout.md) remains the directional target; V2 mirrors the same separation using the `course_flow_v2/` tree.
+The long-term `src/` layout described in [repository_layout.md](../architecture/repository_layout.md) remains the directional target; the running project mirrors the same separation under `course_flow/`.
 
 ## Initial foundation status
 
-The first backend slice is now represented in the active V2 codebase:
+The first backend slice is represented in the active codebase:
 
-- confirmed core ORM models live in `course_flow_v2/core/models/`
+- core ORM models live in `course_flow/core/models`
 - shared persistence conventions use UUIDs plus `date_created` / `modified_on` where the canonical entity docs define them
 - explicit through models capture project-discipline, project-team membership, node/outcome/tag links, favorites, and horizontal outcome links
 - the initial Ninja API slice exposes `POST/GET/LIST` endpoints for projects and graphs

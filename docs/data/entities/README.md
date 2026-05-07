@@ -1,19 +1,25 @@
-# Entities Folder
+# Entities folder
 
-This folder is reserved for the canonical data-model documents for CourseFlow vNext.
+Artifacts here describe the **CourseFlow vNext** persistence layer.
 
-The entities, relationships, and fields have already been defined at the project level. This folder exists so those definitions can be normalized into friendly artifacts.
+## Source of truth
 
-## Intended Contents
+The **canonical schema** is the Django ORM under:
 
-- canonical entity manifest
-- field dictionary
-- relationship documentation
-- generated ERD sources
-- future migration notes when entity design changes
+`course_flow/core/models/`
 
-## Current Rule
+(package directory `course_flow/`, module import path `course_flow.core.models`).
 
-Do not invent new entities or relations in documentation unless they have been ratified in project discussions.
+Files in this folder (`entities.md`, `entity_relations.md`, `schema_mermaid.md`) are **derived documentation**. They should be updated when models change, not the other way around.
 
-Prefer updating the canonical entity source and then deriving secondary docs from it.
+## Contents
+
+| File | Purpose |
+|------|---------|
+| `entities.md` | Field- and table-level summary aligned with models |
+| `entity_relations.md` | Narrative relation overview |
+| `schema_mermaid.md` | Mermaid ERD derived from models |
+
+## Rule
+
+Do not add entities or relations here that are not present in `course_flow/core/models/` unless they are explicitly queued for implementation.

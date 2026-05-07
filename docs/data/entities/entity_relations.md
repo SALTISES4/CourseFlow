@@ -1,53 +1,41 @@
-# Entity Relations
+# Entity relations (implementation-backed)
 
-This file captures the current high-level relation set that is already in scope for the rebuild.
+High-level relationships matching **`course_flow/core/models/`**. For fields and tables, see [`entities.md`](entities.md).
 
-It is intentionally high-level and should be refined only from ratified model decisions.
+## Users and access
 
-## Core Ownership
+- A **user** owns many **projects** (`Project.owner`).
+- A **user** authors many **workflows** (`Workflow.author`; reverse name `created_graphs`).
+- **Comments** reference a **user** as author (`Comment.author`).
+- **Notifications**, **favorite projects**, **favorite graphs**, and **auth tokens** belong to a user.
+- **Team membership**: `TeamUser` links a **user** to a **team** (one team per project).
 
-- a user owns many projects
-- a user owns many graphs
-- a project contains many graphs
+## Project
 
-## Project Classification
+- A **project** has one **team** container (`Team`).
+- A **project** has many **tags** (optional null project on tag allowed).
+- A **project** may have many **disciplines** (M2M via `ProjectDiscipline`).
 
-- a project may be associated with many disciplines
-- a discipline may classify many projects
+## Graph and workflow
 
-## Graph Structure
+- A **graph** holds structural/editor state: **sections**, **channels**, **outcomes** (`Outcome.graph`), and `revision_id`.
+- Each **graph** has exactly one **workflow** (`Workflow.graph` one-to-one); the workflow carries the typed academic object (`workflow_type`, titles, meta records).
+- The ORM does **not** currently define `Graph.project` or `Graph.owner`; document or add when those are modeled.
 
-- a graph contains many sections
-- a graph has one workflow
-- a graph may contain many channels
+## Sections, channels, nodes
 
-## Section / Channel / Node
+- **Sections** and **channels** belong to a **graph** and may have an optional **thread**.
+- **Nodes** reference a **section**, a **channel**, and a **workflow** (all required in code), optional **thread**, and `section_row`.
+- **Nodes** connect to **outcomes** (M2M) and **tags** (M2M).
+- **Edges** connect two **nodes** (directed).
 
-- a section contains many nodes
-- a channel contains many nodes
+## Outcomes
 
-## Graph Structure
+- An **outcome** belongs to a **graph** and has a required **thread** (`PROTECT`).
+- Outcomes may form a **tree**: optional **parent** outcome, **`order`** among siblings (unique per parent when parent is set).
+- Outcomes may have **tags** (M2M) and participate in **horizontal outcome** groupings (M2M via `HorizontaloutcomeOutcome`).
 
-- a node may connect to many outcomes
-- a node may have many edges
-- a node may be associated to a workflow where that relation is defined by the canonical model
+## Documentation rule
 
-## Outcome Structure
-
-- an outcome belongs to a graph
-- an outcome has one thread
-- an outcome may link to other outcomes where that self-relation is defined by the canonical model
-
-## User Interaction / Secondary Relations
-
-- comments are owned by users
-- notifications belong to users
-- favorite projects belong to users
-- favorite graphs belong to users
-- project-team membership links users into projects where that join model applies
-
-## Current Documentation Rule
-
-This file is a human-oriented summary.
-
-The canonical field-level and cardinality-level model should live in the entity source document once that file is formalized for the new repository.
+- **Canonical source:** `course_flow/core/models/`.
+- Update this file when models change, or regenerate from code review.

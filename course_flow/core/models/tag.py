@@ -7,6 +7,8 @@ class Tag(models.Model):
     project = models.ForeignKey(
         Project,
         on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name="tags",
     )
     label = models.CharField(max_length=255)

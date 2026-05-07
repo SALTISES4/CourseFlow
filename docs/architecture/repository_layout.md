@@ -2,7 +2,7 @@
 
 This is the current target layout for the backend rebuild.
 
-**Status:** the running Django project uses `course_flow_v2/` (ORM in `course_flow_v2/core`, API in `course_flow_v2/api`, application and infrastructure siblings). The tree below remains the north-star shape; migrate toward it as features grow.
+**Status:** the running Django project uses `course_flow/` (ORM in `course_flow/core`, API in `course_flow/api`, application and infrastructure siblings). The aspirational `src/` tree below remains a north-star shape; the live package mirrors the same separation under `course_flow/`.
 
 The intent is to keep business logic independent from Django while still using Django for framework concerns such as configuration, migrations, admin, auth integration, and ORM-backed persistence.
 
