@@ -240,7 +240,7 @@ export const zProjectUpdateIn = z.object({
 export const zGraphDetailOut = z.object({
   uuid: z.string().uuid(),
   title: z.string(),
-  ownerId: z.number().int(),
+  ownerId: z.number().int().nullable(),
   projectId: z.number().int().nullable(),
   revisionId: z.number().int(),
   dateCreated: z.string().datetime(),
@@ -271,7 +271,7 @@ export const zGraphCreateIn = z.object({
 export const zGraphListItemOut = z.object({
   uuid: z.string().uuid(),
   title: z.string(),
-  ownerId: z.number().int(),
+  ownerId: z.number().int().nullable(),
   projectId: z.number().int().nullable(),
   revisionId: z.number().int(),
   modifiedOn: z.string().datetime()
@@ -325,7 +325,7 @@ export const zEdgeGraphOut = z.object({
 export const zGraphMetaOut = z.object({
   uuid: z.string().uuid(),
   title: z.string(),
-  ownerId: z.number().int(),
+  ownerId: z.number().int().nullable(),
   projectId: z.number().int().nullable(),
   revisionId: z.number().int(),
   dateCreated: z.string().datetime(),
@@ -950,7 +950,7 @@ export const zLibraryFavoriteIn = z.object({
   uuid: z.string().uuid().nullish()
 })
 
-export const zCourseFlowV2ApiNinjaAppHealthData = z.object({
+export const zCourseFlowApiNinjaAppHealthData = z.object({
   body: z.never().optional(),
   path: z.never().optional(),
   query: z.never().optional()
@@ -959,7 +959,7 @@ export const zCourseFlowV2ApiNinjaAppHealthData = z.object({
 /**
  * OK
  */
-export const zCourseFlowV2ApiNinjaAppHealthResponse = zHealthResponse
+export const zCourseFlowApiNinjaAppHealthResponse = zHealthResponse
 
 export const zListProjectsData = z.object({
   body: z.never().optional(),

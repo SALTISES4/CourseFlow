@@ -30,8 +30,28 @@ py_log_file := "logs/python.log"
 infra_services := "postgres"
 
 # replade this with volta
-frontend_bootstrap := 'cd {{ frontend_dir }} && export NVM_DIR="$HOME/.nvm" && . "$NVM_DIR/nvm.sh" && nvm use'
+frontend_bootstrap := "\
+    export VOLTA_HOME=\"$HOME/.volta\" &&\
+    export PATH=\"$VOLTA_HOME/bin:$PATH\" &&\
+    cd react"
 
+
+#########################################################
+# DEPS
+#########################################################
+# volta is the node environment manager
+[group: 'deps']
+install-volta:
+    brew install volta
+
+# install the precommit hooks which run on git commit
+[group: 'deps']
+pre-commit-install:
+    pre-commit pre-commit install --install-hooks
+
+[group: 'deps']
+install-repomix:
+    brew install repomix
 
 #########################################################
 #  SINGLE COMMAND GROUPS
@@ -168,16 +188,12 @@ frontend-dev:
 
 
 [group: 'Frontend']
-frontend-gen-openapi:
+frontend-openapi-codegen:
   {{ frontend_bootstrap }} && yarn run openapi-ts && yarn run eslint --fix ./src/api/gen
 
 # ----------------------------
 # Quality / validation
 # ----------------------------
-
-[group: 'Quality']
-pre-commit-install:
-  pre-commit pre-commit install --install-hooks
 
 # run all the precommit hooks including (ruff, safety) see .pre-commit-config.yaml
 [group: 'Quality']

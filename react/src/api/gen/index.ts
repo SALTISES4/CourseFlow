@@ -2,7 +2,7 @@
 
 export {
   addProjectTeamMembers,
-  courseFlowV2ApiNinjaAppHealth,
+  courseFlowApiNinjaAppHealth,
   createChannel,
   createGraph,
   createGraphEdge,
@@ -74,9 +74,9 @@ export {
   type CommentAuthorOut,
   type CommentCreateIn,
   type CommentOut,
-  type CourseFlowV2ApiNinjaAppHealthData,
-  type CourseFlowV2ApiNinjaAppHealthResponse,
-  type CourseFlowV2ApiNinjaAppHealthResponses,
+  type CourseFlowApiNinjaAppHealthData,
+  type CourseFlowApiNinjaAppHealthResponse,
+  type CourseFlowApiNinjaAppHealthResponses,
   type CourseMetaOut,
   type CreateChannelData,
   type CreateChannelResponse,

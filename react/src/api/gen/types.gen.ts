@@ -483,7 +483,7 @@ export type GraphDetailOut = {
   /**
    * Ownerid
    */
-  ownerId: number
+  ownerId: number | null
   /**
    * Projectid
    */
@@ -552,7 +552,7 @@ export type GraphListItemOut = {
   /**
    * Ownerid
    */
-  ownerId: number
+  ownerId: number | null
   /**
    * Projectid
    */
@@ -663,7 +663,7 @@ export type GraphMetaOut = {
   /**
    * Ownerid
    */
-  ownerId: number
+  ownerId: number | null
   /**
    * Projectid
    */
@@ -1840,22 +1840,22 @@ export type LibraryFavoriteIn = {
   uuid?: string | null
 }
 
-export type CourseFlowV2ApiNinjaAppHealthData = {
+export type CourseFlowApiNinjaAppHealthData = {
   body?: never
   path?: never
   query?: never
   url: '/api/health'
 }
 
-export type CourseFlowV2ApiNinjaAppHealthResponses = {
+export type CourseFlowApiNinjaAppHealthResponses = {
   /**
    * OK
    */
   200: HealthResponse
 }
 
-export type CourseFlowV2ApiNinjaAppHealthResponse =
-  CourseFlowV2ApiNinjaAppHealthResponses[keyof CourseFlowV2ApiNinjaAppHealthResponses]
+export type CourseFlowApiNinjaAppHealthResponse =
+  CourseFlowApiNinjaAppHealthResponses[keyof CourseFlowApiNinjaAppHealthResponses]
 
 export type ListProjectsData = {
   body?: never

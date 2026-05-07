@@ -12,7 +12,7 @@ import { client } from '../client.gen'
 import {
   type Options,
   addProjectTeamMembers,
-  courseFlowV2ApiNinjaAppHealth,
+  courseFlowApiNinjaAppHealth,
   createChannel,
   createGraph,
   createGraphEdge,
@@ -70,8 +70,8 @@ import {
 import type {
   AddProjectTeamMembersData,
   AddProjectTeamMembersResponse,
-  CourseFlowV2ApiNinjaAppHealthData,
-  CourseFlowV2ApiNinjaAppHealthResponse,
+  CourseFlowApiNinjaAppHealthData,
+  CourseFlowApiNinjaAppHealthResponse,
   CreateChannelData,
   CreateChannelResponse,
   CreateGraphData,
@@ -219,24 +219,24 @@ const createQueryKey = <TOptions extends Options>(
   return [params]
 }
 
-export const courseFlowV2ApiNinjaAppHealthQueryKey = (
-  options?: Options<CourseFlowV2ApiNinjaAppHealthData>
-) => createQueryKey('courseFlowV2ApiNinjaAppHealth', options)
+export const courseFlowApiNinjaAppHealthQueryKey = (
+  options?: Options<CourseFlowApiNinjaAppHealthData>
+) => createQueryKey('courseFlowApiNinjaAppHealth', options)
 
 /**
  * Liveness check
  */
-export const courseFlowV2ApiNinjaAppHealthOptions = (
-  options?: Options<CourseFlowV2ApiNinjaAppHealthData>
+export const courseFlowApiNinjaAppHealthOptions = (
+  options?: Options<CourseFlowApiNinjaAppHealthData>
 ) =>
   queryOptions<
-    CourseFlowV2ApiNinjaAppHealthResponse,
+    CourseFlowApiNinjaAppHealthResponse,
     DefaultError,
-    CourseFlowV2ApiNinjaAppHealthResponse,
-    ReturnType<typeof courseFlowV2ApiNinjaAppHealthQueryKey>
+    CourseFlowApiNinjaAppHealthResponse,
+    ReturnType<typeof courseFlowApiNinjaAppHealthQueryKey>
   >({
     queryFn: async ({ queryKey, signal }) => {
-      const { data } = await courseFlowV2ApiNinjaAppHealth({
+      const { data } = await courseFlowApiNinjaAppHealth({
         ...options,
         ...queryKey[0],
         signal,
@@ -244,7 +244,7 @@ export const courseFlowV2ApiNinjaAppHealthOptions = (
       })
       return data
     },
-    queryKey: courseFlowV2ApiNinjaAppHealthQueryKey(options)
+    queryKey: courseFlowApiNinjaAppHealthQueryKey(options)
   })
 
 export const listProjectsQueryKey = (options?: Options<ListProjectsData>) =>

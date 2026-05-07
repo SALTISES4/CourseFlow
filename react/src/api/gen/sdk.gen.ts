@@ -5,8 +5,8 @@ import { client } from './client.gen'
 import type {
   AddProjectTeamMembersData,
   AddProjectTeamMembersResponses,
-  CourseFlowV2ApiNinjaAppHealthData,
-  CourseFlowV2ApiNinjaAppHealthResponses,
+  CourseFlowApiNinjaAppHealthData,
+  CourseFlowApiNinjaAppHealthResponses,
   CreateChannelData,
   CreateChannelResponses,
   CreateGraphData,
@@ -117,8 +117,8 @@ import type {
 import {
   zAddProjectTeamMembersData,
   zAddProjectTeamMembersResponse,
-  zCourseFlowV2ApiNinjaAppHealthData,
-  zCourseFlowV2ApiNinjaAppHealthResponse,
+  zCourseFlowApiNinjaAppHealthData,
+  zCourseFlowApiNinjaAppHealthResponse,
   zCreateChannelData,
   zCreateChannelResponse,
   zCreateGraphData,
@@ -247,20 +247,20 @@ export type Options<
 /**
  * Liveness check
  */
-export const courseFlowV2ApiNinjaAppHealth = <
+export const courseFlowApiNinjaAppHealth = <
   ThrowOnError extends boolean = false
 >(
-  options?: Options<CourseFlowV2ApiNinjaAppHealthData, ThrowOnError>
+  options?: Options<CourseFlowApiNinjaAppHealthData, ThrowOnError>
 ) =>
   (options?.client ?? client).get<
-    CourseFlowV2ApiNinjaAppHealthResponses,
+    CourseFlowApiNinjaAppHealthResponses,
     unknown,
     ThrowOnError
   >({
     requestValidator: async (data) =>
-      await zCourseFlowV2ApiNinjaAppHealthData.parseAsync(data),
+      await zCourseFlowApiNinjaAppHealthData.parseAsync(data),
     responseValidator: async (data) =>
-      await zCourseFlowV2ApiNinjaAppHealthResponse.parseAsync(data),
+      await zCourseFlowApiNinjaAppHealthResponse.parseAsync(data),
     url: '/api/health',
     ...options
   })
