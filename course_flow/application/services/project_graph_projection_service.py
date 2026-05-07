@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from course_flow.core.models import Project
+from course_flow.core.models import Graph, Project
 
 
 class ProjectGraphProjectionService:
@@ -10,11 +10,15 @@ class ProjectGraphProjectionService:
 
     def get_by_project_uuid(self, project_uuid: UUID):
         try:
-            p = Project.objects.prefetch_related("graphs").get(uuid=project_uuid)
+            p = Project.objects.get(uuid=project_uuid)
         except Project.DoesNotExist:
             return None
 
-        graph_uuids = [w.uuid for w in p.graphs.all().order_by("id")]
+        graph_uuids = list(
+            Graph.objects.filter(workflow__project_id=p.id)
+            .order_by("id")
+            .values_list("uuid", flat=True)
+        )
 
         return {
             "uuid": p.uuid,

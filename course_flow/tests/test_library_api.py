@@ -9,7 +9,7 @@ from django.test import Client
 from django.utils import timezone
 
 from course_flow.core.auth import generate_raw_token, hash_token
-from course_flow.core.enum import WorkflowType
+from course_flow.core.enum import Role, WorkflowType
 from course_flow.core.models import (
     Authtoken,
     Discipline,
@@ -91,14 +91,16 @@ def _graph_with_workflow(
     workflow_description: str = "",
     workflow_type: str = WorkflowType.COURSE,
 ) -> Graph:
-    wf = Graph.objects.create(owner=owner, project=project, title=graph_title)
+    g = Graph.objects.create()
     Workflow.objects.create(
-        graph=wf,
-        title=workflow_title,
+        graph=g,
+        author=owner,
+        project=project,
+        title=workflow_title or graph_title,
         description=workflow_description,
         workflow_type=workflow_type,
     )
-    return wf
+    return g
 
 
 def _set_project_created(project: Project, dt) -> None:
@@ -174,7 +176,7 @@ def test_team_member_sees_project_and_child_workflow_backed_items(
     raw_member = _issue_token_for(teammate)
     project = Project.objects.create(owner=user, title="Shared", description="")
     team = Team.objects.get(project=project)
-    TeamUser.objects.create(projectteam=team, user=teammate)
+    TeamUser.objects.create(team=team, user=teammate, role=Role.VIEWER)
     wf = _graph_with_workflow(
         user,
         project=project,
@@ -428,7 +430,7 @@ def test_keyword_matches_graph_title(client: Client, user):
         project=project,
         graph_title="GraphLabel special",
         workflow_title="Generic",
-        workflow_description="",
+        workflow_description="GraphLabel special",
         workflow_type=WorkflowType.COURSE,
     )
     body = _post_search(client, raw, {"filters": [{"name": "keyword", "value": "GraphLabel"}]})
@@ -667,7 +669,7 @@ def test_library_search_applies_filters_including_favourited(client: Client, use
         is_template=False,
     )
     team, _ = Team.objects.get_or_create(project=team_project)
-    TeamUser.objects.create(projectteam=team, user=user)
+    TeamUser.objects.create(team=team, user=user, role=Role.VIEWER)
     ProjectDiscipline.objects.create(project=team_project, discipline=discipline_b)
     _graph_with_workflow(
         teammate,

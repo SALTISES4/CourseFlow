@@ -2,11 +2,19 @@ from __future__ import annotations
 
 from django.db.models import Q
 
+from course_flow.core.enum import LanguagePreference
 from course_flow.core.models import User
+
+_CANONICAL_LANG = {
+    "en": LanguagePreference.EN.value,
+    "fr": LanguagePreference.FR.value,
+    LanguagePreference.EN.value: LanguagePreference.EN.value,
+    LanguagePreference.FR.value: LanguagePreference.FR.value,
+}
 
 
 class UserService:
-    ALLOWED_LANGUAGE_PREFERENCES = {"en", "fr"}
+    ALLOWED_LANGUAGE_PREFERENCES = set(_CANONICAL_LANG.keys())
 
     def get_profile_settings(self, user_id: int) -> User | None:
         return User.objects.filter(pk=user_id).first()
@@ -39,7 +47,7 @@ class UserService:
             value = language_preference.strip().lower()
             if value not in self.ALLOWED_LANGUAGE_PREFERENCES:
                 raise ValueError("language_preference is invalid")
-            user.language_preference = value
+            user.language_preference = _CANONICAL_LANG[value]
 
         user.save(update_fields=["first_name", "last_name", "language_preference"])
         return user

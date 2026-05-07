@@ -24,10 +24,12 @@ from __future__ import annotations
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
+from course_flow.core.enum import WorkflowType
 from course_flow.core.models import (
     Activitymeta,
     Channel,
     Coursemeta,
+    Graph,
     Node,
     Outcome,
     Programmeta,
@@ -91,6 +93,14 @@ def ensure_project_team_on_project_create(
 ) -> None:
     if created:
         Team.objects.get_or_create(project=instance)
+
+
+@receiver(post_delete, sender=Workflow)
+def delete_graph_after_workflow_delete(sender, instance: Workflow, **kwargs) -> None:
+    """When a workflow row is removed, drop its graph so project/user cascades do not orphan graphs."""
+    gid = instance.graph_id
+    if gid:
+        Graph.objects.filter(pk=gid).delete()
 
 
 @receiver(post_save, sender=Workflow)

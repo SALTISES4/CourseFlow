@@ -50,16 +50,18 @@ class LibraryService:
         discipline_ids = self._normalize_int_list(normalized_filters.get("discipline"))
         keyword = self._normalize_keyword(normalized_filters.get("keyword"))
         is_template = self._normalize_bool(normalized_filters.get("istemplate"))
-        is_favorite = self._normalize_bool(normalized_filters.get("isfavorite"))
+        is_favorite = self._normalize_bool(
+            normalized_filters.get("isfavorite")
+            or normalized_filters.get("favourited")
+        )
 
         accessible_projects = Project.objects.filter(
-            Q(owner_id=user_id) | Q(team__members__user_id=user_id)
+            Q(owner_id=user_id) | Q(team__users__user_id=user_id)
         ).distinct()
 
         project_qs = accessible_projects
-        graph_qs = Graph.objects.select_related("project", "workflow").filter(
-            project_id__in=accessible_projects.values("id"),
-            workflow__isnull=False,
+        graph_qs = Graph.objects.select_related("workflow", "workflow__project").filter(
+            workflow__project_id__in=accessible_projects.values("id"),
         )
 
         if workspace_type == "project":
@@ -70,19 +72,19 @@ class LibraryService:
 
         if project_filter_uuid is not None:
             project_qs = project_qs.filter(uuid=project_filter_uuid)
-            graph_qs = graph_qs.filter(project__uuid=project_filter_uuid)
+            graph_qs = graph_qs.filter(workflow__project__uuid=project_filter_uuid)
 
         if discipline_ids:
             project_qs = project_qs.filter(
                 disciplines__id__in=discipline_ids
             ).distinct()
             graph_qs = graph_qs.filter(
-                project__disciplines__id__in=discipline_ids
+                workflow__project__disciplines__id__in=discipline_ids
             ).distinct()
 
         if is_template is not None:
             project_qs = project_qs.filter(is_template=is_template)
-            graph_qs = graph_qs.filter(project__is_template=is_template)
+            graph_qs = graph_qs.filter(workflow__project__is_template=is_template)
 
         if keyword:
             project_qs = project_qs.filter(
@@ -91,7 +93,6 @@ class LibraryService:
             graph_qs = graph_qs.filter(
                 Q(workflow__title__icontains=keyword)
                 | Q(workflow__description__icontains=keyword)
-                | Q(title__icontains=keyword)
             )
 
         if is_favorite is True:
@@ -277,20 +278,19 @@ class LibraryService:
         rows: list[dict[str, Any]] = []
         for graph in graph_qs:
             workflow = graph.workflow
+            proj = workflow.project
             rows.append(
                 {
                     "object_type": workflow.workflow_type,
                     "uuid": None,
                     "graph_uuid": graph.uuid,
-                    "project_uuid": graph.project.uuid if graph.project else None,
+                    "project_uuid": proj.uuid if proj is not None else None,
                     "workflow_uuid": workflow.uuid,
                     "title": workflow.title,
                     "description": workflow.description,
                     "date_created": graph.date_created,
                     "modified_on": graph.modified_on,
-                    "is_template": bool(
-                        graph.project and graph.project.is_template
-                    ),
+                    "is_template": bool(proj and proj.is_template),
                     "is_favorite": graph.uuid in favorite_uuids,
                 }
             )

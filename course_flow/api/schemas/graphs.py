@@ -32,7 +32,7 @@ class GraphListItemOut(CamelSchema):
 
     uuid: UUID
     title: str
-    owner_id: int
+    owner_id: int | None
     project_id: int | None
     revision_id: int
     modified_on: datetime
@@ -54,7 +54,7 @@ class GraphDetailOut(CamelSchema):
 
     uuid: UUID
     title: str
-    owner_id: int
+    owner_id: int | None
     project_id: int | None
     revision_id: int
     date_created: datetime

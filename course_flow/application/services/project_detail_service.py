@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from course_flow.core.models import Project
+from course_flow.core.enum import WorkflowType
+from course_flow.core.models import Graph, Project
 
 
 class ProjectDetailService:
@@ -15,59 +16,63 @@ class ProjectDetailService:
             return None
 
         graphs = list(
-            p.graphs.select_related("workflow")
+            Graph.objects.filter(workflow__project_id=p.id)
+            .select_related("workflow")
             .prefetch_related(
-                "workflow__task_meta",
-                "workflow__program_meta",
-                "workflow__course_meta",
-                "workflow__activity_meta",
+                "workflow__taskmeta",
+                "workflow__programmeta",
+                "workflow__coursemeta",
+                "workflow__activitymeta",
             )
             .order_by("-modified_on", "-id")
         )
 
         graph_items: list[dict] = []
-        for wf in graphs:
-            workflow = wf.workflow
+        for g in graphs:
+            workflow = g.workflow
             meta: dict | None = None
-            if workflow.workflow_type == workflow.WorkflowType.TASK and hasattr(workflow, "task_meta"):
-                meta = {"kind": "task_meta", "context": workflow.task_meta.context}
-            elif workflow.workflow_type == workflow.WorkflowType.PROGRAM and hasattr(
-                workflow, "program_meta"
-            ):
-                pm = workflow.program_meta
-                meta = {
-                    "kind": "program_meta",
-                    "calculate_time": pm.calculate_time,
-                    "calculate_credits": pm.calculate_credits,
-                    "calculate_ponderation": pm.calculate_ponderation,
-                    "calculate_classification": pm.calculate_classification,
-                    "classification_general_time": pm.classification_general_time,
-                    "classification_specific_time": pm.classification_specific_time,
-                }
-            elif workflow.workflow_type == workflow.WorkflowType.COURSE and hasattr(workflow, "course_meta"):
-                meta = {
-                    "kind": "course_meta",
-                    "classification": workflow.course_meta.classification,
-                    "code": workflow.course_meta.code,
-                }
-            elif workflow.workflow_type == workflow.WorkflowType.ACTIVITY and hasattr(
-                workflow, "activity_meta"
-            ):
-                meta = {
-                    "kind": "activity_meta",
-                    "context": workflow.activity_meta.context,
-                    "classification": workflow.activity_meta.classification,
-                }
+            if workflow.workflow_type == WorkflowType.TASK:
+                tm = getattr(workflow, "taskmeta", None)
+                if tm is not None:
+                    meta = {"kind": "task_meta", "context": tm.context}
+            elif workflow.workflow_type == WorkflowType.PROGRAM:
+                pm = getattr(workflow, "programmeta", None)
+                if pm is not None:
+                    meta = {
+                        "kind": "program_meta",
+                        "calculate_time": pm.calculate_time,
+                        "calculate_credits": pm.calculate_credits,
+                        "calculate_ponderation": pm.calculate_ponderation,
+                        "calculate_classification": pm.calculate_classification,
+                        "classification_general_time": pm.classification_general_time,
+                        "classification_specific_time": pm.classification_specific_time,
+                    }
+            elif workflow.workflow_type == WorkflowType.COURSE:
+                cm = getattr(workflow, "coursemeta", None)
+                if cm is not None:
+                    meta = {
+                        "kind": "course_meta",
+                        "classification": cm.classification,
+                        "code": cm.code,
+                    }
+            elif workflow.workflow_type == WorkflowType.ACTIVITY:
+                am = getattr(workflow, "activitymeta", None)
+                if am is not None:
+                    meta = {
+                        "kind": "activity_meta",
+                        "context": am.context,
+                        "classification": am.classification,
+                    }
 
             graph_items.append(
                 {
-                    "uuid": wf.uuid,
-                    "title": wf.title,
-                    "owner_id": wf.owner_id,
-                    "project_id": wf.project_id,
-                    "revision_id": wf.revision_id,
-                    "date_created": wf.date_created,
-                    "modified_on": wf.modified_on,
+                    "uuid": g.uuid,
+                    "title": workflow.title,
+                    "owner_id": workflow.author_id,
+                    "project_id": workflow.project_id,
+                    "revision_id": g.revision_id,
+                    "date_created": g.date_created,
+                    "modified_on": g.modified_on,
                     "workflow": {
                         "uuid": workflow.uuid,
                         "title": workflow.title,

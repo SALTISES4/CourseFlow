@@ -28,7 +28,7 @@ class GraphDTO:
     id: int
     uuid: UUID
     title: str
-    owner_id: int
+    owner_id: int | None
     project_id: int | None
     revision_id: int
     workflow_uuid: UUID

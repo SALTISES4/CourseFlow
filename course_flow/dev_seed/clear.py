@@ -31,7 +31,7 @@ def clear_dev_seed_projects(
         qs = Project.objects.filter(title__startswith=title_prefix)
 
     outcome_thread_ids = list(
-        Outcome.objects.filter(graph__project__in=qs).values_list(
+        Outcome.objects.filter(graph__workflow__project__in=qs).values_list(
             "thread_id",
             flat=True,
         )

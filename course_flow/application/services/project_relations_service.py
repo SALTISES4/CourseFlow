@@ -68,7 +68,7 @@ class ProjectRelationsService:
         except Team.DoesNotExist:
             return []
         rows = (
-            TeamUser.objects.filter(projectteam_id=team.id)
+            TeamUser.objects.filter(team_id=team.id)
             .select_related("user")
             .order_by("id")
         )
@@ -105,7 +105,7 @@ class ProjectRelationsService:
         out: list[ProjectTeamMemberDTO] = []
         for u in ordered_users:
             m, _created = TeamUser.objects.get_or_create(
-                projectteam=team,
+                team=team,
                 user=u,
                 defaults={"role": role},
             )
@@ -124,7 +124,7 @@ class ProjectRelationsService:
             return None
         team, _ = Team.objects.get_or_create(project=p)
         m = (
-            TeamUser.objects.filter(pk=membership_id, projectteam_id=team.id)
+            TeamUser.objects.filter(pk=membership_id, team_id=team.id)
             .select_related("user")
             .first()
         )
@@ -143,6 +143,6 @@ class ProjectRelationsService:
             return False
         team, _ = Team.objects.get_or_create(project=p)
         deleted, _ = TeamUser.objects.filter(
-            pk=membership_id, projectteam_id=team.id
+            pk=membership_id, team_id=team.id
         ).delete()
         return deleted > 0

@@ -51,6 +51,7 @@ class User(AbstractUser):
     language_preference = models.CharField(
         max_length=5,
         choices=LANGUAGE_PREFERENCES_CHOICES,
+        default=LanguagePreference.EN.value,
     )
     notifications_active = models.BooleanField(default=False)
     objects = CourseFlowUserManager()

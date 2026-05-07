@@ -69,10 +69,10 @@ def _create_graph(client: Client, raw_token: str) -> str:
 
 
 def _section_and_channel(wf_uuid: str):
-    wf = Graph.objects.get(uuid=wf_uuid)
-    section = Section.objects.create(graph=wf, title="S", position=0)
-    channel = Channel.objects.create(graph=wf, title="C", position=0)
-    return section, channel
+    g = Graph.objects.select_related("workflow").get(uuid=wf_uuid)
+    section = Section.objects.create(graph=g, title="S", position=0)
+    channel = Channel.objects.create(graph=g, title="C", position=0)
+    return section, channel, g.workflow
 
 
 def _assert_envelope_shape(body: dict) -> None:
@@ -92,9 +92,13 @@ def test_delete_node_returns_delta_with_cascaded_edges_and_bumps_revision(
 ):
     raw = _issue_token_for(user)
     wf_uuid = _create_graph(client, raw)
-    section, channel = _section_and_channel(wf_uuid)
-    n1 = Node.objects.create(section=section, channel=channel, section_row=0)
-    n2 = Node.objects.create(section=section, channel=channel, section_row=1)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    n1 = Node.objects.create(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+    n2 = Node.objects.create(
+        section=section, channel=channel, workflow=workflow, section_row=1
+    )
     edge = Edge.objects.create(source_node=n1, target_node=n2)
 
     r = client.delete(
@@ -126,9 +130,13 @@ def test_delete_node_returns_delta_with_cascaded_edges_and_bumps_revision(
 def test_create_and_delete_edge_envelopes(client: Client, user):
     raw = _issue_token_for(user)
     wf_uuid = _create_graph(client, raw)
-    section, channel = _section_and_channel(wf_uuid)
-    n1 = Node.objects.create(section=section, channel=channel, section_row=0)
-    n2 = Node.objects.create(section=section, channel=channel, section_row=1)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    n1 = Node.objects.create(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+    n2 = Node.objects.create(
+        section=section, channel=channel, workflow=workflow, section_row=1
+    )
 
     r1 = client.post(
         f"/api/graph/{wf_uuid}/edges",
@@ -166,7 +174,7 @@ def test_create_and_delete_edge_envelopes(client: Client, user):
 def test_create_node_and_update_node_envelopes(client: Client, user):
     raw = _issue_token_for(user)
     wf_uuid = _create_graph(client, raw)
-    section, channel = _section_and_channel(wf_uuid)
+    section, channel, _w = _section_and_channel(wf_uuid)
 
     r1 = client.post(
         f"/api/graph/{wf_uuid}/nodes",
@@ -203,8 +211,10 @@ def test_create_node_and_update_node_envelopes(client: Client, user):
 def test_graph_mutation_forbidden_for_non_owner(client: Client, user, other_user):
     raw_owner = _issue_token_for(user)
     wf_uuid = _create_graph(client, raw_owner)
-    section, channel = _section_and_channel(wf_uuid)
-    n = Node.objects.create(section=section, channel=channel, section_row=0)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    n = Node.objects.create(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
 
     raw_other = _issue_token_for(other_user)
     r = client.delete(

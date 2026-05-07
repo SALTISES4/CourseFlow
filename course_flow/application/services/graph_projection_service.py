@@ -17,13 +17,11 @@ class GraphProjectionService:
 
     def get_by_graph_uuid(self, graph_uuid: UUID) -> dict | None:
         try:
-            w = Graph.objects.select_related("workflow", "project").get(
-                uuid=graph_uuid
-            )
+            w = Graph.objects.select_related("workflow").get(uuid=graph_uuid)
         except Graph.DoesNotExist:
             return None
 
-        workflow = getattr(w, "workflow", None)
+        workflow = w.workflow
 
         sections = list(w.sections.all().order_by("position", "id"))
         channels = list(w.channels.all().order_by("position", "id"))
@@ -78,15 +76,15 @@ class GraphProjectionService:
         return {
             "graph": {
                 "uuid": w.uuid,
-                "title": w.title,
-                "owner_id": w.owner_id,
-                "project_id": w.project_id,
+                "title": workflow.title,
+                "owner_id": workflow.author_id,
+                "project_id": workflow.project_id,
                 "revision_id": w.revision_id,
                 "date_created": w.date_created,
                 "modified_on": w.modified_on,
-                "root_workflow_uuid": workflow.uuid if workflow is not None else None,
-                "root_workflow_type": workflow.workflow_type if workflow is not None else None,
-                "root_workflow_title": workflow.title if workflow is not None else "",
+                "root_workflow_uuid": workflow.uuid,
+                "root_workflow_type": workflow.workflow_type,
+                "root_workflow_title": workflow.title,
             },
             "sections": [
                 {

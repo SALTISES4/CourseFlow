@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from course_flow.core.enum import WorkflowType
 from course_flow.core.models import (
     Channel,
     Comment,
@@ -9,8 +10,10 @@ from course_flow.core.models import (
     Graph,
     Node,
     Outcome,
+    Project,
     Section,
     Thread,
+    User,
     Workflow,
 )
 from course_flow.dev_seed.constants import DEV_SEED_TAG_LABEL_PREFIX
@@ -30,6 +33,8 @@ def _thread() -> Thread:
 def build_workflow_for_graph(
     graph: Graph,
     *,
+    author: User,
+    project: Project | None,
     fake,
     rng: SeededRNG,
 ) -> Workflow:
@@ -38,6 +43,8 @@ def build_workflow_for_graph(
     )
     return Workflow.objects.create(
         graph=graph,
+        author=author,
+        project=project,
         title=fake.sentence(nb_words=4).rstrip("."),
         description=fake.text(max_nb_chars=200),
         workflow_type=root_type,
@@ -79,11 +86,13 @@ def build_sections_and_channels(
 
 
 def build_nodes_from_layout(
+    graph: Graph,
     sections: list[Section],
     channels: list[Channel],
     layout: GraphLayoutPlan,
 ) -> list[Node]:
     """Create nodes in the same global order as ``iter_layout_node_meta``."""
+    workflow = graph.workflow
     nodes: list[Node] = []
     for si, sec in enumerate(layout.sections):
         section = sections[si]
@@ -94,6 +103,8 @@ def build_nodes_from_layout(
                     section=section,
                     channel=channel,
                     section_row=row,
+                    workflow=workflow,
+                    thread=Thread.objects.create(),
                 )
             )
     return nodes
@@ -176,7 +187,7 @@ def add_light_comments(
             continue
         Comment.objects.create(
             thread=sec.thread,
-            owner=owner,
+            author=owner,
             body="Dev seed comment for thread testing.",
         )
         count += 1

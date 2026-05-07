@@ -88,7 +88,7 @@ def test_patch_profile_settings_updates_allowed_fields(client: Client, user):
     user.refresh_from_db()
     assert user.first_name == "Alex"
     assert user.last_name == "Dray"
-    assert user.language_preference == "fr"
+    assert user.language_preference == "fr-ca"
 
 
 @pytest.mark.django_db

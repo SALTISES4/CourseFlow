@@ -87,11 +87,15 @@ class GraphMutationService:
         user_id: int,
     ) -> tuple[Graph | None, MutationError | None]:
         try:
-            wf = Graph.objects.select_for_update().get(uuid=graph_uuid)
+            wf = (
+                Graph.objects.select_for_update(of=("self",))
+                .select_related("workflow")
+                .get(uuid=graph_uuid)
+            )
         except Graph.DoesNotExist:
             return None, "not_found"
 
-        if wf.owner_id != user_id:
+        if wf.workflow.author_id != user_id:
             return None, "forbidden"
 
         return wf, None
@@ -119,11 +123,15 @@ class GraphMutationService:
             return None, "bad_request"
 
         try:
-            wf_locked = Graph.objects.select_for_update().get(pk=wf.pk)
+            wf_locked = (
+                Graph.objects.select_for_update(of=("self",))
+                .select_related("workflow")
+                .get(pk=wf.pk)
+            )
         except Graph.DoesNotExist:
             return None, "not_found"
 
-        if wf_locked.owner_id != user_id:
+        if wf_locked.workflow.author_id != user_id:
             return None, "forbidden"
         try:
             node = (
@@ -246,11 +254,15 @@ class GraphMutationService:
             return None, "not_found"
 
         try:
-            wf_locked = Graph.objects.select_for_update().get(pk=wf_s.pk)
+            wf_locked = (
+                Graph.objects.select_for_update(of=("self",))
+                .select_related("workflow")
+                .get(pk=wf_s.pk)
+            )
         except Graph.DoesNotExist:
             return None, "not_found"
 
-        if wf_locked.owner_id != user_id:
+        if wf_locked.workflow.author_id != user_id:
             return None, "forbidden"
 
         try:
@@ -322,13 +334,16 @@ class GraphMutationService:
             except Channel.DoesNotExist:
                 return None, "bad_request"
 
-        workflow = None
+        workflow_row = None
 
         if workflow_uuid is not None:
             try:
-                workflow = Workflow.objects.get(uuid=workflow_uuid, graph_id=wf.id)
+                workflow_row = Workflow.objects.get(uuid=workflow_uuid, graph_id=wf.id)
             except Workflow.DoesNotExist:
                 return None, "bad_request"
+
+        if workflow_row is None:
+            workflow_row = wf.workflow
 
         if section is None and channel is None:
             return None, "bad_request"
@@ -337,7 +352,7 @@ class GraphMutationService:
             section=section,
             channel=channel,
             section_row=section_row,
-            workflow=workflow,
+            workflow=workflow_row,
         )
         n = (
             Node.objects.select_related("section", "channel", "workflow", "thread")
@@ -379,10 +394,14 @@ class GraphMutationService:
         if wf is None:
             return None, "bad_request"
         try:
-            wf_locked = Graph.objects.select_for_update().get(pk=wf.pk)
+            wf_locked = (
+                Graph.objects.select_for_update(of=("self",))
+                .select_related("workflow")
+                .get(pk=wf.pk)
+            )
         except Graph.DoesNotExist:
             return None, "not_found"
-        if wf_locked.owner_id != user_id:
+        if wf_locked.workflow.author_id != user_id:
             return None, "forbidden"
         try:
             n = Node.objects.select_related(

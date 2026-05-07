@@ -89,7 +89,7 @@ def test_graph_view_top_level_shape_and_flat_collections(client: Client, user):
 
     wf = body["graph"]
     assert wf["uuid"] == str(wf_uuid)
-    assert wf["title"] == "Graph Test"
+    assert wf["title"] == "Root"
     assert wf["revisionId"] == 0
     assert "rootWorkflowUuid" in wf
     assert "rootWorkflowType" in wf
@@ -138,10 +138,12 @@ def test_graph_view_requires_auth(client: Client, user):
 def test_graph_view_node_includes_section_row(client: Client, user):
     raw_token = _issue_token_for(user)
     wf_uuid = _create_graph(client, raw_token)
-    wf = Graph.objects.get(uuid=wf_uuid)
+    wf = Graph.objects.select_related("workflow").get(uuid=wf_uuid)
     channel = Channel.objects.create(graph=wf, title="Col A", position=0)
     section = Section.objects.create(graph=wf, title="Grid 1", position=0)
-    Node.objects.create(section=section, channel=channel, section_row=4)
+    Node.objects.create(
+        section=section, channel=channel, workflow=wf.workflow, section_row=4
+    )
 
     body = client.get(
         f"/api/graph/{wf_uuid}/view",

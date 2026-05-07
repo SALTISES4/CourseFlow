@@ -78,8 +78,8 @@ def test_db_nodes_one_per_cell_and_compact_rows():
     cfg = SeedConfig(seed=2020, section_count=3, channel_count=3)
     generate_dev_seed(cfg)
     p = Project.objects.get(title__startswith=DEV_SEED_PROJECT_TITLE_PREFIX)
-    wf = p.graphs.first()
-    for sec in wf.sections.all():
+    g = p.workflows.select_related("graph").first().graph
+    for sec in g.sections.all():
         dups = (
             Node.objects.filter(section=sec)
             .values("channel_id", "section_row")
@@ -99,8 +99,8 @@ def test_db_nodes_one_per_cell_and_compact_rows():
 def test_db_edge_out_degrees_and_no_self_loop():
     generate_dev_seed(SeedConfig(seed=77, section_count=3, channel_count=3))
     p = Project.objects.get(title__startswith=DEV_SEED_PROJECT_TITLE_PREFIX)
-    wf = p.graphs.first()
-    edges = Edge.objects.filter(source_node__section__graph=wf)
+    g = p.workflows.select_related("graph").first().graph
+    edges = Edge.objects.filter(source_node__section__graph=g)
     assert edges.exists()
     for e in edges:
         assert e.source_node_id != e.target_node_id

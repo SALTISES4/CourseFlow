@@ -17,8 +17,8 @@ from course_flow.core.models import (
 
 class ThreadCommentService:
     """
-    Lazy-load comments for a thread; authorization matches graph ownership
-    (same mental model as ``GET /graphs/{uuid}/view``).
+    Lazy-load comments for a thread; authorization matches workflow authorship
+    on the owning graph (same mental model as ``GET /graphs/{uuid}/view``).
     """
 
     def _graph_for_thread(self, thread: Thread) -> Graph | None:
@@ -62,10 +62,10 @@ class ThreadCommentService:
     def _get_authorized_thread(
         self, thread_uuid: UUID, requester_user_id: int
     ) -> Thread | None:
-        """Return the thread if it exists, is in a graph context, and requester owns the graph.
+        """Return the thread if it exists, is in a graph context, and requester may access it.
 
         Returns ``None`` if the thread does not exist or has no graph context.
-        Raises ``PermissionError`` if the graph is owned by another user.
+        Raises ``PermissionError`` if the workflow author is another user.
         """
         try:
             thread = Thread.objects.get(uuid=thread_uuid)
@@ -76,7 +76,8 @@ class ThreadCommentService:
         if graph is None:
             return None
 
-        if graph.owner_id != requester_user_id:
+        graph = Graph.objects.select_related("workflow").get(pk=graph.pk)
+        if graph.workflow.author_id != requester_user_id:
             raise PermissionError
 
         return thread
@@ -101,7 +102,7 @@ class ThreadCommentService:
 
         rows = (
             Comment.objects.filter(thread_id=thread.id)
-            .select_related("owner")
+            .select_related("author")
             .order_by("date_created", "id")
         )
         return [self._to_dto(c, thread.uuid) for c in rows]
@@ -131,10 +132,10 @@ class ThreadCommentService:
 
         c = Comment.objects.create(
             thread=thread,
-            owner_id=requester_user_id,
+            author_id=requester_user_id,
             body=text,
         )
-        c = Comment.objects.select_related("owner").get(pk=c.pk)
+        c = Comment.objects.select_related("author").get(pk=c.pk)
         return self._to_dto(c, thread.uuid)
 
     def delete_comment(
@@ -176,7 +177,7 @@ class ThreadCommentService:
         return count
 
     def _to_dto(self, c: Comment, thread_uuid: UUID) -> CommentDTO:
-        owner = c.owner
+        author = c.author
         return CommentDTO(
             uuid=c.uuid,
             thread_uuid=thread_uuid,
@@ -184,9 +185,9 @@ class ThreadCommentService:
             date_created=c.date_created,
             modified_on=c.modified_on,
             author=CommentAuthorDTO(
-                uuid=owner.uuid,
-                email=owner.email,
-                first_name=owner.first_name,
-                last_name=owner.last_name,
+                uuid=author.uuid,
+                email=author.email,
+                first_name=author.first_name,
+                last_name=author.last_name,
             ),
         )

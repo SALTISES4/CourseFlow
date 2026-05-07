@@ -8,6 +8,7 @@ from django.test import Client
 from django.utils import timezone
 
 from course_flow.core.auth import generate_raw_token, hash_token
+from course_flow.core.enum import Role
 from course_flow.core.models import Authtoken, Project, Team, TeamUser
 
 
@@ -80,9 +81,9 @@ def test_list_project_team_returns_expected_members(client: Client, owner, membe
     project = Project.objects.get(uuid=project_uuid)
     team = project.team
     TeamUser.objects.create(
-        projectteam=team,
+        team=team,
         user=member,
-        role=TeamUser.Role.COMMENTER,
+        role=Role.COMMENTER,
     )
 
     response = client.get(
@@ -119,8 +120,8 @@ def test_add_project_team_member_works(client: Client, owner, member):
     assert body["meta"]["total"] == 1
     assert body["items"][0]["role"] == "editor"
 
-    persisted = TeamUser.objects.get(projectteam=team, user=member)
-    assert persisted.role == TeamUser.Role.EDITOR
+    persisted = TeamUser.objects.get(team=team, user=member)
+    assert persisted.role == Role.EDITOR
 
 
 @pytest.mark.django_db
@@ -130,9 +131,9 @@ def test_add_duplicate_member_does_not_duplicate_row(client: Client, owner, memb
     project = Project.objects.get(uuid=project_uuid)
     team = project.team
     TeamUser.objects.create(
-        projectteam=team,
+        team=team,
         user=member,
-        role=TeamUser.Role.VIEWER,
+        role=Role.VIEWER,
     )
 
     response = client.post(
@@ -145,7 +146,7 @@ def test_add_duplicate_member_does_not_duplicate_row(client: Client, owner, memb
     assert response.json()["meta"]["total"] == 1
     assert response.json()["items"][0]["role"] == "viewer"
 
-    assert TeamUser.objects.filter(projectteam=team, user=member).count() == 1
+    assert TeamUser.objects.filter(team=team, user=member).count() == 1
 
 
 @pytest.mark.django_db
@@ -155,9 +156,9 @@ def test_update_project_team_member_role_works(client: Client, owner, member):
     project = Project.objects.get(uuid=project_uuid)
     team = project.team
     m = TeamUser.objects.create(
-        projectteam=team,
+        team=team,
         user=member,
-        role=TeamUser.Role.VIEWER,
+        role=Role.VIEWER,
     )
 
     response = client.patch(
@@ -170,7 +171,7 @@ def test_update_project_team_member_role_works(client: Client, owner, member):
     assert response.json()["role"] == "editor"
 
     m.refresh_from_db()
-    assert m.role == TeamUser.Role.EDITOR
+    assert m.role == Role.EDITOR
 
 
 @pytest.mark.django_db
@@ -180,9 +181,9 @@ def test_delete_project_team_member_works(client: Client, owner, member):
     project = Project.objects.get(uuid=project_uuid)
     team = project.team
     m = TeamUser.objects.create(
-        projectteam=team,
+        team=team,
         user=member,
-        role=TeamUser.Role.VIEWER,
+        role=Role.VIEWER,
     )
 
     deleted = client.delete(

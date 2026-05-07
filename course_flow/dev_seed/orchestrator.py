@@ -80,12 +80,14 @@ def _generate_one_project(cfg: SeedConfig, project_index: int) -> dict:
         wf_fake = Faker()
         wf_fake.seed_instance(cfg.seed + project_index * 10_007 + w * 97)
 
-        graph = Graph.objects.create(
-            owner=owner,
+        graph = Graph.objects.create()
+        build_workflow_for_graph(
+            graph,
+            author=owner,
             project=project,
-            title=wf_fake.sentence(nb_words=4).rstrip("."),
+            fake=wf_fake,
+            rng=wf_rng,
         )
-        build_workflow_for_graph(graph, fake=wf_fake, rng=wf_rng)
 
         shape = _shape_params(cfg, wf_rng)
         layout, edge_pairs = generate_graph_shape(wf_rng, shape)
@@ -96,7 +98,7 @@ def _generate_one_project(cfg: SeedConfig, project_index: int) -> dict:
             section_count=len(layout.sections),
             channel_count=shape.channel_count,
         )
-        nodes = build_nodes_from_layout(sections, channels, layout)
+        nodes = build_nodes_from_layout(graph, sections, channels, layout)
         build_outcomes(
             graph,
             nodes,

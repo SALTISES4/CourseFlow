@@ -49,28 +49,29 @@ def test_bounded_shape_and_graph_parts():
     )
     generate_dev_seed(cfg)
     p = Project.objects.get(title__startswith=DEV_SEED_PROJECT_TITLE_PREFIX)
-    wf = p.graphs.first()
+    wf = p.workflows.select_related("graph").first()
     assert wf is not None
-    assert wf.workflow is not None
+    g = wf.graph
+    assert g is not None
 
-    assert 1 <= wf.sections.count() <= 5
-    assert 2 <= wf.channels.count() <= 5
+    assert 1 <= g.sections.count() <= 5
+    assert 2 <= g.channels.count() <= 5
 
-    total_nodes = Node.objects.filter(section__graph=wf).count()
-    assert 4 * wf.sections.count() <= total_nodes <= 12 * wf.sections.count()
+    total_nodes = Node.objects.filter(section__graph=g).count()
+    assert 4 * g.sections.count() <= total_nodes <= 12 * g.sections.count()
 
-    for n in Node.objects.filter(section__graph=wf):
+    for n in Node.objects.filter(section__graph=g):
         assert n.section_id is not None
         assert n.channel_id is not None
         assert n.section_row is not None
 
-    edges = Edge.objects.filter(source_node__section__graph=wf)
+    edges = Edge.objects.filter(source_node__section__graph=g)
     assert edges.exists()
     for e in edges:
         assert e.source_node_id != e.target_node_id
 
     out_counts = (
-        Edge.objects.filter(source_node__section__graph=wf)
+        Edge.objects.filter(source_node__section__graph=g)
         .values("source_node_id")
         .annotate(c=Count("id"))
     )
@@ -83,10 +84,11 @@ def test_same_section_edges_are_majority():
     cfg = SeedConfig(seed=11, section_count=4, channel_count=3)
     generate_dev_seed(cfg)
     p = Project.objects.get(title__startswith=DEV_SEED_PROJECT_TITLE_PREFIX)
-    wf = p.graphs.first()
+    wf = p.workflows.select_related("graph").first()
+    g = wf.graph
     edges = Edge.objects.filter(
-        source_node__section__graph=wf,
-        target_node__section__graph=wf,
+        source_node__section__graph=g,
+        target_node__section__graph=g,
     )
     total = edges.count()
     same = sum(

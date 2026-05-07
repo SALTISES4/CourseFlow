@@ -9,6 +9,7 @@ from django.test import Client
 from django.utils import timezone
 
 from course_flow.core.auth import generate_raw_token, hash_token
+from course_flow.core.enum import WorkflowType
 from course_flow.core.models import (
     Authtoken,
     Comment,
@@ -53,17 +54,18 @@ def _issue_token_for(user, *, expires_delta: timedelta = timedelta(hours=1)):
 
 
 def _graph_with_section_thread(user):
-    wf = Graph.objects.create(owner=user, title="WF", project_id=None)
+    g = Graph.objects.create()
     Workflow.objects.create(
-        graph=wf,
+        graph=g,
+        author=user,
         title="",
         description="",
         workflow_type=WorkflowType.COURSE,
     )
     thread = Thread.objects.create()
-    Section.objects.create(graph=wf, title="S1", position=0, thread=thread)
-    Comment.objects.create(thread=thread, owner=user, body="First comment")
-    return wf, thread
+    Section.objects.create(graph=g, title="S1", position=0, thread=thread)
+    Comment.objects.create(thread=thread, author=user, body="First comment")
+    return g, thread
 
 
 @pytest.mark.django_db

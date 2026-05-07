@@ -8,6 +8,7 @@ from django.test import Client
 from django.utils import timezone
 
 from course_flow.core.auth import generate_raw_token, hash_token
+from course_flow.core.enum import WorkflowType
 from course_flow.core.models import (
     Authtoken,
     Channel,
@@ -113,20 +114,23 @@ def test_project_detail_includes_graph_workflow_and_typed_meta(client: Client, u
 
 @pytest.mark.django_db
 def test_create_invariants_auto_create_threads_and_workflow_meta(user):
-    wf = Graph.objects.create(owner=user, title="WF")
+    g = Graph.objects.create()
     workflow = Workflow.objects.create(
-        graph=wf,
+        graph=g,
+        author=user,
         title="Activity Workflow",
         description="",
         workflow_type=WorkflowType.ACTIVITY,
     )
     workflow.refresh_from_db()
-    assert hasattr(workflow, "activity_meta")
+    assert hasattr(workflow, "activitymeta")
 
-    channel = Channel.objects.create(graph=wf, title="C", position=0)
-    section = Section.objects.create(graph=wf, title="S", position=0)
-    node = Node.objects.create(section=section, channel=channel, section_row=0)
-    outcome = Outcome.objects.create(graph=wf)
+    channel = Channel.objects.create(graph=g, title="C", position=0)
+    section = Section.objects.create(graph=g, title="S", position=0)
+    node = Node.objects.create(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+    outcome = Outcome.objects.create(graph=g)
 
     assert channel.thread_id is not None
     assert section.thread_id is not None

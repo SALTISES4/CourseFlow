@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from django.contrib.auth import get_user_model
 
+from course_flow.core.enum import Role
 from course_flow.core.models import (
     Discipline,
     Project,
@@ -116,5 +117,9 @@ def ensure_team(
         extra = rng.randint(1, len(members) - 1)
         to_add = [members[0]] + members[1 : 1 + extra]
     for u in to_add:
-        TeamUser.objects.get_or_create(projectteam=team, user=u)
+        TeamUser.objects.get_or_create(
+            team=team,
+            user=u,
+            defaults={"role": Role.VIEWER},
+        )
     return team

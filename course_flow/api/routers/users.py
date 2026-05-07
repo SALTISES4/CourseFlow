@@ -14,9 +14,19 @@ from course_flow.api.schemas.users import (
     UserProfileSettingsOutResp,
     UserProfileSettingsPatchIn,
 )
+from course_flow.core.enum import LanguagePreference
 from course_flow.core.models import User
 
 router = Router(tags=["users"], by_alias=True)
+
+_PROFILE_LANG_SHORT = {
+    LanguagePreference.EN.value: "en",
+    LanguagePreference.FR.value: "fr",
+}
+
+
+def _language_pref_api(value: str) -> str:
+    return _PROFILE_LANG_SHORT.get(value, value)
 
 
 def _user_list_item_out(user: User) -> UserListItemOut:
@@ -34,7 +44,7 @@ def _profile_out(user: User) -> UserProfileSettingsOut:
         email=user.email,
         first_name=user.first_name,
         last_name=user.last_name,
-        language_preference=user.language_preference,
+        language_preference=_language_pref_api(user.language_preference),
     )
 
 

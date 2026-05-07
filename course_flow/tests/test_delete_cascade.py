@@ -6,7 +6,9 @@ from datetime import timedelta
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
+from course_flow.core.enum import WorkflowType
 from course_flow.core.models import (
     Activitymeta,
     Authtoken,
@@ -41,14 +43,16 @@ def user_b():
 
 
 def _graph_with_workflow(owner, *, project=None):
-    wf = Graph.objects.create(owner=owner, title="W", project=project)
+    g = Graph.objects.create()
     Workflow.objects.create(
-        graph=wf,
-        title="",
+        graph=g,
+        author=owner,
+        project=project,
+        title="W",
         description="",
         workflow_type=WorkflowType.COURSE,
     )
-    return wf
+    return g
 
 
 @pytest.mark.django_db
@@ -85,9 +89,7 @@ def test_user_delete_cascades_owned_projects_graphs_notifications_favorites_comm
     Notification.objects.create(user=user_a, message="hi")
     FavoriteProject.objects.create(user=user_a, project=p)
     thread = Thread.objects.create()
-    Comment.objects.create(thread=thread, owner=user_a, body="c")
-    from django.utils import timezone
-
+    Comment.objects.create(thread=thread, author=user_a, body="c")
     Authtoken.objects.create(
         user=user_a,
         token_hash="b" * 64,
@@ -99,21 +101,30 @@ def test_user_delete_cascades_owned_projects_graphs_notifications_favorites_comm
 
     assert not get_user_model().objects.filter(pk=uid).exists()
     assert not Project.objects.filter(owner_id=uid).exists()
-    assert not Graph.objects.filter(owner_id=uid).exists()
+    assert not Workflow.objects.filter(author_id=uid).exists()
+    assert not Graph.objects.filter(pk=wf.id).exists()
     assert not Notification.objects.filter(user_id=uid).exists()
     assert not FavoriteProject.objects.filter(user_id=uid).exists()
-    assert not Comment.objects.filter(owner_id=uid).exists()
+    assert not Comment.objects.filter(author_id=uid).exists()
     assert not Authtoken.objects.filter(user_id=uid).exists()
 
 
 @pytest.mark.django_db
 def test_channel_delete_cascades_nodes_and_linked_thread(user_a):
-    wf = _graph_with_workflow(user_a)
-    thread = Thread.objects.create()
-    ch = Channel.objects.create(graph=wf, title="C", position=0, thread=thread)
-    node = Node.objects.create(channel=ch, section=None)
+    g = _graph_with_workflow(user_a)
+    th_ch = Thread.objects.create()
+    th_node = Thread.objects.create()
+    ch = Channel.objects.create(graph=g, title="C", position=0, thread=th_ch)
+    sec = Section.objects.create(graph=g, title="S", position=0)
+    node = Node.objects.create(
+        channel=ch,
+        section=sec,
+        workflow=g.workflow,
+        thread=th_node,
+        section_row=0,
+    )
 
-    nid, tid = node.id, thread.id
+    nid, tid = node.id, th_ch.id
     ch.delete()
 
     assert not Node.objects.filter(pk=nid).exists()
@@ -122,12 +133,20 @@ def test_channel_delete_cascades_nodes_and_linked_thread(user_a):
 
 @pytest.mark.django_db
 def test_section_delete_cascades_nodes_and_linked_thread(user_a):
-    wf = _graph_with_workflow(user_a)
-    thread = Thread.objects.create()
-    sec = Section.objects.create(graph=wf, title="S", position=0, thread=thread)
-    node = Node.objects.create(section=sec, channel=None)
+    g = _graph_with_workflow(user_a)
+    th_sec = Thread.objects.create()
+    th_node = Thread.objects.create()
+    sec = Section.objects.create(graph=g, title="S", position=0, thread=th_sec)
+    ch = Channel.objects.create(graph=g, title="C", position=0)
+    node = Node.objects.create(
+        section=sec,
+        channel=ch,
+        workflow=g.workflow,
+        thread=th_node,
+        section_row=0,
+    )
 
-    nid, tid = node.id, thread.id
+    nid, tid = node.id, th_sec.id
     sec.delete()
 
     assert not Node.objects.filter(pk=nid).exists()
@@ -146,9 +165,18 @@ def test_graph_delete_cascades_workflow(user_a):
 
 @pytest.mark.django_db
 def test_workflow_delete_cascades_nodes_and_activity_meta(user_a):
-    wf = _graph_with_workflow(user_a)
-    workflow = wf.workflow
-    node = Node.objects.create(workflow=workflow, section=None, channel=None)
+    g = _graph_with_workflow(user_a)
+    workflow = g.workflow
+    sec = Section.objects.create(graph=g, title="S", position=0)
+    ch = Channel.objects.create(graph=g, title="C", position=0)
+    th = Thread.objects.create()
+    node = Node.objects.create(
+        workflow=workflow,
+        section=sec,
+        channel=ch,
+        thread=th,
+        section_row=0,
+    )
     Activitymeta.objects.create(workflow=workflow)
     nid, workflow_pk = node.id, workflow.pk
     workflow.delete()
@@ -159,7 +187,7 @@ def test_workflow_delete_cascades_nodes_and_activity_meta(user_a):
 @pytest.mark.django_db
 def test_thread_delete_cascades_comments(user_a):
     thread = Thread.objects.create()
-    c = Comment.objects.create(thread=thread, owner=user_a, body="x")
+    c = Comment.objects.create(thread=thread, author=user_a, body="x")
     cid = c.id
     thread.delete()
     assert not Comment.objects.filter(pk=cid).exists()
@@ -167,19 +195,22 @@ def test_thread_delete_cascades_comments(user_a):
 
 @pytest.mark.django_db
 def test_node_delete_cascades_edges_and_thread(user_a):
-    wf = _graph_with_workflow(user_a)
-    sec = Section.objects.create(graph=wf, title="S", position=0)
-    ch = Channel.objects.create(graph=wf, title="C", position=0)
-    n1 = Node.objects.create(section=sec, channel=ch)
-    n2 = Node.objects.create(section=sec, channel=ch)
+    g = _graph_with_workflow(user_a)
+    sec = Section.objects.create(graph=g, title="S", position=0)
+    ch = Channel.objects.create(graph=g, title="C", position=0)
+    th1 = Thread.objects.create()
+    th2 = Thread.objects.create()
+    n1 = Node.objects.create(
+        section=sec, channel=ch, workflow=g.workflow, thread=th1, section_row=0
+    )
+    n2 = Node.objects.create(
+        section=sec, channel=ch, workflow=g.workflow, thread=th2, section_row=1
+    )
     Edge.objects.create(source_node=n1, target_node=n2)
-    th = Thread.objects.create()
-    n1.thread = th
-    n1.save()
 
     eid, tid, n1_id = (
         Edge.objects.get(source_node=n1).id,
-        th.id,
+        th1.id,
         n1.id,
     )
     n1.delete()
