@@ -9,6 +9,7 @@ from django.test import Client
 from django.utils import timezone
 
 from course_flow.core.auth import generate_raw_token, hash_token
+from course_flow.core.enum import WorkflowType
 from course_flow.core.models import (
     Authtoken,
     Discipline,
@@ -88,7 +89,7 @@ def _graph_with_workflow(
     graph_title: str,
     workflow_title: str,
     workflow_description: str = "",
-    workflow_type: str = Workflow.WorkflowType.COURSE,
+    workflow_type: str = WorkflowType.COURSE,
 ) -> Graph:
     wf = Graph.objects.create(owner=owner, project=project, title=graph_title)
     Workflow.objects.create(
@@ -126,7 +127,7 @@ def test_stranger_sees_no_items_for_others_project(client: Client, user, strange
         graph_title="wf",
         workflow_title="Hidden Workflow",
         workflow_description="",
-        workflow_type=Workflow.WorkflowType.TASK,
+        workflow_type=WorkflowType.TASK,
     )
     raw_stranger = _issue_token_for(stranger)
     body = _post_search(client, raw_stranger, {})
@@ -144,7 +145,7 @@ def test_owner_sees_own_project_and_child_workflow_backed_items(client: Client, 
         graph_title="wf1",
         workflow_title="Course A",
         workflow_description="",
-        workflow_type=Workflow.WorkflowType.COURSE,
+        workflow_type=WorkflowType.COURSE,
     )
     wf_task = _graph_with_workflow(
         user,
@@ -152,7 +153,7 @@ def test_owner_sees_own_project_and_child_workflow_backed_items(client: Client, 
         graph_title="wf2",
         workflow_title="Task B",
         workflow_description="",
-        workflow_type=Workflow.WorkflowType.TASK,
+        workflow_type=WorkflowType.TASK,
     )
     body = _post_search(client, raw, {})
     assert body["meta"]["totalResults"] == 3
@@ -180,7 +181,7 @@ def test_team_member_sees_project_and_child_workflow_backed_items(
         graph_title="member-wf",
         workflow_title="Workflow X",
         workflow_description="desc",
-        workflow_type=Workflow.WorkflowType.PROGRAM,
+        workflow_type=WorkflowType.PROGRAM,
     )
     body = _post_search(client, raw_member, {})
     assert body["meta"]["totalResults"] == 2
@@ -202,7 +203,7 @@ def test_graph_without_project_not_listed_even_for_owner(client: Client, user):
         project=None,
         graph_title="orphan",
         workflow_title="Orphan Workflow",
-        workflow_type=Workflow.WorkflowType.COURSE,
+        workflow_type=WorkflowType.COURSE,
     )
     body = _post_search(client, raw, {})
     assert body["meta"]["totalResults"] == 0
@@ -220,7 +221,7 @@ def test_workspace_type_project_returns_only_projects(client: Client, user):
         project=project,
         graph_title="w",
         workflow_title="U",
-        workflow_type=Workflow.WorkflowType.ACTIVITY,
+        workflow_type=WorkflowType.ACTIVITY,
     )
     body = _post_search(
         client,
@@ -234,10 +235,10 @@ def test_workspace_type_project_returns_only_projects(client: Client, user):
 @pytest.mark.parametrize(
     "workflow_type,workspace_value",
     [
-        (Workflow.WorkflowType.ACTIVITY, "activity"),
-        (Workflow.WorkflowType.COURSE, "course"),
-        (Workflow.WorkflowType.PROGRAM, "program"),
-        (Workflow.WorkflowType.TASK, "task"),
+        (WorkflowType.ACTIVITY, "activity"),
+        (WorkflowType.COURSE, "course"),
+        (WorkflowType.PROGRAM, "program"),
+        (WorkflowType.TASK, "task"),
     ],
 )
 @pytest.mark.django_db
@@ -258,7 +259,7 @@ def test_workspace_type_workflow_filters_to_that_type_only(
         project=project,
         graph_title="other",
         workflow_title="noise",
-        workflow_type=Workflow.WorkflowType.TASK if workflow_type != Workflow.WorkflowType.TASK else Workflow.WorkflowType.COURSE,
+        workflow_type=WorkflowType.TASK if workflow_type != WorkflowType.TASK else WorkflowType.COURSE,
     )
     body = _post_search(
         client,
@@ -279,10 +280,10 @@ def test_project_filter_limits_projects_and_graphs(client: Client, user):
     p_keep = Project.objects.create(owner=user, title="Keep", description="")
     p_drop = Project.objects.create(owner=user, title="Drop", description="")
     wf_keep = _graph_with_workflow(
-        user, project=p_keep, graph_title="wk", workflow_title="u", workflow_type=Workflow.WorkflowType.TASK
+        user, project=p_keep, graph_title="wk", workflow_title="u", workflow_type=WorkflowType.TASK
     )
     _graph_with_workflow(
-        user, project=p_drop, graph_title="wj", workflow_title="v", workflow_type=Workflow.WorkflowType.TASK
+        user, project=p_drop, graph_title="wj", workflow_title="v", workflow_type=WorkflowType.TASK
     )
     body = _post_search(
         client,
@@ -305,13 +306,13 @@ def test_discipline_filter_applies_via_parent_project(client: Client, user):
     p_ok = Project.objects.create(owner=user, title="Ok", description="")
     ProjectDiscipline.objects.create(project=p_ok, discipline=d_match)
     wf_ok = _graph_with_workflow(
-        user, project=p_ok, graph_title="w", workflow_title="u", workflow_type=Workflow.WorkflowType.COURSE
+        user, project=p_ok, graph_title="w", workflow_title="u", workflow_type=WorkflowType.COURSE
     )
 
     p_bad = Project.objects.create(owner=user, title="Bad", description="")
     ProjectDiscipline.objects.create(project=p_bad, discipline=d_other)
     _graph_with_workflow(
-        user, project=p_bad, graph_title="w2", workflow_title="u2", workflow_type=Workflow.WorkflowType.COURSE
+        user, project=p_bad, graph_title="w2", workflow_title="u2", workflow_type=WorkflowType.COURSE
     )
 
     body = _post_search(
@@ -330,10 +331,10 @@ def test_isTemplate_filter_projects_and_workflow_rows(client: Client, user):
     p_t = Project.objects.create(owner=user, title="T", description="", is_template=True)
     p_f = Project.objects.create(owner=user, title="F", description="", is_template=False)
     _graph_with_workflow(
-        user, project=p_t, graph_title="w1", workflow_title="u1", workflow_type=Workflow.WorkflowType.TASK
+        user, project=p_t, graph_title="w1", workflow_title="u1", workflow_type=WorkflowType.TASK
     )
     _graph_with_workflow(
-        user, project=p_f, graph_title="w2", workflow_title="u2", workflow_type=Workflow.WorkflowType.TASK
+        user, project=p_f, graph_title="w2", workflow_title="u2", workflow_type=WorkflowType.TASK
     )
     body = _post_search(
         client,
@@ -355,7 +356,7 @@ def test_keyword_matches_project_title(client: Client, user):
         graph_title="WF",
         workflow_title="No match here",
         workflow_description="",
-        workflow_type=Workflow.WorkflowType.COURSE,
+        workflow_type=WorkflowType.COURSE,
     )
     body = _post_search(client, raw, {"filters": [{"name": "keyword", "value": "Alpine"}]})
     assert body["meta"]["totalResults"] == 1
@@ -373,7 +374,7 @@ def test_keyword_matches_project_description(client: Client, user):
         graph_title="WF",
         workflow_title="U",
         workflow_description="",
-        workflow_type=Workflow.WorkflowType.COURSE,
+        workflow_type=WorkflowType.COURSE,
     )
     body = _post_search(client, raw, {"filters": [{"name": "keyword", "value": "ridge"}]})
     assert body["meta"]["totalResults"] == 1
@@ -391,7 +392,7 @@ def test_keyword_matches_workflow_title(client: Client, user):
         graph_title="WF",
         workflow_title="Moss survey",
         workflow_description="",
-        workflow_type=Workflow.WorkflowType.COURSE,
+        workflow_type=WorkflowType.COURSE,
     )
     body = _post_search(client, raw, {"filters": [{"name": "keyword", "value": "Moss"}]})
     assert body["meta"]["totalResults"] == 1
@@ -410,7 +411,7 @@ def test_keyword_matches_workflow_description(client: Client, user):
         graph_title="WF",
         workflow_title="U",
         workflow_description="peat soil notes",
-        workflow_type=Workflow.WorkflowType.COURSE,
+        workflow_type=WorkflowType.COURSE,
     )
     body = _post_search(client, raw, {"filters": [{"name": "keyword", "value": "peat"}]})
     assert body["meta"]["totalResults"] == 1
@@ -428,7 +429,7 @@ def test_keyword_matches_graph_title(client: Client, user):
         graph_title="GraphLabel special",
         workflow_title="Generic",
         workflow_description="",
-        workflow_type=Workflow.WorkflowType.COURSE,
+        workflow_type=WorkflowType.COURSE,
     )
     body = _post_search(client, raw, {"filters": [{"name": "keyword", "value": "GraphLabel"}]})
     assert body["meta"]["totalResults"] == 1
@@ -469,7 +470,7 @@ def test_project_favorite_and_graph_favorite_are_independent_relations(
         project=project,
         graph_title="W",
         workflow_title="U",
-        workflow_type=Workflow.WorkflowType.ACTIVITY,
+        workflow_type=WorkflowType.ACTIVITY,
     )
     FavoriteProject.objects.create(user=user, project=project)
 
@@ -502,7 +503,7 @@ def test_pagination_metadata_total_page_count_and_slice(client: Client, user):
             project=project,
             graph_title=f"w{i}",
             workflow_title=f"U{i}",
-            workflow_type=Workflow.WorkflowType.TASK,
+            workflow_type=WorkflowType.TASK,
         )
     # 1 project + 4 tasks = 5 rows
     body = _post_search(
@@ -533,10 +534,10 @@ def test_sort_a_z_direction(client: Client, user):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="P", description="")
     _graph_with_workflow(
-        user, project=project, graph_title="w1", workflow_title="Zebra", workflow_type=Workflow.WorkflowType.COURSE
+        user, project=project, graph_title="w1", workflow_title="Zebra", workflow_type=WorkflowType.COURSE
     )
     _graph_with_workflow(
-        user, project=project, graph_title="w2", workflow_title="Alpha", workflow_type=Workflow.WorkflowType.COURSE
+        user, project=project, graph_title="w2", workflow_title="Alpha", workflow_type=WorkflowType.COURSE
     )
     asc = _post_search(
         client,
@@ -610,7 +611,7 @@ def test_library_search_returns_accessible_project_and_workflow_backed_items(cli
         graph_title="Legacy Graph Name",
         workflow_title="Biology Workflow",
         workflow_description="Workflow description",
-        workflow_type=Workflow.WorkflowType.ACTIVITY,
+        workflow_type=WorkflowType.ACTIVITY,
     )
     FavoriteProject.objects.create(user=user, project=project)
     FavoriteGraph.objects.create(user=user, graph=graph)
@@ -655,7 +656,7 @@ def test_library_search_applies_filters_including_favourited(client: Client, use
         graph_title="Owned wf",
         workflow_title="Chemistry Task",
         workflow_description="Lab",
-        workflow_type=Workflow.WorkflowType.TASK,
+        workflow_type=WorkflowType.TASK,
     )
     FavoriteGraph.objects.create(user=user, graph=wf_owned)
 
@@ -674,7 +675,7 @@ def test_library_search_applies_filters_including_favourited(client: Client, use
         graph_title="Team wf",
         workflow_title="Physics Task",
         workflow_description="",
-        workflow_type=Workflow.WorkflowType.TASK,
+        workflow_type=WorkflowType.TASK,
     )
 
     body = _post_search(
@@ -709,7 +710,7 @@ def test_library_search_supports_sorting_and_pagination(client: Client, user):
         graph_title="wf-a",
         workflow_title="Zulu",
         workflow_description="",
-        workflow_type=Workflow.WorkflowType.COURSE,
+        workflow_type=WorkflowType.COURSE,
     )
     _graph_with_workflow(
         user,
@@ -717,7 +718,7 @@ def test_library_search_supports_sorting_and_pagination(client: Client, user):
         graph_title="wf-b",
         workflow_title="Alpha",
         workflow_description="",
-        workflow_type=Workflow.WorkflowType.COURSE,
+        workflow_type=WorkflowType.COURSE,
     )
 
     body = _post_search(

@@ -58,7 +58,7 @@ def _graph_with_section_thread(user):
         graph=wf,
         title="",
         description="",
-        workflow_type=Workflow.WorkflowType.COURSE,
+        workflow_type=WorkflowType.COURSE,
     )
     thread = Thread.objects.create()
     Section.objects.create(graph=wf, title="S1", position=0, thread=thread)

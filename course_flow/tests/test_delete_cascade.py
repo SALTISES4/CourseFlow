@@ -46,7 +46,7 @@ def _graph_with_workflow(owner, *, project=None):
         graph=wf,
         title="",
         description="",
-        workflow_type=Workflow.WorkflowType.COURSE,
+        workflow_type=WorkflowType.COURSE,
     )
     return wf
 

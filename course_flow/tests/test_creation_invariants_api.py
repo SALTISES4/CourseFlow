@@ -118,7 +118,7 @@ def test_create_invariants_auto_create_threads_and_workflow_meta(user):
         graph=wf,
         title="Activity Workflow",
         description="",
-        workflow_type=Workflow.WorkflowType.ACTIVITY,
+        workflow_type=WorkflowType.ACTIVITY,
     )
     workflow.refresh_from_db()
     assert hasattr(workflow, "activity_meta")

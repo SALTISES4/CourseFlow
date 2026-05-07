@@ -34,7 +34,7 @@ def build_workflow_for_graph(
     rng: SeededRNG,
 ) -> Workflow:
     root_type = rng.choice(
-        [Workflow.WorkflowType.PROGRAM, Workflow.WorkflowType.COURSE],
+        [WorkflowType.PROGRAM, WorkflowType.COURSE],
     )
     return Workflow.objects.create(
         graph=graph,
