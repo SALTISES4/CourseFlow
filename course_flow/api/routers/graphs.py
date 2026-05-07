@@ -26,9 +26,9 @@ router = Router(tags=["graphs"], by_alias=True)
 def _graph_detail(dto: GraphDTO) -> GraphDetailOut:
     return GraphDetailOut(
         uuid=dto.uuid,
-        title=dto.title,
-        owner_id=dto.owner_id,
-        project_id=dto.project_id,
+        workflow_title=dto.workflow_title,
+        author_id=dto.author_id,
+        workflow_project_id=dto.workflow_project_id,
         revision_id=dto.revision_id,
         date_created=dto.date_created,
         modified_on=dto.modified_on,
@@ -38,9 +38,9 @@ def _graph_detail(dto: GraphDTO) -> GraphDetailOut:
 def _graph_list_item(dto: GraphDTO) -> GraphListItemOut:
     return GraphListItemOut(
         uuid=dto.uuid,
-        title=dto.title,
-        owner_id=dto.owner_id,
-        project_id=dto.project_id,
+        workflow_title=dto.workflow_title,
+        author_id=dto.author_id,
+        workflow_project_id=dto.workflow_project_id,
         revision_id=dto.revision_id,
         modified_on=dto.modified_on,
     )
@@ -58,9 +58,8 @@ def create_graph(request, payload: GraphCreateIn):
     svc = get_graph_service()
 
     dto = svc.create(
-        owner_id=current_user.id,
-        project_id=payload.project_id,
-        graph_title=payload.graph_title,
+        author_id=current_user.id,
+        workflow_project_id=payload.workflow_project_id,
         workflow_title=payload.workflow_title,
         workflow_type=payload.workflow_type.value,
         workflow_description=payload.workflow_description,
@@ -76,17 +75,17 @@ def create_graph(request, payload: GraphCreateIn):
 )
 def get_graph_view(request, uuid: UUID):
     current_user = get_current_user(request)
-    wf_svc = get_graph_service()
-    wf = wf_svc.get_by_uuid(uuid)
+    graph_svc = get_graph_service()
+    graph_dto = graph_svc.get_by_uuid(uuid)
 
-    if wf is None:
+    if graph_dto is None:
         raise HttpError(404, "Graph not found")
 
-    if not can_view_graph(current_user=current_user, graph=wf):
+    if not can_view_graph(current_user=current_user, graph=graph_dto):
         raise HttpError(403, "Forbidden")
 
-    graph_svc = get_graph_projection_service()
-    payload = graph_svc.get_by_graph_uuid(uuid)
+    graph_projection_svc = get_graph_projection_service()
+    payload = graph_projection_svc.get_by_graph_uuid(uuid)
 
     if payload is None:
         raise HttpError(404, "Graph not found")
@@ -120,6 +119,6 @@ def get_graph(request, uuid: UUID):
 def list_graphs(request):
     current_user = get_current_user(request)
     svc = get_graph_service()
-    rows = svc.list_for_owner(current_user.id)
+    rows = svc.list_for_author(current_user.id)
     items = [_graph_list_item(r) for r in rows]
     return GraphListOut(items=items, meta=GraphListMetaOut(total=len(items)))

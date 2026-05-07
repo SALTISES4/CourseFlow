@@ -13,27 +13,24 @@ class WorkflowTypeIn(str, Enum):
 
 
 class GraphCreateIn(CamelSchema):
-    project_id: int | None = None
-    graph_title: str
+    """Create a Graph row and its single root Workflow (see ``Workflow`` / ``Graph`` ORM)."""
+
+    workflow_project_id: int | None = None
     workflow_title: str = ""
     workflow_type: WorkflowTypeIn
     workflow_description: str = ""
 
 
 class GraphUpdateIn(CamelSchema):
-    title: str | None = None
-    project_id: int | None = None
+    workflow_title: str | None = None
+    workflow_project_id: int | None = None
 
 
 class GraphListItemOut(CamelSchema):
-    """
-    List rows: graph entity fields only.
-    """
-
     uuid: UUID
-    title: str
-    owner_id: int | None
-    project_id: int | None
+    workflow_title: str
+    author_id: int | None
+    workflow_project_id: int | None
     revision_id: int
     modified_on: datetime
 
@@ -48,14 +45,10 @@ class GraphListOut(CamelSchema):
 
 
 class GraphDetailOut(CamelSchema):
-    """
-    Single graph resource: persisted fields only (no workflow/sections/channels).
-    """
-
     uuid: UUID
-    title: str
-    owner_id: int | None
-    project_id: int | None
+    workflow_title: str
+    author_id: int | None
+    workflow_project_id: int | None
     revision_id: int
     date_created: datetime
     modified_on: datetime

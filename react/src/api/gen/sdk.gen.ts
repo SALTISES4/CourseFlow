@@ -932,7 +932,7 @@ export const deleteEdge = <ThrowOnError extends boolean = false>(
       responseValidator: async (data) =>
         await zDeleteEdgeResponse.parseAsync(data),
       security: [{ scheme: 'bearer', type: 'http' }],
-      url: '/api/edge/{uuid}',
+      url: '/api/edge/{edge_id}',
       ...options
     }
   )
@@ -947,7 +947,7 @@ export const getEdge = <ThrowOnError extends boolean = false>(
     requestValidator: async (data) => await zGetEdgeData.parseAsync(data),
     responseValidator: async (data) => await zGetEdgeResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/edge/{uuid}',
+    url: '/api/edge/{edge_id}',
     ...options
   })
 

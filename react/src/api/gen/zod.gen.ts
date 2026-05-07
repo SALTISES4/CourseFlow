@@ -63,13 +63,14 @@ export const zWorkflowOut = z.object({
 
 /**
  * ProjectGraphOut
+ *
+ * Graph UUID + revision; workflow authorship and project scope come from ``Workflow``.
  */
 export const zProjectGraphOut = z.object({
   uuid: z.string().uuid(),
-  title: z.string(),
-  ownerId: z.number().int(),
-  projectId: z.number().int().nullable(),
   revisionId: z.number().int(),
+  authorId: z.number().int().nullable(),
+  workflowProjectId: z.number().int().nullable(),
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime(),
   workflow: zWorkflowOut
@@ -234,14 +235,12 @@ export const zProjectUpdateIn = z.object({
 
 /**
  * GraphDetailOut
- *
- * Single graph resource: persisted fields only (no workflow/sections/channels).
  */
 export const zGraphDetailOut = z.object({
   uuid: z.string().uuid(),
-  title: z.string(),
-  ownerId: z.number().int().nullable(),
-  projectId: z.number().int().nullable(),
+  workflowTitle: z.string(),
+  authorId: z.number().int().nullable(),
+  workflowProjectId: z.number().int().nullable(),
   revisionId: z.number().int(),
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime()
@@ -254,10 +253,11 @@ export const zWorkflowTypeIn = z.enum(['program', 'course', 'activity', 'task'])
 
 /**
  * GraphCreateIn
+ *
+ * Create a Graph row and its single root Workflow (see ``Workflow`` / ``Graph`` ORM).
  */
 export const zGraphCreateIn = z.object({
-  projectId: z.number().int().nullish(),
-  graphTitle: z.string(),
+  workflowProjectId: z.number().int().nullish(),
   workflowTitle: z.string().optional().default(''),
   workflowType: zWorkflowTypeIn,
   workflowDescription: z.string().optional().default('')
@@ -265,14 +265,12 @@ export const zGraphCreateIn = z.object({
 
 /**
  * GraphListItemOut
- *
- * List rows: graph entity fields only.
  */
 export const zGraphListItemOut = z.object({
   uuid: z.string().uuid(),
-  title: z.string(),
-  ownerId: z.number().int().nullable(),
-  projectId: z.number().int().nullable(),
+  workflowTitle: z.string(),
+  authorId: z.number().int().nullable(),
+  workflowProjectId: z.number().int().nullable(),
   revisionId: z.number().int(),
   modifiedOn: z.string().datetime()
 })
@@ -320,13 +318,13 @@ export const zEdgeGraphOut = z.object({
 /**
  * GraphMetaOut
  *
- * Graph row + root workflow identifiers needed for the editor shell (no nested workflow object).
+ * Graph UUID/revision plus root ``Workflow`` fields (graph row has no title/author/project).
  */
 export const zGraphMetaOut = z.object({
   uuid: z.string().uuid(),
-  title: z.string(),
-  ownerId: z.number().int().nullable(),
-  projectId: z.number().int().nullable(),
+  workflowTitle: z.string(),
+  authorId: z.number().int().nullable(),
+  workflowProjectId: z.number().int().nullable(),
   revisionId: z.number().int(),
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime(),
@@ -547,11 +545,13 @@ export const zGraphMutationEnvelopeOut = z.object({
 
 /**
  * GraphNodeCreateIn
+ *
+ * Placement is required on ``Node`` (ORM); optional ``workflow_uuid`` selects a workflow on this graph.
  */
 export const zGraphNodeCreateIn = z.object({
-  sectionUuid: z.string().uuid().nullish(),
-  channelUuid: z.string().uuid().nullish(),
-  sectionRow: z.number().int().nullish(),
+  sectionUuid: z.string().uuid(),
+  channelUuid: z.string().uuid(),
+  sectionRow: z.number().int(),
   workflowUuid: z.string().uuid().nullish()
 })
 
@@ -621,7 +621,7 @@ export const zSectionPatchIn = z.object({
 /**
  * GraphNodePatchIn
  *
- * Send only fields to change; JSON ``null`` clears nullable FKs / section_row.
+ * Partial update; do not send ``null`` for FK fields (ORM requires section, channel, workflow).
  */
 export const zGraphNodePatchIn = z.object({
   sectionUuid: z.string().uuid().nullish(),
@@ -1388,7 +1388,7 @@ export const zPatchNodeResponse = zGraphMutationEnvelopeOut
 export const zDeleteEdgeData = z.object({
   body: z.never().optional(),
   path: z.object({
-    uuid: z.number().int()
+    edge_id: z.number().int()
   }),
   query: z.never().optional()
 })
@@ -1401,7 +1401,7 @@ export const zDeleteEdgeResponse = zGraphMutationEnvelopeOut
 export const zGetEdgeData = z.object({
   body: z.never().optional(),
   path: z.object({
-    uuid: z.number().int()
+    edge_id: z.number().int()
   }),
   query: z.never().optional()
 })

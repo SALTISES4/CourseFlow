@@ -75,14 +75,16 @@ class GraphMutationEnvelopeOut(CamelSchema):
 
 
 class GraphNodeCreateIn(CamelSchema):
-    section_uuid: UUID | None = None
-    channel_uuid: UUID | None = None
-    section_row: int | None = None
+    """Placement is required on ``Node`` (ORM); optional ``workflow_uuid`` selects a workflow on this graph."""
+
+    section_uuid: UUID
+    channel_uuid: UUID
+    section_row: int
     workflow_uuid: UUID | None = None
 
 
 class GraphNodePatchIn(CamelSchema):
-    """Send only fields to change; JSON ``null`` clears nullable FKs / section_row."""
+    """Partial update; do not send ``null`` for FK fields (ORM requires section, channel, workflow)."""
 
     section_uuid: UUID | None = None
     channel_uuid: UUID | None = None

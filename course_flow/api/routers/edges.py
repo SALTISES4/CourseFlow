@@ -78,12 +78,12 @@ def create_graph_edge(request, uuid: UUID, payload: GraphEdgeCreateIn):
 
 
 @edge_resource_router.get(
-    "/{uuid}",
+    "/{edge_id}",
     response=EdgeGraphOut,
     auth=BearerAuth(),
     operation_id="getEdge",
 )
-def get_edge(request, uuid: int):
+def get_edge(request, edge_id: int):
     current_user = get_current_user(request)
     try:
         e = Edge.objects.select_related(
@@ -91,7 +91,7 @@ def get_edge(request, uuid: int):
             "source_node__channel__graph",
             "target_node__section__graph",
             "target_node__channel__graph",
-        ).get(pk=uuid)
+        ).get(pk=edge_id)
     except Edge.DoesNotExist:
         raise HttpError(404, "Not found")
 
@@ -105,7 +105,7 @@ def get_edge(request, uuid: int):
         raise HttpError(403, "Forbidden")
 
     return EdgeGraphOut(
-        uuid=e.uuid,
+        id=e.id,
         source_node_uuid=e.source_node.uuid,
         target_node_uuid=e.target_node.uuid,
         line_type=e.line_type,
@@ -115,16 +115,16 @@ def get_edge(request, uuid: int):
 
 
 @edge_resource_router.delete(
-    "/{uuid}",
+    "/{edge_id}",
     response=GraphMutationEnvelopeOut,
     auth=BearerAuth(),
     operation_id="deleteEdge",
 )
-def delete_edge(request, uuid: int):
+def delete_edge(request, edge_id: int):
     current_user = get_current_user(request)
     svc = get_graph_mutation_service()
     out, err = svc.delete_edge(
         user_id=current_user.id,
-        edge_id=uuid,
+        edge_id=edge_id,
     )
     return graph_mutation_http(out, err)

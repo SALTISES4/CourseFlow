@@ -14,12 +14,12 @@ from course_flow.api.common.schemas import CamelSchema
 
 
 class GraphMetaOut(CamelSchema):
-    """Graph row + root workflow identifiers needed for the editor shell (no nested workflow object)."""
+    """Graph UUID/revision plus root ``Workflow`` fields (graph row has no title/author/project)."""
 
     uuid: UUID
-    title: str
-    owner_id: int | None
-    project_id: int | None
+    workflow_title: str
+    author_id: int | None
+    workflow_project_id: int | None
     revision_id: int
     date_created: datetime
     modified_on: datetime

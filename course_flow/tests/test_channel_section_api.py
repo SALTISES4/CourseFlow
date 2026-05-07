@@ -48,8 +48,7 @@ def _create_graph(client: Client, raw_token: str) -> str:
     response = client.post(
         "/api/graph",
         data={
-            "projectId": None,
-            "graphTitle": "Entity Test",
+            "workflowProjectId": None,
             "workflowTitle": "Root",
             "workflowType": "course",
             "workflowDescription": "",

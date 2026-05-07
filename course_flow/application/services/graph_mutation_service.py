@@ -304,49 +304,31 @@ class GraphMutationService:
         *,
         graph_uuid: UUID,
         user_id: int,
-        section_uuid: UUID | None,
-        channel_uuid: UUID | None,
-        section_row: int | None,
+        section_uuid: UUID,
+        channel_uuid: UUID,
+        section_row: int,
         workflow_uuid: UUID | None,
     ) -> tuple[dict | None, MutationError | None]:
         wf, err = self._lock_graph(graph_uuid, user_id)
         if err:
             return None, err
 
-        section = None
-        channel = None
+        try:
+            section = Section.objects.get(uuid=section_uuid, graph_id=wf.id)
+        except Section.DoesNotExist:
+            return None, "bad_request"
 
-        if section_uuid is not None:
-            try:
-                section = Section.objects.get(
-                    uuid=section_uuid,
-                    graph_id=wf.id,
-                )
-            except Section.DoesNotExist:
-                return None, "bad_request"
+        try:
+            channel = Channel.objects.get(uuid=channel_uuid, graph_id=wf.id)
+        except Channel.DoesNotExist:
+            return None, "bad_request"
 
-        if channel_uuid is not None:
-            try:
-                channel = Channel.objects.get(
-                    uuid=channel_uuid,
-                    graph_id=wf.id,
-                )
-            except Channel.DoesNotExist:
-                return None, "bad_request"
-
-        workflow_row = None
-
+        workflow_row = wf.workflow
         if workflow_uuid is not None:
             try:
                 workflow_row = Workflow.objects.get(uuid=workflow_uuid, graph_id=wf.id)
             except Workflow.DoesNotExist:
                 return None, "bad_request"
-
-        if workflow_row is None:
-            workflow_row = wf.workflow
-
-        if section is None and channel is None:
-            return None, "bad_request"
 
         n = Node.objects.create(
             section=section,
@@ -411,6 +393,10 @@ class GraphMutationService:
             return None, "not_found"
         if not _node_in_graph(n, wf_locked.id):
             return None, "not_found"
+
+        for fk in ("section_uuid", "channel_uuid", "workflow_uuid"):
+            if fk in patch and patch[fk] is None:
+                return None, "bad_request"
 
         if "section_uuid" in patch:
             v = patch["section_uuid"]

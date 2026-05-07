@@ -76,9 +76,9 @@ class GraphProjectionService:
         return {
             "graph": {
                 "uuid": w.uuid,
-                "title": workflow.title,
-                "owner_id": workflow.author_id,
-                "project_id": workflow.project_id,
+                "workflow_title": workflow.title,
+                "author_id": workflow.author_id,
+                "workflow_project_id": workflow.project_id,
                 "revision_id": w.revision_id,
                 "date_created": w.date_created,
                 "modified_on": w.modified_on,

@@ -96,7 +96,7 @@ def create_section(request, payload: SectionCreateIn):
     _ensure_graph_owner(payload.uuid, current_user)
 
     dto = get_section_service().create(
-        uuid=payload.uuid,
+        graph_uuid=payload.graph_uuid,
         title=payload.title,
         position=payload.position,
         thread_uuid=payload.thread_uuid,

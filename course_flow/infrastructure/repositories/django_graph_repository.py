@@ -12,10 +12,9 @@ def _to_dto(g: Graph) -> GraphDTO:
     return GraphDTO(
         id=g.id,
         uuid=g.uuid,
-        title=workflow.title,
-        owner_id=workflow.author_id,
-        project_id=workflow.project_id,
         revision_id=g.revision_id,
+        author_id=workflow.author_id,
+        workflow_project_id=workflow.project_id,
         workflow_uuid=workflow.uuid,
         workflow_type=workflow.workflow_type,
         workflow_title=workflow.title,
@@ -29,19 +28,18 @@ class DjangoGraphRepository:
     def create(
         self,
         *,
-        owner_id: int,
-        project_id: int | None,
-        graph_title: str,
+        author_id: int,
+        workflow_project_id: int | None,
         workflow_title: str,
         workflow_type: str,
         workflow_description: str,
     ) -> GraphDTO:
         g = Graph.objects.create()
-        title = (workflow_title or "").strip() or graph_title
+        title = (workflow_title or "").strip() or "Untitled"
         Workflow.objects.create(
             graph=g,
-            author_id=owner_id,
-            project_id=project_id,
+            author_id=author_id,
+            project_id=workflow_project_id,
             title=title,
             description=workflow_description,
             workflow_type=workflow_type,
@@ -56,9 +54,9 @@ class DjangoGraphRepository:
             return None
         return _to_dto(g)
 
-    def list_for_owner(self, owner_id: int) -> list[GraphDTO]:
+    def list_for_author(self, author_id: int) -> list[GraphDTO]:
         qs = (
-            Graph.objects.filter(workflow__author_id=owner_id)
+            Graph.objects.filter(workflow__author_id=author_id)
             .select_related("workflow")
             .order_by("-modified_on")
         )
@@ -79,11 +77,11 @@ class DjangoGraphRepository:
             return None
         wf = g.workflow
         changed = False
-        if "title" in updates and updates["title"] is not None:
-            wf.title = updates["title"]
+        if "workflow_title" in updates and updates["workflow_title"] is not None:
+            wf.title = updates["workflow_title"]
             changed = True
-        if "project_id" in updates:
-            wf.project_id = updates["project_id"]
+        if "workflow_project_id" in updates:
+            wf.project_id = updates["workflow_project_id"]
             changed = True
         if changed:
             wf.save()

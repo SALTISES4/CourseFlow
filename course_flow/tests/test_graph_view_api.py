@@ -48,8 +48,7 @@ def _create_graph(client: Client, raw_token: str) -> str:
     response = client.post(
         "/api/graph",
         data={
-            "projectId": None,
-            "graphTitle": "Graph Test",
+            "workflowProjectId": None,
             "workflowTitle": "Root",
             "workflowType": "course",
             "workflowDescription": "",
@@ -89,7 +88,7 @@ def test_graph_view_top_level_shape_and_flat_collections(client: Client, user):
 
     wf = body["graph"]
     assert wf["uuid"] == str(wf_uuid)
-    assert wf["title"] == "Root"
+    assert wf["workflowTitle"] == "Root"
     assert wf["revisionId"] == 0
     assert "rootWorkflowUuid" in wf
     assert "rootWorkflowType" in wf

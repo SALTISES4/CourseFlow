@@ -67,10 +67,9 @@ class ProjectDetailService:
             graph_items.append(
                 {
                     "uuid": g.uuid,
-                    "title": workflow.title,
-                    "owner_id": workflow.author_id,
-                    "project_id": workflow.project_id,
                     "revision_id": g.revision_id,
+                    "author_id": workflow.author_id,
+                    "workflow_project_id": workflow.project_id,
                     "date_created": g.date_created,
                     "modified_on": g.modified_on,
                     "workflow": {

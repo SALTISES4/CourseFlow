@@ -25,12 +25,13 @@ class ProjectDuplicatePlaceholderDTO:
 
 @dataclass(frozen=True, slots=True)
 class GraphDTO:
+    """Graph row identity plus root Workflow fields (Graph ORM has no title/author/project)."""
+
     id: int
     uuid: UUID
-    title: str
-    owner_id: int | None
-    project_id: int | None
     revision_id: int
+    author_id: int | None
+    workflow_project_id: int | None
     workflow_uuid: UUID
     workflow_type: str
     workflow_title: str

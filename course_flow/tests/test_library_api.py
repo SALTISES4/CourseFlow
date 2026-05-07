@@ -86,7 +86,6 @@ def _graph_with_workflow(
     owner,
     *,
     project: Project | None,
-    graph_title: str,
     workflow_title: str,
     workflow_description: str = "",
     workflow_type: str = WorkflowType.COURSE,
@@ -96,7 +95,7 @@ def _graph_with_workflow(
         graph=g,
         author=owner,
         project=project,
-        title=workflow_title or graph_title,
+        title=workflow_title,
         description=workflow_description,
         workflow_type=workflow_type,
     )
@@ -126,7 +125,6 @@ def test_stranger_sees_no_items_for_others_project(client: Client, user, strange
     _graph_with_workflow(
         user,
         project=project,
-        graph_title="wf",
         workflow_title="Hidden Workflow",
         workflow_description="",
         workflow_type=WorkflowType.TASK,
@@ -144,7 +142,6 @@ def test_owner_sees_own_project_and_child_workflow_backed_items(client: Client, 
     wf_course = _graph_with_workflow(
         user,
         project=project,
-        graph_title="wf1",
         workflow_title="Course A",
         workflow_description="",
         workflow_type=WorkflowType.COURSE,
@@ -152,7 +149,6 @@ def test_owner_sees_own_project_and_child_workflow_backed_items(client: Client, 
     wf_task = _graph_with_workflow(
         user,
         project=project,
-        graph_title="wf2",
         workflow_title="Task B",
         workflow_description="",
         workflow_type=WorkflowType.TASK,
@@ -180,7 +176,6 @@ def test_team_member_sees_project_and_child_workflow_backed_items(
     wf = _graph_with_workflow(
         user,
         project=project,
-        graph_title="member-wf",
         workflow_title="Workflow X",
         workflow_description="desc",
         workflow_type=WorkflowType.PROGRAM,
@@ -203,7 +198,6 @@ def test_graph_without_project_not_listed_even_for_owner(client: Client, user):
     _graph_with_workflow(
         user,
         project=None,
-        graph_title="orphan",
         workflow_title="Orphan Workflow",
         workflow_type=WorkflowType.COURSE,
     )
@@ -221,7 +215,6 @@ def test_workspace_type_project_returns_only_projects(client: Client, user):
     _graph_with_workflow(
         user,
         project=project,
-        graph_title="w",
         workflow_title="U",
         workflow_type=WorkflowType.ACTIVITY,
     )
@@ -252,14 +245,12 @@ def test_workspace_type_workflow_filters_to_that_type_only(
     target = _graph_with_workflow(
         user,
         project=project,
-        graph_title="t",
         workflow_title="want",
         workflow_type=workflow_type,
     )
     _graph_with_workflow(
         user,
         project=project,
-        graph_title="other",
         workflow_title="noise",
         workflow_type=WorkflowType.TASK if workflow_type != WorkflowType.TASK else WorkflowType.COURSE,
     )
@@ -282,10 +273,10 @@ def test_project_filter_limits_projects_and_graphs(client: Client, user):
     p_keep = Project.objects.create(owner=user, title="Keep", description="")
     p_drop = Project.objects.create(owner=user, title="Drop", description="")
     wf_keep = _graph_with_workflow(
-        user, project=p_keep, graph_title="wk", workflow_title="u", workflow_type=WorkflowType.TASK
+        user, project=p_keep, workflow_title="u", workflow_type=WorkflowType.TASK
     )
     _graph_with_workflow(
-        user, project=p_drop, graph_title="wj", workflow_title="v", workflow_type=WorkflowType.TASK
+        user, project=p_drop, workflow_title="v", workflow_type=WorkflowType.TASK
     )
     body = _post_search(
         client,
@@ -308,13 +299,13 @@ def test_discipline_filter_applies_via_parent_project(client: Client, user):
     p_ok = Project.objects.create(owner=user, title="Ok", description="")
     ProjectDiscipline.objects.create(project=p_ok, discipline=d_match)
     wf_ok = _graph_with_workflow(
-        user, project=p_ok, graph_title="w", workflow_title="u", workflow_type=WorkflowType.COURSE
+        user, project=p_ok, workflow_title="u", workflow_type=WorkflowType.COURSE
     )
 
     p_bad = Project.objects.create(owner=user, title="Bad", description="")
     ProjectDiscipline.objects.create(project=p_bad, discipline=d_other)
     _graph_with_workflow(
-        user, project=p_bad, graph_title="w2", workflow_title="u2", workflow_type=WorkflowType.COURSE
+        user, project=p_bad, workflow_title="u2", workflow_type=WorkflowType.COURSE
     )
 
     body = _post_search(
@@ -333,10 +324,10 @@ def test_isTemplate_filter_projects_and_workflow_rows(client: Client, user):
     p_t = Project.objects.create(owner=user, title="T", description="", is_template=True)
     p_f = Project.objects.create(owner=user, title="F", description="", is_template=False)
     _graph_with_workflow(
-        user, project=p_t, graph_title="w1", workflow_title="u1", workflow_type=WorkflowType.TASK
+        user, project=p_t, workflow_title="u1", workflow_type=WorkflowType.TASK
     )
     _graph_with_workflow(
-        user, project=p_f, graph_title="w2", workflow_title="u2", workflow_type=WorkflowType.TASK
+        user, project=p_f, workflow_title="u2", workflow_type=WorkflowType.TASK
     )
     body = _post_search(
         client,
@@ -355,7 +346,6 @@ def test_keyword_matches_project_title(client: Client, user):
     _graph_with_workflow(
         user,
         project=project,
-        graph_title="WF",
         workflow_title="No match here",
         workflow_description="",
         workflow_type=WorkflowType.COURSE,
@@ -373,7 +363,6 @@ def test_keyword_matches_project_description(client: Client, user):
     _graph_with_workflow(
         user,
         project=project,
-        graph_title="WF",
         workflow_title="U",
         workflow_description="",
         workflow_type=WorkflowType.COURSE,
@@ -391,7 +380,6 @@ def test_keyword_matches_workflow_title(client: Client, user):
     wf = _graph_with_workflow(
         user,
         project=project,
-        graph_title="WF",
         workflow_title="Moss survey",
         workflow_description="",
         workflow_type=WorkflowType.COURSE,
@@ -410,7 +398,6 @@ def test_keyword_matches_workflow_description(client: Client, user):
     wf = _graph_with_workflow(
         user,
         project=project,
-        graph_title="WF",
         workflow_title="U",
         workflow_description="peat soil notes",
         workflow_type=WorkflowType.COURSE,
@@ -428,7 +415,6 @@ def test_keyword_matches_graph_title(client: Client, user):
     wf = _graph_with_workflow(
         user,
         project=project,
-        graph_title="GraphLabel special",
         workflow_title="Generic",
         workflow_description="GraphLabel special",
         workflow_type=WorkflowType.COURSE,
@@ -470,7 +456,6 @@ def test_project_favorite_and_graph_favorite_are_independent_relations(
     wf = _graph_with_workflow(
         user,
         project=project,
-        graph_title="W",
         workflow_title="U",
         workflow_type=WorkflowType.ACTIVITY,
     )
@@ -503,7 +488,6 @@ def test_pagination_metadata_total_page_count_and_slice(client: Client, user):
         _graph_with_workflow(
             user,
             project=project,
-            graph_title=f"w{i}",
             workflow_title=f"U{i}",
             workflow_type=WorkflowType.TASK,
         )
@@ -536,10 +520,10 @@ def test_sort_a_z_direction(client: Client, user):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="P", description="")
     _graph_with_workflow(
-        user, project=project, graph_title="w1", workflow_title="Zebra", workflow_type=WorkflowType.COURSE
+        user, project=project, workflow_title="Zebra", workflow_type=WorkflowType.COURSE
     )
     _graph_with_workflow(
-        user, project=project, graph_title="w2", workflow_title="Alpha", workflow_type=WorkflowType.COURSE
+        user, project=project, workflow_title="Alpha", workflow_type=WorkflowType.COURSE
     )
     asc = _post_search(
         client,
@@ -610,7 +594,6 @@ def test_library_search_returns_accessible_project_and_workflow_backed_items(cli
     graph = _graph_with_workflow(
         user,
         project=project,
-        graph_title="Legacy Graph Name",
         workflow_title="Biology Workflow",
         workflow_description="Workflow description",
         workflow_type=WorkflowType.ACTIVITY,
@@ -655,7 +638,6 @@ def test_library_search_applies_filters_including_favourited(client: Client, use
     wf_owned = _graph_with_workflow(
         user,
         project=owned_project,
-        graph_title="Owned wf",
         workflow_title="Chemistry Task",
         workflow_description="Lab",
         workflow_type=WorkflowType.TASK,
@@ -674,7 +656,6 @@ def test_library_search_applies_filters_including_favourited(client: Client, use
     _graph_with_workflow(
         teammate,
         project=team_project,
-        graph_title="Team wf",
         workflow_title="Physics Task",
         workflow_description="",
         workflow_type=WorkflowType.TASK,
@@ -709,7 +690,6 @@ def test_library_search_supports_sorting_and_pagination(client: Client, user):
     _graph_with_workflow(
         user,
         project=project,
-        graph_title="wf-a",
         workflow_title="Zulu",
         workflow_description="",
         workflow_type=WorkflowType.COURSE,
@@ -717,7 +697,6 @@ def test_library_search_supports_sorting_and_pagination(client: Client, user):
     _graph_with_workflow(
         user,
         project=project,
-        graph_title="wf-b",
         workflow_title="Alpha",
         workflow_description="",
         workflow_type=WorkflowType.COURSE,

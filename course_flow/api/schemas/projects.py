@@ -19,8 +19,9 @@ class ProjectUpdateIn(CamelSchema):
 
 
 class ProjectListItemOut(CamelSchema):
-    """List rows: compact project fields only."""
-
+    """
+    List rows: compact project fields only.
+    """
     uuid: UUID
     title: str
     owner_id: int
@@ -39,7 +40,9 @@ class ProjectListOut(CamelSchema):
 
 
 class ProjectDetailOut(CamelSchema):
-    """Single project resource: persisted fields only (no related collections)."""
+    """
+    Single project resource: persisted fields only (no related collections).
+    """
 
     uuid: UUID
     title: str
@@ -57,7 +60,9 @@ class ProjectDetailOutResp(CamelSchema):
 
 
 class ProjectDuplicatePlaceholderOut(CamelSchema):
-    """Response for POST /project/{uuid}/duplicate while duplication is not implemented."""
+    """
+    Response for POST /project/{uuid}/duplicate while duplication is not implemented.
+    """
 
     success: bool = True
     message: str
@@ -100,11 +105,12 @@ class WorkflowOut(CamelSchema):
 
 
 class ProjectGraphOut(CamelSchema):
+    """Graph UUID + revision; workflow authorship and project scope come from ``Workflow``."""
+
     uuid: UUID
-    title: str
-    owner_id: int
-    project_id: int | None
     revision_id: int
+    author_id: int | None
+    workflow_project_id: int | None
     date_created: datetime
     modified_on: datetime
     workflow: WorkflowOut

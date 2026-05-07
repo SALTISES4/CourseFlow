@@ -29,7 +29,8 @@ py_log_file := "logs/python.log"
 # Infra services you want Compose to manage in dev
 infra_services := "postgres"
 
-# replade this with volta
+# we need to use volta because nvm doens't play very well in
+# docker etc.
 frontend_bootstrap := "\
     export VOLTA_HOME=\"$HOME/.volta\" &&\
     export PATH=\"$VOLTA_HOME/bin:$PATH\" &&\
@@ -65,7 +66,9 @@ commamd-confirm:
 # ----------------------------
 # Help / inspection
 # ----------------------------
-
+[group: 'aux']
+export-xml:
+    repomix ./course_flow -o ./assets/repomix.xml --ignore ./assets/
 
 # ----------------------------
 # VCS

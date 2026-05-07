@@ -90,8 +90,7 @@ def test_project_detail_includes_graph_workflow_and_typed_meta(client: Client, u
     create_graph = client.post(
         "/api/graph",
         data={
-            "projectId": project.id,
-            "graphTitle": "W",
+            "workflowProjectId": project.id,
             "workflowTitle": "Task Workflow",
             "workflowType": "task",
             "workflowDescription": "",

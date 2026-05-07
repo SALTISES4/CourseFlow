@@ -130,6 +130,8 @@ export type ProjectDetailOut = {
 
 /**
  * ProjectGraphOut
+ *
+ * Graph UUID + revision; workflow authorship and project scope come from ``Workflow``.
  */
 export type ProjectGraphOut = {
   /**
@@ -137,21 +139,17 @@ export type ProjectGraphOut = {
    */
   uuid: string
   /**
-   * Title
-   */
-  title: string
-  /**
-   * Ownerid
-   */
-  ownerId: number
-  /**
-   * Projectid
-   */
-  projectId: number | null
-  /**
    * Revisionid
    */
   revisionId: number
+  /**
+   * Authorid
+   */
+  authorId: number | null
+  /**
+   * Workflowprojectid
+   */
+  workflowProjectId: number | null
   /**
    * Datecreated
    */
@@ -468,8 +466,6 @@ export type ProjectUpdateIn = {
 
 /**
  * GraphDetailOut
- *
- * Single graph resource: persisted fields only (no workflow/sections/channels).
  */
 export type GraphDetailOut = {
   /**
@@ -477,17 +473,17 @@ export type GraphDetailOut = {
    */
   uuid: string
   /**
-   * Title
+   * Workflowtitle
    */
-  title: string
+  workflowTitle: string
   /**
-   * Ownerid
+   * Authorid
    */
-  ownerId: number | null
+  authorId: number | null
   /**
-   * Projectid
+   * Workflowprojectid
    */
-  projectId: number | null
+  workflowProjectId: number | null
   /**
    * Revisionid
    */
@@ -504,16 +500,14 @@ export type GraphDetailOut = {
 
 /**
  * GraphCreateIn
+ *
+ * Create a Graph row and its single root Workflow (see ``Workflow`` / ``Graph`` ORM).
  */
 export type GraphCreateIn = {
   /**
-   * Projectid
+   * Workflowprojectid
    */
-  projectId?: number | null
-  /**
-   * Graphtitle
-   */
-  graphTitle: string
+  workflowProjectId?: number | null
   /**
    * Workflowtitle
    */
@@ -537,8 +531,6 @@ export enum WorkflowTypeIn {
 
 /**
  * GraphListItemOut
- *
- * List rows: graph entity fields only.
  */
 export type GraphListItemOut = {
   /**
@@ -546,17 +538,17 @@ export type GraphListItemOut = {
    */
   uuid: string
   /**
-   * Title
+   * Workflowtitle
    */
-  title: string
+  workflowTitle: string
   /**
-   * Ownerid
+   * Authorid
    */
-  ownerId: number | null
+  authorId: number | null
   /**
-   * Projectid
+   * Workflowprojectid
    */
-  projectId: number | null
+  workflowProjectId: number | null
   /**
    * Revisionid
    */
@@ -649,7 +641,7 @@ export type EdgeGraphOut = {
 /**
  * GraphMetaOut
  *
- * Graph row + root workflow identifiers needed for the editor shell (no nested workflow object).
+ * Graph UUID/revision plus root ``Workflow`` fields (graph row has no title/author/project).
  */
 export type GraphMetaOut = {
   /**
@@ -657,17 +649,17 @@ export type GraphMetaOut = {
    */
   uuid: string
   /**
-   * Title
+   * Workflowtitle
    */
-  title: string
+  workflowTitle: string
   /**
-   * Ownerid
+   * Authorid
    */
-  ownerId: number | null
+  authorId: number | null
   /**
-   * Projectid
+   * Workflowprojectid
    */
-  projectId: number | null
+  workflowProjectId: number | null
   /**
    * Revisionid
    */
@@ -1107,20 +1099,22 @@ export type GraphTagsDeltaOut = {
 
 /**
  * GraphNodeCreateIn
+ *
+ * Placement is required on ``Node`` (ORM); optional ``workflow_uuid`` selects a workflow on this graph.
  */
 export type GraphNodeCreateIn = {
   /**
    * Sectionuuid
    */
-  sectionUuid?: string | null
+  sectionUuid: string
   /**
    * Channeluuid
    */
-  channelUuid?: string | null
+  channelUuid: string
   /**
    * Sectionrow
    */
-  sectionRow?: number | null
+  sectionRow: number
   /**
    * Workflowuuid
    */
@@ -1250,7 +1244,7 @@ export type SectionPatchIn = {
 /**
  * GraphNodePatchIn
  *
- * Send only fields to change; JSON ``null`` clears nullable FKs / section_row.
+ * Partial update; do not send ``null`` for FK fields (ORM requires section, channel, workflow).
  */
 export type GraphNodePatchIn = {
   /**
@@ -2561,12 +2555,12 @@ export type DeleteEdgeData = {
   body?: never
   path: {
     /**
-     * Uuid
+     * Edge Id
      */
-    uuid: number
+    edge_id: number
   }
   query?: never
-  url: '/api/edge/{uuid}'
+  url: '/api/edge/{edge_id}'
 }
 
 export type DeleteEdgeResponses = {
@@ -2582,12 +2576,12 @@ export type GetEdgeData = {
   body?: never
   path: {
     /**
-     * Uuid
+     * Edge Id
      */
-    uuid: number
+    edge_id: number
   }
   query?: never
-  url: '/api/edge/{uuid}'
+  url: '/api/edge/{edge_id}'
 }
 
 export type GetEdgeResponses = {

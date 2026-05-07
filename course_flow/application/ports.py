@@ -35,9 +35,8 @@ class GraphRepositoryPort(Protocol):
     def create(
         self,
         *,
-        owner_id: int,
-        project_id: int | None,
-        graph_title: str,
+        author_id: int,
+        workflow_project_id: int | None,
         workflow_title: str,
         workflow_type: str,
         workflow_description: str,
@@ -45,7 +44,7 @@ class GraphRepositoryPort(Protocol):
 
     def get_by_uuid(self, uuid: UUID) -> GraphDTO | None: ...
 
-    def list_for_owner(self, owner_id: int) -> list[GraphDTO]: ...
+    def list_for_author(self, author_id: int) -> list[GraphDTO]: ...
 
     def list_for_project(self, project_id: int) -> list[GraphDTO]: ...
 
