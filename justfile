@@ -119,6 +119,10 @@ django-migrate:
   uv run python manage.py migrate
 
 [group: 'Django']
+django-make-migrate:
+  uv run python manage.py makemigrations
+
+[group: 'Django']
 django-run:
   uv run python manage.py runserver
 
@@ -253,8 +257,8 @@ init:
 dev:
   just uv-sync
   just docker-up
-  just migrate
-  just django-run
+  just django-migrate
   just iterm
   just browsers
+  just django-run
 

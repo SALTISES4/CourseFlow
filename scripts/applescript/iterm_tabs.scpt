@@ -20,10 +20,6 @@ on run argv
                 write text "cd " & quoted form of repoRoot & " && just docker-logs"
             end tell
 
-            set runServer to (create tab with default profile)
-            tell current session of runServer
-                write text "cd " & quoted form of repoRoot & " && just ws-logs"
-            end tell
         end tell
     end tell
 end run
