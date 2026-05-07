@@ -49,7 +49,7 @@ class User(AbstractUser):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     email = models.EmailField(unique=True)
     language_preference = models.CharField(
-        max_length=8,
+        max_length=2,
         choices=LANGUAGE_PREFERENCES_CHOICES,
     )
     notifications_active = models.BooleanField(default=False)

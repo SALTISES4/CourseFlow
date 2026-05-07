@@ -15,9 +15,7 @@ class Section(TimeStampedUUIDModel):
     position = models.IntegerField(default=0)
     thread = models.OneToOneField(
         Thread,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+        on_delete=models.CASCADE,
         related_name="section",
     )
 

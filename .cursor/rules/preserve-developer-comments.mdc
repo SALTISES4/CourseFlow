@@ -1,0 +1,10 @@
+---
+description: Do not delete or strip developer comments, questions, or TODOs unless the user explicitly asks
+alwaysApply: true
+---
+
+# Preserve developer comments
+
+- **Do not remove** inline comments, block comments, `# TODO`, `# FIXME`, `# not sure`, questions, or explanatory notes left by developers—unless the user **explicitly** instructs you to delete or clean them up.
+- **Do not** treat such remarks as “noise” or decide they are “no longer relevant” on your own.
+- **Allowed without special instruction:** add new comments when helpful; **edit existing comments only** when required for factual accuracy after a real code change (e.g. rename a symbol and update the comment to match). If unsure whether a comment should stay, **leave it** or ask the user.

@@ -7,7 +7,7 @@ class Horizontaloutcome(UUIDModel):
     outcomes = models.ManyToManyField(
         "Outcome",
         through="HorizontaloutcomeOutcome",
-        related_name="horizontal_groups",
+        related_name="horizontal_groups",  # not sure about this name
         blank=True,
     )
 
