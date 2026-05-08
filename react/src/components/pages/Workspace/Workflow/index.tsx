@@ -9,11 +9,12 @@ import {
   useGraphBootstrap
 } from '@cf/features/graph/state'
 import Loader from '@cfComponents/UIPrimitives/Loader'
-import { WorkflowSidebarContextProvider } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useSidebar/context'
+import ErrorView from '@cfPages/MsgViews/ErrorView'
 import { RootState } from '@cfRedux/store'
-import ErrorView from '@cfViews/MsgViews/ErrorView'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
+
+import { WorkflowSidebarContextProvider } from './Sidebar/hooks/useSidebar/context'
 
 const Workflow = () => {
   const { id } = useParams<{ id: string }>()

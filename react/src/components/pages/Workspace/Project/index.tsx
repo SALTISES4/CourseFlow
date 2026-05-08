@@ -4,7 +4,7 @@ import { mapProjectV2ToProjectDetails } from '@cf/utility/marshalling/projectDet
 import { _t } from '@cf/utility/Utility.class'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
 import Loader from '@cfComponents/UIPrimitives/Loader'
-import ErrorView from '@cfViews/MsgViews/ErrorView'
+import ErrorView from '@cfPages/MsgViews/ErrorView'
 import { useQuery } from '@tanstack/react-query'
 import { getErrorMessage } from '@XMLHTTP/API/api'
 import { useEffect, useState } from 'react'

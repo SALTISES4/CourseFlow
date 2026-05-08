@@ -12,11 +12,10 @@ import SortableFilterButton from '@cfComponents/filters/SortableFilterButton'
 import { SearchFilterOption } from '@cfComponents/filters/types'
 import Pagination from '@cfComponents/UIPrimitives/Pagination'
 import { GridWrap, OuterContentWrap } from '@cfMUI/helper'
+import ErrorView from '@cfPages/MsgViews/ErrorView'
 import LibraryHelper, {
   SearchOptions
 } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
-import ErrorView from '@cfViews/MsgViews/ErrorView'
-import NotFoundView from '@cfViews/MsgViews/NotFoundVIew'
 import CategoryIcon from '@mui/icons-material/Category'
 import FilterIcon from '@mui/icons-material/FilterAlt'
 import SortIcon from '@mui/icons-material/Sort'
@@ -372,7 +371,9 @@ const LibrarySearchView = ({
     }
 
     if (!data) {
-      return <NotFoundView />
+      return (
+        <ErrorView message="The content you were looking for is not found." />
+      )
     }
     if (isError) {
       return (
