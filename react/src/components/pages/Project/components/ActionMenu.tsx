@@ -1,19 +1,15 @@
 import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
-import { MenuItemType, MenuWithOverflow } from '@cf/components/common/menu/Menu'
 import { useMenuActions } from '@cf/components/pages/Project/hooks/useMenuActions'
 import { _t } from '@cf/utility/Utility.class'
-<<<<<<<< HEAD:react/src/components/pages/Project/components/MenuBar.tsx
-========
 import { MenuItemType, MenuWithOverflow } from '@cfComponents/menu/Menu'
->>>>>>>> feature/notifications:react/src/components/pages/Project/components/ActionMenu.tsx
 import EditIcon from '@mui/icons-material/Edit'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
-import { useMenuActions } from '../hooks/useMenuActions'
-
-/** Until v2 exposes project ACLs, menu visibility assumes a writable project for authenticated users. */
+/**
+ * Until v2 exposes project ACLs, menu visibility assumes a writable project for authenticated users.
+ * */
 const v2MenuPermissions = {
   read: true,
   write: true,

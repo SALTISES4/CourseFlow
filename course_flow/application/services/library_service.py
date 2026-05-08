@@ -15,6 +15,7 @@ from course_flow.core.models import (
     FavoriteProject,
     Graph,
     Project,
+    Workflow,
 )
 
 
@@ -35,6 +36,7 @@ class LibraryService:
         user_id: int,
         payload: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
+
         payload = payload or {}
         pagination = payload.get("pagination") or {}
         sort = payload.get("sort") or {}
@@ -67,6 +69,7 @@ class LibraryService:
 
         if workspace_type == "project":
             graph_qs = graph_qs.none()
+
         elif workspace_type in {"activity", "course", "program", "task"}:
             project_qs = project_qs.none()
             graph_qs = graph_qs.filter(workflow__workflow_type=workspace_type)
@@ -111,7 +114,7 @@ class LibraryService:
 
         items = self._normalize_project_items(project_qs, project_favorite_uuids)
         items.extend(
-            self._normalize_graph_items(graph_qs, graph_favorite_uuids)
+            self._normalize_workflow_items(graph_qs, graph_favorite_uuids)
         )
 
         items = self._sort_items(
@@ -273,8 +276,8 @@ class LibraryService:
             )
         return rows
 
-    def _normalize_graph_items(
-        self, graph_qs: QuerySet[Graph], favorite_uuids: set[UUID]
+    def _normalize_workflow_items(
+        self, graph_qs: QuerySet[Workflow], favorite_uuids: set[UUID]
     ) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
         for graph in graph_qs:

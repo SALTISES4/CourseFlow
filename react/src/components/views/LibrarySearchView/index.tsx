@@ -47,7 +47,7 @@ type PropsType = {
   setSearchArgs: (args: LibrarySearchIn) => void
   config: Config
   override?: {
-    selecteduuid: string
+    uuid: string
     onCardSelect: (uuid: string) => void
   }
 }
@@ -121,10 +121,7 @@ const LibrarySearchView = ({
   /*******************************************************
    * QUERY HOOKS
    *******************************************************/
-  // const { data, error, isLoading, isError, isFetching } =
-  //   useLibraryObjectsSearchQuery(searchArgs)
-
-  const { data, isLoading, isError } = useLibrarySearch(searchArgs)
+  const { data, isLoading, isError, error } = useLibrarySearch(searchArgs)
 
   useEffect(() => {
     if (!defaultOptionsSearchOptions) {

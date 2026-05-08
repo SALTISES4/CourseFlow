@@ -27,22 +27,22 @@ const ProjectDialogs = () => {
         // <ProjectEditDialog />
       }
       <RestoreDialog
-        id={projectUuid}
+        uuid={projectUuid}
         objectType={WorkspaceType.PROJECT}
         callback={refetch}
       />
       <ArchiveDialog
-        id={projectUuid}
+        uuid={projectUuid}
         objectType={WorkspaceType.PROJECT}
         callback={refetch}
       />
 
       <ContributorAddDialog
-        id={projectUuid}
+        uuid={projectUuid}
         type={WorkspaceType.PROJECT}
         refetch={refetch}
       />
-      <ContributorRemoveDialog id={projectUuid} type={WorkspaceType.PROJECT} />
+      <ContributorRemoveDialog uuid={projectUuid} type={WorkspaceType.PROJECT} />
       {/*<ImportDialog />*/}
       {/*<ProjectExportDialog {...dummyProjectExportData} />*/}
     </>

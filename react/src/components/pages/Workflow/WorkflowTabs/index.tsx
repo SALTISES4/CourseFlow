@@ -15,6 +15,7 @@ import WorkflowLegend from '@cf/components/views/WorkflowView/GraphView/componen
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { RootState } from '@cf/redux/store'
 import { OuterContentWrap } from '@cf/styles/mui/helper'
+import ActionMenu from '@cfPages/Project/components/ActionMenu'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Tabs from '@mui/material/Tabs'
@@ -22,8 +23,6 @@ import { useQuery } from '@tanstack/react-query'
 import { useContext, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { Routes, matchPath, useParams } from 'react-router-dom'
-
-import { ActionMenu } from '../../Project/components/MenuBar'
 
 /**
  * The base component of our workflow view. This renders the menu bar
@@ -88,12 +87,6 @@ const WorkflowTabs = () => {
    *******************************************************/
   return (
     <>
-      {/*
-      this div has been randomly dropped here so we can still see the legacy selectmanager in action
-      after that it can go
-      */}
-      <div id="edit-menu"></div>
-
       <div className="main-block">
         <MenuBar
           leftSection={<ActionMenu />}

@@ -67,7 +67,6 @@ const WorkflowCardWrapper = ({
       isDisabledLink={isDisabledLink}
       description={description}
       isSelected={isSelected}
-      // overridden onclick handler
       onClick={onClick ? onClick : () => navigateToItem(uuid, type)}
       chips={[...chips, isLinked && <InUseChip key="in-use" />]}
     />

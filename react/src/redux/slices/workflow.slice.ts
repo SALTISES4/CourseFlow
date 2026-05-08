@@ -95,7 +95,7 @@ const workflowSlice = createSlice({
         OutcomeWorkflowActions.CHANGE_ID as string,
         (
           state,
-          action: PayloadAction<{ olduuid: string; newuuid: string }>
+          action: PayloadAction<{ oldUuid: string; newUuid: string }>
         ) => {
           const index = state.outcomes.indexOf(action.payload.oldId)
           if (index >= 0) {

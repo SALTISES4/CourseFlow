@@ -37,7 +37,7 @@ const RestoreDialog = ({
 
   async function onSubmit() {
     const args = {
-      uuid: String(uuid),
+      uuid,
       payload: {
         objectType: objectType
       }

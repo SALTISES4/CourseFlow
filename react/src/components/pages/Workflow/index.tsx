@@ -1,7 +1,6 @@
 import Loader from '@cf/components/common/UIPrimitives/Loader'
 import { WorkflowSidebarContextProvider } from '@cf/components/pages/Workflow/Sidebar/hooks/useSidebar/context'
 import WorkflowTabs from '@cf/components/pages/Workflow/WorkflowTabs'
-import ErrorView from '@cf/components/views/MsgViews/ErrorView'
 import WorkflowConfigProvider from '@cf/context/workFlowConfigContext'
 import {
   canRenderChannels,
