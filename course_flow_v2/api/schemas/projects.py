@@ -46,6 +46,7 @@ class ProjectDetailOut(CamelSchema):
     description: str
     is_published: bool
     is_template: bool
+    is_favourite: bool
     owner_id: int
     date_created: datetime
     modified_on: datetime

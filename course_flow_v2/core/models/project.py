@@ -21,5 +21,5 @@ class Project(TimeStampedUUIDModel):
         blank=True,
     )
 
-    class Meta:
+    class Meta(TimeStampedUUIDModel.Meta):
         db_table = "cf2_project"

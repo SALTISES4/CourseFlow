@@ -4,10 +4,10 @@ import math
 from enum import Enum
 from typing import Any
 from uuid import UUID
-from dataclasses import dataclass
 
 from django.db.models import Q, QuerySet
 
+from course_flow_v2.api.common.schemas import CamelSchema
 from course_flow_v2.api.schemas.library import (
     LibraryFavoriteOut
 )
@@ -23,8 +23,7 @@ class LibraryObjectType(str, Enum):
     PROJECT = "project"
     WORKFLOW = "workflow"
 
-@dataclass
-class LibraryObject:
+class LibraryObject(CamelSchema):
     id: int
     type: LibraryObjectType
     uuid: UUID
@@ -157,7 +156,7 @@ class LibraryService:
             message="added" if created else "deleted",
         )
 
-    def _find_from_uuid(self, uuid: UUID):
+    def _find_from_uuid(self, uuid: UUID | None):
         if uuid is None:
             raise ValueError("UUID is required")
 

@@ -250,8 +250,7 @@ def delete_project_team_member(request, uuid: UUID, membership_id: int):
 )
 def get_project(request, uuid: UUID):
     current_user = get_current_user(request)
-    svc = get_project_service()
-    dto = svc.get_by_uuid(uuid)
+    dto = get_project_service().get_by_uuid(uuid)
 
     if dto is None:
         raise HttpError(404, "Project not found")

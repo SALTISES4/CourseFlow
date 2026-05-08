@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from course_flow_v2.core.models import Project
+from course_flow_v2.core.models import (
+    FavoriteProject,
+    Project,
+)
 
 
 class ProjectDetailService:
@@ -78,12 +81,16 @@ class ProjectDetailService:
                 }
             )
 
+
+        is_favourite = FavoriteProject.objects.filter(project_id=p.id).exists()
+
         return {
             "uuid": p.uuid,
             "title": p.title,
             "description": p.description,
             "is_published": p.is_published,
             "is_template": p.is_template,
+            "is_favourite": is_favourite,
             "owner_id": p.owner_id,
             "date_created": p.date_created,
             "modified_on": p.modified_on,
