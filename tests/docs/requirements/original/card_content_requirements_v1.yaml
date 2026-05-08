@@ -1,0 +1,265 @@
+# Normalized requirements: shared card content contracts
+# Source: React card rendering and marshalling logic
+# Application code evidence:
+#   - react/src/components/common/cards/WorkflowCardWrapper/index.tsx
+#   - react/src/components/common/cards/WorkflowCardDumb/*
+#   - react/src/utility/marshalling/libraryCards.ts
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference:
+#   - tests/docs/requirements/original/homepage_requirements_v1.yaml
+#   - tests/docs/requirements/original/explore_page_requirements_v1.yaml
+#   - tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+
+uiObjectDefinitions:
+  projectCard:
+    meaning: Shared clickable card tile representing a project entity across application surfaces, including template and non-template projects. Template projects use the same projectCard object (no separate template-card object).
+  workflowCard:
+    meaning: Shared clickable card tile representing a workflow library object (program, course, activity, or other non-project workflow type), including template and non-template workflows, rendered via WorkflowCardWrapper. Canonical identifier for workflow rows on Explore and other mixed project/workflow lists. Template workflows use the same workflowCard object with cardTemplateChip visible when template flag is true (FR-CARD-002).
+  cardTitleText:
+    meaning: Primary card title text rendered on projectCard or workflowCard.
+  cardOwnerText:
+    meaning: Secondary ownership text on a card; current format is 'Owned by {ownerName}' when owner data exists.
+  cardTypeChip:
+    meaning: Chip indicating object type derived from library object type, with optional 'strategy' suffix when applicable.
+  cardDescriptionExcerpt:
+    meaning: Description text excerpt rendered below cardTitleText on workflowCard, clamped to two visible lines.
+  cardTemplateChip:
+    meaning: Chip with label 'Template' rendered on workflowCard whenever the card represents a template workflow; required in all template contexts across surfaces (no surface-specific omission).
+  cardWorkflowCountChip:
+    meaning: Chip displaying workflow count on projectCard when count is greater than zero.
+  cardFavouriteToggle:
+    meaning: Favourite control rendered on the card and bound to favourite state.
+  globalMessageSnackbar:
+    meaning: Global snackbar used to communicate feedback after cardFavouriteToggle action. On successful add to favourites it shows 'Added to your favourites'; on successful remove from favourites it shows 'Removed from your favourites'; on failed add/remove it shows 'We were not able to update favorite status'.
+
+locatorMappings:
+  projectCard:
+    strategy: null
+    confidence: unresolved
+  workflowCard:
+    strategy: null
+    confidence: unresolved
+  cardTitleText:
+    strategy: "{projectCard|workflowCard} title region"
+    confidence: unresolved
+  cardOwnerText:
+    strategy: "{projectCard|workflowCard} text matching pattern 'Owned by {ownerName}'"
+    confidence: inferred
+  cardTypeChip:
+    strategy: "{projectCard|workflowCard} chip mapped from object type"
+    confidence: unresolved
+  cardDescriptionExcerpt:
+    strategy: "{workflowCard} description text region below title, visually limited to 2 lines"
+    confidence: inferred
+  cardTemplateChip:
+    strategy: "{workflowCard} chip with text 'Template'"
+    confidence: inferred
+  cardWorkflowCountChip:
+    strategy: "{projectCard} chip with text pattern '{n} workflow' or '{n} workflows'"
+    confidence: inferred
+  cardFavouriteToggle:
+    strategy: "{projectCard|workflowCard} favourite control"
+    confidence: unresolved
+  globalMessageSnackbar:
+    strategy: null
+    confidence: unresolved
+
+requirements:
+  - id: FR-CARD-001
+    title: projectCard displays mapped project content
+
+    designEvidence:
+      - FIGMA-HOME-DASHBOARD
+
+    actors:
+      - user
+
+    uiObjects:
+      - projectCard
+      - cardTitleText
+      - cardOwnerText
+      - cardTypeChip
+      - cardWorkflowCountChip
+      - cardFavouriteToggle
+
+    preconditions:
+      - a projectCard instance is rendered
+
+    trigger:
+      - system renders projectCard
+
+    mainFlow:
+      - system renders cardTitleText from project title
+      - system renders cardOwnerText with format 'Owned by {ownerName}'
+      - system renders cardTypeChip from project object type mapping
+      - when project workflow count is greater than zero, system renders cardWorkflowCountChip with singular/plural workflow label
+      - system renders cardFavouriteToggle bound to project favourite state
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given project title exists, cardTitleText matches project title
+      - cardOwnerText matches pattern 'Owned by {ownerName}'
+      - given project workflow count equals 1, cardWorkflowCountChip label matches '1 workflow'
+      - given project workflow count is greater than 1, cardWorkflowCountChip label matches '{n} workflows'
+      - given project workflow count is null or 0, cardWorkflowCountChip is not visible
+
+    openQuestions: []
+
+  - id: FR-CARD-002
+    title: workflowCard displays mapped workflow content
+
+    designEvidence:
+      - FIGMA-HOME-DASHBOARD
+      - FIGMA-CARD-DESIGNS
+      - FIGMA-WF-CREATE-STEP-3-TEMPLATE
+      - FIGMA-EXPLORE-DEFAULT
+
+    actors:
+      - user
+
+    uiObjects:
+      - workflowCard
+      - cardTitleText
+      - cardDescriptionExcerpt
+      - cardOwnerText
+      - cardTypeChip
+      - cardTemplateChip
+      - cardFavouriteToggle
+
+    preconditions:
+      - a workflow library object row is rendered as workflowCard from library-object data
+
+    trigger:
+      - system renders workflowCard
+
+    mainFlow:
+      - system renders cardTitleText from workflow title
+      - system renders cardDescriptionExcerpt below cardTitleText using workflow description content
+      - system constrains cardDescriptionExcerpt to two visible lines (overflow is truncated)
+      - when owner data exists, system renders cardOwnerText with format 'Owned by {ownerName}'
+      - system renders cardTypeChip from workflow object type mapping
+      - when template flag is true, system renders cardTemplateChip with label 'Template' on workflowCard in every template context (e.g. home templates section, create-workflow template selection, Explore workflow rows, and any other surface that shows a workflow row for a template)
+      - system renders cardFavouriteToggle bound to workflow favourite state
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given workflow title exists, cardTitleText matches that title
+      - given workflow description exists, cardDescriptionExcerpt shows description content below cardTitleText
+      - given workflow description exceeds two lines in the rendered card width, only two lines are visible and remaining text is truncated
+      - given workflow owner exists, cardOwnerText matches pattern 'Owned by {ownerName}'
+      - given workflow is a template, cardTemplateChip is visible with label 'Template' in every surface that renders workflowCard for that workflow
+      - given workflow is not a template, cardTemplateChip is not visible
+
+    openQuestions: []
+
+  - id: FR-CARD-003
+    title: projectCard click destination
+
+    designEvidence:
+      - FIGMA-HOME-DASHBOARD
+
+    actors:
+      - user
+
+    uiObjects:
+      - projectCard
+
+    preconditions:
+      - projectCard is visible in the current surface
+      - projectCard is bound to a concrete project id
+
+    trigger:
+      - user clicks projectCard
+
+    mainFlow:
+      - when user clicks projectCard, system navigates to the selected project's 'Workflows' view at route pattern /project/{id}/workflows
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user clicks projectCard, current route matches /project/{id}/workflows
+
+    openQuestions:
+      - Current implementation route is /project/{id}/workflow and is expected to migrate to /project/{id}/workflows.
+
+  - id: FR-CARD-004
+    title: workflowCard click destination
+
+    designEvidence:
+      - FIGMA-HOME-DASHBOARD
+      - FIGMA-CARD-DESIGNS
+      - FIGMA-EXPLORE-DEFAULT
+
+    actors:
+      - user
+
+    uiObjects:
+      - workflowCard
+
+    preconditions:
+      - workflowCard is visible in the current surface
+      - the card is bound to a concrete workflow id
+
+    trigger:
+      - user clicks workflowCard
+
+    mainFlow:
+      - when user clicks workflowCard, system navigates to the corresponding workflow 'Workflow' view at route pattern /workflow/{id}
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user clicks workflowCard, current route matches /workflow/{id}
+
+    openQuestions: []
+
+  - id: FR-CARD-005
+    title: cardFavouriteToggle updates favourite state
+
+    designEvidence:
+      - FIGMA-EXPLORE-DEFAULT
+
+    actors:
+      - user
+
+    uiObjects:
+      - projectCard
+      - workflowCard
+      - cardFavouriteToggle
+      - globalMessageSnackbar
+
+    preconditions:
+      - a projectCard or workflowCard is visible
+      - cardFavouriteToggle is visible on that card
+
+    trigger:
+      - user clicks cardFavouriteToggle
+
+    mainFlow:
+      - when user clicks cardFavouriteToggle, system attempts to update favourite state for that card
+      - on successful request, system updates cardFavouriteToggle visual state and shows globalMessageSnackbar with success copy: 'Added to your favourites' when favourite becomes true, and 'Removed from your favourites' when favourite becomes false
+      - on failed request, system preserves prior favourite state and shows globalMessageSnackbar with error copy 'We were not able to update favorite status'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user clicks cardFavouriteToggle on a non-favourited card and update succeeds, cardFavouriteToggle switches to favourited and globalMessageSnackbar shows 'Added to your favourites'
+      - given user clicks cardFavouriteToggle on a favourited card and update succeeds, cardFavouriteToggle switches to non-favourited and globalMessageSnackbar shows 'Removed from your favourites'
+      - given favourite-state update fails, cardFavouriteToggle visual state remains on previous state and globalMessageSnackbar shows 'We were not able to update favorite status'
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-EXPLORE-DEFAULT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=4151-30580&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-HOME-DASHBOARD
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6492-61051&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-CARD-DESIGNS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=612-4041&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-WF-CREATE-STEP-3-TEMPLATE
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5678-97152&t=lsKQpS4Jq8MOZwMT-1

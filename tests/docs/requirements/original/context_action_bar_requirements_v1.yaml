@@ -1,0 +1,436 @@
+# Normalized requirements: context action bar (project and workflow routes)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Contributors; Archiving a Project; Archiving a Workflow; View Settings / action bar)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference:
+#   - tests/docs/requirements/original/project_create_edit_form_requirements_v1.yaml (editPencilButton, editProjectDialog on project routes—FR-PROJ-FORM-003)
+#   - tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml (editPencilButton, editWorkflowDialog on workflow routes—FR-WF-FORM-001)
+#   - tests/docs/requirements/original/project_overview_requirements_v1.yaml (projectOverviewAddContributorsButton; addContributorsDialog—FR-PROJ-OV-004; contributor list outcomes—FR-PROJ-OV-002)
+#   - tests/docs/requirements/original/project_archive_requirements_v1.yaml (FR-PROJ-ARCH-* after 'Archive project' overflow row)
+#   - tests/docs/requirements/original/workflow_archive_requirements_v1.yaml (FR-WF-ARCH-* after 'Archive workflow' overflow row)
+#   - tests/docs/requirements/original/workflow_copy_requirements_v1.yaml (FR-WF-COPY-* after 'Copy workflow' overflow row)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+
+uiObjectDefinitions:
+  contextActionBar:
+    meaning: Horizontal action region rendered directly below the global topNavigationBar while the user is on a primary project route ('/project/{id}' or '/project/{id}/workflows') or a workflow-scoped route (pathname '/workflow/{id}' or '/workflow/{id}/...' for workflow sub-views); exposes context-specific primary actions including editPencilButton on project and workflow routes, optional 'View settings' on workflow routes where applicable, and contextActionBarOverflowTrigger; additional controls may be added over time.
+  editPencilButton:
+    meaning: Same canonical pencil control as editPencilButton in project_create_edit_form_requirements_v1.yaml and workflow_edit_form_requirements_v1.yaml; on project routes it appears on contextActionBar and Owner or Editor click opens editProjectDialog per FR-PROJ-FORM-003; on workflow-scoped routes it appears on contextActionBar and Owner or Editor click opens editWorkflowDialog per FR-WF-FORM-001 in workflow_edit_form_requirements_v1.yaml.
+  contextActionBarAddContributorsButton:
+    meaning: Distinct control on contextActionBar on project routes with user-visible label 'Add CourseFlow user'; opens the same addContributorsDialog as projectOverviewAddContributorsButton in project_overview_requirements_v1.yaml when actionable. Contributor-add outcomes and dialog field behaviour are defined there (FR-PROJ-OV-002, FR-PROJ-OV-004). Owner and Editor may click it; Viewer and Commenter see it read-only on contextActionBar (not actionable) per FR-CAB-002.
+  contextActionBarOverflowTrigger:
+    meaning: Icon-only overflow control on contextActionBar (more-options / '...' pattern) that opens contextActionBarOverflowMenu when clicked.
+  contextActionBarOverflowMenu:
+    meaning: Menu surface opened from contextActionBarOverflowTrigger; contains only context-specific rows; closes after a row selection or when the user dismisses the menu per product conventions.
+  contextActionBarOverflowItemArchiveProject:
+    meaning: The only row in contextActionBarOverflowMenu when the current context is a project route; user-visible label is 'Archive project'.
+  contextActionBarOverflowItemArchiveWorkflow:
+    meaning: Row in contextActionBarOverflowMenu when the current context is a workflow route; user-visible label is 'Archive workflow'.
+  contextActionBarOverflowItemCopyWorkflow:
+    meaning: Row in contextActionBarOverflowMenu when the current context is a workflow-scoped route; user-visible label is 'Copy workflow'. Actionable for Owner, Editor, Viewer, and Commenter with collaboration access on the workflow, and also actionable for users with read-only access when the parent project is published and the product exposes copy for that viewer context per FR-CAB-005 and FR-WF-COPY-001.
+  workflowViewSettingsTrigger:
+    meaning: Control on contextActionBar on workflow routes that opens workflowViewSettingsMenu when visible; user-visible label follows design ('View settings').
+  workflowViewSettingsMenu:
+    meaning: Menu opened from workflowViewSettingsTrigger; which rows are offered depends on the active workflow sub-view ('Overview', 'Workflow', or 'Outcomes') per the 'View settings' table in tests/docs/__ARCHIVE/functional-requirements.md.
+  workflowJumpToTrigger:
+    meaning: Control on contextActionBar visible on the workflow 'Workflow' sub-view with user-visible label 'Jump to'; opens workflowJumpToMenu.
+  workflowJumpToMenu:
+    meaning: Dropdown menu opened from workflowJumpToTrigger that lists the workflow's sections as clickable rows.
+  workflowJumpToMenuSectionItem:
+    meaning: A section row inside workflowJumpToMenu; clicking it scrolls the user to that corresponding section in the workflow view.
+
+locatorMappings:
+  contextActionBar:
+    strategy: null
+    confidence: unresolved
+  editPencilButton:
+    strategy: null
+    confidence: unresolved
+  contextActionBarAddContributorsButton:
+    strategy: null
+    confidence: unresolved
+  contextActionBarOverflowTrigger:
+    strategy: null
+    confidence: unresolved
+  contextActionBarOverflowMenu:
+    strategy: null
+    confidence: unresolved
+  contextActionBarOverflowItemArchiveProject:
+    strategy: null
+    confidence: unresolved
+  contextActionBarOverflowItemArchiveWorkflow:
+    strategy: null
+    confidence: unresolved
+  contextActionBarOverflowItemCopyWorkflow:
+    strategy: null
+    confidence: unresolved
+  workflowViewSettingsTrigger:
+    strategy: null
+    confidence: unresolved
+  workflowViewSettingsMenu:
+    strategy: null
+    confidence: unresolved
+  workflowJumpToTrigger:
+    strategy: null
+    confidence: unresolved
+  workflowJumpToMenu:
+    strategy: null
+    confidence: unresolved
+  workflowJumpToMenuSectionItem:
+    strategy: null
+    confidence: unresolved
+
+requirements:
+  - id: FR-CAB-001
+    title: contextActionBar on project routes
+
+    designEvidence:
+      - FIGMA-CAB-PROJECT-ACTION-BAR
+
+    actors:
+      - user
+      - owner
+      - editor
+      - viewer
+      - commenter
+
+    uiObjects:
+      - contextActionBar
+
+    preconditions:
+      - current route matches route pattern '/project/{id}' or '/project/{id}/workflows'
+      - user has access to that project
+
+    trigger: []
+
+    mainFlow:
+      - system renders contextActionBar directly below topNavigationBar for the active project route
+      - contextActionBar remains available when switching between project sub-views 'Overview' and 'Workflows' via projectViewTabSelector (same bar contract on both routes)
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user is on '/project/{id}' or '/project/{id}/workflows' with access, contextActionBar is visible below topNavigationBar
+
+    openQuestions: []
+
+  - id: FR-CAB-002
+    title: Project contextActionBar primary actions (edit pencil, add contributors, overflow)
+
+    designEvidence:
+      - FIGMA-CAB-PROJECT-ACTION-BAR
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+
+    uiObjects:
+      - contextActionBar
+      - editPencilButton
+      - contextActionBarAddContributorsButton
+      - contextActionBarOverflowTrigger
+
+    preconditions:
+      - FR-CAB-001 preconditions hold
+
+    trigger: []
+
+    mainFlow:
+      - on project routes, contextActionBar includes editPencilButton, contextActionBarAddContributorsButton, and contextActionBarOverflowTrigger for every project collaborator role (Owner, Editor, Viewer, Commenter)
+      - Owner and Editor may click editPencilButton and contextActionBarAddContributorsButton (editPencilButton opens editProjectDialog per FR-PROJ-FORM-003 in project_create_edit_form_requirements_v1.yaml)
+      - only Owner may click contextActionBarOverflowTrigger on project routes; archiving a project is Owner-only per tests/docs/__ARCHIVE/functional-requirements.md, so Editor has contextActionBarOverflowTrigger read-only (visible, not actionable)
+      - Viewer and Commenter see editPencilButton, contextActionBarAddContributorsButton, and contextActionBarOverflowTrigger on contextActionBar but all three are read-only (visible, not actionable); addContributorsDialog does not open from contextActionBarAddContributorsButton; contextActionBarOverflowMenu does not open from contextActionBarOverflowTrigger
+
+    roleBehavior:
+      owner:
+        contextActionBarAddContributorsButton: available
+        editPencilButton: available
+        contextActionBarOverflowTrigger: available
+      editor:
+        contextActionBarAddContributorsButton: available
+        editPencilButton: available
+        contextActionBarOverflowTrigger: readOnly
+      viewer:
+        contextActionBarAddContributorsButton: readOnly
+        editPencilButton: readOnly
+        contextActionBarOverflowTrigger: readOnly
+      commenter:
+        contextActionBarAddContributorsButton: readOnly
+        editPencilButton: readOnly
+        contextActionBarOverflowTrigger: readOnly
+
+    acceptanceCriteria:
+      - given any Owner, Editor, Viewer, or Commenter on a project route, editPencilButton, contextActionBarAddContributorsButton, and contextActionBarOverflowTrigger are visible on contextActionBar (contextActionBarAddContributorsButton label is 'Add CourseFlow user')
+      - given Owner, editPencilButton, contextActionBarAddContributorsButton, and contextActionBarOverflowTrigger are each actionable per FR-PROJ-FORM-003 for editPencilButton and per FR-PROJ-OV-002 for contributor-add entry via contextActionBarAddContributorsButton (same dialog as projectOverviewAddContributorsButton)
+      - given Editor, editPencilButton and contextActionBarAddContributorsButton are actionable per FR-PROJ-FORM-003 and FR-PROJ-OV-002 respectively; contextActionBarOverflowTrigger is read-only (project archive is Owner-only)
+      - given Viewer or Commenter, editPencilButton, contextActionBarAddContributorsButton, and contextActionBarOverflowTrigger are each read-only (not actionable); addContributorsDialog does not open when user attempts to click contextActionBarAddContributorsButton; contextActionBarOverflowMenu does not open when user attempts to click contextActionBarOverflowTrigger
+
+    openQuestions: []
+
+  - id: FR-CAB-003
+    title: Project overflow menu
+
+    designEvidence:
+      - FIGMA-CAB-PROJECT-ACTION-BAR
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+
+    uiObjects:
+      - contextActionBar
+      - contextActionBarOverflowTrigger
+      - contextActionBarOverflowMenu
+      - contextActionBarOverflowItemArchiveProject
+
+    preconditions:
+      - FR-CAB-001 preconditions hold
+
+    trigger:
+      - user clicks contextActionBarOverflowTrigger when that control is actionable per FR-CAB-002 (Owner only on project routes)
+
+    mainFlow:
+      - when user is Owner and clicks contextActionBarOverflowTrigger, system opens contextActionBarOverflowMenu
+      - contextActionBarOverflowMenu lists exactly one selectable row contextActionBarOverflowItemArchiveProject labeled 'Archive project'
+
+    roleBehavior:
+      owner:
+        contextActionBarOverflowTrigger: available
+        contextActionBarOverflowItemArchiveProject: available
+      editor:
+        contextActionBarOverflowTrigger: readOnly
+      viewer:
+        contextActionBarOverflowTrigger: readOnly
+      commenter:
+        contextActionBarOverflowTrigger: readOnly
+
+    acceptanceCriteria:
+      - given user is Owner and clicks contextActionBarOverflowTrigger on a project route, contextActionBarOverflowMenu opens and shows exactly one row labeled 'Archive project'
+      - given user is Owner, contextActionBarOverflowItemArchiveProject is actionable
+      - given user is Editor, Viewer, or Commenter, contextActionBarOverflowTrigger is read-only per FR-CAB-002 and contextActionBarOverflowMenu does not open on click attempt
+
+    openQuestions: []
+
+  - id: FR-CAB-004
+    title: contextActionBar on workflow routes ('Overview', 'Workflow', 'Outcomes')
+
+    designEvidence:
+      - FIGMA-CAB-WF-OVERVIEW
+      - FIGMA-CAB-WF-WORKFLOW-VIEW-SETTINGS
+      - FIGMA-CAB-WF-OUTCOMES-VIEW-SETTINGS
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+
+    uiObjects:
+      - contextActionBar
+
+    preconditions:
+      - current route pathname is exactly '/workflow/{id}' or matches '/workflow/{id}/...' (non-empty suffix path segments for workflow sub-views such as overview or outcomes; product may add further segments over time)
+      - user has access to that workflow
+
+    trigger: []
+
+    mainFlow:
+      - system renders contextActionBar directly below topNavigationBar for the active workflow route
+      - contextActionBar includes editPencilButton, contextActionBarOverflowTrigger, and workflowViewSettingsTrigger; detailed editPencilButton behavior is specified in workflow_edit_form_requirements_v1.yaml FR-WF-FORM-001
+      - when active workflow sub-view is 'Workflow', contextActionBar also includes workflowJumpToTrigger; on other workflow sub-views this control is not shown
+      - contextActionBar is shown for workflow sub-views 'Overview', 'Workflow', and 'Outcomes' (same shell across views; inner controls may differ per FR-CAB-005 and FR-CAB-006)
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user is on a workflow-scoped route ('/workflow/{id}' or '/workflow/{id}/...'), contextActionBar is visible below topNavigationBar for each of the workflow sub-views in scope
+
+    openQuestions: []
+
+  - id: FR-CAB-005
+    title: Workflow overflow menu rows ('Archive workflow', 'Copy workflow')
+
+    designEvidence:
+      - FIGMA-CAB-WF-WORKFLOW-VIEW-SETTINGS
+      - FIGMA-CAB-WF-OUTCOMES-VIEW-SETTINGS
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+
+    uiObjects:
+      - contextActionBar
+      - contextActionBarOverflowTrigger
+      - contextActionBarOverflowMenu
+      - contextActionBarOverflowItemArchiveWorkflow
+      - contextActionBarOverflowItemCopyWorkflow
+
+    preconditions:
+      - FR-CAB-004 preconditions hold
+
+    trigger:
+      - user clicks contextActionBarOverflowTrigger
+
+    mainFlow:
+      - Owner, Editor, Viewer, and Commenter may click contextActionBarOverflowTrigger on workflow-scoped routes to open contextActionBarOverflowMenu; users with read-only access to the workflow when the parent project is published may also click contextActionBarOverflowTrigger when the product exposes the overflow control for that published-project viewing context
+      - contextActionBarOverflowMenu lists contextActionBarOverflowItemArchiveWorkflow labeled 'Archive workflow'
+      - contextActionBarOverflowMenu lists contextActionBarOverflowItemCopyWorkflow labeled 'Copy workflow'
+      - archiving a workflow is Owner-only per tests/docs/__ARCHIVE/functional-requirements.md; contextActionBarOverflowItemArchiveWorkflow is actionable for Owner only and read-only for Editor, Viewer, and Commenter when shown in the menu
+      - contextActionBarOverflowItemCopyWorkflow is actionable for Owner, Editor, Viewer, and Commenter with collaboration roles on the workflow, and is also actionable for read-only viewers of the workflow when the parent project is published and the product includes copy for that context (see workflow_copy_requirements_v1.yaml FR-WF-COPY-001)
+      - no additional overflow rows exist in this product scope beyond those two
+      - when Owner clicks contextActionBarOverflowItemArchiveWorkflow, post-click behaviour is specified in workflow_archive_requirements_v1.yaml (FR-WF-ARCH-001 onward)
+      - when user clicks contextActionBarOverflowItemCopyWorkflow, post-click behaviour is specified in workflow_copy_requirements_v1.yaml (FR-WF-COPY-001 onward)
+
+    roleBehavior:
+      owner:
+        contextActionBarOverflowTrigger: available
+        contextActionBarOverflowItemArchiveWorkflow: available
+        contextActionBarOverflowItemCopyWorkflow: available
+      editor:
+        contextActionBarOverflowTrigger: available
+        contextActionBarOverflowItemArchiveWorkflow: readOnly
+        contextActionBarOverflowItemCopyWorkflow: available
+      viewer:
+        contextActionBarOverflowTrigger: available
+        contextActionBarOverflowItemArchiveWorkflow: readOnly
+        contextActionBarOverflowItemCopyWorkflow: available
+      commenter:
+        contextActionBarOverflowTrigger: available
+        contextActionBarOverflowItemArchiveWorkflow: readOnly
+        contextActionBarOverflowItemCopyWorkflow: available
+
+    acceptanceCriteria:
+      - given user is Owner, Editor, Viewer, or Commenter and clicks contextActionBarOverflowTrigger on a workflow-scoped route, contextActionBarOverflowMenu opens and shows exactly two rows with labels 'Archive workflow' and 'Copy workflow' in that top-to-bottom order
+      - given user has read-only access to the workflow because the parent project is published and the product exposes contextActionBarOverflowTrigger for that context, user may open contextActionBarOverflowMenu; contextActionBarOverflowItemCopyWorkflow is actionable (other rows such as 'Archive workflow' follow product rules for that viewer context per openQuestions)
+      - given user is Owner, contextActionBarOverflowItemArchiveWorkflow is actionable
+      - given user is Editor, Viewer, or Commenter, contextActionBarOverflowItemArchiveWorkflow is visible in the menu but read-only (not actionable)
+      - given user is Owner, Editor, Viewer, or Commenter, contextActionBarOverflowItemCopyWorkflow is actionable
+
+    openQuestions:
+      - For read-only published-project viewers, confirm whether 'Archive workflow' appears read-only, is omitted, or is hidden; archive remains Owner-only for collaborators per mainFlow.
+
+
+  - id: FR-CAB-006
+    title: Workflow 'View settings' on contextActionBar (visibility by sub-view)
+
+    designEvidence:
+      - FIGMA-CAB-WF-OVERVIEW
+      - FIGMA-CAB-WF-WORKFLOW-VIEW-SETTINGS
+      - FIGMA-CAB-WF-OUTCOMES-VIEW-SETTINGS
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+
+    uiObjects:
+      - contextActionBar
+      - workflowViewSettingsTrigger
+      - workflowViewSettingsMenu
+
+    preconditions:
+      - FR-CAB-004 preconditions hold
+
+    trigger:
+      - user clicks workflowViewSettingsTrigger when that control is visible
+
+    mainFlow:
+      - when active workflow sub-view is 'Overview', workflowViewSettingsTrigger is not shown on contextActionBar (hidden for this view per tests/docs/__ARCHIVE/functional-requirements.md)
+      - when active workflow sub-view is 'Workflow' or 'Outcomes', workflowViewSettingsTrigger is visible on contextActionBar and opens workflowViewSettingsMenu when actionable
+      - workflowViewSettingsMenu row set matches the 'View settings' table for the active sub-view in tests/docs/__ARCHIVE/functional-requirements.md (for example expand/collapse and tags rows on 'Workflow' and 'Outcomes' views)
+
+    roleBehavior:
+      owner:
+        workflowViewSettingsTrigger: available
+      editor:
+        workflowViewSettingsTrigger: available
+      viewer:
+        workflowViewSettingsTrigger: readOnly
+      commenter:
+        workflowViewSettingsTrigger: readOnly
+
+    acceptanceCriteria:
+      - given workflow sub-view is 'Overview', workflowViewSettingsTrigger is not visible
+      - given workflow sub-view is 'Workflow' or 'Outcomes', workflowViewSettingsTrigger is visible; given Owner or Editor, clicking it opens workflowViewSettingsMenu
+      - given workflow sub-view is 'Workflow' or 'Outcomes', given Viewer or Commenter, workflowViewSettingsTrigger is read-only and workflowViewSettingsMenu does not open on click attempt
+
+    openQuestions:
+      - Role-specific read-only rules for individual workflowViewSettingsMenu rows (if any) are not fully specified in source materials for this artifact.
+
+  - id: FR-CAB-007
+    title: Workflow 'Jump to' on contextActionBar scrolls to selected section
+
+    designEvidence:
+      - FIGMA-CAB-WF-WORKFLOW-VIEW-SETTINGS
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - contextActionBar
+      - workflowJumpToTrigger
+      - workflowJumpToMenu
+      - workflowJumpToMenuSectionItem
+
+    preconditions:
+      - FR-CAB-004 preconditions hold
+      - active workflow sub-view is 'Workflow'
+      - workflow contains at least one section
+      - user has workflow-route access (contributor role, or normal user when parent project is published)
+
+    trigger:
+      - user clicks workflowJumpToTrigger, then clicks workflowJumpToMenuSectionItem
+
+    mainFlow:
+      - workflowJumpToTrigger is visible on contextActionBar with label 'Jump to'
+      - clicking workflowJumpToTrigger opens workflowJumpToMenu
+      - workflowJumpToMenu lists all sections of the active workflow as workflowJumpToMenuSectionItem rows
+      - clicking a workflowJumpToMenuSectionItem scrolls the user to the matching section in the 'Workflow' view
+
+    roleBehavior:
+      user:
+        workflowJumpToTrigger: available
+      owner:
+        workflowJumpToTrigger: available
+      editor:
+        workflowJumpToTrigger: available
+      viewer:
+        workflowJumpToTrigger: available
+      commenter:
+        workflowJumpToTrigger: available
+
+    acceptanceCriteria:
+      - given workflow sub-view is 'Workflow', workflowJumpToTrigger is visible with label 'Jump to'
+      - given user clicks workflowJumpToTrigger, workflowJumpToMenu opens
+      - given workflowJumpToMenu is open, all workflow sections are listed as selectable workflowJumpToMenuSectionItem rows
+      - given user clicks a workflowJumpToMenuSectionItem, viewport scroll position moves to that corresponding section
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-CAB-PROJECT-ACTION-BAR
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=3566-42791&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-CAB-WF-OVERVIEW
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-94010&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-CAB-WF-WORKFLOW-VIEW-SETTINGS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=4452-72641&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-CAB-WF-OUTCOMES-VIEW-SETTINGS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=4452-72658&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-CAB-WF-ARCHIVE-WORKFLOW-MODAL
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-112526&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-CAB-WF-COPY-WORKFLOW
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5679-100738&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-CAB-WF-COPY-SELECT-PROJECT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5716-49665&t=6weYZA8hUf6tm7DF-1

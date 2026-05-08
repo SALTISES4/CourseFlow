@@ -1,0 +1,544 @@
+# Normalized requirements: workflow 'Overview' view metadata (activity, course, program)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Workflow Metadata + Views/Overview sections)
+# Application code evidence: react/src/components/pages/Workspace/Workflow/WorkflowTabs/hooks/useWorkflowTabs.tsx; react/src/components/views/WorkflowView/OverviewView/index.tsx
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference:
+#   - tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (workflow header-level controls on contextActionBar)
+#   - tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml (edit workflow dialog launched from editPencilButton)
+#   - tests/docs/requirements/original/workflow_header_requirements_v1.yaml (workflow top section: title, favourite toggle, and tab selector across sub-views)
+#   - tests/docs/requirements/original/project_overview_requirements_v1.yaml (project-level publish/visibility and contributor inheritance context)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+
+uiObjectDefinitions:
+  workflowOverviewView:
+    meaning: The 'Overview' sub-view of a workflow route where workflow metadata is displayed and, for allowed roles, editable.
+  workflowMetadataSection:
+    meaning: Container region(s) inside workflowOverviewView that group metadata fields and switches.
+  workflowMetadataFieldDescription:
+    meaning: Rich text metadata field for workflow description in workflowOverviewView.
+  workflowMetadataFieldCode:
+    meaning: Metadata field for workflow code within workflowMetadataSection in workflowOverviewView; available on course and program workflows only (not shown on activity workflows).
+  workflowMetadataSwitchCalculateTimeAutomatically:
+    meaning: Switch control labeled 'Calculate time automatically' in workflowOverviewView.
+  workflowMetadataFieldTime:
+    meaning: Metadata field of type duration for 'Time' in workflowOverviewView.
+  workflowMetadataSwitchCalculatePonderationAutomatically:
+    meaning: Program-only switch control labeled 'Calculate ponderation automatically' in the 'Ponderation' section of workflowOverviewView.
+  workflowMetadataFieldIndividualTime:
+    meaning: Metadata field of type duration labeled 'Individual' in the 'Ponderation' section of workflowOverviewView on course workflows; on program workflows, the same duration field in the 'Ponderation' section (editability per FR-WF-OV-004).
+  workflowMetadataFieldPracticalTime:
+    meaning: Metadata field of type duration labeled 'Practical' in the 'Ponderation' section of workflowOverviewView on course workflows; on program workflows, the same duration field in the 'Ponderation' section (editability per FR-WF-OV-004).
+  workflowMetadataFieldTheoryTime:
+    meaning: Metadata field of type duration labeled 'Theory' in the 'Ponderation' section of workflowOverviewView on course workflows; on program workflows, the same duration field in the 'Ponderation' section (editability per FR-WF-OV-004).
+  workflowMetadataSwitchCalculateCreditsAutomatically:
+    meaning: Program-only switch control labeled 'Calculate credits automatically' in workflowOverviewView.
+  workflowMetadataFieldCredits:
+    meaning: Metadata field of type number for 'Credits' in workflowOverviewView on course and program workflows; values are whole numbers only (integers); on courses there is no automatic calculation option for credits (manual entry only); on program workflows, optional auto-calculation is controlled by workflowMetadataSwitchCalculateCreditsAutomatically (see FR-WF-OV-005).
+  workflowMetadataSwitchCalculateClassificationAutomatically:
+    meaning: Program-only switch control labeled 'Calculate classification automatically' in workflowOverviewView.
+  workflowMetadataFieldGeneralTime:
+    meaning: Metadata field of type duration for 'General time' in workflowOverviewView (program scope; classification section).
+  workflowMetadataFieldSpecificTime:
+    meaning: Metadata field of type duration for 'Specific time' in workflowOverviewView (program scope; classification section).
+  workflowMetadataClassificationWarningBanner:
+    meaning: Banner on program workflowOverviewView when the combined duration total of workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime does not equal the duration in workflowMetadataFieldTime; visible copy is 'Total of classification hours does not match program time'.
+  workflowMetadataWarningBanner:
+    meaning: Banner on course/program workflowOverviewView when the combined duration total of workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, and workflowMetadataFieldIndividualTime does not equal the duration in workflowMetadataFieldTime; visible copy is 'Total of ponderation hours does not match [workflow type] time.' with [workflow type] replaced by the workflow type label (activity, course, or program).
+  workflowPermissionsPanel:
+    meaning: Read-only permissions/contributors region shown on workflowOverviewView that mirrors the same permissions data as the parent project; at workflow level this phase does not allow adding users, removing users, or changing contributor roles.
+
+locatorMappings:
+  workflowOverviewView:
+    strategy: "Workflow tab route '/workflow/{id}' (index tab in workflow tabs)"
+    confidence: inferred
+  workflowMetadataSection:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldDescription:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldCode:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataSwitchCalculateTimeAutomatically:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldTime:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataSwitchCalculatePonderationAutomatically:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldIndividualTime:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldPracticalTime:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldTheoryTime:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataSwitchCalculateCreditsAutomatically:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldCredits:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataSwitchCalculateClassificationAutomatically:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldGeneralTime:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldSpecificTime:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataClassificationWarningBanner:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataWarningBanner:
+    strategy: null
+    confidence: unresolved
+  workflowPermissionsPanel:
+    strategy: "OverviewView renders UserPermissions panel in current code"
+    confidence: inferred
+
+requirements:
+  - id: FR-WF-OV-001
+    title: Workflow overview view is available
+
+    designEvidence:
+      - FIGMA-WF-OV-ACTIVITY-OWNER-EDITOR
+      - FIGMA-WF-OV-COURSE-OWNER-EDITOR
+      - FIGMA-WF-OV-COURSE-VIEWER-COMMENTER
+      - FIGMA-WF-OV-PROGRAM-OWNER-EDITOR
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - workflowOverviewView
+      - workflowMetadataSection
+
+    preconditions:
+      - current route is a workflow route with active sub-view 'Overview'
+
+    trigger:
+      - user opens workflow route and selects 'Overview' tab if not already active
+
+    mainFlow:
+      - system renders workflowOverviewView
+      - workflowOverviewView displays workflow metadata content in workflowMetadataSection
+      - workflow top section behavior (title, favourite toggle, tab selector, and sub-view switching) is defined in tests/docs/requirements/original/workflow_header_requirements_v1.yaml
+
+    roleBehavior:
+      owner:
+        workflowOverviewView: available
+      editor:
+        workflowOverviewView: available
+      viewer:
+        workflowOverviewView: available
+      commenter:
+        workflowOverviewView: available
+      user:
+        workflowOverviewView: available
+
+    acceptanceCriteria:
+      - given sub-view is 'Overview', workflowOverviewView is visible
+
+    openQuestions: []
+
+  - id: FR-WF-OV-002
+    title: Workflow overview metadata editability follows role permissions
+
+    designEvidence:
+      - FIGMA-WF-OV-ACTIVITY-OWNER-EDITOR
+      - FIGMA-WF-OV-COURSE-OWNER-EDITOR
+      - FIGMA-WF-OV-COURSE-VIEWER-COMMENTER
+      - FIGMA-WF-OV-PROGRAM-OWNER-EDITOR
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - workflowOverviewView
+      - workflowMetadataSection
+      - workflowMetadataFieldDescription
+      - workflowMetadataFieldCode
+
+    preconditions:
+      - FR-WF-OV-001 preconditions hold
+
+    trigger: []
+
+    mainFlow:
+      - when workflow description data exists, workflowMetadataFieldDescription is displayed in workflowOverviewView
+      - workflowMetadataFieldDescription is not editable directly on workflowOverviewView for any role
+      - owner and editor can update workflow description only through editWorkflowDialog flow defined in tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml (FR-WF-FORM-001)
+      - on course and program workflows, workflowMetadataFieldCode is displayed in workflowMetadataSection within workflowOverviewView
+      - on activity workflows, workflowMetadataFieldCode is not shown
+      - on course and program workflows, workflowMetadataFieldCode is editable for owner/editor and read-only for viewer/commenter/user
+      - workflow title display and edit-entry behavior are defined in tests/docs/requirements/original/workflow_header_requirements_v1.yaml and tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml (FR-WF-FORM-001)
+      - viewer, commenter, and user can view but cannot edit workflow metadata fields
+      - no workflow overview metadata fields are intentionally hidden from viewer, commenter, or user; they see the same field set as owner and editor for that workflow type, subject to read-only rules in this requirement and related overview requirements
+
+    roleBehavior:
+      owner:
+        workflowMetadataFieldDescription: readOnly
+        workflowMetadataFieldCode: editable
+      editor:
+        workflowMetadataFieldDescription: readOnly
+        workflowMetadataFieldCode: editable
+      viewer:
+        workflowMetadataFieldDescription: readOnly
+        workflowMetadataFieldCode: readOnly
+      commenter:
+        workflowMetadataFieldDescription: readOnly
+        workflowMetadataFieldCode: readOnly
+      user:
+        workflowMetadataFieldDescription: readOnly
+        workflowMetadataFieldCode: readOnly
+
+    acceptanceCriteria:
+      - given workflow description has a value, workflowMetadataFieldDescription is visible on workflowOverviewView
+      - given any actor on workflowOverviewView, workflowMetadataFieldDescription is read-only and cannot be edited in place
+      - given owner or editor needs to change description, update path is editWorkflowDialog defined in tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml (FR-WF-FORM-001)
+      - given workflow type is course or program, workflowMetadataFieldCode is visible in workflowMetadataSection on workflowOverviewView
+      - given workflow type is activity, workflowMetadataFieldCode is not visible
+      - given workflow type is course or program and actor is owner/editor, workflowMetadataFieldCode is editable
+      - given workflow type is course or program and actor is viewer/commenter/user, workflowMetadataFieldCode is read-only
+      - given viewer, commenter, or user on workflowOverviewView, metadata fields are read-only
+      - given viewer, commenter, or user, no overview metadata field is intentionally hidden or omitted for that actor (read-only where applicable)
+
+    openQuestions: []
+
+  - id: FR-WF-OV-003
+    title: Time auto-calculation switch controls editability of 'Time' field
+
+    designEvidence:
+      - FIGMA-WF-OV-ACTIVITY-OWNER-EDITOR
+      - FIGMA-WF-OV-ACTIVITY-OWNER-EDITOR-AUTO-CALC-ON
+      - FIGMA-WF-OV-COURSE-OWNER-EDITOR
+      - FIGMA-WF-OV-PROGRAM-OWNER-EDITOR
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - workflowMetadataSwitchCalculateTimeAutomatically
+      - workflowMetadataFieldTime
+
+    preconditions:
+      - FR-WF-OV-001 preconditions hold
+
+    trigger:
+      - owner or editor toggles workflowMetadataSwitchCalculateTimeAutomatically
+
+    mainFlow:
+      - workflowMetadataFieldTime is a duration-type field
+      - post-create default switch states are defined in tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml (FR-WF-CREATE-STEPPER-005 and FR-WF-CREATE-STEPPER-006)
+      - when workflowMetadataSwitchCalculateTimeAutomatically is OFF, workflowMetadataFieldTime is editable for owner/editor
+      - when workflowMetadataSwitchCalculateTimeAutomatically is ON, workflowMetadataFieldTime is read-only and displayed value is calculated from workflow node time values
+      - when owner or editor toggles workflowMetadataSwitchCalculateTimeAutomatically, the duration value shown in workflowMetadataFieldTime updates synchronously in the UI (no separate save or apply step is required for that display update)
+      - viewer/commenter/user cannot edit either control and see resulting values read-only
+
+    roleBehavior:
+      owner:
+        workflowMetadataSwitchCalculateTimeAutomatically: available
+        workflowMetadataFieldTime: editableWhenSwitchOff
+      editor:
+        workflowMetadataSwitchCalculateTimeAutomatically: available
+        workflowMetadataFieldTime: editableWhenSwitchOff
+      viewer:
+        workflowMetadataSwitchCalculateTimeAutomatically: readOnly
+        workflowMetadataFieldTime: readOnly
+      commenter:
+        workflowMetadataSwitchCalculateTimeAutomatically: readOnly
+        workflowMetadataFieldTime: readOnly
+      user:
+        workflowMetadataSwitchCalculateTimeAutomatically: readOnly
+        workflowMetadataFieldTime: readOnly
+
+    acceptanceCriteria:
+      - given switch is OFF and actor is owner/editor, workflowMetadataFieldTime is editable
+      - given switch is ON and actor is owner/editor, workflowMetadataFieldTime is read-only and shows calculated value
+      - given actor is viewer/commenter/user, switch and field are read-only regardless of switch state
+      - given owner or editor toggles workflowMetadataSwitchCalculateTimeAutomatically, workflowMetadataFieldTime updates synchronously to reflect the new mode and value
+
+    openQuestions: []
+
+  - id: FR-WF-OV-004
+    title: Course/program ponderation fields and program auto-calculate behavior
+
+    designEvidence:
+      - FIGMA-WF-OV-COURSE-OWNER-EDITOR
+      - FIGMA-WF-OV-COURSE-OWNER-EDITOR-WARNING
+      - FIGMA-WF-OV-PROGRAM-OWNER-EDITOR
+      - FIGMA-WF-OV-PROGRAM-OWNER-EDITOR-WARNING
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - workflowMetadataSwitchCalculatePonderationAutomatically
+      - workflowMetadataFieldIndividualTime
+      - workflowMetadataFieldPracticalTime
+      - workflowMetadataFieldTheoryTime
+      - workflowMetadataFieldTime
+      - workflowMetadataWarningBanner
+
+    preconditions:
+      - FR-WF-OV-001 preconditions hold
+      - workflow type is course or program
+
+    trigger:
+      - owner or editor edits ponderation duration fields and/or toggles workflowMetadataSwitchCalculatePonderationAutomatically on program
+
+    mainFlow:
+      - on course and program workflows, the 'Ponderation' section shows three duration fields: workflowMetadataFieldTheoryTime ('Theory'), workflowMetadataFieldPracticalTime ('Practical'), and workflowMetadataFieldIndividualTime ('Individual'), which are editable for owner/editor
+      - on program workflows, there is an additional switch control: workflowMetadataSwitchCalculatePonderationAutomatically, which is editable for owner/editor
+      - on program workflows, when workflowMetadataSwitchCalculatePonderationAutomatically is OFF, those three duration fields in the 'Ponderation' section are editable for owner/editor
+      - on program workflows, when workflowMetadataSwitchCalculatePonderationAutomatically is ON, those three duration fields are read-only and their displayed values reflect ponderation calculated from the sum of values on individual workflow nodes (including linked courses)
+      - when the combined duration represented by workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, and workflowMetadataFieldIndividualTime is not equal to the duration represented by workflowMetadataFieldTime, workflowMetadataWarningBanner is shown; its message is 'Total of ponderation hours does not match [workflow type] time.' where [workflow type] is replaced by the workflow type label (activity, course, or program)
+      - example of a mismatch that triggers workflowMetadataWarningBanner—workflowMetadataFieldTheoryTime 40 hours, workflowMetadataFieldPracticalTime 60 hours, workflowMetadataFieldIndividualTime 80 hours (combined total 180 hours), and workflowMetadataFieldTime 150 hours
+
+    roleBehavior:
+      owner:
+        workflowMetadataFieldIndividualTime: editableByTypeAndSwitchState
+        workflowMetadataFieldPracticalTime: editableByTypeAndSwitchState
+        workflowMetadataFieldTheoryTime: editableByTypeAndSwitchState
+      editor:
+        workflowMetadataFieldIndividualTime: editableByTypeAndSwitchState
+        workflowMetadataFieldPracticalTime: editableByTypeAndSwitchState
+        workflowMetadataFieldTheoryTime: editableByTypeAndSwitchState
+      viewer:
+        workflowMetadataFieldIndividualTime: readOnly
+        workflowMetadataFieldPracticalTime: readOnly
+        workflowMetadataFieldTheoryTime: readOnly
+      commenter:
+        workflowMetadataFieldIndividualTime: readOnly
+        workflowMetadataFieldPracticalTime: readOnly
+        workflowMetadataFieldTheoryTime: readOnly
+      user:
+        workflowMetadataFieldIndividualTime: readOnly
+        workflowMetadataFieldPracticalTime: readOnly
+        workflowMetadataFieldTheoryTime: readOnly
+
+    acceptanceCriteria:
+      - given workflow type is course or program, the 'Ponderation' section shows Theory, Practical, and Individual as duration fields (workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, workflowMetadataFieldIndividualTime)
+      - given workflow type is course, workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, workflowMetadataFieldIndividualTime are editable
+      - given workflow type is program, workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, workflowMetadataFieldIndividualTime are editable for owner/editor when workflowMetadataSwitchCalculatePonderationAutomatically is OFF
+      - given workflow type is program and workflowMetadataSwitchCalculatePonderationAutomatically is ON, those three ponderation duration fields are read-only for owner/editor and their displayed values reflect ponderation derived from the sum of values on individual workflow nodes (including linked courses)
+      - given workflow type is course or program and actor is viewer/commenter/user, the three ponderation duration fields are read-only
+      - given workflow type is course or program, when the sum of the three ponderation duration values does not equal the duration in workflowMetadataFieldTime, workflowMetadataWarningBanner is visible
+      - given workflowMetadataWarningBanner is visible, its text is 'Total of ponderation hours does not match [workflow type] time.' with [workflow type] substituted by the current workflow type label (activity, course, or program)
+
+    openQuestions: []
+
+  - id: FR-WF-OV-005
+    title: Course and program credits number field; program auto-calculation switch
+
+    designEvidence:
+      - FIGMA-WF-OV-COURSE-OWNER-EDITOR
+      - FIGMA-WF-OV-COURSE-VIEWER-COMMENTER
+      - FIGMA-WF-OV-PROGRAM-OWNER-EDITOR
+      - FIGMA-WF-OV-PROGRAM-OWNER-EDITOR-WARNING
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - workflowMetadataSwitchCalculateCreditsAutomatically
+      - workflowMetadataFieldCredits
+
+    preconditions:
+      - FR-WF-OV-001 preconditions hold
+      - workflow type is course or program
+
+    trigger:
+      - on course workflows, owner or editor edits workflowMetadataFieldCredits
+      - on program workflows, owner or editor toggles workflowMetadataSwitchCalculateCreditsAutomatically and edits workflowMetadataFieldCredits where editable
+
+    mainFlow:
+      - on course workflows, workflowOverviewView shows workflowMetadataFieldCredits as a number field; there is no option to calculate credits automatically on courses; owner and editor can edit workflowMetadataFieldCredits
+      - workflowMetadataFieldCredits accepts and displays whole numbers only (no fractional credits), whether entered manually on courses or shown as calculated on programs when auto-calculate is ON
+      - on program workflows, workflowOverviewView shows workflowMetadataSwitchCalculateCreditsAutomatically and workflowMetadataFieldCredits
+      - on program workflows, when workflowMetadataSwitchCalculateCreditsAutomatically is OFF, workflowMetadataFieldCredits is editable for owner/editor
+      - on program workflows, when workflowMetadataSwitchCalculateCreditsAutomatically is ON, workflowMetadataFieldCredits is read-only and calculated from node or linked-courses values
+      - viewer/commenter/user cannot edit workflowMetadataFieldCredits; on program workflows they cannot edit workflowMetadataSwitchCalculateCreditsAutomatically
+
+    roleBehavior:
+      owner:
+        workflowMetadataFieldCredits: editableWhenSwitchOff
+      editor:
+        workflowMetadataFieldCredits: editableWhenSwitchOff
+      viewer:
+        workflowMetadataFieldCredits: readOnly
+      commenter:
+        workflowMetadataFieldCredits: readOnly
+      user:
+        workflowMetadataFieldCredits: readOnly
+
+    acceptanceCriteria:
+      - given workflow type is course, workflowMetadataSwitchCalculateCreditsAutomatically is not shown and workflowMetadataFieldCredits is editable for owner/editor
+      - given workflow type is program and workflowMetadataSwitchCalculateCreditsAutomatically is OFF, workflowMetadataFieldCredits is editable for owner/editor
+      - given workflow type is program and workflowMetadataSwitchCalculateCreditsAutomatically is ON, workflowMetadataFieldCredits is read-only and calculated
+      - given viewer/commenter/user, workflowMetadataFieldCredits is read-only on course and program workflows
+      - given viewer/commenter/user on a program workflow, workflowMetadataSwitchCalculateCreditsAutomatically is read-only
+      - given workflowMetadataFieldCredits is shown, its value is a whole number (integer) for manual entry on courses and for displayed calculated values on programs
+
+    openQuestions: []
+
+  - id: FR-WF-OV-006
+    title: Program classification auto-calculation switch and duration fields
+
+    designEvidence:
+      - FIGMA-WF-OV-PROGRAM-OWNER-EDITOR
+      - FIGMA-WF-OV-PROGRAM-OWNER-EDITOR-WARNING
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - workflowMetadataSwitchCalculateClassificationAutomatically
+      - workflowMetadataFieldGeneralTime
+      - workflowMetadataFieldSpecificTime
+      - workflowMetadataFieldTime
+      - workflowMetadataClassificationWarningBanner
+
+    preconditions:
+      - FR-WF-OV-001 preconditions hold
+      - workflow type is program
+
+    trigger:
+      - owner or editor toggles workflowMetadataSwitchCalculateClassificationAutomatically and edits workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime where editable
+
+    mainFlow:
+      - workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are duration-type fields in the program overview classification controls
+      - when workflowMetadataSwitchCalculateClassificationAutomatically is OFF, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are editable for owner/editor
+      - when workflowMetadataSwitchCalculateClassificationAutomatically is ON, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are read-only and calculated from node classification time values
+      - when the combined duration represented by workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime is not equal to the duration represented by workflowMetadataFieldTime, workflowMetadataClassificationWarningBanner is shown with message 'Total of classification hours does not match program time'
+      - viewer/commenter/user cannot edit workflowMetadataSwitchCalculateClassificationAutomatically, workflowMetadataFieldGeneralTime, or workflowMetadataFieldSpecificTime
+
+    roleBehavior:
+      owner:
+        workflowMetadataSwitchCalculateClassificationAutomatically: available
+        workflowMetadataFieldGeneralTime: editableWhenSwitchOff
+        workflowMetadataFieldSpecificTime: editableWhenSwitchOff
+      editor:
+        workflowMetadataSwitchCalculateClassificationAutomatically: available
+        workflowMetadataFieldGeneralTime: editableWhenSwitchOff
+        workflowMetadataFieldSpecificTime: editableWhenSwitchOff
+      viewer:
+        workflowMetadataSwitchCalculateClassificationAutomatically: readOnly
+        workflowMetadataFieldGeneralTime: readOnly
+        workflowMetadataFieldSpecificTime: readOnly
+      commenter:
+        workflowMetadataSwitchCalculateClassificationAutomatically: readOnly
+        workflowMetadataFieldGeneralTime: readOnly
+        workflowMetadataFieldSpecificTime: readOnly
+      user:
+        workflowMetadataSwitchCalculateClassificationAutomatically: readOnly
+        workflowMetadataFieldGeneralTime: readOnly
+        workflowMetadataFieldSpecificTime: readOnly
+
+    acceptanceCriteria:
+      - given owner/editor and workflowMetadataSwitchCalculateClassificationAutomatically is OFF, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are editable
+      - given owner/editor and workflowMetadataSwitchCalculateClassificationAutomatically is ON, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are read-only and calculated
+      - given viewer/commenter/user, workflowMetadataSwitchCalculateClassificationAutomatically, workflowMetadataFieldGeneralTime, and workflowMetadataFieldSpecificTime are read-only
+      - given workflow type is program, when the sum of workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime does not equal the duration in workflowMetadataFieldTime, workflowMetadataClassificationWarningBanner is visible
+      - given workflowMetadataClassificationWarningBanner is visible, its text is 'Total of classification hours does not match program time'
+
+    openQuestions: []
+
+  - id: FR-WF-OV-007
+    title: Workflow overview permissions panel visibility
+
+    designEvidence:
+      - FIGMA-WF-OV-ACTIVITY-OWNER-EDITOR
+      - FIGMA-WF-OV-COURSE-OWNER-EDITOR
+      - FIGMA-WF-OV-PROGRAM-OWNER-EDITOR
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - workflowPermissionsPanel
+
+    preconditions:
+      - FR-WF-OV-001 preconditions hold
+
+    trigger: []
+
+    mainFlow:
+      - workflowOverviewView shows workflowPermissionsPanel in overview content
+      - workflowPermissionsPanel displays the same permissions dataset as the parent project's projectOverviewPermissionsBlock
+      - all roles can view permissions data in workflowPermissionsPanel, but all controls are read-only
+      - workflow overview does not provide permission-management actions; users cannot add contributors, remove contributors, or modify contributor roles from this panel
+
+    roleBehavior:
+      owner:
+        workflowPermissionsPanel: readOnly
+      editor:
+        workflowPermissionsPanel: readOnly
+      viewer:
+        workflowPermissionsPanel: readOnly
+      commenter:
+        workflowPermissionsPanel: readOnly
+      user:
+        workflowPermissionsPanel: readOnly
+
+    acceptanceCriteria:
+      - given workflowOverviewView is visible, workflowPermissionsPanel is visible
+      - given workflowPermissionsPanel is shown, listed users and roles match the parent project's projectOverviewPermissionsBlock
+      - given any actor, workflowPermissionsPanel is read-only and does not allow adding contributors
+      - given any actor, workflowPermissionsPanel is read-only and does not allow removing contributors
+      - given any actor, workflowPermissionsPanel is read-only and does not allow changing user role assignments
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-WF-OV-ACTIVITY-OWNER-EDITOR
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-94010&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-OV-ACTIVITY-OWNER-EDITOR-AUTO-CALC-ON
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-102999&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-OV-COURSE-OWNER-EDITOR
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-103751&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-OV-COURSE-OWNER-EDITOR-WARNING
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-86352&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-OV-COURSE-VIEWER-COMMENTER
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-107411&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-OV-PROGRAM-OWNER-EDITOR
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-108254&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-OV-PROGRAM-OWNER-EDITOR-WARNING
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-108844&t=6weYZA8hUf6tm7DF-1

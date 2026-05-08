@@ -1,0 +1,179 @@
+# Normalized requirements: copy workflow (target project selection and completion)
+# Source: tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (FR-CAB-005 entry from contextActionBarOverflowItemCopyWorkflow); Figma copy flow frames.
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference:
+#   - tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (FR-CAB-004, FR-CAB-005)
+#   - tests/docs/requirements/original/project_overview_requirements_v1.yaml (project published vs private—read-only workflow viewing when published)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+
+uiObjectDefinitions:
+  contextActionBarOverflowItemCopyWorkflow:
+    meaning: Canonical overflow menu row labeled 'Copy workflow' on workflow-scoped routes; defined in context_action_bar_requirements_v1.yaml FR-CAB-005; actionable for Owner, Editor, Viewer, and Commenter with workflow collaboration access, and also actionable for users with read-only access to the workflow when the parent project is published and the product exposes copy for that viewer context (see FR-WF-COPY-001 preconditions).
+  copyWorkflowDialog:
+    meaning: Dialog or stepped surface opened after user clicks contextActionBarOverflowItemCopyWorkflow; first-step layout and fields per FIGMA-CAB-WF-COPY-WORKFLOW.
+  copyWorkflowDialogCancelButton:
+    meaning: Control that dismisses copyWorkflowDialog without creating a copy; placement and label per FIGMA-CAB-WF-COPY-WORKFLOW.
+  copyWorkflowDialogContinueButton:
+    meaning: Primary control on copyWorkflowDialog that advances the flow toward project selection when the first-step requirements are met; label per FIGMA-CAB-WF-COPY-WORKFLOW.
+  copyWorkflowSelectProjectPanel:
+    meaning: Step where user chooses the destination project for the copied workflow; layout and selection affordances per FIGMA-CAB-WF-COPY-SELECT-PROJECT.
+  copyWorkflowSelectProjectConfirmButton:
+    meaning: Primary control that completes copy after a project is selected when applicable; label per FIGMA-CAB-WF-COPY-SELECT-PROJECT.
+  copyWorkflowSelectProjectCancelButton:
+    meaning: Control that returns user to prior step or dismisses copy without completing when applicable; label per FIGMA-CAB-WF-COPY-SELECT-PROJECT.
+  globalMessageSnackbar:
+    meaning: Optional global snackbar for success or failure feedback after copy completes or fails; exact copy not specified in source for this artifact.
+
+locatorMappings:
+  contextActionBarOverflowItemCopyWorkflow:
+    strategy: null
+    confidence: unresolved
+  copyWorkflowDialog:
+    strategy: null
+    confidence: unresolved
+  copyWorkflowDialogCancelButton:
+    strategy: null
+    confidence: unresolved
+  copyWorkflowDialogContinueButton:
+    strategy: null
+    confidence: unresolved
+  copyWorkflowSelectProjectPanel:
+    strategy: null
+    confidence: unresolved
+  copyWorkflowSelectProjectConfirmButton:
+    strategy: null
+    confidence: unresolved
+  copyWorkflowSelectProjectCancelButton:
+    strategy: null
+    confidence: unresolved
+  globalMessageSnackbar:
+    strategy: null
+    confidence: unresolved
+
+requirements:
+  - id: FR-WF-COPY-001
+    title: Copy workflow flow opens from overflow menu
+
+    designEvidence:
+      - FIGMA-CAB-WF-COPY-WORKFLOW
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+
+    uiObjects:
+      - contextActionBarOverflowItemCopyWorkflow
+      - copyWorkflowDialog
+      - copyWorkflowDialogCancelButton
+      - copyWorkflowDialogContinueButton
+
+    preconditions:
+      - current route pathname is exactly '/workflow/{id}' or matches '/workflow/{id}/...' (non-empty suffix path segments for workflow sub-views such as overview or outcomes; product may add further segments over time)
+      - contextActionBarOverflowMenu is open with contextActionBarOverflowItemCopyWorkflow visible
+      - any of the following holds—(1) user is Owner, Editor, Viewer, or Commenter on the workflow with contextActionBarOverflowItemCopyWorkflow actionable per context_action_bar_requirements_v1.yaml FR-CAB-005; (2) user has read-only access to the workflow because the parent project is published (project visibility per project_overview_requirements_v1.yaml) and the product surfaces contextActionBarOverflowItemCopyWorkflow as actionable for that viewing context
+
+    trigger:
+      - user clicks contextActionBarOverflowItemCopyWorkflow
+
+    mainFlow:
+      - system opens copyWorkflowDialog showing first-step content per FIGMA-CAB-WF-COPY-WORKFLOW
+      - copyWorkflowDialog includes copyWorkflowDialogCancelButton per design
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given trigger when preconditions (1) hold for Owner, Editor, Viewer, or Commenter per FR-CAB-005, copyWorkflowDialog is visible
+      - given trigger when preconditions (2) hold (read-only viewer of a workflow in a published parent project with copy exposed), copyWorkflowDialog is visible
+      - copyWorkflowDialogCancelButton is visible
+
+    openQuestions:
+      - Confirm required fields on the first step of copyWorkflowDialog (FIGMA-CAB-WF-COPY-WORKFLOW) before Continue is enabled.
+
+  - id: FR-WF-COPY-002
+    title: Select target project for copied workflow
+
+    designEvidence:
+      - FIGMA-CAB-WF-COPY-WORKFLOW
+      - FIGMA-CAB-WF-COPY-SELECT-PROJECT
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+
+    uiObjects:
+      - copyWorkflowDialog
+      - copyWorkflowDialogContinueButton
+      - copyWorkflowSelectProjectPanel
+      - copyWorkflowSelectProjectConfirmButton
+      - copyWorkflowSelectProjectCancelButton
+
+    preconditions:
+      - copyWorkflowDialog is open
+      - copyWorkflowDialogContinueButton is visible and actionable per FIGMA-CAB-WF-COPY-WORKFLOW
+
+    trigger:
+      - user clicks copyWorkflowDialogContinueButton
+
+    mainFlow:
+      - system shows copyWorkflowSelectProjectPanel per FIGMA-CAB-WF-COPY-SELECT-PROJECT
+      - copyWorkflowSelectProjectPanel includes copyWorkflowSelectProjectConfirmButton and copyWorkflowSelectProjectCancelButton per design
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given trigger, copyWorkflowSelectProjectPanel is visible
+      - copyWorkflowSelectProjectConfirmButton and copyWorkflowSelectProjectCancelButton are visible
+
+    openQuestions:
+      - Confirm whether project list is scoped to projects where the user may place the copy, and how empty or error states are shown.
+
+  - id: FR-WF-COPY-003
+    title: Complete or abandon copy workflow flow
+
+    designEvidence:
+      - FIGMA-CAB-WF-COPY-SELECT-PROJECT
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+
+    uiObjects:
+      - copyWorkflowDialog
+      - copyWorkflowSelectProjectPanel
+      - copyWorkflowSelectProjectConfirmButton
+      - copyWorkflowSelectProjectCancelButton
+      - copyWorkflowDialogCancelButton
+      - globalMessageSnackbar
+
+    preconditions:
+      - copyWorkflowSelectProjectPanel is visible
+
+    trigger:
+      - user clicks copyWorkflowSelectProjectConfirmButton, or user clicks copyWorkflowSelectProjectCancelButton or copyWorkflowDialogCancelButton
+
+    mainFlow:
+      - when user clicks copyWorkflowSelectProjectConfirmButton with a valid selection per design, system completes copy and closes copyWorkflowDialog; user-facing success feedback may appear via globalMessageSnackbar per product rules
+      - when user clicks copyWorkflowSelectProjectCancelButton or copyWorkflowDialogCancelButton to abandon per design, system dismisses the flow without creating a copy
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user abandons via cancel controls per trigger, copyWorkflowDialog is not visible afterward
+      - given user completes confirm with valid selection per design, copyWorkflowDialog is not visible afterward
+
+    openQuestions:
+      - Confirm exact success and failure snackbar copy and any navigation to the new workflow after copy.
+
+designEvidenceLinkTable:
+  - key: FIGMA-CAB-WF-COPY-WORKFLOW
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5679-100738&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-CAB-WF-COPY-SELECT-PROJECT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5716-49665&t=6weYZA8hUf6tm7DF-1

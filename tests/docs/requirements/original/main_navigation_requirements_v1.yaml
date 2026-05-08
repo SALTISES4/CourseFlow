@@ -1,0 +1,526 @@
+documentPreconditions:
+  - user is authenticated
+
+uiObjectDefinitions:
+  mainNavigation:
+    meaning: Global left shell for primary app navigation; wraps the collapse toggle and the inner navigation panel; root element uses stable test id main-nav in current implementation.
+  mainNavigationPanel:
+    meaning: Inner surface that lists primary destinations, optional favourites block, contextual workflow links, and help; hidden when main navigation is in collapsed presentation per current styles.
+  collapseToggle:
+    meaning: Floating control that toggles collapsed vs expanded main navigation; when expanded, shows back-arrow affordance (visible on hover of mainNavigation in current implementation); exposes aria-label 'collapse sidebar' in current implementation; same underlying control as expandIcon with different presentation when collapsed.
+  expandIcon:
+    meaning: Expand affordance shown at top-left when main navigation is collapsed; product-level name for the collapsed-state control; in current implementation the same element as collapseToggle with expand iconography.
+  brandLockup:
+    meaning: Product logo and product name label at the top of mainNavigationPanel.
+  homeNavItem:
+    meaning: Navigation row that routes to the home destination.
+  myLibraryNavItem:
+    meaning: Navigation row that routes to the library destination.
+  exploreNavItem:
+    meaning: Navigation row that routes to the explore destination.
+  favouritesSection:
+    meaning: Optional block listing favourited library objects and optional view-all affordance when applicable.
+  favouritesLoader:
+    meaning: Loading presentation shown while favourites data is fetched.
+  favouritedItemLink:
+    meaning: A single row linking to a favourited workflow or project from favouritesSection; workflows and projects use the same row presentation in design and product intent.
+  viewAllLink:
+    meaning: Link shown when favourites count meets implementation threshold; routes to the favourites index destination.
+  helpAndSupportLink:
+    meaning: Row that opens external help in a new browser tab in current implementation.
+  appearsInSection:
+    meaning: Optional block listing parent workflows for the active workflow route when data is available (implementation uses translated label 'Appears in').
+  containsSection:
+    meaning: Optional block listing child workflows linked from nodes when data is available (implementation uses translated label 'Contains').
+  relatedWorkflowList:
+    meaning: List container for workflow links inside appearsInSection or containsSection in current implementation.
+
+locatorMappings:
+  mainNavigation:
+    strategy: "[data-test-id=\"main-nav\"]"
+    confidence: confirmed
+  mainNavigationPanel:
+    strategy: "{mainNavigation} .MuiPaper-root"
+    confidence: inferred
+  collapseToggle:
+    strategy: "{mainNavigation} .MuiFab-root[aria-label=\"collapse sidebar\"]"
+    confidence: inferred
+  expandIcon:
+    strategy: "{collapseToggle}"
+    confidence: inferred
+  homeNavItem:
+    strategy: "[data-test-id=\"panel-home\"]"
+    confidence: confirmed
+  myLibraryNavItem:
+    strategy: "[data-test-id=\"panel-library\"]"
+    confidence: confirmed
+  exploreNavItem:
+    strategy: "[data-test-id=\"panel-explore\"]"
+    confidence: confirmed
+  favouritedItemLink:
+    strategy: "[data-test-id=\"panel-favourite\"]"
+    confidence: confirmed
+  viewAllLink:
+    strategy: null
+    confidence: unresolved
+  helpAndSupportLink:
+    strategy: null
+    confidence: unresolved
+  appearsInSection:
+    strategy: null
+    confidence: unresolved
+  containsSection:
+    strategy: null
+    confidence: unresolved
+  relatedWorkflowList:
+    strategy: "[data-test-id=\"panel-other-workflows\"]"
+    confidence: confirmed
+
+requirements:
+  - id: FR-NAV-001
+    title: Main Navigation presence
+
+    designEvidence:
+      - FIGMA-NAV-FAV-6PLUS
+      - FIGMA-NAV-FAV-5MINUS
+      - FIGMA-NAV-FAV-NONE
+      - FIGMA-NAV-HOVER-COLLAPSE
+      - FIGMA-NAV-WORKFLOW-CONTEXT
+      - FIGMA-NAV-SIDEBAR-COLLAPSED
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - mainNavigationPanel
+      - homeNavItem
+      - myLibraryNavItem
+      - exploreNavItem
+      - favouritesSection
+      - helpAndSupportLink
+
+    preconditions:
+      - mainNavigation is not collapsed
+
+    trigger: []
+
+    mainFlow:
+      - mainNavigation presents homeNavItem, myLibraryNavItem, exploreNavItem
+      - mainNavigation may present favouritesSection when user has favourites per application rules
+      - mainNavigation presents helpAndSupportLink
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - mainNavigation is visible
+      - mainNavigationPanel is visible
+      - homeNavItem is visible
+      - myLibraryNavItem is visible
+      - exploreNavItem is visible
+      - helpAndSupportLink is visible
+      - when the user has at least one favourite per application rules, favouritesSection is visible
+
+    openQuestions: []
+
+  - id: FR-NAV-002
+    title: Home
+
+    designEvidence:
+      - FIGMA-NAV-WORKFLOW-CONTEXT
+      - FIGMA-NAV-FAV-6PLUS
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - homeNavItem
+
+    preconditions:
+      - mainNavigation is not collapsed
+
+    trigger:
+      - user clicks homeNavItem
+
+    mainFlow:
+      - application navigates to route pattern /home
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - current route matches /home
+      - homeNavItem shows selected styling
+
+    openQuestions: []
+
+  - id: FR-NAV-003
+    title: My library
+
+    designEvidence:
+      - FIGMA-NAV-WORKFLOW-CONTEXT
+      - FIGMA-NAV-FAV-6PLUS
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - myLibraryNavItem
+
+    preconditions:
+      - mainNavigation is not collapsed
+
+    trigger:
+      - user clicks myLibraryNavItem
+
+    mainFlow:
+      - application navigates to route pattern /library
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - current route matches /library
+      - myLibraryNavItem shows selected styling
+
+    openQuestions: []
+
+  - id: FR-NAV-004
+    title: Explore
+
+    designEvidence:
+      - FIGMA-NAV-WORKFLOW-CONTEXT
+      - FIGMA-NAV-FAV-6PLUS
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - exploreNavItem
+
+    preconditions:
+      - mainNavigation is not collapsed
+
+    trigger:
+      - user clicks exploreNavItem
+
+    mainFlow:
+      - application navigates to route pattern /explore
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - current route matches /explore
+      - exploreNavItem shows selected styling
+
+    openQuestions: []
+
+  - id: FR-NAV-005
+    title: Favourites list
+
+    designEvidence:
+      - FIGMA-NAV-FAV-5MINUS
+      - FIGMA-NAV-FAV-NONE
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - favouritesSection
+      - favouritedItemLink
+      - favouritesLoader
+
+    preconditions:
+      - mainNavigation is not collapsed
+      - user has between 1 and 5 favourited items in the favourites feature sense used by the application
+
+    trigger: []
+
+    mainFlow:
+      - system lists up to the five most recently viewed favourited items in favouritesSection
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - favouritesSection is visible in mainNavigation
+      - user can see between 1 and 5 favouritedItemLink rows in favouritesSection
+      - visible favouritedItemLink rows are clickable
+
+    openQuestions:
+      - Ordering and recency rules for favourites list depend on backend contract; confirm the authoritative rule beyond the stated product wording.
+
+  - id: FR-NAV-006
+    title: Favourites list and View all visibility
+
+    designEvidence:
+      - FIGMA-NAV-FAV-6PLUS
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - favouritesSection
+      - favouritedItemLink
+      - viewAllLink
+
+    preconditions:
+      - mainNavigation is not collapsed
+      - user has at least six favourited items in the favourites feature sense used by the application
+
+    trigger: []
+
+    mainFlow:
+      - system lists the five most recently viewed favourited items in favouritesSection
+      - system shows viewAllLink below those items
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - favouritesSection is visible in mainNavigation
+      - user can see five favouritedItemLink rows in favouritesSection
+      - user can see viewAllLink below those five favouritedItemLink rows
+
+    openQuestions: []
+
+  - id: FR-NAV-007
+    title: Favourites list and View all click
+
+    designEvidence:
+      - FIGMA-NAV-FAV-6PLUS
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - viewAllLink
+
+    preconditions:
+      - mainNavigation is not collapsed
+      - user has at least six favourited items in the favourites feature sense used by the application
+      - viewAllLink is visible
+
+    trigger:
+      - user clicks viewAllLink
+
+    mainFlow:
+      - application navigates to route pattern /favourites
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - current route matches /favourites
+
+    openQuestions: []
+
+  - id: FR-NAV-008
+    title: Click on Favourites Workflows or Projects
+
+    designEvidence:
+      - FIGMA-NAV-FAV-6PLUS
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - favouritedItemLink
+
+    preconditions:
+      - mainNavigation is not collapsed
+      - user has at least one favourited item in the favourites feature sense used by the application
+
+    trigger:
+      - user clicks favouritedItemLink
+
+    mainFlow:
+      - if favouritedItem is a workflow, application navigates to workflow detail route pattern /workflow/{id}
+      - if favouritedItem is a project, application navigates to the project's default 'Workflows' view route pattern /project/{id}/workflows
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - if favouritedItem is a workflow, current route matches /workflow/{id}
+      - if favouritedItem is a project, current route matches /project/{id}/workflows
+
+    openQuestions:
+      - Confirm how favourite list data distinguishes workflow vs project so routing can assert the correct destination (API or client field contract).
+
+  - id: FR-NAV-009
+    title: Main navigation collapse
+
+    designEvidence:
+      - FIGMA-NAV-HOVER-COLLAPSE
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - mainNavigationPanel
+      - collapseToggle
+      - expandIcon
+
+    preconditions:
+      - mainNavigation is not collapsed
+      - user is hovering anywhere on mainNavigation
+
+    trigger:
+      - user hovers mainNavigation and clicks collapseToggle
+
+    mainFlow:
+      - when mainNavigation is in expanded presentation, collapseToggle is visible
+      - user clicks collapseToggle
+      - mainNavigation expanded content is hidden from view (including mainNavigationPanel and primary navigation items)
+      - only expandIcon remains visible in the main navigation region at the top left
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - with mainNavigation expanded, collapseToggle is visible
+      - after user clicks collapseToggle, mainNavigation expanded content is not visible
+      - after user clicks collapseToggle, expandIcon is visible at the top left of the main navigation region
+
+    openQuestions: []
+
+  - id: FR-NAV-010
+    title: Main navigation expand
+
+    designEvidence:
+      - FIGMA-NAV-SIDEBAR-COLLAPSED
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - mainNavigationPanel
+      - collapseToggle
+      - expandIcon
+
+    preconditions:
+      - mainNavigation is collapsed
+
+    trigger:
+      - user clicks expandIcon
+
+    mainFlow:
+      - mainNavigationPanel becomes visible in expanded presentation
+      - expandIcon is no longer shown; collapseToggle presents the control used to collapse again
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - mainNavigationPanel is visible
+      - expandIcon is not visible
+
+    openQuestions: []
+
+  - id: FR-NAV-011
+    title: Help and Support
+
+    designEvidence:
+      - FIGMA-NAV-WORKFLOW-CONTEXT
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - helpAndSupportLink
+
+    preconditions:
+      - mainNavigation is not collapsed
+
+    trigger:
+      - user clicks helpAndSupportLink
+
+    mainFlow:
+      - external help destination opens in a new browser tab
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - "the URL 'https://courseflow.freshdesk.com/support/home' is loaded in a new tab"
+
+    openQuestions: []
+
+  - id: FR-NAV-012
+    title: Workflow contains [NOT READY]
+
+    designEvidence:
+      - FIGMA-NAV-WORKFLOW-CONTEXT
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - containsSection
+
+    preconditions:
+      - mainNavigation is not collapsed
+      - user is viewing a workflow which has at least one node linked to a child workflow
+
+    trigger:
+      - not specified in upstream placeholder requirement
+
+    mainFlow:
+      - not specified in upstream placeholder requirement
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - containsSection listing linked child workflows is visible in mainNavigation
+
+    openQuestions:
+      - Intentional placeholder; trigger and mainFlow remain unspecified until upstream product requirement is finalized.
+
+  - id: FR-NAV-013
+    title: Workflow appears in [NOT READY]
+
+    designEvidence:
+      - FIGMA-NAV-WORKFLOW-CONTEXT
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - appearsInSection
+
+    preconditions:
+      - mainNavigation is not collapsed
+      - user is viewing a workflow which has been linked to a parent workflow from a node in the parent workflow
+
+    trigger:
+      - not specified in upstream placeholder requirement
+
+    mainFlow:
+      - not specified in upstream placeholder requirement
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - appearsInSection listing linked parent workflows is visible in mainNavigation
+
+    openQuestions:
+      - Intentional placeholder; trigger and mainFlow remain unspecified until upstream product requirement is finalized.
+      - Implementation uses ParentWorkflowIndicator; verify behavior when this placeholder requirement is validated or implemented (e.g. location-derived state and list test ids).
+
+designEvidenceLinkTable:
+  - key: FIGMA-NAV-FAV-6PLUS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=608-4559&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-NAV-FAV-5MINUS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=2374-90306&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-NAV-FAV-NONE
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=2374-90508&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-NAV-HOVER-COLLAPSE
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=2374-91141&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-NAV-WORKFLOW-CONTEXT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=2726-96617&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-NAV-SIDEBAR-COLLAPSED
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=807-5882&t=lsKQpS4Jq8MOZwMT-1

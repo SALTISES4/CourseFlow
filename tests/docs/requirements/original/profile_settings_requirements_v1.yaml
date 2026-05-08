@@ -1,0 +1,301 @@
+# Normalized requirements: profile settings page
+# Source: application code (no separate Google Doc for this run)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - user is within the main application shell
+
+uiObjectDefinitions:
+  profileSettingsPage:
+    meaning: Full page rendered at the profile settings route where a user can view username (email) and update first name, last name, and language preference.
+  profileSettingsLoader:
+    meaning: Loading presentation shown while profile settings data is being fetched before the form is rendered.
+  profileSettingsFetchWarningMessage:
+    meaning: Warning message shown on profileSettingsPage when profile settings data cannot be fetched.
+  profileSettingsTitle:
+    meaning: Page title text for the profile settings screen; 'Profile settings' in current implementation.
+  profileSettingsForm:
+    meaning: Form container that submits updated profile settings.
+  profileUsernameField:
+    meaning: Read-only field in profileSettingsForm that displays the user's username, which is the email used at sign-up and is always populated.
+  profileFirstNameField:
+    meaning: Text input for the user's first name in profileSettingsForm.
+  profileLastNameField:
+    meaning: Text input for the user's last name in profileSettingsForm.
+  profileLanguagePreferenceGroup:
+    meaning: Radio-option group for selecting the user's language preference; it is always populated, defaulting to English when no user-specific language value overrides it.
+  profileLanguageOptionEnglish:
+    meaning: Radio option in profileLanguagePreferenceGroup representing English.
+  profileLanguageOptionFrench:
+    meaning: Radio option in profileLanguagePreferenceGroup representing French.
+  profileUpdateButton:
+    meaning: Submit button in profileSettingsForm used to save updated profile settings; label 'Update profile' in current implementation.
+  profileFieldValidationMessage:
+    meaning: Inline validation message shown by form controls when input does not satisfy validation rules.
+  globalMessageSnackbar:
+    meaning: Global feedback surface used by generic message handling to show success or error results after update attempts.
+
+locatorMappings:
+  profileSettingsPage:
+    strategy: "URL pathname /user/profile-settings"
+    confidence: confirmed
+  profileSettingsLoader:
+    strategy: null
+    confidence: unresolved
+  profileSettingsFetchWarningMessage:
+    strategy: null
+    confidence: unresolved
+  profileSettingsTitle:
+    strategy: "{profileSettingsPage} h1"
+    confidence: inferred
+  profileSettingsForm:
+    strategy: "{profileSettingsPage} form"
+    confidence: inferred
+  profileUsernameField:
+    strategy: null
+    confidence: unresolved
+  profileFirstNameField:
+    strategy: "{profileSettingsForm} input[name=\"firstName\"]"
+    confidence: inferred
+  profileLastNameField:
+    strategy: "{profileSettingsForm} input[name=\"lastName\"]"
+    confidence: inferred
+  profileLanguagePreferenceGroup:
+    strategy: "{profileSettingsForm} fieldset"
+    confidence: inferred
+  profileLanguageOptionEnglish:
+    strategy: "{profileLanguagePreferenceGroup} input[type=\"radio\"][value=\"en\"]"
+    confidence: inferred
+  profileLanguageOptionFrench:
+    strategy: "{profileLanguagePreferenceGroup} input[type=\"radio\"][value=\"fr\"]"
+    confidence: inferred
+  profileUpdateButton:
+    strategy: "{profileSettingsForm} button[type=\"submit\"]"
+    confidence: inferred
+  profileFieldValidationMessage:
+    strategy: null
+    confidence: unresolved
+  globalMessageSnackbar:
+    strategy: null
+    confidence: unresolved
+
+requirements:
+  - id: FR-PROFILE-001
+    title: Profile settings page route and primary form elements
+
+    designEvidence:
+      - FIGMA-PROFILE-SETTINGS
+
+    actors:
+      - user
+
+    uiObjects:
+      - profileSettingsPage
+      - profileSettingsTitle
+      - profileSettingsForm
+      - profileUsernameField
+      - profileFirstNameField
+      - profileLastNameField
+      - profileLanguagePreferenceGroup
+      - profileUpdateButton
+
+    preconditions:
+      - user is authenticated
+
+    trigger: []
+
+    mainFlow:
+      - when user is on route pattern /user/profile-settings, system renders profileSettingsPage
+      - profileSettingsPage presents profileSettingsTitle and profileSettingsForm
+      - profileSettingsForm presents the following fields, in this order: profileUsernameField as read-only and populated with the sign-up email, profileFirstNameField, profileLastNameField, profileLanguagePreferenceGroup, and profileUpdateButton
+      - visible labels on profile settings controls use sentence case
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - current route matches /user/profile-settings
+      - profileSettingsTitle is visible
+      - profileSettingsForm is visible
+      - profileUsernameField is visible, is not editable, and has a non-empty value representing the sign-up email
+      - profileFirstNameField is visible
+      - profileLastNameField is visible
+      - profileLanguagePreferenceGroup is visible
+      - profileUpdateButton is visible, but not clickable
+      - profile settings labels use sentence case (for example 'First name' and 'Last name', not 'First Name' and 'Last Name')
+
+    openQuestions:
+      - Current profile settings implementation appears to omit profileUsernameField; confirm implementation timeline and authoritative locator for the read-only username (email) field.
+
+  - id: FR-PROFILE-002
+    title: Profile settings initial load behavior and data binding
+
+    designEvidence:
+      - FIGMA-PROFILE-SETTINGS
+      - FIGMA-PROFILE-SETTINGS-FETCH-WARNING
+
+    actors:
+      - user
+
+    uiObjects:
+      - profileSettingsPage
+      - profileSettingsLoader
+      - profileSettingsFetchWarningMessage
+      - profileSettingsForm
+      - profileFirstNameField
+      - profileLastNameField
+      - profileLanguagePreferenceGroup
+
+    preconditions:
+      - user is on profileSettingsPage
+
+    trigger: []
+
+    mainFlow:
+      - while profile settings query is loading, system renders profileSettingsLoader
+      - when query data is available, system resets profileSettingsForm values from returned values
+      - profileFirstNameField, profileLastNameField, and profileLanguagePreferenceGroup show values from fetched profile settings
+      - when no user-specific language value is available, profileLanguagePreferenceGroup defaults to profileLanguageOptionEnglish
+      - when profile settings data cannot be fetched due to an issue, system shows profileSettingsFetchWarningMessage on profileSettingsPage
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - while profile settings query is loading, profileSettingsLoader is visible
+      - after successful profile settings query, profileFirstNameField value equals returned firstName
+      - after successful profile settings query, profileLastNameField value equals returned lastName
+      - profileLanguagePreferenceGroup always has a selected option
+      - when no user-specific language value is provided, selected profileLanguagePreferenceGroup option defaults to profileLanguageOptionEnglish
+      - after successful profile settings query, selected profileLanguagePreferenceGroup option equals returned language
+      - when profile settings query fails, profileSettingsFetchWarningMessage is visible on profileSettingsPage
+
+    openQuestions: []
+
+  - id: FR-PROFILE-003
+    title: Profile settings field validation rules
+
+    designEvidence:
+      - FIGMA-PROFILE-SETTINGS
+
+    actors:
+      - user
+
+    uiObjects:
+      - profileSettingsForm
+      - profileFirstNameField
+      - profileLastNameField
+      - profileLanguagePreferenceGroup
+      - profileLanguageOptionEnglish
+      - profileFieldValidationMessage
+      - profileUpdateButton
+
+    preconditions:
+      - profileSettingsForm is visible
+
+    trigger:
+      - user edits profileSettingsForm and clicks profileUpdateButton
+
+    mainFlow:
+      - profileFirstNameField requires a non-empty value and limits value length to 200 characters
+      - profileLastNameField requires a non-empty value and limits value length to 200 characters
+      - profileLanguagePreferenceGroup always has one selected language value; the default selection is always English (profileLanguageOptionEnglish)
+      - when profileSettingsPage first loads after signup and profileFirstNameField or profileLastNameField is empty, profileFieldValidationMessage is not shown before user interaction
+      - validation for profileFirstNameField and profileLastNameField starts only after user interaction with profileSettingsForm and a submit attempt
+      - when validation fails, system does not submit profileSettingsForm and shows profileFieldValidationMessage on the invalid control
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - profileLanguagePreferenceGroup has profileLanguageOptionEnglish selected by default when no user-specific language applies
+      - given profileSettingsPage first loads after signup with empty profileFirstNameField or profileLastNameField and user has not interacted with profileSettingsForm, profileFieldValidationMessage is not shown
+      - given user has interacted with profileFirstNameField and it is empty, on submit profileSettingsForm is not submitted and profileFieldValidationMessage is shown for profileFirstNameField
+      - given user has interacted with profileLastNameField and it is empty, on submit profileSettingsForm is not submitted and profileFieldValidationMessage is shown for profileLastNameField
+      - given profileFirstNameField value length exceeds 200 characters, on submit profileSettingsForm is not submitted and profileFieldValidationMessage is shown for profileFirstNameField
+      - given profileLastNameField value length exceeds 200 characters, on submit profileSettingsForm is not submitted and profileFieldValidationMessage is shown for profileLastNameField
+
+    openQuestions: []
+
+  - id: FR-PROFILE-004
+    title: Language preference option set
+
+    designEvidence:
+      - FIGMA-PROFILE-SETTINGS
+
+    actors:
+      - user
+
+    uiObjects:
+      - profileSettingsForm
+      - profileLanguagePreferenceGroup
+      - profileLanguageOptionEnglish
+      - profileLanguageOptionFrench
+
+    preconditions:
+      - profileSettingsForm is visible
+
+    trigger: []
+
+    mainFlow:
+      - profileLanguagePreferenceGroup renders language options from language options constants
+      - current implementation provides profileLanguageOptionEnglish with value en
+      - current implementation provides profileLanguageOptionFrench with value fr
+      - profileLanguagePreferenceGroup includes only profileLanguageOptionEnglish and profileLanguageOptionFrench
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - profileLanguagePreferenceGroup includes profileLanguageOptionEnglish
+      - profileLanguagePreferenceGroup includes profileLanguageOptionFrench
+      - profileLanguageOptionEnglish value is en
+      - profileLanguageOptionFrench value is fr
+      - no additional language options are present beyond profileLanguageOptionEnglish and profileLanguageOptionFrench
+
+    openQuestions: []
+
+  - id: FR-PROFILE-005
+    title: Profile update submit behavior and feedback
+
+    designEvidence:
+      - FIGMA-PROFILE-SETTINGS
+
+    actors:
+      - user
+
+    uiObjects:
+      - profileSettingsForm
+      - profileFirstNameField
+      - profileLastNameField
+      - profileLanguagePreferenceGroup
+      - profileUpdateButton
+      - globalMessageSnackbar
+
+    preconditions:
+      - profileSettingsForm is visible
+      - profileSettingsForm is valid
+
+    trigger:
+      - user changes profileSettingsForm content and clicks profileUpdateButton
+
+    mainFlow:
+      - profileUpdateButton is disabled and not clickable while profileSettingsForm has no unsaved content change
+      - when at least one field value differs from the loaded form state, profileUpdateButton becomes enabled
+      - when user clicks profileUpdateButton with valid form values, system submits firstName, lastName, and language to profile settings update endpoint
+      - on successful update response, globalMessageSnackbar shows 'Your profile settings have been updated'
+      - when profile settings are not updated and there are no inline field-specific validation errors on profileSettingsForm, globalMessageSnackbar shows 'Your profile settings have not been updated'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given profileSettingsForm has no unsaved content change, profileUpdateButton is disabled and not clickable
+      - given profileSettingsForm has at least one unsaved change and no validation error, profileUpdateButton is enabled
+      - when user submits valid profileSettingsForm values, request payload contains firstName, lastName, and language fields
+      - on successful profile update, globalMessageSnackbar shows 'Your profile settings have been updated'
+      - when profile settings are not updated and profileSettingsForm has no inline field-specific validation error, globalMessageSnackbar shows 'Your profile settings have not been updated'
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-PROFILE-SETTINGS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=1842-117777&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-PROFILE-SETTINGS-FETCH-WARNING
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6461-46058&t=lsKQpS4Jq8MOZwMT-1

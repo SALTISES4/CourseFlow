@@ -1,0 +1,319 @@
+# Normalized requirements: homepage dashboard
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (templates can be viewed from dashboard; library/template context)
+# Application code evidence: react/src/components/pages/Home/*
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: home route in tests/docs/requirements/original/main_navigation_requirements_v1.yaml (FR-NAV-002); workflow create dialog in tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml; shared card content in tests/docs/requirements/original/card_content_requirements_v1.yaml; projectCard click navigation in tests/docs/requirements/original/card_content_requirements_v1.yaml (FR-CARD-003)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+
+uiObjectDefinitions:
+  homePage:
+    meaning: Full-page dashboard experience at route pattern /home.
+  homeLoadingIndicator:
+    meaning: Loading state shown while home context data is being fetched.
+  homeWelcomePanel:
+    meaning: Dismissible onboarding panel near top of homePage with workflow-create shortcuts.
+  homeWelcomeDismissButton:
+    meaning: Close control in homeWelcomePanel that hides the panel and stores a cookie-based preference.
+  homeWelcomeProgramButton:
+    meaning: CTA in homeWelcomePanel with label 'I want to create a program'; opens createWorkflowDialog for program type.
+  homeWelcomeCourseButton:
+    meaning: CTA in homeWelcomePanel with label 'I want to create a course'; opens createWorkflowDialog for course type.
+  homeWelcomeActivityButton:
+    meaning: CTA in homeWelcomePanel with label 'I want to create an activity'; opens createWorkflowDialog for activity type.
+  homeRecentProjectsSection:
+    meaning: Section showing recent project cards on homePage when projects exist.
+  homeRecentProjectsTitle:
+    meaning: Header title text for homeRecentProjectsSection.
+  homeViewAllProjectsLink:
+    meaning: Link in homeRecentProjectsSection header with label 'View all projects' routing to /library.
+  projectCard:
+    meaning: Clickable project card instance in homeRecentProjectsSection; canonical shared content contract is defined in card_content_requirements_v1.yaml.
+  homeTemplatesSection:
+    meaning: Section on homePage that shows at most four workflowCard items; templates are manually selected (curated), not an unbounded list from automatic ranking.
+  homeTemplatesSectionTitle:
+    meaning: Header title text for homeTemplatesSection, conditional on whether user has projects.
+  homeViewAllTemplatesLink:
+    meaning: Link in homeTemplatesSection header with label 'View all templates'; navigates to library with templates filter active; canonical URL pattern TBD.
+  homeTemplatesInfoAlert:
+    meaning: Informational alert in homeTemplatesSection with title 'How to use templates' and explanatory subtitle.
+  homeTemplatesInfoAlertCloseButton:
+    meaning: Close (X) control on homeTemplatesInfoAlert; when user clicks it, system sets a dismissal cookie so homeTemplatesInfoAlert is not shown on later visits to homePage while the cookie remains; current implementation uses cookie name 'hide_home_howto_template_message'.
+  workflowCard:
+    meaning: Template card instance in homeTemplatesSection; canonical shared content contract is defined in card_content_requirements_v1.yaml.
+  createWorkflowDialog:
+    meaning: Workflow create dialog opened by welcome CTAs (see workflow_create_stepped_form_requirements_v1.yaml).
+
+locatorMappings:
+  homePage:
+    strategy: "URL pathname /home"
+    confidence: confirmed
+  homeLoadingIndicator:
+    strategy: null
+    confidence: unresolved
+  homeWelcomePanel:
+    strategy: null
+    confidence: unresolved
+  homeWelcomeDismissButton:
+    strategy: "{homeWelcomePanel} button[aria-label='close']"
+    confidence: inferred
+  homeWelcomeProgramButton:
+    strategy: "{homeWelcomePanel} button with label 'I want to create a program'"
+    confidence: inferred
+  homeWelcomeCourseButton:
+    strategy: "{homeWelcomePanel} button with label 'I want to create a course'"
+    confidence: inferred
+  homeWelcomeActivityButton:
+    strategy: "{homeWelcomePanel} button with label 'I want to create an activity'"
+    confidence: inferred
+  homeRecentProjectsSection:
+    strategy: null
+    confidence: unresolved
+  homeRecentProjectsTitle:
+    strategy: "{homeRecentProjectsSection} heading with text 'Recent projects'"
+    confidence: inferred
+  homeViewAllProjectsLink:
+    strategy: "{homeRecentProjectsSection} link with text 'View all projects'"
+    confidence: inferred
+  projectCard:
+    strategy: "{homeRecentProjectsSection} workflow card tile"
+    confidence: inferred
+  homeTemplatesSection:
+    strategy: null
+    confidence: unresolved
+  homeTemplatesSectionTitle:
+    strategy: "{homeTemplatesSection} heading with text 'Explore templates' or 'Get started with templates'"
+    confidence: inferred
+  homeViewAllTemplatesLink:
+    strategy: "{homeTemplatesSection} link with text 'View all templates'"
+    confidence: inferred
+  homeTemplatesInfoAlert:
+    strategy: "{homeTemplatesSection} info alert with title 'How to use templates'"
+    confidence: inferred
+  workflowCard:
+    strategy: "{homeTemplatesSection} workflow card tile"
+    confidence: inferred
+  createWorkflowDialog:
+    strategy: null
+    confidence: unresolved
+
+requirements:
+  - id: FR-HOME-001
+    title: Home dashboard route and loading state
+
+    designEvidence:
+      - FIGMA-HOME-DASHBOARD
+
+    actors:
+      - user
+
+    uiObjects:
+      - homePage
+      - homeLoadingIndicator
+
+    preconditions:
+      - current route matches /home
+
+    trigger:
+      - user navigates to /home
+
+    mainFlow:
+      - while home context query is loading, system shows homeLoadingIndicator
+      - after data load, system renders homePage content sections from projects and templates datasets
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given /home and loading state, homeLoadingIndicator is visible
+      - given /home and home context data is loaded, homePage content is rendered
+
+    openQuestions:
+      - Error-state behavior for failed home context query is not explicitly normalized; current implementation does not render a dedicated error panel in Home component.
+
+  - id: FR-HOME-002
+    title: Welcome panel visibility, dismissal, and create-workflow shortcuts
+
+    designEvidence:
+      - FIGMA-HOME-DASHBOARD
+
+    actors:
+      - user
+
+    uiObjects:
+      - homePage
+      - homeWelcomePanel
+      - homeWelcomeDismissButton
+      - homeWelcomeProgramButton
+      - homeWelcomeCourseButton
+      - homeWelcomeActivityButton
+      - createWorkflowDialog
+
+    preconditions:
+      - homePage is rendered
+
+    trigger:
+      - user views homePage or clicks a button in homeWelcomePanel
+
+    mainFlow:
+      - homeWelcomePanel is visible only when welcome-dismiss cookie is not set
+      - homeWelcomePanel shows heading 'Welcome to CourseFlow'
+      - homeWelcomePanel shows copy 'Tell us a bit more about your goals so that we can help you get started.'
+      - homeWelcomePanel shows three CTAs: homeWelcomeProgramButton, homeWelcomeCourseButton, and homeWelcomeActivityButton
+      - when user clicks homeWelcomeProgramButton, system opens createWorkflowDialog with workflowType program
+      - when user clicks homeWelcomeCourseButton, system opens createWorkflowDialog with workflowType course
+      - when user clicks homeWelcomeActivityButton, system opens createWorkflowDialog with workflowType activity
+      - when user clicks homeWelcomeDismissButton, system hides homeWelcomePanel and stores welcome-dismiss preference cookie
+
+  - id: FR-HOME-003
+    title: Recent projects section on homepage
+
+    designEvidence:
+      - FIGMA-HOME-DASHBOARD
+
+    actors:
+      - user
+
+    uiObjects:
+      - homePage
+      - homeRecentProjectsSection
+      - homeRecentProjectsTitle
+      - homeViewAllProjectsLink
+      - projectCard
+
+    preconditions:
+      - homePage is rendered
+
+    trigger:
+      - home context projects dataset is available
+
+    mainFlow:
+      - when projects dataset has items, system renders homeRecentProjectsSection
+      - homeRecentProjectsSection title is 'Recent projects'
+      - homeRecentProjectsSection includes homeViewAllProjectsLink with label 'View all projects' and route /library
+      - projectCard list is ordered by most recently viewed project by the user first (most recent to least recent)
+      - homeRecentProjectsSection displays at most 4 projectCard items
+      - click navigation for projectCard is defined in FR-CARD-003
+      - when projects dataset is empty, system does not render homeRecentProjectsSection
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given projects dataset has items, homeRecentProjectsSection is visible with title 'Recent projects'
+      - given projects dataset has items, homeViewAllProjectsLink is visible and routes to /library
+      - given projects dataset has more than four projects, homeRecentProjectsSection shows at most 4 projectCard items
+      - given projects dataset has more than one project, projectCard order matches most recently viewed first
+      - given projects dataset has items, projectCard click navigation conforms to FR-CARD-003
+      - given projects dataset is empty, homeRecentProjectsSection is not visible
+
+    openQuestions: []
+
+  - id: FR-HOME-004
+    title: Templates section content and conditional heading
+
+    designEvidence:
+      - FIGMA-HOME-DASHBOARD
+
+    actors:
+      - user
+
+    uiObjects:
+      - homePage
+      - homeTemplatesSection
+      - homeTemplatesSectionTitle
+      - homeViewAllTemplatesLink
+      - homeTemplatesInfoAlert
+      - homeTemplatesInfoAlertCloseButton
+      - workflowCard
+
+    preconditions:
+      - homePage is rendered
+      - home context provides the manually selected templates list for homeTemplatesSection (at most four)
+
+    trigger:
+      - home context data resolves
+
+    mainFlow:
+      - homeTemplatesSection is rendered on homePage
+      - homeTemplatesSectionTitle is 'Explore templates' when projects dataset has items
+      - homeTemplatesSection includes homeViewAllTemplatesLink with label 'View all templates' that navigates to library with templates filter active (canonical URL pattern TBD)
+      - homeTemplatesInfoAlert is shown with title 'How to use templates' and explanatory subtitle copy
+      - when dismissal cookie for homeTemplatesInfoAlert is not set, homeTemplatesInfoAlert is visible
+      - when user clicks homeTemplatesInfoAlertCloseButton, system sets dismissal cookie and hides homeTemplatesInfoAlert
+      - when dismissal cookie is set, homeTemplatesInfoAlert is not shown on subsequent visits to homePage
+      - homeTemplatesSection renders workflowCard items for manually selected templates from home context, with at most four workflowCard items visible
+      - when user clicks a workflowCard in homeTemplatesSection, system navigates to the corresponding workflow 'Workflow' view at /workflow/{id}
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given projects dataset has items, homeTemplatesSectionTitle matches 'Explore templates'
+      - given projects dataset is empty, homeTemplatesSectionTitle matches 'Get started with templates'
+      - homeViewAllTemplatesLink is visible with label 'View all templates'
+      - given user clicks homeViewAllTemplatesLink, application navigates to library with templates filter active (URL TBD)
+      - given dismissal cookie for homeTemplatesInfoAlert is not set, homeTemplatesInfoAlert is present with title 'How to use templates'
+      - given user clicks homeTemplatesInfoAlertCloseButton, homeTemplatesInfoAlert is hidden and dismissal cookie is set
+      - given dismissal cookie is set, homeTemplatesInfoAlert is not visible on homePage
+      - given manually selected templates list has more than four entries, homeTemplatesSection shows at most 4 workflowCard items
+      - given manually selected templates list has four or fewer entries, workflowCard count matches that list length
+      - given user clicks a workflowCard in homeTemplatesSection, current route matches /workflow/{id}
+
+    openQuestions:
+      - Confirm canonical URL or route pattern for library with templates filter active (linked from homeViewAllTemplatesLink).
+      - Confirm authoring or backend contract for how manually selected homepage templates are chosen and updated.
+
+  - id: FR-HOME-005
+    title: Announcement bar above welcome panel [NOT READY]
+
+    uiObjectDefinitions:
+      homeAnnouncementBar:
+        meaning: Full-width announcement region at the top of homePage main content, above homeWelcomePanel; displays product or marketing announcements (title, optional body, optional link or CTA) per FIGMA-HOME-DASHBOARD.
+      homeAnnouncementBarDismissButton:
+        meaning: Optional close control on homeAnnouncementBar when the bar is dismissible; hides the bar and stores a dismissal preference (cookie or equivalent) when applicable.
+
+    locatorMappings:
+      homeAnnouncementBar:
+        strategy: null
+        confidence: unresolved
+      homeAnnouncementBarDismissButton:
+        strategy: "{homeAnnouncementBar} button[aria-label='close']"
+        confidence: inferred
+
+    designEvidence:
+      - FIGMA-HOME-DASHBOARD
+
+    actors:
+      - user
+
+    uiObjects:
+      - homePage
+      - homeAnnouncementBar
+      - homeAnnouncementBarDismissButton
+
+    preconditions:
+      - homePage is rendered
+
+    trigger:
+      - user views homePage while an announcement is configured to be shown
+
+    mainFlow:
+      - when an announcement is active, system renders homeAnnouncementBar as the first block in homePage main content, visually above homeWelcomePanel
+      - homeAnnouncementBar presents announcement title and optional supporting copy and optional link or CTA per design; exact strings and link targets are defined in design or content source
+      - when homeAnnouncementBar is dismissible and user clicks homeAnnouncementBarDismissButton, system hides homeAnnouncementBar and persists dismissal so the bar does not reappear for the user until the dismissal rule expires or content changes (mechanism TBD)
+      - when no announcement is active or user has dismissed per rules, system may omit homeAnnouncementBar
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given an active announcement, homeAnnouncementBar is visible and appears above homeWelcomePanel in the layout order
+      - given homeAnnouncementBar is dismissible, when user clicks homeAnnouncementBarDismissButton, homeAnnouncementBar is hidden on subsequent views per dismissal rules
+
+    openQuestions:
+      - Implementation deferred; do not generate tests from this requirement until homeAnnouncementBar is implemented in the application and locator strategies are confirmed.
+      - Confirm data source for announcement content (static copy, CMS, or API) and how multiple announcements are scheduled.
+      - Confirm whether homeAnnouncementBar is always dismissible and exact cookie or preference name and TTL for dismissal.
+      - Capture literal title, body, link label, and link URL from FIGMA-HOME-DASHBOARD for acceptance tests.
+
+designEvidenceLinkTable:
+  - key: FIGMA-HOME-DASHBOARD
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6492-61051&t=lsKQpS4Jq8MOZwMT-1

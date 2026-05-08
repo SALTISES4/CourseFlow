@@ -1,0 +1,149 @@
+# Normalized requirements: edit workflow form (modal)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Workflow metadata)
+# Application code evidence: react/src/components/common/dialog/Workflow/WorkflowEditDialog/index.tsx
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference:
+#   - tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (editPencilButton on workflow routes—FR-CAB-004)
+#   - tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml (workflowTitleField and workflowDescriptionField on blank create step—naming parity)
+#   - tests/docs/requirements/original/project_create_edit_form_requirements_v1.yaml (parallel edit dialog pattern for projects—FR-PROJ-FORM-003)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+
+uiObjectDefinitions:
+  contextActionBar:
+    meaning: Horizontal action bar below global top navigation on workflow-scoped routes; full header-level route contract in context_action_bar_requirements_v1.yaml FR-CAB-004 onward; includes editPencilButton for workflow edit entry per FR-CAB-004.
+  editPencilButton:
+    meaning: Pencil icon control on contextActionBar on workflow-scoped routes; visible for contributor roles when the bar is shown per FR-CAB-004; Owner and Editor click it to open editWorkflowDialog; Viewer and Commenter see it read-only (not actionable) per FR-WF-FORM-001.
+  editWorkflowDialog:
+    meaning: Modal dialog for editing an existing workflow title and description; opened when Owner or Editor clicks editPencilButton on contextActionBar while on a workflow-scoped route. Dialog title uses template 'Edit [workflow type]' with lowercase user-visible type label substitution (for example 'Edit activity'). Primary submit label uses template 'Update [workflow type]' with the same substitution (for example 'Update activity').
+  workflowEditForm:
+    meaning: Form inside editWorkflowDialog containing workflowTitleField, workflowDescriptionField, workflowFormCancelButton, and workflowFormSubmitButton.
+  workflowFormDialogTitle:
+    meaning: Accessible title for editWorkflowDialog matching the 'Edit [workflow type]' template after lowercase type-label substitution for the workflow being edited.
+  workflowTitleField:
+    meaning: Text input for workflow title; required; label 'Title' in current implementation.
+  workflowDescriptionField:
+    meaning: Multiline text input for workflow description; required in edit dialog client validation in current implementation; label uses the visible workflow type label plus the word 'description' (for example 'Activity description' for an activity workflow).
+  workflowFormCancelButton:
+    meaning: Secondary action that closes editWorkflowDialog without persisting changes; label 'Cancel' in current implementation.
+  workflowFormSubmitButton:
+    meaning: Primary submit for editWorkflowDialog; label follows 'Update [workflow type]' with lowercase type-label substitution; read-only (disabled and not clickable) until workflowEditForm has unsaved changes relative to values loaded when the dialog opened.
+  globalMessageSnackbar:
+    meaning: Global snackbar feedback after editWorkflowDialog submit. On successful update it shows 'Your [workflow type] has been successfully updated'. On failed update it shows 'We encountered an issue and your [workflow type] was not updated'. In both cases '[workflow type]' is substituted with the workflow's user-visible type label.
+
+locatorMappings:
+  contextActionBar:
+    strategy: null
+    confidence: unresolved
+  editPencilButton:
+    strategy: null
+    confidence: unresolved
+  editWorkflowDialog:
+    strategy: null
+    confidence: unresolved
+  workflowEditForm:
+    strategy: null
+    confidence: unresolved
+  workflowFormDialogTitle:
+    strategy: null
+    confidence: unresolved
+  workflowTitleField:
+    strategy: "{workflowEditForm} input[name=\"title\"]"
+    confidence: inferred
+  workflowDescriptionField:
+    strategy: "{workflowEditForm} textarea[name=\"description\"] or input[name=\"description\"]"
+    confidence: inferred
+  workflowFormCancelButton:
+    strategy: null
+    confidence: unresolved
+  workflowFormSubmitButton:
+    strategy: "{workflowEditForm} button[type=\"submit\"]"
+    confidence: inferred
+  globalMessageSnackbar:
+    strategy: null
+    confidence: unresolved
+
+requirements:
+  - id: FR-WF-FORM-001
+    title: Edit workflow dialog opens from contextActionBar edit pencil
+
+    designEvidence:
+      - FIGMA-CAB-WF-OVERVIEW
+      - FIGMA-CAB-WF-WORKFLOW-VIEW-SETTINGS
+      - FIGMA-CAB-WF-OUTCOMES-VIEW-SETTINGS
+
+    actors:
+      - user
+      - owner
+      - editor
+      - viewer
+      - commenter
+
+    uiObjects:
+      - contextActionBar
+      - editPencilButton
+      - editWorkflowDialog
+      - workflowEditForm
+      - workflowFormDialogTitle
+      - workflowTitleField
+      - workflowDescriptionField
+      - workflowFormCancelButton
+      - workflowFormSubmitButton
+      - globalMessageSnackbar
+
+    preconditions:
+      - current route pathname is exactly '/workflow/{id}' or matches '/workflow/{id}/...' (workflow sub-views in product scope)
+
+    trigger:
+      - user clicks editPencilButton on contextActionBar
+      - user clicks workflowFormCancelButton while editWorkflowDialog is open
+
+    mainFlow:
+      - contextActionBar is visible below the global top navigation
+      - editPencilButton is visible on contextActionBar for Owner, Editor, Viewer, Commenter, and user when the bar is shown for this workflow context
+      - editPencilButton is clickable for Owner and Editor only; Viewer, Commenter, and user see it visible but read-only (not clickable)
+      - when user has Owner or Editor role and clicks editPencilButton, system opens editWorkflowDialog
+      - editWorkflowDialog presents workflowEditForm with workflowFormDialogTitle matching the 'Edit [workflow type]' template after lowercase substitution for that workflow's type label
+      - workflowTitleField and workflowDescriptionField are prefilled from loaded workflow data
+      - workflowFormSubmitButton shows label matching the 'Update [workflow type]' template after the same substitution
+      - when no content has changed in workflowTitleField or workflowDescriptionField from loaded values, workflowFormSubmitButton is read-only (disabled and not clickable)
+      - when user changes at least one of workflowTitleField or workflowDescriptionField, workflowFormSubmitButton becomes clickable
+      - when user clicks workflowFormCancelButton, system closes editWorkflowDialog without updating workflow data and returns user to the same route/view from which editWorkflowDialog was triggered
+      - when Owner or Editor clicks workflowFormSubmitButton and update succeeds, system closes editWorkflowDialog, returns user to the same route/view from which editWorkflowDialog was triggered, and shows globalMessageSnackbar with 'Your [workflow type] has been successfully updated'
+      - when Owner or Editor clicks workflowFormSubmitButton and update fails, system keeps user on the same route/view context and shows globalMessageSnackbar with 'We encountered an issue and your [workflow type] was not updated'
+
+    roleBehavior:
+      owner:
+        editPencilButton: available
+      editor:
+        editPencilButton: available
+      viewer:
+        editPencilButton: readOnly
+      commenter:
+        editPencilButton: readOnly
+      user:
+        editPencilButton: readOnly
+
+    acceptanceCriteria:
+      - given user has Owner or Editor role on the workflow, editPencilButton is clickable and user can open editWorkflowDialog via trigger
+      - given user has Viewer, Commenter, or user role (published parent project access) on the workflow, editPencilButton is visible and read-only (not clickable), and editWorkflowDialog does not open when user attempts to click it
+      - given Owner or Editor preconditions and trigger, editWorkflowDialog is open
+      - workflowFormDialogTitle matches the 'Edit [workflow type]' pattern with lowercase type substitution for the workflow instance
+      - workflowTitleField and workflowDescriptionField show values from the workflow being edited after load
+      - workflowFormCancelButton and workflowFormSubmitButton are visible
+      - given editWorkflowDialog is open with prefilled values and no field has been changed in workflowTitleField or workflowDescriptionField, workflowFormSubmitButton is read-only (disabled and not clickable)
+      - given editWorkflowDialog is open and user has changed at least one field from loaded values, workflowFormSubmitButton is enabled and clickable
+      - given user clicks workflowFormCancelButton while editWorkflowDialog is open, editWorkflowDialog closes, workflow is not updated, and current route/view matches the route/view from which editWorkflowDialog was triggered
+      - given Owner or Editor submits and update succeeds, user returns to the same route/view from which editWorkflowDialog was triggered and globalMessageSnackbar shows 'Your [workflow type] has been successfully updated' after workflow-type substitution
+      - given Owner or Editor submits and update fails, user remains in the same route/view context and globalMessageSnackbar shows 'We encountered an issue and your [workflow type] was not updated' after workflow-type substitution
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-CAB-WF-OVERVIEW
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-94010&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-CAB-WF-WORKFLOW-VIEW-SETTINGS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=4452-72641&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-CAB-WF-OUTCOMES-VIEW-SETTINGS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=4452-72658&t=6weYZA8hUf6tm7DF-1

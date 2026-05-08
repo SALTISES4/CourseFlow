@@ -1,0 +1,340 @@
+# Normalized requirements: notifications detail page
+# Source: Figma and application code (no separate Google Doc for this run)
+# Application code evidence: react/src/components/pages/Notifications/index.tsx; react/src/components/pages/Notifications/style.ts; react/src/HTTP/XMLHTTP/API/notifications.rtk.ts; react/src/router/appRoutes.tsx; react/src/router/apiRoutes.ts; react/src/utility/strings.ts
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/original/top_navigation_requirements_v1.yaml (entry path to route '/user/notifications' from top navigation notifications panel)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - user is within the main application shell
+
+uiObjectDefinitions:
+  notificationsPage:
+    meaning: Full page rendered at route '/user/notifications' where user reviews notifications and performs notification actions.
+  notificationsTitle:
+    meaning: Page title on notificationsPage with text 'Notifications'.
+  notificationsLoadingState:
+    meaning: Loading presentation rendered while notifications query is in progress.
+  notificationsErrorState:
+    meaning: Error presentation shown when notifications query fails.
+  notificationsEmptyStateMessage:
+    meaning: Empty-state message shown when there are no notifications; current copy is 'You have no notifications yet.'.
+  notificationsList:
+    meaning: List region containing notification rows when notifications exist.
+  notificationListItem:
+    meaning: One row in notificationsList; composed of notificationListItemUserAvatar, notificationListItemUserName, notificationListItemRelativeTimestamp, notificationListItemContent, and notificationListItemUnreadDot. Reused canonical object naming from top_navigation_requirements_v1.yaml.
+  notificationListItemUserAvatar:
+    meaning: Visual representing the acting user; for now shows initials only.
+  notificationListItemUserName:
+    meaning: Display name of the user associated with the notification.
+  notificationListItemRelativeTimestamp:
+    meaning: Time label associated with the notification.
+  notificationListItemContent:
+    meaning: Body text of the notification.
+  notificationListItemUnreadDot:
+    meaning: Dot indicator shown for unread notificationListItem instances.
+  notificationRowActionTrigger:
+    meaning: Icon-only trigger on notificationListItem (three-dots icon with no visible text label) that opens notificationActionsMenu.
+  notificationActionsMenu:
+    meaning: Context menu anchored to notificationRowActionTrigger with row-level actions.
+  notificationMenuMarkAsReadItem:
+    meaning: Menu item labeled 'Mark as read' in notificationActionsMenu; shown only for unread rows when notifications are not globally marked read in current page state.
+  notificationMenuDeleteItem:
+    meaning: Menu item labeled 'Delete' in notificationActionsMenu.
+  markAllAsReadLink:
+    meaning: Header link labeled 'Mark all as read' that marks notifications as read in current page state.
+  notificationsPagination:
+    meaning: Pagination control below notificationsList for page navigation when list has more than one page at the current page size.
+  notificationsListQuery:
+    meaning: Data query to '/notification/list' returning notification items and unread count metadata.
+  notificationMarkAllReadRequest:
+    meaning: Request operation used to mark notifications as read via '/notification/mark-all-as-read'.
+  notificationDeleteRequest:
+    meaning: Request operation used to delete a notification via '/notification/delete' with notification id.
+
+locatorMappings:
+  notificationsPage:
+    strategy: "URL pathname '/user/notifications'"
+    confidence: confirmed
+  notificationsTitle:
+    strategy: "{notificationsPage} h1 text 'Notifications'"
+    confidence: inferred
+  notificationsLoadingState:
+    strategy: "Loader component rendered by notifications page during query load"
+    confidence: inferred
+  notificationsErrorState:
+    strategy: "{notificationsPage} text starting with 'An error occurred:'"
+    confidence: inferred
+  notificationsEmptyStateMessage:
+    strategy: "{notificationsPage} text 'You have no notifications yet.'"
+    confidence: inferred
+  notificationsList:
+    strategy: "{notificationsPage} MUI List container in NotificationsList"
+    confidence: inferred
+  notificationListItem:
+    strategy: "{notificationsList} list item row (StyledListItem)"
+    confidence: inferred
+  notificationListItemUserAvatar:
+    strategy: "{notificationListItem} avatar component showing initials"
+    confidence: inferred
+  notificationListItemUserName:
+    strategy: "{notificationListItem} sender name text region"
+    confidence: unresolved
+  notificationListItemRelativeTimestamp:
+    strategy: "{notificationListItem} primary timestamp text region"
+    confidence: inferred
+  notificationListItemContent:
+    strategy: "{notificationListItem} secondary message text region"
+    confidence: inferred
+  notificationListItemUnreadDot:
+    strategy: "{notificationListItem} MUI Badge variant 'dot'"
+    confidence: inferred
+  notificationRowActionTrigger:
+    strategy: "{notificationListItem} icon-only trigger button showing MoreHoriz icon"
+    confidence: inferred
+  notificationActionsMenu:
+    strategy: "MUI Menu with id 'notification-menu' and aria-label 'Notification options'"
+    confidence: inferred
+  notificationMenuMarkAsReadItem:
+    strategy: "{notificationActionsMenu} MenuItem text 'Mark as read'"
+    confidence: inferred
+  notificationMenuDeleteItem:
+    strategy: "{notificationActionsMenu} MenuItem text 'Delete'"
+    confidence: inferred
+  markAllAsReadLink:
+    strategy: "{notificationsPage} Link text 'Mark all as read'"
+    confidence: inferred
+  notificationsPagination:
+    strategy: "{notificationsPage} MUI Pagination with first/last buttons enabled"
+    confidence: inferred
+  notificationsListQuery:
+    strategy: "GET '/notification/list'"
+    confidence: confirmed
+  notificationMarkAllReadRequest:
+    strategy: "POST '/notification/mark-all-as-read'"
+    confidence: confirmed
+  notificationDeleteRequest:
+    strategy: "POST '/notification/delete' body { notification_id: <id> }"
+    confidence: confirmed
+
+requirements:
+  - id: FR-NPAGE-001
+    title: Notifications route and page-level states
+
+    designEvidence:
+      - FIGMA-NOTIFICATIONS-PAGE
+      - FIGMA-NOTIFICATIONS-EMPTY
+      - FIGMA-NOTIFICATIONS-ERROR
+
+    actors:
+      - user
+
+    uiObjects:
+      - notificationsPage
+      - notificationsTitle
+      - notificationsLoadingState
+      - notificationsErrorState
+      - notificationsEmptyStateMessage
+      - notificationsList
+
+    preconditions:
+      - user is authenticated
+
+    trigger:
+      - user navigates to '/user/notifications'
+
+    mainFlow:
+      - when user navigates to '/user/notifications', system renders notificationsPage
+      - while notificationsListQuery is loading, notificationsLoadingState is rendered
+      - when notificationsListQuery fails, notificationsErrorState is rendered on notificationsPage
+      - when notifications list is empty, notificationsTitle and notificationsEmptyStateMessage are rendered
+      - when notifications list has one or more rows, notificationsTitle and notificationsList are rendered
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - current route matches '/user/notifications'
+      - notificationsTitle is visible with text 'Notifications'
+      - given loading query, notificationsLoadingState is visible
+      - given query error, notificationsErrorState is visible
+      - given zero notifications, notificationsEmptyStateMessage is visible with text 'You have no notifications yet.'
+      - given one or more notifications, notificationsList is visible
+
+    openQuestions:
+      - Current page component computes list rendering from `pageState.notifications` but does not clearly initialize it from query `items`; confirm authoritative behavior for first render with non-empty query results.
+
+  - id: FR-NPAGE-002
+    title: Notifications list row structure and unread styling
+
+    designEvidence:
+      - FIGMA-NOTIFICATIONS-PAGE
+
+    actors:
+      - user
+
+    uiObjects:
+      - notificationsList
+      - notificationListItem
+      - notificationListItemUserAvatar
+      - notificationListItemUserName
+      - notificationListItemRelativeTimestamp
+      - notificationListItemContent
+      - notificationListItemUnreadDot
+      - notificationRowActionTrigger
+      - notificationActionsMenu
+      - notificationMenuMarkAsReadItem
+      - notificationMenuDeleteItem
+
+    preconditions:
+      - notificationsList is visible
+
+    trigger:
+      - system renders notification rows
+
+    mainFlow:
+      - notifications row semantics reuse the same canonical objects as FR-TOP-004 in top_navigation_requirements_v1.yaml (notificationListItem and child objects)
+      - notificationsList renders one notificationListItem per notification
+      - each notificationListItem presents notificationListItemUserAvatar, notificationListItemUserName, notificationListItemRelativeTimestamp, and notificationListItemContent
+      - unread notificationListItem instances show notificationListItemUnreadDot and unread row background highlight
+      - each notificationListItem presents notificationRowActionTrigger as an icon-only control with no visible text label
+      - when user clicks notificationRowActionTrigger, system opens notificationActionsMenu with options 'Mark as read' (for unread rows) and 'Delete'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given notificationsList is visible, each row has notificationRowActionTrigger
+      - given notification row is unread, notificationListItemUnreadDot is visible
+      - given notification row is read, notificationListItemUnreadDot is not visible
+      - given user clicks notificationRowActionTrigger for an unread row, notificationActionsMenu is visible with options 'Mark as read' and 'Delete'
+      - given user clicks notificationRowActionTrigger for a read row, notificationActionsMenu is visible with option 'Delete'
+
+    openQuestions:
+      - Confirm whether notificationListItemUserName is intentionally hidden on the full notifications page (code currently renders avatar, date, and content but no explicit sender-name text region).
+      - Confirm whether clicking notificationListItem body navigates to a notification target URL, since rows currently render as ListItemButton but no explicit row-click navigation behavior is defined in this page component.
+
+  - id: FR-NPAGE-003
+    title: Header action 'Mark all as read'
+
+    designEvidence:
+      - FIGMA-NOTIFICATIONS-PAGE
+
+    actors:
+      - user
+
+    uiObjects:
+      - notificationsPage
+      - notificationsList
+      - markAllAsReadLink
+      - notificationListItemUnreadDot
+      - notificationMarkAllReadRequest
+
+    preconditions:
+      - notificationsList is visible
+      - there is at least one unread notification in current list metadata
+
+    trigger:
+      - user clicks markAllAsReadLink
+
+    mainFlow:
+      - when unread notifications exist and page is not in all-read local state, notificationsPage shows markAllAsReadLink with text 'Mark all as read'
+      - when user clicks markAllAsReadLink, system sends notificationMarkAllReadRequest
+      - after successful request, unread indicators are cleared in page presentation state
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given unread notifications exist, markAllAsReadLink is visible
+      - given user clicks markAllAsReadLink, request is issued to '/notification/mark-all-as-read'
+      - given mark-all-read succeeds, notificationListItemUnreadDot is not shown on rows still visible in current page state
+
+    openQuestions:
+      - Confirm whether mark-all-read should persist to all pages and survive hard refresh immediately, or whether current local all-read state behavior is temporarily acceptable.
+
+  - id: FR-NPAGE-004
+    title: Row actions menu - 'Mark as read' and 'Delete'
+
+    designEvidence:
+      - FIGMA-NOTIFICATIONS-PAGE
+
+    actors:
+      - user
+
+    uiObjects:
+      - notificationListItem
+      - notificationRowActionTrigger
+      - notificationActionsMenu
+      - notificationMenuMarkAsReadItem
+      - notificationMenuDeleteItem
+      - notificationListItemUnreadDot
+      - notificationMarkAllReadRequest
+      - notificationDeleteRequest
+
+    preconditions:
+      - notificationsList is visible
+      - notificationRowActionTrigger is available on target notificationListItem
+
+    trigger:
+      - user clicks notificationRowActionTrigger, then selects an action in notificationActionsMenu
+
+    mainFlow:
+      - user clicks notificationRowActionTrigger and system opens notificationActionsMenu
+      - for unread rows, notificationActionsMenu includes notificationMenuMarkAsReadItem with text 'Mark as read'
+      - notificationActionsMenu includes notificationMenuDeleteItem with text 'Delete'
+      - when user clicks notificationMenuMarkAsReadItem, system sends notificationMarkAllReadRequest with row notification id payload in current implementation and updates row unread state locally
+      - when user clicks notificationMenuDeleteItem, system sends notificationDeleteRequest with row notification id and removes the row locally on success
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given row menu is opened for unread row, notificationMenuMarkAsReadItem is visible
+      - given row menu is opened for read row, notificationMenuMarkAsReadItem is not visible
+      - given row menu is opened, notificationMenuDeleteItem is visible
+      - given user clicks notificationMenuDeleteItem and request succeeds, row is removed from notificationsList
+      - given user clicks notificationMenuMarkAsReadItem and request succeeds, notificationListItemUnreadDot is removed for that row in current page state
+
+    openQuestions:
+      - Row-level 'Mark as read' currently posts to '/notification/mark-all-as-read' with `notification_id`; confirm whether this is intentional API contract or should use '/notification/select' or another row-specific endpoint.
+
+  - id: FR-NPAGE-005
+    title: Notifications pagination
+
+    designEvidence:
+      - FIGMA-NOTIFICATIONS-PAGE
+
+    actors:
+      - user
+
+    uiObjects:
+      - notificationsList
+      - notificationListItem
+      - notificationsPagination
+
+    preconditions:
+      - notificationsList is visible
+      - total notifications exceed current page size (10)
+
+    trigger:
+      - user changes page via notificationsPagination
+
+    mainFlow:
+      - notifications page uses local page size of 10 rows per page
+      - when total rows produce more than one page, notificationsPagination is shown with first and last buttons
+      - when user selects a page, notificationsList renders the corresponding 10-row slice for that page
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given more than 10 notifications, notificationsPagination is visible
+      - given user changes page, notificationsList updates to the selected page slice
+      - given 10 or fewer notifications, notificationsPagination is not visible
+
+    openQuestions:
+      - Confirm whether pagination should be backend-driven in future revisions instead of current client-side slicing.
+
+designEvidenceLinkTable:
+  - key: FIGMA-NOTIFICATIONS-PAGE
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=2295-5519&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-NOTIFICATIONS-EMPTY
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6540-71425&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-NOTIFICATIONS-ERROR
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6540-72022&t=lsKQpS4Jq8MOZwMT-1

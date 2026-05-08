@@ -1,0 +1,188 @@
+# Normalized requirements: archive workflow (confirmation and outcomes)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Archiving a Workflow)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference:
+#   - tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (FR-CAB-005 entry from contextActionBarOverflowItemArchiveWorkflow)
+#   - tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml (project 'Workflows' view at /project/{id}/workflows—post-archive navigation target)
+#   - tests/docs/requirements/original/project_overview_requirements_v1.yaml (publish and unpublish at project level only; child workflows inherit project visibility)
+#   - tests/docs/requirements/original/library_page_requirements_v1.yaml (archived workflow visibility, restore rules—FR-LIB-006 and related)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+
+uiObjectDefinitions:
+  contextActionBarOverflowItemArchiveWorkflow:
+    meaning: Canonical overflow menu row labeled 'Archive workflow' when the user is on a workflow-scoped route (pathname '/workflow/{id}' or '/workflow/{id}/...' for sub-views); defined in context_action_bar_requirements_v1.yaml FR-CAB-005; Owner-only actionable.
+  archiveWorkflowConfirmationModal:
+    meaning: Modal dialog presented after Owner clicks contextActionBarOverflowItemArchiveWorkflow; layout, title, body copy, and actions match FIGMA-CAB-WF-ARCHIVE-WORKFLOW-MODAL (authoritative user-visible copy). Where that design shows a literal '[workflow type]' token, the running product substitutes the workflow's user-visible type label so no bracketed placeholder remains—for example when the type is activity, user-visible strings follow the Figma pattern with 'activity' in place of the token (e.g. primary confirm or title reads 'Archive activity').
+  archiveWorkflowConfirmationModalCancelButton:
+    meaning: Secondary control on archiveWorkflowConfirmationModal that dismisses the modal without archiving; user-visible label matches FIGMA-CAB-WF-ARCHIVE-WORKFLOW-MODAL, including the same '[workflow type]' substitution rule where that label participates in templated copy.
+  archiveWorkflowConfirmationModalConfirmButton:
+    meaning: Primary destructive control on archiveWorkflowConfirmationModal that confirms archiving the workflow; user-visible label matches FIGMA-CAB-WF-ARCHIVE-WORKFLOW-MODAL, including the same '[workflow type]' substitution rule where that label participates in templated copy.
+  globalMessageSnackbar:
+    meaning: Global snackbar for outcomes after Owner confirms archiveWorkflowConfirmationModal. On successful archive when the user lands on the parent project 'Workflows' view at pathname '/project/{id}/workflows', user-visible success copy matches the template 'Your [workflow type] has been successfully archived' after substituting the workflow's user-visible type label for '[workflow type]' (for example for an activity workflow, 'Your activity has been successfully archived'). On failed confirm (workflow remains non-archived), user-visible error copy matches the template 'We encountered an issue and your [workflow type] was not archived' after the same substitution (for example 'We encountered an issue and your activity was not archived').
+
+locatorMappings:
+  contextActionBarOverflowItemArchiveWorkflow:
+    strategy: null
+    confidence: unresolved
+  archiveWorkflowConfirmationModal:
+    strategy: null
+    confidence: unresolved
+  archiveWorkflowConfirmationModalCancelButton:
+    strategy: null
+    confidence: unresolved
+  archiveWorkflowConfirmationModalConfirmButton:
+    strategy: null
+    confidence: unresolved
+  globalMessageSnackbar:
+    strategy: null
+    confidence: unresolved
+
+requirements:
+  - id: FR-WF-ARCH-001
+    title: Archive workflow confirmation modal opens from contextActionBar overflow
+
+    designEvidence:
+      - FIGMA-CAB-WF-ARCHIVE-WORKFLOW-MODAL
+
+    actors:
+      - owner
+
+    uiObjects:
+      - contextActionBarOverflowItemArchiveWorkflow
+      - archiveWorkflowConfirmationModal
+      - archiveWorkflowConfirmationModalCancelButton
+      - archiveWorkflowConfirmationModalConfirmButton
+
+    preconditions:
+      - current route pathname is exactly '/workflow/{id}' or matches '/workflow/{id}/...' (non-empty suffix path segments for workflow sub-views such as overview or outcomes; product may add further segments over time)
+      - user is Owner of the workflow
+      - contextActionBarOverflowMenu is open with contextActionBarOverflowItemArchiveWorkflow actionable per context_action_bar_requirements_v1.yaml FR-CAB-005
+
+    trigger:
+      - user clicks contextActionBarOverflowItemArchiveWorkflow
+
+    mainFlow:
+      - system presents archiveWorkflowConfirmationModal per FIGMA-CAB-WF-ARCHIVE-WORKFLOW-MODAL
+      - archiveWorkflowConfirmationModal includes archiveWorkflowConfirmationModalCancelButton and archiveWorkflowConfirmationModalConfirmButton; modal title, body copy, and both button labels match the user-visible strings in FIGMA-CAB-WF-ARCHIVE-WORKFLOW-MODAL after substituting the workflow's user-visible type label for any '[workflow type]' placeholder shown in that design (for example for an activity workflow, confirm copy reads 'Archive activity' instead of a string that still contains '[workflow type]')
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given Owner trigger, archiveWorkflowConfirmationModal is visible
+      - archiveWorkflowConfirmationModalCancelButton and archiveWorkflowConfirmationModalConfirmButton are visible
+      - modal title and body copy match FIGMA-CAB-WF-ARCHIVE-WORKFLOW-MODAL with '[workflow type]' replaced by the workflow's type label for that workflow instance
+      - archiveWorkflowConfirmationModalCancelButton and archiveWorkflowConfirmationModalConfirmButton labels match FIGMA-CAB-WF-ARCHIVE-WORKFLOW-MODAL with the same substitution rule where templated copy applies
+
+    openQuestions: []
+
+  - id: FR-WF-ARCH-002
+    title: Cancel archive workflow leaves workflow unchanged
+
+    designEvidence:
+      - FIGMA-CAB-WF-ARCHIVE-WORKFLOW-MODAL
+
+    actors:
+      - owner
+
+    uiObjects:
+      - archiveWorkflowConfirmationModal
+      - archiveWorkflowConfirmationModalCancelButton
+
+    preconditions:
+      - archiveWorkflowConfirmationModal is open
+      - user opened archiveWorkflowConfirmationModal from contextActionBar per FR-WF-ARCH-001 (including from any workflow sub-view pathname under '/workflow/{id}/')
+
+    trigger:
+      - user clicks archiveWorkflowConfirmationModalCancelButton
+
+    mainFlow:
+      - system closes archiveWorkflowConfirmationModal
+      - user is returned to the same application location as when they opened the modal—pathname matches the pathname that was current when the modal opened (including any segments after '/workflow/{id}/' for the same workflow id)
+      - workflow remains in a non-archived state for listing and browse rules that applied before the modal opened
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given trigger, archiveWorkflowConfirmationModal is not visible
+      - given trigger, application URL pathname equals the pathname when the user opened archiveWorkflowConfirmationModal (any '/workflow/{id}/...' sub-view is preserved for the same workflow id)
+      - workflow is not archived as a result of clicking on the archiveWorkflowConfirmationModalCancelButton (listing and browse rules unchanged from before Owner opened archiveWorkflowConfirmationModal)
+
+    openQuestions: []
+
+  - id: FR-WF-ARCH-003
+    title: Confirm archive workflow applies archived state, navigates to project Workflows, and library rules
+
+    designEvidence:
+      - FIGMA-CAB-WF-ARCHIVE-WORKFLOW-MODAL
+
+    actors:
+      - owner
+
+    uiObjects:
+      - archiveWorkflowConfirmationModal
+      - archiveWorkflowConfirmationModalConfirmButton
+      - globalMessageSnackbar
+
+    preconditions:
+      - archiveWorkflowConfirmationModal is open
+
+    trigger:
+      - user clicks archiveWorkflowConfirmationModalConfirmButton
+
+    mainFlow:
+      - system closes archiveWorkflowConfirmationModal after successful archive
+      - application navigates the user to the parent project 'Workflows' view at route pathname '/project/{id}/workflows' of the project that contains the archived workflow (see project_workflows_view_requirements_v1.yaml projectWorkflowsView)
+      - when the user lands on that project 'Workflows' view after successful archive, system shows globalMessageSnackbar with user-visible copy matching the template 'Your [workflow type] has been successfully archived' after substituting that workflow's user-visible type label for '[workflow type]'
+      - archived workflow listing, browse restriction, and Owner-only restore affordances on cards follow the same product rules as other archived workflows in library_page_requirements_v1.yaml FR-LIB-006 (and related acceptance criteria for archived workflowCard rows)
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given successful confirm, archiveWorkflowConfirmationModal is not visible
+      - given successful confirm, current route pathname is '/project/{id}/workflows' for the parent project of the archived workflow (project 'Workflows' view per project_workflows_view_requirements_v1.yaml)
+      - given successful confirm, globalMessageSnackbar is visible with user-visible copy matching 'Your [workflow type] has been successfully archived' after the same '[workflow type]' substitution as in FR-WF-ARCH-001 (for example 'Your activity has been successfully archived' for an activity workflow)
+      - given Owner is on that project 'Workflows' view after confirm and uses archive filter behaviour that lists archived workflows, archived workflow appears per FR-LIB-006 contract for archived workflowCard rows in the project workflows listing
+
+    openQuestions: []
+
+  - id: FR-WF-ARCH-004
+    title: Confirm archive workflow failure closes modal, preserves route, and shows error snackbar
+
+    designEvidence:
+      - FIGMA-CAB-WF-ARCHIVE-WORKFLOW-MODAL
+
+    actors:
+      - owner
+
+    uiObjects:
+      - archiveWorkflowConfirmationModal
+      - archiveWorkflowConfirmationModalConfirmButton
+      - globalMessageSnackbar
+
+    preconditions:
+      - archiveWorkflowConfirmationModal is open
+      - user opened archiveWorkflowConfirmationModal from contextActionBar per FR-WF-ARCH-001 (including from any workflow sub-view pathname under '/workflow/{id}/')
+
+    trigger:
+      - user clicks archiveWorkflowConfirmationModalConfirmButton and the archive operation does not complete successfully (for example API or server error), leaving the workflow in a non-archived state
+
+    mainFlow:
+      - system closes archiveWorkflowConfirmationModal without navigating away from the workflow context—the user remains at the same application location as when they opened the modal (pathname and workflow id as when the modal opened, including any '/workflow/{id}/...' sub-view segments; search and hash unchanged if present when the modal opened), matching the preservation contract in FR-WF-ARCH-002
+      - workflow remains not archived; listing and browse rules are unchanged from before the failed confirm
+      - system shows globalMessageSnackbar with user-visible copy matching the template 'We encountered an issue and your [workflow type] was not archived' after substituting the workflow's user-visible type label for '[workflow type]'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given failed confirm outcome described in trigger, archiveWorkflowConfirmationModal is not visible
+      - given failed confirm, application URL pathname equals the pathname when the user opened archiveWorkflowConfirmationModal (any '/workflow/{id}/...' sub-view is preserved for the same workflow id); if search or hash was present when the modal opened, search and hash after failed confirm match those values
+      - given failed confirm, workflow is not archived (listing and browse rules unchanged from before Owner opened archiveWorkflowConfirmationModal)
+      - given failed confirm, globalMessageSnackbar is visible with user-visible copy matching 'We encountered an issue and your [workflow type] was not archived' after the same '[workflow type]' substitution as in FR-WF-ARCH-001 (for example 'We encountered an issue and your activity was not archived' for an activity workflow)
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-CAB-WF-ARCHIVE-WORKFLOW-MODAL
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-112526&t=6weYZA8hUf6tm7DF-1

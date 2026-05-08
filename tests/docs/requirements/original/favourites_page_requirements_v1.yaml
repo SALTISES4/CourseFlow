@@ -1,0 +1,298 @@
+# Normalized requirements: 'Favourites' page (route /favourites)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (library/navigation favourites behavior), implementation evidence in Library/Favourites page and Favourite toggle component.
+# Application code evidence: react/src/components/pages/Library/Favourites/index.tsx; react/src/components/common/UIPrimitives/Favourite/index.tsx; react/src/HTTP/XMLHTTP/API/library.rtk.ts
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/original/main_navigation_requirements_v1.yaml (FR-NAV-007 route entry to /favourites); tests/docs/requirements/original/library_page_requirements_v1.yaml (favouritesToggle on 'My library' is scoped to contributor objects only); tests/docs/requirements/original/card_content_requirements_v1.yaml (projectCard/workflowCard/cardTemplateChip and cardFavouriteToggle semantics)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+
+uiObjectDefinitions:
+  favouritesPage:
+    meaning: Dedicated page at route pathname /favourites for favourited library objects. Scope includes favourited workflows and favourited projects in 'My library' contributor scope and favourited published workflows and favourited published projects outside that contributor scope.
+  favouritesFilterToolbar:
+    meaning: Top toolbar on favouritesPage containing sortControl, ownershipFilter, typeFilter, workflowTypeFilter (visible only when typeFilter includes 'Workflows' in scope, same visibility rule as on 'My library'), templatesToggle, and keywordSearchField for favourites results.
+  sortControl:
+    meaning: Same canonical behavior as sortControl on 'My library' (FR-LIB-002), on favouritesFilterToolbar. Placeholder label is 'Sort'; selectable options include 'A - Z' and 'Date created'; when non-default sort is active, sortResetButton is shown.
+  sortResetButton:
+    meaning: Clear (X) control on sortControl when non-default sort is active; clears to default sort order for favourites results.
+  ownershipFilter:
+    meaning: Same canonical behavior as ownershipFilter on 'My library' (FR-LIB-003), on favouritesFilterToolbar. Single-select with placeholder label 'Ownership'; selectable options include at least 'Owned' and 'Shared'; when active, visible label is the selected option and ownershipFilterResetButton is shown.
+  ownershipFilterResetButton:
+    meaning: Clear (X) control on ownershipFilter when an ownership option is active; clears ownership selection and restores placeholder label 'Ownership'.
+  typeFilter:
+    meaning: Same canonical behavior as typeFilter on 'My library' (FR-LIB-003), on favouritesFilterToolbar. Placeholder label is 'Type'; commitments are 'Projects' or 'Workflows', with Unset as the cleared state; no separate selectable 'All types' row. On first land of /favourites, typeFilter is committed to 'Projects' until the user changes it.
+  typeFilterResetButton:
+    meaning: Clear (X) control on typeFilter when a committed type is active; clears to the canonical default for '/favourites' per product behavior.
+  workflowTypeFilter:
+    meaning: Same canonical behavior as workflowTypeFilter on 'My library' (FR-LIB-003), on favouritesFilterToolbar. Multiselect options are 'Activity', 'Course', and 'Program'; visible only when typeFilter includes 'Workflows' in scope (typeFilter committed to 'Workflows', or typeFilter is Unset), and not visible when typeFilter is committed to 'Projects' only.
+  templatesToggle:
+    meaning: Boolean filter on favouritesFilterToolbar labeled 'Templates'; when on, favourites results are constrained to template cards only; when off, both template and non-template favourited cards may be shown.
+  keywordSearchField:
+    meaning: Search field on favouritesFilterToolbar; same mechanism as keywordSearchField on 'My library': results narrow as user types keyword input and pressing 'Enter' is not required.
+  keywordSearchClearButton:
+    meaning: Icon-only clear control ('X') shown on the right side of keywordSearchField when the field is not empty; clicking it clears the field and removes keyword-search filtering.
+  resultsSummary:
+    meaning: Region between favouritesFilterToolbar and resultsRegion displaying current query result counts; same canonical contract as resultsSummary on 'My library' and 'Explore'.
+  resultsRegion:
+    meaning: Same canonical object as resultsRegion on 'My library' and 'Explore'; on favouritesPage it lists favourited projectCard and workflowCard items for the current query state, including loading, empty, and error states.
+  projectCard:
+    meaning: Same canonical object as projectCard in card_content_requirements_v1.yaml, when resultsRegion item type is project.
+  workflowCard:
+    meaning: Same canonical object as workflowCard in card_content_requirements_v1.yaml, when resultsRegion item type is workflow.
+  cardTemplateChip:
+    meaning: Same canonical object as cardTemplateChip in card_content_requirements_v1.yaml; shown on workflowCard when the workflow row represents a template.
+  pagination:
+    meaning: Same canonical pagination control used on 'My library' and 'Explore'; shown when total matching favourited items are more than one page at 10 items per page.
+  paginationPageNumberButton:
+    meaning: Clickable numeric page control within pagination.
+  paginationPreviousNextButton:
+    meaning: Single-arrow control within pagination that navigates one page backward or forward.
+  paginationFirstLastButton:
+    meaning: Double-arrow control within pagination that navigates directly to first or last page.
+  favouritesLoadingState:
+    meaning: Loading placeholders shown while favourites query is in flight.
+  favouritesEmptyState:
+    meaning: Empty state shown when the favourites query returns zero matching rows.
+  favouritesErrorState:
+    meaning: Error state shown when the favourites query fails.
+
+locatorMappings:
+  favouritesPage:
+    strategy: "URL pathname /favourites"
+    confidence: confirmed
+  favouritesFilterToolbar:
+    strategy: "{favouritesPage} top filter toolbar row"
+    confidence: inferred
+  sortControl:
+    strategy: "{favouritesFilterToolbar} control showing label 'Sort', 'A - Z', or 'Date created'"
+    confidence: inferred
+  sortResetButton:
+    strategy: "{sortControl} button[aria-label='close'] or icon-only clear control adjacent to active sort label"
+    confidence: inferred
+  ownershipFilter:
+    strategy: "{favouritesFilterToolbar} single-select filter showing placeholder 'Ownership' or active label Owned or Shared"
+    confidence: inferred
+  ownershipFilterResetButton:
+    strategy: "{ownershipFilter} button[aria-label='close'] or icon-only clear control adjacent to active ownership label"
+    confidence: inferred
+  typeFilter:
+    strategy: "{favouritesFilterToolbar} single-select filter showing label 'Type' or committed type label 'Projects' or 'Workflows'"
+    confidence: inferred
+  typeFilterResetButton:
+    strategy: "{typeFilter} button[aria-label='close'] or icon-only clear control when committed type scope is active"
+    confidence: inferred
+  workflowTypeFilter:
+    strategy: "{favouritesFilterToolbar} multiselect filter for workflow program types; present only when typeFilter is committed to 'Workflows' or is Unset (no committed 'Projects' or 'Workflows')"
+    confidence: inferred
+  templatesToggle:
+    strategy: "{favouritesFilterToolbar} toggle labeled 'Templates'"
+    confidence: inferred
+  keywordSearchField:
+    strategy: "{favouritesFilterToolbar} inline search field using same interaction mechanism as 'My library'"
+    confidence: inferred
+  keywordSearchClearButton:
+    strategy: "{keywordSearchField} right-side icon button shown when input is non-empty"
+    confidence: inferred
+  resultsSummary:
+    strategy: "{favouritesPage} region between favouritesFilterToolbar and resultsRegion showing count summary"
+    confidence: inferred
+  resultsRegion:
+    strategy: "{favouritesPage} main results grid/listing region"
+    confidence: inferred
+  projectCard:
+    strategy: "{resultsRegion} card where object type is project"
+    confidence: inferred
+  workflowCard:
+    strategy: "{resultsRegion} card where object type is workflow/program/course/activity; template workflows remain workflowCard and are identified by cardTemplateChip"
+    confidence: inferred
+  cardTemplateChip:
+    strategy: "{workflowCard} chip with text 'Template' on template workflow rows"
+    confidence: inferred
+  pagination:
+    strategy: "{favouritesPage} pagination control shown when pageCount > 1"
+    confidence: inferred
+  paginationPageNumberButton:
+    strategy: "{pagination} clickable numeric page item"
+    confidence: inferred
+  paginationPreviousNextButton:
+    strategy: "{pagination} single-arrow previous/next control"
+    confidence: inferred
+  paginationFirstLastButton:
+    strategy: "{pagination} double-arrow first/last control"
+    confidence: inferred
+  favouritesLoadingState:
+    strategy: "{resultsRegion} 10 rectangular skeleton rows while loading"
+    confidence: inferred
+  favouritesEmptyState:
+    strategy: "{resultsRegion} text 'No results found'"
+    confidence: inferred
+  favouritesErrorState:
+    strategy: "{resultsRegion} error view"
+    confidence: inferred
+
+requirements:
+  - id: FR-FAV-001
+    title: Route and base scope for '/favourites'
+
+    designEvidence:
+      - FIGMA-FAV-DEFAULT
+      - FIGMA-FAV-WITH-WORKFLOWS
+
+    actors:
+      - user
+
+    uiObjects:
+      - favouritesPage
+      - favouritesFilterToolbar
+      - resultsSummary
+      - resultsRegion
+      - projectCard
+      - workflowCard
+
+    preconditions:
+      - user is authenticated
+      - user navigates to route pattern /favourites (for example from viewAllLink in mainNavigation)
+
+    trigger:
+      - user lands on /favourites
+
+    mainFlow:
+      - system renders favouritesPage with favouritesFilterToolbar, resultsSummary, and resultsRegion
+      - on first land of /favourites, typeFilter is committed to 'Projects' by default (same as 'My library')
+      - with default first-load typeFilter committed to 'Projects', resultsRegion includes favourited projects only
+      - when typeFilter includes workflows in scope, resultsRegion may include favourited workflows and favourited published workflows where user is not Owner, Editor, Viewer, or Commenter
+      - resultsRegion may include favourited published projects where user is not Owner, Editor, Viewer, or Commenter
+      - results render as projectCard and/or workflowCard according to object type and active filters
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - current route matches /favourites
+      - favouritesPage is visible
+      - favouritesFilterToolbar is visible
+      - on first land of /favourites, typeFilter reflects committed 'Projects' by default
+      - resultsSummary is visible between favouritesFilterToolbar and resultsRegion
+      - given first land on /favourites with default typeFilter state, resultsRegion shows favourited projects only
+      - given typeFilter includes workflows in scope, resultsRegion may show favourited workflows and favourited projects according to active filters
+
+    openQuestions: []
+
+  - id: FR-FAV-002
+    title: Toolbar filtering on '/favourites'
+
+    designEvidence:
+      - FIGMA-FAV-DEFAULT
+      - FIGMA-FAV-WITH-WORKFLOWS
+
+    actors:
+      - user
+
+    uiObjects:
+      - favouritesPage
+      - favouritesFilterToolbar
+      - sortControl
+      - sortResetButton
+      - ownershipFilter
+      - ownershipFilterResetButton
+      - typeFilter
+      - typeFilterResetButton
+      - workflowTypeFilter
+      - templatesToggle
+      - keywordSearchField
+      - keywordSearchClearButton
+      - resultsSummary
+      - resultsRegion
+
+    preconditions:
+      - favouritesPage is rendered
+
+    trigger:
+      - user changes sortControl, ownershipFilter, typeFilter, workflowTypeFilter, templatesToggle, or keywordSearchField, or uses a filter reset control
+
+    mainFlow:
+      - sortControl behavior matches FR-LIB-002 interaction pattern ('Sort', 'A - Z', 'Date created', toggle direction on repeat selection, reset via sortResetButton)
+      - ownershipFilter behavior matches FR-LIB-003 single-select interaction pattern ('Ownership', 'Owned', 'Shared', reset via ownershipFilterResetButton)
+      - typeFilter behavior matches FR-LIB-003 three-state contract ('Type', 'Projects', 'Workflows', reset via typeFilterResetButton)
+      - workflowTypeFilter behavior matches FR-LIB-003 multiselect contract and is visible only when typeFilter includes 'Workflows' in scope (typeFilter committed to 'Workflows', or typeFilter Unset)
+      - templatesToggle applies boolean template constraint to resultsRegion
+      - keywordSearchField uses the same mechanism as 'My library': inline input narrows results as user types; keywordSearchClearButton clears the keyword constraint
+      - ownershipFilter, typeFilter, workflowTypeFilter, templatesToggle, and keywordSearchField combine with AND semantics across filter dimensions against the favourites base scope; workflowTypeFilter selections remain additive within the workflow-type dimension (OR semantics)
+      - changing sort, ownershipFilter, typeFilter, workflowTypeFilter, templatesToggle, or keywordSearchField resets listing to the first results page
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given favouritesPage is rendered, sortControl is visible with placeholder 'Sort' before selection
+      - given favouritesPage is rendered, ownershipFilter is visible with placeholder 'Ownership' before selection
+      - given first land on /favourites, typeFilter is committed to 'Projects' by default
+      - given typeFilter is reset to Unset, typeFilter shows placeholder 'Type'
+      - given typeFilter is committed to 'Projects' only, workflowTypeFilter is not visible
+      - given typeFilter includes 'Workflows' in scope (committed 'Workflows', or Unset), workflowTypeFilter is visible
+      - given ownershipFilter has an active option, ownershipFilterResetButton is visible and clears ownership selection
+      - given typeFilter has an active committed option, typeFilterResetButton is visible and clears the committed type scope per product default
+      - given workflowTypeFilter is visible and user selects more than one option, results include workflows matching any selected workflow type
+      - given templatesToggle is on, results include only template favourited cards
+      - given templatesToggle is off, results may include template and non-template favourited cards
+      - given keywordSearchField receives input, results are constrained by keyword without requiring 'Enter', using the same mechanism as 'My library'
+      - given keywordSearchField is non-empty, keywordSearchClearButton is visible and clears the keyword constraint when clicked
+      - given any filter or sort change, resultsSummary updates to reflect the current query result counts
+
+    openQuestions: []
+
+  - id: FR-FAV-003
+    title: Loading, empty, error, and pagination states on '/favourites'
+
+    designEvidence:
+      - FIGMA-FAV-DEFAULT
+      - FIGMA-FAV-WITH-WORKFLOWS
+      - FIGMA-FAV-EMPTY
+      - FIGMA-FAV-ERROR
+
+    actors:
+      - user
+
+    uiObjects:
+      - favouritesPage
+      - resultsRegion
+      - favouritesLoadingState
+      - favouritesEmptyState
+      - favouritesErrorState
+      - pagination
+      - paginationPageNumberButton
+      - paginationPreviousNextButton
+      - paginationFirstLastButton
+
+    preconditions:
+      - favouritesPage is rendered
+
+    trigger:
+      - favourites query state changes or user interacts with pagination controls
+
+    mainFlow:
+      - while query is loading, system renders favouritesLoadingState placeholders in resultsRegion
+      - when query returns zero rows, system renders favouritesEmptyState
+      - when query fails, system renders favouritesErrorState
+      - when query succeeds with more than one page, system renders pagination and supports page changes
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given loading query, favouritesLoadingState is visible
+      - given successful query with zero rows, favouritesEmptyState is visible
+      - given failed query, favouritesErrorState is visible
+      - given query meta pageCount greater than 1, pagination is visible
+      - given user selects a different paginationPageNumberButton, resultsRegion updates for that page
+      - given pagination is visible, paginationPreviousNextButton and paginationFirstLastButton navigate correctly between favourites result pages
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-FAV-DEFAULT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6624-27524&t=Q1Rlqw0f4xYnBv7M-1
+  - key: FIGMA-FAV-WITH-WORKFLOWS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6657-33060&t=Q1Rlqw0f4xYnBv7M-1
+  - key: FIGMA-FAV-EMPTY
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6661-33756&t=Q1Rlqw0f4xYnBv7M-1
+  - key: FIGMA-FAV-ERROR
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6661-33764&t=Q1Rlqw0f4xYnBv7M-1
