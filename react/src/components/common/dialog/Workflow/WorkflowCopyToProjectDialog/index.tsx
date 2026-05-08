@@ -3,11 +3,20 @@ import { _t } from '@cf/utility/Utility.class'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
-import { TargetProjectQueryResp } from '@XMLHTTP/types/query'
 import { useState } from 'react'
 
 const getTargetProjectMenuQuery = () => {
   console.log('getTargetProjectMenuQuery fired')
+}
+
+export type TargetProjectQueryResp = {
+  message: string
+  dataPackage: {
+    ownedProjects: any
+    editProjects: any
+    deletedProjects?: any
+  }
+  workflowUuid: string
 }
 
 function WorkflowCopyToProjectDialog({ id, actionFunction }: any) {

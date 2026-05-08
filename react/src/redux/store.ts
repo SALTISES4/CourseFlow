@@ -1,10 +1,6 @@
 import { graphStateReducer } from '@cf/features/graph/state'
 import { listenerMiddleware } from '@cfRedux/middleware/viewsettings.localstorage'
-import {
-  dummyReducers,
-  legacyWorkflowReducers,
-  workspaceReducer
-} from '@cfRedux/Reducers'
+import { dummyReducers, legacyWorkflowReducers } from '@cfRedux/Reducers'
 import authReducer from '@cfRedux/slices/auth.slice'
 import sidebarReducer from '@cfRedux/slices/sidebar.slice'
 import svgLinkReducer from '@cfRedux/slices/svglink.slice'
@@ -26,7 +22,7 @@ const store = configureStore({
     // They are quarantined from the new hydration path.
     ...legacyWorkflowReducers,
     ...dummyReducers,
-    workspace: workspaceReducer,
+    //    workspace: workspaceReducer,
     sidebar: sidebarReducer,
     svglink: svgLinkReducer,
     viewsettings: viewsettingsReducer

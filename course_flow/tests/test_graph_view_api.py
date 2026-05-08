@@ -8,7 +8,15 @@ from django.test import Client
 from django.utils import timezone
 
 from course_flow.core.auth import generate_raw_token, hash_token
-from course_flow.core.models import Authtoken, Channel, Graph, Node, Section
+from course_flow.core.models import (
+    Authtoken,
+    Channel,
+    Comment,
+    Graph,
+    Node,
+    Section,
+    Thread,
+)
 
 
 @pytest.fixture
@@ -131,6 +139,27 @@ def test_graph_view_requires_auth(client: Client, user):
 
     response = client.get(f"/api/graph/{wf_uuid}/view")
     assert response.status_code == 401
+
+
+@pytest.mark.django_db
+def test_graph_view_thread_comment_counts_use_thread_id_resolution(client: Client, user):
+    """Regression: comment aggregates filter by thread_id after resolving thread UUIDs."""
+    raw_token = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw_token)
+    wf = Graph.objects.select_related("workflow").get(uuid=wf_uuid)
+    thread = Thread.objects.create()
+    section = Section.objects.create(graph=wf, title="With thread", position=0, thread=thread)
+    Comment.objects.create(author=user, thread=thread, body="one")
+    Comment.objects.create(author=user, thread=thread, body="two")
+
+    body = client.get(
+        f"/api/graph/{wf_uuid}/view",
+        **_auth_header(raw_token),
+    ).json()
+
+    counts_by_thread = {row["threadUuid"]: row["commentCount"] for row in body["threadCommentCounts"]}
+    assert counts_by_thread[str(thread.uuid)] == 2
+    assert any(s["uuid"] == str(section.uuid) for s in body["sections"])
 
 
 @pytest.mark.django_db

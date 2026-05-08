@@ -39,7 +39,7 @@ import {
 } from './types'
 
 type StateType = {
-  condensed: number[] | 'all'
+  condensed: string[] | 'all'
   redrawLines: boolean
 }
 
@@ -121,15 +121,15 @@ const GraphView = () => {
     [dispatch, triggerLineRerender]
   )
 
-  const onSectionCollapse = useCallback((sectionuuid: string) => {
+  const onSectionCollapse = useCallback((sectionUuid: string) => {
     setState(
       produce((draft) => {
         if (Array.isArray(draft.condensed)) {
-          const index = draft.condensed.indexOf(sectionId)
+          const index = draft.condensed.indexOf(sectionUuid)
           if (index !== -1) {
             draft.condensed.splice(index, 1)
           } else {
-            draft.condensed.push(sectionId)
+            draft.condensed.push(sectionUuid)
           }
         }
       })

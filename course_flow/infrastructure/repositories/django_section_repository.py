@@ -27,7 +27,7 @@ class DjangoSectionRepository:
         thread_uuid: UUID | None = None,
     ) -> SectionDTO | None:
         try:
-            wf = Graph.objects.get(uuid=graph_uuid)
+            graph = Graph.objects.only("id").get(uuid=graph_uuid)
         except Graph.DoesNotExist:
             return None
 
@@ -39,7 +39,7 @@ class DjangoSectionRepository:
                 return None
 
         sec = Section.objects.create(
-            graph=wf,
+            graph_id=graph.id,
             title=title,
             position=position,
             thread_id=thread_id,
@@ -55,8 +55,12 @@ class DjangoSectionRepository:
         return _to_dto(sec)
 
     def list_for_graph_uuid(self, graph_uuid: UUID) -> list[SectionDTO]:
+        graph = Graph.objects.only("id").filter(uuid=graph_uuid).first()
+        if graph is None:
+            return []
+
         qs = (
-            Section.objects.filter(graph__uuid=graph_uuid)
+            Section.objects.filter(graph_id=graph.id)
             .select_related("graph", "thread")
             .order_by("position", "id")
         )
@@ -75,10 +79,10 @@ class DjangoSectionRepository:
         if "thread_uuid" in updates:
             thread_uuid = updates["thread_uuid"]
             if thread_uuid is None:
-                sec.thread = None
+                sec.thread_id = None
             else:
                 try:
-                    sec.thread = Thread.objects.get(uuid=thread_uuid)
+                    sec.thread_id = Thread.objects.only("id").get(uuid=thread_uuid).id
                 except Thread.DoesNotExist:
                     return None
 

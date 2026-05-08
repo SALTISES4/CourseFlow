@@ -4,7 +4,7 @@ from uuid import UUID
 
 from django.db.models import Count, Q
 
-from course_flow.core.models import Comment, Edge, Graph, Node, Outcome
+from course_flow.core.models import Comment, Edge, Graph, Node, Outcome, Thread
 
 
 class GraphViewService:
@@ -66,12 +66,19 @@ class GraphViewService:
 
         comment_counts = {tu: 0 for tu in thread_uuids}
         if thread_uuids:
-            for row in (
-                Comment.objects.filter(thread__uuid__in=thread_uuids)
-                .values("thread__uuid")
-                .annotate(comment_count=Count("id"))
-            ):
-                comment_counts[row["thread__uuid"]] = row["comment_count"]
+            uuid_to_tid = dict(
+                Thread.objects.filter(uuid__in=thread_uuids).values_list("uuid", "id")
+            )
+            thread_ids = list(uuid_to_tid.values())
+            tid_to_uuid = {tid: tu for tu, tid in uuid_to_tid.items()}
+            if thread_ids:
+                for row in (
+                    Comment.objects.filter(thread_id__in=thread_ids)
+                    .values("thread_id")
+                    .annotate(comment_count=Count("id"))
+                ):
+                    tu = tid_to_uuid[row["thread_id"]]
+                    comment_counts[tu] = row["comment_count"]
 
         return {
             "graph": {

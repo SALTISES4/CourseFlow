@@ -1,20 +1,14 @@
 import { LibrarySortDirectionIn, LibrarySortValueIn } from '@cf/api/gen'
 import { _t } from '@cf/utility/Utility.class'
-// import {
-//   SortDirection,
-//   SortValueOption
-// } from '@cfComponents/filters/SortableFilterButton'
 import {
   SearchFilterGroup,
   SearchFilterOption,
   SortOption
 } from '@cfComponents/filters/types'
+import { WorkflowType } from '@cfPages/Workflow/types'
 
-import { WorkflowType } from '../../pages/Workflow/types'
 type FilterGroups = { [key: string]: SearchFilterGroup }
 
-type Option = any
-type WorkflowTypeFilter = 'activity' | 'course' | 'program' | 'task'
 type ContentTypeFilter = 'project' | 'workflow'
 
 export type LibrarySearchFilters = {
@@ -22,7 +16,7 @@ export type LibrarySearchFilters = {
   contentType?: ContentTypeFilter | null
   projectUuid?: string | null
   disciplineIds?: number[]
-  workflowTypes?: WorkflowTypeFilter[]
+  workflowTypes?: WorkflowType[]
   ownership?: 'owned' | 'shared' | null
   isFavorite?: boolean | null
   isTemplate?: boolean | null
@@ -158,6 +152,7 @@ class LibraryHelper {
       }
     }
   }
+
   /**
    *
    **/
@@ -226,8 +221,8 @@ class LibraryHelper {
 
     const workflowTypes = (
       ['activity', 'course', 'program', 'task'] as const
-    ).includes(contentSelection as WorkflowTypeFilter)
-      ? [contentSelection as WorkflowTypeFilter]
+    ).includes(contentSelection as WorkflowType)
+      ? [contentSelection as WorkflowType]
       : []
 
     const contentType: ContentTypeFilter | null =

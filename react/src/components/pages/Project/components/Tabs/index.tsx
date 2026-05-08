@@ -97,7 +97,7 @@ const ProjectTabs = ({ project }: { project: ProjectDetailsType }) => {
         <Route index path="/" element={<TabOverview {...project} />} />
         <Route
           path={RelativeRoutes.WORKFLOWS}
-          element={<TabWorkflows projectUuid={project.uuid!} />}
+          element={<TabWorkflows uuid={project.uuid} />}
         />
       </Routes>
     </>

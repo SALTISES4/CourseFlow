@@ -1,7 +1,7 @@
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { LibraryObjectType } from '@cf/types/enum'
-import { mapObjectTypeToLibraryObjectType } from '@cf/utility/marshalling/libraryV2Search'
+import { mapObjectTypeToLibraryObjectType } from '../../../../utility/marshalling/librarySearch'
 import strings from '@cf/utility/strings'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'

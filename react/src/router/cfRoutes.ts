@@ -24,7 +24,7 @@ export enum CFRoutes {
   NOTIFICATIONS_SETTINGS = `/user/notifications-settings`,
   PROFILE_SETTINGS = `/user/profile-settings`,
   PROJECT = `/project/:uuid`,
-  PROJECT_WORKFLOW = `/project/:uuid/workflow/`,
+  PROJECT_WORKFLOW = `/project/:uuid/workflows`,
   WORKFLOW = `/workflow/:uuid`,
   WORKFLOW_GRAPH = `/workflow/:uuid/${RelativeRoutes.GRAPH}`,
   WORKFLOW_ALIGNMENT_ANALYSIS = `/workflow/:uuid/${RelativeRoutes.ALIGNMENT_ANALYSIS}`,

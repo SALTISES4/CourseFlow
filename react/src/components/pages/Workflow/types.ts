@@ -16,7 +16,8 @@ export enum WorkflowViewType {
 export enum WorkflowType {
   PROGRAM = 'program',
   ACTIVITY = 'activity',
-  COURSE = 'course'
+  COURSE = 'course',
+  TASK = 'task'
 }
 
 export enum WorkflowContext {

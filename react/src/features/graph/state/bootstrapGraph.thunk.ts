@@ -103,7 +103,9 @@ export const bootstrapWorkflowGraph = (
       })
 
     const settled = await Promise.allSettled([graphPromise, tagsPromise])
+
     const ok = settled.every((result) => result.status === 'fulfilled')
+
     if (process.env.NODE_ENV !== 'production') {
       // Temporary milestone instrumentation for hydration verification.
       // Safe to remove once full editor migration starts.

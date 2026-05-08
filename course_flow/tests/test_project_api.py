@@ -9,7 +9,7 @@ from django.test import Client
 from django.utils import timezone
 
 from course_flow.core.auth import generate_raw_token, hash_token
-from course_flow.core.models import Authtoken, Project
+from course_flow.core.models import Authtoken, FavoriteGraph, Graph, Project
 
 
 @pytest.fixture
@@ -39,6 +39,25 @@ def _issue_token_for(user, *, expires_delta: timedelta = timedelta(hours=1)):
         last_used_at=now,
     )
     return raw_token
+
+
+def _create_workflow_on_project(
+    client: Client, raw_token: str, project_uuid: str
+) -> str:
+    project_pk = Project.objects.only("id").get(uuid=project_uuid).id
+    response = client.post(
+        "/api/workflow",
+        data={
+            "projectId": project_pk,
+            "title": "WF",
+            "workflowType": "course",
+            "description": "",
+        },
+        content_type="application/json",
+        **_auth_header(raw_token),
+    )
+    assert response.status_code == 200, response.content
+    return response.json()["graphUuid"]
 
 
 def _create_project(client: Client, raw_token: str) -> str:
@@ -101,6 +120,23 @@ def test_patch_project_partial_leaves_other_fields_unchanged(client: Client, use
     assert persisted.description == "Initial description"
     assert persisted.is_published is False
     assert persisted.is_template is False
+
+
+@pytest.mark.django_db
+def test_project_detail_marks_workflow_favorite_via_graph_id_resolution(
+    client: Client, user
+):
+    raw = _issue_token_for(user)
+    project_uuid = _create_project(client, raw)
+    graph_uuid_str = _create_workflow_on_project(client, raw, project_uuid)
+    graph = Graph.objects.get(uuid=graph_uuid_str)
+    FavoriteGraph.objects.create(user=user, graph=graph)
+
+    detail = client.get(f"/api/project/{project_uuid}", **_auth_header(raw))
+    assert detail.status_code == 200
+    workflows = detail.json()["item"]["workflows"]
+    assert len(workflows) == 1
+    assert workflows[0]["isFavorite"] is True
 
 
 @pytest.mark.django_db

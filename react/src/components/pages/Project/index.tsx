@@ -1,12 +1,12 @@
 import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { ProjectDetailsType } from '@cf/types/common'
+import { getErrorMessage } from '@cf/utility/errorWrapper'
 import { mapProjectV2ToProjectDetails } from '@cf/utility/marshalling/projectDetail'
 import { _t } from '@cf/utility/Utility.class'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
 import { useQuery } from '@tanstack/react-query'
-import { getErrorMessage } from '@XMLHTTP/API/api'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 

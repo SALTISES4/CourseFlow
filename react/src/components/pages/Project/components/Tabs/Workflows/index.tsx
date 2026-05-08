@@ -4,10 +4,10 @@ import { TypedLibrarySearchArgs } from '@cfViews/LibrarySearchView/LibraryHelper
 import { useState } from 'react'
 
 type PropsType = {
-  projectUuid: string
+  uuid: string
 }
 
-const TabWorkflows = ({ projectUuid }: PropsType) => {
+const TabWorkflows = ({ uuid }: PropsType) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
@@ -23,7 +23,7 @@ const TabWorkflows = ({ projectUuid }: PropsType) => {
     keywordFilter: true
   }
 
-  const locked = { projectUuid }
+  const locked = { projectUuid: uuid }
 
   const [searchArgs, setSearchArgs] = useState<TypedLibrarySearchArgs>({})
 

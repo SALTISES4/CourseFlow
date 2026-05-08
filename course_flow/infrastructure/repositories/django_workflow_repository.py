@@ -4,6 +4,7 @@ from uuid import UUID
 from django.db import transaction
 
 from course_flow.application.dto import WorkflowDTO
+from course_flow.application.ports import WorkflowRepositoryPort
 from course_flow.core.models import Graph, Workflow
 
 
@@ -24,7 +25,7 @@ def _to_dto(g: Graph) -> WorkflowDTO:
     )
 
 
-class DjangoWorkflowRepository:
+class DjangoWorkflowRepository(WorkflowRepositoryPort):
     @transaction.atomic
     def create(
         self,

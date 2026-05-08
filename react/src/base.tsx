@@ -1,5 +1,5 @@
 import UserProvider from '@cf/context/userContext'
-import NetworkActivityProvider from '@cf/HTTP/NetworkActivityProvider'
+import NetworkActivityProvider from './components/common/NetworkActivityProvider'
 import GlobalDialogs from '@cfComponents/globalNav/GlobalDialogs'
 import MainSidebar from '@cfComponents/globalNav/MainSidebar'
 import TopBar from '@cfComponents/globalNav/TopBar'

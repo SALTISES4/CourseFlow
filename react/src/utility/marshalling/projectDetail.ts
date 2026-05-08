@@ -26,7 +26,9 @@ export function formatProjectEntity(project: EProject): ProjectDetailsType {
   }
 }
 
-/** Map CourseFlow v2 ``GET /api/project/{uuid}`` JSON into the simplified project UI model. */
+/**
+ * Map GET /api/project/{uuid} JSON into the simplified project UI model.
+ */
 export function mapProjectV2ToProjectDetails(
   p: ProjectDetailOut
 ): ProjectDetailsType {

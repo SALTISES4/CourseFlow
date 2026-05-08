@@ -34,13 +34,16 @@ const WorkflowTabs = () => {
   const context = useContext(WorkflowConfigContext)
   const { uuid } = useParams()
   const workflowUuid = uuid ?? ''
+
   const { data: workflowDetailResp } = useQuery({
     ...getWorkflowOptions({ path: { uuid: workflowUuid } }),
     enabled: Boolean(workflowUuid)
   })
+
   const graphViewState = useSelector(
     (state: RootState) => state.workspace.workflow
   )
+
   const workflowType =
     (workflowDetailResp?.item.workflowType as WorkflowType | undefined) ??
     graphViewState.type

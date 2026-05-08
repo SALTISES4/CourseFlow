@@ -15,23 +15,27 @@ import { Link as RouterLink, generatePath } from 'react-router-dom'
  */
 const ReturnLinks = () => {
   const canView = true // @todo temp because project is not in store yet
-  const project = useSelector((state: RootState) => state.workspace.project)
+  //  const project = useSelector((state: RootState) => state.workspace.project)
+  const project = {
+    uuid: 'temp-temp',
+    title: 'fake title'
+  }
 
   /*******************************************************
    * REDUX
    *******************************************************/
-  const publicView = useSelector(
-    (state: RootState) => state.workspace.workflow?.publicView
-  )
+  // const publicView = useSelector(
+  //   (state: RootState) => state.workspace.workflow?.publicView
+  // )
+  const publicView = true
 
   const BackToProjectLink = () => {
-    // @todo not sure about this check yet, redux store is not stable
     if (!project || !project?.uuid || publicView) {
       return <></>
     }
 
     const path = generatePath(CFRoutes.PROJECT, {
-      uuid: String(project.uuid)
+      uuid: project.uuid
     })
 
     return (

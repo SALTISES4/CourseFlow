@@ -94,7 +94,7 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
   }))
 
   const edges: EdgeEntity[] = view.edges.map((edge) => ({
-    edgeId: String(edge.uuid),
+    edgeId: edge.uuid,
     workflowUuid: graphUuid,
     sourceNodeUuid: edge.sourceNodeUuid,
     targetNodeUuid: edge.targetNodeUuid,
@@ -110,7 +110,7 @@ export const fetchWorkflowGraphBundle = async (
   workflowUuid: WorkflowUuid
 ): Promise<GraphResourceBundle> => {
   const result = await getGraphView({
-    path: { uuid: String(workflowUuid) }
+    path: { uuid: workflowUuid }
   })
   const view = unwrapSdkData<GraphViewOut>(result)
   return mapViewToBundle(view)

@@ -6,7 +6,9 @@ import {
 import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'
 
-/** /login: loading gate + redirect authenticated users to home shell. */
+/**
+ * login: loading gate + redirect authenticated users to home shell.
+ * */
 export default function LoginPage() {
   const bootstrapping = useSelector(selectIsBootstrapping)
   const status = useSelector(selectAuthStatus)

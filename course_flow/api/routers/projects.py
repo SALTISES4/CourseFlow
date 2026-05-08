@@ -34,7 +34,7 @@ from course_flow.api.schemas.projects import (
     ProjectWorkflowListItemOut,
 )
 from course_flow.application.dto import ProjectDTO, ProjectTeamMemberDTO
-from course_flow.core.models import FavoriteGraph
+from course_flow.core.models import FavoriteGraph, Graph
 
 router = Router(tags=["projects"], by_alias=True)
 
@@ -54,10 +54,23 @@ def _team_member_out(dto: ProjectTeamMemberDTO) -> ProjectTeamMemberOut:
 def _project_detail_out(current_user_id: int, dto: ProjectDTO) -> ProjectDetailOut:
     workflow_rows = get_workflow_service().list_for_project(dto.id)
     workflow_uuids = [row.graph_uuid for row in workflow_rows]
-    favorite_graph_uuids = set(
-        FavoriteGraph.objects.filter(user_id=current_user_id, graph__uuid__in=workflow_uuids)
-        .values_list("graph__uuid", flat=True)
-    )
+    if not workflow_uuids:
+        favorite_graph_uuids: set[UUID] = set()
+    else:
+        graph_uuid_to_id = dict(
+            Graph.objects.filter(uuid__in=workflow_uuids).values_list("uuid", "id")
+        )
+        graph_ids = list(graph_uuid_to_id.values())
+        favorite_graph_ids = set(
+            FavoriteGraph.objects.filter(
+                user_id=current_user_id,
+                graph_id__in=graph_ids,
+            ).values_list("graph_id", flat=True)
+        )
+        id_to_graph_uuid = {gid: gu for gu, gid in graph_uuid_to_id.items()}
+        favorite_graph_uuids = {
+            id_to_graph_uuid[gid] for gid in favorite_graph_ids if gid in id_to_graph_uuid
+        }
     workflows = [
         ProjectWorkflowListItemOut(
             uuid=row.workflow_uuid,

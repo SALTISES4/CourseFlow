@@ -170,6 +170,29 @@ def test_filter_content_type_workflow_returns_only_workflows(client: Client, use
 
 
 @pytest.mark.django_db
+def test_filter_project_uuid_returns_only_child_workflows_not_project(client: Client, user):
+    raw = _issue_token_for(user)
+    p_keep = Project.objects.create(owner=user, title="Scoped project", description="")
+    p_other = Project.objects.create(owner=user, title="Other project", description="")
+    _graph_with_workflow(
+        user, project=p_keep, workflow_title="wf Course", workflow_type=WorkflowType.COURSE
+    )
+    _graph_with_workflow(user, project=p_keep, workflow_title="wf Task", workflow_type=WorkflowType.TASK)
+    _graph_with_workflow(user, project=p_other, workflow_title="other wf", workflow_type=WorkflowType.COURSE)
+
+    body = _post_search(
+        client,
+        raw,
+        {"filters": {"projectUuid": str(p_keep.uuid)}},
+    )
+
+    assert body["meta"]["totalResults"] == 2
+    assert {item["contentType"] for item in body["items"]} == {"workflow"}
+    assert {item["title"] for item in body["items"]} == {"wf Course", "wf Task"}
+    assert not any(item["title"] == "Scoped project" for item in body["items"])
+
+
+@pytest.mark.django_db
 def test_filter_workflow_types_returns_matching_workflow_items_only(client: Client, user):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="P", description="")

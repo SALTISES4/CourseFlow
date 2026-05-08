@@ -1,7 +1,6 @@
 import Loader from '@cf/components/common/UIPrimitives/Loader'
 import { WorkflowSidebarContextProvider } from '@cf/components/pages/Workflow/Sidebar/hooks/useSidebar/context'
 import WorkflowTabs from '@cf/components/pages/Workflow/WorkflowTabs'
-import WorkflowConfigProvider from '@cf/context/workFlowConfigContext'
 import {
   canRenderChannels,
   canRenderEdges,
@@ -12,6 +11,7 @@ import {
   useGraphBootstrap
 } from '@cf/features/graph/state'
 import { RootState } from '@cf/redux/store'
+import ErrorView from '@cfPages/MsgViews/ErrorView'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
@@ -40,45 +40,31 @@ const Workflow = () => {
     workflowUuid ? selectWorkflowLoadState(workflowUuid)(state) : undefined
   )
 
-  // if (!workflowUuid) {
-  //   return <ErrorView />
-  // }
+  if (!workflowUuid) {
+    return <ErrorView />
+  }
 
-  // if (!shellReady && loadState?.workflowMeta !== 'failed') {
-  //   return <Loader />
-  // }
+  if (!shellReady && loadState?.workflowMeta !== 'failed') {
+    return <Loader />
+  }
 
-  // if (loadState?.workflowMeta === 'failed') {
-  //   return <ErrorView />
-  // }
+  if (loadState?.workflowMeta === 'failed') {
+    return <ErrorView />
+  }
 
   return (
     <WorkflowSidebarContextProvider>
-      <WorkflowConfigProvider
-        initialValue={{
-          editableMethods: {
-            lockUpdate: () => undefined,
-            microUpdate: () => undefined,
-            changeField: () => undefined
-          },
-          ws: {
-            wsConnected: false,
-            connectedUsers: []
-          }
-        }}
-      >
-        {/*<div style={{ padding: '1rem' }} data-test-id="graph-bootstrap-status">*/}
-        {/*  <h2>{workflowMeta?.workflowTitle || 'Workflow'}</h2>*/}
-        {/*  <p>Graph hydration bootstrap active (new graph store path).</p>*/}
-        {/*  <ul>*/}
-        {/*    <li>shell: {String(shellReady)}</li>*/}
-        {/*    <li>channels: {String(channelsReady)}</li>*/}
-        {/*    <li>nodes: {String(nodesReady)}</li>*/}
-        {/*    <li>edges: {String(edgesReady)}</li>*/}
-        {/*  </ul>*/}
-        {/*</div>*/}
-        <WorkflowTabs />
-      </WorkflowConfigProvider>
+      <div style={{ padding: '1rem' }} data-test-id="graph-bootstrap-status">
+        <h2>{workflowMeta?.workflowTitle || 'Workflow'}</h2>
+        <p>Graph hydration bootstrap active (new graph store path).</p>
+        <ul>
+          <li>shell: {String(shellReady)}</li>
+          <li>channels: {String(channelsReady)}</li>
+          <li>nodes: {String(nodesReady)}</li>
+          <li>edges: {String(edgesReady)}</li>
+        </ul>
+      </div>
+      <WorkflowTabs />
     </WorkflowSidebarContextProvider>
   )
 }

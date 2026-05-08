@@ -45,6 +45,9 @@ class LibraryService:
         payload: LibrarySearchIn,
     ) -> LibrarySearchOut:
 
+        #########################################################
+        # META / PAGINATION
+        #########################################################
         pagination = payload.pagination
         sort = payload.sort
         raw_filters = payload.filters or LibraryFiltersIn()
@@ -55,6 +58,7 @@ class LibraryService:
         sort_direction = ((sort.direction if sort else "DESC") or "DESC").upper()
 
         keyword = self._normalize_keyword(raw_filters.keyword)
+
         filters = LibraryAppliedFiltersOut(
             keyword=keyword,
             content_type=raw_filters.content_type,
@@ -72,6 +76,7 @@ class LibraryService:
 
         if filters.ownership == "owned":
             accessible_projects = accessible_projects.filter(owner_id=user_id)
+
         elif filters.ownership == "shared":
             accessible_projects = accessible_projects.exclude(owner_id=user_id)
 
@@ -80,8 +85,12 @@ class LibraryService:
             workflow__project_id__in=accessible_projects.values("id"),
         )
 
+        #########################################################
+        # CONTENT TYPE
+        #########################################################
         if filters.content_type == LibraryContentTypeIn.PROJECT:
             workflow_graph_qs = workflow_graph_qs.none()
+
         elif filters.content_type == LibraryContentTypeIn.WORKFLOW:
             project_qs = project_qs.none()
 
@@ -92,8 +101,17 @@ class LibraryService:
             )
 
         if filters.project_uuid is not None:
-            project_qs = project_qs.filter(uuid=filters.project_uuid)
-            workflow_graph_qs = workflow_graph_qs.filter(workflow__project__uuid=filters.project_uuid)
+            # Scope means "library items under this project": workflows only, not the project row itself.
+            project_qs = project_qs.none()
+            scoped_project = accessible_projects.filter(
+                uuid=filters.project_uuid
+            ).only("id").first()
+            if scoped_project is None:
+                workflow_graph_qs = workflow_graph_qs.none()
+            else:
+                workflow_graph_qs = workflow_graph_qs.filter(
+                    workflow__project_id=scoped_project.id
+                )
 
         if filters.discipline_ids:
             project_qs = project_qs.filter(

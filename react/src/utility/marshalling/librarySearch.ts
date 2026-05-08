@@ -6,10 +6,23 @@ import { LibrarySearchIn } from '@cf/api/gen'
 import { ObjectPermission } from '@cf/types/common'
 import { LibraryObjectType } from '@cf/types/enum'
 import { ELibraryObject, EUser } from '@XMLHTTP/types/entity'
-import type { LibraryObjectsSearchQueryResp } from '@XMLHTTP/types/query'
 
-/** Raw item from Django Ninja `LibraryItemOut` (snake_case JSON). */
-export type V2LibraryItemRaw = {
+export type LibraryObjectsSearchQueryResp = {
+  message: string
+  dataPackage: {
+    items: ELibraryObject[]
+    meta: {
+      currentPage: number
+      count: number
+      pageCount: number
+    }
+  }
+}
+
+/**
+ * Raw item from Django Ninja `LibraryItemOut`
+ *  */
+export type LibraryItemRaw = {
   uuid: string
   content_type: 'project' | 'workflow'
   label: string
@@ -21,16 +34,16 @@ export type V2LibraryItemRaw = {
   is_favorite: boolean
 }
 
-export type V2LibrarySearchMetaRaw = {
+export type LibrarySearchMetaRaw = {
   total_results: number
   page_count: number
   current_page: number
   results_per_page: number
 }
 
-export type V2LibrarySearchResponseRaw = {
-  items: V2LibraryItemRaw[]
-  meta: V2LibrarySearchMetaRaw
+export type LibrarySearchResponseRaw = {
+  items: LibraryItemRaw[]
+  meta: LibrarySearchMetaRaw
 }
 
 const emptyAuthor = (): EUser => ({
@@ -62,8 +75,8 @@ export function mapObjectTypeToLibraryObjectType(
  * Navigation uuid: project UUID for projects; workflow UUID for unit-backed rows
  * (matches `useNavigateToLibraryItem` + workflow routes).
  */
-export function mapV2LibraryItemToELibraryObject(
-  item: V2LibraryItemRaw
+export function mapLibraryItemToELibraryObject(
+  item: LibraryItemRaw
 ): ELibraryObject {
   const isProject = item.content_type === 'project'
   const id = String(item.uuid ?? '')
@@ -94,7 +107,7 @@ export function mapV2LibraryItemToELibraryObject(
   }
 }
 
-export function buildV2LibrarySearchRequestBody(
+export function buildLibrarySearchRequestBody(
   args: LibrarySearchIn | Record<string, never>
 ): Record<string, unknown> {
   const pagination = args.pagination ?? { page: 0 }
@@ -119,7 +132,7 @@ export function buildV2LibrarySearchRequestBody(
   return body
 }
 
-export function transformV2LibrarySearchResponseToLegacy(
+export function transformLibrarySearchResponseToLegacy(
   raw: unknown
 ): LibraryObjectsSearchQueryResp {
   if (!raw || typeof raw !== 'object') {
@@ -132,9 +145,9 @@ export function transformV2LibrarySearchResponseToLegacy(
     }
   }
 
-  const r = raw as Partial<V2LibrarySearchResponseRaw>
+  const r = raw as Partial<LibrarySearchResponseRaw>
   const itemsRaw = Array.isArray(r.items) ? r.items : []
-  const items = itemsRaw.map((row) => mapV2LibraryItemToELibraryObject(row))
+  const items = itemsRaw.map((row) => mapLibraryItemToELibraryObject(row))
   const meta = r.meta
 
   return {

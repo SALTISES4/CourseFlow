@@ -49,7 +49,13 @@ class LibraryContentTypeOut(str, Enum):
 class LibraryFiltersIn(CamelSchema):
     keyword: str | None = None
     content_type: LibraryContentTypeIn | None = None
-    project_uuid: UUID | None = None
+    project_uuid: UUID | None = Field(
+        default=None,
+        description=(
+            "Limit results to workflows whose parent project has this UUID. "
+            "The project row itself is not included in library results when set."
+        ),
+    )
     discipline_ids: list[int] = Field(default_factory=list)
     workflow_types: list[WorkflowType] = Field(default_factory=list)
     ownership: LibraryOwnershipIn | None = None

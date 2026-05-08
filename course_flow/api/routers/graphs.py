@@ -34,7 +34,7 @@ def _graph_detail(dto: WorkflowDTO) -> GraphDetailOut:
 def get_graph_view(request, uuid: UUID):
     current_user = get_current_user(request)
     workflow_svc = get_workflow_service()
-    workflow_dto = workflow_svc.get_by_graph_uuid(uuid)
+    workflow_dto = workflow_svc.get_by_workflow_uuid(uuid)
 
     if workflow_dto is None:
         raise HttpError(404, "Graph not found")
@@ -43,7 +43,7 @@ def get_graph_view(request, uuid: UUID):
         raise HttpError(403, "Forbidden")
 
     graph_view_svc = get_graph_view_service()
-    payload = graph_view_svc.get_by_graph_uuid(uuid)
+    payload = graph_view_svc.get_by_graph_uuid(workflow_dto.graph_uuid)
 
     if payload is None:
         raise HttpError(404, "Graph not found")

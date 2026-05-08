@@ -8,7 +8,7 @@ import {
 } from '@cfComponents/cards/WorkflowCardDumb'
 import { WorkflowCardWrapperPropsType } from '@cfComponents/cards/WorkflowCardWrapper'
 
-import { mapObjectTypeToLibraryObjectType } from './libraryV2Search'
+import { mapObjectTypeToLibraryObjectType } from './librarySearch'
 
 type LibraryItemOutTyped = LibraryItemOut & {
   uuid: string

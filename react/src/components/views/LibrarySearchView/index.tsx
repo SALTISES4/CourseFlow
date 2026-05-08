@@ -1,6 +1,7 @@
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
 import { LibraryObjectType } from '@cf/types/enum'
+import { getErrorMessage } from '@cf/utility/errorWrapper'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
 import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
@@ -24,7 +25,6 @@ import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlin
 import { Link, Skeleton, Typography } from '@mui/material'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
-import { getErrorMessage } from '@XMLHTTP/API/api'
 import { produce } from 'immer'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link as LinkRouter } from 'react-router-dom'
@@ -130,7 +130,7 @@ const LibrarySearchView = ({
       return
     }
 
-    const args = LibraryHelper.reduceStateToSearchArgs(searchFilterState)
+    const args = LibraryHelper. reduceStateToSearchArgs(searchFilterState)
 
     /*******************************************************
      *    These are the formatted search args, reduced to only active filters, and formatted in a flat list for the API call
@@ -389,7 +389,11 @@ const LibrarySearchView = ({
             key={`workflow_${item.uuid}`}
             {...item}
             isSelected={item.uuid === override?.uuid}
-            onClick={() => override?.onCardSelect(item.uuid)}
+            onClick={
+              override?.onCardSelect
+                ? () => override?.onCardSelect(item.uuid)
+                : undefined
+            }
           />
         ))}
 

@@ -37,7 +37,7 @@ import {
   useQuery,
   useQueryClient
 } from '@tanstack/react-query'
-import { getErrorMessage } from '@XMLHTTP/API/api'
+import { getErrorMessage } from '../../../utility/errorWrapper'
 import { type MouseEvent, useEffect, useState } from 'react'
 
 import * as SC from './style'

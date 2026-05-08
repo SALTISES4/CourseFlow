@@ -4,6 +4,8 @@ import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
 import strings from '@cf/utility/strings'
 import { MenuItemType, SimpleMenu, StaticMenu } from '@cfComponents/menu/Menu'
+import { WorkflowType } from '@cfPages/Workflow/types'
+import ReturnLinks from '@cfPages/Workflow/WorkflowTabs/components/ReturnLinks'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import LogoutIcon from '@mui/icons-material/Logout'
@@ -23,8 +25,6 @@ import { useCallback } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import * as SC from './styles'
-import { WorkflowType } from '../../../pages/Workflow/types'
-import ReturnLinks from '../../../pages/Workflow/WorkflowTabs/components/ReturnLinks'
 
 /** First page only; large enough for the dropdown preview without loading the full inbox. */
 const TOPBAR_NOTIFICATION_PREVIEW_PAGE_SIZE = 40

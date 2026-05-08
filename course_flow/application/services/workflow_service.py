@@ -18,6 +18,7 @@ class WorkflowService:
         workflow_type: str,
         description: str = "",
     ) -> WorkflowDTO:
+
         return self._repository.create(
             author_id=author_id,
             project_id=project_id,
@@ -27,6 +28,11 @@ class WorkflowService:
         )
 
     def get_by_graph_uuid(self, uuid: UUID) -> WorkflowDTO | None:
+        """
+        lookup the WorkflowDTO by a graph's uuid
+        :param uuid:
+        :return:
+        """
         return self._repository.get_by_graph_uuid(uuid)
 
     def get_by_workflow_uuid(self, uuid: UUID) -> WorkflowDTO | None:
