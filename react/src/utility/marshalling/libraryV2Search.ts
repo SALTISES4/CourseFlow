@@ -2,7 +2,7 @@
  * Maps CourseFlow v2 `POST /api/library/search` JSON to the legacy library
  * envelope expected by LibrarySearchView / Sidebar (`dataPackage` + `ELibraryObject`).
  */
-import { LibraryFilterIn, LibrarySearchIn } from '@cf/api/gen'
+import { LibrarySearchIn } from '@cf/api/gen'
 import { ObjectPermission } from '@cf/types/common'
 import { LibraryObjectType } from '@cf/types/enum'
 import { ELibraryObject, EUser } from '@XMLHTTP/types/entity'
@@ -10,11 +10,9 @@ import type { LibraryObjectsSearchQueryResp } from '@XMLHTTP/types/query'
 
 /** Raw item from Django Ninja `LibraryItemOut` (snake_case JSON). */
 export type V2LibraryItemRaw = {
-  object_type: string
-  uuid?: string | null
-  workflow_uuid?: string | null
-  project_uuid?: string | null
-  unit_uuid?: string | null
+  uuid: string
+  content_type: 'project' | 'workflow'
+  label: string
   title: string
   description: string
   date_created: string
@@ -44,17 +42,20 @@ const emptyAuthor = (): EUser => ({
 })
 
 export function mapObjectTypeToLibraryObjectType(
-  objectType: string
+  contentType: string,
+  label: string
 ): LibraryObjectType {
+  if (contentType === 'project') {
+    return LibraryObjectType.PROJECT
+  }
   const validTypes = {
-    project: LibraryObjectType.PROJECT,
     program: LibraryObjectType.PROGRAM,
     course: LibraryObjectType.COURSE,
     activity: LibraryObjectType.ACTIVITY,
     task: LibraryObjectType.TASK
   }
 
-  return validTypes[objectType] ?? LibraryObjectType.COURSE
+  return validTypes[label] ?? LibraryObjectType.COURSE
 }
 
 /**
@@ -64,13 +65,11 @@ export function mapObjectTypeToLibraryObjectType(
 export function mapV2LibraryItemToELibraryObject(
   item: V2LibraryItemRaw
 ): ELibraryObject {
-  const isProject = item.object_type === 'project'
-  const id = isProject
-    ? String(item.uuid ?? '')
-    : String(item.workflow_uuid ?? '')
+  const isProject = item.content_type === 'project'
+  const id = String(item.uuid ?? '')
 
   return {
-    uuid,
+    uuid: id,
     hash: '',
     deleted: false,
     deletedOn: '',
@@ -83,7 +82,7 @@ export function mapV2LibraryItemToELibraryObject(
     published: false,
     type: isProject
       ? LibraryObjectType.PROJECT
-      : mapObjectTypeToLibraryObjectType(item.object_type),
+      : mapObjectTypeToLibraryObjectType(item.content_type, item.label),
     isOwned: true,
     isStrategy: false,
     projectTitle: '',
@@ -95,30 +94,12 @@ export function mapV2LibraryItemToELibraryObject(
   }
 }
 
-/** Legacy Favourites page used `{ name: 'type', value: 'favourited' }`; v2 expects `favourited: true`. */
-export function normalizeLibraryFiltersForV2(
-  filters: LibraryFilterIn[] | undefined
-): LibraryFilterIn[] {
-  if (!filters?.length) {
-    return []
-  }
-  const out: LibraryFilterIn[] = []
-  for (const f of filters) {
-    if (f.name === 'type' && f.value === 'favourited') {
-      out.push({ name: 'favourited', value: true })
-      continue
-    }
-    out.push(f)
-  }
-  return out
-}
-
 export function buildV2LibrarySearchRequestBody(
   args: LibrarySearchIn | Record<string, never>
 ): Record<string, unknown> {
   const pagination = args.pagination ?? { page: 0 }
   const sort = args.sort ?? undefined
-  const filters = normalizeLibraryFiltersForV2(args.filters)
+  const filters = args.filters ?? undefined
 
   const body: Record<string, unknown> = {
     pagination: {
@@ -132,7 +113,7 @@ export function buildV2LibrarySearchRequestBody(
       direction: sort.direction
     }
   }
-  if (filters.length > 0) {
+  if (filters) {
     body.filters = filters
   }
   return body

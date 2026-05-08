@@ -41,10 +41,6 @@ export type ProjectDetailOut = {
    */
   isTemplate: boolean
   /**
-   * Isfavourite
-   */
-  isFavourite: boolean
-  /**
    * Ownerid
    */
   ownerId: number
@@ -1632,29 +1628,94 @@ export type NotificationItemOutResp = {
 }
 
 /**
- * LibraryItemOut
+ * LibraryAllowedFiltersOut
  */
-export type LibraryItemOut = {
+export type LibraryAllowedFiltersOut = {
   /**
-   * Objecttype
+   * Disciplines
    */
-  objectType: string
+  disciplines?: Array<LibraryDisciplineOptionOut>
+}
+
+/**
+ * LibraryAppliedFiltersOut
+ */
+export type LibraryAppliedFiltersOut = {
   /**
-   * Uuid
+   * Keyword
    */
-  uuid?: string | null
-  /**
-   * Graphuuid
-   */
-  graphUuid?: string | null
+  keyword?: string | null
+  contentType?: LibraryContentTypeIn | null
   /**
    * Projectuuid
    */
   projectUuid?: string | null
   /**
-   * Workflowuuid
+   * Disciplineids
    */
-  workflowUuid?: string | null
+  disciplineIds?: Array<number>
+  /**
+   * Workflowtypes
+   */
+  workflowTypes?: Array<WorkflowType>
+  ownership?: LibraryOwnershipIn | null
+  /**
+   * Isfavorite
+   */
+  isFavorite?: boolean | null
+  /**
+   * Istemplate
+   */
+  isTemplate?: boolean | null
+}
+
+/**
+ * LibraryContentTypeIn
+ */
+export enum LibraryContentTypeIn {
+  PROJECT = 'project',
+  WORKFLOW = 'workflow'
+}
+
+/**
+ * LibraryContentTypeOut
+ */
+export enum LibraryContentTypeOut {
+  PROJECT = 'project',
+  WORKFLOW = 'workflow'
+}
+
+/**
+ * LibraryDisciplineOptionOut
+ */
+export type LibraryDisciplineOptionOut = {
+  /**
+   * Id
+   */
+  id: number
+  /**
+   * Label
+   */
+  label: string
+  /**
+   * Translationplural
+   */
+  translationPlural: string
+}
+
+/**
+ * LibraryItemOut
+ */
+export type LibraryItemOut = {
+  /**
+   * Uuid
+   */
+  uuid: string
+  contentType: LibraryContentTypeOut
+  /**
+   * Label
+   */
+  label: string
   /**
    * Title
    */
@@ -1701,6 +1762,16 @@ export type LibraryMetaOut = {
    * Resultsperpage
    */
   resultsPerPage: number
+  appliedFilters: LibraryAppliedFiltersOut
+  allowed: LibraryAllowedFiltersOut
+}
+
+/**
+ * LibraryOwnershipIn
+ */
+export enum LibraryOwnershipIn {
+  OWNED = 'owned',
+  SHARED = 'shared'
 }
 
 /**
@@ -1715,17 +1786,35 @@ export type LibrarySearchOut = {
 }
 
 /**
- * LibraryFilterIn
+ * LibraryFiltersIn
  */
-export type LibraryFilterIn = {
+export type LibraryFiltersIn = {
   /**
-   * Name
+   * Keyword
    */
-  name: string
+  keyword?: string | null
+  contentType?: LibraryContentTypeIn | null
   /**
-   * Value
+   * Projectuuid
    */
-  value: unknown
+  projectUuid?: string | null
+  /**
+   * Disciplineids
+   */
+  disciplineIds?: Array<number>
+  /**
+   * Workflowtypes
+   */
+  workflowTypes?: Array<WorkflowType>
+  ownership?: LibraryOwnershipIn | null
+  /**
+   * Isfavorite
+   */
+  isFavorite?: boolean | null
+  /**
+   * Istemplate
+   */
+  isTemplate?: boolean | null
 }
 
 /**
@@ -1748,10 +1837,7 @@ export type LibraryPaginationIn = {
 export type LibrarySearchIn = {
   pagination?: LibraryPaginationIn | null
   sort?: LibrarySortIn | null
-  /**
-   * Filters
-   */
-  filters?: Array<LibraryFilterIn> | null
+  filters?: LibraryFiltersIn | null
 }
 
 /**

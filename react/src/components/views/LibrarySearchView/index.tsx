@@ -1,6 +1,6 @@
-import { LibrarySearchIn } from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
+import { LibraryObjectType } from '@cf/types/enum'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
 import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
@@ -14,7 +14,8 @@ import Pagination from '@cfComponents/UIPrimitives/Pagination'
 import { GridWrap, OuterContentWrap } from '@cfMUI/helper'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
 import LibraryHelper, {
-  SearchOptions
+  SearchOptions,
+  TypedLibrarySearchArgs
 } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import CategoryIcon from '@mui/icons-material/Category'
 import FilterIcon from '@mui/icons-material/FilterAlt'
@@ -25,7 +26,7 @@ import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import { getErrorMessage } from '@XMLHTTP/API/api'
 import { produce } from 'immer'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link as LinkRouter } from 'react-router-dom'
 
 type FilterGroups = {
@@ -43,8 +44,8 @@ interface Config {
  * see:  https://docs.google.com/document/d/1LgSedmw-U6mDF8S48I3gMbaohfliZetki6AJAeIKKLw/edit?tab=t.0#heading=h.seafxrns9x1f
  *******************************************************/
 type PropsType = {
-  searchArgs: LibrarySearchIn
-  setSearchArgs: (args: LibrarySearchIn) => void
+  searchArgs: TypedLibrarySearchArgs
+  setSearchArgs: (args: TypedLibrarySearchArgs) => void
   config: Config
   override?: {
     uuid: string
@@ -77,10 +78,11 @@ const FilterWorkflowResults = ({
   }
 
   const res = data?.items || []
+  const cards = formatLibraryObjects(res)
 
   return (
     <FilterWorkflows
-      workflows={formatLibraryObjects(res)} // @todo memoize
+      workflows={cards}
       // handle key down (enter) which will pass the 'keyword' filter string over to the external search
       onPropagateChange={(val) => {
         setSearchFilterState(
@@ -91,8 +93,11 @@ const FilterWorkflowResults = ({
         )
       }}
       onChange={(workflow) => {
-        const match = data.items.find((el) => workflow.uuid === el.uuid)
-        navigateToItem(match.uuid, match.objectType)
+        const match = cards.find((card) => workflow.uuid === card.uuid)
+        if (!match) {
+          return
+        }
+        navigateToItem(match.uuid, match.type as LibraryObjectType)
       }}
     />
   )
@@ -115,9 +120,6 @@ const LibrarySearchView = ({
   const [searchFilterState, setSearchFilterState] = useState<SearchOptions>(
     defaultOptionsSearchOptions
   )
-  // discipline options are set in state since they may come from an asynchronous source
-  const [disciplineOptions, setDisciplineOptions] = useState([])
-
   /*******************************************************
    * QUERY HOOKS
    *******************************************************/
@@ -139,14 +141,14 @@ const LibrarySearchView = ({
     setSearchArgs(args)
   }, [searchFilterState, defaultOptionsSearchOptions])
 
-  useEffect(() => {
-    const options = COURSEFLOW_APP.globalContextData.disciplines
-    const mappedOptions: SearchFilterOption[] = options.map((o) => ({
-      value: o.uuid,
-      label: o.title
-    }))
-    setDisciplineOptions(mappedOptions)
-  }, [])
+  const disciplineOptions: SearchFilterOption[] = useMemo(
+    () =>
+      data?.meta?.allowed?.disciplines?.map((option) => ({
+        value: option.id,
+        label: option.label
+      })) ?? [],
+    [data?.meta?.allowed?.disciplines]
+  )
 
   /*******************************************************
    * RENDER COMPONENTS
@@ -234,23 +236,21 @@ const LibrarySearchView = ({
     )
   }
 
-  const renderWorkspaceTypeFilter = () => {
-    if (!config.filterGroups.workspaceTypeFilter) {
+  const renderContentTypeFilter = () => {
+    if (!config.filterGroups.contentTypeFilter) {
       return <></>
     }
 
-    const filterGroup = searchFilterState.filterGroups.workspaceTypeFilter
+    const filterGroup = searchFilterState.filterGroups.contentTypeFilter
 
     const { options, name } = filterGroup
 
     return (
       <>
         {/*******************************************************
-         *  Workspace Type
+         *  Content Type
          * project
-         * program
-         * course
-         * activity
+         * workflow types
          *******************************************************/}
         <FilterButton
           options={options}
@@ -262,7 +262,7 @@ const LibrarySearchView = ({
             )
             setSearchFilterState(
               produce((draft) => {
-                draft.filterGroups.workspaceTypeFilter.options =
+                draft.filterGroups.contentTypeFilter.options =
                   newFilterProjectOptions
                 draft.pagination.page = 0
               })
@@ -420,7 +420,7 @@ const LibrarySearchView = ({
               {renderSort()}
               {renderRelationshipFilter()}
               {renderDisciplineFilter()}
-              {renderWorkspaceTypeFilter()}
+              {renderContentTypeFilter()}
               {renderTemplateFilter()}
             </Stack>
             <FilterWorkflowResults

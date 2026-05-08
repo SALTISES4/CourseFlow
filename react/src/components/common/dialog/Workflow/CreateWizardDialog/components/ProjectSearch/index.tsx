@@ -1,7 +1,6 @@
-import { LibrarySearchIn } from '@cf/api/gen'
-import { WorkspaceType } from '@cf/types/enum'
 import LibrarySearchView from '@cfViews/LibrarySearchView'
 import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
+import { TypedLibrarySearchArgs } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import { useState } from 'react'
 
 type PropsType = {
@@ -20,23 +19,18 @@ const ProjectSearch = ({ selected, onProjectSelect }: PropsType) => {
     filterGroups: {
       relationshipFilter: false,
       disciplineFilter: false,
-      workspaceTypeFilter: false,
+      contentTypeFilter: false,
       templateFilter: false
     },
     keywordFilter: true
   }
 
-  const locked = [{ name: 'workspaceType', value: WorkspaceType.PROJECT }]
+  const locked = { contentType: 'project' as const }
 
-  const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
+  const [searchArgs, setSearchArgs] = useState<TypedLibrarySearchArgs>({})
 
-  const updateSearchArgsHandler = (args: LibrarySearchIn) => {
-    const merged = LibraryHelper.merger(locked, args.filters)
-
-    setSearchArgs({
-      ...args,
-      filters: merged
-    })
+  const updateSearchArgsHandler = (args: TypedLibrarySearchArgs) => {
+    setSearchArgs(LibraryHelper.applyLockedFilters(args, locked))
   }
 
   /*******************************************************

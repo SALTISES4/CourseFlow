@@ -10,6 +10,12 @@ import { WorkflowCardWrapperPropsType } from '@cfComponents/cards/WorkflowCardWr
 
 import { mapObjectTypeToLibraryObjectType } from './libraryV2Search'
 
+type LibraryItemOutTyped = LibraryItemOut & {
+  uuid: string
+  contentType: 'project' | 'workflow'
+  label: string
+}
+
 /**
  * this thin wrapper is for when we move CHIP_TYPE away from the domain
  * @param type
@@ -22,9 +28,9 @@ function mapChipType(type: LibraryObjectType): ChipOptions {
   )
 }
 
-function getTypeChip(workflow: LibraryItemOut): WorkflowCardChipType {
-  const { objectType } = workflow
-  let typeText = _t(objectType)
+function getTypeChip(workflow: LibraryItemOutTyped): WorkflowCardChipType {
+  const typeLabel = workflow.label
+  let typeText = _t(typeLabel)
 
   // TODO: figure out wheee this is coming from with the new v2 data
   const isStrategy = false
@@ -39,12 +45,14 @@ function getTypeChip(workflow: LibraryItemOut): WorkflowCardChipType {
   }
 
   return {
-    type: mapChipType(mapObjectTypeToLibraryObjectType(objectType)),
+    type: mapChipType(
+      mapObjectTypeToLibraryObjectType(workflow.contentType, workflow.label)
+    ),
     label: ThemeHelper.capWords(typeText)
   }
 }
 
-function getTemplateChip(workflow: LibraryItemOut): WorkflowCardChipType {
+function getTemplateChip(workflow: LibraryItemOutTyped): WorkflowCardChipType {
   const isTemplate = workflow.isTemplate
   if (isTemplate) {
     return {
@@ -55,7 +63,9 @@ function getTemplateChip(workflow: LibraryItemOut): WorkflowCardChipType {
   return null
 }
 
-function getWorkflowCountChip(workflow: LibraryItemOut): WorkflowCardChipType {
+function getWorkflowCountChip(
+  workflow: LibraryItemOutTyped
+): WorkflowCardChipType {
   // TODO:
   // if (
   //   workflow.objectType === LibraryObjectType.PROJECT &&
@@ -73,12 +83,12 @@ function getWorkflowCountChip(workflow: LibraryItemOut): WorkflowCardChipType {
 }
 
 export function formatLibraryObjects(data: LibraryItemOut[]) {
-  return data.map((item) => formatLibraryObject(item))
+  return data.map((item) => formatLibraryObject(item as LibraryItemOutTyped))
 }
 
 // TODO: should this whole thing be a selector instead?
 export function formatLibraryObject(
-  libraryObject: LibraryItemOut
+  libraryObject: LibraryItemOutTyped
 ): Pick<
   WorkflowCardWrapperPropsType,
   | 'uuid'
@@ -93,7 +103,10 @@ export function formatLibraryObject(
   const templateChip = getTemplateChip(libraryObject)
   const countChip = getWorkflowCountChip(libraryObject)
 
-  const type = mapObjectTypeToLibraryObjectType(libraryObject.objectType)
+  const type = mapObjectTypeToLibraryObjectType(
+    libraryObject.contentType,
+    libraryObject.label
+  )
 
   return {
     uuid: libraryObject.uuid,

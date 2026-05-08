@@ -36,7 +36,6 @@ export const zProjectDetailOut = z.object({
   description: z.string(),
   isPublished: z.boolean(),
   isTemplate: z.boolean(),
-  isFavourite: z.boolean(),
   ownerId: z.number().int(),
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime(),
@@ -837,14 +836,38 @@ export const zNotificationItemOutResp = z.object({
 })
 
 /**
+ * LibraryContentTypeIn
+ */
+export const zLibraryContentTypeIn = z.enum(['project', 'workflow'])
+
+/**
+ * LibraryContentTypeOut
+ */
+export const zLibraryContentTypeOut = z.enum(['project', 'workflow'])
+
+/**
+ * LibraryDisciplineOptionOut
+ */
+export const zLibraryDisciplineOptionOut = z.object({
+  id: z.number().int(),
+  label: z.string(),
+  translationPlural: z.string()
+})
+
+/**
+ * LibraryAllowedFiltersOut
+ */
+export const zLibraryAllowedFiltersOut = z.object({
+  disciplines: z.array(zLibraryDisciplineOptionOut).optional()
+})
+
+/**
  * LibraryItemOut
  */
 export const zLibraryItemOut = z.object({
-  objectType: z.string(),
-  uuid: z.string().uuid().nullish(),
-  graphUuid: z.string().uuid().nullish(),
-  projectUuid: z.string().uuid().nullish(),
-  workflowUuid: z.string().uuid().nullish(),
+  uuid: z.string().uuid(),
+  contentType: zLibraryContentTypeOut,
+  label: z.string(),
   title: z.string(),
   description: z.string(),
   dateCreated: z.string().datetime(),
@@ -854,13 +877,34 @@ export const zLibraryItemOut = z.object({
 })
 
 /**
+ * LibraryOwnershipIn
+ */
+export const zLibraryOwnershipIn = z.enum(['owned', 'shared'])
+
+/**
+ * LibraryAppliedFiltersOut
+ */
+export const zLibraryAppliedFiltersOut = z.object({
+  keyword: z.string().nullish(),
+  contentType: zLibraryContentTypeIn.nullish(),
+  projectUuid: z.string().uuid().nullish(),
+  disciplineIds: z.array(z.number().int()).optional(),
+  workflowTypes: z.array(zWorkflowType).optional(),
+  ownership: zLibraryOwnershipIn.nullish(),
+  isFavorite: z.boolean().nullish(),
+  isTemplate: z.boolean().nullish()
+})
+
+/**
  * LibraryMetaOut
  */
 export const zLibraryMetaOut = z.object({
   totalResults: z.number().int(),
   pageCount: z.number().int(),
   currentPage: z.number().int(),
-  resultsPerPage: z.number().int()
+  resultsPerPage: z.number().int(),
+  appliedFilters: zLibraryAppliedFiltersOut,
+  allowed: zLibraryAllowedFiltersOut
 })
 
 /**
@@ -872,11 +916,17 @@ export const zLibrarySearchOut = z.object({
 })
 
 /**
- * LibraryFilterIn
+ * LibraryFiltersIn
  */
-export const zLibraryFilterIn = z.object({
-  name: z.string(),
-  value: z.unknown()
+export const zLibraryFiltersIn = z.object({
+  keyword: z.string().nullish(),
+  contentType: zLibraryContentTypeIn.nullish(),
+  projectUuid: z.string().uuid().nullish(),
+  disciplineIds: z.array(z.number().int()).optional(),
+  workflowTypes: z.array(zWorkflowType).optional(),
+  ownership: zLibraryOwnershipIn.nullish(),
+  isFavorite: z.boolean().nullish(),
+  isTemplate: z.boolean().nullish()
 })
 
 /**
@@ -915,7 +965,7 @@ export const zLibrarySortIn = z.object({
 export const zLibrarySearchIn = z.object({
   pagination: zLibraryPaginationIn.nullish(),
   sort: zLibrarySortIn.nullish(),
-  filters: z.array(zLibraryFilterIn).nullish()
+  filters: zLibraryFiltersIn.nullish()
 })
 
 /**

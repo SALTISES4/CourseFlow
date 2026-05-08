@@ -24,7 +24,7 @@ def search_library(request, payload: LibrarySearchIn):
     svc = get_library_service()
     return svc.search(
         user_id=current_user.id,
-        payload=payload.model_dump(exclude_none=True, mode="json"),
+        payload=payload,
     )
 
 

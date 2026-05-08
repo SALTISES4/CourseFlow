@@ -1,6 +1,7 @@
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { LibraryObjectType } from '@cf/types/enum'
+import { mapObjectTypeToLibraryObjectType } from '@cf/utility/marshalling/libraryV2Search'
 import strings from '@cf/utility/strings'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
@@ -29,12 +30,9 @@ const Favourites = () => {
       page: 0,
       resultsPerPage: 5
     },
-    filters: [
-      {
-        name: 'isFavorite',
-        value: true
-      }
-    ]
+    filters: {
+      isFavorite: true
+    } as never
   })
 
   const SeeAll = () => {
@@ -75,13 +73,22 @@ const Favourites = () => {
 
         <List>
           {data.items.map((item, id) => {
+            const typedItem = item as typeof item & {
+              contentType: string
+              label: string
+              uuid: string
+            }
+            const libraryType = mapObjectTypeToLibraryObjectType(
+              typedItem.contentType,
+              typedItem.label
+            )
             const url =
-              item.objectType === LibraryObjectType.PROJECT
+              libraryType === LibraryObjectType.PROJECT
                 ? generatePath(CFRoutes.PROJECT, {
-                    uuid: String(item.uuid)
+                    uuid: String(typedItem.uuid)
                   })
                 : generatePath(CFRoutes.WORKFLOW, {
-                    uuid: String(item.workflowUuid)
+                    uuid: String(typedItem.uuid)
                   })
 
             return (

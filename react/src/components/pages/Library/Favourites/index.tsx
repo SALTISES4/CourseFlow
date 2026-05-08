@@ -1,8 +1,8 @@
-import { LibrarySearchIn } from '@cf/api/gen'
 import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import { useState } from 'react'
 
 import LibrarySearchView from 'components/views/LibrarySearchView'
+import { TypedLibrarySearchArgs } from 'components/views/LibrarySearchView/LibraryHelper.Class'
 
 /*******************************************************
  * @LibraryRenderer
@@ -22,17 +22,12 @@ const LibraryPage = () => {
     keywordFilter: true
   }
 
-  const locked = [{ name: 'type', value: 'favourited' }]
+  const locked = { isFavorite: true }
 
-  const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
+  const [searchArgs, setSearchArgs] = useState<TypedLibrarySearchArgs>({})
 
-  const updateSearchArgsHandler = (args: LibrarySearchIn) => {
-    const merged = LibraryHelper.merger(locked, args.filters)
-
-    setSearchArgs({
-      ...args,
-      filters: merged
-    })
+  const updateSearchArgsHandler = (args: TypedLibrarySearchArgs) => {
+    setSearchArgs(LibraryHelper.applyLockedFilters(args, locked))
   }
 
   /*******************************************************

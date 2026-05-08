@@ -1,10 +1,4 @@
-import {
-  LibraryFilterIn,
-  LibrarySearchIn,
-  LibrarySortDirectionIn,
-  LibrarySortValueIn
-} from '@cf/api/gen'
-import { WorkspaceType } from '@cf/types/enum'
+import { LibrarySortDirectionIn, LibrarySortValueIn } from '@cf/api/gen'
 import { _t } from '@cf/utility/Utility.class'
 // import {
 //   SortDirection,
@@ -20,6 +14,31 @@ import { WorkflowType } from '../../pages/Workflow/types'
 type FilterGroups = { [key: string]: SearchFilterGroup }
 
 type Option = any
+type WorkflowTypeFilter = 'activity' | 'course' | 'program' | 'task'
+type ContentTypeFilter = 'project' | 'workflow'
+
+export type LibrarySearchFilters = {
+  keyword?: string | null
+  contentType?: ContentTypeFilter | null
+  projectUuid?: string | null
+  disciplineIds?: number[]
+  workflowTypes?: WorkflowTypeFilter[]
+  ownership?: 'owned' | 'shared' | null
+  isFavorite?: boolean | null
+  isTemplate?: boolean | null
+}
+
+export type TypedLibrarySearchArgs = {
+  pagination?: {
+    page?: number
+    resultsPerPage?: number
+  }
+  sort?: {
+    value?: LibrarySortValueIn
+    direction?: LibrarySortDirectionIn
+  } | null
+  filters?: LibrarySearchFilters | null
+}
 
 export type SearchOptions = {
   pagination: {
@@ -31,7 +50,7 @@ export type SearchOptions = {
   filterGroups: {
     relationshipFilter: SearchFilterGroup
     disciplineFilter: SearchFilterGroup
-    workspaceTypeFilter: SearchFilterGroup
+    contentTypeFilter: SearchFilterGroup
     keywordFilter: SearchFilterGroup
     templateFilter: SearchFilterGroup
   }
@@ -83,10 +102,6 @@ class LibraryHelper {
           {
             value: 'favourited',
             label: _t('Favourites')
-          },
-          {
-            value: 'archived',
-            label: _t('Archived')
           }
         ]
       },
@@ -98,8 +113,8 @@ class LibraryHelper {
         options: []
       },
       // Filter group with a single selectable options at one time
-      workspaceTypeFilter: {
-        name: 'workspaceType',
+      contentTypeFilter: {
+        name: 'contentType',
         label: _t('Type'),
         options: [
           {
@@ -109,7 +124,7 @@ class LibraryHelper {
           },
           {
             label: 'Project',
-            value: WorkspaceType.PROJECT
+            value: 'project'
           },
           {
             label: 'Program',
@@ -123,6 +138,10 @@ class LibraryHelper {
           {
             label: 'Activity',
             value: WorkflowType.ACTIVITY
+          },
+          {
+            label: 'Task',
+            value: WorkflowType.TASK
           }
         ]
       },
@@ -190,72 +209,47 @@ class LibraryHelper {
    **/
   public static processFilterGroups = (
     filterGroups: FilterGroups
-  ): LibraryFilterIn[] => {
-    // Helper function to get enabled options for selectMultiple filters
-    const getEnabledValues = (options: Option[]): any[] =>
-      options.filter((option) => option.enabled).map((option) => option.value)
+  ): LibrarySearchFilters => {
+    const relationship = filterGroups.relationshipFilter?.options?.find(
+      (option) => option.enabled
+    )?.value
+    const contentSelection = filterGroups.contentTypeFilter?.options?.find(
+      (option) => option.enabled
+    )?.value
+    const disciplineIds = (filterGroups.disciplineFilter?.options
+      ?.filter((option) => option.enabled)
+      .map((option) => Number(option.value))
+      .filter((value) => Number.isInteger(value)) ?? []) as number[]
 
-    // Helper function to get the first enabled option
-    const getFirstEnabledValue = (options: Option[]): any | undefined =>
-      options.find((option) => option.enabled)?.value
+    const keyword =
+      String(filterGroups.keywordFilter?.value ?? '').trim() || null
 
-    return Object.values(filterGroups)
-      .reduce<LibraryFilterIn[]>((acc, filter) => {
-        const { name, options, selectMultiple, value } = filter
+    const workflowTypes = (
+      ['activity', 'course', 'program', 'task'] as const
+    ).includes(contentSelection as WorkflowTypeFilter)
+      ? [contentSelection as WorkflowTypeFilter]
+      : []
 
-        /**
-         * We're dealing with a few use cases since we're defining different 'filter options'
-         * the if/else shape is messy which suggests there is a better way to do this
-         *
-         *  Generally this is what we're doing:
-         *  create an empty array
-         *
-         *  iterate through it
-         *  if there is an option key
-         *  iterate through the options and look for the key value pair enabled is true
-         *
-         *  if this child has enabled: true
-         *  add this to the array as:
-         *  name: [ name of item  such as name: workspaceType ]
-         *  value: [item value of child above which had enabled true ]
-         *
-         *  now if the item has option selectMultiple: true,
-         *  look for each child that has enabled true
-         *
-         *  in this case add a new item to the array
-         *  name : [ name of item  such as name: discipline ]
-         *  value:[ array of all values which had enabled true]
-         *
-         *
-         *  if there is no options just look for the key value (on the parent item)
-         *  add this to the  array as
-         *  name : [ name of item  such as name: keyword ]
-         *  value:[ value of item]
-         *
-         **/
+    const contentType: ContentTypeFilter | null =
+      contentSelection === 'project'
+        ? 'project'
+        : workflowTypes.length > 0 || contentSelection === 'workflow'
+          ? 'workflow'
+          : null
 
-        if (!options) {
-          if (value !== undefined) {
-            acc.push({ name, value })
-          }
-          return acc
-        }
-
-        if (selectMultiple) {
-          const enabledValues = getEnabledValues(options)
-          if (enabledValues.length > 0) {
-            acc.push({ name, value: enabledValues })
-          }
-        } else {
-          const enabledValue = getFirstEnabledValue(options)
-          if (enabledValue) {
-            acc.push({ name, value: enabledValue })
-          }
-        }
-
-        return acc
-      }, [])
-      .filter((item) => item.value !== null && item.value !== '')
+    return {
+      keyword,
+      contentType,
+      disciplineIds,
+      workflowTypes,
+      ownership:
+        relationship === 'owned' || relationship === 'shared'
+          ? relationship
+          : null,
+      isFavorite: relationship === 'favourited' ? true : null,
+      // Boolean filters are "only when true" for this endpoint.
+      isTemplate: filterGroups.templateFilter?.value ? true : null
+    }
   }
 
   /**
@@ -278,7 +272,7 @@ class LibraryHelper {
    **/
   public static reduceStateToSearchArgs(
     stateParams: SearchOptions
-  ): LibrarySearchIn {
+  ): TypedLibrarySearchArgs {
     const activeSort = LibraryHelper.getActiveSortOption(
       stateParams.sortOptions.options
     )
@@ -286,35 +280,39 @@ class LibraryHelper {
     const filterGroups = stateParams.filterGroups
     const filters = LibraryHelper.processFilterGroups(filterGroups)
 
-    return {
+    const payload: TypedLibrarySearchArgs = {
       pagination: {
-        page: stateParams.pagination.page
+        page: stateParams.pagination.page,
+        resultsPerPage: 10
       },
       sort: activeSort,
       filters: filters
     }
+
+    return payload
   }
 
-  public static merger = (a, b) => {
-    const mapA = new Map(a.map((item) => [item.name, item.value]))
-
-    // If `b` is empty, simply return a copy of `a` since there's nothing to merge from `b`
-    if (b.length === 0) {
-      return a
+  public static applyLockedFilters(
+    args: TypedLibrarySearchArgs,
+    locked: Partial<LibrarySearchFilters>
+  ): TypedLibrarySearchArgs {
+    const base = args ?? {}
+    const mergedFilters: LibrarySearchFilters = {
+      ...(base.filters ?? {}),
+      ...locked
     }
-    // Merge arrays with priority on values from `a`
-    const merged = b.map((item) => {
-      return mapA.has(item.name)
-        ? { name: item.name, value: mapA.get(item.name) }
-        : item
-    })
 
-    // Include items from `a` not present in `b`
-    const additionalItems = a.filter(
-      (aItem) => !b.some((bItem) => bItem.name === aItem.name)
-    )
+    if (
+      mergedFilters.contentType === 'project' &&
+      mergedFilters.workflowTypes?.length
+    ) {
+      mergedFilters.workflowTypes = []
+    }
 
-    return [...merged, ...additionalItems]
+    return {
+      ...base,
+      filters: mergedFilters
+    }
   }
 }
 

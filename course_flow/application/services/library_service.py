@@ -8,9 +8,17 @@ from uuid import UUID
 
 from django.db.models import Q, QuerySet
 
-from course_flow.api.common.schemas import CamelSchema
-from course_flow.api.schemas.library import LibraryFavoriteOut
+from course_flow.api.schemas.library import (
+    LibraryAllowedFiltersOut,
+    LibraryAppliedFiltersOut,
+    LibraryContentTypeIn,
+    LibraryFavoriteOut,
+    LibraryFiltersIn,
+    LibrarySearchIn,
+    LibrarySearchOut,
+)
 from course_flow.core.models import (
+    Discipline,
     FavoriteGraph,
     FavoriteProject,
     Graph,
@@ -23,8 +31,8 @@ class LibraryObjectType(str, Enum):
     PROJECT = "project"
     WORKFLOW = "workflow"
 
-@dataclass
-class LibraryObject(CamelSchema):
+@dataclass(frozen=True, slots=True)
+class LibraryObject:
     id: int
     type: LibraryObjectType
     uuid: UUID
@@ -34,74 +42,87 @@ class LibraryService:
         self,
         *,
         user_id: int,
-        payload: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+        payload: LibrarySearchIn,
+    ) -> LibrarySearchOut:
 
-        payload = payload or {}
-        pagination = payload.get("pagination") or {}
-        sort = payload.get("sort") or {}
-        filters = payload.get("filters") or []
+        pagination = payload.pagination
+        sort = payload.sort
+        raw_filters = payload.filters or LibraryFiltersIn()
 
-        page = max(int(pagination.get("page", 0) or 0), 0)
-        results_per_page = max(int(pagination.get("results_per_page", 10) or 10), 1)
-        sort_value = str(sort.get("value", "DATE_CREATED") or "DATE_CREATED").upper()
-        sort_direction = str(sort.get("direction", "DESC") or "DESC").upper()
+        page = max(int((pagination.page if pagination else 0) or 0), 0)
+        results_per_page = max(int((pagination.results_per_page if pagination else 10) or 10), 1)
+        sort_value = ((sort.value if sort else "DATE_CREATED") or "DATE_CREATED").upper()
+        sort_direction = ((sort.direction if sort else "DESC") or "DESC").upper()
 
-        normalized_filters = self._normalize_filters(filters)
-        workspace_type = normalized_filters.get("workspacetype")
-        project_filter_uuid = self._parse_uuid(normalized_filters.get("project"))
-        discipline_ids = self._normalize_int_list(normalized_filters.get("discipline"))
-        keyword = self._normalize_keyword(normalized_filters.get("keyword"))
-        is_template = self._normalize_bool(normalized_filters.get("istemplate"))
-        is_favorite = self._normalize_bool(
-            normalized_filters.get("isfavorite")
-            or normalized_filters.get("favourited")
+        keyword = self._normalize_keyword(raw_filters.keyword)
+        filters = LibraryAppliedFiltersOut(
+            keyword=keyword,
+            content_type=raw_filters.content_type,
+            project_uuid=raw_filters.project_uuid,
+            discipline_ids=list(raw_filters.discipline_ids or []),
+            workflow_types=list(raw_filters.workflow_types or []),
+            ownership=raw_filters.ownership,
+            is_favorite=raw_filters.is_favorite,
+            is_template=raw_filters.is_template,
         )
 
         accessible_projects = Project.objects.filter(
             Q(owner_id=user_id) | Q(team__users__user_id=user_id)
         ).distinct()
 
+        if filters.ownership == "owned":
+            accessible_projects = accessible_projects.filter(owner_id=user_id)
+        elif filters.ownership == "shared":
+            accessible_projects = accessible_projects.exclude(owner_id=user_id)
+
         project_qs = accessible_projects
-        graph_qs = Graph.objects.select_related("workflow", "workflow__project").filter(
+        workflow_graph_qs = Graph.objects.select_related("workflow", "workflow__project").filter(
             workflow__project_id__in=accessible_projects.values("id"),
         )
 
-        if workspace_type == "project":
-            graph_qs = graph_qs.none()
-
-        elif workspace_type in {"activity", "course", "program", "task"}:
+        if filters.content_type == LibraryContentTypeIn.PROJECT:
+            workflow_graph_qs = workflow_graph_qs.none()
+        elif filters.content_type == LibraryContentTypeIn.WORKFLOW:
             project_qs = project_qs.none()
-            graph_qs = graph_qs.filter(workflow__workflow_type=workspace_type)
 
-        if project_filter_uuid is not None:
-            project_qs = project_qs.filter(uuid=project_filter_uuid)
-            graph_qs = graph_qs.filter(workflow__project__uuid=project_filter_uuid)
+        if filters.workflow_types:
+            project_qs = project_qs.none()
+            workflow_graph_qs = workflow_graph_qs.filter(
+                workflow__workflow_type__in=filters.workflow_types
+            )
 
-        if discipline_ids:
+        if filters.project_uuid is not None:
+            project_qs = project_qs.filter(uuid=filters.project_uuid)
+            workflow_graph_qs = workflow_graph_qs.filter(workflow__project__uuid=filters.project_uuid)
+
+        if filters.discipline_ids:
             project_qs = project_qs.filter(
-                disciplines__id__in=discipline_ids
+                disciplines__id__in=filters.discipline_ids
             ).distinct()
-            graph_qs = graph_qs.filter(
-                workflow__project__disciplines__id__in=discipline_ids
+            workflow_graph_qs = workflow_graph_qs.filter(
+                workflow__project__disciplines__id__in=filters.discipline_ids
             ).distinct()
 
-        if is_template is not None:
-            project_qs = project_qs.filter(is_template=is_template)
-            graph_qs = graph_qs.filter(workflow__project__is_template=is_template)
+        # Boolean filters are "only when true":
+        # False/None means the filter is not applied.
+        if filters.is_template:
+            project_qs = project_qs.filter(is_template=True)
+            workflow_graph_qs = workflow_graph_qs.filter(workflow__project__is_template=True)
 
         if keyword:
             project_qs = project_qs.filter(
                 Q(title__icontains=keyword) | Q(description__icontains=keyword)
             )
-            graph_qs = graph_qs.filter(
+            workflow_graph_qs = workflow_graph_qs.filter(
                 Q(workflow__title__icontains=keyword)
                 | Q(workflow__description__icontains=keyword)
             )
 
-        if is_favorite is True:
+        # Boolean filters are "only when true":
+        # False/None means the filter is not applied.
+        if filters.is_favorite:
             project_qs = project_qs.filter(favorite_links__user_id=user_id)
-            graph_qs = graph_qs.filter(favorite_links__user_id=user_id)
+            workflow_graph_qs = workflow_graph_qs.filter(favorite_links__user_id=user_id)
 
         project_favorite_uuids = self._favorite_project_uuids(
             user_id=user_id, project_qs=project_qs
@@ -109,12 +130,12 @@ class LibraryService:
 
         graph_favorite_uuids = self._favorite_graph_uuids(
             user_id=user_id,
-            graph_qs=graph_qs,
+            graph_qs=workflow_graph_qs,
         )
 
         items = self._normalize_project_items(project_qs, project_favorite_uuids)
         items.extend(
-            self._normalize_workflow_items(graph_qs, graph_favorite_uuids)
+            self._normalize_workflow_items(workflow_graph_qs, graph_favorite_uuids)
         )
 
         items = self._sort_items(
@@ -127,15 +148,21 @@ class LibraryService:
         start_idx = page * results_per_page
         end_idx = start_idx + results_per_page
 
-        return {
+        res =  {
             "items": items[start_idx:end_idx],
             "meta": {
                 "total_results": total_results,
                 "page_count": page_count,
                 "current_page": page,
                 "results_per_page": results_per_page,
+                "applied_filters": filters.model_dump(mode="json"),
+                "allowed": LibraryAllowedFiltersOut(
+                    disciplines=self._discipline_options()
+                ).model_dump(mode="json"),
             },
         }
+
+        return LibrarySearchOut.model_validate(res)
 
     def toggle_favorite(self, *, user_id: int, uuid: UUID):
         library_item = self._find_from_uuid(uuid)
@@ -164,73 +191,29 @@ class LibraryService:
         if uuid is None:
             raise ValueError("UUID is required")
 
-        graph = Graph.objects.filter(uuid=uuid).only("id").first()
-        if graph:
+        workflow = Workflow.objects.filter(uuid=uuid).only("id", "uuid", "graph_id").first()
+        if workflow:
             return LibraryObject(
-                id=graph.id,
+                id=workflow.graph_id,
                 type=LibraryObjectType.WORKFLOW,
-                uuid=uuid,
+                uuid=workflow.uuid,
             )
 
-        project = Project.objects.filter(uuid=uuid).only("id").first()
+        project = Project.objects.filter(uuid=uuid).only("id", "uuid").first()
         if project:
             return LibraryObject(
                 id=project.id,
                 type=LibraryObjectType.PROJECT,
-                uuid=uuid,
+                uuid=project.uuid,
             )
 
         raise ValueError(f"Couldn't find UUID: {uuid}")
 
-    def _normalize_filters(self, filters: list[Any]) -> dict[str, Any]:
-        output: dict[str, Any] = {}
-        for raw in filters:
-            if not isinstance(raw, dict):
-                continue
-            name = str(raw.get("name", "")).strip().lower()
-            if not name:
-                continue
-            output[name] = raw.get("value")
-        return output
-
-    def _normalize_int_list(self, value: Any) -> list[int]:
+    def _normalize_keyword(self, value: str | None) -> str | None:
         if value is None:
-            return []
-        if not isinstance(value, list):
-            value = [value]
-
-        result: list[int] = []
-        for raw in value:
-            try:
-                result.append(int(raw))
-            except (TypeError, ValueError):
-                continue
-        return result
-
-    def _normalize_bool(self, value: Any) -> bool | None:
-        if isinstance(value, bool):
-            return value
-        if isinstance(value, str):
-            lowered = value.strip().lower()
-            if lowered in {"true", "1"}:
-                return True
-            if lowered in {"false", "0"}:
-                return False
-        return None
-
-    def _normalize_keyword(self, value: Any) -> str | None:
-        if not isinstance(value, str):
             return None
-        normalized = value.strip()
+        normalized = str(value).strip()
         return normalized or None
-
-    def _parse_uuid(self, value: Any) -> UUID | None:
-        if value is None:
-            return None
-        try:
-            return UUID(str(value))
-        except (TypeError, ValueError):
-            return None
 
     def _favorite_project_uuids(
         self, *, user_id: int, project_qs: QuerySet[Project]
@@ -261,11 +244,9 @@ class LibraryService:
         for project in project_qs:
             rows.append(
                 {
-                    "object_type": "project",
+                    "content_type": "project",
+                    "label": "project",
                     "uuid": project.uuid,
-                    "graph_uuid": None,
-                    "project_uuid": project.uuid,
-                    "workflow_uuid": None,
                     "title": project.title,
                     "description": project.description,
                     "date_created": project.date_created,
@@ -277,19 +258,17 @@ class LibraryService:
         return rows
 
     def _normalize_workflow_items(
-        self, graph_qs: QuerySet[Workflow], favorite_uuids: set[UUID]
+        self, workflow_graph_qs: QuerySet[Graph], favorite_uuids: set[UUID]
     ) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
-        for graph in graph_qs:
+        for graph in workflow_graph_qs:
             workflow = graph.workflow
             proj = workflow.project
             rows.append(
                 {
-                    "object_type": workflow.workflow_type,
-                    "uuid": None,
-                    "graph_uuid": graph.uuid,
-                    "project_uuid": proj.uuid if proj is not None else None,
-                    "workflow_uuid": workflow.uuid,
+                    "content_type": "workflow",
+                    "label": workflow.workflow_type,
+                    "uuid": workflow.uuid,
                     "title": workflow.title,
                     "description": workflow.description,
                     "date_created": graph.date_created,
@@ -299,6 +278,16 @@ class LibraryService:
                 }
             )
         return rows
+
+    def _discipline_options(self) -> list[dict[str, Any]]:
+        return [
+            {
+                "id": discipline.id,
+                "label": discipline.label,
+                "translation_plural": discipline.translation_plural,
+            }
+            for discipline in Discipline.objects.all().order_by("label", "id")
+        ]
 
     def _sort_items(
         self, items: list[dict[str, Any]], *, sort_value: str, sort_direction: str
