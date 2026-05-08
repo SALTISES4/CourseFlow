@@ -9,8 +9,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
-// @todo not sure this needs its own file
-const Header = ({ project }: { project: ProjectDetailsType }) => (
+const ProjectHeader = ({ project }: { project: ProjectDetailsType }) => (
   <OuterContentWrap sx={{ pb: 0 }}>
     <Stack
       direction="row"
@@ -48,4 +47,4 @@ const Header = ({ project }: { project: ProjectDetailsType }) => (
   </OuterContentWrap>
 )
 
-export default Header
+export default ProjectHeader

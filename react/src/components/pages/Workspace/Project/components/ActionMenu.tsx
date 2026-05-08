@@ -1,11 +1,12 @@
 import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { _t } from '@cf/utility/Utility.class'
 import { MenuItemType, MenuWithOverflow } from '@cfComponents/menu/Menu'
-import { useMenuActions } from '@cfPages/Workspace/Project/hooks/useMenuActions'
 import EditIcon from '@mui/icons-material/Edit'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
+
+import { useMenuActions } from '../hooks/useMenuActions'
 
 /** Until v2 exposes project ACLs, menu visibility assumes a writable project for authenticated users. */
 const v2MenuPermissions = {
@@ -95,4 +96,4 @@ const ActionMenu = () => {
   )
 }
 
-export { ActionMenu }
+export default ActionMenu

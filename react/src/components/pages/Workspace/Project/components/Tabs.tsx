@@ -1,0 +1,104 @@
+import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
+import { ProjectDetailsType } from '@cf/types/common'
+import { _t } from '@cf/utility/Utility.class'
+import { OuterContentWrap } from '@cfMUI/helper'
+import TabOverview from '@cfViews/ProjectView/TabOverview'
+import TabWorkflows from '@cfViews/ProjectView/TabWorkflows'
+import Box from '@mui/material/Box'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
+import { useEffect, useMemo, useState } from 'react'
+import {
+  Route,
+  Routes,
+  generatePath,
+  matchPath,
+  useLocation,
+  useNavigate
+} from 'react-router-dom'
+
+const ProjectDetails = ({ project }: { project: ProjectDetailsType }) => {
+  const location = useLocation()
+  const [activeTab, setActiveTab] = useState<RelativeRoutes>()
+  const navigate = useNavigate()
+
+  const tabsObject = useMemo(
+    () => [
+      {
+        path: CFRoutes.PROJECT,
+        relativePath: RelativeRoutes.INDEX,
+        label: _t('Overview'),
+        action: () => {
+          const path = generatePath(CFRoutes.PROJECT, {
+            uuid: project.uuid
+          })
+          navigate(path)
+        }
+      },
+      {
+        path: CFRoutes.PROJECT_WORKFLOW,
+        relativePath: RelativeRoutes.WORKFLOWS,
+        label: _t('Workflows'),
+        action: () => {
+          const path = generatePath(CFRoutes.PROJECT_WORKFLOW, {
+            uuid: project.uuid
+          })
+          navigate(path)
+        }
+      }
+    ],
+    [navigate, project.uuid]
+  )
+
+  const tabs = tabsObject.map((item) => (
+    <Tab
+      key={item.relativePath}
+      label={item.label}
+      value={item.relativePath}
+      onClick={() => {
+        const path = generatePath(item.path, { uuid: project.uuid })
+        navigate(path)
+      }}
+    />
+  ))
+
+  /*******************************************************
+   * LIFE CYCLE
+   *******************************************************/
+  // not really a big fan of this solution...
+  // is this really how RR would implement this?
+  // here is probably a better solution
+  // https://blog.stackademic.com/how-to-implement-tabs-that-sync-with-react-router-e255e0e90cfd
+  // we use the same pattern in: workspace tabs
+  useEffect(() => {
+    const match = tabsObject.find((tab) =>
+      matchPath({ path: tab.path, end: true }, location.pathname)
+    )
+    setActiveTab(match.relativePath)
+  }, [tabsObject, location.pathname])
+
+  return (
+    <>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <OuterContentWrap style={{ paddingBottom: 0 }}>
+          <Tabs
+            value={activeTab}
+            onChange={(_, newValue: RelativeRoutes) => setActiveTab(newValue)}
+          >
+            {tabs}
+          </Tabs>
+        </OuterContentWrap>
+      </Box>
+
+      <Routes>
+        <Route index path="/" element={<TabOverview {...project} />} />
+        <Route
+          path={RelativeRoutes.WORKFLOWS}
+          element={<TabWorkflows projectUuid={project.uuid!} />}
+        />
+      </Routes>
+    </>
+  )
+}
+
+export default ProjectDetails
