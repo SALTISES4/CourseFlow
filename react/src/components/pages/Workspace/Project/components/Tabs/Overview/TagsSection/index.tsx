@@ -66,7 +66,7 @@ const Tags = ({ data }: PropsType) => {
             </Grid>
           ))}
           <Grid item xs={4}>
-            <Tag id={state.length + 1} onChange={onChange} create />
+            <Tag id={String(state.length + 1)} onChange={onChange} create />
           </Grid>
         </Grid>
       </SC.InfoBlockContent>

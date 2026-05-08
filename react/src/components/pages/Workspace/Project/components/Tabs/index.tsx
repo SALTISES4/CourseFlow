@@ -2,8 +2,6 @@ import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { ProjectDetailsType } from '@cf/types/common'
 import { _t } from '@cf/utility/Utility.class'
 import { OuterContentWrap } from '@cfMUI/helper'
-import TabOverview from '@cfViews/ProjectView/TabOverview'
-import TabWorkflows from '@cfViews/ProjectView/TabWorkflows'
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
@@ -17,9 +15,14 @@ import {
   useNavigate
 } from 'react-router-dom'
 
-const ProjectDetails = ({ project }: { project: ProjectDetailsType }) => {
+import TabOverview from './Overview'
+import TabWorkflows from './Workflows'
+
+const ProjectTabs = ({ project }: { project: ProjectDetailsType }) => {
   const location = useLocation()
-  const [activeTab, setActiveTab] = useState<RelativeRoutes>()
+  const [activeTab, setActiveTab] = useState<RelativeRoutes>(
+    RelativeRoutes.INDEX
+  )
   const navigate = useNavigate()
 
   const tabsObject = useMemo(
@@ -101,4 +104,4 @@ const ProjectDetails = ({ project }: { project: ProjectDetailsType }) => {
   )
 }
 
-export default ProjectDetails
+export default ProjectTabs
