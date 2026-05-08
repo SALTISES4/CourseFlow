@@ -1,6 +1,7 @@
 import { DialogContext, DialogDispatchContext } from '@cf/context/dialogContext'
-import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { useContext } from 'react'
+
+import { WorkflowType } from '../components/pages/Workflow/types'
 
 export enum DialogMode {
   // Define your dialog modes here
@@ -43,10 +44,10 @@ export type DialogPayloadMap = {
     workflowId: string
   }
   [DialogMode.WORKFLOW_DELETE_NODE_CATEGORY]: {
-    id: string
+    uuid: string
   }
   [DialogMode.NODE_LINK_WORKFLOW]: {
-    id: string
+    uuid: string
   }
 
   /*******************************************************

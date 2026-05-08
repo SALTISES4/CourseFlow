@@ -22,7 +22,7 @@ class GraphNodeMutationOut(CamelSchema):
 
 
 class GraphEdgeMutationOut(CamelSchema):
-    """Edge row; ``id`` is the integer PK (``cf2_edge`` has no UUID column)."""
+    """Edge row; ``id`` is the integer PK (``cf_edge`` has no UUID column)."""
 
     id: int
     source_node_uuid: UUID

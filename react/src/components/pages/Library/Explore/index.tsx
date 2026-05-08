@@ -74,9 +74,9 @@ export default ExplorePage
 //       disciplineFilter: {
 //         ...draft.filterGroups.disciplineFilter,
 //         options: disciplines.map((item) => ({
-//           name: `discipline_option_${item.id}`,
+//           name: `discipline_option_${item.uuid}`,
 //           label: _t(item.title),
-//           value: item.id
+//           value: item.uuid
 //         }))
 //       }
 //     }

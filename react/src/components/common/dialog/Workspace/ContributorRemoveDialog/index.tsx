@@ -15,10 +15,10 @@ import Typography from '@mui/material/Typography'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 const ContributorRemoveDialog = ({
-  id,
+  uuid,
   type: _type
 }: {
-  id: string
+  uuid: string
   type: WorkspaceType
 }) => {
   const { show, onClose, payload } = useDialog<DialogMode.CONTRIBUTOR_REMOVE>(
@@ -31,7 +31,7 @@ const ContributorRemoveDialog = ({
     ...deleteProjectTeamMemberMutation(),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: listProjectTeamQueryKey({ path: { uuid: id } })
+        queryKey: listProjectTeamQueryKey({ path: { uuid } })
       })
     }
   })
@@ -43,8 +43,8 @@ const ContributorRemoveDialog = ({
     try {
       await deleteMember.mutateAsync({
         path: {
-          uuid: id,
-          membership_id: payload.membershipId
+          uuid,
+          membership_uuid: payload.membershipId
         }
       })
       onSuccess({ message: _t('Success!') })

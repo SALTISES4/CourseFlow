@@ -18,24 +18,24 @@ interface RefreshStoreDataAction extends UnknownAction {
 
 interface DeleteSelfOutcomeBaseAction extends UnknownAction {
   type: OutcomeBaseActions.DELETE_SELF | OutcomeBaseActions.DELETE_SELF_SOFT
-  payload: { parentid: string }
+  payload: { parentuuid: string }
 }
 
 interface RestoreSelfOutcomeBaseAction extends UnknownAction {
   type: OutcomeBaseActions.RESTORE_SELF
   payload: {
-    parentid: string
+    parentuuid: string
     throughparentIndex: number
-    throughparentid: string
+    throughparentuuid: string
   }
 }
 
 interface InsertBelowOutcomeBaseAction extends UnknownAction {
   type: OutcomeBaseActions.INSERT_BELOW
   payload: {
-    parentid: string
+    parentuuid: string
     newThrough: {
-      id: string
+      uuid: string
       workflow: number
       rank: number
     }
@@ -45,9 +45,9 @@ interface InsertBelowOutcomeBaseAction extends UnknownAction {
 interface NewOutcomeAction extends UnknownAction {
   type: OutcomeActions.NEW_OUTCOME
   payload: {
-    parentid: string
+    parentuuid: string
     newThrough: {
-      id: string
+      uuid: string
       workflow: number
     }
   }
@@ -74,7 +74,7 @@ function childWorkflowReducer(state = [], action: ChildWorkflowActionTypes) {
       return action.payload.childWorkflow.reduce(
         (updatedState, newChildWorkflowItem) => {
           const existingIndex = updatedState.findIndex(
-            (item) => item.id === newChildWorkflowItem.id
+            (item) => item.uuid === newChildWorkflowItem.uuid
           )
 
           if (existingIndex !== -1) {
@@ -103,7 +103,7 @@ function childWorkflowReducer(state = [], action: ChildWorkflowActionTypes) {
 
     // case OutcomeBaseActions.RESTORE_SELF:
     //   return state.map((item) => {
-    //     if (item.id === action.payload.parentId) {
+    //     if (item.uuid === action.payload.parentId) {
     //       const newOutcomeworkflowSet = [...item.outcomeworkflowSet]
     //       const index =
     //         action.type === OutcomeBaseActions.RESTORE_SELF
@@ -113,7 +113,7 @@ function childWorkflowReducer(state = [], action: ChildWorkflowActionTypes) {
     //       newOutcomeworkflowSet.splice(
     //         index,
     //         0,
-    //         action.payload.throughparentId || action.payload.newThrough.id
+    //         action.payload.throughparentId || action.payload.newThrough.uuid
     //       )
     //       return { ...item, outcomeworkflowSet: newOutcomeworkflowSet }
     //     }
@@ -126,8 +126,8 @@ function childWorkflowReducer(state = [], action: ChildWorkflowActionTypes) {
     case OutcomeActions.NEW_OUTCOME:
       return state.map((item) => {
         if (
-          item.id === action.payload.parentId ||
-          item.id === action.payload.newThrough.workflow
+          item.uuid === action.payload.parentId ||
+          item.uuid === action.payload.newThrough.workflow
         ) {
           const newOutcomeworkflowSet = [...item.outcomeworkflowSet]
           const index =
@@ -138,7 +138,7 @@ function childWorkflowReducer(state = [], action: ChildWorkflowActionTypes) {
           newOutcomeworkflowSet.splice(
             index,
             0,
-            action.payload.throughparentId || action.payload.newThrough.id
+            action.payload.throughparentId || action.payload.newThrough.uuid
           )
           return { ...item, outcomeworkflowSet: newOutcomeworkflowSet }
         }
@@ -167,7 +167,7 @@ export default childWorkflowReducer
 //       if (action.payload.childWorkflow) {
 //         action.payload.childWorkflow.forEach((newObj) => {
 //           const existingIndex = newState.findIndex(
-//             (item) => item.id === newObj.id
+//             (item) => item.uuid === newObj.uuid
 //           )
 //
 //           if (existingIndex !== -1) {
@@ -207,7 +207,7 @@ export default childWorkflowReducer
 //
 //     case OutcomeBaseActions.RESTORE_SELF: {
 //       for (var i = 0; i < state.length; i++) {
-//         if (state[i].id == action.payload.parentId) {
+//         if (state[i].uuid == action.payload.parentId) {
 //           var newState = state.slice()
 //           newState[i] = { ...state[i] }
 //           newState[i].outcomeworkflowSet =
@@ -226,14 +226,14 @@ export default childWorkflowReducer
 //     case OutcomeBaseActions.INSERT_BELOW:
 //     case OutcomeActions.NEW_OUTCOME: {
 //       for (var i = 0; i < state.length; i++) {
-//         if (state[i].id == action.payload.newThrough.workflow) {
+//         if (state[i].uuid == action.payload.newThrough.workflow) {
 //           var newState = state.slice()
 //           newState[i] = { ...state[i] }
 //           const newOutcomeworkflowSet = state[i].outcomeworkflowSet.slice()
 //           newOutcomeworkflowSet.splice(
 //             action.payload.newThrough.rank,
 //             0,
-//             action.payload.newThrough.id
+//             action.payload.newThrough.uuid
 //           )
 //           newState[i].outcomeworkflowSet = newOutcomeworkflowSet
 //           return newState

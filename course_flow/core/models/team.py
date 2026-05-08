@@ -12,4 +12,4 @@ class Team(TimeStampedUUIDModel):
     )
 
     class Meta:
-        db_table = "cf_project_team"
+        db_table = "cf_team"

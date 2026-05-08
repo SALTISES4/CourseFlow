@@ -16,12 +16,12 @@ import {
 import * as Styled from './styles'
 
 type PropsType = {
-  id: string
+  uuid: string
   label?: string
   create?: boolean
   disabled?: boolean
-  onChange: (id: string, value: string, createNew: boolean) => void
-  onDelete?: (id: string) => void
+  onChange: (uuid: string, value: string, createNew: boolean) => void
+  onDelete?: (uuid: string) => void
 }
 
 type StateType = {
@@ -32,7 +32,7 @@ type StateType = {
 const Tag = ({
   create,
   label,
-  id,
+  uuid,
   disabled,
   onChange,
   onDelete
@@ -77,7 +77,7 @@ const Tag = ({
       return
     }
 
-    onChange(id, state.label, create)
+    onChange(uuid, state.label, create)
 
     setState(
       produce((draft) => {
@@ -85,7 +85,7 @@ const Tag = ({
         draft.focused = false
       })
     )
-  }, [onChange, id, create, state.focused, state.label])
+  }, [onChange, uuid, create, state.focused, state.label])
 
   const onInputKeyDown: KeyboardEventHandler<HTMLInputElement> = useCallback(
     (e) => {
@@ -94,7 +94,7 @@ const Tag = ({
       }
 
       if (e.key === 'Enter') {
-        onChange(id, state.label, create)
+        onChange(uuid, state.label, create)
         setState(
           produce((draft) => {
             draft.label = ''
@@ -110,15 +110,15 @@ const Tag = ({
         })
       }
     },
-    [create, id, onChange, state.label]
+    [create, uuid, onChange, state.label]
   )
 
   const onDeleteClick = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation()
-      onDelete(id)
+      onDelete(uuid)
     },
-    [onDelete, id]
+    [onDelete, uuid]
   )
 
   return (

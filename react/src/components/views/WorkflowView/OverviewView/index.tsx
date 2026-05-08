@@ -1,23 +1,39 @@
+import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { WorkspaceType } from '@cf/types/enum'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { OuterContentWrap } from '@cfMUI/helper'
-import { RootState } from '@cfRedux/store'
 import LinkIcon from '@mui/icons-material/Link'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
-import { useSelector } from 'react-redux'
+import { useQuery } from '@tanstack/react-query'
+import type { EUser } from '@XMLHTTP/types/entity'
+import { useParams } from 'react-router-dom'
 
 import * as SC from './styles'
 import UserPermissions from './UserPermissions'
 
 const OverviewView = () => {
-  const data = useSelector((state: RootState) => state.workspace.workflow)
-  const workflow = useSelector((state: RootState) => state.workspace.workflow)
+  const { uuid } = useParams()
+  const workflowUuid = uuid ?? ''
+  const { data: workflowResp } = useQuery({
+    ...getWorkflowOptions({ path: { uuid: workflowUuid } }),
+    enabled: Boolean(workflowUuid)
+  })
+  const workflow = workflowResp?.item
+  const workflowAuthor: EUser = {
+    uuid: String(workflow?.authorId ?? ''),
+    username: '',
+    firstName: '',
+    lastName: '',
+    name: '',
+    email: ''
+  }
 
   // @todo disciplines is missing from workflow data type
   const disciplines = []
-  const { description, createdOn } = data
+  const description = workflow?.description ?? ''
+  const createdOn = workflow?.dateCreated
 
   return (
     <OuterContentWrap sx={{ pt: 4 }}>
@@ -43,17 +59,17 @@ const OverviewView = () => {
           <SC.InfoBlock>
             <SC.InfoBlockTitle>{_t('Created on')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
-              {Utility.formatDate(createdOn)}
+              {createdOn ? Utility.formatDate(createdOn) : '-'}
             </SC.InfoBlockContent>
           </SC.InfoBlock>
         </Grid>
       </Grid>
 
       <SC.InfoBlock sx={{ mt: 3 }}>
-        <SC.InfoBlockTitle>{_t('Permissionsa')}</SC.InfoBlockTitle>
+        <SC.InfoBlockTitle>{_t('Permissions')}</SC.InfoBlockTitle>
         <UserPermissions
-          workspaceId={workflow.id}
-          author={workflow.author}
+          workspaceId={workflowUuid}
+          author={workflowAuthor}
           workspaceType={WorkspaceType.WORKFLOW}
         />
 

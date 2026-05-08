@@ -9,7 +9,7 @@ import * as Styled from './styles'
 
 export type PropsType = {
   parent: {
-    id: string
+    uuid: string
     type: 'node' | 'outcome'
   }
   outcomes: number[]
@@ -64,7 +64,7 @@ const LinkedOutcomes = ({ parent, outcomes, highlight }: PropsType) => {
   )
 }
 
-export const OutcomeGroup = ({ parentId }: { parentid: string }) => {
+export const OutcomeGroup = ({ parentId }: { parentuuid: string }) => {
   const childOutcomes = useSelector((state: RootState) =>
     selectOutcomeChildrenById(state, parentId)
   )
@@ -76,7 +76,7 @@ export const OutcomeGroup = ({ parentId }: { parentid: string }) => {
   return (
     <StyledOutcome.OutcomeGroup>
       {childOutcomes.map((outcome) => (
-        <StyledOutcome.OutcomeGroupItem key={outcome.id}>
+        <StyledOutcome.OutcomeGroupItem key={outcome.uuid}>
           <Outcome {...outcome} />
         </StyledOutcome.OutcomeGroupItem>
       ))}

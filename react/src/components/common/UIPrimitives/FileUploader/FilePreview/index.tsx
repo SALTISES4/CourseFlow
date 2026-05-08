@@ -9,7 +9,7 @@ import { FileRejection } from 'react-dropzone'
 import { FileInfo, FileName, FileWrap } from './styles'
 
 type PropsType = {
-  id: string
+  uuid: string
   file: File | FileRejection
   onFileRemove?: (index: number) => void
   onFileUploaded?: (name: string) => void

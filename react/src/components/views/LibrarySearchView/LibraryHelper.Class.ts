@@ -15,7 +15,8 @@ import {
   SearchFilterOption,
   SortOption
 } from '@cfComponents/filters/types'
-import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
+
+import { WorkflowType } from '../../pages/Workflow/types'
 type FilterGroups = { [key: string]: SearchFilterGroup }
 
 type Option = any

@@ -6,7 +6,7 @@ export enum CfObjectType {
   PROJECT = 'project',
   NODELINK = 'nodelink',
   NODE = 'node',
-  WEEK = 'week',
+  WEEK = 'section',
   COLUMN = 'column',
   OUTCOME = 'outcome',
   // OUTCOME_BASE = 'outcome',
@@ -16,8 +16,8 @@ export enum CfObjectType {
   OUTCOMEOUTCOME = 'outcomeoutcome',
   OUTCOMEHORIZONTALLINK = 'outcomehorizontallink',
   OUTCOMEWORKFLOW = 'outcomeworkflow',
-  NODEWEEK = 'nodeweek',
-  WEEKWORKFLOW = 'weekworkflow'
+  NODEWEEK = 'nodesection',
+  WEEKWORKFLOW = 'sectionworkflow'
 }
 
 /*******************************************************

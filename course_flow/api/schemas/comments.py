@@ -1,4 +1,4 @@
-"""Thread comment read models (lazy-loaded; not embedded in graph projection)."""
+"""Thread comment read models (lazy-loaded; not embedded in Graph View)."""
 
 from __future__ import annotations
 

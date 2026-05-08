@@ -38,7 +38,7 @@ const workflowMetaSlice = createSlice({
     ) {
       const { workflowUuid, revisionId } = action.payload
       workflowMetaAdapter.updateOne(state, {
-        id: workflowUuid,
+        uuid: workflowUuid,
         changes: { revisionId }
       })
     },

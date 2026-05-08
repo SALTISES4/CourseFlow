@@ -24,7 +24,7 @@ export type QueryPages = {
 }
 
 export type Discipline = {
-  id: string
+  uuid: string
   title: string
 }
 
@@ -81,7 +81,7 @@ export enum PermissionGroup {
 }
 
 export type PermissionUserType = {
-  id: string
+  uuid: string
   name: string
   email: string
   permissionGroup: PermissionGroup

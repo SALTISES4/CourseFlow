@@ -48,8 +48,8 @@ type PropsType = {
   setSearchArgs: (args: LibrarySearchIn) => void
   config: Config
   override?: {
-    selectedid: string
-    onCardSelect: (id: string) => void
+    selecteduuid: string
+    onCardSelect: (uuid: string) => void
   }
 }
 
@@ -146,7 +146,7 @@ const LibrarySearchView = ({
   useEffect(() => {
     const options = COURSEFLOW_APP.globalContextData.disciplines
     const mappedOptions: SearchFilterOption[] = options.map((o) => ({
-      value: o.id,
+      value: o.uuid,
       label: o.title
     }))
     setDisciplineOptions(mappedOptions)
@@ -388,10 +388,10 @@ const LibrarySearchView = ({
 
         {cards.map((item) => (
           <WorkflowCardWrapper
-            key={`workflow_${item.id}`}
+            key={`workflow_${item.uuid}`}
             {...item}
-            isSelected={item.id === override?.uuid}
-            onClick={() => override?.onCardSelect(item.id)}
+            isSelected={item.uuid === override?.uuid}
+            onClick={() => override?.onCardSelect(item.uuid)}
           />
         ))}
 

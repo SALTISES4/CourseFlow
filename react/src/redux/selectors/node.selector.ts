@@ -8,7 +8,7 @@ export const {
   selectIds: selectNodeIds
 } = nodeAdapter.getSelectors<RootState>((state) => state.workspace.node)
 
-export const selectNodeColumn = (nodeid: string) =>
+export const selectNodeColumn = (nodeuuid: string) =>
   createSelector(
     (state: RootState) => state.workspace.node.entities[nodeId],
     (node) => node.column

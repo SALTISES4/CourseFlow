@@ -3,26 +3,12 @@ import { _t } from '@cf/utility/Utility.class'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
-import { getTargetProjectMenuQuery } from '@XMLHTTP/API/workflowObjects/workflow'
 import { TargetProjectQueryResp } from '@XMLHTTP/types/query'
 import { useState } from 'react'
 
-// function copyToProject(
-//    workflowid: string,
-//    projectid: string,
-//    workflowType: WorkflowType
-//  ) {
-//    loader.startLoad()
-//    duplicateBaseItemQuery(
-//      workflowId,
-//      workflowType,
-//      projectId,
-//      (responseData) => {
-//        loader.endLoad()
-//        window.location.href = 'path top newly created item'
-//      }
-//    )
-//  }
+const getTargetProjectMenuQuery = () => {
+  console.log('getTargetProjectMenuQuery fired')
+}
 
 function WorkflowCopyToProjectDialog({ id, actionFunction }: any) {
   const { show, onClose } = useDialog(DialogMode.WORKFLOW_COPY_TO_PROJECT)
@@ -40,7 +26,8 @@ function WorkflowCopyToProjectDialog({ id, actionFunction }: any) {
     }
 
     if (projectData == null) {
-      getTargetProjectMenuQuery(id, setProjectData)
+      // not sure what this does
+      getTargetProjectMenuQuery()
     } else {
       return (
         <TargetProjectDialogContents

@@ -1,9 +1,9 @@
-import { StyledBox, StyledDialog } from '@cf/components/common/dialog/styles'
 import {
   addProjectTeamMembersMutation,
   listProjectTeamQueryKey,
   listUsersOptions
 } from '@cf/api/gen/@tanstack/react-query.gen'
+import { StyledBox, StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { PermissionGroup } from '@cf/types/common'
@@ -23,7 +23,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import TextField from '@mui/material/TextField'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
@@ -34,7 +34,7 @@ interface IFormInputs {
 
 type UserFormOption = {
   name: string
-  id: string
+  uuid: string
 }
 
 function permissionGroupToRole(
@@ -53,11 +53,11 @@ function permissionGroupToRole(
 }
 
 const ContributorAddDialog = ({
-  id,
+  uuid,
   type: _type,
   refetch
 }: {
-  id: string
+  uuid: string
   type: WorkspaceType
   refetch: () => void
 }) => {
@@ -81,7 +81,7 @@ const ContributorAddDialog = ({
 
   const userIds = watch('userId')
   const role = watch('group')
-  const disableSubmit = !userIds || userIds?.length === 0 || !role || !id
+  const disableSubmit = !userIds || userIds?.length === 0 || !role || !uuid
 
   const { data: listUsersData } = useQuery({
     ...listUsersOptions({
@@ -89,13 +89,13 @@ const ContributorAddDialog = ({
         ? { filter: debouncedFilter.trim() }
         : undefined
     }),
-    enabled: Boolean(show && id && debouncedFilter.trim())
+    enabled: Boolean(show && uuid && debouncedFilter.trim())
   })
 
   const userOptions: UserFormOption[] = useMemo(
     () =>
       (listUsersData?.items ?? []).map((u) => ({
-        id: u.uuid,
+        uuid: u.uuid,
         name:
           [u.firstName, u.lastName].filter(Boolean).join(' ').trim() || u.email
       })),
@@ -106,18 +106,18 @@ const ContributorAddDialog = ({
     ...addProjectTeamMembersMutation(),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: listProjectTeamQueryKey({ path: { uuid: id } })
+        queryKey: listProjectTeamQueryKey({ path: { uuid } })
       })
     }
   })
 
   const onSubmit = useCallback(async () => {
-    if (!userIds?.length || role == null || !id) {
+    if (!userIds?.length || role == null || !uuid) {
       return
     }
     try {
       await addMembers.mutateAsync({
-        path: { uuid: id },
+        path: { uuid },
         body: {
           userUuids: userIds,
           role: permissionGroupToRole(role)
@@ -129,7 +129,7 @@ const ContributorAddDialog = ({
     } catch (err) {
       onError(err)
     }
-  }, [addMembers, id, onClose, onError, onSuccess, refetch, role, userIds])
+  }, [addMembers, uuid, onClose, onError, onSuccess, refetch, role, userIds])
 
   const onAutocompleteChange = useCallback((value: string) => {
     setSearch(value)
@@ -159,9 +159,9 @@ const ContributorAddDialog = ({
                   options={userOptions}
                   getOptionLabel={(user) => user.name}
                   onChange={(_, selectedUsers) =>
-                    field.onChange(selectedUsers.map((user) => user.id))
+                    field.onChange(selectedUsers.map((user) => user.uuid))
                   }
-                  isOptionEqualToValue={(opt, val) => opt.id === val.id}
+                  isOptionEqualToValue={(opt, val) => opt.uuid === val.uuid}
                   filterOptions={(x) => x}
                   onInputChange={(_, value) => onAutocompleteChange(value)}
                   renderInput={(params) => (

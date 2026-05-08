@@ -1,4 +1,3 @@
-import { apiPaths } from '@cf/router/apiRoutes'
 import React, { ReactElement } from 'react'
 
 interface ActionButtonProps {

@@ -1,92 +1,92 @@
 import {
   CommonActions,
   NodeActions,
-  NodeWeekActions,
-  StrategyActions,
-  WeekActions
+  NodeSectionActions,
+  SectionActions,
+  StrategyActions
 } from '@cfRedux/types/enumActions'
-import { TNodeweek } from '@cfRedux/types/type'
+import { TNodesection } from '@cfRedux/types/type'
 import { UnknownAction } from '@reduxjs/toolkit'
 
 interface ReplaceStoreDataAction extends UnknownAction {
   type: CommonActions.REPLACE_STOREDATA
-  payload: { nodeweek?: TNodeweek[] }
+  payload: { nodesection?: TNodesection[] }
 }
 
 interface RefreshStoreDataAction extends UnknownAction {
   type: CommonActions.REFRESH_STOREDATA
-  payload: { nodeweek: TNodeweek[] }
+  payload: { nodesection: TNodesection[] }
 }
 
-interface ChangeIdNodeWeekAction extends UnknownAction {
-  type: NodeWeekActions.CHANGE_ID
-  payload: { oldid: string; newid: string }
+interface ChangeIdNodeSectionAction extends UnknownAction {
+  type: NodeSectionActions.CHANGE_ID
+  payload: { olduuid: string; newuuid: string }
 }
 
-interface MovedToNodeWeekAction extends UnknownAction {
-  type: NodeWeekActions.MOVED_TO
-  payload: { id: string; newParent: number }
+interface MovedToNodeSectionAction extends UnknownAction {
+  type: NodeSectionActions.MOVED_TO
+  payload: { uuid: string; newParent: number }
 }
 
 interface DeleteSelfNodeAction extends UnknownAction {
   type: NodeActions.DELETE_SELF
-  payload: { parentid: string }
+  payload: { parentuuid: string }
 }
 
 interface InsertBelowNodeAction extends UnknownAction {
   type: NodeActions.INSERT_BELOW
-  payload: { newThrough: TNodeweek }
+  payload: { newThrough: TNodesection }
 }
 
 interface NewNodeAction extends UnknownAction {
   type: NodeActions.NEW_NODE
-  payload: { newThrough: TNodeweek }
+  payload: { newThrough: TNodesection }
 }
 
-interface InsertBelowWeekAction extends UnknownAction {
-  type: WeekActions.INSERT_BELOW
-  payload: { children?: { nodeweek: TNodeweek[] } }
+interface InsertBelowSectionAction extends UnknownAction {
+  type: SectionActions.INSERT_BELOW
+  payload: { children?: { nodesection: TNodesection[] } }
 }
 
 interface AddStrategyAction extends UnknownAction {
   type: StrategyActions.ADD_STRATEGY
-  payload: { nodeweeksAdded: TNodeweek[] }
+  payload: { nodesectionsAdded: TNodesection[] }
 }
 
 // Union type for all actions handled by the reducer
-type NodeWeekActionTypes =
+type NodeSectionActionTypes =
   | ReplaceStoreDataAction
   | RefreshStoreDataAction
-  | ChangeIdNodeWeekAction
-  | MovedToNodeWeekAction
+  | ChangeIdNodeSectionAction
+  | MovedToNodeSectionAction
   | DeleteSelfNodeAction
   | InsertBelowNodeAction
   | NewNodeAction
-  | InsertBelowWeekAction
+  | InsertBelowSectionAction
   | AddStrategyAction
 
-export default function nodeweekReducer(
-  state: TNodeweek[] = [],
-  action: NodeWeekActionTypes
-): TNodeweek[] {
+export default function nodesectionReducer(
+  state: TNodesection[] = [],
+  action: NodeSectionActionTypes
+): TNodesection[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
-      if (action.payload.nodeweek) {
-        return action.payload.nodeweek
+      if (action.payload.nodesection) {
+        return action.payload.nodesection
       }
       return state
 
     case CommonActions.REFRESH_STOREDATA:
-      return action.payload.nodeweek
-        ? action.payload.nodeweek.reduce(
-            (updatedState, newNodeWeek) => {
+      return action.payload.nodesection
+        ? action.payload.nodesection.reduce(
+            (updatedState, newNodeSection) => {
               const index = updatedState.findIndex(
-                (item) => item.id === newNodeWeek.id
+                (item) => item.uuid === newNodeSection.uuid
               )
               if (index !== -1) {
-                updatedState.splice(index, 1, newNodeWeek)
+                updatedState.splice(index, 1, newNodeSection)
               } else {
-                updatedState.push(newNodeWeek)
+                updatedState.push(newNodeSection)
               }
               return updatedState
             },
@@ -94,31 +94,31 @@ export default function nodeweekReducer(
           )
         : state
 
-    case NodeWeekActions.CHANGE_ID:
+    case NodeSectionActions.CHANGE_ID:
       return state.map((item) =>
-        item.id === action.payload.oldId
-          ? { ...item, id: action.payload.newId, noDrag: false }
+        item.uuid === action.payload.oldId
+          ? { ...item, uuid: action.payload.newId, noDrag: false }
           : item
       )
 
     case NodeActions.DELETE_SELF:
-      return state.filter((item) => item.id !== action.payload.parentId)
+      return state.filter((item) => item.uuid !== action.payload.parentId)
 
-    case NodeWeekActions.MOVED_TO: {
+    case NodeSectionActions.MOVED_TO: {
       return state.map((item) =>
-        item.id === action.payload.id
+        item.uuid === action.payload.uuid
           ? {
               ...item,
-              week: action.payload.newParent,
+              section: action.payload.newParent,
               noDrag: true
             }
           : item
       )
     }
 
-    case WeekActions.INSERT_BELOW:
+    case SectionActions.INSERT_BELOW:
       return action.payload.children
-        ? [...state, ...action.payload.children.nodeweek]
+        ? [...state, ...action.payload.children.nodesection]
         : state
 
     case NodeActions.INSERT_BELOW:
@@ -126,9 +126,9 @@ export default function nodeweekReducer(
       return [...state, action.payload.newThrough]
 
     case StrategyActions.ADD_STRATEGY:
-      return action.payload.nodeweeksAdded.length === 0
+      return action.payload.nodesectionsAdded.length === 0
         ? state
-        : [...state, ...action.payload.nodeweeksAdded]
+        : [...state, ...action.payload.nodesectionsAdded]
 
     default:
       return state

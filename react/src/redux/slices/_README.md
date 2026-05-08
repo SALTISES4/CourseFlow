@@ -32,7 +32,7 @@ before
       .addCase(
         CommonActions.REPLACE_STOREDATA,
         (state, action: PayloadAction<ReplaceStoreDataPayload>) => {
-          return action.payload.week || state
+          return action.payload.section || state
         }
       )
 ```
@@ -42,8 +42,8 @@ After
       .addCase(
         CommonActions.REPLACE_STOREDATA,
         (state, action: PayloadAction<ReplaceStoreDataPayload>) => {
-        if(action.payload.week){
-          return action.payload.week
+        if(action.payload.section){
+          return action.payload.section
           }
         }
       )

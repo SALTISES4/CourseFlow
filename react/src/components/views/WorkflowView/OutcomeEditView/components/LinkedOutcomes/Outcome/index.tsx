@@ -16,7 +16,7 @@ type OutcomeStateType = {
 }
 
 const Outcome = ({
-  id,
+  uuid,
   level,
   title,
   children,
@@ -25,14 +25,14 @@ const Outcome = ({
   linkParent?: LinkedOutcomesProps['parent']
 }) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
-  const prefix = useSelector((state: RootState) => getPrefixPath(state, id))
+  const prefix = useSelector((state: RootState) => getPrefixPath(state, uuid))
   const sidebarData = useSelector((state: RootState) => state.sidebar.edit)
   const [state, setState] = useState<OutcomeStateType>({
     collapsed: true
   })
 
   const selected =
-    sidebarData.objectType === CfObjectType.OUTCOME && sidebarData.id === id
+    sidebarData.objectType === CfObjectType.OUTCOME && sidebarData.uuid === uuid
 
   const setCollapsed = useCallback((value: boolean) => {
     setState(
@@ -55,7 +55,7 @@ const Outcome = ({
   return (
     <Styled.OutcomeWrapper>
       <OutcomeHeader
-        id={id}
+        uuid={uuid}
         level={level}
         linkParent={linkParent}
         dragRef={dragHandleRef}
@@ -66,7 +66,7 @@ const Outcome = ({
         onToggleClick={onToggleClick}
       />
 
-      {!state.collapsed && <OutcomeGroup parentId={id} />}
+      {!state.collapsed && <OutcomeGroup parentId={uuid} />}
     </Styled.OutcomeWrapper>
   )
 }

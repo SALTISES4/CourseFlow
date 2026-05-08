@@ -16,7 +16,7 @@ import { useDispatch } from 'react-redux'
 import { PropsType as LinkedOutcomesProps } from '../../index'
 
 type PropsType = {
-  id: string
+  uuid: string
   level: number
   linkParent?: LinkedOutcomesProps['parent']
   title: string
@@ -28,7 +28,7 @@ type PropsType = {
 }
 
 const OutcomeHeader = ({
-  id,
+  uuid,
   level,
   linkParent,
   title,
@@ -52,7 +52,7 @@ const OutcomeHeader = ({
     >
       <Styled.OutcomeHeaderInner>
         <Styled.OutcomeTitle variant="body2">{title}</Styled.OutcomeTitle>
-        <HoverMenu show={isHovered} id={id} linkParent={linkParent} />
+        <HoverMenu show={isHovered} uuid={uuid} linkParent={linkParent} />
       </Styled.OutcomeHeaderInner>
       {showToggle && (
         <Styled.OutcomeHeaderToggle onClick={onToggleClick}>
@@ -73,11 +73,11 @@ enum HoverMenuActions {
 }
 
 const HoverMenu = ({
-  id,
+  uuid,
   linkParent,
   show
 }: {
-  id: PropsType['id']
+  uuid: PropsType['uuid']
   linkParent: PropsType['linkParent']
   show: boolean
 }) => {
@@ -93,14 +93,14 @@ const HoverMenu = ({
               case 'outcome':
                 dispatch(
                   linkOutcome({
-                    targetId: id,
-                    destinationId: linkParent.id
+                    targetId: uuid,
+                    destinationId: linkParent.uuid
                   })
                 )
                 break
               case 'node':
                 dispatch(
-                  nodelinkOutcome({ outcomeId: id, nodeId: linkParent.id })
+                  nodelinkOutcome({ outcomeId: uuid, nodeId: linkParent.uuid })
                 )
                 break
             }
@@ -108,7 +108,7 @@ const HoverMenu = ({
           case HoverMenuActions.COMMENTS:
             dispatch(
               sidebarEdit({
-                id,
+                uuid,
                 objectType: CfObjectType.OUTCOME,
                 tab: 'comments'
               })
@@ -119,7 +119,7 @@ const HoverMenu = ({
         }
       }
     },
-    [dispatch, id, linkParent]
+    [dispatch, uuid, linkParent]
   )
 
   return (

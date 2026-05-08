@@ -1,13 +1,13 @@
 import { CookieTypes, useCookies } from '@cf/context/cookieContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/Utility.class'
-import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import CloseIcon from '@mui/icons-material/Close'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import React, { useEffect, useState } from 'react'
 
 import * as SC from './style'
+import { WorkflowType } from '../../../Workflow/types'
 
 type PropsType = {
   hide?: boolean

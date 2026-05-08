@@ -102,7 +102,7 @@ const FilterWorkflows = ({
 
     const currentIndex = !selected
       ? -1
-      : results.findIndex((p) => p.id === selected.id)
+      : results.findIndex((p) => p.uuid === selected.uuid)
 
     switch (e.key) {
       case 'ArrowDown':
@@ -211,9 +211,9 @@ const FilterWorkflows = ({
       >
         {results.map((p) => (
           <Suggestion
-            key={p.id}
+            key={p.uuid}
             onClick={() => onSuggestionClick(p)}
-            selected={selected && selected.id === p.id}
+            selected={selected && selected.uuid === p.uuid}
           >
             <ProjectGroup>{p.description}</ProjectGroup>
             {/*<ProjectName>{p.name}</ProjectName>*/}

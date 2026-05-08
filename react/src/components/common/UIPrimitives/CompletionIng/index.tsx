@@ -1,5 +1,3 @@
-import { apiPaths } from '@cf/router/apiRoutes'
-
 /**
  * Based on an outcomenode's completion status, return the correct icon
  *
@@ -17,7 +15,7 @@ const CompletionImg = ({
     return (
       <img
         className="self-completed"
-        src={apiPaths.external.static_assets.icon + 'solid_check.svg'}
+        src={'/static/course_flow/img/images_svg/solid_check.svg'}
       />
     )
   }

@@ -48,7 +48,6 @@ interface GenericPath {
   [key: string]: string
 }
 
-
 interface UpdatePath {
   project: string
   activity: string
@@ -74,7 +73,7 @@ export interface GlobalContextData {
     updateNotifications:
       | {
           title: string
-          id: string
+          uuid: string
         }
       | Record<string, never>
   }

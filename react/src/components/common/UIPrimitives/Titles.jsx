@@ -6,7 +6,7 @@ import { NavLink, generatePath } from 'react-router-dom'
 
 export function workflowUrl(workflow) {
   const base = CFRoutes.WORKFLOW
-  return generatePath(base, { id: workflow.id })
+  return generatePath(base, { uuid: workflow.uuid })
 }
 
 export const WorkflowNavLink = ({ workflow }) => {
@@ -21,11 +21,11 @@ export const WorkflowNavLink = ({ workflow }) => {
   return <NavLink to={url}>{title}</NavLink>
 }
 
-//Title text for a week
-export class WeekTitle extends Component {
+//Title text for a section
+export class SectionTitle extends Component {
   render() {
     const data = this.props.data
-    const defaultText = data.weekTypeDisplay + ' ' + (this.props.rank + 1)
+    const defaultText = data.sectionTypeDisplay + ' ' + (this.props.rank + 1)
     return <TitleText text={data.title} defaultText={defaultText} />
   }
 }

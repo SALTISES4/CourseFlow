@@ -73,7 +73,6 @@ export-xml:
 # ----------------------------
 # VCS
 # ----------------------------
-
 [group: 'VCS']
 checkout-dev:
   git checkout develop
@@ -150,12 +149,38 @@ django-run:
   uv run python manage.py runserver
 
 [group: 'Django']
+django-run-background:
+   uv run python manage.py runserver 127.0.0.1:8000 > logs/django.log 2>&1 &
+
+[group: 'Django']
+django-kill-background:
+  pkill -f "manage.py runserver" || true
+
+[group: 'Django']
 django-create-superuser:
-  uv run python manage.py createsuperuser
+  DJANGO_SUPERUSER_EMAIL=admin@courseflow.com DJANGO_SUPERUSER_PASSWORD='password' uv run python manage.py createsuperuser --noinput
 
 [group: 'Django']
 django-seed-graph:
-  uv run cf2-seed-dev-data
+  uv run cf-seed-dev-data
+
+[group: 'Django']
+django-seed-notifications:
+  uv run cf-seed-dev-notifications
+
+[group: 'Django']
+django-seed:
+  just django-seed-graph
+  just django-seed-notifications
+
+
+[group: 'Django']
+django-wait-db:
+  bash -lc 'for i in {1..60}; do \
+    uv run python -c "import psycopg; psycopg.connect(\"host=127.0.0.1 port=5432 dbname=courseflow user=courseflow password=courseflow\").close()" \
+      && exit 0; \
+    sleep 2; \
+  done; echo "DB not ready"; exit 1'
 
 # ----------------------------
 # Backend
@@ -281,3 +306,16 @@ dev:
   just browsers
   just django-run
 
+
+
+
+[group: 'Workflows']
+rebuild-test-db:
+  just django-kill-background
+  just docker-reset
+  just docker-up
+  just django-wait-db
+  just django-migrate
+  just django-create-superuser
+  just django-seed
+  just django-kill-background

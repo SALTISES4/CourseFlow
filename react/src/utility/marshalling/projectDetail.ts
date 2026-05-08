@@ -7,12 +7,12 @@ export function formatProjectEntity(project: EProject): ProjectDetailsType {
   const allDisciplines = COURSEFLOW_APP.globalContextData.disciplines
 
   const formattedDisciplines: string[] = project.disciplines.map((projDisc) => {
-    return allDisciplines.find((item) => String(item.id) === String(projDisc))
+    return allDisciplines.find((item) => String(item.uuid) === String(projDisc))
       ?.title as string
   })
 
   return {
-    uuid: project.id,
+    uuid: project.uuid,
     title: project.title,
     description: project.description,
     isFavourite: project.favourite,
@@ -39,7 +39,7 @@ export function mapProjectV2ToProjectDetails(
     created: p.dateCreated,
     disciplines: [],
     author: {
-      id: '',
+      uuid: '',
       username: '',
       firstName: '',
       lastName: '',

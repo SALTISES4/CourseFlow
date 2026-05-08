@@ -12,7 +12,7 @@ import { useCallback, useState } from 'react'
 import { FileRejection } from 'react-dropzone'
 
 type PropsType = {
-  workflowid: string
+  workflowuuid: string
 }
 
 type StateType = {
@@ -33,7 +33,7 @@ R#EFERENCE TO ORIGIGNAL
   //       <>
   //         <ImportMenu
   //           data={{
-  //             objectId: this.data.id,
+  //             objectId: this.data.uuid,
   //             objectType: this.objectType,
   //             importType: 'outcomes'
   //           }}
@@ -41,7 +41,7 @@ R#EFERENCE TO ORIGIGNAL
   //         />
   //         <ImportMenu
   //           data={{
-  //             objectId: this.data.id,
+  //             objectId: this.data.uuid,
   //             objectType: this.objectType,
   //             importType: 'nodes'
   //           }}

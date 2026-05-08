@@ -2,10 +2,10 @@ import { CfObjectType } from '@cf/types/enum'
 import {
   CommonActions,
   NodeActions,
-  NodeWeekActions,
+  NodeSectionActions,
   OutcomeOutcomeActions,
   OutcomeWorkflowActions,
-  WeekWorkflowActions
+  SectionWorkflowActions
 } from '@cfRedux/types/enumActions'
 import { AppState } from '@cfRedux/types/type'
 import { EComment } from '@XMLHTTP/types/entity'
@@ -34,7 +34,7 @@ class ActionCreator {
    * COMMON / DYNAMIC OBJECT
    *******************************************************/
   static createLockAction = (
-    objectid: string,
+    objectuuid: string,
     objectType: CfObjectType,
     lock?: boolean,
     userId?: number,
@@ -44,7 +44,7 @@ class ActionCreator {
       return {
         type: objectType + '/createLock', // this is a redux antipattern
         payload: {
-          id: objectId,
+          uuid: objectId,
           // where are rest of props for lock?
           lock: { userId: userId, userColour: userColour }
         }
@@ -53,7 +53,7 @@ class ActionCreator {
       return {
         type: objectType + '/createLock',
         payload: {
-          id: objectId,
+          uuid: objectId,
           lock: null
         }
       }
@@ -61,29 +61,29 @@ class ActionCreator {
   }
 
   static reloadCommentsAction = (
-    id: string,
+    uuid: string,
     objectType: CfObjectType,
     commentData: EComment[]
   ) => {
     return {
       type: objectType + '/reloadComments', // this is a redux antipattern
       payload: {
-        id: id,
+        uuid: id,
         objectType: objectType,
         commentData
       }
     }
   }
 
-  static changeField = <T>(id: string, objectType: CfObjectType, json: T) => {
+  static changeField = <T>(uuid: string, objectType: CfObjectType, json: T) => {
     console.log(
-      'what is  static changeField = (id: string, objectType: CfObjectType, json) => {'
+      'what is  static changeField = (uuid: string, objectType: CfObjectType, json) => {'
     )
     console.log(json)
     return {
       type: objectType + '/changeField', // this is a redux antipattern
       payload: {
-        id: id,
+        uuid: id,
         objectType: objectType,
         json: json
       }
@@ -114,23 +114,23 @@ class ActionCreator {
     }
   }
 
-  // static reloadAssignmentsAction = (id: string, hasAssignment) => {
+  // static reloadAssignmentsAction = (uuid: string, hasAssignment) => {
   //   return {
   //     type: NodeActions.RELOAD_ASSIGNMENTS,
-  //     payload: { id: id, hasAssignment: hasAssignment }
+  //     payload: { uuid: id, hasAssignment: hasAssignment }
   //   }
   // }
 
-  static moveWeekWorkflow = (
-    id: string,
+  static moveSectionWorkflow = (
+    uuid: string,
     newIndex: number,
     newParent: number,
-    childid: string
+    childuuid: string
   ) => {
     return {
-      type: WeekWorkflowActions.MOVED_TO,
+      type: SectionWorkflowActions.MOVED_TO,
       payload: {
-        id,
+        uuid,
         newIndex,
         newParent,
         childId
@@ -138,23 +138,23 @@ class ActionCreator {
     }
   }
 
-  static columnChangeNode = (id: string, newColumn: number) => {
+  static columnChangeNode = (uuid: string, newColumn: number) => {
     return {
       type: NodeActions.CHANGED_COLUMN,
       payload: { id, newColumn }
     }
   }
 
-  static moveNodeWeek = (
-    id: string,
+  static moveNodeSection = (
+    uuid: string,
     newIndex: number,
     newParent: number,
-    childid: string
+    childuuid: string
   ) => {
     return {
-      type: NodeWeekActions.MOVED_TO,
+      type: NodeSectionActions.MOVED_TO,
       payload: {
-        id,
+        uuid,
         newIndex,
         newParent,
         childId
@@ -163,15 +163,15 @@ class ActionCreator {
   }
 
   static moveOutcomeOutcome = (
-    id: string,
+    uuid: string,
     newIndex: number,
     newParent: number,
-    childid: string
+    childuuid: string
   ) => {
     return {
       type: OutcomeOutcomeActions.MOVED_TO,
       payload: {
-        id,
+        uuid,
         newIndex,
         newParent,
         childId
@@ -180,15 +180,15 @@ class ActionCreator {
   }
 
   static moveOutcomeWorkflow = (
-    id: string,
+    uuid: string,
     newIndex: number,
     newParent: number,
-    childid: string
+    childuuid: string
   ) => {
     return {
       type: OutcomeWorkflowActions.MOVED_TO,
       payload: {
-        id,
+        uuid,
         newIndex,
         newParent,
         childId

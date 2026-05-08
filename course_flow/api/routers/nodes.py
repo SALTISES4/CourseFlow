@@ -10,8 +10,8 @@ from ninja.errors import HttpError
 from course_flow.api.auth import BearerAuth, get_current_user
 from course_flow.api.deps import (
     get_graph_mutation_service,
-    get_graph_projection_service,
-    get_graph_service,
+    get_graph_view_service,
+    get_workflow_service,
 )
 from course_flow.api.graph_common import graph_mutation_http
 from course_flow.api.permissions import can_view_graph
@@ -46,8 +46,8 @@ def _node_graph_out(n: Node) -> NodeGraphOut:
 
 
 def _ensure_graph_owner(uuid: UUID, current_user) -> None:
-    svc = get_graph_service()
-    dto = svc.get_by_uuid(uuid)
+    svc = get_workflow_service()
+    dto = svc.get_by_graph_uuid(uuid)
     if dto is None:
         raise HttpError(404, "Graph not found")
     if not can_view_graph(current_user=current_user, graph=dto):
@@ -63,10 +63,10 @@ def _ensure_graph_owner(uuid: UUID, current_user) -> None:
 def list_graph_nodes(request, uuid: UUID):
     current_user = get_current_user(request)
     _ensure_graph_owner(uuid, current_user)
-    proj = get_graph_projection_service().get_by_graph_uuid(uuid)
-    if proj is None:
+    view = get_graph_view_service().get_by_graph_uuid(uuid)
+    if view is None:
         raise HttpError(404, "Graph not found")
-    return [NodeGraphOut.model_validate(x) for x in proj["nodes"]]
+    return [NodeGraphOut.model_validate(x) for x in view["nodes"]]
 
 
 @graph_collection_router.post(

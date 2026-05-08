@@ -18,7 +18,7 @@ import { CardChip as WorkflowCardChip } from '../WorkflowCardDumb/styles'
 
 export type WorkflowCardWrapperPropsType = Pick<
   WorkflowCardDumbPropsType,
-  'id' | 'description' | 'chips'
+  'uuid' | 'description' | 'chips'
 > & {
   title: string
   isFavourite: boolean
@@ -29,7 +29,7 @@ export type WorkflowCardWrapperPropsType = Pick<
 }
 
 const WorkflowCardWrapper = ({
-  id,
+  uuid,
   title,
   description,
   chips,
@@ -55,18 +55,20 @@ const WorkflowCardWrapper = ({
   const code = ''
   const deleted = false
 
-  const favourite = <Favourite id={id} isFavourite={isFavourite} type={type} />
+  const favourite = (
+    <Favourite uuid={uuid} isFavourite={isFavourite} type={type} />
+  )
 
   return (
     <WorkflowCardDumb
-      id={id}
+      uuid={uuid}
       title={workflowTitle({ title, code, deleted })}
       favourite={favourite}
       isDisabledLink={isDisabledLink}
       description={description}
       isSelected={isSelected}
       // overridden onclick handler
-      onClick={onClick ? onClick : () => navigateToItem(id, type)}
+      onClick={onClick ? onClick : () => navigateToItem(uuid, type)}
       chips={[...chips, isLinked && <InUseChip key="in-use" />]}
     />
   )

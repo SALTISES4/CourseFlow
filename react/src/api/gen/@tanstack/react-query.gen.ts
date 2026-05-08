@@ -14,13 +14,13 @@ import {
   addProjectTeamMembers,
   courseFlowApiNinjaAppHealth,
   createChannel,
-  createGraph,
   createGraphEdge,
   createGraphNode,
   createGraphSection,
   createProject,
   createSection,
   createThreadComment,
+  createWorkflow,
   deleteAllThreadComments,
   deleteChannel,
   deleteEdge,
@@ -41,17 +41,18 @@ import {
   getProject,
   getProjectGraph,
   getSection,
+  getWorkflow,
   libraryItemFavoriteToggle,
   listGraphChannels,
   listGraphEdges,
   listGraphNodes,
   listGraphSections,
-  listGraphs,
   listMyNotifications,
   listProjectTeam,
   listProjects,
   listThreadComments,
   listUsers,
+  listWorkflows,
   login,
   logout,
   markAllMyNotificationsAsRead,
@@ -65,7 +66,8 @@ import {
   updateChannel,
   updateProject,
   updateProjectTeamMember,
-  updateSection
+  updateSection,
+  updateWorkflow
 } from '../sdk.gen'
 import type {
   AddProjectTeamMembersData,
@@ -74,12 +76,10 @@ import type {
   CourseFlowApiNinjaAppHealthResponse,
   CreateChannelData,
   CreateChannelResponse,
-  CreateGraphData,
   CreateGraphEdgeData,
   CreateGraphEdgeResponse,
   CreateGraphNodeData,
   CreateGraphNodeResponse,
-  CreateGraphResponse,
   CreateGraphSectionData,
   CreateGraphSectionResponse,
   CreateProjectData,
@@ -88,6 +88,8 @@ import type {
   CreateSectionResponse,
   CreateThreadCommentData,
   CreateThreadCommentResponse,
+  CreateWorkflowData,
+  CreateWorkflowResponse,
   DeleteAllThreadCommentsData,
   DeleteAllThreadCommentsResponse,
   DeleteChannelData,
@@ -128,6 +130,8 @@ import type {
   GetProjectResponse,
   GetSectionData,
   GetSectionResponse,
+  GetWorkflowData,
+  GetWorkflowResponse,
   LibraryItemFavoriteToggleData,
   LibraryItemFavoriteToggleResponse,
   ListGraphChannelsData,
@@ -138,8 +142,6 @@ import type {
   ListGraphNodesResponse,
   ListGraphSectionsData,
   ListGraphSectionsResponse,
-  ListGraphsData,
-  ListGraphsResponse,
   ListMyNotificationsData,
   ListMyNotificationsResponse,
   ListProjectTeamData,
@@ -150,6 +152,8 @@ import type {
   ListThreadCommentsResponse,
   ListUsersData,
   ListUsersResponse,
+  ListWorkflowsData,
+  ListWorkflowsResponse,
   LoginData,
   LoginResponse,
   LogoutData,
@@ -177,7 +181,9 @@ import type {
   UpdateProjectTeamMemberData,
   UpdateProjectTeamMemberResponse,
   UpdateSectionData,
-  UpdateSectionResponse
+  UpdateSectionResponse,
+  UpdateWorkflowData,
+  UpdateWorkflowResponse
 } from '../types.gen'
 
 export type QueryKey<TOptions extends Options> = [
@@ -540,21 +546,21 @@ export const updateProjectMutation = (
   return mutationOptions
 }
 
-export const listGraphsQueryKey = (options?: Options<ListGraphsData>) =>
-  createQueryKey('listGraphs', options)
+export const listWorkflowsQueryKey = (options?: Options<ListWorkflowsData>) =>
+  createQueryKey('listWorkflows', options)
 
 /**
- * List Graphs
+ * List Workflows
  */
-export const listGraphsOptions = (options?: Options<ListGraphsData>) =>
+export const listWorkflowsOptions = (options?: Options<ListWorkflowsData>) =>
   queryOptions<
-    ListGraphsResponse,
+    ListWorkflowsResponse,
     DefaultError,
-    ListGraphsResponse,
-    ReturnType<typeof listGraphsQueryKey>
+    ListWorkflowsResponse,
+    ReturnType<typeof listWorkflowsQueryKey>
   >({
     queryFn: async ({ queryKey, signal }) => {
-      const { data } = await listGraphs({
+      const { data } = await listWorkflows({
         ...options,
         ...queryKey[0],
         signal,
@@ -562,26 +568,78 @@ export const listGraphsOptions = (options?: Options<ListGraphsData>) =>
       })
       return data
     },
-    queryKey: listGraphsQueryKey(options)
+    queryKey: listWorkflowsQueryKey(options)
   })
 
 /**
- * Create Graph
+ * Create Workflow
  */
-export const createGraphMutation = (
-  options?: Partial<Options<CreateGraphData>>
+export const createWorkflowMutation = (
+  options?: Partial<Options<CreateWorkflowData>>
 ): UseMutationOptions<
-  CreateGraphResponse,
+  CreateWorkflowResponse,
   DefaultError,
-  Options<CreateGraphData>
+  Options<CreateWorkflowData>
 > => {
   const mutationOptions: UseMutationOptions<
-    CreateGraphResponse,
+    CreateWorkflowResponse,
     DefaultError,
-    Options<CreateGraphData>
+    Options<CreateWorkflowData>
   > = {
     mutationFn: async (fnOptions) => {
-      const { data } = await createGraph({
+      const { data } = await createWorkflow({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+export const getWorkflowQueryKey = (options: Options<GetWorkflowData>) =>
+  createQueryKey('getWorkflow', options)
+
+/**
+ * Get Workflow
+ */
+export const getWorkflowOptions = (options: Options<GetWorkflowData>) =>
+  queryOptions<
+    GetWorkflowResponse,
+    DefaultError,
+    GetWorkflowResponse,
+    ReturnType<typeof getWorkflowQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getWorkflow({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true
+      })
+      return data
+    },
+    queryKey: getWorkflowQueryKey(options)
+  })
+
+/**
+ * Update Workflow
+ */
+export const updateWorkflowMutation = (
+  options?: Partial<Options<UpdateWorkflowData>>
+): UseMutationOptions<
+  UpdateWorkflowResponse,
+  DefaultError,
+  Options<UpdateWorkflowData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    UpdateWorkflowResponse,
+    DefaultError,
+    Options<UpdateWorkflowData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await updateWorkflow({
         ...options,
         ...fnOptions,
         throwOnError: true

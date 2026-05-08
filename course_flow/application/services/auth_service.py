@@ -32,7 +32,7 @@ class IssuedAuthToken:
 
 class AuthService:
     def _token_ttl_seconds(self) -> int:
-        return int(getattr(settings, "CF2_AUTH_TOKEN_TTL_SECONDS", 60 * 60 * 24 * 30))
+        return int(getattr(settings, "CF_AUTH_TOKEN_TTL_SECONDS", 60 * 60 * 24 * 30))
 
     def issue_token(self, *, user: User, label: str = "") -> IssuedAuthToken:
         now = timezone.now()

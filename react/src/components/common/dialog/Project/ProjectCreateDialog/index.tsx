@@ -42,7 +42,7 @@ const ProjectCreateDialog = () => {
     }
   })
 
-  function onSuccess(id: string) {
+  function onSuccess(uuid: string) {
     const path = generatePath(CFRoutes.PROJECT, {
       id
     })

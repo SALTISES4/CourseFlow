@@ -15,79 +15,9 @@ export type HealthResponse = {
 }
 
 /**
- * ActivityMetaOut
- */
-export type ActivityMetaOut = {
-  /**
-   * Kind
-   */
-  kind?: string
-  /**
-   * Context
-   */
-  context: string
-  /**
-   * Classification
-   */
-  classification: string
-}
-
-/**
- * CourseMetaOut
- */
-export type CourseMetaOut = {
-  /**
-   * Kind
-   */
-  kind?: string
-  /**
-   * Classification
-   */
-  classification: string
-  /**
-   * Code
-   */
-  code: string
-}
-
-/**
- * ProgramMetaOut
- */
-export type ProgramMetaOut = {
-  /**
-   * Kind
-   */
-  kind?: string
-  /**
-   * Calculatetime
-   */
-  calculateTime: string
-  /**
-   * Calculatecredits
-   */
-  calculateCredits: string
-  /**
-   * Calculateponderation
-   */
-  calculatePonderation: string
-  /**
-   * Calculateclassification
-   */
-  calculateClassification: string
-  /**
-   * Classificationgeneraltime
-   */
-  classificationGeneralTime?: string | null
-  /**
-   * Classificationspecifictime
-   */
-  classificationSpecificTime?: string | null
-}
-
-/**
  * ProjectDetailOut
  *
- * Single project resource: persisted fields only (no related collections).
+ * Single project resource with minimal child workflow list metadata.
  */
 export type ProjectDetailOut = {
   /**
@@ -123,62 +53,15 @@ export type ProjectDetailOut = {
    */
   modifiedOn: string
   /**
-   * Graphs
+   * Workflows
    */
-  graphs?: Array<ProjectGraphOut>
+  workflows?: Array<ProjectWorkflowListItemOut>
 }
 
 /**
- * ProjectGraphOut
- *
- * Graph UUID + revision; workflow authorship and project scope come from ``Workflow``.
+ * ProjectWorkflowListItemOut
  */
-export type ProjectGraphOut = {
-  /**
-   * Uuid
-   */
-  uuid: string
-  /**
-   * Revisionid
-   */
-  revisionId: number
-  /**
-   * Authorid
-   */
-  authorId: number | null
-  /**
-   * Workflowprojectid
-   */
-  workflowProjectId: number | null
-  /**
-   * Datecreated
-   */
-  dateCreated: string
-  /**
-   * Modifiedon
-   */
-  modifiedOn: string
-  workflow: WorkflowOut
-}
-
-/**
- * TaskMetaOut
- */
-export type TaskMetaOut = {
-  /**
-   * Kind
-   */
-  kind?: string
-  /**
-   * Context
-   */
-  context: string
-}
-
-/**
- * WorkflowOut
- */
-export type WorkflowOut = {
+export type ProjectWorkflowListItemOut = {
   /**
    * Uuid
    */
@@ -191,14 +74,21 @@ export type WorkflowOut = {
    * Description
    */
   description: string
+  workflowType: WorkflowType
   /**
-   * Workflowtype
+   * Isfavorite
    */
-  workflowType: string
-  /**
-   * Meta
-   */
-  meta?: TaskMetaOut | ProgramMetaOut | CourseMetaOut | ActivityMetaOut | null
+  isFavorite: boolean
+}
+
+/**
+ * WorkflowType
+ */
+export enum WorkflowType {
+  PROGRAM = 'program',
+  COURSE = 'course',
+  ACTIVITY = 'activity',
+  TASK = 'task'
 }
 
 /**
@@ -277,11 +167,11 @@ export type ProjectListOut = {
 }
 
 /**
- * ProjectGraphProjectionOut
+ * ProjectGraphViewOut
  *
  * Project overview: entity fields + graph UUID references only.
  */
-export type ProjectGraphProjectionOut = {
+export type ProjectGraphViewOut = {
   /**
    * Uuid
    */
@@ -465,25 +355,37 @@ export type ProjectUpdateIn = {
 }
 
 /**
- * GraphDetailOut
+ * WorkflowDetailOut
  */
-export type GraphDetailOut = {
+export type WorkflowDetailOut = {
   /**
    * Uuid
    */
   uuid: string
   /**
-   * Workflowtitle
+   * Graphuuid
    */
-  workflowTitle: string
+  graphUuid: string
+  /**
+   * Title
+   */
+  title: string
+  /**
+   * Description
+   */
+  description: string
+  /**
+   * Workflowtype
+   */
+  workflowType: string
   /**
    * Authorid
    */
   authorId: number | null
   /**
-   * Workflowprojectid
+   * Projectid
    */
-  workflowProjectId: number | null
+  projectId: number | null
   /**
    * Revisionid
    */
@@ -499,24 +401,24 @@ export type GraphDetailOut = {
 }
 
 /**
- * GraphCreateIn
+ * WorkflowCreateIn
  *
- * Create a Graph row and its single root Workflow (see ``Workflow`` / ``Graph`` ORM).
+ * Create a root ``Workflow`` and its backing ``Graph`` row (1:1 ORM).
  */
-export type GraphCreateIn = {
+export type WorkflowCreateIn = {
   /**
-   * Workflowprojectid
+   * Projectid
    */
-  workflowProjectId?: number | null
+  projectId?: number | null
   /**
-   * Workflowtitle
+   * Title
    */
-  workflowTitle?: string
+  title?: string
   workflowType: WorkflowTypeIn
   /**
-   * Workflowdescription
+   * Description
    */
-  workflowDescription?: string
+  description?: string
 }
 
 /**
@@ -530,25 +432,33 @@ export enum WorkflowTypeIn {
 }
 
 /**
- * GraphListItemOut
+ * WorkflowListItemOut
  */
-export type GraphListItemOut = {
+export type WorkflowListItemOut = {
   /**
    * Uuid
    */
   uuid: string
   /**
-   * Workflowtitle
+   * Graphuuid
    */
-  workflowTitle: string
+  graphUuid: string
+  /**
+   * Title
+   */
+  title: string
   /**
    * Authorid
    */
   authorId: number | null
   /**
-   * Workflowprojectid
+   * Projectid
    */
-  workflowProjectId: number | null
+  projectId: number | null
+  /**
+   * Workflowtype
+   */
+  workflowType: string
   /**
    * Revisionid
    */
@@ -560,9 +470,9 @@ export type GraphListItemOut = {
 }
 
 /**
- * GraphListMetaOut
+ * WorkflowListMetaOut
  */
-export type GraphListMetaOut = {
+export type WorkflowListMetaOut = {
   /**
    * Total
    */
@@ -570,14 +480,39 @@ export type GraphListMetaOut = {
 }
 
 /**
- * GraphListOut
+ * WorkflowListOut
  */
-export type GraphListOut = {
+export type WorkflowListOut = {
   /**
    * Items
    */
-  items: Array<GraphListItemOut>
-  meta: GraphListMetaOut
+  items: Array<WorkflowListItemOut>
+  meta: WorkflowListMetaOut
+}
+
+/**
+ * WorkflowDetailOutResp
+ */
+export type WorkflowDetailOutResp = {
+  item: WorkflowDetailOut
+}
+
+/**
+ * WorkflowUpdateIn
+ */
+export type WorkflowUpdateIn = {
+  /**
+   * Title
+   */
+  title?: string | null
+  /**
+   * Projectid
+   */
+  projectId?: number | null
+  /**
+   * Description
+   */
+  description?: string | null
 }
 
 /**
@@ -689,7 +624,7 @@ export type GraphMetaOut = {
 /**
  * GraphViewOut
  *
- * Single round-trip projection for rendering the graph (not nested entity trees).
+ * Single round-trip Graph View payload (not nested entity trees).
  */
 export type GraphViewOut = {
   graph: GraphMetaOut
@@ -787,6 +722,40 @@ export type ThreadCommentCountOut = {
    * Commentcount
    */
   commentCount: number
+}
+
+/**
+ * GraphDetailOut
+ */
+export type GraphDetailOut = {
+  /**
+   * Uuid
+   */
+  uuid: string
+  /**
+   * Workflowtitle
+   */
+  workflowTitle: string
+  /**
+   * Authorid
+   */
+  authorId: number | null
+  /**
+   * Workflowprojectid
+   */
+  workflowProjectId: number | null
+  /**
+   * Revisionid
+   */
+  revisionId: number
+  /**
+   * Datecreated
+   */
+  dateCreated: string
+  /**
+   * Modifiedon
+   */
+  modifiedOn: string
 }
 
 /**
@@ -927,7 +896,7 @@ export type GraphSectionCreateIn = {
 /**
  * GraphEdgeMutationOut
  *
- * Edge row; ``id`` is the integer PK (``cf2_edge`` has no UUID column).
+ * Edge row; ``id`` is the integer PK (``cf_edge`` has no UUID column).
  */
 export type GraphEdgeMutationOut = {
   /**
@@ -1901,7 +1870,7 @@ export type GetProjectGraphResponses = {
   /**
    * OK
    */
-  200: ProjectGraphProjectionOut
+  200: ProjectGraphViewOut
 }
 
 export type GetProjectGraphResponse =
@@ -2090,38 +2059,83 @@ export type UpdateProjectResponses = {
 export type UpdateProjectResponse =
   UpdateProjectResponses[keyof UpdateProjectResponses]
 
-export type ListGraphsData = {
+export type ListWorkflowsData = {
   body?: never
   path?: never
   query?: never
-  url: '/api/graph'
+  url: '/api/workflow'
 }
 
-export type ListGraphsResponses = {
+export type ListWorkflowsResponses = {
   /**
    * OK
    */
-  200: GraphListOut
+  200: WorkflowListOut
 }
 
-export type ListGraphsResponse = ListGraphsResponses[keyof ListGraphsResponses]
+export type ListWorkflowsResponse =
+  ListWorkflowsResponses[keyof ListWorkflowsResponses]
 
-export type CreateGraphData = {
-  body: GraphCreateIn
+export type CreateWorkflowData = {
+  body: WorkflowCreateIn
   path?: never
   query?: never
-  url: '/api/graph'
+  url: '/api/workflow'
 }
 
-export type CreateGraphResponses = {
+export type CreateWorkflowResponses = {
   /**
    * OK
    */
-  200: GraphDetailOut
+  200: WorkflowDetailOut
 }
 
-export type CreateGraphResponse =
-  CreateGraphResponses[keyof CreateGraphResponses]
+export type CreateWorkflowResponse =
+  CreateWorkflowResponses[keyof CreateWorkflowResponses]
+
+export type GetWorkflowData = {
+  body?: never
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/workflow/{uuid}'
+}
+
+export type GetWorkflowResponses = {
+  /**
+   * OK
+   */
+  200: WorkflowDetailOutResp
+}
+
+export type GetWorkflowResponse =
+  GetWorkflowResponses[keyof GetWorkflowResponses]
+
+export type UpdateWorkflowData = {
+  body: WorkflowUpdateIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/workflow/{uuid}'
+}
+
+export type UpdateWorkflowResponses = {
+  /**
+   * OK
+   */
+  200: WorkflowDetailOutResp
+}
+
+export type UpdateWorkflowResponse =
+  UpdateWorkflowResponses[keyof UpdateWorkflowResponses]
 
 export type GetGraphViewData = {
   body?: never

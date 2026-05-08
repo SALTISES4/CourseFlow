@@ -1,8 +1,9 @@
 import { ObjectPermission, PermissionGroup } from '@cf/types/common'
 import { CfObjectType, LibraryObjectType } from '@cf/types/enum'
 import { WorkspaceType } from '@cf/types/enum'
-import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { NodeTypeDisplay } from '@cfRedux/types/type'
+
+import { WorkflowType } from '../../../components/pages/Workflow/types'
 
 /*******************************************************
  * 'E' prefix symbolizes 'Entity', this is because these are essentially dumps from the
@@ -19,7 +20,7 @@ export type EDate = string
  * ABSTRACT
  *******************************************************/
 interface CourseFlowEntity {
-  id: string
+  uuid: string
   hash: string
   deleted: boolean
   deletedOn: EDate
@@ -30,7 +31,7 @@ interface CourseFlowEntity {
 }
 
 export type EUser = {
-  id: string
+  uuid: string
   username: string
   firstName: string
   lastName: string
@@ -123,7 +124,7 @@ export interface EWorkflow extends CourseFlowEntity {
   editCount?: number
   defaultCustomColumn: number
   defaultColumns: number[]
-  weeks: number[]
+  sections: number[]
   columns: number[]
   outcomes: number[]
 }
@@ -131,11 +132,11 @@ export interface EWorkflow extends CourseFlowEntity {
 /*******************************************************
  * WORKFLOW OBJECTS
  *******************************************************/
-export interface EWeek extends CourseFlowEntity {
+export interface ESection extends CourseFlowEntity {
   isStrategy: boolean
   default: boolean
-  weekType: number // @todo try to check this
-  weekTypeDisplay: string
+  sectionType: number // @todo try to check this
+  sectionTypeDisplay: string
   strategyClassification: number
   order: number
   comments: number[]
@@ -173,7 +174,7 @@ export interface ENode extends CourseFlowEntity {
   linkedWorkflowData: ELibraryObject | null
   hasAssignment: boolean
   order: number
-  week: number
+  section: number
   tags: number[]
   outcomenodeSet: number[]
   outcomenodeUniqueSet: number[]
@@ -181,17 +182,17 @@ export interface ENode extends CourseFlowEntity {
 }
 
 export type ETag = {
-  id: string
+  uuid: string
   title: string
 }
 
 export type EDiscipline = {
-  id: string
+  uuid: string
   title: string
 }
 
 export type EComment = {
-  id: string
+  uuid: string
   user: EUser
   createdOn: EDate
   text: string
@@ -200,7 +201,7 @@ export type EComment = {
 export type ENodelink = {
   deleted: boolean
   deletedOn: EDate
-  id: string
+  uuid: string
   title: string | null
   sourceNode: number
   targetNode: number
@@ -214,7 +215,7 @@ export type ENodelink = {
  * OUTCOME
  *******************************************************/
 export type EOutcome = {
-  id: string
+  uuid: string
   deleted: boolean
   deletedOn: EDate
   title: string
@@ -235,17 +236,17 @@ export type EOutcome = {
 /*******************************************************
  * WORKFLOW RELATIONS
  *******************************************************/
-export type EWeekworkflow = {
-  id: string
+export type ESectionworkflow = {
+  uuid: string
   workflow: number
-  week: number
+  section: number
   rank: number
   objectType: number
 }
 export type EColumnworkflow = EOutcomeWorkflow
 
 export type EOutcomeWorkflow = {
-  id: string
+  uuid: string
   rank: number
   workflow: number
   outcome: number
@@ -255,7 +256,7 @@ export type EOutcomeHorizontalLink = {
   outcome: number
   parentOutcome: number
   rank: number
-  id: string
+  uuid: string
   degree: number
 }
 
@@ -263,22 +264,22 @@ export type EOutcomeOutcome = {
   parent: number
   child: number
   rank: number
-  id: string
+  uuid: string
 }
 
-export type ENodeweek = {
+export type ENodesection = {
   addedOn: EDate
-  week: number
+  section: number
   node: number
   rank: number
-  id: string
+  uuid: string
 }
 
 export type EOutcomenode = {
   node: number
   outcome: number
   rank: number
-  id: string
+  uuid: string
   degree: number
 }
 
@@ -298,7 +299,7 @@ export type ESection = {
 }
 
 export type ENotification = {
-  id: string
+  uuid: string
   type: WorkspaceType
   unread: boolean
   from: string

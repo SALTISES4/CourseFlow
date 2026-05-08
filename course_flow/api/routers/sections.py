@@ -5,7 +5,7 @@ from ninja.errors import HttpError
 
 from course_flow.api.auth import BearerAuth, get_current_user
 from course_flow.api.common.schemas import SuccessOut
-from course_flow.api.deps import get_graph_service, get_section_service
+from course_flow.api.deps import get_section_service, get_workflow_service
 from course_flow.api.permissions import can_view_graph
 from course_flow.api.schemas.sections import (
     GraphSectionCreateIn,
@@ -35,7 +35,7 @@ def _section_out(dto: SectionDTO) -> SectionOut:
 
 
 def _ensure_graph_owner(uuid: UUID, current_user) -> None:
-    dto = get_graph_service().get_by_uuid(uuid)
+    dto = get_workflow_service().get_by_graph_uuid(uuid)
 
     if dto is None:
         raise HttpError(404, "Graph not found")
@@ -121,7 +121,7 @@ def get_section(request, uuid: UUID):
     if dto is None:
         raise HttpError(404, "Section not found")
 
-    wf = get_graph_service().get_by_uuid(dto.graph_uuid)
+    wf = get_workflow_service().get_by_graph_uuid(dto.graph_uuid)
 
     if wf is None:
         raise HttpError(404, "Graph not found")
@@ -141,7 +141,7 @@ def update_section(request, uuid: UUID, payload: SectionPatchIn):
 
     if existing is None:
         raise HttpError(404, "Section not found")
-    wf = get_graph_service().get_by_uuid(existing.graph_uuid)
+    wf = get_workflow_service().get_by_graph_uuid(existing.graph_uuid)
 
     if wf is None:
         raise HttpError(404, "Graph not found")
@@ -170,7 +170,7 @@ def delete_section(request, uuid: UUID):
 
     if existing is None:
         raise HttpError(404, "Section not found")
-    wf = get_graph_service().get_by_uuid(existing.graph_uuid)
+    wf = get_workflow_service().get_by_graph_uuid(existing.graph_uuid)
 
     if wf is None:
         raise HttpError(404, "Graph not found")

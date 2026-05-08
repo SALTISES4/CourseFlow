@@ -7,13 +7,13 @@ from ninja.errors import HttpError
 from course_flow.api.auth import BearerAuth, get_current_user
 from course_flow.api.common.schemas import SuccessOut
 from course_flow.api.deps import (
-    get_project_detail_service,
-    get_project_graph_projection_service,
+    get_project_graph_view_service,
     get_project_relations_service,
     get_project_service,
+    get_workflow_service,
 )
 from course_flow.api.permissions import can_view_project
-from course_flow.api.schemas.graph_projection import ProjectGraphProjectionOut
+from course_flow.api.schemas.project_graph_view import ProjectGraphViewOut
 from course_flow.api.schemas.project_subresources import (
     ProjectTeamListMetaOut,
     ProjectTeamListOut,
@@ -31,8 +31,10 @@ from course_flow.api.schemas.projects import (
     ProjectListMetaOut,
     ProjectListOut,
     ProjectUpdateIn,
+    ProjectWorkflowListItemOut,
 )
-from course_flow.application.dto import ProjectTeamMemberDTO
+from course_flow.application.dto import ProjectDTO, ProjectTeamMemberDTO
+from course_flow.core.models import FavoriteGraph
 
 router = Router(tags=["projects"], by_alias=True)
 
@@ -46,6 +48,36 @@ def _team_member_out(dto: ProjectTeamMemberDTO) -> ProjectTeamMemberOut:
         user_first_name=dto.user_first_name,
         user_last_name=dto.user_last_name,
         role=cast(ProjectTeamRoleSchema, dto.role),
+    )
+
+
+def _project_detail_out(current_user_id: int, dto: ProjectDTO) -> ProjectDetailOut:
+    workflow_rows = get_workflow_service().list_for_project(dto.id)
+    workflow_uuids = [row.graph_uuid for row in workflow_rows]
+    favorite_graph_uuids = set(
+        FavoriteGraph.objects.filter(user_id=current_user_id, graph__uuid__in=workflow_uuids)
+        .values_list("graph__uuid", flat=True)
+    )
+    workflows = [
+        ProjectWorkflowListItemOut(
+            uuid=row.workflow_uuid,
+            title=row.title,
+            description=row.description,
+            workflow_type=row.workflow_type,
+            is_favorite=row.graph_uuid in favorite_graph_uuids,
+        )
+        for row in workflow_rows
+    ]
+    return ProjectDetailOut(
+        uuid=dto.uuid,
+        title=dto.title,
+        description=dto.description,
+        is_published=dto.is_published,
+        is_template=dto.is_template,
+        owner_id=dto.owner_id,
+        date_created=dto.date_created,
+        modified_on=dto.modified_on,
+        workflows=workflows,
     )
 
 
@@ -79,7 +111,7 @@ def create_project(request, payload: ProjectCreateIn):
 
 @router.get(
     "/{uuid}/view",
-    response=ProjectGraphProjectionOut,
+    response=ProjectGraphViewOut,
     auth=BearerAuth(),
     operation_id="getProjectGraph",
 )
@@ -94,12 +126,12 @@ def get_project_graph(request, uuid: UUID):
     if not can_view_project(current_user=current_user, project=dto):
         raise HttpError(403, "Forbidden")
 
-    proj = get_project_graph_projection_service()
-    payload = proj.get_by_project_uuid(uuid)
+    view = get_project_graph_view_service()
+    payload = view.get_by_project_uuid(uuid)
 
     if payload is None:
         raise HttpError(404, "Project not found")
-    return ProjectGraphProjectionOut.model_validate(payload)
+    return ProjectGraphViewOut.model_validate(payload)
 
 
 @router.post(
@@ -257,10 +289,7 @@ def get_project(request, uuid: UUID):
     if not can_view_project(current_user=current_user, project=dto):
         raise HttpError(403, "Forbidden")
 
-    detail_payload = get_project_detail_service().get_by_project_uuid(uuid)
-    if detail_payload is None:
-        raise HttpError(404, "Project not found")
-    return ProjectDetailOutResp(item=ProjectDetailOut.model_validate(detail_payload))
+    return ProjectDetailOutResp(item=_project_detail_out(current_user.id, dto))
 
 
 @router.patch(
@@ -286,10 +315,7 @@ def update_project(request, uuid: UUID, payload: ProjectUpdateIn):
     if updated is None:
         raise HttpError(404, "Project not found")
 
-    detail_payload = get_project_detail_service().get_by_project_uuid(uuid)
-    if detail_payload is None:
-        raise HttpError(404, "Project not found")
-    return ProjectDetailOutResp(item=ProjectDetailOut.model_validate(detail_payload))
+    return ProjectDetailOutResp(item=_project_detail_out(current_user.id, updated))
 
 
 @router.delete(

@@ -70,7 +70,7 @@ def test_project_create_initializes_project_team(client: Client, user):
 
 
 @pytest.mark.django_db
-def test_project_detail_includes_graph_workflow_and_typed_meta(client: Client, user):
+def test_project_detail_includes_workflow_list_metadata(client: Client, user):
     raw = _issue_token_for(user)
     create_project = client.post(
         "/api/project",
@@ -88,12 +88,12 @@ def test_project_detail_includes_graph_workflow_and_typed_meta(client: Client, u
     project = Project.objects.get(uuid=project_uuid)
 
     create_graph = client.post(
-        "/api/graph",
+        "/api/workflow",
         data={
-            "workflowProjectId": project.id,
-            "workflowTitle": "Task Workflow",
+            "projectId": project.id,
+            "title": "Task Workflow",
             "workflowType": "task",
-            "workflowDescription": "",
+            "description": "",
         },
         content_type="application/json",
         **_auth_header(raw),
@@ -103,12 +103,14 @@ def test_project_detail_includes_graph_workflow_and_typed_meta(client: Client, u
     detail = client.get(f"/api/project/{project_uuid}", **_auth_header(raw))
     assert detail.status_code == 200, detail.content
     item = detail.json()["item"]
-    assert "graphs" in item
-    assert len(item["graphs"]) == 1
-    wf = item["graphs"][0]
-    assert wf["workflow"]["workflowType"] == "task"
-    assert wf["workflow"]["meta"]["kind"] == "task_meta"
-    assert "context" in wf["workflow"]["meta"]
+    assert "graphs" not in item
+    assert "workflows" in item
+    assert len(item["workflows"]) == 1
+    workflow = item["workflows"][0]
+    assert workflow["title"] == "Task Workflow"
+    assert workflow["description"] == ""
+    assert workflow["workflowType"] == "task"
+    assert workflow["isFavorite"] is False
 
 
 @pytest.mark.django_db

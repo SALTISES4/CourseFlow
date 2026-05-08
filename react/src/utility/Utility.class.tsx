@@ -55,9 +55,10 @@ class Utility {
   ): T[] {
     return objectList
       .filter(
-        (obj): obj is T & { id: any } => hasId(obj) && idList.includes(obj.id)
+        (obj): obj is T & { uuid: any } =>
+          hasId(obj) && idList.includes(obj.uuid)
       )
-      .sort((a, b) => idList.indexOf(a.id) - idList.indexOf(b.id))
+      .sort((a, b) => idList.indexOf(a.uuid) - idList.indexOf(b.uuid))
   }
 
   /**
@@ -179,7 +180,9 @@ class Utility {
       return false
     }
 
-    return !objectSets.some((set) => !set.hidden && data.sets.includes(set.id))
+    return !objectSets.some(
+      (set) => !set.hidden && data.sets.includes(set.uuid)
+    )
   }
 
   /**
@@ -209,12 +212,12 @@ class Utility {
   /**
    * // @todo this is a mistake to include a react helper  here, this means it should be a hook probably
    **/
-  static getPathByObject(id: string, object: WorkspaceType): string {
+  static getPathByObject(uuid: string, object: WorkspaceType): string {
     switch (object) {
       case WorkspaceType.PROJECT:
-        return generatePath(CFRoutes.PROJECT, { id: String(id) })
+        return generatePath(CFRoutes.PROJECT, { uuid: String(uuid) })
       case WorkspaceType.WORKFLOW:
-        return generatePath(CFRoutes.WORKFLOW, { id: String(id) })
+        return generatePath(CFRoutes.WORKFLOW, { uuid: String(uuid) })
       default:
         break
     }

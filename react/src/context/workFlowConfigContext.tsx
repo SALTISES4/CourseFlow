@@ -1,7 +1,8 @@
 import { ConnectedUser } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
 import { CfObjectType } from '@cf/types/enum'
-import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
+
+import { WorkflowViewType } from '../components/pages/Workflow/types'
 
 export const WorkflowConfigContext = React.createContext<WorkflowContextType>(
   {} as WorkflowContextType
@@ -10,12 +11,12 @@ export const WorkflowConfigContext = React.createContext<WorkflowContextType>(
 export type WorkflowContextType = {
   editableMethods: {
     lockUpdate: (
-      obj: { objectid: string; objectType: CfObjectType },
+      obj: { objectuuid: string; objectType: CfObjectType },
       time: any,
       lock: boolean
     ) => void
     microUpdate: (obj: any) => void
-    changeField: (id: any, objectType: any, field: any, value: any) => void
+    changeField: (uuid: any, objectType: any, field: any, value: any) => void
   }
   ws: {
     connectedUsers: ConnectedUser[]

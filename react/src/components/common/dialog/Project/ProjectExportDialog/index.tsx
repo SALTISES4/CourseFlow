@@ -93,7 +93,7 @@ function ProjectExportDialog(data: EProject) {
 
   function onSubmit(e: MouseEvent<HTMLButtonElement>) {
     const postData = {
-      objectId: data.id,
+      objectId: data.uuid,
       objectType: data.type,
       exportType: state.type,
       exportFormat: state.format

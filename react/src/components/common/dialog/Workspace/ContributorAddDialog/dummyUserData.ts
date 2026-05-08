@@ -1,12 +1,12 @@
 export default [
-  { id: 1, name: 'Alice Johnson' },
-  { id: 2, name: 'Ben Carter' },
-  { id: 3, name: 'Clara Nguyen' },
-  { id: 4, name: 'Daniel Smith' },
-  { id: 5, name: 'Eva Martinez' },
-  { id: 6, name: 'Felix Baumgartner' },
-  { id: 7, name: 'Grace Lee' },
-  { id: 8, name: 'Hassan Ali' },
-  { id: 9, name: 'Ivy Thompson' },
-  { id: 10, name: 'Jonas Miller' }
+  { uuid: 1, name: 'Alice Johnson' },
+  { uuid: 2, name: 'Ben Carter' },
+  { uuid: 3, name: 'Clara Nguyen' },
+  { uuid: 4, name: 'Daniel Smith' },
+  { uuid: 5, name: 'Eva Martinez' },
+  { uuid: 6, name: 'Felix Baumgartner' },
+  { uuid: 7, name: 'Grace Lee' },
+  { uuid: 8, name: 'Hassan Ali' },
+  { uuid: 9, name: 'Ivy Thompson' },
+  { uuid: 10, name: 'Jonas Miller' }
 ]

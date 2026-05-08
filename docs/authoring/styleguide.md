@@ -14,7 +14,7 @@ Typical phases include:
 ### Preferred
 
 ```python
-@router.get("/{project_uuid}/graph", response=ProjectGraphProjectionOut, auth=BearerAuth())
+@router.get("/{project_uuid}/graph", response=ProjectGraphViewOut, auth=BearerAuth())
 def get_project_graph(request, project_uuid: UUID):
     current_user = get_current_user(request)
     svc = get_project_service()
@@ -26,8 +26,8 @@ def get_project_graph(request, project_uuid: UUID):
     if dto.owner_id != current_user.id:
         raise HttpError(403, "Forbidden")
 
-    proj = get_project_graph_projection_service()
-    payload = proj.get_by_project_uuid(project_uuid)
+    view = get_project_graph_view_service()
+    payload = view.get_by_project_uuid(project_uuid)
 
     if payload is None:
         raise HttpError(404, "Project not found")

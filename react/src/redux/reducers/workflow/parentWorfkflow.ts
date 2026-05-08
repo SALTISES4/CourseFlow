@@ -28,7 +28,7 @@ export default function parentWorkflowReducer(
 
       return action.payload.parentWorkflow.reduce(
         (acc, newItem) => {
-          const index = acc.findIndex((item) => item.id === newItem.id)
+          const index = acc.findIndex((item) => item.uuid === newItem.uuid)
           if (index > -1) {
             acc.splice(index, 1, newItem)
           } else {
@@ -57,7 +57,7 @@ export default function parentWorkflowReducer(
 //           const newObj = action.payload.parentWorkflow[i]
 //           let added = false
 //           for (let j = 0; j < newState.length; j++) {
-//             if (newState[j].id == newObj.id) {
+//             if (newState[j].uuid == newObj.uuid) {
 //               newState.splice(j, 1, newObj)
 //               added = true
 //               break

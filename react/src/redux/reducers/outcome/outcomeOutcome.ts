@@ -20,22 +20,22 @@ interface RefreshStoreDataAction extends UnknownAction {
 interface ChangeIdAction extends UnknownAction {
   type: OutcomeOutcomeActions.CHANGE_ID
   payload: {
-    oldid: string
-    newid: string
+    olduuid: string
+    newuuid: string
   }
 }
 
 interface MovedToAction extends UnknownAction {
   type: OutcomeOutcomeActions.MOVED_TO
   payload: {
-    id: string
+    uuid: string
     newParent: number
   }
 }
 
 interface DeleteSelfAction extends UnknownAction {
   type: OutcomeActions.DELETE_SELF
-  payload: { parentid: string }
+  payload: { parentuuid: string }
 }
 
 interface InsertChildAction extends UnknownAction {
@@ -77,7 +77,7 @@ function outcomeOutcomeReducer(
         ? action.payload.outcomeoutcome.reduce(
             (acc, newItem) => {
               const existingIndex = acc.findIndex(
-                (item) => item.id === newItem.id
+                (item) => item.uuid === newItem.uuid
               )
               if (existingIndex !== -1) {
                 acc[existingIndex] = newItem
@@ -92,20 +92,20 @@ function outcomeOutcomeReducer(
 
     case OutcomeOutcomeActions.CHANGE_ID:
       return state.map((item) =>
-        item.id === action.payload.oldId
-          ? { ...item, id: action.payload.newId, noDrag: false }
+        item.uuid === action.payload.oldId
+          ? { ...item, uuid: action.payload.newId, noDrag: false }
           : item
       )
 
     case OutcomeOutcomeActions.MOVED_TO:
       return state.map((item) =>
-        item.id === action.payload.id
+        item.uuid === action.payload.uuid
           ? { ...item, parent: action.payload.newParent, noDrag: true }
           : item
       )
 
     case OutcomeActions.DELETE_SELF:
-      return state.filter((item) => item.id !== action.payload.parentId)
+      return state.filter((item) => item.uuid !== action.payload.parentId)
 
     case OutcomeBaseActions.INSERT_BELOW:
     case OutcomeActions.INSERT_CHILD:
@@ -133,7 +133,7 @@ function outcomeOutcomeReducer(
   //         const newObj = action.payload.outcomeoutcome[i]
   //         let added = false
   //         for (let j = 0; j < newState.length; j++) {
-  //           if (newState[j].id == newObj.id) {
+  //           if (newState[j].uuid == newObj.uuid) {
   //             newState.splice(j, 1, newObj)
   //             added = true
   //             break
@@ -148,11 +148,11 @@ function outcomeOutcomeReducer(
   //
   //   case 'outcomeoutcome/changeId': {
   //     for (var i = 0; i < state.length; i++) {
-  //       if (state[i].id == action.payload.oldId) {
+  //       if (state[i].uuid == action.payload.oldId) {
   //         var newState = state.slice()
   //         newState[i] = {
   //           ...newState[i],
-  //           id: action.payload.newId,
+  //           uuid: action.payload.newId,
   //           noDrag: false
   //         }
   //         return newState
@@ -164,7 +164,7 @@ function outcomeOutcomeReducer(
   //   case 'outcomeoutcome/movedTo': {
   //     newState = state.slice()
   //     for (var i = 0; i < state.length; i++) {
-  //       if (state[i].id == action.payload.id) {
+  //       if (state[i].uuid == action.payload.uuid) {
   //         newState[i] = {
   //           ...state[i],
   //           parent: action.payload.newParent,
@@ -177,7 +177,7 @@ function outcomeOutcomeReducer(
   //
   //   case 'outcome/deleteSelf': {
   //     for (var i = 0; i < state.length; i++) {
-  //       if (state[i].id == action.payload.parentId) {
+  //       if (state[i].uuid == action.payload.parentId) {
   //         var newState = state.slice()
   //         newState.splice(i, 1)
   //         return newState

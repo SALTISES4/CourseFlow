@@ -11,7 +11,7 @@ import { ChangeEvent } from 'react'
 
 type PropsType = {
   selected?: string
-  onTemplateSelect: (id: string) => void
+  onTemplateSelect: (uuid: string) => void
 }
 
 const TemplateSearch = ({ selected, onTemplateSelect }: PropsType) => {
@@ -52,10 +52,10 @@ const TemplateSearch = ({ selected, onTemplateSelect }: PropsType) => {
       <GridWrap sx={{ mt: 4 }}>
         {workflowData.map((workflow, index) => (
           <WorkflowCardDumb
-            key={workflow.id}
+            key={workflow.uuid}
             {...workflow}
-            isSelected={workflow.id === selected}
-            onClick={() => onTemplateSelect(workflow.id)}
+            isSelected={workflow.uuid === selected}
+            onClick={() => onTemplateSelect(workflow.uuid)}
           />
         ))}
       </GridWrap>

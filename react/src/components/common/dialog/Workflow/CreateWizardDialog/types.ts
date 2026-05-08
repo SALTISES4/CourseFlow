@@ -4,7 +4,7 @@ export const timeUnits = [
   'Minutes',
   'Hours',
   'Days',
-  'Weeks',
+  'Sections',
   'Months',
   'Years',
   'Credits'

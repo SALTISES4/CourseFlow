@@ -9,18 +9,18 @@ import {
   EDate,
   ENode,
   ENodelink,
-  ENodeweek,
+  ENodesection,
   ENotification,
   EOutcome,
   EOutcomeOutcome,
   EOutcomeWorkflow,
   EOutcomenode,
   EProject,
+  ESection,
+  ESectionworkflow,
   EStrategy,
   ETag,
   EUser,
-  EWeek,
-  EWeekworkflow,
   EWorkflow
 } from '@XMLHTTP/types/entity'
 
@@ -33,7 +33,7 @@ export type WorkspaceAppState = {
   project?: TProject
   nodelink: TNodelink[]
   column: TColumn[]
-  week: TWeek[]
+  section: TSection[]
   workflow: TWorkflow
   node: TNode[]
   strategy: TStrategy[]
@@ -43,8 +43,8 @@ export type AppState = {
   workspace: WorkspaceAppState
   // relations
   columnworkflow: TColumnworkflow[]
-  weekworkflow: TWeekworkflow[]
-  nodeweek: TNodeweek[]
+  sectionworkflow: TSectionworkflow[]
+  nodesection: TNodesection[]
   outcomeworkflow: TColumnworkflow[]
   // outcomes
   outcome: TOutcome[]
@@ -79,7 +79,7 @@ type LockableItem = {
 export type TOutcome = EOutcome & LockableItem
 export type TColumn = EColumn & LockableItem
 export type TNode = ENode & LockableItem
-export type TWeek = EWeek & LockableItem
+export type TSection = ESection & LockableItem
 
 /*******************************************************
  * MORE RELAIONS
@@ -92,9 +92,9 @@ export type TColumnworkflow = EOutcomeWorkflow & {
   column?: number
 }
 
-export type TNodeweek = ENodeweek
+export type TNodesection = ENodesection
 
-export type TWeekworkflow = EWeekworkflow & {
+export type TSectionworkflow = ESectionworkflow & {
   noDrag?: boolean
 }
 

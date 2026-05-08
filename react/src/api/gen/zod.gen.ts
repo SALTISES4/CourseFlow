@@ -10,76 +10,25 @@ export const zHealthResponse = z.object({
 })
 
 /**
- * ActivityMetaOut
+ * WorkflowType
  */
-export const zActivityMetaOut = z.object({
-  kind: z.string().optional().default('activity_meta'),
-  context: z.string(),
-  classification: z.string()
-})
+export const zWorkflowType = z.enum(['program', 'course', 'activity', 'task'])
 
 /**
- * CourseMetaOut
+ * ProjectWorkflowListItemOut
  */
-export const zCourseMetaOut = z.object({
-  kind: z.string().optional().default('course_meta'),
-  classification: z.string(),
-  code: z.string()
-})
-
-/**
- * ProgramMetaOut
- */
-export const zProgramMetaOut = z.object({
-  kind: z.string().optional().default('program_meta'),
-  calculateTime: z.string(),
-  calculateCredits: z.string(),
-  calculatePonderation: z.string(),
-  calculateClassification: z.string(),
-  classificationGeneralTime: z.string().nullish(),
-  classificationSpecificTime: z.string().nullish()
-})
-
-/**
- * TaskMetaOut
- */
-export const zTaskMetaOut = z.object({
-  kind: z.string().optional().default('task_meta'),
-  context: z.string()
-})
-
-/**
- * WorkflowOut
- */
-export const zWorkflowOut = z.object({
+export const zProjectWorkflowListItemOut = z.object({
   uuid: z.string().uuid(),
   title: z.string(),
   description: z.string(),
-  workflowType: z.string(),
-  meta: z
-    .union([zTaskMetaOut, zProgramMetaOut, zCourseMetaOut, zActivityMetaOut])
-    .nullish()
-})
-
-/**
- * ProjectGraphOut
- *
- * Graph UUID + revision; workflow authorship and project scope come from ``Workflow``.
- */
-export const zProjectGraphOut = z.object({
-  uuid: z.string().uuid(),
-  revisionId: z.number().int(),
-  authorId: z.number().int().nullable(),
-  workflowProjectId: z.number().int().nullable(),
-  dateCreated: z.string().datetime(),
-  modifiedOn: z.string().datetime(),
-  workflow: zWorkflowOut
+  workflowType: zWorkflowType,
+  isFavorite: z.boolean()
 })
 
 /**
  * ProjectDetailOut
  *
- * Single project resource: persisted fields only (no related collections).
+ * Single project resource with minimal child workflow list metadata.
  */
 export const zProjectDetailOut = z.object({
   uuid: z.string().uuid(),
@@ -90,7 +39,7 @@ export const zProjectDetailOut = z.object({
   ownerId: z.number().int(),
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime(),
-  graphs: z.array(zProjectGraphOut).optional().default([])
+  workflows: z.array(zProjectWorkflowListItemOut).optional().default([])
 })
 
 /**
@@ -133,11 +82,11 @@ export const zProjectListOut = z.object({
 })
 
 /**
- * ProjectGraphProjectionOut
+ * ProjectGraphViewOut
  *
  * Project overview: entity fields + graph UUID references only.
  */
-export const zProjectGraphProjectionOut = z.object({
+export const zProjectGraphViewOut = z.object({
   uuid: z.string().uuid(),
   title: z.string(),
   description: z.string(),
@@ -234,13 +183,16 @@ export const zProjectUpdateIn = z.object({
 })
 
 /**
- * GraphDetailOut
+ * WorkflowDetailOut
  */
-export const zGraphDetailOut = z.object({
+export const zWorkflowDetailOut = z.object({
   uuid: z.string().uuid(),
-  workflowTitle: z.string(),
+  graphUuid: z.string().uuid(),
+  title: z.string(),
+  description: z.string(),
+  workflowType: z.string(),
   authorId: z.number().int().nullable(),
-  workflowProjectId: z.number().int().nullable(),
+  projectId: z.number().int().nullable(),
   revisionId: z.number().int(),
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime()
@@ -252,42 +204,60 @@ export const zGraphDetailOut = z.object({
 export const zWorkflowTypeIn = z.enum(['program', 'course', 'activity', 'task'])
 
 /**
- * GraphCreateIn
+ * WorkflowCreateIn
  *
- * Create a Graph row and its single root Workflow (see ``Workflow`` / ``Graph`` ORM).
+ * Create a root ``Workflow`` and its backing ``Graph`` row (1:1 ORM).
  */
-export const zGraphCreateIn = z.object({
-  workflowProjectId: z.number().int().nullish(),
-  workflowTitle: z.string().optional().default(''),
+export const zWorkflowCreateIn = z.object({
+  projectId: z.number().int().nullish(),
+  title: z.string().optional().default(''),
   workflowType: zWorkflowTypeIn,
-  workflowDescription: z.string().optional().default('')
+  description: z.string().optional().default('')
 })
 
 /**
- * GraphListItemOut
+ * WorkflowListItemOut
  */
-export const zGraphListItemOut = z.object({
+export const zWorkflowListItemOut = z.object({
   uuid: z.string().uuid(),
-  workflowTitle: z.string(),
+  graphUuid: z.string().uuid(),
+  title: z.string(),
   authorId: z.number().int().nullable(),
-  workflowProjectId: z.number().int().nullable(),
+  projectId: z.number().int().nullable(),
+  workflowType: z.string(),
   revisionId: z.number().int(),
   modifiedOn: z.string().datetime()
 })
 
 /**
- * GraphListMetaOut
+ * WorkflowListMetaOut
  */
-export const zGraphListMetaOut = z.object({
+export const zWorkflowListMetaOut = z.object({
   total: z.number().int()
 })
 
 /**
- * GraphListOut
+ * WorkflowListOut
  */
-export const zGraphListOut = z.object({
-  items: z.array(zGraphListItemOut),
-  meta: zGraphListMetaOut
+export const zWorkflowListOut = z.object({
+  items: z.array(zWorkflowListItemOut),
+  meta: zWorkflowListMetaOut
+})
+
+/**
+ * WorkflowDetailOutResp
+ */
+export const zWorkflowDetailOutResp = z.object({
+  item: zWorkflowDetailOut
+})
+
+/**
+ * WorkflowUpdateIn
+ */
+export const zWorkflowUpdateIn = z.object({
+  title: z.string().nullish(),
+  projectId: z.number().int().nullish(),
+  description: z.string().nullish()
 })
 
 /**
@@ -368,7 +338,7 @@ export const zThreadCommentCountOut = z.object({
 /**
  * GraphViewOut
  *
- * Single round-trip projection for rendering the graph (not nested entity trees).
+ * Single round-trip Graph View payload (not nested entity trees).
  */
 export const zGraphViewOut = z.object({
   graph: zGraphMetaOut,
@@ -377,6 +347,19 @@ export const zGraphViewOut = z.object({
   nodes: z.array(zNodeGraphOut),
   edges: z.array(zEdgeGraphOut),
   threadCommentCounts: z.array(zThreadCommentCountOut).optional()
+})
+
+/**
+ * GraphDetailOut
+ */
+export const zGraphDetailOut = z.object({
+  uuid: z.string().uuid(),
+  workflowTitle: z.string(),
+  authorId: z.number().int().nullable(),
+  workflowProjectId: z.number().int().nullable(),
+  revisionId: z.number().int(),
+  dateCreated: z.string().datetime(),
+  modifiedOn: z.string().datetime()
 })
 
 /**
@@ -454,7 +437,7 @@ export const zGraphSectionCreateIn = z.object({
 /**
  * GraphEdgeMutationOut
  *
- * Edge row; ``id`` is the integer PK (``cf2_edge`` has no UUID column).
+ * Edge row; ``id`` is the integer PK (``cf_edge`` has no UUID column).
  */
 export const zGraphEdgeMutationOut = z.object({
   id: z.number().int(),
@@ -994,7 +977,7 @@ export const zGetProjectGraphData = z.object({
 /**
  * OK
  */
-export const zGetProjectGraphResponse = zProjectGraphProjectionOut
+export const zGetProjectGraphResponse = zProjectGraphViewOut
 
 export const zDuplicateProjectPlaceholderData = z.object({
   body: z.never().optional(),
@@ -1103,7 +1086,7 @@ export const zUpdateProjectData = z.object({
  */
 export const zUpdateProjectResponse = zProjectDetailOutResp
 
-export const zListGraphsData = z.object({
+export const zListWorkflowsData = z.object({
   body: z.never().optional(),
   path: z.never().optional(),
   query: z.never().optional()
@@ -1112,10 +1095,10 @@ export const zListGraphsData = z.object({
 /**
  * OK
  */
-export const zListGraphsResponse = zGraphListOut
+export const zListWorkflowsResponse = zWorkflowListOut
 
-export const zCreateGraphData = z.object({
-  body: zGraphCreateIn,
+export const zCreateWorkflowData = z.object({
+  body: zWorkflowCreateIn,
   path: z.never().optional(),
   query: z.never().optional()
 })
@@ -1123,7 +1106,33 @@ export const zCreateGraphData = z.object({
 /**
  * OK
  */
-export const zCreateGraphResponse = zGraphDetailOut
+export const zCreateWorkflowResponse = zWorkflowDetailOut
+
+export const zGetWorkflowData = z.object({
+  body: z.never().optional(),
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zGetWorkflowResponse = zWorkflowDetailOutResp
+
+export const zUpdateWorkflowData = z.object({
+  body: zWorkflowUpdateIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zUpdateWorkflowResponse = zWorkflowDetailOutResp
 
 export const zGetGraphViewData = z.object({
   body: z.never().optional(),

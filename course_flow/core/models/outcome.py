@@ -38,6 +38,6 @@ class Outcome(UUIDModel):
             models.UniqueConstraint(
                 fields=["parent", "order"],
                 condition=models.Q(parent__isnull=False),
-                name="cf2_outcome_parent_sibling_order_unique",
+                name="cf_outcome_parent_sibling_order_unique",
             )
         ]

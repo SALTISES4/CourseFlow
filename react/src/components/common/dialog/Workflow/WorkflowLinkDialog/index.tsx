@@ -15,7 +15,6 @@ import DialogTitle from '@mui/material/DialogTitle'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { debounce } from '@mui/material/utils'
-import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/API/workflowObjects/workflow'
 import Fuse from 'fuse.js'
 import { produce } from 'immer'
 import { ChangeEvent, useCallback, useEffect, useState } from 'react'
@@ -27,6 +26,9 @@ type StateType = {
   filteredWorkflows: ReturnType<typeof formatLibraryObjects> | null
 }
 
+const getLinkedWorkflowMenuQuery = () => {
+  console.log('getLinkedWorkflowMenuQuery')
+}
 function NodeLinkWorkflowDialog() {
   const dispatch = useDispatch()
   const { payload, show, onClose } = useDialog(DialogMode.NODE_LINK_WORKFLOW)
@@ -49,11 +51,11 @@ function NodeLinkWorkflowDialog() {
     })
   }, [onClose])
 
-  const onWorkflowSelect = useCallback((id: string) => {
+  const onWorkflowSelect = useCallback((uuid: string) => {
     return () => {
       setState(
         produce((draft) => {
-          draft.selected = id
+          draft.selected = uuid
         })
       )
     }
@@ -62,9 +64,9 @@ function NodeLinkWorkflowDialog() {
   const onSubmit = useCallback(() => {
     dispatch(
       nodeSetLinkedWorkflow({
-        nodeId: payload?.id,
+        nodeId: payload?.uuid,
         workflowId: selected,
-        workflowData: workflowData.find((w) => w.id === selected)
+        workflowData: workflowData.find((w) => w.uuid === selected)
       })
     )
 
@@ -101,8 +103,8 @@ function NodeLinkWorkflowDialog() {
   )
 
   useEffect(() => {
-    if (workflowData === null && payload?.id) {
-      getLinkedWorkflowMenuQuery(payload.id, (response) => {
+    if (workflowData === null && payload?.uuid) {
+      getLinkedWorkflowMenuQuery(payload.uuid, (response) => {
         setState(
           produce((draft) => {
             const { allPublished, currentProject } = response.dataPackage
@@ -147,10 +149,10 @@ function NodeLinkWorkflowDialog() {
           <GridWrap sx={{ mt: 4 }}>
             {filteredResults.map((item) => (
               <WorkflowCardWrapper
-                key={`workflow_${item.id}`}
+                key={`workflow_${item.uuid}`}
                 {...item}
-                isSelected={item.id === state.selected}
-                onClick={onWorkflowSelect(item.id)}
+                isSelected={item.uuid === state.selected}
+                onClick={onWorkflowSelect(item.uuid)}
               />
             ))}
           </GridWrap>

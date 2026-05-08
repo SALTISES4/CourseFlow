@@ -6,7 +6,7 @@ import {
   OutcomeBaseActions,
   OutcomeNodeActions,
   OutcomeOutcomeActions,
-  WeekActions
+  SectionActions
 } from '@cfRedux/types/enumActions'
 import { TOutcomenode } from '@cfRedux/types/type'
 import { UnknownAction } from '@reduxjs/toolkit'
@@ -28,7 +28,7 @@ interface UpdateDegreeAction extends UnknownAction {
 
 interface DeleteSelfAction extends UnknownAction {
   type: OutcomeBaseActions.DELETE_SELF | OutcomeActions.DELETE_SELF
-  payload: { id: string }
+  payload: { uuid: string }
 }
 
 interface InsertChildAction extends UnknownAction {
@@ -40,7 +40,7 @@ interface InsertChildAction extends UnknownAction {
 
 interface InsertBelowAction extends UnknownAction {
   type:
-    | WeekActions.INSERT_BELOW
+    | SectionActions.INSERT_BELOW
     | NodeActions.INSERT_BELOW
     | OutcomeActions.INSERT_BELOW
   payload: {
@@ -81,7 +81,7 @@ export default function outcomeNodeReducer(
 
       const updatedItems = action.payload.outcomenode
         .map((newItem) => {
-          const existingItem = state.find((item) => item.id === newItem.id)
+          const existingItem = state.find((item) => item.uuid === newItem.uuid)
           return existingItem ? newItem : null
         })
         .filter((item) => item !== null)
@@ -89,7 +89,7 @@ export default function outcomeNodeReducer(
       const remainingItems = state.filter(
         (stateItem) =>
           !action.payload.outcomenode.some(
-            (newItem) => newItem.id === stateItem.id
+            (newItem) => newItem.uuid === stateItem.uuid
           )
       )
 
@@ -128,10 +128,10 @@ export default function outcomeNodeReducer(
 
     case OutcomeBaseActions.DELETE_SELF:
     case OutcomeActions.DELETE_SELF: {
-      return state.filter((item) => item.outcome !== action.payload.id)
+      return state.filter((item) => item.outcome !== action.payload.uuid)
     }
 
-    case WeekActions.INSERT_BELOW:
+    case SectionActions.INSERT_BELOW:
     case NodeActions.INSERT_BELOW:
     case OutcomeActions.INSERT_CHILD:
     case OutcomeActions.INSERT_BELOW:
@@ -163,7 +163,7 @@ export default function outcomeNodeReducer(
 //           const newObj = action.payload.outcomenode[i]
 //           let added = false
 //           for (let j = 0; j < newState.length; j++) {
-//             if (newState[j].id == newObj.id) {
+//             if (newState[j].uuid == newObj.uuid) {
 //               newState.splice(j, 1, newObj)
 //               added = true
 //               break
@@ -204,7 +204,7 @@ export default function outcomeNodeReducer(
 //     case OutcomeActions.DELETE_SELF: {
 //       const newState = state.slice()
 //       for (var i = 0; i < newState.length; i++) {
-//         if (newState[i].outcome == action.payload.id) {
+//         if (newState[i].outcome == action.payload.uuid) {
 //           newState.splice(i, 1)
 //           i--
 //         }
@@ -212,7 +212,7 @@ export default function outcomeNodeReducer(
 //       return newState
 //     }
 //
-//     case WeekActions.INSERT_BELOW:
+//     case SectionActions.INSERT_BELOW:
 //     case NodeActions.INSERT_BELOW:
 //     case OutcomeActions.INSERT_CHILD:
 //     case OutcomeActions.INSERT_BELOW:

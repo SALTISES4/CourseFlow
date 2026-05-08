@@ -51,7 +51,7 @@ class WorkflowCardCondensed extends Component<PropsType, StateType> {
     //         <this.ProjectTitle />
     //       </>
     //     }
-    //     id={data.id}
+    //     id={data.uuid}
     //     chips={[this.getTypeChip()]}
     //     onClick={this.clickAction.bind(this)}
     //     onMouseDown={(evt) => {

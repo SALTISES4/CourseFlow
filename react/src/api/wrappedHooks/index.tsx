@@ -3,23 +3,6 @@ import { QueryKey, useQuery } from '@tanstack/react-query'
 import { useQueryClient } from '@tanstack/react-query'
 import { Draft, produce } from 'immer'
 
-// export type FilterResult = {
-//   name: string
-//   value: string | boolean | number | string[] | number[]
-// }[]
-
-// export type LibraryObjectsSearchQueryArgs = {
-//   pagination?: {
-//     page: number
-//     resultsPerPage?: number
-//   }
-//   sort?: {
-//     direction: SortDirection
-//     value: SortValueOption
-//   } | null
-//   filters?: FilterResult
-// }
-
 export function useLibrarySearch(input: LibrarySearchIn) {
   return useQuery({
     queryKey: ['library-search', input],

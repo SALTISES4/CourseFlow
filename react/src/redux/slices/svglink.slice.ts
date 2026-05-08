@@ -5,7 +5,7 @@ import { Position } from '@xyflow/react'
 import { AppDispatch, RootState } from '../store'
 
 export const svglinkDragEnd = createAction<{
-  id: string
+  uuid: string
   from: SVGLinkState['snap']['from']
   to: SVGLinkState['snap']['to']
 }>('svgLink/svglinkDragEnd')
@@ -15,7 +15,7 @@ export const dragEndThunk =
     const state = getState().svglink
     dispatch(
       svglinkDragEnd({
-        id: state.dragging.id,
+        uuid: state.dragging.uuid,
         from: state.snap.from,
         to: state.snap.to
       })
@@ -31,7 +31,7 @@ export type DragPosition = {
 
 type SVGLinkState = {
   dragging: {
-    id: string | null
+    uuid: string | null
     from: DragPosition | null
     to: DragPosition | null
   }
@@ -47,14 +47,14 @@ type SVGLinkState = {
 }
 
 type LineEdit = {
-  id: string
+  uuid: string
   from: DragPosition
   to: DragPosition
   editing: 'from' | 'to'
 }
 
 const initialState: SVGLinkState = {
-  dragging: { id: null, from: null, to: null },
+  dragging: { uuid: null, from: null, to: null },
   snap: { from: null, to: null },
   editing: null,
   allowDnd: false
@@ -65,7 +65,7 @@ const svgLinkSlice = createSlice({
   initialState,
   reducers: {
     dragStart(state, action: PayloadAction<DragPosition>) {
-      state.dragging.id = null
+      state.dragging.uuid = null
       state.dragging.from = action.payload
     },
     dragMove(state, action: PayloadAction<DragPosition>) {
@@ -74,7 +74,7 @@ const svgLinkSlice = createSlice({
     dragSnap(
       state,
       action: PayloadAction<{
-        id: string
+        uuid: string
         edge: Position
         editing: LineEdit['editing']
       }>
@@ -99,7 +99,7 @@ const svgLinkSlice = createSlice({
       }
     },
     lineEdit(state, action: PayloadAction<LineEdit>) {
-      state.dragging.id = action.payload.id
+      state.dragging.uuid = action.payload.uuid
       state.dragging.from = action.payload.from
       state.dragging.to = action.payload.to
       state.editing = action.payload.editing
@@ -110,7 +110,7 @@ const svgLinkSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(svglinkDragEnd, (state, action) => {
-      state.dragging.id = null
+      state.dragging.uuid = null
       state.dragging.from = null
       state.dragging.to = null
       state.snap.from = null

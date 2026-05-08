@@ -9,7 +9,7 @@ export type SidebarState = {
 }
 
 export type EditTabState = {
-  id: string
+  uuid: string
   parentId: string
   objectType: CfObjectType
 }
@@ -43,7 +43,7 @@ const sidebarSlice = createSlice({
       // if we're calling edit with the same payload as current state
       // we're essentially toggling the edit off and resetting
       if (
-        state.edit.id === action.payload.id &&
+        state.edit.uuid === action.payload.uuid &&
         state.edit.objectType === action.payload.objectType &&
         state.edit.parentId === action.payload.parentId &&
         (state.tab === action.payload.tab ||
@@ -53,12 +53,12 @@ const sidebarSlice = createSlice({
       }
 
       // if payload is empty, also reset everything
-      if (!action.payload.id || !action.payload.objectType) {
+      if (!action.payload.uuid || !action.payload.objectType) {
         return resetState(state)
       }
 
       // if the payload contains id and object type, show edit tab
-      if (action.payload.id && action.payload.objectType) {
+      if (action.payload.uuid && action.payload.objectType) {
         state.tab = 'edit'
         state.collapsed = false
       }

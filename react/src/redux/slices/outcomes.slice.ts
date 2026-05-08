@@ -4,7 +4,7 @@ import { createEntityAdapter, createSlice } from '@reduxjs/toolkit'
 import { type PayloadAction } from '@reduxjs/toolkit'
 
 export type Outcome = {
-  id: string
+  uuid: string
   title: string
   description?: string
   code?: string
@@ -21,7 +21,7 @@ export const outcomeAdapter = createEntityAdapter<Outcome>()
 export type OutcomesState = ReturnType<
   typeof outcomeAdapter.getInitialState
 > & {
-  dragging: { id: string; level: number } | null
+  dragging: { uuid: string; level: number } | null
   highlighted: number[]
 }
 
@@ -31,7 +31,7 @@ const initialState: OutcomesState = {
   highlighted: []
 }
 
-type AddOutcomeType = Pick<Outcome, 'id'> &
+type AddOutcomeType = Pick<Outcome, 'uuid'> &
   Partial<Outcome> & { order?: 'after' }
 
 export const outcomesSlice = createSlice({
@@ -40,12 +40,12 @@ export const outcomesSlice = createSlice({
   reducers: {
     // add outcome to a specific parent
     addOutcome: (state, action: PayloadAction<AddOutcomeType>) => {
-      // const outcomeId = getNextLargestNumber(state.ids)
+      // const outcomeId = getNextLargestNumber(state.uuids)
       // TODO: nope
       const outcomeId = 'new-outcome-id'
 
       const newOutcomeData: Outcome = {
-        id: outcomeId,
+        uuid: outcomeId,
         title: action.payload?.title ?? 'Blank outcome title',
         description: action.payload?.description ?? '',
         code: action.payload?.code ?? '',
@@ -62,16 +62,16 @@ export const outcomesSlice = createSlice({
 
       // if no "order", then we're simply appending to the parent ID
       if (!action.payload.order) {
-        const parent = state.entities[action.payload.id]
-        newOutcomeData.parent = parent.id
+        const parent = state.entities[action.payload.uuid]
+        newOutcomeData.parent = parent.uuid
         parent.children.push(outcomeId)
       } else {
         // if order is present, add after the target outcome
-        const target = state.entities[action.payload.id]
+        const target = state.entities[action.payload.uuid]
         if (target.parent) {
           newOutcomeData.parent = target.parent
           const parent = state.entities[target.parent]
-          const childIndex = parent.children.indexOf(target.id)
+          const childIndex = parent.children.indexOf(target.uuid)
           if (childIndex !== -1) {
             parent.children.splice(childIndex + 1, 0, outcomeId)
           }
@@ -91,15 +91,15 @@ export const outcomesSlice = createSlice({
       // but only if it's the root level outcome
       // can't do it earlier since RTK.addOne doesn't support rearranging
       if (action.payload.order && newOutcomeData.parent === null) {
-        const index = state.ids.indexOf(newOutcomeData.id)
-        const targetIndex = state.ids.indexOf(action.payload.id)
-        state.ids.splice(index, 1)
-        state.ids.splice(targetIndex + 1, 0, newOutcomeData.id)
+        const index = state.uuids.indexOf(newOutcomeData.uuid)
+        const targetIndex = state.uuids.indexOf(action.payload.uuid)
+        state.uuids.splice(index, 1)
+        state.uuids.splice(targetIndex + 1, 0, newOutcomeData.uuid)
       }
     },
 
-    deleteOutcome: (state, action: PayloadAction<{ id: string }>) => {
-      const outcomeId = action.payload.id
+    deleteOutcome: (state, action: PayloadAction<{ uuid: string }>) => {
+      const outcomeId = action.payload.uuid
 
       // delete from parent
       const parentId = state.entities[outcomeId].parent
@@ -115,18 +115,18 @@ export const outcomesSlice = createSlice({
 
     // duplicates the outcome below the target
     // cloning the tree structure as well
-    duplicateOutcome: (state, action: PayloadAction<{ id: string }>) => {
-      const target = state.entities[action.payload.id]
+    duplicateOutcome: (state, action: PayloadAction<{ uuid: string }>) => {
+      const target = state.entities[action.payload.uuid]
       const clonedIds: string[] = []
 
       // recursively go over the tree of outcomes and make updates
       function cloneOutcome(outcome: Outcome, parentId: string | null = null) {
-        // const cloneId = getNextLargestNumber(state.ids)
+        // const cloneId = getNextLargestNumber(state.uuids)
         const cloneId = 'new-clone-id'
         clonedIds.push(cloneId)
         const clone = {
           ...outcome,
-          id: cloneId,
+          uuid: cloneId,
           title: outcome.title + ' (duplicate)'
         }
 
@@ -150,23 +150,23 @@ export const outcomesSlice = createSlice({
       // add the root clone to the correct parent
       if (target.parent) {
         const parent = state.entities[target.parent]
-        const index = parent.children.indexOf(target.id)
+        const index = parent.children.indexOf(target.uuid)
         parent.children.splice(index + 1, 0, clonedIds[0])
       } else {
         // for the root level outcomes (without parent), rearrange ids
-        const index = state.ids.indexOf(clonedIds[0])
-        const targetIndex = state.ids.indexOf(target.id)
-        state.ids.splice(index, 1)
-        state.ids.splice(targetIndex + 1, 0, clonedIds[0])
+        const index = state.uuids.indexOf(clonedIds[0])
+        const targetIndex = state.uuids.indexOf(target.uuid)
+        state.uuids.splice(index, 1)
+        state.uuids.splice(targetIndex + 1, 0, clonedIds[0])
       }
     },
 
     updateOutcome: (
       state,
-      action: PayloadAction<{ id: string; data: Partial<Outcome> }>
+      action: PayloadAction<{ uuid: string; data: Partial<Outcome> }>
     ) => {
       outcomeAdapter.updateOne(state, {
-        id: action.payload.id,
+        uuid: action.payload.uuid,
         changes: action.payload.data
       })
     },
@@ -184,8 +184,8 @@ export const outcomesSlice = createSlice({
       const { targetId, destinationId, operation } = action.payload
       const target = state.entities[targetId]
       const destination = state.entities[destinationId]
-      const targetIndex = state.ids.indexOf(targetId)
-      const destinationIndex = state.ids.indexOf(destinationId)
+      const targetIndex = state.uuids.indexOf(targetId)
+      const destinationIndex = state.uuids.indexOf(destinationId)
       let orderId = destinationId // the id of the element around which we order
       let orderAfter = true // order after or before the orderId
       const combineMode = !operation || operation === 'combine'
@@ -200,13 +200,13 @@ export const outcomesSlice = createSlice({
         // we're ordering after the last child of the parent, or parent if no children
         orderId = destination.children.length
           ? destination.children[destination.children.length - 1]
-          : destination.id
+          : destination.uuid
 
         // finally push target onto the new parent's children
         destination.children.push(targetId)
 
         // and update target's parent
-        target.parent = destination.id
+        target.parent = destination.uuid
       }
 
       // reorder mode is when we're moving outcome around adjacent outcomes
@@ -257,20 +257,20 @@ export const outcomesSlice = createSlice({
           orderAfter = operation === 'reorder-after'
 
           // set the correct parent
-          target.parent = newParent.id
+          target.parent = newParent.uuid
         }
       }
 
       // update final order
-      state.ids.splice(targetIndex, 1)
-      const orderIndex = state.ids.indexOf(orderId)
-      state.ids.splice(orderAfter ? orderIndex + 1 : orderIndex, 0, targetId)
+      state.uuids.splice(targetIndex, 1)
+      const orderIndex = state.uuids.indexOf(orderId)
+      state.uuids.splice(orderAfter ? orderIndex + 1 : orderIndex, 0, targetId)
     },
 
     // set currently dragged outcome ID to better control pragmatic dropzones
     setDragging: (
       state,
-      action: PayloadAction<{ id: string; level: number } | null>
+      action: PayloadAction<{ uuid: string; level: number } | null>
     ) => {
       state.dragging = action.payload
     },
@@ -312,10 +312,10 @@ export const outcomesSlice = createSlice({
 })
 
 export function isOutcomeLink(data: Record<string | symbol, unknown>): data is {
-  id: string
+  uuid: string
   type: 'link_outcome'
 } {
-  return 'id' in data && 'type' in data && data.type === 'link_outcome'
+  return 'uuid' in data && 'type' in data && data.type === 'link_outcome'
 }
 
 export const {

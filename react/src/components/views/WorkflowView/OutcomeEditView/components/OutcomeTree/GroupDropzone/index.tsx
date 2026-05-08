@@ -7,12 +7,12 @@ import { useDispatch } from 'react-redux'
 import * as Styled from '../styles'
 
 const GroupDropzone = ({
-  id,
+  uuid,
   children,
   level,
   hasChildren
 }: {
-  id: string
+  uuid: string
   children: ReactNode
   level: number
   hasChildren: boolean
@@ -46,14 +46,14 @@ const GroupDropzone = ({
         const data = source.data
         dispatch(
           moveOutcome({
-            targetId: data.id as number,
-            destinationId: id
+            targetId: data.uuid as number,
+            destinationId: uuid
           })
         )
         setDraggingOver(false)
       }
     })
-  }, [dispatch, hasChildren, level, id])
+  }, [dispatch, hasChildren, level, uuid])
 
   return (
     <Styled.GroupDropzone ref={dropRef} highlight={highlight}>

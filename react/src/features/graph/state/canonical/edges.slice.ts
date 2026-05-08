@@ -25,7 +25,7 @@ const edgesSlice = createSlice({
       edgesAdapter.removeMany(state, action.payload)
     },
     removeByWorkflowUuid(state, action: PayloadAction<WorkflowUuid>) {
-      const ids = state.ids.filter((id) => {
+      const ids = state.uuids.filter((id) => {
         const edge = state.entities[id]
         return edge?.workflowUuid === action.payload
       })

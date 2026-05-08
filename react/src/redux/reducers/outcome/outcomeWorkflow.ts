@@ -23,7 +23,7 @@ function outcomeworkflowReducer(
       return action.payload.outcomeworkflow.reduce(
         (accumulator, currentItem) => {
           const existingItemIndex = accumulator.findIndex(
-            (item) => item.id === currentItem.id
+            (item) => item.uuid === currentItem.uuid
           )
 
           if (existingItemIndex !== -1) {
@@ -42,18 +42,18 @@ function outcomeworkflowReducer(
 
     case OutcomeWorkflowActions.MOVED_TO:
       return state.map((item) =>
-        item.id === action.payload.id ? { ...item, noDrag: true } : item
+        item.uuid === action.payload.uuid ? { ...item, noDrag: true } : item
       )
 
     case OutcomeWorkflowActions.CHANGE_ID:
       return state.map((item) =>
-        item.id === action.payload.oldId
-          ? { ...item, id: action.payload.newId, noDrag: false }
+        item.uuid === action.payload.oldId
+          ? { ...item, uuid: action.payload.newId, noDrag: false }
           : item
       )
 
     case OutcomeBaseActions.DELETE_SELF:
-      return state.filter((item) => item.outcome !== action.payload.id)
+      return state.filter((item) => item.outcome !== action.payload.uuid)
 
     case OutcomeBaseActions.INSERT_BELOW:
     case OutcomeActions.NEW_OUTCOME:
@@ -84,7 +84,7 @@ export default outcomeworkflowReducer
 //           const newObj = action.payload.outcomeworkflow[i]
 //           let added = false
 //           for (let j = 0; j < newState.length; j++) {
-//             if (newState[j].id === newObj.id) {
+//             if (newState[j].uuid === newObj.uuid) {
 //               newState.splice(j, 1, newObj)
 //               added = true
 //               break
@@ -100,7 +100,7 @@ export default outcomeworkflowReducer
 //     case OutcomeWorkflowActions.MOVED_TO: {
 //       const newState = state.slice()
 //       for (let i = 0; i < state.length; i++) {
-//         if (state[i].id === action.payload.id) {
+//         if (state[i].uuid === action.payload.uuid) {
 //           newState[i] = {
 //             ...state[i],
 //             noDrag: true
@@ -112,11 +112,11 @@ export default outcomeworkflowReducer
 //
 //     case OutcomeWorkflowActions.CHANGE_ID: {
 //       for (let i = 0; i < state.length; i++) {
-//         if (state[i].id === action.payload.oldId) {
+//         if (state[i].uuid === action.payload.oldId) {
 //           const newState = state.slice()
 //           newState[i] = {
 //             ...newState[i],
-//             id: action.payload.newId,
+//             uuid: action.payload.newId,
 //             noDrag: false
 //           }
 //           return newState
@@ -127,7 +127,7 @@ export default outcomeworkflowReducer
 //
 //     case OutcomeBaseActions.DELETE_SELF: {
 //       for (let i = 0; i < state.length; i++) {
-//         if (state[i].outcome == action.payload.id) {
+//         if (state[i].outcome == action.payload.uuid) {
 //           const newState = state.slice()
 //           newState.splice(i, 1)
 //           return newState

@@ -30,7 +30,7 @@ def _thread() -> Thread:
     return Thread.objects.create()
 
 
-def build_workflow_for_graph(
+def build_workflow_with_graph(
     graph: Graph,
     *,
     author: User,

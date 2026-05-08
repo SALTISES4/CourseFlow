@@ -140,14 +140,14 @@ input[type="submit"] {
 
 
 //.workflow-wrapper
-//*:is(.node, .week, .column, .workflow-for-menu, .outcome):not(.selected):not(
+//*:is(.node, .section, .column, .workflow-for-menu, .outcome):not(.selected):not(
 //    .valid-drop
 //  ):hover {
 //  border-color: $color-gray;
 //}
 
 
-.week {
+.section {
   //background: $color-white-gray-light;
   //min-height: 100px;
   //padding: 10px;
@@ -159,36 +159,36 @@ input[type="submit"] {
   //position: relative;
 }
 
-.week > .title-text {
+.section > .title-text {
   //font-weight: 600;
   //font-size: 14px;
   //white-space: normal;
   //overflow: hidden;
 }
 
-//.week-workflow.dragging {
+//.section-workflow.dragging {
 //  height: 50px;
 //  overflow: hidden;
 //  border-width: 2px;
 //  border-radius: 5px;
 //}
 
-//.week-workflow.dragging .week {
+//.section-workflow.dragging .section {
 //  border: none;
 //}
 
-//.week-workflow.dragging .node-block {
+//.section-workflow.dragging .node-block {
 //  display: none;
 //}
 
-//.week-block {
+//.section-block {
 //  width: 100%;
 //  padding-left: 10px;
 //  padding-right: 10px;
 //  box-sizing: border-box;
 //}
 //
-//.week-block > div:nth-of-type(odd) > .week {
+//.section-block > div:nth-of-type(odd) > .section {
 //  background: rgba(224, 224, 224, 0.878);
 //}
 
@@ -228,11 +228,11 @@ input[type="submit"] {
 //  padding-right: 50px;
 //}
 
-//.node-week:first-child {
+//.node-section:first-child {
 //  padding-top: 5px;
 //}
 
-.node-week {
+.node-section {
   width: 100%;
   display: block;
   position: relative;
@@ -240,12 +240,12 @@ input[type="submit"] {
   padding-top: 30px;
 }
 
-.node-week.empty {
+.node-section.empty {
   min-height: 0px;
   padding-top: 0px;
 }
 
-.node-week.dragging.ui-sortable-helper .node {
+.node-section.dragging.ui-sortable-helper .node {
   position: static;
 }
 
@@ -893,11 +893,11 @@ ol.children-block {
     vertical-align:top;
 }
 
-.competency-matrix .week .node-row:first-child .outcome-header{
+.competency-matrix .section .node-row:first-child .outcome-header{
     background: $color-white-gray-alt;
 }
 
-.competency-matrix .week{
+.competency-matrix .section{
     background:none;
     min-height:revert;
     padding:0;
@@ -934,7 +934,7 @@ ol.children-block {
   vertical-align: top;
 }
 
-.competency-matrix .week .node-row:first-child {
+.competency-matrix .section .node-row:first-child {
   background: $color-white-gray-alt;
 }
 
@@ -1017,7 +1017,7 @@ ol.children-block {
   display: flex;
 }
 
-.workflow-grid .week {
+.workflow-grid .section {
   margin-right: 20px;
 }
 
@@ -1307,7 +1307,7 @@ input:checked + .slider::before {
 //  background: $color-white;
 // }
 
-/*This is used to get around the issue that we can't make the week itself relatively positioned (messes up jquery sortable*/
+/*This is used to get around the issue that we can't make the section itself relatively positioned (messes up jquery sortable*/
 //.mouseover-container-bypass {
 //  position: relative;
 //  padding: 0;
@@ -1464,7 +1464,7 @@ input:checked + .slider::before {
   height: 20px;
 }
 
-.week > .comment-indicator {
+.section > .comment-indicator {
   margin-right: 10px;
   margin-top: 10px;
 }
@@ -1796,7 +1796,7 @@ input:checked + .slider::before {
   outline: 2px solid $color-primary-green;
 }
 
-.node-bar-week {
+.node-bar-section {
   padding: 2px;
   font-weight: 600;
   margin-bottom: 2px;
@@ -1829,7 +1829,7 @@ input:checked + .slider::before {
   white-space: normal;
 }
 
-.week-ghost {
+.section-ghost {
   width: 300px;
   min-height: 50px;
   border: 1px dashed $color-black;
@@ -1868,7 +1868,7 @@ input:checked + .slider::before {
   white-space: nowrap;
 }
 
-.alignment-block .week .node-block {
+.alignment-block .section .node-block {
   display: block;
 }
 
@@ -2048,13 +2048,13 @@ input:checked + .slider::before {
   gap: 20px;
 }
 
-.comparison-view .node-week {
+.comparison-view .node-section {
   padding-top: 5px;
   max-width: 204px;
   white-space: normal;
 }
 
-.comparison-view .week {
+.comparison-view .section {
   min-height: 60px;
   box-sizing: content-box;
 }

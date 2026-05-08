@@ -29,6 +29,7 @@ type BaseMenuItemType = {
   action?: any
   show?: boolean
   id?: string
+  uuid?: string
   title?: string
   icon?: ReactElement
   separator?: boolean | 'top' | 'bottom'
@@ -90,6 +91,7 @@ const MenuToggleButton = (props: MenuItemType) => {
 
 export const ListMenuItem = ({
   id,
+  uuid,
   title,
   content,
   action,
@@ -113,10 +115,12 @@ export const ListMenuItem = ({
     return content
   }
 
+  const menuItemId = id ?? uuid ?? 'menu-item'
+
   return (
     <>
       {separator === 'top' && <Divider />}
-      <MenuItem id={`${id}-button`} onClick={action} title={title}>
+      <MenuItem id={`${menuItemId}-button`} onClick={action} title={title}>
         {contentChooser(content)}
       </MenuItem>
       {separator && separator !== 'top' && <Divider />}
@@ -127,13 +131,16 @@ export const ListMenuItem = ({
 // Regular menu structure
 const SimpleMenu = ({
   id,
+  uuid: menuId,
   menuItems,
   header
 }: {
-  id: string
+  id?: string
+  uuid?: string
   menuItems: MenuItemType[]
   header: MenuItemType
 }) => {
+  const resolvedMenuId = id ?? menuId ?? 'menu'
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const onClickHandler = (event: MouseEvent<HTMLButtonElement>) => {
@@ -144,22 +151,22 @@ const SimpleMenu = ({
   }
 
   const buttons = menuItems.map((item, el) => {
-    return <ListMenuItem key={item.id} {...item} />
+    return <ListMenuItem key={item.uuid ?? item.id ?? el} {...item} />
   })
 
   return (
     <>
       <MenuToggleButton
-        id={`${id}-button`}
-        data-test-id={`${id}-button`}
-        aria-controls={`${id}-menu`}
+        id={`${resolvedMenuId}-button`}
+        data-test-id={`${resolvedMenuId}-button`}
+        aria-controls={`${resolvedMenuId}-menu`}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : 'false'}
         action={onClickHandler}
         {...header}
       />
       <StyledMenu
-        id={`${id}-menu`}
+        id={`${resolvedMenuId}-menu`}
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -205,10 +212,10 @@ const MenuWithOverflow = ({
 
       return (
         <MenuToggleButton
-          key={props.id}
-          id={`${props.id}-button`}
-          data-test-id={`${props.id}-button`}
-          aria-controls={`${props.id}-menu`}
+          key={props.uuid ?? props.id}
+          id={`${props.uuid ?? props.id}-button`}
+          data-test-id={`${props.uuid ?? props.id}-button`}
+          aria-controls={`${props.uuid ?? props.id}-menu`}
           aria-haspopup="true"
           aria-expanded={open ? 'true' : 'false'}
           action={onClickHandler}
@@ -216,7 +223,7 @@ const MenuWithOverflow = ({
         />
       )
     } else {
-      return <ListMenuItem key={item.id} {...item} />
+      return <ListMenuItem key={item.uuid ?? item.id} {...item} />
     }
   })
 
@@ -262,7 +269,8 @@ const MenuWithOverflow = ({
 }
 
 type StaticMenuProps = {
-  id: string
+  id?: string
+  uuid?: string
   menuItems?: MenuItemType[] // Optional if you might only have content
   header: MenuItemType
   content?: ReactNode // Optional content to be displayed
@@ -271,10 +279,12 @@ type StaticMenuProps = {
 // Non-standard/custom menu with content you inject through props
 const StaticMenu = ({
   id,
+  uuid: menuId,
   menuItems = [], // Default to an empty array if not provided
   header,
   content
 }: StaticMenuProps) => {
+  const resolvedMenuId = id ?? menuId ?? 'menu'
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
@@ -287,9 +297,9 @@ const StaticMenu = ({
   return (
     <>
       <MenuToggleButton
-        id={`${id}-button`}
-        data-test-id={`${id}-button`}
-        aria-controls={`${id}-menu`}
+        id={`${resolvedMenuId}-button`}
+        data-test-id={`${resolvedMenuId}-button`}
+        aria-controls={`${resolvedMenuId}-menu`}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : 'false'}
         action={onClickHandler}
@@ -298,7 +308,7 @@ const StaticMenu = ({
 
       <StyledPopover
         anchorEl={anchorEl}
-        id={`${id}-menu`}
+        id={`${resolvedMenuId}-menu`}
         keepMounted
         anchorOrigin={{
           vertical: 'bottom',
@@ -319,17 +329,20 @@ const StaticMenu = ({
 
 const HoverMenu = ({
   id,
+  uuid: elementId,
   menuItems
 }: {
   id?: string
+  uuid?: string
   menuItems: MenuItemType[]
 }) => {
+  const resolvedElementId = id ?? elementId
   const [show, setShow] = useState<boolean>(false)
 
   const buttons = menuItems.map((item, el) => {
     return (
       <ActionButton
-        key={item.id}
+        key={item.uuid ?? item.id}
         buttonIcon={item.icon}
         buttonClass="insert-sibling-button"
         titleText={item.title}
@@ -339,7 +352,10 @@ const HoverMenu = ({
   })
 
   return (
-    <div id={id} style={{ position: 'absolute', top: 0, right: 0 }}>
+    <div
+      id={resolvedElementId}
+      style={{ position: 'absolute', top: 0, right: 0 }}
+    >
       {buttons}
       {/*{canWrite && (*/}
       {/*  <>*/}

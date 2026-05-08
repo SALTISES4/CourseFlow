@@ -36,7 +36,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = "course_flow.urls"
 WSGI_APPLICATION = "course_flow.wsgi.application"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-AUTH_USER_MODEL = "cf2_core.User"
+AUTH_USER_MODEL = "cf_core.User"
 
 DATABASES = {
     "default": {

@@ -53,18 +53,18 @@ def _issue_token_for(user, *, expires_delta: timedelta = timedelta(hours=1)):
 
 def _create_graph(client: Client, raw_token: str) -> str:
     response = client.post(
-        "/api/graph",
+        "/api/workflow",
         data={
-            "workflowProjectId": None,
-            "workflowTitle": "Root",
+            "projectId": None,
+            "title": "Root",
             "workflowType": "course",
-            "workflowDescription": "",
+            "description": "",
         },
         content_type="application/json",
         **_auth_header(raw_token),
     )
     assert response.status_code == 200, response.content
-    return response.json()["uuid"]
+    return response.json()["graphUuid"]
 
 
 def _section_and_channel(wf_uuid: str):

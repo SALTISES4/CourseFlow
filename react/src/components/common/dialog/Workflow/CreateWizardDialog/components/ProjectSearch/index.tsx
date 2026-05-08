@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 type PropsType = {
   selected?: string
-  onProjectSelect: (id: string) => void
+  onProjectSelect: (uuid: string) => void
 }
 
 const ProjectSearch = ({ selected, onProjectSelect }: PropsType) => {
@@ -49,7 +49,7 @@ const ProjectSearch = ({ selected, onProjectSelect }: PropsType) => {
       setSearchArgs={updateSearchArgsHandler}
       override={{
         onCardSelect: onProjectSelect,
-        selectedid: selected
+        selecteduuid: selected
       }}
     />
   )

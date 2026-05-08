@@ -2,12 +2,11 @@ import { CfLock } from '@cf/types/common'
 import { _t } from '@cf/utility/Utility.class'
 import {
   CommonActions,
+  SectionActions,
   SliceNamespace,
-  StrategyActions,
-  WeekActions
+  StrategyActions
 } from '@cfRedux/types/enumActions'
 import { TNodelink, WorkspaceAppState } from '@cfRedux/types/type'
-import { getEdgePortKey } from '@cfViews/WorkflowView/WorkflowEditView/components/LineSVG/types'
 import {
   PayloadAction,
   createAction,
@@ -16,19 +15,20 @@ import {
 } from '@reduxjs/toolkit'
 
 import { svglinkDragEnd } from './svglink.slice'
+import { getEdgePortKey } from '../../components/views/WorkflowView/GraphView/components/LineSVG/types'
 
 interface CreateLockPayload {
-  id: string
+  uuid: string
   lock: CfLock
 }
 
 interface ChangeFieldPayload {
-  id: string
+  uuid: string
   json: Partial<TNodelink>
 }
 
 interface NodelinkByIdPayload {
-  id: string
+  uuid: string
 }
 
 export const nodelinkAdapter = createEntityAdapter<TNodelink>()
@@ -54,13 +54,13 @@ const nodelinkSlice = createSlice({
   reducers: {
     changeField(state, action: PayloadAction<ChangeFieldPayload>) {
       nodelinkAdapter.updateOne(state, {
-        id: action.payload.id,
+        uuid: action.payload.uuid,
         changes: action.payload.json
       })
     },
     createLock(state, action: PayloadAction<CreateLockPayload>) {
       nodelinkAdapter.updateOne(state, {
-        id: action.payload.id,
+        uuid: action.payload.uuid,
         changes: { lock: action.payload.lock }
       })
     },
@@ -68,7 +68,7 @@ const nodelinkSlice = createSlice({
       nodelinkAdapter.addOne(state, action.payload)
     },
     deleteSelf(state, action: PayloadAction<NodelinkByIdPayload>) {
-      nodelinkAdapter.removeOne(state, action.payload.id)
+      nodelinkAdapter.removeOne(state, action.payload.uuid)
     }
   },
   extraReducers: (builder) => {
@@ -87,7 +87,7 @@ const nodelinkSlice = createSlice({
         nodelinkAdapter.upsertMany(state, action.payload.nodelink)
       })
       .addCase(
-        WeekActions.INSERT_BELOW as string,
+        SectionActions.INSERT_BELOW as string,
         (
           state,
           action: PayloadAction<{ children?: { nodelink: TNodelink[] } }>
@@ -115,17 +115,19 @@ const nodelinkSlice = createSlice({
 
         if (id === null) {
           // TODO: actually figure out how we'll be handling this
-          const newLink = { ...state.entities[state.ids[state.ids.length - 1]] }
+          const newLink = {
+            ...state.entities[state.uuids[state.uuids.length - 1]]
+          }
 
           // figure out the next biggest id
-          newLink.id = state.ids.reduce((acc, c) => Math.max(acc, c), 0) + 1
+          newLink.uuid = state.uuids.reduce((acc, c) => Math.max(acc, c), 0) + 1
           newLink.sourceNode = from.nodeId
           newLink.sourcePort = getEdgePortKey(from.edge)
           newLink.targetNode = to.nodeId
           newLink.targetPort = getEdgePortKey(to.edge)
 
           // only allow one unique connection combo sourceId/sourceEdge -> targetId/targetEdge
-          const found = state.ids.filter((id) => {
+          const found = state.uuids.filter((id) => {
             const nodelink = state.entities[id]
             return (
               nodelink.sourceNode === newLink.sourceNode &&

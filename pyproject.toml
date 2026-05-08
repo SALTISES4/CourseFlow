@@ -31,7 +31,8 @@ dependencies = [
 ]
 
 [project.scripts]
-cf2-seed-dev-data = "course_flow.cli:main"
+cf-seed-dev-data = "course_flow.cli:main"
+cf-seed-dev-notifications = "course_flow.cli:seed_notifications_main"
 
 [build-system]
 requires = ["hatchling"]
@@ -49,10 +50,6 @@ dev = [
   "pytest-django>=4.8",
   "ruff>=0.8",
 ]
-
-
-
-
 
 
 [tool.pytest.ini_options]

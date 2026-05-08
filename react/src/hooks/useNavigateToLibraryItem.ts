@@ -6,12 +6,12 @@ import { generatePath } from 'react-router-dom'
 const useNavigateToLibraryItem = () => {
   const navigate = useNavigate()
 
-  return (id: string, type: string) => {
+  return (uuid: string, type: string) => {
     const basePath =
       type === LibraryObjectType.PROJECT ? CFRoutes.PROJECT : CFRoutes.WORKFLOW
 
     const path = generatePath(basePath, {
-      uuid: String(id)
+      uuid: String(uuid)
     })
 
     navigate(path)

@@ -8,12 +8,14 @@ import { enqueueSnackbar } from 'notistack'
 import { MouseEvent, useCallback, useState } from 'react'
 
 type PropsType = {
-  id: string
+  id?: string
+  uuid?: string
   isFavourite: boolean
   type: LibraryObjectType
 }
 
-const Favourite = ({ id, isFavourite, type }: PropsType) => {
+const Favourite = ({ id, uuid, isFavourite, type }: PropsType) => {
+  const targetUuid = uuid ?? id
   const [isFavouriteState, setFavouriteState] = useState<boolean>(isFavourite)
   const queryClient = useQueryClient()
   const toggleFavorite = useMutation({
@@ -40,10 +42,10 @@ const Favourite = ({ id, isFavourite, type }: PropsType) => {
       e.stopPropagation()
       e.preventDefault()
       toggleFavorite.mutateAsync({
-        body: { uuid: id }
+        body: { uuid: targetUuid }
       })
     },
-    [id, toggleFavorite]
+    [targetUuid, toggleFavorite]
   )
 
   return (

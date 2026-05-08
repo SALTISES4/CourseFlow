@@ -11,7 +11,6 @@ import {
   CreateResourceOptions,
   WorkflowFormType
 } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
-import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -24,6 +23,8 @@ import { produce } from 'immer'
 import { enqueueSnackbar } from 'notistack'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { generatePath, useNavigate } from 'react-router-dom'
+
+import { WorkflowType } from '../../../../pages/Workflow/types'
 
 type StateType = {
   step: number
@@ -111,8 +112,8 @@ const CreateWizardDialog = () => {
     )
   }
 
-  function onProjectSelect(id: string) {
-    setProjectId(id)
+  function onProjectSelect(uuid: string) {
+    setProjectId(uuid)
   }
 
   function onTypeSelect(resourceType: CreateResourceOptions) {
@@ -123,10 +124,10 @@ const CreateWizardDialog = () => {
     )
   }
 
-  function onTemplateSelect(id: string) {
+  function onTemplateSelect(uuid: string) {
     setState(
       produce((draft) => {
-        draft.template = id
+        draft.template = uuid
       })
     )
   }

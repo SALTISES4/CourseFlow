@@ -10,10 +10,10 @@ import Typography from '@mui/material/Typography'
 
 const RestoreDialog = ({
   objectType,
-  id,
+  uuid,
   callback
 }: {
-  id: string
+  uuid: string
   objectType: WorkspaceType
   callback?: () => void
 }) => {
@@ -37,7 +37,7 @@ const RestoreDialog = ({
 
   async function onSubmit() {
     const args = {
-      id: string(id),
+      uuid: String(uuid),
       payload: {
         objectType: objectType
       }

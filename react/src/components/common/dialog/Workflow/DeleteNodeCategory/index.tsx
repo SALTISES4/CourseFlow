@@ -17,7 +17,7 @@ const DeleteWorkflowNodeCategory = () => {
   )
 
   const onSubmit = useCallback(() => {
-    dispatch(columnDeleteSelf({ id: payload?.id }))
+    dispatch(columnDeleteSelf({ uuid: payload?.uuid }))
     onClose()
   }, [dispatch, onClose, payload])
 
@@ -27,9 +27,9 @@ const DeleteWorkflowNodeCategory = () => {
       onClose={onClose}
       fullWidth
       maxWidth="xs"
-      aria-labelledby={`delete-week-node-category-modal`}
+      aria-labelledby={`delete-section-node-category-modal`}
     >
-      <DialogTitle id={`delete-week-node-category-modal`}>
+      <DialogTitle id={`delete-section-node-category-modal`}>
         {_t('You are about to delete a node category')}
       </DialogTitle>
       <DialogContent dividers>

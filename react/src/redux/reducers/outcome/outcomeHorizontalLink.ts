@@ -47,7 +47,7 @@ function outcomeHorizontalLinkReducer(
       return action.payload.outcomehorizontallink.reduce(
         (updatedState, newOutcomeHorizontalLink) => {
           const existingIndex = updatedState.findIndex(
-            (item) => item.id === newOutcomeHorizontalLink.id
+            (item) => item.uuid === newOutcomeHorizontalLink.uuid
           )
 
           if (existingIndex !== -1) {

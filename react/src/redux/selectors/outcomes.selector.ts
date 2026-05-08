@@ -1,8 +1,9 @@
 import { _t } from '@cf/utility/Utility.class'
-import editTabNodeData from '@cfPages/Workspace/Workflow/Sidebar/components/EditTab/components/EditNode/optionsData'
 import { outcomeAdapter } from '@cfRedux/slices/outcomes.slice'
 import { RootState } from '@cfRedux/store'
 import { createSelector } from 'reselect'
+
+import editTabNodeData from '../../components/pages/Workflow/Sidebar/components/EditTab/components/EditNode/optionsData'
 
 export const {
   selectAll: selectAllOutcomes,
@@ -43,7 +44,7 @@ export const isHighlightedViaOutcome = createSelector(
 const tagsData = editTabNodeData.tags
 
 type TagGroup = {
-  id: string
+  uuid: string
   title: string
   outcomes: number[]
 }
@@ -54,7 +55,7 @@ export const selectOutcomeTagGroups = createSelector(
   (rootOuutcomes) => {
     const tagGroups: TagGroup[] = []
     const untagged: TagGroup = {
-      id: -1,
+      uuid: -1,
       title: _t('Untagged'),
       outcomes: []
     }
@@ -64,22 +65,22 @@ export const selectOutcomeTagGroups = createSelector(
 
       // if no tags, throw into the untagged group
       if (!outcome.tags || outcome.tags.length === 0) {
-        untagged.outcomes.push(outcome.id)
+        untagged.outcomes.push(outcome.uuid)
         continue
       }
 
       // otherwise, loop through tags and throw into respective groups
       for (let j = 0; j < outcome.tags.length; j++) {
         const tagId = outcome.tags[j]
-        const foundIndex = tagGroups.findIndex((t) => t.id === tagId)
+        const foundIndex = tagGroups.findIndex((t) => t.uuid === tagId)
         if (foundIndex === -1) {
           tagGroups.push({
-            id: tagId,
-            title: tagsData.find((t) => t.id === tagId).label,
-            outcomes: [outcome.id]
+            uuid: tagId,
+            title: tagsData.find((t) => t.uuid === tagId).label,
+            outcomes: [outcome.uuid]
           })
         } else {
-          tagGroups[foundIndex].outcomes.push(outcome.id)
+          tagGroups[foundIndex].outcomes.push(outcome.uuid)
         }
       }
     }
@@ -88,7 +89,7 @@ export const selectOutcomeTagGroups = createSelector(
       tagGroups.push(untagged)
     }
 
-    return tagGroups.sort((a, b) => a.id - b.id)
+    return tagGroups.sort((a, b) => a.uuid - b.uuid)
   }
 )
 
@@ -96,7 +97,7 @@ export const selectOutcomeChildrenById = createSelector(
   [
     selectAllOutcomes,
     selectOutcomeEntities,
-    (_: RootState, parentid: string | null) => parentId
+    (_: RootState, parentuuid: string | null) => parentId
   ],
   (allOutcomes, entities, parentId) => {
     if (parentId === null) {
@@ -118,7 +119,7 @@ export const getPrefixPath = createSelector(
   [
     selectRootOutcomeIds,
     selectOutcomeEntities,
-    (_: RootState, id: string) => id
+    (_: RootState, uuid: string) => id
   ],
   (rootIds, entities, outcomeId) => {
     const path: (number | string)[] = []
@@ -127,7 +128,7 @@ export const getPrefixPath = createSelector(
     // if we're immediately working with a level 0 item, bail out early
     // and display code within the prefix (if it exists)
     if (!outcome.parent) {
-      const rootIndex = rootIds.indexOf(outcome.id)
+      const rootIndex = rootIds.indexOf(outcome.uuid)
       return outcome.code
         ? `${rootIndex + 1} - ${outcome.code} - `
         : `${rootIndex + 1}. `
@@ -135,14 +136,14 @@ export const getPrefixPath = createSelector(
 
     // otherwise continue looping through parents to figure out the full prefix path
     while (outcome && outcome.parent) {
-      const index = entities[outcome.parent].children.indexOf(outcome.id)
+      const index = entities[outcome.parent].children.indexOf(outcome.uuid)
       path.unshift(index + 1)
       outcome = entities[outcome.parent]
     }
 
     // after the while loop, we're at level 0 again
     if (outcome.level === 0) {
-      const rootIndex = rootIds.indexOf(outcome.id)
+      const rootIndex = rootIds.indexOf(outcome.uuid)
       path.unshift(rootIndex + 1)
     }
 

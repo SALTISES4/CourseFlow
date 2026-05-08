@@ -111,7 +111,7 @@ def test_clear_removes_seed_project_tree():
 @pytest.mark.django_db
 def test_management_command_runs():
     call_command(
-        "cf2_seed_dev_data",
+        "cf_seed_dev_data",
         "--seed",
         "100",
         "--section-count",

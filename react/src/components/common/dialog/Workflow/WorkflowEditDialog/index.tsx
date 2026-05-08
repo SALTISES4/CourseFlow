@@ -1,21 +1,27 @@
+import {
+  getWorkflowOptions,
+  getWorkflowQueryKey,
+  listWorkflowsQueryKey,
+  updateWorkflowMutation
+} from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import { WorkflowFormType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
-import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
-import { RootState } from '@cfRedux/store'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import TextField from '@mui/material/TextField'
-import { useCallback } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useCallback, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
+
+import { WorkflowType } from '../../../../pages/Workflow/types'
 
 const WorkflowLabels: Record<WorkflowType, string> = {
   [WorkflowType.PROGRAM]: _t('Program'),
@@ -31,11 +37,21 @@ const workflowSchema = z.object({
 
 const WorkflowEditDialog = () => {
   const { uuid } = useParams()
-  const workflow = useSelector((state: RootState) => state.workspace.workflow)
+  const workflowUuid = uuid ?? ''
+
   const { show, onClose } = useDialog(DialogMode.WORKFLOW_EDIT)
   const { onError, onSuccess } = useGenericMsgHandler()
+  const queryClient = useQueryClient()
 
-  const workflowTypeLabel = WorkflowLabels[workflow.type]
+  const { data: workflowDetail } = useQuery({
+    ...getWorkflowOptions({ path: { uuid: workflowUuid } }),
+    enabled: Boolean(workflowUuid) && show
+  })
+  const workflow = workflowDetail?.item
+  const workflowTypeLabel =
+    (workflow?.workflowType &&
+      WorkflowLabels[workflow.workflowType as WorkflowType]) ||
+    _t('Workflow')
 
   const {
     register,
@@ -45,26 +61,45 @@ const WorkflowEditDialog = () => {
   } = useForm<WorkflowFormType>({
     resolver: zodResolver(workflowSchema),
     defaultValues: {
-      title: workflow.title,
-      description: workflow.description
+      title: '',
+      description: ''
     }
   })
 
-  // @todo replace
-  const [mutate] = useUpdateWorkflowMutation()
+  useEffect(() => {
+    if (!workflow) {
+      return
+    }
+    reset({
+      title: workflow.title ?? '',
+      description: workflow.description ?? ''
+    })
+  }, [workflow, reset])
+
+  const updateWorkflow = useMutation({
+    ...updateWorkflowMutation(),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: getWorkflowQueryKey({ path: { uuid: variables.path.uuid } })
+      })
+      queryClient.invalidateQueries({
+        queryKey: listWorkflowsQueryKey()
+      })
+      onSuccess({ message: 'Success' })
+      onClose()
+    },
+    onError: (err) => onError(err)
+  })
 
   // TODO: still not sure if this should be handled by django or not
   const onSubmit = useCallback(
     (data: WorkflowFormType) => {
-      mutate({
-        uuid: String(id),
-        payload: Utility.replaceEmptyStringsWithNull(data)
+      updateWorkflow.mutate({
+        path: { uuid: workflowUuid },
+        body: Utility.replaceEmptyStringsWithNull(data)
       })
-        .unwrap()
-        .then((resp) => onSuccess(resp))
-        .catch((e) => onError(e))
     },
-    [id, mutate, onError, onSuccess]
+    [updateWorkflow, workflowUuid]
   )
 
   const resetState = () => {
@@ -120,7 +155,11 @@ const WorkflowEditDialog = () => {
           <Button variant="contained" color="secondary" onClick={onClose}>
             {_t('Cancel')}
           </Button>
-          <Button type="submit" variant="contained" disabled={!isDirty}>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={!isDirty || !workflow}
+          >
             {_t(`Update ${workflowTypeLabel.toLowerCase()}`)}
           </Button>
         </DialogActions>

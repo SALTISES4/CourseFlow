@@ -36,7 +36,7 @@ type OutcomeStateType = {
 }
 
 const Outcome = ({
-  id,
+  uuid,
   title,
   children,
   level,
@@ -50,7 +50,7 @@ const Outcome = ({
   const dispatch = useDispatch()
   const sidebarData = useSelector((state: RootState) => state.sidebar.edit)
   const dragging = useSelector((state: RootState) => state.outcomes.dragging)
-  const prefix = useSelector((state: RootState) => getPrefixPath(state, id))
+  const prefix = useSelector((state: RootState) => getPrefixPath(state, uuid))
   const highlight = useSelector(
     (state: RootState) => state.outcomes.highlighted
   )
@@ -62,7 +62,7 @@ const Outcome = ({
   })
 
   const selected =
-    sidebarData.objectType === CfObjectType.OUTCOME && sidebarData.id === id
+    sidebarData.objectType === CfObjectType.OUTCOME && sidebarData.uuid === uuid
 
   // TODO: not gonna quite cut it, id is now a string (uuid)
   const highlighted = linkedOutcomes?.some((o) =>
@@ -79,9 +79,9 @@ const Outcome = ({
     return combine(
       draggable({
         element: el,
-        getInitialData: () => ({ id, level }),
+        getInitialData: () => ({ uuid, level }),
         onDragStart: () => {
-          dispatch(setDragging({ id, level }))
+          dispatch(setDragging({ uuid, level }))
         },
         onDrop: () => {
           dispatch(setDragging(null))
@@ -90,19 +90,19 @@ const Outcome = ({
       dropTargetForElements({
         element: el,
         getData: ({ input, element }) => {
-          const data = { id }
+          const data = { uuid }
 
           // only allow reordering if the target/dragged outcomes are different
           // and only if they're of the same level
-          const reorder = dragging?.id !== id && dragging?.level === level
+          const reorder = dragging?.uuid !== uuid && dragging?.level === level
 
           // allow combine if we're combining different outcome IDs
           // (ie, you can't combine self with self)
           // and the dragged outcome level must be +1 compared to our target
-          let combine = dragging?.id !== id && dragging?.level === level + 1
+          let combine = dragging?.uuid !== uuid && dragging?.level === level + 1
 
           // but also disallow combine if dragged outcome is a child of the parent already
-          if (children.includes(dragging?.id)) {
+          if (children.includes(dragging?.uuid)) {
             combine = false
           }
 
@@ -147,8 +147,8 @@ const Outcome = ({
           if (isOutcomeLink(dragging) && level === 0) {
             dispatch(
               linkOutcome({
-                targetId: dragging.id,
-                destinationId: id
+                targetId: dragging.uuid,
+                destinationId: uuid
               })
             )
           }
@@ -168,8 +168,8 @@ const Outcome = ({
 
             dispatch(
               moveOutcome({
-                targetId: args.source.data.id as string,
-                destinationId: id,
+                targetId: args.source.data.uuid as string,
+                destinationId: uuid,
                 operation: instruction.operation
               })
             )
@@ -184,7 +184,7 @@ const Outcome = ({
         }
       })
     )
-  }, [dispatch, dragging?.id, dragging?.level, id, level, children])
+  }, [dispatch, dragging?.uuid, dragging?.level, uuid, level, children])
 
   const setCollapsed = useCallback((value: boolean) => {
     setState(
@@ -206,14 +206,14 @@ const Outcome = ({
     if (selected) {
       manager.current.clearSidebar()
     } else {
-      manager.current.updateSidebar(id, CfObjectType.OUTCOME, '-1')
+      manager.current.updateSidebar(uuid, CfObjectType.OUTCOME, '-1')
     }
-  }, [id, selected])
+  }, [uuid, selected])
 
   return (
-    <Styled.OutcomeWrapper dragging={dragging?.id === id}>
+    <Styled.OutcomeWrapper dragging={dragging?.uuid === uuid}>
       <OutcomeHeader
-        id={id}
+        uuid={uuid}
         level={level}
         tags={tags}
         greenHover={greenHover}
@@ -228,7 +228,7 @@ const Outcome = ({
         onToggleClick={onToggleClick}
       />
 
-      {!state.collapsed && <OutcomeGroup parentId={id} />}
+      {!state.collapsed && <OutcomeGroup parentId={uuid} />}
 
       <DropIndicator
         lineGap="8px"

@@ -16,7 +16,7 @@ type PropsType = {
 const { appNotifications } = COURSEFLOW_APP.globalContextData
 
 const NotificationsAlert = ({ show }: { show: boolean }) => {
-  if (!appNotifications.updateNotifications.id || !show) {
+  if (!appNotifications.updateNotifications.uuid || !show) {
     return <></>
   }
   return (
@@ -25,7 +25,7 @@ const NotificationsAlert = ({ show }: { show: boolean }) => {
         sx={{ mt: 3 }}
         severity="update"
         title={HtmlReactParser(appNotifications.updateNotifications.title)}
-        hideIfCookie={`cf-update-${appNotifications.updateNotifications.id}`}
+        hideIfCookie={`cf-update-${appNotifications.updateNotifications.uuid}`}
       />
     </OuterContentWrap>
   )

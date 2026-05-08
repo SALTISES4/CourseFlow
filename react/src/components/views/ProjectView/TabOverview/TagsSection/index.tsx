@@ -15,7 +15,7 @@ const Tags = ({ data }: PropsType) => {
   const [state, setState] = useState<TTag[]>(data)
 
   const onChange = useCallback(
-    (id: string, value: string, createNew: boolean) => {
+    (uuid: string, value: string, createNew: boolean) => {
       setState(
         produce((draft) => {
           if (createNew) {
@@ -24,11 +24,11 @@ const Tags = ({ data }: PropsType) => {
             }
 
             draft.push({
-              id,
+              uuid,
               title: value
             })
           } else {
-            const target = draft.find((t) => t.id === id)
+            const target = draft.find((t) => t.uuid === uuid)
             if (target.title !== value) {
               target.title = value
             }
@@ -39,9 +39,9 @@ const Tags = ({ data }: PropsType) => {
     []
   )
 
-  const onTagDelete = useCallback((id: string) => {
+  const onTagDelete = useCallback((uuid: string) => {
     setState((oldTags) =>
-      produce(oldTags, (draft) => draft.filter((t) => t.id !== id))
+      produce(oldTags, (draft) => draft.filter((t) => t.uuid !== uuid))
     )
   }, [])
 
@@ -56,9 +56,9 @@ const Tags = ({ data }: PropsType) => {
       <SC.InfoBlockContent sx={{ mt: 2 }}>
         <Grid container spacing={2}>
           {state.map((tag) => (
-            <Grid item key={tag.id} xs={4}>
+            <Grid item key={tag.uuid} xs={4}>
               <Tag
-                id={tag.id}
+                uuid={tag.uuid}
                 label={tag.title}
                 onChange={onChange}
                 onDelete={onTagDelete}
@@ -66,7 +66,7 @@ const Tags = ({ data }: PropsType) => {
             </Grid>
           ))}
           <Grid item xs={4}>
-            <Tag id={state.length + 1} onChange={onChange} create />
+            <Tag uuid={String(state.length + 1)} onChange={onChange} create />
           </Grid>
         </Grid>
       </SC.InfoBlockContent>

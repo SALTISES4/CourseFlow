@@ -154,7 +154,7 @@ const ProjectForm = ({
                           clickable
                           label={
                             disciplineOptions.find(
-                              (option) => String(option.id) === String(value)
+                              (option) => String(option.uuid) === String(value)
                             )?.title
                           }
                           deleteIcon={
@@ -173,7 +173,7 @@ const ProjectForm = ({
                   )}
                 >
                   {disciplineOptions.map((option) => (
-                    <MenuItem key={option.id} value={option.id}>
+                    <MenuItem key={option.uuid} value={option.uuid}>
                       {option.title}
                     </MenuItem>
                   ))}

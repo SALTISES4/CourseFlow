@@ -16,6 +16,7 @@ from course_flow.dev_seed.constants import DEV_SEED_PROJECT_TITLE_PREFIX
 from course_flow.dev_seed.rng import SeededRNG
 
 User = get_user_model()
+DEV_SEED_OWNER_EMAIL = "admin@courseflow.com"
 
 # Global discipline catalog — we only link projects; we never delete these on clear.
 _CANONICAL_DISCIPLINES = (
@@ -47,21 +48,30 @@ def ensure_seed_users(
     """
     Deterministic users for owner + team members.
 
-    Emails are stable for a given ``seed`` so repeated runs do not multiply
-    accounts unnecessarily.
+    Owner is always the local admin account so seeded projects/graphs are
+    authored by the same user across runs.
     """
-    owner_email = f"cf2-dev-seed-{seed}-owner@local.test"
+    owner_email = DEV_SEED_OWNER_EMAIL
     owner, _ = User.objects.get_or_create(
         email=owner_email,
-        defaults={"first_name": "Dev", "last_name": "SeedOwner"},
+        defaults={
+            "first_name": "Admin",
+            "last_name": "CourseFlow",
+            "is_staff": True,
+            "is_superuser": True,
+        },
     )
+    if not owner.is_staff or not owner.is_superuser:
+        owner.is_staff = True
+        owner.is_superuser = True
+        owner.save(update_fields=["is_staff", "is_superuser"])
     if not owner.has_usable_password():
         owner.set_password("dev-seed-password")
         owner.save()
 
     members: list = [owner]
     for i in range(1, team_size):
-        email = f"cf2-dev-seed-{seed}-member{i}@local.test"
+        email = f"cf-dev-seed-{seed}-member{i}@local.test"
         u, _ = User.objects.get_or_create(
             email=email,
             defaults={"first_name": f"Member{i}", "last_name": "Seed"},

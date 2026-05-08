@@ -10,10 +10,10 @@ import Typography from '@mui/material/Typography'
 
 const ArchiveDialog = ({
   objectType,
-  id,
+  uuid,
   callback
 }: {
-  id: string
+  uuid: string
   objectType: WorkspaceType
   callback?: () => void
 }) => {
@@ -37,7 +37,7 @@ const ArchiveDialog = ({
   async function onSubmit() {
     try {
       const resp = await mutate({
-        id: string(id),
+        uuid: String(uuid),
         payload: {
           objectType: objectType
         }

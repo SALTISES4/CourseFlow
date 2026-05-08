@@ -49,7 +49,7 @@ class UserLabel extends Component<PropsType, StateProps> {
     let disabled = false
     if (
       this.props.cannotChange &&
-      this.props.cannotChange.indexOf(this.props.user.id) >= 0
+      this.props.cannotChange.indexOf(this.props.user.uuid) >= 0
     ) {
       disabled = true
     }

@@ -3,7 +3,6 @@ import {
   WorkflowFormType,
   timeUnits
 } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
-import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -18,6 +17,8 @@ import Typography from '@mui/material/Typography'
 import { RefObject, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+
+import { WorkflowType } from '../../../../../pages/Workflow/types'
 
 export enum FormField {
   TITLE = 'title',

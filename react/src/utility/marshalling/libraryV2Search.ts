@@ -36,7 +36,7 @@ export type V2LibrarySearchResponseRaw = {
 }
 
 const emptyAuthor = (): EUser => ({
-  id: '',
+  uuid: '',
   username: '',
   firstName: '',
   lastName: '',
@@ -58,7 +58,7 @@ export function mapObjectTypeToLibraryObjectType(
 }
 
 /**
- * Navigation id: project UUID for projects; workflow UUID for unit-backed rows
+ * Navigation uuid: project UUID for projects; workflow UUID for unit-backed rows
  * (matches `useNavigateToLibraryItem` + workflow routes).
  */
 export function mapV2LibraryItemToELibraryObject(
@@ -70,7 +70,7 @@ export function mapV2LibraryItemToELibraryObject(
     : String(item.workflow_uuid ?? '')
 
   return {
-    id,
+    uuid,
     hash: '',
     deleted: false,
     deletedOn: '',

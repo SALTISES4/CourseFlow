@@ -35,19 +35,19 @@ const columnSlice = createSlice({
   name: SliceNamespace.COLUMN,
   initialState,
   reducers: {
-    createLock(state, action: PayloadAction<{ id: string; lock: CfLock }>) {
-      const item = state.entities[action.payload.id]
+    createLock(state, action: PayloadAction<{ uuid: string; lock: CfLock }>) {
+      const item = state.entities[action.payload.uuid]
       if (item) {
         item.lock = action.payload.lock
       }
     },
-    deleteSelf(state, action: PayloadAction<{ id: string }>) {
-      columnAdapter.removeOne(state, action.payload.id)
+    deleteSelf(state, action: PayloadAction<{ uuid: string }>) {
+      columnAdapter.removeOne(state, action.payload.uuid)
     },
     insertBelow(
       state,
       action: PayloadAction<{
-        id: string | null
+        uuid: string | null
         newId: string
         duplicate?: string
       }>
@@ -56,7 +56,7 @@ const columnSlice = createSlice({
 
       const column = duplicate
         ? state.entities[duplicate]
-        : state.entities[state.ids[0]]
+        : state.entities[state.uuids[0]]
 
       const clone = { ...column }
       const cloneTitle = column.title?.length
@@ -65,7 +65,7 @@ const columnSlice = createSlice({
 
       columnAdapter.addOne(state, {
         ...clone,
-        id: newId,
+        uuid: newId,
         title: _t('Blank title'),
         description: '',
         colour: defaultColumnSettings['new-column'].colour,
@@ -85,12 +85,12 @@ const columnSlice = createSlice({
     changeField(
       state,
       action: PayloadAction<{
-        id: string
+        uuid: string
         data: Partial<TColumn>
       }>
     ) {
       columnAdapter.updateOne(state, {
-        id: action.payload.id,
+        uuid: action.payload.uuid,
         changes: action.payload.data
       })
     }

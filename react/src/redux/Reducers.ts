@@ -4,18 +4,18 @@ import outcomeNodeReducer from '@cfRedux/reducers/outcome/outcomeNode'
 import outcomeOutcomeReducer from '@cfRedux/reducers/outcome/outcomeOutcome'
 import outcomeworkflowReducer from '@cfRedux/reducers/outcome/outcomeWorkflow'
 import childWorkflowReducer from '@cfRedux/reducers/workflow/childWorkflow'
-import nodeweekReducer from '@cfRedux/reducers/workflow/nodeWeek'
+import nodesectionReducer from '@cfRedux/reducers/workflow/nodeSection'
 import parentNodeReducer from '@cfRedux/reducers/workflow/parentNode'
 import parentWorkflowReducer from '@cfRedux/reducers/workflow/parentWorfkflow'
-import weekworkflowReducer from '@cfRedux/reducers/workflow/weekworkflow'
+import sectionworkflowReducer from '@cfRedux/reducers/workflow/sectionworkflow'
 // slices
 import columnReducer from '@cfRedux/slices/column.slice'
 import nodeReducer from '@cfRedux/slices/node.slice'
 import nodelinkReducer from '@cfRedux/slices/nodelink.slice'
 import outcomesReducer from '@cfRedux/slices/outcomes.slice'
 import projectReducer from '@cfRedux/slices/project.slice'
+import sectionReducer from '@cfRedux/slices/section.slice'
 import strategyReducer from '@cfRedux/slices/strategy.slice'
-import weekReducer from '@cfRedux/slices/week.slice'
 import workflowReducer from '@cfRedux/slices/workflow.slice'
 import { combineReducers } from 'redux'
 
@@ -55,35 +55,32 @@ import { combineReducers } from 'redux'
 
 export const legacyWorkflowReducers = {
   // to remove
-  nodeweek: nodeweekReducer,
-  weekworkflow: weekworkflowReducer,
-  outcomeworkflow: outcomeworkflowReducer,
-  outcomenode: outcomeNodeReducer,
-
+  // nodesection: nodesectionReducer,
+  // sectionworkflow: sectionworkflowReducer,
+  // outcomeworkflow: outcomeworkflowReducer,
+  // outcomenode: outcomeNodeReducer,
   //  a n2M with UI applications
-
-  outcome: outcomeReducer,
-  outcomeoutcome: outcomeOutcomeReducer,
+  // outcome: outcomeReducer,
+  // outcomeoutcome: outcomeOutcomeReducer,
   // verify
-  outcomehorizontallink: outcomeHorizontalLinkReducer,
-
+  // outcomehorizontallink: outcomeHorizontalLinkReducer,
   // @todo sort through these parent / children, why do they need to be in store
-  parentWorkflow: parentWorkflowReducer,
-  parentNode: parentNodeReducer,
-  childWorkflow: childWorkflowReducer
+  // parentWorkflow: parentWorkflowReducer,
+  // parentNode: parentNodeReducer,
+  // childWorkflow: childWorkflowReducer
 }
 
 export const workspaceReducer = combineReducers({
-  project: projectReducer,
-  workflow: workflowReducer,
-  column: columnReducer,
-  week: weekReducer,
-  node: nodeReducer,
+  // project: projectReducer,
+  workflow: workflowReducer
+  // column: columnReducer,
+  // section: sectionReducer,
+  // node: nodeReducer,
   // note this is not called nodenode, although that's what it is
-  nodelink: nodelinkReducer,
-  strategy: strategyReducer
+  // nodelink: nodelinkReducer,
+  // strategy: strategyReducer
 })
 
 export const dummyReducers = {
-  outcomes: outcomesReducer
+  // outcomes: outcomesReducer
 }

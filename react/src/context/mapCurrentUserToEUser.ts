@@ -6,7 +6,7 @@ export function mapCurrentUserToEUser(u: CurrentUser): EUser {
   const firstName = u.firstName ?? ''
   const lastName = u.lastName ?? ''
   return {
-    id: u.uuid,
+    uuid: u.uuid,
     username: u.email,
     firstName,
     lastName,

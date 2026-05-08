@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from course_flow.application.dto import GraphDTO
+from course_flow.application.dto import WorkflowDTO
 from course_flow.core.models import Graph, User
 
 
 def can_view_graph(
-    *, current_user: User, graph: GraphDTO | Graph | None
+    *, current_user: User, graph: WorkflowDTO | Graph | None
 ) -> bool:
     """Whether ``current_user`` may read/mutate the given graph context.
 

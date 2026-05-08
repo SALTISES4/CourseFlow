@@ -1,5 +1,3 @@
-import { apiPaths } from '@cf/router/apiRoutes'
-
 type PropsType = {
   icon?: string
   divClass?: string
@@ -18,7 +16,7 @@ const LegendLine = ({ icon, divClass, div, text }: PropsType) => {
             verticalAlign: 'middle',
             width: '24px'
           }}
-          src={`${apiPaths.external.static_assets.icon}${icon}.svg`}
+          src={`/static/course_flow/img/images_svg/${icon}.svg`}
           alt="icon"
         />
       )

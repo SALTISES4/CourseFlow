@@ -22,14 +22,14 @@ Entity resources
     only: fields that belong to the persisted resource, without embedding related
     graphs or editor-specific joins.
 
-Graph / editor projections
+Graph View
     Loading everything needed to render the graph in one round trip uses
-    dedicated *projection* routes (e.g. ``GET .../graph/{uuid}/view``).
-    Projections return **flat** top-level collections (lists) keyed by type, linked by
+    dedicated Graph View routes (e.g. ``GET .../graph/{uuid}/view``).
+    Graph View payloads return **flat** top-level collections (lists) keyed by type, linked by
     **UUID references** between rows—not nested trees.
 
 Comments / threads
-    Projections may expose ``thread_uuid`` and/or ``comment_count`` per thread for UI
+    Graph View payloads may expose ``thread_uuid`` and/or ``comment_count`` per thread for UI
     badges. Full comment bodies stay behind separate thread/comment endpoints.
 
 This module documents the contract; enforcement is by schema placement and route

@@ -16,7 +16,7 @@ from course_flow.dev_seed.graph_view import (
     build_nodes_from_layout,
     build_outcomes,
     build_sections_and_channels,
-    build_workflow_for_graph,
+    build_workflow_with_graph,
     generate_graph_shape,
     make_project_tags,
     persist_edges_from_pairs,
@@ -81,7 +81,7 @@ def _generate_one_project(cfg: SeedConfig, project_index: int) -> dict:
         wf_fake.seed_instance(cfg.seed + project_index * 10_007 + w * 97)
 
         graph = Graph.objects.create()
-        build_workflow_for_graph(
+        build_workflow_with_graph(
             graph,
             author=owner,
             project=project,

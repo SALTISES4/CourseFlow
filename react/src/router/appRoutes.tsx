@@ -8,16 +8,17 @@ import Explore from '@cfPages/Library/Explore'
 import Favourites from '@cfPages/Library/Favourites'
 import MyLibrary from '@cfPages/Library/MyLibrary'
 import NotificationsPage from '@cfPages/Notifications'
-import WorkflowPage from '@cfPages/Workspace/Workflow'
-import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import { Navigate, createBrowserRouter } from 'react-router-dom'
 
 import NotificationsSettingsPage from 'components/pages/Settings/NotificationsSettings'
 import ProfileSettingsPage from 'components/pages/Settings/ProfileSettings'
-import Project from 'components/pages/Workspace/Project'
+
+import Project from '../components/pages/Project'
+import WorkflowPage from '../components/pages/Workflow'
+import { WorkflowViewType } from '../components/pages/Workflow/types'
 
 /*******************************************************
- * NOTE:  RR6 drastically altered it's approach and no longer robustly supports absolute paths
+ * NOTE:  RR6 drastically altered its approach and no longer robustly supports absolute paths
  * this is a workaround until we finalize a 'pattern'
  * see: https://github.com/remix-run/react-router/discussions/9841
  *******************************************************/

@@ -15,7 +15,7 @@ export function groupUsersFromPermissionGroups({
   return [
     ...viewers.map((item) => {
       return {
-        id: item.id,
+        uuid: item.uuid,
         name: item.firstName + ' ' + item.lastName,
         email: 'plceholder@email.com',
         permissionGroup: PermissionGroup.VIEW
@@ -23,7 +23,7 @@ export function groupUsersFromPermissionGroups({
     }),
     ...commentors.map((item) => {
       return {
-        id: item.id,
+        uuid: item.uuid,
         name: item.firstName + ' ' + item.lastName,
         email: 'plceholder@email.com',
         permissionGroup: PermissionGroup.COMMENT
@@ -31,7 +31,7 @@ export function groupUsersFromPermissionGroups({
     }),
     ...editors.map((item) => {
       return {
-        id: item.id,
+        uuid: item.uuid,
         name: item.firstName + ' ' + item.lastName,
         email: 'plceholder@email.com',
         permissionGroup: PermissionGroup.EDIT
@@ -39,7 +39,7 @@ export function groupUsersFromPermissionGroups({
     }),
     ...students.map((item) => {
       return {
-        id: item.id,
+        uuid: item.uuid,
         name: item.firstName + ' ' + item.lastName,
         email: 'plceholder@email.com',
         permissionGroup: PermissionGroup.VIEW

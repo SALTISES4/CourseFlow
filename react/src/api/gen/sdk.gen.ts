@@ -9,12 +9,10 @@ import type {
   CourseFlowApiNinjaAppHealthResponses,
   CreateChannelData,
   CreateChannelResponses,
-  CreateGraphData,
   CreateGraphEdgeData,
   CreateGraphEdgeResponses,
   CreateGraphNodeData,
   CreateGraphNodeResponses,
-  CreateGraphResponses,
   CreateGraphSectionData,
   CreateGraphSectionResponses,
   CreateProjectData,
@@ -23,6 +21,8 @@ import type {
   CreateSectionResponses,
   CreateThreadCommentData,
   CreateThreadCommentResponses,
+  CreateWorkflowData,
+  CreateWorkflowResponses,
   DeleteAllThreadCommentsData,
   DeleteAllThreadCommentsResponses,
   DeleteChannelData,
@@ -63,6 +63,8 @@ import type {
   GetProjectResponses,
   GetSectionData,
   GetSectionResponses,
+  GetWorkflowData,
+  GetWorkflowResponses,
   LibraryItemFavoriteToggleData,
   LibraryItemFavoriteToggleResponses,
   ListGraphChannelsData,
@@ -73,8 +75,6 @@ import type {
   ListGraphNodesResponses,
   ListGraphSectionsData,
   ListGraphSectionsResponses,
-  ListGraphsData,
-  ListGraphsResponses,
   ListMyNotificationsData,
   ListMyNotificationsResponses,
   ListProjectTeamData,
@@ -85,6 +85,8 @@ import type {
   ListThreadCommentsResponses,
   ListUsersData,
   ListUsersResponses,
+  ListWorkflowsData,
+  ListWorkflowsResponses,
   LoginData,
   LoginResponses,
   LogoutData,
@@ -112,7 +114,9 @@ import type {
   UpdateProjectTeamMemberData,
   UpdateProjectTeamMemberResponses,
   UpdateSectionData,
-  UpdateSectionResponses
+  UpdateSectionResponses,
+  UpdateWorkflowData,
+  UpdateWorkflowResponses
 } from './types.gen'
 import {
   zAddProjectTeamMembersData,
@@ -121,12 +125,10 @@ import {
   zCourseFlowApiNinjaAppHealthResponse,
   zCreateChannelData,
   zCreateChannelResponse,
-  zCreateGraphData,
   zCreateGraphEdgeData,
   zCreateGraphEdgeResponse,
   zCreateGraphNodeData,
   zCreateGraphNodeResponse,
-  zCreateGraphResponse,
   zCreateGraphSectionData,
   zCreateGraphSectionResponse,
   zCreateProjectData,
@@ -135,6 +137,8 @@ import {
   zCreateSectionResponse,
   zCreateThreadCommentData,
   zCreateThreadCommentResponse,
+  zCreateWorkflowData,
+  zCreateWorkflowResponse,
   zDeleteAllThreadCommentsData,
   zDeleteAllThreadCommentsResponse,
   zDeleteChannelData,
@@ -175,6 +179,8 @@ import {
   zGetProjectResponse,
   zGetSectionData,
   zGetSectionResponse,
+  zGetWorkflowData,
+  zGetWorkflowResponse,
   zLibraryItemFavoriteToggleData,
   zLibraryItemFavoriteToggleResponse,
   zListGraphChannelsData,
@@ -185,8 +191,6 @@ import {
   zListGraphNodesResponse,
   zListGraphSectionsData,
   zListGraphSectionsResponse,
-  zListGraphsData,
-  zListGraphsResponse,
   zListMyNotificationsData,
   zListMyNotificationsResponse,
   zListProjectTeamData,
@@ -197,6 +201,8 @@ import {
   zListThreadCommentsResponse,
   zListUsersData,
   zListUsersResponse,
+  zListWorkflowsData,
+  zListWorkflowsResponse,
   zLoginData,
   zLoginResponse,
   zLogoutData,
@@ -224,7 +230,9 @@ import {
   zUpdateProjectTeamMemberData,
   zUpdateProjectTeamMemberResponse,
   zUpdateSectionData,
-  zUpdateSectionResponse
+  zUpdateSectionResponse,
+  zUpdateWorkflowData,
+  zUpdateWorkflowResponse
 } from './zod.gen'
 
 export type Options<
@@ -496,32 +504,80 @@ export const updateProject = <ThrowOnError extends boolean = false>(
   })
 
 /**
- * List Graphs
+ * List Workflows
  */
-export const listGraphs = <ThrowOnError extends boolean = false>(
-  options?: Options<ListGraphsData, ThrowOnError>
+export const listWorkflows = <ThrowOnError extends boolean = false>(
+  options?: Options<ListWorkflowsData, ThrowOnError>
 ) =>
-  (options?.client ?? client).get<ListGraphsResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await zListGraphsData.parseAsync(data),
+  (options?.client ?? client).get<
+    ListWorkflowsResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) => await zListWorkflowsData.parseAsync(data),
     responseValidator: async (data) =>
-      await zListGraphsResponse.parseAsync(data),
+      await zListWorkflowsResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/graph',
+    url: '/api/workflow',
     ...options
   })
 
 /**
- * Create Graph
+ * Create Workflow
  */
-export const createGraph = <ThrowOnError extends boolean = false>(
-  options: Options<CreateGraphData, ThrowOnError>
+export const createWorkflow = <ThrowOnError extends boolean = false>(
+  options: Options<CreateWorkflowData, ThrowOnError>
 ) =>
-  (options.client ?? client).post<CreateGraphResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await zCreateGraphData.parseAsync(data),
+  (options.client ?? client).post<
+    CreateWorkflowResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zCreateWorkflowData.parseAsync(data),
     responseValidator: async (data) =>
-      await zCreateGraphResponse.parseAsync(data),
+      await zCreateWorkflowResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/graph',
+    url: '/api/workflow',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Get Workflow
+ */
+export const getWorkflow = <ThrowOnError extends boolean = false>(
+  options: Options<GetWorkflowData, ThrowOnError>
+) =>
+  (options.client ?? client).get<GetWorkflowResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await zGetWorkflowData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zGetWorkflowResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workflow/{uuid}',
+    ...options
+  })
+
+/**
+ * Update Workflow
+ */
+export const updateWorkflow = <ThrowOnError extends boolean = false>(
+  options: Options<UpdateWorkflowData, ThrowOnError>
+) =>
+  (options.client ?? client).patch<
+    UpdateWorkflowResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zUpdateWorkflowData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zUpdateWorkflowResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workflow/{uuid}',
     ...options,
     headers: {
       'Content-Type': 'application/json',

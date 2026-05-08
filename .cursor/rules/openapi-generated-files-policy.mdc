@@ -1,0 +1,12 @@
+---
+description: Enforce generated OpenAPI client workflow
+alwaysApply: true
+---
+
+# OpenAPI Generated Files Policy
+
+- Never manually edit files under `react/src/api/gen/**`.
+- If generated code appears wrong, first run the project generation command (`yarn openapi-gen` in `react/`).
+- If the issue persists after regeneration, trace and fix the source in the backend Python OpenAPI/schema definitions.
+- Regenerate client artifacts after backend schema changes; do not patch generated outputs directly.
+- Treat manual edits in generated files as invalid changes that must be replaced by regeneration.

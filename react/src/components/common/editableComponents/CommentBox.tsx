@@ -18,13 +18,13 @@ import React, { useRef, useState } from 'react'
 
 // Props definition — `id` is the thread UUID for v2 thread comment endpoints
 type PropsType = {
-  id: string
+  uuid: string
   setShow: (show: boolean) => void
   objectType: CfObjectType
 }
 
 const CommentBox = ({
-  id,
+  uuid,
   setShow: _setShow,
   objectType: _objectType
 }: PropsType) => {
@@ -52,13 +52,13 @@ const CommentBox = ({
   const { onError, onSuccess } = useGenericMsgHandler()
 
   const { data: comments = [], refetch } = useQuery({
-    ...listThreadCommentsOptions({ path: { uuid: id } }),
-    enabled: Boolean(id)
+    ...listThreadCommentsOptions({ path: { uuid } }),
+    enabled: Boolean(uuid)
   })
 
   const invalidateThreadComments = async () => {
     await queryClient.invalidateQueries({
-      queryKey: listThreadCommentsQueryKey({ path: { uuid: id } })
+      queryKey: listThreadCommentsQueryKey({ path: { uuid } })
     })
   }
 
@@ -102,7 +102,7 @@ const CommentBox = ({
   const removeComment = async (commentUuid: string) => {
     try {
       const resp = await deleteOneMutation.mutateAsync({
-        path: { uuid: id, comment_uuid: commentUuid }
+        path: { uuid, comment_uuid: commentUuid }
       })
       onSuccess(resp)
     } catch (e) {
@@ -113,7 +113,7 @@ const CommentBox = ({
   const removeAllCommentsHandler = async () => {
     try {
       const resp = await deleteAllMutation.mutateAsync({
-        path: { uuid: id }
+        path: { uuid }
       })
       onSuccess(resp)
     } catch (e) {
@@ -129,7 +129,7 @@ const CommentBox = ({
 
     try {
       const resp = await createMutation.mutateAsync({
-        path: { uuid: id },
+        path: { uuid },
         body: { body: text }
       })
       onSuccess(resp)
@@ -186,7 +186,7 @@ const CommentBox = ({
       setTagPosition(inputRef.current?.selectionStart || 0)
 
       // @todo replace
-      getUsersForObjectQueryLegacy(workflow.id, 'workflow', (response) => {
+      getUsersForObjectQueryLegacy(workflow.uuid, 'workflow', (response) => {
         setUserList(response.dataPackage)
         setTagging(true)
       })

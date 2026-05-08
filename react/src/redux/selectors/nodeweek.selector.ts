@@ -4,26 +4,26 @@ import { AppState } from '@cfRedux/types/type'
 import { createSelector } from 'reselect'
 
 const selectNodeState = (state: AppState) => state.workspace.node
-const selectNodeWeekState = (state: AppState) => state.nodeweek
-const selectNodeWeekId = (_: AppState, id: string) => id
+const selectNodeSectionState = (state: AppState) => state.nodesection
+const selectNodeSectionId = (_: AppState, uuid: string) => id
 
 /**
- * Memoized selector to find a node week by ID.
+ * Memoized selector to find a node section by ID.
  */
-export const getNodeWeekById = createSelector(
+export const getNodeSectionById = createSelector(
   [
-    selectNodeWeekState,
-    selectNodeWeekId,
+    selectNodeSectionState,
+    selectNodeSectionId,
     selectNodeState,
     (state: RootState) => state
   ],
-  (nodeweeks, id, nodes, state) => {
-    const nodeweek = nodeweeks.find((nw) => nw.id === id)
+  (nodesections, id, nodes, state) => {
+    const nodesection = nodesections.find((nw) => nw.uuid === id)
 
-    if (nodeweek) {
-      const node = selectNodeById(state, nodeweek.node)
+    if (nodesection) {
+      const node = selectNodeById(state, nodesection.node)
       return {
-        data: nodeweek,
+        data: nodesection,
         order: node?.order ?? [],
         column: node?.column ?? null
       }

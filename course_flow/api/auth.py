@@ -30,7 +30,7 @@ class BearerAuth(HttpBearer):
 
         Authtoken.objects.filter(id=auth_token.id).update(last_used_at=now)
         auth_token.last_used_at = now
-        setattr(request, "cf2_auth_token", auth_token)
+        setattr(request, "cf_auth_token", auth_token)
         return auth_token.user
 
 
@@ -43,7 +43,7 @@ def get_current_user(request: HttpRequest) -> User:
 
 
 def get_current_token(request: HttpRequest) -> Authtoken:
-    auth_token = cast(Any, getattr(request, "cf2_auth_token", None))
+    auth_token = cast(Any, getattr(request, "cf_auth_token", None))
     if not isinstance(auth_token, Authtoken):
         raise HttpError(401, "Authentication required")
     return auth_token

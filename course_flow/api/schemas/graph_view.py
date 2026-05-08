@@ -1,4 +1,4 @@
-"""Graph graph/editor read model (flat collections, UUID references).
+"""Graph View read model (flat collections, UUID references).
 
 Not a CRUD entity payload — use primary graph routes for resource fields only.
 """
@@ -71,7 +71,7 @@ class ThreadCommentCountOut(CamelSchema):
 
 
 class GraphViewOut(CamelSchema):
-    """Single round-trip projection for rendering the graph (not nested entity trees)."""
+    """Single round-trip Graph View payload (not nested entity trees)."""
 
     graph: GraphMetaOut
     channels: list[ChannelGraphOut]

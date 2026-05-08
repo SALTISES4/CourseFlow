@@ -1,0 +1,12 @@
+---
+description: Frontend identity naming convention for uuid vs id
+alwaysApply: true
+---
+
+# Frontend Identity Convention
+
+- `uuid` means backend/API public entity identity.
+- `id` means local UI identity, DOM identity, framework identity, or third-party library identity.
+- Do not alias backend UUIDs as `id` in domain/application code.
+- If a library requires `id`, map `id: entity.uuid` at the adapter boundary and preserve `uuid` in `data` when original entity identity is still needed.
+- For RTK entity adapters, keep framework vocabulary (`ids`, `entities`, `selectById`) but configure domain `selectId` to `entity.uuid` where backend identity is UUID.

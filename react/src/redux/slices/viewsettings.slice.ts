@@ -2,7 +2,7 @@ import { SliceNamespace } from '@cf/redux/types/enumActions'
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 export type ViewsettingsState = {
-  expandedWeeks: boolean
+  expandedSections: boolean
   expandedNodes: boolean
   expandedOutcomes: boolean
   condensed: boolean
@@ -20,7 +20,7 @@ const loadStateFromLocalStorage = (): ViewsettingsState => {
     }
   }
   return {
-    expandedWeeks: true,
+    expandedSections: true,
     expandedNodes: true,
     expandedOutcomes: true,
     condensed: false,

@@ -1,6 +1,6 @@
 import {
-  listProjectTeamQueryKey,
   listProjectTeamOptions,
+  listProjectTeamQueryKey,
   updateProjectTeamMemberMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import type { ProjectTeamMemberOut } from '@cf/api/gen/types.gen'
@@ -18,9 +18,9 @@ import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { EUser } from '@XMLHTTP/types/entity'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -33,7 +33,9 @@ type PropsType = {
   author: EUser
 }
 
-function roleToPermissionGroup(role: ProjectTeamMemberOut['role']): PermissionGroup {
+function roleToPermissionGroup(
+  role: ProjectTeamMemberOut['role']
+): PermissionGroup {
   switch (role) {
     case 'editor':
       return PermissionGroup.EDIT
@@ -82,7 +84,7 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
   const projectUuidForTeam =
     workspaceType === WorkspaceType.PROJECT
       ? workspaceId
-      : workflowTeamProjectUuid ?? null
+      : (workflowTeamProjectUuid ?? null)
 
   const { data: teamData, isLoading } = useQuery({
     ...listProjectTeamOptions({
@@ -96,7 +98,9 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
     onSuccess: async () => {
       if (projectUuidForTeam) {
         await queryClient.invalidateQueries({
-          queryKey: listProjectTeamQueryKey({ path: { uuid: projectUuidForTeam } })
+          queryKey: listProjectTeamQueryKey({
+            path: { uuid: projectUuidForTeam }
+          })
         })
       }
     }
@@ -114,7 +118,7 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
       const resp = await updateMember.mutateAsync({
         path: {
           uuid: projectUuidForTeam,
-          membership_id: membershipId
+          membership_uuid: membershipId
         },
         body: { role: permissionGroupToRole(group) }
       })
@@ -173,7 +177,7 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
         )}
 
         {members.map((user) => (
-          <SC.PermissionThumbnail key={user.id}>
+          <SC.PermissionThumbnail key={user.uuid}>
             <ListItemAvatar>
               <Avatar alt={memberDisplayName(user)}>
                 {ThemeHelper.getInitials(
@@ -206,11 +210,11 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
                 {
                   name: 'remove',
                   label: _t('Remove user'),
-                  onClick: onUserRemove(user.id, memberDisplayName(user))
+                  onClick: onUserRemove(user.uuid, memberDisplayName(user))
                 }
               ]}
               onChange={(group) =>
-                onChangeHandler(Number(group) as PermissionGroup, user.id)
+                onChangeHandler(Number(group) as PermissionGroup, user.uuid)
               }
               placeholder={
                 permissionGroupMenuOptions.find(

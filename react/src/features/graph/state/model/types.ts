@@ -9,17 +9,18 @@ export type EdgeKey = string
 
 export type GraphLoadStatus = 'idle' | 'loading' | 'succeeded' | 'failed'
 
+/** Mirrors `GraphMetaOut` from the OpenAPI graph contract. */
 export interface WorkflowMetaEntity {
   uuid: WorkflowUuid
-  title: string
-  ownerId: string | null
-  /** Nullable owning project FK from API (integer as string until project is UUID-only). */
-  projectId: string | null
+  workflowTitle: string
+  authorId: number | null
+  workflowProjectId: number | null
   revisionId: number
   dateCreated?: string
   modifiedOn?: string
 }
 
+/** Graph UUID scope (`SectionGraphOut.graphUuid` in OpenAPI). */
 export interface SectionEntity {
   uuid: ResourceUuid
   workflowUuid: WorkflowUuid
@@ -28,6 +29,7 @@ export interface SectionEntity {
   threadUuid: ResourceUuid | null
 }
 
+/** Graph UUID scope (`ChannelGraphOut.graphUuid` in OpenAPI). */
 export interface ChannelEntity {
   uuid: ResourceUuid
   workflowUuid: WorkflowUuid
@@ -38,11 +40,13 @@ export interface ChannelEntity {
 
 export interface NodeEntity {
   uuid: ResourceUuid
+  /** Graph UUID (route id); selectors filter on this field. */
   workflowUuid: WorkflowUuid
   sectionUuid: ResourceUuid | null
   channelUuid: ResourceUuid | null
   sectionRow: number | null
-  unitUuid: ResourceUuid | null
+  /** Optional workflow row FK on the node (`NodeGraphOut.workflowUuid`). */
+  nodeWorkflowUuid: ResourceUuid | null
   threadUuid: ResourceUuid | null
   outcomeUuids: ResourceUuid[]
 }
@@ -98,7 +102,7 @@ export type GraphOpType =
 export type GraphOpStatus = 'pending' | 'acked' | 'failed'
 
 export interface PendingGraphOperation {
-  id: string
+  uuid: string
   workflowUuid: WorkflowUuid
   type: GraphOpType
   status: GraphOpStatus
@@ -148,8 +152,8 @@ export interface RenameNodeInput {
 export interface MoveNodeInput {
   workflowUuid: WorkflowUuid
   nodeUuid: ResourceUuid
-  sectionId: ResourceUuid | null
-  channelId: ResourceUuid | null
+  sectionUuid: ResourceUuid | null
+  channelUuid: ResourceUuid | null
   sectionRow: number | null
 }
 

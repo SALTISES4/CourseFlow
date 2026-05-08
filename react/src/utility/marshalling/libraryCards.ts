@@ -81,24 +81,22 @@ export function formatLibraryObject(
   libraryObject: LibraryItemOut
 ): Pick<
   WorkflowCardWrapperPropsType,
-  'id' | 'title' | 'description' | 'isFavourite' | 'chips' | 'isLinked' | 'type'
+  | 'uuid'
+  | 'title'
+  | 'description'
+  | 'isFavourite'
+  | 'chips'
+  | 'isLinked'
+  | 'type'
 > {
   const typeChip = getTypeChip(libraryObject)
   const templateChip = getTemplateChip(libraryObject)
   const countChip = getWorkflowCountChip(libraryObject)
-  // TODO: figure out where this comes from
-  // const descriptionFromEntity =
-  //   libraryObject.description?.trim() ||
-  //   (libraryObject.author?.name &&
-  //     `${_t('Owned by')} ${libraryObject.author.name}`)
 
   const type = mapObjectTypeToLibraryObjectType(libraryObject.objectType)
 
   return {
-    id:
-      type === LibraryObjectType.PROJECT
-        ? libraryObject.uuid
-        : libraryObject.graphUuid,
+    uuid: libraryObject.uuid,
     title: libraryObject.title,
     description: libraryObject.description,
     isFavourite: libraryObject.isFavorite,

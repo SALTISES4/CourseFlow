@@ -76,14 +76,10 @@
         "./styles/scss/*"
       ],
       "@cfSidebar/*": [
-          "./components/pages/Workspace/Workflow/Sidebar/*",
+          "./components/pages/Workflow/Sidebar/*",
       ]
     }
   },
-  "include": [
-    "./**/*",
-    "node_modules/@types/jquery/JQuery.d.ts"
-  ],
   "exclude": [
     "./build/**/*",
     "node_modules"

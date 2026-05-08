@@ -19,16 +19,16 @@ import {
 } from '@reduxjs/toolkit'
 
 interface DeleteColumnAction {
-  id: string
+  uuid: string
   extraData: any
 }
 
 export type NodeWorkflowReorderPayload = {
   mode?: 'row' | 'column'
   edge?: 'top' | 'bottom'
-  id: string
-  fromWeek: number
-  toWeek: number
+  uuid: string
+  fromSection: number
+  toSection: number
   toColumn: number
   toRow: number
 }
@@ -49,29 +49,29 @@ const initialState: NodeState = {
  *******************************************************/
 const updateEntity = (
   state: NodeState,
-  action: PayloadAction<{ id: string; data: Partial<TNode> }>
+  action: PayloadAction<{ uuid: string; data: Partial<TNode> }>
 ) => {
   nodeAdapter.updateOne(state, {
-    id: action.payload.id,
+    uuid: action.payload.uuid,
     changes: action.payload.data
   })
 }
 
 const removeEntityById = (
   state: NodeState,
-  action: PayloadAction<{ id: string }>
+  action: PayloadAction<{ uuid: string }>
 ) => {
-  nodeAdapter.removeOne(state, action.payload.id)
+  nodeAdapter.removeOne(state, action.payload.uuid)
 }
 
 const toggleArchiveEntity = (
   state: NodeState,
-  action: PayloadAction<{ id: string }>
+  action: PayloadAction<{ uuid: string }>
 ) => {
-  const entity = state.entities[action.payload.id]
+  const entity = state.entities[action.payload.uuid]
   if (entity) {
     nodeAdapter.updateOne(state, {
-      id: action.payload.id,
+      uuid: action.payload.uuid,
       changes: {
         deleted: !entity.deleted,
         deletedOn: entity.deleted ? undefined : _t('This session')
@@ -84,7 +84,7 @@ const updatingNodeSet = (
   state: NodeState,
   action: PayloadAction<{
     nodeUpdates: {
-      id: string
+      uuid: string
       outcomenodeSet: any[]
       outcomenodeUniqueSet: any[]
     }[]
@@ -95,7 +95,7 @@ const updatingNodeSet = (
   }
 
   const updates = action.payload.nodeUpdates.map((update) => ({
-    id: update.id,
+    uuid: update.uuid,
     changes: {
       outcomenodeSet: update.outcomenodeSet,
       outcomenodeUniqueSet: update.outcomenodeUniqueSet
@@ -144,7 +144,7 @@ const splitWorkflowGridNodes = ({
 }
 
 // figure out whether a row needs to be collapsed or not
-const getCollapsedWeekRow = ({
+const getCollapsedSectionRow = ({
   ids,
   entities,
   from,
@@ -153,8 +153,8 @@ const getCollapsedWeekRow = ({
 }: {
   ids: string[]
   entities: typeof initialState.entities
-  from: { week: string; row: number }
-  to: { week: string; row: number }
+  from: { section: string; row: number }
+  to: { section: string; row: number }
   columnMode?: boolean
 }): number | null => {
   const sameRow = ids.filter((nodeId) => {
@@ -162,7 +162,8 @@ const getCollapsedWeekRow = ({
     return n.deleted === false && n.order === from.row
   })
   const columnCheck = columnMode
-    ? from.week !== to.week || (from.week === to.week && from.row !== to.row)
+    ? from.section !== to.section ||
+      (from.section === to.section && from.row !== to.row)
     : true
   return !sameRow.length && columnCheck ? from.row : null
 }
@@ -175,7 +176,7 @@ const getCollapsedWeekRow = ({
 const updateItem = (state, action: PayloadAction<{ extraData: any[] }>) => {
   return state.map((item) => {
     const update = action.payload.extraData.find(
-      (updateItem) => updateItem.id === item.id
+      (updateItem) => updateItem.uuid === item.uuid
     )
     return update ? { ...item, ...update } : item
   })
@@ -216,10 +217,10 @@ const nodeSlice = createSlice({
     },
     reloadComments(
       state,
-      action: PayloadAction<{ id: string; commentData: any }>
+      action: PayloadAction<{ uuid: string; commentData: any }>
     ) {
       nodeAdapter.updateOne(state, {
-        id: action.payload.id,
+        uuid: action.payload.uuid,
         changes: { comments: action.payload.commentData }
       })
     },
@@ -239,7 +240,7 @@ const nodeSlice = createSlice({
       // TODO: refactor ID being a string
       console.log('TOOD: setLinkedWorkflow', action.payload)
       // nodeAdapter.updateOne(state, {
-      //   id: nodeId,
+      //   uuid: nodeId,
       //   changes: {
       //     linkedWorkflow: workflowId,
       //     linkedWorkflowData: workflowData,
@@ -266,7 +267,7 @@ const nodeSlice = createSlice({
         | {
             newColumn?: boolean
             columnId: string
-            weekId: string
+            sectionId: string
             mode: NodeWorkflowReorderPayload['mode']
             row: number
           }
@@ -276,27 +277,27 @@ const nodeSlice = createSlice({
       return state
 
       if ('columnId' in action.payload) {
-        const { newColumn, mode, columnId, weekId, row } = action.payload
-        const weekNodes = state.ids.filter(
-          (nodeId) => state.entities[nodeId].week.toString() === weekId
+        const { newColumn, mode, columnId, sectionId, row } = action.payload
+        const sectionNodes = state.uuids.filter(
+          (nodeId) => state.entities[nodeId].section.toString() === sectionId
         )
 
         const gridSplits = splitWorkflowGridNodes({
-          ids: weekNodes,
+          ids: sectionNodes,
           entities: state.entities,
           newRow: row,
           column: mode === 'row' ? undefined : newColumn ? '-1' : columnId
         })
 
         // grab any existing node
-        const clone = state.entities[state.ids[0]]
+        const clone = state.entities[state.uuids[0]]
         nodeAdapter.addOne(state, {
           ...clone,
           // TODO: not gonna quite work, review
-          // id: getNextLargestNumber(state.ids),
+          // uuid: getNextLargestNumber(state.uuids),
           title: _t('Blank title'),
           order: row,
-          week: weekId,
+          section: sectionId,
           column: columnId,
           deleted: false,
           taskClassification: -1,
@@ -314,13 +315,14 @@ const nodeSlice = createSlice({
         const { nodeId, mode, duplicate } = action.payload
         const node = state.entities[nodeId]
 
-        const weekNodes = state.ids.filter(
+        const sectionNodes = state.uuids.filter(
           (nodeId) =>
-            nodeId !== node.id && state.entities[nodeId].week === node.week
+            nodeId !== node.uuid &&
+            state.entities[nodeId].section === node.section
         )
 
         const gridSplits = splitWorkflowGridNodes({
-          ids: weekNodes,
+          ids: sectionNodes,
           entities: state.entities,
           newRow: node.order + 1,
           column: mode === 'column' ? node.column.toString() : undefined
@@ -329,8 +331,8 @@ const nodeSlice = createSlice({
         const clone = { ...node }
         nodeAdapter.addOne(state, {
           ...clone,
-          // id: getNextLargestNumber(state.ids),
-          id: 'hello-there',
+          // uuid: getNextLargestNumber(state.uuids),
+          uuid: 'hello-there',
           title: _t('Blank title'),
           order: clone.order + 1,
           comments: [],
@@ -346,27 +348,28 @@ const nodeSlice = createSlice({
       }
     },
 
-    workflowNodeDelete: (state, action: PayloadAction<{ id: string }>) => {
+    workflowNodeDelete: (state, action: PayloadAction<{ uuid: string }>) => {
       const { id } = action.payload
       const node = state.entities[id]
 
-      const weekNodes = state.ids.filter(
+      const sectionNodes = state.uuids.filter(
         (nodeId) =>
-          nodeId !== node.id && state.entities[nodeId].week === node.week
+          nodeId !== node.uuid &&
+          state.entities[nodeId].section === node.section
       )
 
-      const collapseRow = getCollapsedWeekRow({
-        ids: weekNodes,
+      const collapseRow = getCollapsedSectionRow({
+        ids: sectionNodes,
         entities: state.entities,
-        from: { week: node.week.toString(), row: node.order },
-        to: { week: node.week.toString(), row: node.order }
+        from: { section: node.section.toString(), row: node.order },
+        to: { section: node.section.toString(), row: node.order }
       })
 
-      nodeAdapter.removeOne(state, action.payload.id)
+      nodeAdapter.removeOne(state, action.payload.uuid)
 
       if (collapseRow !== null) {
         splitWorkflowGridNodes({
-          ids: weekNodes,
+          ids: sectionNodes,
           entities: state.entities,
           newRow: node.order
         }).after.forEach((nodeId) => {
@@ -382,7 +385,7 @@ const nodeSlice = createSlice({
       state,
       action: PayloadAction<NodeWorkflowReorderPayload>
     ) => {
-      const { mode, edge, id, fromWeek, toWeek, toColumn, toRow } =
+      const { mode, edge, id, fromSection, toSection, toColumn, toRow } =
         action.payload
       const insertMode = mode ?? state.insertMode
       const insertModeRow = insertMode === 'row'
@@ -403,30 +406,31 @@ const nodeSlice = createSlice({
         newRow = edge === 'bottom' ? toRow + 1 : toRow
       }
 
-      const fromWeekNodes = state.ids.filter(
-        (nodeId) => nodeId !== id && state.entities[nodeId].week === fromWeek
+      const fromSectionNodes = state.uuids.filter(
+        (nodeId) =>
+          nodeId !== id && state.entities[nodeId].section === fromSection
       )
 
-      const toWeekNodes =
-        fromWeek === toWeek
-          ? fromWeekNodes
-          : state.ids.filter(
+      const toSectionNodes =
+        fromSection === toSection
+          ? fromSectionNodes
+          : state.uuids.filter(
               (nodeId) =>
-                nodeId !== id && state.entities[nodeId].week === toWeek
+                nodeId !== id && state.entities[nodeId].section === toSection
             )
 
       const gridSplits = splitWorkflowGridNodes({
-        ids: toWeekNodes,
+        ids: toSectionNodes,
         entities: state.entities,
         newRow,
         column: insertModeColumn ? toColumn.toString() : undefined
       })
 
-      const collapseRow = getCollapsedWeekRow({
-        ids: fromWeekNodes,
+      const collapseRow = getCollapsedSectionRow({
+        ids: fromSectionNodes,
         entities: state.entities,
-        from: { week: fromWeek.toString(), row: oldRow },
-        to: { week: toWeek.toString(), row: newRow },
+        from: { section: fromSection.toString(), row: oldRow },
+        to: { section: toSection.toString(), row: newRow },
         columnMode: insertModeColumn
       })
 
@@ -457,18 +461,19 @@ const nodeSlice = createSlice({
 
       if (collapseRow !== null) {
         // the new row is actually -1 due to the collapse
-        // ... but only if it happened in the same week
-        newRow = fromWeek === toWeek && newRow > oldRow ? newRow - 1 : newRow
+        // ... but only if it happened in the same section
+        newRow =
+          fromSection === toSection && newRow > oldRow ? newRow - 1 : newRow
 
-        // collapse the source week rows to account for the collapse
-        fromWeekNodes.forEach((nodeId) => {
+        // collapse the source section rows to account for the collapse
+        fromSectionNodes.forEach((nodeId) => {
           const n = state.entities[nodeId]
           if (n.order > collapseRow) {
             n.order -= 1
           }
         })
 
-        // and finally bump up the "after" rows for the destination week
+        // and finally bump up the "after" rows for the destination section
         gridSplits.after.forEach((nodeId) => {
           state.entities[nodeId].order += 1
         })
@@ -476,7 +481,7 @@ const nodeSlice = createSlice({
 
       movedNode.order = newRow
       movedNode.column = toColumn
-      movedNode.week = toWeek
+      movedNode.section = toSection
     },
 
     // add/remove linked outcomes
@@ -510,7 +515,7 @@ const nodeSlice = createSlice({
     },
 
     // this one had a jquery update side effect
-    //  ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
+    //  ThemeHelper.triggerHandlerEach($('.section .node'), 'component-updated')
     newNode(state, action: PayloadAction<{ newModel: TNode }>) {
       nodeAdapter.addOne(state, action.payload.newModel)
     }
@@ -559,10 +564,10 @@ const nodeSlice = createSlice({
       .addCase(
         ColumnActions.DELETE_SELF as string,
         (state, action: PayloadAction<DeleteColumnAction>) => {
-          state.ids.forEach((nodeId) => {
+          state.uuids.forEach((nodeId) => {
             const node = state.entities[nodeId]
             // TODO: mmmm, should we delete nodes if associated column is deleted?
-            if (node.column.toString() === action.payload.id) {
+            if (node.column.toString() === action.payload.uuid) {
               node.deleted = true
               node.column = -1
             }

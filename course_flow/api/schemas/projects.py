@@ -1,7 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from uuid import UUID
 
 from course_flow.api.common.schemas import CamelSchema
+from course_flow.core.enum import WorkflowType
 
 
 class ProjectCreateIn(CamelSchema):
@@ -22,6 +23,7 @@ class ProjectListItemOut(CamelSchema):
     """
     List rows: compact project fields only.
     """
+
     uuid: UUID
     title: str
     owner_id: int
@@ -39,9 +41,17 @@ class ProjectListOut(CamelSchema):
     meta: ProjectListMetaOut
 
 
+class ProjectWorkflowListItemOut(CamelSchema):
+    uuid: UUID
+    title: str
+    description: str
+    workflow_type: WorkflowType
+    is_favorite: bool
+
+
 class ProjectDetailOut(CamelSchema):
     """
-    Single project resource: persisted fields only (no related collections).
+    Single project resource with minimal child workflow list metadata.
     """
 
     uuid: UUID
@@ -52,7 +62,7 @@ class ProjectDetailOut(CamelSchema):
     owner_id: int
     date_created: datetime
     modified_on: datetime
-    graphs: list["ProjectGraphOut"] = []
+    workflows: list[ProjectWorkflowListItemOut] = []
 
 
 class ProjectDetailOutResp(CamelSchema):
@@ -67,50 +77,3 @@ class ProjectDuplicatePlaceholderOut(CamelSchema):
     success: bool = True
     message: str
     project_uuid: UUID
-
-
-class TaskMetaOut(CamelSchema):
-    kind: str = "task_meta"
-    context: str
-
-
-class ProgramMetaOut(CamelSchema):
-    kind: str = "program_meta"
-    calculate_time: str
-    calculate_credits: str
-    calculate_ponderation: str
-    calculate_classification: str
-    classification_general_time: timedelta | None = None
-    classification_specific_time: timedelta | None = None
-
-
-class CourseMetaOut(CamelSchema):
-    kind: str = "course_meta"
-    classification: str
-    code: str
-
-
-class ActivityMetaOut(CamelSchema):
-    kind: str = "activity_meta"
-    context: str
-    classification: str
-
-
-class WorkflowOut(CamelSchema):
-    uuid: UUID
-    title: str
-    description: str
-    workflow_type: str
-    meta: TaskMetaOut | ProgramMetaOut | CourseMetaOut | ActivityMetaOut | None = None
-
-
-class ProjectGraphOut(CamelSchema):
-    """Graph UUID + revision; workflow authorship and project scope come from ``Workflow``."""
-
-    uuid: UUID
-    revision_id: int
-    author_id: int | None
-    workflow_project_id: int | None
-    date_created: datetime
-    modified_on: datetime
-    workflow: WorkflowOut

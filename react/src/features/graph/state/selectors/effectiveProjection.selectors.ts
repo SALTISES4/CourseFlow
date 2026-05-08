@@ -19,7 +19,9 @@ export const selectPendingOperationsByWorkflowUuid = (
   workflowUuid: WorkflowUuid
 ) =>
   createSelector([selectPendingOperations], (ops) =>
-    ops.filter((op) => op.workflowUuid === workflowUuid && op.status === 'pending')
+    ops.filter(
+      (op) => op.workflowUuid === workflowUuid && op.status === 'pending'
+    )
   )
 
 // Placeholder projection seam.

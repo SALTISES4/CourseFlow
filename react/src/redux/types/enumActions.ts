@@ -4,7 +4,7 @@ export enum SliceNamespace {
   NODE = 'node',
   SIDEBAR = 'sidebar',
   SVGLINK = 'svglink',
-  WEEK = 'week',
+  WEEK = 'section',
   COLUMN = 'column',
   STRATEGY = 'strategy',
   OBJECTSET = 'objectSet',
@@ -28,19 +28,19 @@ export enum WorkflowActions {
   RESTORE_SELF = 'workflow/restoreSelf'
 }
 
-export enum WeekActions {
-  DELETE_SELF = 'week/deleteSelf',
-  DELETE_SELF_SOFT = 'week/deleteSelfSoft',
-  RESTORE_SELF = 'week/restoreSelf',
-  INSERT_BELOW = 'week/insertBelow',
-  CREATE_LOCK = 'week/createLock',
-  CHANGE_FIELD = 'week/changeField',
-  RELOAD_COMMENTS = 'week/reloadComments'
+export enum SectionActions {
+  DELETE_SELF = 'section/deleteSelf',
+  DELETE_SELF_SOFT = 'section/deleteSelfSoft',
+  RESTORE_SELF = 'section/restoreSelf',
+  INSERT_BELOW = 'section/insertBelow',
+  CREATE_LOCK = 'section/createLock',
+  CHANGE_FIELD = 'section/changeField',
+  RELOAD_COMMENTS = 'section/reloadComments'
 }
 
-export enum WeekWorkflowActions {
-  CHANGE_ID = 'weekworkflow/changeId',
-  MOVED_TO = 'weekworkflow/movedTo'
+export enum SectionWorkflowActions {
+  CHANGE_ID = 'sectionworkflow/changeId',
+  MOVED_TO = 'sectionworkflow/movedTo'
 }
 
 export enum OutcomeActions {
@@ -97,9 +97,9 @@ export enum ColumnActions {
   CHANGE_FIELD = 'column/changeField'
 }
 
-export enum NodeWeekActions {
-  CHANGE_ID = 'nodeweek/changeId',
-  MOVED_TO = 'nodeweek/movedTo'
+export enum NodeSectionActions {
+  CHANGE_ID = 'nodesection/changeId',
+  MOVED_TO = 'nodesection/movedTo'
 }
 
 export enum NodeActions {

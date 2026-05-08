@@ -59,7 +59,7 @@ export type CommentsForObjectQueryResp = {
 }
 
 export type CommentsForObjectQueryArgs = {
-  objectid: string
+  objectuuid: string
   objectType: CfObjectType
 }
 
@@ -102,7 +102,7 @@ export type PageLibraryQueryResp = {
 // export type WorkflowContextQueryResp = {
 //   message: string
 //   dataPackage: WorkflowContextData
-//   workflowid: string
+//   workflowuuid: string
 // }
 
 export type TargetProjectQueryResp = {
@@ -112,7 +112,7 @@ export type TargetProjectQueryResp = {
     editProjects: ESectionGroup
     deletedProjects?: ESectionGroup
   }
-  workflowid: string
+  workflowuuid: string
 }
 
 export type ProjectsForCreateQueryResp = {
@@ -133,17 +133,17 @@ export type WorkflowsForProjectQueryResp = {
 export type LinkedWorkflowMenuQueryResp = {
   message: string
   dataPackage: WorkflowGroupsDataPackage
-  nodeid: string
+  nodeuuid: string
 }
 
 export type GetWorkflowSelectQueryResp = {
   message: string
   dataPackage: WorkflowGroupsDataPackage
-  projectid: string
+  projectuuid: string
 }
 
 export type GetWorkflowSelectMenuResp = {
-  workflowid: string
+  workflowuuid: string
 }
 
 /*******************************************************

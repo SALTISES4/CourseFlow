@@ -1,6 +1,5 @@
 import { StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { apiPaths } from '@cf/router/apiRoutes'
 import strings from '@cf/utility/strings'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -14,9 +13,7 @@ const PasswordResetDialog = () => {
   const navigate = useNavigate()
 
   function onSubmit() {
-    navigate(apiPaths.external.resetPasswordUrl, {
-      replace: true
-    })
+    console.log('reset password')
   }
 
   return (

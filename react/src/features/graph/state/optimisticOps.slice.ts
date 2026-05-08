@@ -24,20 +24,20 @@ const optimisticOpsSlice = createSlice({
     updateStatus(
       state,
       action: PayloadAction<{
-        id: PendingGraphOperation['id']
+        uuid: PendingGraphOperation['uuid']
         status: PendingGraphOperation['status']
       }>
     ) {
       optimisticOpsAdapter.updateOne(state, {
-        id: action.payload.id,
+        uuid: action.payload.uuid,
         changes: { status: action.payload.status }
       })
     },
-    removeById(state, action: PayloadAction<PendingGraphOperation['id']>) {
+    removeById(state, action: PayloadAction<PendingGraphOperation['uuid']>) {
       optimisticOpsAdapter.removeOne(state, action.payload)
     },
     removeByWorkflowUuid(state, action: PayloadAction<WorkflowUuid>) {
-      const ids = state.ids.filter((id) => {
+      const ids = state.uuids.filter((id) => {
         const op = state.entities[id]
         return op?.workflowUuid === action.payload
       })

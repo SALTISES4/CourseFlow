@@ -193,9 +193,9 @@ class ThemeHelper {
     return colour ?? (defaultColumnSettings[columnType]?.colour || '')
   }
 
-  static generateColorFromIntToHex(id: string) {
+  static generateColorFromIntToHex(uuid: string) {
     // Use a large prime here to avoid having modulo 0
-    const hue = (id * 41) % 360
+    const hue = (Number(uuid) * 41) % 360
 
     // Set saturation and lightness to fixed values
     const saturation = 50

@@ -63,7 +63,7 @@ export default function parentNodeReducer(
 
       return action.payload.parentNode.reduce(
         (acc, newItem) => {
-          const index = acc.findIndex((item) => item.id === newItem.id)
+          const index = acc.findIndex((item) => item.uuid === newItem.uuid)
           if (index > -1) {
             acc.splice(index, 1, newItem)
           } else {
@@ -87,7 +87,7 @@ export default function parentNodeReducer(
       }
 
       return state.map((item) => {
-        if (item.id === action.payload.dataPackage[0].node) {
+        if (item.uuid === action.payload.dataPackage[0].node) {
           return {
             ...item,
             outcomenodeSet: action.payload.newOutcomenodeSet,
@@ -109,10 +109,12 @@ export default function parentNodeReducer(
     case OutcomeBaseActions.DELETE_SELF:
     case OutcomeBaseActions.DELETE_SELF_SOFT: {
       return state.map((item, index) =>
-        action.payload.extraData.find((data) => data.id === item.id)
+        action.payload.extraData.find((data) => data.uuid === item.uuid)
           ? {
               ...item,
-              ...action.payload.extraData.find((data) => data.id === item.id)
+              ...action.payload.extraData.find(
+                (data) => data.uuid === item.uuid
+              )
             }
           : item
       )
@@ -122,4 +124,3 @@ export default function parentNodeReducer(
       return state
   }
 }
-

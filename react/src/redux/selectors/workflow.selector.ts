@@ -21,21 +21,21 @@ export const selectWorkflowColumnEntities = createSelector(
 )
 
 type Section = {
-  id: string
+  uuid: string
   rows: Record<string, string>[]
 }
 
 export type WorkflowBoard = {
-  id: string
+  uuid: string
   columns: {
     ids: string[]
     colors: Record<string, string>
   }
-  weeks: Section[]
+  sections: Section[]
 }
 
 // WEEK ROW EXAMPLE
-// this week has 3 rows       rows = [
+// this section has 3 rows       rows = [
 // #11 x: 3, y: 0               { 3: 11 },
 // #22 x: 2, y: 1               { 2: 22, 3, 23 },
 // #23 x: 3, y: 1               { 0: 33 }
@@ -50,43 +50,47 @@ export const selectWorkflowBoard = createSelector(
     // prepare column colors
     const colors: WorkflowBoard['columns']['colors'] = {}
     getChannelData(columns).forEach((col) => {
-      colors[col.id] = col.color
+      colors[col.uuid] = col.color
     })
 
     // final shape of the board
     const board: WorkflowBoard = {
-      id: workflow.id,
+      uuid: workflow.uuid,
       columns: {
-        ids: columns.map((col) => col.id),
+        ids: columns.map((col) => col.uuid),
         colors
       },
-      weeks: workflow.weeks.map((weekId) => {
+      sections: workflow.sections.map((sectionId) => {
         const rows: Section['rows'] = []
-        const weekNodes = nodes.filter((n) => n.week === weekId && !n.deleted)
-        weekNodes
+        const sectionNodes = nodes.filter(
+          (n) => n.section === sectionId && !n.deleted
+        )
+        sectionNodes
           .sort((a, b) => a.order - b.order)
           .forEach((node) => {
-            const x = columns.findIndex((c) => c.id === node.column.toString())
+            const x = columns.findIndex(
+              (c) => c.uuid === node.column.toString()
+            )
             const y = node.order
 
             // place the node into the corresponding row/cell
             if (!rows[y]) {
-              rows[y] = { [x]: node.id }
+              rows[y] = { [x]: node.uuid }
             } else {
               // there can technically be an overwrite
               if (rows[y][x]) {
                 console.log(
-                  `node overwrite at week #${weekId} ${y}/${x} node id #${node.id} replacing #${rows[y][x]}`
+                  `node overwrite at section #${sectionId} ${y}/${x} node id #${node.uuid} replacing #${rows[y][x]}`
                 )
               }
 
               // assign the node anyway
-              rows[y][x] = node.id
+              rows[y][x] = node.uuid
             }
           })
 
         return {
-          id: weekId.toString(),
+          uuid: sectionId.toString(),
           rows
         }
       })

@@ -3,9 +3,9 @@ from uuid import UUID
 
 from course_flow.application.dto import (
     ChannelDTO,
-    GraphDTO,
     ProjectDTO,
     SectionDTO,
+    WorkflowDTO,
 )
 
 
@@ -31,24 +31,26 @@ class ProjectRepositoryPort(Protocol):
     def delete(self, uuid: UUID) -> bool: ...
 
 
-class GraphRepositoryPort(Protocol):
+class WorkflowRepositoryPort(Protocol):
     def create(
         self,
         *,
         author_id: int,
-        workflow_project_id: int | None,
-        workflow_title: str,
+        project_id: int | None,
+        title: str,
         workflow_type: str,
-        workflow_description: str,
-    ) -> GraphDTO: ...
+        description: str,
+    ) -> WorkflowDTO: ...
 
-    def get_by_uuid(self, uuid: UUID) -> GraphDTO | None: ...
+    def get_by_graph_uuid(self, uuid: UUID) -> WorkflowDTO | None: ...
 
-    def list_for_author(self, author_id: int) -> list[GraphDTO]: ...
+    def get_by_workflow_uuid(self, uuid: UUID) -> WorkflowDTO | None: ...
 
-    def list_for_project(self, project_id: int) -> list[GraphDTO]: ...
+    def list_for_author(self, author_id: int) -> list[WorkflowDTO]: ...
 
-    def update(self, uuid: UUID, updates: dict[str, Any]) -> GraphDTO | None: ...
+    def list_for_project(self, project_id: int) -> list[WorkflowDTO]: ...
+
+    def update(self, graph_uuid: UUID, updates: dict[str, Any]) -> WorkflowDTO | None: ...
 
 
 class ChannelRepositoryPort(Protocol):

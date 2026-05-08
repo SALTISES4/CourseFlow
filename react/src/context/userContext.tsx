@@ -6,12 +6,12 @@ import { ReactNode, createContext } from 'react'
 import { useSelector } from 'react-redux'
 
 type UserContextType = {
-  id: string
+  uuid: string
   user: EUser
 }
 
 export const UserContext = createContext<UserContextType>({
-  id: '',
+  uuid: '',
   user: null
 })
 
@@ -40,7 +40,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
   return (
     <UserContext.Provider
       value={{
-        id: eUser.id,
+        uuid: eUser.uuid,
         user: eUser
       }}
     >

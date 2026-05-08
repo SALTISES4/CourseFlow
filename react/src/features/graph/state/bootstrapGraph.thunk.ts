@@ -8,11 +8,7 @@ import {
   tagsActions,
   workflowMetaActions
 } from './canonical'
-import {
-  fetchWorkflowGraphBundle,
-  fetchWorkflowMeta,
-  fetchWorkflowTags
-} from './graphApi'
+import { fetchWorkflowGraphBundle, fetchWorkflowTags } from './graphApi'
 import { graphLoadActions } from './graphLoad.slice'
 import type { GraphState } from './graphState'
 import type { GraphResourceLoadState, WorkflowUuid } from './model/types'
@@ -73,16 +69,6 @@ export const bootstrapWorkflowGraph = (
     dispatch(setLoading(workflowUuid, 'edges'))
     dispatch(setLoading(workflowUuid, 'tags'))
 
-    const workflowMetaPromise = fetchWorkflowMeta(workflowUuid)
-      .then((meta) => {
-        dispatch(workflowMetaActions.upsertOne(meta))
-        dispatch(setSucceeded(workflowUuid, 'workflowMeta'))
-      })
-      .catch(() => {
-        dispatch(setFailed(workflowUuid, 'workflowMeta'))
-        throw new Error('workflowMeta')
-      })
-
     const graphPromise = fetchWorkflowGraphBundle(workflowUuid)
       .then((bundle) => {
         dispatch(workflowMetaActions.upsertOne(bundle.workflowMeta))
@@ -91,8 +77,6 @@ export const bootstrapWorkflowGraph = (
         dispatch(nodesActions.upsertMany(bundle.nodes))
         dispatch(edgesActions.upsertMany(bundle.edges))
 
-        // Meta can be sourced from either dedicated workflow endpoint
-        // or graph projection endpoint; mark ready on successful graph payload too.
         dispatch(setSucceeded(workflowUuid, 'workflowMeta'))
         dispatch(setSucceeded(workflowUuid, 'sections'))
         dispatch(setSucceeded(workflowUuid, 'channels'))
@@ -100,6 +84,7 @@ export const bootstrapWorkflowGraph = (
         dispatch(setSucceeded(workflowUuid, 'edges'))
       })
       .catch(() => {
+        dispatch(setFailed(workflowUuid, 'workflowMeta'))
         dispatch(setFailed(workflowUuid, 'sections'))
         dispatch(setFailed(workflowUuid, 'channels'))
         dispatch(setFailed(workflowUuid, 'nodes'))
@@ -117,11 +102,7 @@ export const bootstrapWorkflowGraph = (
         throw new Error('tags')
       })
 
-    const settled = await Promise.allSettled([
-      workflowMetaPromise,
-      graphPromise,
-      tagsPromise
-    ])
+    const settled = await Promise.allSettled([graphPromise, tagsPromise])
     const ok = settled.every((result) => result.status === 'fulfilled')
     if (process.env.NODE_ENV !== 'production') {
       // Temporary milestone instrumentation for hydration verification.

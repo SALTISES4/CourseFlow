@@ -25,12 +25,15 @@ export const OutcomeGroup = ({ parentId }: { parentId: string | null }) => {
   return (
     <Styled.OutcomeGroup>
       {childOutcomes.map((outcome) => (
-        <Styled.OutcomeGroupItem key={outcome.id} padded={outcome.level === 0}>
+        <Styled.OutcomeGroupItem
+          key={outcome.uuid}
+          padded={outcome.level === 0}
+        >
           <Outcome {...outcome} greenHover />
           {!!outcome.linkedOutcomes?.length && (
             <LinkedOutcomes
               parent={{
-                id: outcome.id,
+                uuid: outcome.uuid,
                 type: 'outcome'
               }}
               outcomes={outcome.linkedOutcomes}
