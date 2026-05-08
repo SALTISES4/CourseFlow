@@ -2,7 +2,6 @@ import { ProjectDetailsType } from '@cf/types/common'
 import { WorkspaceType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { OuterContentWrap } from '@cfMUI/helper'
-import Tags from '@cfViews/ProjectView/TabOverview/TagsSection'
 import * as SC from '@cfViews/WorkflowView/OverviewView/styles'
 import UserPermissions from '@cfViews/WorkflowView/OverviewView/UserPermissions'
 import LinkIcon from '@mui/icons-material/Link'
@@ -10,6 +9,8 @@ import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import { useParams } from 'react-router-dom'
+
+import TagsSection from './TagsSection'
 
 const OverviewTab = ({
   description,
@@ -19,7 +20,6 @@ const OverviewTab = ({
   author
 }: ProjectDetailsType) => {
   const { uuid } = useParams()
-  const projectUuid = uuid
 
   return (
     <OuterContentWrap sx={{ pt: 4 }}>
@@ -54,7 +54,7 @@ const OverviewTab = ({
         <SC.InfoBlockTitle>{_t('Permissions')}</SC.InfoBlockTitle>
 
         <UserPermissions
-          workspaceId={projectUuid ?? ''}
+          workspaceId={uuid ?? ''}
           author={author}
           workspaceType={WorkspaceType.PROJECT}
         />
@@ -76,7 +76,7 @@ const OverviewTab = ({
         </Stack>
       </SC.InfoBlock>
 
-      <Tags data={tags} />
+      <TagsSection data={tags} />
     </OuterContentWrap>
   )
 }

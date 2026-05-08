@@ -8,6 +8,7 @@ from uuid import UUID
 
 from django.db.models import Q, QuerySet
 
+from course_flow.api.common.schemas import CamelSchema
 from course_flow.api.schemas.library import LibraryFavoriteOut
 from course_flow.core.models import (
     FavoriteGraph,
@@ -22,7 +23,7 @@ class LibraryObjectType(str, Enum):
     WORKFLOW = "workflow"
 
 @dataclass
-class LibraryObject:
+class LibraryObject(CamelSchema):
     id: int
     type: LibraryObjectType
     uuid: UUID
@@ -156,7 +157,7 @@ class LibraryService:
             message="added" if created else "deleted",
         )
 
-    def _find_from_uuid(self, uuid: UUID):
+    def _find_from_uuid(self, uuid: UUID | None):
         if uuid is None:
             raise ValueError("UUID is required")
 

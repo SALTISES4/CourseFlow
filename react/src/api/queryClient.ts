@@ -11,3 +11,12 @@ export const courseFlowQueryClient = new QueryClient({
     }
   }
 })
+
+// Add support for TanStack Query devtools
+declare global {
+  interface Window {
+    __TANSTACK_QUERY_CLIENT__: import('@tanstack/query-core').QueryClient
+  }
+}
+
+window.__TANSTACK_QUERY_CLIENT__ = courseFlowQueryClient

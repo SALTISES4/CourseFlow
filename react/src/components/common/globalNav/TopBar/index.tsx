@@ -148,7 +148,7 @@ const TopBar = () => {
     }
 
     const items = data?.items ?? []
-    const unreadCount = data?.meta.unread_count ?? 0
+    const unreadCount = data?.meta.unreadCount ?? 0
 
     const content = (
       <>
@@ -169,19 +169,19 @@ const TopBar = () => {
               key={String(item.uuid)}
               alignItems="flex-start"
               sx={{
-                backgroundColor: !item.is_read ? 'courseflow.lightest' : null
+                backgroundColor: !item.isRead ? 'courseflow.lightest' : null
               }}
             >
               <ListItemButton
                 component={RouterLink}
                 to={CFRoutes.NOTIFICATIONS}
               >
-                {!item.is_read && <Badge color="primary" variant="dot" />}
+                {!item.isRead && <Badge color="primary" variant="dot" />}
                 <ListItemText
-                  primary={item.date_created}
+                  primary={item.dateCreated}
                   secondary={
                     <Typography
-                      sx={{ display: 'inline' }}
+                      style={{ display: 'inline' }}
                       component="span"
                       variant="body2"
                       color="text.primary"
@@ -232,7 +232,7 @@ const TopBar = () => {
       <AppBar position="static">
         <Toolbar variant="dense">
           <ReturnLinks />
-          <Box sx={{ flexGrow: 1 }} className="title" />
+          <Box style={{ flexGrow: 1 }} className="title" />
           <Stack direction="row" spacing={1}>
             <AddMenu show />
             <NotificationsMenu />

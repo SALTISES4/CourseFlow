@@ -1,105 +1,28 @@
 import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
-import MenuBar from '@cf/components/common/globalNav/MenuBar'
-import Loader from '@cf/components/common/UIPrimitives/Loader'
-import Header from '@cf/components/pages/Project/components/Header'
-import { ActionMenu } from '@cf/components/pages/Project/components/MenuBar'
-import ProjectDialogs from '@cf/components/pages/Project/components/ProjectDialogs'
-import ErrorView from '@cf/components/views/MsgViews/ErrorView'
-import TabOverview from '@cf/components/views/ProjectView/TabOverview'
-import TabWorkflows from '@cf/components/views/ProjectView/TabWorkflows'
-import { getErrorMessage } from '@cf/HTTP/XMLHTTP/API/api'
-import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
-import { OuterContentWrap } from '@cf/styles/mui/helper'
 import { ProjectDetailsType } from '@cf/types/common'
 import { mapProjectV2ToProjectDetails } from '@cf/utility/marshalling/projectDetail'
 import { _t } from '@cf/utility/Utility.class'
-import Box from '@mui/material/Box'
-import Tab from '@mui/material/Tab'
-import Tabs from '@mui/material/Tabs'
+import MenuBar from '@cfComponents/globalNav/MenuBar'
+import Loader from '@cfComponents/UIPrimitives/Loader'
+import ErrorView from '@cfPages/MsgViews/ErrorView'
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useMemo, useState } from 'react'
-import {
-  Route,
-  Routes,
-  generatePath,
-  matchPath,
-  useLocation,
-  useNavigate,
-  useParams
-} from 'react-router-dom'
+import { getErrorMessage } from '@XMLHTTP/API/api'
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+
+import ProjectActionMenu from './components/ActionMenu'
+import ProjectDialogs from './components/Dialogs'
+import ProjectHeader from './components/Header'
+import ProjectTabs from './components/Tabs'
 
 const ProjectDetails = () => {
-  /*******************************************************
-   * HOOKS
-   *******************************************************/
   const { uuid } = useParams()
-  const projectUuid = uuid
-  const location = useLocation()
-  const [activeTab, setActiveTab] = useState<RelativeRoutes>()
   const [project, setProject] = useState<ProjectDetailsType>()
-  const navigate = useNavigate()
 
   const { data, error, isLoading, isError } = useQuery({
-    ...getProjectOptions({
-      path: { uuid: projectUuid as string }
-    }),
-    enabled: Boolean(projectUuid)
+    ...getProjectOptions({ path: { uuid } }),
+    enabled: Boolean(uuid)
   })
-
-  const tabsObject = useMemo(
-    () => [
-      {
-        path: CFRoutes.PROJECT,
-        relativePath: RelativeRoutes.INDEX,
-        label: _t('Overview'),
-        action: () => {
-          const path = generatePath(CFRoutes.PROJECT, {
-            uuid: projectUuid
-          })
-          navigate(path)
-        }
-      },
-      {
-        path: CFRoutes.PROJECT_WORKFLOW,
-        relativePath: RelativeRoutes.WORKFLOWS,
-        label: _t('Workflows'),
-        action: () => {
-          const path = generatePath(CFRoutes.PROJECT_WORKFLOW, {
-            uuid: projectUuid
-          })
-          navigate(path)
-        }
-      }
-    ],
-    [navigate, projectUuid]
-  )
-
-  const tabs = tabsObject.map((item) => (
-    <Tab
-      key={item.relativePath}
-      label={item.label}
-      value={item.relativePath}
-      onClick={() => {
-        const path = generatePath(item.path, { uuid: projectUuid })
-        navigate(path)
-      }}
-    />
-  ))
-
-  /*******************************************************
-   * LIFE CYCLE
-   *******************************************************/
-  // not really a big fan of this solution...
-  // is this really how RR would implement this?
-  // here is probably a better solution
-  // https://blog.stackademic.com/how-to-implement-tabs-that-sync-with-react-router-e255e0e90cfd
-  // we use the same pattern in: workspace tabs
-  useEffect(() => {
-    const match = tabsObject.find((tab) =>
-      matchPath({ path: tab.path, end: true }, location.pathname)
-    )
-    setActiveTab(match.relativePath)
-  }, [tabsObject, location.pathname])
 
   useEffect(() => {
     if (!data) {
@@ -119,40 +42,11 @@ const ProjectDetails = () => {
     )
   }
 
-  const ProjectTabsManager = () => {
-    return (
-      <>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <OuterContentWrap style={{ paddingBottom: 0 }}>
-            <Tabs
-              value={activeTab}
-              onChange={(_, newValue: RelativeRoutes) => setActiveTab(newValue)}
-            >
-              {tabs}
-            </Tabs>
-          </OuterContentWrap>
-        </Box>
-
-        <Routes>
-          <Route index path="/" element={<TabOverview {...project} />} />
-          <Route
-            path={RelativeRoutes.WORKFLOWS}
-            element={<TabWorkflows projectUuid={projectUuid!} />}
-          />
-        </Routes>
-      </>
-    )
-  }
-
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-
   return (
     <>
-      <MenuBar leftSection={<ActionMenu />} />
-      <Header project={project} />
-      <ProjectTabsManager />
+      <MenuBar leftSection={<ProjectActionMenu />} />
+      <ProjectHeader project={project} />
+      <ProjectTabs project={project} />
       <ProjectDialogs />
     </>
   )
