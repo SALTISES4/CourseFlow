@@ -4,7 +4,7 @@ import { sectionInsertBelow } from '@cf/redux/slices/section.slice'
 import { RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
-import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
+import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
@@ -23,7 +23,6 @@ type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
 const HoverMenu = ({ workflowId, sectionId, show }: PropsType) => {
   const dispatch = useDispatch()
   const { dispatch: dialogDispatch } = useDialog()
-  const ids = useSelector((state: RootState) => state.workspace.section.uuids)
   // const newSectionId = getNextLargestNumber(ids)
   console.log('TODO: review section hover menu')
   const newSectionId = 'new-section-id'
@@ -57,7 +56,7 @@ const HoverMenu = ({ workflowId, sectionId, show }: PropsType) => {
             dispatch(
               sidebarEdit({
                 uuid: sectionId,
-                objectType: CfObjectType.WEEK,
+                objectType: CfObjectType.SECTION,
                 tab: 'comments'
               })
             )

@@ -1,11 +1,11 @@
 import * as SC from '@cf/components/pages/Workflow/Sidebar/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { selectNodeById } from '@cf/redux/selectors/node.selector'
+import { selectNodeByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
 import {
   nodeChangeField,
   nodeSetLinkedWorkflow
 } from '@cf/redux/slices/node.slice'
-import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
+import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { RootState } from '@cf/redux/store'
 import { TNode } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
@@ -33,16 +33,23 @@ import optionsData from './optionsData'
 import * as Styled from './styles'
 import { NodeForm } from './types'
 
-const EditNode = ({ nodeId }: { nodeuuid: string }) => {
+const EditNode = ({ nodeId }: { nodeId: string }) => {
   const dispatch = useDispatch()
-  const node = useSelector((state: RootState) => selectNodeById(state, nodeId))
+  const nodeSelector = useMemo(() => selectNodeByUuid(nodeId), [nodeId])
+  const node = useSelector(nodeSelector)
+
+  useEffect(() => {
+    if (!node && nodeId) {
+      dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
+    }
+  }, [node, nodeId, dispatch])
 
   if (!node) {
-    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
     return null
   }
 
-  return <EditNodeForm node={node} />
+  // TODO(graph-state): map canonical NodeEntity + workflow/node detail API into TNode when available.
+  return <EditNodeForm node={node as unknown as TNode} />
 }
 
 const EditNodeForm = ({ node }: { node: TNode }) => {

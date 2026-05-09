@@ -5,78 +5,80 @@ import {
   SidebarInnerWrap,
   SidebarTitle
 } from '@cf/components/pages/Workflow/Sidebar/styles'
-import { selectColumnById } from '@cf/redux/selectors/column.selector'
-import { columnChangeField } from '@cf/redux/slices/column.slice'
-import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
+import {
+  selectChannelByUuid,
+  selectChannelThemeColumnType
+} from '@cf/features/graph/state/selectors/canonical.selectors'
+import type { ChannelEntity } from '@cf/features/graph/state/model/types'
+import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { RootState } from '@cf/redux/store'
-import { TColumn } from '@cf/redux/types/type'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import { debounce } from '@mui/material/utils'
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-const EditColumn = ({ columnId }: { columnuuid: string }) => {
+const EditColumn = ({ columnId }: { columnId: string }) => {
   const dispatch = useDispatch()
-  const column = useSelector((state: RootState) =>
-    selectColumnById(state, columnId)
+  const graphUuid = useSelector(
+    (state: RootState) => state.sidebar.edit.parentId ?? ''
   )
+  const channelSelector = useMemo(
+    () => selectChannelByUuid(columnId),
+    [columnId]
+  )
+  const channel = useSelector(channelSelector)
+  const themeColumnTypeSelector = useMemo(
+    () => selectChannelThemeColumnType(graphUuid, columnId),
+    [graphUuid, columnId]
+  )
+  const themeColumnType = useSelector(themeColumnTypeSelector)
 
-  if (!column) {
-    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
+  useEffect(() => {
+    if (!channel && columnId) {
+      dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
+    }
+  }, [channel, columnId, dispatch])
+
+  if (!channel) {
     return null
   }
 
-  return <EditColumnForm column={column} />
+  return (
+    <EditColumnForm channel={channel} themeColumnType={themeColumnType} />
+  )
 }
 
-const EditColumnForm = ({ column }: { column: TColumn }) => {
-  const dispatch = useDispatch()
-
+const EditColumnForm = ({
+  channel,
+  themeColumnType
+}: {
+  channel: ChannelEntity
+  themeColumnType: number
+}) => {
   const columnColourHex = ThemeHelper.getColumnColour({
-    columnType: column.columnType,
-    colour: column.colour
+    columnType: themeColumnType,
+    colour: null
   })
 
   const [color, setColor] = useState(columnColourHex)
-
-  const onTitleChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      dispatch(
-        columnChangeField({
-          uuid: column.uuid,
-          data: {
-            title: e.target.value
-          }
-        })
-      )
-    },
-    [dispatch, column.uuid]
-  )
-
-  const onColorChange = useCallback((color: string) => {
-    setColor(color)
-  }, [])
-
-  const debouncedUpdate = useMemo(
-    () =>
-      debounce((color: string) => {
-        dispatch(
-          columnChangeField({
-            uuid: column.uuid,
-            data: { colour: color }
-          })
-        )
-      }, 50),
-    [dispatch, column.uuid]
-  )
+  const [titleDraft, setTitleDraft] = useState(channel.title ?? '')
 
   useEffect(() => {
-    debouncedUpdate(color)
-  }, [color, debouncedUpdate])
+    setTitleDraft(channel.title ?? '')
+  }, [channel.uuid, channel.title])
+
+  const onTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setTitleDraft(e.target.value)
+    // TODO(graph-state): persist channel title via graph/channel mutation API when available.
+  }
+
+  const onColorChange = (next: string) => {
+    setColor(next)
+    // TODO(graph-state): canonical ChannelEntity has no per-channel colour; colours follow cyclic theme.
+  }
 
   return (
     <SidebarInnerWrap>
@@ -89,7 +91,7 @@ const EditColumnForm = ({ column }: { column: TColumn }) => {
             variant="outlined"
             label={_t('Title')}
             size="small"
-            value={column.title ?? column.columnTypeDisplay}
+            value={titleDraft}
             onChange={onTitleChange}
           />
           <ColorPicker size="small" color={color} onChange={onColorChange} />

@@ -1,7 +1,7 @@
 import {
   viewsettingsToggle,
   viewsettingsUpdate
-} from '@cfRedux/slices/viewsettings.slice'
+} from '@cf/features/viewSettings/state/viewsettings.slice'
 import { AppDispatch, RootState } from '@cfRedux/store'
 import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit'
 

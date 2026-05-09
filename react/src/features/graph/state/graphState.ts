@@ -3,17 +3,19 @@ import { combineReducers } from '@reduxjs/toolkit'
 import {
   channelsReducer,
   edgesReducer,
+  graphReducer,
   nodesReducer,
   sectionsReducer,
   tagsReducer,
-  workflowMetaReducer
+  workflowReducer
 } from './canonical'
 import { graphLoadReducer } from './graphLoad.slice'
 import { graphUiReducer } from './graphUi.slice'
 import { optimisticOpsReducer } from './optimisticOps.slice'
 
 export const graphCanonicalReducer = combineReducers({
-  workflowMeta: workflowMetaReducer,
+  graph: graphReducer,
+  workflow: workflowReducer,
   sections: sectionsReducer,
   channels: channelsReducer,
   nodes: nodesReducer,

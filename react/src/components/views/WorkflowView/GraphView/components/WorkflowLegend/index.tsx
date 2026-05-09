@@ -1,11 +1,14 @@
 import * as Constants from '@cf/utility/constants'
+import {
+  selectNodesByGraphUuid,
+  selectSectionsOrderedByGraphUuid
+} from '@cf/features/graph/state/selectors/canonical.selectors'
 import { _t } from '@cf/utility/Utility.class'
 import LegendLine from '@cfComponents/UIPrimitives/LegendLine'
-import { selectAllNodes } from '@cfRedux/selectors/node.selector'
-import { selectAllSections } from '@cfRedux/selectors/section.selector'
-import { RootState } from '@cfRedux/store'
 import Legend from '@cfViews/common/Legend'
+import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 
 const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
@@ -13,15 +16,32 @@ const choices = COURSEFLOW_APP.globalContextData.workflowChoices
  * first pass on FV conversion is done
  *******************************************************/
 const WorkflowLegend = () => {
-  const nodes = useSelector((state: RootState) => selectAllNodes(state))
-  const sections = useSelector((state: RootState) => selectAllSections(state))
+  const { uuid: graphUuid = '' } = useParams()
+  const sectionsSelector = useMemo(
+    () => selectSectionsOrderedByGraphUuid(graphUuid),
+    [graphUuid]
+  )
+  const nodesSelector = useMemo(
+    () => selectNodesByGraphUuid(graphUuid),
+    [graphUuid]
+  )
+  const nodes = useSelector(nodesSelector)
+  const sections = useSelector(sectionsSelector)
 
   /*******************************************************
    * COMPONENTS
    *******************************************************/
   const Strategies = () => {
     const strategies = sections
-      .map((section) => parseInt(section.strategyClassification.toString(), 10))
+      .map((section) =>
+        parseInt(
+          String(
+            (section as { strategyClassification?: string | number })
+              .strategyClassification ?? '0'
+          ),
+          10
+        )
+      )
       .filter((value, index, self) => self.indexOf(value) === index)
       .filter((value) => value > 0)
 
@@ -52,7 +72,15 @@ const WorkflowLegend = () => {
 
   const Contexts = () => {
     const contexts = nodes
-      .map((node) => parseInt(node.contextClassification.toString(), 10))
+      .map((node) =>
+        parseInt(
+          String(
+            (node as { contextClassification?: string | number })
+              .contextClassification ?? '0'
+          ),
+          10
+        )
+      )
       .filter((value, index, self) => self.indexOf(value) === index)
       .filter((value) => value > 0)
 
@@ -79,7 +107,15 @@ const WorkflowLegend = () => {
 
   const Tasks = () => {
     const tasks = nodes
-      .map((node) => parseInt(node.taskClassification.toString(), 10))
+      .map((node) =>
+        parseInt(
+          String(
+            (node as { taskClassification?: string | number })
+              .taskClassification ?? '0'
+          ),
+          10
+        )
+      )
       .filter((value, index, self) => self.indexOf(value) === index)
       .filter((value) => value > 0)
 

@@ -12,7 +12,7 @@ import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indi
 import { getPrefixPath } from '@cf/redux/selectors/outcomes.selector'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
-import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
+import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
 import {
   Outcome as OutcomeType,
   isOutcomeLink,

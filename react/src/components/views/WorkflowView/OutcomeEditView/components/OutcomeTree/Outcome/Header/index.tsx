@@ -7,7 +7,7 @@ import {
   deleteOutcome,
   duplicateOutcome
 } from '@cfRedux/slices/outcomes.slice'
-import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
+import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import AddIcon from '@mui/icons-material/Add'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'

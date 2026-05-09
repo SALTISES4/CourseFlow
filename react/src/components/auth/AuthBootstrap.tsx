@@ -1,4 +1,4 @@
-import { bootstrapAuth } from '@cfRedux/slices/auth.slice'
+import { bootstrapAuth } from '@cf/features/auth/state/auth.slice'
 import type { AppDispatch } from '@cfRedux/store'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'

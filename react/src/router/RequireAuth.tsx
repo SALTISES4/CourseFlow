@@ -1,7 +1,7 @@
 import {
   selectAuthStatus,
   selectIsBootstrapping
-} from '@cfRedux/slices/auth.slice'
+} from '@cf/features/auth/state/auth.slice'
 import { useSelector } from 'react-redux'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 

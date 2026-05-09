@@ -4,7 +4,7 @@ import { columnInsertBelow } from '@cf/redux/slices/column.slice'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
-import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
+import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import { RootState } from '@cfRedux/store'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
@@ -23,7 +23,12 @@ type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
 const HoverMenu = ({ nodeId, show }: PropsType) => {
   const dispatch = useDispatch()
   const { dispatch: dialogDispatch } = useDialog()
-  const ids = useSelector((state: RootState) => state.workspace.column.uuids)
+  const ids = useSelector((state: RootState) => {
+    const st = state as RootState & {
+      workspace?: { column?: { uuids?: string[] } }
+    }
+    return st.workspace?.column?.uuids ?? []
+  })
   // const newColumnId = getNextLargestNumber(ids)
   const newColumnId = 'please-work-god'
 

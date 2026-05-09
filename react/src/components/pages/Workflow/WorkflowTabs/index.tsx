@@ -11,18 +11,20 @@ import {
 import ConnectionBar from '@cf/components/pages/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
 import WorkflowDialogs from '@cf/components/pages/Workflow/WorkflowTabs/components/WorkflowDialogs'
 import useWorkflowTabs from '@cf/components/pages/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
+import { useWorkflowViewTypeFromRoute } from '@cf/components/pages/Workflow/WorkflowTabs/hooks/useWorkflowViewTypeFromRoute'
 import WorkflowLegend from '@cf/components/views/WorkflowView/GraphView/components/WorkflowLegend'
-import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
-import { RootState } from '@cf/redux/store'
+import Loader from '@cf/components/common/UIPrimitives/Loader'
+import { selectSectionUuidsOrderedForGraph } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { OuterContentWrap } from '@cf/styles/mui/helper'
 import ActionMenu from '@cfPages/Project/components/ActionMenu'
+import ErrorView from '@cfPages/MsgViews/ErrorView'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Tabs from '@mui/material/Tabs'
 import { useQuery } from '@tanstack/react-query'
-import { useContext, useEffect } from 'react'
+import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { Routes, matchPath, useParams } from 'react-router-dom'
+import { Routes, useParams } from 'react-router-dom'
 
 /**
  * The base component of our workflow view. This renders the menu bar
@@ -30,57 +32,65 @@ import { Routes, matchPath, useParams } from 'react-router-dom'
  * and then the tabs that allow the user to select a "type" of workflow view.
  */
 
-const WorkflowTabs = () => {
-  const context = useContext(WorkflowConfigContext)
-  const { uuid } = useParams()
-  const workflowUuid = uuid ?? ''
+// TODO(graph-state): Plumb `publicView` and `isStrategy` from canonical workflow meta or workflow detail API when available (legacy `workspace.workflow` is not mounted on RootState). Defaults match signed-in editor behavior.
+const workflowChromePublicView = false
+const workflowChromeIsStrategy = false
 
-  const { data: workflowDetailResp } = useQuery({
-    ...getWorkflowOptions({ path: { uuid: workflowUuid } }),
-    enabled: Boolean(workflowUuid)
+const WorkflowTabs = () => {
+  const { uuid } = useParams()
+  const workflowViewType = useWorkflowViewTypeFromRoute()
+
+  const {
+    data: workflowDetailResp,
+    isPending,
+    isFetching,
+    isError
+  } = useQuery({
+    ...getWorkflowOptions({
+      path: {
+        uuid: uuid ?? ''
+      }
+    }),
+    enabled: Boolean(uuid)
   })
 
-  const graphViewState = useSelector(
-    (state: RootState) => state.workspace.workflow
+  const sectionIdsOrderedSelector = useMemo(
+    () =>
+      selectSectionUuidsOrderedForGraph(workflowDetailResp?.item?.graphUuid),
+    [workflowDetailResp?.item?.graphUuid]
   )
+  const sectionIdsOrdered = useSelector(sectionIdsOrderedSelector)
 
-  const workflowType =
-    (workflowDetailResp?.item.workflowType as WorkflowType | undefined) ??
-    graphViewState.type
+  const workflowType = workflowDetailResp?.item.workflowType
 
   useWorkflowSidebar({
-    workflowType,
-    viewType: context.workflowView
+    workflowType, // enum no properly assigned in python schema
+    viewType: workflowViewType
   })
 
   // @todo should be memoized (calling the tabs per render)
-  const { tabRoutes, tabButtons, tabs } = useWorkflowTabs(
-    { ...graphViewState, type: workflowType },
-    context
-  )
+  const { tabRoutes, tabButtons } = useWorkflowTabs(workflowDetailResp, {
+    workflowView: workflowViewType
+  })
 
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
+  if (!uuid) {
+    return null
+  }
 
-  useEffect(() => {
-    const match = tabs.find((tab) =>
-      matchPath({ path: tab.route, end: true }, location.pathname)
-    )
-    if (match && context.workflowView !== match.type) {
-      context.setWorkflowView(match.type)
-    }
-  }, [])
+  if (!workflowDetailResp && (isPending || isFetching)) {
+    return <Loader />
+  }
+
+  if (!workflowDetailResp && isError) {
+    return <ErrorView />
+  }
 
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-
   const ViewBar = () => (
     <Stack direction="row" spacing={2}>
-      <JumpToMenu
-        sectionIds={graphViewState.sections?.map((w) => w.toString())}
-      />
+      <JumpToMenu sectionIds={sectionIdsOrdered} />
       <ExpandCollapseMenu legend={<WorkflowLegend />} />
     </Stack>
   )
@@ -94,16 +104,16 @@ const WorkflowTabs = () => {
         <MenuBar
           leftSection={<ActionMenu />}
           viewbar={<ViewBar />}
-          userbar={<ConnectionBar show={!graphViewState.publicView} />}
+          userbar={<ConnectionBar show={!workflowChromePublicView} />}
         />
         <div className="right-panel-wrapper">
           <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">
               <Header />
-              {!graphViewState.isStrategy && (
+              {!workflowChromeIsStrategy && (
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                   <OuterContentWrap sx={{ pb: 0 }}>
-                    <Tabs value={context.workflowView}>{tabButtons}</Tabs>
+                    <Tabs value={workflowViewType}>{tabButtons}</Tabs>
                   </OuterContentWrap>
                 </Box>
               )}

@@ -92,56 +92,56 @@ export interface EProject extends CourseFlowEntity {
 /*******************************************************
  * WORKFLOW
  *******************************************************/
-export interface EWorkflow extends CourseFlowEntity {
-  author: EUser
-  userPermissions: number
-  favourite: boolean
-  published: boolean
-  isOriginal: boolean
-  isStrategy: boolean
-  isTemplate: boolean
-  type: WorkflowType
-  publicView: boolean
-  condensed: boolean
-  importing: boolean
-
-  code: null
-
-  outcomesSort: number
-  outcomesType: number
-  parentWorkflow: null | number
-  ponderationIndividual: number
-  ponderationPractical: number
-  ponderationTheory: number
-
-  timeGeneralHours: number
-  timeRequired: number | null
-  timeSpecificHours: number
-  timeUnits: number
-
-  tableType: number
-  url: string
-  editCount?: number
-  defaultCustomColumn: number
-  defaultColumns: number[]
-  sections: number[]
-  columns: number[]
-  outcomes: number[]
-}
+// export interface EWorkflow extends CourseFlowEntity {
+//   author: EUser
+//   userPermissions: number
+//   favourite: boolean
+//   published: boolean
+//   isOriginal: boolean
+//   isStrategy: boolean
+//   isTemplate: boolean
+//   type: WorkflowType
+//   publicView: boolean
+//   condensed: boolean
+//   importing: boolean
+//
+//   code: null
+//
+//   outcomesSort: number
+//   outcomesType: number
+//   parentWorkflow: null | number
+//   ponderationIndividual: number
+//   ponderationPractical: number
+//   ponderationTheory: number
+//
+//   timeGeneralHours: number
+//   timeRequired: number | null
+//   timeSpecificHours: number
+//   timeUnits: number
+//
+//   tableType: number
+//   url: string
+//   editCount?: number
+//   defaultCustomColumn: number
+//   defaultColumns: number[]
+//   sections: number[]
+//   columns: number[]
+//   outcomes: number[]
+// }
 
 /*******************************************************
  * WORKFLOW OBJECTS
  *******************************************************/
-export interface ESection extends CourseFlowEntity {
-  isStrategy: boolean
-  default: boolean
-  sectionType: number // @todo try to check this
-  sectionTypeDisplay: string
-  strategyClassification: number
-  order: number
-  comments: number[]
-  nodes: number[]
-}
+// export interface ESection extends CourseFlowEntity {
+//   isStrategy: boolean
+//   default: boolean
+//   sectionType: number // @todo try to check this
+//   sectionTypeDisplay: string
+//   strategyClassification: number
+//   order: number
+//   comments: number[]
+//   nodes: number[]
+// }
 
 export interface EColumn extends CourseFlowEntity {
   colour: string | null

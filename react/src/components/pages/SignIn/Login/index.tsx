@@ -1,11 +1,11 @@
-import { _t } from '@cf/utility/Utility.class'
-import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
 import {
   clearAuthError,
   login,
   selectAuthError,
   selectLoginPending
-} from '@cfRedux/slices/auth.slice'
+} from '@cf/features/auth/state/auth.slice'
+import { _t } from '@cf/utility/Utility.class'
+import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
 import type { AppDispatch } from '@cfRedux/store'
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'

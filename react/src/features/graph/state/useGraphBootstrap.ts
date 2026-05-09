@@ -3,15 +3,15 @@ import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { bootstrapWorkflowGraph } from './bootstrapGraph.thunk'
-import type { WorkflowUuid } from './model/types'
+import type { GraphUuid } from './model/types'
 
-export const useGraphBootstrap = (workflowUuid: WorkflowUuid | null) => {
+export const useGraphBootstrap = (graphUuid: GraphUuid | null) => {
   const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
-    if (!workflowUuid) {
+    if (!graphUuid) {
       return
     }
-    dispatch(bootstrapWorkflowGraph(workflowUuid))
-  }, [dispatch, workflowUuid])
+    dispatch(bootstrapWorkflowGraph(graphUuid))
+  }, [dispatch, graphUuid])
 }

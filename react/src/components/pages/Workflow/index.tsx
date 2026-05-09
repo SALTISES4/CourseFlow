@@ -6,8 +6,8 @@ import {
   canRenderEdges,
   canRenderNodes,
   canRenderShell,
+  selectGraphByUuid,
   selectWorkflowLoadState,
-  selectWorkflowMetaByUuid,
   useGraphBootstrap
 } from '@cf/features/graph/state'
 import { RootState } from '@cf/redux/store'
@@ -33,8 +33,8 @@ const Workflow = () => {
   const edgesReady = useSelector((state: RootState) =>
     workflowUuid ? canRenderEdges(workflowUuid)(state) : false
   )
-  const workflowMeta = useSelector((state: RootState) =>
-    workflowUuid ? selectWorkflowMetaByUuid(workflowUuid)(state) : null
+  const graphMeta = useSelector((state: RootState) =>
+    workflowUuid ? selectGraphByUuid(workflowUuid)(state) : null
   )
   const loadState = useSelector((state: RootState) =>
     workflowUuid ? selectWorkflowLoadState(workflowUuid)(state) : undefined
@@ -44,18 +44,18 @@ const Workflow = () => {
     return <ErrorView />
   }
 
-  if (!shellReady && loadState?.workflowMeta !== 'failed') {
+  if (!shellReady && loadState?.graph !== 'failed') {
     return <Loader />
   }
 
-  if (loadState?.workflowMeta === 'failed') {
+  if (loadState?.graph === 'failed') {
     return <ErrorView />
   }
 
   return (
     <WorkflowSidebarContextProvider>
       <div style={{ padding: '1rem' }} data-test-id="graph-bootstrap-status">
-        <h2>{workflowMeta?.workflowTitle || 'Workflow'}</h2>
+        <h2>{graphMeta?.workflowTitle || 'Workflow'}</h2>
         <p>Graph hydration bootstrap active (new graph store path).</p>
         <ul>
           <li>shell: {String(shellReady)}</li>

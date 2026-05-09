@@ -1,15 +1,25 @@
 import { createSelector } from 'reselect'
 
+import { defaultColumnSettings } from '@cf/utility/constants'
+
 import {
   channelsAdapter,
   edgesAdapter,
+  graphAdapter,
   nodesAdapter,
   sectionsAdapter,
   tagsAdapter,
-  workflowMetaAdapter
+  workflowAdapter
 } from '../canonical'
 import type { GraphState } from '../graphState'
-import type { WorkflowUuid } from '../model/types'
+import type { GraphUuid, ResourceUuid, WorkflowUuid } from '../model/types'
+
+/** Cyclic default column “types” for theme colours (aligned with graph board selector). */
+const CYCLIC_DEFAULT_COLUMN_TYPES: number[] = Object.keys(defaultColumnSettings)
+  .filter((key) => typeof key !== 'symbol' && key !== 'new-column')
+  .map(Number)
+  .filter((n) => !Number.isNaN(n))
+  .sort((a, b) => a - b)
 
 type StateWithGraph = {
   graph: GraphState
@@ -20,8 +30,10 @@ export const selectGraphState = (state: StateWithGraph): GraphState =>
 export const selectGraphCanonical = (state: StateWithGraph) =>
   selectGraphState(state).canonical
 
-export const selectWorkflowMetaState = (state: StateWithGraph) =>
-  selectGraphCanonical(state).workflowMeta
+export const selectGraphEntityState = (state: StateWithGraph) =>
+  selectGraphCanonical(state).graph
+export const selectWorkflowState = (state: StateWithGraph) =>
+  selectGraphCanonical(state).workflow
 export const selectSectionsState = (state: StateWithGraph) =>
   selectGraphCanonical(state).sections
 export const selectChannelsState = (state: StateWithGraph) =>
@@ -37,39 +49,118 @@ const sectionSelectors = sectionsAdapter.getSelectors(selectSectionsState)
 const channelSelectors = channelsAdapter.getSelectors(selectChannelsState)
 const nodeSelectors = nodesAdapter.getSelectors(selectNodesState)
 const edgeSelectors = edgesAdapter.getSelectors(selectEdgesState)
-const workflowMetaSelectors = workflowMetaAdapter.getSelectors(
-  selectWorkflowMetaState
-)
+const graphSelectors = graphAdapter.getSelectors(selectGraphEntityState)
+const workflowSelectors = workflowAdapter.getSelectors(selectWorkflowState)
 const tagSelectors = tagsAdapter.getSelectors(selectTagsState)
 
-export const selectAllWorkflowMeta = workflowMetaSelectors.selectAll
+export const selectAllGraphs = graphSelectors.selectAll
+export const selectAllWorkflows = workflowSelectors.selectAll
 export const selectAllSections = sectionSelectors.selectAll
 export const selectAllChannels = channelSelectors.selectAll
 export const selectAllNodes = nodeSelectors.selectAll
 export const selectAllEdges = edgeSelectors.selectAll
 export const selectAllTags = tagSelectors.selectAll
 
-export const selectWorkflowMetaByUuid = (workflowUuid: WorkflowUuid) =>
+export const selectGraphByUuid = (graphUuid: GraphUuid) =>
   createSelector([(state: StateWithGraph) => state], (state) =>
-    workflowMetaSelectors.selectById(state, workflowUuid)
+    graphSelectors.selectById(state, graphUuid)
   )
 
-export const selectSectionsByWorkflowUuid = (workflowUuid: WorkflowUuid) =>
+export const selectWorkflowByUuid = (workflowUuid: WorkflowUuid) =>
+  createSelector([(state: StateWithGraph) => state], (state) =>
+    workflowSelectors.selectById(state, workflowUuid)
+  )
+
+export const selectChannelByUuid = (channelUuid: ResourceUuid) =>
+  createSelector([(state: StateWithGraph) => state], (state) =>
+    channelSelectors.selectById(state, channelUuid)
+  )
+
+export const selectSectionByUuid = (sectionUuid: ResourceUuid) =>
+  createSelector([(state: StateWithGraph) => state], (state) =>
+    sectionSelectors.selectById(state, sectionUuid)
+  )
+
+/** Adapter `ids` slice order (not necessarily graph `position` order). */
+export const selectSectionEntityIds = (state: StateWithGraph) =>
+  sectionSelectors.selectIds(state)
+
+export const selectNodeByUuid = (nodeUuid: ResourceUuid) =>
+  createSelector([(state: StateWithGraph) => state], (state) =>
+    nodeSelectors.selectById(state, nodeUuid)
+  )
+
+/** Adapter `ids` slice order (not necessarily layout order). */
+export const selectNodeEntityIds = (state: StateWithGraph) =>
+  nodeSelectors.selectIds(state)
+
+/**
+ * Legacy UI used cyclic column types for colours; canonical channels have no columnType field.
+ * Derive the theme index from channel order within the graph (same ordering as the workflow board).
+ */
+export const selectChannelThemeColumnType = (
+  graphUuid: GraphUuid,
+  channelUuid: ResourceUuid
+) =>
+  createSelector(
+    [selectChannelsOrderedByGraphUuid(graphUuid)],
+    (channels) => {
+      const idx = channels.findIndex((c) => c.uuid === channelUuid)
+      const types = CYCLIC_DEFAULT_COLUMN_TYPES
+      const typeCount = types.length > 0 ? types.length : 1
+      if (idx < 0) {
+        return types.length > 0 ? types[0] : 0
+      }
+      return types.length > 0 ? types[idx % typeCount] : 0
+    }
+  )
+
+export const selectSectionsByGraphUuid = (graphUuid: GraphUuid) =>
   createSelector([selectAllSections], (sections) =>
-    sections.filter((section) => section.workflowUuid === workflowUuid)
+    sections.filter((section) => section.graphUuid === graphUuid)
   )
 
-export const selectChannelsByWorkflowUuid = (workflowUuid: WorkflowUuid) =>
+/** Section UUIDs for a graph in canonical `position` order (JumpToMenu / view chrome). */
+export const selectSectionUuidsOrderedForGraph = (
+  graphUuid: GraphUuid
+) =>
+  createSelector([selectSectionsByGraphUuid(graphUuid)], (sections) =>
+    [...sections].sort((a, b) => a.position - b.position).map((s) => s.uuid)
+  )
+
+export const selectChannelsByGraphUuid = (graphUuid: GraphUuid) =>
   createSelector([selectAllChannels], (channels) =>
-    channels.filter((channel) => channel.workflowUuid === workflowUuid)
+    channels.filter((channel) => channel.graphUuid === graphUuid)
   )
 
-export const selectNodesByWorkflowUuid = (workflowUuid: WorkflowUuid) =>
+/** Sections for a graph ordered by canonical `position`. */
+export const selectSectionsOrderedByGraphUuid = (
+  graphUuid: GraphUuid
+) =>
+  createSelector([selectSectionsByGraphUuid(graphUuid)], (sections) =>
+    [...sections].sort((a, b) => a.position - b.position)
+  )
+
+/** Channels for a graph ordered by canonical `position` (column order). */
+export const selectChannelsOrderedByGraphUuid = (
+  graphUuid: GraphUuid
+) =>
+  createSelector([selectChannelsByGraphUuid(graphUuid)], (channels) =>
+    [...channels].sort((a, b) => a.position - b.position)
+  )
+
+export const selectNodesByGraphUuid = (graphUuid: GraphUuid) =>
   createSelector([selectAllNodes], (nodes) =>
-    nodes.filter((node) => node.workflowUuid === workflowUuid)
+    nodes.filter((node) => node.graphUuid === graphUuid)
   )
 
-export const selectEdgesByWorkflowUuid = (workflowUuid: WorkflowUuid) =>
+/** Node UUIDs in graph scope (canonical graph store has no soft-delete flag on nodes). */
+export const selectNodeUuidsByGraphUuid = (graphUuid: GraphUuid) =>
+  createSelector([selectNodesByGraphUuid(graphUuid)], (nodes) =>
+    nodes.map((n) => n.uuid)
+  )
+
+export const selectEdgesByGraphUuid = (graphUuid: GraphUuid) =>
   createSelector([selectAllEdges], (edges) =>
-    edges.filter((edge) => edge.workflowUuid === workflowUuid)
+    edges.filter((edge) => edge.graphUuid === graphUuid)
   )

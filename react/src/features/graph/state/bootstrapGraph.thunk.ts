@@ -3,15 +3,16 @@ import type { ThunkAction, UnknownAction } from '@reduxjs/toolkit'
 import {
   channelsActions,
   edgesActions,
+  graphActions,
   nodesActions,
   sectionsActions,
   tagsActions,
-  workflowMetaActions
+  workflowActions
 } from './canonical'
 import { fetchWorkflowGraphBundle, fetchWorkflowTags } from './graphApi'
 import { graphLoadActions } from './graphLoad.slice'
 import type { GraphState } from './graphState'
-import type { GraphResourceLoadState, WorkflowUuid } from './model/types'
+import type { GraphResourceLoadState, GraphUuid } from './model/types'
 
 type GraphBootstrapState = { graph: GraphState }
 type GraphThunk<ReturnType = void> = ThunkAction<
@@ -22,83 +23,86 @@ type GraphThunk<ReturnType = void> = ThunkAction<
 >
 
 const setLoading = (
-  workflowUuid: WorkflowUuid,
+  graphUuid: GraphUuid,
   resource: keyof GraphResourceLoadState
 ) =>
   graphLoadActions.setResourceStatus({
-    workflowUuid,
+    graphUuid,
     resource,
     status: 'loading'
   })
 
 const setSucceeded = (
-  workflowUuid: WorkflowUuid,
+  graphUuid: GraphUuid,
   resource: keyof GraphResourceLoadState
 ) =>
   graphLoadActions.setResourceStatus({
-    workflowUuid,
+    graphUuid,
     resource,
     status: 'succeeded'
   })
 
 const setFailed = (
-  workflowUuid: WorkflowUuid,
+  graphUuid: GraphUuid,
   resource: keyof GraphResourceLoadState
 ) =>
   graphLoadActions.setResourceStatus({
-    workflowUuid,
+    graphUuid,
     resource,
     status: 'failed'
   })
 
 export type BootstrapGraphResult = {
-  workflowUuid: WorkflowUuid
+  graphUuid: GraphUuid
   ok: boolean
 }
 
 export const bootstrapWorkflowGraph = (
-  workflowUuid: WorkflowUuid
+  graphUuid: GraphUuid
 ): GraphThunk<Promise<BootstrapGraphResult>> => {
   return async (dispatch) => {
-    dispatch(graphLoadActions.initializeWorkflowLoadState({ workflowUuid }))
+    dispatch(graphLoadActions.initializeGraphLoadState({ graphUuid }))
 
-    dispatch(setLoading(workflowUuid, 'workflowMeta'))
-    dispatch(setLoading(workflowUuid, 'sections'))
-    dispatch(setLoading(workflowUuid, 'channels'))
-    dispatch(setLoading(workflowUuid, 'nodes'))
-    dispatch(setLoading(workflowUuid, 'edges'))
-    dispatch(setLoading(workflowUuid, 'tags'))
+    dispatch(setLoading(graphUuid, 'graph'))
+    dispatch(setLoading(graphUuid, 'sections'))
+    dispatch(setLoading(graphUuid, 'channels'))
+    dispatch(setLoading(graphUuid, 'nodes'))
+    dispatch(setLoading(graphUuid, 'edges'))
+    dispatch(setLoading(graphUuid, 'tags'))
 
-    const graphPromise = fetchWorkflowGraphBundle(workflowUuid)
+    const graphPromise = fetchWorkflowGraphBundle(graphUuid)
       .then((bundle) => {
-        dispatch(workflowMetaActions.upsertOne(bundle.workflowMeta))
+        dispatch(graphActions.upsertOne(bundle.graph))
+        if (bundle.workflow) {
+          dispatch(workflowActions.upsertOne(bundle.workflow))
+        }
         dispatch(sectionsActions.upsertMany(bundle.sections))
         dispatch(channelsActions.upsertMany(bundle.channels))
         dispatch(nodesActions.upsertMany(bundle.nodes))
         dispatch(edgesActions.upsertMany(bundle.edges))
 
-        dispatch(setSucceeded(workflowUuid, 'workflowMeta'))
-        dispatch(setSucceeded(workflowUuid, 'sections'))
-        dispatch(setSucceeded(workflowUuid, 'channels'))
-        dispatch(setSucceeded(workflowUuid, 'nodes'))
-        dispatch(setSucceeded(workflowUuid, 'edges'))
+        dispatch(setSucceeded(graphUuid, 'graph'))
+        dispatch(setSucceeded(graphUuid, 'sections'))
+        dispatch(setSucceeded(graphUuid, 'channels'))
+        dispatch(setSucceeded(graphUuid, 'nodes'))
+        dispatch(setSucceeded(graphUuid, 'edges'))
       })
       .catch(() => {
-        dispatch(setFailed(workflowUuid, 'workflowMeta'))
-        dispatch(setFailed(workflowUuid, 'sections'))
-        dispatch(setFailed(workflowUuid, 'channels'))
-        dispatch(setFailed(workflowUuid, 'nodes'))
-        dispatch(setFailed(workflowUuid, 'edges'))
+        dispatch(setFailed(graphUuid, 'graph'))
+        dispatch(setFailed(graphUuid, 'sections'))
+        dispatch(setFailed(graphUuid, 'channels'))
+        dispatch(setFailed(graphUuid, 'nodes'))
+        dispatch(setFailed(graphUuid, 'edges'))
         throw new Error('graph')
       })
 
-    const tagsPromise = fetchWorkflowTags(workflowUuid)
+    const tagsPromise = fetchWorkflowTags(graphUuid)
       .then((tags) => {
         dispatch(tagsActions.upsertMany(tags))
-        dispatch(setSucceeded(workflowUuid, 'tags'))
+        dispatch(setSucceeded(graphUuid, 'tags'))
       })
       .catch(() => {
-        dispatch(setFailed(workflowUuid, 'tags'))
+        dispatch(setFailed(graphUuid, 'tags'))
         throw new Error('tags')
       })
 
@@ -109,8 +113,8 @@ export const bootstrapWorkflowGraph = (
     if (process.env.NODE_ENV !== 'production') {
       // Temporary milestone instrumentation for hydration verification.
       // Safe to remove once full editor migration starts.
-      console.debug('[graph bootstrap]', workflowUuid, settled)
+      console.debug('[graph bootstrap]', graphUuid, settled)
     }
-    return { workflowUuid, ok }
+    return { graphUuid, ok }
   }
 }

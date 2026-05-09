@@ -23,7 +23,7 @@ export const dragEndThunk =
   }
 
 export type DragPosition = {
-  nodeId: string | null
+  nodeUuid: string | null
   x: number
   y: number
   edge: Position | null
@@ -36,8 +36,8 @@ type SVGLinkState = {
     to: DragPosition | null
   }
   snap: {
-    from: { nodeId: string; edge: Position } | null
-    to: { nodeId: string; edge: Position } | null
+    from: { nodeUuid: string; edge: Position } | null
+    to: { nodeUuid: string; edge: Position } | null
   }
   editing: LineEdit['editing'] | null
 
@@ -79,22 +79,22 @@ const svgLinkSlice = createSlice({
         editing: LineEdit['editing']
       }>
     ) {
-      const { id, edge, editing } = action.payload
-      const fromId = state.dragging.from?.nodeId ?? null
+      const { uuid, edge, editing } = action.payload
+      const fromId = state.dragging.from?.nodeUuid ?? null
       const fromEdge = state.dragging.from?.edge ?? null
-      const toId = state.dragging.to?.nodeId ?? null
+      const toId = state.dragging.to?.nodeUuid ?? null
       const toEdge = state.dragging.to?.edge ?? null
 
       const snap: SVGLinkState['snap'] = {
-        from: { nodeId: fromId, edge: fromEdge },
-        to: { nodeId: toId, edge: toEdge }
+        from: { nodeUuid: fromId, edge: fromEdge },
+        to: { nodeUuid: toId, edge: toEdge }
       }
 
       state.snap = snap
 
       const target = state.snap[editing]
       if (target) {
-        target.nodeId = id
+        target.nodeUuid = uuid
         target.edge = edge
       }
     },

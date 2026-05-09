@@ -3,7 +3,7 @@ import {
   clearAuthError,
   register,
   selectAuthError
-} from '@cf/redux/slices/auth.slice'
+} from '@cf/features/auth/state/auth.slice'
 import { AppDispatch } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'

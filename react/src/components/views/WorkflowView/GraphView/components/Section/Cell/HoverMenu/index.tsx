@@ -6,7 +6,7 @@ import {
 } from '@cf/redux/slices/node.slice'
 import { CfObjectType } from '@cf/types/enum'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
-import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
+import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import store from '@cfRedux/store'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
@@ -18,7 +18,7 @@ import { useDispatch } from 'react-redux'
 import InsertMenu from '../InsertMenu'
 
 type PropsType = {
-  nodeuuid: string
+  nodeId: string
   nodeRef: MutableRefObject<HTMLDivElement>
 }
 
@@ -42,7 +42,10 @@ const HoverMenu = ({ nodeId, nodeRef }: PropsType) => {
       return (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
         // read from the store API to avoid expensive useSelector subscription
-        const insertMode = store.getState().workspace.node.insertMode
+        const st = store.getState() as ReturnType<typeof store.getState> & {
+          workspace?: { node?: { insertMode?: NodeInsertMode } }
+        }
+        const insertMode = st.workspace?.node?.insertMode ?? 'manual'
         switch (action) {
           case 'insert':
           case 'duplicate':

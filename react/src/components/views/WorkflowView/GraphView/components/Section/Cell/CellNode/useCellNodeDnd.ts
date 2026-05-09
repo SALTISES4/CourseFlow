@@ -12,7 +12,7 @@ import {
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import { svglinkAllowDND } from '@cf/redux/slices/svglink.slice'
 import { _t } from '@cf/utility/Utility.class'
-import { nodelinkOutcome } from '@cfRedux/slices/node.slice'
+import { nodelinkOutcome as edgeOutcome } from '@cfRedux/slices/node.slice'
 import { isOutcomeLink } from '@cfRedux/slices/outcomes.slice'
 import { produce } from 'immer'
 import { useCallback, useEffect, useState } from 'react'
@@ -117,17 +117,20 @@ function useCellNodeDnd({
         onDrop: ({ source, self }) => {
           const dropped = source.data
           if (isOutcomeLink(dropped)) {
-            dispatch(nodelinkOutcome({ outcomeId: dropped.uuid, nodeId }))
+            dispatch(edgeOutcome({ outcomeId: dropped.uuid, nodeId }))
           }
 
           if (isGridCell(dropped) && dropped.uuid !== nodeId) {
+            // TODO(graph-state): `NodeWorkflowReorderPayload` still types section/column as numbers.
+            // This view now carries UUID section/column identities; keep runtime UUIDs and narrow-cast
+            // until reorder payload typing is fully migrated off legacy numeric IDs.
             onDrop({
               type: SectionCellType.NODE,
               edge: extractClosestEdge(self.data) as 'top' | 'bottom',
               uuid: dropped.uuid,
-              fromSection: dropped.coords.section,
-              toSection: coordsSection,
-              toColumn: columnId,
+              fromSection: dropped.coords.section as unknown as number,
+              toSection: coordsSection as unknown as number,
+              toColumn: columnId as unknown as number,
               toRow: coordsY
             })
           }
@@ -156,7 +159,7 @@ function useCellNodeDnd({
         getInitialData: (): CellDataType => ({
           uuid: nodeId,
           coords: {
-            section: coordsSection,
+            section: coordsSection as unknown as number,
             x: coordsX,
             y: coordsY
           },

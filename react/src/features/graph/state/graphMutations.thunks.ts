@@ -26,10 +26,10 @@ type GraphMutationThunk<ReturnType = void> = ThunkAction<
   UnknownAction
 >
 
-const markWorkflowMetaFailed = (workflowUuid: string) =>
+const markGraphFailed = (graphUuid: string) =>
   graphLoadActions.setResourceStatus({
-    workflowUuid,
-    resource: 'workflowMeta',
+    graphUuid,
+    resource: 'graph',
     status: 'failed'
   })
 
@@ -45,7 +45,7 @@ export const renameNode = (
       const delta = await renameNodeCommand(input)
       applyGraphDelta(dispatch, delta)
     } catch (error) {
-      dispatch(markWorkflowMetaFailed(input.workflowUuid))
+      dispatch(markGraphFailed(input.graphUuid))
       throw error
     }
   }
@@ -63,7 +63,7 @@ export const moveNode = (
       const delta = await moveNodeCommand(input)
       applyGraphDelta(dispatch, delta)
     } catch (error) {
-      dispatch(markWorkflowMetaFailed(input.workflowUuid))
+      dispatch(markGraphFailed(input.graphUuid))
       throw error
     }
   }
@@ -77,7 +77,7 @@ export const createEdge = (
       const delta = await createEdgeCommand(input)
       applyGraphDelta(dispatch, delta)
     } catch (error) {
-      dispatch(markWorkflowMetaFailed(input.workflowUuid))
+      dispatch(markGraphFailed(input.graphUuid))
       throw error
     }
   }
@@ -91,7 +91,7 @@ export const deleteEdge = (
       const delta = await deleteEdgeCommand(input)
       applyGraphDelta(dispatch, delta)
     } catch (error) {
-      dispatch(markWorkflowMetaFailed(input.workflowUuid))
+      dispatch(markGraphFailed(input.graphUuid))
       throw error
     }
   }
@@ -105,7 +105,7 @@ export const deleteNode = (
       const delta = await deleteNodeCommand(input)
       applyGraphDelta(dispatch, delta)
     } catch (error) {
-      dispatch(markWorkflowMetaFailed(input.workflowUuid))
+      dispatch(markGraphFailed(input.graphUuid))
       throw error
     }
   }

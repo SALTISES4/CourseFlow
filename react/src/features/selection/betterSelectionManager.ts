@@ -1,5 +1,5 @@
+import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import { CfObjectType } from '@cf/types/enum'
-import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
 import store from '@cfRedux/store'
 import { UnknownAction } from '@reduxjs/toolkit'
 import { Dispatch } from 'redux'
@@ -23,7 +23,7 @@ class BetterSelectionManager {
   }
 
   updateSidebar(uuid: string, objectType: CfObjectType, parentId?: string) {
-    store.dispatch(sidebarEdit({ id, parentId, objectType }))
+    store.dispatch(sidebarEdit({ uuid, parentId, objectType }))
   }
 
   clearSidebar() {

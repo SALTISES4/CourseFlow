@@ -3,7 +3,7 @@ import {
   dropTargetForElements,
   monitorForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { selectWorkflowBoard } from '@cf/redux/selectors/workflow.selector'
+import { selectGraphBoard } from '@cf/redux/selectors/workflow.selector'
 import { nodeWorkflowReorder } from '@cf/redux/slices/node.slice'
 import {
   workflowReorderColumns,
@@ -23,6 +23,7 @@ import {
   useState
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 import { useResizeObserver } from 'usehooks-ts'
 
 import ColumnsHeader from './components/ColumnsHeader'
@@ -43,9 +44,15 @@ type StateType = {
   redrawLines: boolean
 }
 
-const GraphView = () => {
+const GraphView = ({ graphUuid }: { graphUuid: string }) => {
   const dispatch = useDispatch()
-  const workflowBoard = useSelector(selectWorkflowBoard)
+
+  const workflowBoard = useSelector((state: RootState) =>
+    selectGraphBoard(state, graphUuid)
+  )
+  console.log(graphUuid)
+  console.log(workflowBoard)
+
   const dragging = useSelector((state: RootState) => state.svglink.allowDnd)
   const sectionsWrapperRef = useRef<HTMLDivElement>(null)
 
@@ -173,7 +180,7 @@ const GraphView = () => {
             sectionId={section.uuid}
             sectionRows={section.rows}
             boardId={workflowBoard.uuid}
-            columnIds={workflowBoard.columns.uuids}
+            columnIds={workflowBoard.columns.ids}
             columnColors={workflowBoard.columns.colors}
             condensed={
               state.condensed === 'all' ||

@@ -4,7 +4,7 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
-import type { EdgeEntity, EdgeKey, WorkflowUuid } from '../model/types'
+import type { EdgeEntity, EdgeKey, GraphUuid } from '../model/types'
 
 export const edgesAdapter = createEntityAdapter<EdgeEntity, EdgeKey>({
   selectId: (e) => e.edgeId
@@ -21,13 +21,13 @@ const edgesSlice = createSlice({
     upsertMany(state, action: PayloadAction<EdgeEntity[]>) {
       edgesAdapter.upsertMany(state, action.payload)
     },
-    removeManyByEdgeId(state, action: PayloadAction<string[]>) {
+    removeManyByEdgeId(state, action: PayloadAction<EdgeKey[]>) {
       edgesAdapter.removeMany(state, action.payload)
     },
-    removeByWorkflowUuid(state, action: PayloadAction<WorkflowUuid>) {
-      const ids = state.uuids.filter((id) => {
+    removeByGraphUuid(state, action: PayloadAction<GraphUuid>) {
+      const ids = state.ids.filter((id) => {
         const edge = state.entities[id]
-        return edge?.workflowUuid === action.payload
+        return edge?.graphUuid === action.payload
       })
       edgesAdapter.removeMany(state, ids)
     },

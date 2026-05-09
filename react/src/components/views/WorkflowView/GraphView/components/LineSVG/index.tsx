@@ -1,6 +1,9 @@
+import {
+  selectEdgesByGraphUuid,
+  selectNodeUuidsByGraphUuid
+} from '@cf/features/graph/state/selectors/canonical.selectors'
 import { RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
-import { selectActiveLinks } from '@cfRedux/selectors/nodelink.selector'
 import {
   MutableRefObject,
   memo,
@@ -10,12 +13,13 @@ import {
   useState
 } from 'react'
 import { useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 
 import Connection from './Connection'
 import ConnectionDrawPreview from './DrawPreview'
 import * as Styled from './styles'
-import { edgeKeys } from './types'
 import { ConnectionType } from './types'
+import { canonicalPortToConnectionEdge, edgeLineTypeIsDashed } from './utility'
 
 export type NodeBCR = {
   x: number
@@ -36,50 +40,58 @@ const LineSVG = ({
   condensed: number
 }) => {
   const ref = useRef<SVGSVGElement>(null)
-  const nodelinks = useSelector(
-    (state: RootState) => state.workspace.nodelink.uuids
-  )
-  const links = useSelector(selectActiveLinks)
-  const nodes = useSelector((state: RootState) => state.workspace.node.uuids)
-  const [nodesBCR, setNodesBCR] = useState<Record<number, NodeBCR>>({})
+  const { uuid: graphRouteUuid } = useParams()
+  const graphUuid = graphRouteUuid ?? ''
 
-  const selectedLinkId = useSelector(
-    (state: RootState) =>
-      state.sidebar.edit.objectType === CfObjectType.NODELINK &&
-      state.sidebar.edit.uuid
+  const edgesSelector = useMemo(() => selectEdgesByGraphUuid(graphUuid), [graphUuid])
+  const nodeUuidsSelector = useMemo(
+    () => selectNodeUuidsByGraphUuid(graphUuid),
+    [graphUuid]
+  )
+
+  const edges = useSelector(edgesSelector)
+  const nodeUuids = useSelector(nodeUuidsSelector)
+
+  const [nodesBCR, setNodesBCR] = useState<Record<string, NodeBCR>>({})
+
+  const selectedEdgeUuid = useSelector((state: RootState) =>
+    state.sidebar.edit.objectType === CfObjectType.EDGE &&
+    state.sidebar.edit.uuid
+      ? state.sidebar.edit.uuid
+      : null
   )
 
   const connections: ConnectionType[] = useMemo(
     () =>
-      links.map((link) => ({
-        uuid: link.uuid,
-        dashed: link.dashed,
-        fromId: link.sourceNode,
-        fromEdge: edgeKeys[link.sourcePort],
-        toId: link.targetNode,
-        toEdge: edgeKeys[link.targetPort]
+      edges.map((edge) => ({
+        uuid: edge.edgeId,
+        dashed: edgeLineTypeIsDashed(edge.lineType),
+        fromId: edge.sourceNodeUuid,
+        fromEdge: canonicalPortToConnectionEdge(edge.sourcePort),
+        toId: edge.targetNodeUuid,
+        toEdge: canonicalPortToConnectionEdge(edge.targetPort)
       })),
-    [links]
+    [edges]
   )
 
   // wait for DOM to render before querying it for node BCRs
   // but adjusted for SVG offsets to give SVG relative coordinates
   useLayoutEffect(() => {
-    const results: Record<number, NodeBCR> = {}
+    const results: Record<string, NodeBCR> = {}
     if (!ref.current) {
       return
     }
 
     const svgBCR = ref.current.getBoundingClientRect()
 
-    nodes.forEach((nodeId) => {
-      const node = document.getElementById(`node-${nodeId}`)
+    nodeUuids.forEach((nodeUuid) => {
+      const node = document.getElementById(`node-${nodeUuid}`)
       if (node) {
         const bcr = node.getBoundingClientRect()
         const x = bcr.x - svgBCR.left
         const y = bcr.y - svgBCR.top
 
-        results[nodeId] = {
+        results[nodeUuid] = {
           x,
           y,
           width: bcr.width,
@@ -93,18 +105,18 @@ const LineSVG = ({
     })
 
     setNodesBCR(results)
-  }, [rerender, condensed, nodes, nodelinks])
+  }, [rerender, condensed, nodeUuids, edges])
 
   return (
     <>
       <BottomSVG
         svgRef={ref}
         connections={connections}
-        selectedLinkId={selectedLinkId}
+        selectedEdgeUuid={selectedEdgeUuid}
       />
       <TopSVG
         nodesBCR={nodesBCR}
-        connection={connections.find((c) => c.uuid === selectedLinkId)}
+        connection={connections.find((c) => c.uuid === selectedEdgeUuid)}
       />
     </>
   )
@@ -113,11 +125,11 @@ const LineSVG = ({
 const BottomSVG = ({
   svgRef,
   connections,
-  selectedLinkId
+  selectedEdgeUuid
 }: {
   svgRef: MutableRefObject<SVGSVGElement>
   connections: ConnectionType[]
-  selectedLinkuuid: string | null
+  selectedEdgeUuid: string | null
 }) => {
   return (
     <Styled.BottomSVG id="line-svg" ref={svgRef}>
@@ -136,7 +148,7 @@ const BottomSVG = ({
         </marker>
       </defs>
       {connections.map((conn) => {
-        if (conn.uuid !== selectedLinkId) {
+        if (conn.uuid !== selectedEdgeUuid) {
           return <Connection key={conn.uuid} svgRef={svgRef} {...conn} />
         }
         return null
@@ -150,7 +162,7 @@ const TopSVG = memo(
     nodesBCR,
     connection
   }: {
-    nodesBCR: Record<number, NodeBCR>
+    nodesBCR: Record<string, NodeBCR>
     connection: ConnectionType | null
   }) => {
     const ref = useRef<SVGSVGElement>(null)

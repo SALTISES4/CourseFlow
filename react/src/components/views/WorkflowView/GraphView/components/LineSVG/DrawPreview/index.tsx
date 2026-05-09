@@ -7,12 +7,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import type { NodeBCR } from '../'
 
 type PropsType = {
-  nodesBCR: Record<number, NodeBCR>
+  nodesBCR: Record<string, NodeBCR>
 }
 
 function findNearestRect(
-  coords: { anchorNodeuuid: string; x: number; y: number },
-  rects: Record<number, NodeBCR>
+  coords: { anchorNodeUuid: string; x: number; y: number },
+  rects: Record<string, NodeBCR>
 ): DragPosition | null {
   const snapThreshold = 25
   const potentialTargets: Map<string, NodeBCR> = new Map() // hashmap ftw
@@ -42,7 +42,7 @@ function findNearestRect(
     const [nodeId, rect] = potentialTargets.entries().next().value
 
     // early exit if we're checking the self as the nearest node
-    if (nodeId === String(coords.anchorNodeId)) {
+    if (nodeId === coords.anchorNodeUuid) {
       return null
     }
 
@@ -75,7 +75,7 @@ function findNearestRect(
     const [targetX, targetY, targetEdge] = closest
 
     return {
-      nodeId: parseInt(nodeId, 10),
+      nodeUuid: nodeId,
       x: targetX,
       y: targetY,
       edge: targetEdge
@@ -99,12 +99,12 @@ const DrawPreview = ({ nodesBCR }: PropsType) => {
     return findNearestRect(
       editing === 'from'
         ? {
-            anchorNodeId: coords.to.nodeId,
+            anchorNodeUuid: coords.to.nodeUuid ?? '',
             x: coords.from.x,
             y: coords.from.y
           }
         : {
-            anchorNodeId: coords.from.nodeId,
+            anchorNodeUuid: coords.from.nodeUuid ?? '',
             x: coords.to.x,
             y: coords.to.y
           },
@@ -117,7 +117,7 @@ const DrawPreview = ({ nodesBCR }: PropsType) => {
     if (
       (snapTarget && !snapTo) ||
       (!snapTarget && snapTo) ||
-      snapTarget?.nodeId !== snapTo?.nodeId
+      snapTarget?.nodeUuid !== snapTo?.nodeUuid
     ) {
       setSnapTo(snapTarget)
     }
@@ -125,12 +125,12 @@ const DrawPreview = ({ nodesBCR }: PropsType) => {
 
   // dispatch the action only when things actually change
   useEffect(() => {
-    const nodeId = snapTo?.nodeId ?? null
+    const nodeUuid = snapTo?.nodeUuid ?? null
     const edge = snapTo?.edge ?? null
-    if (nodeId && edge) {
+    if (nodeUuid && edge) {
       dispatch(
         svglinkDragSnap({
-          uuid: nodeId,
+          uuid: nodeUuid,
           edge,
           editing: editing ?? 'to'
         })

@@ -6,6 +6,6 @@ export enum EditableType {
   PART = 'editable_part',
   OUTCOME = CfObjectType.OUTCOME,
   NODE = CfObjectType.NODE,
-  NODE_LINK = CfObjectType.NODELINK,
+  NODE_LINK = CfObjectType.EDGE,
   COLUMN = CfObjectType.COLUMN
 }

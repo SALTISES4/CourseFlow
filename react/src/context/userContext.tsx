@@ -1,6 +1,9 @@
 import { mapCurrentUserToEUser } from '@cf/context/mapCurrentUserToEUser'
+import {
+  selectAuthStatus,
+  selectAuthUser
+} from '@cf/features/auth/state/auth.slice'
 import Loader from '@cfComponents/UIPrimitives/Loader'
-import { selectAuthStatus, selectAuthUser } from '@cfRedux/slices/auth.slice'
 import { EUser } from '@XMLHTTP/types/entity'
 import { ReactNode, createContext } from 'react'
 import { useSelector } from 'react-redux'

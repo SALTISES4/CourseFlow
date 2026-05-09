@@ -4,7 +4,7 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
-import type { NodeEntity, ResourceUuid, WorkflowUuid } from '../model/types'
+import type { GraphUuid, NodeEntity, ResourceUuid } from '../model/types'
 
 export const nodesAdapter = createEntityAdapter<NodeEntity, ResourceUuid>({
   selectId: (n) => n.uuid
@@ -24,10 +24,10 @@ const nodesSlice = createSlice({
     removeManyByUuid(state, action: PayloadAction<string[]>) {
       nodesAdapter.removeMany(state, action.payload)
     },
-    removeByWorkflowUuid(state, action: PayloadAction<WorkflowUuid>) {
+    removeByGraphUuid(state, action: PayloadAction<GraphUuid>) {
       const ids = state.ids.filter((id) => {
         const node = state.entities[id]
-        return node?.workflowUuid === action.payload
+        return node?.graphUuid === action.payload
       })
       nodesAdapter.removeMany(state, ids)
     },

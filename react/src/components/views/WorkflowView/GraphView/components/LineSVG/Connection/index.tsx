@@ -1,5 +1,5 @@
-import BetterSelectionManager from '@cf/redux/BetterSelectionManager'
-import { selectIsDrawingLinkPreview } from '@cf/redux/selectors/nodelink.selector'
+import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
+import { selectIsDrawingLinkPreview } from '@cf/redux/selectors/svglink.selectors'
 import { dragEndThunk, svglinkLineEdit } from '@cf/redux/slices/svglink.slice'
 import { AppDispatch, RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
@@ -47,13 +47,13 @@ const Connection = ({
   )
 
   const onClick = useCallback(
-    () => manager.updateSidebar(uuid, CfObjectType.NODELINK),
+    () => manager.updateSidebar(uuid, CfObjectType.EDGE),
     [uuid, manager]
   )
 
   const selected = useSelector(
     (state: RootState) =>
-      state.sidebar.edit.objectType === CfObjectType.NODELINK &&
+      state.sidebar.edit.objectType === CfObjectType.EDGE &&
       state.sidebar.edit.uuid === uuid
   )
 
@@ -76,13 +76,13 @@ const Connection = ({
         const args = {
           uuid,
           from: {
-            nodeId: fromId,
+            nodeUuid: fromId,
             x: lineStart.x,
             y: lineStart.y,
             edge: fromEdge as Position
           },
           to: {
-            nodeId: toId,
+            nodeUuid: toId,
             x: lineEnd.x,
             y: lineEnd.y,
             edge: toEdge as Position
@@ -170,7 +170,7 @@ const Connection = ({
   const lineId = `line-${fromId}-${fromEdge}-to-${toId}-${toEdge}`
 
   return (
-    <g fill="none" data-nodelink-id={uuid}>
+    <g fill="none" data-edge-id={uuid}>
       <path
         d={path}
         stroke={strokeColor}

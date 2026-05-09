@@ -31,8 +31,8 @@ export const selectRootOutcomes = createSelector(
 )
 
 export const selectHighlightedOutcomes = createSelector(
-  (state: RootState) => state.outcomes,
-  (outcomes) => outcomes.highlighted
+  (state: RootState) => [], // state.outcomes,
+  (outcomes) => [] // outcomes.highlighted
 )
 
 export const isHighlightedViaOutcome = createSelector(

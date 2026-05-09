@@ -5,8 +5,8 @@ import {
 } from '@cf/components/common/menu/Menu'
 import { WorkflowViewType } from '@cf/components/pages/Workflow/types'
 import { useMenuActions } from '@cf/components/pages/Workflow/WorkflowTabs/hooks/useMenuActions'
+import { useWorkflowViewTypeFromRoute } from '@cf/components/pages/Workflow/WorkflowTabs/hooks/useWorkflowViewTypeFromRoute'
 import { UserContext } from '@cf/context/userContext'
-import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
@@ -142,7 +142,7 @@ const ActionMenu = () => {
 }
 
 const ExpandCollapseMenu = ({ legend }: { legend?: ReactElement }) => {
-  const context = useContext(WorkflowConfigContext)
+  const workflowViewType = useWorkflowViewTypeFromRoute()
   const { expandAll, collapseAll } = useMenuActions()
   const [expanded, setExpanded] = useState({
     [CfObjectType.WEEK]: true,
@@ -170,7 +170,7 @@ const ExpandCollapseMenu = ({ legend }: { legend?: ReactElement }) => {
     [expandAll, collapseAll]
   )
 
-  if (context.workflowView === WorkflowViewType.OVERVIEW) {
+  if (workflowViewType === WorkflowViewType.OVERVIEW) {
     return null
   }
 
@@ -259,8 +259,7 @@ const ExpandCollapseMenu = ({ legend }: { legend?: ReactElement }) => {
  * JUMP MENU
  *******************************************************/
 const JumpToMenu = ({ sectionIds }: { sectionIds: string[] }) => {
-  const context = useContext(WorkflowConfigContext)
-  const viewType = context.workflowView
+  const viewType = useWorkflowViewTypeFromRoute()
 
   const scrollToHandler = useCallback((objectId: string) => {
     return () => {

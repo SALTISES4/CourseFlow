@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect'
 
 import type { GraphState } from '../graphState'
-import type { WorkflowUuid } from '../model/types'
+import type { GraphUuid } from '../model/types'
 import { optimisticOpsAdapter } from '../optimisticOps.slice'
 import {
   selectAllEdges,
@@ -15,27 +15,25 @@ const optimisticSelectors = optimisticOpsAdapter.getSelectors(
 
 export const selectPendingOperations = optimisticSelectors.selectAll
 
-export const selectPendingOperationsByWorkflowUuid = (
-  workflowUuid: WorkflowUuid
+export const selectPendingOperationsByGraphUuid = (
+  graphUuid: GraphUuid
 ) =>
   createSelector([selectPendingOperations], (ops) =>
-    ops.filter(
-      (op) => op.workflowUuid === workflowUuid && op.status === 'pending'
-    )
+    ops.filter((op) => op.graphUuid === graphUuid && op.status === 'pending')
   )
 
 // Placeholder projection seam.
 // For now, effective projection returns canonical entities unchanged.
-export const selectEffectiveNodes = (workflowUuid: WorkflowUuid) =>
+export const selectEffectiveNodes = (graphUuid: GraphUuid) =>
   createSelector(
-    [selectAllNodes, selectPendingOperationsByWorkflowUuid(workflowUuid)],
-    (nodes) => nodes.filter((node) => node.workflowUuid === workflowUuid)
+    [selectAllNodes, selectPendingOperationsByGraphUuid(graphUuid)],
+    (nodes) => nodes.filter((node) => node.graphUuid === graphUuid)
   )
 
 // Placeholder projection seam.
 // Future optimistic overlays can filter/augment edges here.
-export const selectEffectiveEdges = (workflowUuid: WorkflowUuid) =>
+export const selectEffectiveEdges = (graphUuid: GraphUuid) =>
   createSelector(
-    [selectAllEdges, selectPendingOperationsByWorkflowUuid(workflowUuid)],
-    (edges) => edges.filter((edge) => edge.workflowUuid === workflowUuid)
+    [selectAllEdges, selectPendingOperationsByGraphUuid(graphUuid)],
+    (edges) => edges.filter((edge) => edge.graphUuid === graphUuid)
   )

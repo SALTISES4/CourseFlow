@@ -4,9 +4,14 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
-import type { PendingGraphOperation, WorkflowUuid } from './model/types'
+import type { GraphUuid, PendingGraphOperation } from './model/types'
 
-export const optimisticOpsAdapter = createEntityAdapter<PendingGraphOperation>()
+export const optimisticOpsAdapter = createEntityAdapter<
+  PendingGraphOperation,
+  string
+>({
+  selectId: (op) => op.uuid
+})
 
 export type OptimisticOpsState = ReturnType<
   typeof optimisticOpsAdapter.getInitialState
@@ -29,17 +34,17 @@ const optimisticOpsSlice = createSlice({
       }>
     ) {
       optimisticOpsAdapter.updateOne(state, {
-        uuid: action.payload.uuid,
+        id: action.payload.uuid,
         changes: { status: action.payload.status }
       })
     },
     removeById(state, action: PayloadAction<PendingGraphOperation['uuid']>) {
       optimisticOpsAdapter.removeOne(state, action.payload)
     },
-    removeByWorkflowUuid(state, action: PayloadAction<WorkflowUuid>) {
-      const ids = state.uuids.filter((id) => {
+    removeByGraphUuid(state, action: PayloadAction<GraphUuid>) {
+      const ids = state.ids.filter((id) => {
         const op = state.entities[id]
-        return op?.workflowUuid === action.payload
+        return op?.graphUuid === action.payload
       })
       optimisticOpsAdapter.removeMany(state, ids)
     },

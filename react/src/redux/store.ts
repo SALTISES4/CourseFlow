@@ -1,10 +1,9 @@
+import authReducer from '@cf/features/auth/state/auth.slice'
 import { graphStateReducer } from '@cf/features/graph/state'
-import { listenerMiddleware } from '@cfRedux/middleware/viewsettings.localstorage'
-import { dummyReducers, legacyWorkflowReducers } from '@cfRedux/Reducers'
-import authReducer from '@cfRedux/slices/auth.slice'
-import sidebarReducer from '@cfRedux/slices/sidebar.slice'
+import sidebarReducer from '@cf/features/sidebar/state/sidebar.slice'
+import { listenerMiddleware } from '@cf/features/viewSettings/state/middleware/viewsettings.localstorage'
+import viewsettingsReducer from '@cf/features/viewSettings/state/viewsettings.slice'
 import svgLinkReducer from '@cfRedux/slices/svglink.slice'
-import viewsettingsReducer from '@cfRedux/slices/viewsettings.slice'
 import { configureStore } from '@reduxjs/toolkit'
 
 import '@cfSCSS/base_style.scss'
@@ -13,16 +12,7 @@ import '@cfSCSS/workflow_styles.scss'
 const store = configureStore({
   reducer: {
     auth: authReducer,
-
-    // New graph rewrite state (canonical/load/ui/ops).
-    // This is the active target for new graph hydration.
     graph: graphStateReducer,
-
-    // Legacy graph/workspace reducers remain mounted for deferred UI migration only.
-    // They are quarantined from the new hydration path.
-    ...legacyWorkflowReducers,
-    ...dummyReducers,
-    //    workspace: workspaceReducer,
     sidebar: sidebarReducer,
     svglink: svgLinkReducer,
     viewsettings: viewsettingsReducer

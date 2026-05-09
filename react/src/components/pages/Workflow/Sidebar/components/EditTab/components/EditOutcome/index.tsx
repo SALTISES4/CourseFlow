@@ -11,7 +11,7 @@ import {
   duplicateOutcome,
   updateOutcome
 } from '@cf/redux/slices/outcomes.slice'
-import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
+import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import { debounce } from '@mui/material'

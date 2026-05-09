@@ -11,7 +11,7 @@ type PropsType = {
 
 const ColumnsHeader = ({ board, onReorder }: PropsType) => (
   <Styled.CellRow data-test-id="columns-block">
-    {board.columns.uuids.map((columnId, index) => (
+    {board.columns.ids.map((columnId, index) => (
       <Cell
         key={`column-header-${columnId}`}
         index={index}

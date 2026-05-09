@@ -1,4 +1,4 @@
-import { ConnectionEdge } from './types'
+import { ConnectionEdge, edgeKeys } from './types'
 
 type PositionCoords = {
   x: number
@@ -22,4 +22,37 @@ export function getCoords(
   }
 
   return positions[direction]
+}
+
+/**
+ * Map canonical API port strings (indices or cardinal names) to SVG connection edges.
+ */
+export function canonicalPortToConnectionEdge(port: string): ConnectionEdge {
+  const trimmed = port.trim()
+  const asNum = Number(trimmed)
+  if (!Number.isNaN(asNum) && asNum >= 0 && asNum < edgeKeys.length) {
+    return edgeKeys[asNum]
+  }
+  const lower = trimmed.toLowerCase()
+  if (lower === 'north' || lower === 'top' || lower === 'n') {
+    return 'top'
+  }
+  if (lower === 'east' || lower === 'right' || lower === 'e') {
+    return 'right'
+  }
+  if (lower === 'south' || lower === 'bottom' || lower === 's') {
+    return 'bottom'
+  }
+  if (lower === 'west' || lower === 'left' || lower === 'w') {
+    return 'left'
+  }
+  return edgeKeys.includes(trimmed as ConnectionEdge)
+    ? (trimmed as ConnectionEdge)
+    : 'right'
+}
+
+/** Dashed stroke from canonical graph `lineType` until a dedicated enum exists in the API client. */
+export function edgeLineTypeIsDashed(lineType: string): boolean {
+  const t = lineType.toLowerCase()
+  return t.includes('dash') || t === 'dotted' || t === 'dashed'
 }

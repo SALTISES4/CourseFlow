@@ -32,12 +32,12 @@ const WorkflowDialogs = () => {
     <>
       {/* Shared */}
       <RestoreDialog
-        id={workflowUuid}
+        uuid={workflowUuid}
         objectType={WorkspaceType.WORKFLOW}
         callback={refetch}
       />
       <ArchiveDialog
-        id={workflowUuid}
+        uuid={workflowUuid}
         objectType={WorkspaceType.WORKFLOW}
         callback={refetch}
       />
@@ -47,12 +47,12 @@ const WorkflowDialogs = () => {
       <WorkflowCopyToProjectDialog />
       <NodeLinkWorkflowDialog />
       <ContributorAddDialog
-        id={contributorProjectId}
+        uuid={contributorProjectId}
         type={WorkspaceType.WORKFLOW}
         refetch={refetch}
       />
       <ContributorRemoveDialog
-        id={contributorProjectId}
+        uuid={contributorProjectId}
         type={WorkspaceType.WORKFLOW}
       />
     </>

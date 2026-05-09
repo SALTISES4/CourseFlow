@@ -1,12 +1,10 @@
 import * as SC from '@cf/components/pages/Workflow/Sidebar/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { getNextLargestNumber } from '@cf/redux/selectors/helpers'
-import { selectSectionById } from '@cf/redux/selectors/section.selector'
+import type { SectionEntity } from '@cf/features/graph/state/model/types'
+import { selectSectionByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
+import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { sectionInsertBelow } from '@cf/redux/slices/section.slice'
 import { sectionChangeField } from '@cf/redux/slices/section.slice'
-import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
-import { RootState } from '@cf/redux/store'
-import { TSection } from '@cf/redux/types/type'
 import { _t } from '@cf/utility/Utility.class'
 import { debounce } from '@mui/material'
 import Button from '@mui/material/Button'
@@ -15,6 +13,7 @@ import { produce } from 'immer'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 
 import SaveAsTemplate from '../SaveAsTemplate'
 
@@ -24,27 +23,31 @@ type SectionFormType = {
 
 const EditSection = ({ sectionId }: { sectionId: string }) => {
   const dispatch = useDispatch()
-  const section = useSelector((state: RootState) =>
-    selectSectionById(state, sectionId)
+  const sectionSelector = useMemo(
+    () => selectSectionByUuid(sectionId),
+    [sectionId]
   )
+  const section = useSelector(sectionSelector)
+
+  useEffect(() => {
+    if (!section && sectionId) {
+      dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
+    }
+  }, [section, sectionId, dispatch])
 
   if (!section) {
-    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
     return null
   }
 
   return <EditSectionForm section={section} />
 }
 
-const EditSectionForm = ({ section }: { section: TSection }) => {
+const EditSectionForm = ({ section }: { section: SectionEntity }) => {
   const dispatch = useDispatch()
   const { dispatch: dialogDispatch } = useDialog()
-  const ids = useSelector((state: RootState) => state.workspace.section.uuids)
-  // const newSectionId = getNextLargestNumber(ids)
+  const { uuid: workflowRouteUuid } = useParams()
+  const workflowId = workflowRouteUuid ?? ''
   const newSectionId = 'new-section-id'
-  const workflowId = useSelector(
-    (state: RootState) => state.workspace.workflow.uuid
-  )
   const [state, setState] = useState({
     template: false
   })
@@ -72,7 +75,8 @@ const EditSectionForm = ({ section }: { section: TSection }) => {
 
   const debouncedDispatch = useMemo(
     () =>
-      debounce((data) => {
+      debounce((data: SectionFormType) => {
+        // TODO(graph-state): persist section title via graph API when available.
         dispatch(
           sectionChangeField({
             uuid: section.uuid,
@@ -81,8 +85,6 @@ const EditSectionForm = ({ section }: { section: TSection }) => {
             }
           })
         )
-
-        // updateValueQuery(section.uuid, CfObjectType.WEEK, data, true)
 
         reset({}, { keepValues: true })
       }, 300),

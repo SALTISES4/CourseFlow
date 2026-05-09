@@ -1,8 +1,8 @@
 import {
   edgesActions,
+  graphActions,
   nodesActions,
-  tagsActions,
-  workflowMetaActions
+  tagsActions
 } from './canonical'
 import type { GraphMutationEnvelope } from './model/types'
 
@@ -17,8 +17,8 @@ export const applyGraphDelta = (
   envelope: GraphMutationEnvelope
 ) => {
   dispatch(
-    workflowMetaActions.updateRevision({
-      workflowUuid: envelope.workflowUuid,
+    graphActions.updateRevision({
+      graphUuid: envelope.graphUuid,
       revisionId: envelope.revisionId
     })
   )

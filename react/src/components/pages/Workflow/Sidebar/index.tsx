@@ -1,10 +1,10 @@
 import useWorkflowSidebar from '@cf/components/pages/Workflow/Sidebar/hooks/useSidebar'
 import { isTabVisible } from '@cf/components/pages/Workflow/Sidebar/hooks/useSidebar/permissions'
-import { SidebarState } from '@cf/redux/slices/sidebar.slice'
+import { SidebarState } from '@cf/features/sidebar/state/sidebar.slice'
 import {
   sidebarChangeTab,
   sidebarCollapse
-} from '@cf/redux/slices/sidebar.slice'
+} from '@cf/features/sidebar/state/sidebar.slice'
 import { RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
 import AddCircleIcon from '@mui/icons-material/AddCircle'

@@ -1,12 +1,10 @@
 import Alert from '@cf/components/common/UIPrimitives/Alert'
-import { WorkflowViewType } from '@cf/components/pages/Workflow/types'
-import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { selectOutcomeTagGroups } from '@cf/redux/selectors/outcomes.selector'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/Utility.class'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
-import { useCallback, useContext } from 'react'
+import { useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { generatePath, useNavigate, useParams } from 'react-router-dom'
 
@@ -16,13 +14,11 @@ import * as Styled from '../../styles'
 const OutcomeTab = () => {
   const { uuid } = useParams()
   const outcomeGroups = useSelector(selectOutcomeTagGroups)
-  const context = useContext(WorkflowConfigContext)
   const navigate = useNavigate()
 
   const goToEditOutcomes = useCallback(() => {
-    context.setWorkflowView(WorkflowViewType.OUTCOME_EDIT)
     navigate(generatePath(CFRoutes.WORKFLOW_OUTCOME_EDIT, { uuid }))
-  }, [navigate, context, uuid])
+  }, [navigate, uuid])
 
   if (!outcomeGroups.length) {
     return (

@@ -1,4 +1,5 @@
-export * from './workflowMeta.slice'
+export * from './graph.slice'
+export * from './workflow.slice'
 export * from './sections.slice'
 export * from './channels.slice'
 export * from './nodes.slice'

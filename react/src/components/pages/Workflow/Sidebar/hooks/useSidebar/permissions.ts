@@ -2,7 +2,7 @@ import {
   WorkflowType,
   WorkflowViewType
 } from '@cf/components/pages/Workflow/types'
-import { SidebarState } from '@cf/redux/slices/sidebar.slice'
+import { SidebarState } from '@cf/features/sidebar/state/sidebar.slice'
 
 import { ConfigType } from './types'
 

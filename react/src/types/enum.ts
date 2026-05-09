@@ -4,9 +4,9 @@
 export enum CfObjectType {
   STRATEGY = 'strategy', // this is like a template, it might not belong here
   PROJECT = 'project',
-  NODELINK = 'nodelink',
+  EDGE = 'edge',
   NODE = 'node',
-  WEEK = 'section',
+  SECTION = 'section',
   COLUMN = 'column',
   OUTCOME = 'outcome',
   // OUTCOME_BASE = 'outcome',
@@ -16,8 +16,8 @@ export enum CfObjectType {
   OUTCOMEOUTCOME = 'outcomeoutcome',
   OUTCOMEHORIZONTALLINK = 'outcomehorizontallink',
   OUTCOMEWORKFLOW = 'outcomeworkflow',
-  NODEWEEK = 'nodesection',
-  WEEKWORKFLOW = 'sectionworkflow'
+  NODESECTION = 'nodesection',
+  SECTIONWORKFLOW = 'sectionworkflow'
 }
 
 /*******************************************************

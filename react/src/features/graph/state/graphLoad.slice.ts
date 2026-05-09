@@ -1,17 +1,17 @@
 import { type PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 import type {
+  GraphUuid,
   GraphLoadStatus,
-  GraphResourceLoadState,
-  WorkflowUuid
+  GraphResourceLoadState
 } from './model/types'
 
 type GraphLoadState = {
-  byWorkflowUuid: Record<WorkflowUuid, GraphResourceLoadState>
+  byGraphUuid: Record<GraphUuid, GraphResourceLoadState>
 }
 
 const makeInitialResourceState = (): GraphResourceLoadState => ({
-  workflowMeta: 'idle',
+  graph: 'idle',
   sections: 'idle',
   channels: 'idle',
   nodes: 'idle',
@@ -20,40 +20,40 @@ const makeInitialResourceState = (): GraphResourceLoadState => ({
 })
 
 const initialState: GraphLoadState = {
-  byWorkflowUuid: {}
+  byGraphUuid: {}
 }
 
 const graphLoadSlice = createSlice({
   name: 'graph/graphLoad',
   initialState,
   reducers: {
-    initializeWorkflowLoadState(
+    initializeGraphLoadState(
       state,
-      action: PayloadAction<{ workflowUuid: WorkflowUuid }>
+      action: PayloadAction<{ graphUuid: GraphUuid }>
     ) {
-      const { workflowUuid } = action.payload
-      state.byWorkflowUuid[workflowUuid] ??= makeInitialResourceState()
+      const { graphUuid } = action.payload
+      state.byGraphUuid[graphUuid] ??= makeInitialResourceState()
     },
     setResourceStatus(
       state,
       action: PayloadAction<{
-        workflowUuid: WorkflowUuid
+        graphUuid: GraphUuid
         resource: keyof GraphResourceLoadState
         status: GraphLoadStatus
       }>
     ) {
-      const { workflowUuid, resource, status } = action.payload
-      state.byWorkflowUuid[workflowUuid] ??= makeInitialResourceState()
-      state.byWorkflowUuid[workflowUuid][resource] = status
+      const { graphUuid, resource, status } = action.payload
+      state.byGraphUuid[graphUuid] ??= makeInitialResourceState()
+      state.byGraphUuid[graphUuid][resource] = status
     },
-    clearWorkflowLoadState(
+    clearGraphLoadState(
       state,
-      action: PayloadAction<{ workflowUuid: WorkflowUuid }>
+      action: PayloadAction<{ graphUuid: GraphUuid }>
     ) {
-      delete state.byWorkflowUuid[action.payload.workflowUuid]
+      delete state.byGraphUuid[action.payload.graphUuid]
     },
     clearAllLoadState(state) {
-      state.byWorkflowUuid = {}
+      state.byGraphUuid = {}
     }
   }
 })

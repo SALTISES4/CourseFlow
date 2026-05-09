@@ -7,10 +7,9 @@ import {
 import { columnInsertBelow } from '@cf/redux/slices/column.slice'
 import { nodeWorkflowInsert } from '@cf/redux/slices/node.slice'
 import store from '@cf/redux/store'
-import { RootState } from '@cf/redux/store'
 import { produce } from 'immer'
 import { MutableRefObject, useCallback, useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 import { isSidebarCustomNode, isSidebarNode } from '../../../types'
 
@@ -32,10 +31,7 @@ type PropsType = SectionRowPropsType & {
 
 function useRowDnd(props: PropsType) {
   const dispatch = useDispatch()
-  const wsColIds = useSelector(
-    (state: RootState) => state.workspace.column.uuids
-  )
-  const { sectionId, rowIndex, rowRef, onNodeDrop } = props
+  const { sectionId, rowIndex, rowRef, onNodeDrop, columnIds } = props
   const [state, setState] = useState<StateType>({
     highlightRow: false,
     highlightEdge: null,
@@ -156,7 +152,7 @@ function useRowDnd(props: PropsType) {
     rowRef,
     state.highlightEdge,
     sectionId,
-    wsColIds
+    columnIds
   ])
 
   return state

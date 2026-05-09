@@ -1,6 +1,6 @@
 import * as SC from '@cf/components/pages/Workflow/Sidebar/styles'
 import { DraggableType } from '@cf/components/views/WorkflowView/GraphView/types'
-import { selectWorkflowColumnEntities } from '@cf/redux/selectors/workflow.selector'
+import { selectGraphColumnEntities } from '@cf/redux/selectors/workflow.selector'
 import {
   NodeInsertMode,
   nodeChangeInsertMode
@@ -24,7 +24,7 @@ const AddTab = () => {
   const theme = useTheme()
   const { title, subtitle, groups } = data
 
-  const workflowColumns = useSelector(selectWorkflowColumnEntities)
+  const workflowColumns = useSelector(selectGraphColumnEntities)
   const nodeCategories = getChannelData(workflowColumns)
 
   const insertMode = useSelector(

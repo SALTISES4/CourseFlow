@@ -12,8 +12,8 @@ import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indi
 import useHover from '@cf/hooks/useHover'
 import { WorkflowBoard } from '@cf/redux/selectors/workflow.selector'
 import { CfObjectType } from '@cf/types/enum'
-import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
-import { selectSectionById } from '@cfRedux/selectors/section.selector'
+import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
+import { selectSectionByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { RootState } from '@cfRedux/store'
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
 import IconButton from '@mui/material/IconButton'
@@ -24,6 +24,7 @@ import {
   memo,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState
 } from 'react'
@@ -75,12 +76,13 @@ const Section = (props: SectionPropsType) => {
   )
   const sectionWrapperRef = useRef<HTMLDivElement>(null)
   const dragHandleRef = useRef<HTMLDivElement>(null)
-  const isStrategy = useSelector(
-    (state: RootState) => state.workspace.workflow.isStrategy
+  // TODO(graph-state): `isStrategy` lived on legacy workspace.workflow (not mounted); expose on WorkflowMetaEntity or workflow detail when modeled in graph.
+  const isStrategy = false
+  const sectionSelector = useMemo(
+    () => selectSectionByUuid(props.sectionId),
+    [props.sectionId]
   )
-  const section = useSelector((state: RootState) =>
-    selectSectionById(state, props.sectionId)
-  )
+  const section = useSelector(sectionSelector)
   const manager = useRef(new BetterSelectionManager(dispatch))
 
   const [_, isHovered] = useHover(dragHandleRef)
@@ -216,6 +218,10 @@ const Section = (props: SectionPropsType) => {
     [props]
   )
 
+  if (!section) {
+    return null
+  }
+
   const sectionGrid = !props.sectionRows.length ? (
     <SectionRow
       rowIndex="empty"
@@ -241,7 +247,7 @@ const Section = (props: SectionPropsType) => {
   )
 
   const defaultText = !isStrategy
-    ? `${section.sectionTypeDisplay} ${section.order + 1}`
+    ? `Section ${(section.position ?? 0) + 1}`
     : undefined
 
   return (

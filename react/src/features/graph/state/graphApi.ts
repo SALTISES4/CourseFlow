@@ -20,14 +20,15 @@ import type {
   DeleteEdgeInput,
   DeleteNodeInput,
   EdgeEntity,
+  GraphEntity,
+  GraphUuid,
   GraphMutationEnvelope,
   MoveNodeInput,
   NodeEntity,
   RenameNodeInput,
   SectionEntity,
   TagEntity,
-  WorkflowMetaEntity,
-  WorkflowUuid
+  WorkflowEntity
 } from './model/types'
 
 function unwrapSdkData<T>(result: { data?: T; error?: unknown }): T {
@@ -42,10 +43,12 @@ function unwrapSdkData<T>(result: { data?: T; error?: unknown }): T {
   return result.data
 }
 
-function mapGraphMetaToEntity(meta: GraphMetaOut): WorkflowMetaEntity {
+function mapGraphMetaToGraphEntity(meta: GraphMetaOut): GraphEntity {
   return {
     uuid: meta.uuid,
-    workflowTitle: meta.workflowTitle,
+    workflowUuid: meta.rootWorkflowUuid ?? null,
+    workflowType: meta.rootWorkflowType ?? null,
+    workflowTitle: meta.rootWorkflowTitle ?? meta.workflowTitle,
     authorId: meta.authorId,
     workflowProjectId: meta.workflowProjectId,
     revisionId: meta.revisionId,
@@ -54,8 +57,24 @@ function mapGraphMetaToEntity(meta: GraphMetaOut): WorkflowMetaEntity {
   }
 }
 
+function mapGraphMetaToWorkflowEntity(meta: GraphMetaOut): WorkflowEntity | null {
+  if (!meta.rootWorkflowUuid) {
+    return null
+  }
+  return {
+    uuid: meta.rootWorkflowUuid,
+    title: meta.rootWorkflowTitle ?? meta.workflowTitle,
+    workflowType: meta.rootWorkflowType ?? null,
+    projectId: meta.workflowProjectId,
+    authorId: meta.authorId,
+    dateCreated: meta.dateCreated,
+    modifiedOn: meta.modifiedOn
+  }
+}
+
 export type GraphResourceBundle = {
-  workflowMeta: WorkflowMetaEntity
+  graph: GraphEntity
+  workflow: WorkflowEntity | null
   sections: SectionEntity[]
   channels: ChannelEntity[]
   nodes: NodeEntity[]
@@ -63,12 +82,13 @@ export type GraphResourceBundle = {
 }
 
 function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
-  const workflowMeta = mapGraphMetaToEntity(view.graph)
-  const graphUuid = workflowMeta.uuid
+  const graph = mapGraphMetaToGraphEntity(view.graph)
+  const workflow = mapGraphMetaToWorkflowEntity(view.graph)
+  const graphUuid = graph.uuid
 
   const sections: SectionEntity[] = view.sections.map((section) => ({
     uuid: section.uuid,
-    workflowUuid: graphUuid,
+    graphUuid,
     title: section.title,
     position: section.position,
     threadUuid: section.threadUuid ?? null
@@ -76,7 +96,7 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
 
   const channels: ChannelEntity[] = view.channels.map((channel) => ({
     uuid: channel.uuid,
-    workflowUuid: graphUuid,
+    graphUuid,
     title: channel.title,
     position: channel.position,
     threadUuid: channel.threadUuid ?? null
@@ -84,33 +104,40 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
 
   const nodes: NodeEntity[] = view.nodes.map((node) => ({
     uuid: node.uuid,
-    workflowUuid: graphUuid,
+    graphUuid,
     sectionUuid: node.sectionUuid ?? null,
     channelUuid: node.channelUuid ?? null,
     sectionRow: node.sectionRow ?? null,
-    nodeWorkflowUuid: node.workflowUuid ?? null,
+    workflowUuid: node.workflowUuid ?? null,
     threadUuid: node.threadUuid ?? null,
     outcomeUuids: node.outcomeUuids ?? []
   }))
 
-  const edges: EdgeEntity[] = view.edges.map((edge) => ({
-    edgeId: edge.uuid,
-    workflowUuid: graphUuid,
-    sourceNodeUuid: edge.sourceNodeUuid,
-    targetNodeUuid: edge.targetNodeUuid,
-    lineType: edge.lineType,
-    sourcePort: edge.sourcePort,
-    targetPort: edge.targetPort
-  }))
+  const edges: EdgeEntity[] = view.edges.reduce<EdgeEntity[]>((acc, edge) => {
+    if (edge.id == null) {
+      console.error('[graph normalize] missing edge id in GraphViewOut edge', edge)
+      return acc
+    }
+    acc.push({
+      edgeId: String(edge.id),
+      graphUuid,
+      sourceNodeUuid: edge.sourceNodeUuid,
+      targetNodeUuid: edge.targetNodeUuid,
+      lineType: edge.lineType,
+      sourcePort: edge.sourcePort,
+      targetPort: edge.targetPort
+    })
+    return acc
+  }, [])
 
-  return { workflowMeta, sections, channels, nodes, edges }
+  return { graph, workflow, sections, channels, nodes, edges }
 }
 
 export const fetchWorkflowGraphBundle = async (
-  workflowUuid: WorkflowUuid
+  graphUuid: GraphUuid
 ): Promise<GraphResourceBundle> => {
   const result = await getGraphView({
-    path: { uuid: workflowUuid }
+    path: { uuid: graphUuid }
   })
   const view = unwrapSdkData<GraphViewOut>(result)
   return mapViewToBundle(view)
@@ -118,32 +145,30 @@ export const fetchWorkflowGraphBundle = async (
 
 // Tags are not returned from the graph view projection; keep a seam for a dedicated loader later.
 export const fetchWorkflowTags = async (
-  _workflowUuid: WorkflowUuid
+  _graphUuid: GraphUuid
 ): Promise<TagEntity[]> => []
 
-function mapMutationNode(
-  graphUuid: WorkflowUuid,
-  node: GraphNodeMutationOut
-): NodeEntity {
+function mapMutationNode(graphUuid: GraphUuid, node: GraphNodeMutationOut): NodeEntity {
   return {
     uuid: node.uuid,
-    workflowUuid: graphUuid,
+    graphUuid,
     sectionUuid: node.sectionUuid ?? null,
     channelUuid: node.channelUuid ?? null,
     sectionRow: node.sectionRow ?? null,
-    nodeWorkflowUuid: node.workflowUuid ?? null,
+    workflowUuid: node.workflowUuid ?? null,
     threadUuid: node.threadUuid ?? null,
     outcomeUuids: node.outcomeUuids ?? []
   }
 }
 
-function mapMutationEdge(
-  graphUuid: WorkflowUuid,
-  edge: GraphEdgeMutationOut
-): EdgeEntity {
+function mapMutationEdge(graphUuid: GraphUuid, edge: GraphEdgeMutationOut): EdgeEntity | null {
+  if (edge.id == null) {
+    console.error('[graph normalize] missing edge id in mutation edge', edge)
+    return null
+  }
   return {
-    edgeId: String(edge.uuid),
-    workflowUuid: graphUuid,
+    edgeId: String(edge.id),
+    graphUuid,
     sourceNodeUuid: edge.sourceNodeUuid,
     targetNodeUuid: edge.targetNodeUuid,
     lineType: edge.lineType,
@@ -154,7 +179,7 @@ function mapMutationEdge(
 
 function mapTagStub(tag: GraphTagStubOut): TagEntity {
   return {
-    tagId: String(tag.uuid),
+    tagId: String(tag.id),
     projectId: null,
     label: '',
     translationPlural: ''
@@ -170,7 +195,7 @@ function mapMutationEnvelope(
   const tagDeleted = payload.changes.tags.deleted ?? []
 
   return {
-    workflowUuid: graphId,
+    graphUuid: graphId,
     revisionId: payload.revisionId,
     changes: {
       nodes: {
@@ -183,12 +208,12 @@ function mapMutationEnvelope(
         deleted: payload.changes.nodes.deleted
       },
       edges: {
-        created: payload.changes.edges.created.map((e) =>
-          mapMutationEdge(graphId, e)
-        ),
-        updated: payload.changes.edges.updated.map((e) =>
-          mapMutationEdge(graphId, e)
-        ),
+        created: payload.changes.edges.created
+          .map((e) => mapMutationEdge(graphId, e))
+          .filter((e): e is EdgeEntity => e !== null),
+        updated: payload.changes.edges.updated
+          .map((e) => mapMutationEdge(graphId, e))
+          .filter((e): e is EdgeEntity => e !== null),
         deleted: payload.changes.edges.deleted.map(String)
       },
       tags: {
@@ -222,7 +247,7 @@ export const createEdgeCommand = async (
   input: CreateEdgeInput
 ): Promise<GraphMutationEnvelope> => {
   const result = await createGraphEdge({
-    path: { uuid: String(input.workflowUuid) },
+    path: { uuid: String(input.graphUuid) },
     body: {
       sourceNodeUuid: input.sourceNodeUuid,
       targetNodeUuid: input.targetNodeUuid,
@@ -237,7 +262,7 @@ export const createEdgeCommand = async (
 function parseEdgeId(edgeId: string): number {
   const n = Number(edgeId)
   if (!Number.isFinite(n)) {
-    throw new Error(`Invalid edge uuid: ${edgeId}`)
+    throw new Error(`Invalid edge id: ${edgeId}`)
   }
   return n
 }
@@ -246,7 +271,7 @@ export const deleteEdgeCommand = async (
   input: DeleteEdgeInput
 ): Promise<GraphMutationEnvelope> => {
   const result = await deleteEdge({
-    path: { edge_uuid: parseEdgeId(String(input.edgeId)) }
+    path: { edge_id: parseEdgeId(String(input.edgeId)) }
   })
   return mapMutationEnvelope(unwrapSdkData(result))
 }

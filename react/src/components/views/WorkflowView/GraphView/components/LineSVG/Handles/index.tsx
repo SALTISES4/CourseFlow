@@ -1,5 +1,5 @@
 import useHover from '@cf/hooks/useHover'
-import { selectIsDrawingLinkPreview } from '@cf/redux/selectors/nodelink.selector'
+import { selectIsDrawingLinkPreview } from '@cf/redux/selectors/svglink.selectors'
 import {
   dragEndThunk,
   svglinkDragMove,
@@ -17,12 +17,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import * as Styled from './styles'
 
 type PropsType = {
-  nodeuuid: string
+  nodeUuid: string
   nodeRef: MutableRefObject<HTMLDivElement>
   diameter?: number
 }
 
-const Handles = ({ nodeId, nodeRef, diameter = 10 }: PropsType) => {
+const Handles = ({ nodeUuid, nodeRef, diameter = 10 }: PropsType) => {
   const dispatch = useDispatch<AppDispatch>()
   const [, hovering] = useHover(nodeRef)
   const isDraggingPreview = useSelector(selectIsDrawingLinkPreview)
@@ -48,7 +48,7 @@ const Handles = ({ nodeId, nodeRef, diameter = 10 }: PropsType) => {
 
       dispatch(
         svglinkDragStart({
-          nodeId,
+          nodeUuid,
           x: bcr.x + bcr.width / 2 - svgBCR.left,
           y: bcr.y + bcr.height / 2 - svgBCR.top,
           edge
@@ -60,7 +60,7 @@ const Handles = ({ nodeId, nodeRef, diameter = 10 }: PropsType) => {
 
         dispatch(
           svglinkDragMove({
-            nodeId: null,
+            nodeUuid: null,
             x: e.clientX - svgBCR.left,
             y: e.clientY - svgBCR.top,
             edge: null
@@ -77,7 +77,7 @@ const Handles = ({ nodeId, nodeRef, diameter = 10 }: PropsType) => {
       window.addEventListener('mousemove', onMouseMove)
       window.addEventListener('mouseup', onMouseUp)
     },
-    [dispatch, nodeId]
+    [dispatch, nodeUuid]
   )
 
   return hovering || isDraggingPreview ? (

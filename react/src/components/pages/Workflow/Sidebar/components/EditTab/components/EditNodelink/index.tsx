@@ -9,7 +9,7 @@ import {
   nodelinkChangeField,
   nodelinkDeleteSelf
 } from '@cf/redux/slices/nodelink.slice'
-import { sidebarChangeTab } from '@cf/redux/slices/sidebar.slice'
+import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { RootState } from '@cf/redux/store'
 import { TNodelink } from '@cf/redux/types/type'
 import { _t } from '@cf/utility/Utility.class'

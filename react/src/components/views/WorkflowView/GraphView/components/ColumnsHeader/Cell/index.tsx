@@ -8,13 +8,16 @@ import {
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box'
+import {
+  selectChannelByUuid,
+  selectChannelThemeColumnType,
+  selectGraphByUuid
+} from '@cf/features/graph/state/selectors/canonical.selectors'
 import useHover from '@cf/hooks/useHover'
-import BetterSelectionManager from '@cf/redux/BetterSelectionManager'
-import { selectColumnById } from '@cf/redux/selectors/column.selector'
+import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { RootState } from '@cfRedux/store'
-import clsx from 'clsx'
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -94,10 +97,18 @@ const ColumnCellInner = ({
 }: Omit<CellProps, 'onReorder'>) => {
   const [ref, isHovering] = useHover()
   const dispatch = useDispatch()
-  const workflow = useSelector((state: RootState) => state.workspace.workflow)
-  const column = useSelector((state: RootState) =>
-    selectColumnById(state, columnId)
+  const graphSelector = useMemo(() => selectGraphByUuid(parentId), [parentId])
+  const graph = useSelector(graphSelector)
+  const channelSelector = useMemo(
+    () => selectChannelByUuid(columnId),
+    [columnId]
   )
+  const channel = useSelector(channelSelector)
+  const themeColumnTypeSelector = useMemo(
+    () => selectChannelThemeColumnType(parentId, columnId),
+    [parentId, columnId]
+  )
+  const themeColumnType = useSelector(themeColumnTypeSelector)
   const selected = useSelector(
     (state: RootState) =>
       state.sidebar.edit.objectType === CfObjectType.COLUMN &&
@@ -112,14 +123,14 @@ const ColumnCellInner = ({
 
   const onClickHandler = (e: MouseEvent<HTMLDivElement>) => {
     e.stopPropagation()
-    if (column) {
-      manager.updateSidebar(column.uuid, CfObjectType.COLUMN, parentId)
+    if (channel) {
+      manager.updateSidebar(channel.uuid, CfObjectType.COLUMN, parentId)
     }
   }
 
   const columnColourHex = ThemeHelper.getColumnColour({
-    columnType: column.columnType,
-    colour: column.colour
+    columnType: themeColumnType,
+    colour: null
   })
 
   useEffect(() => {
@@ -133,24 +144,17 @@ const ColumnCellInner = ({
     })
   }, [columnId, dragging, index, ref])
 
-  if (!column || !workflow) {
+  if (!channel || !graph) {
     return null
   }
 
-  const title = column.title?.length ? column.title : column.columnTypeDisplay
+  const title = channel.title?.trim() ? channel.title : ''
 
   return (
     <Styled.ColumnWrap ref={ref} dragging={dragging}>
       <Styled.Background selected={selected} hovering={isHovering} />
       <HoverMenu nodeId={columnId} show={isHovering} />
-      <Styled.Inner
-        border={column.lock && `2px solid ${column.lock.userColour}`}
-        className={clsx(
-          column.lock && 'locked',
-          column.lock && `locked-${column.lock.userId}`
-        )}
-        onClick={onClickHandler}
-      >
+      <Styled.Inner onClick={onClickHandler}>
         <Styled.Border color={columnColourHex} />
         <Styled.Title variant="body2">
           <span dangerouslySetInnerHTML={{ __html: title }}></span>
