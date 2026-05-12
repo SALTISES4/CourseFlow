@@ -124,6 +124,11 @@ def async_create_export_file(
     allowed_sets,
     dir_path,
 ):
+    logger.info(
+        "async_create_export_file start: default_storage=%s DEFAULT_FILE_STORAGE=%s",
+        type(default_storage).__name__,
+        getattr(settings, "DEFAULT_FILE_STORAGE", None),
+    )
     try:
         job_id = job_data.get("job_id")
         user_id = job_data.get("user_id")
@@ -188,6 +193,11 @@ def async_create_export_file(
         job_data["status"] = "success"
         job_data["filename"] = filename
     except Exception as err:
+        logger.error(
+            "async_create_export_file failed: %s\n%s",
+            err,
+            traceback.format_exc(),
+        )
         job_data["status"] = "failed"
         job_data["error"] = str(err)
         job_data['debug_info'] = traceback.format_exc()  # not exposed to users
@@ -196,7 +206,7 @@ def async_create_export_file(
         default_storage.delete(job_file_path)
     default_storage.save(
         job_file_path,
-        ContentFile(json.dumps(job_data))
+        ContentFile(json.dumps(job_data).encode("utf-8")),
     )
 
 

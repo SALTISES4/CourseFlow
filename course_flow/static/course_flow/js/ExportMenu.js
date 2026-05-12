@@ -75,7 +75,7 @@ export class ExportMenu extends React.Component{
                                 download
                             </span>
                             )}
-                            {job.status === 'error' && (
+                            {(job.status === 'error' || job.status === 'failed') && (
                             <span>{gettext("with error: ")+job.error}</span>
                             )}
                         </div>

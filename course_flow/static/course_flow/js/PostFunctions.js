@@ -832,8 +832,8 @@ export function getExport(objectID,objectType,exportType,exportMethod,callBackFu
         $.post(post_paths.get_export,{
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType),
-            exportType:JSON.stringify(exportType),
-            exportType:JSON.stringify(exportMethod),
+            export_type: exportType,
+            export_method: exportMethod,
         }).done(function(data, status, xhr){
             if(data.action=="posted")callBackFunction(data);
             else fail_function(data.action)

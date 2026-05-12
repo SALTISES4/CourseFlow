@@ -2000,7 +2000,9 @@ def get_export(request: HttpRequest) -> HttpResponse:
                 'filename': None,
             }
             json_path = f'{dir_path}/job_{job_id}.json'
-            json_content = ContentFile(json.dumps(job_data))
+            json_content = ContentFile(
+                json.dumps(job_data).encode("utf-8")
+            )
             default_storage.save(json_path, json_content)
             tasks.async_create_export_file(
                 job_data,
