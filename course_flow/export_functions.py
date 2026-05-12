@@ -293,7 +293,6 @@ def get_outcomes_export(
             with pd.ExcelWriter(b, engine="xlsxwriter") as writer:
                 for workflow in workflows:
                     df = get_workflow_outcomes_table(workflow, allowed_sets)
-                    print("got it")
                     sheet_name = (
                         get_alphanum(workflow.title) + "_" + str(workflow.pk)
                     )[:30]

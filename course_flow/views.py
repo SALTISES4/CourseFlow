@@ -21,6 +21,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, ProtectedError, Q
@@ -1968,7 +1970,7 @@ def import_data(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"action": "posted"})
 
 
-EXPORT_DIR = os.path.abspath('exports/courseflow/exports')
+EXPORT_DIR = 'exports/courseflow/exports'
 
 @user_can_view(False)
 def get_export(request: HttpRequest) -> HttpResponse:
@@ -1984,7 +1986,6 @@ def get_export(request: HttpRequest) -> HttpResponse:
         try:
             job_id = str(uuid.uuid4())
             dir_path = os.path.join(EXPORT_DIR,str(user.id))
-            os.makedirs(dir_path, exist_ok=True)
             clean_old_exports(dir_path)
             job_data = {
                 'job_id' : job_id,
@@ -1998,8 +1999,9 @@ def get_export(request: HttpRequest) -> HttpResponse:
                 'error': None,
                 'filename': None,
             }
-            with open(f'{dir_path}/job_{job_id}.json', 'w') as f:
-                json.dump(job_data, f)
+            json_path = f'{dir_path}/job_{job_id}.json'
+            json_content = ContentFile(json.dumps(job_data))
+            default_storage.save(json_path, json_content)
             tasks.async_create_export_file(
                 job_data,
                 allowed_sets,
@@ -2033,14 +2035,19 @@ def get_export(request: HttpRequest) -> HttpResponse:
 @require_POST
 def check_export_status(request: HttpRequest) -> HttpResponse:
     dir_path = os.path.join(EXPORT_DIR,str(request.user.id))
-    os.makedirs(dir_path, exist_ok=True)
     job_summaries = []
 
-    for filename in os.listdir(dir_path):
+    # listdir returns (directories, files)
+    try:
+        directorynames, filenames = default_storage.listdir(dir_path)
+    except FileNotFoundError:
+        filenames = []
+
+    for filename in filenames:
         if filename.endswith('.json'):
             filepath = os.path.join(dir_path, filename)
             try:
-                with open(filepath, 'r') as f:
+                with default_storage.open(filepath, 'r') as f:
                     job_data = json.load(f)
 
                 # Strip debug_info before returning to user
@@ -2060,23 +2067,27 @@ def check_export_status(request: HttpRequest) -> HttpResponse:
 # Get a file that has been completed
 @ajax_login_required
 def get_export_download(request: HttpRequest, filename) -> HttpResponse:
-    #Security checks
+    # --- Security checks ---
     if '..' in filename or '/' in filename or '\\' in filename:
         raise Http404("Invalid filename")
+
     if not filename.endswith(('.csv', '.xlsx')):
         raise Http404("Unsupported file type")
-    
-    dir_path = Path(EXPORT_DIR) / str(request.user.id)
-    file_path = (dir_path / filename).resolve()
 
-    # Check that the resolved path is actually inside the expected dir
-    if not str(file_path).startswith(str(dir_path.resolve())):
-        raise Http404("Invalid path")
+    dir_path = os.path.join(EXPORT_DIR, str(request.user.id))
+    file_path = f"{dir_path}/{filename}"
 
-    if not file_path.exists():
+    # --- Existence check via storage ---
+    if not default_storage.exists(file_path):
         raise Http404("File not found")
 
-    return FileResponse(open(file_path, 'rb'), as_attachment=True)
+    # --- Open via storage ---
+    try:
+        file = default_storage.open(file_path, 'rb')
+    except Exception:
+        raise Http404("File not accessible")
+
+    return FileResponse(file, as_attachment=True, filename=filename)
 
 @ajax_login_required
 def get_saltise_download(request: HttpRequest) -> HttpResponse:

@@ -7,6 +7,7 @@ from pathlib import Path
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
+from django.core.files.storage import default_storage
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
@@ -420,28 +421,34 @@ def benchmark(identifier, last_time):
 
 
 def clean_old_exports(user_dir, max_jobs: int = 2):
-    user_dir = Path(user_dir)
-    if not user_dir.exists():
+    # Find all job JSON files
+    try:
+        _, filenames = default_storage.listdir(user_dir)
+    except FileNotFoundError:
         return
 
-    # Find all job JSON files
-    job_files = list(user_dir.glob('*.json'))
     jobs = []
 
-    for job_file in job_files:
+    # Scan JSON job files
+    for filename in filenames:
+        if not filename.endswith('.json'):
+            continue
+
+        filepath = f"{user_dir}/{filename}"
+
         try:
-            with open(job_file) as f:
+            with default_storage.open(filepath, 'r') as f:
                 job_data = json.load(f)
                 created = job_data.get('created')
                 if created:
                     dt = parse_datetime(created)
-                    jobs.append((dt, job_data['filename'], job_file))
+                    jobs.append((dt, job_data['filename'], filepath))
         except Exception as e:
             # If the file is corrupt, we delete it
             try:
                 print("deleting a corrupt job file")
                 print(e)
-                job_file.unlink()
+                default_storage.delete(filepath)
             except Exception as delete_err:
                 print(f"Error deleting corrupt file: {delete_err}")
 
@@ -450,32 +457,37 @@ def clean_old_exports(user_dir, max_jobs: int = 2):
 
     # If too many, delete oldest
     while len(jobs) >= max_jobs + 1:
-        _, filename, job_file = jobs.pop(0)
-        job_file.unlink()
-        if filename is not None:
-            data_file = user_dir / filename
-            if data_file.exists():
-                data_file.unlink()
+        _, data_filename, json_path = jobs.pop(0)
+        default_storage.delete(json_path)
+        if data_filename:
+            data_path = f"{user_dir}/{data_filename}"
+            if default_storage.exists(data_path):
+                default_storage.delete(data_path)
 
     valid_filenames = {filename for _, filename, _ in jobs}
 
     # Delete any files in the folder that aren't .json and not in the valid set
-    for f in user_dir.iterdir():
-        if f.suffix in {'.csv', '.xlsx'} and f.name not in valid_filenames:
+    for filename in filenames:
+        if filename.endswith(('.csv', '.xlsx')) and filename not in valid_filenames:
             try:
-                f.unlink()
-                print(f"Deleted orphaned export file: {f}")
+                default_storage.delete(f"{user_dir}/{filename}")
+                print(f"Deleted orphaned export file: {filename}")
             except Exception as e:
-                print(f"Error deleting orphaned file {f}: {e}")
+                print(f"Error deleting orphaned file {filename}: {e}")
 
     #Delete any files older than 24 hours
     EXPORT_MAX_AGE_SECONDS = 86400
 
     now = timezone.now()
-    for f in user_dir.iterdir():
+    for dt, data_filename, json_path in jobs:
         try:
-            mtime = timezone.datetime.fromtimestamp(f.stat().st_mtime, tz=timezone.utc)
-            if (now - mtime).total_seconds() > EXPORT_MAX_AGE_SECONDS:
-                f.unlink()
+            if dt and (now - dt).total_seconds() > EXPORT_MAX_AGE_SECONDS:
+                default_storage.delete(json_path)
+
+                if data_filename:
+                    data_path = f"{user_dir}/{data_filename}"
+                    if default_storage.exists(data_path):
+                        default_storage.delete(data_path)
+
         except Exception as e:
-            print(f"Error deleting {f}: {e}")
+            print(f"Error deleting old job {json_path}: {e}")
