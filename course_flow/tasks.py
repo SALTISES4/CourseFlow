@@ -124,6 +124,8 @@ def async_create_export_file(
     allowed_sets,
     dir_path,
 ):
+
+  # why doesn't this make it into CW?
     logger.info(
         "async_create_export_file start: default_storage=%s DEFAULT_FILE_STORAGE=%s",
         type(default_storage).__name__,
@@ -193,6 +195,8 @@ def async_create_export_file(
         job_data["status"] = "success"
         job_data["filename"] = filename
     except Exception as err:
+        # why doesn't this make it into CW?
+        # celery logging is not configured properly...
         logger.error(
             "async_create_export_file failed: %s\n%s",
             err,
@@ -206,6 +210,7 @@ def async_create_export_file(
         default_storage.delete(job_file_path)
     default_storage.save(
         job_file_path,
+        # must encode for boto
         ContentFile(json.dumps(job_data).encode("utf-8")),
     )
 

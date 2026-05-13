@@ -32,7 +32,7 @@ def try_async(func):
     """
     From https://github.com/SALTISES4/dalite-ng/blob/master/dalite/celery.py
     Decorator for celery tasks such that they default to synchronous operation
-    if the broker is unavailable or inspect cannot see workers.
+    if the broker is unavailable or inspect cannot see workers (i.e. we don't always see the worker for some reason) 
     """
 
     @wraps(func)
