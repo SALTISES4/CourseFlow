@@ -47,12 +47,48 @@ def luminance(rgb):
     return 0.299 * r + 0.587 * g + 0.114 * b
 
 
+def _normalized_hex_body_for_export(bg_hex):
+    """
+    Comp effort for improper hex output
+    """
+    if bg_hex is None:
+        return None
+    try:
+        if pd.isna(bg_hex):
+            return None
+    except TypeError:
+        return None
+    if not isinstance(bg_hex, str):
+        bg_hex = str(bg_hex)
+    body = bg_hex.strip().lstrip("#").lower()
+    if not body or body == "nan":
+        return None
+    if not all(c in "0123456789abcdef" for c in body):
+        return None
+    if len(body) == 3:
+        body = "".join(c * 2 for c in body)
+    elif len(body) > 6:
+        return None
+    elif len(body) < 6:
+        body = body.zfill(6)
+    if len(body) != 6:
+        return None
+    return body
+
+
 def readable_text_color(bg_hex, threshold=140):
     """
     Returns '#000000' or '#FFFFFF' depending on background brightness.
+    Export-only: tolerates missing, NaN, and non–6-digit hex from serialized data.
     """
-    lum = luminance(hex_to_rgb(bg_hex))
-    return "#000000" if lum > 140 else "#FFFFFF"
+    body = _normalized_hex_body_for_export(bg_hex)
+    if body is None:
+        return "#000000"
+    try:
+        lum = luminance(hex_to_rgb(body))
+    except (ValueError, TypeError):
+        return "#000000"
+    return "#000000" if lum > threshold else "#FFFFFF"
 
 
 def get_workflow_full_table(workflow, allowed_sets):
