@@ -1,4 +1,7 @@
 // import './wdyr'
+
+// eslint-disable-next-line import/order
+import theme from '@cfMUI/theme'
 import '@cf/api/configureCourseFlowClient'
 import { courseFlowQueryClient } from '@cf/api/queryClient'
 import AuthBootstrap from '@cf/components/auth/AuthBootstrap'
@@ -6,7 +9,6 @@ import { CookieProvider } from '@cf/context/cookieContext'
 import { DialogContextProvider } from '@cf/context/dialogContext'
 import CfRouter from '@cf/router/appRoutes'
 import { MainSidebarRootStyles } from '@cfComponents/globalNav/MainSidebar/styles'
-import theme from '@cfMUI/theme'
 import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
@@ -16,6 +18,7 @@ import { SnackbarProvider } from 'notistack'
 import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { RouterProvider } from 'react-router-dom'
+
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
 

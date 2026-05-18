@@ -1,9 +1,9 @@
 import { selectIsDrawingLinkPreview } from '@cf/features/graph/state/selectors/svglink.selectors'
 import {
-  dragEndThunk,
   svglinkDragMove,
   svglinkDragStart
 } from '@cf/features/graph/state/slices/svglink.slice'
+import { dragEndThunk } from '@cf/features/graph/state/thunks/svglink.thunk'
 import useHover from '@cf/hooks/useHover'
 import { AppDispatch } from '@cf/redux/store'
 import { Position } from '@xyflow/react'

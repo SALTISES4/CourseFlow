@@ -9,8 +9,8 @@ import {
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box'
-import { GraphBoard } from '@cf/features/graph/state'
 import { selectSectionByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
+import { GraphBoard } from '@cf/features/graph/state/selectors/graphBoard.selectors'
 import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
 import useHover from '@cf/hooks/useHover'
 import { CfObjectType } from '@cf/types/enum'

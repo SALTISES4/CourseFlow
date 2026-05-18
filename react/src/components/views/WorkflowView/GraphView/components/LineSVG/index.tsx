@@ -16,21 +16,10 @@ import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
 import Connection from './Connection'
-import ConnectionDrawPreview from './DrawPreview'
+import ConnectionDrawPreview, { NodeBCR } from './DrawPreview'
 import * as Styled from './styles'
 import { ConnectionType } from './types'
 import { canonicalPortToConnectionEdge, edgeLineTypeIsDashed } from './utility'
-
-export type NodeBCR = {
-  x: number
-  y: number
-  top: number
-  left: number
-  right: number
-  bottom: number
-  width: number
-  height: number
-}
 
 const LineSVG = ({
   rerender,

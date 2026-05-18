@@ -1,11 +1,10 @@
+import { LinkedOutcomesPropsType } from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes/types'
 import MuiBadge from '@mui/material/Badge'
 import Box from '@mui/material/Box'
 import MuiPopover from '@mui/material/Popover'
 import { styled } from '@mui/material/styles'
 
-import { PropsType } from './'
-
-type LinkedTo = PropsType['parent']['type']
+type LinkedTo = LinkedOutcomesPropsType['parent']['type']
 
 export const Wrap = styled(Box, {
   shouldForwardProp: (prop) => !['type'].includes(prop as string)

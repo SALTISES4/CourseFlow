@@ -1,4 +1,4 @@
-import { styled } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import { MuiColorInput } from 'mui-color-input'
 
 // .MuiColorInput-TextField   Styles applied to the root element.

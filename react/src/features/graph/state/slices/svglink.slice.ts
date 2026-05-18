@@ -1,4 +1,3 @@
-import { AppDispatch, RootState } from '@cfRedux//store'
 import { SliceNamespace } from '@cfRedux/types/enumActions'
 import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit'
 import { Position } from '@xyflow/react'
@@ -8,18 +7,6 @@ export const svglinkDragEnd = createAction<{
   from: SVGLinkState['snap']['from']
   to: SVGLinkState['snap']['to']
 }>('svglink/svglinkDragEnd')
-
-export const dragEndThunk =
-  () => (dispatch: AppDispatch, getState: () => RootState) => {
-    const state = getState().svglink
-    dispatch(
-      svglinkDragEnd({
-        uuid: state.dragging.uuid,
-        from: state.snap.from,
-        to: state.snap.to
-      })
-    )
-  }
 
 export type DragPosition = {
   nodeUuid: string | null

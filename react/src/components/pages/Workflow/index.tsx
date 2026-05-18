@@ -1,15 +1,15 @@
 import Loader from '@cf/components/common/UIPrimitives/Loader'
 import { WorkflowSidebarContextProvider } from '@cf/components/pages/Workflow/Sidebar/hooks/useSidebar/context'
 import WorkflowTabs from '@cf/components/pages/Workflow/WorkflowTabs'
+import { selectGraphByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
 import {
   canRenderChannels,
   canRenderEdges,
   canRenderNodes,
   canRenderShell,
-  selectGraphByUuid,
-  selectWorkflowLoadState,
-  useGraphBootstrap
-} from '@cf/features/graph/state'
+  selectWorkflowLoadState
+} from '@cf/features/graph/state/selectors/readiness.selectors'
+import { useGraphBootstrap } from '@cf/features/graph/state/useGraphBootstrap'
 import { RootState } from '@cf/redux/store'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
 import { useSelector } from 'react-redux'

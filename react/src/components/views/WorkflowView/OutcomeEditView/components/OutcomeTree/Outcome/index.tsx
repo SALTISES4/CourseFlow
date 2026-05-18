@@ -25,7 +25,7 @@ import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { OutcomeGroup } from '../'
+// import { OutcomeGroup } from '../'
 import OutcomeHeader from './Header'
 import * as Styled from '../styles'
 
@@ -228,7 +228,11 @@ const Outcome = ({
         onToggleClick={onToggleClick}
       />
 
-      {!state.collapsed && <OutcomeGroup parentId={uuid} />}
+
+      {
+      // can't work like this circ dependency
+      // !state.collapsed && <OutcomeGroup parentId={uuid} />
+      }
 
       <DropIndicator
         lineGap="8px"

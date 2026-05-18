@@ -7,10 +7,19 @@ import { Position, getSmoothStepPath, getStraightPath } from '@xyflow/react'
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import type { NodeBCR } from '../'
-
 type PropsType = {
   nodesBCR: Record<string, NodeBCR>
+}
+
+export interface NodeBCR {
+  x: number
+  y: number
+  top: number
+  left: number
+  right: number
+  bottom: number
+  width: number
+  height: number
 }
 
 function findNearestRect(

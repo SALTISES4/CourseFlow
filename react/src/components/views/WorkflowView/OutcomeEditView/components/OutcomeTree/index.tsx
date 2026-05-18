@@ -9,14 +9,6 @@ import GroupDropzone from './GroupDropzone'
 import Outcome from './Outcome'
 import * as Styled from './styles'
 
-const OutcomeTree = ({ outcomes }: { outcomes: OutcomeType[] }) => (
-  <GroupDropzone id={'-1'} level={0} hasChildren={!!outcomes.length}>
-    <Styled.OutcomeGroupWrap>
-      <OutcomeGroup parentId={null} />
-    </Styled.OutcomeGroupWrap>
-  </GroupDropzone>
-)
-
 export const OutcomeGroup = ({ parentId }: { parentId: string | null }) => {
   const childOutcomes = useSelector((state: RootState) =>
     selectOutcomeChildrenById(state, parentId)
@@ -44,5 +36,13 @@ export const OutcomeGroup = ({ parentId }: { parentId: string | null }) => {
     </Styled.OutcomeGroup>
   )
 }
+
+const OutcomeTree = ({ outcomes }: { outcomes: OutcomeType[] }) => (
+  <GroupDropzone id={'-1'} level={0} hasChildren={!!outcomes.length}>
+    <Styled.OutcomeGroupWrap>
+      <OutcomeGroup parentId={null} />
+    </Styled.OutcomeGroupWrap>
+  </GroupDropzone>
+)
 
 export default OutcomeTree

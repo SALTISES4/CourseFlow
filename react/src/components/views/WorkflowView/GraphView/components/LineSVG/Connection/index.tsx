@@ -1,8 +1,6 @@
 import { selectIsDrawingLinkPreview } from '@cf/features/graph/state/selectors/svglink.selectors'
-import {
-  dragEndThunk,
-  svglinkLineEdit
-} from '@cf/features/graph/state/slices/svglink.slice'
+import { svglinkLineEdit } from '@cf/features/graph/state/slices/svglink.slice'
+import { dragEndThunk } from '@cf/features/graph/state/thunks/svglink.thunk'
 import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
 import { AppDispatch, RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'

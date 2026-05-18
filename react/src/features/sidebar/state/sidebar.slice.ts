@@ -84,10 +84,10 @@ const sidebarSlice = createSlice({
   }
 })
 
-export default sidebarSlice.reducer
-
 export const {
   collapse: sidebarCollapse,
   edit: sidebarEdit,
   changeTab: sidebarChangeTab
 } = sidebarSlice.actions
+
+export default sidebarSlice.reducer

@@ -1,13 +1,14 @@
 import authReducer from '@cf/features/auth/state/auth.slice'
-import { graphStateReducer } from '@cf/features/graph/state'
+import { graphStateReducer } from '@cf/features/graph/state/graphState'
 import svglinkReducer from '@cf/features/graph/state/slices/svglink.slice'
 import sidebarReducer from '@cf/features/sidebar/state/sidebar.slice'
 import { listenerMiddleware } from '@cf/features/viewSettings/state/middleware/viewsettings.localstorage'
 import viewsettingsReducer from '@cf/features/viewSettings/state/viewsettings.slice'
 import { configureStore } from '@reduxjs/toolkit'
 
-import '@cfSCSS/base_style.scss'
-import '@cfSCSS/workflow_styles.scss'
+// @todo why are these here?
+// import '@cfSCSS/base_style.scss'
+// import '@cfSCSS/workflow_styles.scss'
 
 const store = configureStore({
   reducer: {

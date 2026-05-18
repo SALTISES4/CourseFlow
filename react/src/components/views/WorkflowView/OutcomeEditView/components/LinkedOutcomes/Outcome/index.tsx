@@ -3,12 +3,13 @@ import { _t } from '@cf/utility/Utility.class'
 import { getPrefixPath } from '@cfRedux/selectors/outcomes.selector'
 import { Outcome as OutcomeType } from '@cfRedux/slices/outcomes.slice'
 import { RootState } from '@cfRedux/store'
+import { LinkedOutcomesPropsType } from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes/types'
 import * as Styled from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { PropsType as LinkedOutcomesProps, OutcomeGroup } from '../index'
+// import { OutcomeGroup } from '../'
 import OutcomeHeader from './Header'
 
 type OutcomeStateType = {
@@ -22,7 +23,7 @@ const Outcome = ({
   children,
   linkParent
 }: OutcomeType & {
-  linkParent?: LinkedOutcomesProps['parent']
+  linkParent?: LinkedOutcomesPropsType['parent']
 }) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const prefix = useSelector((state: RootState) => getPrefixPath(state, uuid))
@@ -66,7 +67,10 @@ const Outcome = ({
         onToggleClick={onToggleClick}
       />
 
-      {!state.collapsed && <OutcomeGroup parentId={uuid} />}
+      {/*{
+      CIRC DEP
+
+      !state.collapsed && <OutcomeGroup parentId={uuid} />}*/}
     </Styled.OutcomeWrapper>
   )
 }

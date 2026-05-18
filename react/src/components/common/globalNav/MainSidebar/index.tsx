@@ -4,6 +4,7 @@ import { LibraryObjectType } from '@cf/types/enum'
 import strings from '@cf/utility/strings'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
+import RelatedWorkflowList from '@cfPages/Workflow/WorkflowTabs/components/RelatedWorkflowList'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import FolderCopyIcon from '@mui/icons-material/FolderCopy'
 import HelpRoundedIcon from '@mui/icons-material/HelpRounded'
@@ -20,9 +21,9 @@ import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { Link, generatePath, useLocation } from 'react-router-dom'
 
+import { mapObjectTypeToLibraryObjectType } from 'utility/marshalling/librarySearch'
+
 import * as SC from './styles'
-import { mapObjectTypeToLibraryObjectType } from '../../../../utility/marshalling/librarySearch'
-import RelatedWorkflowList from '../../../pages/Workflow/WorkflowTabs/components/RelatedWorkflowList'
 
 const Favourites = () => {
   const { data, isLoading, isError } = useLibrarySearch({

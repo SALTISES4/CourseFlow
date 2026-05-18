@@ -1,39 +1,17 @@
-import { GraphBoard } from '@cf/features/graph/state'
 import { RootState } from '@cf/redux/store'
 import { defaultColumnSettings } from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
+import { SectionRowPropsType } from '@cfViews/WorkflowView/GraphView/components/Section/Row/type'
 import { alpha } from '@mui/material'
-import { MouseEvent, ReactNode, memo, useRef } from 'react'
+import { ReactNode, memo, useRef } from 'react'
 import { useSelector } from 'react-redux'
 
 import useRowDnd from './useRowDnd'
-import type { SectionPropsType } from '../'
 import * as StyledWorkflow from '../../../styles'
 import SectionCell from '../Cell'
 import DropIndicator from '../Cell/DropIndicator'
 import { SectionCellType } from '../Cell/types'
 import * as StyledSection from '../styles'
-
-interface NonEmptyRowType {
-  nodes: GraphBoard['sections'][0]['rows'][0]
-  graphUuid: string
-  sectionId: string
-  rowIndex: number
-  columnIds: GraphBoard['columns']['ids']
-  columnColors: GraphBoard['columns']['colors']
-  onNodeDrop: SectionPropsType['onNodeDrop']
-  onNodeClick: (e: MouseEvent<HTMLDivElement>, nodeuuid: string) => void
-}
-
-interface EmptyRowType
-  extends Pick<
-    NonEmptyRowType,
-    'graphUuid' | 'sectionId' | 'columnIds' | 'columnColors' | 'onNodeDrop'
-  > {
-  rowIndex: 'empty'
-}
-
-export type SectionRowPropsType = EmptyRowType | NonEmptyRowType
 
 const SectionRow = (props: SectionRowPropsType) => {
   const rowRef = useRef<HTMLDivElement>(null)

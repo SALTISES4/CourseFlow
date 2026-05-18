@@ -1,22 +1,18 @@
 import { selectOutcomeChildrenById } from '@cfRedux/selectors/outcomes.selector'
 import { RootState } from '@cfRedux/store'
+import { LinkedOutcomesPropsType } from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes/types'
 import * as StyledOutcome from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import { MouseEvent, useCallback, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import Outcome from './Outcome'
+// import Outcome from './Outcome'
 import * as Styled from './styles'
 
-export type PropsType = {
-  parent: {
-    uuid: string
-    type: 'node' | 'outcome'
-  }
-  outcomes: number[]
-  highlight?: boolean
-}
-
-const LinkedOutcomes = ({ parent, outcomes, highlight }: PropsType) => {
+const LinkedOutcomes = ({
+  parent,
+  outcomes,
+  highlight
+}: LinkedOutcomesPropsType) => {
   const [show, setShow] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
   const badgeRef = useRef<HTMLSpanElement>(null)
@@ -55,7 +51,7 @@ const LinkedOutcomes = ({ parent, outcomes, highlight }: PropsType) => {
         <StyledOutcome.OutcomeGroup sx={{ mt: 0 }}>
           {outcomes.map((outcome) => (
             <StyledOutcome.OutcomeGroupItem key={outcome}>
-              <Outcome {...entities[outcome]} linkParent={parent} />
+              {/*<Outcome {...entities[outcome]} linkParent={parent} />*/}
             </StyledOutcome.OutcomeGroupItem>
           ))}
         </StyledOutcome.OutcomeGroup>

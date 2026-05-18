@@ -3,8 +3,8 @@ import {
   dropTargetForElements,
   monitorForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { selectGraphBoard } from '@cf/features/graph/state'
 import { resolveNodeDropSectionRow } from '@cf/features/graph/state/resolveNodeDropRow'
+import { selectGraphBoard } from '@cf/features/graph/state/selectors/graphBoard.selectors'
 import {
   moveNode,
   reorderChannels,

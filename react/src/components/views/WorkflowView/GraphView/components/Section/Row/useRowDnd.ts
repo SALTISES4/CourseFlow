@@ -7,13 +7,12 @@ import {
 import { insertChannelBelow } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { nodeWorkflowInsert } from '@cf/redux/slices/node.slice'
 import type { AppDispatch, RootState } from '@cf/redux/store'
+import { SectionRowPropsType } from '@cfViews/WorkflowView/GraphView/components/Section/Row/type'
 import { produce } from 'immer'
 import { MutableRefObject, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { isSidebarCustomNode, isSidebarNode } from '../../../types'
-
-import type { SectionRowPropsType } from './index'
 
 type StateType = {
   highlightEdge: Edge | null

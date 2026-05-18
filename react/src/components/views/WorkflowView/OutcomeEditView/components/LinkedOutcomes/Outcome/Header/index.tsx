@@ -5,6 +5,7 @@ import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import { nodelinkOutcome } from '@cfRedux/slices/node.slice'
 import { linkOutcome } from '@cfRedux/slices/outcomes.slice'
+import { LinkedOutcomesPropsType } from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes/types'
 import * as Styled from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import AddIcon from '@mui/icons-material/Add'
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined'
@@ -13,12 +14,10 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import { MouseEvent, MutableRefObject, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 
-import { PropsType as LinkedOutcomesProps } from '../../index'
-
 type PropsType = {
   uuid: string
   level: number
-  linkParent?: LinkedOutcomesProps['parent']
+  linkParent?: LinkedOutcomesPropsType['parent']
   title: string
   dragRef: MutableRefObject<HTMLDivElement>
   selected: boolean
