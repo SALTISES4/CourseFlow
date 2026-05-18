@@ -1,9 +1,10 @@
-import {
-  NodeInsertMode,
-  NodeWorkflowReorderPayload
-} from '@cf/redux/slices/node.slice'
-import store from '@cfRedux/store'
+import type {
+  NodeDropPayload,
+  NodeInsertMode
+} from '@cf/features/graph/state/resolveNodeDropRow'
+import type { RootState } from '@cf/redux/store'
 import { memo, useCallback, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import SectionCellEmpty from './CellEmpty'
 import SectionCellNode from './CellNode'
@@ -14,7 +15,7 @@ import * as Styled from '../../../styles'
 type StateType = {
   anchor: HTMLDivElement | null
   dropData:
-    | (NodeWorkflowReorderPayload & {
+    | (NodeDropPayload & {
         type: SectionCellType.NODE | SectionCellType.PHANTOM
       })
     | null
@@ -23,6 +24,9 @@ type StateType = {
 const SectionCell = (props: SectionCellProps) => {
   // console.log(`${props.coordsY + 1} x ${props.coordsX + 1}`)
   const { type, onReorder } = props
+  const insertMode = useSelector(
+    (state: RootState) => state.graph.graphUi.nodeInsertMode
+  )
   const [state, setState] = useState<StateType>({
     anchor: null,
     dropData: null
@@ -31,12 +35,10 @@ const SectionCell = (props: SectionCellProps) => {
 
   const onDrop = useCallback(
     (
-      data: NodeWorkflowReorderPayload & {
+      data: NodeDropPayload & {
         type: SectionCellType.NODE | SectionCellType.PHANTOM
       }
     ) => {
-      // read from the store API to avoid expensive useSelector subscription
-      const insertMode = store.getState().workspace.node.insertMode
       if (insertMode === 'manual') {
         setState({
           anchor: ref.current,
@@ -46,7 +48,7 @@ const SectionCell = (props: SectionCellProps) => {
         onReorder(data)
       }
     },
-    [onReorder]
+    [insertMode, onReorder]
   )
 
   const onOption = useCallback(

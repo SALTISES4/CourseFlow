@@ -4,9 +4,10 @@ import {
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import store from '@cfRedux/store'
+import type { RootState } from '@cf/redux/store'
 import { produce } from 'immer'
 import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import { isGridCell } from '../../../../types'
 import { SectionCellEmptyTypeInternal, SectionCellType } from '../types'
@@ -16,11 +17,6 @@ type PropsType = Pick<
   'wrapRef' | 'columnId' | 'coordsSection' | 'coordsY' | 'emptyRow' | 'onDrop'
 >
 
-// read from the store API to avoid expensive useSelector subscription
-function getIsRowInsert() {
-  return store.getState().workspace.node.insertMode === 'row'
-}
-
 function useCellEmptyDnd({
   wrapRef,
   columnId,
@@ -29,6 +25,9 @@ function useCellEmptyDnd({
   emptyRow,
   onDrop
 }: PropsType) {
+  const isRowInsert = useSelector(
+    (state: RootState) => state.graph.graphUi.nodeInsertMode === 'row'
+  )
   const [state, setState] = useState<{
     draggedOver: boolean
     closestEdge: Edge | null
@@ -61,7 +60,7 @@ function useCellEmptyDnd({
         }
 
         if (
-          getIsRowInsert() &&
+          isRowInsert &&
           isGridCell(source.data) &&
           source.data.coords.y !== coordsY
         ) {
@@ -79,7 +78,7 @@ function useCellEmptyDnd({
             draft.closestEdge = null
 
             if (
-              getIsRowInsert() &&
+              isRowInsert &&
               isGridCell(source.data) &&
               source.data.coords.y !== coordsY
             ) {
@@ -106,7 +105,7 @@ function useCellEmptyDnd({
             type: SectionCellType.PHANTOM,
             edge: undefined,
             uuid: dropped.uuid,
-            fromSection: dropped.coords.section,
+            fromSection: String(dropped.coords.section),
             toSection: coordsSection,
             toColumn: columnId,
             toRow: coordsY
@@ -119,7 +118,7 @@ function useCellEmptyDnd({
         })
       }
     })
-  }, [wrapRef, columnId, coordsSection, coordsY, emptyRow, onDrop])
+  }, [wrapRef, columnId, coordsSection, coordsY, emptyRow, isRowInsert, onDrop])
 
   return state
 }

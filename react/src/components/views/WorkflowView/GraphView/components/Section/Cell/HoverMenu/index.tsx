@@ -1,19 +1,19 @@
+import type { NodeInsertMode } from '@cf/features/graph/state/resolveNodeDropRow'
+import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import useHover from '@cf/hooks/useHover'
 import {
-  NodeInsertMode,
   nodeWorkflowDelete,
   nodeWorkflowInsert
 } from '@cf/redux/slices/node.slice'
+import type { RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
-import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
-import store from '@cfRedux/store'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import { MouseEvent, MutableRefObject, useCallback, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import InsertMenu from '../InsertMenu'
 
@@ -36,16 +36,14 @@ const HoverMenu = ({ nodeId, nodeRef }: PropsType) => {
     duplicate: false
   })
   const [, hovering] = useHover(nodeRef)
+  const insertMode = useSelector(
+    (state: RootState) => state.graph.graphUi.nodeInsertMode
+  )
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {
       return (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
-        // read from the store API to avoid expensive useSelector subscription
-        const st = store.getState() as ReturnType<typeof store.getState> & {
-          workspace?: { node?: { insertMode?: NodeInsertMode } }
-        }
-        const insertMode = st.workspace?.node?.insertMode ?? 'manual'
         switch (action) {
           case 'insert':
           case 'duplicate':
@@ -81,7 +79,7 @@ const HoverMenu = ({ nodeId, nodeRef }: PropsType) => {
         }
       }
     },
-    [dispatch, nodeId, nodeRef]
+    [dispatch, insertMode, nodeId, nodeRef]
   )
 
   const onInsertCancel = useCallback(

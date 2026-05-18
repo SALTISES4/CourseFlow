@@ -1,5 +1,4 @@
 import { type Instruction } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item'
-import { getNextLargestNumber } from '@cf/redux/selectors/helpers'
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit'
 import { type PayloadAction } from '@reduxjs/toolkit'
 
@@ -40,7 +39,7 @@ export const outcomesSlice = createSlice({
   reducers: {
     // add outcome to a specific parent
     addOutcome: (state, action: PayloadAction<AddOutcomeType>) => {
-      // const outcomeId = getNextLargestNumber(state.uuids)
+      // const outcomeId = Utility.getNextLargestNumber(state.uuids)
       // TODO: nope
       const outcomeId = 'new-outcome-id'
 
@@ -121,7 +120,7 @@ export const outcomesSlice = createSlice({
 
       // recursively go over the tree of outcomes and make updates
       function cloneOutcome(outcome: Outcome, parentId: string | null = null) {
-        // const cloneId = getNextLargestNumber(state.uuids)
+        // const cloneId = Utility.getNextLargestNumber(state.uuids)
         const cloneId = 'new-clone-id'
         clonedIds.push(cloneId)
         const clone = {

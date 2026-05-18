@@ -35,7 +35,7 @@ export type GraphBoard = {
   sections: SectionBoard[]
 }
 
-// WEEK ROW EXAMPLE
+// SECTION ROW EXAMPLE
 // this section has 3 rows       rows = [
 // #11 x: 3, y: 0               { 3: 11 },
 // #22 x: 2, y: 1               { 2: 22, 3: 23 },
@@ -74,7 +74,7 @@ const buildChannelColors = (
 
 /**
  * Memoized selector factory keyed by graph UUID.
- * Use: `selectWorkflowBoard(state, graphUuid)`.
+ * Use: `selectGraphBoard(state, graphUuid)`.
  */
 const makeSelectGraphBoard = lruMemoize(
   (graphUuid: GraphUuid) =>

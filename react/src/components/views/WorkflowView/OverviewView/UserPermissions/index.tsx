@@ -20,7 +20,6 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { EUser } from '@XMLHTTP/types/entity'
-import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -106,10 +105,6 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
     }
   })
 
-  function onSuccessHandler(resp: EmptyPostResp) {
-    onSuccess(resp)
-  }
-
   async function onChangeHandler(group: PermissionGroup, membershipId: number) {
     if (!projectUuidForTeam) {
       return
@@ -118,11 +113,11 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
       const resp = await updateMember.mutateAsync({
         path: {
           uuid: projectUuidForTeam,
-          membership_uuid: membershipId
+          membership_uuid: membershipId // should this be uid or uui?
         },
         body: { role: permissionGroupToRole(group) }
       })
-      onSuccessHandler(resp as unknown as EmptyPostResp)
+      onSuccess(resp)
     } catch (err) {
       onError(err)
     }

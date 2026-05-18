@@ -3,13 +3,14 @@ import {
   dropTargetForElements,
   monitorForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { selectGraphBoard } from '@cf/redux/selectors/workflow.selector'
-import { nodeWorkflowReorder } from '@cf/redux/slices/node.slice'
+import { selectGraphBoard } from '@cf/features/graph/state'
+import { resolveNodeDropSectionRow } from '@cf/features/graph/state/resolveNodeDropRow'
 import {
-  workflowReorderColumns,
-  workflowReorderSection
-} from '@cf/redux/slices/workflow.slice'
-import { RootState } from '@cf/redux/store'
+  moveNode,
+  reorderChannels,
+  reorderSections
+} from '@cf/features/graph/state/thunks/graphMutations.thunks'
+import type { AppDispatch, RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import DeleteNodeCategoryDialog from '@cfComponents/dialog/Workflow/DeleteNodeCategory'
 import DeleteSectionDialog from '@cfComponents/dialog/Workflow/DeleteSection'
@@ -23,7 +24,6 @@ import {
   useState
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
 import { useResizeObserver } from 'usehooks-ts'
 
 import ColumnsHeader from './components/ColumnsHeader'
@@ -45,13 +45,14 @@ type StateType = {
 }
 
 const GraphView = ({ graphUuid }: { graphUuid: string }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
+  const nodeInsertMode = useSelector(
+    (state: RootState) => state.graph.graphUi.nodeInsertMode
+  )
 
-  const workflowBoard = useSelector((state: RootState) =>
+  const graphBoard = useSelector((state: RootState) =>
     selectGraphBoard(state, graphUuid)
   )
-  console.log(graphUuid)
-  console.log(workflowBoard)
 
   const dragging = useSelector((state: RootState) => state.svglink.allowDnd)
   const sectionsWrapperRef = useRef<HTMLDivElement>(null)
@@ -120,12 +121,13 @@ const GraphView = ({ graphUuid }: { graphUuid: string }) => {
 
   const onColumnReorder: ColumnReorderCallbackFn = useCallback(
     (oldIndex: number, newIndex: number) => {
-      dispatch(
-        workflowReorderColumns({ moveIndex: oldIndex, toIndex: newIndex })
-      )
+      const channelUuids = [...graphBoard.columns.ids]
+      const [moved] = channelUuids.splice(oldIndex, 1)
+      channelUuids.splice(newIndex, 0, moved)
+      dispatch(reorderChannels({ graphUuid, channelUuids }))
       triggerLineRerender()
     },
-    [dispatch, triggerLineRerender]
+    [dispatch, graphBoard.columns.ids, graphUuid, triggerLineRerender]
   )
 
   const onSectionCollapse = useCallback((sectionUuid: string) => {
@@ -155,33 +157,45 @@ const GraphView = ({ graphUuid }: { graphUuid: string }) => {
 
   const onSectionReorder: SectionReorderCallbackFn = useCallback(
     (from, to) => {
-      dispatch(workflowReorderSection({ fromIndex: from, toIndex: to }))
+      const sectionUuids = graphBoard.sections.map((section) => section.uuid)
+      const [moved] = sectionUuids.splice(from, 1)
+      sectionUuids.splice(to, 0, moved)
+      dispatch(reorderSections({ graphUuid, sectionUuids }))
       triggerLineRerender()
     },
-    [dispatch, triggerLineRerender]
+    [dispatch, graphBoard.sections, graphUuid, triggerLineRerender]
   )
 
   const onNodeDrop: CellReorderCallbackFn = useCallback(
     (payload) => {
-      dispatch(nodeWorkflowReorder(payload))
+      dispatch(
+        moveNode({
+          graphUuid,
+          nodeUuid: payload.uuid,
+          sectionUuid: String(payload.toSection),
+          channelUuid: String(payload.toColumn),
+          sectionRow: resolveNodeDropSectionRow(payload, nodeInsertMode)
+        })
+      )
       triggerLineRerender()
     },
-    [dispatch, triggerLineRerender]
+    [dispatch, graphUuid, nodeInsertMode, triggerLineRerender]
   )
 
   return (
     <GraphViewWrap dragging={dragging}>
-      <ColumnsHeader board={workflowBoard} onReorder={onColumnReorder} />
+      <ColumnsHeader board={graphBoard} onReorder={onColumnReorder} />
       <SectionsWrapper data-test-id="sections-block" ref={sectionsWrapperRef}>
-        {workflowBoard.sections.map((section, index) => (
+        {graphBoard.sections.map((section, index) => (
           <Section
+            // Maybe this should be called CFSection since Section is used everywhere from MUI
             key={`section_${section.uuid}`}
             index={index}
             sectionId={section.uuid}
             sectionRows={section.rows}
-            boardId={workflowBoard.uuid}
-            columnIds={workflowBoard.columns.ids}
-            columnColors={workflowBoard.columns.colors}
+            boardId={graphBoard.uuid}
+            columnIds={graphBoard.columns.ids}
+            columnColors={graphBoard.columns.colors}
             condensed={
               state.condensed === 'all' ||
               state.condensed.includes(section.uuid)

@@ -1,10 +1,9 @@
+import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { getNextLargestNumber } from '@cf/redux/selectors/helpers'
 import { columnInsertBelow } from '@cf/redux/slices/column.slice'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
-import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import { RootState } from '@cfRedux/store'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
@@ -15,12 +14,13 @@ import { useDispatch, useSelector } from 'react-redux'
 
 type PropsType = {
   nodeId: string
+  graphUuid: string
   show: boolean
 }
 
 type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
 
-const HoverMenu = ({ nodeId, show }: PropsType) => {
+const HoverMenu = ({ nodeId, graphUuid, show }: PropsType) => {
   const dispatch = useDispatch()
   const { dispatch: dialogDispatch } = useDialog()
   const ids = useSelector((state: RootState) => {
@@ -29,7 +29,7 @@ const HoverMenu = ({ nodeId, show }: PropsType) => {
     }
     return st.workspace?.column?.uuids ?? []
   })
-  // const newColumnId = getNextLargestNumber(ids)
+  // const newColumnId = Utility.getNextLargestNumber(ids)
   const newColumnId = 'please-work-god'
 
   const onActionClick = useCallback(
@@ -51,7 +51,8 @@ const HoverMenu = ({ nodeId, show }: PropsType) => {
             break
           case 'delete':
             dialogDispatch(DialogMode.WORKFLOW_DELETE_NODE_CATEGORY, {
-              uuid: nodeId
+              uuid: nodeId,
+              graphUuid
             })
             break
           case 'comments':
@@ -68,7 +69,7 @@ const HoverMenu = ({ nodeId, show }: PropsType) => {
         }
       }
     },
-    [dispatch, dialogDispatch, newColumnId, nodeId]
+    [dispatch, dialogDispatch, graphUuid, newColumnId, nodeId]
   )
 
   return (

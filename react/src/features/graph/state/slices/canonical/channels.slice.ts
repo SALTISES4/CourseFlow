@@ -4,7 +4,7 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
-import type { ChannelEntity, GraphUuid, ResourceUuid } from '../model/types'
+import type { ChannelEntity, GraphUuid, ResourceUuid } from '../../model/types'
 
 export const channelsAdapter = createEntityAdapter<ChannelEntity, ResourceUuid>(
   {
@@ -22,6 +22,9 @@ const channelsSlice = createSlice({
   reducers: {
     upsertMany(state, action: PayloadAction<ChannelEntity[]>) {
       channelsAdapter.upsertMany(state, action.payload)
+    },
+    removeManyByUuid(state, action: PayloadAction<ResourceUuid[]>) {
+      channelsAdapter.removeMany(state, action.payload)
     },
     removeByGraphUuid(state, action: PayloadAction<GraphUuid>) {
       const ids = state.ids.filter((id) => {

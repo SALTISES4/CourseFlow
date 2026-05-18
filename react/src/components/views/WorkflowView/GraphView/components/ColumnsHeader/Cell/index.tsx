@@ -13,8 +13,8 @@ import {
   selectChannelThemeColumnType,
   selectGraphByUuid
 } from '@cf/features/graph/state/selectors/canonical.selectors'
-import useHover from '@cf/hooks/useHover'
 import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
+import useHover from '@cf/hooks/useHover'
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { RootState } from '@cfRedux/store'
@@ -153,7 +153,7 @@ const ColumnCellInner = ({
   return (
     <Styled.ColumnWrap ref={ref} dragging={dragging}>
       <Styled.Background selected={selected} hovering={isHovering} />
-      <HoverMenu nodeId={columnId} show={isHovering} />
+      <HoverMenu nodeId={columnId} graphUuid={parentId} show={isHovering} />
       <Styled.Inner onClick={onClickHandler}>
         <Styled.Border color={columnColourHex} />
         <Styled.Title variant="body2">

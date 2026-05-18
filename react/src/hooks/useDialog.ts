@@ -19,12 +19,12 @@ export enum DialogMode {
   // WORKFLOW
   IMPORT_OUTCOMES = 'import_outcomes',
   IMPORT_NODES = 'import_nodes',
-  WORKFLOW_DELETE = 'workflow_DELETE',
+  WORKFLOW_DELETE = 'workflow_delete',
   WORKFLOW_EDIT = 'workflow_edit',
   WORKFLOW_COPY_TO_PROJECT = 'workflow_copy_to_project',
   WORKFLOW_CREATE = 'workflow_create',
-  WORKFLOW_DELETE_SECTION = 'workflow_delete_section',
-  WORKFLOW_DELETE_NODE_CATEGORY = 'workflow_delete_node_category',
+  GRAPH_DELETE_SECTION = 'graph_delete_section',
+  WORKFLOW_DELETE_NODE_CATEGORY = 'graph_delete_node_category',
 
   // WORKSPACE
   CONTRIBUTOR_REMOVE = 'contributor_remove',
@@ -39,12 +39,13 @@ export type DialogPayloadMap = {
   [DialogMode.CONTRIBUTOR_REMOVE]: { membershipId: number; username: string }
   [DialogMode.ARCHIVE]: { peopleId: string }
   [DialogMode.WORKFLOW_CREATE]: { workflowType: WorkflowType }
-  [DialogMode.WORKFLOW_DELETE_SECTION]: {
+  [DialogMode.GRAPH_DELETE_SECTION]: {
     sectionId: string
-    workflowId: string
+    graphUuid: string
   }
   [DialogMode.WORKFLOW_DELETE_NODE_CATEGORY]: {
     uuid: string
+    graphUuid: string
   }
   [DialogMode.NODE_LINK_WORKFLOW]: {
     uuid: string

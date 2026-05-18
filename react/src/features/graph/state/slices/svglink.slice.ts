@@ -1,14 +1,13 @@
-import { SliceNamespace } from '@cf/redux/types/enumActions'
+import { AppDispatch, RootState } from '@cfRedux//store'
+import { SliceNamespace } from '@cfRedux/types/enumActions'
 import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit'
 import { Position } from '@xyflow/react'
-
-import { AppDispatch, RootState } from '../store'
 
 export const svglinkDragEnd = createAction<{
   uuid: string
   from: SVGLinkState['snap']['from']
   to: SVGLinkState['snap']['to']
-}>('svgLink/svglinkDragEnd')
+}>('svglink/svglinkDragEnd')
 
 export const dragEndThunk =
   () => (dispatch: AppDispatch, getState: () => RootState) => {
@@ -60,7 +59,7 @@ const initialState: SVGLinkState = {
   allowDnd: false
 }
 
-const svgLinkSlice = createSlice({
+const svglinkSlice = createSlice({
   name: SliceNamespace.SVGLINK,
   initialState,
   reducers: {
@@ -120,7 +119,7 @@ const svgLinkSlice = createSlice({
   }
 })
 
-export default svgLinkSlice.reducer
+export default svglinkSlice.reducer
 
 export const {
   dragStart: svglinkDragStart,
@@ -128,4 +127,4 @@ export const {
   dragSnap: svglinkDragSnap,
   lineEdit: svglinkLineEdit,
   allowDragDrop: svglinkAllowDND
-} = svgLinkSlice.actions
+} = svglinkSlice.actions

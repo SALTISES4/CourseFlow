@@ -297,7 +297,6 @@ export const {
   createLock: sectionCreateLock,
   reloadComments: sectionReloadComments,
   changeField: sectionChangeField,
-  insertBelow: sectionInsertBelow,
   deleteSelf: sectionDeleteSelf,
   deleteSelfSoft: sectionDeleteSelfSoft,
   restoreSelf: sectionRestoreSelf,

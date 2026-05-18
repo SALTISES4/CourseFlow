@@ -1,10 +1,10 @@
 import { type PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 import type {
-  GraphUuid,
   GraphLoadStatus,
-  GraphResourceLoadState
-} from './model/types'
+  GraphResourceLoadState,
+  GraphUuid
+} from '../model/types'
 
 type GraphLoadState = {
   byGraphUuid: Record<GraphUuid, GraphResourceLoadState>

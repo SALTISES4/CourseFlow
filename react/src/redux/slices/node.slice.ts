@@ -294,7 +294,7 @@ const nodeSlice = createSlice({
         nodeAdapter.addOne(state, {
           ...clone,
           // TODO: not gonna quite work, review
-          // uuid: getNextLargestNumber(state.uuids),
+          // uuid: Utility.getNextLargestNumber(state.uuids),
           title: _t('Blank title'),
           order: row,
           section: sectionId,
@@ -331,7 +331,7 @@ const nodeSlice = createSlice({
         const clone = { ...node }
         nodeAdapter.addOne(state, {
           ...clone,
-          // uuid: getNextLargestNumber(state.uuids),
+          // uuid: Utility.getNextLargestNumber(state.uuids),
           uuid: 'hello-there',
           title: _t('Blank title'),
           order: clone.order + 1,
@@ -434,7 +434,7 @@ const nodeSlice = createSlice({
         columnMode: insertModeColumn
       })
 
-      // for the columns, when there's no row collapsing
+      // for the channels, when there's no row collapsing
       // iterate over same column nodes and chain bump them if necessary
       if (insertModeColumn && collapseRow === null) {
         let currRow = newRow
@@ -590,7 +590,6 @@ export const {
 
   // workflow view
   workfowLinkOutcome: nodelinkOutcome,
-  workflowNodeReorder: nodeWorkflowReorder,
   workflowNodeInsert: nodeWorkflowInsert,
   workflowNodeDelete: nodeWorkflowDelete
 } = nodeSlice.actions

@@ -1,10 +1,12 @@
+import type { GraphMutationEnvelope } from './model/types'
 import {
+  channelsActions,
   edgesActions,
   graphActions,
   nodesActions,
+  sectionsActions,
   tagsActions
-} from './canonical'
-import type { GraphMutationEnvelope } from './model/types'
+} from './slices/canonical'
 
 type DispatchLike = (action: unknown) => void
 
@@ -37,6 +39,42 @@ export const applyGraphDelta = (
 
   if (envelope.changes.nodes.deleted.length) {
     dispatch(nodesActions.removeManyByUuid(envelope.changes.nodes.deleted))
+  }
+
+  if (
+    envelope.changes.channels.created.length ||
+    envelope.changes.channels.updated.length
+  ) {
+    dispatch(
+      channelsActions.upsertMany([
+        ...envelope.changes.channels.created,
+        ...envelope.changes.channels.updated
+      ])
+    )
+  }
+
+  if (envelope.changes.channels.deleted.length) {
+    dispatch(
+      channelsActions.removeManyByUuid(envelope.changes.channels.deleted)
+    )
+  }
+
+  if (
+    envelope.changes.sections.created.length ||
+    envelope.changes.sections.updated.length
+  ) {
+    dispatch(
+      sectionsActions.upsertMany([
+        ...envelope.changes.sections.created,
+        ...envelope.changes.sections.updated
+      ])
+    )
+  }
+
+  if (envelope.changes.sections.deleted.length) {
+    dispatch(
+      sectionsActions.removeManyByUuid(envelope.changes.sections.deleted)
+    )
   }
 
   if (

@@ -1,7 +1,6 @@
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { LibraryObjectType } from '@cf/types/enum'
-import { mapObjectTypeToLibraryObjectType } from '../../../../utility/marshalling/librarySearch'
 import strings from '@cf/utility/strings'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
@@ -22,6 +21,7 @@ import { useState } from 'react'
 import { Link, generatePath, useLocation } from 'react-router-dom'
 
 import * as SC from './styles'
+import { mapObjectTypeToLibraryObjectType } from '../../../../utility/marshalling/librarySearch'
 import RelatedWorkflowList from '../../../pages/Workflow/WorkflowTabs/components/RelatedWorkflowList'
 
 const Favourites = () => {

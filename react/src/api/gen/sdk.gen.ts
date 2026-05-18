@@ -65,6 +65,10 @@ import type {
   GetSectionResponses,
   GetWorkflowData,
   GetWorkflowResponses,
+  InsertGraphChannelBelowData,
+  InsertGraphChannelBelowResponses,
+  InsertGraphSectionBelowData,
+  InsertGraphSectionBelowResponses,
   LibraryItemFavoriteToggleData,
   LibraryItemFavoriteToggleResponses,
   ListGraphChannelsData,
@@ -105,6 +109,10 @@ import type {
   PatchNodeResponses,
   RegisterData,
   RegisterResponses,
+  ReorderGraphChannelsData,
+  ReorderGraphChannelsResponses,
+  ReorderGraphSectionsData,
+  ReorderGraphSectionsResponses,
   SearchLibraryData,
   SearchLibraryResponses,
   UpdateChannelData,
@@ -181,6 +189,10 @@ import {
   zGetSectionResponse,
   zGetWorkflowData,
   zGetWorkflowResponse,
+  zInsertGraphChannelBelowData,
+  zInsertGraphChannelBelowResponse,
+  zInsertGraphSectionBelowData,
+  zInsertGraphSectionBelowResponse,
   zLibraryItemFavoriteToggleData,
   zLibraryItemFavoriteToggleResponse,
   zListGraphChannelsData,
@@ -221,6 +233,10 @@ import {
   zPatchNodeResponse,
   zRegisterData,
   zRegisterResponse,
+  zReorderGraphChannelsData,
+  zReorderGraphChannelsResponse,
+  zReorderGraphSectionsData,
+  zReorderGraphSectionsResponse,
   zSearchLibraryData,
   zSearchLibraryResponse,
   zUpdateChannelData,
@@ -635,6 +651,54 @@ export const listGraphChannels = <ThrowOnError extends boolean = false>(
   })
 
 /**
+ * Insert Graph Channel Below
+ */
+export const insertGraphChannelBelow = <ThrowOnError extends boolean = false>(
+  options: Options<InsertGraphChannelBelowData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    InsertGraphChannelBelowResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zInsertGraphChannelBelowData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zInsertGraphChannelBelowResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/graph/{uuid}/channels/insert-below',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Reorder Graph Channels
+ */
+export const reorderGraphChannels = <ThrowOnError extends boolean = false>(
+  options: Options<ReorderGraphChannelsData, ThrowOnError>
+) =>
+  (options.client ?? client).put<
+    ReorderGraphChannelsResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zReorderGraphChannelsData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zReorderGraphChannelsResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/graph/{uuid}/channels/order',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
  * List Graph Sections
  */
 export const listGraphSections = <ThrowOnError extends boolean = false>(
@@ -671,6 +735,54 @@ export const createGraphSection = <ThrowOnError extends boolean = false>(
       await zCreateGraphSectionResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/graph/{uuid}/sections',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Insert Graph Section Below
+ */
+export const insertGraphSectionBelow = <ThrowOnError extends boolean = false>(
+  options: Options<InsertGraphSectionBelowData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    InsertGraphSectionBelowResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zInsertGraphSectionBelowData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zInsertGraphSectionBelowResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/graph/{uuid}/sections/insert-below',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Reorder Graph Sections
+ */
+export const reorderGraphSections = <ThrowOnError extends boolean = false>(
+  options: Options<ReorderGraphSectionsData, ThrowOnError>
+) =>
+  (options.client ?? client).put<
+    ReorderGraphSectionsResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zReorderGraphSectionsData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zReorderGraphSectionsResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/graph/{uuid}/sections/order',
     ...options,
     headers: {
       'Content-Type': 'application/json',

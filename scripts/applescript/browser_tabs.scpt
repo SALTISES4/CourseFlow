@@ -5,7 +5,7 @@ on run argv
 
         set newWindow to make new window
         (* CF *)
-        make new tab at end of tabs of newWindow with properties {URL:"http://localhost:5173/"}
+        make new tab at end of tabs of newWindow with properties {URL:"http://localhost:3000/"}
 
         (* OPENAPI *)
         make new tab at end of tabs of newWindow with properties {URL:"http://127.0.0.1:8000/api/docs"}

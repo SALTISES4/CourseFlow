@@ -1,5 +1,8 @@
 import type { ThunkAction, UnknownAction } from '@reduxjs/toolkit'
 
+import { fetchWorkflowGraphBundle, fetchWorkflowTags } from '../graphApi'
+import type { GraphState } from '../graphState'
+import type { GraphResourceLoadState, GraphUuid } from '../model/types'
 import {
   channelsActions,
   edgesActions,
@@ -8,11 +11,8 @@ import {
   sectionsActions,
   tagsActions,
   workflowActions
-} from './canonical'
-import { fetchWorkflowGraphBundle, fetchWorkflowTags } from './graphApi'
-import { graphLoadActions } from './graphLoad.slice'
-import type { GraphState } from './graphState'
-import type { GraphResourceLoadState, GraphUuid } from './model/types'
+} from '../slices/canonical'
+import { graphLoadActions } from '../slices/graphLoad.slice'
 
 type GraphBootstrapState = { graph: GraphState }
 type GraphThunk<ReturnType = void> = ThunkAction<

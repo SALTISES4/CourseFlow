@@ -1,6 +1,7 @@
 import { StyledDialog } from '@cf/components/common/dialog/styles'
+import { deleteChannel } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { columnDeleteSelf } from '@cf/redux/slices/column.slice'
+import type { AppDispatch } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -11,13 +12,20 @@ import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 
 const DeleteWorkflowNodeCategory = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { payload, show, onClose } = useDialog(
     DialogMode.WORKFLOW_DELETE_NODE_CATEGORY
   )
 
   const onSubmit = useCallback(() => {
-    dispatch(columnDeleteSelf({ uuid: payload?.uuid }))
+    if (payload?.uuid && payload?.graphUuid) {
+      dispatch(
+        deleteChannel({
+          graphUuid: payload.graphUuid,
+          channelUuid: payload.uuid
+        })
+      )
+    }
     onClose()
   }, [dispatch, onClose, payload])
 

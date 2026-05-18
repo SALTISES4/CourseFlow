@@ -4,14 +4,12 @@ import {
   SidebarInnerWrap,
   SidebarTitle
 } from '@cf/components/pages/Workflow/Sidebar/styles'
-import { selectNodelinkById } from '@cf/redux/selectors/nodelink.selector'
-import {
-  nodelinkChangeField,
-  nodelinkDeleteSelf
-} from '@cf/redux/slices/nodelink.slice'
+import { edgeLineTypeIsDashed } from '@cf/components/views/WorkflowView/GraphView/components/LineSVG/utility'
+import type { EdgeEntity } from '@cf/features/graph/state/model/types'
+import { selectEdgeByEdgeId } from '@cf/features/graph/state/selectors/canonical.selectors'
+import { deleteEdge } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
-import { RootState } from '@cf/redux/store'
-import { TNodelink } from '@cf/redux/types/type'
+import type { AppDispatch } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -21,71 +19,69 @@ import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { ChangeEvent, useCallback } from 'react'
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-const EditNodeLink = ({ nodeLinkId }: { nodeLinkuuid: string }) => {
+const EditNodeLink = ({ nodeLinkId }: { nodeLinkId: string }) => {
   const dispatch = useDispatch()
-  const nodeLink = useSelector((state: RootState) =>
-    selectNodelinkById(state, nodeLinkId)
+  const edgeSelector = useMemo(
+    () => selectEdgeByEdgeId(nodeLinkId),
+    [nodeLinkId]
   )
+  const edge = useSelector(edgeSelector)
 
-  if (!nodeLink) {
-    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
+  useEffect(() => {
+    if (!edge && nodeLinkId) {
+      dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
+    }
+  }, [edge, nodeLinkId, dispatch])
+
+  if (!edge) {
     return null
   }
 
-  return <EditNodeLinkForm nodeLink={nodeLink} />
+  return <EditNodeLinkForm edge={edge} />
 }
 
-const EditNodeLinkForm = ({ nodeLink }: { nodeLink: TNodelink }) => {
-  const dispatch = useDispatch()
-
-  const onTitleChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => [
-      dispatch(
-        nodelinkChangeField({
-          uuid: nodeLink.uuid,
-          json: {
-            title: e.target.value
-          }
-        })
-      )
-    ],
-    [dispatch, nodeLink.uuid]
+const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
+  const dispatch = useDispatch<AppDispatch>()
+  const [titleDraft, setTitleDraft] = useState('')
+  const [textPosition, setTextPosition] = useState(50)
+  const [dashed, setDashed] = useState(() =>
+    edgeLineTypeIsDashed(edge.lineType)
   )
+
+  useEffect(() => {
+    setDashed(edgeLineTypeIsDashed(edge.lineType))
+  }, [edge.edgeId, edge.lineType])
+
+  const onTitleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setTitleDraft(e.target.value)
+    // TODO(graph-state): persist edge label when the graph API supports it.
+  }, [])
 
   const onDashChange = useCallback(
     (_: ChangeEvent<HTMLInputElement>, checked: boolean) => {
-      dispatch(
-        nodelinkChangeField({
-          uuid: nodeLink.uuid,
-          json: {
-            dashed: checked
-          }
-        })
-      )
+      setDashed(checked)
+      // TODO(graph-state): persist lineType (`dashed` / `solid`) via edge patch mutation when available.
     },
-    [dispatch, nodeLink.uuid]
+    []
   )
 
-  const onSliderChange = useCallback(
-    (_: Event, value: number | number[]) => {
-      dispatch(
-        nodelinkChangeField({
-          uuid: nodeLink.uuid,
-          json: {
-            textPosition: value as number
-          }
-        })
-      )
-    },
-    [dispatch, nodeLink.uuid]
-  )
+  const onSliderChange = useCallback((_: Event, value: number | number[]) => {
+    setTextPosition(value as number)
+    // TODO(graph-state): persist edge text position when the graph API supports it.
+  }, [])
 
   const onDelete = useCallback(() => {
-    dispatch(nodelinkDeleteSelf({ uuid: nodeLink.uuid }))
-  }, [dispatch, nodeLink.uuid])
+    dispatch(
+      deleteEdge({
+        graphUuid: edge.graphUuid,
+        edgeId: edge.edgeId
+      })
+    )
+    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
+  }, [dispatch, edge.edgeId, edge.graphUuid])
 
   return (
     <SidebarInnerWrap>
@@ -98,7 +94,7 @@ const EditNodeLinkForm = ({ nodeLink }: { nodeLink: TNodelink }) => {
             variant="outlined"
             label="Title"
             size="small"
-            value={nodeLink.title}
+            value={titleDraft}
             onChange={onTitleChange}
           />
           <Box>
@@ -106,7 +102,7 @@ const EditNodeLinkForm = ({ nodeLink }: { nodeLink: TNodelink }) => {
               {_t('Text position')}
             </Typography>
             <Slider
-              value={nodeLink.textPosition}
+              value={textPosition}
               aria-labelledby="edit-text-position"
               valueLabelDisplay="off"
               onChange={onSliderChange}
@@ -116,11 +112,7 @@ const EditNodeLinkForm = ({ nodeLink }: { nodeLink: TNodelink }) => {
             sx={{ ml: 0 }}
             label="Dashed line"
             control={
-              <Switch
-                checked={nodeLink.dashed}
-                onChange={onDashChange}
-                size="small"
-              />
+              <Switch checked={dashed} onChange={onDashChange} size="small" />
             }
           />
         </Stack>

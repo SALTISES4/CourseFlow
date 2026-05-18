@@ -1,10 +1,11 @@
 import * as SC from '@cf/components/pages/Workflow/Sidebar/styles'
-import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import type { SectionEntity } from '@cf/features/graph/state/model/types'
 import { selectSectionByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
+import { insertSectionBelow } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
-import { sectionInsertBelow } from '@cf/redux/slices/section.slice'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { sectionChangeField } from '@cf/redux/slices/section.slice'
+import type { AppDispatch } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import { debounce } from '@mui/material'
 import Button from '@mui/material/Button'
@@ -13,7 +14,6 @@ import { produce } from 'immer'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
 
 import SaveAsTemplate from '../SaveAsTemplate'
 
@@ -43,11 +43,8 @@ const EditSection = ({ sectionId }: { sectionId: string }) => {
 }
 
 const EditSectionForm = ({ section }: { section: SectionEntity }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
-  const { uuid: workflowRouteUuid } = useParams()
-  const workflowId = workflowRouteUuid ?? ''
-  const newSectionId = 'new-section-id'
   const [state, setState] = useState({
     template: false
   })
@@ -120,20 +117,20 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
 
   const onDuplicate = useCallback(() => {
     dispatch(
-      sectionInsertBelow({
-        uuid: section.uuid,
-        newId: newSectionId,
+      insertSectionBelow({
+        graphUuid: section.graphUuid,
+        sectionUuid: section.uuid,
         duplicate: true
       })
     )
-  }, [dispatch, newSectionId, section.uuid])
+  }, [dispatch, section.graphUuid, section.uuid])
 
   const onDelete = useCallback(() => {
-    dialogDispatch(DialogMode.WORKFLOW_DELETE_SECTION, {
+    dialogDispatch(DialogMode.GRAPH_DELETE_SECTION, {
       sectionId: section.uuid,
-      workflowId
+      graphUuid: section.graphUuid
     })
-  }, [dialogDispatch, workflowId, section.uuid])
+  }, [dialogDispatch, section.graphUuid, section.uuid])
 
   return state.template ? (
     <SaveAsTemplate

@@ -398,40 +398,25 @@ export const zChannelListOut = z.object({
 })
 
 /**
- * SectionListMetaOut
+ * GraphChannelMutationOut
+ *
+ * Flat channel snapshot for created/updated buckets (aligned with graph read shape).
  */
-export const zSectionListMetaOut = z.object({
-  total: z.number().int()
-})
-
-/**
- * SectionOut
- */
-export const zSectionOut = z.object({
+export const zGraphChannelMutationOut = z.object({
   uuid: z.string().uuid(),
   graphUuid: z.string().uuid(),
   title: z.string(),
   position: z.number().int(),
-  threadUuid: z.string().uuid().nullable(),
-  dateCreated: z.string().datetime(),
-  modifiedOn: z.string().datetime()
-})
-
-/**
- * SectionListOut
- */
-export const zSectionListOut = z.object({
-  items: z.array(zSectionOut),
-  meta: zSectionListMetaOut
-})
-
-/**
- * GraphSectionCreateIn
- */
-export const zGraphSectionCreateIn = z.object({
-  title: z.string(),
-  position: z.number().int().optional().default(0),
   threadUuid: z.string().uuid().nullish()
+})
+
+/**
+ * GraphChannelsDeltaOut
+ */
+export const zGraphChannelsDeltaOut = z.object({
+  created: z.array(zGraphChannelMutationOut),
+  updated: z.array(zGraphChannelMutationOut),
+  deleted: z.array(z.string().uuid())
 })
 
 /**
@@ -490,6 +475,28 @@ export const zGraphNodesDeltaOut = z.object({
 })
 
 /**
+ * GraphSectionMutationOut
+ *
+ * Flat section snapshot for created/updated buckets (aligned with graph read shape).
+ */
+export const zGraphSectionMutationOut = z.object({
+  uuid: z.string().uuid(),
+  graphUuid: z.string().uuid(),
+  title: z.string(),
+  position: z.number().int(),
+  threadUuid: z.string().uuid().nullish()
+})
+
+/**
+ * GraphSectionsDeltaOut
+ */
+export const zGraphSectionsDeltaOut = z.object({
+  created: z.array(zGraphSectionMutationOut),
+  updated: z.array(zGraphSectionMutationOut),
+  deleted: z.array(z.string().uuid())
+})
+
+/**
  * GraphTagStubOut
  *
  * Placeholder for future tag mutations; buckets remain empty until implemented.
@@ -513,6 +520,8 @@ export const zGraphTagsDeltaOut = z.object({
 export const zGraphMutationChangesOut = z.object({
   nodes: zGraphNodesDeltaOut,
   edges: zGraphEdgesDeltaOut,
+  channels: zGraphChannelsDeltaOut,
+  sections: zGraphSectionsDeltaOut,
   tags: zGraphTagsDeltaOut
 })
 
@@ -524,6 +533,81 @@ export const zGraphMutationEnvelopeOut = z.object({
   revisionId: z.number().int(),
   changes: zGraphMutationChangesOut,
   meta: zGraphMutationMetaOut
+})
+
+/**
+ * GraphReorderChannelsIn
+ *
+ * Full channel order for a graph; every channel on the graph must appear exactly once.
+ */
+export const zGraphReorderChannelsIn = z.object({
+  channelUuids: z.array(z.string().uuid())
+})
+
+/**
+ * SectionListMetaOut
+ */
+export const zSectionListMetaOut = z.object({
+  total: z.number().int()
+})
+
+/**
+ * SectionOut
+ */
+export const zSectionOut = z.object({
+  uuid: z.string().uuid(),
+  graphUuid: z.string().uuid(),
+  title: z.string(),
+  position: z.number().int(),
+  threadUuid: z.string().uuid().nullable(),
+  dateCreated: z.string().datetime(),
+  modifiedOn: z.string().datetime()
+})
+
+/**
+ * SectionListOut
+ */
+export const zSectionListOut = z.object({
+  items: z.array(zSectionOut),
+  meta: zSectionListMetaOut
+})
+
+/**
+ * GraphSectionCreateIn
+ */
+export const zGraphSectionCreateIn = z.object({
+  title: z.string(),
+  position: z.number().int().optional().default(0),
+  threadUuid: z.string().uuid().nullish()
+})
+
+/**
+ * GraphReorderSectionsIn
+ *
+ * Full section order for a graph; every section on the graph must appear exactly once.
+ */
+export const zGraphReorderSectionsIn = z.object({
+  sectionUuids: z.array(z.string().uuid())
+})
+
+/**
+ * GraphChannelInsertBelowIn
+ *
+ * Insert below channelUuid, or append at end when channelUuid is omitted.
+ */
+export const zGraphChannelInsertBelowIn = z.object({
+  channelUuid: z.string().uuid().nullish(),
+  duplicate: z.boolean().optional().default(false)
+})
+
+/**
+ * GraphSectionInsertBelowIn
+ *
+ * Insert a new section directly below sectionUuid; optionally duplicate title.
+ */
+export const zGraphSectionInsertBelowIn = z.object({
+  sectionUuid: z.string().uuid(),
+  duplicate: z.boolean().optional().default(false)
 })
 
 /**
@@ -1224,6 +1308,32 @@ export const zListGraphChannelsData = z.object({
  */
 export const zListGraphChannelsResponse = zChannelListOut
 
+export const zInsertGraphChannelBelowData = z.object({
+  body: zGraphChannelInsertBelowIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zInsertGraphChannelBelowResponse = zGraphMutationEnvelopeOut
+
+export const zReorderGraphChannelsData = z.object({
+  body: zGraphReorderChannelsIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zReorderGraphChannelsResponse = zGraphMutationEnvelopeOut
+
 export const zListGraphSectionsData = z.object({
   body: z.never().optional(),
   path: z.object({
@@ -1249,6 +1359,32 @@ export const zCreateGraphSectionData = z.object({
  * OK
  */
 export const zCreateGraphSectionResponse = zSectionOut
+
+export const zInsertGraphSectionBelowData = z.object({
+  body: zGraphSectionInsertBelowIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zInsertGraphSectionBelowResponse = zGraphMutationEnvelopeOut
+
+export const zReorderGraphSectionsData = z.object({
+  body: zGraphReorderSectionsIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zReorderGraphSectionsResponse = zGraphMutationEnvelopeOut
 
 export const zListGraphNodesData = z.object({
   body: z.never().optional(),
@@ -1328,7 +1464,7 @@ export const zDeleteChannelData = z.object({
 /**
  * OK
  */
-export const zDeleteChannelResponse = zSuccessOut
+export const zDeleteChannelResponse = zGraphMutationEnvelopeOut
 
 export const zGetChannelData = z.object({
   body: z.never().optional(),
@@ -1378,7 +1514,7 @@ export const zDeleteSectionData = z.object({
 /**
  * OK
  */
-export const zDeleteSectionResponse = zSuccessOut
+export const zDeleteSectionResponse = zGraphMutationEnvelopeOut
 
 export const zGetSectionData = z.object({
   body: z.never().optional(),

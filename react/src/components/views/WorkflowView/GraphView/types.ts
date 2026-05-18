@@ -1,4 +1,4 @@
-import { NodeWorkflowReorderPayload } from '@cf/redux/slices/node.slice'
+import type { NodeDropPayload } from '@cf/features/graph/state/resolveNodeDropRow'
 import { MouseEvent } from 'react'
 
 export enum DraggableType {
@@ -17,8 +17,8 @@ export enum DraggableType {
 export type CellDataType = {
   uuid: string
   coords: {
-    section: number
-    x: number // column
+    section: string
+    x: number // column index
     y: number // row
   }
   type: DraggableType
@@ -37,9 +37,7 @@ export type ColumnReorderCallbackFn = (
 export type SectionInsertCallbackFn = (insertAt: number) => void
 export type SectionReorderCallbackFn = (from: number, to: number) => void
 
-export type CellReorderCallbackFn = (
-  payload: NodeWorkflowReorderPayload
-) => void
+export type CellReorderCallbackFn = (payload: NodeDropPayload) => void
 
 export type CellClickCallbackFn = (
   e: MouseEvent<HTMLDivElement>,

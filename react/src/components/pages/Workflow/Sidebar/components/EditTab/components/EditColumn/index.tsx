@@ -5,11 +5,11 @@ import {
   SidebarInnerWrap,
   SidebarTitle
 } from '@cf/components/pages/Workflow/Sidebar/styles'
+import type { ChannelEntity } from '@cf/features/graph/state/model/types'
 import {
   selectChannelByUuid,
   selectChannelThemeColumnType
 } from '@cf/features/graph/state/selectors/canonical.selectors'
-import type { ChannelEntity } from '@cf/features/graph/state/model/types'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { RootState } from '@cf/redux/store'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
@@ -46,9 +46,7 @@ const EditColumn = ({ columnId }: { columnId: string }) => {
     return null
   }
 
-  return (
-    <EditColumnForm channel={channel} themeColumnType={themeColumnType} />
-  )
+  return <EditColumnForm channel={channel} themeColumnType={themeColumnType} />
 }
 
 const EditColumnForm = ({

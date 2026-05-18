@@ -9,11 +9,11 @@ import {
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box'
-import useHover from '@cf/hooks/useHover'
-import { WorkflowBoard } from '@cf/redux/selectors/workflow.selector'
-import { CfObjectType } from '@cf/types/enum'
-import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
+import { GraphBoard } from '@cf/features/graph/state'
 import { selectSectionByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
+import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
+import useHover from '@cf/hooks/useHover'
+import { CfObjectType } from '@cf/types/enum'
 import { RootState } from '@cfRedux/store'
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
 import IconButton from '@mui/material/IconButton'
@@ -44,11 +44,11 @@ import {
 export type SectionPropsType = {
   index: number
   sectionId: string
-  sectionRows: WorkflowBoard['sections'][0]['rows']
+  sectionRows: GraphBoard['sections'][0]['rows']
   condensed: boolean
-  boardId: WorkflowBoard['uuid']
-  columnIds: WorkflowBoard['columns']['ids']
-  columnColors: WorkflowBoard['columns']['colors']
+  boardId: GraphBoard['uuid']
+  columnIds: GraphBoard['columns']['ids']
+  columnColors: GraphBoard['columns']['colors']
   onSectionCollapse: (sectionId: string) => void
   onNodeDrop: CellReorderCallbackFn
   onSectionReorder: SectionReorderCallbackFn
@@ -71,7 +71,7 @@ const Section = (props: SectionPropsType) => {
   })
   const selected = useSelector(
     (state: RootState) =>
-      state.sidebar.edit.objectType === CfObjectType.WEEK &&
+      state.sidebar.edit.objectType === CfObjectType.SECTION &&
       state.sidebar.edit.uuid === props.sectionId
   )
   const sectionWrapperRef = useRef<HTMLDivElement>(null)
@@ -195,7 +195,7 @@ const Section = (props: SectionPropsType) => {
       e.stopPropagation()
       manager.current.updateSidebar(
         props.sectionId,
-        CfObjectType.WEEK,
+        CfObjectType.SECTION,
         props.boardId
       )
     },
@@ -225,6 +225,7 @@ const Section = (props: SectionPropsType) => {
   const sectionGrid = !props.sectionRows.length ? (
     <SectionRow
       rowIndex="empty"
+      graphUuid={props.boardId}
       sectionId={props.sectionId}
       columnIds={props.columnIds}
       columnColors={props.columnColors}
@@ -237,7 +238,7 @@ const Section = (props: SectionPropsType) => {
         nodes={nodes}
         rowIndex={rowIndex}
         sectionId={props.sectionId}
-        parentId={props.boardId}
+        graphUuid={props.boardId}
         columnIds={props.columnIds}
         columnColors={props.columnColors}
         onNodeDrop={props.onNodeDrop}
@@ -276,7 +277,7 @@ const Section = (props: SectionPropsType) => {
           </IconButton>
 
           <HoverMenu
-            workflowId={props.boardId}
+            graphUuid={props.boardId}
             sectionId={props.sectionId}
             show={isHovered}
           />

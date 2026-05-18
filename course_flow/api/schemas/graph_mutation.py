@@ -38,6 +38,26 @@ class GraphTagStubOut(CamelSchema):
     id: int
 
 
+class GraphChannelMutationOut(CamelSchema):
+    """Flat channel snapshot for created/updated buckets (aligned with graph read shape)."""
+
+    uuid: UUID
+    graph_uuid: UUID
+    title: str
+    position: int
+    thread_uuid: UUID | None = None
+
+
+class GraphSectionMutationOut(CamelSchema):
+    """Flat section snapshot for created/updated buckets (aligned with graph read shape)."""
+
+    uuid: UUID
+    graph_uuid: UUID
+    title: str
+    position: int
+    thread_uuid: UUID | None = None
+
+
 class GraphNodesDeltaOut(CamelSchema):
     created: list[GraphNodeMutationOut]
     updated: list[GraphNodeMutationOut]
@@ -56,9 +76,23 @@ class GraphTagsDeltaOut(CamelSchema):
     deleted: list[int] = Field(default_factory=list)
 
 
+class GraphChannelsDeltaOut(CamelSchema):
+    created: list[GraphChannelMutationOut]
+    updated: list[GraphChannelMutationOut]
+    deleted: list[UUID]
+
+
+class GraphSectionsDeltaOut(CamelSchema):
+    created: list[GraphSectionMutationOut]
+    updated: list[GraphSectionMutationOut]
+    deleted: list[UUID]
+
+
 class GraphMutationChangesOut(CamelSchema):
     nodes: GraphNodesDeltaOut
     edges: GraphEdgesDeltaOut
+    channels: GraphChannelsDeltaOut
+    sections: GraphSectionsDeltaOut
     tags: GraphTagsDeltaOut
 
 
@@ -98,3 +132,29 @@ class GraphEdgeCreateIn(CamelSchema):
     line_type: str = ""
     source_port: str = ""
     target_port: str = ""
+
+
+class GraphReorderChannelsIn(CamelSchema):
+    """Full channel order for a graph; every channel on the graph must appear exactly once."""
+
+    channel_uuids: list[UUID]
+
+
+class GraphReorderSectionsIn(CamelSchema):
+    """Full section order for a graph; every section on the graph must appear exactly once."""
+
+    section_uuids: list[UUID]
+
+
+class GraphSectionInsertBelowIn(CamelSchema):
+    """Insert a new section directly below ``section_uuid``; optionally duplicate title."""
+
+    section_uuid: UUID
+    duplicate: bool = False
+
+
+class GraphChannelInsertBelowIn(CamelSchema):
+    """Insert below ``channel_uuid``, or append at end when ``channel_uuid`` is omitted."""
+
+    channel_uuid: UUID | None = None
+    duplicate: bool = False

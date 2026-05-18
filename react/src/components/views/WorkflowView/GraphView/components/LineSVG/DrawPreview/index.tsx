@@ -1,4 +1,7 @@
-import { DragPosition, svglinkDragSnap } from '@cf/redux/slices/svglink.slice'
+import {
+  DragPosition,
+  svglinkDragSnap
+} from '@cf/features/graph/state/slices/svglink.slice'
 import { RootState } from '@cfRedux/store'
 import { Position, getSmoothStepPath, getStraightPath } from '@xyflow/react'
 import { useEffect, useMemo, useState } from 'react'

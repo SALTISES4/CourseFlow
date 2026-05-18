@@ -1,7 +1,13 @@
+import { defaultColumnSettings } from '@cf/utility/constants'
 import { createSelector } from 'reselect'
 
-import { defaultColumnSettings } from '@cf/utility/constants'
-
+import type { GraphState } from '../graphState'
+import type {
+  EdgeKey,
+  GraphUuid,
+  ResourceUuid,
+  WorkflowUuid
+} from '../model/types'
 import {
   channelsAdapter,
   edgesAdapter,
@@ -10,9 +16,7 @@ import {
   sectionsAdapter,
   tagsAdapter,
   workflowAdapter
-} from '../canonical'
-import type { GraphState } from '../graphState'
-import type { GraphUuid, ResourceUuid, WorkflowUuid } from '../model/types'
+} from '../slices/canonical'
 
 /** Cyclic default column “types” for theme colours (aligned with graph board selector). */
 const CYCLIC_DEFAULT_COLUMN_TYPES: number[] = Object.keys(defaultColumnSettings)
@@ -76,6 +80,11 @@ export const selectChannelByUuid = (channelUuid: ResourceUuid) =>
     channelSelectors.selectById(state, channelUuid)
   )
 
+export const selectEdgeByEdgeId = (edgeId: EdgeKey) =>
+  createSelector([(state: StateWithGraph) => state], (state) =>
+    edgeSelectors.selectById(state, edgeId)
+  )
+
 export const selectSectionByUuid = (sectionUuid: ResourceUuid) =>
   createSelector([(state: StateWithGraph) => state], (state) =>
     sectionSelectors.selectById(state, sectionUuid)
@@ -102,18 +111,15 @@ export const selectChannelThemeColumnType = (
   graphUuid: GraphUuid,
   channelUuid: ResourceUuid
 ) =>
-  createSelector(
-    [selectChannelsOrderedByGraphUuid(graphUuid)],
-    (channels) => {
-      const idx = channels.findIndex((c) => c.uuid === channelUuid)
-      const types = CYCLIC_DEFAULT_COLUMN_TYPES
-      const typeCount = types.length > 0 ? types.length : 1
-      if (idx < 0) {
-        return types.length > 0 ? types[0] : 0
-      }
-      return types.length > 0 ? types[idx % typeCount] : 0
+  createSelector([selectChannelsOrderedByGraphUuid(graphUuid)], (channels) => {
+    const idx = channels.findIndex((c) => c.uuid === channelUuid)
+    const types = CYCLIC_DEFAULT_COLUMN_TYPES
+    const typeCount = types.length > 0 ? types.length : 1
+    if (idx < 0) {
+      return types.length > 0 ? types[0] : 0
     }
-  )
+    return types.length > 0 ? types[idx % typeCount] : 0
+  })
 
 export const selectSectionsByGraphUuid = (graphUuid: GraphUuid) =>
   createSelector([selectAllSections], (sections) =>
@@ -121,9 +127,7 @@ export const selectSectionsByGraphUuid = (graphUuid: GraphUuid) =>
   )
 
 /** Section UUIDs for a graph in canonical `position` order (JumpToMenu / view chrome). */
-export const selectSectionUuidsOrderedForGraph = (
-  graphUuid: GraphUuid
-) =>
+export const selectSectionUuidsOrderedForGraph = (graphUuid: GraphUuid) =>
   createSelector([selectSectionsByGraphUuid(graphUuid)], (sections) =>
     [...sections].sort((a, b) => a.position - b.position).map((s) => s.uuid)
   )
@@ -134,17 +138,13 @@ export const selectChannelsByGraphUuid = (graphUuid: GraphUuid) =>
   )
 
 /** Sections for a graph ordered by canonical `position`. */
-export const selectSectionsOrderedByGraphUuid = (
-  graphUuid: GraphUuid
-) =>
+export const selectSectionsOrderedByGraphUuid = (graphUuid: GraphUuid) =>
   createSelector([selectSectionsByGraphUuid(graphUuid)], (sections) =>
     [...sections].sort((a, b) => a.position - b.position)
   )
 
 /** Channels for a graph ordered by canonical `position` (column order). */
-export const selectChannelsOrderedByGraphUuid = (
-  graphUuid: GraphUuid
-) =>
+export const selectChannelsOrderedByGraphUuid = (graphUuid: GraphUuid) =>
   createSelector([selectChannelsByGraphUuid(graphUuid)], (channels) =>
     [...channels].sort((a, b) => a.position - b.position)
   )

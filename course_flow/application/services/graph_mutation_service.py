@@ -75,6 +75,26 @@ def _edge_payload(e: Edge) -> dict:
     }
 
 
+def _channel_payload(ch: Channel) -> dict:
+    return {
+        "uuid": ch.uuid,
+        "graph_uuid": ch.graph.uuid,
+        "title": ch.title,
+        "position": ch.position,
+        "thread_uuid": ch.thread.uuid if ch.thread_id else None,
+    }
+
+
+def _section_payload(sec: Section) -> dict:
+    return {
+        "uuid": sec.uuid,
+        "graph_uuid": sec.graph.uuid,
+        "title": sec.title,
+        "position": sec.position,
+        "thread_uuid": sec.thread.uuid if sec.thread_id else None,
+    }
+
+
 def _bump_revision(wf: Graph) -> None:
     Graph.objects.filter(pk=wf.pk).update(revision_id=F("revision_id") + 1)
     wf.refresh_from_db(fields=["revision_id", "modified_on"])
@@ -166,6 +186,332 @@ class GraphMutationService:
             trigger_entity_id=str(node_uuid),
         )
 
+        return env, None
+
+    @transaction.atomic
+    def delete_channel(
+        self,
+        *,
+        user_id: int,
+        channel_uuid: UUID,
+    ) -> tuple[dict | None, MutationError | None]:
+        try:
+            channel = Channel.objects.select_related("graph", "thread").get(
+                uuid=channel_uuid
+            )
+        except Channel.DoesNotExist:
+            return None, "not_found"
+
+        try:
+            wf_locked = (
+                Graph.objects.select_for_update(of=("self",))
+                .select_related("workflow")
+                .get(pk=channel.graph_id)
+            )
+        except Graph.DoesNotExist:
+            return None, "not_found"
+
+        if wf_locked.workflow.author_id != user_id:
+            return None, "forbidden"
+
+        if channel.graph_id != wf_locked.id:
+            return None, "not_found"
+
+        node_rows = list(
+            Node.objects.filter(channel_id=channel.id).values_list("id", "uuid")
+        )
+        node_pks = [pk for pk, _ in node_rows]
+        node_uuids = [nu for _, nu in node_rows]
+
+        edge_ids: list[int] = []
+        if node_pks:
+            edge_ids = list(
+                Edge.objects.filter(
+                    Q(source_node_id__in=node_pks) | Q(target_node_id__in=node_pks),
+                ).values_list("id", flat=True)
+            )
+
+        builder = GraphMutationDeltaBuilder()
+        builder.add_channel_deleted(channel.uuid)
+        for node_uuid in node_uuids:
+            builder.add_node_deleted(node_uuid)
+        for edge_id in edge_ids:
+            builder.add_edge_deleted(edge_id)
+
+        channel.delete()
+        _bump_revision(wf_locked)
+
+        env = builder.build_envelope(
+            graph_uuid=wf_locked.uuid,
+            revision_id=wf_locked.revision_id,
+            triggered_by="delete_channel",
+            trigger_entity_id=str(channel_uuid),
+        )
+        return env, None
+
+    @transaction.atomic
+    def delete_section(
+        self,
+        *,
+        user_id: int,
+        section_uuid: UUID,
+    ) -> tuple[dict | None, MutationError | None]:
+        try:
+            section = Section.objects.select_related("graph", "thread").get(
+                uuid=section_uuid
+            )
+        except Section.DoesNotExist:
+            return None, "not_found"
+
+        try:
+            wf_locked = (
+                Graph.objects.select_for_update(of=("self",))
+                .select_related("workflow")
+                .get(pk=section.graph_id)
+            )
+        except Graph.DoesNotExist:
+            return None, "not_found"
+
+        if wf_locked.workflow.author_id != user_id:
+            return None, "forbidden"
+
+        if section.graph_id != wf_locked.id:
+            return None, "not_found"
+
+        node_rows = list(
+            Node.objects.filter(section_id=section.id).values_list("id", "uuid")
+        )
+        node_pks = [pk for pk, _ in node_rows]
+        node_uuids = [nu for _, nu in node_rows]
+
+        edge_ids: list[int] = []
+        if node_pks:
+            edge_ids = list(
+                Edge.objects.filter(
+                    Q(source_node_id__in=node_pks) | Q(target_node_id__in=node_pks),
+                ).values_list("id", flat=True)
+            )
+
+        builder = GraphMutationDeltaBuilder()
+        builder.add_section_deleted(section.uuid)
+        for node_uuid in node_uuids:
+            builder.add_node_deleted(node_uuid)
+        for edge_id in edge_ids:
+            builder.add_edge_deleted(edge_id)
+
+        section.delete()
+        _bump_revision(wf_locked)
+
+        env = builder.build_envelope(
+            graph_uuid=wf_locked.uuid,
+            revision_id=wf_locked.revision_id,
+            triggered_by="delete_section",
+            trigger_entity_id=str(section_uuid),
+        )
+        return env, None
+
+    @transaction.atomic
+    def insert_channel_below(
+        self,
+        *,
+        graph_uuid: UUID,
+        user_id: int,
+        channel_uuid: UUID | None = None,
+        duplicate: bool = False,
+    ) -> tuple[dict | None, MutationError | None]:
+        wf, err = self._lock_graph(graph_uuid, user_id)
+        if err:
+            return None, err
+
+        channels = list(
+            Channel.objects.filter(graph_id=wf.id)
+            .select_related("graph", "thread")
+            .order_by("position", "id")
+        )
+
+        anchor: Channel | None = None
+        if channel_uuid is not None:
+            by_uuid = {ch.uuid: ch for ch in channels}
+            anchor = by_uuid.get(channel_uuid)
+            if anchor is None:
+                return None, "not_found"
+            insert_position = anchor.position + 1
+        else:
+            insert_position = (
+                max((ch.position for ch in channels), default=-1) + 1
+            )
+
+        builder = GraphMutationDeltaBuilder()
+
+        for ch in channels:
+            if ch.position >= insert_position:
+                ch.position += 1
+                ch.save(update_fields=["position", "modified_on"])
+                ch = Channel.objects.select_related("graph", "thread").get(pk=ch.pk)
+                builder.add_channel_updated(_channel_payload(ch))
+
+        if duplicate:
+            source = anchor if anchor is not None else (channels[0] if channels else None)
+            if source is None:
+                title = " (copy)"
+            else:
+                source_title = (source.title or "").strip()
+                title = f"{source_title} (copy)" if source_title else " (copy)"
+        else:
+            title = ""
+
+        new_ch = Channel.objects.create(
+            graph_id=wf.id,
+            title=title,
+            position=insert_position,
+        )
+        new_ch = Channel.objects.select_related("graph", "thread").get(pk=new_ch.pk)
+        builder.add_channel_created(_channel_payload(new_ch))
+
+        _bump_revision(wf)
+        env = builder.build_envelope(
+            graph_uuid=wf.uuid,
+            revision_id=wf.revision_id,
+            triggered_by="duplicate_channel_below" if duplicate else "insert_channel_below",
+            trigger_entity_id=str(new_ch.uuid),
+        )
+        return env, None
+
+    @transaction.atomic
+    def reorder_channels(
+        self,
+        *,
+        graph_uuid: UUID,
+        user_id: int,
+        channel_uuids: list[UUID],
+    ) -> tuple[dict | None, MutationError | None]:
+        wf, err = self._lock_graph(graph_uuid, user_id)
+        if err:
+            return None, err
+
+        channels = list(
+            Channel.objects.filter(graph_id=wf.id)
+            .select_related("graph", "thread")
+            .order_by("position", "id")
+        )
+        existing = {ch.uuid for ch in channels}
+        if set(channel_uuids) != existing or len(channel_uuids) != len(existing):
+            return None, "bad_request"
+
+        by_uuid = {ch.uuid: ch for ch in channels}
+        builder = GraphMutationDeltaBuilder()
+        for position, channel_uuid in enumerate(channel_uuids):
+            ch = by_uuid[channel_uuid]
+            if ch.position != position:
+                ch.position = position
+                ch.save(update_fields=["position", "modified_on"])
+                ch = Channel.objects.select_related("graph", "thread").get(pk=ch.pk)
+                builder.add_channel_updated(_channel_payload(ch))
+
+        _bump_revision(wf)
+        env = builder.build_envelope(
+            graph_uuid=wf.uuid,
+            revision_id=wf.revision_id,
+            triggered_by="reorder_channels",
+            trigger_entity_id=str(graph_uuid),
+        )
+        return env, None
+
+    @transaction.atomic
+    def insert_section_below(
+        self,
+        *,
+        graph_uuid: UUID,
+        user_id: int,
+        section_uuid: UUID,
+        duplicate: bool = False,
+    ) -> tuple[dict | None, MutationError | None]:
+        wf, err = self._lock_graph(graph_uuid, user_id)
+        if err:
+            return None, err
+
+        try:
+            anchor = Section.objects.select_related("graph", "thread").get(
+                uuid=section_uuid, graph_id=wf.id
+            )
+        except Section.DoesNotExist:
+            return None, "not_found"
+
+        insert_position = anchor.position + 1
+        builder = GraphMutationDeltaBuilder()
+
+        sections_to_shift = list(
+            Section.objects.filter(graph_id=wf.id, position__gte=insert_position)
+            .select_related("graph", "thread")
+            .order_by("position", "id")
+        )
+        for sec in sections_to_shift:
+            sec.position += 1
+            sec.save(update_fields=["position", "modified_on"])
+            sec = Section.objects.select_related("graph", "thread").get(pk=sec.pk)
+            builder.add_section_updated(_section_payload(sec))
+
+        if duplicate:
+            source_title = (anchor.title or "").strip()
+            title = f"{source_title} (copy)" if source_title else " (copy)"
+        else:
+            title = ""
+
+        new_sec = Section.objects.create(
+            graph_id=wf.id,
+            title=title,
+            position=insert_position,
+        )
+        new_sec = Section.objects.select_related("graph", "thread").get(pk=new_sec.pk)
+        builder.add_section_created(_section_payload(new_sec))
+
+        _bump_revision(wf)
+        env = builder.build_envelope(
+            graph_uuid=wf.uuid,
+            revision_id=wf.revision_id,
+            triggered_by="duplicate_section_below" if duplicate else "insert_section_below",
+            trigger_entity_id=str(new_sec.uuid),
+        )
+        return env, None
+
+    @transaction.atomic
+    def reorder_sections(
+        self,
+        *,
+        graph_uuid: UUID,
+        user_id: int,
+        section_uuids: list[UUID],
+    ) -> tuple[dict | None, MutationError | None]:
+        wf, err = self._lock_graph(graph_uuid, user_id)
+        if err:
+            return None, err
+
+        sections = list(
+            Section.objects.filter(graph_id=wf.id)
+            .select_related("graph", "thread")
+            .order_by("position", "id")
+        )
+        existing = {sec.uuid for sec in sections}
+        if set(section_uuids) != existing or len(section_uuids) != len(existing):
+            return None, "bad_request"
+
+        by_uuid = {sec.uuid: sec for sec in sections}
+        builder = GraphMutationDeltaBuilder()
+        for position, section_uuid in enumerate(section_uuids):
+            sec = by_uuid[section_uuid]
+            if sec.position != position:
+                sec.position = position
+                sec.save(update_fields=["position", "modified_on"])
+                sec = Section.objects.select_related("graph", "thread").get(pk=sec.pk)
+                builder.add_section_updated(_section_payload(sec))
+
+        _bump_revision(wf)
+        env = builder.build_envelope(
+            graph_uuid=wf.uuid,
+            revision_id=wf.revision_id,
+            triggered_by="reorder_sections",
+            trigger_entity_id=str(graph_uuid),
+        )
         return env, None
 
     @transaction.atomic

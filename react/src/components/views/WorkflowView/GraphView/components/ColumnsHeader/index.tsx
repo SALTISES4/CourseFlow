@@ -1,11 +1,11 @@
-import { WorkflowBoard } from '@cf/redux/selectors/workflow.selector'
+import { GraphBoard } from '@cf/features/graph/state'
 
 import Cell from './Cell'
 import * as Styled from '../../styles'
 import { ColumnReorderCallbackFn } from '../../types'
 
 type PropsType = {
-  board: WorkflowBoard
+  board: GraphBoard
   onReorder: ColumnReorderCallbackFn
 }
 

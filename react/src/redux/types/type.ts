@@ -1,7 +1,7 @@
+import { SidebarState } from '@cf/features/sidebar/state/sidebar.slice'
 import { CfLock } from '@cf/types/common'
 import { WorkflowPermission } from '@cf/utility/permissions'
 import { OutcomesState } from '@cfRedux/slices/outcomes.slice'
-import { SidebarState } from '@cf/features/sidebar/state/sidebar.slice'
 import { RootState } from '@cfRedux/store'
 import {
   EColumn,

@@ -131,8 +131,8 @@ class Utility {
    *  temp console logs for debugging
    *  versus permanent logger functions
    *******************************************************/
-  static logger(data: any) {
-    console.log(data)
+  static logger(data: any, data2: any) {
+    console.log(data, data2)
   }
 }
 
@@ -145,4 +145,12 @@ export default Utility
 export const _t = (str: string) => {
   // used to return django gettext helper but we don't use that any more
   return str
+}
+
+export const getNextLargestNumber = (haystack: number[]): number => {
+  const largest = haystack.reduce((acc, curr) => {
+    return acc > curr ? acc : curr
+  }, 0)
+
+  return largest + 1
 }

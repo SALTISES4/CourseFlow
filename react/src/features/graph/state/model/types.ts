@@ -99,6 +99,8 @@ export interface GraphUiState {
   hoveredNodeUuid: ResourceUuid | null
   hoveredEdgeId: EdgeKey | null
   activePanel: 'none' | 'properties' | 'inspector' | 'comments'
+  /** Grid node insert/move mode (legacy `workspace.node.insertMode`). */
+  nodeInsertMode: 'manual' | 'row' | 'column'
   edgeDraft: {
     sourceNodeUuid: ResourceUuid | null
     sourcePort: string | null
@@ -114,6 +116,12 @@ export type GraphOpType =
   | 'renameNode'
   | 'createEdge'
   | 'deleteEdge'
+  | 'deleteChannel'
+  | 'deleteSection'
+  | 'insertSectionBelow'
+  | 'insertChannelBelow'
+  | 'reorderChannels'
+  | 'reorderSections'
 
 export type GraphOpStatus = 'pending' | 'acked' | 'failed'
 
@@ -145,12 +153,26 @@ export interface GraphDeltaTags {
   deleted: string[]
 }
 
+export interface GraphDeltaChannels {
+  created: ChannelEntity[]
+  updated: ChannelEntity[]
+  deleted: ResourceUuid[]
+}
+
+export interface GraphDeltaSections {
+  created: SectionEntity[]
+  updated: SectionEntity[]
+  deleted: ResourceUuid[]
+}
+
 export interface GraphMutationEnvelope {
   graphUuid: GraphUuid
   revisionId: number
   changes: {
     nodes: GraphDeltaNodes
     edges: GraphDeltaEdges
+    channels: GraphDeltaChannels
+    sections: GraphDeltaSections
     tags: GraphDeltaTags
   }
   meta: {
@@ -190,4 +212,37 @@ export interface DeleteEdgeInput {
 export interface DeleteNodeInput {
   graphUuid: GraphUuid
   nodeUuid: ResourceUuid
+}
+
+export interface DeleteChannelInput {
+  graphUuid: GraphUuid
+  channelUuid: ResourceUuid
+}
+
+export interface DeleteSectionInput {
+  graphUuid: GraphUuid
+  sectionUuid: ResourceUuid
+}
+
+export interface ReorderChannelsInput {
+  graphUuid: GraphUuid
+  channelUuids: ResourceUuid[]
+}
+
+export interface ReorderSectionsInput {
+  graphUuid: GraphUuid
+  sectionUuids: ResourceUuid[]
+}
+
+export interface InsertSectionBelowInput {
+  graphUuid: GraphUuid
+  sectionUuid: ResourceUuid
+  duplicate?: boolean
+}
+
+export interface InsertChannelBelowInput {
+  graphUuid: GraphUuid
+  /** Omit or null to append at end of the channel list. */
+  channelUuid?: ResourceUuid | null
+  duplicate?: boolean
 }

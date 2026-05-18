@@ -4,9 +4,18 @@ from ninja import Router
 from ninja.errors import HttpError
 
 from course_flow.api.auth import BearerAuth, get_current_user
-from course_flow.api.common.schemas import SuccessOut
-from course_flow.api.deps import get_section_service, get_workflow_service
+from course_flow.api.deps import (
+    get_graph_mutation_service,
+    get_section_service,
+    get_workflow_service,
+)
+from course_flow.api.graph_common import graph_mutation_http
 from course_flow.api.permissions import can_view_graph
+from course_flow.api.schemas.graph_mutation import (
+    GraphMutationEnvelopeOut,
+    GraphReorderSectionsIn,
+    GraphSectionInsertBelowIn,
+)
 from course_flow.api.schemas.sections import (
     GraphSectionCreateIn,
     SectionCreateIn,
@@ -85,6 +94,45 @@ def create_graph_section(
     return _section_out(dto)
 
 
+@graph_collection_router.post(
+    "/{uuid}/sections/insert-below",
+    response=GraphMutationEnvelopeOut,
+    auth=BearerAuth(),
+    operation_id="insertGraphSectionBelow",
+)
+def insert_graph_section_below(
+    request, uuid: UUID, payload: GraphSectionInsertBelowIn
+):
+    current_user = get_current_user(request)
+    _ensure_graph_owner(uuid, current_user)
+    svc = get_graph_mutation_service()
+    out, err = svc.insert_section_below(
+        graph_uuid=uuid,
+        user_id=current_user.id,
+        section_uuid=payload.section_uuid,
+        duplicate=payload.duplicate,
+    )
+    return graph_mutation_http(out, err)
+
+
+@graph_collection_router.put(
+    "/{uuid}/sections/order",
+    response=GraphMutationEnvelopeOut,
+    auth=BearerAuth(),
+    operation_id="reorderGraphSections",
+)
+def reorder_graph_sections(request, uuid: UUID, payload: GraphReorderSectionsIn):
+    current_user = get_current_user(request)
+    _ensure_graph_owner(uuid, current_user)
+    svc = get_graph_mutation_service()
+    out, err = svc.reorder_sections(
+        graph_uuid=uuid,
+        user_id=current_user.id,
+        section_uuids=payload.section_uuids,
+    )
+    return graph_mutation_http(out, err)
+
+
 @resource_router.post(
     "",
     response=SectionOut,
@@ -160,7 +208,7 @@ def update_section(request, uuid: UUID, payload: SectionPatchIn):
 
 @resource_router.delete(
     "/{uuid}",
-    response=SuccessOut,
+    response=GraphMutationEnvelopeOut,
     auth=BearerAuth(),
     operation_id="deleteSection",
 )
@@ -178,9 +226,9 @@ def delete_section(request, uuid: UUID):
     if not can_view_graph(current_user=current_user, graph=wf):
         raise HttpError(403, "Forbidden")
 
-    deleted = get_section_service().delete(uuid)
-
-    if not deleted:
-        raise HttpError(404, "Section not found")
-
-    return SuccessOut()
+    svc = get_graph_mutation_service()
+    payload, err = svc.delete_section(
+        user_id=current_user.id,
+        section_uuid=uuid,
+    )
+    return graph_mutation_http(payload, err)

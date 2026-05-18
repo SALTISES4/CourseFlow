@@ -43,7 +43,10 @@ const LineSVG = ({
   const { uuid: graphRouteUuid } = useParams()
   const graphUuid = graphRouteUuid ?? ''
 
-  const edgesSelector = useMemo(() => selectEdgesByGraphUuid(graphUuid), [graphUuid])
+  const edgesSelector = useMemo(
+    () => selectEdgesByGraphUuid(graphUuid),
+    [graphUuid]
+  )
   const nodeUuidsSelector = useMemo(
     () => selectNodeUuidsByGraphUuid(graphUuid),
     [graphUuid]

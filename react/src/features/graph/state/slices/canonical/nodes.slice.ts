@@ -4,7 +4,7 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
-import type { GraphUuid, NodeEntity, ResourceUuid } from '../model/types'
+import type { GraphUuid, NodeEntity, ResourceUuid } from '../../model/types'
 
 export const nodesAdapter = createEntityAdapter<NodeEntity, ResourceUuid>({
   selectId: (n) => n.uuid

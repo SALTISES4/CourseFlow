@@ -1,4 +1,4 @@
-import { WorkflowBoard } from '@cf/redux/selectors/workflow.selector'
+import { GraphBoard } from '@cf/features/graph/state'
 import { RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import { memo, useRef } from 'react'
@@ -11,14 +11,14 @@ import { SectionCellType } from '../Cell/types'
 import * as Styled from '../styles'
 
 type PropsType = {
-  sectionuuid: string
-  columnIds: WorkflowBoard['columns']['ids']
-  columnColors: WorkflowBoard['columns']['colors']
+  sectionUuid: string
+  columnIds: GraphBoard['columns']['ids']
+  columnColors: GraphBoard['columns']['colors']
   onNodeDrop: SectionPropsType['onNodeDrop']
 }
 
 const EmptySectionRow = ({
-  sectionId,
+  sectionUuid,
   columnIds,
   columnColors,
   onNodeDrop
@@ -30,9 +30,9 @@ const EmptySectionRow = ({
     <StyledWorkflow.CellRow ref={ref} sx={{ minHeight: 120 }}>
       {columnIds.map((columnId, index) => (
         <SectionCell
-          key={`${sectionId}_${columnId}`}
+          key={`${sectionUuid}_${columnId}`}
           type={SectionCellType.PHANTOM}
-          coordsSection={sectionId}
+          coordsSection={sectionUuid}
           coordsX={index}
           coordsY={0}
           columnId={columnId}

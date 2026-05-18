@@ -1,8 +1,8 @@
-import * as Constants from '@cf/utility/constants'
 import {
   selectNodesByGraphUuid,
   selectSectionsOrderedByGraphUuid
 } from '@cf/features/graph/state/selectors/canonical.selectors'
+import * as Constants from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
 import LegendLine from '@cfComponents/UIPrimitives/LegendLine'
 import Legend from '@cfViews/common/Legend'

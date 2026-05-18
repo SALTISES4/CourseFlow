@@ -9,10 +9,10 @@ import {
   extractInstruction
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item'
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/list-item'
+import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
 import { getPrefixPath } from '@cf/redux/selectors/outcomes.selector'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
-import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
 import {
   Outcome as OutcomeType,
   isOutcomeLink,

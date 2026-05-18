@@ -55,8 +55,7 @@ const useWorkflowTabs = (
             relRoute: RelativeRoutes.OUTCOME_EDIT,
             label: _t('Outcomes'),
             content: <OutcomeEditView />,
-            allowedTabs:
-              workflow.item.workflowType == 'program' ? [3] : [2, 3] // @todo enum
+            allowedTabs: workflow.item.workflowType == 'program' ? [3] : [2, 3] // @todo enum
           }
         ]
 

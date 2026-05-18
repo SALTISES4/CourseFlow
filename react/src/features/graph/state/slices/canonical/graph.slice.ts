@@ -4,13 +4,15 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
-import type { GraphEntity, GraphUuid } from '../model/types'
+import type { GraphEntity, GraphUuid } from '../../model/types'
 
 export const graphAdapter = createEntityAdapter<GraphEntity, GraphUuid>({
   selectId: (g) => g.uuid
 })
 
-export type GraphCanonicalState = ReturnType<typeof graphAdapter.getInitialState>
+export type GraphCanonicalState = ReturnType<
+  typeof graphAdapter.getInitialState
+>
 
 const initialState: GraphCanonicalState = graphAdapter.getInitialState()
 

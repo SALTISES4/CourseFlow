@@ -4,19 +4,16 @@ import {
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import { columnInsertBelow } from '@cf/redux/slices/column.slice'
+import { insertChannelBelow } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { nodeWorkflowInsert } from '@cf/redux/slices/node.slice'
-import store from '@cf/redux/store'
+import type { AppDispatch, RootState } from '@cf/redux/store'
 import { produce } from 'immer'
 import { MutableRefObject, useCallback, useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { isSidebarCustomNode, isSidebarNode } from '../../../types'
 
 import type { SectionRowPropsType } from './index'
-
-// read from the store API to avoid expensive useSelector subscription
-const getInsertMode = () => store.getState().workspace.node.insertMode
 
 type StateType = {
   highlightEdge: Edge | null
@@ -30,8 +27,11 @@ type PropsType = SectionRowPropsType & {
 }
 
 function useRowDnd(props: PropsType) {
-  const dispatch = useDispatch()
-  const { sectionId, rowIndex, rowRef, onNodeDrop, columnIds } = props
+  const dispatch = useDispatch<AppDispatch>()
+  const insertMode = useSelector(
+    (state: RootState) => state.graph.graphUi.nodeInsertMode
+  )
+  const { graphUuid, sectionId, rowIndex, rowRef, columnIds } = props
   const [state, setState] = useState<StateType>({
     highlightRow: false,
     highlightEdge: null,
@@ -69,7 +69,7 @@ function useRowDnd(props: PropsType) {
 
         setState(
           produce((draft) => {
-            const columnMode = getInsertMode() === 'column'
+            const columnMode = insertMode === 'column'
             const isCustom = isSidebarCustomNode(dragging)
 
             draft.dragId = dragging.uuid
@@ -83,7 +83,7 @@ function useRowDnd(props: PropsType) {
       },
       onDragLeave: resetState,
       onDrag: ({ source, self }) => {
-        const columnMode = getInsertMode() === 'column'
+        const columnMode = insertMode === 'column'
         const isSidebar = isSidebarNode(source.data)
         const isCustom = isSidebarCustomNode(source.data)
 
@@ -111,17 +111,20 @@ function useRowDnd(props: PropsType) {
         )
       },
       canDrop: ({ source }) => isSidebarNode(source.data),
-      onDrop: ({ source, self }) => {
-        const insertMode = getInsertMode()
+      onDrop: async ({ source, self }) => {
         const isCustom = isSidebarCustomNode(source.data)
         const row = self.data.row as number
         let channelId = source.data.uuid as string
         let closestEdge = extractClosestEdge(self.data)
 
         if (isCustom) {
-          channelId = 'new-column-here'
           closestEdge = insertMode === 'column' ? 'top' : state.highlightEdge
-          dispatch(columnInsertBelow({ uuid: null, newId: channelId }))
+          const createdChannelUuid = await dispatch(
+            insertChannelBelow({ graphUuid, channelUuid: null })
+          ).unwrap()
+          if (createdChannelUuid) {
+            channelId = createdChannelUuid
+          }
         }
 
         // TODO: handle manual insert mode
@@ -146,12 +149,13 @@ function useRowDnd(props: PropsType) {
     })
   }, [
     dispatch,
+    graphUuid,
+    insertMode,
     resetState,
-    onNodeDrop,
     rowIndex,
     rowRef,
-    state.highlightEdge,
     sectionId,
+    state.highlightEdge,
     columnIds
   ])
 

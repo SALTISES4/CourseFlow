@@ -821,30 +821,11 @@ export type ChannelOut = {
 }
 
 /**
- * SectionListMetaOut
+ * GraphChannelMutationOut
+ *
+ * Flat channel snapshot for created/updated buckets (aligned with graph read shape).
  */
-export type SectionListMetaOut = {
-  /**
-   * Total
-   */
-  total: number
-}
-
-/**
- * SectionListOut
- */
-export type SectionListOut = {
-  /**
-   * Items
-   */
-  items: Array<SectionOut>
-  meta: SectionListMetaOut
-}
-
-/**
- * SectionOut
- */
-export type SectionOut = {
+export type GraphChannelMutationOut = {
   /**
    * Uuid
    */
@@ -864,33 +845,25 @@ export type SectionOut = {
   /**
    * Threaduuid
    */
-  threadUuid: string | null
-  /**
-   * Datecreated
-   */
-  dateCreated: string
-  /**
-   * Modifiedon
-   */
-  modifiedOn: string
+  threadUuid?: string | null
 }
 
 /**
- * GraphSectionCreateIn
+ * GraphChannelsDeltaOut
  */
-export type GraphSectionCreateIn = {
+export type GraphChannelsDeltaOut = {
   /**
-   * Title
+   * Created
    */
-  title: string
+  created: Array<GraphChannelMutationOut>
   /**
-   * Position
+   * Updated
    */
-  position?: number
+  updated: Array<GraphChannelMutationOut>
   /**
-   * Threaduuid
+   * Deleted
    */
-  threadUuid?: string | null
+  deleted: Array<string>
 }
 
 /**
@@ -949,6 +922,8 @@ export type GraphEdgesDeltaOut = {
 export type GraphMutationChangesOut = {
   nodes: GraphNodesDeltaOut
   edges: GraphEdgesDeltaOut
+  channels: GraphChannelsDeltaOut
+  sections: GraphSectionsDeltaOut
   tags: GraphTagsDeltaOut
 }
 
@@ -1037,6 +1012,52 @@ export type GraphNodesDeltaOut = {
 }
 
 /**
+ * GraphSectionMutationOut
+ *
+ * Flat section snapshot for created/updated buckets (aligned with graph read shape).
+ */
+export type GraphSectionMutationOut = {
+  /**
+   * Uuid
+   */
+  uuid: string
+  /**
+   * Graphuuid
+   */
+  graphUuid: string
+  /**
+   * Title
+   */
+  title: string
+  /**
+   * Position
+   */
+  position: number
+  /**
+   * Threaduuid
+   */
+  threadUuid?: string | null
+}
+
+/**
+ * GraphSectionsDeltaOut
+ */
+export type GraphSectionsDeltaOut = {
+  /**
+   * Created
+   */
+  created: Array<GraphSectionMutationOut>
+  /**
+   * Updated
+   */
+  updated: Array<GraphSectionMutationOut>
+  /**
+   * Deleted
+   */
+  deleted: Array<string>
+}
+
+/**
  * GraphTagStubOut
  *
  * Placeholder for future tag mutations; buckets remain empty until implemented.
@@ -1064,6 +1085,135 @@ export type GraphTagsDeltaOut = {
    * Deleted
    */
   deleted?: Array<number>
+}
+
+/**
+ * GraphReorderChannelsIn
+ *
+ * Full channel order for a graph; every channel on the graph must appear exactly once.
+ */
+export type GraphReorderChannelsIn = {
+  /**
+   * Channeluuids
+   */
+  channelUuids: Array<string>
+}
+
+/**
+ * SectionListMetaOut
+ */
+export type SectionListMetaOut = {
+  /**
+   * Total
+   */
+  total: number
+}
+
+/**
+ * SectionListOut
+ */
+export type SectionListOut = {
+  /**
+   * Items
+   */
+  items: Array<SectionOut>
+  meta: SectionListMetaOut
+}
+
+/**
+ * SectionOut
+ */
+export type SectionOut = {
+  /**
+   * Uuid
+   */
+  uuid: string
+  /**
+   * Graphuuid
+   */
+  graphUuid: string
+  /**
+   * Title
+   */
+  title: string
+  /**
+   * Position
+   */
+  position: number
+  /**
+   * Threaduuid
+   */
+  threadUuid: string | null
+  /**
+   * Datecreated
+   */
+  dateCreated: string
+  /**
+   * Modifiedon
+   */
+  modifiedOn: string
+}
+
+/**
+ * GraphSectionCreateIn
+ */
+export type GraphSectionCreateIn = {
+  /**
+   * Title
+   */
+  title: string
+  /**
+   * Position
+   */
+  position?: number
+  /**
+   * Threaduuid
+   */
+  threadUuid?: string | null
+}
+
+/**
+ * GraphReorderSectionsIn
+ *
+ * Full section order for a graph; every section on the graph must appear exactly once.
+ */
+export type GraphReorderSectionsIn = {
+  /**
+   * Sectionuuids
+   */
+  sectionUuids: Array<string>
+}
+
+/**
+ * GraphChannelInsertBelowIn
+ *
+ * Insert below channelUuid, or append at end when channelUuid is omitted.
+ */
+export type GraphChannelInsertBelowIn = {
+  /**
+   * Channeluuid
+   */
+  channelUuid?: string | null
+  /**
+   * Duplicate
+   */
+  duplicate?: boolean
+}
+
+/**
+ * GraphSectionInsertBelowIn
+ *
+ * Insert a new section directly below sectionUuid; optionally duplicate title.
+ */
+export type GraphSectionInsertBelowIn = {
+  /**
+   * Sectionuuid
+   */
+  sectionUuid: string
+  /**
+   * Duplicate
+   */
+  duplicate?: boolean
 }
 
 /**
@@ -1796,6 +1946,8 @@ export type LibraryFiltersIn = {
   contentType?: LibraryContentTypeIn | null
   /**
    * Projectuuid
+   *
+   * Limit results to workflows whose parent project has this UUID. The project row itself is not included in library results when set.
    */
   projectUuid?: string | null
   /**
@@ -2292,6 +2444,50 @@ export type ListGraphChannelsResponses = {
 export type ListGraphChannelsResponse =
   ListGraphChannelsResponses[keyof ListGraphChannelsResponses]
 
+export type InsertGraphChannelBelowData = {
+  body: GraphChannelInsertBelowIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/graph/{uuid}/channels/insert-below'
+}
+
+export type InsertGraphChannelBelowResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type InsertGraphChannelBelowResponse =
+  InsertGraphChannelBelowResponses[keyof InsertGraphChannelBelowResponses]
+
+export type ReorderGraphChannelsData = {
+  body: GraphReorderChannelsIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/graph/{uuid}/channels/order'
+}
+
+export type ReorderGraphChannelsResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type ReorderGraphChannelsResponse =
+  ReorderGraphChannelsResponses[keyof ReorderGraphChannelsResponses]
+
 export type ListGraphSectionsData = {
   body?: never
   path: {
@@ -2335,6 +2531,50 @@ export type CreateGraphSectionResponses = {
 
 export type CreateGraphSectionResponse =
   CreateGraphSectionResponses[keyof CreateGraphSectionResponses]
+
+export type InsertGraphSectionBelowData = {
+  body: GraphSectionInsertBelowIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/graph/{uuid}/sections/insert-below'
+}
+
+export type InsertGraphSectionBelowResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type InsertGraphSectionBelowResponse =
+  InsertGraphSectionBelowResponses[keyof InsertGraphSectionBelowResponses]
+
+export type ReorderGraphSectionsData = {
+  body: GraphReorderSectionsIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/graph/{uuid}/sections/order'
+}
+
+export type ReorderGraphSectionsResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type ReorderGraphSectionsResponse =
+  ReorderGraphSectionsResponses[keyof ReorderGraphSectionsResponses]
 
 export type ListGraphNodesData = {
   body?: never
@@ -2461,7 +2701,7 @@ export type DeleteChannelResponses = {
   /**
    * OK
    */
-  200: SuccessOut
+  200: GraphMutationEnvelopeOut
 }
 
 export type DeleteChannelResponse =
@@ -2543,7 +2783,7 @@ export type DeleteSectionResponses = {
   /**
    * OK
    */
-  200: SuccessOut
+  200: GraphMutationEnvelopeOut
 }
 
 export type DeleteSectionResponse =

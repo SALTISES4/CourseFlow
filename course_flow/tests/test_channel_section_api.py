@@ -96,7 +96,9 @@ def test_channel_crud_and_graph_collection(client: Client, user):
 
     deleted = client.delete(f"/api/channel/{channel_uuid}", **_auth_header(raw))
     assert deleted.status_code == 200
-    assert deleted.json()["success"] is True
+    body = deleted.json()
+    assert body["changes"]["channels"]["deleted"] == [channel_uuid]
+    assert body["meta"]["triggeredBy"] == "delete_channel"
 
     missing = client.get(f"/api/channel/{channel_uuid}", **_auth_header(raw))
     assert missing.status_code == 404
@@ -139,3 +141,6 @@ def test_section_crud_allows_cross_owner_with_placeholder_permissions(
 
     owner_delete = client.delete(f"/api/section/{section_uuid}", **_auth_header(raw_owner))
     assert owner_delete.status_code == 200
+    body = owner_delete.json()
+    assert body["changes"]["sections"]["deleted"] == [section_uuid]
+    assert body["meta"]["triggeredBy"] == "delete_section"

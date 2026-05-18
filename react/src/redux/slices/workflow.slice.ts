@@ -11,8 +11,6 @@ import {
 import { TWorkflow, WorkspaceAppState } from '@cfRedux/types/type'
 import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit'
 
-import { columnDeleteSelf, columnInsertBelow } from './column.slice'
-
 const initialState: TWorkflow = {} as TWorkflow
 
 /*******************************************************
@@ -48,7 +46,7 @@ const workflowSlice = createSlice({
       Object.assign(state, action.payload.json)
     },
 
-    // workflow reorder columns
+    // workflow reorder channels
     reorderColumns(
       state,
       action: PayloadAction<{ moveIndex: number; toIndex: number }>
@@ -250,24 +248,6 @@ const workflowSlice = createSlice({
         }
       }
     )
-
-    // Column Actions
-    builder
-      .addCase(columnDeleteSelf, (state, action) => {
-        state.columns = state.columns.filter((id) => id !== action.payload.uuid)
-      })
-      .addCase(columnInsertBelow, (state, action) => {
-        const { id, newId } = action.payload
-
-        // if no "target" id, we're just adding to the end
-        if (!id) {
-          state.columns.push(newId)
-          return
-        }
-
-        const foundIndex = state.columns.indexOf(id)
-        state.columns.splice(foundIndex + 1, 0, newId)
-      })
   }
 })
 
@@ -275,9 +255,7 @@ export const {
   deleteSelfSoft: workflowDeleteSelfSoft,
   restoreSelf: workflowRestoreSelf,
   createLock: workflowCreateLock,
-  changeField: workflowChangeField,
-  reorderColumns: workflowReorderColumns,
-  reorderSection: workflowReorderSection
+  changeField: workflowChangeField
 } = workflowSlice.actions
 
 export default workflowSlice.reducer

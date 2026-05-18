@@ -1,15 +1,23 @@
 import {
   createGraphEdge,
+  deleteChannel,
   deleteEdge,
   deleteNode,
+  deleteSection,
   getGraphView,
-  patchNode
+  insertGraphChannelBelow,
+  insertGraphSectionBelow,
+  patchNode,
+  reorderGraphChannels,
+  reorderGraphSections
 } from '@cf/api/gen/sdk.gen'
 import type {
+  GraphChannelMutationOut,
   GraphEdgeMutationOut,
   GraphMetaOut,
   GraphMutationEnvelopeOut,
   GraphNodeMutationOut,
+  GraphSectionMutationOut,
   GraphTagStubOut,
   GraphViewOut
 } from '@cf/api/gen/types.gen'
@@ -17,15 +25,21 @@ import type {
 import type {
   ChannelEntity,
   CreateEdgeInput,
+  DeleteChannelInput,
   DeleteEdgeInput,
   DeleteNodeInput,
+  DeleteSectionInput,
   EdgeEntity,
   GraphEntity,
-  GraphUuid,
   GraphMutationEnvelope,
+  GraphUuid,
+  InsertChannelBelowInput,
+  InsertSectionBelowInput,
   MoveNodeInput,
   NodeEntity,
   RenameNodeInput,
+  ReorderChannelsInput,
+  ReorderSectionsInput,
   SectionEntity,
   TagEntity,
   WorkflowEntity
@@ -57,7 +71,9 @@ function mapGraphMetaToGraphEntity(meta: GraphMetaOut): GraphEntity {
   }
 }
 
-function mapGraphMetaToWorkflowEntity(meta: GraphMetaOut): WorkflowEntity | null {
+function mapGraphMetaToWorkflowEntity(
+  meta: GraphMetaOut
+): WorkflowEntity | null {
   if (!meta.rootWorkflowUuid) {
     return null
   }
@@ -115,7 +131,10 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
 
   const edges: EdgeEntity[] = view.edges.reduce<EdgeEntity[]>((acc, edge) => {
     if (edge.id == null) {
-      console.error('[graph normalize] missing edge id in GraphViewOut edge', edge)
+      console.error(
+        '[graph normalize] missing edge id in GraphViewOut edge',
+        edge
+      )
       return acc
     }
     acc.push({
@@ -148,7 +167,36 @@ export const fetchWorkflowTags = async (
   _graphUuid: GraphUuid
 ): Promise<TagEntity[]> => []
 
-function mapMutationNode(graphUuid: GraphUuid, node: GraphNodeMutationOut): NodeEntity {
+function mapMutationChannel(
+  graphUuid: GraphUuid,
+  channel: GraphChannelMutationOut
+): ChannelEntity {
+  return {
+    uuid: channel.uuid,
+    graphUuid: channel.graphUuid ?? graphUuid,
+    title: channel.title,
+    position: channel.position,
+    threadUuid: channel.threadUuid ?? null
+  }
+}
+
+function mapMutationSection(
+  graphUuid: GraphUuid,
+  section: GraphSectionMutationOut
+): SectionEntity {
+  return {
+    uuid: section.uuid,
+    graphUuid: section.graphUuid ?? graphUuid,
+    title: section.title,
+    position: section.position,
+    threadUuid: section.threadUuid ?? null
+  }
+}
+
+function mapMutationNode(
+  graphUuid: GraphUuid,
+  node: GraphNodeMutationOut
+): NodeEntity {
   return {
     uuid: node.uuid,
     graphUuid,
@@ -161,7 +209,10 @@ function mapMutationNode(graphUuid: GraphUuid, node: GraphNodeMutationOut): Node
   }
 }
 
-function mapMutationEdge(graphUuid: GraphUuid, edge: GraphEdgeMutationOut): EdgeEntity | null {
+function mapMutationEdge(
+  graphUuid: GraphUuid,
+  edge: GraphEdgeMutationOut
+): EdgeEntity | null {
   if (edge.id == null) {
     console.error('[graph normalize] missing edge id in mutation edge', edge)
     return null
@@ -190,6 +241,12 @@ function mapMutationEnvelope(
   payload: GraphMutationEnvelopeOut
 ): GraphMutationEnvelope {
   const graphId = payload.graphId
+  const channelCreated = payload.changes.channels.created ?? []
+  const channelUpdated = payload.changes.channels.updated ?? []
+  const channelDeleted = payload.changes.channels.deleted ?? []
+  const sectionCreated = payload.changes.sections.created ?? []
+  const sectionUpdated = payload.changes.sections.updated ?? []
+  const sectionDeleted = payload.changes.sections.deleted ?? []
   const tagCreated = payload.changes.tags.created ?? []
   const tagUpdated = payload.changes.tags.updated ?? []
   const tagDeleted = payload.changes.tags.deleted ?? []
@@ -206,6 +263,16 @@ function mapMutationEnvelope(
           mapMutationNode(graphId, n)
         ),
         deleted: payload.changes.nodes.deleted
+      },
+      channels: {
+        created: channelCreated.map((c) => mapMutationChannel(graphId, c)),
+        updated: channelUpdated.map((c) => mapMutationChannel(graphId, c)),
+        deleted: channelDeleted
+      },
+      sections: {
+        created: sectionCreated.map((s) => mapMutationSection(graphId, s)),
+        updated: sectionUpdated.map((s) => mapMutationSection(graphId, s)),
+        deleted: sectionDeleted
       },
       edges: {
         created: payload.changes.edges.created
@@ -281,6 +348,70 @@ export const deleteNodeCommand = async (
 ): Promise<GraphMutationEnvelope> => {
   const result = await deleteNode({
     path: { uuid: String(input.nodeUuid) }
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const deleteChannelCommand = async (
+  input: DeleteChannelInput
+): Promise<GraphMutationEnvelope> => {
+  const result = await deleteChannel({
+    path: { uuid: String(input.channelUuid) }
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const deleteSectionCommand = async (
+  input: DeleteSectionInput
+): Promise<GraphMutationEnvelope> => {
+  const result = await deleteSection({
+    path: { uuid: String(input.sectionUuid) }
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const reorderChannelsCommand = async (
+  input: ReorderChannelsInput
+): Promise<GraphMutationEnvelope> => {
+  const result = await reorderGraphChannels({
+    path: { uuid: String(input.graphUuid) },
+    body: { channelUuids: input.channelUuids }
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const reorderSectionsCommand = async (
+  input: ReorderSectionsInput
+): Promise<GraphMutationEnvelope> => {
+  const result = await reorderGraphSections({
+    path: { uuid: String(input.graphUuid) },
+    body: { sectionUuids: input.sectionUuids }
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const insertSectionBelowCommand = async (
+  input: InsertSectionBelowInput
+): Promise<GraphMutationEnvelope> => {
+  const result = await insertGraphSectionBelow({
+    path: { uuid: String(input.graphUuid) },
+    body: {
+      sectionUuid: input.sectionUuid,
+      duplicate: input.duplicate ?? false
+    }
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const insertChannelBelowCommand = async (
+  input: InsertChannelBelowInput
+): Promise<GraphMutationEnvelope> => {
+  const result = await insertGraphChannelBelow({
+    path: { uuid: String(input.graphUuid) },
+    body: {
+      channelUuid: input.channelUuid ?? null,
+      duplicate: input.duplicate ?? false
+    }
   })
   return mapMutationEnvelope(unwrapSdkData(result))
 }

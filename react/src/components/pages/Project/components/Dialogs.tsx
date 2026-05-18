@@ -42,7 +42,10 @@ const ProjectDialogs = () => {
         type={WorkspaceType.PROJECT}
         refetch={refetch}
       />
-      <ContributorRemoveDialog uuid={projectUuid} type={WorkspaceType.PROJECT} />
+      <ContributorRemoveDialog
+        uuid={projectUuid}
+        type={WorkspaceType.PROJECT}
+      />
       {/*<ImportDialog />*/}
       {/*<ProjectExportDialog {...dummyProjectExportData} />*/}
     </>

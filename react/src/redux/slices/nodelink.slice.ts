@@ -1,3 +1,4 @@
+import { svglinkDragEnd } from '@cf/features/graph/state/slices/svglink.slice'
 import { CfLock } from '@cf/types/common'
 import { _t } from '@cf/utility/Utility.class'
 import {
@@ -14,7 +15,6 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
-import { svglinkDragEnd } from './svglink.slice'
 import { getEdgePortKey } from '../../components/views/WorkflowView/GraphView/components/LineSVG/types'
 
 interface CreateLockPayload {

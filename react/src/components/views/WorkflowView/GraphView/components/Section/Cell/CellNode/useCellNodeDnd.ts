@@ -10,7 +10,7 @@ import {
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import { svglinkAllowDND } from '@cf/redux/slices/svglink.slice'
+import { svglinkAllowDND } from '@cf/features/graph/state/slices/svglink.slice'
 import { _t } from '@cf/utility/Utility.class'
 import { nodelinkOutcome as edgeOutcome } from '@cfRedux/slices/node.slice'
 import { isOutcomeLink } from '@cfRedux/slices/outcomes.slice'
@@ -128,9 +128,9 @@ function useCellNodeDnd({
               type: SectionCellType.NODE,
               edge: extractClosestEdge(self.data) as 'top' | 'bottom',
               uuid: dropped.uuid,
-              fromSection: dropped.coords.section as unknown as number,
-              toSection: coordsSection as unknown as number,
-              toColumn: columnId as unknown as number,
+              fromSection: String(dropped.coords.section),
+              toSection: coordsSection,
+              toColumn: columnId,
               toRow: coordsY
             })
           }
@@ -159,7 +159,7 @@ function useCellNodeDnd({
         getInitialData: (): CellDataType => ({
           uuid: nodeId,
           coords: {
-            section: coordsSection as unknown as number,
+            section: coordsSection,
             x: coordsX,
             y: coordsY
           },

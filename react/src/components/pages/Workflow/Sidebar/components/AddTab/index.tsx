@@ -1,40 +1,54 @@
+import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import * as SC from '@cf/components/pages/Workflow/Sidebar/styles'
 import { DraggableType } from '@cf/components/views/WorkflowView/GraphView/types'
-import { selectGraphColumnEntities } from '@cf/redux/selectors/workflow.selector'
-import {
-  NodeInsertMode,
-  nodeChangeInsertMode
-} from '@cf/redux/slices/node.slice'
-import { RootState } from '@cf/redux/store'
+import type { NodeInsertMode } from '@cf/features/graph/state/resolveNodeDropRow'
+import { selectChannelsOrderedByGraphUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
+import { graphUiActions } from '@cf/features/graph/state/slices/graphUi.slice'
+import type { AppDispatch, RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { useTheme } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import { MouseEvent, useCallback } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { MouseEvent, useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 
 import data, { getChannelData } from './data'
 import DraggableItem from './Draggable'
 import * as Styled from './styles'
 
 const AddTab = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const theme = useTheme()
   const { title, subtitle, groups } = data
+  const { uuid: workflowUuid } = useParams<{ uuid: string }>()
 
-  const workflowColumns = useSelector(selectGraphColumnEntities)
-  const nodeCategories = getChannelData(workflowColumns)
+  const { data: workflowDetailResp } = useQuery({
+    ...getWorkflowOptions({
+      path: { uuid: workflowUuid ?? '' }
+    }),
+    enabled: Boolean(workflowUuid)
+  })
+
+  const graphUuid = workflowDetailResp?.item?.graphUuid ?? ''
+  const channelsSelector = useMemo(
+    () => selectChannelsOrderedByGraphUuid(graphUuid),
+    [graphUuid]
+  )
+  const channels = useSelector(channelsSelector)
+  const nodeCategories = graphUuid ? getChannelData(channels) : []
 
   const insertMode = useSelector(
-    (state: RootState) => state.workspace.node.insertMode
+    (state: RootState) => state.graph.graphUi.nodeInsertMode
   )
 
   const onInsertModeChange = useCallback(
     (e: MouseEvent, val: NodeInsertMode | null) => {
       if (val) {
-        dispatch(nodeChangeInsertMode(val))
+        dispatch(graphUiActions.setNodeInsertMode(val))
       }
     },
     [dispatch]
@@ -90,7 +104,7 @@ const AddTab = () => {
             </ToggleButton>
           </Styled.InsertButtonGroup>
         </SC.GroupWrap>
-        {nodeCategories && (
+        {nodeCategories.length > 0 && (
           <SC.GroupWrap>
             <Typography component="h6" variant="body2">
               {_t('Node categories')}

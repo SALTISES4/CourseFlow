@@ -4,6 +4,7 @@ import {
   SidebarInnerWrap,
   SidebarTitle
 } from '@cf/components/pages/Workflow/Sidebar/styles'
+import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { selectOutcomeById } from '@cf/redux/selectors/outcomes.selector'
 import {
   Outcome,
@@ -11,7 +12,6 @@ import {
   duplicateOutcome,
   updateOutcome
 } from '@cf/redux/slices/outcomes.slice'
-import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import { debounce } from '@mui/material'

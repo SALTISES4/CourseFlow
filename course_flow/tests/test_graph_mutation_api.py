@@ -77,8 +77,8 @@ def _section_and_channel(wf_uuid: str):
 def _assert_envelope_shape(body: dict) -> None:
     assert set(body.keys()) == {"graphId", "revisionId", "changes", "meta"}
     ch = body["changes"]
-    assert set(ch.keys()) == {"nodes", "edges", "tags"}
-    for entity in ("nodes", "edges", "tags"):
+    assert set(ch.keys()) == {"nodes", "edges", "channels", "sections", "tags"}
+    for entity in ("nodes", "edges", "channels", "sections", "tags"):
         b = ch[entity]
         assert set(b.keys()) == {"created", "updated", "deleted"}
     assert set(body["meta"].keys()) == {"triggeredBy", "triggerEntityId"}
@@ -204,6 +204,219 @@ def test_create_node_and_update_node_envelopes(client: Client, user):
     assert b2["revisionId"] == 2
     assert b2["changes"]["nodes"]["updated"][0]["sectionRow"] == 7
     assert b2["meta"]["triggeredBy"] == "update_node"
+
+
+@pytest.mark.django_db
+def test_delete_channel_returns_delta_with_cascaded_nodes_and_edges(
+    client: Client,
+    user,
+):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    n1 = Node.objects.create(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+    n2 = Node.objects.create(
+        section=section, channel=channel, workflow=workflow, section_row=1
+    )
+    edge = Edge.objects.create(source_node=n1, target_node=n2)
+
+    r = client.delete(
+        f"/api/channel/{channel.uuid}",
+        **_auth_header(raw),
+    )
+    assert r.status_code == 200
+    body = r.json()
+    _assert_envelope_shape(body)
+    assert body["graphId"] == str(wf_uuid)
+    assert body["revisionId"] == 1
+    assert body["meta"]["triggeredBy"] == "delete_channel"
+    assert body["meta"]["triggerEntityId"] == str(channel.uuid)
+    assert body["changes"]["channels"]["deleted"] == [str(channel.uuid)]
+    assert set(body["changes"]["nodes"]["deleted"]) == {str(n1.uuid), str(n2.uuid)}
+    assert body["changes"]["edges"]["deleted"] == [edge.id]
+    assert body["changes"]["channels"]["created"] == []
+    assert body["changes"]["tags"]["deleted"] == []
+
+    wf = Graph.objects.get(uuid=wf_uuid)
+    assert wf.revision_id == 1
+    assert not Channel.objects.filter(uuid=channel.uuid).exists()
+    assert not Node.objects.filter(uuid__in=[n1.uuid, n2.uuid]).exists()
+
+
+@pytest.mark.django_db
+def test_delete_section_returns_delta_with_cascaded_nodes_and_edges(
+    client: Client,
+    user,
+):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    n1 = Node.objects.create(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+    n2 = Node.objects.create(
+        section=section, channel=channel, workflow=workflow, section_row=1
+    )
+    edge = Edge.objects.create(source_node=n1, target_node=n2)
+
+    r = client.delete(
+        f"/api/section/{section.uuid}",
+        **_auth_header(raw),
+    )
+    assert r.status_code == 200
+    body = r.json()
+    _assert_envelope_shape(body)
+    assert body["graphId"] == str(wf_uuid)
+    assert body["revisionId"] == 1
+    assert body["meta"]["triggeredBy"] == "delete_section"
+    assert body["meta"]["triggerEntityId"] == str(section.uuid)
+    assert body["changes"]["sections"]["deleted"] == [str(section.uuid)]
+    assert set(body["changes"]["nodes"]["deleted"]) == {str(n1.uuid), str(n2.uuid)}
+    assert body["changes"]["edges"]["deleted"] == [edge.id]
+    assert body["changes"]["sections"]["created"] == []
+    assert body["changes"]["tags"]["deleted"] == []
+
+    wf = Graph.objects.get(uuid=wf_uuid)
+    assert wf.revision_id == 1
+    assert not Section.objects.filter(uuid=section.uuid).exists()
+    assert not Node.objects.filter(uuid__in=[n1.uuid, n2.uuid]).exists()
+
+
+@pytest.mark.django_db
+def test_reorder_channels_returns_updated_positions(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    ch2 = Channel.objects.create(graph=section.graph, title="C2", position=1)
+
+    r = client.put(
+        f"/api/graph/{wf_uuid}/channels/order",
+        data={"channelUuids": [str(ch2.uuid), str(channel.uuid)]},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert r.status_code == 200
+    body = r.json()
+    _assert_envelope_shape(body)
+    assert body["meta"]["triggeredBy"] == "reorder_channels"
+    updated = {item["uuid"]: item["position"] for item in body["changes"]["channels"]["updated"]}
+    assert updated[str(ch2.uuid)] == 0
+    assert updated[str(channel.uuid)] == 1
+
+
+@pytest.mark.django_db
+def test_reorder_sections_returns_updated_positions(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    sec2 = Section.objects.create(graph=section.graph, title="S2", position=1)
+
+    r = client.put(
+        f"/api/graph/{wf_uuid}/sections/order",
+        data={"sectionUuids": [str(sec2.uuid), str(section.uuid)]},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert r.status_code == 200
+    body = r.json()
+    _assert_envelope_shape(body)
+    assert body["meta"]["triggeredBy"] == "reorder_sections"
+    updated = {item["uuid"]: item["position"] for item in body["changes"]["sections"]["updated"]}
+    assert updated[str(sec2.uuid)] == 0
+    assert updated[str(section.uuid)] == 1
+
+
+@pytest.mark.django_db
+def test_insert_channel_append_returns_created_channel(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+
+    r = client.post(
+        f"/api/graph/{wf_uuid}/channels/insert-below",
+        data={"duplicate": False},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert r.status_code == 200
+    body = r.json()
+    _assert_envelope_shape(body)
+    assert body["meta"]["triggeredBy"] == "insert_channel_below"
+    assert len(body["changes"]["channels"]["created"]) == 1
+    created = body["changes"]["channels"]["created"][0]
+    assert created["title"] == ""
+    assert created["position"] == 1
+    assert body["changes"]["channels"]["updated"] == []
+
+
+@pytest.mark.django_db
+def test_insert_channel_below_shifts_positions(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    ch2 = Channel.objects.create(graph=section.graph, title="C2", position=1)
+
+    r = client.post(
+        f"/api/graph/{wf_uuid}/channels/insert-below",
+        data={"channelUuid": str(channel.uuid), "duplicate": False},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert r.status_code == 200
+    body = r.json()
+    created = body["changes"]["channels"]["created"][0]
+    assert created["position"] == 1
+    updated = {item["uuid"]: item["position"] for item in body["changes"]["channels"]["updated"]}
+    assert updated[str(ch2.uuid)] == 2
+
+
+@pytest.mark.django_db
+def test_insert_section_below_returns_created_section(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    sec2 = Section.objects.create(graph=section.graph, title="S2", position=1)
+
+    r = client.post(
+        f"/api/graph/{wf_uuid}/sections/insert-below",
+        data={"sectionUuid": str(section.uuid), "duplicate": False},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert r.status_code == 200
+    body = r.json()
+    _assert_envelope_shape(body)
+    assert body["meta"]["triggeredBy"] == "insert_section_below"
+    assert len(body["changes"]["sections"]["created"]) == 1
+    created = body["changes"]["sections"]["created"][0]
+    assert created["title"] == ""
+    assert created["position"] == 1
+    updated = {item["uuid"]: item["position"] for item in body["changes"]["sections"]["updated"]}
+    assert updated[str(sec2.uuid)] == 2
+
+
+@pytest.mark.django_db
+def test_duplicate_section_below_copies_title(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    section.title = "Week 1"
+    section.save(update_fields=["title"])
+
+    r = client.post(
+        f"/api/graph/{wf_uuid}/sections/insert-below",
+        data={"sectionUuid": str(section.uuid), "duplicate": True},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["meta"]["triggeredBy"] == "duplicate_section_below"
+    created = body["changes"]["sections"]["created"][0]
+    assert created["title"] == "Week 1 (copy)"
+    assert created["position"] == 1
 
 
 @pytest.mark.django_db

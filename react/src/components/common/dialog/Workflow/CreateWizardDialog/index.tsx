@@ -11,6 +11,7 @@ import {
   CreateResourceOptions,
   WorkflowFormType
 } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
+import { WorkflowType } from '@cfPages/Workflow/types'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -18,13 +19,10 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Step from '@mui/material/Step'
 import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
-import { useMutation } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { enqueueSnackbar } from 'notistack'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { generatePath, useNavigate } from 'react-router-dom'
-
-import { WorkflowType } from '../../../../pages/Workflow/types'
 
 type StateType = {
   step: number

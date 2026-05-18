@@ -1,6 +1,7 @@
 import { StyledDialog } from '@cf/components/common/dialog/styles'
+import { deleteSection } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { sectionDeleteSelf } from '@cf/redux/slices/section.slice'
+import type { AppDispatch } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -11,16 +12,21 @@ import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 
 const DeleteWorkflowSection = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const { payload, show, onClose } = useDialog(
-    DialogMode.WORKFLOW_DELETE_SECTION
-  )
+  const { payload, show, onClose } = useDialog(DialogMode.GRAPH_DELETE_SECTION)
 
   const onSubmit = useCallback(() => {
-    dispatch(sectionDeleteSelf({ uuid: payload?.sectionId }))
+    if (payload?.sectionId && payload?.graphUuid) {
+      dispatch(
+        deleteSection({
+          graphUuid: payload.graphUuid,
+          sectionUuid: payload.sectionId
+        })
+      )
+    }
     onClose()
   }, [dispatch, onClose, payload])
 

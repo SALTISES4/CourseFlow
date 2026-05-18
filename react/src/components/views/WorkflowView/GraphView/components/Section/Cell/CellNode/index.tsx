@@ -88,8 +88,7 @@ const SectionCellNode = ({
         <StyledNode.Border style={{ backgroundColor: borderColor }} />
         <StyledNode.Content onClick={onNodeClicked}>
           <StyledNode.Title variant="body2">
-            {(node as unknown as { title?: string }).title ||
-              _t('Blank title')}{' '}
+            {(node as unknown as { title?: string }).title || _t('Blank title')}{' '}
             <br />
             <small>{`#${nodeId}, row: ${node.sectionRow ?? '?'}`}</small>
           </StyledNode.Title>
@@ -110,8 +109,7 @@ const SectionCellNode = ({
               length:
                 (node as unknown as { timeRequired?: number }).timeRequired ??
                 0,
-              unit:
-                (node as unknown as { timeUnits?: number }).timeUnits ?? 0
+              unit: (node as unknown as { timeUnits?: number }).timeUnits ?? 0
             }}
           />
         </StyledNode.Content>

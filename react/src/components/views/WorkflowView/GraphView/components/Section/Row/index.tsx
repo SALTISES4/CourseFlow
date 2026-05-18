@@ -1,4 +1,4 @@
-import { WorkflowBoard } from '@cf/redux/selectors/workflow.selector'
+import { GraphBoard } from '@cf/features/graph/state'
 import { RootState } from '@cf/redux/store'
 import { defaultColumnSettings } from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
@@ -15,12 +15,12 @@ import { SectionCellType } from '../Cell/types'
 import * as StyledSection from '../styles'
 
 interface NonEmptyRowType {
-  nodes: WorkflowBoard['sections'][0]['rows'][0]
-  parentId: string
+  nodes: GraphBoard['sections'][0]['rows'][0]
+  graphUuid: string
   sectionId: string
   rowIndex: number
-  columnIds: WorkflowBoard['columns']['ids']
-  columnColors: WorkflowBoard['columns']['colors']
+  columnIds: GraphBoard['columns']['ids']
+  columnColors: GraphBoard['columns']['colors']
   onNodeDrop: SectionPropsType['onNodeDrop']
   onNodeClick: (e: MouseEvent<HTMLDivElement>, nodeuuid: string) => void
 }
@@ -28,7 +28,7 @@ interface NonEmptyRowType {
 interface EmptyRowType
   extends Pick<
     NonEmptyRowType,
-    'sectionId' | 'columnIds' | 'columnColors' | 'onNodeDrop'
+    'graphUuid' | 'sectionId' | 'columnIds' | 'columnColors' | 'onNodeDrop'
   > {
   rowIndex: 'empty'
 }

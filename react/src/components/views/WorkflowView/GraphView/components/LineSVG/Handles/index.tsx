@@ -1,10 +1,10 @@
-import useHover from '@cf/hooks/useHover'
-import { selectIsDrawingLinkPreview } from '@cf/redux/selectors/svglink.selectors'
+import { selectIsDrawingLinkPreview } from '@cf/features/graph/state/selectors/svglink.selectors'
 import {
   dragEndThunk,
   svglinkDragMove,
   svglinkDragStart
-} from '@cf/redux/slices/svglink.slice'
+} from '@cf/features/graph/state/slices/svglink.slice'
+import useHover from '@cf/hooks/useHover'
 import { AppDispatch } from '@cf/redux/store'
 import { Position } from '@xyflow/react'
 import {

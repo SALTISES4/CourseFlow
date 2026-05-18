@@ -1,8 +1,8 @@
 import { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import {
-  NodeInsertMode,
-  NodeWorkflowReorderPayload
-} from '@cf/redux/slices/node.slice'
+import type {
+  NodeDropPayload,
+  NodeInsertMode
+} from '@cf/features/graph/state/resolveNodeDropRow'
 import { MutableRefObject } from 'react'
 
 import { CellClickCallbackFn, CellReorderCallbackFn } from '../../../types'
@@ -38,7 +38,7 @@ export interface SectionCellNodeType extends SectionCellShared {
 interface InternalShared {
   wrapRef: MutableRefObject<HTMLDivElement>
   onDrop: (
-    data: NodeWorkflowReorderPayload & {
+    data: NodeDropPayload & {
       type: SectionCellType.NODE | SectionCellType.PHANTOM
     }
   ) => void

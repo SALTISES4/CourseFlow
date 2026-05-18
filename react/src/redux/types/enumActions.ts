@@ -21,13 +21,6 @@ export enum CommonActions {
   CLEAR_WORKFLOW_DATA = 'clearWorkflowData'
 }
 
-export enum WorkflowActions {
-  CREATELOCK = 'workflow/createLock',
-  CHANGE_FIELD = 'workflow/changeField',
-  DELETE_SELF_SOFT = 'workflow/deleteSelfSoft',
-  RESTORE_SELF = 'workflow/restoreSelf'
-}
-
 export enum SectionActions {
   DELETE_SELF = 'section/deleteSelf',
   DELETE_SELF_SOFT = 'section/deleteSelfSoft',
@@ -55,10 +48,6 @@ export enum OutcomeActions {
   UPDATE_HORIZONTAL_LINK = 'outcome/updateHorizontalLinks',
   CHANGE_FIELD = 'outcome/changeField',
   CHANGE_FIELD_MANY = 'outcome/changeFieldMany'
-}
-
-export enum OutcomeNodeActions {
-  UPDATE_DEGREE = 'outcomenode/updateDegree'
 }
 
 export enum OutcomeBaseActions {
@@ -114,23 +103,4 @@ export enum NodeActions {
   CHANGE_FIELD = 'node/changeField',
   RELOAD_COMMENTS = 'node/reloadComments',
   SET_LINKED_WORKFLOW = 'node/setLinkedWorkflow'
-}
-
-export enum NodelinkActions {
-  CREATE_LOCK = 'nodelink/createLock',
-  CHANGE_FIELD = 'nodelink/changeField',
-  RESTORE_SELF = 'nodelink/restoreSelf',
-  DELETE_SELF = 'nodelink/deleteSelf',
-  DELETE_SELF_SOFT = 'nodelink/deleteSelfSoft',
-  NEW_NODE_LINK = 'nodelink/newNodelink'
-}
-
-export enum OutcomeHorizontalLinkActions {
-  UPDATE_DEGREE = 'outcomehorizontallink/updateDegree'
-}
-
-export enum SidebarActions {
-  COLLAPSE = 'sidebar/collapse',
-  EDIT = 'sidebar/edit',
-  CHANGE_TAB = 'sidebar/changeTab'
 }

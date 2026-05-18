@@ -1,4 +1,4 @@
-import { NodeInsertMode } from '@cf/redux/slices/node.slice'
+import type { NodeInsertMode } from '@cf/features/graph/state/resolveNodeDropRow'
 import { _t } from '@cf/utility/Utility.class'
 import TableRowsOutlinedIcon from '@mui/icons-material/TableRowsOutlined'
 import ViewSectionOutlinedIcon from '@mui/icons-material/ViewWeekOutlined'

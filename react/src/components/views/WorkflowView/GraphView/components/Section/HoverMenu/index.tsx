@@ -1,31 +1,27 @@
+import { insertSectionBelow } from '@cf/features/graph/state/thunks/graphMutations.thunks'
+import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { getNextLargestNumber } from '@cf/redux/selectors/helpers'
-import { sectionInsertBelow } from '@cf/redux/slices/section.slice'
-import { RootState } from '@cf/redux/store'
+import type { AppDispatch } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
-import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import { MouseEvent, useCallback } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 type PropsType = {
-  workflowId: string
+  graphUuid: string
   sectionId: string
   show: boolean
 }
 
 type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
 
-const HoverMenu = ({ workflowId, sectionId, show }: PropsType) => {
-  const dispatch = useDispatch()
+const HoverMenu = ({ graphUuid, sectionId, show }: PropsType) => {
+  const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
-  // const newSectionId = getNextLargestNumber(ids)
-  console.log('TODO: review section hover menu')
-  const newSectionId = 'new-section-id'
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {
@@ -34,22 +30,26 @@ const HoverMenu = ({ workflowId, sectionId, show }: PropsType) => {
         switch (action) {
           case 'insert':
             dispatch(
-              sectionInsertBelow({ uuid: sectionId, newId: newSectionId })
+              insertSectionBelow({
+                graphUuid,
+                sectionUuid: sectionId,
+                duplicate: false
+              })
             )
             break
           case 'duplicate':
             dispatch(
-              sectionInsertBelow({
-                uuid: sectionId,
-                newId: newSectionId,
+              insertSectionBelow({
+                graphUuid,
+                sectionUuid: sectionId,
                 duplicate: true
               })
             )
             break
           case 'delete':
-            dialogDispatch(DialogMode.WORKFLOW_DELETE_SECTION, {
+            dialogDispatch(DialogMode.GRAPH_DELETE_SECTION, {
               sectionId: sectionId,
-              workflowId
+              graphUuid
             })
             break
           case 'comments':
@@ -66,7 +66,7 @@ const HoverMenu = ({ workflowId, sectionId, show }: PropsType) => {
         }
       }
     },
-    [dispatch, dialogDispatch, newSectionId, sectionId, workflowId]
+    [dispatch, dialogDispatch, graphUuid, sectionId]
   )
 
   return (

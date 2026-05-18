@@ -4,13 +4,14 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
-import type { WorkflowEntity, WorkflowUuid } from '../model/types'
+import type { WorkflowEntity, WorkflowUuid } from '../../model/types'
 
-export const workflowAdapter = createEntityAdapter<WorkflowEntity, WorkflowUuid>(
-  {
-    selectId: (w) => w.uuid
-  }
-)
+export const workflowAdapter = createEntityAdapter<
+  WorkflowEntity,
+  WorkflowUuid
+>({
+  selectId: (w) => w.uuid
+})
 
 export type WorkflowState = ReturnType<typeof workflowAdapter.getInitialState>
 

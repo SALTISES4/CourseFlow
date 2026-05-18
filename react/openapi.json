@@ -3,12 +3,12 @@
   "info": {
     "title": "CourseFlow V2 API",
     "version": "0.1.0",
-    "description": "OpenAPI is generated from Ninja routes and schemas. Primary CRUD routes return entity fields only. Workflow graph/editor loads use ``GET /workflow/{uuid}/graph`` (flat projection). See ``course_flow_v2.api.conventions`` and ``course_flow_v2.api.schemas.workflow_graph``."
+    "description": "OpenAPI is generated from Ninja routes and schemas. Primary CRUD routes return entity fields only. Graph editor loads use 'GET /graph/{uuid}/view' (Graph View payload). See 'course_flow.api.conventions' and 'course_flow.api.schemas.graph_view'."
   },
   "paths": {
     "/api/health": {
       "get": {
-        "operationId": "course_flow_v2_api_ninja_app_health",
+        "operationId": "course_flow_api_ninja_app_health",
         "summary": "Liveness check",
         "parameters": [],
         "responses": {
@@ -90,7 +90,7 @@
         ]
       }
     },
-    "/api/project/{uuid}/graph": {
+    "/api/project/{uuid}/view": {
       "get": {
         "operationId": "getProjectGraph",
         "summary": "Get Project Graph",
@@ -112,7 +112,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProjectGraphProjectionOut"
+                  "$ref": "#/components/schemas/ProjectGraphViewOut"
                 }
               }
             }
@@ -535,44 +535,6 @@
         ]
       }
     },
-    "/api/workflow/{uuid}/graph": {
-      "get": {
-        "operationId": "getWorkflowGraph",
-        "summary": "Get Workflow Graph",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "uuid",
-            "schema": {
-              "format": "uuid",
-              "title": "Uuid",
-              "type": "string"
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/WorkflowGraphOut"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "workflows"
-        ],
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
     "/api/workflow/{uuid}": {
       "get": {
         "operationId": "getWorkflow",
@@ -609,12 +571,134 @@
             "BearerAuth": []
           }
         ]
+      },
+      "patch": {
+        "operationId": "updateWorkflow",
+        "summary": "Update Workflow",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowDetailOutResp"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "workflows"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkflowUpdateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
       }
     },
-    "/api/workflow/{uuid}/channels": {
+    "/api/graph/{uuid}/view": {
       "get": {
-        "operationId": "listWorkflowChannels",
-        "summary": "List Workflow Channels",
+        "operationId": "getGraphView",
+        "summary": "Get Graph View",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphViewOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "graphs"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/graph/{uuid}": {
+      "get": {
+        "operationId": "getGraph",
+        "summary": "Get Graph",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphDetailOutResp"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "graphs"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/graph/{uuid}/channels": {
+      "get": {
+        "operationId": "listGraphChannels",
+        "summary": "List Graph Channels",
         "parameters": [
           {
             "in": "path",
@@ -649,10 +733,106 @@
         ]
       }
     },
-    "/api/workflow/{uuid}/sections": {
+    "/api/graph/{uuid}/channels/insert-below": {
+      "post": {
+        "operationId": "insertGraphChannelBelow",
+        "summary": "Insert Graph Channel Below",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "channels"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphChannelInsertBelowIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/graph/{uuid}/channels/order": {
+      "put": {
+        "operationId": "reorderGraphChannels",
+        "summary": "Reorder Graph Channels",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "channels"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphReorderChannelsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/graph/{uuid}/sections": {
       "get": {
-        "operationId": "listWorkflowSections",
-        "summary": "List Workflow Sections",
+        "operationId": "listGraphSections",
+        "summary": "List Graph Sections",
         "parameters": [
           {
             "in": "path",
@@ -687,8 +867,8 @@
         ]
       },
       "post": {
-        "operationId": "createWorkflowSection",
-        "summary": "Create Workflow Section",
+        "operationId": "createGraphSection",
+        "summary": "Create Graph Section",
         "parameters": [
           {
             "in": "path",
@@ -720,7 +900,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/WorkflowSectionCreateIn"
+                "$ref": "#/components/schemas/GraphSectionCreateIn"
               }
             }
           },
@@ -733,10 +913,106 @@
         ]
       }
     },
-    "/api/workflow/{uuid}/nodes": {
+    "/api/graph/{uuid}/sections/insert-below": {
+      "post": {
+        "operationId": "insertGraphSectionBelow",
+        "summary": "Insert Graph Section Below",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "sections"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphSectionInsertBelowIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/graph/{uuid}/sections/order": {
+      "put": {
+        "operationId": "reorderGraphSections",
+        "summary": "Reorder Graph Sections",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "sections"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphReorderSectionsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/graph/{uuid}/nodes": {
       "get": {
-        "operationId": "listWorkflowNodes",
-        "summary": "List Workflow Nodes",
+        "operationId": "listGraphNodes",
+        "summary": "List Graph Nodes",
         "parameters": [
           {
             "in": "path",
@@ -775,8 +1051,8 @@
         ]
       },
       "post": {
-        "operationId": "createWorkflowNode",
-        "summary": "Create Workflow Node",
+        "operationId": "createGraphNode",
+        "summary": "Create Graph Node",
         "parameters": [
           {
             "in": "path",
@@ -821,10 +1097,10 @@
         ]
       }
     },
-    "/api/workflow/{uuid}/edges": {
+    "/api/graph/{uuid}/edges": {
       "get": {
-        "operationId": "listWorkflowEdges",
-        "summary": "List Workflow Edges",
+        "operationId": "listGraphEdges",
+        "summary": "List Graph Edges",
         "parameters": [
           {
             "in": "path",
@@ -863,8 +1139,8 @@
         ]
       },
       "post": {
-        "operationId": "createWorkflowEdge",
-        "summary": "Create Workflow Edge",
+        "operationId": "createGraphEdge",
+        "summary": "Create Graph Edge",
         "parameters": [
           {
             "in": "path",
@@ -1050,7 +1326,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SuccessOut"
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
                 }
               }
             }
@@ -1207,7 +1483,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SuccessOut"
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
                 }
               }
             }
@@ -1343,16 +1619,16 @@
         ]
       }
     },
-    "/api/edge/{uuid}": {
+    "/api/edge/{edge_id}": {
       "get": {
         "operationId": "getEdge",
         "summary": "Get Edge",
         "parameters": [
           {
             "in": "path",
-            "name": "uuid",
+            "name": "edge_id",
             "schema": {
-              "title": "Uuid",
+              "title": "Edge Id",
               "type": "integer"
             },
             "required": true
@@ -1385,9 +1661,9 @@
         "parameters": [
           {
             "in": "path",
-            "name": "uuid",
+            "name": "edge_id",
             "schema": {
-              "title": "Uuid",
+              "title": "Edge Id",
               "type": "integer"
             },
             "required": true
@@ -2053,6 +2329,43 @@
           }
         ]
       }
+    },
+    "/api/library/favorite": {
+      "post": {
+        "operationId": "libraryItemFavoriteToggle",
+        "summary": "Library Item Favorite Toggle",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LibraryFavoriteOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "library"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LibraryFavoriteIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -2070,111 +2383,8 @@
         "title": "HealthResponse",
         "type": "object"
       },
-      "ActivityMetaOut": {
-        "properties": {
-          "kind": {
-            "default": "activity_meta",
-            "title": "Kind",
-            "type": "string"
-          },
-          "context": {
-            "title": "Context",
-            "type": "string"
-          },
-          "classification": {
-            "title": "Classification",
-            "type": "string"
-          }
-        },
-        "required": [
-          "context",
-          "classification"
-        ],
-        "title": "ActivityMetaOut",
-        "type": "object"
-      },
-      "CourseMetaOut": {
-        "properties": {
-          "kind": {
-            "default": "course_meta",
-            "title": "Kind",
-            "type": "string"
-          },
-          "classification": {
-            "title": "Classification",
-            "type": "string"
-          },
-          "code": {
-            "title": "Code",
-            "type": "string"
-          }
-        },
-        "required": [
-          "classification",
-          "code"
-        ],
-        "title": "CourseMetaOut",
-        "type": "object"
-      },
-      "ProgramMetaOut": {
-        "properties": {
-          "kind": {
-            "default": "program_meta",
-            "title": "Kind",
-            "type": "string"
-          },
-          "calculateTime": {
-            "title": "Calculatetime",
-            "type": "string"
-          },
-          "calculateCredits": {
-            "title": "Calculatecredits",
-            "type": "string"
-          },
-          "calculatePonderation": {
-            "title": "Calculateponderation",
-            "type": "string"
-          },
-          "calculateClassification": {
-            "title": "Calculateclassification",
-            "type": "string"
-          },
-          "classificationGeneralTime": {
-            "anyOf": [
-              {
-                "format": "duration",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Classificationgeneraltime"
-          },
-          "classificationSpecificTime": {
-            "anyOf": [
-              {
-                "format": "duration",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Classificationspecifictime"
-          }
-        },
-        "required": [
-          "calculateTime",
-          "calculateCredits",
-          "calculatePonderation",
-          "calculateClassification"
-        ],
-        "title": "ProgramMetaOut",
-        "type": "object"
-      },
       "ProjectDetailOut": {
-        "description": "Single project resource: persisted fields only (no related collections).",
+        "description": "Single project resource with minimal child workflow list metadata.",
         "properties": {
           "uuid": {
             "format": "uuid",
@@ -2214,7 +2424,7 @@
           "workflows": {
             "default": [],
             "items": {
-              "$ref": "#/components/schemas/ProjectWorkflowOut"
+              "$ref": "#/components/schemas/ProjectWorkflowListItemOut"
             },
             "title": "Workflows",
             "type": "array"
@@ -2233,82 +2443,7 @@
         "title": "ProjectDetailOut",
         "type": "object"
       },
-      "ProjectWorkflowOut": {
-        "properties": {
-          "uuid": {
-            "format": "uuid",
-            "title": "Uuid",
-            "type": "string"
-          },
-          "title": {
-            "title": "Title",
-            "type": "string"
-          },
-          "ownerId": {
-            "title": "Ownerid",
-            "type": "integer"
-          },
-          "projectId": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Projectid"
-          },
-          "revisionId": {
-            "title": "Revisionid",
-            "type": "integer"
-          },
-          "dateCreated": {
-            "format": "date-time",
-            "title": "Datecreated",
-            "type": "string"
-          },
-          "modifiedOn": {
-            "format": "date-time",
-            "title": "Modifiedon",
-            "type": "string"
-          },
-          "unit": {
-            "$ref": "#/components/schemas/UnitOut"
-          }
-        },
-        "required": [
-          "uuid",
-          "title",
-          "ownerId",
-          "projectId",
-          "revisionId",
-          "dateCreated",
-          "modifiedOn",
-          "unit"
-        ],
-        "title": "ProjectWorkflowOut",
-        "type": "object"
-      },
-      "TaskMetaOut": {
-        "properties": {
-          "kind": {
-            "default": "task_meta",
-            "title": "Kind",
-            "type": "string"
-          },
-          "context": {
-            "title": "Context",
-            "type": "string"
-          }
-        },
-        "required": [
-          "context"
-        ],
-        "title": "TaskMetaOut",
-        "type": "object"
-      },
-      "UnitOut": {
+      "ProjectWorkflowListItemOut": {
         "properties": {
           "uuid": {
             "format": "uuid",
@@ -2323,39 +2458,33 @@
             "title": "Description",
             "type": "string"
           },
-          "unitType": {
-            "title": "Unittype",
-            "type": "string"
+          "workflowType": {
+            "$ref": "#/components/schemas/WorkflowType"
           },
-          "meta": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/TaskMetaOut"
-              },
-              {
-                "$ref": "#/components/schemas/ProgramMetaOut"
-              },
-              {
-                "$ref": "#/components/schemas/CourseMetaOut"
-              },
-              {
-                "$ref": "#/components/schemas/ActivityMetaOut"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Meta"
+          "isFavorite": {
+            "title": "Isfavorite",
+            "type": "boolean"
           }
         },
         "required": [
           "uuid",
           "title",
           "description",
-          "unitType"
+          "workflowType",
+          "isFavorite"
         ],
-        "title": "UnitOut",
+        "title": "ProjectWorkflowListItemOut",
         "type": "object"
+      },
+      "WorkflowType": {
+        "enum": [
+          "program",
+          "course",
+          "activity",
+          "task"
+        ],
+        "title": "WorkflowType",
+        "type": "string"
       },
       "ProjectCreateIn": {
         "properties": {
@@ -2459,8 +2588,8 @@
         "title": "ProjectListOut",
         "type": "object"
       },
-      "ProjectGraphProjectionOut": {
-        "description": "Project overview: entity fields + workflow UUID references only.",
+      "ProjectGraphViewOut": {
+        "description": "Project overview: entity fields + graph UUID references only.",
         "properties": {
           "uuid": {
             "format": "uuid",
@@ -2497,12 +2626,12 @@
             "title": "Modifiedon",
             "type": "string"
           },
-          "workflowUuids": {
+          "graphUuids": {
             "items": {
               "format": "uuid",
               "type": "string"
             },
-            "title": "Workflowuuids",
+            "title": "Graphuuids",
             "type": "array"
           }
         },
@@ -2515,9 +2644,9 @@
           "ownerId",
           "dateCreated",
           "modifiedOn",
-          "workflowUuids"
+          "graphUuids"
         ],
-        "title": "ProjectGraphProjectionOut",
+        "title": "ProjectGraphViewOut",
         "type": "object"
       },
       "ProjectDuplicatePlaceholderOut": {
@@ -2750,20 +2879,39 @@
         "type": "object"
       },
       "WorkflowDetailOut": {
-        "description": "Single workflow resource: persisted fields only (no unit/sections/channels).",
         "properties": {
           "uuid": {
             "format": "uuid",
             "title": "Uuid",
             "type": "string"
           },
+          "graphUuid": {
+            "format": "uuid",
+            "title": "Graphuuid",
+            "type": "string"
+          },
           "title": {
             "title": "Title",
             "type": "string"
           },
-          "ownerId": {
-            "title": "Ownerid",
-            "type": "integer"
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "workflowType": {
+            "title": "Workflowtype",
+            "type": "string"
+          },
+          "authorId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authorid"
           },
           "projectId": {
             "anyOf": [
@@ -2793,8 +2941,11 @@
         },
         "required": [
           "uuid",
+          "graphUuid",
           "title",
-          "ownerId",
+          "description",
+          "workflowType",
+          "authorId",
           "projectId",
           "revisionId",
           "dateCreated",
@@ -2803,69 +2954,76 @@
         "title": "WorkflowDetailOut",
         "type": "object"
       },
-      "UnitTypeIn": {
+      "WorkflowCreateIn": {
+        "description": "Create a root ``Workflow`` and its backing ``Graph`` row (1:1 ORM).",
+        "properties": {
+          "projectId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Projectid"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "workflowType": {
+            "$ref": "#/components/schemas/WorkflowTypeIn"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          }
+        },
+        "required": [
+          "workflowType"
+        ],
+        "title": "WorkflowCreateIn",
+        "type": "object"
+      },
+      "WorkflowTypeIn": {
         "enum": [
           "program",
           "course",
           "activity",
           "task"
         ],
-        "title": "UnitTypeIn",
+        "title": "WorkflowTypeIn",
         "type": "string"
       },
-      "WorkflowCreateIn": {
-        "properties": {
-          "projectId": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Projectid"
-          },
-          "workflowTitle": {
-            "title": "Workflowtitle",
-            "type": "string"
-          },
-          "unitTitle": {
-            "default": "",
-            "title": "Unittitle",
-            "type": "string"
-          },
-          "unitType": {
-            "$ref": "#/components/schemas/UnitTypeIn"
-          },
-          "unitDescription": {
-            "default": "",
-            "title": "Unitdescription",
-            "type": "string"
-          }
-        },
-        "required": [
-          "workflowTitle",
-          "unitType"
-        ],
-        "title": "WorkflowCreateIn",
-        "type": "object"
-      },
       "WorkflowListItemOut": {
-        "description": "List rows: workflow entity fields only.",
         "properties": {
           "uuid": {
             "format": "uuid",
             "title": "Uuid",
             "type": "string"
           },
+          "graphUuid": {
+            "format": "uuid",
+            "title": "Graphuuid",
+            "type": "string"
+          },
           "title": {
             "title": "Title",
             "type": "string"
           },
-          "ownerId": {
-            "title": "Ownerid",
-            "type": "integer"
+          "authorId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authorid"
           },
           "projectId": {
             "anyOf": [
@@ -2877,6 +3035,10 @@
               }
             ],
             "title": "Projectid"
+          },
+          "workflowType": {
+            "title": "Workflowtype",
+            "type": "string"
           },
           "revisionId": {
             "title": "Revisionid",
@@ -2890,9 +3052,11 @@
         },
         "required": [
           "uuid",
+          "graphUuid",
           "title",
-          "ownerId",
+          "authorId",
           "projectId",
+          "workflowType",
           "revisionId",
           "modifiedOn"
         ],
@@ -2932,6 +3096,57 @@
         "title": "WorkflowListOut",
         "type": "object"
       },
+      "WorkflowDetailOutResp": {
+        "properties": {
+          "item": {
+            "$ref": "#/components/schemas/WorkflowDetailOut"
+          }
+        },
+        "required": [
+          "item"
+        ],
+        "title": "WorkflowDetailOutResp",
+        "type": "object"
+      },
+      "WorkflowUpdateIn": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "projectId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Projectid"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "title": "WorkflowUpdateIn",
+        "type": "object"
+      },
       "ChannelGraphOut": {
         "properties": {
           "uuid": {
@@ -2939,9 +3154,9 @@
             "title": "Uuid",
             "type": "string"
           },
-          "workflowUuid": {
+          "graphUuid": {
             "format": "uuid",
-            "title": "Workflowuuid",
+            "title": "Graphuuid",
             "type": "string"
           },
           "title": {
@@ -2967,7 +3182,7 @@
         },
         "required": [
           "uuid",
-          "workflowUuid",
+          "graphUuid",
           "title",
           "position"
         ],
@@ -3015,6 +3230,147 @@
         "title": "EdgeGraphOut",
         "type": "object"
       },
+      "GraphMetaOut": {
+        "description": "Graph UUID/revision plus root ``Workflow`` fields (graph row has no title/author/project).",
+        "properties": {
+          "uuid": {
+            "format": "uuid",
+            "title": "Uuid",
+            "type": "string"
+          },
+          "workflowTitle": {
+            "title": "Workflowtitle",
+            "type": "string"
+          },
+          "authorId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authorid"
+          },
+          "workflowProjectId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Workflowprojectid"
+          },
+          "revisionId": {
+            "title": "Revisionid",
+            "type": "integer"
+          },
+          "dateCreated": {
+            "format": "date-time",
+            "title": "Datecreated",
+            "type": "string"
+          },
+          "modifiedOn": {
+            "format": "date-time",
+            "title": "Modifiedon",
+            "type": "string"
+          },
+          "rootWorkflowUuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rootworkflowuuid"
+          },
+          "rootWorkflowType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rootworkflowtype"
+          },
+          "rootWorkflowTitle": {
+            "default": "",
+            "title": "Rootworkflowtitle",
+            "type": "string"
+          }
+        },
+        "required": [
+          "uuid",
+          "workflowTitle",
+          "authorId",
+          "workflowProjectId",
+          "revisionId",
+          "dateCreated",
+          "modifiedOn"
+        ],
+        "title": "GraphMetaOut",
+        "type": "object"
+      },
+      "GraphViewOut": {
+        "description": "Single round-trip Graph View payload (not nested entity trees).",
+        "properties": {
+          "graph": {
+            "$ref": "#/components/schemas/GraphMetaOut"
+          },
+          "channels": {
+            "items": {
+              "$ref": "#/components/schemas/ChannelGraphOut"
+            },
+            "title": "Channels",
+            "type": "array"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/SectionGraphOut"
+            },
+            "title": "Sections",
+            "type": "array"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/NodeGraphOut"
+            },
+            "title": "Nodes",
+            "type": "array"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/EdgeGraphOut"
+            },
+            "title": "Edges",
+            "type": "array"
+          },
+          "threadCommentCounts": {
+            "items": {
+              "$ref": "#/components/schemas/ThreadCommentCountOut"
+            },
+            "title": "Threadcommentcounts",
+            "type": "array"
+          }
+        },
+        "required": [
+          "graph",
+          "channels",
+          "sections",
+          "nodes",
+          "edges"
+        ],
+        "title": "GraphViewOut",
+        "type": "object"
+      },
       "NodeGraphOut": {
         "properties": {
           "uuid": {
@@ -3057,7 +3413,7 @@
             ],
             "title": "Sectionrow"
           },
-          "unitUuid": {
+          "workflowUuid": {
             "anyOf": [
               {
                 "format": "uuid",
@@ -3067,7 +3423,7 @@
                 "type": "null"
               }
             ],
-            "title": "Unituuid"
+            "title": "Workflowuuid"
           },
           "threadUuid": {
             "anyOf": [
@@ -3103,9 +3459,9 @@
             "title": "Uuid",
             "type": "string"
           },
-          "workflowUuid": {
+          "graphUuid": {
             "format": "uuid",
-            "title": "Workflowuuid",
+            "title": "Graphuuid",
             "type": "string"
           },
           "title": {
@@ -3131,7 +3487,7 @@
         },
         "required": [
           "uuid",
-          "workflowUuid",
+          "graphUuid",
           "title",
           "position"
         ],
@@ -3157,23 +3513,18 @@
         "title": "ThreadCommentCountOut",
         "type": "object"
       },
-      "WorkflowGraphMetaOut": {
-        "description": "Workflow row + root unit identifiers needed for the editor shell (no nested unit object).",
+      "GraphDetailOut": {
         "properties": {
           "uuid": {
             "format": "uuid",
             "title": "Uuid",
             "type": "string"
           },
-          "title": {
-            "title": "Title",
+          "workflowTitle": {
+            "title": "Workflowtitle",
             "type": "string"
           },
-          "ownerId": {
-            "title": "Ownerid",
-            "type": "integer"
-          },
-          "projectId": {
+          "authorId": {
             "anyOf": [
               {
                 "type": "integer"
@@ -3182,7 +3533,18 @@
                 "type": "null"
               }
             ],
-            "title": "Projectid"
+            "title": "Authorid"
+          },
+          "workflowProjectId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Workflowprojectid"
           },
           "revisionId": {
             "title": "Revisionid",
@@ -3197,110 +3559,30 @@
             "format": "date-time",
             "title": "Modifiedon",
             "type": "string"
-          },
-          "rootUnitUuid": {
-            "anyOf": [
-              {
-                "format": "uuid",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Rootunituuid"
-          },
-          "rootUnitType": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Rootunittype"
-          },
-          "rootUnitTitle": {
-            "default": "",
-            "title": "Rootunittitle",
-            "type": "string"
           }
         },
         "required": [
           "uuid",
-          "title",
-          "ownerId",
-          "projectId",
+          "workflowTitle",
+          "authorId",
+          "workflowProjectId",
           "revisionId",
           "dateCreated",
           "modifiedOn"
         ],
-        "title": "WorkflowGraphMetaOut",
+        "title": "GraphDetailOut",
         "type": "object"
       },
-      "WorkflowGraphOut": {
-        "description": "Single round-trip projection for rendering the workflow graph (not nested entity trees).",
-        "properties": {
-          "workflow": {
-            "$ref": "#/components/schemas/WorkflowGraphMetaOut"
-          },
-          "channels": {
-            "items": {
-              "$ref": "#/components/schemas/ChannelGraphOut"
-            },
-            "title": "Channels",
-            "type": "array"
-          },
-          "sections": {
-            "items": {
-              "$ref": "#/components/schemas/SectionGraphOut"
-            },
-            "title": "Sections",
-            "type": "array"
-          },
-          "nodes": {
-            "items": {
-              "$ref": "#/components/schemas/NodeGraphOut"
-            },
-            "title": "Nodes",
-            "type": "array"
-          },
-          "edges": {
-            "items": {
-              "$ref": "#/components/schemas/EdgeGraphOut"
-            },
-            "title": "Edges",
-            "type": "array"
-          },
-          "threadCommentCounts": {
-            "items": {
-              "$ref": "#/components/schemas/ThreadCommentCountOut"
-            },
-            "title": "Threadcommentcounts",
-            "type": "array"
-          }
-        },
-        "required": [
-          "workflow",
-          "channels",
-          "sections",
-          "nodes",
-          "edges"
-        ],
-        "title": "WorkflowGraphOut",
-        "type": "object"
-      },
-      "WorkflowDetailOutResp": {
+      "GraphDetailOutResp": {
         "properties": {
           "item": {
-            "$ref": "#/components/schemas/WorkflowDetailOut"
+            "$ref": "#/components/schemas/GraphDetailOut"
           }
         },
         "required": [
           "item"
         ],
-        "title": "WorkflowDetailOutResp",
+        "title": "GraphDetailOutResp",
         "type": "object"
       },
       "ChannelListMetaOut": {
@@ -3343,9 +3625,9 @@
             "title": "Uuid",
             "type": "string"
           },
-          "workflowUuid": {
+          "graphUuid": {
             "format": "uuid",
-            "title": "Workflowuuid",
+            "title": "Graphuuid",
             "type": "string"
           },
           "title": {
@@ -3381,7 +3663,7 @@
         },
         "required": [
           "uuid",
-          "workflowUuid",
+          "graphUuid",
           "title",
           "position",
           "threadUuid",
@@ -3391,49 +3673,17 @@
         "title": "ChannelOut",
         "type": "object"
       },
-      "SectionListMetaOut": {
-        "properties": {
-          "total": {
-            "title": "Total",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "total"
-        ],
-        "title": "SectionListMetaOut",
-        "type": "object"
-      },
-      "SectionListOut": {
-        "properties": {
-          "items": {
-            "items": {
-              "$ref": "#/components/schemas/SectionOut"
-            },
-            "title": "Items",
-            "type": "array"
-          },
-          "meta": {
-            "$ref": "#/components/schemas/SectionListMetaOut"
-          }
-        },
-        "required": [
-          "items",
-          "meta"
-        ],
-        "title": "SectionListOut",
-        "type": "object"
-      },
-      "SectionOut": {
+      "GraphChannelMutationOut": {
+        "description": "Flat channel snapshot for created/updated buckets (aligned with graph read shape).",
         "properties": {
           "uuid": {
             "format": "uuid",
             "title": "Uuid",
             "type": "string"
           },
-          "workflowUuid": {
+          "graphUuid": {
             "format": "uuid",
-            "title": "Workflowuuid",
+            "title": "Graphuuid",
             "type": "string"
           },
           "title": {
@@ -3455,62 +3705,52 @@
               }
             ],
             "title": "Threaduuid"
-          },
-          "dateCreated": {
-            "format": "date-time",
-            "title": "Datecreated",
-            "type": "string"
-          },
-          "modifiedOn": {
-            "format": "date-time",
-            "title": "Modifiedon",
-            "type": "string"
           }
         },
         "required": [
           "uuid",
-          "workflowUuid",
+          "graphUuid",
           "title",
-          "position",
-          "threadUuid",
-          "dateCreated",
-          "modifiedOn"
+          "position"
         ],
-        "title": "SectionOut",
+        "title": "GraphChannelMutationOut",
         "type": "object"
       },
-      "WorkflowSectionCreateIn": {
+      "GraphChannelsDeltaOut": {
         "properties": {
-          "title": {
-            "title": "Title",
-            "type": "string"
+          "created": {
+            "items": {
+              "$ref": "#/components/schemas/GraphChannelMutationOut"
+            },
+            "title": "Created",
+            "type": "array"
           },
-          "position": {
-            "default": 0,
-            "title": "Position",
-            "type": "integer"
+          "updated": {
+            "items": {
+              "$ref": "#/components/schemas/GraphChannelMutationOut"
+            },
+            "title": "Updated",
+            "type": "array"
           },
-          "threadUuid": {
-            "anyOf": [
-              {
-                "format": "uuid",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Threaduuid"
+          "deleted": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Deleted",
+            "type": "array"
           }
         },
         "required": [
-          "title"
+          "created",
+          "updated",
+          "deleted"
         ],
-        "title": "WorkflowSectionCreateIn",
+        "title": "GraphChannelsDeltaOut",
         "type": "object"
       },
       "GraphEdgeMutationOut": {
-        "description": "Edge row; ``id`` is the integer PK (``cf2_edge`` has no UUID column).",
+        "description": "Edge row; ``id`` is the integer PK (``cf_edge`` has no UUID column).",
         "properties": {
           "id": {
             "title": "Id",
@@ -3590,6 +3830,12 @@
           "edges": {
             "$ref": "#/components/schemas/GraphEdgesDeltaOut"
           },
+          "channels": {
+            "$ref": "#/components/schemas/GraphChannelsDeltaOut"
+          },
+          "sections": {
+            "$ref": "#/components/schemas/GraphSectionsDeltaOut"
+          },
           "tags": {
             "$ref": "#/components/schemas/GraphTagsDeltaOut"
           }
@@ -3597,6 +3843,8 @@
         "required": [
           "nodes",
           "edges",
+          "channels",
+          "sections",
           "tags"
         ],
         "title": "GraphMutationChangesOut",
@@ -3604,9 +3852,9 @@
       },
       "GraphMutationEnvelopeOut": {
         "properties": {
-          "workflowId": {
+          "graphId": {
             "format": "uuid",
-            "title": "Workflowid",
+            "title": "Graphid",
             "type": "string"
           },
           "revisionId": {
@@ -3621,7 +3869,7 @@
           }
         },
         "required": [
-          "workflowId",
+          "graphId",
           "revisionId",
           "changes",
           "meta"
@@ -3690,7 +3938,7 @@
             ],
             "title": "Sectionrow"
           },
-          "unitUuid": {
+          "workflowUuid": {
             "anyOf": [
               {
                 "format": "uuid",
@@ -3700,7 +3948,7 @@
                 "type": "null"
               }
             ],
-            "title": "Unituuid"
+            "title": "Workflowuuid"
           },
           "threadUuid": {
             "anyOf": [
@@ -3762,6 +4010,82 @@
         "title": "GraphNodesDeltaOut",
         "type": "object"
       },
+      "GraphSectionMutationOut": {
+        "description": "Flat section snapshot for created/updated buckets (aligned with graph read shape).",
+        "properties": {
+          "uuid": {
+            "format": "uuid",
+            "title": "Uuid",
+            "type": "string"
+          },
+          "graphUuid": {
+            "format": "uuid",
+            "title": "Graphuuid",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "threadUuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threaduuid"
+          }
+        },
+        "required": [
+          "uuid",
+          "graphUuid",
+          "title",
+          "position"
+        ],
+        "title": "GraphSectionMutationOut",
+        "type": "object"
+      },
+      "GraphSectionsDeltaOut": {
+        "properties": {
+          "created": {
+            "items": {
+              "$ref": "#/components/schemas/GraphSectionMutationOut"
+            },
+            "title": "Created",
+            "type": "array"
+          },
+          "updated": {
+            "items": {
+              "$ref": "#/components/schemas/GraphSectionMutationOut"
+            },
+            "title": "Updated",
+            "type": "array"
+          },
+          "deleted": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Deleted",
+            "type": "array"
+          }
+        },
+        "required": [
+          "created",
+          "updated",
+          "deleted"
+        ],
+        "title": "GraphSectionsDeltaOut",
+        "type": "object"
+      },
       "GraphTagStubOut": {
         "description": "Placeholder for future tag mutations; buckets remain empty until implemented.",
         "properties": {
@@ -3803,9 +4127,78 @@
         "title": "GraphTagsDeltaOut",
         "type": "object"
       },
-      "GraphNodeCreateIn": {
+      "GraphReorderChannelsIn": {
+        "description": "Full channel order for a graph; every channel on the graph must appear exactly once.",
         "properties": {
-          "sectionUuid": {
+          "channelUuids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Channeluuids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "channelUuids"
+        ],
+        "title": "GraphReorderChannelsIn",
+        "type": "object"
+      },
+      "SectionListMetaOut": {
+        "properties": {
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total"
+        ],
+        "title": "SectionListMetaOut",
+        "type": "object"
+      },
+      "SectionListOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SectionOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/SectionListMetaOut"
+          }
+        },
+        "required": [
+          "items",
+          "meta"
+        ],
+        "title": "SectionListOut",
+        "type": "object"
+      },
+      "SectionOut": {
+        "properties": {
+          "uuid": {
+            "format": "uuid",
+            "title": "Uuid",
+            "type": "string"
+          },
+          "graphUuid": {
+            "format": "uuid",
+            "title": "Graphuuid",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "threadUuid": {
             "anyOf": [
               {
                 "format": "uuid",
@@ -3815,8 +4208,82 @@
                 "type": "null"
               }
             ],
-            "title": "Sectionuuid"
+            "title": "Threaduuid"
           },
+          "dateCreated": {
+            "format": "date-time",
+            "title": "Datecreated",
+            "type": "string"
+          },
+          "modifiedOn": {
+            "format": "date-time",
+            "title": "Modifiedon",
+            "type": "string"
+          }
+        },
+        "required": [
+          "uuid",
+          "graphUuid",
+          "title",
+          "position",
+          "threadUuid",
+          "dateCreated",
+          "modifiedOn"
+        ],
+        "title": "SectionOut",
+        "type": "object"
+      },
+      "GraphSectionCreateIn": {
+        "properties": {
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "position": {
+            "default": 0,
+            "title": "Position",
+            "type": "integer"
+          },
+          "threadUuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threaduuid"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "GraphSectionCreateIn",
+        "type": "object"
+      },
+      "GraphReorderSectionsIn": {
+        "description": "Full section order for a graph; every section on the graph must appear exactly once.",
+        "properties": {
+          "sectionUuids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Sectionuuids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "sectionUuids"
+        ],
+        "title": "GraphReorderSectionsIn",
+        "type": "object"
+      },
+      "GraphChannelInsertBelowIn": {
+        "description": "Insert below channelUuid, or append at end when channelUuid is omitted.",
+        "properties": {
           "channelUuid": {
             "anyOf": [
               {
@@ -3829,18 +4296,53 @@
             ],
             "title": "Channeluuid"
           },
-          "sectionRow": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Sectionrow"
+          "duplicate": {
+            "default": false,
+            "title": "Duplicate",
+            "type": "boolean"
+          }
+        },
+        "title": "GraphChannelInsertBelowIn",
+        "type": "object"
+      },
+      "GraphSectionInsertBelowIn": {
+        "description": "Insert a new section directly below sectionUuid; optionally duplicate title.",
+        "properties": {
+          "sectionUuid": {
+            "format": "uuid",
+            "title": "Sectionuuid",
+            "type": "string"
           },
-          "unitUuid": {
+          "duplicate": {
+            "default": false,
+            "title": "Duplicate",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "sectionUuid"
+        ],
+        "title": "GraphSectionInsertBelowIn",
+        "type": "object"
+      },
+      "GraphNodeCreateIn": {
+        "description": "Placement is required on ``Node`` (ORM); optional ``workflow_uuid`` selects a workflow on this graph.",
+        "properties": {
+          "sectionUuid": {
+            "format": "uuid",
+            "title": "Sectionuuid",
+            "type": "string"
+          },
+          "channelUuid": {
+            "format": "uuid",
+            "title": "Channeluuid",
+            "type": "string"
+          },
+          "sectionRow": {
+            "title": "Sectionrow",
+            "type": "integer"
+          },
+          "workflowUuid": {
             "anyOf": [
               {
                 "format": "uuid",
@@ -3850,9 +4352,14 @@
                 "type": "null"
               }
             ],
-            "title": "Unituuid"
+            "title": "Workflowuuid"
           }
         },
+        "required": [
+          "sectionUuid",
+          "channelUuid",
+          "sectionRow"
+        ],
         "title": "GraphNodeCreateIn",
         "type": "object"
       },
@@ -3893,9 +4400,9 @@
       },
       "ChannelCreateIn": {
         "properties": {
-          "workflowUuid": {
+          "graphUuid": {
             "format": "uuid",
-            "title": "Workflowuuid",
+            "title": "Graphuuid",
             "type": "string"
           },
           "title": {
@@ -3921,7 +4428,7 @@
           }
         },
         "required": [
-          "workflowUuid",
+          "graphUuid",
           "title"
         ],
         "title": "ChannelCreateIn",
@@ -3981,9 +4488,9 @@
       },
       "SectionCreateIn": {
         "properties": {
-          "workflowUuid": {
+          "graphUuid": {
             "format": "uuid",
-            "title": "Workflowuuid",
+            "title": "Graphuuid",
             "type": "string"
           },
           "title": {
@@ -4009,7 +4516,7 @@
           }
         },
         "required": [
-          "workflowUuid",
+          "graphUuid",
           "title"
         ],
         "title": "SectionCreateIn",
@@ -4068,7 +4575,7 @@
         "type": "object"
       },
       "GraphNodePatchIn": {
-        "description": "Send only fields to change; JSON ``null`` clears nullable FKs / section_row.",
+        "description": "Partial update; do not send ``null`` for FK fields (ORM requires section, channel, workflow).",
         "properties": {
           "sectionUuid": {
             "anyOf": [
@@ -4105,7 +4612,7 @@
             ],
             "title": "Sectionrow"
           },
-          "unitUuid": {
+          "workflowUuid": {
             "anyOf": [
               {
                 "format": "uuid",
@@ -4115,7 +4622,7 @@
                 "type": "null"
               }
             ],
-            "title": "Unituuid"
+            "title": "Workflowuuid"
           }
         },
         "title": "GraphNodePatchIn",
@@ -4688,35 +5195,41 @@
         "title": "NotificationItemOutResp",
         "type": "object"
       },
-      "LibraryItemOut": {
+      "LibraryAllowedFiltersOut": {
         "properties": {
-          "objectType": {
-            "title": "Objecttype",
-            "type": "string"
-          },
-          "uuid": {
+          "disciplines": {
+            "items": {
+              "$ref": "#/components/schemas/LibraryDisciplineOptionOut"
+            },
+            "title": "Disciplines",
+            "type": "array"
+          }
+        },
+        "title": "LibraryAllowedFiltersOut",
+        "type": "object"
+      },
+      "LibraryAppliedFiltersOut": {
+        "properties": {
+          "keyword": {
             "anyOf": [
               {
-                "format": "uuid",
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Uuid"
+            "title": "Keyword"
           },
-          "workflowUuid": {
+          "contentType": {
             "anyOf": [
               {
-                "format": "uuid",
-                "type": "string"
+                "$ref": "#/components/schemas/LibraryContentTypeIn"
               },
               {
                 "type": "null"
               }
-            ],
-            "title": "Workflowuuid"
+            ]
           },
           "projectUuid": {
             "anyOf": [
@@ -4730,17 +5243,108 @@
             ],
             "title": "Projectuuid"
           },
-          "unitUuid": {
+          "disciplineIds": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Disciplineids",
+            "type": "array"
+          },
+          "workflowTypes": {
+            "items": {
+              "$ref": "#/components/schemas/WorkflowType"
+            },
+            "title": "Workflowtypes",
+            "type": "array"
+          },
+          "ownership": {
             "anyOf": [
               {
-                "format": "uuid",
-                "type": "string"
+                "$ref": "#/components/schemas/LibraryOwnershipIn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "isFavorite": {
+            "anyOf": [
+              {
+                "type": "boolean"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Unituuid"
+            "title": "Isfavorite"
+          },
+          "isTemplate": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Istemplate"
+          }
+        },
+        "title": "LibraryAppliedFiltersOut",
+        "type": "object"
+      },
+      "LibraryContentTypeIn": {
+        "enum": [
+          "project",
+          "workflow"
+        ],
+        "title": "LibraryContentTypeIn",
+        "type": "string"
+      },
+      "LibraryContentTypeOut": {
+        "enum": [
+          "project",
+          "workflow"
+        ],
+        "title": "LibraryContentTypeOut",
+        "type": "string"
+      },
+      "LibraryDisciplineOptionOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "translationPlural": {
+            "title": "Translationplural",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "translationPlural"
+        ],
+        "title": "LibraryDisciplineOptionOut",
+        "type": "object"
+      },
+      "LibraryItemOut": {
+        "properties": {
+          "uuid": {
+            "format": "uuid",
+            "title": "Uuid",
+            "type": "string"
+          },
+          "contentType": {
+            "$ref": "#/components/schemas/LibraryContentTypeOut"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
           },
           "title": {
             "title": "Title",
@@ -4770,7 +5374,9 @@
           }
         },
         "required": [
-          "objectType",
+          "uuid",
+          "contentType",
+          "label",
           "title",
           "description",
           "dateCreated",
@@ -4798,16 +5404,32 @@
           "resultsPerPage": {
             "title": "Resultsperpage",
             "type": "integer"
+          },
+          "appliedFilters": {
+            "$ref": "#/components/schemas/LibraryAppliedFiltersOut"
+          },
+          "allowed": {
+            "$ref": "#/components/schemas/LibraryAllowedFiltersOut"
           }
         },
         "required": [
           "totalResults",
           "pageCount",
           "currentPage",
-          "resultsPerPage"
+          "resultsPerPage",
+          "appliedFilters",
+          "allowed"
         ],
         "title": "LibraryMetaOut",
         "type": "object"
+      },
+      "LibraryOwnershipIn": {
+        "enum": [
+          "owned",
+          "shared"
+        ],
+        "title": "LibraryOwnershipIn",
+        "type": "string"
       },
       "LibrarySearchOut": {
         "properties": {
@@ -4829,21 +5451,90 @@
         "title": "LibrarySearchOut",
         "type": "object"
       },
-      "LibraryFilterIn": {
+      "LibraryFiltersIn": {
         "properties": {
-          "name": {
-            "title": "Name",
-            "type": "string"
+          "keyword": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Keyword"
           },
-          "value": {
-            "title": "Value"
+          "contentType": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LibraryContentTypeIn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "projectUuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Limit results to workflows whose parent project has this UUID. The project row itself is not included in library results when set.",
+            "title": "Projectuuid"
+          },
+          "disciplineIds": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Disciplineids",
+            "type": "array"
+          },
+          "workflowTypes": {
+            "items": {
+              "$ref": "#/components/schemas/WorkflowType"
+            },
+            "title": "Workflowtypes",
+            "type": "array"
+          },
+          "ownership": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LibraryOwnershipIn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "isFavorite": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isfavorite"
+          },
+          "isTemplate": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Istemplate"
           }
         },
-        "required": [
-          "name",
-          "value"
-        ],
-        "title": "LibraryFilterIn",
+        "title": "LibraryFiltersIn",
         "type": "object"
       },
       "LibraryPaginationIn": {
@@ -4887,16 +5578,12 @@
           "filters": {
             "anyOf": [
               {
-                "items": {
-                  "$ref": "#/components/schemas/LibraryFilterIn"
-                },
-                "type": "array"
+                "$ref": "#/components/schemas/LibraryFiltersIn"
               },
               {
                 "type": "null"
               }
-            ],
-            "title": "Filters"
+            ]
           }
         },
         "title": "LibrarySearchIn",
@@ -4940,6 +5627,48 @@
         ],
         "title": "LibrarySortValueIn",
         "type": "string"
+      },
+      "LibraryFavoriteOut": {
+        "properties": {
+          "userId": {
+            "title": "Userid",
+            "type": "integer"
+          },
+          "uuid": {
+            "format": "uuid",
+            "title": "Uuid",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "userId",
+          "uuid",
+          "message"
+        ],
+        "title": "LibraryFavoriteOut",
+        "type": "object"
+      },
+      "LibraryFavoriteIn": {
+        "properties": {
+          "uuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uuid"
+          }
+        },
+        "title": "LibraryFavoriteIn",
+        "type": "object"
       }
     },
     "securitySchemes": {

@@ -4,7 +4,7 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
-import type { TagEntity } from '../model/types'
+import type { TagEntity } from '../../model/types'
 
 export const tagsAdapter = createEntityAdapter<TagEntity, string>({
   selectId: (t) => t.tagId

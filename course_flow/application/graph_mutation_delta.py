@@ -13,6 +13,12 @@ class GraphMutationDeltaBuilder:
     nodes_created: list[dict] = field(default_factory=list)
     nodes_updated: list[dict] = field(default_factory=list)
     nodes_deleted: list[UUID] = field(default_factory=list)
+    channels_created: list[dict] = field(default_factory=list)
+    channels_updated: list[dict] = field(default_factory=list)
+    channels_deleted: list[UUID] = field(default_factory=list)
+    sections_created: list[dict] = field(default_factory=list)
+    sections_updated: list[dict] = field(default_factory=list)
+    sections_deleted: list[UUID] = field(default_factory=list)
     edges_created: list[dict] = field(default_factory=list)
     edges_updated: list[dict] = field(default_factory=list)
     edges_deleted: list[int] = field(default_factory=list)
@@ -25,6 +31,24 @@ class GraphMutationDeltaBuilder:
 
     def add_node_deleted(self, node_uuid: UUID) -> None:
         self.nodes_deleted.append(node_uuid)
+
+    def add_channel_created(self, payload: dict) -> None:
+        self.channels_created.append(payload)
+
+    def add_channel_updated(self, payload: dict) -> None:
+        self.channels_updated.append(payload)
+
+    def add_channel_deleted(self, channel_uuid: UUID) -> None:
+        self.channels_deleted.append(channel_uuid)
+
+    def add_section_created(self, payload: dict) -> None:
+        self.sections_created.append(payload)
+
+    def add_section_updated(self, payload: dict) -> None:
+        self.sections_updated.append(payload)
+
+    def add_section_deleted(self, section_uuid: UUID) -> None:
+        self.sections_deleted.append(section_uuid)
 
     def add_edge_created(self, payload: dict) -> None:
         self.edges_created.append(payload)
@@ -58,6 +82,16 @@ class GraphMutationDeltaBuilder:
                     "created": list(self.edges_created),
                     "updated": list(self.edges_updated),
                     "deleted": list(self.edges_deleted),
+                },
+                "channels": {
+                    "created": list(self.channels_created),
+                    "updated": list(self.channels_updated),
+                    "deleted": list(self.channels_deleted),
+                },
+                "sections": {
+                    "created": list(self.sections_created),
+                    "updated": list(self.sections_updated),
+                    "deleted": list(self.sections_deleted),
                 },
                 "tags": {
                     "created": [],

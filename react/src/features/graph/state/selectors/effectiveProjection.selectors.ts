@@ -1,13 +1,13 @@
 import { createSelector } from 'reselect'
 
 import type { GraphState } from '../graphState'
-import type { GraphUuid } from '../model/types'
-import { optimisticOpsAdapter } from '../optimisticOps.slice'
 import {
   selectAllEdges,
   selectAllNodes,
   selectGraphState
 } from './canonical.selectors'
+import type { GraphUuid } from '../model/types'
+import { optimisticOpsAdapter } from '../slices/optimisticOps.slice'
 
 const optimisticSelectors = optimisticOpsAdapter.getSelectors(
   (state: { graph: GraphState }) => selectGraphState(state).optimisticOps
@@ -15,9 +15,7 @@ const optimisticSelectors = optimisticOpsAdapter.getSelectors(
 
 export const selectPendingOperations = optimisticSelectors.selectAll
 
-export const selectPendingOperationsByGraphUuid = (
-  graphUuid: GraphUuid
-) =>
+export const selectPendingOperationsByGraphUuid = (graphUuid: GraphUuid) =>
   createSelector([selectPendingOperations], (ops) =>
     ops.filter((op) => op.graphUuid === graphUuid && op.status === 'pending')
   )

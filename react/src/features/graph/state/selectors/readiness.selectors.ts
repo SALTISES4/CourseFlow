@@ -34,15 +34,13 @@ export const selectIsGraphCoreReady = (graphUuid: GraphUuid) =>
 
 export const selectIsWorkflowGraphRenderable = (graphUuid: GraphUuid) =>
   createSelector(
-    [
-      selectIsGraphReady(graphUuid),
-      selectIsGraphCoreReady(graphUuid)
-    ],
+    [selectIsGraphReady(graphUuid), selectIsGraphCoreReady(graphUuid)],
     (graphReady, graphCoreReady) => graphReady && graphCoreReady
   )
 
 // Workflow page can render top-level shell when metadata is available.
-export const canRenderShell = (graphUuid: GraphUuid) => selectIsGraphReady(graphUuid)
+export const canRenderShell = (graphUuid: GraphUuid) =>
+  selectIsGraphReady(graphUuid)
 
 // Channels can render once channel entities are loaded.
 export const canRenderChannels = (graphUuid: GraphUuid) =>

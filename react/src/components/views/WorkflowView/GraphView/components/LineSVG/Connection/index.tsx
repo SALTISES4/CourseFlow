@@ -1,6 +1,9 @@
+import { selectIsDrawingLinkPreview } from '@cf/features/graph/state/selectors/svglink.selectors'
+import {
+  dragEndThunk,
+  svglinkLineEdit
+} from '@cf/features/graph/state/slices/svglink.slice'
 import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
-import { selectIsDrawingLinkPreview } from '@cf/redux/selectors/svglink.selectors'
-import { dragEndThunk, svglinkLineEdit } from '@cf/redux/slices/svglink.slice'
 import { AppDispatch, RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
 import { Position, getSmoothStepPath } from '@xyflow/react'

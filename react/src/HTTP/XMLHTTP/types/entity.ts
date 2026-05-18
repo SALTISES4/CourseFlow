@@ -3,8 +3,6 @@ import { CfObjectType, LibraryObjectType } from '@cf/types/enum'
 import { WorkspaceType } from '@cf/types/enum'
 import { NodeTypeDisplay } from '@cfRedux/types/type'
 
-import { WorkflowType } from '../../../components/pages/Workflow/types'
-
 /*******************************************************
  * 'E' prefix symbolizes 'Entity', this is because these are essentially dumps from the
  * python/django datamodels.

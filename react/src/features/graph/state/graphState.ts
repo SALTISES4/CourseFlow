@@ -8,10 +8,10 @@ import {
   sectionsReducer,
   tagsReducer,
   workflowReducer
-} from './canonical'
-import { graphLoadReducer } from './graphLoad.slice'
-import { graphUiReducer } from './graphUi.slice'
-import { optimisticOpsReducer } from './optimisticOps.slice'
+} from './slices/canonical'
+import { graphLoadReducer } from './slices/graphLoad.slice'
+import { graphUiReducer } from './slices/graphUi.slice'
+import { optimisticOpsReducer } from './slices/optimisticOps.slice'
 
 export const graphCanonicalReducer = combineReducers({
   graph: graphReducer,

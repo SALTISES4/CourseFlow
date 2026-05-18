@@ -1,6 +1,7 @@
 import { type PayloadAction, createSlice } from '@reduxjs/toolkit'
 
-import type { EdgeKey, GraphUiState, ResourceUuid } from './model/types'
+import type { EdgeKey, GraphUiState, ResourceUuid } from '../model/types'
+import type { NodeInsertMode } from '../resolveNodeDropRow'
 
 const initialState: GraphUiState = {
   selectedNodeUuid: null,
@@ -8,6 +9,7 @@ const initialState: GraphUiState = {
   hoveredNodeUuid: null,
   hoveredEdgeId: null,
   activePanel: 'none',
+  nodeInsertMode: 'manual',
   edgeDraft: {
     sourceNodeUuid: null,
     sourcePort: null,
@@ -40,6 +42,9 @@ const graphUiSlice = createSlice({
     },
     setActivePanel(state, action: PayloadAction<GraphUiState['activePanel']>) {
       state.activePanel = action.payload
+    },
+    setNodeInsertMode(state, action: PayloadAction<NodeInsertMode>) {
+      state.nodeInsertMode = action.payload
     },
     setEdgeDraft(state, action: PayloadAction<GraphUiState['edgeDraft']>) {
       state.edgeDraft = action.payload

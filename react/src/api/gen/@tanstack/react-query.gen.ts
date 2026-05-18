@@ -42,6 +42,8 @@ import {
   getProjectGraph,
   getSection,
   getWorkflow,
+  insertGraphChannelBelow,
+  insertGraphSectionBelow,
   libraryItemFavoriteToggle,
   listGraphChannels,
   listGraphEdges,
@@ -62,6 +64,8 @@ import {
   patchMyProfileSettings,
   patchNode,
   register,
+  reorderGraphChannels,
+  reorderGraphSections,
   searchLibrary,
   updateChannel,
   updateProject,
@@ -132,6 +136,10 @@ import type {
   GetSectionResponse,
   GetWorkflowData,
   GetWorkflowResponse,
+  InsertGraphChannelBelowData,
+  InsertGraphChannelBelowResponse,
+  InsertGraphSectionBelowData,
+  InsertGraphSectionBelowResponse,
   LibraryItemFavoriteToggleData,
   LibraryItemFavoriteToggleResponse,
   ListGraphChannelsData,
@@ -172,6 +180,10 @@ import type {
   PatchNodeResponse,
   RegisterData,
   RegisterResponse,
+  ReorderGraphChannelsData,
+  ReorderGraphChannelsResponse,
+  ReorderGraphSectionsData,
+  ReorderGraphSectionsResponse,
   SearchLibraryData,
   SearchLibraryResponse,
   UpdateChannelData,
@@ -728,6 +740,60 @@ export const listGraphChannelsOptions = (
     queryKey: listGraphChannelsQueryKey(options)
   })
 
+/**
+ * Insert Graph Channel Below
+ */
+export const insertGraphChannelBelowMutation = (
+  options?: Partial<Options<InsertGraphChannelBelowData>>
+): UseMutationOptions<
+  InsertGraphChannelBelowResponse,
+  DefaultError,
+  Options<InsertGraphChannelBelowData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    InsertGraphChannelBelowResponse,
+    DefaultError,
+    Options<InsertGraphChannelBelowData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await insertGraphChannelBelow({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Reorder Graph Channels
+ */
+export const reorderGraphChannelsMutation = (
+  options?: Partial<Options<ReorderGraphChannelsData>>
+): UseMutationOptions<
+  ReorderGraphChannelsResponse,
+  DefaultError,
+  Options<ReorderGraphChannelsData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    ReorderGraphChannelsResponse,
+    DefaultError,
+    Options<ReorderGraphChannelsData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await reorderGraphChannels({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
 export const listGraphSectionsQueryKey = (
   options: Options<ListGraphSectionsData>
 ) => createQueryKey('listGraphSections', options)
@@ -773,6 +839,60 @@ export const createGraphSectionMutation = (
   > = {
     mutationFn: async (fnOptions) => {
       const { data } = await createGraphSection({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Insert Graph Section Below
+ */
+export const insertGraphSectionBelowMutation = (
+  options?: Partial<Options<InsertGraphSectionBelowData>>
+): UseMutationOptions<
+  InsertGraphSectionBelowResponse,
+  DefaultError,
+  Options<InsertGraphSectionBelowData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    InsertGraphSectionBelowResponse,
+    DefaultError,
+    Options<InsertGraphSectionBelowData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await insertGraphSectionBelow({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Reorder Graph Sections
+ */
+export const reorderGraphSectionsMutation = (
+  options?: Partial<Options<ReorderGraphSectionsData>>
+): UseMutationOptions<
+  ReorderGraphSectionsResponse,
+  DefaultError,
+  Options<ReorderGraphSectionsData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    ReorderGraphSectionsResponse,
+    DefaultError,
+    Options<ReorderGraphSectionsData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await reorderGraphSections({
         ...options,
         ...fnOptions,
         throwOnError: true

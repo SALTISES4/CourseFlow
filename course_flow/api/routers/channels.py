@@ -4,8 +4,12 @@ from ninja import Router
 from ninja.errors import HttpError
 
 from course_flow.api.auth import BearerAuth, get_current_user
-from course_flow.api.common.schemas import SuccessOut
-from course_flow.api.deps import get_channel_service, get_workflow_service
+from course_flow.api.deps import (
+    get_channel_service,
+    get_graph_mutation_service,
+    get_workflow_service,
+)
+from course_flow.api.graph_common import graph_mutation_http
 from course_flow.api.permissions import can_view_graph
 from course_flow.api.schemas.channels import (
     ChannelCreateIn,
@@ -14,6 +18,11 @@ from course_flow.api.schemas.channels import (
     ChannelOut,
     ChannelOutResp,
     ChannelPatchIn,
+)
+from course_flow.api.schemas.graph_mutation import (
+    GraphChannelInsertBelowIn,
+    GraphMutationEnvelopeOut,
+    GraphReorderChannelsIn,
 )
 from course_flow.application.dto import ChannelDTO
 
@@ -58,6 +67,45 @@ def list_graph_channels(request, uuid: UUID):
     items = [_channel_out(r) for r in rows]
 
     return ChannelListOut(items=items, meta=ChannelListMetaOut(total=len(items)))
+
+
+@graph_collection_router.post(
+    "/{uuid}/channels/insert-below",
+    response=GraphMutationEnvelopeOut,
+    auth=BearerAuth(),
+    operation_id="insertGraphChannelBelow",
+)
+def insert_graph_channel_below(
+    request, uuid: UUID, payload: GraphChannelInsertBelowIn
+):
+    current_user = get_current_user(request)
+    _ensure_graph_owner(uuid, current_user)
+    svc = get_graph_mutation_service()
+    out, err = svc.insert_channel_below(
+        graph_uuid=uuid,
+        user_id=current_user.id,
+        channel_uuid=payload.channel_uuid,
+        duplicate=payload.duplicate,
+    )
+    return graph_mutation_http(out, err)
+
+
+@graph_collection_router.put(
+    "/{uuid}/channels/order",
+    response=GraphMutationEnvelopeOut,
+    auth=BearerAuth(),
+    operation_id="reorderGraphChannels",
+)
+def reorder_graph_channels(request, uuid: UUID, payload: GraphReorderChannelsIn):
+    current_user = get_current_user(request)
+    _ensure_graph_owner(uuid, current_user)
+    svc = get_graph_mutation_service()
+    out, err = svc.reorder_channels(
+        graph_uuid=uuid,
+        user_id=current_user.id,
+        channel_uuids=payload.channel_uuids,
+    )
+    return graph_mutation_http(out, err)
 
 
 @resource_router.post(
@@ -128,7 +176,7 @@ def update_channel(request, uuid: UUID, payload: ChannelPatchIn):
 
 @resource_router.delete(
     "/{uuid}",
-    response=SuccessOut,
+    response=GraphMutationEnvelopeOut,
     auth=BearerAuth(),
     operation_id="deleteChannel",
 )
@@ -146,9 +194,9 @@ def delete_channel(request, uuid: UUID):
     if not can_view_graph(current_user=current_user, graph=wf):
         raise HttpError(403, "Forbidden")
 
-    deleted = get_channel_service().delete(uuid)
-
-    if not deleted:
-        raise HttpError(404, "Channel not found")
-
-    return SuccessOut()
+    svc = get_graph_mutation_service()
+    payload, err = svc.delete_channel(
+        user_id=current_user.id,
+        channel_uuid=uuid,
+    )
+    return graph_mutation_http(payload, err)

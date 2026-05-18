@@ -4,7 +4,7 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
-import type { EdgeEntity, EdgeKey, GraphUuid } from '../model/types'
+import type { EdgeEntity, EdgeKey, GraphUuid } from '../../model/types'
 
 export const edgesAdapter = createEntityAdapter<EdgeEntity, EdgeKey>({
   selectId: (e) => e.edgeId

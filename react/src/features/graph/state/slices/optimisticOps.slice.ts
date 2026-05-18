@@ -4,7 +4,7 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
-import type { GraphUuid, PendingGraphOperation } from './model/types'
+import type { GraphUuid, PendingGraphOperation } from '../model/types'
 
 export const optimisticOpsAdapter = createEntityAdapter<
   PendingGraphOperation,
