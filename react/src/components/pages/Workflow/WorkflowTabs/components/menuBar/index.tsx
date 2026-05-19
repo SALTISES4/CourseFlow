@@ -145,7 +145,7 @@ const ExpandCollapseMenu = ({ legend }: { legend?: ReactElement }) => {
   const workflowViewType = useWorkflowViewTypeFromRoute()
   const { expandAll, collapseAll } = useMenuActions()
   const [expanded, setExpanded] = useState({
-    [CfObjectType.WEEK]: true,
+    [CfObjectType.SECTION]: true,
     [CfObjectType.NODE]: true,
     [CfObjectType.OUTCOME]: true
   })
@@ -187,8 +187,8 @@ const ExpandCollapseMenu = ({ legend }: { legend?: ReactElement }) => {
         <FormControlLabel
           control={
             <Switch
-              value={CfObjectType.WEEK}
-              checked={expanded[CfObjectType.WEEK]}
+              value={CfObjectType.SECTION}
+              checked={expanded[CfObjectType.SECTION]}
               onChange={onExpandChange}
               inputProps={{ 'aria-label': 'controlled' }}
             />

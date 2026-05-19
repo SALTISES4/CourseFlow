@@ -1,5 +1,5 @@
-import { SliceNamespace } from '../../../redux/types/enum'
 import { CfObjectType } from '@cf/types/enum'
+import { SliceNamespace } from '@cfRedux/types/enum'
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 export type SidebarState = {

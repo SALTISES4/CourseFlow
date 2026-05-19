@@ -27,8 +27,8 @@ export enum CFRoutes {
   PROJECT_WORKFLOW = `/project/:uuid/workflows`,
   WORKFLOW = `/workflow/:uuid`,
   WORKFLOW_GRAPH = `/workflow/:uuid/${RelativeRoutes.GRAPH}`,
-  WORKFLOW_ALIGNMENT_ANALYSIS = `/workflow/:uuid/${RelativeRoutes.ALIGNMENT_ANALYSIS}`,
-  WORKFLOW_OUTCOME_TABLE = `/workflow/:uuid/${RelativeRoutes.OUTCOME_TABLE}`,
   WORKFLOW_OUTCOME_EDIT = `/workflow/:uuid/${RelativeRoutes.OUTCOME_EDIT}`,
-  WORKFLOW_GRID = `/workflow/:uuid/${RelativeRoutes.GRID}`
+  WORKFLOW_ALIGNMENT_ANALYSIS = `/workflow/:uuid/${RelativeRoutes.ALIGNMENT_ANALYSIS}`, // @todo
+  WORKFLOW_OUTCOME_TABLE = `/workflow/:uuid/${RelativeRoutes.OUTCOME_TABLE}`, // @todo
+  WORKFLOW_GRID = `/workflow/:uuid/${RelativeRoutes.GRID}` // @todo
 }

@@ -5,7 +5,7 @@ import { MouseEventHandler, ReactNode, useState } from 'react'
 
 import { StyledButton, StyledMenu } from './styles'
 
-export type MenuButtonOption = {
+type MenuButtonOption = {
   name: string | 'mui-divider'
   label?: string
   onClick?: () => void

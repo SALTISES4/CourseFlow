@@ -19,8 +19,3 @@ export enum WorkflowType {
   COURSE = 'course',
   TASK = 'task'
 }
-
-export enum WorkflowContext {
-  WORKFLOW = 'workflow',
-  COMPARISON = 'comparison'
-}

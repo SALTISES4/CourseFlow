@@ -2,8 +2,7 @@ import { DraggableType } from '@cf/components/views/WorkflowView/GraphView/types
 import type { ChannelEntity } from '@cf/features/graph/state/model/types'
 import { defaultColumnSettings } from '@cf/utility/constants'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
-
-import { AddTabType } from '../../types'
+import { AddTabType } from '@cfPages/Workflow/Sidebar/types'
 
 const CYCLIC_DEFAULT_COLUMN_TYPES: number[] = Object.keys(defaultColumnSettings)
   .filter((key) => typeof key !== 'symbol' && key !== 'new-column')

@@ -60,7 +60,7 @@ function getTabContent(
 const objectTypesWithComments: CfObjectType[] = [
   CfObjectType.NODE,
   CfObjectType.COLUMN,
-  CfObjectType.WEEK,
+  CfObjectType.SECTION,
   CfObjectType.OUTCOME
 ]
 
