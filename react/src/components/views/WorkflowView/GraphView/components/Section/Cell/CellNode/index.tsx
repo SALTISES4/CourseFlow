@@ -34,6 +34,7 @@ const SectionCellNode = ({
   const dnd = useCellNodeDnd({
     wrapRef,
     nodeId,
+    graphUuid: node?.graphUuid ?? '',
     columnId,
     coordsSection,
     coordsX,
@@ -58,10 +59,6 @@ const SectionCellNode = ({
 
   const edgeIndicator = highlight !== 'cell' && highlight
 
-  const legacyOutcomes = node
-    ? (node as unknown as { outcomenodeSet?: number[] }).outcomenodeSet
-    : undefined
-
   if (!node) {
     return null
   }
@@ -75,12 +72,22 @@ const SectionCellNode = ({
         dropHighlight={dnd.dropHighlight}
         dragging={dnd.dragging}
       >
-        {!dnd.dragging && <HoverMenu nodeId={nodeId} nodeRef={wrapRef} />}
+        {!dnd.dragging && (
+          <HoverMenu
+            nodeId={nodeId}
+            graphUuid={node.graphUuid}
+            nodeRef={wrapRef}
+          />
+        )}
 
-        {!!legacyOutcomes?.length && (
+        {node.outcomeUuids.length > 0 && (
           <LinkedOutcomes
-            parent={{ uuid: nodeId, type: SectionCellType.NODE }}
-            outcomes={legacyOutcomes}
+            parent={{
+              uuid: nodeId,
+              type: SectionCellType.NODE,
+              graphUuid: node.graphUuid
+            }}
+            outcomes={node.outcomeUuids}
             highlight={highlighted}
           />
         )}
@@ -88,8 +95,7 @@ const SectionCellNode = ({
         <StyledNode.Border style={{ backgroundColor: borderColor }} />
         <StyledNode.Content onClick={onNodeClicked}>
           <StyledNode.Title variant="body2">
-            {(node as unknown as { title?: string }).title || _t('Blank title')}{' '}
-            <br />
+            {node.title || _t('Blank title')} <br />
             <small>{`#${nodeId}, row: ${node.sectionRow ?? '?'}`}</small>
           </StyledNode.Title>
           <Meta

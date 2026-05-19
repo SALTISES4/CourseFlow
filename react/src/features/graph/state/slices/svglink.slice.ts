@@ -1,4 +1,4 @@
-import { SliceNamespace } from '@cfRedux/types/enumActions'
+import { SliceNamespace } from '../../../../redux/types/enum'
 import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit'
 import { Position } from '@xyflow/react'
 

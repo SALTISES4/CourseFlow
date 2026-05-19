@@ -11,6 +11,8 @@ export const zHealthResponse = z.object({
 
 /**
  * WorkflowType
+ *
+ * Root graph workflow semantic layer (``task`` is not a valid root type).
  */
 export const zWorkflowType = z.enum(['program', 'course', 'activity', 'task'])
 
@@ -200,8 +202,10 @@ export const zWorkflowDetailOut = z.object({
 
 /**
  * WorkflowTypeIn
+ *
+ * Allowed root graph workflow types (``task`` is only valid on grid nodes).
  */
-export const zWorkflowTypeIn = z.enum(['program', 'course', 'activity', 'task'])
+export const zWorkflowTypeIn = z.enum(['program', 'course', 'activity'])
 
 /**
  * WorkflowCreateIn
@@ -308,6 +312,15 @@ export const zGraphMetaOut = z.object({
  */
 export const zNodeGraphOut = z.object({
   uuid: z.string().uuid(),
+  nodeType: z.string(),
+  title: z.string().optional().default(''),
+  description: z.string().optional().default(''),
+  contextClassification: z.number().int().nullish(),
+  taskClassification: z.number().int().nullish(),
+  timeRequired: z.number().nullish(),
+  timeUnits: z.number().int().nullish(),
+  representsWorkflow: z.boolean().optional().default(false),
+  tagIds: z.array(z.number().int()).optional(),
   sectionUuid: z.string().uuid().nullish(),
   channelUuid: z.string().uuid().nullish(),
   sectionRow: z.number().int().nullish(),
@@ -457,6 +470,15 @@ export const zGraphMutationMetaOut = z.object({
  */
 export const zGraphNodeMutationOut = z.object({
   uuid: z.string().uuid(),
+  nodeType: z.string(),
+  title: z.string().optional().default(''),
+  description: z.string().optional().default(''),
+  contextClassification: z.number().int().nullish(),
+  taskClassification: z.number().int().nullish(),
+  timeRequired: z.number().nullish(),
+  timeUnits: z.number().int().nullish(),
+  representsWorkflow: z.boolean().optional().default(false),
+  tagIds: z.array(z.number().int()).optional(),
   sectionUuid: z.string().uuid().nullish(),
   channelUuid: z.string().uuid().nullish(),
   sectionRow: z.number().int().nullish(),
@@ -536,6 +558,16 @@ export const zGraphMutationEnvelopeOut = z.object({
 })
 
 /**
+ * GraphChannelInsertBelowIn
+ *
+ * Insert below ``channel_uuid``, or append at end when ``channel_uuid`` is omitted.
+ */
+export const zGraphChannelInsertBelowIn = z.object({
+  channelUuid: z.string().uuid().nullish(),
+  duplicate: z.boolean().optional().default(false)
+})
+
+/**
  * GraphReorderChannelsIn
  *
  * Full channel order for a graph; every channel on the graph must appear exactly once.
@@ -582,32 +614,22 @@ export const zGraphSectionCreateIn = z.object({
 })
 
 /**
+ * GraphSectionInsertBelowIn
+ *
+ * Insert a new section directly below ``section_uuid``; optionally duplicate title.
+ */
+export const zGraphSectionInsertBelowIn = z.object({
+  sectionUuid: z.string().uuid(),
+  duplicate: z.boolean().optional().default(false)
+})
+
+/**
  * GraphReorderSectionsIn
  *
  * Full section order for a graph; every section on the graph must appear exactly once.
  */
 export const zGraphReorderSectionsIn = z.object({
   sectionUuids: z.array(z.string().uuid())
-})
-
-/**
- * GraphChannelInsertBelowIn
- *
- * Insert below channelUuid, or append at end when channelUuid is omitted.
- */
-export const zGraphChannelInsertBelowIn = z.object({
-  channelUuid: z.string().uuid().nullish(),
-  duplicate: z.boolean().optional().default(false)
-})
-
-/**
- * GraphSectionInsertBelowIn
- *
- * Insert a new section directly below sectionUuid; optionally duplicate title.
- */
-export const zGraphSectionInsertBelowIn = z.object({
-  sectionUuid: z.string().uuid(),
-  duplicate: z.boolean().optional().default(false)
 })
 
 /**
@@ -620,6 +642,31 @@ export const zGraphNodeCreateIn = z.object({
   channelUuid: z.string().uuid(),
   sectionRow: z.number().int(),
   workflowUuid: z.string().uuid().nullish()
+})
+
+/**
+ * GraphNodeInsertBelowIn
+ *
+ * Insert a node below ``node_uuid``; backend computes grid reflow.
+ */
+export const zGraphNodeInsertBelowIn = z.object({
+  nodeUuid: z.string().uuid(),
+  mode: z.string(),
+  duplicate: z.boolean().optional().default(false),
+  edge: z.string().nullish()
+})
+
+/**
+ * GraphNodePlaceIn
+ *
+ * Place a new node on the grid (sidebar / row drop); backend computes reflow.
+ */
+export const zGraphNodePlaceIn = z.object({
+  sectionUuid: z.string().uuid(),
+  channelUuid: z.string().uuid(),
+  rowHint: z.number().int(),
+  mode: z.string(),
+  edge: z.string().nullish()
 })
 
 /**
@@ -695,6 +742,51 @@ export const zGraphNodePatchIn = z.object({
   channelUuid: z.string().uuid().nullish(),
   sectionRow: z.number().int().nullish(),
   workflowUuid: z.string().uuid().nullish()
+})
+
+/**
+ * GraphNodeLinkOutcomeIn
+ */
+export const zGraphNodeLinkOutcomeIn = z.object({
+  outcomeUuid: z.string().uuid()
+})
+
+/**
+ * GraphNodeMetaPatchIn
+ *
+ * Editable node metadata (grid placement and ``node_type`` are not patchable here).
+ */
+export const zGraphNodeMetaPatchIn = z.object({
+  title: z.string().nullish(),
+  description: z.string().nullish(),
+  contextClassification: z.number().int().nullish(),
+  taskClassification: z.number().int().nullish(),
+  timeRequired: z.number().nullish(),
+  timeUnits: z.number().int().nullish(),
+  representsWorkflow: z.boolean().nullish(),
+  tagIds: z.array(z.number().int()).nullish()
+})
+
+/**
+ * GraphNodeLinkWorkflowIn
+ *
+ * Point a grid node at a library workflow (or clear link back to the graph root workflow).
+ */
+export const zGraphNodeLinkWorkflowIn = z.object({
+  workflowUuid: z.string().uuid().nullish()
+})
+
+/**
+ * GraphNodeMoveIn
+ *
+ * Move an existing node; backend computes sibling row/channel updates.
+ */
+export const zGraphNodeMoveIn = z.object({
+  toSectionUuid: z.string().uuid(),
+  toChannelUuid: z.string().uuid(),
+  rowHint: z.number().int(),
+  mode: z.string(),
+  edge: z.string().nullish()
 })
 
 /**
@@ -1414,6 +1506,32 @@ export const zCreateGraphNodeData = z.object({
  */
 export const zCreateGraphNodeResponse = zGraphMutationEnvelopeOut
 
+export const zInsertGraphNodeBelowData = z.object({
+  body: zGraphNodeInsertBelowIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zInsertGraphNodeBelowResponse = zGraphMutationEnvelopeOut
+
+export const zPlaceGraphNodeData = z.object({
+  body: zGraphNodePlaceIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zPlaceGraphNodeResponse = zGraphMutationEnvelopeOut
+
 export const zListGraphEdgesData = z.object({
   body: z.never().optional(),
   path: z.object({
@@ -1580,6 +1698,71 @@ export const zPatchNodeData = z.object({
  * OK
  */
 export const zPatchNodeResponse = zGraphMutationEnvelopeOut
+
+export const zLinkNodeOutcomeData = z.object({
+  body: zGraphNodeLinkOutcomeIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zLinkNodeOutcomeResponse = zGraphMutationEnvelopeOut
+
+export const zUnlinkNodeOutcomeData = z.object({
+  body: zGraphNodeLinkOutcomeIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zUnlinkNodeOutcomeResponse = zGraphMutationEnvelopeOut
+
+export const zPatchNodeMetaData = z.object({
+  body: zGraphNodeMetaPatchIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zPatchNodeMetaResponse = zGraphMutationEnvelopeOut
+
+export const zLinkNodeWorkflowData = z.object({
+  body: zGraphNodeLinkWorkflowIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zLinkNodeWorkflowResponse = zGraphMutationEnvelopeOut
+
+export const zMoveGraphNodeData = z.object({
+  body: zGraphNodeMoveIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zMoveGraphNodeResponse = zGraphMutationEnvelopeOut
 
 export const zDeleteEdgeData = z.object({
   body: z.never().optional(),

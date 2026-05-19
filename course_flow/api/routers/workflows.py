@@ -57,13 +57,16 @@ def _workflow_list_item(dto: WorkflowDTO) -> WorkflowListItemOut:
 def create_workflow(request, payload: WorkflowCreateIn):
     current_user = get_current_user(request)
     svc = get_workflow_service()
-    dto = svc.create(
-        author_id=current_user.id,
-        project_id=payload.project_id,
-        title=payload.title,
-        workflow_type=payload.workflow_type.value,
-        description=payload.description,
-    )
+    try:
+        dto = svc.create(
+            author_id=current_user.id,
+            project_id=payload.project_id,
+            title=payload.title,
+            workflow_type=payload.workflow_type.value,
+            description=payload.description,
+        )
+    except ValueError as exc:
+        raise HttpError(422, str(exc)) from exc
     return _workflow_detail(dto)
 
 

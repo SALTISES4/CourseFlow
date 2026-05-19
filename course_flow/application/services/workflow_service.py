@@ -3,6 +3,10 @@ from uuid import UUID
 
 from course_flow.application.dto import WorkflowDTO
 from course_flow.application.ports import WorkflowRepositoryPort
+from course_flow.core.hierarchy import (
+    InvalidWorkflowTypeError,
+    assert_allowed_root_workflow_type,
+)
 
 
 class WorkflowService:
@@ -18,6 +22,10 @@ class WorkflowService:
         workflow_type: str,
         description: str = "",
     ) -> WorkflowDTO:
+        try:
+            assert_allowed_root_workflow_type(workflow_type)
+        except InvalidWorkflowTypeError as exc:
+            raise ValueError(str(exc)) from exc
 
         return self._repository.create(
             author_id=author_id,

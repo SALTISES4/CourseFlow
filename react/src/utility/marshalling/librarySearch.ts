@@ -2,7 +2,7 @@
  * Maps CourseFlow v2 `POST /api/library/search` JSON to the legacy library
  * envelope expected by LibrarySearchView / Sidebar (`dataPackage` + `ELibraryObject`).
  */
-import { LibrarySearchIn } from '@cf/api/gen'
+import { LibraryItemOut, LibrarySearchIn } from '@cf/api/gen'
 import { ObjectPermission } from '@cf/types/common'
 import { LibraryObjectType } from '@cf/types/enum'
 import { ELibraryObject, EUser } from '@XMLHTTP/types/entity'
@@ -19,21 +19,6 @@ export type LibraryObjectsSearchQueryResp = {
   }
 }
 
-/**
- * Raw item from Django Ninja `LibraryItemOut`
- *  */
-export type LibraryItemRaw = {
-  uuid: string
-  content_type: 'project' | 'workflow'
-  label: string
-  title: string
-  description: string
-  date_created: string
-  modified_on: string
-  is_template: boolean
-  is_favorite: boolean
-}
-
 export type LibrarySearchMetaRaw = {
   total_results: number
   page_count: number
@@ -42,7 +27,7 @@ export type LibrarySearchMetaRaw = {
 }
 
 export type LibrarySearchResponseRaw = {
-  items: LibraryItemRaw[]
+  items: LibraryItemOut[]
   meta: LibrarySearchMetaRaw
 }
 
@@ -76,9 +61,9 @@ export function mapObjectTypeToLibraryObjectType(
  * (matches `useNavigateToLibraryItem` + workflow routes).
  */
 export function mapLibraryItemToELibraryObject(
-  item: LibraryItemRaw
+  item: LibraryItemOut
 ): ELibraryObject {
-  const isProject = item.content_type === 'project'
+  const isProject = item.contentType === 'project'
   const id = String(item.uuid ?? '')
 
   return {
@@ -86,16 +71,16 @@ export function mapLibraryItemToELibraryObject(
     hash: '',
     deleted: false,
     deletedOn: '',
-    createdOn: item.date_created,
-    lastModified: item.modified_on,
+    createdOn: item.dateCreated,
+    lastModified: item.modifiedOn,
     title: item.title,
     description: item.description ?? '',
     author: emptyAuthor(),
-    favourite: item.is_favorite,
+    favourite: item.isFavorite,
     published: false,
     type: isProject
       ? LibraryObjectType.PROJECT
-      : mapObjectTypeToLibraryObjectType(item.content_type, item.label),
+      : mapObjectTypeToLibraryObjectType(item.contentType, item.label),
     isOwned: true,
     isStrategy: false,
     projectTitle: '',
@@ -103,7 +88,7 @@ export function mapLibraryItemToELibraryObject(
     workflowCount: 0,
     isLinked: false,
     isVisible: true,
-    isTemplate: item.is_template
+    isTemplate: item.isTemplate
   }
 }
 

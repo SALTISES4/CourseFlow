@@ -2,7 +2,8 @@ export type LinkedOutcomesPropsType = {
   parent: {
     uuid: string
     type: 'node' | 'outcome'
+    graphUuid?: string
   }
-  outcomes: number[]
+  outcomes: string[]
   highlight?: boolean
 }

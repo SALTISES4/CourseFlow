@@ -8,7 +8,8 @@ from django.test import Client
 from django.utils import timezone
 
 from course_flow.core.auth import generate_raw_token, hash_token
-from course_flow.core.enum import WorkflowType
+from course_flow.core.enum import NodeType, WorkflowType
+from course_flow.core.hierarchy import child_node_type_value_for_workflow
 from course_flow.core.models import (
     Authtoken,
     Channel,
@@ -91,8 +92,8 @@ def test_project_detail_includes_workflow_list_metadata(client: Client, user):
         "/api/workflow",
         data={
             "projectId": project.id,
-            "title": "Task Workflow",
-            "workflowType": "task",
+            "title": "Course Workflow",
+            "workflowType": "course",
             "description": "",
         },
         content_type="application/json",
@@ -107,9 +108,9 @@ def test_project_detail_includes_workflow_list_metadata(client: Client, user):
     assert "workflows" in item
     assert len(item["workflows"]) == 1
     workflow = item["workflows"][0]
-    assert workflow["title"] == "Task Workflow"
+    assert workflow["title"] == "Course Workflow"
     assert workflow["description"] == ""
-    assert workflow["workflowType"] == "task"
+    assert workflow["workflowType"] == "course"
     assert workflow["isFavorite"] is False
 
 
@@ -129,7 +130,11 @@ def test_create_invariants_auto_create_threads_and_workflow_meta(user):
     channel = Channel.objects.create(graph=g, title="C", position=0)
     section = Section.objects.create(graph=g, title="S", position=0)
     node = Node.objects.create(
-        section=section, channel=channel, workflow=workflow, section_row=0
+        section=section,
+        channel=channel,
+        workflow=workflow,
+        section_row=0,
+        node_type=child_node_type_value_for_workflow(workflow.workflow_type),
     )
     outcome = Outcome.objects.create(graph=g)
 
@@ -137,3 +142,5 @@ def test_create_invariants_auto_create_threads_and_workflow_meta(user):
     assert section.thread_id is not None
     assert node.thread_id is not None
     assert outcome.thread_id is not None
+    assert node.node_type == NodeType.TASK
+    assert hasattr(node, "taskmeta")

@@ -6,10 +6,18 @@ import {
   deleteSection,
   getGraphView,
   insertGraphChannelBelow,
+  insertGraphNodeBelow,
   insertGraphSectionBelow,
+  linkNodeOutcome as linkNodeOutcomeSdk,
+  linkNodeWorkflow as linkNodeWorkflowSdk,
+  moveGraphNode,
   patchNode,
+  patchNodeMeta,
+  placeGraphNode,
   reorderGraphChannels,
-  reorderGraphSections
+  reorderGraphSections,
+  unlinkNodeOutcome as unlinkNodeOutcomeSdk,
+  updateSection
 } from '@cf/api/gen/sdk.gen'
 import type {
   GraphChannelMutationOut,
@@ -19,10 +27,14 @@ import type {
   GraphNodeMutationOut,
   GraphSectionMutationOut,
   GraphTagStubOut,
-  GraphViewOut
+  GraphViewOut,
+  SectionOut,
+  SectionOutResp
 } from '@cf/api/gen/types.gen'
 
 import type {
+  ChangeNodeMetaInput,
+  ChangeSectionMetaInput,
   ChannelEntity,
   CreateEdgeInput,
   DeleteChannelInput,
@@ -34,14 +46,20 @@ import type {
   GraphMutationEnvelope,
   GraphUuid,
   InsertChannelBelowInput,
+  InsertNodeBelowInput,
   InsertSectionBelowInput,
+  LinkNodeOutcomeInput,
+  LinkNodeWorkflowInput,
+  MoveNodeGridInput,
   MoveNodeInput,
   NodeEntity,
+  PlaceNodeInput,
   RenameNodeInput,
   ReorderChannelsInput,
   ReorderSectionsInput,
   SectionEntity,
   TagEntity,
+  UnlinkNodeOutcomeInput,
   WorkflowEntity
 } from './model/types'
 
@@ -120,6 +138,8 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
 
   const nodes: NodeEntity[] = view.nodes.map((node) => ({
     uuid: node.uuid,
+    nodeType: node.nodeType,
+    ...mapNodeMetaFromApi(node),
     graphUuid,
     sectionUuid: node.sectionUuid ?? null,
     channelUuid: node.channelUuid ?? null,
@@ -162,6 +182,38 @@ export const fetchWorkflowGraphBundle = async (
   return mapViewToBundle(view)
 }
 
+function mapNodeMetaFromApi(node: {
+  title?: string
+  description?: string
+  contextClassification?: number | null
+  taskClassification?: number | null
+  timeRequired?: number | null
+  timeUnits?: number | null
+  representsWorkflow?: boolean
+  tagIds?: number[]
+}): Pick<
+  NodeEntity,
+  | 'title'
+  | 'description'
+  | 'contextClassification'
+  | 'taskClassification'
+  | 'timeRequired'
+  | 'timeUnits'
+  | 'representsWorkflow'
+  | 'tagIds'
+> {
+  return {
+    title: node.title ?? '',
+    description: node.description ?? '',
+    contextClassification: node.contextClassification ?? null,
+    taskClassification: node.taskClassification ?? null,
+    timeRequired: node.timeRequired ?? null,
+    timeUnits: node.timeUnits ?? null,
+    representsWorkflow: node.representsWorkflow ?? false,
+    tagIds: node.tagIds ?? []
+  }
+}
+
 // Tags are not returned from the graph view projection; keep a seam for a dedicated loader later.
 export const fetchWorkflowTags = async (
   _graphUuid: GraphUuid
@@ -199,6 +251,8 @@ function mapMutationNode(
 ): NodeEntity {
   return {
     uuid: node.uuid,
+    nodeType: node.nodeType,
+    ...mapNodeMetaFromApi(node),
     graphUuid,
     sectionUuid: node.sectionUuid ?? null,
     channelUuid: node.channelUuid ?? null,
@@ -305,6 +359,121 @@ export const moveNodeCommand = async (
       sectionUuid: input.sectionUuid,
       channelUuid: input.channelUuid,
       sectionRow: input.sectionRow
+    }
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const moveNodeGridCommand = async (
+  input: MoveNodeGridInput
+): Promise<GraphMutationEnvelope> => {
+  const result = await moveGraphNode({
+    path: { uuid: String(input.nodeUuid) },
+    body: {
+      toSectionUuid: input.toSectionUuid,
+      toChannelUuid: input.toChannelUuid,
+      rowHint: input.rowHint,
+      mode: input.mode,
+      edge: input.edge
+    }
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const linkNodeWorkflowCommand = async (
+  input: LinkNodeWorkflowInput
+): Promise<GraphMutationEnvelope> => {
+  const result = await linkNodeWorkflowSdk({
+    path: { uuid: String(input.nodeUuid) },
+    body: {
+      workflowUuid: input.workflowUuid
+    }
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const linkNodeOutcomeCommand = async (
+  input: LinkNodeOutcomeInput
+): Promise<GraphMutationEnvelope> => {
+  const result = await linkNodeOutcomeSdk({
+    path: { uuid: String(input.nodeUuid) },
+    body: { outcomeUuid: input.outcomeUuid }
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const unlinkNodeOutcomeCommand = async (
+  input: UnlinkNodeOutcomeInput
+): Promise<GraphMutationEnvelope> => {
+  const result = await unlinkNodeOutcomeSdk({
+    path: { uuid: String(input.nodeUuid) },
+    body: { outcomeUuid: input.outcomeUuid }
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const changeNodeMetaCommand = async (
+  input: ChangeNodeMetaInput
+): Promise<GraphMutationEnvelope> => {
+  const { meta } = input
+  const body: Record<string, unknown> = {}
+  if (meta.title !== undefined) {
+    body.title = meta.title
+  }
+  if (meta.description !== undefined) {
+    body.description = meta.description
+  }
+  if (meta.contextClassification !== undefined) {
+    body.contextClassification = meta.contextClassification
+  }
+  if (meta.taskClassification !== undefined) {
+    body.taskClassification = meta.taskClassification
+  }
+  if (meta.timeRequired !== undefined) {
+    body.timeRequired = meta.timeRequired
+  }
+  if (meta.timeUnits !== undefined) {
+    body.timeUnits = meta.timeUnits
+  }
+  if (meta.representsWorkflow !== undefined) {
+    body.representsWorkflow = meta.representsWorkflow
+  }
+  if (meta.tagIds !== undefined) {
+    body.tagIds = meta.tagIds
+  }
+  const result = await patchNodeMeta({
+    path: { uuid: String(input.nodeUuid) },
+    body: body as never
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const insertNodeBelowCommand = async (
+  input: InsertNodeBelowInput
+): Promise<GraphMutationEnvelope> => {
+  const result = await insertGraphNodeBelow({
+    path: { uuid: String(input.graphUuid) },
+    body: {
+      nodeUuid: input.nodeUuid,
+      mode: input.mode,
+      duplicate: input.duplicate ?? false,
+      edge: input.edge
+    }
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const placeNodeCommand = async (
+  input: PlaceNodeInput
+): Promise<GraphMutationEnvelope> => {
+  const result = await placeGraphNode({
+    path: { uuid: String(input.graphUuid) },
+    body: {
+      sectionUuid: input.sectionUuid,
+      channelUuid: input.channelUuid,
+      rowHint: input.rowHint,
+      mode: input.mode,
+      edge: input.edge
     }
   })
   return mapMutationEnvelope(unwrapSdkData(result))
@@ -423,3 +592,48 @@ export const renameNodeCommand = async (
     'renameNode is not yet supported by the current backend graph mutation contract.'
   )
 }
+
+function mapSectionOut(section: SectionOut): SectionEntity {
+  return {
+    uuid: section.uuid,
+    graphUuid: section.graphUuid,
+    title: section.title,
+    position: section.position,
+    threadUuid: section.threadUuid ?? null
+  }
+}
+
+/**
+ * Resource PATCH `/api/section/{uuid}` — returns `SectionOutResp`, not a graph envelope.
+ * Callers synthesize a minimal envelope for `applyGraphDelta` (sections.updated only).
+ */
+export const changeSectionMetaCommand = async (
+  input: ChangeSectionMetaInput
+): Promise<SectionEntity> => {
+  const result = await updateSection({
+    path: { uuid: String(input.sectionUuid) },
+    body: input.meta
+  })
+  const resp = unwrapSdkData<SectionOutResp>(result)
+  return mapSectionOut(resp.item)
+}
+
+export const buildSectionMetaMutationEnvelope = (
+  graphUuid: GraphUuid,
+  revisionId: number,
+  section: SectionEntity
+): GraphMutationEnvelope => ({
+  graphUuid,
+  revisionId,
+  changes: {
+    nodes: { created: [], updated: [], deleted: [] },
+    channels: { created: [], updated: [], deleted: [] },
+    sections: { created: [], updated: [section], deleted: [] },
+    edges: { created: [], updated: [], deleted: [] },
+    tags: { created: [], updated: [], deleted: [] }
+  },
+  meta: {
+    triggeredBy: 'changeSectionMeta',
+    triggerEntityId: section.uuid
+  }
+})

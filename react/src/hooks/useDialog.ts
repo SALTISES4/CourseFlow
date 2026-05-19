@@ -49,6 +49,7 @@ export type DialogPayloadMap = {
   }
   [DialogMode.NODE_LINK_WORKFLOW]: {
     uuid: string
+    graphUuid: string
   }
 
   /*******************************************************

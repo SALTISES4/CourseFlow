@@ -5,7 +5,7 @@ import * as StyledOutcome from '@cfViews/WorkflowView/OutcomeEditView/components
 import { MouseEvent, useCallback, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-// import Outcome from './Outcome'
+// import Outcome from './Outcome' // circ dep
 import * as Styled from './styles'
 
 const LinkedOutcomes = ({

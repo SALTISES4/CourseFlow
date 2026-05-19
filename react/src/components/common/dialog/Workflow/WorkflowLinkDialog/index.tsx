@@ -1,10 +1,17 @@
+import { searchLibrary } from '@cf/api/gen'
+import { selectNodeByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
+import { linkNodeWorkflow } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { ELibraryObject } from '@cf/HTTP/XMLHTTP/types/entity'
-import { nodeSetLinkedWorkflow } from '@cf/redux/slices/node.slice'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
+import {
+  buildLibrarySearchRequestBody,
+  transformLibrarySearchResponseToLegacy
+} from '@cf/utility/marshalling/librarySearch'
 import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import { StyledDialog } from '@cfComponents/dialog/styles'
+import Loader from '@cfComponents/UIPrimitives/Loader'
 import { GridWrap } from '@cfMUI/helper'
 import SearchIcon from '@mui/icons-material/Search'
 import Box from '@mui/material/Box'
@@ -17,28 +24,37 @@ import TextField from '@mui/material/TextField'
 import { debounce } from '@mui/material/utils'
 import Fuse from 'fuse.js'
 import { produce } from 'immer'
-import { ChangeEvent, useCallback, useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 type StateType = {
-  selected: number | null
+  selected: string | null
   workflowData: ELibraryObject[] | null
   filteredWorkflows: ReturnType<typeof formatLibraryObjects> | null
+  loading: boolean
+  loadError: boolean
 }
 
-const getLinkedWorkflowMenuQuery = () => {
-  console.log('getLinkedWorkflowMenuQuery')
-}
 function NodeLinkWorkflowDialog() {
   const dispatch = useDispatch()
   const { payload, show, onClose } = useDialog(DialogMode.NODE_LINK_WORKFLOW)
+  const nodeSelector = useMemo(
+    () => (payload?.uuid ? selectNodeByUuid(payload.uuid) : () => null),
+    [payload?.uuid]
+  )
+  const node = useSelector(nodeSelector)
+  const graphUuid = payload?.graphUuid ?? node?.graphUuid ?? ''
+
   const [state, setState] = useState<StateType>({
     selected: null,
     workflowData: null,
-    filteredWorkflows: null
+    filteredWorkflows: null,
+    loading: false,
+    loadError: false
   })
 
-  const { selected, workflowData, filteredWorkflows } = state
+  const { selected, workflowData, filteredWorkflows, loading, loadError } =
+    state
   const filteredResults =
     filteredWorkflows ?? formatLibraryObjects(workflowData ?? [])
 
@@ -47,7 +63,9 @@ function NodeLinkWorkflowDialog() {
     setState({
       selected: null,
       workflowData: null,
-      filteredWorkflows: null
+      filteredWorkflows: null,
+      loading: false,
+      loadError: false
     })
   }, [onClose])
 
@@ -62,22 +80,30 @@ function NodeLinkWorkflowDialog() {
   }, [])
 
   const onSubmit = useCallback(() => {
-    dispatch(
-      nodeSetLinkedWorkflow({
-        nodeId: payload?.uuid,
-        workflowId: selected,
-        workflowData: workflowData.find((w) => w.uuid === selected)
+    if (!payload?.uuid || !selected || !graphUuid) {
+      return
+    }
+
+    const linked = workflowData?.find((w) => w.uuid === selected)
+    void dispatch(
+      linkNodeWorkflow({
+        graphUuid,
+        nodeUuid: payload.uuid,
+        workflowUuid: selected,
+        linkedWorkflow: linked
+          ? { uuid: linked.uuid, title: linked.title }
+          : { uuid: selected, title: '' }
       })
     )
 
     onClose()
-  }, [dispatch, onClose, payload, selected, workflowData])
+  }, [dispatch, graphUuid, onClose, payload, selected, workflowData])
 
   const onSearchChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value.trim()
 
-      if (value === '') {
+      if (value === '' || !workflowData) {
         return setState(
           produce((draft) => {
             draft.filteredWorkflows = null
@@ -103,30 +129,53 @@ function NodeLinkWorkflowDialog() {
   )
 
   useEffect(() => {
-    if (workflowData === null && payload?.uuid) {
-      getLinkedWorkflowMenuQuery(payload.uuid, (response) => {
+    if (!show || workflowData !== null || !payload?.uuid) {
+      return
+    }
+
+    let cancelled = false
+    setState(
+      produce((draft) => {
+        draft.loading = true
+        draft.loadError = false
+      })
+    )
+
+    void (async () => {
+      try {
+        const { data } = await searchLibrary({
+          body: buildLibrarySearchRequestBody({
+            pagination: { page: 0, resultsPerPage: 100 },
+            filters: { contentType: 'workflow' }
+          }) as never,
+          throwOnError: true
+        })
+        if (cancelled) {
+          return
+        }
+        const legacy = transformLibrarySearchResponseToLegacy(data)
         setState(
           produce((draft) => {
-            const { allPublished, currentProject } = response.dataPackage
-            const workflowsFavorites: ELibraryObject[] =
-              allPublished.sections.reduce((acc, curr) => {
-                return [...acc, ...curr.objects]
-              }, [])
-            const workflowsProject: ELibraryObject[] =
-              currentProject.sections.reduce((acc, curr) => {
-                return [...acc, ...curr.objects]
-              }, [])
-
-            draft.workflowData = [...workflowsFavorites, ...workflowsProject]
+            draft.workflowData = legacy.dataPackage.items
+            draft.loading = false
           })
         )
-      })
-    }
-  }, [workflowData, payload])
+      } catch {
+        if (!cancelled) {
+          setState(
+            produce((draft) => {
+              draft.loading = false
+              draft.loadError = true
+            })
+          )
+        }
+      }
+    })()
 
-  if (workflowData === null) {
-    return null
-  }
+    return () => {
+      cancelled = true
+    }
+  }, [show, workflowData, payload?.uuid])
 
   return (
     <StyledDialog open={show} fullWidth maxWidth="lg" onClose={onDialogClose}>
@@ -137,6 +186,7 @@ function NodeLinkWorkflowDialog() {
             variant="standard"
             label="Search"
             fullWidth
+            disabled={loading || loadError || workflowData === null}
             onChange={debounce(onSearchChange, 400)}
             InputProps={{
               endAdornment: (
@@ -146,16 +196,22 @@ function NodeLinkWorkflowDialog() {
               )
             }}
           />
-          <GridWrap sx={{ mt: 4 }}>
-            {filteredResults.map((item) => (
-              <WorkflowCardWrapper
-                key={`workflow_${item.uuid}`}
-                {...item}
-                isSelected={item.uuid === state.selected}
-                onClick={onWorkflowSelect(item.uuid)}
-              />
-            ))}
-          </GridWrap>
+          {loading && <Loader />}
+          {loadError && (
+            <Box sx={{ py: 4 }}>{_t('Could not load workflows.')}</Box>
+          )}
+          {!loading && !loadError && workflowData !== null && (
+            <GridWrap sx={{ mt: 4 }}>
+              {filteredResults.map((item) => (
+                <WorkflowCardWrapper
+                  key={`workflow_${item.uuid}`}
+                  {...item}
+                  isSelected={item.uuid === state.selected}
+                  onClick={onWorkflowSelect(item.uuid)}
+                />
+              ))}
+            </GridWrap>
+          )}
         </Box>
       </DialogContent>
       <DialogActions>
@@ -164,7 +220,7 @@ function NodeLinkWorkflowDialog() {
         </Button>
         <Button
           variant="contained"
-          disabled={!state.selected}
+          disabled={!state.selected || !graphUuid}
           onClick={onSubmit}
         >
           {_t('Link to node')}

@@ -24,7 +24,7 @@ from __future__ import annotations
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
-from course_flow.core.enum import WorkflowType
+from course_flow.core.enum import NodeType, WorkflowType
 from course_flow.core.models import (
     Activitymeta,
     Channel,
@@ -117,3 +117,17 @@ def ensure_workflow_typed_meta_on_workflow_create(
         Coursemeta.objects.get_or_create(workflow=instance)
     elif instance.workflow_type == WorkflowType.ACTIVITY:
         Activitymeta.objects.get_or_create(workflow=instance)
+
+
+@receiver(post_save, sender=Node)
+def ensure_node_typed_meta_on_node_create(
+    sender, instance: Node, created: bool, **kwargs
+) -> None:
+    if not created:
+        return
+    if instance.node_type == NodeType.COURSE:
+        Coursemeta.objects.get_or_create(node=instance)
+    elif instance.node_type == NodeType.ACTIVITY:
+        Activitymeta.objects.get_or_create(node=instance)
+    elif instance.node_type == NodeType.TASK:
+        Taskmeta.objects.get_or_create(node=instance)

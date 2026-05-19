@@ -1,11 +1,11 @@
 import type { NodeInsertMode } from '@cf/features/graph/state/resolveNodeDropRow'
+import {
+  deleteNode,
+  insertNodeBelow
+} from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import useHover from '@cf/hooks/useHover'
-import {
-  nodeWorkflowDelete,
-  nodeWorkflowInsert
-} from '@cf/redux/slices/node.slice'
-import type { RootState } from '@cf/redux/store'
+import type { AppDispatch, RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
@@ -19,6 +19,7 @@ import InsertMenu from '../InsertMenu'
 
 type PropsType = {
   nodeId: string
+  graphUuid: string
   nodeRef: MutableRefObject<HTMLDivElement>
 }
 
@@ -29,8 +30,8 @@ type StateType = {
   duplicate?: boolean
 }
 
-const HoverMenu = ({ nodeId, nodeRef }: PropsType) => {
-  const dispatch = useDispatch()
+const HoverMenu = ({ nodeId, graphUuid, nodeRef }: PropsType) => {
+  const dispatch = useDispatch<AppDispatch>()
   const [state, setState] = useState<StateType>({
     anchor: null,
     duplicate: false
@@ -54,8 +55,9 @@ const HoverMenu = ({ nodeId, nodeRef }: PropsType) => {
               })
             } else {
               dispatch(
-                nodeWorkflowInsert({
-                  nodeId,
+                insertNodeBelow({
+                  graphUuid,
+                  nodeUuid: nodeId,
                   mode: insertMode,
                   duplicate: action === 'duplicate'
                 })
@@ -63,7 +65,12 @@ const HoverMenu = ({ nodeId, nodeRef }: PropsType) => {
             }
             break
           case 'delete':
-            dispatch(nodeWorkflowDelete({ uuid: nodeId }))
+            dispatch(
+              deleteNode({
+                graphUuid,
+                nodeUuid: nodeId
+              })
+            )
             break
           case 'comments':
             dispatch(
@@ -79,7 +86,7 @@ const HoverMenu = ({ nodeId, nodeRef }: PropsType) => {
         }
       }
     },
-    [dispatch, insertMode, nodeId, nodeRef]
+    [dispatch, graphUuid, insertMode, nodeId, nodeRef]
   )
 
   const onInsertCancel = useCallback(
@@ -90,15 +97,16 @@ const HoverMenu = ({ nodeId, nodeRef }: PropsType) => {
   const onInsertOption = useCallback(
     (insertModeOption: Exclude<NodeInsertMode, 'manual'>) => {
       dispatch(
-        nodeWorkflowInsert({
-          nodeId,
+        insertNodeBelow({
+          graphUuid,
+          nodeUuid: nodeId,
           mode: insertModeOption,
           duplicate: state.duplicate
         })
       )
       onInsertCancel()
     },
-    [dispatch, onInsertCancel, nodeId, state.duplicate]
+    [dispatch, graphUuid, nodeId, onInsertCancel, state.duplicate]
   )
 
   return (

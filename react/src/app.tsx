@@ -1,7 +1,8 @@
 // import './wdyr'
 
 // eslint-disable-next-line import/order
-import theme from '@cfMUI/theme'
+import theme from '@cfMUI/theme' // if theme is moved down, app will break from circ deps
+
 import '@cf/api/configureCourseFlowClient'
 import { courseFlowQueryClient } from '@cf/api/queryClient'
 import AuthBootstrap from '@cf/components/auth/AuthBootstrap'

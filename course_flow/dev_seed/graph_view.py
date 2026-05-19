@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from course_flow.core.enum import WorkflowType
+from course_flow.core.hierarchy import child_node_type_value_for_workflow
 from course_flow.core.models import (
     Channel,
     Comment,
@@ -104,6 +105,7 @@ def build_nodes_from_layout(
                     channel=channel,
                     section_row=row,
                     workflow=workflow,
+                    node_type=child_node_type_value_for_workflow(workflow.workflow_type),
                     thread=Thread.objects.create(),
                 )
             )

@@ -14,8 +14,11 @@ from course_flow.core.models import (
     Edge,
     Graph,
     Node,
+    Outcome,
     Section,
+    Thread,
 )
+from course_flow.tests.node_helpers import create_grid_node
 
 
 @pytest.fixture
@@ -92,10 +95,10 @@ def test_delete_node_returns_delta_with_cascaded_edges_and_bumps_revision(
     raw = _issue_token_for(user)
     wf_uuid = _create_graph(client, raw)
     section, channel, workflow = _section_and_channel(wf_uuid)
-    n1 = Node.objects.create(
+    n1 = create_grid_node(
         section=section, channel=channel, workflow=workflow, section_row=0
     )
-    n2 = Node.objects.create(
+    n2 = create_grid_node(
         section=section, channel=channel, workflow=workflow, section_row=1
     )
     edge = Edge.objects.create(source_node=n1, target_node=n2)
@@ -118,8 +121,9 @@ def test_delete_node_returns_delta_with_cascaded_edges_and_bumps_revision(
 
     wf = Graph.objects.get(uuid=wf_uuid)
     assert wf.revision_id == 1
+    wf = Graph.objects.select_related("workflow").get(uuid=wf_uuid)
     graph = client.get(
-        f"/api/graph/{wf_uuid}/view",
+        f"/api/graph/{wf.workflow.uuid}/view",
         **_auth_header(raw),
     ).json()
     assert graph["graph"]["revisionId"] == 1
@@ -130,10 +134,10 @@ def test_create_and_delete_edge_envelopes(client: Client, user):
     raw = _issue_token_for(user)
     wf_uuid = _create_graph(client, raw)
     section, channel, workflow = _section_and_channel(wf_uuid)
-    n1 = Node.objects.create(
+    n1 = create_grid_node(
         section=section, channel=channel, workflow=workflow, section_row=0
     )
-    n2 = Node.objects.create(
+    n2 = create_grid_node(
         section=section, channel=channel, workflow=workflow, section_row=1
     )
 
@@ -207,6 +211,206 @@ def test_create_node_and_update_node_envelopes(client: Client, user):
 
 
 @pytest.mark.django_db
+def test_insert_node_below_row_mode_shifts_sibling(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    n0 = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+    n1 = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=1
+    )
+
+    r = client.post(
+        f"/api/graph/{wf_uuid}/nodes/insert-below",
+        data={
+            "nodeUuid": str(n0.uuid),
+            "mode": "row",
+            "duplicate": False,
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert r.status_code == 200, r.content
+    body = r.json()
+    _assert_envelope_shape(body)
+    assert body["meta"]["triggeredBy"] == "insert_node_below"
+    created = body["changes"]["nodes"]["created"][0]
+    assert created["sectionRow"] == 1
+    updated = {u["uuid"]: u["sectionRow"] for u in body["changes"]["nodes"]["updated"]}
+    assert updated[str(n1.uuid)] == 2
+
+
+@pytest.mark.django_db
+def test_move_graph_node_returns_multi_node_envelope(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    sec2 = Section.objects.create(graph=section.graph, title="S2", position=1)
+    ch2 = Channel.objects.create(graph=section.graph, title="C2", position=1)
+    n0 = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+    n1 = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=1
+    )
+
+    r = client.post(
+        f"/api/node/{n0.uuid}/move",
+        data={
+            "toSectionUuid": str(sec2.uuid),
+            "toChannelUuid": str(ch2.uuid),
+            "rowHint": 0,
+            "mode": "row",
+            "edge": "bottom",
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert r.status_code == 200, r.content
+    body = r.json()
+    assert body["meta"]["triggeredBy"] == "move_node_grid"
+    moved = next(
+        u for u in body["changes"]["nodes"]["updated"] if u["uuid"] == str(n0.uuid)
+    )
+    assert moved["sectionUuid"] == str(sec2.uuid)
+    assert moved["channelUuid"] == str(ch2.uuid)
+
+
+@pytest.mark.django_db
+def test_link_and_unlink_node_outcome(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    g = Graph.objects.get(uuid=wf_uuid)
+    node = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+    outcome = Outcome.objects.create(graph=g, thread=Thread.objects.create())
+
+    link = client.post(
+        f"/api/node/{node.uuid}/link-outcome",
+        data={"outcomeUuid": str(outcome.uuid)},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert link.status_code == 200, link.content
+    linked = link.json()["changes"]["nodes"]["updated"][0]
+    assert str(outcome.uuid) in linked["outcomeUuids"]
+    assert node.outcomes.filter(pk=outcome.pk).exists()
+
+    unlink = client.post(
+        f"/api/node/{node.uuid}/unlink-outcome",
+        data={"outcomeUuid": str(outcome.uuid)},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert unlink.status_code == 200, unlink.content
+    unlinked = unlink.json()["changes"]["nodes"]["updated"][0]
+    assert str(outcome.uuid) not in unlinked["outcomeUuids"]
+    assert not node.outcomes.filter(pk=outcome.pk).exists()
+
+
+@pytest.mark.django_db
+def test_patch_node_meta_updates_fields_and_returns_envelope(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    node = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+
+    r = client.patch(
+        f"/api/node/{node.uuid}/meta",
+        data={
+            "title": "Lab 1",
+            "description": "Intro activity",
+            "contextClassification": 2,
+            "taskClassification": 3,
+            "timeRequired": 1.5,
+            "timeUnits": 2,
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert r.status_code == 200, r.content
+    body = r.json()
+    assert body["meta"]["triggeredBy"] == "update_node_meta"
+    updated = body["changes"]["nodes"]["updated"][0]
+    assert updated["title"] == "Lab 1"
+    assert updated["contextClassification"] == 2
+    assert updated["timeUnits"] == 2
+
+    node.refresh_from_db()
+    assert node.title == "Lab 1"
+    assert node.context_classification == 2
+
+
+@pytest.mark.django_db
+def test_link_node_workflow_and_unlink(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    other_wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    other_graph = Graph.objects.select_related("workflow").get(uuid=other_wf_uuid)
+    other_workflow = other_graph.workflow
+    node = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+
+    r = client.post(
+        f"/api/node/{node.uuid}/link-workflow",
+        data={"workflowUuid": str(other_workflow.uuid)},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert r.status_code == 200, r.content
+    body = r.json()
+    _assert_envelope_shape(body)
+    assert body["meta"]["triggeredBy"] == "link_node_workflow"
+    updated = body["changes"]["nodes"]["updated"][0]
+    assert updated["workflowUuid"] == str(other_workflow.uuid)
+    node.refresh_from_db()
+    assert node.workflow_id == other_workflow.id
+
+    r2 = client.post(
+        f"/api/node/{node.uuid}/link-workflow",
+        data={"workflowUuid": None},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert r2.status_code == 200, r2.content
+    body2 = r2.json()
+    assert body2["meta"]["triggeredBy"] == "unlink_node_workflow"
+    node.refresh_from_db()
+    assert node.workflow_id == workflow.id
+
+
+@pytest.mark.django_db
+def test_place_graph_node_at_row_hint(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+
+    r = client.post(
+        f"/api/graph/{wf_uuid}/nodes/place",
+        data={
+            "sectionUuid": str(section.uuid),
+            "channelUuid": str(channel.uuid),
+            "rowHint": 0,
+            "mode": "row",
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert r.status_code == 200, r.content
+    body = r.json()
+    assert body["meta"]["triggeredBy"] == "place_node"
+    assert body["changes"]["nodes"]["created"][0]["sectionRow"] == 0
+
+
+@pytest.mark.django_db
 def test_delete_channel_returns_delta_with_cascaded_nodes_and_edges(
     client: Client,
     user,
@@ -214,10 +418,10 @@ def test_delete_channel_returns_delta_with_cascaded_nodes_and_edges(
     raw = _issue_token_for(user)
     wf_uuid = _create_graph(client, raw)
     section, channel, workflow = _section_and_channel(wf_uuid)
-    n1 = Node.objects.create(
+    n1 = create_grid_node(
         section=section, channel=channel, workflow=workflow, section_row=0
     )
-    n2 = Node.objects.create(
+    n2 = create_grid_node(
         section=section, channel=channel, workflow=workflow, section_row=1
     )
     edge = Edge.objects.create(source_node=n1, target_node=n2)
@@ -253,10 +457,10 @@ def test_delete_section_returns_delta_with_cascaded_nodes_and_edges(
     raw = _issue_token_for(user)
     wf_uuid = _create_graph(client, raw)
     section, channel, workflow = _section_and_channel(wf_uuid)
-    n1 = Node.objects.create(
+    n1 = create_grid_node(
         section=section, channel=channel, workflow=workflow, section_row=0
     )
-    n2 = Node.objects.create(
+    n2 = create_grid_node(
         section=section, channel=channel, workflow=workflow, section_row=1
     )
     edge = Edge.objects.create(source_node=n1, target_node=n2)
@@ -424,7 +628,7 @@ def test_graph_mutation_forbidden_for_non_owner(client: Client, user, other_user
     raw_owner = _issue_token_for(user)
     wf_uuid = _create_graph(client, raw_owner)
     section, channel, workflow = _section_and_channel(wf_uuid)
-    n = Node.objects.create(
+    n = create_grid_node(
         section=section, channel=channel, workflow=workflow, section_row=0
     )
 

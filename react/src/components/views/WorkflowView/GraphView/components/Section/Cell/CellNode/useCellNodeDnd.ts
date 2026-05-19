@@ -11,8 +11,9 @@ import {
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import { svglinkAllowDND } from '@cf/features/graph/state/slices/svglink.slice'
+import { linkNodeOutcome } from '@cf/features/graph/state/thunks/graphMutations.thunks'
+import type { AppDispatch } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
-import { nodelinkOutcome as edgeOutcome } from '@cfRedux/slices/node.slice'
 import { isOutcomeLink } from '@cfRedux/slices/outcomes.slice'
 import { produce } from 'immer'
 import { useCallback, useEffect, useState } from 'react'
@@ -37,18 +38,20 @@ type PropsType = Pick<
   | 'coordsX'
   | 'coordsY'
   | 'onDrop'
+  | 'graphUuid'
 >
 
 function useCellNodeDnd({
   wrapRef,
   nodeId,
+  graphUuid,
   columnId,
   coordsSection,
   coordsX,
   coordsY,
   onDrop
 }: PropsType) {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [state, setState] = useState<SateType>({
     dragging: false,
     dropHighlight: false,
@@ -117,7 +120,13 @@ function useCellNodeDnd({
         onDrop: ({ source, self }) => {
           const dropped = source.data
           if (isOutcomeLink(dropped)) {
-            dispatch(edgeOutcome({ outcomeId: dropped.uuid, nodeId }))
+            void dispatch(
+              linkNodeOutcome({
+                graphUuid,
+                nodeUuid: nodeId,
+                outcomeUuid: dropped.uuid
+              })
+            )
           }
 
           if (isGridCell(dropped) && dropped.uuid !== nodeId) {
@@ -175,6 +184,7 @@ function useCellNodeDnd({
     coordsX,
     coordsY,
     dispatch,
+    graphUuid,
     nodeId,
     onDrop,
     toggleState,

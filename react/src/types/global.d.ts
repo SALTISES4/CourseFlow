@@ -8,6 +8,7 @@ import {
   TopBarProps
 } from './common'
 export {}
+
 declare global {
   /** Legacy Django-era global; populated at runtime from `bootstrap.ts` (mock JSON in dev). */
   var COURSEFLOW_APP: CourseflowAppGlobals
@@ -23,25 +24,7 @@ interface Path {
   post_paths: { [key: string]: string }
   get_paths: GetPaths
   update_path: UpdatePath
-  /* SORTED */
-  html: HTMLPaths
-  //   json_api: JSONAPIPaths
   static_assets: GenericPath
-}
-
-interface GetPaths {
-  get_public_parentWorkflow_info: string
-}
-
-interface HTMLPaths {
-  update_path_temp: string
-  public_update_path_temp: string
-  library: {
-    home: string
-    explore: string
-    library: string
-    favourites: string
-  }
 }
 
 interface GenericPath {
@@ -67,7 +50,6 @@ export interface GlobalContextData {
     outcomeSortChoices: FieldChoice[]
     columnChoices: FieldChoice[]
   }
-  path: Path
   appNotifications: {
     showNotificationRequest: boolean
     updateNotifications:
@@ -77,10 +59,6 @@ export interface GlobalContextData {
         }
       | Record<string, never>
   }
-}
-
-interface Identifier {
-  _reactListeningarkdylqyv1: boolean
 }
 
 export type NodeDom = {

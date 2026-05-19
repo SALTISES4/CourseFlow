@@ -31,7 +31,7 @@ class GraphViewService:
                 Q(section__graph_id=w.id) | Q(channel__graph_id=w.id),
             )
             .select_related("section", "channel", "workflow", "thread")
-            .prefetch_related("outcomes")
+            .prefetch_related("outcomes", "tags")
             .order_by("section_id", "channel_id", "section_row", "id")
         )
         nodes = list(node_qs)
@@ -116,6 +116,17 @@ class GraphViewService:
             "nodes": [
                 {
                     "uuid": n.uuid,
+                    "node_type": n.node_type,
+                    "title": n.title or "",
+                    "description": n.description or "",
+                    "context_classification": n.context_classification,
+                    "task_classification": n.task_classification,
+                    "time_required": (
+                        float(n.time_required) if n.time_required is not None else None
+                    ),
+                    "time_units": n.time_units,
+                    "represents_workflow": n.represents_workflow,
+                    "tag_ids": list(n.tags.values_list("id", flat=True)),
                     "section_uuid": n.section.uuid if n.section_id else None,
                     "channel_uuid": n.channel.uuid if n.channel_id else None,
                     "section_row": n.section_row,

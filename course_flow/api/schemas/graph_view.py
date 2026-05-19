@@ -46,6 +46,15 @@ class ChannelGraphOut(CamelSchema):
 
 class NodeGraphOut(CamelSchema):
     uuid: UUID
+    node_type: str
+    title: str = ""
+    description: str = ""
+    context_classification: int | None = None
+    task_classification: int | None = None
+    time_required: float | None = None
+    time_units: int | None = None
+    represents_workflow: bool = False
+    tag_ids: list[int] = Field(default_factory=list)
     section_uuid: UUID | None = None
     channel_uuid: UUID | None = None
     section_row: int | None = None

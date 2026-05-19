@@ -13,6 +13,15 @@ class GraphNodeMutationOut(CamelSchema):
     """Flat node snapshot for created/updated buckets (aligned with graph read shape)."""
 
     uuid: UUID
+    node_type: str
+    title: str = ""
+    description: str = ""
+    context_classification: int | None = None
+    task_classification: int | None = None
+    time_required: float | None = None
+    time_units: int | None = None
+    represents_workflow: bool = False
+    tag_ids: list[int] = Field(default_factory=list)
     section_uuid: UUID | None = None
     channel_uuid: UUID | None = None
     section_row: int | None = None
@@ -124,6 +133,58 @@ class GraphNodePatchIn(CamelSchema):
     channel_uuid: UUID | None = None
     section_row: int | None = None
     workflow_uuid: UUID | None = None
+
+
+class GraphNodeInsertBelowIn(CamelSchema):
+    """Insert a node below ``node_uuid``; backend computes grid reflow."""
+
+    node_uuid: UUID
+    mode: str  # row | column
+    duplicate: bool = False
+    edge: str | None = None  # top | bottom
+
+
+class GraphNodePlaceIn(CamelSchema):
+    """Place a new node on the grid (sidebar / row drop); backend computes reflow."""
+
+    section_uuid: UUID
+    channel_uuid: UUID
+    row_hint: int
+    mode: str
+    edge: str | None = None
+
+
+class GraphNodeMoveIn(CamelSchema):
+    """Move an existing node; backend computes sibling row/channel updates."""
+
+    to_section_uuid: UUID
+    to_channel_uuid: UUID
+    row_hint: int
+    mode: str
+    edge: str | None = None
+
+
+class GraphNodeLinkWorkflowIn(CamelSchema):
+    """Point a grid node at a library workflow (or clear link back to the graph root workflow)."""
+
+    workflow_uuid: UUID | None = None
+
+
+class GraphNodeLinkOutcomeIn(CamelSchema):
+    outcome_uuid: UUID
+
+
+class GraphNodeMetaPatchIn(CamelSchema):
+    """Editable node metadata (grid placement and ``node_type`` are not patchable here)."""
+
+    title: str | None = None
+    description: str | None = None
+    context_classification: int | None = None
+    task_classification: int | None = None
+    time_required: float | None = None
+    time_units: int | None = None
+    represents_workflow: bool | None = None
+    tag_ids: list[int] | None = None
 
 
 class GraphEdgeCreateIn(CamelSchema):

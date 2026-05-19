@@ -1,10 +1,12 @@
 import * as SC from '@cf/components/pages/Workflow/Sidebar/styles'
 import type { SectionEntity } from '@cf/features/graph/state/model/types'
 import { selectSectionByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
-import { insertSectionBelow } from '@cf/features/graph/state/thunks/graphMutations.thunks'
+import {
+  changeSectionMeta,
+  insertSectionBelow
+} from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { sectionChangeField } from '@cf/redux/slices/section.slice'
 import type { AppDispatch } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import { debounce } from '@mui/material'
@@ -73,19 +75,17 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
   const debouncedDispatch = useMemo(
     () =>
       debounce((data: SectionFormType) => {
-        // TODO(graph-state): persist section title via graph API when available.
-        dispatch(
-          sectionChangeField({
-            uuid: section.uuid,
-            data: {
-              title: data.title
-            }
+        void dispatch(
+          changeSectionMeta({
+            graphUuid: section.graphUuid,
+            sectionUuid: section.uuid,
+            meta: { title: data.title }
           })
         )
 
         reset({}, { keepValues: true })
       }, 300),
-    [dispatch, reset, section.uuid]
+    [dispatch, reset, section.graphUuid, section.uuid]
   )
 
   useEffect(() => {

@@ -169,7 +169,9 @@ def test_graph_view_node_includes_section_row(client: Client, user):
     wf = Graph.objects.select_related("workflow").get(uuid=wf_uuid)
     channel = Channel.objects.create(graph=wf, title="Col A", position=0)
     section = Section.objects.create(graph=wf, title="Grid 1", position=0)
-    Node.objects.create(
+    from course_flow.tests.node_helpers import create_grid_node
+
+    create_grid_node(
         section=section, channel=channel, workflow=wf.workflow, section_row=4
     )
 
@@ -180,6 +182,7 @@ def test_graph_view_node_includes_section_row(client: Client, user):
     assert len(body["nodes"]) == 1
     row = body["nodes"][0]
     assert row["sectionRow"] == 4
+    assert row["nodeType"] == "activity"
     assert row["sectionUuid"] == str(section.uuid)
     assert row["channelUuid"] == str(channel.uuid)
 

@@ -1,4 +1,4 @@
-import { SliceNamespace } from '@cf/redux/types/enumActions'
+import { SliceNamespace } from '../../../redux/types/enum'
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 export type ViewsettingsState = {

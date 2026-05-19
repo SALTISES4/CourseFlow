@@ -1,9 +1,10 @@
+import { unlinkNodeOutcome } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import useHover from '@cf/hooks/useHover'
+import type { AppDispatch } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
-import { nodelinkOutcome } from '@cfRedux/slices/node.slice'
 import { linkOutcome } from '@cfRedux/slices/outcomes.slice'
 import { LinkedOutcomesPropsType } from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes/types'
 import * as Styled from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
@@ -80,7 +81,7 @@ const HoverMenu = ({
   linkParent: PropsType['linkParent']
   show: boolean
 }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {
@@ -98,9 +99,15 @@ const HoverMenu = ({
                 )
                 break
               case 'node':
-                dispatch(
-                  nodelinkOutcome({ outcomeId: uuid, nodeId: linkParent.uuid })
-                )
+                if (linkParent.graphUuid) {
+                  void dispatch(
+                    unlinkNodeOutcome({
+                      graphUuid: linkParent.graphUuid,
+                      nodeUuid: linkParent.uuid,
+                      outcomeUuid: uuid
+                    })
+                  )
+                }
                 break
             }
             break

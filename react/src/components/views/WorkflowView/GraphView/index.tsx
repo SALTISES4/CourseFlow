@@ -3,10 +3,10 @@ import {
   dropTargetForElements,
   monitorForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { resolveNodeDropSectionRow } from '@cf/features/graph/state/resolveNodeDropRow'
+import type { NodeDropPayload } from '@cf/features/graph/state/resolveNodeDropRow'
 import { selectGraphBoard } from '@cf/features/graph/state/selectors/graphBoard.selectors'
 import {
-  moveNode,
+  moveNodeGrid,
   reorderChannels,
   reorderSections
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
@@ -167,14 +167,18 @@ const GraphView = ({ graphUuid }: { graphUuid: string }) => {
   )
 
   const onNodeDrop: CellReorderCallbackFn = useCallback(
-    (payload) => {
+    (payload: NodeDropPayload) => {
+      const mode =
+        payload.mode ?? (nodeInsertMode === 'manual' ? 'row' : nodeInsertMode)
       dispatch(
-        moveNode({
+        moveNodeGrid({
           graphUuid,
           nodeUuid: payload.uuid,
-          sectionUuid: String(payload.toSection),
-          channelUuid: String(payload.toColumn),
-          sectionRow: resolveNodeDropSectionRow(payload, nodeInsertMode)
+          toSectionUuid: String(payload.toSection),
+          toChannelUuid: String(payload.toColumn),
+          rowHint: payload.toRow,
+          mode,
+          edge: payload.edge
         })
       )
       triggerLineRerender()

@@ -1,30 +1,5 @@
 import { ProjectDetailOut } from '@cf/api/gen'
 import { PermissionGroup, ProjectDetailsType } from '@cf/types/common'
-import Utility from '@cf/utility/Utility.class'
-import { EProject } from '@XMLHTTP/types/entity'
-
-export function formatProjectEntity(project: EProject): ProjectDetailsType {
-  const allDisciplines = COURSEFLOW_APP.globalContextData.disciplines
-
-  const formattedDisciplines: string[] = project.disciplines.map((projDisc) => {
-    return allDisciplines.find((item) => String(item.uuid) === String(projDisc))
-      ?.title as string
-  })
-
-  return {
-    uuid: project.uuid,
-    title: project.title,
-    description: project.description,
-    isFavourite: project.favourite,
-    isDeleted: project.deleted,
-    created: Utility.formatDate(project.createdOn),
-    disciplines: formattedDisciplines,
-    // @ts-expect-error TODO: kept objectSets for backwards compatibility, actually use tags
-    tags: project.objectSets,
-    permissionGroup: project.userPermissions,
-    author: project.author
-  }
-}
 
 /**
  * Map GET /api/project/{uuid} JSON into the simplified project UI model.

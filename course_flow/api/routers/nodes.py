@@ -18,7 +18,13 @@ from course_flow.api.permissions import can_view_graph
 from course_flow.api.schemas.graph_mutation import (
     GraphMutationEnvelopeOut,
     GraphNodeCreateIn,
+    GraphNodeInsertBelowIn,
+    GraphNodeLinkOutcomeIn,
+    GraphNodeLinkWorkflowIn,
+    GraphNodeMetaPatchIn,
+    GraphNodeMoveIn,
     GraphNodePatchIn,
+    GraphNodePlaceIn,
 )
 from course_flow.api.schemas.graph_view import NodeGraphOut
 from course_flow.application.services.graph_mutation_service import (
@@ -34,8 +40,18 @@ node_resource_router = Router(tags=["nodes"], by_alias=True)
 
 
 def _node_graph_out(n: Node) -> NodeGraphOut:
+    time_required = n.time_required
     return NodeGraphOut(
         uuid=n.uuid,
+        node_type=n.node_type,
+        title=n.title or "",
+        description=n.description or "",
+        context_classification=n.context_classification,
+        task_classification=n.task_classification,
+        time_required=float(time_required) if time_required is not None else None,
+        time_units=n.time_units,
+        represents_workflow=n.represents_workflow,
+        tag_ids=list(n.tags.values_list("id", flat=True)),
         section_uuid=n.section.uuid if n.section_id else None,
         channel_uuid=n.channel.uuid if n.channel_id else None,
         section_row=n.section_row,
@@ -89,6 +105,51 @@ def create_graph_node(request, uuid: UUID, payload: GraphNodeCreateIn):
     return graph_mutation_http(out, err)
 
 
+@graph_collection_router.post(
+    "/{uuid}/nodes/insert-below",
+    response=GraphMutationEnvelopeOut,
+    auth=BearerAuth(),
+    operation_id="insertGraphNodeBelow",
+)
+def insert_graph_node_below(request, uuid: UUID, payload: GraphNodeInsertBelowIn):
+    current_user = get_current_user(request)
+    svc = get_graph_mutation_service()
+    edge = payload.edge if payload.edge in ("top", "bottom") else None
+    mode = payload.mode if payload.mode in ("row", "column") else "row"
+    out, err = svc.insert_node_below(
+        graph_uuid=uuid,
+        user_id=current_user.id,
+        node_uuid=payload.node_uuid,
+        mode=mode,
+        duplicate=payload.duplicate,
+        edge=edge,
+    )
+    return graph_mutation_http(out, err)
+
+
+@graph_collection_router.post(
+    "/{uuid}/nodes/place",
+    response=GraphMutationEnvelopeOut,
+    auth=BearerAuth(),
+    operation_id="placeGraphNode",
+)
+def place_graph_node(request, uuid: UUID, payload: GraphNodePlaceIn):
+    current_user = get_current_user(request)
+    svc = get_graph_mutation_service()
+    edge = payload.edge if payload.edge in ("top", "bottom") else None
+    mode = payload.mode if payload.mode in ("row", "column") else "row"
+    out, err = svc.place_node(
+        graph_uuid=uuid,
+        user_id=current_user.id,
+        section_uuid=payload.section_uuid,
+        channel_uuid=payload.channel_uuid,
+        row_hint=payload.row_hint,
+        mode=mode,
+        edge=edge,
+    )
+    return graph_mutation_http(out, err)
+
+
 @node_resource_router.get(
     "/{uuid}", response=NodeGraphOut, auth=BearerAuth(), operation_id="getNode"
 )
@@ -124,6 +185,98 @@ def patch_node(request, uuid: UUID, payload: GraphNodePatchIn):
         user_id=current_user.id,
         node_uuid=uuid,
         patch=patch,
+    )
+    return graph_mutation_http(out, err)
+
+
+@node_resource_router.post(
+    "/{uuid}/link-outcome",
+    response=GraphMutationEnvelopeOut,
+    auth=BearerAuth(),
+    operation_id="linkNodeOutcome",
+)
+def link_node_outcome(request, uuid: UUID, payload: GraphNodeLinkOutcomeIn):
+    current_user = get_current_user(request)
+    svc = get_graph_mutation_service()
+    out, err = svc.link_node_outcome(
+        user_id=current_user.id,
+        node_uuid=uuid,
+        outcome_uuid=payload.outcome_uuid,
+    )
+    return graph_mutation_http(out, err)
+
+
+@node_resource_router.post(
+    "/{uuid}/unlink-outcome",
+    response=GraphMutationEnvelopeOut,
+    auth=BearerAuth(),
+    operation_id="unlinkNodeOutcome",
+)
+def unlink_node_outcome(request, uuid: UUID, payload: GraphNodeLinkOutcomeIn):
+    current_user = get_current_user(request)
+    svc = get_graph_mutation_service()
+    out, err = svc.unlink_node_outcome(
+        user_id=current_user.id,
+        node_uuid=uuid,
+        outcome_uuid=payload.outcome_uuid,
+    )
+    return graph_mutation_http(out, err)
+
+
+@node_resource_router.patch(
+    "/{uuid}/meta",
+    response=GraphMutationEnvelopeOut,
+    auth=BearerAuth(),
+    operation_id="patchNodeMeta",
+)
+def patch_node_meta(request, uuid: UUID, payload: GraphNodeMetaPatchIn):
+    current_user = get_current_user(request)
+    patch = payload.model_dump(exclude_unset=True)
+    svc = get_graph_mutation_service()
+    out, err = svc.update_node_meta(
+        user_id=current_user.id,
+        node_uuid=uuid,
+        patch=patch,
+    )
+    return graph_mutation_http(out, err)
+
+
+@node_resource_router.post(
+    "/{uuid}/link-workflow",
+    response=GraphMutationEnvelopeOut,
+    auth=BearerAuth(),
+    operation_id="linkNodeWorkflow",
+)
+def link_node_workflow(request, uuid: UUID, payload: GraphNodeLinkWorkflowIn):
+    current_user = get_current_user(request)
+    svc = get_graph_mutation_service()
+    out, err = svc.link_node_workflow(
+        user_id=current_user.id,
+        node_uuid=uuid,
+        workflow_uuid=payload.workflow_uuid,
+    )
+    return graph_mutation_http(out, err)
+
+
+@node_resource_router.post(
+    "/{uuid}/move",
+    response=GraphMutationEnvelopeOut,
+    auth=BearerAuth(),
+    operation_id="moveGraphNode",
+)
+def move_graph_node(request, uuid: UUID, payload: GraphNodeMoveIn):
+    current_user = get_current_user(request)
+    svc = get_graph_mutation_service()
+    edge = payload.edge if payload.edge in ("top", "bottom") else None
+    mode = payload.mode if payload.mode in ("row", "column") else "row"
+    out, err = svc.move_node_grid(
+        user_id=current_user.id,
+        node_uuid=uuid,
+        to_section_uuid=payload.to_section_uuid,
+        to_channel_uuid=payload.to_channel_uuid,
+        row_hint=payload.row_hint,
+        mode=mode,
+        edge=edge,
     )
     return graph_mutation_http(out, err)
 

@@ -6,10 +6,11 @@ from course_flow.api.common.schemas import CamelSchema
 
 
 class WorkflowTypeIn(str, Enum):
+    """Allowed root graph workflow types (``task`` is only valid on grid nodes)."""
+
     PROGRAM = "program"
     COURSE = "course"
     ACTIVITY = "activity"
-    TASK = "task"
 
 
 class WorkflowCreateIn(CamelSchema):

@@ -1,12 +1,20 @@
 import * as SC from '@cf/components/pages/Workflow/Sidebar/styles'
-import { selectNodeByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
+import type {
+  NodeEntity,
+  WorkflowEntity
+} from '@cf/features/graph/state/model/types'
+import {
+  selectGraphByUuid,
+  selectNodeByUuid,
+  selectWorkflowByUuid
+} from '@cf/features/graph/state/selectors/canonical.selectors'
+import {
+  changeNodeMeta,
+  linkNodeWorkflow
+} from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import {
-  nodeChangeField,
-  nodeSetLinkedWorkflow
-} from '@cf/redux/slices/node.slice'
-import { TNode } from '@cf/redux/types/type'
+import type { AppDispatch } from '@cf/redux/store'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { debounce } from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -45,12 +53,45 @@ const EditNode = ({ nodeId }: { nodeId: string }) => {
     return null
   }
 
-  // TODO(graph-state): map canonical NodeEntity + workflow/node detail API into TNode when available.
-  return <EditNodeForm node={node as unknown as TNode} />
+  const graphSelector = useMemo(
+    () => selectGraphByUuid(node.graphUuid),
+    [node.graphUuid]
+  )
+  const graph = useSelector(graphSelector)
+  const linkedWorkflowSelector = useMemo(
+    () =>
+      node.workflowUuid
+        ? selectWorkflowByUuid(node.workflowUuid)
+        : () => undefined,
+    [node.workflowUuid]
+  )
+  const linkedWorkflowEntity = useSelector(linkedWorkflowSelector)
+  const isExplicitlyLinked = Boolean(
+    node.workflowUuid &&
+      graph?.workflowUuid &&
+      node.workflowUuid !== graph.workflowUuid
+  )
+  const linkedWorkflow = isExplicitlyLinked ? linkedWorkflowEntity : undefined
+
+  return (
+    <EditNodeForm
+      node={node}
+      graphUuid={node.graphUuid}
+      linkedWorkflow={linkedWorkflow}
+    />
+  )
 }
 
-const EditNodeForm = ({ node }: { node: TNode }) => {
-  const dispatch = useDispatch()
+const EditNodeForm = ({
+  node,
+  graphUuid,
+  linkedWorkflow
+}: {
+  node: NodeEntity
+  graphUuid: string
+  linkedWorkflow?: WorkflowEntity
+}) => {
+  const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
 
   const {
@@ -65,44 +106,35 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
       title: node.title,
       description: node.description,
       ponderation: {
-        theory: String(node.ponderationTheory),
-        practice: String(node.ponderationPractical),
-        individual: String(node.ponderationIndividual)
-        // TODO: where do these come from?
-        // generalEdu: String(nodeData.node.ponderationGeneralEdu),
-        // specificEdu: String(nodeData.node.ponderationSpecificEdu)
+        theory: '0',
+        practice: '0',
+        individual: '0'
       },
-      contextType: node.contextClassification || '',
-      taskType: node.taskClassification || '',
-      timeRequired: node.timeRequired,
-      timeUnits: node.timeUnits,
-      tags: node.tags || []
+      contextType: node.contextClassification ?? '',
+      taskType: node.taskClassification ?? '',
+      timeRequired: node.timeRequired ?? undefined,
+      timeUnits: node.timeUnits ?? '',
+      tags: node.tagIds ?? []
     }
   })
 
   const watchedFields = watch()
 
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
   useEffect(() => {
     if (!isDirty) {
       reset({
         title: node.title,
         description: node.description,
         ponderation: {
-          theory: String(node.ponderationTheory),
-          practice: String(node.ponderationPractical),
-          individual: String(node.ponderationIndividual)
-          // TODO: where do these come from?
-          // generalEdu: String(nodeData.node.ponderationGeneralEdu),
-          // specificEdu: String(nodeData.node.ponderationSpecificEdu)
+          theory: '0',
+          practice: '0',
+          individual: '0'
         },
-        contextType: node.contextClassification || '',
-        taskType: node.taskClassification || '',
-        timeRequired: node.timeRequired,
-        timeUnits: node.timeUnits,
-        tags: node.tags || []
+        contextType: node.contextClassification ?? '',
+        taskType: node.taskClassification ?? '',
+        timeRequired: node.timeRequired ?? undefined,
+        timeUnits: node.timeUnits ?? '',
+        tags: node.tagIds ?? []
       })
     }
   }, [reset, isDirty, node])
@@ -110,28 +142,44 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
   const debouncedDispatch = useMemo(
     () =>
       debounce((data: NodeForm) => {
-        // update redux state
-        dispatch(
-          nodeChangeField({
-            uuid: node.uuid,
-            data: {
+        const contextClassification =
+          data.contextType === '' || data.contextType === null
+            ? null
+            : parseInt(String(data.contextType), 10)
+        const taskClassification =
+          data.taskType === '' || data.taskType === null
+            ? null
+            : parseInt(String(data.taskType), 10)
+        const timeRequired =
+          data.timeRequired === '' ||
+          data.timeRequired === null ||
+          data.timeRequired === undefined
+            ? null
+            : Number(data.timeRequired)
+        const timeUnits =
+          data.timeUnits === '' || data.timeUnits === null
+            ? null
+            : Number(data.timeUnits)
+
+        void dispatch(
+          changeNodeMeta({
+            graphUuid,
+            nodeUuid: node.uuid,
+            meta: {
               title: data.title,
               description: data.description,
-              contextClassification: parseInt(data.contextType.toString(), 10),
-              taskClassification: parseInt(data.taskType.toString(), 10),
-              timeRequired: data.timeRequired,
-              timeUnits: data.timeUnits,
-              tags: data.tags
+              contextClassification,
+              taskClassification,
+              timeRequired: Number.isNaN(timeRequired) ? null : timeRequired,
+              timeUnits: Number.isNaN(timeUnits) ? null : timeUnits,
+              tagIds: data.tags.map((id) => Number(id))
             }
           })
         )
 
-        // update the server
-        // updateValueQuery(node.uuid, CfObjectType.NODE, data, true)
-
         reset({}, { keepValues: true })
       }, 300),
-    [dispatch, reset, node.uuid]
+    [dispatch, graphUuid, node.uuid, reset]
   )
 
   useEffect(() => {
@@ -140,48 +188,41 @@ const EditNodeForm = ({ node }: { node: TNode }) => {
     }
   }, [watchedFields, isDirty, debouncedDispatch])
 
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
   const onSubmit = (data: NodeForm) => {
     Utility.logger('Form submitted with data:', data)
   }
 
   const toggleLinkWorkflowDialog = useCallback(() => {
-    dialogDispatch(DialogMode.NODE_LINK_WORKFLOW, { uuid: node.uuid })
-  }, [dialogDispatch, node.uuid])
+    dialogDispatch(DialogMode.NODE_LINK_WORKFLOW, {
+      uuid: node.uuid,
+      graphUuid
+    })
+  }, [dialogDispatch, graphUuid, node.uuid])
 
   const removeLinkedWorkflow = useCallback(() => {
-    dispatch(
-      nodeSetLinkedWorkflow({
-        nodeId: node.uuid,
-        workflowId: null,
-        workflowData: null,
-        representsWorkflow: false
+    void dispatch(
+      linkNodeWorkflow({
+        graphUuid,
+        nodeUuid: node.uuid,
+        workflowUuid: null
       })
     )
-  }, [dispatch, node.uuid])
+  }, [dispatch, graphUuid, node.uuid])
 
   const toggleRepresentWorkflow = useCallback(
     (_, checked: boolean) => {
-      dispatch(
-        nodeChangeField({
-          uuid: node.uuid,
-          data: {
-            representsWorkflow: checked
-          }
+      void dispatch(
+        changeNodeMeta({
+          graphUuid,
+          nodeUuid: node.uuid,
+          meta: { representsWorkflow: checked }
         })
       )
     },
-    [dispatch, node.uuid]
+    [dispatch, graphUuid, node.uuid]
   )
 
-  // TODO: seems wrong, investigate where this comes from with MC
-  const ponderation = watch('linkedWorkflow')
-    ? watch('linkedWorkflow.ponderation')
-    : watch('ponderation')
-
-  const linkedWorkflow = node.linkedWorkflowData
+  const ponderation = watch('ponderation')
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

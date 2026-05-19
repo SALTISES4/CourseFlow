@@ -13,7 +13,6 @@ import { CardChip as WorkflowCardChip } from '../WorkflowCardDumb/styles'
 
 /*******************************************************
  * A workflow card for a menu
- *
  *******************************************************/
 
 export type WorkflowCardWrapperPropsType = Pick<

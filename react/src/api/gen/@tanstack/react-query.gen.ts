@@ -43,8 +43,11 @@ import {
   getSection,
   getWorkflow,
   insertGraphChannelBelow,
+  insertGraphNodeBelow,
   insertGraphSectionBelow,
   libraryItemFavoriteToggle,
+  linkNodeOutcome,
+  linkNodeWorkflow,
   listGraphChannels,
   listGraphEdges,
   listGraphNodes,
@@ -60,13 +63,17 @@ import {
   markAllMyNotificationsAsRead,
   markOneNotificationAsRead,
   me,
+  moveGraphNode,
   patchMyNotificationSettings,
   patchMyProfileSettings,
   patchNode,
+  patchNodeMeta,
+  placeGraphNode,
   register,
   reorderGraphChannels,
   reorderGraphSections,
   searchLibrary,
+  unlinkNodeOutcome,
   updateChannel,
   updateProject,
   updateProjectTeamMember,
@@ -138,10 +145,16 @@ import type {
   GetWorkflowResponse,
   InsertGraphChannelBelowData,
   InsertGraphChannelBelowResponse,
+  InsertGraphNodeBelowData,
+  InsertGraphNodeBelowResponse,
   InsertGraphSectionBelowData,
   InsertGraphSectionBelowResponse,
   LibraryItemFavoriteToggleData,
   LibraryItemFavoriteToggleResponse,
+  LinkNodeOutcomeData,
+  LinkNodeOutcomeResponse,
+  LinkNodeWorkflowData,
+  LinkNodeWorkflowResponse,
   ListGraphChannelsData,
   ListGraphChannelsResponse,
   ListGraphEdgesData,
@@ -172,12 +185,18 @@ import type {
   MarkOneNotificationAsReadResponse,
   MeData,
   MeResponse,
+  MoveGraphNodeData,
+  MoveGraphNodeResponse,
   PatchMyNotificationSettingsData,
   PatchMyNotificationSettingsResponse,
   PatchMyProfileSettingsData,
   PatchMyProfileSettingsResponse,
   PatchNodeData,
+  PatchNodeMetaData,
+  PatchNodeMetaResponse,
   PatchNodeResponse,
+  PlaceGraphNodeData,
+  PlaceGraphNodeResponse,
   RegisterData,
   RegisterResponse,
   ReorderGraphChannelsData,
@@ -186,6 +205,8 @@ import type {
   ReorderGraphSectionsResponse,
   SearchLibraryData,
   SearchLibraryResponse,
+  UnlinkNodeOutcomeData,
+  UnlinkNodeOutcomeResponse,
   UpdateChannelData,
   UpdateChannelResponse,
   UpdateProjectData,
@@ -955,6 +976,60 @@ export const createGraphNodeMutation = (
   return mutationOptions
 }
 
+/**
+ * Insert Graph Node Below
+ */
+export const insertGraphNodeBelowMutation = (
+  options?: Partial<Options<InsertGraphNodeBelowData>>
+): UseMutationOptions<
+  InsertGraphNodeBelowResponse,
+  DefaultError,
+  Options<InsertGraphNodeBelowData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    InsertGraphNodeBelowResponse,
+    DefaultError,
+    Options<InsertGraphNodeBelowData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await insertGraphNodeBelow({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Place Graph Node
+ */
+export const placeGraphNodeMutation = (
+  options?: Partial<Options<PlaceGraphNodeData>>
+): UseMutationOptions<
+  PlaceGraphNodeResponse,
+  DefaultError,
+  Options<PlaceGraphNodeData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    PlaceGraphNodeResponse,
+    DefaultError,
+    Options<PlaceGraphNodeData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await placeGraphNode({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
 export const listGraphEdgesQueryKey = (options: Options<ListGraphEdgesData>) =>
   createQueryKey('listGraphEdges', options)
 
@@ -1288,6 +1363,141 @@ export const patchNodeMutation = (
   > = {
     mutationFn: async (fnOptions) => {
       const { data } = await patchNode({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Link Node Outcome
+ */
+export const linkNodeOutcomeMutation = (
+  options?: Partial<Options<LinkNodeOutcomeData>>
+): UseMutationOptions<
+  LinkNodeOutcomeResponse,
+  DefaultError,
+  Options<LinkNodeOutcomeData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    LinkNodeOutcomeResponse,
+    DefaultError,
+    Options<LinkNodeOutcomeData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await linkNodeOutcome({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Unlink Node Outcome
+ */
+export const unlinkNodeOutcomeMutation = (
+  options?: Partial<Options<UnlinkNodeOutcomeData>>
+): UseMutationOptions<
+  UnlinkNodeOutcomeResponse,
+  DefaultError,
+  Options<UnlinkNodeOutcomeData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    UnlinkNodeOutcomeResponse,
+    DefaultError,
+    Options<UnlinkNodeOutcomeData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await unlinkNodeOutcome({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Patch Node Meta
+ */
+export const patchNodeMetaMutation = (
+  options?: Partial<Options<PatchNodeMetaData>>
+): UseMutationOptions<
+  PatchNodeMetaResponse,
+  DefaultError,
+  Options<PatchNodeMetaData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    PatchNodeMetaResponse,
+    DefaultError,
+    Options<PatchNodeMetaData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await patchNodeMeta({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Link Node Workflow
+ */
+export const linkNodeWorkflowMutation = (
+  options?: Partial<Options<LinkNodeWorkflowData>>
+): UseMutationOptions<
+  LinkNodeWorkflowResponse,
+  DefaultError,
+  Options<LinkNodeWorkflowData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    LinkNodeWorkflowResponse,
+    DefaultError,
+    Options<LinkNodeWorkflowData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await linkNodeWorkflow({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Move Graph Node
+ */
+export const moveGraphNodeMutation = (
+  options?: Partial<Options<MoveGraphNodeData>>
+): UseMutationOptions<
+  MoveGraphNodeResponse,
+  DefaultError,
+  Options<MoveGraphNodeData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    MoveGraphNodeResponse,
+    DefaultError,
+    Options<MoveGraphNodeData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await moveGraphNode({
         ...options,
         ...fnOptions,
         throwOnError: true

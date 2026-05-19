@@ -1,8 +1,9 @@
 import { StyledBox, StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import Utility from '@cf/utility/Utility.class'
+import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
+import { TTag } from '@cfRedux/types/type'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -12,10 +13,21 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import FormLabel from '@mui/material/FormLabel'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
-import { API_POST } from '@XMLHTTP/CallWrapper'
-import { EProject } from '@XMLHTTP/types/entity'
+import { CourseFlowEntity, EUser } from '@XMLHTTP/types/entity'
 import { produce } from 'immer'
 import { MouseEvent, useState } from 'react'
+
+interface EProject extends CourseFlowEntity {
+  author: EUser
+  userPermissions: number
+  favourite: boolean
+  // objectPermission: ObjectPermission
+  disciplines: number[]
+  tags: TTag[]
+  published: boolean
+  type: CfObjectType.PROJECT
+  workflowprojectSet: number[]
+}
 
 enum EXPORT_TYPE {
   OUTCOME = 'outcome',
@@ -56,23 +68,6 @@ const fields = {
   ]
 }
 
-//  reference for connecting
-
-// class ExportMenu extends React.Component<PropsType, StateProps> {
-// const ExportDialog = () => {
-//   return (
-//     <Dialog open={state.openExportDialog}>
-//       <DialogTitle>
-//         <h2>{_t('Export project')}</h2>
-//       </DialogTitle>
-//       <ExportMenu
-//         data={data}
-//         actionFunction={closeModals}
-//       />
-//     </Dialog>
-//   )
-// }
-
 function ProjectExportDialog(data: EProject) {
   const [state, setState] = useState({
     type: EXPORT_TYPE.OUTCOME,
@@ -99,15 +94,7 @@ function ProjectExportDialog(data: EProject) {
       exportFormat: state.format
     }
 
-    // TODO: handle success/failure appropriately
-    API_POST(
-      COURSEFLOW_APP.globalContextData.path.post_paths.get_export,
-      postData
-    )
-      .then((resp) => {
-        Utility.logger('response', resp)
-      })
-      .catch((error) => Utility.logger('errors', error))
+    // @todo function that triggers a project export goes here
   }
 
   function onDialogClose() {

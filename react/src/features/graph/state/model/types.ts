@@ -56,6 +56,16 @@ export interface ChannelEntity {
 
 export interface NodeEntity {
   uuid: ResourceUuid
+  /** Semantic layer (`course` | `activity` | `task`); immutable after creation. */
+  nodeType: string
+  title: string
+  description: string
+  contextClassification: number | null
+  taskClassification: number | null
+  timeRequired: number | null
+  timeUnits: number | null
+  representsWorkflow: boolean
+  tagIds: number[]
   /** Graph UUID (route id); selectors filter on this field. */
   graphUuid: GraphUuid
   sectionUuid: ResourceUuid | null
@@ -113,6 +123,9 @@ export type GraphOpType =
   | 'createNode'
   | 'deleteNode'
   | 'moveNode'
+  | 'moveNodeGrid'
+  | 'insertNodeBelow'
+  | 'placeNode'
   | 'renameNode'
   | 'createEdge'
   | 'deleteEdge'
@@ -122,6 +135,11 @@ export type GraphOpType =
   | 'insertChannelBelow'
   | 'reorderChannels'
   | 'reorderSections'
+  | 'changeSectionMeta'
+  | 'linkNodeWorkflow'
+  | 'changeNodeMeta'
+  | 'linkNodeOutcome'
+  | 'unlinkNodeOutcome'
 
 export type GraphOpStatus = 'pending' | 'acked' | 'failed'
 
@@ -187,12 +205,45 @@ export interface RenameNodeInput {
   title: string
 }
 
+/** Grid insert/move mode (manual is UI-only). */
+export type GridInsertMode = 'row' | 'column'
+
+export type GridDropEdge = 'top' | 'bottom'
+
 export interface MoveNodeInput {
   graphUuid: GraphUuid
   nodeUuid: ResourceUuid
   sectionUuid: ResourceUuid | null
   channelUuid: ResourceUuid | null
   sectionRow: number | null
+}
+
+/** Backend computes final placement and sibling reflow. */
+export interface MoveNodeGridInput {
+  graphUuid: GraphUuid
+  nodeUuid: ResourceUuid
+  toSectionUuid: ResourceUuid
+  toChannelUuid: ResourceUuid
+  rowHint: number
+  mode: GridInsertMode
+  edge?: GridDropEdge
+}
+
+export interface InsertNodeBelowInput {
+  graphUuid: GraphUuid
+  nodeUuid: ResourceUuid
+  mode: GridInsertMode
+  duplicate?: boolean
+  edge?: GridDropEdge
+}
+
+export interface PlaceNodeInput {
+  graphUuid: GraphUuid
+  sectionUuid: ResourceUuid
+  channelUuid: ResourceUuid
+  rowHint: number
+  mode: GridInsertMode
+  edge?: GridDropEdge
 }
 
 export interface CreateEdgeInput {
@@ -245,4 +296,56 @@ export interface InsertChannelBelowInput {
   /** Omit or null to append at end of the channel list. */
   channelUuid?: ResourceUuid | null
   duplicate?: boolean
+}
+
+/** Partial section metadata (`SectionPatchIn` on the resource API). */
+export interface SectionMetaPatch {
+  title?: string
+  position?: number
+  threadUuid?: ResourceUuid | null
+}
+
+export interface ChangeSectionMetaInput {
+  graphUuid: GraphUuid
+  sectionUuid: ResourceUuid
+  meta: SectionMetaPatch
+}
+
+/** Link a grid node to a library workflow, or clear link (root graph workflow). */
+export interface LinkNodeWorkflowInput {
+  graphUuid: GraphUuid
+  nodeUuid: ResourceUuid
+  workflowUuid: WorkflowUuid | null
+  /** Optional metadata to upsert into canonical workflow cache for UI labels. */
+  linkedWorkflow?: WorkflowEntity | null
+}
+
+/** Partial node metadata (`GraphNodeMetaPatchIn` on the resource API). */
+export interface NodeMetaPatch {
+  title?: string
+  description?: string
+  contextClassification?: number | null
+  taskClassification?: number | null
+  timeRequired?: number | null
+  timeUnits?: number | null
+  representsWorkflow?: boolean
+  tagIds?: number[]
+}
+
+export interface ChangeNodeMetaInput {
+  graphUuid: GraphUuid
+  nodeUuid: ResourceUuid
+  meta: NodeMetaPatch
+}
+
+export interface LinkNodeOutcomeInput {
+  graphUuid: GraphUuid
+  nodeUuid: ResourceUuid
+  outcomeUuid: ResourceUuid
+}
+
+export interface UnlinkNodeOutcomeInput {
+  graphUuid: GraphUuid
+  nodeUuid: ResourceUuid
+  outcomeUuid: ResourceUuid
 }

@@ -317,18 +317,7 @@
         "name": "Other"
       }
     ]
-  },
-  "path": {
-    "post_paths": {
-      "new_outcome": "/course-flow/json-api/v1/workflow/outcome/create",
-      "update_outcomehorizontallink_degree": "/course-flow/json-api/v1/outcome/update-outcomehorizontallink-degree",
-      "update_outcomenode_degree": "/course-flow/json-api/v1/workflow/update-outcomenode-degree"
-    },
-    "get_paths": {
-      "get_public_workflow_child_data": "/course-flow/json-api/v1/workflow/0/public/child/detail",
-      "get_public_parent_workflow_info": "/course-flow/json-api/v1/workflow/0/public/parent/detail-full"
-    }
-  },
+   },
   "disciplines": [
     {
       "id": 10,

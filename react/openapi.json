@@ -1097,6 +1097,102 @@
         ]
       }
     },
+    "/api/graph/{uuid}/nodes/insert-below": {
+      "post": {
+        "operationId": "insertGraphNodeBelow",
+        "summary": "Insert Graph Node Below",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "nodes"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphNodeInsertBelowIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/graph/{uuid}/nodes/place": {
+      "post": {
+        "operationId": "placeGraphNode",
+        "summary": "Place Graph Node",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "nodes"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphNodePlaceIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/graph/{uuid}/edges": {
       "get": {
         "operationId": "listGraphEdges",
@@ -1612,6 +1708,246 @@
         "tags": [
           "nodes"
         ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/node/{uuid}/link-outcome": {
+      "post": {
+        "operationId": "linkNodeOutcome",
+        "summary": "Link Node Outcome",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "nodes"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphNodeLinkOutcomeIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/node/{uuid}/unlink-outcome": {
+      "post": {
+        "operationId": "unlinkNodeOutcome",
+        "summary": "Unlink Node Outcome",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "nodes"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphNodeLinkOutcomeIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/node/{uuid}/meta": {
+      "patch": {
+        "operationId": "patchNodeMeta",
+        "summary": "Patch Node Meta",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "nodes"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphNodeMetaPatchIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/node/{uuid}/link-workflow": {
+      "post": {
+        "operationId": "linkNodeWorkflow",
+        "summary": "Link Node Workflow",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "nodes"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphNodeLinkWorkflowIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/node/{uuid}/move": {
+      "post": {
+        "operationId": "moveGraphNode",
+        "summary": "Move Graph Node",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "nodes"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphNodeMoveIn"
+              }
+            }
+          },
+          "required": true
+        },
         "security": [
           {
             "BearerAuth": []
@@ -2477,6 +2813,7 @@
         "type": "object"
       },
       "WorkflowType": {
+        "description": "Root graph workflow semantic layer (``task`` is not a valid root type).",
         "enum": [
           "program",
           "course",
@@ -2989,11 +3326,11 @@
         "type": "object"
       },
       "WorkflowTypeIn": {
+        "description": "Allowed root graph workflow types (``task`` is only valid on grid nodes).",
         "enum": [
           "program",
           "course",
-          "activity",
-          "task"
+          "activity"
         ],
         "title": "WorkflowTypeIn",
         "type": "string"
@@ -3378,6 +3715,76 @@
             "title": "Uuid",
             "type": "string"
           },
+          "nodeType": {
+            "title": "Nodetype",
+            "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "contextClassification": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contextclassification"
+          },
+          "taskClassification": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Taskclassification"
+          },
+          "timeRequired": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timerequired"
+          },
+          "timeUnits": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timeunits"
+          },
+          "representsWorkflow": {
+            "default": false,
+            "title": "Representsworkflow",
+            "type": "boolean"
+          },
+          "tagIds": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Tagids",
+            "type": "array"
+          },
           "sectionUuid": {
             "anyOf": [
               {
@@ -3447,7 +3854,8 @@
           }
         },
         "required": [
-          "uuid"
+          "uuid",
+          "nodeType"
         ],
         "title": "NodeGraphOut",
         "type": "object"
@@ -3903,6 +4311,76 @@
             "title": "Uuid",
             "type": "string"
           },
+          "nodeType": {
+            "title": "Nodetype",
+            "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "contextClassification": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contextclassification"
+          },
+          "taskClassification": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Taskclassification"
+          },
+          "timeRequired": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timerequired"
+          },
+          "timeUnits": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timeunits"
+          },
+          "representsWorkflow": {
+            "default": false,
+            "title": "Representsworkflow",
+            "type": "boolean"
+          },
+          "tagIds": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Tagids",
+            "type": "array"
+          },
           "sectionUuid": {
             "anyOf": [
               {
@@ -3972,7 +4450,8 @@
           }
         },
         "required": [
-          "uuid"
+          "uuid",
+          "nodeType"
         ],
         "title": "GraphNodeMutationOut",
         "type": "object"
@@ -4127,6 +4606,30 @@
         "title": "GraphTagsDeltaOut",
         "type": "object"
       },
+      "GraphChannelInsertBelowIn": {
+        "description": "Insert below ``channel_uuid``, or append at end when ``channel_uuid`` is omitted.",
+        "properties": {
+          "channelUuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Channeluuid"
+          },
+          "duplicate": {
+            "default": false,
+            "title": "Duplicate",
+            "type": "boolean"
+          }
+        },
+        "title": "GraphChannelInsertBelowIn",
+        "type": "object"
+      },
       "GraphReorderChannelsIn": {
         "description": "Full channel order for a graph; every channel on the graph must appear exactly once.",
         "properties": {
@@ -4263,50 +4766,8 @@
         "title": "GraphSectionCreateIn",
         "type": "object"
       },
-      "GraphReorderSectionsIn": {
-        "description": "Full section order for a graph; every section on the graph must appear exactly once.",
-        "properties": {
-          "sectionUuids": {
-            "items": {
-              "format": "uuid",
-              "type": "string"
-            },
-            "title": "Sectionuuids",
-            "type": "array"
-          }
-        },
-        "required": [
-          "sectionUuids"
-        ],
-        "title": "GraphReorderSectionsIn",
-        "type": "object"
-      },
-      "GraphChannelInsertBelowIn": {
-        "description": "Insert below channelUuid, or append at end when channelUuid is omitted.",
-        "properties": {
-          "channelUuid": {
-            "anyOf": [
-              {
-                "format": "uuid",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Channeluuid"
-          },
-          "duplicate": {
-            "default": false,
-            "title": "Duplicate",
-            "type": "boolean"
-          }
-        },
-        "title": "GraphChannelInsertBelowIn",
-        "type": "object"
-      },
       "GraphSectionInsertBelowIn": {
-        "description": "Insert a new section directly below sectionUuid; optionally duplicate title.",
+        "description": "Insert a new section directly below ``section_uuid``; optionally duplicate title.",
         "properties": {
           "sectionUuid": {
             "format": "uuid",
@@ -4323,6 +4784,24 @@
           "sectionUuid"
         ],
         "title": "GraphSectionInsertBelowIn",
+        "type": "object"
+      },
+      "GraphReorderSectionsIn": {
+        "description": "Full section order for a graph; every section on the graph must appear exactly once.",
+        "properties": {
+          "sectionUuids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Sectionuuids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "sectionUuids"
+        ],
+        "title": "GraphReorderSectionsIn",
         "type": "object"
       },
       "GraphNodeCreateIn": {
@@ -4361,6 +4840,84 @@
           "sectionRow"
         ],
         "title": "GraphNodeCreateIn",
+        "type": "object"
+      },
+      "GraphNodeInsertBelowIn": {
+        "description": "Insert a node below ``node_uuid``; backend computes grid reflow.",
+        "properties": {
+          "nodeUuid": {
+            "format": "uuid",
+            "title": "Nodeuuid",
+            "type": "string"
+          },
+          "mode": {
+            "title": "Mode",
+            "type": "string"
+          },
+          "duplicate": {
+            "default": false,
+            "title": "Duplicate",
+            "type": "boolean"
+          },
+          "edge": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edge"
+          }
+        },
+        "required": [
+          "nodeUuid",
+          "mode"
+        ],
+        "title": "GraphNodeInsertBelowIn",
+        "type": "object"
+      },
+      "GraphNodePlaceIn": {
+        "description": "Place a new node on the grid (sidebar / row drop); backend computes reflow.",
+        "properties": {
+          "sectionUuid": {
+            "format": "uuid",
+            "title": "Sectionuuid",
+            "type": "string"
+          },
+          "channelUuid": {
+            "format": "uuid",
+            "title": "Channeluuid",
+            "type": "string"
+          },
+          "rowHint": {
+            "title": "Rowhint",
+            "type": "integer"
+          },
+          "mode": {
+            "title": "Mode",
+            "type": "string"
+          },
+          "edge": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edge"
+          }
+        },
+        "required": [
+          "sectionUuid",
+          "channelUuid",
+          "rowHint",
+          "mode"
+        ],
+        "title": "GraphNodePlaceIn",
         "type": "object"
       },
       "GraphEdgeCreateIn": {
@@ -4626,6 +5183,179 @@
           }
         },
         "title": "GraphNodePatchIn",
+        "type": "object"
+      },
+      "GraphNodeLinkOutcomeIn": {
+        "properties": {
+          "outcomeUuid": {
+            "format": "uuid",
+            "title": "Outcomeuuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "outcomeUuid"
+        ],
+        "title": "GraphNodeLinkOutcomeIn",
+        "type": "object"
+      },
+      "GraphNodeMetaPatchIn": {
+        "description": "Editable node metadata (grid placement and ``node_type`` are not patchable here).",
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "contextClassification": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contextclassification"
+          },
+          "taskClassification": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Taskclassification"
+          },
+          "timeRequired": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timerequired"
+          },
+          "timeUnits": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timeunits"
+          },
+          "representsWorkflow": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Representsworkflow"
+          },
+          "tagIds": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tagids"
+          }
+        },
+        "title": "GraphNodeMetaPatchIn",
+        "type": "object"
+      },
+      "GraphNodeLinkWorkflowIn": {
+        "description": "Point a grid node at a library workflow (or clear link back to the graph root workflow).",
+        "properties": {
+          "workflowUuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Workflowuuid"
+          }
+        },
+        "title": "GraphNodeLinkWorkflowIn",
+        "type": "object"
+      },
+      "GraphNodeMoveIn": {
+        "description": "Move an existing node; backend computes sibling row/channel updates.",
+        "properties": {
+          "toSectionUuid": {
+            "format": "uuid",
+            "title": "Tosectionuuid",
+            "type": "string"
+          },
+          "toChannelUuid": {
+            "format": "uuid",
+            "title": "Tochanneluuid",
+            "type": "string"
+          },
+          "rowHint": {
+            "title": "Rowhint",
+            "type": "integer"
+          },
+          "mode": {
+            "title": "Mode",
+            "type": "string"
+          },
+          "edge": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edge"
+          }
+        },
+        "required": [
+          "toSectionUuid",
+          "toChannelUuid",
+          "rowHint",
+          "mode"
+        ],
+        "title": "GraphNodeMoveIn",
         "type": "object"
       },
       "CommentAuthorOut": {

@@ -4,8 +4,11 @@ import {
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import { insertChannelBelow } from '@cf/features/graph/state/thunks/graphMutations.thunks'
-import { nodeWorkflowInsert } from '@cf/redux/slices/node.slice'
+import type { GridInsertMode } from '@cf/features/graph/state/model/types'
+import {
+  insertChannelBelow,
+  placeNode
+} from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import type { AppDispatch, RootState } from '@cf/redux/store'
 import { SectionRowPropsType } from '@cfViews/WorkflowView/GraphView/components/Section/Row/type'
 import { produce } from 'immer'
@@ -132,14 +135,19 @@ function useRowDnd(props: PropsType) {
           return resetState()
         }
 
+        const rowHint =
+          rowIndex === 'empty' ? 0 : closestEdge === 'top' ? row : row + 1
         dispatch(
-          nodeWorkflowInsert({
-            mode: insertMode,
-            newColumn: isCustom,
-            columnId: channelId,
-            sectionId,
-            row:
-              rowIndex === 'empty' ? 0 : closestEdge === 'top' ? row : row + 1
+          placeNode({
+            graphUuid,
+            sectionUuid: sectionId,
+            channelUuid: channelId,
+            rowHint,
+            mode: insertMode as GridInsertMode,
+            edge:
+              closestEdge === 'top' || closestEdge === 'bottom'
+                ? closestEdge
+                : undefined
           })
         )
 

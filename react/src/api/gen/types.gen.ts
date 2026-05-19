@@ -83,6 +83,8 @@ export type ProjectWorkflowListItemOut = {
 
 /**
  * WorkflowType
+ *
+ * Root graph workflow semantic layer (``task`` is not a valid root type).
  */
 export enum WorkflowType {
   PROGRAM = 'program',
@@ -423,12 +425,13 @@ export type WorkflowCreateIn = {
 
 /**
  * WorkflowTypeIn
+ *
+ * Allowed root graph workflow types (``task`` is only valid on grid nodes).
  */
 export enum WorkflowTypeIn {
   PROGRAM = 'program',
   COURSE = 'course',
-  ACTIVITY = 'activity',
-  TASK = 'task'
+  ACTIVITY = 'activity'
 }
 
 /**
@@ -658,6 +661,42 @@ export type NodeGraphOut = {
    * Uuid
    */
   uuid: string
+  /**
+   * Nodetype
+   */
+  nodeType: string
+  /**
+   * Title
+   */
+  title?: string
+  /**
+   * Description
+   */
+  description?: string
+  /**
+   * Contextclassification
+   */
+  contextClassification?: number | null
+  /**
+   * Taskclassification
+   */
+  taskClassification?: number | null
+  /**
+   * Timerequired
+   */
+  timeRequired?: number | null
+  /**
+   * Timeunits
+   */
+  timeUnits?: number | null
+  /**
+   * Representsworkflow
+   */
+  representsWorkflow?: boolean
+  /**
+   * Tagids
+   */
+  tagIds?: Array<number>
   /**
    * Sectionuuid
    */
@@ -968,6 +1007,42 @@ export type GraphNodeMutationOut = {
    */
   uuid: string
   /**
+   * Nodetype
+   */
+  nodeType: string
+  /**
+   * Title
+   */
+  title?: string
+  /**
+   * Description
+   */
+  description?: string
+  /**
+   * Contextclassification
+   */
+  contextClassification?: number | null
+  /**
+   * Taskclassification
+   */
+  taskClassification?: number | null
+  /**
+   * Timerequired
+   */
+  timeRequired?: number | null
+  /**
+   * Timeunits
+   */
+  timeUnits?: number | null
+  /**
+   * Representsworkflow
+   */
+  representsWorkflow?: boolean
+  /**
+   * Tagids
+   */
+  tagIds?: Array<number>
+  /**
    * Sectionuuid
    */
   sectionUuid?: string | null
@@ -1088,6 +1163,22 @@ export type GraphTagsDeltaOut = {
 }
 
 /**
+ * GraphChannelInsertBelowIn
+ *
+ * Insert below ``channel_uuid``, or append at end when ``channel_uuid`` is omitted.
+ */
+export type GraphChannelInsertBelowIn = {
+  /**
+   * Channeluuid
+   */
+  channelUuid?: string | null
+  /**
+   * Duplicate
+   */
+  duplicate?: boolean
+}
+
+/**
  * GraphReorderChannelsIn
  *
  * Full channel order for a graph; every channel on the graph must appear exactly once.
@@ -1173,37 +1264,9 @@ export type GraphSectionCreateIn = {
 }
 
 /**
- * GraphReorderSectionsIn
- *
- * Full section order for a graph; every section on the graph must appear exactly once.
- */
-export type GraphReorderSectionsIn = {
-  /**
-   * Sectionuuids
-   */
-  sectionUuids: Array<string>
-}
-
-/**
- * GraphChannelInsertBelowIn
- *
- * Insert below channelUuid, or append at end when channelUuid is omitted.
- */
-export type GraphChannelInsertBelowIn = {
-  /**
-   * Channeluuid
-   */
-  channelUuid?: string | null
-  /**
-   * Duplicate
-   */
-  duplicate?: boolean
-}
-
-/**
  * GraphSectionInsertBelowIn
  *
- * Insert a new section directly below sectionUuid; optionally duplicate title.
+ * Insert a new section directly below ``section_uuid``; optionally duplicate title.
  */
 export type GraphSectionInsertBelowIn = {
   /**
@@ -1214,6 +1277,18 @@ export type GraphSectionInsertBelowIn = {
    * Duplicate
    */
   duplicate?: boolean
+}
+
+/**
+ * GraphReorderSectionsIn
+ *
+ * Full section order for a graph; every section on the graph must appear exactly once.
+ */
+export type GraphReorderSectionsIn = {
+  /**
+   * Sectionuuids
+   */
+  sectionUuids: Array<string>
 }
 
 /**
@@ -1238,6 +1313,58 @@ export type GraphNodeCreateIn = {
    * Workflowuuid
    */
   workflowUuid?: string | null
+}
+
+/**
+ * GraphNodeInsertBelowIn
+ *
+ * Insert a node below ``node_uuid``; backend computes grid reflow.
+ */
+export type GraphNodeInsertBelowIn = {
+  /**
+   * Nodeuuid
+   */
+  nodeUuid: string
+  /**
+   * Mode
+   */
+  mode: string
+  /**
+   * Duplicate
+   */
+  duplicate?: boolean
+  /**
+   * Edge
+   */
+  edge?: string | null
+}
+
+/**
+ * GraphNodePlaceIn
+ *
+ * Place a new node on the grid (sidebar / row drop); backend computes reflow.
+ */
+export type GraphNodePlaceIn = {
+  /**
+   * Sectionuuid
+   */
+  sectionUuid: string
+  /**
+   * Channeluuid
+   */
+  channelUuid: string
+  /**
+   * Rowhint
+   */
+  rowHint: number
+  /**
+   * Mode
+   */
+  mode: string
+  /**
+   * Edge
+   */
+  edge?: string | null
 }
 
 /**
@@ -1382,6 +1509,96 @@ export type GraphNodePatchIn = {
    * Workflowuuid
    */
   workflowUuid?: string | null
+}
+
+/**
+ * GraphNodeLinkOutcomeIn
+ */
+export type GraphNodeLinkOutcomeIn = {
+  /**
+   * Outcomeuuid
+   */
+  outcomeUuid: string
+}
+
+/**
+ * GraphNodeMetaPatchIn
+ *
+ * Editable node metadata (grid placement and ``node_type`` are not patchable here).
+ */
+export type GraphNodeMetaPatchIn = {
+  /**
+   * Title
+   */
+  title?: string | null
+  /**
+   * Description
+   */
+  description?: string | null
+  /**
+   * Contextclassification
+   */
+  contextClassification?: number | null
+  /**
+   * Taskclassification
+   */
+  taskClassification?: number | null
+  /**
+   * Timerequired
+   */
+  timeRequired?: number | null
+  /**
+   * Timeunits
+   */
+  timeUnits?: number | null
+  /**
+   * Representsworkflow
+   */
+  representsWorkflow?: boolean | null
+  /**
+   * Tagids
+   */
+  tagIds?: Array<number> | null
+}
+
+/**
+ * GraphNodeLinkWorkflowIn
+ *
+ * Point a grid node at a library workflow (or clear link back to the graph root workflow).
+ */
+export type GraphNodeLinkWorkflowIn = {
+  /**
+   * Workflowuuid
+   */
+  workflowUuid?: string | null
+}
+
+/**
+ * GraphNodeMoveIn
+ *
+ * Move an existing node; backend computes sibling row/channel updates.
+ */
+export type GraphNodeMoveIn = {
+  /**
+   * Tosectionuuid
+   */
+  toSectionUuid: string
+  /**
+   * Tochanneluuid
+   */
+  toChannelUuid: string
+  /**
+   * Rowhint
+   */
+  rowHint: number
+  /**
+   * Mode
+   */
+  mode: string
+  /**
+   * Edge
+   */
+  edge?: string | null
 }
 
 /**
@@ -2622,6 +2839,50 @@ export type CreateGraphNodeResponses = {
 export type CreateGraphNodeResponse =
   CreateGraphNodeResponses[keyof CreateGraphNodeResponses]
 
+export type InsertGraphNodeBelowData = {
+  body: GraphNodeInsertBelowIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/graph/{uuid}/nodes/insert-below'
+}
+
+export type InsertGraphNodeBelowResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type InsertGraphNodeBelowResponse =
+  InsertGraphNodeBelowResponses[keyof InsertGraphNodeBelowResponses]
+
+export type PlaceGraphNodeData = {
+  body: GraphNodePlaceIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/graph/{uuid}/nodes/place'
+}
+
+export type PlaceGraphNodeResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type PlaceGraphNodeResponse =
+  PlaceGraphNodeResponses[keyof PlaceGraphNodeResponses]
+
 export type ListGraphEdgesData = {
   body?: never
   path: {
@@ -2894,6 +3155,116 @@ export type PatchNodeResponses = {
 }
 
 export type PatchNodeResponse = PatchNodeResponses[keyof PatchNodeResponses]
+
+export type LinkNodeOutcomeData = {
+  body: GraphNodeLinkOutcomeIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/node/{uuid}/link-outcome'
+}
+
+export type LinkNodeOutcomeResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type LinkNodeOutcomeResponse =
+  LinkNodeOutcomeResponses[keyof LinkNodeOutcomeResponses]
+
+export type UnlinkNodeOutcomeData = {
+  body: GraphNodeLinkOutcomeIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/node/{uuid}/unlink-outcome'
+}
+
+export type UnlinkNodeOutcomeResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type UnlinkNodeOutcomeResponse =
+  UnlinkNodeOutcomeResponses[keyof UnlinkNodeOutcomeResponses]
+
+export type PatchNodeMetaData = {
+  body: GraphNodeMetaPatchIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/node/{uuid}/meta'
+}
+
+export type PatchNodeMetaResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type PatchNodeMetaResponse =
+  PatchNodeMetaResponses[keyof PatchNodeMetaResponses]
+
+export type LinkNodeWorkflowData = {
+  body: GraphNodeLinkWorkflowIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/node/{uuid}/link-workflow'
+}
+
+export type LinkNodeWorkflowResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type LinkNodeWorkflowResponse =
+  LinkNodeWorkflowResponses[keyof LinkNodeWorkflowResponses]
+
+export type MoveGraphNodeData = {
+  body: GraphNodeMoveIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/node/{uuid}/move'
+}
+
+export type MoveGraphNodeResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type MoveGraphNodeResponse =
+  MoveGraphNodeResponses[keyof MoveGraphNodeResponses]
 
 export type DeleteEdgeData = {
   body?: never

@@ -30,6 +30,7 @@ from course_flow.core.models.relations import (
     FavoriteProject,
     ProjectDiscipline,
 )
+from course_flow.tests.node_helpers import create_grid_node
 
 
 @pytest.fixture
@@ -116,7 +117,7 @@ def test_channel_delete_cascades_nodes_and_linked_thread(user_a):
     th_node = Thread.objects.create()
     ch = Channel.objects.create(graph=g, title="C", position=0, thread=th_ch)
     sec = Section.objects.create(graph=g, title="S", position=0)
-    node = Node.objects.create(
+    node = create_grid_node(
         channel=ch,
         section=sec,
         workflow=g.workflow,
@@ -138,7 +139,7 @@ def test_section_delete_cascades_nodes_and_linked_thread(user_a):
     th_node = Thread.objects.create()
     sec = Section.objects.create(graph=g, title="S", position=0, thread=th_sec)
     ch = Channel.objects.create(graph=g, title="C", position=0)
-    node = Node.objects.create(
+    node = create_grid_node(
         section=sec,
         channel=ch,
         workflow=g.workflow,
@@ -170,7 +171,7 @@ def test_workflow_delete_cascades_nodes_and_activity_meta(user_a):
     sec = Section.objects.create(graph=g, title="S", position=0)
     ch = Channel.objects.create(graph=g, title="C", position=0)
     th = Thread.objects.create()
-    node = Node.objects.create(
+    node = create_grid_node(
         workflow=workflow,
         section=sec,
         channel=ch,
@@ -200,10 +201,10 @@ def test_node_delete_cascades_edges_and_thread(user_a):
     ch = Channel.objects.create(graph=g, title="C", position=0)
     th1 = Thread.objects.create()
     th2 = Thread.objects.create()
-    n1 = Node.objects.create(
+    n1 = create_grid_node(
         section=sec, channel=ch, workflow=g.workflow, thread=th1, section_row=0
     )
-    n2 = Node.objects.create(
+    n2 = create_grid_node(
         section=sec, channel=ch, workflow=g.workflow, thread=th2, section_row=1
     )
     Edge.objects.create(source_node=n1, target_node=n2)

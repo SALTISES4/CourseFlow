@@ -67,10 +67,16 @@ import type {
   GetWorkflowResponses,
   InsertGraphChannelBelowData,
   InsertGraphChannelBelowResponses,
+  InsertGraphNodeBelowData,
+  InsertGraphNodeBelowResponses,
   InsertGraphSectionBelowData,
   InsertGraphSectionBelowResponses,
   LibraryItemFavoriteToggleData,
   LibraryItemFavoriteToggleResponses,
+  LinkNodeOutcomeData,
+  LinkNodeOutcomeResponses,
+  LinkNodeWorkflowData,
+  LinkNodeWorkflowResponses,
   ListGraphChannelsData,
   ListGraphChannelsResponses,
   ListGraphEdgesData,
@@ -101,12 +107,18 @@ import type {
   MarkOneNotificationAsReadResponses,
   MeData,
   MeResponses,
+  MoveGraphNodeData,
+  MoveGraphNodeResponses,
   PatchMyNotificationSettingsData,
   PatchMyNotificationSettingsResponses,
   PatchMyProfileSettingsData,
   PatchMyProfileSettingsResponses,
   PatchNodeData,
+  PatchNodeMetaData,
+  PatchNodeMetaResponses,
   PatchNodeResponses,
+  PlaceGraphNodeData,
+  PlaceGraphNodeResponses,
   RegisterData,
   RegisterResponses,
   ReorderGraphChannelsData,
@@ -115,6 +127,8 @@ import type {
   ReorderGraphSectionsResponses,
   SearchLibraryData,
   SearchLibraryResponses,
+  UnlinkNodeOutcomeData,
+  UnlinkNodeOutcomeResponses,
   UpdateChannelData,
   UpdateChannelResponses,
   UpdateProjectData,
@@ -191,10 +205,16 @@ import {
   zGetWorkflowResponse,
   zInsertGraphChannelBelowData,
   zInsertGraphChannelBelowResponse,
+  zInsertGraphNodeBelowData,
+  zInsertGraphNodeBelowResponse,
   zInsertGraphSectionBelowData,
   zInsertGraphSectionBelowResponse,
   zLibraryItemFavoriteToggleData,
   zLibraryItemFavoriteToggleResponse,
+  zLinkNodeOutcomeData,
+  zLinkNodeOutcomeResponse,
+  zLinkNodeWorkflowData,
+  zLinkNodeWorkflowResponse,
   zListGraphChannelsData,
   zListGraphChannelsResponse,
   zListGraphEdgesData,
@@ -225,12 +245,18 @@ import {
   zMarkOneNotificationAsReadResponse,
   zMeData,
   zMeResponse,
+  zMoveGraphNodeData,
+  zMoveGraphNodeResponse,
   zPatchMyNotificationSettingsData,
   zPatchMyNotificationSettingsResponse,
   zPatchMyProfileSettingsData,
   zPatchMyProfileSettingsResponse,
   zPatchNodeData,
+  zPatchNodeMetaData,
+  zPatchNodeMetaResponse,
   zPatchNodeResponse,
+  zPlaceGraphNodeData,
+  zPlaceGraphNodeResponse,
   zRegisterData,
   zRegisterResponse,
   zReorderGraphChannelsData,
@@ -239,6 +265,8 @@ import {
   zReorderGraphSectionsResponse,
   zSearchLibraryData,
   zSearchLibraryResponse,
+  zUnlinkNodeOutcomeData,
+  zUnlinkNodeOutcomeResponse,
   zUpdateChannelData,
   zUpdateChannelResponse,
   zUpdateProjectData,
@@ -835,6 +863,54 @@ export const createGraphNode = <ThrowOnError extends boolean = false>(
   })
 
 /**
+ * Insert Graph Node Below
+ */
+export const insertGraphNodeBelow = <ThrowOnError extends boolean = false>(
+  options: Options<InsertGraphNodeBelowData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    InsertGraphNodeBelowResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zInsertGraphNodeBelowData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zInsertGraphNodeBelowResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/graph/{uuid}/nodes/insert-below',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Place Graph Node
+ */
+export const placeGraphNode = <ThrowOnError extends boolean = false>(
+  options: Options<PlaceGraphNodeData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    PlaceGraphNodeResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zPlaceGraphNodeData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zPlaceGraphNodeResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/graph/{uuid}/nodes/place',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
  * List Graph Edges
  */
 export const listGraphEdges = <ThrowOnError extends boolean = false>(
@@ -1081,6 +1157,124 @@ export const patchNode = <ThrowOnError extends boolean = false>(
       await zPatchNodeResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/node/{uuid}',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Link Node Outcome
+ */
+export const linkNodeOutcome = <ThrowOnError extends boolean = false>(
+  options: Options<LinkNodeOutcomeData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    LinkNodeOutcomeResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zLinkNodeOutcomeData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zLinkNodeOutcomeResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/node/{uuid}/link-outcome',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Unlink Node Outcome
+ */
+export const unlinkNodeOutcome = <ThrowOnError extends boolean = false>(
+  options: Options<UnlinkNodeOutcomeData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    UnlinkNodeOutcomeResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zUnlinkNodeOutcomeData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zUnlinkNodeOutcomeResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/node/{uuid}/unlink-outcome',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Patch Node Meta
+ */
+export const patchNodeMeta = <ThrowOnError extends boolean = false>(
+  options: Options<PatchNodeMetaData, ThrowOnError>
+) =>
+  (options.client ?? client).patch<
+    PatchNodeMetaResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) => await zPatchNodeMetaData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zPatchNodeMetaResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/node/{uuid}/meta',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Link Node Workflow
+ */
+export const linkNodeWorkflow = <ThrowOnError extends boolean = false>(
+  options: Options<LinkNodeWorkflowData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    LinkNodeWorkflowResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zLinkNodeWorkflowData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zLinkNodeWorkflowResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/node/{uuid}/link-workflow',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Move Graph Node
+ */
+export const moveGraphNode = <ThrowOnError extends boolean = false>(
+  options: Options<MoveGraphNodeData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    MoveGraphNodeResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) => await zMoveGraphNodeData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zMoveGraphNodeResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/node/{uuid}/move',
     ...options,
     headers: {
       'Content-Type': 'application/json',

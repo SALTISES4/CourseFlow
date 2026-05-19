@@ -63,12 +63,6 @@ export type EventUnion =
 /*******************************************************
  *
  *******************************************************/
-// export enum PermissionGroup {
-//   'OWNER' = 'owner',
-//   'EDITOR' = 'editor',
-//   'COMMENTER' = 'commenter',
-//   'VIEWER' = 'viewer'
-// }
 /*
  * i don't like this but it simplifies the backend for now
  * */
