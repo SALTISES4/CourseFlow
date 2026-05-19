@@ -1,29 +1,11 @@
+import { CFRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/Utility.class'
+import { generatePath } from 'react-router-dom'
 
 /*******************************************************
  * COMPONENTS
  *******************************************************/
-export const OutcomeTitle = ({
-  title,
-  hovertext,
-  prefix
-}: {
-  title: string | null
-  hovertext: string
-  prefix: string
-}) => {
-  let text = title
-  if (title == null || title == '') {
-    text = _t('Untitled')
-  }
 
-  return (
-    <div title={hovertext} className="title-text">
-      <span>{prefix + ' - '}</span>
-      <span dangerouslySetInnerHTML={{ __html: text }} />
-    </div>
-  )
-}
 //Text that can be passed a default value. HTML is dangerously set.
 export const TitleText = ({
   text,
@@ -48,6 +30,11 @@ export const TitleText = ({
 /*******************************************************
  * FUNCTION
  *******************************************************/
+export function workflowUrl(workflow) {
+  const base = CFRoutes.WORKFLOW
+  return generatePath(base, { uuid: workflow.uuid })
+}
+
 export function workflowTitle({
   title,
   code,
@@ -63,34 +50,8 @@ export function workflowTitle({
     text = `${code} - ${text}`
   }
 
-  // @todo check this condition
-  // if (['noaccess', 'nouser'].includes(data.url)) {
-  //   text += ` ${_t(' (no access)')}`
-  // }
-
   if (deleted) {
     text += ' (deleted)'
   }
   return text
-}
-
-//Returns the outcome title as a string
-/**
- *
- * @param data
- * @param prefix
- */
-export function getOutcomeTitle({
-  title,
-  prefix
-}: {
-  title: string | null
-  prefix: string
-}) {
-  let finalText = title
-  if (title == null || title == '') {
-    finalText = _t('Untitled')
-  }
-
-  return prefix + ' - ' + finalText
 }

@@ -2,7 +2,7 @@ import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
 import { LibraryObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import Favourite from '@cfComponents/UIPrimitives/Favourite'
-import { workflowTitle } from '@cfComponents/UIPrimitives/Titles.ts'
+import { workflowTitle } from '../../UIPrimitives/Titles.tsx'
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
 import Tooltip from '@mui/material/Tooltip'
 
