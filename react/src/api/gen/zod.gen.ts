@@ -194,7 +194,7 @@ export const zWorkflowDetailOut = z.object({
   description: z.string(),
   workflowType: z.string(),
   authorId: z.number().int().nullable(),
-  projectId: z.number().int().nullable(),
+  projectUuid: z.string().uuid().nullable(),
   revisionId: z.number().int(),
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime()
@@ -213,7 +213,7 @@ export const zWorkflowTypeIn = z.enum(['program', 'course', 'activity'])
  * Create a root ``Workflow`` and its backing ``Graph`` row (1:1 ORM).
  */
 export const zWorkflowCreateIn = z.object({
-  projectId: z.number().int().nullish(),
+  projectUuid: z.string().uuid().nullish(),
   title: z.string().optional().default(''),
   workflowType: zWorkflowTypeIn,
   description: z.string().optional().default('')
@@ -227,7 +227,7 @@ export const zWorkflowListItemOut = z.object({
   graphUuid: z.string().uuid(),
   title: z.string(),
   authorId: z.number().int().nullable(),
-  projectId: z.number().int().nullable(),
+  projectUuid: z.string().uuid().nullable(),
   workflowType: z.string(),
   revisionId: z.number().int(),
   modifiedOn: z.string().datetime()
@@ -260,7 +260,7 @@ export const zWorkflowDetailOutResp = z.object({
  */
 export const zWorkflowUpdateIn = z.object({
   title: z.string().nullish(),
-  projectId: z.number().int().nullish(),
+  projectUuid: z.string().uuid().nullish(),
   description: z.string().nullish()
 })
 

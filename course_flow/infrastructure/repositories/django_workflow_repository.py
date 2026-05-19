@@ -10,6 +10,7 @@ from course_flow.core.models import Graph, Workflow
 
 def _to_dto(g: Graph) -> WorkflowDTO:
     workflow = g.workflow
+    project = workflow.project if workflow.project_id else None
     return WorkflowDTO(
         id=g.id,
         graph_uuid=g.uuid,
@@ -17,6 +18,7 @@ def _to_dto(g: Graph) -> WorkflowDTO:
         revision_id=g.revision_id,
         author_id=workflow.author_id,
         project_id=workflow.project_id,
+        project_uuid=project.uuid if project is not None else None,
         workflow_type=workflow.workflow_type,
         title=workflow.title,
         description=workflow.description,
@@ -46,19 +48,19 @@ class DjangoWorkflowRepository(WorkflowRepositoryPort):
             description=description,
             workflow_type=workflow_type,
         )
-        g.refresh_from_db()
+        g = Graph.objects.select_related("workflow__project").get(pk=g.pk)
         return _to_dto(g)
 
     def get_by_graph_uuid(self, uuid: UUID) -> WorkflowDTO | None:
         try:
-            g = Graph.objects.select_related("workflow").get(uuid=uuid)
+            g = Graph.objects.select_related("workflow__project").get(uuid=uuid)
         except Graph.DoesNotExist:
             return None
         return _to_dto(g)
 
     def get_by_workflow_uuid(self, uuid: UUID) -> WorkflowDTO | None:
         try:
-            wf = Workflow.objects.select_related("graph").get(uuid=uuid)
+            wf = Workflow.objects.select_related("graph", "project").get(uuid=uuid)
         except Workflow.DoesNotExist:
             return None
         return _to_dto(wf.graph)
@@ -66,7 +68,7 @@ class DjangoWorkflowRepository(WorkflowRepositoryPort):
     def list_for_author(self, author_id: int) -> list[WorkflowDTO]:
         qs = (
             Graph.objects.filter(workflow__author_id=author_id)
-            .select_related("workflow")
+            .select_related("workflow__project")
             .order_by("-modified_on")
         )
         return [_to_dto(g) for g in qs]
@@ -74,14 +76,14 @@ class DjangoWorkflowRepository(WorkflowRepositoryPort):
     def list_for_project(self, project_id: int) -> list[WorkflowDTO]:
         qs = (
             Graph.objects.filter(workflow__project_id=project_id)
-            .select_related("workflow")
+            .select_related("workflow__project")
             .order_by("-modified_on")
         )
         return [_to_dto(g) for g in qs]
 
     def update(self, graph_uuid: UUID, updates: dict[str, Any]) -> WorkflowDTO | None:
         try:
-            g = Graph.objects.select_related("workflow").get(uuid=graph_uuid)
+            g = Graph.objects.select_related("workflow__project").get(uuid=graph_uuid)
         except Graph.DoesNotExist:
             return None
         wf = g.workflow

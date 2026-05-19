@@ -1,4 +1,8 @@
-// import { createWorkflowMutation } from '@cf/api/gen/@tanstack/react-query.gen'
+import { WorkflowTypeIn } from '@cf/api/gen'
+import {
+  createWorkflowMutation,
+  listWorkflowsQueryKey
+} from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
@@ -19,9 +23,10 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Step from '@mui/material/Step'
 import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { enqueueSnackbar } from 'notistack'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { generatePath, useNavigate } from 'react-router-dom'
 
 type StateType = {
@@ -40,14 +45,20 @@ const initialState: StateType = {
 const CreateWizardDialog = () => {
   const formRef = useRef<HTMLFormElement>(null)
   const [state, setState] = useState<StateType>(initialState)
-  const [projectId, setProjectId] = useState<string>()
+  const [projectUuid, setProjectUuid] = useState<string>()
   const [templates, setTemplateData] = useState<TemplateType[]>(null)
   const [isFormReady, setIsFormReady] = useState<boolean>()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
-  //   const [mutate] = useCreateWorkflowMutation()
-  // TODO:
-  // const createWorkflow = useMutation(createWorkflowMutation())
+  const createWorkflow = useMutation({
+    ...createWorkflowMutation(),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: listWorkflowsQueryKey()
+      })
+    }
+  })
 
   const {
     show,
@@ -59,7 +70,7 @@ const CreateWizardDialog = () => {
   const steps = [
     {
       title: 'Select project',
-      canSubmit: projectId
+      canSubmit: projectUuid
     },
     {
       title: `Select a ${state.workflowType} type`,
@@ -111,7 +122,7 @@ const CreateWizardDialog = () => {
   }
 
   function onProjectSelect(uuid: string) {
-    setProjectId(uuid)
+    setProjectUuid(uuid)
   }
 
   function onTypeSelect(resourceType: CreateResourceOptions) {
@@ -141,45 +152,48 @@ const CreateWizardDialog = () => {
     onDialogClose()
   }
 
-  function onSuccess(uuid: string) {
-    const path = generatePath(CFRoutes.WORKFLOW, { uuid })
-    onDialogClose()
-    navigate(path)
-    enqueueSnackbar('created project success', {
-      variant: 'success'
-    })
-  }
+  const onSuccess = useCallback(
+    (uuid: string) => {
+      const path = generatePath(CFRoutes.WORKFLOW, { uuid })
+      onDialogClose()
+      navigate(path)
+      enqueueSnackbar('Workflow created', {
+        variant: 'success'
+      })
+    },
+    [navigate, onDialogClose]
+  )
 
-  function onError(error) {
-    enqueueSnackbar('created project error', {
+  const onError = useCallback((error: unknown) => {
+    enqueueSnackbar('Failed to create workflow', {
       variant: 'error'
     })
-    // this won't work because we're getting back errors from the serializer
-    // but it's a start
-    console.error('Error creating project:', error)
-    // setErrors(error.name)
-  }
+    console.error('Error creating workflow:', error)
+  }, [])
 
-  async function onSubmit(data: WorkflowFormType) {
-    const payload = {
-      projectId: projectId ? Number(projectId) : null,
-      type: state.workflowType,
-      ...data
-    }
+  const onSubmit = useCallback(
+    async (data: WorkflowFormType) => {
+      if (!state.workflowType) {
+        return
+      }
 
-    // TODO:
-    console.log('onSubmit with', payload)
+      try {
+        const response = await createWorkflow.mutateAsync({
+          body: {
+            ...(projectUuid ? { projectUuid } : {}),
+            title: data.title,
+            workflowType: state.workflowType as WorkflowTypeIn,
+            description: data.description ?? ''
+          }
+        })
 
-    // try {
-    //   const response = await createWorkflow.mutateAsync({
-    //     body: payload
-    //   })
-
-    //   onSuccess(String(response.uuid))
-    // } catch (err) {
-    //   onError(err)
-    // }
-  }
+        onSuccess(String(response.uuid))
+      } catch (err) {
+        onError(err)
+      }
+    },
+    [createWorkflow, onError, onSuccess, projectUuid, state.workflowType]
+  )
 
   /**
    * Bit of a hack, we want the form to be selfcontained, but we want to submit it conditionally from outside
@@ -206,7 +220,7 @@ const CreateWizardDialog = () => {
         case 0: {
           return (
             <ProjectSearch
-              selected={projectId}
+              selected={projectUuid}
               onProjectSelect={onProjectSelect}
             />
           )
@@ -237,7 +251,7 @@ const CreateWizardDialog = () => {
           if (state.resourceType === CreateResourceOptions.TEMPLATE) {
             return (
               <TemplateSearch
-                selected={projectId}
+                selected={projectUuid}
                 onTemplateSelect={onTemplateSelect}
               />
             )
@@ -248,7 +262,16 @@ const CreateWizardDialog = () => {
           return null
       }
     }
-  }, [onSubmit, onCloseHandler, setIsFormReady])
+  }, [
+    onSubmit,
+    onCloseHandler,
+    setIsFormReady,
+    state.step,
+    state.resourceType,
+    state.workflowType,
+    state.title,
+    projectUuid
+  ])
 
   const ButtonActions = () => {
     return (
@@ -270,7 +293,7 @@ const CreateWizardDialog = () => {
           onClick={
             state.step !== steps.length - 1 ? goToNextStep : handleChildSubmit
           }
-          disabled={!steps[state.step].canSubmit}
+          disabled={!steps[state.step].canSubmit || createWorkflow.isPending}
         >
           {state.step !== steps.length - 1 ? 'Next step' : ctaTitle}
         </Button>

@@ -16,7 +16,7 @@ class WorkflowTypeIn(str, Enum):
 class WorkflowCreateIn(CamelSchema):
     """Create a root ``Workflow`` and its backing ``Graph`` row (1:1 ORM)."""
 
-    project_id: int | None = None
+    project_uuid: UUID | None = None
     title: str = ""
     workflow_type: WorkflowTypeIn
     description: str = ""
@@ -24,7 +24,7 @@ class WorkflowCreateIn(CamelSchema):
 
 class WorkflowUpdateIn(CamelSchema):
     title: str | None = None
-    project_id: int | None = None
+    project_uuid: UUID | None = None
     description: str | None = None
 
 
@@ -33,7 +33,7 @@ class WorkflowListItemOut(CamelSchema):
     graph_uuid: UUID
     title: str
     author_id: int | None
-    project_id: int | None
+    project_uuid: UUID | None
     workflow_type: str
     revision_id: int
     modified_on: datetime
@@ -55,7 +55,7 @@ class WorkflowDetailOut(CamelSchema):
     description: str
     workflow_type: str
     author_id: int | None
-    project_id: int | None
+    project_uuid: UUID | None
     revision_id: int
     date_created: datetime
     modified_on: datetime

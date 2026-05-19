@@ -3468,16 +3468,17 @@
             ],
             "title": "Authorid"
           },
-          "projectId": {
+          "projectUuid": {
             "anyOf": [
               {
-                "type": "integer"
+                "format": "uuid",
+                "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Projectid"
+            "title": "Projectuuid"
           },
           "revisionId": {
             "title": "Revisionid",
@@ -3501,7 +3502,7 @@
           "description",
           "workflowType",
           "authorId",
-          "projectId",
+          "projectUuid",
           "revisionId",
           "dateCreated",
           "modifiedOn"
@@ -3512,16 +3513,17 @@
       "WorkflowCreateIn": {
         "description": "Create a root ``Workflow`` and its backing ``Graph`` row (1:1 ORM).",
         "properties": {
-          "projectId": {
+          "projectUuid": {
             "anyOf": [
               {
-                "type": "integer"
+                "format": "uuid",
+                "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Projectid"
+            "title": "Projectuuid"
           },
           "title": {
             "default": "",
@@ -3580,16 +3582,17 @@
             ],
             "title": "Authorid"
           },
-          "projectId": {
+          "projectUuid": {
             "anyOf": [
               {
-                "type": "integer"
+                "format": "uuid",
+                "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Projectid"
+            "title": "Projectuuid"
           },
           "workflowType": {
             "title": "Workflowtype",
@@ -3610,7 +3613,7 @@
           "graphUuid",
           "title",
           "authorId",
-          "projectId",
+          "projectUuid",
           "workflowType",
           "revisionId",
           "modifiedOn"
@@ -3676,16 +3679,17 @@
             ],
             "title": "Title"
           },
-          "projectId": {
+          "projectUuid": {
             "anyOf": [
               {
-                "type": "integer"
+                "format": "uuid",
+                "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Projectid"
+            "title": "Projectuuid"
           },
           "description": {
             "anyOf": [

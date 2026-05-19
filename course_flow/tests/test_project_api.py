@@ -9,7 +9,13 @@ from django.test import Client
 from django.utils import timezone
 
 from course_flow.core.auth import generate_raw_token, hash_token
-from course_flow.core.models import Authtoken, FavoriteGraph, Graph, Project
+from course_flow.core.models import (
+    Authtoken,
+    FavoriteGraph,
+    Graph,
+    Project,
+    Workflow,
+)
 
 
 @pytest.fixture
@@ -44,11 +50,10 @@ def _issue_token_for(user, *, expires_delta: timedelta = timedelta(hours=1)):
 def _create_workflow_on_project(
     client: Client, raw_token: str, project_uuid: str
 ) -> str:
-    project_pk = Project.objects.only("id").get(uuid=project_uuid).id
     response = client.post(
         "/api/workflow",
         data={
-            "projectId": project_pk,
+            "projectUuid": project_uuid,
             "title": "WF",
             "workflowType": "course",
             "description": "",
@@ -74,6 +79,30 @@ def _create_project(client: Client, raw_token: str) -> str:
     )
     assert response.status_code == 200, response.content
     return response.json()["uuid"]
+
+
+@pytest.mark.django_db
+def test_create_workflow_accepts_project_uuid(client: Client, user):
+    raw = _issue_token_for(user)
+    project_uuid = _create_project(client, raw)
+
+    response = client.post(
+        "/api/workflow",
+        data={
+            "projectUuid": project_uuid,
+            "title": "From UUID",
+            "workflowType": "course",
+            "description": "",
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert response.status_code == 200, response.content
+    body = response.json()
+    assert body["title"] == "From UUID"
+    assert body["projectUuid"] == project_uuid
+    wf = Workflow.objects.select_related("project").get(uuid=body["uuid"])
+    assert wf.project_id == Project.objects.only("id").get(uuid=project_uuid).id
 
 
 @pytest.mark.django_db

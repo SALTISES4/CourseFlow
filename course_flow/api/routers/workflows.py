@@ -4,7 +4,7 @@ from ninja import Router
 from ninja.errors import HttpError
 
 from course_flow.api.auth import BearerAuth, get_current_user
-from course_flow.api.deps import get_workflow_service
+from course_flow.api.deps import get_project_service, get_workflow_service
 from course_flow.api.permissions import can_view_graph
 from course_flow.api.schemas.workflows import (
     WorkflowCreateIn,
@@ -28,11 +28,20 @@ def _workflow_detail(dto: WorkflowDTO) -> WorkflowDetailOut:
         description=dto.description,
         workflow_type=dto.workflow_type,
         author_id=dto.author_id,
-        project_id=dto.project_id,
+        project_uuid=dto.project_uuid,
         revision_id=dto.revision_id,
         date_created=dto.date_created,
         modified_on=dto.modified_on,
     )
+
+
+def _resolve_project_pk(project_uuid: UUID | None) -> int | None:
+    if project_uuid is None:
+        return None
+    project = get_project_service().get_by_uuid(project_uuid)
+    if project is None:
+        raise HttpError(404, "Project not found")
+    return project.id
 
 
 def _workflow_list_item(dto: WorkflowDTO) -> WorkflowListItemOut:
@@ -41,11 +50,22 @@ def _workflow_list_item(dto: WorkflowDTO) -> WorkflowListItemOut:
         graph_uuid=dto.graph_uuid,
         title=dto.title,
         author_id=dto.author_id,
-        project_id=dto.project_id,
+        project_uuid=dto.project_uuid,
         workflow_type=dto.workflow_type,
         revision_id=dto.revision_id,
         modified_on=dto.modified_on,
     )
+
+
+def _updates_with_resolved_project(
+    updates: dict,
+) -> dict:
+    if "project_uuid" not in updates:
+        return updates
+    resolved = dict(updates)
+    project_uuid = resolved.pop("project_uuid")
+    resolved["project_id"] = _resolve_project_pk(project_uuid)
+    return resolved
 
 
 @router.post(
@@ -60,7 +80,7 @@ def create_workflow(request, payload: WorkflowCreateIn):
     try:
         dto = svc.create(
             author_id=current_user.id,
-            project_id=payload.project_id,
+            project_id=_resolve_project_pk(payload.project_uuid),
             title=payload.title,
             workflow_type=payload.workflow_type.value,
             description=payload.description,
@@ -101,7 +121,9 @@ def update_workflow(request, uuid: UUID, payload: WorkflowUpdateIn):
         raise HttpError(404, "Workflow not found")
     if not can_view_graph(current_user=current_user, graph=existing):
         raise HttpError(403, "Forbidden")
-    updates = payload.model_dump(exclude_unset=True)
+    updates = _updates_with_resolved_project(
+        payload.model_dump(exclude_unset=True)
+    )
     dto = svc.update_by_workflow_uuid(uuid, updates)
     if dto is None:
         raise HttpError(404, "Workflow not found")

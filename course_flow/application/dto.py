@@ -33,6 +33,7 @@ class WorkflowDTO:
     revision_id: int
     author_id: int | None
     project_id: int | None
+    project_uuid: UUID | None
     workflow_type: str
     title: str
     description: str

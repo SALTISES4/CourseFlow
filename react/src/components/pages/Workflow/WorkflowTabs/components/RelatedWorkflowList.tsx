@@ -1,9 +1,8 @@
-// import { listWorkflowsOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { listWorkflowsOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import * as MainSidebar from '@cf/components/common/globalNav/MainSidebar/styles'
 import Loader from '@cf/components/common/UIPrimitives/Loader'
 import { _t } from '@cf/utility/Utility.class'
-import { workflowUrl } from '../../../../common/UIPrimitives/Titles.tsx'
+import { workflowUrl } from '@cfComponents/UIPrimitives/Titles'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -12,13 +11,6 @@ import ListItemText from '@mui/material/ListItemText'
 import { useQuery } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
 
-type WorkflowNode = {
-  uuid: string
-  title: string
-  description: string
-  url: string
-  deleted: boolean
-}
 /**
  * https://courseflow-staging.mydalite.org/course-flow/workflow/19
  * There are two parts:
@@ -30,30 +22,7 @@ type WorkflowNode = {
 
  */
 const RelatedWorkflowList = () => {
-  // TODO:
-  return (
-    <>
-      <Divider sx={{ mt: 2 }} />
-      <MainSidebar.SectionWrap>
-        <MainSidebar.SectionLabel variant="body1">
-          {_t('RelatedWorkflowList:')}
-        </MainSidebar.SectionLabel>
-        <List>
-          <ListItem dense>
-            <ListItemText primary={'TODO: Review this'} />
-          </ListItem>
-        </List>
-      </MainSidebar.SectionWrap>
-    </>
-  )
-
   const { uuid } = useParams()
-
-  // const { data: childData, isLoading: childIsLoading } =
-  //   useListRelatedWorkflowParentsQuery({ uuid: uuid }, { skip: !uuid })
-  //
-  // const { data: parentData, isLoading: parentIsLoading } =
-  //   useListRelatedWorkflowChildrenQuery({ uuid: uuid }, { skip: !uuid })
 
   const childQuery = useQuery({
     ...listWorkflowsOptions({
@@ -62,7 +31,7 @@ const RelatedWorkflowList = () => {
         page: 1
       }
     }),
-    enabled: false
+    enabled: true
   })
 
   const parentQuery = useQuery({
@@ -72,7 +41,7 @@ const RelatedWorkflowList = () => {
         page: 1
       }
     }),
-    enabled: false
+    enabled: true
   })
 
   if (!uuid) {
@@ -93,10 +62,7 @@ const RelatedWorkflowList = () => {
 
     const parentWorkflows = Array.from(
       new Map(
-        (parentQuery.data.items as WorkflowNode[]).map((workflow) => [
-          workflow.uuid,
-          workflow
-        ])
+        parentQuery.data.items.map((workflow) => [workflow.uuid, workflow])
       ).values()
     )
 

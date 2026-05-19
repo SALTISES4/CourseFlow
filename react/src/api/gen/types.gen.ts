@@ -385,9 +385,9 @@ export type WorkflowDetailOut = {
    */
   authorId: number | null
   /**
-   * Projectid
+   * Projectuuid
    */
-  projectId: number | null
+  projectUuid: string | null
   /**
    * Revisionid
    */
@@ -409,9 +409,9 @@ export type WorkflowDetailOut = {
  */
 export type WorkflowCreateIn = {
   /**
-   * Projectid
+   * Projectuuid
    */
-  projectId?: number | null
+  projectUuid?: string | null
   /**
    * Title
    */
@@ -455,9 +455,9 @@ export type WorkflowListItemOut = {
    */
   authorId: number | null
   /**
-   * Projectid
+   * Projectuuid
    */
-  projectId: number | null
+  projectUuid: string | null
   /**
    * Workflowtype
    */
@@ -509,9 +509,9 @@ export type WorkflowUpdateIn = {
    */
   title?: string | null
   /**
-   * Projectid
+   * Projectuuid
    */
-  projectId?: number | null
+  projectUuid?: string | null
   /**
    * Description
    */
