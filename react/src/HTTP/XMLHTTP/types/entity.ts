@@ -47,5 +47,3 @@ export interface ELibraryObject extends CourseFlowEntity {
   isVisible: boolean
   isTemplate: boolean
 }
-
-

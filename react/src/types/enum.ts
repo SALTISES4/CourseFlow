@@ -41,10 +41,3 @@ export enum LibraryObjectType {
   COURSE = 'course',
   TASK = 'task'
 }
-
-// @todo unclear data type
-export enum objectType {
-  OUTCOME = 'outcome',
-  PROJECT = 'project',
-  STRATEGY = 'strategy'
-}
