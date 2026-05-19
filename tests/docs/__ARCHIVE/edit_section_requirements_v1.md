@@ -22,7 +22,7 @@
 ## Prerequisites Section FRs
 
 - User is authentified to the CourseFlow application
-- User has nativated to a Workflow on which he has Viewer, Commenter, Editor or Owner role
+- User has navigated to a Workflow where they have Viewer, Commenter, Editor, or Owner role on the parent project, or User (published-access) is viewing a workflow whose parent project is published
 
 ## Functional Requirements
 
@@ -34,6 +34,7 @@
   - Editor
   - Viewer (may open the sidebar in read-only mode)
   - Commenter (may open the sidebar in read-only mode)
+  - User (published-access; may open the sidebar in read-only mode when the parent project is published)
 - **Preconditions**: Workflow is open in [Workflow] view, at least one Section exists.
 - **Trigger**:
   1. User clicks an existing Section, or
@@ -82,6 +83,9 @@
 - **Actor**: 
   - Owner
   - Editor
+  - Commenter
+  - Viewer
+  - User (published-access)
 - **Preconditions**: Section exists; user has edit rights.
 - **Trigger**: User clicks on the [Insert below] icon on hover of the [Section header].
 - **Main Flow**:
@@ -90,7 +94,7 @@
 - **Acceptance Criteria**:
   - Given Section at index K, when insert below action succeeds, then new Section is at K+1 and following indices shift.
   - Given Commenter role, the [Insert below] icon is visible but inactive on hover of [Section header]
-  - Given Viewer role, no icon is visible on hover of [Section header]
+  - Given Viewer or User (published-access) role, no icon is visible on hover of [Section header]
 
 ### FR-SEC-005 Duplicate Section Below (hover or sidebar)
 
@@ -98,6 +102,9 @@
 - **Actor**: 
   - Owner 
   - Editor
+  - Commenter
+  - Viewer
+  - User (published-access)
 - **Preconditions**: At least one Section exists within the Workflow.
 - **Trigger**: User clicks on the [Duplicate] icon on hover of [Section header] or on the [Duplicate] button from [Edit section] form in the [Right sidebar]
 - **Main Flow**:
@@ -112,7 +119,7 @@
 - **Acceptance Criteria**:
   - Content mirrored except comments; copied Section is placed immediately below the source Section.
   - Given Commenter role, the [Duplicate] icon is visible on hover of [Section header] but inactive and the [Duplicate] button is read-only in the [Edit section] form of the [Right sidebar].
-  - Given Viewer role, no icon is visible on hover of [Section header] but and the [Duplicate] button is read-only in the [Edit section] form of the [Right sidebar].
+  - Given Viewer or User (published-access) role, no icon is visible on hover of [Section header] and the [Duplicate] button is read-only in the [Edit section] form of the [Right sidebar].
 
 ### FR-SEC-006 Delete Section
 
@@ -120,6 +127,9 @@
 - **Actor**: 
   - Owner
   - Editor
+  - Commenter
+  - Viewer
+  - User (published-access)
 - **Preconditions**: Target Section exists.
 - **Trigger**: User clicks on the [Delete] icon from hover on [Section header] or the [Delete] button from [Edit section] form in the [Right sidebar]
 - **Main Flow**:
@@ -141,17 +151,19 @@
   - Editor
   - Commenter
   - Viewer
+  - User (published-access)
 - **Preconditions**: 
 User has access to the Workflow.
 - **Main Flow**:
   1. Owner and Editor roles: can view and click on icons when [Section header] is hovered ([Insert below], [Duplicate], [Delete], [Comment]); [Edit section] form fields are editable.
   2. Viewer role: can view Sections; Section hover icons are not visible; [Edit section] form fields are read-only; [Edit section] form buttons are disabled.
-  3. Commenter role: may view and comment on Sections (FR-SEC-011); on hover of [Section header], all icons are visible but only the [Comment] icon is active; the [Edit section] form fields are read-only; the [Edit section] form buttons are disabled.
+  3. User (published-access) role: can view Sections on a published parent project; Section hover icons are not visible; [Edit section] form fields are read-only; [Edit section] form buttons are disabled.
+  4. Commenter role: may view and comment on Sections (FR-SEC-011); on hover of [Section header], all icons are visible but only the [Comment] icon is active; the [Edit section] form fields are read-only; the [Edit section] form buttons are disabled.
 - **Acceptance Criteria**:
-  - Given Viewer role, icons are not displayed on hover of [Section header].
+  - Given Viewer or User (published-access) role, icons are not displayed on hover of [Section header].
   - Given Owner/Editor role, when hovering [Section header], then all four icons are clickable.
   - Given Commenter role, when hovering [Section header], then all four icons are are visible, but only [Comment] icon is clickable.
-  - Given Viewer or Commenter role, when [Edit section] form is open in the [Right sidebar], then [Title] field is read-only and buttons are disabled.
+  - Given Viewer, Commenter, or User (published-access) role, when [Edit section] form is open in the [Right sidebar], then [Title] field is read-only and buttons are disabled.
 
 ### FR-SEC-008 Data Integrity For Edges Across Section Changes
 
@@ -187,6 +199,7 @@ User has access to the Workflow.
   - Editor
   - Commenter
   - Viewer
+  - User (published-access)
 - **Preconditions**: User has comment rights on the Workflow.
 - **Trigger**: User clicks on the [Comment icon] on hover of [Section header]
 - **Main Flow**:

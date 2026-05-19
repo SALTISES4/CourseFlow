@@ -84,7 +84,8 @@ Do not drift into implementation of:
 Use variable-friendly `camelCase` object names such as:
 
 * `workflowView`
-* `sectionContainer`
+* `workflowSectionContainer`
+* `workflowSectionRow`
 * `sectionHeader`
 * `rightSidebar`
 * `editSectionForm`
@@ -110,11 +111,11 @@ Example:
 
 ```yaml
 locatorMappings:
-  sectionContainer:
+  workflowSectionContainer:
     strategy: "[data-week-id]"
     confidence: confirmed
   sectionHeader:
-    strategy: "{sectionContainer} > header"
+    strategy: "{workflowSectionContainer} > header"
     confidence: inferred
   editSectionForm:
     strategy: null

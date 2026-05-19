@@ -9,33 +9,33 @@ documentPreconditions:
 
 uiObjectDefinitions:
   createProjectDialog:
-    meaning: Modal dialog for creating a project; opened from addMenuItemProject (see FR-TOP-002); wraps projectForm with create-specific title and submit labels; fullWidth maxWidth sm in current implementation.
+    meaning: Modal dialog for creating a project
   contextActionBar:
-    meaning: Horizontal action bar rendered below the global top navigation for the active content context; full contract for project and workflow routes is in context_action_bar_requirements_v1.yaml (FR-CAB-001 onward)
+    meaning: Canonical definition in tests/docs/requirements/original/context_action_bar_requirements_v1.yaml.
   editPencilButton:
-    meaning: Pencil icon control on contextActionBar; on project routes visible for Owner, Editor, Viewer, and Commenter—Owner and Editor click it to open editProjectDialog; Viewer and Commenter see it read-only (not clickable) per FR-PROJ-FORM-003. 
+    meaning: Canonical definition in tests/docs/requirements/original/context_action_bar_requirements_v1.yaml.
   editProjectDialog:
-    meaning: Modal dialog for editing an existing project; opened when Owner or Editor clicks editPencilButton on contextActionBar while on a project view route; wraps the same projectForm with edit-specific title and submit labels and prefilled values from project detail.
+    meaning: Modal dialog for editing an existing project
   projectForm:
-    meaning: Form inside createProjectDialog or editProjectDialog containing projectTitleField, projectDescriptionField, projectDisciplineField, projectFormCancelButton, and projectFormSubmitButton.
+    meaning: Form inside createProjectDialog or editProjectDialog for project metadata and submit actions.
   projectStartWithProjectAlert:
-    meaning: Informational alert shown above project fields in createProjectDialog when the user account has no projects (see FR-PROJ-FORM-002); copy per FIGMA-PROJ-CREATE-NEW-USERS; edit-project flow may use related rules per implementation.
+    meaning: Alert on projectOverviewView prompting the user to start from a project.
   projectFormDialogTitle:
-    meaning: Dialog title for the form; 'Create project' in create mode and 'Edit project' in edit mode in current implementation.
+    meaning: Dialog title for the form; 'Create project' in create mode and 'Edit project' in edit mode
   projectTitleField:
-    meaning: Text input for project title; required; maximum 200 characters per FR-PROJ-FORM-004; if the user enters content beyond the maximum, the field shows an error message (projectFormFieldValidationMessage); label 'Title' and placeholder 'Project title' in current implementation.
+    meaning: Text input for project title
   projectDescriptionField:
-    meaning: Text input for project description; optional; no maximum character length per FR-PROJ-FORM-004; label 'Description' in current implementation.
+    meaning: Text input for project description; optional; no maximum character length; label 'Description'
   projectDisciplineField:
-    meaning: Multi-select control for zero or more disciplines; not required for create or edit and no maximum number of selected options per FR-PROJ-FORM-004; label 'Discipline'; options come from application discipline list in current implementation.
+    meaning: Multi-select control for zero or more disciplines
   projectFormCancelButton:
-    meaning: Secondary action that closes the dialog without persisting changes; label 'Cancel' in current implementation.
+    meaning: Secondary action that closes the dialog without persisting changes; label 'Cancel'
   projectFormSubmitButton:
-    meaning: Primary submit action; label 'Create project' or 'Update project' depending on mode; disabled and not clickable until projectForm has unsaved changes relative to loaded or initial values (see FR-PROJ-FORM-003 for edit dialog, FR-PROJ-FORM-005 for general submit enablement).
+    meaning: Primary submit action
   projectFormFieldValidationMessage:
     meaning: Inline helper or error text for a field when validation fails.
   globalMessageSnackbar:
-    meaning: Global feedback via snackbar for create and update project outcomes where not shown inline on the form; success message on successful create or edit, error message when create or update does not complete successfully after submit per FR-PROJ-FORM-005 (inline field validation per FR-PROJ-FORM-004 where applicable).
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_header_requirements_v1.yaml.
 
 locatorMappings:
   createProjectDialog:

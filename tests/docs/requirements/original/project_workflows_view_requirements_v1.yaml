@@ -4,7 +4,8 @@
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
 # Cross-reference:
 #   - tests/docs/requirements/original/project_overview_requirements_v1.yaml (shared projectHeader and projectViewTabSelector contracts in FR-PROJ-OV-001; favourites behavior in FR-PROJ-OV-006)
-#   - tests/docs/requirements/original/card_content_requirements_v1.yaml (workflowCard content and click destination in FR-CARD-002 and FR-CARD-004)
+#   - tests/docs/requirements/original/library_page_requirements_v1.yaml (sort and shared filters — FR-LIB-002, FR-LIB-003)
+#   - tests/docs/requirements/original/card_content_requirements_v1.yaml (workflowCard — FR-CARD-001 through FR-CARD-006 as applicable)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
@@ -12,45 +13,45 @@ documentPreconditions:
 
 uiObjectDefinitions:
   projectWorkflowsView:
-    meaning: Project 'Workflows' view at route '/project/{id}/workflows', showing workflows scoped to the current project.
+    meaning: Project Workflows sub-view listing workflows belonging to the project.
   projectWorkflowsFilterToolbar:
-    meaning: Filter/search toolbar for projectWorkflowsView using global canonical controls shared across listing surfaces: sortControl, ownershipFilter, workflowTypeFilter, favouritesToggle, archiveToggle, and keywordSearchField.
+    meaning: Filter toolbar on projectWorkflowsView with sort, ownership, workflow-type, favourites, archive, and keyword controls.
   sortControl:
-    meaning: Global canonical sortControl shared across listing surfaces. Placeholder label is 'Sort'; options are 'A - Z' and 'Date created'; selecting the same option again toggles direction; sortResetButton is visible when non-default sort is active.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   sortResetButton:
-    meaning: Clear ('X') control on sortControl that resets sorting to default order.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   ownershipFilter:
-    meaning: Global canonical ownershipFilter shared across listing surfaces, with a single-select option set and ownershipFilterResetButton when active.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   ownershipFilterResetButton:
-    meaning: Clear ('X') control on ownershipFilter when an ownership option is active.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   workflowTypeFilter:
-    meaning: Global canonical workflowTypeFilter shared across listing surfaces, with the same option set everywhere it appears. In projectWorkflowsView it is visible by default because only workflows are in scope.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   favouritesToggle:
-    meaning: Global canonical favourites boolean filter shared across listing surfaces; when enabled, results are constrained to favourited workflows in current project scope.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   archiveToggle:
-    meaning: Global canonical archive boolean filter shared across listing surfaces; when enabled, archived workflows may appear per backend contract.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   keywordSearchField:
-    meaning: Global canonical inline keyword search field shared across listing surfaces, used to narrow workflows.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   keywordSearchClearButton:
-    meaning: Icon-only clear ('X') control on keywordSearchField, visible when keywordSearchField is non-empty.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   resultsSummary:
-    meaning: Region between projectWorkflowsFilterToolbar and resultsRegion showing current query result counts; same canonical contract as resultsSummary on 'My library' and 'Explore'.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   resultsRegion:
-    meaning: Main grid results area in projectWorkflowsView listing workflowCard items for current query state. Uses shared results layout contract across listing surfaces: exactly 2 cards per row, maximum 5 rows (maximum 10 visible cards per page).
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   workflowCard:
-    meaning: Same canonical object as workflowCard in card_content_requirements_v1.yaml for each workflow listed in projectWorkflowsView.
+    meaning: Canonical definition in tests/docs/requirements/original/card_content_requirements_v1.yaml.
   pagination:
-    meaning: Shared pagination control shown only when total matching workflows are 11 or more.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   paginationPageNumberButton:
-    meaning: Clickable numeric page control within pagination.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   paginationPreviousNextButton:
-    meaning: Single-arrow control within pagination for previous/next page navigation.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   paginationFirstLastButton:
-    meaning: Double-arrow control within pagination for first/last page navigation.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   projectWorkflowsLoadingState:
     meaning: Loading placeholders shown while project workflows query is in progress.
   projectWorkflowsEmptyState:
-    meaning: Empty state shown when no workflows are present in the project workflows listing; exact copy is 'There are no workflows in this project'.
+    meaning: Empty state shown when no workflows are present in the project workflows listing
   projectWorkflowsErrorState:
     meaning: Error state shown when project workflows query fails.
 
@@ -155,6 +156,7 @@ requirements:
       - projectViewTabSelector indicates 'Workflows' as the active tab
       - system renders projectWorkflowsFilterToolbar, resultsRegion and resultsSummary
       - resultsRegion lists workflowCard items scoped to the current project id
+      - workflowCard presentation and card interactions in resultsRegion conform to card_content_requirements_v1.yaml
 
     roleBehavior: {}
 
@@ -164,6 +166,7 @@ requirements:
       - projectWorkflowsFilterToolbar is visible
       - resultsSummary is visible between projectWorkflowsFilterToolbar and resultsRegion
       - given query returns workflows for the current project, workflowCard items are shown in resultsRegion
+      - given query returns workflows for the current project, workflowCard in resultsRegion conforms to card_content_requirements_v1.yaml
 
     openQuestions:
       - Confirm whether published-project users without authentication can access '/project/{id}/workflows', or if this route is authenticated-only in product contract.
@@ -199,28 +202,19 @@ requirements:
       - user changes sort/filter/search controls on projectWorkflowsFilterToolbar
 
     mainFlow:
-      - sortControl uses the global canonical sort behavior ('Sort', 'A - Z', 'Date created', toggle direction on repeat selection, reset via sortResetButton)
-      - ownershipFilter uses the global canonical ownership-filter behavior and ownershipFilterResetButton clears active ownership selection
-      - workflowTypeFilter uses the global canonical workflow-type behavior and is visible in this workflows-only view
-      - favouritesToggle narrows results to favourited workflows when enabled
-      - archiveToggle applies archived-state filtering when enabled
-      - keywordSearchField narrows results based on typed keyword
-      - keywordSearchClearButton clears keywordSearchField and removes keyword constraint
-      - active sort and filter constraints combine with AND semantics across dimensions against the project-scoped workflows set
-      - changing sort or any filter/search control resets listing to first page
+      - sortControl behaviour conforms to library_page_requirements_v1.yaml FR-LIB-002
+      - ownershipFilter, workflowTypeFilter, favouritesToggle, archiveToggle, keywordSearchField, and keywordSearchClearButton behaviour conform to library_page_requirements_v1.yaml FR-LIB-003 where those controls are present on projectWorkflowsFilterToolbar
+      - projectWorkflowsFilterToolbar has no typeFilter; results are workflows scoped to the current project per FR-PROJ-WF-001
+      - workflowTypeFilter is always visible on this workflows-only view
+      - active sort and filter constraints combine with AND semantics against the project-scoped workflow set
+      - changing sort or any filter/search control resets listing to the first page
       - resultsSummary updates to reflect current filtered/sorted query result counts
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - sortControl is visible with placeholder 'Sort' before selection
-      - given sortControl options are shown, available options include 'A - Z' and 'Date created'
-      - ownershipFilter is visible
-      - given ownershipFilter options are shown, option set uses the global canonical ownership options
-      - workflowTypeFilter is visible
-      - given workflowTypeFilter options are shown, option set uses the global canonical workflow-type options
-      - favouritesToggle is visible
-      - archiveToggle is visible
+      - given projectWorkflowsView is visible, sortControl behaviour conforms to FR-LIB-002
+      - given projectWorkflowsView is visible, ownershipFilter, workflowTypeFilter, favouritesToggle, archiveToggle, and keywordSearchField behaviour conform to FR-LIB-003
       - keywordSearchField is visible
       - given keywordSearchField is non-empty, keywordSearchClearButton is visible and clears the input when clicked
       - given favouritesToggle is enabled, only favourited workflows are included in resultsRegion

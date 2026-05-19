@@ -1,0 +1,244 @@
+# Normalized requirements: delete an existing workflowNode ('Workflow' view)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Node Actions ▸ Delete, lines 872–876; Edges ▸ When Nodes are deleted, lines 1045–1046)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml (workflowEditNodeForm and workflowEditNodeFormDeleteButton canonical placement on the right sidebar); tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebar collapsed/expanded presentation — FR-WF-RS-001); tests/docs/requirements/original/workflow_duplicate_node_requirements_v1.yaml (companion node-action flow); tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml (workflowNodeHoverActionsMenu visibility — FR-WF-NODE-004; workflowNodeHoverActionsMenuDeleteItem actionability — FR-WF-NODE-005, canonical for hover-menu item roleBehavior); tests/docs/requirements/original/workflow_edge_requirements_v1.yaml (canonical workflowEdge; node delete does not restate edge cleanup — FR-WF-DEL-004); tests/docs/requirements/original/workflow_move_node_requirements_v1.yaml (edge preservation on move — FR-WF-MV-005); tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml (workflowView, workflowSectionContainer, workflowSectionRow canonical definitions)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - current route is '/workflow/{id}/workflow'
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+  - workflowView is open with at least one workflowSectionContainer that contains at least one workflowNode
+
+uiObjectDefinitions:
+  workflowView:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml.
+  workflowSectionContainer:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowSectionRow:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowChannel:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowNode:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
+  workflowEdge:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edge_requirements_v1.yaml.
+  workflowEditNodeForm:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
+  workflowEditNodeFormDeleteButton:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
+  workflowRightSidebar:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarEditTab:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowNodeHoverActionsMenu:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml.
+  workflowNodeHoverActionsMenuDeleteItem:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml.
+
+locatorMappings:
+  workflowView:
+    strategy: null
+    confidence: unresolved
+  workflowSectionContainer:
+    strategy: "[data-week-id]"
+    confidence: confirmed
+  workflowSectionRow:
+    strategy: null
+    confidence: unresolved
+  workflowChannel:
+    strategy: null
+    confidence: unresolved
+  workflowNode:
+    strategy: null
+    confidence: unresolved
+  workflowEdge:
+    strategy: null
+    confidence: unresolved
+  workflowEditNodeForm:
+    strategy: null
+    confidence: unresolved
+  workflowEditNodeFormDeleteButton:
+    strategy: "{workflowEditNodeForm} button with text 'Delete'"
+    confidence: inferred
+  workflowRightSidebar:
+    strategy: null
+    confidence: unresolved
+  workflowRightSidebarEditTab:
+    strategy: null
+    confidence: unresolved
+  workflowNodeHoverActionsMenu:
+    strategy: null
+    confidence: unresolved
+  workflowNodeHoverActionsMenuDeleteItem:
+    strategy: "{workflowNodeHoverActionsMenu} button with accessible name 'Delete node'"
+    confidence: inferred
+
+requirements:
+  - id: FR-WF-DEL-001
+    title: Trigger deletion from workflowEditNodeFormDeleteButton
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user (published-access)
+
+    uiObjects:
+      - workflowEditNodeForm
+      - workflowEditNodeFormDeleteButton
+      - workflowNode
+      - workflowRightSidebar
+      - workflowRightSidebarEditTab
+
+    preconditions:
+      - workflowEditNodeForm is rendered and bound to a workflowNode
+
+    trigger:
+      - owner or editor clicks workflowEditNodeFormDeleteButton
+
+    mainFlow:
+      - deletion takes effect immediately when workflowEditNodeFormDeleteButton is activated, with no confirmation dialog or other intermediate gate
+      - system removes the bound workflowNode from its workflowSectionContainer per FR-WF-DEL-003
+      - system clears workflowEdges to and from the deleted workflowNode per FR-WF-DEL-004
+      - after deletion workflowEditNodeForm no longer targets that workflowNode and workflowRightSidebar collapses
+
+    roleBehavior:
+      owner:
+        workflowEditNodeFormDeleteButton: active
+      editor:
+        workflowEditNodeFormDeleteButton: active
+      commenter:
+        workflowEditNodeFormDeleteButton: readOnly
+      viewer:
+        workflowEditNodeFormDeleteButton: readOnly
+      user (published-access):
+        workflowEditNodeFormDeleteButton: readOnly
+
+    acceptanceCriteria:
+      - given owner or editor with workflowEditNodeForm open on a workflowNode clicks workflowEditNodeFormDeleteButton, no confirmation dialog intervenes before the bound workflowNode is removed from its workflowSectionContainer, workflowRightSidebar collapses
+      - given actor is commenter, viewer, or user (published-access), workflowEditNodeFormDeleteButton is readOnly
+
+    openQuestions: []
+
+  - id: FR-WF-DEL-002
+    title: Trigger deletion from workflowNodeHoverActionsMenuDeleteItem
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user (published-access)
+
+    uiObjects:
+      - workflowNode
+      - workflowNodeHoverActionsMenu
+      - workflowNodeHoverActionsMenuDeleteItem
+      - workflowEditNodeForm
+      - workflowRightSidebar
+      - workflowRightSidebarEditTab
+
+    preconditions:
+      - at least one workflowNode is rendered in a workflowSectionContainer inside workflowView
+
+    trigger:
+      - owner or editor hovers a workflowNode and clicks workflowNodeHoverActionsMenuDeleteItem in the resulting workflowNodeHoverActionsMenu
+
+    mainFlow:
+      - workflowNodeHoverActionsMenuDeleteItem actionability for the actor conforms to tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml FR-WF-NODE-005
+      - when workflowNodeHoverActionsMenuDeleteItem is active for the actor per FR-WF-NODE-005, deletion takes effect immediately on click, with no confirmation dialog or other intermediate gate
+      - system removes the hovered workflowNode from its workflowSectionContainer per FR-WF-DEL-003
+      - system clears workflowEdges to and from the deleted workflowNode per FR-WF-DEL-004
+      - if workflowEditNodeForm was open on workflowRightSidebarEditTab bound to the deleted (hovered) workflowNode, after deletion workflowRightSidebar collapses
+      - if workflowEditNodeForm was not open on workflowRightSidebarEditTab bound to the deleted (hovered) workflowNode, after deletion workflowRightSidebar keeps the same presentation as immediately before deletion aside from the canvas no longer showing the deleted workflowNode
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given owner or editor hovers a workflowNode and clicks workflowNodeHoverActionsMenuDeleteItem when active per FR-WF-NODE-005, no confirmation dialog intervenes before the hovered workflowNode is removed from its workflowSectionContainer and workflowEdges to and from it are cleared per FR-WF-DEL-004
+      - given owner or editor deletes a workflowNode via workflowNodeHoverActionsMenuDeleteItem while workflowEditNodeForm is open on workflowRightSidebarEditTab bound to that same workflowNode, after deletion workflowRightSidebar collapses and workflowEditNodeForm no longer targets that workflowNode
+      - given owner or editor deletes a workflowNode via workflowNodeHoverActionsMenuDeleteItem while workflowEditNodeForm is not open on workflowRightSidebarEditTab bound to that workflowNode (including when workflowEditNodeForm is bound to a different workflowNode or another sidebar tab is active), after deletion workflowRightSidebar presentation matches immediately before deletion aside from the canvas no longer showing the deleted workflowNode
+      - given actor is commenter with workflowNodeHoverActionsMenu visible per FR-WF-NODE-004, activating workflowNodeHoverActionsMenuDeleteItem per FR-WF-NODE-005 does not delete any workflowNode
+      - given actor is viewer or user (published-access), workflowNodeHoverActionsMenuDeleteItem is not reachable per FR-WF-NODE-004 and FR-WF-NODE-005, so no deletion occurs via this trigger
+
+    openQuestions: []
+
+  - id: FR-WF-DEL-003
+    title: Effect of deletion on the workflowNode grid (row collapse)
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user (published-access)
+
+    uiObjects:
+      - workflowSectionContainer
+      - workflowSectionRow
+      - workflowChannel
+      - workflowNode
+
+    preconditions:
+      - a deletion has been triggered against a target workflowNode per FR-WF-DEL-001 or FR-WF-DEL-002
+
+    trigger: []
+
+    mainFlow:
+      - the target workflowNode is removed from its workflowSectionContainer; the cell it occupied (target workflowSectionRow × target workflowChannel) is emptied
+      - if the target workflowSectionRow contains no other workflowNode in any workflowChannel after the removal (i.e., the row would otherwise be empty), that workflowSectionRow is removed and all workflowSectionRows below it across every workflowChannel shift up by one row
+      - if the target workflowSectionRow still contains at least one workflowNode in some other workflowChannel after the removal, the row is not removed and the grid layout otherwise remains unchanged (only the deleted workflowNode's cell becomes empty)
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given the target workflowSectionRow contained only the deleted workflowNode, after deletion the workflowSectionContainer has one fewer workflowSectionRow and all rows below the deleted row shift up by one in every workflowChannel
+      - given the target workflowSectionRow contained at least one other workflowNode in a different workflowChannel, after deletion the deleted workflowNode's cell is empty, no rows are deleted, and no other workflowNode changes position
+
+    openQuestions: []
+
+  - id: FR-WF-DEL-004
+    title: Edge handling on deletion (cleanup with single bypass for linear chain)
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user (published-access)
+
+    uiObjects:
+      - workflowNode
+      - workflowEdge
+
+    preconditions:
+      - a deletion has been triggered against a target workflowNode per FR-WF-DEL-001 or FR-WF-DEL-002
+
+    trigger: []
+
+    mainFlow:
+      - system removes every workflowEdge whose source or target was the deleted workflowNode (per upstream archive Node Actions ▸ Delete and Edges ▸ When Nodes are deleted)
+      - if the deleted workflowNode had exactly one incoming workflowEdge and exactly one outgoing workflowEdge immediately before deletion, system removes those two edges and creates exactly one bypass workflowEdge from the immediate predecessor workflowNode (source of the incoming edge) to the immediate successor workflowNode (target of the outgoing edge)
+      - if the deleted workflowNode had at least one incoming and at least one outgoing workflowEdge but not exactly one of each (multiple incoming and/or multiple outgoing), system removes every workflowEdge incident on the deleted workflowNode and creates no bypass workflowEdge
+      - each bypass workflowEdge is created with default persisted attributes — not dashed (drawn solid in workflowView per tests/docs/requirements/original/workflow_edge_requirements_v1.yaml), empty title, and default values for any other edge metadata fields (bypass edges do not copy title, dashed flag, or text position from the removed incident workflowEdges)
+      - if the deleted workflowNode had workflowEdges on only one side (incoming-only or outgoing-only), those workflowEdges are removed and no bypass workflowEdge is created (per upstream archive 'If there was only one Edge attached to the Node (either coming in or out of the Node), it would be automatically deleted')
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given workflowNodes N1, N2, and N3 with workflowEdge from N1 to N2 and workflowEdge from N2 to N3, when N2 is deleted both incident workflowEdges are removed, a workflowEdge from N1 to N3 exists, and that bypass workflowEdge is solid with empty title (default metadata, not copied from the removed edges)
+      - given the deleted workflowNode had more than one incoming workflowEdge or more than one outgoing workflowEdge (for example incoming from both A1 and A2 and outgoing to both B1 and B2), after deletion every workflowEdge incident on that workflowNode is removed and no bypass workflowEdge is created
+      - given the deleted workflowNode had only incoming workflowEdges (no outgoing), after deletion every incoming workflowEdge is removed and no bypass workflowEdge is created
+      - given the deleted workflowNode had only outgoing workflowEdges (no incoming), after deletion every outgoing workflowEdge is removed and no bypass workflowEdge is created
+      - given the deleted workflowNode had no workflowEdges, after deletion no workflowEdges in the workflow are added or removed
+
+    openQuestions: []

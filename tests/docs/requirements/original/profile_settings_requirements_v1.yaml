@@ -8,33 +8,33 @@ documentPreconditions:
 
 uiObjectDefinitions:
   profileSettingsPage:
-    meaning: Full page rendered at the profile settings route where a user can view username (email) and update first name, last name, and language preference.
+    meaning: Profile settings page at the profile route for username display and password update.
   profileSettingsLoader:
     meaning: Loading presentation shown while profile settings data is being fetched before the form is rendered.
   profileSettingsFetchWarningMessage:
     meaning: Warning message shown on profileSettingsPage when profile settings data cannot be fetched.
   profileSettingsTitle:
-    meaning: Page title text for the profile settings screen; 'Profile settings' in current implementation.
+    meaning: Page title text for the profile settings screen; 'Profile settings'
   profileSettingsForm:
     meaning: Form container that submits updated profile settings.
   profileUsernameField:
-    meaning: Read-only field in profileSettingsForm that displays the user's username, which is the email used at sign-up and is always populated.
+    meaning: Read-only username (email) field on profileSettingsForm.
   profileFirstNameField:
     meaning: Text input for the user's first name in profileSettingsForm.
   profileLastNameField:
     meaning: Text input for the user's last name in profileSettingsForm.
   profileLanguagePreferenceGroup:
-    meaning: Radio-option group for selecting the user's language preference; it is always populated, defaulting to English when no user-specific language value overrides it.
+    meaning: Radio-option group for selecting the user's language preference
   profileLanguageOptionEnglish:
     meaning: Radio option in profileLanguagePreferenceGroup representing English.
   profileLanguageOptionFrench:
     meaning: Radio option in profileLanguagePreferenceGroup representing French.
   profileUpdateButton:
-    meaning: Submit button in profileSettingsForm used to save updated profile settings; label 'Update profile' in current implementation.
+    meaning: Submit button in profileSettingsForm used to save updated profile settings; label 'Update profile'
   profileFieldValidationMessage:
     meaning: Inline validation message shown by form controls when input does not satisfy validation rules.
   globalMessageSnackbar:
-    meaning: Global feedback surface used by generic message handling to show success or error results after update attempts.
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_header_requirements_v1.yaml.
 
 locatorMappings:
   profileSettingsPage:

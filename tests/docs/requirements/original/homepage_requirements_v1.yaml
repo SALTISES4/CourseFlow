@@ -2,7 +2,7 @@
 # Source: tests/docs/__ARCHIVE/functional-requirements.md (templates can be viewed from dashboard; library/template context)
 # Application code evidence: react/src/components/pages/Home/*
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Cross-reference: home route in tests/docs/requirements/original/main_navigation_requirements_v1.yaml (FR-NAV-002); workflow create dialog in tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml; shared card content in tests/docs/requirements/original/card_content_requirements_v1.yaml; projectCard click navigation in tests/docs/requirements/original/card_content_requirements_v1.yaml (FR-CARD-003)
+# Cross-reference: home route in tests/docs/requirements/original/main_navigation_requirements_v1.yaml (FR-NAV-002); workflow create dialog in tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml; shared card content in tests/docs/requirements/original/card_content_requirements_v1.yaml (projectCard and workflowCard — FR-CARD-001 through FR-CARD-006 as applicable)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
@@ -17,11 +17,11 @@ uiObjectDefinitions:
   homeWelcomeDismissButton:
     meaning: Close control in homeWelcomePanel that hides the panel and stores a cookie-based preference.
   homeWelcomeProgramButton:
-    meaning: CTA in homeWelcomePanel with label 'I want to create a program'; opens createWorkflowDialog for program type.
+    meaning: Homepage CTA button to start a program workflow.
   homeWelcomeCourseButton:
-    meaning: CTA in homeWelcomePanel with label 'I want to create a course'; opens createWorkflowDialog for course type.
+    meaning: Homepage CTA button to start a course workflow.
   homeWelcomeActivityButton:
-    meaning: CTA in homeWelcomePanel with label 'I want to create an activity'; opens createWorkflowDialog for activity type.
+    meaning: Homepage CTA button to start an activity workflow.
   homeRecentProjectsSection:
     meaning: Section showing recent project cards on homePage when projects exist.
   homeRecentProjectsTitle:
@@ -29,21 +29,21 @@ uiObjectDefinitions:
   homeViewAllProjectsLink:
     meaning: Link in homeRecentProjectsSection header with label 'View all projects' routing to /library.
   projectCard:
-    meaning: Clickable project card instance in homeRecentProjectsSection; canonical shared content contract is defined in card_content_requirements_v1.yaml.
+    meaning: Canonical definition in tests/docs/requirements/original/card_content_requirements_v1.yaml.
   homeTemplatesSection:
-    meaning: Section on homePage that shows at most four workflowCard items; templates are manually selected (curated), not an unbounded list from automatic ranking.
+    meaning: Section on homePage that shows at most four workflowCard items
   homeTemplatesSectionTitle:
     meaning: Header title text for homeTemplatesSection, conditional on whether user has projects.
   homeViewAllTemplatesLink:
-    meaning: Link in homeTemplatesSection header with label 'View all templates'; navigates to library with templates filter active; canonical URL pattern TBD.
+    meaning: Link in homeTemplatesSection header with label 'View all templates'
   homeTemplatesInfoAlert:
-    meaning: Informational alert in homeTemplatesSection with title 'How to use templates' and explanatory subtitle.
+    meaning: Informational alert on homepage about template workflows.
   homeTemplatesInfoAlertCloseButton:
-    meaning: Close (X) control on homeTemplatesInfoAlert; when user clicks it, system sets a dismissal cookie so homeTemplatesInfoAlert is not shown on later visits to homePage while the cookie remains; current implementation uses cookie name 'hide_home_howto_template_message'.
+    meaning: Close (X) control on homeTemplatesInfoAlert
   workflowCard:
-    meaning: Template card instance in homeTemplatesSection; canonical shared content contract is defined in card_content_requirements_v1.yaml.
+    meaning: Canonical definition in tests/docs/requirements/original/card_content_requirements_v1.yaml.
   createWorkflowDialog:
-    meaning: Workflow create dialog opened by welcome CTAs (see workflow_create_stepped_form_requirements_v1.yaml).
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml.
 
 locatorMappings:
   homePage:
@@ -193,7 +193,7 @@ requirements:
       - homeRecentProjectsSection includes homeViewAllProjectsLink with label 'View all projects' and route /library
       - projectCard list is ordered by most recently viewed project by the user first (most recent to least recent)
       - homeRecentProjectsSection displays at most 4 projectCard items
-      - click navigation for projectCard is defined in FR-CARD-003
+      - projectCard presentation and card interactions in homeRecentProjectsSection conform to card_content_requirements_v1.yaml
       - when projects dataset is empty, system does not render homeRecentProjectsSection
 
     roleBehavior: {}
@@ -203,7 +203,7 @@ requirements:
       - given projects dataset has items, homeViewAllProjectsLink is visible and routes to /library
       - given projects dataset has more than four projects, homeRecentProjectsSection shows at most 4 projectCard items
       - given projects dataset has more than one project, projectCard order matches most recently viewed first
-      - given projects dataset has items, projectCard click navigation conforms to FR-CARD-003
+      - given projects dataset has items, projectCard in homeRecentProjectsSection conforms to card_content_requirements_v1.yaml
       - given projects dataset is empty, homeRecentProjectsSection is not visible
 
     openQuestions: []
@@ -242,7 +242,7 @@ requirements:
       - when user clicks homeTemplatesInfoAlertCloseButton, system sets dismissal cookie and hides homeTemplatesInfoAlert
       - when dismissal cookie is set, homeTemplatesInfoAlert is not shown on subsequent visits to homePage
       - homeTemplatesSection renders workflowCard items for manually selected templates from home context, with at most four workflowCard items visible
-      - when user clicks a workflowCard in homeTemplatesSection, system navigates to the corresponding workflow 'Workflow' view at /workflow/{id}
+      - workflowCard presentation and card interactions in homeTemplatesSection conform to card_content_requirements_v1.yaml
 
     roleBehavior: {}
 
@@ -256,7 +256,7 @@ requirements:
       - given dismissal cookie is set, homeTemplatesInfoAlert is not visible on homePage
       - given manually selected templates list has more than four entries, homeTemplatesSection shows at most 4 workflowCard items
       - given manually selected templates list has four or fewer entries, workflowCard count matches that list length
-      - given user clicks a workflowCard in homeTemplatesSection, current route matches /workflow/{id}
+      - given manually selected templates list has at least one entry, workflowCard in homeTemplatesSection conforms to card_content_requirements_v1.yaml
 
     openQuestions:
       - Confirm canonical URL or route pattern for library with templates filter active (linked from homeViewAllTemplatesLink).

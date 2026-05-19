@@ -1,0 +1,136 @@
+# Normalized requirements: workspace route access denial (project and workflow)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Published Projects; permissions); Figma no-access frames (project and workflow)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference:
+#   - tests/docs/requirements/original/project_overview_requirements_v1.yaml (documentPreconditions for in-scope project overview tests)
+#   - tests/docs/requirements/original/project_header_requirements_v1.yaml (projectHeader — not rendered when access denied)
+#   - tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml (projectWorkflowsView — not rendered when access denied)
+#   - tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (contextActionBar — not rendered when access denied)
+#   - tests/docs/requirements/original/workflow_header_requirements_v1.yaml (workflowHeader — not rendered when access denied)
+#   - tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml (linked-workflow new-tab — FR-WF-NODE-001; workflow denial when FR-WS-ACCESS-002 preconditions apply)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+
+uiObjectDefinitions:
+  projectAccessDeniedView:
+    meaning: Full-page project 'no access' presentation when the authenticated user cannot view the requested project workspace route.
+  projectAccessDeniedTitle:
+    meaning: Title heading on projectAccessDeniedView for the project no-access state.
+  projectAccessDeniedSubtitle:
+    meaning: Subtitle body copy on projectAccessDeniedView below projectAccessDeniedTitle.
+  workflowAccessDeniedView:
+    meaning: Full-page workflow 'no access' presentation when the authenticated user cannot view any workflow workspace route matching '/workflow/{id}/*'.
+  workflowAccessDeniedTitle:
+    meaning: Title heading on workflowAccessDeniedView for the workflow no-access state.
+  workflowAccessDeniedSubtitle:
+    meaning: Subtitle body copy on workflowAccessDeniedView below workflowAccessDeniedTitle.
+
+locatorMappings:
+  projectAccessDeniedView:
+    strategy: null
+    confidence: unresolved
+  projectAccessDeniedTitle:
+    strategy: "{projectAccessDeniedView} title heading per FIGMA-WS-ACCESS-PROJECT-NO-ACCESS"
+    confidence: inferred
+  projectAccessDeniedSubtitle:
+    strategy: "{projectAccessDeniedView} subtitle body below title per FIGMA-WS-ACCESS-PROJECT-NO-ACCESS"
+    confidence: inferred
+  workflowAccessDeniedView:
+    strategy: null
+    confidence: unresolved
+  workflowAccessDeniedTitle:
+    strategy: "{workflowAccessDeniedView} title heading per FIGMA-WS-ACCESS-WORKFLOW-NO-ACCESS"
+    confidence: inferred
+  workflowAccessDeniedSubtitle:
+    strategy: "{workflowAccessDeniedView} subtitle body below title per FIGMA-WS-ACCESS-WORKFLOW-NO-ACCESS"
+    confidence: inferred
+
+requirements:
+  - id: FR-WS-ACCESS-001
+    title: Denied access — non-contributor on unpublished project routes
+
+    designEvidence:
+      - FIGMA-WS-ACCESS-PROJECT-NO-ACCESS
+
+    actors:
+      - user
+
+    uiObjects:
+      - projectAccessDeniedView
+      - projectAccessDeniedTitle
+      - projectAccessDeniedSubtitle
+
+    preconditions:
+      - user is authenticated to CourseFlow
+      - actor has no owner, editor, viewer, or commenter role on the target project (not a project contributor; on positive-path specs this actor is labeled user per tests/docs/requirements/original/project_overview_requirements_v1.yaml documentPreconditions)
+      - target project is unpublished
+
+    trigger:
+      - user navigates directly to '/project/{id}' or '/project/{id}/workflows' for that project
+
+    mainFlow:
+      - this FR is the negative path when tests/docs/requirements/original/project_overview_requirements_v1.yaml documentPreconditions fail — contributor roles (owner, editor, viewer, commenter) may access unpublished projects; non-contributors may access only published projects
+      - system does not render project workspace chrome for the requested project — projectHeader, projectOverviewView, projectWorkflowsView, and contextActionBar are not visible
+      - system renders projectAccessDeniedView per FIGMA-WS-ACCESS-PROJECT-NO-ACCESS in place of the project workspace content
+      - projectAccessDeniedTitle shows exactly 'No project access'
+      - projectAccessDeniedSubtitle shows exactly 'This project is private. You need permission from the owner to view or edit its contents.'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given actor has no contributor role on the target project and the project is unpublished, when user opens '/project/{id}', projectAccessDeniedView is visible and matches FIGMA-WS-ACCESS-PROJECT-NO-ACCESS
+      - given actor has no contributor role on the target project and the project is unpublished, when user opens '/project/{id}', projectOverviewView is not visible
+      - given actor has no contributor role on the target project and the project is unpublished, when user opens '/project/{id}/workflows', projectAccessDeniedView is visible and projectWorkflowsView is not visible
+      - given actor has no contributor role on the target project and the project is unpublished, when user opens either project route, projectHeader is not visible
+      - given actor has no contributor role on the target project and the project is unpublished, when user opens either project route, contextActionBar is not visible
+      - given actor has no contributor role on the target project and the project is unpublished, when user opens either project route, projectAccessDeniedTitle is visible with text exactly 'No project access'
+      - given actor has no contributor role on the target project and the project is unpublished, when user opens either project route, projectAccessDeniedSubtitle is visible with text exactly 'This project is private. You need permission from the owner to view or edit its contents.'
+
+    openQuestions:
+      - Until dedicated projectAccessDeniedView is implemented, confirm interim mapping from API failure to ErrorView vs the designed no-access screen.
+
+  - id: FR-WS-ACCESS-002
+    title: Denied access — non-contributor on workflow routes (unpublished parent project)
+
+    designEvidence:
+      - FIGMA-WS-ACCESS-WORKFLOW-NO-ACCESS
+
+    actors:
+      - user
+
+    uiObjects:
+      - workflowAccessDeniedView
+      - workflowAccessDeniedTitle
+      - workflowAccessDeniedSubtitle
+
+    preconditions:
+      - user is authenticated to CourseFlow
+      - actor has no owner, editor, viewer, or commenter role on the parent project of the target workflow (not a project contributor)
+      - parent project of the target workflow is unpublished
+
+    trigger:
+      - user navigates directly to any route matching '/workflow/{id}/*' for a workflow whose parent project is unpublished
+
+    mainFlow:
+      - system does not render workflow workspace chrome for that workflow — workflowHeader, workflowRightSidebar, contextActionBar, and any workflow sub-view content under '/workflow/{id}/*' (including but not limited to workflowOverviewView and workflowView) are not visible
+      - system renders workflowAccessDeniedView per FIGMA-WS-ACCESS-WORKFLOW-NO-ACCESS in place of the workflow workspace content
+      - workflowAccessDeniedTitle shows exactly 'No workflow access'
+      - workflowAccessDeniedSubtitle shows exactly 'This workflow is private. You need permission from the owner to view or edit its contents.'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given actor has no contributor role on the parent project and the parent project is unpublished, when user opens any route matching '/workflow/{id}/*' for that workflow, workflowAccessDeniedView is visible and matches FIGMA-WS-ACCESS-WORKFLOW-NO-ACCESS
+      - given actor has no contributor role on the parent project and the parent project is unpublished, when user opens any route matching '/workflow/{id}/*' for that workflow, workflowHeader and any workflow sub-view content (e.g. workflowOverviewView, workflowView) are not visible
+      - given actor has no contributor role on the parent project and the parent project is unpublished, when user opens any route matching '/workflow/{id}/*' for that workflow, workflowAccessDeniedTitle is visible with text exactly 'No workflow access'
+      - given actor has no contributor role on the parent project and the parent project is unpublished, when user opens any route matching '/workflow/{id}/*' for that workflow, workflowAccessDeniedSubtitle is visible with text exactly 'This workflow is private. You need permission from the owner to view or edit its contents.'
+
+    openQuestions:
+      - Until dedicated workflowAccessDeniedView is implemented, confirm interim mapping from API failure to ErrorView vs the designed no-access screen.
+
+designEvidenceLinkTable:
+  - key: FIGMA-WS-ACCESS-PROJECT-NO-ACCESS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6916-55080&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WS-ACCESS-WORKFLOW-NO-ACCESS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6916-59151&t=6weYZA8hUf6tm7DF-1

@@ -1,0 +1,126 @@
+# Normalized requirements: project header (header, tabs, favourite)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Project section: Overview, Workflows, favourites)
+# Application code evidence: react/src/components/pages/Workspace/Project/index.tsx; react/src/components/pages/Workspace/Project/components/menuBar/menus.tsx
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/original/project_overview_requirements_v1.yaml (overview content blocks); tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (project-level action bar controls); tests/docs/requirements/original/project_create_edit_form_requirements_v1.yaml (project title update path via editProjectDialog, FR-PROJ-FORM-003); tests/docs/requirements/original/card_content_requirements_v1.yaml (FR-CARD-005 favourite snackbar copy for projectHeaderFavouriteToggle)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+
+uiObjectDefinitions:
+  projectHeader:
+    meaning: Header region showing project title, projectHeaderFavouriteToggle, and projectViewTabSelector.
+  projectTitle:
+    meaning: Project title text shown in projectHeader and shared across Overview and Workflows views.
+  projectHeaderFavouriteToggle:
+    meaning: Favourite toggle control in projectHeader.
+  projectViewTabSelector:
+    meaning: Tab selector on project routes for Overview and Workflows views.
+  globalMessageSnackbar:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_header_requirements_v1.yaml.
+
+locatorMappings:
+  projectHeader:
+    strategy: "Project header with title + favourite toggle + tab selector"
+    confidence: inferred
+  projectTitle:
+    strategy: "{projectHeader} heading text for current project title"
+    confidence: inferred
+  projectHeaderFavouriteToggle:
+    strategy: "{projectHeader} favourite toggle control for current project"
+    confidence: inferred
+  projectViewTabSelector:
+    strategy: "{projectHeader} tab selector with tabs 'Overview' and 'Workflows'"
+    confidence: inferred
+  globalMessageSnackbar:
+    strategy: null
+    confidence: unresolved
+
+requirements:
+  - id: FR-PROJ-HEADER-001
+    title: Project header and tab selector
+
+    designEvidence:
+      - FIGMA-PROJ-OV-UNPUBLISHED-WITH-TAGS
+      - FIGMA-PROJ-OV-PUBLISHED-NO-TAGS
+
+    actors:
+      - user
+      - owner
+      - editor
+      - viewer
+      - commenter
+
+    uiObjects:
+      - projectHeader
+      - projectTitle
+      - projectViewTabSelector
+
+    preconditions:
+      - user navigates to an existing project
+      - if actor is user (published-access, no explicit project role), project is published
+
+    trigger:
+      - user opens '/project/{id}' or '/project/{id}/workflows'
+      - user switches tabs using projectViewTabSelector
+
+    mainFlow:
+      - project view renders projectHeader with projectTitle for the current project
+      - projectTitle is display-only in projectHeader; title updates are performed through editProjectDialog flow defined in tests/docs/requirements/original/project_create_edit_form_requirements_v1.yaml (FR-PROJ-FORM-003)
+      - "projectViewTabSelector provides exactly two tabs: 'Overview' and 'Workflows'"
+      - selecting 'Overview' shows '/project/{id}'
+      - selecting 'Workflows' shows '/project/{id}/workflows'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given projectHeader is visible, projectTitle is visible
+      - given actor is user (published-access, no explicit project role), projectHeader is visible only when the project is published
+      - given user needs to change projectTitle, update path is editProjectDialog defined in tests/docs/requirements/original/project_create_edit_form_requirements_v1.yaml (FR-PROJ-FORM-003)
+      - given projectHeader is visible, projectViewTabSelector shows tabs 'Overview' and 'Workflows'
+      - given user is on '/project/{id}', tab 'Overview' is active; selecting 'Workflows' navigates to '/project/{id}/workflows'
+      - given user is on '/project/{id}/workflows', tab 'Workflows' is active; selecting 'Overview' navigates to '/project/{id}'
+
+    openQuestions: []
+
+  - id: FR-PROJ-HEADER-002
+    title: Add and remove project favourite via projectHeader
+
+    designEvidence:
+      - FIGMA-PROJ-OV-UNPUBLISHED-WITH-TAGS
+      - FIGMA-PROJ-OV-PUBLISHED-NO-TAGS
+
+    actors:
+      - user
+
+    uiObjects:
+      - projectHeader
+      - projectHeaderFavouriteToggle
+      - globalMessageSnackbar
+
+    preconditions:
+      - projectHeaderFavouriteToggle is visible
+      - if actor is user (published-access, no explicit project role), project is published
+
+    trigger:
+      - user clicks projectHeaderFavouriteToggle
+
+    mainFlow:
+      - when user clicks projectHeaderFavouriteToggle, system attempts to update favourite state for the current project
+      - on successful favourite-state update, projectHeaderFavouriteToggle visual state reflects the new favourite state and globalMessageSnackbar success copy conforms to card_content_requirements_v1.yaml FR-CARD-005
+      - on failed favourite-state update, projectHeaderFavouriteToggle visual state is unchanged and globalMessageSnackbar error copy conforms to card_content_requirements_v1.yaml FR-CARD-005
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given actor is user (published-access, no explicit project role), projectHeaderFavouriteToggle is visible only when the project is published
+      - given user clicks projectHeaderFavouriteToggle and favourite-state update succeeds, projectHeaderFavouriteToggle visual state reflects the new state and globalMessageSnackbar copy conforms to FR-CARD-005
+      - given user clicks projectHeaderFavouriteToggle and favourite-state update fails, projectHeaderFavouriteToggle visual state is unchanged and globalMessageSnackbar copy conforms to FR-CARD-005
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-PROJ-OV-UNPUBLISHED-WITH-TAGS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=3566-42791&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-PROJ-OV-PUBLISHED-NO-TAGS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=3566-42816&t=lsKQpS4Jq8MOZwMT-1

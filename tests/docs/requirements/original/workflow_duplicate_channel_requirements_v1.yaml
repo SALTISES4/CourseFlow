@@ -1,0 +1,136 @@
+# Normalized requirements: duplicate an existing workflowChannel ('Workflow' view)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Channels ▸ Duplicate — lines 967–968)
+# Application code evidence: react/src/components/views/WorkflowView/WorkflowEditView/components/ColumnsHeader/Cell/HoverMenu/index.tsx (columnInsertBelow with duplicate flag); react/src/redux/slices/column.slice.ts; react/src/redux/slices/workflow.slice.ts (column order splice)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml (canonical channel uiObjects and locators; FR-CHAN-001–004, FR-CHAN-007–008); tests/docs/requirements/original/workflow_delete_channel_requirements_v1.yaml (FR-CHAN-006)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - current route is '/workflow/{id}/workflow'
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+
+uiObjectDefinitions:
+  workflowView:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml.
+  workflowChannel:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowChannelsHeaderRow:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowChannelHeader:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowChannelHeaderTitleText:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowChannelHeaderColorIndicator:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowChannelHoverActionsMenu:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowChannelHoverActionsMenuDuplicateItem:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowRightSidebar:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowEditChannelForm:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowEditChannelFormTitleField:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowEditChannelFormColorField:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowEditChannelFormDuplicateButton:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+
+locatorMappings:
+  workflowView:
+    strategy: null
+    confidence: unresolved
+  workflowChannel:
+    strategy: "[data-column-id]"
+    confidence: inferred
+  workflowChannelHoverActionsMenu:
+    strategy: "{workflowChannelHeader} NodeHoverMenu cluster"
+    confidence: inferred
+  workflowRightSidebar:
+    strategy: "[data-test-id='sidebar']"
+    confidence: confirmed
+  workflowEditChannelFormDuplicateButton:
+    strategy: null
+    confidence: unresolved
+
+requirements:
+  - id: FR-CHAN-005
+    title: Duplicate channel to the right (hover or sidebar)
+
+    designEvidence:
+      - FIGMA-CHAN-OE-HOVER
+      - FIGMA-CHAN-OE-EDIT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowView
+      - workflowChannelsHeaderRow
+      - workflowChannelHeader
+      - workflowChannelHeaderTitleText
+      - workflowChannelHeaderColorIndicator
+      - workflowChannelHoverActionsMenu
+      - workflowChannelHoverActionsMenuDuplicateItem
+      - workflowRightSidebar
+      - workflowEditChannelForm
+      - workflowEditChannelFormTitleField
+      - workflowEditChannelFormColorField
+      - workflowEditChannelFormDuplicateButton
+
+    preconditions:
+      - workflowView contains at least one workflowChannel
+      - for the hover-menu path, workflowChannelHoverActionsMenuDuplicateItem is active for the actor per this FR roleBehavior and FR-CHAN-007 lockstep with FR-WF-NODE-005 in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml
+      - for the sidebar path, workflowEditChannelFormDuplicateButton is active for the actor per this FR roleBehavior
+
+    trigger:
+      - user clicks workflowChannelHoverActionsMenuDuplicateItem on workflowChannelHoverActionsMenu visible on workflowChannelHeader hover per FR-CHAN-007
+      - user clicks workflowEditChannelFormDuplicateButton on workflowEditChannelForm in workflowRightSidebar
+
+    mainFlow:
+      - system identifies the source workflowChannel from workflowChannelHoverActionsMenuDuplicateItem on that channel's workflowChannelHeader, or from workflowEditChannelForm open in workflowRightSidebar for that workflowChannel
+      - system creates a new workflowChannel in workflowChannelsHeaderRow immediately to the right of the source workflowChannel
+      - system copies only the source workflowChannel title and colour into the duplicate; workflowNodes assigned to the source workflowChannel are not duplicated into the new workflowChannel
+      - the effective source title for naming the duplicate is the source workflowChannel persisted title when non-empty, otherwise the channel default display title per FR-CHAN-002 in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml (predefined type display name or 'Custom node category')
+      - the duplicate's persisted title is that effective source title with literal ' (copy)' appended (for example 'Lesson (copy)' when the source field was empty on a default 'Lesson' channel, or 'Custom node category (copy)' when the source field was empty on a custom channel)
+      - when the effective source title already ends with ' (copy)', the duplicate appends another ' (copy)' suffix
+
+    roleBehavior:
+      owner:
+        workflowChannelHoverActionsMenuDuplicateItem: active
+        workflowEditChannelFormDuplicateButton: active
+      editor:
+        workflowChannelHoverActionsMenuDuplicateItem: active
+        workflowEditChannelFormDuplicateButton: active
+      commenter:
+        workflowChannelHoverActionsMenuDuplicateItem: readOnly
+        workflowEditChannelFormDuplicateButton: readOnly
+      viewer:
+        workflowChannelHoverActionsMenuDuplicateItem: notRendered
+        workflowEditChannelFormDuplicateButton: readOnly
+      user:
+        workflowChannelHoverActionsMenuDuplicateItem: notRendered
+        workflowEditChannelFormDuplicateButton: readOnly
+
+    acceptanceCriteria:
+      - given source workflowChannel C, when duplicate completes, a new workflowChannel appears immediately to the right of C in workflowChannelsHeaderRow with the same colour as C and no workflowNodes in the new channel
+      - given source workflowChannel had persisted title 'My channel', duplicated workflowChannelHeaderTitleText is 'My channel (copy)'
+      - given source workflowChannel had empty workflowEditChannelFormTitleField and default display title 'Lesson', duplicated workflowChannelHeaderTitleText is 'Lesson (copy)'
+      - given source workflowChannel had empty workflowEditChannelFormTitleField and default display title 'Custom node category', duplicated workflowChannelHeaderTitleText is 'Custom node category (copy)'
+      - given actor is commenter with workflowChannelHoverActionsMenu visible per FR-CHAN-007, workflowChannelHoverActionsMenuDuplicateItem is readOnly and no duplicate channel is created when that control is clicked
+      - given actor is viewer or user (published-access), workflowChannelHoverActionsMenu is not rendered on workflowChannelHeader hover per FR-CHAN-007 lockstep with FR-WF-NODE-004, so workflowChannelHoverActionsMenuDuplicateItem is not reachable via the hover path
+
+    openQuestions:
+      - column.slice insertBelow (duplicate flag) must set duplicate title to channel default display title per FR-CHAN-002 + literal ' (copy)' when source persisted title is empty, including literal 'Custom node category' when columnTypeDisplay is empty; current cloneTitle is title || columnTypeDisplay only (react/src/redux/slices/column.slice.ts).
+      - workflowEditChannelFormDuplicateButton is rendered in react/src/components/pages/Workspace/Workflow/Sidebar/components/EditTab/components/EditColumn/index.tsx but has no onClick handler; hover duplicate path via columnInsertBelow duplicate flag is implemented.
+
+designEvidenceLinkTable:
+  - key: FIGMA-CHAN-OE-HOVER
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=1937-26971&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-CHAN-OE-EDIT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=1937-26971&t=6weYZA8hUf6tm7DF-1

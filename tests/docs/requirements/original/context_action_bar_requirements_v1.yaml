@@ -4,7 +4,7 @@
 # Cross-reference:
 #   - tests/docs/requirements/original/project_create_edit_form_requirements_v1.yaml (editPencilButton, editProjectDialog on project routes—FR-PROJ-FORM-003)
 #   - tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml (editPencilButton, editWorkflowDialog on workflow routes—FR-WF-FORM-001)
-#   - tests/docs/requirements/original/project_overview_requirements_v1.yaml (projectOverviewAddContributorsButton; addContributorsDialog—FR-PROJ-OV-004; contributor list outcomes—FR-PROJ-OV-002)
+#   - tests/docs/requirements/original/project_overview_requirements_v1.yaml (projectMetadataAddContributorsButton; addContributorsDialog—FR-PROJ-OV-004; contributor list outcomes—FR-PROJ-OV-002)
 #   - tests/docs/requirements/original/project_archive_requirements_v1.yaml (FR-PROJ-ARCH-* after 'Archive project' overflow row)
 #   - tests/docs/requirements/original/workflow_archive_requirements_v1.yaml (FR-WF-ARCH-* after 'Archive workflow' overflow row)
 #   - tests/docs/requirements/original/workflow_copy_requirements_v1.yaml (FR-WF-COPY-* after 'Copy workflow' overflow row)
@@ -14,31 +14,31 @@ documentPreconditions:
 
 uiObjectDefinitions:
   contextActionBar:
-    meaning: Horizontal action region rendered directly below the global topNavigationBar while the user is on a primary project route ('/project/{id}' or '/project/{id}/workflows') or a workflow-scoped route (pathname '/workflow/{id}' or '/workflow/{id}/...' for workflow sub-views); exposes context-specific primary actions including editPencilButton on project and workflow routes, optional 'View settings' on workflow routes where applicable, and contextActionBarOverflowTrigger; additional controls may be added over time.
+    meaning: Contextual action bar below top navigation on project and workflow routes.
   editPencilButton:
-    meaning: Same canonical pencil control as editPencilButton in project_create_edit_form_requirements_v1.yaml and workflow_edit_form_requirements_v1.yaml; on project routes it appears on contextActionBar and Owner or Editor click opens editProjectDialog per FR-PROJ-FORM-003; on workflow-scoped routes it appears on contextActionBar and Owner or Editor click opens editWorkflowDialog per FR-WF-FORM-001 in workflow_edit_form_requirements_v1.yaml.
+    meaning: Pencil edit control on contextActionBar for project and workflow routes.
   contextActionBarAddContributorsButton:
-    meaning: Distinct control on contextActionBar on project routes with user-visible label 'Add CourseFlow user'; opens the same addContributorsDialog as projectOverviewAddContributorsButton in project_overview_requirements_v1.yaml when actionable. Contributor-add outcomes and dialog field behaviour are defined there (FR-PROJ-OV-002, FR-PROJ-OV-004). Owner and Editor may click it; Viewer and Commenter see it read-only on contextActionBar (not actionable) per FR-CAB-002.
+    meaning: Add CourseFlow user button on contextActionBar for project routes.
   contextActionBarOverflowTrigger:
-    meaning: Icon-only overflow control on contextActionBar (more-options / '...' pattern) that opens contextActionBarOverflowMenu when clicked.
+    meaning: Overflow menu trigger on contextActionBar.
   contextActionBarOverflowMenu:
-    meaning: Menu surface opened from contextActionBarOverflowTrigger; contains only context-specific rows; closes after a row selection or when the user dismisses the menu per product conventions.
+    meaning: Menu surface opened from contextActionBarOverflowTrigger
   contextActionBarOverflowItemArchiveProject:
-    meaning: The only row in contextActionBarOverflowMenu when the current context is a project route; user-visible label is 'Archive project'.
+    meaning: Archive project row in contextActionBarOverflowMenu.
   contextActionBarOverflowItemArchiveWorkflow:
-    meaning: Row in contextActionBarOverflowMenu when the current context is a workflow route; user-visible label is 'Archive workflow'.
+    meaning: Archive workflow row in contextActionBarOverflowMenu.
   contextActionBarOverflowItemCopyWorkflow:
-    meaning: Row in contextActionBarOverflowMenu when the current context is a workflow-scoped route; user-visible label is 'Copy workflow'. Actionable for Owner, Editor, Viewer, and Commenter with collaboration access on the workflow, and also actionable for users with read-only access when the parent project is published and the product exposes copy for that viewer context per FR-CAB-005 and FR-WF-COPY-001.
+    meaning: Copy workflow row in contextActionBarOverflowMenu.
   workflowViewSettingsTrigger:
-    meaning: Control on contextActionBar on workflow routes that opens workflowViewSettingsMenu when visible; user-visible label follows design ('View settings').
+    meaning: View settings control on contextActionBar for workflow routes.
   workflowViewSettingsMenu:
-    meaning: Menu opened from workflowViewSettingsTrigger; which rows are offered depends on the active workflow sub-view ('Overview', 'Workflow', or 'Outcomes') per the 'View settings' table in tests/docs/__ARCHIVE/functional-requirements.md.
+    meaning: Menu opened from workflowViewSettingsTrigger
   workflowJumpToTrigger:
-    meaning: Control on contextActionBar visible on the workflow 'Workflow' sub-view with user-visible label 'Jump to'; opens workflowJumpToMenu.
+    meaning: Jump to control on contextActionBar on the Workflow sub-view.
   workflowJumpToMenu:
-    meaning: Dropdown menu opened from workflowJumpToTrigger that lists the workflow's sections as clickable rows.
+    meaning: Dropdown menu listing workflow sections from workflowJumpToTrigger.
   workflowJumpToMenuSectionItem:
-    meaning: A section row inside workflowJumpToMenu; clicking it scrolls the user to that corresponding section in the workflow view.
+    meaning: A section row inside workflowJumpToMenu
 
 locatorMappings:
   contextActionBar:
@@ -105,7 +105,7 @@ requirements:
     trigger: []
 
     mainFlow:
-      - system renders contextActionBar directly below topNavigationBar for the active project route
+      - system renders contextActionBar directly below topNavigationBar when current route is '/project/{id}' or '/project/{id}/workflows'
       - contextActionBar remains available when switching between project sub-views 'Overview' and 'Workflows' via projectViewTabSelector (same bar contract on both routes)
 
     roleBehavior: {}
@@ -164,7 +164,7 @@ requirements:
 
     acceptanceCriteria:
       - given any Owner, Editor, Viewer, or Commenter on a project route, editPencilButton, contextActionBarAddContributorsButton, and contextActionBarOverflowTrigger are visible on contextActionBar (contextActionBarAddContributorsButton label is 'Add CourseFlow user')
-      - given Owner, editPencilButton, contextActionBarAddContributorsButton, and contextActionBarOverflowTrigger are each actionable per FR-PROJ-FORM-003 for editPencilButton and per FR-PROJ-OV-002 for contributor-add entry via contextActionBarAddContributorsButton (same dialog as projectOverviewAddContributorsButton)
+      - given Owner, editPencilButton, contextActionBarAddContributorsButton, and contextActionBarOverflowTrigger are each actionable per FR-PROJ-FORM-003 for editPencilButton and per FR-PROJ-OV-002 for contributor-add entry via contextActionBarAddContributorsButton (same dialog as projectMetadataAddContributorsButton)
       - given Editor, editPencilButton and contextActionBarAddContributorsButton are actionable per FR-PROJ-FORM-003 and FR-PROJ-OV-002 respectively; contextActionBarOverflowTrigger is read-only (project archive is Owner-only)
       - given Viewer or Commenter, editPencilButton, contextActionBarAddContributorsButton, and contextActionBarOverflowTrigger are each read-only (not actionable); addContributorsDialog does not open when user attempts to click contextActionBarAddContributorsButton; contextActionBarOverflowMenu does not open when user attempts to click contextActionBarOverflowTrigger
 
@@ -240,7 +240,7 @@ requirements:
     trigger: []
 
     mainFlow:
-      - system renders contextActionBar directly below topNavigationBar for the active workflow route
+      - system renders contextActionBar directly below topNavigationBar when current route pathname is '/workflow/{id}' or matches '/workflow/{id}/...'
       - contextActionBar includes editPencilButton, contextActionBarOverflowTrigger, and workflowViewSettingsTrigger; detailed editPencilButton behavior is specified in workflow_edit_form_requirements_v1.yaml FR-WF-FORM-001
       - when active workflow sub-view is 'Workflow', contextActionBar also includes workflowJumpToTrigger; on other workflow sub-views this control is not shown
       - contextActionBar is shown for workflow sub-views 'Overview', 'Workflow', and 'Outcomes' (same shell across views; inner controls may differ per FR-CAB-005 and FR-CAB-006)
@@ -388,7 +388,7 @@ requirements:
       - FR-CAB-004 preconditions hold
       - active workflow sub-view is 'Workflow'
       - workflow contains at least one section
-      - user has workflow-route access (contributor role, or normal user when parent project is published)
+      - user has workflow-route access (contributor role, or actor is user with published-access because parent project is published)
 
     trigger:
       - user clicks workflowJumpToTrigger, then clicks workflowJumpToMenuSectionItem

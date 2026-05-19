@@ -155,7 +155,7 @@ Instead, return the issue for clarification or remedial work.
 
 ## Example application to a requirement
 
-For a requirement such as `FR-SEC-006 Delete Section (modal)`, the workflow should look like this:
+For a requirement such as `FR-SEC-006 Delete Section (modal)` in `tests/docs/requirements/original/workflow_delete_section_requirements_v1.yaml`, the workflow should look like this:
 
 1. Read the FR and identify the deletion flow.
 2. Confirm which role is allowed.

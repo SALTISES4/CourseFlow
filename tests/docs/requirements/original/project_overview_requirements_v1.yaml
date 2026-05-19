@@ -2,44 +2,46 @@
 # Source: tests/docs/__ARCHIVE/functional-requirements.md (Project section: Contributors, Tags, Published Projects, Overview)
 # Application code evidence: react/src/components/pages/Workspace/Project/index.tsx; react/src/components/pages/Workspace/Project/components/menuBar/menus.tsx; react/src/components/common/dialog/Workspace/ContributorAddDialog/index.tsx; react/src/components/views/ProjectView/TabOverview/index.tsx; react/src/components/views/ProjectView/TabOverview/TagsSection/*
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Cross-reference: tests/docs/requirements/original/explore_page_requirements_v1.yaml (published project visibility in Explore); tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (contextActionBarAddContributorsButton on project routes—FR-CAB-002; distinct from projectOverviewAddContributorsButton here; both open addContributorsDialog); tests/docs/requirements/original/project_header_requirements_v1.yaml (project top section: title, favourite toggle, and tab selector across project sub-views)
+# Cross-reference: tests/docs/requirements/original/explore_page_requirements_v1.yaml (published project visibility in Explore); tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (contextActionBarAddContributorsButton on project routes—FR-CAB-002; distinct from projectMetadataAddContributorsButton here; both open addContributorsDialog); tests/docs/requirements/original/project_header_requirements_v1.yaml (project top section: title, favourite toggle, and tab selector across project sub-views); tests/docs/requirements/original/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-001)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the project at route '/project/{id}', or (b) user (published-access, no explicit contributor role) viewing a project that is published
+  - requirements in this file assume the above hold; when they do not, assert per tests/docs/requirements/original/workspace_access_requirements_v1.yaml FR-WS-ACCESS-001
 
 uiObjectDefinitions:
   projectOverviewView:
-    meaning: Project 'Overview' view at route '/project/{id}' showing project metadata, contributors/permissions context, tags, and publish-state controls.
+    meaning: Project Overview view at /project/{id} for metadata, contributors, and publish controls.
   projectMetadataFieldDescription:
-    meaning: Overview metadata block labeled 'Description' showing project description text.
+    meaning: Description block on projectOverviewView.
   projectMetadataFieldDisciplines:
     meaning: Overview metadata block labeled 'Disciplines' showing project disciplines.
   projectMetadataPermissionsPanel:
-    meaning: Overview metadata block labeled 'Permissions' showing contributor/permission summary and related actions.
+    meaning: Contributors and permissions panel on projectOverviewView.
   contributorRoleDropdown:
-    meaning: "Role dropdown control for a contributor entry within projectMetadataPermissionsPanel; allows Owner or Editor to change contributor role and includes exactly four options: 'Editor', 'Commenter', 'Viewer', and 'Remove contributor'. Ownership transfer is not supported; there is no option to assign 'Owner'."
-  projectOverviewAddContributorsButton:
-    meaning: "Distinct control with user-visible label 'Add CourseFlow user' rendered in the project 'Overview' permissions context (within or adjacent to projectMetadataPermissionsPanel on projectOverviewView at '/project/{id}'). Opens the same addContributorsDialog as contextActionBarAddContributorsButton (defined in context_action_bar_requirements_v1.yaml FR-CAB-002); dialog field behaviour and permissions outcomes in this file apply once the dialog opens."
+    meaning: Role dropdown on a contributor row in projectMetadataPermissionsPanel.
+  projectMetadataAddContributorsButton:
+    meaning: Add CourseFlow user button in the project Overview permissions area.
   contextActionBarAddContributorsButton:
-    meaning: "Canonical control definition and placement on contextActionBar are in context_action_bar_requirements_v1.yaml (FR-CAB-002). It is a separate DOM instance from projectOverviewAddContributorsButton; both use label 'Add CourseFlow user' and open the same addContributorsDialog."
+    meaning: Canonical definition in tests/docs/requirements/original/context_action_bar_requirements_v1.yaml.
   addContributorsDialog:
-    meaning: Modal dialog for adding one or more contributors to the project and selecting their role.
+    meaning: Modal dialog for adding contributors to a project.
   addContributorsUserSelector:
-    meaning: "'CourseFlow Users' autocomplete control inside addContributorsDialog for finding and selecting one or more existing CourseFlow users to add as contributors. As user types, narrowed matching results are displayed automatically."
+    meaning: CourseFlow Users autocomplete on addContributorsDialog.
   addContributorsUserSelectorClearButton:
     meaning: Icon-only clear ('X') control on addContributorsUserSelector that removes the current typed input.
   addContributorsRoleSelector:
-    meaning: Role-selection control inside addContributorsDialog used to assign contributor role for selected users. Allowed assignable roles are 'Editor', 'Commenter', and 'Viewer'.
+    meaning: Role selector on addContributorsDialog.
   addContributorsSubmitButton:
     meaning: Primary action in addContributorsDialog that confirms adding selected users with assigned role(s).
   addContributorsCancelButton:
-    meaning: Secondary action in addContributorsDialog that closes the dialog without applying contributor changes.
+    meaning: Cancel action on addContributorsDialog.
   publishProjectButton:
-    meaning: Control that transitions project visibility state from unpublished to published at project level. When visible, label is 'Publish project' and accompanies visibility-state message copy 'The project is currently private'.
+    meaning: Publish project control on projectOverviewView.
   unpublishProjectButton:
-    meaning: Control that transitions project visibility state from published to unpublished at project level. When visible, label is 'Unpublish project' and accompanies visibility-state message copy 'The project is currently public'.
+    meaning: Unpublish project control on projectOverviewView.
   projectVisibilityStateMessage:
-    meaning: Read-only project visibility-status text in the publish/unpublish area. Copy is 'The project is currently private' for unpublished projects and 'The project is currently public' for published projects.
+    meaning: Read-only project visibility status message on projectOverviewView.
   projectTagsSection:
     meaning: Overview block labeled 'Tags' where tags are displayed and managed.
   projectTagItem:
@@ -67,7 +69,7 @@ locatorMappings:
   contributorRoleDropdown:
     strategy: "{projectMetadataPermissionsPanel} role dropdown on a contributor entry with selectable roles and remove action"
     confidence: inferred
-  projectOverviewAddContributorsButton:
+  projectMetadataAddContributorsButton:
     strategy: "{projectMetadataPermissionsPanel} control with label 'Add CourseFlow user' opening the same addContributorsDialog as contextActionBarAddContributorsButton"
     confidence: inferred
   contextActionBarAddContributorsButton:
@@ -140,24 +142,30 @@ requirements:
       - projectTagsSection
 
     preconditions:
-      - user navigates to an existing project
+      - documentPreconditions for this file hold
+      - user navigates to project 'Overview' view at route '/project/{id}'
 
     trigger:
       - user navigates to project 'Overview' view at route '/project/{id}'
 
     mainFlow:
       - system renders projectOverviewView at route '/project/{id}'
-      - when project is published, any logged-in user can view projectOverviewView even without an explicit role (Owner, Editor, Viewer, Commenter) on that project
       - projectOverviewView displays projectMetadataFieldDescription, projectMetadataFieldDisciplines, projectMetadataPermissionsPanel, and projectTagsSection
+      - projectMetadataFieldDescription always shows label 'Description'; when description is empty, displayed value is '-'
+      - projectMetadataFieldDescription content is plain text only (no rich-text formatting) and has no maximum length limit
       - disciplines in projectMetadataFieldDisciplines are sorted from A-Z and shown as comma-separated values
       - project top section behavior (title, favourite toggle, tab selector, and sub-view switching) is defined in tests/docs/requirements/original/project_header_requirements_v1.yaml
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given user opens '/project/{id}', projectOverviewView is visible
-      - given project is published and user has no explicit role on that project (Owner, Editor, Viewer, Commenter), projectOverviewView is visible in read-only mode
-      - given project has description, projectMetadataFieldDescription is visible
+      - given documentPreconditions hold and user opens '/project/{id}', projectOverviewView is visible
+      - given actor is user (published-access) per documentPreconditions, projectOverviewView is visible in read-only mode
+      - given projectOverviewView is visible, projectMetadataFieldDescription label 'Description' is visible
+      - given project description has a value, projectMetadataFieldDescription shows that value
+      - given project description is empty, projectMetadataFieldDescription shows '-'
+      - projectMetadataFieldDescription accepts plain text only (no rich-text formatting controls)
+      - project description has no maximum length limit
       - given project has disciplines, projectMetadataFieldDisciplines displays disciplines sorted A-Z as comma-separated values
       - projectMetadataPermissionsPanel is visible
       - projectTagsSection is visible
@@ -177,65 +185,70 @@ requirements:
       - editor
       - viewer
       - commenter
+      - user
 
     uiObjects:
       - projectOverviewView
       - projectMetadataPermissionsPanel
-      - projectOverviewAddContributorsButton
+      - projectMetadataAddContributorsButton
       - contextActionBarAddContributorsButton
       - addContributorsDialog
       - contributorRoleDropdown
 
     preconditions:
       - user has Owner, Editor, Viewer, or Commenter role on the project
-      - for projectOverviewAddContributorsButton and contributorRoleDropdown flows, projectOverviewView is visible at '/project/{id}'
+      - for projectMetadataAddContributorsButton and contributorRoleDropdown flows, projectOverviewView is visible at '/project/{id}'
       - for contextActionBarAddContributorsButton flows, current route is a project route per context_action_bar_requirements_v1.yaml FR-CAB-001
 
     trigger:
-      - user clicks projectOverviewAddContributorsButton or contextActionBarAddContributorsButton, or changes/removes an existing contributor via contributorRoleDropdown when projectMetadataPermissionsPanel is visible
+      - user clicks projectMetadataAddContributorsButton or contextActionBarAddContributorsButton, or changes/removes an existing contributor via contributorRoleDropdown when projectMetadataPermissionsPanel is visible
 
     mainFlow:
-      - projectOverviewAddContributorsButton is the permissions-context entry point on projectOverviewView with label 'Add CourseFlow user'; contextActionBarAddContributorsButton is the separate contextActionBar entry point with the same label (FR-CAB-002); both are distinct controls and both open addContributorsDialog when Owner or Editor clicks either control
+      - projectMetadataAddContributorsButton is the permissions-context entry point on projectOverviewView with label 'Add CourseFlow user'; contextActionBarAddContributorsButton is the separate contextActionBar entry point with the same label (FR-CAB-002); both are distinct controls and both open addContributorsDialog when Owner or Editor clicks either control
       - Viewer and Commenter see both entry points read-only where each is rendered (addContributorsDialog does not open on click attempt)
       - addContributorsDialog allows selecting CourseFlow users and assigning a project role
       - projectMetadataPermissionsPanel lists current contributors and their roles
       - owner or editor may use contributorRoleDropdown on an existing contributor to select a different role among 'Editor', 'Commenter', and 'Viewer'
       - contributorRoleDropdown includes a 'Remove contributor' action to remove a contributor from projectMetadataPermissionsPanel
       - contributorRoleDropdown does not offer an 'Owner' assignment; project ownership cannot be transferred from this control
-      - for viewer, commenter, or published-project read-only users without explicit project role, contributor roles remain visible in projectMetadataPermissionsPanel but contributorRoleDropdown is read-only and not actionable
+      - for viewer, commenter, or user (published-access, no explicit project role), contributor roles remain visible in projectMetadataPermissionsPanel but contributorRoleDropdown is read-only and not actionable
       - when contributor is added at project level, child workflows inherit project contributors and roles by default
       - workflow-level contributor modifications are not allowed
       - adding contributor results in project appearing in that contributor's 'My library' and role permissions applying per project permissions matrix
 
     roleBehavior:
       owner:
-        projectOverviewAddContributorsButton: available
+        projectMetadataAddContributorsButton: available
         contextActionBarAddContributorsButton: available
         contributorRoleDropdown: available
       editor:
-        projectOverviewAddContributorsButton: available
+        projectMetadataAddContributorsButton: available
         contextActionBarAddContributorsButton: available
         contributorRoleDropdown: available
       viewer:
-        projectOverviewAddContributorsButton: readOnly
+        projectMetadataAddContributorsButton: readOnly
         contextActionBarAddContributorsButton: readOnly
         contributorRoleDropdown: readOnly
       commenter:
-        projectOverviewAddContributorsButton: readOnly
+        projectMetadataAddContributorsButton: readOnly
+        contextActionBarAddContributorsButton: readOnly
+        contributorRoleDropdown: readOnly
+      user:
+        projectMetadataAddContributorsButton: readOnly
         contextActionBarAddContributorsButton: readOnly
         contributorRoleDropdown: readOnly
 
     acceptanceCriteria:
-      - given projectOverviewView at '/project/{id}', projectOverviewAddContributorsButton is visible with label 'Add CourseFlow user' in the permissions context for Owner, Editor, Viewer, and Commenter when that block is shown
+      - given projectOverviewView at '/project/{id}', projectMetadataAddContributorsButton is visible with label 'Add CourseFlow user' in the permissions context for Owner, Editor, Viewer, and Commenter when that block is shown
       - given a project route per FR-CAB-002, contextActionBarAddContributorsButton is visible with label 'Add CourseFlow user' on contextActionBar for Owner, Editor, Viewer, and Commenter
-      - given owner or editor clicks projectOverviewAddContributorsButton or contextActionBarAddContributorsButton, addContributorsDialog opens
-      - given viewer or commenter, each visible entry point (projectOverviewAddContributorsButton and/or contextActionBarAddContributorsButton) is read-only and addContributorsDialog does not open when user attempts to click that control
+      - given owner or editor clicks projectMetadataAddContributorsButton or contextActionBarAddContributorsButton, addContributorsDialog opens
+      - given viewer or commenter, each visible entry point (projectMetadataAddContributorsButton and/or contextActionBarAddContributorsButton) is read-only and addContributorsDialog does not open when user attempts to click that control
       - given owner or editor adds a contributor with role X in addContributorsDialog, projectMetadataPermissionsPanel shows that contributor with role X
       - given owner or editor opens contributorRoleDropdown, available options are exactly 'Editor', 'Commenter', 'Viewer', and 'Remove contributor'
       - given owner or editor changes a contributor role via contributorRoleDropdown, selected role must be one of 'Editor', 'Commenter', or 'Viewer' and projectMetadataPermissionsPanel updates to that selected role
       - given owner or editor uses remove action in contributorRoleDropdown, that contributor no longer appears in projectMetadataPermissionsPanel
       - given viewer or commenter, projectMetadataPermissionsPanel shows contributor roles and contributorRoleDropdown is read-only
-      - given project is published and user has no explicit role on that project (Owner, Editor, Viewer, Commenter), projectMetadataPermissionsPanel shows contributor roles and contributorRoleDropdown is read-only
+      - given actor is user (published-access) per documentPreconditions, projectMetadataPermissionsPanel shows contributor roles and contributorRoleDropdown is read-only
       - given contributor is added at project level, child workflow access reflects inherited project contributor role
 
     openQuestions:
@@ -315,7 +328,7 @@ requirements:
 
     uiObjects:
       - projectOverviewView
-      - projectOverviewAddContributorsButton
+      - projectMetadataAddContributorsButton
       - contextActionBarAddContributorsButton
       - addContributorsDialog
       - addContributorsUserSelector
@@ -327,13 +340,13 @@ requirements:
 
     preconditions:
       - user has Owner or Editor role on the project
-      - projectOverviewAddContributorsButton is visible on projectOverviewView at '/project/{id}', or contextActionBarAddContributorsButton is visible on a project route per FR-CAB-002
+      - projectMetadataAddContributorsButton is visible on projectOverviewView at '/project/{id}', or contextActionBarAddContributorsButton is visible on a project route per FR-CAB-002
 
     trigger:
-      - user opens addContributorsDialog by clicking projectOverviewAddContributorsButton or contextActionBarAddContributorsButton
+      - user opens addContributorsDialog by clicking projectMetadataAddContributorsButton or contextActionBarAddContributorsButton
 
     mainFlow:
-      - clicking projectOverviewAddContributorsButton or contextActionBarAddContributorsButton opens the same addContributorsDialog
+      - clicking projectMetadataAddContributorsButton or contextActionBarAddContributorsButton opens the same addContributorsDialog
       - addContributorsDialog presents addContributorsUserSelector and addContributorsRoleSelector
       - addContributorsUserSelector is an autocomplete on existing CourseFlow users; when user types, narrowed matching results are displayed automatically
       - addContributorsUserSelectorClearButton clears typed input in addContributorsUserSelector
@@ -353,7 +366,7 @@ requirements:
         addContributorsDialog: notAvailable
 
     acceptanceCriteria:
-      - given owner or editor clicks projectOverviewAddContributorsButton or contextActionBarAddContributorsButton, addContributorsDialog is visible
+      - given owner or editor clicks projectMetadataAddContributorsButton or contextActionBarAddContributorsButton, addContributorsDialog is visible
       - addContributorsDialog shows addContributorsUserSelector and addContributorsRoleSelector
       - given user types in addContributorsUserSelector, narrowed matching CourseFlow users are displayed automatically
       - given addContributorsUserSelector has typed input, addContributorsUserSelectorClearButton is visible; clicking it clears the input
@@ -378,6 +391,7 @@ requirements:
       - editor
       - viewer
       - commenter
+      - user
 
     uiObjects:
       - projectOverviewView
@@ -398,7 +412,7 @@ requirements:
       - for owner and editor, addNewTagInput with placeholder 'Add new tag' allows creating a new tag
       - for owner and editor, editTagInput allows inline editing of existing tag labels
       - for owner and editor, deleteTagButton removes tag from visible tag list
-      - for viewer, commenter, or anonymous users viewing a published project, projectTagsSection remains visible but tag controls are read-only and not actionable
+      - for viewer, commenter, or user (published-access) per documentPreconditions, projectTagsSection remains visible but tag controls are read-only and not actionable
       - tags are ordered by most recently added
 
     roleBehavior:
@@ -418,13 +432,16 @@ requirements:
         addNewTagInput: readOnly
         editTagInput: readOnly
         deleteTagButton: notAvailable
+      user:
+        addNewTagInput: readOnly
+        editTagInput: readOnly
+        deleteTagButton: notAvailable
 
     acceptanceCriteria:
       - given owner or editor enters a value in addNewTagInput and commits, a new projectTagItem is shown
       - given owner or editor edits a tag label and commits, projectTagItem reflects the new label
       - given owner or editor clicks deleteTagButton for a tag, that projectTagItem is removed from the list
-      - given viewer or commenter, projectTagsSection is visible and tag controls are read-only
-      - given published project and user has no explicit project role (including anonymous user), projectTagsSection is visible and tag controls are read-only
+      - given viewer, commenter, or user per documentPreconditions, projectTagsSection is visible and tag controls are read-only
       - tags are displayed in most-recently-added order
 
     openQuestions:

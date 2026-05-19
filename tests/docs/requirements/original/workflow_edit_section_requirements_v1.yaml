@@ -1,0 +1,425 @@
+# Normalized requirements: workflow section surface in Workflow view — shared uiObjectDefinitions, locatorMappings, and FR-SEC-001–009 in product order (FR-SEC-005 → workflow_duplicate_section_requirements_v1.yaml; FR-SEC-006 → workflow_delete_section_requirements_v1.yaml; FR-SEC-001–004 and FR-SEC-007–009 in this file)
+# Source: tests/docs/__ARCHIVE/edit_section_requirements_v1.md
+# Application code evidence: react/src/components/pages/Workspace/Workflow/Sidebar/components/EditTab/components/EditSection/index.tsx; react/src/components/views/WorkflowView/WorkflowEditView/components/Week/HoverMenu/index.tsx (section hover menu — NodeHoverMenu with insert, duplicate, delete, comments); react/src/components/views/WorkflowView/WorkflowEditView/components/Week/index.tsx (vertical section reorder drag — onWeekReorder / workflowReorderSection); react/src/redux/slices/week.slice.ts (section insert and ordering)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml (workflowView canonical); tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebar, workflowRightSidebarEditTab, workflowRightSidebarCommentsTab — FR-WF-RS-001, FR-WF-RS-002, FR-WF-RS-003); tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml (workflowNodeHoverActionsMenu visibility and item actionability — FR-WF-NODE-004, FR-WF-NODE-005; section hover menu lockstep — FR-SEC-007); tests/docs/requirements/original/workflow_duplicate_section_requirements_v1.yaml (duplicate section — FR-SEC-005); tests/docs/requirements/original/workflow_delete_section_requirements_v1.yaml (delete section — FR-SEC-006); tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml (open comments for section — FR-WF-COMMENTS-002; supersedes legacy FR-SEC-011 traceability). Canonical workflowSectionContainer (and related section uiObjects) and locators in this file are reused by the duplicate and delete section requirement files.
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - current route is '/workflow/{id}/workflow'
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+
+uiObjectDefinitions:
+  workflowView:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml.
+  workflowSectionContainer:
+    meaning: Ordered section block in workflowView that contains the section node grid.
+  workflowSectionRow:
+    meaning: Horizontal row band inside a workflowSectionContainer spanning all workflowChannels.
+  workflowSectionHeader:
+    meaning: Header band of a workflowSectionContainer showing section index, optional title, collapse control, and section-level hover affordances.
+  workflowSectionNumberLabel:
+    meaning: Circular badge on workflowSectionHeader showing the 1-based section index.
+  workflowSectionTitleText:
+    meaning: Optional section title text adjacent to workflowSectionNumberLabel on workflowSectionHeader.
+  workflowSectionContainerHoverActionsMenu:
+    meaning: Four-icon hover action menu on a workflowSectionContainer header row (insert below, duplicate, delete, comments).
+  workflowSectionContainerHoverActionsMenuInsertBelowItem:
+    meaning: Insert-below icon button in workflowSectionContainerHoverActionsMenu.
+  workflowSectionContainerHoverActionsMenuDuplicateItem:
+    meaning: Duplicate icon button in workflowSectionContainerHoverActionsMenu.
+  workflowSectionContainerHoverActionsMenuDeleteItem:
+    meaning: Delete icon button in workflowSectionContainerHoverActionsMenu.
+  workflowSectionContainerHoverActionsMenuCommentsItem:
+    meaning: Comments icon button in workflowSectionContainerHoverActionsMenu.
+  workflowRightSidebar:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarEditTab:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarCommentsTab:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowEditSectionForm:
+    meaning: Right-sidebar edit form for the selected workflowSectionContainer.
+  workflowEditSectionFormTitleField:
+    meaning: Single-line field for section title on workflowEditSectionForm.
+  workflowEditSectionFormDuplicateButton:
+    meaning: Duplicate button on workflowEditSectionForm.
+  workflowEditSectionFormDeleteButton:
+    meaning: Delete button on workflowEditSectionForm.
+  workflowSectionDeleteDialog:
+    meaning: Confirmation modal for deleting a workflowSectionContainer.
+  workflowSectionDeleteDialogCancelButton:
+    meaning: Cancel control on workflowSectionDeleteDialog; dismisses without deleting.
+  workflowSectionDeleteDialogConfirmButton:
+    meaning: Primary confirm control on workflowSectionDeleteDialog; performs delete
+
+locatorMappings:
+  workflowView:
+    strategy: null
+    confidence: unresolved
+  workflowSectionContainer:
+    strategy: "[data-week-id]"
+    confidence: confirmed
+  workflowSectionRow:
+    strategy: null
+    confidence: unresolved
+  workflowSectionHeader:
+    strategy: "{workflowSectionContainer} header region including week title row"
+    confidence: inferred
+  workflowSectionNumberLabel:
+    strategy: "{workflowSectionHeader} circular section index badge (WeekNumber span in current implementation)"
+    confidence: inferred
+  workflowSectionTitleText:
+    strategy: "{workflowSectionHeader} title text adjacent to workflowSectionNumberLabel when section title is non-empty"
+    confidence: inferred
+  workflowSectionContainerHoverActionsMenu:
+    strategy: "{workflowSectionContainer} .hover-menu"
+    confidence: inferred
+  workflowSectionContainerHoverActionsMenuInsertBelowItem:
+    strategy: "{workflowSectionContainerHoverActionsMenu} button with accessible name 'Insert week below'"
+    confidence: inferred
+  workflowSectionContainerHoverActionsMenuDuplicateItem:
+    strategy: "{workflowSectionContainerHoverActionsMenu} button whose accessible name matches localized duplicate-week label"
+    confidence: inferred
+  workflowSectionContainerHoverActionsMenuDeleteItem:
+    strategy: "{workflowSectionContainerHoverActionsMenu} button with accessible name 'Delete week'"
+    confidence: inferred
+  workflowSectionContainerHoverActionsMenuCommentsItem:
+    strategy: "{workflowSectionContainerHoverActionsMenu} button with accessible name 'Comments'"
+    confidence: inferred
+  workflowRightSidebar:
+    strategy: "[data-test-id='sidebar']"
+    confidence: confirmed
+  workflowEditSectionForm:
+    strategy: null
+    confidence: unresolved
+  workflowEditSectionFormTitleField:
+    strategy: null
+    confidence: unresolved
+  workflowSectionDeleteDialog:
+    strategy: "[aria-labelledby='delete-week-part-modal']"
+    confidence: inferred
+
+requirements:
+  - id: FR-SEC-001
+    title: Open Edit Section Form
+
+    designEvidence:
+      - FIGMA-SEC-OE-EDIT
+      - FIGMA-SEC-CV-EDIT
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - workflowView
+      - workflowSectionContainer
+      - workflowSectionHeader
+      - workflowRightSidebar
+      - workflowEditSectionForm
+
+    preconditions:
+      - workflowView is open on the 'Workflow' sub-view
+      - at least one workflowSectionContainer exists
+
+    trigger:
+      - user clicks workflowSectionHeader for a section to select the section
+      - user already has workflowRightSidebar open and clicks workflowSectionHeader for a section
+
+    mainFlow:
+      - system opens workflowRightSidebar with workflowEditSectionForm for the identified workflowSectionContainer, or updates workflowRightSidebar content to workflowEditSectionForm when the sidebar was already open
+
+    roleBehavior:
+      owner:
+        workflowEditSectionForm: editable
+      editor:
+        workflowEditSectionForm: editable
+      commenter:
+        workflowEditSectionForm: readOnly
+      viewer:
+        workflowEditSectionForm: readOnly
+      user:
+        workflowEditSectionForm: readOnly
+
+    acceptanceCriteria:
+      - given workflowRightSidebar is closed, when user clicks workflowSectionHeader for a section outside any workflowNode cell in that workflowSectionContainer, then workflowRightSidebar opens and shows workflowEditSectionForm for that section
+      - given workflowRightSidebar is already open, when user clicks workflowSectionHeader for a section outside any workflowNode cell in that workflowSectionContainer, then workflowRightSidebar shows workflowEditSectionForm for that section
+      - given user clicks a workflowNode cell inside a workflowSectionContainer, that click does not select the parent section via workflowSectionHeader (section selection for workflowEditSectionForm follows only workflowSectionHeader clicks outside workflowNode cells)
+
+    openQuestions: []
+
+  - id: FR-SEC-002
+    title: Section numbering and display
+
+    designEvidence:
+      - FIGMA-SEC-OE-EDIT
+      - FIGMA-SEC-OE-HOVER
+      - FIGMA-SEC-C-HOVER
+
+    actors:
+      - system
+
+    uiObjects:
+      - workflowSectionContainer
+      - workflowSectionHeader
+      - workflowSectionNumberLabel
+      - workflowSectionTitleText
+      - workflowEditSectionForm
+
+    preconditions:
+      - workflow contains 1..N workflowSectionContainer regions
+
+    trigger:
+      - any section create, insert, delete, or reorder operation completes
+
+    mainFlow:
+      - system recalculates workflowSectionNumberLabel values top-to-bottom starting at 1
+      - on vertical reorder of a workflowSectionContainer, node and edge behavior per FR-SEC-009
+      - system always shows workflowSectionNumberLabel on workflowSectionHeader without requiring hover
+      - if workflowEditSectionFormTitleField is non-empty for a section, workflowSectionHeader shows workflowSectionNumberLabel and workflowSectionTitleText; if title is empty, workflowSectionHeader shows workflowSectionNumberLabel only with no workflowSectionTitleText (no default text)
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - when a section is inserted between existing sections, workflowSectionNumberLabel values update so indices stay contiguous from top to bottom
+      - given workflowEditSectionFormTitleField is empty for a section, workflowSectionHeader shows only workflowSectionNumberLabel with no workflowSectionTitleText and no default text
+
+    openQuestions: []
+
+  - id: FR-SEC-003
+    title: Edit section title (auto-save and 100-character limit)
+
+    designEvidence:
+      - FIGMA-SEC-OE-EDIT
+
+    actors:
+      - system
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowEditSectionForm
+      - workflowEditSectionFormTitleField
+      - workflowSectionHeader
+      - workflowSectionContainer
+
+    preconditions:
+      - workflowEditSectionForm is open for a section
+      - user has edit rights for the workflow
+
+    trigger:
+      - user types, pastes, or clears workflowEditSectionFormTitleField
+      - input would exceed the 100-character stored title limit
+
+    mainFlow:
+      - system prevents more than 100 characters in the stored title (by blocking extra input); validation is continuous or on attempted input past the limit
+      - when the change is within the limit, system auto-saves without a save button on the form
+      - workflowSectionHeader updates to reflect persisted title after save
+
+    roleBehavior:
+      owner:
+        workflowEditSectionFormTitleField: editable
+      editor:
+        workflowEditSectionFormTitleField: editable
+      commenter:
+        workflowEditSectionFormTitleField: readOnly
+      viewer:
+        workflowEditSectionFormTitleField: readOnly
+      user:
+        workflowEditSectionFormTitleField: readOnly
+
+    acceptanceCriteria:
+      - given workflowEditSectionFormTitleField at 100 characters, when owner or editor attempts further input, then no additional characters are stored (or equivalent design-safe behavior)
+      - when changes are within the 100-character limit, title persists without an explicit save control and workflowSectionHeader reflects the persisted title
+      - given workflowEditSectionFormTitleField is cleared, when auto-save completes, workflowSectionHeader shows workflowSectionNumberLabel only per FR-SEC-002 (no workflowSectionTitleText, no placeholder)
+      - given commenter, viewer, or user (published-access) role, workflowEditSectionFormTitleField is readOnly and no auto-save occurs on edit attempts
+
+    openQuestions: []
+
+  - id: FR-SEC-004
+    title: Insert section below (hover)
+
+    designEvidence:
+      - FIGMA-SEC-OE-HOVER
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowSectionContainer
+      - workflowSectionHeader
+      - workflowSectionContainerHoverActionsMenu
+      - workflowSectionContainerHoverActionsMenuInsertBelowItem
+
+    preconditions:
+      - target workflowSectionContainer exists
+      - workflowSectionContainerHoverActionsMenuInsertBelowItem is active for the actor per FR-SEC-007
+
+    trigger:
+      - user clicks workflowSectionContainerHoverActionsMenuInsertBelowItem on workflowSectionContainerHoverActionsMenu visible on workflowSectionHeader hover per FR-SEC-007
+
+    mainFlow:
+      - system inserts a new empty workflowSectionContainer directly below the target section
+      - system renumbers sections
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given section at index K, when insert below succeeds, new section is at K+1 and following indices shift
+      - hover-menu visibility and insert-item actionability for owner, editor, commenter, viewer, and user follow FR-SEC-007
+
+    openQuestions: []
+
+  # FR-SEC-005: workflow_duplicate_section_requirements_v1.yaml
+  # FR-SEC-006: workflow_delete_section_requirements_v1.yaml
+
+  - id: FR-SEC-007
+    title: workflowSectionContainerHoverActionsMenu — lockstep with FR-WF-NODE-005
+
+    designEvidence:
+      - FIGMA-SEC-OE-HOVER
+      - FIGMA-SEC-C-HOVER
+      - FIGMA-WF-NODE-WORKFLOW-VIEW
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowView
+      - workflowSectionContainer
+      - workflowSectionHeader
+      - workflowSectionContainerHoverActionsMenu
+      - workflowSectionContainerHoverActionsMenuInsertBelowItem
+      - workflowSectionContainerHoverActionsMenuDuplicateItem
+      - workflowSectionContainerHoverActionsMenuDeleteItem
+      - workflowSectionContainerHoverActionsMenuCommentsItem
+
+    preconditions:
+      - workflowView is open on the 'Workflow' sub-view
+
+    trigger:
+      - system renders workflowSectionContainerHoverActionsMenu on workflowSectionHeader hover
+      - user clicks an item in workflowSectionContainerHoverActionsMenu
+
+    mainFlow:
+      - on workflowSectionHeader hover in workflowView, workflowSectionContainerHoverActionsMenu is shown, kept visible, and dismissed per FR-WF-NODE-004 using this node→section name mapping — workflowNodeHoverActionsMenu → workflowSectionContainerHoverActionsMenu; workflowNode → workflowSectionHeader (section headers are not subject to workflowNode move-drag suppression in FR-WF-NODE-004); workflowNodeHoverActionsMenuInsertItem → workflowSectionContainerHoverActionsMenuInsertBelowItem; workflowNodeHoverActionsMenuDuplicateItem → workflowSectionContainerHoverActionsMenuDuplicateItem; workflowNodeHoverActionsMenuDeleteItem → workflowSectionContainerHoverActionsMenuDeleteItem; workflowNodeHoverActionsMenuCommentsItem → workflowSectionContainerHoverActionsMenuCommentsItem
+      - while workflowSectionContainerHoverActionsMenu is visible, each menu item's actionability for the actor follows FR-WF-NODE-005 using the same mapping
+      - when user clicks workflowSectionContainerHoverActionsMenuInsertBelowItem, system runs FR-SEC-004; when user clicks workflowSectionContainerHoverActionsMenuDuplicateItem, system runs FR-SEC-005; when user clicks workflowSectionContainerHoverActionsMenuDeleteItem, system runs FR-SEC-006; when user clicks workflowSectionContainerHoverActionsMenuCommentsItem, system runs FR-WF-COMMENTS-002
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - section hover-menu visibility and per-item active, readOnly, and notRendered states match FR-WF-NODE-004 and FR-WF-NODE-005 when the node→section name mapping in this FR's mainFlow is applied
+
+    openQuestions: []
+
+  - id: FR-SEC-008
+    title: Edge integrity for section insert and delete
+
+    designEvidence: []
+
+    actors:
+      - system
+
+    uiObjects:
+      - workflowSectionContainer
+      - workflowNode
+      - workflowEdge
+
+    preconditions:
+      - workflow contains inter-section edges (edges linking nodes in different workflowSectionContainers)
+
+    trigger:
+      - section insert or delete operations complete (including insert below per FR-SEC-004 and delete per FR-SEC-006)
+
+    mainFlow:
+      - on section insert between two workflowSectionContainers that had cross-section linked workflowNodes, existing cross-section workflowEdges remain
+      - on confirmed section delete per FR-SEC-006, every workflowNode in the deleted workflowSectionContainer is removed and every workflowEdge incident on those workflowNodes is removed
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given section insertion between two sections that had linked nodes, when insert completes, existing cross-section edges remain
+      - given confirmed section delete, when section nodes are removed, all edges originating or targeting those nodes are deleted
+
+    openQuestions:
+      - No Figma design evidence in upstream; validate against backend or graph-level specifications when authoring tests. Duplicate-specific cross-section edge semantics are exercised from FR-SEC-005 in workflow_duplicate_section_requirements_v1.yaml.
+
+  - id: FR-SEC-009
+    title: Vertical reorder of workflowSectionContainer — nodes and edges
+
+    designEvidence: []
+
+    actors:
+      - system
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowView
+      - workflowSectionContainer
+      - workflowSectionHeader
+      - workflowSectionNumberLabel
+      - workflowChannel
+      - workflowSectionRow
+      - workflowNode
+      - workflowEdge
+
+    preconditions:
+      - workflow contains at least two workflowSectionContainers in top-to-bottom order
+      - the workflowSectionContainer being reordered contains at least one workflowNode or is empty
+
+    trigger:
+      - owner or editor completes a vertical reorder of a workflowSectionContainer in workflowView (drag the section to a new top-to-bottom position per react/src/components/views/WorkflowView/WorkflowEditView/components/Week/index.tsx grid-week drag-and-drop)
+
+    mainFlow:
+      - workflowSectionContainer keeps the same identity; only its top-to-bottom index in workflowView changes
+      - system recalculates workflowSectionNumberLabel on every workflowSectionHeader per FR-SEC-002
+      - every workflowNode that was inside the reordered workflowSectionContainer before the reorder remains inside that same workflowSectionContainer after the reorder with unchanged workflowChannel and workflowSectionRow assignments
+      - existing workflowEdges between workflowNodes are preserved — including workflowEdges whose source workflowNode is in one workflowSectionContainer and target workflowNode is in another (cross-section edges); source and target workflowNode identities and edge metadata are unchanged; edge lines follow the updated section layout
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given workflowSectionContainer S moves from top-to-bottom index K to index M by vertical reorder, every workflowNode that was in S before the reorder is still in S after the reorder at the same workflowChannel and workflowSectionRow coordinates relative to S
+      - given owner or editor vertically reorders a workflowSectionContainer, no workflowNode is removed or created, no workflowNode changes workflowChannel or workflowSectionRow assignment, and no workflowChannel is inserted or removed solely as a result of the reorder
+      - given workflowNode A in workflowSectionContainer S is connected by a workflowEdge to workflowNode B in a different workflowSectionContainer, when S is vertically reordered, that workflowEdge still exists with the same source workflowNode A, target workflowNode B, and metadata
+      - given owner or editor vertically reorders a workflowSectionContainer, every other workflowEdge that existed before the reorder (within-section and cross-section) still exists with the same source workflowNode, target workflowNode, and metadata
+      - given owner or editor vertically reorders a workflowSectionContainer, workflowSectionNumberLabel values on all workflowSectionHeaders reflect the new contiguous order per FR-SEC-002
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-WF-NODE-WORKFLOW-VIEW
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=1853-18902&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-SEC-OE-EDIT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=4193-42498&t=vePHPw4PnV3f9k8W-1
+  - key: FIGMA-SEC-CV-EDIT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6353-89504&t=vePHPw4PnV3f9k8W-1
+  - key: FIGMA-SEC-OE-HOVER
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=1937-24543&t=vePHPw4PnV3f9k8W-1
+  - key: FIGMA-SEC-C-HOVER
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6354-91198&t=vePHPw4PnV3f9k8W-1
+  - key: FIGMA-SEC-DEL-WARN
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5661-46139&t=vePHPw4PnV3f9k8W-1
+  - key: FIGMA-SEC-COM-OE
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6355-92135&t=vePHPw4PnV3f9k8W-1
+  - key: FIGMA-SEC-COM-C
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6355-99730&t=vePHPw4PnV3f9k8W-1
+  - key: FIGMA-SEC-COM-V
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6355-100291&t=vePHPw4PnV3f9k8W-1

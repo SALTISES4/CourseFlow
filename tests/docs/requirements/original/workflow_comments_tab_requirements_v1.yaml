@@ -1,0 +1,644 @@
+# Normalized requirements: workflowRightSidebarCommentsTab — comments for workflow hosts (nodes, channels, sections, outcomes)
+# Scope: workflowRightSidebarCommentsTabContent for any workflowCommentsHostObject whose type is one of NODE, COLUMN, WEEK, or OUTCOME (NODE → workflowNode, COLUMN → workflowChannel, WEEK → workflowSectionContainer, OUTCOME → workflowOutcome). FR-WF-COMMENTS-001 through FR-WF-COMMENTS-004 each normalize how to open comments for one host type; FR-WF-COMMENTS-005 binds that host to sidebar.edit and the Edit tab; FR-WF-COMMENTS-006 and FR-WF-COMMENTS-007 normalize compose and delete; FR-WF-COMMENTS-008 normalizes the comments-presence indicator on hover action menus. Archive and product intent: commenting works the same way for every host type (list, composer, plain text, own-comment delete); only entry paths differ. Same bind/rebind vocabulary as workflow_edit_node_requirements_v1.yaml FR-WF-EN-001 for sidebar.edit targets where applicable.
+# Source (product): tests/docs/__ARCHIVE/functional-requirements.md — Commenting (comments on Nodes, Channels, Sections, Outcomes, Permissions; roles Owner/Editor/Commentor add and view; plain text; own-comment delete; Owner-only delete of others' comments — lines 91–107); Node/Channel/Section references in the same archive; Workflow sidebar matrix Comment tab visibility (lines 1273–1276).
+# Source (design): Figma CourseFlow 2.0 — comment section frames for owner/editor, commenter, and viewer for node context (see designEvidenceLinkTable); other host types are assumed to reuse the same Comments chrome until separate design evidence exists.
+# Normative entry-path cross-references: tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml FR-WF-NODE-005 (node hover); tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml FR-SEC-007 (section hover lockstep); tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml FR-CHAN-007 (channel hover lockstep); Outcomes view — outcome header hover comments entry (align with FR-WF-COMMENTS-004 when outcome hover menu is normalized).
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/guidelines_functional_requirements.md; tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebar, FR-WF-RS-002, FR-WF-RS-003); tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml (FR-WF-NODE-005); tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml (workflowEditNodeForm / sidebar.edit binding per FR-WF-EN-001); tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml (workflowChannel); tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml (workflowSectionContainer); tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml (workflowChannelHoverActionsMenu — FR-CHAN-007).
+#
+# IMPORTANT: Gaps vs design and archive are called out per FR (mock data, placeholder author strings, moderation delete, comments-presence indicator on hover menus). Figma frames anchor owner/editor vs commenter vs viewer layouts; where product behavior is still undecided, openQuestions record the delta.
+
+documentPreconditions:
+  - user is authenticated to CourseFlow and on an existing workflow route
+  - workflowRightSidebar is visible per tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml FR-WF-RS-001
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+
+uiObjectDefinitions:
+  workflowChannel:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowSectionContainer:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowOutcome:
+    meaning: Outcome entity selected as sidebar.edit target in 'Outcomes' view when object type is OUTCOME
+  workflowCommentsHostObject:
+    meaning: The entity whose comment thread workflowRightSidebarCommentsTabContent displays
+  workflowNode:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
+  workflowNodeHoverActionsMenu:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml.
+  workflowNodeHoverActionsMenuCommentsItem:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml.
+  workflowSectionContainerHoverActionsMenu:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowSectionContainerHoverActionsMenuCommentsItem:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowChannelHoverActionsMenu:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowChannelHoverActionsMenuCommentsItem:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowOutcomeHoverActionsMenu:
+    meaning: Cluster of icon-only action controls on an outcome header in Outcomes views (includes comments)
+  workflowOutcomeHoverActionsMenuCommentsItem:
+    meaning: Comments icon in workflowOutcomeHoverActionsMenu.
+  workflowCommentsPresenceIndicator:
+    meaning: Green badge on a host hover-actions comments icon when unread comments exist.
+  workflowRightSidebar:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarEditTab:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarEditTabContent:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowEditNodeForm:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
+  workflowRightSidebarCommentsTab:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarCommentsTabContent:
+    meaning: Content region rendered inside workflowRightSidebar when workflowRightSidebarCommentsTab is active
+  workflowCommentsTabTitle:
+    meaning: Title region at the top of workflowRightSidebarCommentsTabContent.
+  workflowCommentsTabList:
+    meaning: Scrollable comment thread list on workflowRightSidebarCommentsTabContent.
+  workflowCommentsTabListItem:
+    meaning: One comment in workflowCommentsTabList
+  workflowCommentsTabListItemHeader:
+    meaning: Header line of workflowCommentsTabListItem of the form '{author-label} • {date-label}'
+  workflowCommentsTabListItemBody:
+    meaning: Body text of workflowCommentsTabListItem rendering the comment's content as plain text.
+  workflowCommentsTabListItemDeleteLink:
+    meaning: Delete control on an individual workflowCommentsTabListItem.
+  workflowCommentsTabComposer:
+    meaning: Bottom composer region on workflowRightSidebarCommentsTabContent.
+  workflowCommentsTabComposerTextField:
+    meaning: Multiline text input inside workflowCommentsTabComposer with label 'Comment'
+  workflowCommentsTabComposerSubmitButton:
+    meaning: Contained button inside workflowCommentsTabComposer with literal label 'Comment'
+
+locatorMappings:
+  workflowChannel:
+    strategy: null
+    confidence: unresolved
+  workflowSectionContainer:
+    strategy: "[data-week-id]"
+    confidence: confirmed
+  workflowOutcome:
+    strategy: null
+    confidence: unresolved
+  workflowCommentsHostObject:
+    strategy: null
+    confidence: unresolved
+  workflowNode:
+    strategy: null
+    confidence: unresolved
+  workflowNodeHoverActionsMenu:
+    strategy: "{workflowNode} floating group of icon buttons anchored to top-right (Mui Tooltip/IconButton cluster)"
+    confidence: inferred
+  workflowNodeHoverActionsMenuCommentsItem:
+    strategy: "{workflowNodeHoverActionsMenu} button with accessible name 'Comments'"
+    confidence: inferred
+  workflowSectionContainerHoverActionsMenu:
+    strategy: "{workflowSectionContainer} .hover-menu"
+    confidence: inferred
+  workflowSectionContainerHoverActionsMenuCommentsItem:
+    strategy: "{workflowSectionContainerHoverActionsMenu} button with accessible name 'Comments'"
+    confidence: inferred
+  workflowChannelHoverActionsMenu:
+    strategy: null
+    confidence: unresolved
+  workflowChannelHoverActionsMenuCommentsItem:
+    strategy: "{workflowChannelHoverActionsMenu} button whose accessible name resolves to localized 'Comments'"
+    confidence: inferred
+  workflowOutcomeHoverActionsMenu:
+    strategy: null
+    confidence: unresolved
+  workflowOutcomeHoverActionsMenuCommentsItem:
+    strategy: "{workflowOutcomeHoverActionsMenu} button whose accessible name resolves to localized 'Comments'"
+    confidence: inferred
+  workflowCommentsPresenceIndicator:
+    strategy: null
+    confidence: unresolved
+  workflowRightSidebar:
+    strategy: "[data-test-id='sidebar']"
+    confidence: confirmed
+  workflowRightSidebarEditTab:
+    strategy: null
+    confidence: unresolved
+  workflowRightSidebarEditTabContent:
+    strategy: null
+    confidence: unresolved
+  workflowEditNodeForm:
+    strategy: null
+    confidence: unresolved
+  workflowRightSidebarCommentsTab:
+    strategy: "{workflowRightSidebarTabStrip} [aria-label='comments tab']"
+    confidence: confirmed
+  workflowRightSidebarCommentsTabContent:
+    strategy: null
+    confidence: unresolved
+  workflowCommentsTabTitle:
+    strategy: "{workflowRightSidebarCommentsTabContent} heading with text 'Comments' (h3)"
+    confidence: inferred
+  workflowCommentsTabList:
+    strategy: null
+    confidence: unresolved
+  workflowCommentsTabListItem:
+    strategy: null
+    confidence: unresolved
+  workflowCommentsTabListItemHeader:
+    strategy: null
+    confidence: unresolved
+  workflowCommentsTabListItemBody:
+    strategy: null
+    confidence: unresolved
+  workflowCommentsTabListItemDeleteLink:
+    strategy: "{workflowCommentsTabListItem} button with text 'Delete' (Mui Link rendered as button)"
+    confidence: inferred
+  workflowCommentsTabComposer:
+    strategy: null
+    confidence: unresolved
+  workflowCommentsTabComposerTextField:
+    strategy: "{workflowCommentsTabComposer} multiline textbox with label 'Comment'"
+    confidence: inferred
+  workflowCommentsTabComposerSubmitButton:
+    strategy: "{workflowCommentsTabComposer} contained button with text 'Comment'"
+    confidence: inferred
+
+requirements:
+  - id: FR-WF-COMMENTS-001
+    title: Open comments for a workflowNode (trigger paths)
+
+    designEvidence:
+      - FIGMA-WF-COMMENTS-NODE-OWNER-EDITOR
+      - FIGMA-WF-COMMENTS-NODE-COMMENTER
+      - FIGMA-WF-COMMENTS-NODE-VIEWER
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowNode
+      - workflowNodeHoverActionsMenu
+      - workflowNodeHoverActionsMenuCommentsItem
+      - workflowRightSidebar
+      - workflowRightSidebarCommentsTab
+      - workflowRightSidebarCommentsTabContent
+
+    preconditions:
+      - workflowRightSidebar is visible per tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml FR-WF-RS-001
+      - for the hover-menu path, workflowView is rendered with at least one workflowNode and the user can hover that workflowNode so workflowNodeHoverActionsMenu is shown per tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml FR-WF-NODE-005
+      - for the sidebar-tab path, sidebar.edit already designates a workflowNode (CfObjectType.NODE) before the user clicks workflowRightSidebarCommentsTab
+
+    trigger:
+      - user clicks workflowNodeHoverActionsMenuCommentsItem on a hovered workflowNode
+      - user clicks workflowRightSidebarCommentsTab while sidebar.edit designates a workflowNode (CfObjectType.NODE)
+
+    mainFlow:
+      - system sets sidebar.edit to that workflowNode with tab 'comments' (hover path per tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml FR-WF-NODE-005) or switches workflowRightSidebar to workflowRightSidebarCommentsTab while preserving the NODE selection (tab path)
+      - if workflowRightSidebar is collapsed, system expands workflowRightSidebar with workflowRightSidebarCommentsTab selected
+      - if workflowRightSidebar is open on a different tab, system switches to workflowRightSidebarCommentsTab
+      - system renders workflowRightSidebarCommentsTabContent for that workflowNode as the workflowCommentsHostObject
+      - per-role actionability for workflowNodeHoverActionsMenuCommentsItem follows tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml FR-WF-NODE-005; per-role actionability for workflowRightSidebarCommentsTab follows tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml FR-WF-RS-003
+
+    roleBehavior:
+      owner:
+        workflowNodeHoverActionsMenuCommentsItem: active
+        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+      editor:
+        workflowNodeHoverActionsMenuCommentsItem: active
+        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+      commenter:
+        workflowNodeHoverActionsMenuCommentsItem: active
+        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+      viewer:
+        workflowNodeHoverActionsMenuCommentsItem: notRendered
+        workflowRightSidebarCommentsTab: disabled
+      user:
+        workflowNodeHoverActionsMenuCommentsItem: notRendered
+        workflowRightSidebarCommentsTab: disabledWhenPublishedParentProject
+
+    acceptanceCriteria:
+      - given actor is owner, editor, or commenter and the user clicks workflowNodeHoverActionsMenuCommentsItem on hovered workflowNode N, workflowRightSidebar shows workflowRightSidebarCommentsTab selected and workflowRightSidebarCommentsTabContent is bound to workflowNode N
+      - given actor is owner, editor, or commenter and sidebar.edit targets workflowNode N, when the user clicks workflowRightSidebarCommentsTab, workflowRightSidebarCommentsTabContent is bound to workflowNode N
+      - given actor is viewer or user, workflowRightSidebarCommentsTab is not actionable per FR-WF-RS-003 and the actor cannot open workflowRightSidebarCommentsTabContent for a workflowNode via these paths
+
+    openQuestions:
+      - Align trigger copy and empty-state behavior with Figma frames (FIGMA-WF-COMMENTS-NODE-*); list data source and backend persistence for comments remain open until wired.
+
+  - id: FR-WF-COMMENTS-002
+    title: Open comments for a workflowSectionContainer (trigger paths)
+
+    designEvidence:
+      - FIGMA-WF-COMMENTS-NODE-OWNER-EDITOR
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowSectionContainer
+      - workflowSectionContainerHoverActionsMenu
+      - workflowSectionContainerHoverActionsMenuCommentsItem
+      - workflowRightSidebar
+      - workflowRightSidebarCommentsTab
+      - workflowRightSidebarCommentsTabContent
+
+    preconditions:
+      - workflowRightSidebar is visible per tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml FR-WF-RS-001
+      - for the hover-menu path, workflowView shows at least one workflowSectionContainer row where workflowSectionContainerHoverActionsMenu can appear on hover
+      - for the sidebar-tab path, sidebar.edit already designates a workflowSectionContainer (WEEK) for that section
+
+    trigger:
+      - user clicks workflowSectionContainerHoverActionsMenuCommentsItem on a hovered workflowSectionContainer
+      - user clicks workflowRightSidebarCommentsTab while sidebar.edit designates that section (CfObjectType.WEEK)
+
+    mainFlow:
+      - system sets sidebar.edit to that workflowSectionContainer with tab 'comments' (hover path per tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml FR-SEC-007 lockstep with FR-WF-NODE-005) or switches workflowRightSidebar to workflowRightSidebarCommentsTab while preserving the WEEK selection
+      - if workflowRightSidebar is collapsed, system expands workflowRightSidebar with workflowRightSidebarCommentsTab selected
+      - system renders workflowRightSidebarCommentsTabContent for that workflowSectionContainer as the workflowCommentsHostObject
+      - per-role actionability for workflowRightSidebarCommentsTab follows tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml FR-WF-RS-003
+
+    roleBehavior:
+      owner:
+        workflowSectionContainerHoverActionsMenuCommentsItem: activeWhenSectionHovered
+        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+      editor:
+        workflowSectionContainerHoverActionsMenuCommentsItem: activeWhenSectionHovered
+        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+      commenter:
+        workflowSectionContainerHoverActionsMenuCommentsItem: activeWhenSectionHovered
+        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+      viewer:
+        workflowSectionContainerHoverActionsMenuCommentsItem: notRendered
+        workflowRightSidebarCommentsTab: disabled
+      user:
+        workflowSectionContainerHoverActionsMenuCommentsItem: notRendered
+        workflowRightSidebarCommentsTab: disabledWhenPublishedParentProject
+
+    acceptanceCriteria:
+      - given actor is owner, editor, or commenter and the user clicks workflowSectionContainerHoverActionsMenuCommentsItem on a hovered section S, workflowRightSidebar shows workflowRightSidebarCommentsTab selected and workflowRightSidebarCommentsTabContent is bound to section S
+      - given actor is owner, editor, or commenter and sidebar.edit targets section S (WEEK), when the user clicks workflowRightSidebarCommentsTab, workflowRightSidebarCommentsTabContent is bound to section S
+
+    openQuestions:
+      - Confirm section hover menu role gating matches FR-SEC-007 lockstep to FR-WF-NODE-005 for every actor (hover Comments affordance vs sidebar tab).
+      - Confirm dedicated Figma frames for section-hosted comments or inherit node Comments chrome.
+      - Legacy Playwright traceability used FR-SEC-011 for section comment hover; use this FR (FR-WF-COMMENTS-002) as the normative requirement id going forward.
+
+  - id: FR-WF-COMMENTS-003
+    title: Open comments for a workflowChannel (trigger paths)
+
+    designEvidence:
+      - FIGMA-WF-COMMENTS-NODE-OWNER-EDITOR
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowChannel
+      - workflowChannelHoverActionsMenu
+      - workflowChannelHoverActionsMenuCommentsItem
+      - workflowRightSidebar
+      - workflowRightSidebarCommentsTab
+      - workflowRightSidebarCommentsTabContent
+
+    preconditions:
+      - workflowRightSidebar is visible per tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml FR-WF-RS-001
+      - for the hover-menu path, workflowView shows at least one workflowChannel header where workflowChannelHoverActionsMenu can appear on hover
+      - for the sidebar-tab path, sidebar.edit already designates a workflowChannel (COLUMN)
+
+    trigger:
+      - user clicks workflowChannelHoverActionsMenuCommentsItem on a hovered workflowChannel column header
+      - user clicks workflowRightSidebarCommentsTab while sidebar.edit designates that channel (CfObjectType.COLUMN)
+
+    mainFlow:
+      - system sets sidebar.edit to that workflowChannel with tab 'comments' (hover path per tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml FR-CHAN-007 lockstep with FR-WF-NODE-005) or switches workflowRightSidebar to workflowRightSidebarCommentsTab while preserving the COLUMN selection
+      - if workflowRightSidebar is collapsed, system expands workflowRightSidebar with workflowRightSidebarCommentsTab selected
+      - system renders workflowRightSidebarCommentsTabContent for that workflowChannel as the workflowCommentsHostObject
+      - per-role actionability for workflowRightSidebarCommentsTab follows tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml FR-WF-RS-003
+
+    roleBehavior:
+      owner:
+        workflowChannelHoverActionsMenuCommentsItem: activeWhenChannelHovered
+        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+      editor:
+        workflowChannelHoverActionsMenuCommentsItem: activeWhenChannelHovered
+        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+      commenter:
+        workflowChannelHoverActionsMenuCommentsItem: activeWhenChannelHovered
+        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+      viewer:
+        workflowChannelHoverActionsMenuCommentsItem: notRendered
+        workflowRightSidebarCommentsTab: disabled
+      user:
+        workflowChannelHoverActionsMenuCommentsItem: notRendered
+        workflowRightSidebarCommentsTab: disabledWhenPublishedParentProject
+
+    acceptanceCriteria:
+      - given actor is owner, editor, or commenter and the user clicks workflowChannelHoverActionsMenuCommentsItem on a hovered channel C, workflowRightSidebar shows workflowRightSidebarCommentsTab selected and workflowRightSidebarCommentsTabContent is bound to channel C
+      - given actor is owner, editor, or commenter and sidebar.edit targets channel C (COLUMN), when the user clicks workflowRightSidebarCommentsTab, workflowRightSidebarCommentsTabContent is bound to channel C
+
+    openQuestions:
+      - Confirm whether workflowChannelHoverActionsMenuCommentsItem is hidden for viewer and user the same way workflowNodeHoverActionsMenuCommentsItem is hidden per FR-WF-NODE-005; roleBehavior assumes parity — verify channel hover menu against product policy.
+      - Confirm dedicated Figma frames for channel-hosted comments or inherit node Comments chrome.
+
+  - id: FR-WF-COMMENTS-004
+    title: Open comments for a workflowOutcome (trigger paths)
+
+    designEvidence:
+      - FIGMA-WF-COMMENTS-NODE-OWNER-EDITOR
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowOutcome
+      - workflowOutcomeHoverActionsMenu
+      - workflowOutcomeHoverActionsMenuCommentsItem
+      - workflowRightSidebar
+      - workflowRightSidebarCommentsTab
+      - workflowRightSidebarCommentsTabContent
+
+    preconditions:
+      - workflowRightSidebar is visible per tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml FR-WF-RS-001
+      - user is in an Outcomes workspace view where outcome headers render workflowOutcomeHoverActionsMenu on hover
+      - for the sidebar-tab path, sidebar.edit already designates a workflowOutcome (OUTCOME)
+
+    trigger:
+      - user clicks workflowOutcomeHoverActionsMenuCommentsItem on a hovered outcome header
+      - user clicks workflowRightSidebarCommentsTab while sidebar.edit designates that outcome (CfObjectType.OUTCOME)
+
+    mainFlow:
+      - system sets sidebar.edit to that workflowOutcome with tab 'comments' (hover path from the outcome header comments affordance in Outcomes view) or switches workflowRightSidebar to workflowRightSidebarCommentsTab while preserving the OUTCOME selection
+      - if workflowRightSidebar is collapsed, system expands workflowRightSidebar with workflowRightSidebarCommentsTab selected
+      - system renders workflowRightSidebarCommentsTabContent for that workflowOutcome as the workflowCommentsHostObject
+      - per-role actionability for workflowRightSidebarCommentsTab follows tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml FR-WF-RS-003
+
+    roleBehavior:
+      owner:
+        workflowOutcomeHoverActionsMenuCommentsItem: activeWhenOutcomeHovered
+        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+      editor:
+        workflowOutcomeHoverActionsMenuCommentsItem: activeWhenOutcomeHovered
+        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+      commenter:
+        workflowOutcomeHoverActionsMenuCommentsItem: activeWhenOutcomeHovered
+        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+      viewer:
+        workflowOutcomeHoverActionsMenuCommentsItem: notRendered
+        workflowRightSidebarCommentsTab: disabled
+      user:
+        workflowOutcomeHoverActionsMenuCommentsItem: notRendered
+        workflowRightSidebarCommentsTab: disabledWhenPublishedParentProject
+
+    acceptanceCriteria:
+      - given actor is owner, editor, or commenter and the user clicks workflowOutcomeHoverActionsMenuCommentsItem on a hovered outcome O, workflowRightSidebar shows workflowRightSidebarCommentsTab selected and workflowRightSidebarCommentsTabContent is bound to outcome O
+      - given actor is owner, editor, or commenter and sidebar.edit targets outcome O (OUTCOME), when the user clicks workflowRightSidebarCommentsTab, workflowRightSidebarCommentsTabContent is bound to outcome O
+
+    openQuestions:
+      - Confirm whether LinkedOutcomes vs OutcomeTree headers must be distinguished as separate ui surfaces for tests, or a single workflowOutcomeHoverActionsMenu abstraction suffices.
+      - Confirm dedicated Figma frames for outcome-hosted comments or inherit node Comments chrome.
+
+  - id: FR-WF-COMMENTS-005
+    title: Comments tab host matches sidebar selection and Edit tab content
+
+    designEvidence:
+      - FIGMA-WF-COMMENTS-NODE-OWNER-EDITOR
+      - FIGMA-WF-COMMENTS-NODE-COMMENTER
+      - FIGMA-WF-COMMENTS-NODE-VIEWER
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowCommentsHostObject
+      - workflowNode
+      - workflowChannel
+      - workflowSectionContainer
+      - workflowOutcome
+      - workflowRightSidebarCommentsTab
+      - workflowRightSidebarCommentsTabContent
+      - workflowRightSidebarEditTab
+      - workflowRightSidebarEditTabContent
+      - workflowEditNodeForm
+
+    preconditions:
+      - workflowRightSidebar is visible per tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml FR-WF-RS-001
+      - user has opened workflowRightSidebarCommentsTabContent for a workflowCommentsHostObject H via FR-WF-COMMENTS-001, FR-WF-COMMENTS-002, FR-WF-COMMENTS-003, or FR-WF-COMMENTS-004 (or an equivalent dispatch that sets sidebar.edit to H with tab 'comments')
+
+    trigger:
+      - user views workflowRightSidebarCommentsTabContent after opening comments for host H
+      - user clicks workflowRightSidebarEditTab after opening comments for host H
+
+    mainFlow:
+      - sidebar.edit identifies workflowCommentsHostObject H shown in workflowRightSidebarCommentsTabContent (same id and CfObjectType as the thread being listed and composed)
+      - when the user clicks workflowRightSidebarEditTab, workflowRightSidebarEditTabContent shows the edit surface for the same H per tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-001 when H is a workflowNode (workflowEditNodeForm targets that workflowNode); when H is a workflowChannel, workflowSectionContainer, or workflowOutcome, workflowRightSidebarEditTabContent shows the corresponding edit surface for that same sidebar.edit target (canonical detail in workflow_edit_node_requirements_v1.yaml and related requirement sets for non-node hosts)
+      - viewer and user cannot reach this state for a comments-eligible host per tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml FR-WF-RS-003
+
+    roleBehavior:
+      owner:
+        workflowRightSidebarCommentsTabContent: readWrite
+      editor:
+        workflowRightSidebarCommentsTabContent: readWrite
+      commenter:
+        workflowRightSidebarCommentsTabContent: readWrite
+      viewer:
+        workflowRightSidebarCommentsTabContent: notReachable
+      user:
+        workflowRightSidebarCommentsTabContent: notReachable
+
+    acceptanceCriteria:
+      - given workflowEditNodeForm was showing workflowNode N1 and the user opens comments for workflowNode N2 via FR-WF-COMMENTS-001, workflowRightSidebarCommentsTabContent is bound to N2 and sidebar.edit targets N2 so that when the user clicks workflowRightSidebarEditTab, workflowEditNodeForm targets workflowNode N2 per tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-001
+      - given sidebar.edit targets a workflowChannel, workflowSectionContainer, or workflowOutcome and the user opened comments for that host via FR-WF-COMMENTS-002, FR-WF-COMMENTS-003, or FR-WF-COMMENTS-004, when the user clicks workflowRightSidebarEditTab, workflowRightSidebarEditTabContent reflects the same host identity as the comments thread (no stale selection from a previously focused object)
+
+    openQuestions:
+      - Enumerate acceptance fixtures for non-node edit surfaces (channel rename, section settings, outcome fields) when asserting 'same host' after switching tabs.
+
+  - id: FR-WF-COMMENTS-006
+    title: Add a new comment in workflowRightSidebarCommentsTabContent
+
+    designEvidence:
+      - FIGMA-WF-COMMENTS-NODE-OWNER-EDITOR
+      - FIGMA-WF-COMMENTS-NODE-COMMENTER
+
+    actors:
+      - owner
+      - editor
+      - commenter
+
+    uiObjects:
+      - workflowRightSidebarCommentsTabContent
+      - workflowCommentsHostObject
+      - workflowCommentsTabTitle
+      - workflowCommentsTabList
+      - workflowCommentsTabListItem
+      - workflowCommentsTabListItemHeader
+      - workflowCommentsTabListItemBody
+      - workflowCommentsTabComposer
+      - workflowCommentsTabComposerTextField
+      - workflowCommentsTabComposerSubmitButton
+
+    preconditions:
+      - workflowRightSidebarCommentsTabContent is bound to a workflowCommentsHostObject per FR-WF-COMMENTS-005
+      - actor is owner, editor, or commenter (viewer and user cannot reach this composer per tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml FR-WF-RS-003)
+
+    trigger:
+      - user types into workflowCommentsTabComposerTextField and clicks workflowCommentsTabComposerSubmitButton
+
+    mainFlow:
+      - workflowRightSidebarCommentsTabContent is laid out vertically as workflowCommentsTabTitle, then workflowCommentsTabList (scrollable), then workflowCommentsTabComposer pinned at the bottom
+      - workflowCommentsTabTitle text is the literal 'Comments'
+      - workflowCommentsTabList renders zero or more workflowCommentsTabListItem entries for the bound workflowCommentsHostObject, in chronological order (oldest first)
+      - each workflowCommentsTabListItem shows workflowCommentsTabListItemHeader on the first line and workflowCommentsTabListItemBody beneath; workflowCommentsTabListItemHeader format is exactly '{author-label} • {date-label}' with author-label 'Me' for the current actor's own comments and the author's name otherwise
+      - workflowCommentsTabComposer contains workflowCommentsTabComposerTextField with label 'Comment' (multiline, up to 5 visible rows before internal scroll) and workflowCommentsTabComposerSubmitButton with literal label 'Comment'
+      - while the user types, workflowCommentsTabComposerTextField updates; workflowCommentsTabComposerSubmitButton remains enabled
+      - when the user clicks workflowCommentsTabComposerSubmitButton and workflowCommentsTabComposerTextField value is empty, the click is a no-op (no new workflowCommentsTabListItem is appended)
+      - when the user clicks workflowCommentsTabComposerSubmitButton and workflowCommentsTabComposerTextField value is non-empty, system appends a new workflowCommentsTabListItem with author equal to the current actor, a canonical recent date-label, and body equal to the submitted text
+      - after a successful submit, workflowCommentsTabComposerTextField is reset to empty and workflowCommentsTabList scrolls to make the newly-appended workflowCommentsTabListItem visible
+
+    roleBehavior:
+      owner:
+        workflowCommentsTabComposer: editable
+      editor:
+        workflowCommentsTabComposer: editable
+      commenter:
+        workflowCommentsTabComposer: editable
+
+    acceptanceCriteria:
+      - given workflowRightSidebarCommentsTabContent is bound to a workflowCommentsHostObject, workflowCommentsTabTitle text is exactly 'Comments'
+      - given workflowCommentsTabComposerTextField is empty, when the user clicks workflowCommentsTabComposerSubmitButton, no new workflowCommentsTabListItem is appended to workflowCommentsTabList
+      - given workflowCommentsTabComposerTextField value is 'Hello', when the user clicks workflowCommentsTabComposerSubmitButton, a new workflowCommentsTabListItem appears at the end of workflowCommentsTabList with workflowCommentsTabListItemBody text 'Hello' and workflowCommentsTabListItemHeader author-label 'Me'
+      - given a successful submit, workflowCommentsTabComposerTextField is reset to empty after the new workflowCommentsTabListItem is appended
+
+    openQuestions:
+      - Confirm canonical chronological ordering of workflowCommentsTabList items (oldest first vs newest first; whether the list auto-scrolls to the latest on initial render).
+      - Confirm whether workflowCommentsTabComposerSubmitButton should be disabled when workflowCommentsTabComposerTextField is empty, or remain enabled with a no-op submit.
+      - Confirm persistence on submit (whether comments persist to the server and how the list is sourced before persistence exists).
+      - Confirm canonical author label for newly-submitted comments (including placeholder handling until profiles are finalized).
+
+  - id: FR-WF-COMMENTS-007
+    title: Delete an own comment from workflowCommentsTabList
+
+    designEvidence:
+      - FIGMA-WF-COMMENTS-NODE-OWNER-EDITOR
+      - FIGMA-WF-COMMENTS-NODE-COMMENTER
+
+    actors:
+      - owner
+      - editor
+      - commenter
+
+    uiObjects:
+      - workflowRightSidebarCommentsTabContent
+      - workflowCommentsTabList
+      - workflowCommentsTabListItem
+      - workflowCommentsTabListItemDeleteLink
+
+    preconditions:
+      - workflowRightSidebarCommentsTabContent is bound to a workflowCommentsHostObject per FR-WF-COMMENTS-005
+      - workflowCommentsTabList contains at least one workflowCommentsTabListItem authored by the current actor
+
+    trigger:
+      - user clicks workflowCommentsTabListItemDeleteLink on a workflowCommentsTabListItem they authored
+
+    mainFlow:
+      - system removes the target workflowCommentsTabListItem from workflowCommentsTabList immediately, without showing a confirmation dialog
+      - other workflowCommentsTabListItem entries are not affected
+      - workflowCommentsTabComposer state is not affected by a delete
+
+    roleBehavior:
+      owner:
+        workflowCommentsTabListItemDeleteLink: visibleOnOwnComment
+      editor:
+        workflowCommentsTabListItemDeleteLink: visibleOnOwnComment
+      commenter:
+        workflowCommentsTabListItemDeleteLink: visibleOnOwnComment
+
+    acceptanceCriteria:
+      - given a workflowCommentsTabListItem authored by another user, workflowCommentsTabListItemDeleteLink is not rendered on that item
+      - given a workflowCommentsTabListItem authored by the current actor and the user clicks its workflowCommentsTabListItemDeleteLink, the item is removed from workflowCommentsTabList immediately and no confirmation dialog is shown
+
+    openQuestions:
+      - Confirm whether deletion requires a confirmation dialog (immediate delete vs confirm step).
+      - Confirm whether owners and editors can delete other users' comments (moderation); today only own-comment delete is specified in acceptance criteria.
+
+  - id: FR-WF-COMMENTS-008
+    title: Comments presence indicator on host hover action menus
+
+    designEvidence:
+      - FIGMA-WF-COMMENTS-NODE-OWNER-EDITOR
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowCommentsHostObject
+      - workflowCommentsPresenceIndicator
+      - workflowNodeHoverActionsMenu
+      - workflowNodeHoverActionsMenuCommentsItem
+      - workflowSectionContainerHoverActionsMenu
+      - workflowSectionContainerHoverActionsMenuCommentsItem
+      - workflowChannelHoverActionsMenu
+      - workflowChannelHoverActionsMenuCommentsItem
+      - workflowOutcomeHoverActionsMenu
+      - workflowOutcomeHoverActionsMenuCommentsItem
+
+    preconditions:
+      - workflowCommentsHostObject H is displayed in workflowView or Outcomes view with its hover actions menu available on hover (per FR-WF-NODE-005 for workflowNode; analogous hover for other hosts)
+      - the canonical comment count for H is at least one (persisted or session-local per product decision)
+
+    trigger:
+      - user hovers the host surface so the relevant hover actions menu is visible
+
+    mainFlow:
+      - when H has at least one comment, the Comments affordance in that host's hover actions menu (workflowNodeHoverActionsMenuCommentsItem, workflowSectionContainerHoverActionsMenuCommentsItem, workflowChannelHoverActionsMenuCommentsItem, or workflowOutcomeHoverActionsMenuCommentsItem) shows workflowCommentsPresenceIndicator as a green circular badge on or adjacent to the comment icon
+      - when H has zero comments, workflowCommentsPresenceIndicator is not shown on that Comments affordance
+
+    roleBehavior:
+      owner:
+        workflowCommentsPresenceIndicator: visibleWhenCommentsExist
+      editor:
+        workflowCommentsPresenceIndicator: visibleWhenCommentsExist
+      commenter:
+        workflowCommentsPresenceIndicator: visibleWhenCommentsExist
+      viewer:
+        workflowCommentsPresenceIndicator: notRendered
+      user:
+        workflowCommentsPresenceIndicator: notRendered
+
+    acceptanceCriteria:
+      - given workflowNode N has at least one comment, when the user hovers N and workflowNodeHoverActionsMenu is visible, workflowNodeHoverActionsMenuCommentsItem shows workflowCommentsPresenceIndicator
+      - given workflowNode N has zero comments, when the user hovers N and workflowNodeHoverActionsMenu is visible, workflowNodeHoverActionsMenuCommentsItem does not show workflowCommentsPresenceIndicator
+      - given the same count rules, workflowSectionContainerHoverActionsMenuCommentsItem, workflowChannelHoverActionsMenuCommentsItem, and workflowOutcomeHoverActionsMenuCommentsItem each show or hide workflowCommentsPresenceIndicator consistently for their respective hosts
+
+    openQuestions:
+      - Confirm whether host hover menus render workflowCommentsPresenceIndicator as specified; finalize green token, size, and stacking order versus the comment icon.
+      - Confirm whether the indicator reflects only top-level thread count for H or includes replies if threading is introduced later.
+
+designEvidenceLinkTable:
+  - key: FIGMA-WF-COMMENTS-NODE-OWNER-EDITOR
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6355-92135&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-COMMENTS-NODE-COMMENTER
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6355-99730&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-COMMENTS-NODE-VIEWER
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6355-100291&t=6weYZA8hUf6tm7DF-1

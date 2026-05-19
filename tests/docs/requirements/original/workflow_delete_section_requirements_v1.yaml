@@ -1,0 +1,135 @@
+# Normalized requirements: delete an existing workflowSectionContainer ('Workflow' view)
+# Source: tests/docs/__ARCHIVE/edit_section_requirements_v1.md
+# Application code evidence: react/src/components/views/WorkflowView/WorkflowEditView/components/Week/HoverMenu/index.tsx (delete week dialog dispatch); react/src/components/pages/Workspace/Workflow/Sidebar/components/EditTab/components/EditSection/index.tsx (workflowEditSectionFormDeleteButton); workflow delete-week modal (aria-labelledby delete-week-part-modal per locator table in workflow_edit_section_requirements_v1.yaml)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml (canonical section uiObjects including workflowSectionDeleteDialog*, workflowSectionContainerHoverActionsMenuDeleteItem, workflowEditSectionFormDeleteButton; FR-SEC-001, FR-SEC-007–009); tests/docs/requirements/original/workflow_duplicate_section_requirements_v1.yaml (duplicate section — FR-SEC-005)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - current route is '/workflow/{id}/workflow'
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+
+uiObjectDefinitions:
+  workflowView:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml.
+  workflowSectionContainer:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowSectionHeader:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowSectionNumberLabel:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowSectionContainerHoverActionsMenu:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowSectionContainerHoverActionsMenuDeleteItem:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowRightSidebar:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowEditSectionForm:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowEditSectionFormDeleteButton:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowSectionDeleteDialog:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowSectionDeleteDialogCancelButton:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowSectionDeleteDialogConfirmButton:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+
+locatorMappings:
+  workflowView:
+    strategy: null
+    confidence: unresolved
+  workflowSectionContainer:
+    strategy: "[data-week-id]"
+    confidence: confirmed
+  workflowSectionContainerHoverActionsMenu:
+    strategy: "{workflowSectionContainer} .hover-menu"
+    confidence: inferred
+  workflowRightSidebar:
+    strategy: "[data-test-id='sidebar']"
+    confidence: confirmed
+  workflowSectionDeleteDialog:
+    strategy: "[aria-labelledby='delete-week-part-modal']"
+    confidence: inferred
+  workflowEditSectionFormDeleteButton:
+    strategy: null
+    confidence: unresolved
+
+requirements:
+  - id: FR-SEC-006
+    title: Delete section
+
+    designEvidence:
+      - FIGMA-SEC-OE-HOVER
+      - FIGMA-SEC-OE-EDIT
+      - FIGMA-SEC-DEL-WARN
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowView
+      - workflowSectionContainer
+      - workflowSectionHeader
+      - workflowSectionNumberLabel
+      - workflowSectionContainerHoverActionsMenu
+      - workflowSectionContainerHoverActionsMenuDeleteItem
+      - workflowRightSidebar
+      - workflowEditSectionForm
+      - workflowEditSectionFormDeleteButton
+      - workflowSectionDeleteDialog
+      - workflowSectionDeleteDialogCancelButton
+      - workflowSectionDeleteDialogConfirmButton
+
+    preconditions:
+      - workflowView contains a target workflowSectionContainer
+      - for the hover-menu path, workflowSectionContainerHoverActionsMenuDeleteItem is active for the actor per this FR roleBehavior and FR-SEC-007 lockstep with FR-WF-NODE-005 in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml
+      - for the sidebar path, workflowEditSectionFormDeleteButton is active for the actor per this FR roleBehavior
+
+    trigger:
+      - user clicks workflowSectionContainerHoverActionsMenuDeleteItem on workflowSectionContainerHoverActionsMenu visible on workflowSectionHeader hover
+      - user clicks workflowEditSectionFormDeleteButton on workflowEditSectionForm in workflowRightSidebar
+
+    mainFlow:
+      - system identifies the target workflowSectionContainer from workflowSectionContainerHoverActionsMenuDeleteItem on that section's workflowSectionHeader, or from workflowEditSectionForm open in workflowRightSidebar for that workflowSectionContainer
+      - system opens workflowSectionDeleteDialog for either entry path
+      - if user clicks workflowSectionDeleteDialogCancelButton, workflowSectionDeleteDialog closes and workflowView is unchanged (target workflowSectionContainer, its workflowNodes and edges, and workflowSectionNumberLabel values unchanged)
+      - if user clicks workflowSectionDeleteDialogConfirmButton, system removes the target workflowSectionContainer and its contained graph content (workflowNodes, edges, node metas, associated outcomes, comments per upstream) from workflowView, then recalculates workflowSectionNumberLabel on every remaining workflowSectionHeader per FR-SEC-002 in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml
+
+    roleBehavior:
+      owner:
+        workflowSectionContainerHoverActionsMenuDeleteItem: active
+        workflowEditSectionFormDeleteButton: active
+      editor:
+        workflowSectionContainerHoverActionsMenuDeleteItem: active
+        workflowEditSectionFormDeleteButton: active
+      commenter:
+        workflowSectionContainerHoverActionsMenuDeleteItem: readOnly
+        workflowEditSectionFormDeleteButton: readOnly
+      viewer:
+        workflowSectionContainerHoverActionsMenuDeleteItem: notRendered
+        workflowEditSectionFormDeleteButton: readOnly
+      user:
+        workflowSectionContainerHoverActionsMenuDeleteItem: notRendered
+        workflowEditSectionFormDeleteButton: readOnly
+
+    acceptanceCriteria:
+      - given workflowSectionDeleteDialog is open, target workflowSectionContainer is not removed until user clicks workflowSectionDeleteDialogConfirmButton
+      - when user clicks workflowSectionDeleteDialogCancelButton, workflowSectionDeleteDialog closes and workflowView is unchanged
+      - given confirmed delete via workflowSectionDeleteDialogConfirmButton, target workflowSectionContainer and its contained content are removed from workflowView and remaining workflowSectionNumberLabel values reflect the new order per FR-SEC-002
+      - given actor is commenter with workflowSectionContainerHoverActionsMenu visible per FR-SEC-007, workflowSectionContainerHoverActionsMenuDeleteItem is readOnly and workflowSectionDeleteDialog does not open when that control is clicked
+      - given actor is viewer or user (published-access), workflowSectionContainerHoverActionsMenu is not rendered on workflowSectionHeader hover per FR-SEC-007 lockstep with FR-WF-NODE-004, so workflowSectionContainerHoverActionsMenuDeleteItem is not reachable and workflowSectionDeleteDialog cannot be opened via the hover path
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-SEC-OE-HOVER
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=1937-24543&t=vePHPw4PnV3f9k8W-1
+  - key: FIGMA-SEC-OE-EDIT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=4193-42498&t=vePHPw4PnV3f9k8W-1
+  - key: FIGMA-SEC-DEL-WARN
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5661-46139&t=vePHPw4PnV3f9k8W-1

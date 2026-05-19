@@ -10,19 +10,19 @@ documentPreconditions:
 
 uiObjectDefinitions:
   notificationsSettingsPage:
-    meaning: Full page rendered at route '/user/notifications-settings' where user configures product-update email notification preference.
+    meaning: Notifications settings page for email notification preferences.
   notificationsSettingsTitle:
     meaning: Page title text on notificationsSettingsPage with copy 'Notification settings'.
   notificationsSettingsForm:
     meaning: Form container on notificationsSettingsPage that binds notification preference state.
   productUpdatesToggle:
-    meaning: Primary switch control in notificationsSettingsForm that represents whether user receives product update emails.
+    meaning: Product-updates email preference toggle on notificationsSettingsPage.
   productUpdatesToggleLabel:
-    meaning: Visible label associated with productUpdatesToggle; copy is 'I want to receive product updates emails' in current implementation.
+    meaning: Visible label for productUpdatesToggle.
   notificationSettingsMutationRequest:
-    meaning: Save operation triggered when productUpdatesToggle changes; posts updated boolean preference to notifications settings update endpoint.
+    meaning: Save operation triggered when productUpdatesToggle changes
   globalMessageSnackbar:
-    meaning: Global feedback surface used by generic message handling after notification settings update attempt.
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_header_requirements_v1.yaml.
 
 locatorMappings:
   notificationsSettingsPage:

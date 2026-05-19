@@ -3,13 +3,13 @@ documentPreconditions:
 
 uiObjectDefinitions:
   mainNavigation:
-    meaning: Global left shell for primary app navigation; wraps the collapse toggle and the inner navigation panel; root element uses stable test id main-nav in current implementation.
+    meaning: Global left shell for primary app navigation
   mainNavigationPanel:
-    meaning: Inner surface that lists primary destinations, optional favourites block, contextual workflow links, and help; hidden when main navigation is in collapsed presentation per current styles.
+    meaning: Left main navigation panel with primary product destinations.
   collapseToggle:
-    meaning: Floating control that toggles collapsed vs expanded main navigation; when expanded, shows back-arrow affordance (visible on hover of mainNavigation in current implementation); exposes aria-label 'collapse sidebar' in current implementation; same underlying control as expandIcon with different presentation when collapsed.
+    meaning: Floating control that toggles collapsed vs expanded main navigation
   expandIcon:
-    meaning: Expand affordance shown at top-left when main navigation is collapsed; product-level name for the collapsed-state control; in current implementation the same element as collapseToggle with expand iconography.
+    meaning: Expand affordance shown at top-left when main navigation is collapsed
   brandLockup:
     meaning: Product logo and product name label at the top of mainNavigationPanel.
   homeNavItem:
@@ -23,17 +23,17 @@ uiObjectDefinitions:
   favouritesLoader:
     meaning: Loading presentation shown while favourites data is fetched.
   favouritedItemLink:
-    meaning: A single row linking to a favourited workflow or project from favouritesSection; workflows and projects use the same row presentation in design and product intent.
+    meaning: A single row linking to a favourited workflow or project from favouritesSection
   viewAllLink:
-    meaning: Link shown when favourites count meets implementation threshold; routes to the favourites index destination.
+    meaning: View-all link on homepage sections routing to a full listing.
   helpAndSupportLink:
-    meaning: Row that opens external help in a new browser tab in current implementation.
+    meaning: Row that opens external help in a new browser tab
   appearsInSection:
-    meaning: Optional block listing parent workflows for the active workflow route when data is available (implementation uses translated label 'Appears in').
+    meaning: Optional block listing parent workflows for the active workflow route.
   containsSection:
-    meaning: Optional block listing child workflows linked from nodes when data is available (implementation uses translated label 'Contains').
+    meaning: Optional block listing child workflows contained by the active workflow.
   relatedWorkflowList:
-    meaning: List container for workflow links inside appearsInSection or containsSection in current implementation.
+    meaning: List container for workflow links inside appearsInSection or containsSection
 
 locatorMappings:
   mainNavigation:

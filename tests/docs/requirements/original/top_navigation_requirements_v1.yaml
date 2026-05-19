@@ -8,61 +8,61 @@ documentPreconditions:
 
 uiObjectDefinitions:
   topNavigationBar:
-    meaning: Global AppBar strip at the top of the main content area; contains a single horizontal layout row (Material-UI Toolbar in current implementation) with leading space for return links and trailing space for add, notifications, and account controls; root uses stable test id top-bar in current implementation.
+    meaning: Global top navigation bar with branding, search, and account menu.
   returnLinksRegion:
-    meaning: Leading segment of topNavigationBar reserved for contextual return links; when the user is viewing a workflow, it occupies the leading side of the bar with return link content (see FR-TOP-005); when the user is not viewing a workflow, it does not occupy that leading side with return navigation.
+    meaning: Leading segment of topNavigationBar reserved for contextual return links
   addMenuTrigger:
-    meaning: Icon button that opens the create/add menu in current implementation.
+    meaning: Icon button that opens the create/add menu
   addMenuDropdown:
-    meaning: Dropdown surface listing create actions for project and workflow types from the add menu in current implementation.
+    meaning: Dropdown surface listing create actions for project and workflow types from the add menu
   addMenuItemProject:
-    meaning: Menu row that opens createProjectDialog in current implementation.
+    meaning: Menu row that opens createProjectDialog
   addMenuItemProgram:
-    meaning: Menu row that opens createWorkflowDialog for a program workflow in current implementation.
+    meaning: Menu row that opens createWorkflowDialog for a program workflow
   addMenuItemCourse:
-    meaning: Menu row that opens createWorkflowDialog for a course workflow in current implementation.
+    meaning: Menu row that opens createWorkflowDialog for a course workflow
   addMenuItemActivity:
-    meaning: Menu row that opens createWorkflowDialog for an activity workflow in current implementation.
+    meaning: Menu row that opens createWorkflowDialog for an activity workflow
   createProjectDialog:
-    meaning: Modal dialog for creating a new project; opened from addMenuItemProject.
+    meaning: Canonical definition in tests/docs/requirements/original/project_create_edit_form_requirements_v1.yaml.
   createWorkflowDialog:
-    meaning: Modal dialog for creating a new workflow; one shared dialog with copy adjusted per workflow type (program, course, activity); opened from addMenuItemProgram, addMenuItemCourse, or addMenuItemActivity.
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml.
   notificationsMenuTrigger:
-    meaning: Icon button opening notifications; always visible in the top bar when the shell is shown, including when there are no notifications; when there are no unread notifications, the icon has no badge; when there is at least one unread notification, shows a green badge with the unread count (see FR-TOP-006).
+    meaning: Icon button opening notifications
   notificationsDropdownPanel:
-    meaning: Dropdown panel opened from notificationsMenuTrigger; includes a header with see-all affordance and notificationsList.
+    meaning: Dropdown panel listing recent notifications from the top bar.
   notificationsSeeAllLink:
-    meaning: Link in notifications panel header routing to the full notifications view in current implementation.
+    meaning: Link in notifications panel header routing to the full notifications view
   notificationsList:
-    meaning: List region inside notificationsDropdownPanel; shows at most three notification rows, the three most recent notifications (see FR-TOP-004).
+    meaning: Canonical definition in tests/docs/requirements/original/notifications_page_requirements_v1.yaml.
   notificationListItem:
-    meaning: One row in notificationsList; composed of notificationListItemUserAvatar, notificationListItemUserName, notificationListItemRelativeTimestamp, notificationListItemContent, and notificationListItemUnreadDot; intended primary navigation target on click is the referenced project or workflow (see FR-TOP-007, not yet implemented).
+    meaning: Canonical definition in tests/docs/requirements/original/notifications_page_requirements_v1.yaml.
   notificationListItemUserAvatar:
-    meaning: Visual representing the acting user; for now shows initials only (image placeholder until a full user image is used).
+    meaning: Canonical definition in tests/docs/requirements/original/notifications_page_requirements_v1.yaml.
   notificationListItemUserName:
-    meaning: Display name of the user associated with the notification.
+    meaning: Canonical definition in tests/docs/requirements/original/notifications_page_requirements_v1.yaml.
   notificationListItemRelativeTimestamp:
-    meaning: Time label relative to now for when the notification applies (for example '9 hours ago').
+    meaning: Canonical definition in tests/docs/requirements/original/notifications_page_requirements_v1.yaml.
   notificationListItemContent:
-    meaning: Body text of the notification (for example 'Added you to project X').
+    meaning: Canonical definition in tests/docs/requirements/original/notifications_page_requirements_v1.yaml.
   notificationListItemUnreadDot:
-    meaning: Dot indicator for an unread notification (see FR-TOP-004); visible until the user has clicked that notificationListItem; only that click marks the row read in the panel (opening the panel or other panel controls do not mark notifications read).
+    meaning: Canonical definition in tests/docs/requirements/original/notifications_page_requirements_v1.yaml.
   accountMenuTrigger:
-    meaning: Icon button that opens the account menu in current implementation.
+    meaning: Icon button that opens the account menu
   accountMenuDropdown:
-    meaning: Dropdown opened from accountMenuTrigger; sub-item order and grouping (including separator before sign out) match FIGMA-TOP-PROFILE-OPEN; lists accountMenuItemProfile, accountMenuItemPassword, accountMenuItemNotificationsSettings, and accountMenuItemSignOut in top-to-bottom order.
+    meaning: Dropdown opened from accountMenuTrigger
   accountMenuItemProfile:
     meaning: Row in accountMenuDropdown that navigates to profile settings route pattern /user/profile-settings.
   accountMenuItemPassword:
-    meaning: Row in accountMenuDropdown that navigates to password reset route pattern /user/password-reset (passwordResetPage).
+    meaning: Password menu item in the account dropdown.
   accountMenuItemNotificationsSettings:
-    meaning: Row in accountMenuDropdown that navigates to notification settings route pattern /user/notifications-settings.
+    meaning: Account-menu row that navigates to notifications settings.
   accountMenuItemSignOut:
-    meaning: Row in accountMenuDropdown that performs sign out via external logout path in current implementation.
+    meaning: Row in accountMenuDropdown that performs sign out via external logout path
   passwordResetPage:
-    meaning: Full-page password reset experience at route pattern /user/password-reset (not a modal dialog); reached by clicking accountMenuItemPassword.
+    meaning: Canonical definition in tests/docs/requirements/original/password_reset_requirements_v1.yaml.
   backToProjectLink:
-    meaning: Link in returnLinksRegion whose label follows 'Return to [Project Name]' (localized return prefix plus parent project title); a workflow is always one of Program, Course, or Activity and always belongs to a project; shown only while the user is viewing a workflow; must not appear in any other context.
+    meaning: Navigation link from a workflow route back to the parent project.
 
 locatorMappings:
   topNavigationBar:

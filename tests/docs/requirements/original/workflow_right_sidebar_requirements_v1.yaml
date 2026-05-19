@@ -1,0 +1,269 @@
+# Normalized requirements: workflow right sidebar in 'Workflow' and 'Outcomes' views
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Right Sidebar section)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/original/workflow_header_requirements_v1.yaml (workflow tab routes and sub-view navigation; globalMessageSnackbar hub); tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml (section uiObjects and locators; open workflowEditSectionForm — FR-SEC-001, hover menu lockstep — FR-SEC-007); tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (view-settings controls in Workflow/Outcomes views); tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml (Add tab—workflowRightSidebarAddTabContent, drag sources, insert mode—FR-WF-ADD-*)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - user is on an existing workflow route
+
+uiObjectDefinitions:
+  workflowRightSidebar:
+    meaning: Right-hand sidebar container on workflow routes with collapsed and expanded states.
+  workflowRightSidebarTabStrip:
+    meaning: Vertical icon tab strip on workflowRightSidebar.
+  workflowRightSidebarToggleButton:
+    meaning: Collapse control on workflowRightSidebar.
+  workflowRightSidebarEditTab:
+    meaning: Edit tab on workflowRightSidebar.
+  workflowRightSidebarAddTab:
+    meaning: Add tab on workflowRightSidebar.
+  workflowRightSidebarCommentsTab:
+    meaning: Comments tab on workflowRightSidebar.
+  workflowRightSidebarOutcomesTab:
+    meaning: Outcomes tab on workflowRightSidebar.
+  workflowRightSidebarEditTabContent:
+    meaning: Content region shown when workflowRightSidebarEditTab is active.
+  workflowRightSidebarAddTabContent:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml.
+  workflowRightSidebarCommentsTabContent:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml.
+  workflowRightSidebarOutcomesTabContent:
+    meaning: Content region shown when workflowRightSidebarOutcomesTab is active.
+
+locatorMappings:
+  workflowRightSidebar:
+    strategy: "[data-test-id='sidebar']"
+    confidence: confirmed
+  workflowRightSidebarTabStrip:
+    strategy: "{workflowRightSidebar} [role='group'] (Mui ToggleButtonGroup)"
+    confidence: inferred
+  workflowRightSidebarEditTab:
+    strategy: "{workflowRightSidebarTabStrip} [aria-label='edit tab']"
+    confidence: confirmed
+  workflowRightSidebarAddTab:
+    strategy: "{workflowRightSidebarTabStrip} [aria-label='add tab']"
+    confidence: confirmed
+  workflowRightSidebarCommentsTab:
+    strategy: "{workflowRightSidebarTabStrip} [aria-label='comments tab']"
+    confidence: confirmed
+  workflowRightSidebarOutcomesTab:
+    strategy: "{workflowRightSidebarTabStrip} [aria-label='outcomes tab']"
+    confidence: confirmed
+  workflowRightSidebarToggleButton:
+    strategy: "{workflowRightSidebar} IconButton at top-right of expanded panel"
+    confidence: inferred
+  workflowRightSidebarEditTabContent:
+    strategy: null
+    confidence: unresolved
+  workflowRightSidebarAddTabContent:
+    strategy: null
+    confidence: unresolved
+  workflowRightSidebarCommentsTabContent:
+    strategy: null
+    confidence: unresolved
+  workflowRightSidebarOutcomesTabContent:
+    strategy: null
+    confidence: unresolved
+
+requirements:
+  - id: FR-WF-RS-001
+    title: Right sidebar visibility and collapsed state in workflow sub-views
+
+    designEvidence:
+      - FIGMA-WF-SIDEBAR-WORKFLOW-OPEN
+      - FIGMA-WF-SIDEBAR-WORKFLOW-COLLAPSED
+      - FIGMA-WF-SIDEBAR-OUTCOMES
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - workflowRightSidebar
+      - workflowRightSidebarTabStrip
+      - workflowRightSidebarToggleButton
+      - workflowRightSidebarEditTab
+      - workflowRightSidebarAddTab
+      - workflowRightSidebarCommentsTab
+      - workflowRightSidebarOutcomesTab
+
+    preconditions:
+      - current route is '/workflow/{id}/workflow' or '/workflow/{id}/outcomes'
+      - for actor 'user' (published-access, no explicit contributor role), parent project is published
+
+    trigger:
+      - user lands on '/workflow/{id}/workflow' or '/workflow/{id}/outcomes'
+      - user clicks workflowRightSidebarToggleButton
+      - user clicks a visible tab icon in workflowRightSidebarTabStrip while sidebar is collapsed
+
+    mainFlow:
+      - workflowRightSidebar is not rendered on '/workflow/{id}/overview'
+      - on '/workflow/{id}/workflow', workflowRightSidebar is visible, including when the workflow is empty
+      - on '/workflow/{id}/outcomes', workflowRightSidebar is visible only when at least one outcome exists
+      - when workflowRightSidebar is visible on initial render of either in-scope route, default state is expanded
+      - workflowRightSidebar supports collapsed and expanded states
+      - when expanded, workflowRightSidebar shows workflowRightSidebarTabStrip and active tab content
+      - when user clicks workflowRightSidebarToggleButton while expanded, workflowRightSidebar collapses and tab content is hidden
+      - while collapsed, workflowRightSidebarTabStrip remains visible
+      - when user clicks any visible tab icon in workflowRightSidebarTabStrip while collapsed, workflowRightSidebar expands and the clicked tab becomes active
+
+    roleBehavior:
+      owner:
+        workflowRightSidebar: available
+      editor:
+        workflowRightSidebar: available
+      viewer:
+        workflowRightSidebar: available
+      commenter:
+        workflowRightSidebar: available
+      user:
+        workflowRightSidebar: availableWhenPublishedParentProject
+
+    acceptanceCriteria:
+      - given route '/workflow/{id}/overview', workflowRightSidebar is not visible
+      - given route '/workflow/{id}/workflow', workflowRightSidebar is visible even when the workflow has no sections/nodes yet
+      - given route '/workflow/{id}/outcomes' and at least one outcome exists, workflowRightSidebar is visible
+      - given workflowRightSidebar is visible on initial load of either in-scope route, it is expanded by default
+      - given workflowRightSidebar is expanded, clicking workflowRightSidebarToggleButton collapses workflowRightSidebar and hides content panel
+      - given workflowRightSidebar is collapsed, workflowRightSidebarTabStrip icons remain visible
+      - given workflowRightSidebar is collapsed, when user clicks a visible tab icon in workflowRightSidebarTabStrip, workflowRightSidebar expands and the clicked tab is active
+
+    openQuestions: []
+
+  - id: FR-WF-RS-002
+    title: Right sidebar tab visibility by workflow view and workflow type
+
+    designEvidence:
+      - FIGMA-WF-SIDEBAR-WORKFLOW-OPEN
+      - FIGMA-WF-SIDEBAR-OUTCOMES
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - workflowRightSidebarTabStrip
+      - workflowRightSidebarEditTab
+      - workflowRightSidebarAddTab
+      - workflowRightSidebarCommentsTab
+      - workflowRightSidebarOutcomesTab
+
+    preconditions:
+      - FR-WF-RS-001 preconditions hold
+      - workflowRightSidebar is visible
+
+    trigger:
+      - system computes visible sidebar tabs for current workflow type and active sub-view
+
+    mainFlow:
+      - in 'Workflow' view for activity/course/program, visible tabs are ordered exactly as: workflowRightSidebarEditTab, workflowRightSidebarAddTab, workflowRightSidebarOutcomesTab, workflowRightSidebarCommentsTab
+      - in 'Outcomes' view for activity/course/program, visible tabs are ordered exactly as: workflowRightSidebarEditTab, workflowRightSidebarCommentsTab
+      - in 'Outcomes' view, workflowRightSidebarAddTab and workflowRightSidebarOutcomesTab are hidden
+
+    roleBehavior:
+      owner:
+        workflowRightSidebarTabStrip: available
+      editor:
+        workflowRightSidebarTabStrip: available
+      viewer:
+        workflowRightSidebarTabStrip: available
+      commenter:
+        workflowRightSidebarTabStrip: available
+      user:
+        workflowRightSidebarTabStrip: availableWhenPublishedParentProject
+
+    acceptanceCriteria:
+      - given activity/course/program in 'Workflow' view, tab strip order is Edit, Add, Outcomes, Comments
+      - given activity/course/program in 'Outcomes' view, tab strip shows Edit and Comments
+
+    openQuestions:
+      - workflowRightSidebarRelatedTab is out of scope for this requirement version and is intentionally not specified.
+
+  - id: FR-WF-RS-003
+    title: Right sidebar tab actionability states
+
+    designEvidence:
+      - FIGMA-WF-SIDEBAR-WORKFLOW-OPEN
+      - FIGMA-WF-SIDEBAR-OUTCOMES
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - workflowRightSidebarEditTab
+      - workflowRightSidebarAddTab
+      - workflowRightSidebarCommentsTab
+      - workflowRightSidebarOutcomesTab
+      - workflowRightSidebarEditTabContent
+      - workflowRightSidebarAddTabContent
+      - workflowRightSidebarCommentsTabContent
+      - workflowRightSidebarOutcomesTabContent
+
+    preconditions:
+      - FR-WF-RS-002 preconditions hold
+
+    trigger:
+      - user clicks a visible sidebar tab
+      - user clicks selectable workspace object that can bind edit/comments context
+
+    mainFlow:
+      - workflowRightSidebarEditTab is actionable only when an editable object is selected in the active workspace view; otherwise the tab remains visible but disabled
+      - workflowRightSidebarCommentsTab is actionable for owner/editor/commenter only when an eligible object is selected in the active workspace view; for viewer and user it remains visible but disabled
+      - workflowRightSidebarAddTab is actionable for owner/editor only; for viewer/commenter/user it remains visible but disabled
+      - when visible, workflowRightSidebarOutcomesTab is actionable
+      - clicking an actionable tab sets that tab active and displays matching tab content region
+
+    roleBehavior:
+      owner:
+        workflowRightSidebarEditTab: enabledWhenEditableSelectionExists
+        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarAddTab: enabledWhenVisible
+      editor:
+        workflowRightSidebarEditTab: enabledWhenEditableSelectionExists
+        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarAddTab: enabledWhenVisible
+      viewer:
+        workflowRightSidebarEditTab: enabledWhenEditableSelectionExists
+        workflowRightSidebarCommentsTab: disabled
+        workflowRightSidebarAddTab: disabled
+      commenter:
+        workflowRightSidebarEditTab: enabledWhenEditableSelectionExists
+        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarAddTab: disabled
+      user:
+        workflowRightSidebarEditTab: enabledWhenEditableSelectionExistsAndPublishedParentProject
+        workflowRightSidebarCommentsTab: disabledWhenPublishedParentProject
+        workflowRightSidebarAddTab: disabledWhenPublishedParentProject
+
+    acceptanceCriteria:
+      - given no editable selection context, workflowRightSidebarEditTab is visible and disabled
+      - given editable selection context exists, workflowRightSidebarEditTab is enabled
+      - given actor is owner/editor/commenter and no eligible selection context, workflowRightSidebarCommentsTab is visible and disabled
+      - given actor is owner/editor/commenter and eligible selection context exists, workflowRightSidebarCommentsTab is enabled
+      - given actor is viewer or user, workflowRightSidebarCommentsTab is visible and disabled
+      - given actor is owner or editor and workflowRightSidebarAddTab is visible, it is enabled
+      - given actor is viewer/commenter/user and workflowRightSidebarAddTab is visible, it is disabled
+      - when workflowRightSidebarOutcomesTab is visible, it is enabled
+      - given user clicks an enabled tab, corresponding tab content is visible and that tab becomes active
+
+    openQuestions:
+      - Confirm exact canonical set of object types that qualify as eligible selection context for comments in this scope.
+
+designEvidenceLinkTable:
+  - key: FIGMA-WF-SIDEBAR-WORKFLOW-OPEN
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5661-54100&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-SIDEBAR-WORKFLOW-COLLAPSED
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5661-54107&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-SIDEBAR-OUTCOMES
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=3947-34077&t=6weYZA8hUf6tm7DF-1

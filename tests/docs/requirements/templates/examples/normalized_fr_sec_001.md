@@ -6,34 +6,39 @@ It is illustrative and should not be edited as a reusable template.
 uiObjectDefinitions:
   workflowView:
     meaning: primary workflow editing surface
-  sectionContainer:
-    meaning: top-level visual container representing one section instance in workflowView
-  sectionHeader:
-    meaning: clickable header region within sectionContainer
-  rightSidebar:
+  workflowSectionContainer:
+    meaning: Container for one section (ordered segment of the workflow); a workflow may list many sections; sections can be empty or contain one or many workflowNodes; nodes in section are ordered horizontally based on workflowChannels and vertically by workflowSectionRow.
+  workflowSectionRow:
+    meaning: Horizontal layout band inside a workflowSectionContainer spanning all workflowChannels; workflowSectionRows stack top-to-bottom; at most one workflowNode per workflowChannel occupies a given row at that vertical level; Row insert mode uses full-width row hit targets (upper and lower halves) for vertical insertion relative to existing nodes.
+  workflowSectionHeader:
+    meaning: clickable header region within workflowSectionContainer
+  workflowRightSidebar:
     meaning: contextual sidebar panel
-  editSectionForm:
-    meaning: sidebar form for editing a selected sectionContainer
-  sidebarTitle:
-    meaning: title text shown at the top of rightSidebar
+  workflowEditSectionForm:
+    meaning: sidebar form for editing a selected workflowSectionContainer
+  workflowEditSectionFormHeading:
+    meaning: title text shown at the top of workflowEditSectionForm (e.g. 'Edit section')
 
 locatorMappings:
   workflowView:
     strategy: null
     confidence: unresolved
-  sectionContainer:
+  workflowSectionContainer:
     strategy: "[data-week-id]"
     confidence: confirmed
-  sectionHeader:
-    strategy: "{sectionContainer} > header"
-    confidence: inferred
-  rightSidebar:
-    strategy: "[data-test-id='sidebar']"
-    confidence: confirmed
-  editSectionForm:
+  workflowSectionRow:
     strategy: null
     confidence: unresolved
-  sidebarTitle:
+  workflowSectionHeader:
+    strategy: "{workflowSectionContainer} header region including week title row"
+    confidence: inferred
+  workflowRightSidebar:
+    strategy: "[data-test-id='sidebar']"
+    confidence: confirmed
+  workflowEditSectionForm:
+    strategy: null
+    confidence: unresolved
+  workflowEditSectionFormHeading:
     strategy: null
     confidence: unresolved
 
@@ -53,44 +58,44 @@ requirements:
 
     uiObjects:
       - workflowView
-      - sectionContainer
-      - sectionHeader
-      - rightSidebar
-      - editSectionForm
-      - sidebarTitle
+      - workflowSectionContainer
+      - workflowSectionHeader
+      - workflowRightSidebar
+      - workflowEditSectionForm
+      - workflowEditSectionFormHeading
 
     preconditions:
       - workflowView is open
-      - at least one sectionContainer exists
+      - at least one workflowSectionContainer exists
       - user has workflow access
-      - rightSidebar may be open or closed
+      - workflowRightSidebar may be open or closed
 
     trigger:
-      - user clicks sectionHeader while rightSidebar is closed
-      - user clicks sectionHeader while rightSidebar is already open
+      - user clicks workflowSectionHeader while workflowRightSidebar is closed
+      - user clicks workflowSectionHeader while workflowRightSidebar is already open
 
     mainFlow:
-      - system identifies the selected sectionContainer from the clicked sectionHeader
-      - if rightSidebar is closed, system opens rightSidebar
-      - system renders editSectionForm in rightSidebar
-      - system binds editSectionForm to the selected sectionContainer
-      - system renders sidebarTitle with value "Edit section"
+      - system identifies the selected workflowSectionContainer from the clicked workflowSectionHeader
+      - if workflowRightSidebar is closed, system opens workflowRightSidebar
+      - system renders workflowEditSectionForm in workflowRightSidebar
+      - system binds workflowEditSectionForm to the selected workflowSectionContainer
+      - system renders workflowEditSectionFormHeading with value 'Edit section'
 
     roleBehavior:
       owner:
-        editSectionForm: editable
+        workflowEditSectionForm: editable
       editor:
-        editSectionForm: editable
+        workflowEditSectionForm: editable
       viewer:
-        editSectionForm: readOnly
+        workflowEditSectionForm: readOnly
       commenter:
-        editSectionForm: readOnly
+        workflowEditSectionForm: readOnly
 
     acceptanceCriteria:
-      - given rightSidebar is closed, when user clicks sectionHeader, then rightSidebar opens and renders editSectionForm for the selected sectionContainer
-      - given rightSidebar is already open, when user clicks sectionHeader, then rightSidebar updates to render editSectionForm for the selected sectionContainer
-      - given actor is owner or editor, when editSectionForm is rendered, then editable controls are enabled
-      - given actor is viewer or commenter, when editSectionForm is rendered, then editable controls are disabled
-      - when editSectionForm is rendered, sidebarTitle equals "Edit section"
+      - given workflowRightSidebar is closed, when user clicks workflowSectionHeader, then workflowRightSidebar opens and renders workflowEditSectionForm for the selected workflowSectionContainer
+      - given workflowRightSidebar is already open, when user clicks workflowSectionHeader, then workflowRightSidebar updates to render workflowEditSectionForm for the selected workflowSectionContainer
+      - given actor is owner or editor, when workflowEditSectionForm is rendered, then editable controls are enabled
+      - given actor is viewer or commenter, when workflowEditSectionForm is rendered, then editable controls are disabled
+      - when workflowEditSectionForm is rendered, workflowEditSectionFormHeading equals 'Edit section'
 
     openQuestions: []

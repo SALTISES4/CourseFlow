@@ -99,7 +99,7 @@ test.describe('CourseFlow 2.0 — Edit Section workflow', () => {
     });
   });
 
-  test.describe('FR-SEC-003 Edit Section Title (auto-save)', () => {
+  test.describe('FR-SEC-003 Edit Section Title (auto-save and 100-character limit)', () => {
     test('Owner/Editor: valid title persists without Save; header updates; clear shows number only', async ({
       page,
     }) => {
@@ -129,6 +129,25 @@ test.describe('CourseFlow 2.0 — Edit Section workflow', () => {
 
       await test.step('Acceptance: After auto-save, section shows number only (no placeholder)', async () => {
         await expect(page.getByLabel(/title/i)).toHaveValue('');
+      });
+    });
+
+    test('At 100 characters, further input does not increase stored length', async ({ page }) => {
+      await preconditionWorkflowViewWithSections(page);
+      await page.getByRole('button', { name: /section/i }).first().click();
+
+      await test.step('Preconditions: Title field at maximum length', async () => {
+        const max = 'a'.repeat(100);
+        await page.getByLabel(/title/i).fill(max);
+      });
+
+      await test.step('Trigger: User attempts further input', async () => {
+        await page.getByLabel(/title/i).pressSequentially('z');
+      });
+
+      await test.step('Acceptance: Stored value remains 100 characters', async () => {
+        const v = await page.getByLabel(/title/i).inputValue();
+        expect(v.length).toBeLessThanOrEqual(100);
       });
     });
   });
@@ -268,28 +287,7 @@ test.describe('CourseFlow 2.0 — Edit Section workflow', () => {
     });
   });
 
-  test.describe('FR-SEC-010 Section Title Validation (100 characters)', () => {
-    test('At 100 characters, further input does not increase stored length', async ({ page }) => {
-      await preconditionWorkflowViewWithSections(page);
-      await page.getByRole('button', { name: /section/i }).first().click();
-
-      await test.step('Preconditions: Title field at maximum length', async () => {
-        const max = 'a'.repeat(100);
-        await page.getByLabel(/title/i).fill(max);
-      });
-
-      await test.step('Trigger: User attempts further input', async () => {
-        await page.getByLabel(/title/i).pressSequentially('z');
-      });
-
-      await test.step('Acceptance: Stored value remains 100 characters', async () => {
-        const v = await page.getByLabel(/title/i).inputValue();
-        expect(v.length).toBeLessThanOrEqual(100);
-      });
-    });
-  });
-
-  test.describe('FR-SEC-011 Comment On Section (hover icon)', () => {
+  test.describe('FR-WF-COMMENTS-002 Open comments for workflowSectionContainer (legacy FR-SEC-011)', () => {
     test('Comment icon click opens Comments tab in right sidebar', async ({ page }) => {
       await preconditionWorkflowViewWithSections(page);
 

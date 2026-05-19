@@ -107,6 +107,10 @@ At minimum, it must support the following top-level sections:
 
 This section defines canonical UI-domain objects using explicit variable-like identifiers.
 
+- Each object must define its meaning in a single-sentence functional definition, not a description of behavior. Behavior belongs strictly in the requirements section.
+- Each object must be defined only once. If used in multiple files, reference the original canonical description.
+- Do not use mainFlow or acceptanceCriteria to restate the uiObjectDefinitions. If an object is listed in uiObjects, its functional existence is assumed; focus only on the state change or interaction.
+
 These identifiers must be:
 
 - machine-friendly
@@ -117,24 +121,25 @@ These identifiers must be:
 Examples:
 
 - `workflowView`
-- `sectionContainer`
-- `sectionHeader`
-- `rightSidebar`
-- `editSectionForm`
-- `sidebarTitle`
+- `workflowSectionContainer`
+- `workflowSectionRow`
+- `workflowSectionHeader`
+- `workflowRightSidebar`
+- `workflowEditSectionForm`
 
 These identifiers are not raw selectors.
 They are canonical semantic objects that the requirement depends on.
 
-Each object must define its meaning.
 
 Example:
 
 ```yaml
 uiObjectDefinitions:
-  sectionContainer:
-    meaning: top-level visual container representing one section instance in workflowView
-````
+  workflowSectionContainer:
+    meaning: Container for one section (ordered segment of the workflow); a workflow may list many sections; sections can be empty or contain one or many workflowNodes; nodes in section are ordered horizontally based on workflowChannels and vertically by workflowSectionRow.
+  workflowSectionRow:
+    meaning: Horizontal layout band inside a workflowSectionContainer spanning all workflowChannels; workflowSectionRows stack top-to-bottom; at most one workflowNode per workflowChannel occupies a given row at that vertical level; Row insert mode uses full-width row hit targets (upper and lower halves) for vertical insertion relative to existing nodes.
+```
 
 ### `locatorMappings`
 
@@ -150,11 +155,14 @@ Example:
 
 ```yaml
 locatorMappings:
-  sectionContainer:
+  workflowSectionContainer:
     strategy: "[data-week-id]"
     confidence: confirmed
-  sectionHeader:
-    strategy: "{sectionContainer} > header"
+  workflowSectionRow:
+    strategy: null
+    confidence: unresolved
+  workflowSectionHeader:
+    strategy: "{workflowSectionContainer} header region including week title row"
     confidence: inferred
 ```
 
@@ -163,7 +171,7 @@ Locator mappings are allowed to be unresolved.
 Example:
 
 ```yaml
-editSectionForm:
+workflowEditSectionForm:
   strategy: null
   confidence: unresolved
 ```
@@ -202,26 +210,25 @@ requirements:
       - commenter
     uiObjects:
       - workflowView
-      - sectionContainer
-      - sectionHeader
-      - rightSidebar
-      - editSectionForm
-      - sidebarTitle
+      - workflowSectionContainer
+      - workflowSectionHeader
+      - workflowRightSidebar
+      - workflowEditSectionForm
     preconditions:
       - workflowView is open
-      - at least one sectionContainer exists
+      - at least one workflowSectionContainer exists
     trigger:
-      - user clicks sectionHeader while rightSidebar is closed
+      - user clicks workflowSectionHeader while workflowRightSidebar is closed
     mainFlow:
-      - system identifies the selected sectionContainer from the clicked sectionHeader
-      - system renders editSectionForm in rightSidebar
+      - system identifies the selected workflowSectionContainer from the clicked workflowSectionHeader
+      - system renders workflowEditSectionForm in workflowRightSidebar
     roleBehavior:
       owner:
-        editSectionForm: editable
+        workflowEditSectionForm: editable
       viewer:
-        editSectionForm: readOnly
+        workflowEditSectionForm: readOnly
     acceptanceCriteria:
-      - given rightSidebar is closed, when user clicks sectionHeader, then rightSidebar opens and renders editSectionForm
+      - given workflowRightSidebar is closed, when user clicks workflowSectionHeader, then workflowRightSidebar opens and renders workflowEditSectionForm
     openQuestions: []
 ```
 
@@ -241,10 +248,11 @@ Canonical UI object identifiers must:
 Examples of preferred names:
 
 * `workflowView`
-* `sectionContainer`
-* `sectionHeader`
-* `deleteSectionDialog`
-* `duplicateButton`
+* `workflowSectionContainer`
+* `workflowSectionRow`
+* `workflowSectionHeader`
+* `workflowSectionDeleteDialog`
+* `workflowEditSectionFormDuplicateButton`
 
 Examples of discouraged names:
 
@@ -291,7 +299,7 @@ Apply this in `mainFlow`, `acceptanceCriteria`, `preconditions`, and any other f
 
 ### Interaction vocabulary (clicks)
 
-Do not use **activate**, **activation**, or **activated** to mean a **click** on a control (button, link, icon, menu item, list row, or similar pointer primary action). In `trigger`, `mainFlow`, and `acceptanceCriteria`, use **click** (e.g. `user clicks homeNavItem`, `user clicks deleteSectionDialogConfirmButton`) or another precise verb when the interaction is not a click (e.g. **types**, **hovers**, **drags**). If you must describe system follow-on behavior, prefer **selected**, **open**, **visible**, or **submitted** over “activated” unless the word is used in a non-click domain sense and is unambiguous in context.
+Do not use **activate**, **activation**, or **activated** to mean a **click** on a control (button, link, icon, menu item, list row, or similar pointer primary action). In `trigger`, `mainFlow`, and `acceptanceCriteria`, use **click** (e.g. `user clicks homeNavItem`, `user clicks workflowSectionDeleteDialogConfirmButton`) or another precise verb when the interaction is not a click (e.g. **types**, **hovers**, **drags**). If you must describe system follow-on behavior, prefer **selected**, **open**, **visible**, or **submitted** over “activated” unless the word is used in a non-click domain sense and is unambiguous in context.
 
 ## What the normalized artifact must not contain
 

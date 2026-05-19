@@ -10,21 +10,21 @@ documentPreconditions:
 
 uiObjectDefinitions:
   contextActionBarOverflowItemCopyWorkflow:
-    meaning: Canonical overflow menu row labeled 'Copy workflow' on workflow-scoped routes; defined in context_action_bar_requirements_v1.yaml FR-CAB-005; actionable for Owner, Editor, Viewer, and Commenter with workflow collaboration access, and also actionable for users with read-only access to the workflow when the parent project is published and the product exposes copy for that viewer context (see FR-WF-COPY-001 preconditions).
+    meaning: Canonical definition in tests/docs/requirements/original/context_action_bar_requirements_v1.yaml.
   copyWorkflowDialog:
-    meaning: Dialog or stepped surface opened after user clicks contextActionBarOverflowItemCopyWorkflow; first-step layout and fields per FIGMA-CAB-WF-COPY-WORKFLOW.
+    meaning: Dialog or stepped surface opened after user clicks contextActionBarOverflowItemCopyWorkflow
   copyWorkflowDialogCancelButton:
-    meaning: Control that dismisses copyWorkflowDialog without creating a copy; placement and label per FIGMA-CAB-WF-COPY-WORKFLOW.
+    meaning: Cancel action on copyWorkflowDialog.
   copyWorkflowDialogContinueButton:
-    meaning: Primary control on copyWorkflowDialog that advances the flow toward project selection when the first-step requirements are met; label per FIGMA-CAB-WF-COPY-WORKFLOW.
+    meaning: Primary continue action on copyWorkflowDialog.
   copyWorkflowSelectProjectPanel:
-    meaning: Step where user chooses the destination project for the copied workflow; layout and selection affordances per FIGMA-CAB-WF-COPY-SELECT-PROJECT.
+    meaning: Step where user chooses the destination project for the copied workflow
   copyWorkflowSelectProjectConfirmButton:
-    meaning: Primary control that completes copy after a project is selected when applicable; label per FIGMA-CAB-WF-COPY-SELECT-PROJECT.
+    meaning: Primary control that completes copy after a project is selected when applicable
   copyWorkflowSelectProjectCancelButton:
-    meaning: Control that returns user to prior step or dismisses copy without completing when applicable; label per FIGMA-CAB-WF-COPY-SELECT-PROJECT.
+    meaning: Control that returns user to prior step or dismisses copy without completing when applicable
   globalMessageSnackbar:
-    meaning: Optional global snackbar for success or failure feedback after copy completes or fails; exact copy not specified in source for this artifact.
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_header_requirements_v1.yaml.
 
 locatorMappings:
   contextActionBarOverflowItemCopyWorkflow:

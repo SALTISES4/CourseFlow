@@ -2,54 +2,54 @@
 # Source: tests/docs/__ARCHIVE/functional-requirements.md (library/navigation favourites behavior), implementation evidence in Library/Favourites page and Favourite toggle component.
 # Application code evidence: react/src/components/pages/Library/Favourites/index.tsx; react/src/components/common/UIPrimitives/Favourite/index.tsx; react/src/HTTP/XMLHTTP/API/library.rtk.ts
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Cross-reference: tests/docs/requirements/original/main_navigation_requirements_v1.yaml (FR-NAV-007 route entry to /favourites); tests/docs/requirements/original/library_page_requirements_v1.yaml (favouritesToggle on 'My library' is scoped to contributor objects only); tests/docs/requirements/original/card_content_requirements_v1.yaml (projectCard/workflowCard/cardTemplateChip and cardFavouriteToggle semantics)
+# Cross-reference: tests/docs/requirements/original/main_navigation_requirements_v1.yaml (FR-NAV-007 route entry to /favourites); tests/docs/requirements/original/library_page_requirements_v1.yaml (sort and shared filters — FR-LIB-002, FR-LIB-003; favouritesToggle on 'My library' is scoped to contributor objects only); tests/docs/requirements/original/card_content_requirements_v1.yaml (projectCard and workflowCard — FR-CARD-001 through FR-CARD-006 as applicable)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
 
 uiObjectDefinitions:
   favouritesPage:
-    meaning: Dedicated page at route pathname /favourites for favourited library objects. Scope includes favourited workflows and favourited projects in 'My library' contributor scope and favourited published workflows and favourited published projects outside that contributor scope.
+    meaning: Dedicated page at route pathname /favourites for favourited library objects.
   favouritesFilterToolbar:
-    meaning: Top toolbar on favouritesPage containing sortControl, ownershipFilter, typeFilter, workflowTypeFilter (visible only when typeFilter includes 'Workflows' in scope, same visibility rule as on 'My library'), templatesToggle, and keywordSearchField for favourites results.
+    meaning: Filter toolbar on favouritesPage with sort, ownership, type, workflow-type, templates, and keyword controls.
   sortControl:
-    meaning: Same canonical behavior as sortControl on 'My library' (FR-LIB-002), on favouritesFilterToolbar. Placeholder label is 'Sort'; selectable options include 'A - Z' and 'Date created'; when non-default sort is active, sortResetButton is shown.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   sortResetButton:
-    meaning: Clear (X) control on sortControl when non-default sort is active; clears to default sort order for favourites results.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   ownershipFilter:
-    meaning: Same canonical behavior as ownershipFilter on 'My library' (FR-LIB-003), on favouritesFilterToolbar. Single-select with placeholder label 'Ownership'; selectable options include at least 'Owned' and 'Shared'; when active, visible label is the selected option and ownershipFilterResetButton is shown.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   ownershipFilterResetButton:
-    meaning: Clear (X) control on ownershipFilter when an ownership option is active; clears ownership selection and restores placeholder label 'Ownership'.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   typeFilter:
-    meaning: Same canonical behavior as typeFilter on 'My library' (FR-LIB-003), on favouritesFilterToolbar. Placeholder label is 'Type'; commitments are 'Projects' or 'Workflows', with Unset as the cleared state; no separate selectable 'All types' row. On first land of /favourites, typeFilter is committed to 'Projects' until the user changes it.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   typeFilterResetButton:
-    meaning: Clear (X) control on typeFilter when a committed type is active; clears to the canonical default for '/favourites' per product behavior.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   workflowTypeFilter:
-    meaning: Same canonical behavior as workflowTypeFilter on 'My library' (FR-LIB-003), on favouritesFilterToolbar. Multiselect options are 'Activity', 'Course', and 'Program'; visible only when typeFilter includes 'Workflows' in scope (typeFilter committed to 'Workflows', or typeFilter is Unset), and not visible when typeFilter is committed to 'Projects' only.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   templatesToggle:
-    meaning: Boolean filter on favouritesFilterToolbar labeled 'Templates'; when on, favourites results are constrained to template cards only; when off, both template and non-template favourited cards may be shown.
+    meaning: Canonical definition in tests/docs/requirements/original/explore_page_requirements_v1.yaml.
   keywordSearchField:
-    meaning: Search field on favouritesFilterToolbar; same mechanism as keywordSearchField on 'My library': results narrow as user types keyword input and pressing 'Enter' is not required.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   keywordSearchClearButton:
-    meaning: Icon-only clear control ('X') shown on the right side of keywordSearchField when the field is not empty; clicking it clears the field and removes keyword-search filtering.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   resultsSummary:
-    meaning: Region between favouritesFilterToolbar and resultsRegion displaying current query result counts; same canonical contract as resultsSummary on 'My library' and 'Explore'.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   resultsRegion:
-    meaning: Same canonical object as resultsRegion on 'My library' and 'Explore'; on favouritesPage it lists favourited projectCard and workflowCard items for the current query state, including loading, empty, and error states.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   projectCard:
-    meaning: Same canonical object as projectCard in card_content_requirements_v1.yaml, when resultsRegion item type is project.
+    meaning: Canonical definition in tests/docs/requirements/original/card_content_requirements_v1.yaml.
   workflowCard:
-    meaning: Same canonical object as workflowCard in card_content_requirements_v1.yaml, when resultsRegion item type is workflow.
+    meaning: Canonical definition in tests/docs/requirements/original/card_content_requirements_v1.yaml.
   cardTemplateChip:
-    meaning: Same canonical object as cardTemplateChip in card_content_requirements_v1.yaml; shown on workflowCard when the workflow row represents a template.
+    meaning: Canonical definition in tests/docs/requirements/original/card_content_requirements_v1.yaml.
   pagination:
-    meaning: Same canonical pagination control used on 'My library' and 'Explore'; shown when total matching favourited items are more than one page at 10 items per page.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   paginationPageNumberButton:
-    meaning: Clickable numeric page control within pagination.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   paginationPreviousNextButton:
-    meaning: Single-arrow control within pagination that navigates one page backward or forward.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   paginationFirstLastButton:
-    meaning: Double-arrow control within pagination that navigates directly to first or last page.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   favouritesLoadingState:
     meaning: Loading placeholders shown while favourites query is in flight.
   favouritesEmptyState:
@@ -164,6 +164,7 @@ requirements:
       - when typeFilter includes workflows in scope, resultsRegion may include favourited workflows and favourited published workflows where user is not Owner, Editor, Viewer, or Commenter
       - resultsRegion may include favourited published projects where user is not Owner, Editor, Viewer, or Commenter
       - results render as projectCard and/or workflowCard according to object type and active filters
+      - projectCard and workflowCard presentation and card interactions in resultsRegion conform to card_content_requirements_v1.yaml
 
     roleBehavior: {}
 
@@ -175,6 +176,7 @@ requirements:
       - resultsSummary is visible between favouritesFilterToolbar and resultsRegion
       - given first land on /favourites with default typeFilter state, resultsRegion shows favourited projects only
       - given typeFilter includes workflows in scope, resultsRegion may show favourited workflows and favourited projects according to active filters
+      - given resultsRegion shows at least one card, projectCard and workflowCard in resultsRegion conform to card_content_requirements_v1.yaml
 
     openQuestions: []
 
@@ -211,20 +213,16 @@ requirements:
       - user changes sortControl, ownershipFilter, typeFilter, workflowTypeFilter, templatesToggle, or keywordSearchField, or uses a filter reset control
 
     mainFlow:
-      - sortControl behavior matches FR-LIB-002 interaction pattern ('Sort', 'A - Z', 'Date created', toggle direction on repeat selection, reset via sortResetButton)
-      - ownershipFilter behavior matches FR-LIB-003 single-select interaction pattern ('Ownership', 'Owned', 'Shared', reset via ownershipFilterResetButton)
-      - typeFilter behavior matches FR-LIB-003 three-state contract ('Type', 'Projects', 'Workflows', reset via typeFilterResetButton)
-      - workflowTypeFilter behavior matches FR-LIB-003 multiselect contract and is visible only when typeFilter includes 'Workflows' in scope (typeFilter committed to 'Workflows', or typeFilter Unset)
-      - templatesToggle applies boolean template constraint to resultsRegion
-      - keywordSearchField uses the same mechanism as 'My library': inline input narrows results as user types; keywordSearchClearButton clears the keyword constraint
-      - ownershipFilter, typeFilter, workflowTypeFilter, templatesToggle, and keywordSearchField combine with AND semantics across filter dimensions against the favourites base scope; workflowTypeFilter selections remain additive within the workflow-type dimension (OR semantics)
-      - changing sort, ownershipFilter, typeFilter, workflowTypeFilter, templatesToggle, or keywordSearchField resets listing to the first results page
+      - sortControl behaviour conforms to library_page_requirements_v1.yaml FR-LIB-002
+      - ownershipFilter, typeFilter, workflowTypeFilter, templatesToggle, and keywordSearchField behaviour conform to library_page_requirements_v1.yaml FR-LIB-003 where those controls are present on favouritesFilterToolbar
+      - favouritesPage has no favouritesToggle and no archiveToggle; base scope is already limited to favourited objects per FR-FAV-001
+      - changing sort or any filter control on favouritesFilterToolbar resets listing to the first results page
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given favouritesPage is rendered, sortControl is visible with placeholder 'Sort' before selection
-      - given favouritesPage is rendered, ownershipFilter is visible with placeholder 'Ownership' before selection
+      - given favouritesPage is rendered, sortControl behaviour conforms to FR-LIB-002
+      - given favouritesPage is rendered, ownershipFilter and typeFilter behaviour conform to FR-LIB-003
       - given first land on /favourites, typeFilter is committed to 'Projects' by default
       - given typeFilter is reset to Unset, typeFilter shows placeholder 'Type'
       - given typeFilter is committed to 'Projects' only, workflowTypeFilter is not visible

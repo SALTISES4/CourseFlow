@@ -1,0 +1,266 @@
+# Normalized requirements: duplicate an existing workflowNode ('Workflow' view)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Node Actions ▸ Duplicate, lines 868–871)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml (canonical insert mode toggle — workflowAddTabInsertModeToggleGroup; drag-drop placement from Add tab remains FR-WF-ADD-004 / FR-WF-ADD-005 / FR-WF-ADD-006); tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml (workflowEditNodeForm and workflowEditNodeFormDuplicateButton canonical placement on the right sidebar); tests/docs/requirements/original/workflow_move_node_requirements_v1.yaml (companion node-action flow; workflowEdge); tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml (workflowView, workflowSectionContainer, workflowSectionRow canonical definitions); tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml (workflowNodeHoverActionsMenu visibility — FR-WF-NODE-004; workflowNodeHoverActionsMenuDuplicateItem actionability — FR-WF-NODE-005, canonical for hover-menu item roleBehavior; hover insert-below placement defers to FR-WF-DUP-003 same as duplicate placement).
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - current route is '/workflow/{id}/workflow'
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+  - workflowView is open with at least one workflowSectionContainer that contains at least one workflowNode
+
+uiObjectDefinitions:
+  workflowView:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml.
+  workflowSectionContainer:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowSectionRow:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowChannel:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowNode:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
+  workflowEdge:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edge_requirements_v1.yaml.
+  workflowAddTabInsertModeToggleGroup:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml.
+  workflowEditNodeForm:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
+  workflowEditNodeFormDuplicateButton:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
+  workflowNodeHoverActionsMenu:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml.
+  workflowNodeHoverActionsMenuDuplicateItem:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml.
+  workflowNodeHoverActionsMenuInsertItem:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml.
+  workflowNodeManualInsertPopupMenu:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml.
+  workflowNodeManualInsertPopupMenuRowItem:
+    meaning: Menu item labeled 'Insert row' on workflowNodeManualInsertPopupMenu.
+  workflowNodeManualInsertPopupMenuColumnItem:
+    meaning: Menu item labeled 'Keep in same column' on workflowNodeManualInsertPopupMenu.
+
+locatorMappings:
+  workflowView:
+    strategy: null
+    confidence: unresolved
+  workflowSectionContainer:
+    strategy: "[data-week-id]"
+    confidence: confirmed
+  workflowSectionRow:
+    strategy: null
+    confidence: unresolved
+  workflowChannel:
+    strategy: null
+    confidence: unresolved
+  workflowNode:
+    strategy: null
+    confidence: unresolved
+  workflowEdge:
+    strategy: null
+    confidence: unresolved
+  workflowAddTabInsertModeToggleGroup:
+    strategy: "{workflowRightSidebarAddTabContent} [aria-label='Insert mode']"
+    confidence: inferred
+  workflowEditNodeForm:
+    strategy: null
+    confidence: unresolved
+  workflowEditNodeFormDuplicateButton:
+    strategy: "{workflowEditNodeForm} button with text 'Duplicate'"
+    confidence: inferred
+  workflowNodeHoverActionsMenu:
+    strategy: null
+    confidence: unresolved
+  workflowNodeHoverActionsMenuDuplicateItem:
+    strategy: "{workflowNodeHoverActionsMenu} button with accessible name 'Duplicate node below'"
+    confidence: inferred
+  workflowNodeHoverActionsMenuInsertItem:
+    strategy: "{workflowNodeHoverActionsMenu} button with accessible name 'Insert node below'"
+    confidence: inferred
+  workflowNodeManualInsertPopupMenu:
+    strategy: "menu[id='node-insert-menu']"
+    confidence: inferred
+  workflowNodeManualInsertPopupMenuRowItem:
+    strategy: "{workflowNodeManualInsertPopupMenu} menuitem with text 'Insert row'"
+    confidence: inferred
+  workflowNodeManualInsertPopupMenuColumnItem:
+    strategy: "{workflowNodeManualInsertPopupMenu} menuitem with text 'Keep in same column'"
+    confidence: inferred
+
+requirements:
+  - id: FR-WF-DUP-001
+    title: Trigger duplication from workflowEditNodeFormDuplicateButton
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowEditNodeForm
+      - workflowEditNodeFormDuplicateButton
+      - workflowAddTabInsertModeToggleGroup
+      - workflowNodeManualInsertPopupMenu
+      - workflowNode
+
+    preconditions:
+      - workflowEditNodeForm is rendered and bound to a workflowNode
+
+    trigger:
+      - owner or editor clicks workflowEditNodeFormDuplicateButton
+
+    mainFlow:
+      - system reads the active insert mode from workflowAddTabInsertModeToggleGroup
+      - if insert mode is 'Row' or 'Column', system immediately creates a duplicate of the bound workflowNode per FR-WF-DUP-003 (placement) and FR-WF-DUP-004 (metadata, title, comments, and workflowEdges)
+      - if insert mode is 'Manual', system opens workflowNodeManualInsertPopupMenu anchored to the bound workflowNode in workflowView; selecting workflowNodeManualInsertPopupMenuRowItem finalizes the duplicate using 'Row' placement per FR-WF-DUP-003, selecting workflowNodeManualInsertPopupMenuColumnItem finalizes the duplicate using 'Column' placement per FR-WF-DUP-003, dismissing the popup (clicking outside) cancels the duplicate operation without creating a workflowNode
+      - after a duplicate is created, workflowEditNodeForm remains bound to the source workflowNode (the node that was duplicated from), not the newly created duplicate
+
+    roleBehavior:
+      owner:
+        workflowEditNodeFormDuplicateButton: active
+      editor:
+        workflowEditNodeFormDuplicateButton: active
+      commenter:
+        workflowEditNodeFormDuplicateButton: disabled
+      viewer:
+        workflowEditNodeFormDuplicateButton: disabled
+      user:
+        workflowEditNodeFormDuplicateButton: disabled
+
+    acceptanceCriteria:
+      - given owner or editor with workflowEditNodeForm open on a workflowNode and workflowAddTabInsertModeToggleGroup set to 'Row' or 'Column', clicking workflowEditNodeFormDuplicateButton creates a new workflowNode in the same workflowSectionContainer per FR-WF-DUP-003 and FR-WF-DUP-004, and workflowEditNodeForm remains bound to the source workflowNode (not the new duplicate)
+      - given owner or editor with workflowEditNodeForm open on a workflowNode and workflowAddTabInsertModeToggleGroup set to 'Manual', clicking workflowEditNodeFormDuplicateButton opens workflowNodeManualInsertPopupMenu anchored to the source workflowNode and does not create any workflowNode until the user selects workflowNodeManualInsertPopupMenuRowItem or workflowNodeManualInsertPopupMenuColumnItem; after the user selects an option and the duplicate is created, workflowEditNodeForm remains bound to the source workflowNode (not the new duplicate)
+      - given workflowNodeManualInsertPopupMenu is open and the user dismisses it by clicking outside, no new workflowNode is created and workflowEditNodeForm remains bound to the original workflowNode unchanged
+      - given actor is commenter, viewer, or user (published-access), workflowEditNodeFormDuplicateButton is rendered and disabled (no-op on click) and no duplication is produced
+
+    openQuestions:
+      - Confirm how workflowNodeManualInsertPopupMenu relates to workflowManualPlacementDialog (modal on drag release in tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml) for tester-facing disambiguation.
+
+  - id: FR-WF-DUP-002
+    title: Trigger duplication from workflowNodeHoverActionsMenuDuplicateItem
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user (published-access)
+
+    uiObjects:
+      - workflowNode
+      - workflowNodeHoverActionsMenu
+      - workflowNodeHoverActionsMenuDuplicateItem
+      - workflowAddTabInsertModeToggleGroup
+      - workflowNodeManualInsertPopupMenu
+
+    preconditions:
+      - at least one workflowNode is rendered in a workflowSectionContainer inside workflowView
+
+    trigger:
+      - owner or editor hovers a workflowNode and clicks workflowNodeHoverActionsMenuDuplicateItem in the resulting workflowNodeHoverActionsMenu
+
+    mainFlow:
+      - workflowNodeHoverActionsMenuDuplicateItem actionability for the actor conforms to tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml FR-WF-NODE-005
+      - when workflowNodeHoverActionsMenuDuplicateItem is active for the actor per FR-WF-NODE-005, system reads the active insert mode from workflowAddTabInsertModeToggleGroup
+      - if insert mode is 'Row' or 'Column', system immediately creates a duplicate of the hovered workflowNode per FR-WF-DUP-003 (placement) and FR-WF-DUP-004 (metadata, title, comments, and workflowEdges)
+      - if insert mode is 'Manual', system opens workflowNodeManualInsertPopupMenu anchored to the hovered workflowNode in workflowView; selection and dismissal behave as described in FR-WF-DUP-001
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given owner or editor hovers a workflowNode and clicks workflowNodeHoverActionsMenuDuplicateItem when active per FR-WF-NODE-005 with workflowAddTabInsertModeToggleGroup set to 'Row' or 'Column', a new workflowNode is created in the same workflowSectionContainer per FR-WF-DUP-003 and FR-WF-DUP-004
+      - given owner or editor hovers a workflowNode and clicks workflowNodeHoverActionsMenuDuplicateItem when active per FR-WF-NODE-005 with workflowAddTabInsertModeToggleGroup set to 'Manual', workflowNodeManualInsertPopupMenu opens anchored to the hovered workflowNode and no new workflowNode is created until the user selects an option per FR-WF-DUP-001
+      - given actor is commenter with workflowNodeHoverActionsMenu visible per FR-WF-NODE-004, activating workflowNodeHoverActionsMenuDuplicateItem per FR-WF-NODE-005 does not create any workflowNode
+      - given actor is viewer or user (published-access), workflowNodeHoverActionsMenuDuplicateItem is not reachable per FR-WF-NODE-004 and FR-WF-NODE-005, so no duplication occurs via this trigger
+
+    openQuestions:
+      - Confirm whether workflowNodeHoverActionsMenu remains visible while workflowNodeManualInsertPopupMenu is open, or is dismissed alongside the trigger interaction.
+
+  - id: FR-WF-DUP-003
+    title: Placement below a source workflowNode (duplicate or insert-below) per active insert mode
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowSectionContainer
+      - workflowSectionRow
+      - workflowChannel
+      - workflowNode
+      - workflowAddTabInsertModeToggleGroup
+      - workflowNodeHoverActionsMenuInsertItem
+      - workflowNodeManualInsertPopupMenu
+
+    preconditions:
+      - a source workflowNode exists in a workflowSectionContainer
+      - placement is being finalized for a new workflowNode either as a duplicate per FR-WF-DUP-001 or FR-WF-DUP-002, or as a blank insert-below via workflowNodeHoverActionsMenuInsertItem per FR-WF-NODE-005
+
+    trigger: []
+
+    mainFlow:
+      - these rules apply identically whether the new workflowNode is a duplicate or a blank node from insert-below; 'source' means the workflowNode duplicated from or the hovered workflowNode for insert-below
+      - the new workflowNode is placed inside the same workflowSectionContainer as the source workflowNode and in the same workflowChannel as the source workflowNode
+      - in 'Row' insert mode, a new workflowSectionRow is inserted in the workflowSectionContainer immediately below the source workflowNode's workflowSectionRow; the new workflowNode occupies the cell at the new workflowSectionRow × source workflowChannel intersection; all workflowSectionRows below the source workflowSectionRow shift down by one row across every workflowChannel of the workflowSectionContainer (same Row-mode shift scope as FR-WF-ADD-004)
+      - in 'Column' insert mode, when the cell immediately below the source workflowNode in the source workflowChannel is empty, the new workflowNode occupies that cell and no other workflowNode moves
+      - in 'Column' insert mode, when that cell is occupied (another workflowNode N2 sits directly below the source N1 in the same workflowChannel), and the source workflowChannel has at least one empty workflowSectionRow × workflowChannel cell on a workflowSectionRow strictly below N2's workflowSectionRow, workflowNodes in the source workflowChannel from N2 through the first such empty cell shift down by one workflowSectionRow so the new workflowNode occupies the cell where N2 was (directly below N1); only that workflowChannel is affected and the former empty cell is consumed
+      - in 'Column' insert mode, when that cell is occupied by N2 and the source workflowChannel has no empty cell on any workflowSectionRow strictly below the source workflowNode's workflowSectionRow (every row from the one below N1 through the last row already has a workflowNode in that channel), the system inserts a new workflowSectionRow immediately below N1's workflowSectionRow, places the new workflowNode in the source workflowChannel on that new workflowSectionRow, and shifts every workflowNode in the source workflowChannel that was strictly below that insertion down by one workflowSectionRow; workflowNodes in every other workflowChannel keep their existing workflowSectionRow positions (those channels have empty cells on the newly inserted workflowSectionRow)
+      - in 'Manual' insert mode, after the user selects workflowNodeManualInsertPopupMenuRowItem or workflowNodeManualInsertPopupMenuColumnItem on workflowNodeManualInsertPopupMenu, final placement follows the 'Row' or 'Column' bullets above according to that selection
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given insert mode is 'Row', after a duplicate per FR-WF-DUP-001 or FR-WF-DUP-002 or insert-below via workflowNodeHoverActionsMenuInsertItem per FR-WF-NODE-005, the workflowSectionContainer has one additional workflowSectionRow inserted directly below the source workflowNode's workflowSectionRow and the new workflowNode occupies the same workflowChannel as the source; nodes in all workflowChannels that were below the source workflowSectionRow shift down by one row
+      - given insert mode is 'Column' and the cell below the source in the source channel is empty, after a duplicate per FR-WF-DUP-001 or FR-WF-DUP-002 or insert-below via workflowNodeHoverActionsMenuInsertItem per FR-WF-NODE-005, the new workflowNode occupies that cell and no other workflowNode moves
+      - given insert mode is 'Column' and the cell below the source is occupied, and the same channel has an empty cell on some row strictly below that occupant, after a duplicate per FR-WF-DUP-001 or FR-WF-DUP-002 or insert-below via workflowNodeHoverActionsMenuInsertItem per FR-WF-NODE-005, the new workflowNode occupies the cell directly below the source, workflowNodes in that channel from the former occupant through the first empty cell shift down by one row, and other workflowChannels are unchanged
+      - given insert mode is 'Column' and the cell below the source is occupied, and the same channel has no empty cell on any row strictly below the source workflowNode's workflowSectionRow, after a duplicate per FR-WF-DUP-001 or FR-WF-DUP-002 or insert-below via workflowNodeHoverActionsMenuInsertItem per FR-WF-NODE-005, the workflowSectionContainer gains one new workflowSectionRow immediately below the source workflowNode's workflowSectionRow, the new workflowNode occupies the source channel on that new row, only workflowNodes in the source channel that were strictly below that insertion shift down by one row, and workflowNodes in every other workflowChannel keep their previous workflowSectionRow positions (empty cells on the new row in those channels)
+      - given insert mode is 'Manual', after the user selects an option on workflowNodeManualInsertPopupMenu, placement matches whichever mode was selected per the bullets above
+
+    openQuestions: []
+
+  - id: FR-WF-DUP-004
+    title: Duplicated workflowNode — metadata, title, comments, and edges
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowNode
+      - workflowEdge
+
+    preconditions:
+      - a duplicate has been finalized against a source workflowNode per FR-WF-DUP-003
+
+    trigger: []
+
+    mainFlow:
+      - system copies onto the duplicated workflowNode the same persisted values the source holds for every metadata control rendered on workflowEditNodeForm per FR-WF-EN-002 through FR-WF-EN-006 for the parent workflow type — as applicable, workflowEditNodeFormDescriptionField, workflowEditNodeFormContextSelect, workflowEditNodeFormTaskTypeSelect, workflowEditNodeFormTimeField, workflowEditNodeFormTagsAutocomplete, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, workflowEditNodeFormPonderationIndividualField, workflowEditNodeFormSpecificEducationSwitch, and linked-workflow state corresponding to workflowEditNodeFormLinkWorkflowButton when the source has a linked workflow
+      - system copies the source workflowNode's outcome associations to the duplicate
+      - system sets the duplicate's title per workflowEditNodeFormTitleField semantics to the source title used for display on the source (the persisted workflowEditNodeFormTitleField value when non-empty, otherwise the default placeholder 'Untitled node' per tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml) with the literal suffix ' (copy)' appended
+      - duplicate's comments collection is reset to empty regardless of the source workflowNode's comments
+      - duplication does not preserve any of the source workflowNode's workflowEdges on duplicate; the system does not create a new workflowEdge between the source and the duplicate; and no existing workflowEdge elsewhere in the workflow is modified, removed, or rewired
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given the source workflowNode has a non-empty persisted workflowEditNodeFormTitleField value 'X', the duplicated workflowNode has title 'X (copy)'
+      - given the source workflowNode has an empty persisted title and workflowEditNodeFormTitleField therefore shows the default placeholder 'Untitled node' per tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml, the duplicated workflowNode has title 'Untitled node (copy)'
+      - given the source workflowNode has persisted values on every metadata workflowEditNodeForm control listed in this FR's first mainFlow bullet (each rendered per FR-WF-EN-002 through FR-WF-EN-006 for the parent workflow type), the duplicated workflowNode matches the source on each such control and on linked-workflow state corresponding to workflowEditNodeFormLinkWorkflowButton
+      - given the source workflowNode has comments, the duplicated workflowNode has zero comments
+      - after duplication, the duplicated workflowNode has zero incoming and zero outgoing workflowEdges (no edges from the source are preserved on the duplicate); the source workflowNode keeps the same counts of incoming and outgoing workflowEdges it had before; and every workflowEdge that existed before duplication still exists unchanged afterward
+
+    openQuestions: []
+
+designEvidenceLinkTable: []

@@ -1,0 +1,515 @@
+# Normalized requirements: add nodes via workflowRightSidebarAddTab / workflowRightSidebarAddTabContent ('Workflow' view)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Node Actions — Add New Node to Workflow)
+# Application code evidence: react/src/components/pages/Workspace/Workflow/Sidebar/components/AddTab/*
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebarAddTab visibility and role actionability—FR-WF-RS-002, FR-WF-RS-003); tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml (workflowSectionContainer as drop target semantics); tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml (workflowChannel canonical; workflowChannelHeader title/colour display and edit form — FR-CHAN-002, FR-CHAN-003; default channel sets at create also asserted on workflowChannelsHeaderRow per FR-CHAN-002); tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml (workflowNode canonical); tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml (post-create navigation to workflow—insert mode default applies when workflowRightSidebarAddTabContent is first shown after create; blank create seeds default channels per FR-WF-ADD-003). workflowView uiObject is canonical in this file.
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - current route is '/workflow/{id}/workflow'
+  - user has owner or editor role on the parent project
+
+uiObjectDefinitions:
+  workflowRightSidebarAddTab:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarAddTabContent:
+    meaning: Panel region shown when workflowRightSidebarAddTab is selected, containing add-node tools and node category drag sources.
+  workflowAddTabTitle:
+    meaning: Primary heading for workflowRightSidebarAddTabContent.
+  workflowAddTabInsertModeGroup:
+    meaning: Group containing insert-mode selection for new node placement.
+  workflowAddTabInsertModeToggleGroup:
+    meaning: Exclusive toggle group labeled 'Insert mode' with Manual, Row, and Column options.
+  workflowAddTabInsertModeManualButton:
+    meaning: Toggle option for 'Manual' insert mode; labeled 'Manual'.
+  workflowAddTabInsertModeRowButton:
+    meaning: Toggle option for 'Row' insert mode; labeled 'Row'.
+  workflowAddTabInsertModeColumnButton:
+    meaning: Toggle option for 'Column' insert mode; labeled 'Column'.
+  workflowAddTabInsertModeHelpIcon:
+    meaning: Info icon beside the Insert mode label that shows insert-mode help tooltip text on hover or focus.
+  workflowAddTabNodeCategoriesGroup:
+    meaning: Grouped list of workflowAddTabNodeCategoryItem rows in workflowRightSidebarAddTabContent.
+  workflowAddTabNodeCategoryItem:
+    meaning: Draggable Add-tab row for one workflowChannel, showing that channel's colour band and title.
+  workflowAddTabNodeCategoryItemColorBand:
+    meaning: Left-edge colour stripe on workflowAddTabNodeCategoryItem for the assigned workflowChannel.
+  workflowAddTabCustomNodeCategoryItem:
+    meaning: Draggable Add-tab row labeled 'Custom node category' for placing a node in a new workflowChannel.
+  workflowView:
+    meaning: The 'Workflow' sub-view at route '/workflow/{id}/workflow'
+  workflowSectionContainer:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowSectionRow:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
+  workflowChannel:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowNode:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
+  workflowNodeDropIndicator:
+    meaning: Pre-drop placement preview occupying an empty workflowSectionRow × workflowChannel cell in workflowView during a drag.
+  workflowRowInsertPreDropBand:
+    meaning: Single-channel pre-drop insertion band in workflowView indicating where a dragged workflowNode would be inserted before release.
+  workflowManualPlacementDialog:
+    meaning: Modal dialog that asks the user to choose Row or Column placement before finalizing a manual insert or move drop.
+  workflowManualPlacementDialogRowButton:
+    meaning: Row option on workflowManualPlacementDialog labeled 'Row'.
+  workflowManualPlacementDialogColumnButton:
+    meaning: Column option on workflowManualPlacementDialog labeled 'Column'.
+
+locatorMappings:
+  workflowRightSidebarAddTab:
+    strategy: "{workflowRightSidebarTabStrip} [aria-label='add tab']"
+    confidence: confirmed
+  workflowRightSidebarAddTabContent:
+    strategy: null
+    confidence: unresolved
+  workflowAddTabInsertModeToggleGroup:
+    strategy: "{workflowRightSidebarAddTabContent} [aria-label='Insert mode']"
+    confidence: inferred
+  workflowAddTabNodeCategoryItem:
+    strategy: null
+    confidence: unresolved
+  workflowAddTabCustomNodeCategoryItem:
+    strategy: null
+    confidence: unresolved
+  workflowView:
+    strategy: null
+    confidence: unresolved
+  workflowSectionContainer:
+    strategy: "[data-week-id]"
+    confidence: confirmed
+  workflowSectionRow:
+    strategy: null
+    confidence: unresolved
+  workflowChannel:
+    strategy: null
+    confidence: unresolved
+  workflowNode:
+    strategy: null
+    confidence: unresolved
+  workflowNodeDropIndicator:
+    strategy: null
+    confidence: unresolved
+  workflowRowInsertPreDropBand:
+    strategy: null
+    confidence: unresolved
+  workflowManualPlacementDialog:
+    strategy: null
+    confidence: unresolved
+  workflowManualPlacementDialogRowButton:
+    strategy: null
+    confidence: unresolved
+  workflowManualPlacementDialogColumnButton:
+    strategy: null
+    confidence: unresolved
+
+requirements:
+  - id: FR-WF-ADD-001
+    title: workflowRightSidebarAddTabContent opens in 'Workflow' view for editors
+
+    designEvidence:
+      - FIGMA-WF-ADD-ACTIVITY
+      - FIGMA-WF-ADD-COURSE
+      - FIGMA-WF-ADD-PROGRAM
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowRightSidebarAddTab
+      - workflowRightSidebarAddTabContent
+      - workflowAddTabTitle
+
+    preconditions:
+      - workflowRightSidebar is visible on '/workflow/{id}/workflow' per tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml FR-WF-RS-001
+
+    trigger:
+      - user clicks workflowRightSidebarAddTab
+
+    mainFlow:
+      - workflowRightSidebarAddTab enabled and disabled states by role are defined in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml FR-WF-RS-003
+      - when workflowRightSidebarAddTab is actionable and user clicks it, system displays workflowRightSidebarAddTabContent
+      - workflowAddTabTitle shows 'Add to workflow'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - when user clicks workflowRightSidebarAddTab, workflowRightSidebarAddTabContent is visible and workflowAddTabTitle text is 'Add to workflow'
+
+    openQuestions: []
+
+  - id: FR-WF-ADD-002
+    title: Insert mode for node placement from workflowRightSidebarAddTabContent
+
+    designEvidence:
+      - FIGMA-WF-ADD-ACTIVITY
+      - FIGMA-WF-ADD-COURSE
+      - FIGMA-WF-ADD-PROGRAM
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowRightSidebarAddTabContent
+      - workflowAddTabInsertModeGroup
+      - workflowAddTabInsertModeToggleGroup
+      - workflowAddTabInsertModeManualButton
+      - workflowAddTabInsertModeRowButton
+      - workflowAddTabInsertModeColumnButton
+      - workflowAddTabInsertModeHelpIcon
+
+    preconditions:
+      - FR-WF-ADD-001 preconditions hold
+      - workflowRightSidebarAddTabContent is visible
+
+    trigger:
+      - user clicks workflowAddTabInsertModeManualButton, workflowAddTabInsertModeRowButton, or workflowAddTabInsertModeColumnButton
+      - user hovers workflowAddTabInsertModeHelpIcon or moves focus to workflowAddTabInsertModeHelpIcon
+
+    mainFlow:
+      - workflowAddTabInsertModeGroup presents label 'Insert mode' and workflowAddTabInsertModeHelpIcon
+      - when user first uses the Workflow editor for that workflow in the same session immediately after successful creation of that workflow, default insert mode is 'Row' before the user changes insert mode
+      - workflowAddTabInsertModeToggleGroup allows exactly one active insert mode among 'Manual', 'Row', and 'Column'; the selected mode governs how drops from workflowRightSidebarAddTabContent are handled, as specified in FR-WF-ADD-004 (Row), FR-WF-ADD-005 (Column), and FR-WF-ADD-006 (Manual)
+      - when user hovers workflowAddTabInsertModeHelpIcon or focuses it, tooltip presents copy 'Row mode forces nodes into a vertical sequence. Column mode allows multiple nodes side-by-side. Manual mode prompts you to choose a layout style for every new node.'
+
+    roleBehavior:
+      owner:
+        workflowAddTabInsertModeToggleGroup: editable
+      editor:
+        workflowAddTabInsertModeToggleGroup: editable
+
+    acceptanceCriteria:
+      - given user has just created the workflow per tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml and has not changed insert mode for this workflow, when user first selects workflowRightSidebarAddTab on '/workflow/{id}/workflow' so workflowRightSidebarAddTabContent is shown, workflowAddTabInsertModeRowButton is selected and insert mode is 'Row'
+      - given workflowRightSidebarAddTabContent is open, workflowAddTabInsertModeToggleGroup shows exactly three options labeled 'Manual', 'Row', and 'Column'
+      - given user selects one insert mode option, that option remains selected until user selects a different option
+      - given user completes a valid drop from workflowRightSidebarAddTabContent onto a valid target inside a workflowSectionContainer in workflowView, placement matches the active insert mode per FR-WF-ADD-004, FR-WF-ADD-005, or FR-WF-ADD-006
+      - given user hovers workflowAddTabInsertModeHelpIcon, tooltip text is 'Row mode forces nodes into a vertical sequence. Column mode allows multiple nodes side-by-side. Manual mode prompts you to choose a layout style for every new node.'
+
+    openQuestions: []
+
+  - id: FR-WF-ADD-003
+    title: Node category drag sources in workflowRightSidebarAddTabContent
+
+    designEvidence:
+      - FIGMA-WF-ADD-ACTIVITY
+      - FIGMA-WF-ADD-COURSE
+      - FIGMA-WF-ADD-PROGRAM
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowRightSidebarAddTabContent
+      - workflowAddTabNodeCategoriesGroup
+      - workflowAddTabNodeCategoryItem
+      - workflowAddTabNodeCategoryItemColorBand
+      - workflowAddTabCustomNodeCategoryItem
+      - workflowChannel
+      - workflowChannelHeader
+      - workflowChannelHeaderColorIndicator
+
+    preconditions:
+      - FR-WF-ADD-001 preconditions hold
+      - workflowRightSidebarAddTabContent is visible
+
+    trigger:
+      - user drags workflowAddTabNodeCategoryItem or workflowAddTabCustomNodeCategoryItem
+
+    mainFlow:
+      - workflowAddTabNodeCategoriesGroup is titled 'Node categories'
+      - workflowAddTabNodeCategoryItem entries reflect workflow channels (node categories) for the current workflow
+      - each workflowAddTabNodeCategoryItem renders workflowAddTabNodeCategoryItemColorBand using the linked workflowChannel persisted colour (same value as workflowEditChannelFormColorField for that channel)
+      - when a workflow is newly created and still has the default channels for its workflow type (before any user channel edits), workflowAddTabNodeCategoryItem visible titles and colour bands match the defaults in acceptanceCriteria for that type; the same defaults appear on workflowChannelsHeaderRow per tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml FR-CHAN-002
+      - workflowAddTabCustomNodeCategoryItem is shown as an additional draggable row labeled 'Custom node category' for adding a custom channel
+      - successful workspace drop from workflowAddTabCustomNodeCategoryItem (per FR-WF-ADD-004, FR-WF-ADD-005, or FR-WF-ADD-006) adds a new channel after all existing channels (rightmost in channel order) and adds a matching workflowAddTabNodeCategoryItem row in workflowAddTabNodeCategoriesGroup
+
+    roleBehavior:
+      owner:
+        workflowAddTabNodeCategoryItem: draggable
+        workflowAddTabCustomNodeCategoryItem: draggable
+      editor:
+        workflowAddTabNodeCategoryItem: draggable
+        workflowAddTabCustomNodeCategoryItem: draggable
+
+    acceptanceCriteria:
+      - given workflow type is activity, workflow is newly created, and default channels are unchanged, workflowAddTabNodeCategoriesGroup lists workflowAddTabNodeCategoryItem rows in order with visible titles and workflowAddTabNodeCategoryItemColorBand colours exactly — 'Out of class (instructor)' #0B118A, 'Out of class (students)' #114BD4, 'In class (instructor)' #268AE5, 'In class (students)' #8BC8FF — and workflowAddTabCustomNodeCategoryItem is visible with label 'Custom node category'
+      - given workflow type is course, workflow is newly created, and default channels are unchanged, workflowAddTabNodeCategoriesGroup lists workflowAddTabNodeCategoryItem rows in order with visible titles and workflowAddTabNodeCategoryItemColorBand colours exactly — 'Preparation' #F7B92A, 'Lesson' #ED8934, 'Artifact' #ED4A28, 'Assessment' #AD1D35 — and workflowAddTabCustomNodeCategoryItem is visible with label 'Custom node category'
+      - given workflow type is program, workflow is newly created, and default channels are unchanged, workflowAddTabNodeCategoriesGroup lists exactly three workflowAddTabNodeCategoryItem rows each with visible title 'Custom node category' and workflowAddTabNodeCategoryItemColorBand colours #468884, #6FA29F, and #98BDBB in left-to-right order, and workflowAddTabCustomNodeCategoryItem is visible with label 'Custom node category'
+      - given workflow type is activity, course, or program, workflow is newly created, and default channels are unchanged, workflowChannelsHeaderRow shows the same default channel titles and workflowChannelHeaderColorIndicator colours as the corresponding workflowAddTabNodeCategoryItem rows per tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml FR-CHAN-002
+      - each workflowAddTabNodeCategoryItem shows workflowAddTabNodeCategoryItemColorBand on its left edge with the colour assigned to that workflowChannel
+      - given workflow channels were later added, renamed, or removed, workflowAddTabNodeCategoryItem rows and colour bands match the current channel set
+      - given user drags from workflowAddTabNodeCategoryItem and completes a valid drop inside a workflowSectionContainer in workflowView, the new node is created in the channel (column) for that node category
+      - given owner or editor completes a successful add using workflowAddTabCustomNodeCategoryItem per FR-WF-ADD-004, FR-WF-ADD-005, or FR-WF-ADD-006, the workflow has a new channel ordered after all previous channels and workflowAddTabNodeCategoriesGroup lists the new workflowAddTabNodeCategoryItem after existing category rows
+
+    openQuestions:
+      - For program workflows, confirm stable selectors or semantics (beyond duplicated visible title text) that distinguish the three default workflowAddTabNodeCategoryItem rows from workflowAddTabCustomNodeCategoryItem when all show 'Custom node category'.
+
+  - id: FR-WF-ADD-004
+    title: Row insert mode — drop new node from workflowRightSidebarAddTabContent onto a workflowSectionContainer in workflowView
+
+    designEvidence:
+      - FIGMA-WF-ADD-ACTIVITY
+      - FIGMA-WF-ADD-COURSE
+      - FIGMA-WF-ADD-PROGRAM
+      - FIGMA-WF-ADD-ROW-PRE-DROP-BAND
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowRightSidebarAddTabContent
+      - workflowAddTabNodeCategoryItem
+      - workflowAddTabCustomNodeCategoryItem
+      - workflowView
+      - workflowSectionContainer
+      - workflowSectionRow
+      - workflowChannel
+      - workflowNode
+      - workflowRowInsertPreDropBand
+      - workflowRightSidebar
+      - workflowRightSidebarEditTab
+      - workflowEditNodeForm
+
+    preconditions:
+      - FR-WF-ADD-002 preconditions hold
+      - insert mode is 'Row'
+      - workflowView contains at least one workflowSectionContainer
+
+    trigger:
+      - user completes drag-and-drop from workflowAddTabNodeCategoryItem or workflowAddTabCustomNodeCategoryItem in workflowRightSidebarAddTabContent into workflowView onto a valid drop target inside a workflowSectionContainer
+
+    mainFlow:
+      - user adds a new node by dragging from workflowRightSidebarAddTabContent to a valid drop target inside a workflowSectionContainer in workflowView
+      - in 'Row' mode, each reference workflowSectionRow spans the full width of workflowSectionContainer (all channels); the pointer's vertical position within the upper half of that workflowSectionRow means insert a new workflowSectionRow above that reference workflowSectionRow, and within the lower half means insert a new workflowSectionRow below that reference workflowSectionRow (the same upper/lower rule applies across the whole section width, not only over the channel where the node sits)
+      - while dragging before release from workflowAddTabNodeCategoryItem, at most one visible workflowRowInsertPreDropBand is shown, drawn only in the workflowChannel that matches the dragged workflowAddTabNodeCategoryItem (not drawn at full workflowSectionContainer width); see FIGMA-WF-ADD-ROW-PRE-DROP-BAND
+      - on drop from workflowAddTabNodeCategoryItem, the new node is always created in the channel for the corresponding workflowAddTabNodeCategoryItem, even when the pointer releases over a different channel column within the same workflowSectionRow
+      - on drop from workflowAddTabCustomNodeCategoryItem, a new channel is created after all existing channels (far right), the new node is placed in that new channel, and vertical insertion still follows the Row rules above (upper and lower halves of reference workflowSectionRows)
+      - while dragging before release from workflowAddTabCustomNodeCategoryItem, the workflowSectionRow under the pointer is highlighted across full workflowSectionContainer width to show vertical insertion position; no workflowRowInsertPreDropBand is shown because the target workflowChannel does not exist until drop creates it
+      - when a workflowSectionContainer already has at least one node, every completed drop adds a new workflowSectionRow for the new node
+      - when a workflowSectionContainer has no nodes yet, the first valid drop places the first node on the initial workflowSectionRow
+      - to insert between two vertically stacked nodes N1 above N2, the user completes the drop on the lower half of N1's workflowSectionRow or the upper half of N2's workflowSectionRow, yielding a new workflowSectionRow between N1 and N2
+      - dropping on the upper half of the workflowSectionRow containing the section's current first node inserts the new node above it so the new node becomes first in vertical order in that workflowSectionContainer
+      - dropping on the lower half of the workflowSectionRow containing the section's current last node inserts the new node below it so the new node becomes last in vertical order in that workflowSectionContainer
+      - when a new workflowSectionRow is inserted, all workflowNodes positioned at or below the inserted workflowSectionRow across every workflowChannel shift down by one workflowSectionRow (the entire full-width row band shifts, not just the target workflowChannel)
+      - after the new workflowNode is finalized at its destination, system auto-selects it and opens workflowEditNodeForm bound to that workflowNode per tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-001; this applies to drops from both workflowAddTabNodeCategoryItem and workflowAddTabCustomNodeCategoryItem
+
+    roleBehavior:
+      owner:
+        workflowAddTabNodeCategoryItem: draggableToWorkspace
+        workflowAddTabCustomNodeCategoryItem: draggableToWorkspace
+      editor:
+        workflowAddTabNodeCategoryItem: draggableToWorkspace
+        workflowAddTabCustomNodeCategoryItem: draggableToWorkspace
+
+    acceptanceCriteria:
+      - given a workflowSectionContainer already contains at least one node, when owner or editor completes a valid drop inside that workflowSectionContainer, the new node appears on its own new workflowSectionRow
+      - given a workflowSectionContainer contains no nodes, when owner or editor completes a valid drop inside that workflowSectionContainer, the section shows a first node on a single new workflowSectionRow
+      - given vertically stacked nodes N1 above N2 inside a workflowSectionContainer, when owner or editor completes a valid drop on the lower half of N1's workflowSectionRow or the upper half of N2's workflowSectionRow, a new node appears in a new workflowSectionRow between N1 and N2
+      - given node N1 is the first node in vertical order inside a workflowSectionContainer, when owner or editor completes a valid drop on the upper half of N1's workflowSectionRow, the new node appears above N1 and becomes the first node in that workflowSectionContainer
+      - given node N2 is the last node in vertical order inside a workflowSectionContainer, when owner or editor completes a valid drop on the lower half of N2's workflowSectionRow, the new node appears below N2 and becomes the last node in that workflowSectionContainer
+      - given owner or editor inserts a new workflowSectionRow between existing nodes N1 and N2, all workflowNodes at or below N2's original workflowSectionRow across every workflowChannel shift down by one workflowSectionRow so ordering stays consistent with the insertion across the full-width row band
+      - given owner or editor drags workflowAddTabNodeCategoryItem from workflowRightSidebarAddTabContent and drops on a valid target in workflowSectionContainer, a new node is created in the channel corresponding to that workflowAddTabNodeCategoryItem and workflowSectionRow placement rules above apply
+      - given 'Row' mode and owner or editor drags from workflowAddTabNodeCategoryItem, while the pointer is over a reference workflowSectionRow a visible workflowRowInsertPreDropBand appears only in the workflowChannel for that dragged category per FIGMA-WF-ADD-ROW-PRE-DROP-BAND
+      - given owner or editor completes a drop from workflowAddTabNodeCategoryItem with the pointer over a channel column other than the dragged category's column within the same workflowSectionRow, the new node still appears in the channel for that workflowAddTabNodeCategoryItem
+      - given 'Row' mode and owner or editor drags from workflowAddTabCustomNodeCategoryItem, while the pointer is over a reference workflowSectionRow that workflowSectionRow is highlighted across full workflowSectionContainer width and no workflowRowInsertPreDropBand is shown (the new workflowChannel does not exist yet)
+      - given owner or editor drags workflowAddTabCustomNodeCategoryItem and completes a valid drop in workflowSectionContainer, a new channel is added after all existing channels (rightmost), the new node appears in that new channel, and vertical placement follows the Row rules above (not the channel-from-sidebar rule used for workflowAddTabNodeCategoryItem)
+      - given owner or editor completes a valid drop from workflowRightSidebarAddTabContent (workflowAddTabNodeCategoryItem or workflowAddTabCustomNodeCategoryItem) inside a workflowSectionContainer, after the new workflowNode is finalized workflowRightSidebar switches from workflowRightSidebarAddTab to workflowRightSidebarEditTab and workflowEditNodeForm opens bound to the new workflowNode per tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-001
+
+    openQuestions:
+      - How upper and lower workflowSectionRow halves are wired in the DOM or event layer (which element receives pointer events for the full workflowSectionContainer width vs per-channel cells) should be documented for stable tests once implementation is fixed.
+      - How workflowRowInsertPreDropBand for workflowAddTabNodeCategoryItem is exposed to automation (data-testid, aria, or preview-only) should be documented so tests can assert feedback per FIGMA-WF-ADD-ROW-PRE-DROP-BAND.
+      - How the full-width workflowSectionRow highlight for workflowAddTabCustomNodeCategoryItem (no per-channel band) is exposed to automation should be documented for stable tests.
+
+  - id: FR-WF-ADD-005
+    title: Column insert mode — drop new node from workflowRightSidebarAddTabContent onto a workflowSectionContainer in workflowView
+
+    designEvidence:
+      - FIGMA-WF-ADD-ACTIVITY
+      - FIGMA-WF-ADD-COURSE
+      - FIGMA-WF-ADD-PROGRAM
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowRightSidebarAddTabContent
+      - workflowAddTabNodeCategoryItem
+      - workflowAddTabCustomNodeCategoryItem
+      - workflowView
+      - workflowSectionContainer
+      - workflowSectionRow
+      - workflowChannel
+      - workflowNode
+      - workflowNodeDropIndicator
+      - workflowRowInsertPreDropBand
+      - workflowRightSidebar
+      - workflowRightSidebarEditTab
+      - workflowEditNodeForm
+
+    preconditions:
+      - FR-WF-ADD-002 preconditions hold
+      - insert mode is 'Column'
+      - workflowView contains at least one workflowSectionContainer
+
+    trigger:
+      - user completes drag-and-drop from workflowAddTabNodeCategoryItem or workflowAddTabCustomNodeCategoryItem in workflowRightSidebarAddTabContent into workflowView onto a valid drop target inside a workflowSectionContainer
+
+    mainFlow:
+      - user adds a new node by dragging from workflowRightSidebarAddTabContent to a valid drop target inside a workflowSectionContainer in workflowView
+      - on drop from workflowAddTabNodeCategoryItem, the new node is created in the channel for that category; the new node may be placed on the same workflowSectionRow as existing nodes in that workflowSectionContainer
+      - on drop from workflowAddTabCustomNodeCategoryItem, a new channel is created ordered after all existing channels (far right), the new node is placed in that new channel, and horizontal placement in the section follows the same Column rules as for workflowAddTabNodeCategoryItem drops
+      - while dragging from workflowAddTabNodeCategoryItem over an empty workflowSectionRow × workflowChannel cell inside a workflowSectionContainer (a cell that does not currently contain a workflowNode), a workflowNodeDropIndicator is displayed in that empty cell to preview where the new workflowNode would be placed if released
+      - while dragging from workflowAddTabNodeCategoryItem over an existing workflowNode and the pointer is in the upper half of that workflowNode, a workflowRowInsertPreDropBand is displayed above the existing workflowNode, drawn only in that workflowNode's workflowChannel, to preview that the new workflowNode will be inserted above the existing workflowNode in that workflowChannel
+      - while dragging from workflowAddTabNodeCategoryItem over an existing workflowNode and the pointer is in the lower half of that workflowNode, a workflowRowInsertPreDropBand is displayed below the existing workflowNode, drawn only in that workflowNode's workflowChannel, to preview that the new workflowNode will be inserted below the existing workflowNode in that workflowChannel
+      - on drop over an empty workflowSectionRow × workflowChannel cell inside a workflowSectionContainer, the new workflowNode is placed in that empty cell and no other workflowNode in the section is moved
+      - on drop over the upper half of an existing workflowNode, if any workflowSectionRow × workflowChannel cell at or below the existing workflowNode in the same workflowChannel is empty, the existing workflowNode together with the contiguous workflowNodes below it in that workflowChannel shifts down by one workflowSectionRow until the first empty cell at or below the existing workflowNode in that workflowChannel is filled, and the new workflowNode is placed in the cell the existing workflowNode previously occupied; only workflowNodes in that workflowChannel are affected, workflowNodes in other workflowChannels keep their workflowSectionRow positions
+      - on drop over the upper half of an existing workflowNode, if the workflowChannel is full from the existing workflowNode through the last workflowSectionRow, a new workflowSectionRow is inserted above the existing workflowNode's workflowSectionRow and the new workflowNode is placed in that new workflowSectionRow in the same workflowChannel; the inserted workflowSectionRow contains only the new workflowNode and other workflowChannels show empty cells at that workflowSectionRow position with their existing workflowNodes unmoved
+      - on drop over the lower half of an existing workflowNode, if any workflowSectionRow × workflowChannel cell below the existing workflowNode in the same workflowChannel is empty, the workflowNodes from the cell directly below the existing workflowNode down to the first empty cell below it in that workflowChannel shift down by one workflowSectionRow so the cell directly below the existing workflowNode becomes empty, and the new workflowNode is placed in that newly-empty cell in the same workflowChannel; only workflowNodes in that workflowChannel are affected, workflowNodes in other workflowChannels keep their workflowSectionRow positions
+      - on drop over the lower half of an existing workflowNode, if the workflowChannel is full from the existing workflowNode through the last workflowSectionRow, a new workflowSectionRow is inserted below the existing workflowNode's workflowSectionRow and the new workflowNode is placed in that new workflowSectionRow in the same workflowChannel; the inserted workflowSectionRow contains only the new workflowNode and other workflowChannels show empty cells at that workflowSectionRow position with their existing workflowNodes unmoved
+      - after the new workflowNode is finalized at its destination, system auto-selects it and opens workflowEditNodeForm bound to that workflowNode per tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-001; this applies to drops from both workflowAddTabNodeCategoryItem and workflowAddTabCustomNodeCategoryItem
+
+    roleBehavior:
+      owner:
+        workflowAddTabNodeCategoryItem: draggableToWorkspace
+        workflowAddTabCustomNodeCategoryItem: draggableToWorkspace
+      editor:
+        workflowAddTabNodeCategoryItem: draggableToWorkspace
+        workflowAddTabCustomNodeCategoryItem: draggableToWorkspace
+
+    acceptanceCriteria:
+      - given owner or editor completes a valid drop from workflowRightSidebarAddTabContent inside a workflowSectionContainer, the new node may be placed on the same workflowSectionRow as another node already visible in that workflowSectionContainer
+      - given owner or editor drags workflowAddTabNodeCategoryItem from workflowRightSidebarAddTabContent and drops on a valid target in workflowSectionContainer, a new node is created in the corresponding workflowChannel for that category
+      - given owner or editor drags workflowAddTabCustomNodeCategoryItem and completes a valid drop in workflowSectionContainer, a new channel is added after all existing channels (rightmost), the new node appears in that new channel, and horizontal placement follows the Column rules above
+      - given owner or editor drags from workflowAddTabNodeCategoryItem and the pointer is over an empty workflowSectionRow × workflowChannel cell inside a workflowSectionContainer, a workflowNodeDropIndicator is displayed in that empty cell as a placement preview
+      - given owner or editor drags from workflowAddTabNodeCategoryItem over an existing workflowNode and the pointer is in the upper half of that workflowNode, a workflowRowInsertPreDropBand is displayed above the existing workflowNode in that workflowNode's workflowChannel
+      - given owner or editor drags from workflowAddTabNodeCategoryItem over an existing workflowNode and the pointer is in the lower half of that workflowNode, a workflowRowInsertPreDropBand is displayed below the existing workflowNode in that workflowNode's workflowChannel
+      - given owner or editor releases a drop on an empty workflowSectionRow × workflowChannel cell inside a workflowSectionContainer, the new workflowNode is placed in that empty cell and no other workflowNode in the section is moved
+      - given owner or editor releases a drop on the upper half of an existing workflowNode and any workflowSectionRow × workflowChannel cell at or below the existing workflowNode in the same workflowChannel is empty, the existing workflowNode together with the contiguous workflowNodes below it in that workflowChannel shifts down by one workflowSectionRow until the first empty cell is filled, the new workflowNode occupies the cell the existing workflowNode previously held, and workflowNodes in other workflowChannels are not moved
+      - given owner or editor releases a drop on the upper half of an existing workflowNode and the workflowChannel is full from the existing workflowNode through the last workflowSectionRow, a new workflowSectionRow is inserted above the existing workflowNode's workflowSectionRow, the new workflowNode occupies that new workflowSectionRow in the same workflowChannel, and workflowNodes in other workflowChannels are not moved (their cells at the inserted workflowSectionRow position are empty)
+      - given owner or editor releases a drop on the lower half of an existing workflowNode and any workflowSectionRow × workflowChannel cell below the existing workflowNode in the same workflowChannel is empty, the workflowNodes from the cell directly below the existing workflowNode down to the first empty cell below it in that workflowChannel shift down by one workflowSectionRow, the new workflowNode occupies the cell directly below the existing workflowNode in the same workflowChannel, and workflowNodes in other workflowChannels are not moved
+      - given owner or editor releases a drop on the lower half of an existing workflowNode and the workflowChannel is full from the existing workflowNode through the last workflowSectionRow, a new workflowSectionRow is inserted below the existing workflowNode's workflowSectionRow, the new workflowNode occupies that new workflowSectionRow in the same workflowChannel, and workflowNodes in other workflowChannels are not moved (their cells at the inserted workflowSectionRow position are empty)
+      - given owner or editor completes a valid drop from workflowRightSidebarAddTabContent (workflowAddTabNodeCategoryItem or workflowAddTabCustomNodeCategoryItem) inside a workflowSectionContainer, after the new workflowNode is finalized workflowRightSidebar switches from workflowRightSidebarAddTab to workflowRightSidebarEditTab and workflowEditNodeForm opens bound to the new workflowNode per tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-001
+
+    openQuestions:
+      - How workflowNodeDropIndicator and workflowRowInsertPreDropBand are exposed to automation (data-testid, aria, or rendering-only) should be documented for stable tests.
+
+  - id: FR-WF-ADD-006
+    title: Manual insert mode — drop new node from workflowRightSidebarAddTabContent onto a workflowSectionContainer in workflowView
+
+    designEvidence:
+      - FIGMA-WF-ADD-ACTIVITY
+      - FIGMA-WF-ADD-COURSE
+      - FIGMA-WF-ADD-PROGRAM
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowRightSidebarAddTabContent
+      - workflowAddTabNodeCategoryItem
+      - workflowAddTabCustomNodeCategoryItem
+      - workflowView
+      - workflowSectionContainer
+      - workflowSectionRow
+      - workflowChannel
+      - workflowNode
+      - workflowNodeDropIndicator
+      - workflowRowInsertPreDropBand
+      - workflowManualPlacementDialog
+      - workflowManualPlacementDialogRowButton
+      - workflowManualPlacementDialogColumnButton
+      - workflowRightSidebar
+      - workflowRightSidebarEditTab
+      - workflowEditNodeForm
+
+    preconditions:
+      - FR-WF-ADD-002 preconditions hold
+      - insert mode is 'Manual'
+      - workflowView contains at least one workflowSectionContainer
+
+    trigger:
+      - user completes drag-and-drop from workflowAddTabNodeCategoryItem or workflowAddTabCustomNodeCategoryItem in workflowRightSidebarAddTabContent into workflowView onto a valid drop target inside a workflowSectionContainer
+
+    mainFlow:
+      - user adds a new node by dragging from workflowRightSidebarAddTabContent to a valid drop target inside a workflowSectionContainer in workflowView
+      - while dragging before release in 'Manual' insert mode, pre-drop preview behavior is identical to 'Column' insert mode per FR-WF-ADD-005
+      - on release of a drag from workflowAddTabNodeCategoryItem or workflowAddTabCustomNodeCategoryItem over a valid drop target inside a workflowSectionContainer, the system captures the drop context (target cell or existing workflowNode plus upper or lower half) and displays workflowManualPlacementDialog before the new workflowNode is finalized
+      - workflowManualPlacementDialog presents exactly two options, workflowManualPlacementDialogRowButton and workflowManualPlacementDialogColumnButton, and provides no cancel control; the user must select one of the two options to finalize the new workflowNode and dismiss workflowManualPlacementDialog
+      - when the user selects workflowManualPlacementDialogRowButton, the new workflowNode is finalized according to the 'Row' insert mode placement rules per FR-WF-ADD-004 applied at the captured drop context
+      - when the user selects workflowManualPlacementDialogColumnButton, the new workflowNode is finalized according to the 'Column' insert mode placement rules per FR-WF-ADD-005 applied at the captured drop context
+      - on release of a drag from workflowAddTabCustomNodeCategoryItem, the workflowManualPlacementDialog choice is applied as above and a new workflowChannel is created ordered after all existing channels (far right); the new workflowNode is finalized in that new workflowChannel using the placement rules of the chosen mode
+      - after the user finalizes placement via workflowManualPlacementDialogRowButton or workflowManualPlacementDialogColumnButton and the new workflowNode is finalized at its destination, system auto-selects it and opens workflowEditNodeForm bound to that workflowNode per tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-001; this applies to drops from both workflowAddTabNodeCategoryItem and workflowAddTabCustomNodeCategoryItem, and does not occur on initial drag release while workflowManualPlacementDialog is still open
+
+    roleBehavior:
+      owner:
+        workflowAddTabNodeCategoryItem: draggableToWorkspace
+        workflowAddTabCustomNodeCategoryItem: draggableToWorkspace
+      editor:
+        workflowAddTabNodeCategoryItem: draggableToWorkspace
+        workflowAddTabCustomNodeCategoryItem: draggableToWorkspace
+
+    acceptanceCriteria:
+      - given owner or editor is dragging from workflowAddTabNodeCategoryItem in 'Manual' insert mode, pre-drop preview matches the 'Column' insert mode pre-drop acceptance criteria per FR-WF-ADD-005
+      - given owner or editor releases a drag from workflowRightSidebarAddTabContent on a valid drop target inside a workflowSectionContainer in 'Manual' insert mode, workflowManualPlacementDialog opens with exactly two options, workflowManualPlacementDialogRowButton labeled 'Row' and workflowManualPlacementDialogColumnButton labeled 'Column', exposes no cancel control, and no workflowNode is finalized before the user makes a selection
+      - given workflowManualPlacementDialog is open, the dialog remains open until the user selects workflowManualPlacementDialogRowButton or workflowManualPlacementDialogColumnButton; the user cannot dismiss workflowManualPlacementDialog without finalizing a new workflowNode
+      - given workflowManualPlacementDialog is open and the user selects workflowManualPlacementDialogRowButton, the new workflowNode is finalized using the 'Row' insert mode placement rules per FR-WF-ADD-004 applied at the captured drop context
+      - given workflowManualPlacementDialog is open and the user selects workflowManualPlacementDialogColumnButton, the new workflowNode is finalized using the 'Column' insert mode placement rules per FR-WF-ADD-005 applied at the captured drop context
+      - given owner or editor drags workflowAddTabNodeCategoryItem and completes a valid drop in workflowSectionContainer, the new workflowNode is created in the workflowChannel for that category and the 'Manual' placement flow above applies
+      - given owner or editor drags workflowAddTabCustomNodeCategoryItem and completes a valid drop in workflowSectionContainer, after the user makes a selection on workflowManualPlacementDialog a new workflowChannel is added after all existing channels (rightmost) and the new workflowNode is finalized in that new workflowChannel using the placement rules of the chosen mode
+      - given workflowManualPlacementDialog is open and the user finalizes via workflowManualPlacementDialogRowButton or workflowManualPlacementDialogColumnButton (workflowAddTabNodeCategoryItem or workflowAddTabCustomNodeCategoryItem drop), after the new workflowNode is finalized workflowRightSidebar switches from workflowRightSidebarAddTab to workflowRightSidebarEditTab and workflowEditNodeForm opens bound to the new workflowNode per tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-001; the auto-open does not occur on initial drag release while workflowManualPlacementDialog is still open
+
+    openQuestions:
+      - How workflowManualPlacementDialog, workflowManualPlacementDialogRowButton, and workflowManualPlacementDialogColumnButton are exposed to automation (data-testid, aria, or rendering-only) should be documented for stable tests.
+      - Pre-drop preview behavior for workflowAddTabCustomNodeCategoryItem in 'Manual' insert mode (specifically whether the workflowSectionRow under the pointer is highlighted across full workflowSectionContainer width as in 'Row' insert mode, or whether only the Column-style indicator/band semantics apply) is not yet specified.
+
+  - id: FR-WF-ADD-007
+    title: Collapsed workflowSectionContainer auto-expands on drag-over from workflowRightSidebarAddTabContent
+
+    designEvidence:
+      - FIGMA-WF-ADD-ACTIVITY
+      - FIGMA-WF-ADD-COURSE
+      - FIGMA-WF-ADD-PROGRAM
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowView
+      - workflowSectionContainer
+      - workflowAddTabNodeCategoryItem
+      - workflowAddTabCustomNodeCategoryItem
+
+    preconditions:
+      - FR-WF-ADD-002 preconditions hold
+      - workflowView contains at least one workflowSectionContainer in a collapsed state
+
+    trigger:
+      - while a drag from workflowAddTabNodeCategoryItem or workflowAddTabCustomNodeCategoryItem is in progress, the pointer enters a workflowSectionContainer that is currently in a collapsed state
+
+    mainFlow:
+      - while a drag from workflowRightSidebarAddTabContent is in progress and the pointer enters a workflowSectionContainer that is currently in a collapsed state, that workflowSectionContainer automatically expands so its workflowSectionRows and workflowChannels are visible and addressable as drop targets; the auto-expanded workflowSectionContainer remains expanded for the remainder of the drag and stays expanded after the drag ends (whether the drop is finalized inside that workflowSectionContainer or the drag ends elsewhere); collapse state of other workflowSectionContainers is not affected
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given owner or editor is dragging from workflowAddTabNodeCategoryItem or workflowAddTabCustomNodeCategoryItem and the pointer enters a workflowSectionContainer that is currently collapsed, that workflowSectionContainer auto-expands and remains expanded for the remainder of the drag and after the drag ends; other workflowSectionContainers retain their collapse state
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-WF-ADD-ACTIVITY
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5677-54940&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-ADD-COURSE
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=1828-112765&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-ADD-PROGRAM
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5677-52474&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-ADD-ROW-PRE-DROP-BAND
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6096-87699&t=6weYZA8hUf6tm7DF-1

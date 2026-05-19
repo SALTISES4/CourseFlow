@@ -13,41 +13,41 @@ documentPreconditions:
 
 uiObjectDefinitions:
   workflowOverviewView:
-    meaning: The 'Overview' sub-view of a workflow route where workflow metadata is displayed and, for allowed roles, editable.
+    meaning: Workflow Overview sub-view for workflow metadata and permissions summary.
   workflowMetadataSection:
-    meaning: Container region(s) inside workflowOverviewView that group metadata fields and switches.
+    meaning: Metadata section on workflowOverviewView containing workflow overview fields and banners.
   workflowMetadataFieldDescription:
-    meaning: Rich text metadata field for workflow description in workflowOverviewView.
+    meaning: Description metadata field on workflowOverviewView.
   workflowMetadataFieldCode:
-    meaning: Metadata field for workflow code within workflowMetadataSection in workflowOverviewView; available on course and program workflows only (not shown on activity workflows).
+    meaning: Code metadata field on workflowOverviewView.
   workflowMetadataSwitchCalculateTimeAutomatically:
     meaning: Switch control labeled 'Calculate time automatically' in workflowOverviewView.
   workflowMetadataFieldTime:
-    meaning: Metadata field of type duration for 'Time' in workflowOverviewView.
+    meaning: Time duration metadata field on workflowOverviewView.
   workflowMetadataSwitchCalculatePonderationAutomatically:
-    meaning: Program-only switch control labeled 'Calculate ponderation automatically' in the 'Ponderation' section of workflowOverviewView.
+    meaning: Toggle on workflowOverviewView to auto-calculate ponderation hours.
   workflowMetadataFieldIndividualTime:
-    meaning: Metadata field of type duration labeled 'Individual' in the 'Ponderation' section of workflowOverviewView on course workflows; on program workflows, the same duration field in the 'Ponderation' section (editability per FR-WF-OV-004).
+    meaning: Individual duration field in the Ponderation section on workflowOverviewView.
   workflowMetadataFieldPracticalTime:
-    meaning: Metadata field of type duration labeled 'Practical' in the 'Ponderation' section of workflowOverviewView on course workflows; on program workflows, the same duration field in the 'Ponderation' section (editability per FR-WF-OV-004).
+    meaning: Practical duration field in the Ponderation section on workflowOverviewView.
   workflowMetadataFieldTheoryTime:
-    meaning: Metadata field of type duration labeled 'Theory' in the 'Ponderation' section of workflowOverviewView on course workflows; on program workflows, the same duration field in the 'Ponderation' section (editability per FR-WF-OV-004).
+    meaning: Theory duration field in the Ponderation section on workflowOverviewView.
   workflowMetadataSwitchCalculateCreditsAutomatically:
     meaning: Program-only switch control labeled 'Calculate credits automatically' in workflowOverviewView.
   workflowMetadataFieldCredits:
-    meaning: Metadata field of type number for 'Credits' in workflowOverviewView on course and program workflows; values are whole numbers only (integers); on courses there is no automatic calculation option for credits (manual entry only); on program workflows, optional auto-calculation is controlled by workflowMetadataSwitchCalculateCreditsAutomatically (see FR-WF-OV-005).
+    meaning: Credits metadata field on workflowOverviewView.
   workflowMetadataSwitchCalculateClassificationAutomatically:
-    meaning: Program-only switch control labeled 'Calculate classification automatically' in workflowOverviewView.
+    meaning: Toggle on workflowOverviewView to auto-calculate classification hours.
   workflowMetadataFieldGeneralTime:
-    meaning: Metadata field of type duration for 'General time' in workflowOverviewView (program scope; classification section).
+    meaning: General time duration field on program workflowOverviewView.
   workflowMetadataFieldSpecificTime:
-    meaning: Metadata field of type duration for 'Specific time' in workflowOverviewView (program scope; classification section).
+    meaning: Specific time duration field on program workflowOverviewView.
   workflowMetadataClassificationWarningBanner:
-    meaning: Banner on program workflowOverviewView when the combined duration total of workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime does not equal the duration in workflowMetadataFieldTime; visible copy is 'Total of classification hours does not match program time'.
+    meaning: Warning banner when classification hours do not match program time.
   workflowMetadataWarningBanner:
-    meaning: Banner on course/program workflowOverviewView when the combined duration total of workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, and workflowMetadataFieldIndividualTime does not equal the duration in workflowMetadataFieldTime; visible copy is 'Total of ponderation hours does not match [workflow type] time.' with [workflow type] replaced by the workflow type label (activity, course, or program).
-  workflowPermissionsPanel:
-    meaning: Read-only permissions/contributors region shown on workflowOverviewView that mirrors the same permissions data as the parent project; at workflow level this phase does not allow adding users, removing users, or changing contributor roles.
+    meaning: Warning banner when ponderation hours do not match workflow time.
+  workflowMetadataPermissionsPanel:
+    meaning: Read-only contributors and permissions summary on workflowOverviewView.
 
 locatorMappings:
   workflowOverviewView:
@@ -101,7 +101,7 @@ locatorMappings:
   workflowMetadataWarningBanner:
     strategy: null
     confidence: unresolved
-  workflowPermissionsPanel:
+  workflowMetadataPermissionsPanel:
     strategy: "OverviewView renders UserPermissions panel in current code"
     confidence: inferred
 
@@ -182,7 +182,9 @@ requirements:
     trigger: []
 
     mainFlow:
-      - when workflow description data exists, workflowMetadataFieldDescription is displayed in workflowOverviewView
+      - workflowMetadataFieldDescription is displayed in workflowOverviewView with label 'Description'
+      - when workflow description data is empty, workflowMetadataFieldDescription shows '-'
+      - workflowMetadataFieldDescription content is plain text only (no rich-text formatting) and has no maximum length limit
       - workflowMetadataFieldDescription is not editable directly on workflowOverviewView for any role
       - owner and editor can update workflow description only through editWorkflowDialog flow defined in tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml (FR-WF-FORM-001)
       - on course and program workflows, workflowMetadataFieldCode is displayed in workflowMetadataSection within workflowOverviewView
@@ -210,7 +212,11 @@ requirements:
         workflowMetadataFieldCode: readOnly
 
     acceptanceCriteria:
-      - given workflow description has a value, workflowMetadataFieldDescription is visible on workflowOverviewView
+      - given workflowOverviewView is visible, workflowMetadataFieldDescription label 'Description' is visible
+      - given workflow description has a value, workflowMetadataFieldDescription shows that value on workflowOverviewView
+      - given workflow description is empty, workflowMetadataFieldDescription shows '-'
+      - workflowMetadataFieldDescription accepts plain text only (no rich-text formatting controls)
+      - workflow description has no maximum length limit
       - given any actor on workflowOverviewView, workflowMetadataFieldDescription is read-only and cannot be edited in place
       - given owner or editor needs to change description, update path is editWorkflowDialog defined in tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml (FR-WF-FORM-001)
       - given workflow type is course or program, workflowMetadataFieldCode is visible in workflowMetadataSection on workflowOverviewView
@@ -431,6 +437,8 @@ requirements:
       - workflowMetadataFieldSpecificTime
       - workflowMetadataFieldTime
       - workflowMetadataClassificationWarningBanner
+      - workflowEditNodeFormSpecificEducationSwitch
+      - workflowEditNodeFormTimeField
 
     preconditions:
       - FR-WF-OV-001 preconditions hold
@@ -441,8 +449,8 @@ requirements:
 
     mainFlow:
       - workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are duration-type fields in the program overview classification controls
-      - when workflowMetadataSwitchCalculateClassificationAutomatically is OFF, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are editable for owner/editor
-      - when workflowMetadataSwitchCalculateClassificationAutomatically is ON, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are read-only and calculated from node classification time values
+      - when workflowMetadataSwitchCalculateClassificationAutomatically is OFF, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are editable for owner/editor and workflowEditNodeFormSpecificEducationSwitch has no effect on these totals
+      - when workflowMetadataSwitchCalculateClassificationAutomatically is ON, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are read-only and calculated from each program workflowNode's workflowEditNodeFormSpecificEducationSwitch (defined in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml) — a workflowNode with workflowEditNodeFormSpecificEducationSwitch ON contributes its workflowEditNodeFormTimeField duration to workflowMetadataFieldSpecificTime, and a workflowNode with workflowEditNodeFormSpecificEducationSwitch OFF contributes its workflowEditNodeFormTimeField duration to workflowMetadataFieldGeneralTime
       - when the combined duration represented by workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime is not equal to the duration represented by workflowMetadataFieldTime, workflowMetadataClassificationWarningBanner is shown with message 'Total of classification hours does not match program time'
       - viewer/commenter/user cannot edit workflowMetadataSwitchCalculateClassificationAutomatically, workflowMetadataFieldGeneralTime, or workflowMetadataFieldSpecificTime
 
@@ -469,8 +477,8 @@ requirements:
         workflowMetadataFieldSpecificTime: readOnly
 
     acceptanceCriteria:
-      - given owner/editor and workflowMetadataSwitchCalculateClassificationAutomatically is OFF, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are editable
-      - given owner/editor and workflowMetadataSwitchCalculateClassificationAutomatically is ON, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are read-only and calculated
+      - given owner/editor and workflowMetadataSwitchCalculateClassificationAutomatically is OFF, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are editable and workflowEditNodeFormSpecificEducationSwitch state on individual program workflowNodes does not affect either total
+      - given owner/editor and workflowMetadataSwitchCalculateClassificationAutomatically is ON, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are read-only and computed by summing each program workflowNode's workflowEditNodeFormTimeField duration into workflowMetadataFieldSpecificTime when workflowEditNodeFormSpecificEducationSwitch is ON and into workflowMetadataFieldGeneralTime when workflowEditNodeFormSpecificEducationSwitch is OFF
       - given viewer/commenter/user, workflowMetadataSwitchCalculateClassificationAutomatically, workflowMetadataFieldGeneralTime, and workflowMetadataFieldSpecificTime are read-only
       - given workflow type is program, when the sum of workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime does not equal the duration in workflowMetadataFieldTime, workflowMetadataClassificationWarningBanner is visible
       - given workflowMetadataClassificationWarningBanner is visible, its text is 'Total of classification hours does not match program time'
@@ -493,7 +501,8 @@ requirements:
       - user
 
     uiObjects:
-      - workflowPermissionsPanel
+      - workflowMetadataSection
+      - workflowMetadataPermissionsPanel
 
     preconditions:
       - FR-WF-OV-001 preconditions hold
@@ -501,29 +510,29 @@ requirements:
     trigger: []
 
     mainFlow:
-      - workflowOverviewView shows workflowPermissionsPanel in overview content
-      - workflowPermissionsPanel displays the same permissions dataset as the parent project's projectOverviewPermissionsBlock
-      - all roles can view permissions data in workflowPermissionsPanel, but all controls are read-only
+      - workflowOverviewView shows workflowMetadataPermissionsPanel in workflowMetadataSection
+      - workflowMetadataPermissionsPanel displays the same permissions dataset as the parent project's projectOverviewPermissionsBlock
+      - all roles can view permissions data in workflowMetadataPermissionsPanel, but all controls are read-only
       - workflow overview does not provide permission-management actions; users cannot add contributors, remove contributors, or modify contributor roles from this panel
 
     roleBehavior:
       owner:
-        workflowPermissionsPanel: readOnly
+        workflowMetadataPermissionsPanel: readOnly
       editor:
-        workflowPermissionsPanel: readOnly
+        workflowMetadataPermissionsPanel: readOnly
       viewer:
-        workflowPermissionsPanel: readOnly
+        workflowMetadataPermissionsPanel: readOnly
       commenter:
-        workflowPermissionsPanel: readOnly
+        workflowMetadataPermissionsPanel: readOnly
       user:
-        workflowPermissionsPanel: readOnly
+        workflowMetadataPermissionsPanel: readOnly
 
     acceptanceCriteria:
-      - given workflowOverviewView is visible, workflowPermissionsPanel is visible
-      - given workflowPermissionsPanel is shown, listed users and roles match the parent project's projectOverviewPermissionsBlock
-      - given any actor, workflowPermissionsPanel is read-only and does not allow adding contributors
-      - given any actor, workflowPermissionsPanel is read-only and does not allow removing contributors
-      - given any actor, workflowPermissionsPanel is read-only and does not allow changing user role assignments
+      - given workflowOverviewView is visible, workflowMetadataPermissionsPanel is visible in workflowMetadataSection
+      - given workflowMetadataPermissionsPanel is shown, listed users and roles match the parent project's projectOverviewPermissionsBlock
+      - given any actor, workflowMetadataPermissionsPanel is read-only and does not allow adding contributors
+      - given any actor, workflowMetadataPermissionsPanel is read-only and does not allow removing contributors
+      - given any actor, workflowMetadataPermissionsPanel is read-only and does not allow changing user role assignments
 
     openQuestions: []
 

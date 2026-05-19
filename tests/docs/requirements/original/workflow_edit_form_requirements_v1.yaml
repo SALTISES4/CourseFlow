@@ -12,25 +12,25 @@ documentPreconditions:
 
 uiObjectDefinitions:
   contextActionBar:
-    meaning: Horizontal action bar below global top navigation on workflow-scoped routes; full header-level route contract in context_action_bar_requirements_v1.yaml FR-CAB-004 onward; includes editPencilButton for workflow edit entry per FR-CAB-004.
+    meaning: Canonical definition in tests/docs/requirements/original/context_action_bar_requirements_v1.yaml.
   editPencilButton:
-    meaning: Pencil icon control on contextActionBar on workflow-scoped routes; visible for contributor roles when the bar is shown per FR-CAB-004; Owner and Editor click it to open editWorkflowDialog; Viewer and Commenter see it read-only (not actionable) per FR-WF-FORM-001.
+    meaning: Canonical definition in tests/docs/requirements/original/context_action_bar_requirements_v1.yaml.
   editWorkflowDialog:
-    meaning: Modal dialog for editing an existing workflow title and description; opened when Owner or Editor clicks editPencilButton on contextActionBar while on a workflow-scoped route. Dialog title uses template 'Edit [workflow type]' with lowercase user-visible type label substitution (for example 'Edit activity'). Primary submit label uses template 'Update [workflow type]' with the same substitution (for example 'Update activity').
+    meaning: Modal dialog for editing an existing workflow title and description
   workflowEditForm:
-    meaning: Form inside editWorkflowDialog containing workflowTitleField, workflowDescriptionField, workflowFormCancelButton, and workflowFormSubmitButton.
+    meaning: Form inside editWorkflowDialog for workflow title, description, and metadata fields.
   workflowFormDialogTitle:
-    meaning: Accessible title for editWorkflowDialog matching the 'Edit [workflow type]' template after lowercase type-label substitution for the workflow being edited.
+    meaning: Accessible title on editWorkflowDialog using the 'Edit [workflow type]' pattern.
   workflowTitleField:
-    meaning: Text input for workflow title; required; label 'Title' in current implementation.
+    meaning: Text input for workflow title; required; label 'Title'
   workflowDescriptionField:
-    meaning: Multiline text input for workflow description; required in edit dialog client validation in current implementation; label uses the visible workflow type label plus the word 'description' (for example 'Activity description' for an activity workflow).
+    meaning: Multiline text input for workflow description; required in edit dialog client validation
   workflowFormCancelButton:
-    meaning: Secondary action that closes editWorkflowDialog without persisting changes; label 'Cancel' in current implementation.
+    meaning: Secondary action that closes editWorkflowDialog without persisting changes; label 'Cancel'
   workflowFormSubmitButton:
-    meaning: Primary submit for editWorkflowDialog; label follows 'Update [workflow type]' with lowercase type-label substitution; read-only (disabled and not clickable) until workflowEditForm has unsaved changes relative to values loaded when the dialog opened.
+    meaning: Primary submit for editWorkflowDialog
   globalMessageSnackbar:
-    meaning: Global snackbar feedback after editWorkflowDialog submit. On successful update it shows 'Your [workflow type] has been successfully updated'. On failed update it shows 'We encountered an issue and your [workflow type] was not updated'. In both cases '[workflow type]' is substituted with the workflow's user-visible type label.
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_header_requirements_v1.yaml.
 
 locatorMappings:
   contextActionBar:

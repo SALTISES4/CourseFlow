@@ -1,0 +1,401 @@
+# Normalized requirements: workflow channel (node category) surface in Workflow view — shared uiObjectDefinitions, locatorMappings, and FR-CHAN-001–008 in product order (FR-CHAN-005 → workflow_duplicate_channel_requirements_v1.yaml; FR-CHAN-006 → workflow_delete_channel_requirements_v1.yaml; FR-CHAN-001–004 and FR-CHAN-007–008 in this file)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Channels — lines 895–972)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml (default channel sets per workflow type — FR-WF-ADD-003; workflowChannel uiObject is canonical in this file); tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebar, workflowRightSidebarEditTab — FR-WF-RS-001, FR-WF-RS-002); tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml (workflowNodeBorder stripe — FR-WF-NODE-001; workflowNodeBorder fill colour sync — FR-CHAN-003 canonical; workflowNodeHoverActionsMenu — FR-WF-NODE-004, FR-WF-NODE-005; channel hover menu lockstep — FR-CHAN-007); tests/docs/requirements/original/workflow_duplicate_channel_requirements_v1.yaml (duplicate channel — FR-CHAN-005); tests/docs/requirements/original/workflow_delete_channel_requirements_v1.yaml (delete channel — FR-CHAN-006); tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml (open comments for channel — FR-WF-COMMENTS-003). Canonical uiObjects and locators in this file are reused by the duplicate and delete channel requirement files.
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - current route is '/workflow/{id}/workflow'
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+  - workflow always retains at least one workflowChannel in workflowChannelsHeaderRow; the user cannot delete the last remaining channel (FR-CHAN-006)
+
+uiObjectDefinitions:
+  workflowView:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml.
+  workflowChannel:
+    meaning: Workflow-scoped node category column shared across every workflowSectionContainer in the workflow.
+  workflowChannelsHeaderRow:
+    meaning: Top header row in workflowView listing workflowChannelHeader cells in left-to-right order.
+  workflowChannelHeader:
+    meaning: Header cell for one workflowChannel in workflowChannelsHeaderRow.
+  workflowChannelHeaderColorIndicator:
+    meaning: Coloured top border stripe on workflowChannelHeader for the channel colour.
+  workflowChannelHeaderTitleText:
+    meaning: Visible title text rendered on workflowChannelHeader.
+  workflowChannelHoverActionsMenu:
+    meaning: Four-icon hover action menu on a workflowChannelHeader (insert right, duplicate, delete, comments).
+  workflowChannelHoverActionsMenuInsertRightItem:
+    meaning: Insert-right icon button in workflowChannelHoverActionsMenu.
+  workflowChannelHoverActionsMenuDuplicateItem:
+    meaning: Duplicate icon button in workflowChannelHoverActionsMenu.
+  workflowChannelHoverActionsMenuDeleteItem:
+    meaning: Delete icon button in workflowChannelHoverActionsMenu.
+  workflowChannelHoverActionsMenuCommentsItem:
+    meaning: Comments icon button in workflowChannelHoverActionsMenu.
+  workflowRightSidebar:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarEditTab:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowEditChannelForm:
+    meaning: Right-sidebar edit form for one workflowChannel titled 'Edit node category'.
+  workflowEditChannelFormTitleField:
+    meaning: Single-line text field labeled 'Title' on workflowEditChannelForm for the channel title.
+  workflowEditChannelFormColorField:
+    meaning: Colour picker on workflowEditChannelForm for the channel colour.
+  workflowEditChannelFormDuplicateButton:
+    meaning: Duplicate button labeled 'Duplicate' on workflowEditChannelForm.
+  workflowEditChannelFormDeleteButton:
+    meaning: Delete button labeled 'Delete' on workflowEditChannelForm.
+  workflowChannelDeleteDialog:
+    meaning: Confirmation modal for deleting a workflowChannel.
+  workflowChannelDeleteDialogCancelButton:
+    meaning: Cancel control labeled 'Cancel' on workflowChannelDeleteDialog; dismisses without deleting.
+  workflowChannelDeleteDialogConfirmButton:
+    meaning: Confirm action on workflowChannelDeleteDialog.
+
+locatorMappings:
+  workflowView:
+    strategy: null
+    confidence: unresolved
+  workflowChannel:
+    strategy: "[data-column-id] on column header cell wrapper"
+    confidence: inferred
+  workflowChannelsHeaderRow:
+    strategy: "[data-test-id='columns-block']"
+    confidence: confirmed
+  workflowChannelHeader:
+    strategy: "{workflowChannelsHeaderRow} [data-column-id] inner header region (ColumnWrap / Inner)"
+    confidence: inferred
+  workflowChannelHeaderColorIndicator:
+    strategy: "{workflowChannelHeader} top border color stripe (Styled.Border)"
+    confidence: inferred
+  workflowChannelHeaderTitleText:
+    strategy: "{workflowChannelHeader} title span (Styled.Title — single line, overflow hidden, text-overflow ellipsis)"
+    confidence: inferred
+  workflowChannelHoverActionsMenu:
+    strategy: "{workflowChannelHeader} NodeHoverMenu cluster"
+    confidence: inferred
+  workflowChannelHoverActionsMenuInsertRightItem:
+    strategy: "{workflowChannelHoverActionsMenu} button with accessible name 'Insert right'"
+    confidence: inferred
+  workflowChannelHoverActionsMenuDuplicateItem:
+    strategy: "{workflowChannelHoverActionsMenu} button with accessible name 'Duplicate'"
+    confidence: inferred
+  workflowChannelHoverActionsMenuDeleteItem:
+    strategy: "{workflowChannelHoverActionsMenu} button with accessible name 'Delete'"
+    confidence: inferred
+  workflowChannelHoverActionsMenuCommentsItem:
+    strategy: "{workflowChannelHoverActionsMenu} button with accessible name 'Comments'"
+    confidence: inferred
+  workflowRightSidebar:
+    strategy: "[data-test-id='sidebar']"
+    confidence: confirmed
+  workflowEditChannelForm:
+    strategy: null
+    confidence: unresolved
+  workflowEditChannelFormTitleField:
+    strategy: null
+    confidence: unresolved
+  workflowEditChannelFormColorField:
+    strategy: null
+    confidence: unresolved
+  workflowChannelDeleteDialog:
+    strategy: "[aria-labelledby='delete-week-node-category-modal']"
+    confidence: inferred
+
+requirements:
+  - id: FR-CHAN-001
+    title: Open edit channel form
+
+    designEvidence:
+      - FIGMA-CHAN-OE-EDIT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowView
+      - workflowChannelsHeaderRow
+      - workflowChannelHeader
+      - workflowRightSidebar
+      - workflowEditChannelForm
+
+    preconditions:
+      - workflowView is open on the 'Workflow' sub-view
+      - at least one workflowChannel exists in workflowChannelsHeaderRow
+
+    trigger:
+      - user clicks workflowChannelHeader for a channel to select the channel
+      - user already has workflowRightSidebar open and clicks workflowChannelHeader for a channel
+
+    mainFlow:
+      - system opens workflowRightSidebar with workflowEditChannelForm for the identified workflowChannel, or updates workflowRightSidebar content to workflowEditChannelForm when the sidebar was already open
+
+    roleBehavior:
+      owner:
+        workflowEditChannelForm: editable
+      editor:
+        workflowEditChannelForm: editable
+      commenter:
+        workflowEditChannelForm: readOnly
+      viewer:
+        workflowEditChannelForm: readOnly
+      user:
+        workflowEditChannelForm: readOnly
+
+    acceptanceCriteria:
+      - given workflowRightSidebar is closed, when user clicks workflowChannelHeader for a channel, then workflowRightSidebar opens and shows workflowEditChannelForm
+      - given workflowRightSidebar is already open, when user clicks workflowChannelHeader for a channel, then workflowRightSidebar shows workflowEditChannelForm for that channel
+
+    openQuestions: []
+
+  - id: FR-CHAN-002
+    title: Channel header title and color display
+
+    designEvidence:
+      - FIGMA-CHAN-OE-EDIT
+
+    actors:
+      - system
+
+    uiObjects:
+      - workflowChannel
+      - workflowChannelsHeaderRow
+      - workflowChannelHeader
+      - workflowChannelHeaderColorIndicator
+      - workflowChannelHeaderTitleText
+      - workflowEditChannelForm
+
+    preconditions:
+      - workflow contains one or more workflowChannels in left-to-right order
+
+    trigger:
+      - workflow is newly created with default channels for its workflow type (blank create per tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml FR-WF-CREATE-STEPPER-005 or equivalent) and default channels are still unchanged
+      - any channel create, insert, duplicate, delete, or lateral reorder operation completes
+      - workflowEditChannelFormTitleField or workflowEditChannelFormColorField value is persisted
+
+    mainFlow:
+      - workflowChannelHeaderColorIndicator reflects the persisted colour of the workflowChannel on every workflowChannelHeader in workflowView (same persisted colour as workflowEditChannelFormColorField and workflowAddTabNodeCategoryItemColorBand per tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml FR-WF-ADD-003)
+      - when workflow is newly created and default channels for its workflow type are unchanged, workflowChannelsHeaderRow lists predefined workflowChannels with titles and colours exactly as enumerated in FR-WF-ADD-003 acceptanceCriteria for that type
+      - when workflowEditChannelFormTitleField has a non-empty persisted value, workflowChannelHeaderTitleText shows that persisted title on a single line
+      - when workflowEditChannelFormTitleField is left empty (no persisted title), workflowChannelHeaderTitleText and workflowEditChannelFormTitleField show the channel default display title — the predefined type display name for a default channel per FR-WF-ADD-003 (for example 'Lesson'), or literal 'Custom node category' for a user-inserted or otherwise custom channel without a type display name
+      - when the visible text of the title shown on workflowChannelHeaderTitleText (persisted title or channel default display title per above) exceeds the available header width, workflowChannelHeaderTitleText truncates with an ellipsis ('...'); the full title text remains available in workflowEditChannelFormTitleField per FR-CHAN-003
+      - title and colour for a newly inserted workflowChannel are defined in FR-CHAN-004 only
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given workflow is newly created, default channels are unchanged, and workflow type is activity, course, or program, workflowChannelsHeaderRow channel titles and workflowChannelHeaderColorIndicator colours match FR-WF-ADD-003 acceptanceCriteria for that type (Add tab list and canvas headers stay aligned)
+      - given workflowEditChannelFormTitleField is empty for a predefined default channel, workflowChannelHeaderTitleText and workflowEditChannelFormTitleField show that channel's predefined display name (for example 'Lesson' on a default course channel per FR-WF-ADD-003)
+      - given workflowEditChannelFormTitleField is empty for a custom channel (no predefined type display name), workflowChannelHeaderTitleText and workflowEditChannelFormTitleField show literal 'Custom node category'
+      - given a persisted channel title that is longer than the workflowChannelHeaderTitleText display width allows on one line, workflowChannelHeaderTitleText shows a truncated prefix followed by '...' and does not wrap to a second line
+      - when channel order changes via lateral reorder, workflowChannelsHeaderRow reflects the new left-to-right order without changing workflowChannel identity; node and edge behavior per FR-CHAN-008
+
+    openQuestions: []
+
+  - id: FR-CHAN-003
+    title: Edit channel title and color (auto-save and 50-character limit)
+
+    designEvidence:
+      - FIGMA-CHAN-OE-EDIT
+
+    actors:
+      - system
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowEditChannelForm
+      - workflowEditChannelFormTitleField
+      - workflowEditChannelFormColorField
+      - workflowChannelHeader
+      - workflowChannelHeaderTitleText
+      - workflowChannelHeaderColorIndicator
+
+    preconditions:
+      - workflowEditChannelForm is open for a workflowChannel
+
+    trigger:
+      - user types, pastes, or clears workflowEditChannelFormTitleField
+      - input would exceed the 50-character stored title limit
+      - user selects a new value in workflowEditChannelFormColorField
+
+    mainFlow:
+      - system prevents more than 50 characters in the stored channel title (by blocking extra input); validation is continuous or on attempted input past the limit
+      - when the title change is within the limit, system persists title and colour changes without an explicit save button on workflowEditChannelForm (title on change; colour on change)
+      - when the user clears workflowEditChannelFormTitleField, the persisted title is empty and workflowChannelHeaderTitleText reverts to the channel default display title per FR-CHAN-002 (predefined type name or 'Custom node category')
+      - workflowChannelHeaderTitleText and workflowChannelHeaderColorIndicator update to reflect persisted values after save; header title presentation (single line, ellipsis when overflow) per FR-CHAN-002
+      - when workflowEditChannelFormColorField changes for workflowChannel C, every workflowNode placed in workflowChannel C in any workflowSectionContainer updates workflowNodeBorder to that same colour
+
+    roleBehavior:
+      owner:
+        workflowEditChannelFormTitleField: editable
+        workflowEditChannelFormColorField: editable
+      editor:
+        workflowEditChannelFormTitleField: editable
+        workflowEditChannelFormColorField: editable
+      commenter:
+        workflowEditChannelFormTitleField: readOnly
+        workflowEditChannelFormColorField: readOnly
+      viewer:
+        workflowEditChannelFormTitleField: readOnly
+        workflowEditChannelFormColorField: readOnly
+      user:
+        workflowEditChannelFormTitleField: readOnly
+        workflowEditChannelFormColorField: readOnly
+
+    acceptanceCriteria:
+      - given workflowEditChannelFormTitleField at 50 characters, when owner or editor attempts further input, then no additional characters are stored (or equivalent design-safe behavior)
+      - when changes are within the 50-character limit, title persists without an explicit save control and workflowChannelHeader reflects the persisted title; workflowChannelHeaderTitleText truncates with '...' on one line when the title exceeds available header width per FR-CHAN-002
+      - given owner or editor clears workflowEditChannelFormTitleField, when auto-save completes, workflowChannelHeaderTitleText shows the channel default display title per FR-CHAN-002 (not a blank header)
+      - given owner or editor changes workflowEditChannelFormColorField for workflowChannel C, workflowChannelHeaderColorIndicator and workflowNodeBorder on every workflowNode in workflowChannel C across all workflowSectionContainers show that same colour
+      - given commenter, viewer, or user (published-access) role, workflowEditChannelFormTitleField and workflowEditChannelFormColorField are readOnly and no auto-save occurs on edit attempts
+
+    openQuestions: []
+
+  - id: FR-CHAN-004
+    title: Insert channel to the right (hover)
+
+    designEvidence:
+      - FIGMA-CHAN-OE-HOVER
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowView
+      - workflowChannelsHeaderRow
+      - workflowChannelHeader
+      - workflowChannelHoverActionsMenu
+      - workflowChannelHoverActionsMenuInsertRightItem
+
+    preconditions:
+      - target workflowChannel exists in workflowChannelsHeaderRow
+      - workflowChannelHoverActionsMenuInsertRightItem is active for the actor per FR-CHAN-007
+
+    trigger:
+      - user clicks workflowChannelHoverActionsMenuInsertRightItem on workflowChannelHoverActionsMenu visible on workflowChannelHeader hover per FR-CHAN-007
+
+    mainFlow:
+      - system inserts a new empty workflowChannel in workflowView immediately to the right of the target workflowChannel in workflowChannelsHeaderRow
+      - until the user persists a title, workflowChannelHeaderTitleText shows placeholder 'Custom node category' and workflowEditChannelFormTitleField shows placeholder 'Custom node category' (same label as workflowAddTabCustomNodeCategoryItem in tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml)
+      - workflowChannelHeaderColorIndicator and workflowEditChannelFormColorField for the new workflowChannel use default colour '#CFD8DC' until the user changes workflowEditChannelFormColorField
+      - no workflowNodes are created in the new workflowChannel
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given workflowChannel at index K in left-to-right order, when insert right succeeds, new workflowChannel is at K+1 and following channels shift right by one index
+      - given insert right succeeds, workflowChannelHeaderTitleText and workflowEditChannelFormTitleField show placeholder 'Custom node category' until the user persists a title
+      - given insert right succeeds, workflowChannelHeaderColorIndicator and workflowEditChannelFormColorField colour is '#CFD8DC'
+      - hover-menu visibility and insert-item actionability for owner, editor, commenter, viewer, and user follow FR-CHAN-007
+
+    openQuestions: []
+
+  # FR-CHAN-005: workflow_duplicate_channel_requirements_v1.yaml
+  # FR-CHAN-006: workflow_delete_channel_requirements_v1.yaml
+
+  - id: FR-CHAN-007
+    title: workflowChannelHoverActionsMenu — lockstep with FR-WF-NODE-005
+
+    designEvidence:
+      - FIGMA-CHAN-OE-HOVER
+      - FIGMA-WF-NODE-WORKFLOW-VIEW
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowView
+      - workflowChannelsHeaderRow
+      - workflowChannelHeader
+      - workflowChannelHoverActionsMenu
+      - workflowChannelHoverActionsMenuInsertRightItem
+      - workflowChannelHoverActionsMenuDuplicateItem
+      - workflowChannelHoverActionsMenuDeleteItem
+      - workflowChannelHoverActionsMenuCommentsItem
+
+    preconditions:
+      - workflowView is open on the 'Workflow' sub-view
+
+    trigger:
+      - system renders workflowChannelHoverActionsMenu on workflowChannelHeader hover
+      - user clicks an item in workflowChannelHoverActionsMenu
+
+    mainFlow:
+      - on workflowChannelHeader hover in workflowView, workflowChannelHoverActionsMenu is shown, kept visible, and dismissed per FR-WF-NODE-004 using this node→channel name mapping — workflowNodeHoverActionsMenu → workflowChannelHoverActionsMenu; workflowNode → workflowChannelHeader (channel headers are not subject to workflowNode move-drag suppression in FR-WF-NODE-004); workflowNodeHoverActionsMenuInsertItem → workflowChannelHoverActionsMenuInsertRightItem; workflowNodeHoverActionsMenuDuplicateItem → workflowChannelHoverActionsMenuDuplicateItem; workflowNodeHoverActionsMenuDeleteItem → workflowChannelHoverActionsMenuDeleteItem; workflowNodeHoverActionsMenuCommentsItem → workflowChannelHoverActionsMenuCommentsItem
+      - while workflowChannelHoverActionsMenu is visible, each menu item's actionability for the actor follows FR-WF-NODE-005 using the same mapping
+      - when user clicks workflowChannelHoverActionsMenuInsertRightItem, system runs FR-CHAN-004; when user clicks workflowChannelHoverActionsMenuDuplicateItem, system runs FR-CHAN-005; when user clicks workflowChannelHoverActionsMenuDeleteItem, system runs FR-CHAN-006; when user clicks workflowChannelHoverActionsMenuCommentsItem, system runs FR-WF-COMMENTS-003
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - channel hover-menu visibility and per-item active, readOnly, and notRendered states match FR-WF-NODE-004 and FR-WF-NODE-005 when the node→channel name mapping in this FR's mainFlow is applied
+
+    openQuestions: []
+
+  - id: FR-CHAN-008
+    title: Lateral reorder of workflowChannels — nodes and edges
+
+    designEvidence: []
+
+    actors:
+      - system
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowView
+      - workflowChannelsHeaderRow
+      - workflowChannel
+      - workflowChannelHeader
+      - workflowSectionContainer
+      - workflowSectionRow
+      - workflowNode
+      - workflowEdge
+
+    preconditions:
+      - workflow contains at least two workflowChannels in workflowChannelsHeaderRow
+      - at least one workflowNode is assigned to the workflowChannel being reordered
+
+    trigger:
+      - owner or editor completes a lateral reorder of workflowChannels in workflowChannelsHeaderRow (drag workflowChannelHeader to a new left-to-right position)
+
+    mainFlow:
+      - workflowChannelsHeaderRow reflects the new left-to-right channel order per FR-CHAN-002; each workflowChannel keeps the same identity (only its index in the row changes)
+      - every workflowNode assigned to the reordered workflowChannel remains assigned to that same workflowChannel; each such workflowNode renders in the column's new horizontal position in every workflowSectionContainer (workflowSectionRow unchanged — nodes do not change vertical row)
+      - existing workflowEdges between workflowNodes are preserved — source and target workflowNode identities and edge metadata are unchanged; edge lines follow the updated column layout
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given workflowChannel C is moved from index K to index M by lateral reorder, every workflowNode assigned to C before the reorder is still assigned to C after the reorder and appears in column position M in every workflowSectionContainer where it was present (same workflowSectionRow as before)
+      - given owner or editor reorders workflowChannels laterally, no workflowNode is removed or created, no workflowNode changes workflowChannel assignment, and no workflowSectionRow is inserted or removed solely as a result of the reorder
+      - given owner or editor reorders workflowChannels laterally, every workflowEdge that existed before the reorder still exists with the same source workflowNode, target workflowNode, and metadata
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-CHAN-OE-EDIT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=1937-26971&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-CHAN-OE-HOVER
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=1937-26971&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-CHAN-DEL-WARN
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5645-53183&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-NODE-WORKFLOW-VIEW
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=1853-18902&t=6weYZA8hUf6tm7DF-1

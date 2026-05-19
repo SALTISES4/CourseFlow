@@ -1,0 +1,149 @@
+# Normalized requirements: delete an existing workflowChannel ('Workflow' view)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Channels ▸ Delete — lines 969–970)
+# Application code evidence: react/src/components/views/WorkflowView/WorkflowEditView/components/ColumnsHeader/Cell/HoverMenu/index.tsx; react/src/components/common/dialog/Workflow/DeleteNodeCategory/index.tsx; react/src/redux/slices/column.slice.ts (columnDeleteSelf)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml (canonical channel uiObjects including workflowChannelDeleteDialog*, workflowChannelHoverActionsMenuDeleteItem, workflowEditChannelFormDeleteButton; FR-CHAN-001, FR-CHAN-007); tests/docs/requirements/original/workflow_duplicate_channel_requirements_v1.yaml (duplicate channel — FR-CHAN-005)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - current route is '/workflow/{id}/workflow'
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+  - workflow always retains at least one workflowChannel; deleting the sole remaining channel is not permitted (FR-CHAN-006)
+
+uiObjectDefinitions:
+  workflowView:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml.
+  workflowChannel:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowChannelsHeaderRow:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowChannelHeader:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowChannelHoverActionsMenu:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowChannelHoverActionsMenuDeleteItem:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowRightSidebar:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowEditChannelForm:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowEditChannelFormDeleteButton:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowChannelDeleteDialog:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowChannelDeleteDialogCancelButton:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowChannelDeleteDialogConfirmButton:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml.
+  workflowNode:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
+  workflowEdge:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edge_requirements_v1.yaml.
+
+locatorMappings:
+  workflowView:
+    strategy: null
+    confidence: unresolved
+  workflowChannel:
+    strategy: "[data-column-id]"
+    confidence: inferred
+  workflowChannelHoverActionsMenu:
+    strategy: "{workflowChannelHeader} NodeHoverMenu cluster"
+    confidence: inferred
+  workflowRightSidebar:
+    strategy: "[data-test-id='sidebar']"
+    confidence: confirmed
+  workflowChannelDeleteDialog:
+    strategy: "[aria-labelledby='delete-week-node-category-modal']"
+    confidence: inferred
+  workflowEditChannelFormDeleteButton:
+    strategy: null
+    confidence: unresolved
+
+requirements:
+  - id: FR-CHAN-006
+    title: Delete channel
+
+    designEvidence:
+      - FIGMA-CHAN-OE-HOVER
+      - FIGMA-CHAN-OE-EDIT
+      - FIGMA-CHAN-DEL-WARN
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowView
+      - workflowChannelsHeaderRow
+      - workflowChannelHeader
+      - workflowChannelHoverActionsMenu
+      - workflowChannelHoverActionsMenuDeleteItem
+      - workflowRightSidebar
+      - workflowEditChannelForm
+      - workflowEditChannelFormDeleteButton
+      - workflowChannelDeleteDialog
+      - workflowChannelDeleteDialogCancelButton
+      - workflowChannelDeleteDialogConfirmButton
+      - workflowNode
+      - workflowEdge
+
+    preconditions:
+      - workflowView contains a target workflowChannel in workflowChannelsHeaderRow
+      - when workflowChannelsHeaderRow contains exactly one workflowChannel, workflowChannelHoverActionsMenuDeleteItem is inactive and workflowEditChannelFormDeleteButton is readOnly for every actor for whom those controls are rendered
+      - when workflowChannelsHeaderRow contains at least two workflowChannels, for the hover-menu path, workflowChannelHoverActionsMenuDeleteItem is active for the actor per this FR roleBehavior and FR-CHAN-007 lockstep with FR-WF-NODE-005 in tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml
+      - when workflowChannelsHeaderRow contains at least two workflowChannels, for the sidebar path, workflowEditChannelFormDeleteButton is active for the actor per this FR roleBehavior
+
+    trigger:
+      - user clicks workflowChannelHoverActionsMenuDeleteItem on workflowChannelHoverActionsMenu visible on workflowChannelHeader hover
+      - user clicks workflowEditChannelFormDeleteButton on workflowEditChannelForm in workflowRightSidebar
+
+    mainFlow:
+      - when workflowChannelsHeaderRow contains exactly one workflowChannel, workflowChannelHoverActionsMenuDeleteItem is inactive and workflowEditChannelFormDeleteButton is readOnly for every actor for whom those controls are rendered (overrides active on both delete controls in roleBehavior below for owner and editor); workflowChannelDeleteDialog does not open from either entry path
+      - when workflowChannelsHeaderRow contains at least two workflowChannels, delete control actionability follows roleBehavior below; system identifies the target workflowChannel from workflowChannelHoverActionsMenuDeleteItem on that channel's workflowChannelHeader, or from workflowEditChannelForm open in workflowRightSidebar for that workflowChannel
+      - when workflowChannelsHeaderRow contains at least two workflowChannels and the actor clicks an active workflowChannelHoverActionsMenuDeleteItem or an active workflowEditChannelFormDeleteButton per roleBehavior, system opens workflowChannelDeleteDialog for either entry path
+      - workflowChannelDeleteDialog body warns that deleting the node category will delete all associated nodes
+      - if user clicks workflowChannelDeleteDialogCancelButton, workflowChannelDeleteDialog closes and workflowView is unchanged (target workflowChannel, its assigned workflowNodes, workflowEdges, and channel order unchanged)
+      - if user clicks workflowChannelDeleteDialogConfirmButton, system removes the target workflowChannel from workflowChannelsHeaderRow and removes every workflowNode assigned to that workflowChannel from every workflowSectionContainer; every workflowEdge whose source or target was a removed workflowNode is removed
+
+    roleBehavior:
+      owner:
+        workflowChannelHoverActionsMenuDeleteItem: active
+        workflowEditChannelFormDeleteButton: active
+      editor:
+        workflowChannelHoverActionsMenuDeleteItem: active
+        workflowEditChannelFormDeleteButton: active
+      commenter:
+        workflowChannelHoverActionsMenuDeleteItem: readOnly
+        workflowEditChannelFormDeleteButton: readOnly
+      viewer:
+        workflowChannelHoverActionsMenuDeleteItem: notRendered
+        workflowEditChannelFormDeleteButton: readOnly
+      user:
+        workflowChannelHoverActionsMenuDeleteItem: notRendered
+        workflowEditChannelFormDeleteButton: readOnly
+
+    acceptanceCriteria:
+      - given workflowChannelsHeaderRow contains exactly one workflowChannel and actor is owner or editor, workflowChannelHoverActionsMenuDeleteItem is inactive, workflowEditChannelFormDeleteButton is readOnly, workflowChannelDeleteDialog does not open from either entry path, and that workflowChannel remains in workflowView
+      - given workflowChannelsHeaderRow contains exactly one workflowChannel and actor is commenter with workflowChannelHoverActionsMenu visible per FR-CHAN-007, workflowChannelHoverActionsMenuDeleteItem is inactive and workflowEditChannelFormDeleteButton is readOnly
+      - given workflowChannelDeleteDialog is open, target workflowChannel is not removed until user clicks workflowChannelDeleteDialogConfirmButton
+      - when user clicks workflowChannelDeleteDialogCancelButton, workflowChannelDeleteDialog closes and workflowView is unchanged
+      - given workflowChannelsHeaderRow contains at least two workflowChannels and confirmed delete via workflowChannelDeleteDialogConfirmButton labeled 'Delete node category', target workflowChannel is removed from workflowChannelsHeaderRow, at least one workflowChannel remains, no workflowNode remains assigned to the deleted channel in any workflowSectionContainer, and no workflowEdge references a removed workflowNode
+      - given workflowChannelsHeaderRow contains at least two workflowChannels and actor is commenter with workflowChannelHoverActionsMenu visible per FR-CHAN-007, workflowChannelHoverActionsMenuDeleteItem is readOnly and workflowChannelDeleteDialog does not open when that control is clicked
+      - given actor is viewer or user (published-access), workflowChannelHoverActionsMenu is not rendered on workflowChannelHeader hover per FR-CHAN-007 lockstep with FR-WF-NODE-004, so workflowChannelHoverActionsMenuDeleteItem is not reachable and workflowChannelDeleteDialog cannot be opened via the hover path
+
+    openQuestions:
+      - workflowEditChannelFormDeleteButton is rendered without onClick in react/src/components/pages/Workspace/Workflow/Sidebar/components/EditTab/components/EditColumn/index.tsx — confirm intended sidebar delete entry path wiring before tests target that path.
+      - Confirm backend/redux cascade when columnDeleteSelf runs — current column.slice deleteSelf removes the channel entity from workflow.columns order only; verify whether orphaned workflowNodes are purged server-side or requires additional reducer logic before automated tests assert node-and-edge removal on confirm.
+      - When workflowChannelsHeaderRow contains exactly one workflowChannel, implement inactive on workflowChannelHoverActionsMenuDeleteItem and readOnly on workflowEditChannelFormDeleteButton per this FR; no sole-channel guard found in ColumnsHeader/HoverMenu or EditColumn in current code.
+
+designEvidenceLinkTable:
+  - key: FIGMA-CHAN-OE-HOVER
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=1937-26971&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-CHAN-OE-EDIT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=1937-26971&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-CHAN-DEL-WARN
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5645-53183&t=6weYZA8hUf6tm7DF-1

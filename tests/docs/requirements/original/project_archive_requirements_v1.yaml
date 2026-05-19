@@ -3,22 +3,23 @@
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
 # Cross-reference:
 #   - tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (FR-CAB-003 entry from contextActionBarOverflowItemArchiveProject)
-#   - tests/docs/requirements/original/library_page_requirements_v1.yaml (archived project cards, restore rules—FR-LIB-006 and related)
+#   - tests/docs/requirements/original/card_content_requirements_v1.yaml (archived projectCard browse—FR-CARD-006)
+#   - tests/docs/requirements/original/library_page_requirements_v1.yaml (archived project restore/delete on 'My library'—FR-LIB-006)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
 
 uiObjectDefinitions:
   contextActionBarOverflowItemArchiveProject:
-    meaning: Canonical overflow menu row labeled 'Archive project' on project routes; defined in context_action_bar_requirements_v1.yaml FR-CAB-003; Owner-only actionable.
+    meaning: Canonical definition in tests/docs/requirements/original/context_action_bar_requirements_v1.yaml.
   archiveProjectConfirmationModal:
-    meaning: Modal dialog presented after Owner clicks contextActionBarOverflowItemArchiveProject; layout, title, body copy, and actions match FIGMA-PROJ-ARCH-MODAL (authoritative user-visible copy).
+    meaning: Modal dialog presented after Owner clicks contextActionBarOverflowItemArchiveProject
   archiveProjectConfirmationModalCancelButton:
-    meaning: Secondary control on archiveProjectConfirmationModal that dismisses the modal without archiving the project; user-visible label matches FIGMA-PROJ-ARCH-MODAL.
+    meaning: Cancel action on archiveProjectConfirmationModal.
   archiveProjectConfirmationModalConfirmButton:
-    meaning: Primary destructive control on archiveProjectConfirmationModal that confirms archiving the project and its child workflows; user-visible label matches FIGMA-PROJ-ARCH-MODAL.
+    meaning: Confirm action on archiveProjectConfirmationModal.
   globalMessageSnackbar:
-    meaning: Global snackbar for outcomes after Owner confirms archiveProjectConfirmationModal. On successful archive when the user lands on 'My library' at pathname /library, user-visible success copy is exactly 'Your project has been successfully archived'. On failed confirm (project remains non-archived), user-visible error copy is exactly 'We encountered an issue and your project was not archived'.
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_header_requirements_v1.yaml.
 
 locatorMappings:
   contextActionBarOverflowItemArchiveProject:
@@ -131,19 +132,22 @@ requirements:
 
     mainFlow:
       - system closes archiveProjectConfirmationModal after successful archive
-      - project and its child workflows are archived; if the project was published at the time of archiving, it becomes unpublished and is not discoverable in the 'Explore' section
+      - project and its child workflows are archived; project and each child workflow are removed from favourites
+      - if the project was published at the time of archiving, it becomes unpublished and is not discoverable in the 'Explore' section
       - application navigates the user to 'My library' at route pathname /library (archived projects are not browsable on project routes)
       - when the user lands on /library after successful archive, system shows globalMessageSnackbar with user-visible copy 'Your project has been successfully archived'
-      - archived project browse restriction and Owner-only restore affordances on projectCard follow library_page_requirements_v1.yaml FR-LIB-006 (and related acceptance criteria for archived projectCard rows)
+      - archived project browse restriction on projectCard follows card_content_requirements_v1.yaml FR-CARD-006; Owner-only restore and delete affordances on 'My library' follow library_page_requirements_v1.yaml FR-LIB-006
 
     roleBehavior: {}
 
     acceptanceCriteria:
       - given successful confirm, archiveProjectConfirmationModal is not visible
+      - given successful confirm, project is removed from favourites
+      - given successful confirm, each child workflow of the project is removed from favourites
       - given successful confirm, current route pathname is /library ('My library' surface per library_page_requirements_v1.yaml FR-LIB-001)
       - given successful confirm, globalMessageSnackbar is visible with user-visible copy exactly 'Your project has been successfully archived'
       - given project was published before archive, after confirm it is treated as unpublished for 'Explore' visibility per source requirements
-      - given Owner is on 'My library' at /library after confirm and uses archive filter behaviour that lists archived projects, archived project appears per FR-LIB-006 contract for archived projectCard rows where applicable
+      - given Owner is on 'My library' at /library after confirm and uses archive filter behaviour that lists archived projects, projectCard for each archived project conforms to FR-CARD-006 where applicable
 
     openQuestions: []
 

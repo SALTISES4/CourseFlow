@@ -1,0 +1,133 @@
+# Normalized requirements: workflow header (header, tabs, favourite)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Workflow section: header/navigation)
+# Application code evidence: react/src/components/pages/Workspace/Workflow/WorkflowTabs/hooks/useWorkflowTabs.tsx; react/src/components/pages/Workspace/Workflow/index.tsx
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/original/workflow_overview_requirements_v1.yaml (overview content); tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (workflow-level action bar controls); tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml (edit flow launched from context action bar); tests/docs/requirements/original/card_content_requirements_v1.yaml (FR-CARD-005 favourite snackbar copy for workflowHeaderFavouriteToggle)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+
+uiObjectDefinitions:
+  workflowHeader:
+    meaning: Header region showing workflow title, workflowHeaderFavouriteToggle, and workflowViewTabSelector.
+  workflowTitle:
+    meaning: Primary workflow title shown in workflowHeader.
+  workflowHeaderFavouriteToggle:
+    meaning: Favourite toggle control in workflowHeader.
+  workflowViewTabSelector:
+    meaning: Tab selector in workflowHeader for Overview, Workflow, and Outcomes views.
+  globalMessageSnackbar:
+    meaning: Application-wide transient snackbar for async success and error feedback.
+
+locatorMappings:
+  workflowHeader:
+    strategy: "Workflow header with title + favourite toggle + tab selector"
+    confidence: inferred
+  workflowTitle:
+    strategy: "{workflowHeader} heading text for current workflow title"
+    confidence: inferred
+  workflowHeaderFavouriteToggle:
+    strategy: "{workflowHeader} favourite toggle control for current workflow"
+    confidence: inferred
+  workflowViewTabSelector:
+    strategy: "{workflowHeader} tab selector with tabs 'Overview', 'Workflow', and 'Outcomes'"
+    confidence: inferred
+  globalMessageSnackbar:
+    strategy: null
+    confidence: unresolved
+
+requirements:
+  - id: FR-WF-HEADER-001
+    title: Workflow header and tab selector
+
+    designEvidence:
+      - FIGMA-WF-OV-ACTIVITY-OWNER-EDITOR
+      - FIGMA-WF-OV-COURSE-OWNER-EDITOR
+      - FIGMA-WF-OV-PROGRAM-OWNER-EDITOR
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - workflowHeader
+      - workflowTitle
+      - workflowViewTabSelector
+
+    preconditions:
+      - user navigates to an existing workflow
+      - if actor is user (published-access, no explicit contributor role), parent project is published
+
+    trigger:
+      - user opens a workflow and uses workflowViewTabSelector
+
+    mainFlow:
+      - workflow view renders workflowHeader with workflowTitle for the current workflow
+      - "workflowViewTabSelector provides exactly three tabs: 'Overview', 'Workflow', and 'Outcomes'"
+      - selecting 'Overview' shows '/workflow/{id}/overview'
+      - selecting 'Workflow' shows '/workflow/{id}/workflow'
+      - selecting 'Outcomes' shows '/workflow/{id}/outcomes'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given workflowHeader is visible, workflowTitle is visible
+      - given actor is user (published-access, no explicit contributor role), workflowHeader is visible only when the parent project is published
+      - given workflowHeader is visible, workflowViewTabSelector shows tabs 'Overview', 'Workflow', and 'Outcomes'
+      - given path is '/workflow/{id}/overview', tab 'Overview' is active
+      - given path is '/workflow/{id}/workflow', tab 'Workflow' is active
+      - given path is '/workflow/{id}/outcomes', tab 'Outcomes' is active
+
+    openQuestions: []
+
+  - id: FR-WF-HEADER-002
+    title: Add and remove workflow favourite via workflowHeader
+
+    designEvidence:
+      - FIGMA-WF-OV-ACTIVITY-OWNER-EDITOR
+      - FIGMA-WF-OV-COURSE-OWNER-EDITOR
+      - FIGMA-WF-OV-PROGRAM-OWNER-EDITOR
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - workflowHeader
+      - workflowHeaderFavouriteToggle
+      - globalMessageSnackbar
+
+    preconditions:
+      - workflowHeaderFavouriteToggle is visible
+      - if actor is user (published-access, no explicit contributor role), parent project is published
+
+    trigger:
+      - user clicks workflowHeaderFavouriteToggle
+
+    mainFlow:
+      - when user clicks workflowHeaderFavouriteToggle, system attempts to update favourite state for the current workflow
+      - on successful favourite-state update, workflowHeaderFavouriteToggle visual state reflects the new favourite state and globalMessageSnackbar success copy conforms to card_content_requirements_v1.yaml FR-CARD-005
+      - on failed favourite-state update, workflowHeaderFavouriteToggle visual state is unchanged and globalMessageSnackbar error copy conforms to card_content_requirements_v1.yaml FR-CARD-005
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given actor is user (published-access, no explicit contributor role), workflowHeaderFavouriteToggle is visible only when the parent project is published
+      - given user clicks workflowHeaderFavouriteToggle and favourite-state update succeeds, workflowHeaderFavouriteToggle visual state reflects the new state and globalMessageSnackbar copy conforms to FR-CARD-005
+      - given user clicks workflowHeaderFavouriteToggle and favourite-state update fails, workflowHeaderFavouriteToggle visual state is unchanged and globalMessageSnackbar copy conforms to FR-CARD-005
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-WF-OV-ACTIVITY-OWNER-EDITOR
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-94010&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-OV-COURSE-OWNER-EDITOR
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-103751&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-OV-PROGRAM-OWNER-EDITOR
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-108254&t=6weYZA8hUf6tm7DF-1

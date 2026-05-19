@@ -16,8 +16,13 @@ import {
 
 /**
  * Playwright e2e — FR-SEC-001 … FR-SEC-006
- * Business logic: tests/docs/Original Requirements/Edit-Section_Requirements_v1.md
- * Bracket resolution: tests/docs/Mapping FR UI.md (LOCATOR_CONSTANT + literal fallbacks)
+ * Normalized requirements:
+ *   tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml (FR-SEC-001–004, FR-SEC-007–009)
+ *   tests/docs/requirements/original/workflow_duplicate_section_requirements_v1.yaml (FR-SEC-005)
+ *   tests/docs/requirements/original/workflow_delete_section_requirements_v1.yaml (FR-SEC-006)
+ * Canonical section uiObjects and locators: tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml
+ * Source archive: tests/docs/__ARCHIVE/edit_section_requirements_v1.md
+ * This spec file name reflects FR-SEC-001–006 coverage; FR-SEC-007–009 are in the same edit YAML.
  *
  * Tooling note (protocol): Figma MCP and Playwright MCP were not available in the
  * generation environment — disabled/hidden assertions follow FR text only; re-check
@@ -152,7 +157,7 @@ test.describe('Edit Section — FR-SEC-001 to FR-SEC-006', () => {
   /**
    * FR-SEC-003 Edit Section Title — § FR-SEC-003
    * (auto-save, no Save button, header reflects title).
-   * Viewer/Commenter AC references FR-SEC-007 — exercised only when PLAYWRIGHT_TEST_ROLE is set.
+   * Viewer/Commenter AC references FR-SEC-003 roleBehavior — exercised only when PLAYWRIGHT_TEST_ROLE is set.
    */
   test('FR-SEC-003: Owner/Editor — valid title persists without Save; [Section header] updates', async ({
     page,
@@ -184,7 +189,7 @@ test.describe('Edit Section — FR-SEC-001 to FR-SEC-006', () => {
     });
   });
 
-  test('FR-SEC-003: Given Viewer or Commenter — [Title] not editable (see FR-SEC-007)', async ({ page }) => {
+  test('FR-SEC-003: Given Viewer or Commenter — [Title] not editable', async ({ page }) => {
     test.skip(
       process.env.PLAYWRIGHT_TEST_ROLE !== 'viewer' &&
         process.env.PLAYWRIGHT_TEST_ROLE !== 'commenter',

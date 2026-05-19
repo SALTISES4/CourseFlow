@@ -10,7 +10,7 @@ documentPreconditions:
 
 uiObjectDefinitions:
   notificationsPage:
-    meaning: Full page rendered at route '/user/notifications' where user reviews notifications and performs notification actions.
+    meaning: Notifications inbox page listing user notification rows.
   notificationsTitle:
     meaning: Page title on notificationsPage with text 'Notifications'.
   notificationsLoadingState:
@@ -18,11 +18,11 @@ uiObjectDefinitions:
   notificationsErrorState:
     meaning: Error presentation shown when notifications query fails.
   notificationsEmptyStateMessage:
-    meaning: Empty-state message shown when there are no notifications; current copy is 'You have no notifications yet.'.
+    meaning: Empty-state message when notificationsPage has no rows.
   notificationsList:
     meaning: List region containing notification rows when notifications exist.
   notificationListItem:
-    meaning: One row in notificationsList; composed of notificationListItemUserAvatar, notificationListItemUserName, notificationListItemRelativeTimestamp, notificationListItemContent, and notificationListItemUnreadDot. Reused canonical object naming from top_navigation_requirements_v1.yaml.
+    meaning: One row in notificationsList
   notificationListItemUserAvatar:
     meaning: Visual representing the acting user; for now shows initials only.
   notificationListItemUserName:
@@ -34,17 +34,17 @@ uiObjectDefinitions:
   notificationListItemUnreadDot:
     meaning: Dot indicator shown for unread notificationListItem instances.
   notificationRowActionTrigger:
-    meaning: Icon-only trigger on notificationListItem (three-dots icon with no visible text label) that opens notificationActionsMenu.
+    meaning: Per-row action menu trigger on notificationsPage.
   notificationActionsMenu:
     meaning: Context menu anchored to notificationRowActionTrigger with row-level actions.
   notificationMenuMarkAsReadItem:
-    meaning: Menu item labeled 'Mark as read' in notificationActionsMenu; shown only for unread rows when notifications are not globally marked read in current page state.
+    meaning: Menu item labeled 'Mark as read' in notificationActionsMenu
   notificationMenuDeleteItem:
     meaning: Menu item labeled 'Delete' in notificationActionsMenu.
   markAllAsReadLink:
     meaning: Header link labeled 'Mark all as read' that marks notifications as read in current page state.
   notificationsPagination:
-    meaning: Pagination control below notificationsList for page navigation when list has more than one page at the current page size.
+    meaning: Pagination control on notificationsPage.
   notificationsListQuery:
     meaning: Data query to '/notification/list' returning notification items and unread count metadata.
   notificationMarkAllReadRequest:
