@@ -31,6 +31,7 @@ export interface SectionCellEmptyType extends SectionCellShared {
 
 export interface SectionCellNodeType extends SectionCellShared {
   nodeId: string
+  graphUuid: string
   type: SectionCellType.NODE
   onClick: CellClickCallbackFn
 }

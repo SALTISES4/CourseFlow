@@ -54,7 +54,9 @@ const useWorkflowTabs = (
             route: CFRoutes.WORKFLOW_OUTCOME_EDIT,
             relRoute: RelativeRoutes.OUTCOME_EDIT,
             label: _t('Outcomes'),
-            content: <OutcomeEditView />,
+            content: (
+              <OutcomeEditView graphUuid={workflow.item.graphUuid} />
+            ),
             allowedTabs: workflow.item.workflowType == 'program' ? [3] : [2, 3] // @todo enum
           }
         ]

@@ -94,6 +94,18 @@ export interface TagEntity {
   translationPlural: string
 }
 
+export interface OutcomeEntity {
+  uuid: ResourceUuid
+  graphUuid: GraphUuid
+  parentUuid: ResourceUuid | null
+  order: number
+  title: string
+  description: string
+  code: string
+  tagIds: number[]
+  threadUuid: ResourceUuid | null
+}
+
 export interface GraphResourceLoadState {
   graph: GraphLoadStatus
   sections: GraphLoadStatus
@@ -101,6 +113,7 @@ export interface GraphResourceLoadState {
   nodes: GraphLoadStatus
   edges: GraphLoadStatus
   tags: GraphLoadStatus
+  outcomes: GraphLoadStatus
 }
 
 export interface GraphUiState {
@@ -140,6 +153,11 @@ export type GraphOpType =
   | 'changeNodeMeta'
   | 'linkNodeOutcome'
   | 'unlinkNodeOutcome'
+  | 'createOutcome'
+  | 'updateOutcome'
+  | 'deleteOutcome'
+  | 'duplicateOutcome'
+  | 'moveOutcome'
 
 export type GraphOpStatus = 'pending' | 'acked' | 'failed'
 
@@ -183,6 +201,12 @@ export interface GraphDeltaSections {
   deleted: ResourceUuid[]
 }
 
+export interface GraphDeltaOutcomes {
+  created: OutcomeEntity[]
+  updated: OutcomeEntity[]
+  deleted: ResourceUuid[]
+}
+
 export interface GraphMutationEnvelope {
   graphUuid: GraphUuid
   revisionId: number
@@ -192,6 +216,7 @@ export interface GraphMutationEnvelope {
     channels: GraphDeltaChannels
     sections: GraphDeltaSections
     tags: GraphDeltaTags
+    outcomes: GraphDeltaOutcomes
   }
   meta: {
     triggeredBy: string
@@ -348,4 +373,47 @@ export interface UnlinkNodeOutcomeInput {
   graphUuid: GraphUuid
   nodeUuid: ResourceUuid
   outcomeUuid: ResourceUuid
+}
+
+export interface OutcomeMetaPatch {
+  title?: string
+  description?: string
+  code?: string
+  tagIds?: number[]
+}
+
+export interface CreateOutcomeInput {
+  graphUuid: GraphUuid
+  parentUuid?: ResourceUuid | null
+  insertIndex?: number
+  title?: string
+  description?: string
+  code?: string
+  tagIds?: number[]
+}
+
+export interface UpdateOutcomeInput {
+  graphUuid: GraphUuid
+  outcomeUuid: ResourceUuid
+  meta: OutcomeMetaPatch
+}
+
+export interface DeleteOutcomeInput {
+  graphUuid: GraphUuid
+  outcomeUuid: ResourceUuid
+}
+
+export interface DuplicateOutcomeInput {
+  graphUuid: GraphUuid
+  outcomeUuid: ResourceUuid
+}
+
+export interface MoveOutcomeInput {
+  graphUuid: GraphUuid
+  outcomeUuid: ResourceUuid
+  parentUuid?: ResourceUuid | null
+  parentUuidProvided?: boolean
+  insertIndex?: number
+  beforeUuid?: ResourceUuid
+  afterUuid?: ResourceUuid
 }

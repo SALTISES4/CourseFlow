@@ -69,7 +69,7 @@ const Handles = ({ nodeUuid, nodeRef, diameter = 10 }: PropsType) => {
       }
 
       const onMouseUp = () => {
-        dispatch(dragEndThunk())
+        void dispatch(dragEndThunk())
         window.removeEventListener('mousemove', onMouseMove)
         window.removeEventListener('mouseup', onMouseUp)
       }

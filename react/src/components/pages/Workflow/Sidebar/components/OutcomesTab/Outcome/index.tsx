@@ -1,43 +1,68 @@
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import * as Styled from '@cf/components/views/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import * as StyledOutcomes from '@cf/components/views/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
+import type { GraphUuid, OutcomeEntity } from '@cf/features/graph/state/model/types'
 import {
   getPrefixPath,
   selectOutcomeById,
   selectOutcomeChildrenById
-} from '@cf/redux/selectors/outcomes.selector'
-import {
-  Outcome as OutcomeType,
-  setHighlighted
-} from '@cf/redux/slices/outcomes.slice'
+} from '@cf/features/graph/state/selectors/outcomes.selectors'
+import { outcomeUiActions } from '@cf/features/graph/state/slices/outcomeUi.slice'
 import { RootState } from '@cf/redux/store'
-import { _t } from '@cf/utility/Utility.class'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import OutcomeHeader from './Header'
 
-export const Outcome = ({ id }: { uuid: string }) => {
+export const Outcome = ({
+  graphUuid,
+  uuid
+}: {
+  graphUuid: GraphUuid
+  uuid: string
+}) => {
   const outcome = useSelector((state: RootState) =>
-    selectOutcomeById(state, id)
+    selectOutcomeById(state, uuid)
   )
+
+  if (!outcome) {
+    return null
+  }
 
   return (
     <StyledOutcomes.OutcomeGroup sx={{ mt: '0.5em !important' }}>
       <StyledOutcomes.OutcomeGroupItem>
-        <OutcomeBlock {...outcome} />
+        <OutcomeBlock graphUuid={graphUuid} {...outcome} />
       </StyledOutcomes.OutcomeGroupItem>
     </StyledOutcomes.OutcomeGroup>
   )
 }
 
-const OutcomeBlock = ({ id, title, children, level }: OutcomeType) => {
+const OutcomeBlock = ({
+  graphUuid,
+  uuid,
+  title
+}: OutcomeEntity & { graphUuid: GraphUuid }) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
-  const prefix = useSelector((state: RootState) => getPrefixPath(state, id))
+  const prefix = useSelector((state: RootState) =>
+    getPrefixPath(state, graphUuid, uuid)
+  )
+  const level = useSelector((state: RootState) => {
+    let depth = 0
+    let current = state.graph.canonical.outcomes.entities[uuid]
+    while (current?.parentUuid) {
+      depth += 1
+      current = state.graph.canonical.outcomes.entities[current.parentUuid]
+    }
+    return depth
+  })
+  const childOutcomes = useSelector((state: RootState) =>
+    selectOutcomeChildrenById(state, graphUuid, uuid)
+  )
   const highlighted = useSelector(
-    (state: RootState) => state.outcomes.highlighted
+    (state: RootState) => state.graph.outcomeUi.highlightedOutcomeUuids
   )
   const [state, setState] = useState({
     collapsed: true,
@@ -45,8 +70,8 @@ const OutcomeBlock = ({ id, title, children, level }: OutcomeType) => {
   })
 
   const onClick = useCallback(() => {
-    dispatch(setHighlighted(id))
-  }, [dispatch, id])
+    dispatch(outcomeUiActions.toggleHighlighted(uuid))
+  }, [dispatch, uuid])
 
   useEffect(() => {
     const el = dragHandleRef.current
@@ -57,7 +82,7 @@ const OutcomeBlock = ({ id, title, children, level }: OutcomeType) => {
 
     return draggable({
       element: el,
-      getInitialData: () => ({ id, type: 'link_outcome' }),
+      getInitialData: () => ({ uuid, type: 'link_outcome', level }),
       onDragStart: () => {
         setState(
           produce((draft) => {
@@ -73,7 +98,7 @@ const OutcomeBlock = ({ id, title, children, level }: OutcomeType) => {
         )
       }
     })
-  }, [dragHandleRef, id, level])
+  }, [level, uuid])
 
   const onToggleClick = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
@@ -95,30 +120,34 @@ const OutcomeBlock = ({ id, title, children, level }: OutcomeType) => {
   return (
     <Styled.OutcomeWrapper dragging={state.dragging}>
       <OutcomeHeader
-        id={id}
+        uuid={uuid}
         level={level}
         dragRef={dragHandleRef}
         title={`${prefix}${title}`}
         collapsed={state.collapsed}
         setCollapsed={setCollapsed}
-        showToggle={!!children.length}
+        showToggle={!!childOutcomes.length}
         onToggleClick={onToggleClick}
-        highlighted={highlighted.indexOf(id) !== -1}
+        highlighted={highlighted.includes(uuid)}
         onClick={onClick}
       />
 
-      {!state.collapsed && <OutcomeChildren parentId={id} />}
+      {!state.collapsed && (
+        <OutcomeChildren graphUuid={graphUuid} parentUuid={uuid} />
+      )}
     </Styled.OutcomeWrapper>
   )
 }
 
 export const OutcomeChildren = ({
-  parentId
+  graphUuid,
+  parentUuid
 }: {
-  parentuuid: string | null
+  graphUuid: GraphUuid
+  parentUuid: string
 }) => {
   const childOutcomes = useSelector((state: RootState) =>
-    selectOutcomeChildrenById(state, parentId)
+    selectOutcomeChildrenById(state, graphUuid, parentUuid)
   )
 
   if (!childOutcomes.length) {
@@ -129,7 +158,7 @@ export const OutcomeChildren = ({
     <StyledOutcomes.OutcomeGroup>
       {childOutcomes.map((outcome) => (
         <StyledOutcomes.OutcomeGroupItem key={outcome.uuid}>
-          <OutcomeBlock {...outcome} />
+          <OutcomeBlock graphUuid={graphUuid} {...outcome} />
         </StyledOutcomes.OutcomeGroupItem>
       ))}
     </StyledOutcomes.OutcomeGroup>

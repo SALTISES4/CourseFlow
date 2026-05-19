@@ -4,7 +4,7 @@ Graph-affecting mutations: cascades, revision bump, delta envelope (graph aggreg
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Any, Iterable, Literal
 from uuid import UUID
 
 from django.db import transaction
@@ -142,6 +142,119 @@ def _section_payload(sec: Section) -> dict:
         "position": sec.position,
         "thread_uuid": sec.thread.uuid if sec.thread_id else None,
     }
+
+
+def _outcome_tag_ids(o: Outcome) -> list[int]:
+    return list(o.tags.values_list("id", flat=True))
+
+
+def _reload_outcome(pk: int) -> Outcome:
+    return (
+        Outcome.objects.select_related("graph", "parent", "thread")
+        .prefetch_related("tags")
+        .get(pk=pk)
+    )
+
+
+def _outcome_payload(o: Outcome) -> dict:
+    return {
+        "uuid": o.uuid,
+        "graph_uuid": o.graph.uuid,
+        "parent_uuid": o.parent.uuid if o.parent_id else None,
+        "order": o.order,
+        "title": o.title or "",
+        "description": o.description or "",
+        "code": o.code or "",
+        "tag_ids": _outcome_tag_ids(o),
+        "thread_uuid": o.thread.uuid if o.thread_id else None,
+    }
+
+
+def _siblings_qs(graph_id: int, parent_id: int | None):
+    qs = (
+        Outcome.objects.filter(graph_id=graph_id)
+        .select_related("graph", "parent", "thread")
+        .prefetch_related("tags")
+    )
+    if parent_id is None:
+        return qs.filter(parent__isnull=True).order_by("order", "id")
+    return qs.filter(parent_id=parent_id).order_by("order", "id")
+
+
+def _outcome_is_descendant(graph_id: int, ancestor_pk: int, candidate_pk: int) -> bool:
+    current_pk: int | None = candidate_pk
+    while current_pk is not None:
+        if current_pk == ancestor_pk:
+            return True
+        current_pk = (
+            Outcome.objects.filter(pk=current_pk, graph_id=graph_id)
+            .values_list("parent_id", flat=True)
+            .first()
+        )
+    return False
+
+
+def _emit_outcome_updates(
+    builder: GraphMutationDeltaBuilder,
+    outcomes: Iterable[Outcome],
+) -> None:
+    for o in outcomes:
+        builder.add_outcome_updated(_outcome_payload(o))
+
+
+def _assign_outcome_sibling_orders(
+    siblings: list[Outcome],
+    builder: GraphMutationDeltaBuilder,
+) -> None:
+    """Two-phase order assignment to satisfy sibling unique constraints."""
+    for i, o in enumerate(siblings):
+        Outcome.objects.filter(pk=o.pk).update(order=10_000 + i)
+    for i, o in enumerate(siblings):
+        Outcome.objects.filter(pk=o.pk).update(order=i)
+        builder.add_outcome_updated(_outcome_payload(_reload_outcome(o.pk)))
+
+
+def _renumber_sibling_outcomes(
+    graph_id: int,
+    parent_id: int | None,
+    builder: GraphMutationDeltaBuilder,
+) -> None:
+    siblings = list(_siblings_qs(graph_id, parent_id))
+    if not siblings:
+        return
+    _assign_outcome_sibling_orders(siblings, builder)
+
+
+def _resolve_outcome_insert_index(
+    *,
+    graph_id: int,
+    parent_id: int | None,
+    insert_index: int | None,
+    before_uuid: UUID | None,
+    after_uuid: UUID | None,
+) -> int | None:
+    if before_uuid is not None:
+        try:
+            ref = Outcome.objects.get(uuid=before_uuid, graph_id=graph_id)
+        except Outcome.DoesNotExist:
+            return None
+        if (ref.parent_id or None) != parent_id:
+            return None
+        return ref.order
+
+    if after_uuid is not None:
+        try:
+            ref = Outcome.objects.get(uuid=after_uuid, graph_id=graph_id)
+        except Outcome.DoesNotExist:
+            return None
+        if (ref.parent_id or None) != parent_id:
+            return None
+        return ref.order + 1
+
+    if insert_index is not None:
+        return max(0, insert_index)
+
+    return _siblings_qs(graph_id, parent_id).count()
 
 
 def _bump_revision(wf: Graph) -> None:
@@ -1366,6 +1479,334 @@ class GraphMutationService:
                 revision_id=wf_locked.revision_id,
                 triggered_by="unlink_node_outcome",
                 trigger_entity_id=str(node_uuid),
+            ),
+            None,
+        )
+
+    @transaction.atomic
+    def create_outcome(
+        self,
+        *,
+        graph_uuid: UUID,
+        user_id: int,
+        parent_uuid: UUID | None = None,
+        insert_index: int | None = None,
+        title: str = "",
+        description: str = "",
+        code: str = "",
+        tag_ids: list[int] | None = None,
+    ) -> tuple[dict | None, MutationError | None]:
+        wf, err = self._lock_graph(graph_uuid, user_id)
+        if err:
+            return None, err
+
+        parent_pk: int | None = None
+        if parent_uuid is not None:
+            try:
+                parent = Outcome.objects.get(uuid=parent_uuid, graph_id=wf.id)
+            except Outcome.DoesNotExist:
+                return None, "not_found"
+            parent_pk = parent.pk
+
+        resolved_index = _resolve_outcome_insert_index(
+            graph_id=wf.id,
+            parent_id=parent_pk,
+            insert_index=insert_index,
+            before_uuid=None,
+            after_uuid=None,
+        )
+        if resolved_index is None:
+            return None, "bad_request"
+
+        builder = GraphMutationDeltaBuilder()
+        outcome = Outcome.objects.create(
+            graph_id=wf.id,
+            parent_id=parent_pk,
+            order=99_999,
+            title=title,
+            description=description,
+            code=code,
+        )
+        if tag_ids:
+            outcome.tags.set(tag_ids)
+        outcome = _reload_outcome(outcome.pk)
+
+        siblings = list(_siblings_qs(wf.id, parent_pk))
+        siblings = [s for s in siblings if s.pk != outcome.pk]
+        insert_at = min(resolved_index, len(siblings))
+        siblings.insert(insert_at, outcome)
+        _assign_outcome_sibling_orders(siblings, builder)
+        builder.add_outcome_created(_outcome_payload(_reload_outcome(outcome.pk)))
+        _bump_revision(wf)
+
+        return (
+            builder.build_envelope(
+                graph_uuid=wf.uuid,
+                revision_id=wf.revision_id,
+                triggered_by="create_outcome",
+                trigger_entity_id=str(outcome.uuid),
+            ),
+            None,
+        )
+
+    @transaction.atomic
+    def update_outcome(
+        self,
+        *,
+        user_id: int,
+        outcome_uuid: UUID,
+        title: str | None = None,
+        description: str | None = None,
+        code: str | None = None,
+        tag_ids: list[int] | None = None,
+    ) -> tuple[dict | None, MutationError | None]:
+        try:
+            outcome = Outcome.objects.select_related("graph__workflow").get(
+                uuid=outcome_uuid
+            )
+        except Outcome.DoesNotExist:
+            return None, "not_found"
+
+        wf, err = self._lock_graph(outcome.graph.uuid, user_id)
+        if err:
+            return None, err
+
+        try:
+            outcome = _reload_outcome(
+                Outcome.objects.get(uuid=outcome_uuid, graph_id=wf.id).pk
+            )
+        except Outcome.DoesNotExist:
+            return None, "not_found"
+
+        update_fields: list[str] = []
+        if title is not None:
+            outcome.title = title
+            update_fields.append("title")
+        if description is not None:
+            outcome.description = description
+            update_fields.append("description")
+        if code is not None:
+            outcome.code = code
+            update_fields.append("code")
+        if update_fields:
+            outcome.save(update_fields=update_fields)
+        if tag_ids is not None:
+            outcome.tags.set(tag_ids)
+            outcome = _reload_outcome(outcome.pk)
+
+        builder = GraphMutationDeltaBuilder()
+        builder.add_outcome_updated(_outcome_payload(_reload_outcome(outcome.pk)))
+        _bump_revision(wf)
+
+        return (
+            builder.build_envelope(
+                graph_uuid=wf.uuid,
+                revision_id=wf.revision_id,
+                triggered_by="update_outcome",
+                trigger_entity_id=str(outcome_uuid),
+            ),
+            None,
+        )
+
+    @transaction.atomic
+    def delete_outcome(
+        self,
+        *,
+        user_id: int,
+        outcome_uuid: UUID,
+    ) -> tuple[dict | None, MutationError | None]:
+        try:
+            outcome = Outcome.objects.select_related("graph__workflow").get(
+                uuid=outcome_uuid
+            )
+        except Outcome.DoesNotExist:
+            return None, "not_found"
+
+        wf, err = self._lock_graph(outcome.graph.uuid, user_id)
+        if err:
+            return None, err
+
+        try:
+            outcome = Outcome.objects.get(uuid=outcome_uuid, graph_id=wf.id)
+        except Outcome.DoesNotExist:
+            return None, "not_found"
+
+        parent_pk = outcome.parent_id
+        deleted_uuid = outcome.uuid
+        outcome.delete()
+
+        builder = GraphMutationDeltaBuilder()
+        builder.add_outcome_deleted(deleted_uuid)
+        _renumber_sibling_outcomes(wf.id, parent_pk, builder)
+        _bump_revision(wf)
+
+        return (
+            builder.build_envelope(
+                graph_uuid=wf.uuid,
+                revision_id=wf.revision_id,
+                triggered_by="delete_outcome",
+                trigger_entity_id=str(deleted_uuid),
+            ),
+            None,
+        )
+
+    @transaction.atomic
+    def duplicate_outcome(
+        self,
+        *,
+        user_id: int,
+        outcome_uuid: UUID,
+    ) -> tuple[dict | None, MutationError | None]:
+        try:
+            source = Outcome.objects.select_related("graph__workflow", "parent").get(
+                uuid=outcome_uuid
+            )
+        except Outcome.DoesNotExist:
+            return None, "not_found"
+
+        wf, err = self._lock_graph(source.graph.uuid, user_id)
+        if err:
+            return None, err
+
+        try:
+            source = _reload_outcome(
+                Outcome.objects.get(uuid=outcome_uuid, graph_id=wf.id).pk
+            )
+        except Outcome.DoesNotExist:
+            return None, "not_found"
+
+        builder = GraphMutationDeltaBuilder()
+        id_map: dict[int, int] = {}
+
+        def clone_subtree(o: Outcome, parent_pk: int | None, order: int) -> Outcome:
+            clone = Outcome.objects.create(
+                graph_id=wf.id,
+                parent_id=parent_pk,
+                order=order,
+                title=f"{o.title} (duplicate)" if o.title else " (duplicate)",
+                description=o.description,
+                code=o.code,
+            )
+            clone.tags.set(_outcome_tag_ids(o))
+            id_map[o.pk] = clone.pk
+            clone = _reload_outcome(clone.pk)
+            builder.add_outcome_created(_outcome_payload(clone))
+            children = list(_siblings_qs(wf.id, o.pk))
+            for idx, child in enumerate(children):
+                clone_subtree(child, clone.pk, idx)
+            return clone
+
+        insert_index = source.order + 1
+        parent_pk = source.parent_id
+        for s in _siblings_qs(wf.id, parent_pk):
+            if s.order >= insert_index and s.pk != source.pk:
+                s.order += 1
+                s.save(update_fields=["order", "modified_on"])
+                builder.add_outcome_updated(_outcome_payload(_reload_outcome(s.pk)))
+
+        clone_subtree(source, parent_pk, insert_index)
+        _bump_revision(wf)
+
+        return (
+            builder.build_envelope(
+                graph_uuid=wf.uuid,
+                revision_id=wf.revision_id,
+                triggered_by="duplicate_outcome",
+                trigger_entity_id=str(outcome_uuid),
+            ),
+            None,
+        )
+
+    @transaction.atomic
+    def move_outcome(
+        self,
+        *,
+        user_id: int,
+        outcome_uuid: UUID,
+        parent_uuid: UUID | None = None,
+        parent_uuid_provided: bool = False,
+        insert_index: int | None = None,
+        before_uuid: UUID | None = None,
+        after_uuid: UUID | None = None,
+    ) -> tuple[dict | None, MutationError | None]:
+        try:
+            moving = Outcome.objects.select_related("graph__workflow", "parent").get(
+                uuid=outcome_uuid
+            )
+        except Outcome.DoesNotExist:
+            return None, "not_found"
+
+        wf, err = self._lock_graph(moving.graph.uuid, user_id)
+        if err:
+            return None, err
+
+        try:
+            moving = _reload_outcome(
+                Outcome.objects.get(uuid=outcome_uuid, graph_id=wf.id).pk
+            )
+        except Outcome.DoesNotExist:
+            return None, "not_found"
+
+        new_parent_pk: int | None = moving.parent_id
+        if parent_uuid_provided:
+            if parent_uuid is None:
+                new_parent_pk = None
+            else:
+                try:
+                    new_parent = Outcome.objects.get(uuid=parent_uuid, graph_id=wf.id)
+                except Outcome.DoesNotExist:
+                    return None, "not_found"
+                if _outcome_is_descendant(wf.id, moving.pk, new_parent.pk):
+                    return None, "bad_request"
+                new_parent_pk = new_parent.pk
+        elif before_uuid is not None:
+            try:
+                ref = Outcome.objects.get(uuid=before_uuid, graph_id=wf.id)
+            except Outcome.DoesNotExist:
+                return None, "not_found"
+            new_parent_pk = ref.parent_id
+        elif after_uuid is not None:
+            try:
+                ref = Outcome.objects.get(uuid=after_uuid, graph_id=wf.id)
+            except Outcome.DoesNotExist:
+                return None, "not_found"
+            new_parent_pk = ref.parent_id
+
+        resolved_index = _resolve_outcome_insert_index(
+            graph_id=wf.id,
+            parent_id=new_parent_pk,
+            insert_index=insert_index,
+            before_uuid=before_uuid,
+            after_uuid=after_uuid,
+        )
+        if resolved_index is None:
+            return None, "bad_request"
+
+        old_parent_pk = moving.parent_id
+        builder = GraphMutationDeltaBuilder()
+
+        Outcome.objects.filter(pk=moving.pk).update(parent_id=None, order=99_999)
+        if old_parent_pk != new_parent_pk:
+            _renumber_sibling_outcomes(wf.id, old_parent_pk, builder)
+
+        new_siblings = [
+            s for s in _siblings_qs(wf.id, new_parent_pk) if s.pk != moving.pk
+        ]
+        resolved_index = min(resolved_index, len(new_siblings))
+        moving = _reload_outcome(moving.pk)
+        moving.parent_id = new_parent_pk
+        moving.save(update_fields=["parent_id"])
+        new_siblings.insert(resolved_index, moving)
+        _assign_outcome_sibling_orders(new_siblings, builder)
+
+        _bump_revision(wf)
+
+        return (
+            builder.build_envelope(
+                graph_uuid=wf.uuid,
+                revision_id=wf.revision_id,
+                triggered_by="move_outcome",
+                trigger_entity_id=str(outcome_uuid),
             ),
             None,
         )

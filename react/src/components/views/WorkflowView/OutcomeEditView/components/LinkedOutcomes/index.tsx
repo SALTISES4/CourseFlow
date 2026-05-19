@@ -1,4 +1,4 @@
-import { selectOutcomeChildrenById } from '@cfRedux/selectors/outcomes.selector'
+import { selectOutcomeChildrenById } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { RootState } from '@cfRedux/store'
 import { LinkedOutcomesPropsType } from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes/types'
 import * as StyledOutcome from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
@@ -9,14 +9,17 @@ import { useSelector } from 'react-redux'
 import * as Styled from './styles'
 
 const LinkedOutcomes = ({
+  graphUuid,
   parent,
   outcomes,
   highlight
-}: LinkedOutcomesPropsType) => {
+}: LinkedOutcomesPropsType & { graphUuid: string }) => {
   const [show, setShow] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
   const badgeRef = useRef<HTMLSpanElement>(null)
-  const entities = useSelector((state: RootState) => state.outcomes.entities)
+  const entities = useSelector(
+    (state: RootState) => state.graph.canonical.outcomes.entities
+  )
 
   const showPopover = useCallback((val: boolean) => {
     return (e: MouseEvent<HTMLSpanElement>) => {
@@ -60,9 +63,15 @@ const LinkedOutcomes = ({
   )
 }
 
-export const OutcomeGroup = ({ parentId }: { parentuuid: string }) => {
+export const OutcomeGroup = ({
+  graphUuid,
+  parentUuid
+}: {
+  graphUuid: string
+  parentUuid: string
+}) => {
   const childOutcomes = useSelector((state: RootState) =>
-    selectOutcomeChildrenById(state, parentId)
+    selectOutcomeChildrenById(state, graphUuid, parentUuid)
   )
 
   if (!childOutcomes.length) {
@@ -73,7 +82,7 @@ export const OutcomeGroup = ({ parentId }: { parentuuid: string }) => {
     <StyledOutcome.OutcomeGroup>
       {childOutcomes.map((outcome) => (
         <StyledOutcome.OutcomeGroupItem key={outcome.uuid}>
-          <Outcome {...outcome} />
+          {/* horizontal outcome links deferred */}
         </StyledOutcome.OutcomeGroupItem>
       ))}
     </StyledOutcome.OutcomeGroup>

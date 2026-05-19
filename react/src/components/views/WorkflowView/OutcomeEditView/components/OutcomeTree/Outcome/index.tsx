@@ -10,22 +10,20 @@ import {
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item'
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/list-item'
 import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
-import { getPrefixPath } from '@cf/redux/selectors/outcomes.selector'
-import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/Utility.class'
+import type { GraphUuid, OutcomeEntity } from '@cf/features/graph/state/model/types'
 import {
-  Outcome as OutcomeType,
-  isOutcomeLink,
-  linkOutcome,
-  moveOutcome
-} from '@cfRedux/slices/outcomes.slice'
-import { setDragging } from '@cfRedux/slices/outcomes.slice'
-import { RootState } from '@cfRedux/store'
+  getPrefixPath,
+  selectOutcomeChildrenById
+} from '@cf/features/graph/state/selectors/outcomes.selectors'
+import { moveOutcome } from '@cf/features/graph/state/thunks/outcomeMutations.thunks'
+import { outcomeUiActions } from '@cf/features/graph/state/slices/outcomeUi.slice'
+import { CfObjectType } from '@cf/types/enum'
+import type { AppDispatch } from '@cf/redux/store'
+import { RootState } from '@cf/redux/store'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-// import { OutcomeGroup } from '../' // circ dep
 import OutcomeHeader from './Header'
 import * as Styled from '../styles'
 
@@ -36,23 +34,35 @@ type OutcomeStateType = {
 }
 
 const Outcome = ({
+  graphUuid,
   uuid,
   title,
-  children,
-  level,
-  tags,
-  linkedOutcomes,
+  tagIds,
   greenHover
-}: OutcomeType & {
+}: OutcomeEntity & {
+  graphUuid: GraphUuid
   greenHover?: boolean
 }) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const sidebarData = useSelector((state: RootState) => state.sidebar.edit)
-  const dragging = useSelector((state: RootState) => state.outcomes.dragging)
-  const prefix = useSelector((state: RootState) => getPrefixPath(state, uuid))
-  const highlight = useSelector(
-    (state: RootState) => state.outcomes.highlighted
+  const dragging = useSelector(
+    (state: RootState) => state.graph.outcomeUi.dragging
+  )
+  const prefix = useSelector((state: RootState) =>
+    getPrefixPath(state, graphUuid, uuid)
+  )
+  const level = useSelector((state: RootState) => {
+    let depth = 0
+    let current = state.graph.canonical.outcomes.entities[uuid]
+    while (current?.parentUuid) {
+      depth += 1
+      current = state.graph.canonical.outcomes.entities[current.parentUuid]
+    }
+    return depth
+  })
+  const childOutcomes = useSelector((state: RootState) =>
+    selectOutcomeChildrenById(state, graphUuid, uuid)
   )
   const manager = useRef(new BetterSelectionManager(dispatch))
   const [state, setState] = useState<OutcomeStateType>({
@@ -64,10 +74,7 @@ const Outcome = ({
   const selected =
     sidebarData.objectType === CfObjectType.OUTCOME && sidebarData.uuid === uuid
 
-  // TODO: not gonna quite cut it, id is now a string (uuid)
-  const highlighted = linkedOutcomes?.some((o) =>
-    highlight.includes(parseInt(o, 10))
-  )
+  const highlighted = false
 
   useEffect(() => {
     const el = dragHandleRef.current
@@ -76,15 +83,17 @@ const Outcome = ({
       return
     }
 
+    const childUuids = childOutcomes.map((c) => c.uuid)
+
     return combine(
       draggable({
         element: el,
         getInitialData: () => ({ uuid, level }),
         onDragStart: () => {
-          dispatch(setDragging({ uuid, level }))
+          dispatch(outcomeUiActions.setDragging({ uuid, level }))
         },
         onDrop: () => {
-          dispatch(setDragging(null))
+          dispatch(outcomeUiActions.setDragging(null))
         }
       }),
       dropTargetForElements({
@@ -92,17 +101,12 @@ const Outcome = ({
         getData: ({ input, element }) => {
           const data = { uuid }
 
-          // only allow reordering if the target/dragged outcomes are different
-          // and only if they're of the same level
           const reorder = dragging?.uuid !== uuid && dragging?.level === level
 
-          // allow combine if we're combining different outcome IDs
-          // (ie, you can't combine self with self)
-          // and the dragged outcome level must be +1 compared to our target
-          let combine = dragging?.uuid !== uuid && dragging?.level === level + 1
+          let combine =
+            dragging?.uuid !== uuid && dragging?.level === level + 1
 
-          // but also disallow combine if dragged outcome is a child of the parent already
-          if (children.includes(dragging?.uuid)) {
+          if (childUuids.includes(dragging?.uuid ?? '')) {
             combine = false
           }
 
@@ -117,19 +121,13 @@ const Outcome = ({
           })
         },
         onDrag: (args) => {
-          const dragging = args.source.data
-
           const instruction: Instruction | null = extractInstruction(
             args.self.data
           )
 
           setState(
             produce((draft) => {
-              if (isOutcomeLink(dragging) && level === 0) {
-                draft.dragHighlight = true
-              } else {
-                draft.operation = instruction?.operation ?? null
-              }
+              draft.operation = instruction?.operation ?? null
             })
           )
         },
@@ -142,17 +140,7 @@ const Outcome = ({
           )
         },
         onDrop: (args) => {
-          const dragging = args.source.data
-
-          if (isOutcomeLink(dragging) && level === 0) {
-            dispatch(
-              linkOutcome({
-                targetId: dragging.uuid,
-                destinationId: uuid
-              })
-            )
-          }
-
+          const sourceUuid = args.source.data.uuid as string
           const instruction: Instruction | null = extractInstruction(
             args.self.data
           )
@@ -166,13 +154,32 @@ const Outcome = ({
               })
             )
 
-            dispatch(
-              moveOutcome({
-                targetId: args.source.data.uuid as string,
-                destinationId: uuid,
-                operation: instruction.operation
-              })
-            )
+            if (instruction.operation === 'combine') {
+              dispatch(
+                moveOutcome({
+                  graphUuid,
+                  outcomeUuid: sourceUuid,
+                  parentUuid: uuid,
+                  parentUuidProvided: true
+                })
+              )
+            } else if (instruction.operation === 'reorder-before') {
+              dispatch(
+                moveOutcome({
+                  graphUuid,
+                  outcomeUuid: sourceUuid,
+                  beforeUuid: uuid
+                })
+              )
+            } else if (instruction.operation === 'reorder-after') {
+              dispatch(
+                moveOutcome({
+                  graphUuid,
+                  outcomeUuid: sourceUuid,
+                  afterUuid: uuid
+                })
+              )
+            }
           }
 
           setState(
@@ -184,7 +191,7 @@ const Outcome = ({
         }
       })
     )
-  }, [dispatch, dragging?.uuid, dragging?.level, uuid, level, children])
+  }, [dispatch, dragging?.uuid, dragging?.level, uuid, level, childOutcomes, graphUuid])
 
   const setCollapsed = useCallback((value: boolean) => {
     setState(
@@ -213,9 +220,10 @@ const Outcome = ({
   return (
     <Styled.OutcomeWrapper dragging={dragging?.uuid === uuid}>
       <OutcomeHeader
+        graphUuid={graphUuid}
         uuid={uuid}
         level={level}
-        tags={tags}
+        tags={tagIds}
         greenHover={greenHover}
         dragRef={dragHandleRef}
         title={`${prefix}${title}`}
@@ -223,15 +231,10 @@ const Outcome = ({
         highlighted={highlighted}
         collapsed={state.collapsed}
         setCollapsed={setCollapsed}
-        showToggle={!!children.length}
+        showToggle={!!childOutcomes.length}
         onClick={onHeaderClick}
         onToggleClick={onToggleClick}
       />
-
-      {
-        // can't work like this circ dependency
-        // !state.collapsed && <OutcomeGroup parentId={uuid} />
-      }
 
       <DropIndicator
         lineGap="8px"
@@ -242,6 +245,16 @@ const Outcome = ({
           blocked: false
         }}
       />
+
+      {!state.collapsed && childOutcomes.length > 0 && (
+        <Styled.OutcomeGroup>
+          {childOutcomes.map((child) => (
+            <Styled.OutcomeGroupItem key={child.uuid}>
+              <Outcome graphUuid={graphUuid} {...child} greenHover />
+            </Styled.OutcomeGroupItem>
+          ))}
+        </Styled.OutcomeGroup>
+      )}
     </Styled.OutcomeWrapper>
   )
 }

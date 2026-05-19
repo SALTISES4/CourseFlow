@@ -32,6 +32,7 @@ import store from './redux/store'
 const originalConsoleWarn = console.error
 console.error = (message, ...args) => {
   // temp do not leave in
+
   if (/unique "key" prop/.test(message)) {
     return
   }
@@ -44,6 +45,7 @@ console.error = (message, ...args) => {
   if (/Cannot read properties of null/.test(message)) {
     return
   }
+
   originalConsoleWarn(message, ...args)
 }
 /*******************************************************

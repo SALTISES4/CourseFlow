@@ -24,6 +24,9 @@ class Outcome(UUIDModel):
         related_name="children",
     )
     order = models.PositiveIntegerField(default=0)
+    title = models.CharField(max_length=200, blank=True)
+    description = models.TextField(blank=True)
+    code = models.CharField(max_length=64, blank=True)
     tags = models.ManyToManyField(
         "Tag",
         through="OutcomeTag",
@@ -34,10 +37,14 @@ class Outcome(UUIDModel):
     class Meta:
         db_table = "cf_outcome"
         constraints = [
-            # i don't think we're properly handling root order uniqueness here
             models.UniqueConstraint(
                 fields=["parent", "order"],
                 condition=models.Q(parent__isnull=False),
                 name="cf_outcome_parent_sibling_order_unique",
-            )
+            ),
+            models.UniqueConstraint(
+                fields=["graph", "order"],
+                condition=models.Q(parent__isnull=True),
+                name="cf_outcome_root_sibling_order_unique",
+            ),
         ]

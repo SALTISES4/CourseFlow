@@ -1,17 +1,21 @@
+import type { GraphUuid, OutcomeEntity } from '@cf/features/graph/state/model/types'
+import { selectOutcomeChildrenById } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { RootState } from '@cf/redux/store'
-import { _t } from '@cf/utility/Utility.class'
-import { selectOutcomeChildrenById } from '@cfRedux/selectors/outcomes.selector'
-import { Outcome as OutcomeType } from '@cfRedux/slices/outcomes.slice'
-import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
 import { useSelector } from 'react-redux'
 
 import GroupDropzone from './GroupDropzone'
 import Outcome from './Outcome'
 import * as Styled from './styles'
 
-export const OutcomeGroup = ({ parentId }: { parentId: string | null }) => {
+export const OutcomeGroup = ({
+  graphUuid,
+  parentUuid
+}: {
+  graphUuid: GraphUuid
+  parentUuid: string | null
+}) => {
   const childOutcomes = useSelector((state: RootState) =>
-    selectOutcomeChildrenById(state, parentId)
+    selectOutcomeChildrenById(state, graphUuid, parentUuid)
   )
 
   return (
@@ -19,28 +23,30 @@ export const OutcomeGroup = ({ parentId }: { parentId: string | null }) => {
       {childOutcomes.map((outcome) => (
         <Styled.OutcomeGroupItem
           key={outcome.uuid}
-          padded={outcome.level === 0}
+          padded={outcome.parentUuid === null}
         >
-          <Outcome {...outcome} greenHover />
-          {!!outcome.linkedOutcomes?.length && (
-            <LinkedOutcomes
-              parent={{
-                uuid: outcome.uuid,
-                type: 'outcome'
-              }}
-              outcomes={outcome.linkedOutcomes}
-            />
-          )}
+          <Outcome graphUuid={graphUuid} {...outcome} greenHover />
         </Styled.OutcomeGroupItem>
       ))}
     </Styled.OutcomeGroup>
   )
 }
 
-const OutcomeTree = ({ outcomes }: { outcomes: OutcomeType[] }) => (
-  <GroupDropzone id={'-1'} level={0} hasChildren={!!outcomes.length}>
+const OutcomeTree = ({
+  graphUuid,
+  outcomes
+}: {
+  graphUuid: GraphUuid
+  outcomes: OutcomeEntity[]
+}) => (
+  <GroupDropzone
+    graphUuid={graphUuid}
+    uuid={null}
+    level={0}
+    hasChildren={!!outcomes.length}
+  >
     <Styled.OutcomeGroupWrap>
-      <OutcomeGroup parentId={null} />
+      <OutcomeGroup graphUuid={graphUuid} parentUuid={null} />
     </Styled.OutcomeGroupWrap>
   </GroupDropzone>
 )

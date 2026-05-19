@@ -61,7 +61,13 @@ class GraphViewService:
         for n in nodes:
             add_thread(n.thread)
 
-        for o in Outcome.objects.filter(graph=w).select_related("thread"):
+        outcome_rows = list(
+            Outcome.objects.filter(graph=w)
+            .select_related("parent", "thread")
+            .prefetch_related("tags")
+            .order_by("parent_id", "order", "id")
+        )
+        for o in outcome_rows:
             add_thread(o.thread)
 
         comment_counts = {tu: 0 for tu in thread_uuids}
@@ -146,6 +152,20 @@ class GraphViewService:
                     "target_port": e.target_port,
                 }
                 for e in edges
+            ],
+            "outcomes": [
+                {
+                    "uuid": o.uuid,
+                    "graph_uuid": w.uuid,
+                    "parent_uuid": o.parent.uuid if o.parent_id else None,
+                    "order": o.order,
+                    "title": o.title or "",
+                    "description": o.description or "",
+                    "code": o.code or "",
+                    "tag_ids": list(o.tags.values_list("id", flat=True)),
+                    "thread_uuid": o.thread.uuid if o.thread_id else None,
+                }
+                for o in outcome_rows
             ],
             "thread_comment_counts": [
                 {"thread_uuid": tu, "comment_count": comment_counts.get(tu, 0)}

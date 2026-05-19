@@ -80,8 +80,15 @@ def _section_and_channel(wf_uuid: str):
 def _assert_envelope_shape(body: dict) -> None:
     assert set(body.keys()) == {"graphId", "revisionId", "changes", "meta"}
     ch = body["changes"]
-    assert set(ch.keys()) == {"nodes", "edges", "channels", "sections", "tags"}
-    for entity in ("nodes", "edges", "channels", "sections", "tags"):
+    assert set(ch.keys()) == {
+        "nodes",
+        "edges",
+        "channels",
+        "sections",
+        "tags",
+        "outcomes",
+    }
+    for entity in ("nodes", "edges", "channels", "sections", "tags", "outcomes"):
         b = ch[entity]
         assert set(b.keys()) == {"created", "updated", "deleted"}
     assert set(body["meta"].keys()) == {"triggeredBy", "triggerEntityId"}

@@ -16,7 +16,8 @@ import * as StyledSection from '../styles'
 const SectionRow = (props: SectionRowPropsType) => {
   const rowRef = useRef<HTMLDivElement>(null)
   const dnd = useRowDnd({ ...props, rowRef })
-  const { sectionId, rowIndex, columnIds, columnColors, onNodeDrop } = props
+  const { sectionId, rowIndex, columnIds, columnColors, onNodeDrop, graphUuid } =
+    props
 
   const draggingCustomNode = dnd.dragId === '-1'
 
@@ -72,6 +73,7 @@ const SectionRow = (props: SectionRowPropsType) => {
             coordsX={index}
             coordsY={rowIndex}
             nodeId={nodeId}
+            graphUuid={graphUuid}
             columnId={columnId}
             borderColor={columnColors[columnId]}
             highlight={dnd.dragId === columnId ? dnd.closestEdge : null}

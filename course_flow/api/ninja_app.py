@@ -9,6 +9,7 @@ from course_flow.api.routers import (
     library,
     nodes,
     notifications,
+    outcomes,
     projects,
     sections,
     threads,
@@ -36,10 +37,12 @@ api.add_router("/graph", graphs.router)
 api.add_router("/graph", channels.graph_collection_router)
 api.add_router("/graph", sections.graph_collection_router)
 api.add_router("/graph", nodes.graph_collection_router)
+api.add_router("/graph", outcomes.graph_collection_router)
 api.add_router("/graph", edges.graph_edges_router)
 api.add_router("/channel", channels.resource_router)
 api.add_router("/section", sections.resource_router)
 api.add_router("/node", nodes.node_resource_router)
+api.add_router("/outcome", outcomes.outcome_resource_router)
 api.add_router("/edge", edges.edge_resource_router)
 api.add_router("/thread", threads.router)
 api.add_router("/auth", auth.router)

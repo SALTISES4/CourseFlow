@@ -212,12 +212,12 @@ const GraphView = ({ graphUuid }: { graphUuid: string }) => {
           />
         ))}
         <LineSVG
+          graphUuid={graphUuid}
           rerender={state.redrawLines}
           condensed={state.condensed.length}
         />
       </SectionsWrapper>
 
-      {/* dialogs */}
       <DeleteNodeCategoryDialog />
       <DeleteSectionDialog />
     </GraphViewWrap>

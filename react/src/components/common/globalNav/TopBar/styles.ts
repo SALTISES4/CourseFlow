@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box'
 import List from '@mui/material/List'
 import Menu from '@mui/material/Menu'
-import Popover from '@mui/material/Popover'
 import { styled } from '@mui/material/styles'
 
 export const TopBarWrap = styled(Box)(({ theme }) => ({
@@ -24,13 +23,6 @@ export const StyledMenu = styled(Menu)(({ theme }) => ({
     }
   }
 }))
-
-export const NotificationsMenu = styled(Popover)({
-  '& .MuiPaper-root': {
-    marginLeft: '3em',
-    width: 500
-  }
-})
 
 export const NotificationsHeader = styled(Box)(({ theme }) => ({
   display: 'flex',

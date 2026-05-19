@@ -1,13 +1,16 @@
 import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
+import type { GraphUuid } from '@cf/features/graph/state/model/types'
+import { selectOutcomeById } from '@cf/features/graph/state/selectors/outcomes.selectors'
+import {
+  createOutcome,
+  deleteOutcome,
+  duplicateOutcome
+} from '@cf/features/graph/state/thunks/outcomeMutations.thunks'
+import { RootState } from '@cf/redux/store'
 import useHover from '@cf/hooks/useHover'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
-import {
-  addOutcome,
-  deleteOutcome,
-  duplicateOutcome
-} from '@cfRedux/slices/outcomes.slice'
 import AddIcon from '@mui/icons-material/Add'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
@@ -18,15 +21,16 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import { MouseEvent, MutableRefObject, useCallback } from 'react'
-import { useDispatch } from 'react-redux'
+import type { AppDispatch } from '@cf/redux/store'
+import { useDispatch, useSelector } from 'react-redux'
 
 import editTabNodeData from '../../../../../../../pages/Workflow/Sidebar/components/EditTab/components/EditNode/optionsData'
 import * as Styled from '../../styles'
 
-// TODO: this actually needs to live somewhere else
 const tagsData = editTabNodeData.tags
 
 type PropsType = {
+  graphUuid: GraphUuid
   uuid: string
   level: number
   title: string
@@ -43,6 +47,7 @@ type PropsType = {
 }
 
 const OutcomeHeader = ({
+  graphUuid,
   uuid,
   level,
   title,
@@ -80,7 +85,7 @@ const OutcomeHeader = ({
             {tags.map((id) => (
               <Chip
                 key={id}
-                label={tagsData.find((t) => t.uuid === id).label}
+                label={tagsData.find((t) => t.uuid === id)?.label ?? id}
                 size="small"
                 variant="outlined"
               />
@@ -89,6 +94,7 @@ const OutcomeHeader = ({
         )}
         <HoverMenu
           show={isHovered}
+          graphUuid={graphUuid}
           uuid={uuid}
           level={level}
           setCollapsed={setCollapsed}
@@ -115,17 +121,22 @@ type HoverMenuActions =
   | 'comments'
 
 const HoverMenu = ({
+  graphUuid,
   uuid,
   level,
   show,
   setCollapsed
 }: {
+  graphUuid: GraphUuid
   uuid: PropsType['uuid']
   level: PropsType['level']
   show: boolean
   setCollapsed: PropsType['setCollapsed']
 }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
+  const sibling = useSelector((state: RootState) =>
+    selectOutcomeById(state, uuid)
+  )
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {
@@ -133,17 +144,40 @@ const HoverMenu = ({
         e.stopPropagation()
         switch (action) {
           case 'insert-sibling':
-            dispatch(addOutcome({ id: uuid, order: 'after' }))
+            if (sibling) {
+              dispatch(
+                createOutcome({
+                  graphUuid,
+                  parentUuid: sibling.parentUuid,
+                  insertIndex: sibling.order + 1
+                })
+              )
+            }
             break
           case 'insert-child':
-            dispatch(addOutcome({ id: uuid }))
+            dispatch(
+              createOutcome({
+                graphUuid,
+                parentUuid: uuid
+              })
+            )
             setCollapsed(false)
             break
           case 'duplicate':
-            dispatch(duplicateOutcome({ id: uuid }))
+            dispatch(
+              duplicateOutcome({
+                graphUuid,
+                outcomeUuid: uuid
+              })
+            )
             break
           case 'delete':
-            dispatch(deleteOutcome({ id: uuid }))
+            dispatch(
+              deleteOutcome({
+                graphUuid,
+                outcomeUuid: uuid
+              })
+            )
             break
           case 'comments':
             dispatch(
@@ -159,7 +193,7 @@ const HoverMenu = ({
         }
       }
     },
-    [dispatch, setCollapsed, uuid]
+    [dispatch, graphUuid, level, setCollapsed, sibling, uuid]
   )
 
   return (
@@ -167,29 +201,29 @@ const HoverMenu = ({
       show={show}
       items={[
         {
-          label: _t('Insert outcome below'),
+          label: _t('Insert sibling'),
           icon: <AddCircleOutlineIcon />,
           onClick: onActionClick('insert-sibling')
         },
-        level !== 2 && {
-          label: _t('Insert child outcome'),
+        {
+          label: _t('Insert child'),
           icon: <QueueIcon />,
           onClick: onActionClick('insert-child')
         },
         {
-          label: _t('Duplicate outcome below'),
+          label: _t('Duplicate'),
           icon: <ContentCopyIcon />,
           onClick: onActionClick('duplicate')
-        },
-        {
-          label: _t('Delete outcome'),
-          icon: <DeleteOutlinedIcon />,
-          onClick: onActionClick('delete')
         },
         {
           label: _t('Comments'),
           icon: <CommentOutlinedIcon />,
           onClick: onActionClick('comments')
+        },
+        {
+          label: _t('Delete'),
+          icon: <DeleteOutlinedIcon />,
+          onClick: onActionClick('delete')
         }
       ]}
     />

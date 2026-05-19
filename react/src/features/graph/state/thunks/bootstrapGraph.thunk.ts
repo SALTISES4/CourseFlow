@@ -8,6 +8,7 @@ import {
   edgesActions,
   graphActions,
   nodesActions,
+  outcomesActions,
   sectionsActions,
   tagsActions,
   workflowActions
@@ -69,6 +70,7 @@ export const bootstrapWorkflowGraph = (
     dispatch(setLoading(graphUuid, 'nodes'))
     dispatch(setLoading(graphUuid, 'edges'))
     dispatch(setLoading(graphUuid, 'tags'))
+    dispatch(setLoading(graphUuid, 'outcomes'))
 
     const graphPromise = fetchWorkflowGraphBundle(graphUuid)
       .then((bundle) => {
@@ -80,12 +82,14 @@ export const bootstrapWorkflowGraph = (
         dispatch(channelsActions.upsertMany(bundle.channels))
         dispatch(nodesActions.upsertMany(bundle.nodes))
         dispatch(edgesActions.upsertMany(bundle.edges))
+        dispatch(outcomesActions.upsertMany(bundle.outcomes))
 
         dispatch(setSucceeded(graphUuid, 'graph'))
         dispatch(setSucceeded(graphUuid, 'sections'))
         dispatch(setSucceeded(graphUuid, 'channels'))
         dispatch(setSucceeded(graphUuid, 'nodes'))
         dispatch(setSucceeded(graphUuid, 'edges'))
+        dispatch(setSucceeded(graphUuid, 'outcomes'))
       })
       .catch(() => {
         dispatch(setFailed(graphUuid, 'graph'))
@@ -93,6 +97,7 @@ export const bootstrapWorkflowGraph = (
         dispatch(setFailed(graphUuid, 'channels'))
         dispatch(setFailed(graphUuid, 'nodes'))
         dispatch(setFailed(graphUuid, 'edges'))
+        dispatch(setFailed(graphUuid, 'outcomes'))
         throw new Error('graph')
       })
 

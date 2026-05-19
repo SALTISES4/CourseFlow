@@ -648,6 +648,10 @@ export type GraphViewOut = {
    */
   edges: Array<EdgeGraphOut>
   /**
+   * Outcomes
+   */
+  outcomes?: Array<OutcomeGraphOut>
+  /**
    * Threadcommentcounts
    */
   threadCommentCounts?: Array<ThreadCommentCountOut>
@@ -721,6 +725,48 @@ export type NodeGraphOut = {
    * Outcomeuuids
    */
   outcomeUuids?: Array<string>
+}
+
+/**
+ * OutcomeGraphOut
+ */
+export type OutcomeGraphOut = {
+  /**
+   * Uuid
+   */
+  uuid: string
+  /**
+   * Graphuuid
+   */
+  graphUuid: string
+  /**
+   * Parentuuid
+   */
+  parentUuid?: string | null
+  /**
+   * Order
+   */
+  order: number
+  /**
+   * Title
+   */
+  title?: string
+  /**
+   * Description
+   */
+  description?: string
+  /**
+   * Code
+   */
+  code?: string
+  /**
+   * Tagids
+   */
+  tagIds?: Array<number>
+  /**
+   * Threaduuid
+   */
+  threadUuid?: string | null
 }
 
 /**
@@ -964,6 +1010,7 @@ export type GraphMutationChangesOut = {
   channels: GraphChannelsDeltaOut
   sections: GraphSectionsDeltaOut
   tags: GraphTagsDeltaOut
+  outcomes: GraphOutcomesDeltaOut
 }
 
 /**
@@ -1080,6 +1127,68 @@ export type GraphNodesDeltaOut = {
    * Updated
    */
   updated: Array<GraphNodeMutationOut>
+  /**
+   * Deleted
+   */
+  deleted: Array<string>
+}
+
+/**
+ * GraphOutcomeMutationOut
+ *
+ * Flat outcome snapshot for created/updated buckets (aligned with graph read shape).
+ */
+export type GraphOutcomeMutationOut = {
+  /**
+   * Uuid
+   */
+  uuid: string
+  /**
+   * Graphuuid
+   */
+  graphUuid: string
+  /**
+   * Parentuuid
+   */
+  parentUuid?: string | null
+  /**
+   * Order
+   */
+  order: number
+  /**
+   * Title
+   */
+  title?: string
+  /**
+   * Description
+   */
+  description?: string
+  /**
+   * Code
+   */
+  code?: string
+  /**
+   * Tagids
+   */
+  tagIds?: Array<number>
+  /**
+   * Threaduuid
+   */
+  threadUuid?: string | null
+}
+
+/**
+ * GraphOutcomesDeltaOut
+ */
+export type GraphOutcomesDeltaOut = {
+  /**
+   * Created
+   */
+  created: Array<GraphOutcomeMutationOut>
+  /**
+   * Updated
+   */
+  updated: Array<GraphOutcomeMutationOut>
   /**
    * Deleted
    */
@@ -1368,6 +1477,36 @@ export type GraphNodePlaceIn = {
 }
 
 /**
+ * GraphOutcomeCreateIn
+ */
+export type GraphOutcomeCreateIn = {
+  /**
+   * Parentuuid
+   */
+  parentUuid?: string | null
+  /**
+   * Insertindex
+   */
+  insertIndex?: number | null
+  /**
+   * Title
+   */
+  title?: string
+  /**
+   * Description
+   */
+  description?: string
+  /**
+   * Code
+   */
+  code?: string
+  /**
+   * Tagids
+   */
+  tagIds?: Array<number>
+}
+
+/**
  * GraphEdgeCreateIn
  */
 export type GraphEdgeCreateIn = {
@@ -1599,6 +1738,52 @@ export type GraphNodeMoveIn = {
    * Edge
    */
   edge?: string | null
+}
+
+/**
+ * GraphOutcomePatchIn
+ */
+export type GraphOutcomePatchIn = {
+  /**
+   * Title
+   */
+  title?: string | null
+  /**
+   * Description
+   */
+  description?: string | null
+  /**
+   * Code
+   */
+  code?: string | null
+  /**
+   * Tagids
+   */
+  tagIds?: Array<number> | null
+}
+
+/**
+ * GraphOutcomeMoveIn
+ *
+ * Reparent and/or reorder among siblings; backend renumbers affected sibling orders.
+ */
+export type GraphOutcomeMoveIn = {
+  /**
+   * Parentuuid
+   */
+  parentUuid?: string | null
+  /**
+   * Insertindex
+   */
+  insertIndex?: number | null
+  /**
+   * Beforeuuid
+   */
+  beforeUuid?: string | null
+  /**
+   * Afteruuid
+   */
+  afterUuid?: string | null
 }
 
 /**
@@ -2883,6 +3068,28 @@ export type PlaceGraphNodeResponses = {
 export type PlaceGraphNodeResponse =
   PlaceGraphNodeResponses[keyof PlaceGraphNodeResponses]
 
+export type CreateGraphOutcomeData = {
+  body: GraphOutcomeCreateIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/graph/{uuid}/outcomes'
+}
+
+export type CreateGraphOutcomeResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type CreateGraphOutcomeResponse =
+  CreateGraphOutcomeResponses[keyof CreateGraphOutcomeResponses]
+
 export type ListGraphEdgesData = {
   body?: never
   path: {
@@ -3265,6 +3472,94 @@ export type MoveGraphNodeResponses = {
 
 export type MoveGraphNodeResponse =
   MoveGraphNodeResponses[keyof MoveGraphNodeResponses]
+
+export type DeleteOutcomeData = {
+  body?: never
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/outcome/{uuid}'
+}
+
+export type DeleteOutcomeResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type DeleteOutcomeResponse =
+  DeleteOutcomeResponses[keyof DeleteOutcomeResponses]
+
+export type PatchOutcomeData = {
+  body: GraphOutcomePatchIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/outcome/{uuid}'
+}
+
+export type PatchOutcomeResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type PatchOutcomeResponse =
+  PatchOutcomeResponses[keyof PatchOutcomeResponses]
+
+export type DuplicateOutcomeData = {
+  body?: never
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/outcome/{uuid}/duplicate'
+}
+
+export type DuplicateOutcomeResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type DuplicateOutcomeResponse =
+  DuplicateOutcomeResponses[keyof DuplicateOutcomeResponses]
+
+export type MoveOutcomeData = {
+  body: GraphOutcomeMoveIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/outcome/{uuid}/move'
+}
+
+export type MoveOutcomeResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type MoveOutcomeResponse =
+  MoveOutcomeResponses[keyof MoveOutcomeResponses]
 
 export type DeleteEdgeData = {
   body?: never

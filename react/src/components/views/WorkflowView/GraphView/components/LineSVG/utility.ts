@@ -1,4 +1,6 @@
-import { ConnectionEdge, edgeKeys } from './types'
+import { Position } from '@xyflow/react'
+
+import { ConnectionEdge, edgeKeys, getEdgePortKey } from './types'
 
 type PositionCoords = {
   x: number
@@ -49,6 +51,22 @@ export function canonicalPortToConnectionEdge(port: string): ConnectionEdge {
   return edgeKeys.includes(trimmed as ConnectionEdge)
     ? (trimmed as ConnectionEdge)
     : 'right'
+}
+
+/**
+ * Map SVG handle positions to canonical API port strings (numeric indices 0–3).
+ */
+export function connectionEdgeToCanonicalPort(
+  edge: Position | ConnectionEdge | string | null | undefined
+): string {
+  if (edge == null) {
+    return ''
+  }
+  const raw = String(edge).toLowerCase()
+  if (edgeKeys.includes(raw as ConnectionEdge)) {
+    return String(getEdgePortKey(raw as ConnectionEdge))
+  }
+  return String(getEdgePortKey(canonicalPortToConnectionEdge(raw)))
 }
 
 /** Dashed stroke from canonical graph `lineType` until a dedicated enum exists in the API client. */

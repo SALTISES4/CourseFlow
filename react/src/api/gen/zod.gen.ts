@@ -330,6 +330,21 @@ export const zNodeGraphOut = z.object({
 })
 
 /**
+ * OutcomeGraphOut
+ */
+export const zOutcomeGraphOut = z.object({
+  uuid: z.string().uuid(),
+  graphUuid: z.string().uuid(),
+  parentUuid: z.string().uuid().nullish(),
+  order: z.number().int(),
+  title: z.string().optional().default(''),
+  description: z.string().optional().default(''),
+  code: z.string().optional().default(''),
+  tagIds: z.array(z.number().int()).optional(),
+  threadUuid: z.string().uuid().nullish()
+})
+
+/**
  * SectionGraphOut
  */
 export const zSectionGraphOut = z.object({
@@ -359,6 +374,7 @@ export const zGraphViewOut = z.object({
   sections: z.array(zSectionGraphOut),
   nodes: z.array(zNodeGraphOut),
   edges: z.array(zEdgeGraphOut),
+  outcomes: z.array(zOutcomeGraphOut).optional(),
   threadCommentCounts: z.array(zThreadCommentCountOut).optional()
 })
 
@@ -497,6 +513,32 @@ export const zGraphNodesDeltaOut = z.object({
 })
 
 /**
+ * GraphOutcomeMutationOut
+ *
+ * Flat outcome snapshot for created/updated buckets (aligned with graph read shape).
+ */
+export const zGraphOutcomeMutationOut = z.object({
+  uuid: z.string().uuid(),
+  graphUuid: z.string().uuid(),
+  parentUuid: z.string().uuid().nullish(),
+  order: z.number().int(),
+  title: z.string().optional().default(''),
+  description: z.string().optional().default(''),
+  code: z.string().optional().default(''),
+  tagIds: z.array(z.number().int()).optional(),
+  threadUuid: z.string().uuid().nullish()
+})
+
+/**
+ * GraphOutcomesDeltaOut
+ */
+export const zGraphOutcomesDeltaOut = z.object({
+  created: z.array(zGraphOutcomeMutationOut),
+  updated: z.array(zGraphOutcomeMutationOut),
+  deleted: z.array(z.string().uuid())
+})
+
+/**
  * GraphSectionMutationOut
  *
  * Flat section snapshot for created/updated buckets (aligned with graph read shape).
@@ -544,7 +586,8 @@ export const zGraphMutationChangesOut = z.object({
   edges: zGraphEdgesDeltaOut,
   channels: zGraphChannelsDeltaOut,
   sections: zGraphSectionsDeltaOut,
-  tags: zGraphTagsDeltaOut
+  tags: zGraphTagsDeltaOut,
+  outcomes: zGraphOutcomesDeltaOut
 })
 
 /**
@@ -670,6 +713,18 @@ export const zGraphNodePlaceIn = z.object({
 })
 
 /**
+ * GraphOutcomeCreateIn
+ */
+export const zGraphOutcomeCreateIn = z.object({
+  parentUuid: z.string().uuid().nullish(),
+  insertIndex: z.number().int().nullish(),
+  title: z.string().optional().default(''),
+  description: z.string().optional().default(''),
+  code: z.string().optional().default(''),
+  tagIds: z.array(z.number().int()).optional()
+})
+
+/**
  * GraphEdgeCreateIn
  */
 export const zGraphEdgeCreateIn = z.object({
@@ -787,6 +842,28 @@ export const zGraphNodeMoveIn = z.object({
   rowHint: z.number().int(),
   mode: z.string(),
   edge: z.string().nullish()
+})
+
+/**
+ * GraphOutcomePatchIn
+ */
+export const zGraphOutcomePatchIn = z.object({
+  title: z.string().nullish(),
+  description: z.string().nullish(),
+  code: z.string().nullish(),
+  tagIds: z.array(z.number().int()).nullish()
+})
+
+/**
+ * GraphOutcomeMoveIn
+ *
+ * Reparent and/or reorder among siblings; backend renumbers affected sibling orders.
+ */
+export const zGraphOutcomeMoveIn = z.object({
+  parentUuid: z.string().uuid().nullish(),
+  insertIndex: z.number().int().nullish(),
+  beforeUuid: z.string().uuid().nullish(),
+  afterUuid: z.string().uuid().nullish()
 })
 
 /**
@@ -1532,6 +1609,19 @@ export const zPlaceGraphNodeData = z.object({
  */
 export const zPlaceGraphNodeResponse = zGraphMutationEnvelopeOut
 
+export const zCreateGraphOutcomeData = z.object({
+  body: zGraphOutcomeCreateIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zCreateGraphOutcomeResponse = zGraphMutationEnvelopeOut
+
 export const zListGraphEdgesData = z.object({
   body: z.never().optional(),
   path: z.object({
@@ -1763,6 +1853,58 @@ export const zMoveGraphNodeData = z.object({
  * OK
  */
 export const zMoveGraphNodeResponse = zGraphMutationEnvelopeOut
+
+export const zDeleteOutcomeData = z.object({
+  body: z.never().optional(),
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zDeleteOutcomeResponse = zGraphMutationEnvelopeOut
+
+export const zPatchOutcomeData = z.object({
+  body: zGraphOutcomePatchIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zPatchOutcomeResponse = zGraphMutationEnvelopeOut
+
+export const zDuplicateOutcomeData = z.object({
+  body: z.never().optional(),
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zDuplicateOutcomeResponse = zGraphMutationEnvelopeOut
+
+export const zMoveOutcomeData = z.object({
+  body: zGraphOutcomeMoveIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zMoveOutcomeResponse = zGraphMutationEnvelopeOut
 
 export const zDeleteEdgeData = z.object({
   body: z.never().optional(),

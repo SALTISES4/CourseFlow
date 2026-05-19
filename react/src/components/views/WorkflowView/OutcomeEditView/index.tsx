@@ -1,9 +1,11 @@
+import type { GraphUuid } from '@cf/features/graph/state/model/types'
+import { selectOutcomeChildrenById } from '@cf/features/graph/state/selectors/outcomes.selectors'
+import { createOutcome } from '@cf/features/graph/state/thunks/outcomeMutations.thunks'
+import type { AppDispatch } from '@cf/redux/store'
 import { RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import { OuterContentWrap } from '@cfMUI/helper'
-import { selectOutcomeChildrenById } from '@cfRedux/selectors/outcomes.selector'
-import { addOutcome } from '@cfRedux/slices/outcomes.slice'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -12,15 +14,15 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import OutcomeTree from './components/OutcomeTree'
 
-const OutcomeEditView = () => {
-  const dispatch = useDispatch()
+const OutcomeEditView = ({ graphUuid }: { graphUuid: GraphUuid }) => {
+  const dispatch = useDispatch<AppDispatch>()
   const outcomes = useSelector((state: RootState) =>
-    selectOutcomeChildrenById(state, null)
+    selectOutcomeChildrenById(state, graphUuid, null)
   )
 
   const onAddNewOutcome = useCallback(() => {
-    dispatch(addOutcome())
-  }, [dispatch])
+    dispatch(createOutcome({ graphUuid }))
+  }, [dispatch, graphUuid])
 
   return (
     <OuterContentWrap sx={{ pt: 4 }}>
@@ -40,7 +42,7 @@ const OutcomeEditView = () => {
         </Box>
       ) : (
         <Stack spacing={3} direction="column">
-          <OutcomeTree outcomes={outcomes} />
+          <OutcomeTree graphUuid={graphUuid} outcomes={outcomes} />
         </Stack>
       )}
     </OuterContentWrap>

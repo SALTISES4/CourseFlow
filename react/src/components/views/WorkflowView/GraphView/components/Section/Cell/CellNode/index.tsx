@@ -1,6 +1,6 @@
 import type { NodeEntity } from '@cf/features/graph/state/model/types'
 import { selectNodeByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
-import { isHighlightedViaOutcome } from '@cf/redux/selectors/outcomes.selector'
+import { isHighlightedViaOutcome } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { RootState } from '@cfRedux/store'
@@ -19,6 +19,7 @@ import useCellNodeDnd from './useCellNodeDnd'
 
 const SectionCellNode = ({
   nodeId,
+  graphUuid,
   columnId,
   coordsSection,
   coordsX,
@@ -34,7 +35,7 @@ const SectionCellNode = ({
   const dnd = useCellNodeDnd({
     wrapRef,
     nodeId,
-    graphUuid: node?.graphUuid ?? '',
+    graphUuid,
     columnId,
     coordsSection,
     coordsX,
@@ -82,6 +83,7 @@ const SectionCellNode = ({
 
         {node.outcomeUuids.length > 0 && (
           <LinkedOutcomes
+            graphUuid={node.graphUuid}
             parent={{
               uuid: nodeId,
               type: SectionCellType.NODE,

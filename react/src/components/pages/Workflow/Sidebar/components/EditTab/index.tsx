@@ -9,26 +9,26 @@ import EditSection from './components/EditSection'
 import EditTerm from './components/EditTerm'
 import { EditableType } from './types'
 
-const EditTab = ({ id, type }: { uuid: string; type: EditableType }) => {
+const EditTab = ({ uuid, type }: { uuid: string; type: EditableType }) => {
   if (!type) {
     return null
   }
 
   switch (type) {
     case EditableType.TERM:
-      return <EditTerm key={id} />
+      return <EditTerm key={uuid} />
     case EditableType.PART:
-      return <EditPart key={id} />
+      return <EditPart key={uuid} />
     case EditableType.SECTION:
-      return <EditSection key={id} sectionId={id} />
+      return <EditSection key={uuid} sectionId={uuid} />
     case EditableType.OUTCOME:
-      return <EditOutcome key={id} outcomeId={id} />
+      return <EditOutcome key={uuid} outcomeUuid={uuid} />
     case EditableType.NODE_LINK:
-      return <EditNodelink key={id} nodeLinkId={id} />
+      return <EditNodelink key={uuid} nodeLinkId={uuid} />
     case EditableType.COLUMN:
-      return <EditColumn key={id} columnId={id} />
+      return <EditColumn key={uuid} columnId={uuid} />
     case EditableType.NODE:
-      return <EditNode key={id} nodeId={id} />
+      return <EditNode key={uuid} nodeId={uuid} />
     default:
       return (
         <Alert

@@ -4,6 +4,7 @@ import {
   edgesActions,
   graphActions,
   nodesActions,
+  outcomesActions,
   sectionsActions,
   tagsActions
 } from './slices/canonical'
@@ -107,5 +108,21 @@ export const applyGraphDelta = (
 
   if (envelope.changes.tags.deleted.length) {
     dispatch(tagsActions.removeManyByTagId(envelope.changes.tags.deleted))
+  }
+
+  if (
+    envelope.changes.outcomes.created.length ||
+    envelope.changes.outcomes.updated.length
+  ) {
+    dispatch(
+      outcomesActions.upsertMany([
+        ...envelope.changes.outcomes.created,
+        ...envelope.changes.outcomes.updated
+      ])
+    )
+  }
+
+  if (envelope.changes.outcomes.deleted.length) {
+    dispatch(outcomesActions.removeManyByUuid(envelope.changes.outcomes.deleted))
   }
 }

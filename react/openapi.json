@@ -1193,6 +1193,54 @@
         ]
       }
     },
+    "/api/graph/{uuid}/outcomes": {
+      "post": {
+        "operationId": "createGraphOutcome",
+        "summary": "Create Graph Outcome",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "outcomes"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphOutcomeCreateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/graph/{uuid}/edges": {
       "get": {
         "operationId": "listGraphEdges",
@@ -1943,6 +1991,176 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/GraphNodeMoveIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/outcome/{uuid}": {
+      "patch": {
+        "operationId": "patchOutcome",
+        "summary": "Patch Outcome",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "outcomes"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphOutcomePatchIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "deleteOutcome",
+        "summary": "Delete Outcome",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "outcomes"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/outcome/{uuid}/duplicate": {
+      "post": {
+        "operationId": "duplicateOutcome",
+        "summary": "Duplicate Outcome",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "outcomes"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/outcome/{uuid}/move": {
+      "post": {
+        "operationId": "moveOutcome",
+        "summary": "Move Outcome",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "outcomes"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphOutcomeMoveIn"
               }
             }
           },
@@ -3690,6 +3908,13 @@
             "title": "Edges",
             "type": "array"
           },
+          "outcomes": {
+            "items": {
+              "$ref": "#/components/schemas/OutcomeGraphOut"
+            },
+            "title": "Outcomes",
+            "type": "array"
+          },
           "threadCommentCounts": {
             "items": {
               "$ref": "#/components/schemas/ThreadCommentCountOut"
@@ -3858,6 +4083,77 @@
           "nodeType"
         ],
         "title": "NodeGraphOut",
+        "type": "object"
+      },
+      "OutcomeGraphOut": {
+        "properties": {
+          "uuid": {
+            "format": "uuid",
+            "title": "Uuid",
+            "type": "string"
+          },
+          "graphUuid": {
+            "format": "uuid",
+            "title": "Graphuuid",
+            "type": "string"
+          },
+          "parentUuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parentuuid"
+          },
+          "order": {
+            "title": "Order",
+            "type": "integer"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "code": {
+            "default": "",
+            "title": "Code",
+            "type": "string"
+          },
+          "tagIds": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Tagids",
+            "type": "array"
+          },
+          "threadUuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threaduuid"
+          }
+        },
+        "required": [
+          "uuid",
+          "graphUuid",
+          "order"
+        ],
+        "title": "OutcomeGraphOut",
         "type": "object"
       },
       "SectionGraphOut": {
@@ -4246,6 +4542,9 @@
           },
           "tags": {
             "$ref": "#/components/schemas/GraphTagsDeltaOut"
+          },
+          "outcomes": {
+            "$ref": "#/components/schemas/GraphOutcomesDeltaOut"
           }
         },
         "required": [
@@ -4253,7 +4552,8 @@
           "edges",
           "channels",
           "sections",
-          "tags"
+          "tags",
+          "outcomes"
         ],
         "title": "GraphMutationChangesOut",
         "type": "object"
@@ -4487,6 +4787,111 @@
           "deleted"
         ],
         "title": "GraphNodesDeltaOut",
+        "type": "object"
+      },
+      "GraphOutcomeMutationOut": {
+        "description": "Flat outcome snapshot for created/updated buckets (aligned with graph read shape).",
+        "properties": {
+          "uuid": {
+            "format": "uuid",
+            "title": "Uuid",
+            "type": "string"
+          },
+          "graphUuid": {
+            "format": "uuid",
+            "title": "Graphuuid",
+            "type": "string"
+          },
+          "parentUuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parentuuid"
+          },
+          "order": {
+            "title": "Order",
+            "type": "integer"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "code": {
+            "default": "",
+            "title": "Code",
+            "type": "string"
+          },
+          "tagIds": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Tagids",
+            "type": "array"
+          },
+          "threadUuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threaduuid"
+          }
+        },
+        "required": [
+          "uuid",
+          "graphUuid",
+          "order"
+        ],
+        "title": "GraphOutcomeMutationOut",
+        "type": "object"
+      },
+      "GraphOutcomesDeltaOut": {
+        "properties": {
+          "created": {
+            "items": {
+              "$ref": "#/components/schemas/GraphOutcomeMutationOut"
+            },
+            "title": "Created",
+            "type": "array"
+          },
+          "updated": {
+            "items": {
+              "$ref": "#/components/schemas/GraphOutcomeMutationOut"
+            },
+            "title": "Updated",
+            "type": "array"
+          },
+          "deleted": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Deleted",
+            "type": "array"
+          }
+        },
+        "required": [
+          "created",
+          "updated",
+          "deleted"
+        ],
+        "title": "GraphOutcomesDeltaOut",
         "type": "object"
       },
       "GraphSectionMutationOut": {
@@ -4918,6 +5323,57 @@
           "mode"
         ],
         "title": "GraphNodePlaceIn",
+        "type": "object"
+      },
+      "GraphOutcomeCreateIn": {
+        "properties": {
+          "parentUuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parentuuid"
+          },
+          "insertIndex": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Insertindex"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "code": {
+            "default": "",
+            "title": "Code",
+            "type": "string"
+          },
+          "tagIds": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Tagids",
+            "type": "array"
+          }
+        },
+        "title": "GraphOutcomeCreateIn",
         "type": "object"
       },
       "GraphEdgeCreateIn": {
@@ -5356,6 +5812,113 @@
           "mode"
         ],
         "title": "GraphNodeMoveIn",
+        "type": "object"
+      },
+      "GraphOutcomePatchIn": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "tagIds": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tagids"
+          }
+        },
+        "title": "GraphOutcomePatchIn",
+        "type": "object"
+      },
+      "GraphOutcomeMoveIn": {
+        "description": "Reparent and/or reorder among siblings; backend renumbers affected sibling orders.",
+        "properties": {
+          "parentUuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parentuuid"
+          },
+          "insertIndex": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Insertindex"
+          },
+          "beforeUuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Beforeuuid"
+          },
+          "afterUuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Afteruuid"
+          }
+        },
+        "title": "GraphOutcomeMoveIn",
         "type": "object"
       },
       "CommentAuthorOut": {

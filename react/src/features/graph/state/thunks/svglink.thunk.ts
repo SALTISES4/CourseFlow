@@ -1,14 +1,62 @@
+import { connectionEdgeToCanonicalPort } from '@cf/components/views/WorkflowView/GraphView/components/LineSVG/utility'
 import { svglinkDragEnd } from '@cf/features/graph/state/slices/svglink.slice'
-import { AppDispatch, RootState } from '@cfRedux/store'
+import { selectNodeByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
+import type { AppDispatch, RootState } from '@cfRedux/store'
+
+import { createEdge } from './graphMutations.thunks'
 
 export const dragEndThunk =
-  () => (dispatch: AppDispatch, getState: () => RootState) => {
-    const state = getState().svglink
+  () => async (dispatch: AppDispatch, getState: () => RootState) => {
+    const { dragging, snap } = getState().svglink
+
+    const sourceNodeUuid =
+      dragging.from?.nodeUuid ?? snap.from?.nodeUuid ?? null
+    const targetNodeUuid = snap.to?.nodeUuid ?? null
+    const sourcePort = dragging.from?.edge ?? snap.from?.edge ?? null
+    const targetPort = snap.to?.edge ?? null
+    const editingExistingEdge = Boolean(dragging.uuid)
+
     dispatch(
       svglinkDragEnd({
-        uuid: state.dragging.uuid,
-        from: state.snap.from,
-        to: state.snap.to
+        uuid: dragging.uuid,
+        from: snap.from,
+        to: snap.to
       })
     )
+
+    if (editingExistingEdge) {
+      // Endpoint drag on an existing edge — no patch API yet.
+      return
+    }
+
+    if (
+      !sourceNodeUuid ||
+      !targetNodeUuid ||
+      sourceNodeUuid === targetNodeUuid ||
+      !targetPort
+    ) {
+      return
+    }
+
+    const sourceNode = selectNodeByUuid(sourceNodeUuid)(getState())
+    if (!sourceNode) {
+      return
+    }
+
+    try {
+      await dispatch(
+        createEdge({
+          graphUuid: sourceNode.graphUuid,
+          sourceNodeUuid,
+          targetNodeUuid,
+          lineType: '',
+          sourcePort: connectionEdgeToCanonicalPort(sourcePort),
+          targetPort: connectionEdgeToCanonicalPort(targetPort)
+        })
+      )
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('[svglink] createEdge failed', error)
+      }
+    }
   }

@@ -16,6 +16,7 @@ import {
   createChannel,
   createGraphEdge,
   createGraphNode,
+  createGraphOutcome,
   createGraphSection,
   createProject,
   createSection,
@@ -26,10 +27,12 @@ import {
   deleteEdge,
   deleteNode,
   deleteOneNotification,
+  deleteOutcome,
   deleteProject,
   deleteProjectTeamMember,
   deleteSection,
   deleteThreadComment,
+  duplicateOutcome,
   duplicateProjectPlaceholder,
   getChannel,
   getEdge,
@@ -64,10 +67,12 @@ import {
   markOneNotificationAsRead,
   me,
   moveGraphNode,
+  moveOutcome,
   patchMyNotificationSettings,
   patchMyProfileSettings,
   patchNode,
   patchNodeMeta,
+  patchOutcome,
   placeGraphNode,
   register,
   reorderGraphChannels,
@@ -91,6 +96,8 @@ import type {
   CreateGraphEdgeResponse,
   CreateGraphNodeData,
   CreateGraphNodeResponse,
+  CreateGraphOutcomeData,
+  CreateGraphOutcomeResponse,
   CreateGraphSectionData,
   CreateGraphSectionResponse,
   CreateProjectData,
@@ -111,6 +118,8 @@ import type {
   DeleteNodeResponse,
   DeleteOneNotificationData,
   DeleteOneNotificationResponse,
+  DeleteOutcomeData,
+  DeleteOutcomeResponse,
   DeleteProjectData,
   DeleteProjectResponse,
   DeleteProjectTeamMemberData,
@@ -119,6 +128,8 @@ import type {
   DeleteSectionResponse,
   DeleteThreadCommentData,
   DeleteThreadCommentResponse,
+  DuplicateOutcomeData,
+  DuplicateOutcomeResponse,
   DuplicateProjectPlaceholderData,
   DuplicateProjectPlaceholderResponse,
   GetChannelData,
@@ -187,6 +198,8 @@ import type {
   MeResponse,
   MoveGraphNodeData,
   MoveGraphNodeResponse,
+  MoveOutcomeData,
+  MoveOutcomeResponse,
   PatchMyNotificationSettingsData,
   PatchMyNotificationSettingsResponse,
   PatchMyProfileSettingsData,
@@ -195,6 +208,8 @@ import type {
   PatchNodeMetaData,
   PatchNodeMetaResponse,
   PatchNodeResponse,
+  PatchOutcomeData,
+  PatchOutcomeResponse,
   PlaceGraphNodeData,
   PlaceGraphNodeResponse,
   RegisterData,
@@ -1030,6 +1045,33 @@ export const placeGraphNodeMutation = (
   return mutationOptions
 }
 
+/**
+ * Create Graph Outcome
+ */
+export const createGraphOutcomeMutation = (
+  options?: Partial<Options<CreateGraphOutcomeData>>
+): UseMutationOptions<
+  CreateGraphOutcomeResponse,
+  DefaultError,
+  Options<CreateGraphOutcomeData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    CreateGraphOutcomeResponse,
+    DefaultError,
+    Options<CreateGraphOutcomeData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await createGraphOutcome({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
 export const listGraphEdgesQueryKey = (options: Options<ListGraphEdgesData>) =>
   createQueryKey('listGraphEdges', options)
 
@@ -1498,6 +1540,114 @@ export const moveGraphNodeMutation = (
   > = {
     mutationFn: async (fnOptions) => {
       const { data } = await moveGraphNode({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Delete Outcome
+ */
+export const deleteOutcomeMutation = (
+  options?: Partial<Options<DeleteOutcomeData>>
+): UseMutationOptions<
+  DeleteOutcomeResponse,
+  DefaultError,
+  Options<DeleteOutcomeData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    DeleteOutcomeResponse,
+    DefaultError,
+    Options<DeleteOutcomeData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await deleteOutcome({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Patch Outcome
+ */
+export const patchOutcomeMutation = (
+  options?: Partial<Options<PatchOutcomeData>>
+): UseMutationOptions<
+  PatchOutcomeResponse,
+  DefaultError,
+  Options<PatchOutcomeData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    PatchOutcomeResponse,
+    DefaultError,
+    Options<PatchOutcomeData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await patchOutcome({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Duplicate Outcome
+ */
+export const duplicateOutcomeMutation = (
+  options?: Partial<Options<DuplicateOutcomeData>>
+): UseMutationOptions<
+  DuplicateOutcomeResponse,
+  DefaultError,
+  Options<DuplicateOutcomeData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    DuplicateOutcomeResponse,
+    DefaultError,
+    Options<DuplicateOutcomeData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await duplicateOutcome({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Move Outcome
+ */
+export const moveOutcomeMutation = (
+  options?: Partial<Options<MoveOutcomeData>>
+): UseMutationOptions<
+  MoveOutcomeResponse,
+  DefaultError,
+  Options<MoveOutcomeData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    MoveOutcomeResponse,
+    DefaultError,
+    Options<MoveOutcomeData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await moveOutcome({
         ...options,
         ...fnOptions,
         throwOnError: true

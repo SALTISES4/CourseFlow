@@ -13,7 +13,6 @@ import {
   useState
 } from 'react'
 import { useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
 
 import Connection from './Connection'
 import ConnectionDrawPreview, { NodeBCR } from './DrawPreview'
@@ -22,15 +21,15 @@ import { ConnectionType } from './types'
 import { canonicalPortToConnectionEdge, edgeLineTypeIsDashed } from './utility'
 
 const LineSVG = ({
+  graphUuid,
   rerender,
   condensed
 }: {
+  graphUuid: string
   rerender: boolean
   condensed: number
 }) => {
   const ref = useRef<SVGSVGElement>(null)
-  const { uuid: graphRouteUuid } = useParams()
-  const graphUuid = graphRouteUuid ?? ''
 
   const edgesSelector = useMemo(
     () => selectEdgesByGraphUuid(graphUuid),

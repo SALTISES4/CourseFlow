@@ -5,13 +5,15 @@ import {
   SidebarTitle
 } from '@cf/components/pages/Workflow/Sidebar/styles'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
-import { selectOutcomeById } from '@cf/redux/selectors/outcomes.selector'
+import type { OutcomeEntity } from '@cf/features/graph/state/model/types'
+import { selectOutcomeById } from '@cf/features/graph/state/selectors/outcomes.selectors'
+import { selectOutcomeLevel } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import {
-  Outcome,
   deleteOutcome,
   duplicateOutcome,
   updateOutcome
-} from '@cf/redux/slices/outcomes.slice'
+} from '@cf/features/graph/state/thunks/outcomeMutations.thunks'
+import type { AppDispatch } from '@cf/redux/store'
 import { RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import { debounce } from '@mui/material'
@@ -25,10 +27,17 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import data from '../EditNode/optionsData'
 
-const EditOutcome = ({ outcomeId }: { outcomeuuid: string }) => {
-  const dispatch = useDispatch()
+type OutcomeFormValues = {
+  title: string
+  description: string
+  code: string
+  tagIds: number[]
+}
+
+const EditOutcome = ({ outcomeUuid }: { outcomeUuid: string }) => {
+  const dispatch = useDispatch<AppDispatch>()
   const outcome = useSelector((state: RootState) =>
-    selectOutcomeById(state, outcomeId)
+    selectOutcomeById(state, outcomeUuid)
   )
 
   if (!outcome) {
@@ -39,8 +48,11 @@ const EditOutcome = ({ outcomeId }: { outcomeuuid: string }) => {
   return <EditOutcomeForm outcome={outcome} />
 }
 
-const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
-  const dispatch = useDispatch()
+const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
+  const dispatch = useDispatch<AppDispatch>()
+  const level = useSelector((state: RootState) =>
+    selectOutcomeLevel(state, outcome.graphUuid, outcome.uuid)
+  )
 
   const {
     control,
@@ -48,12 +60,12 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
     watch,
     reset,
     formState: { isDirty }
-  } = useForm<Outcome>({
+  } = useForm<OutcomeFormValues>({
     defaultValues: {
       title: outcome.title,
       description: outcome.description,
       code: outcome.code,
-      tags: outcome.tags
+      tagIds: outcome.tagIds
     }
   })
 
@@ -65,27 +77,30 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
         title: outcome.title,
         description: outcome.description,
         code: outcome.code,
-        tags: outcome.tags
+        tagIds: outcome.tagIds
       })
     }
   }, [reset, isDirty, outcome])
 
   const debouncedDispatch = useMemo(
     () =>
-      debounce((data: Outcome) => {
+      debounce((formData: OutcomeFormValues) => {
         dispatch(
           updateOutcome({
-            uuid: outcome.uuid,
-            data: {
-              children: outcome.children,
-              ...data
+            graphUuid: outcome.graphUuid,
+            outcomeUuid: outcome.uuid,
+            meta: {
+              title: formData.title,
+              description: formData.description,
+              code: formData.code,
+              tagIds: formData.tagIds
             }
           })
         )
 
         reset({}, { keepValues: true })
       }, 300),
-    [dispatch, reset, outcome.uuid, outcome.children]
+    [dispatch, reset, outcome.graphUuid, outcome.uuid]
   )
 
   useEffect(() => {
@@ -95,12 +110,22 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
   }, [watchedFields, isDirty, debouncedDispatch])
 
   const onDuplicate = useCallback(() => {
-    dispatch(duplicateOutcome({ uuid: outcome.uuid }))
-  }, [dispatch, outcome.uuid])
+    dispatch(
+      duplicateOutcome({
+        graphUuid: outcome.graphUuid,
+        outcomeUuid: outcome.uuid
+      })
+    )
+  }, [dispatch, outcome.graphUuid, outcome.uuid])
 
   const onDelete = useCallback(() => {
-    dispatch(deleteOutcome({ uuid: outcome.uuid }))
-  }, [dispatch, outcome.uuid])
+    dispatch(
+      deleteOutcome({
+        graphUuid: outcome.graphUuid,
+        outcomeUuid: outcome.uuid
+      })
+    )
+  }, [dispatch, outcome.graphUuid, outcome.uuid])
 
   return (
     <SidebarInnerWrap>
@@ -124,7 +149,7 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
             maxRows={5}
             {...register('description')}
           />
-          {outcome.level === 0 && (
+          {level === 0 && (
             <>
               <TextField
                 variant="outlined"
@@ -134,7 +159,7 @@ const EditOutcomeForm = ({ outcome }: { outcome: Outcome }) => {
               />
               {data.tags && (
                 <Controller
-                  name="tags"
+                  name="tagIds"
                   control={control}
                   render={({ field }) => (
                     <Autocomplete

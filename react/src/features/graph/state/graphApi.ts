@@ -17,7 +17,12 @@ import {
   reorderGraphChannels,
   reorderGraphSections,
   unlinkNodeOutcome as unlinkNodeOutcomeSdk,
-  updateSection
+  updateSection,
+  createGraphOutcome,
+  patchOutcome,
+  deleteOutcome as deleteOutcomeSdk,
+  duplicateOutcome,
+  moveOutcome as moveOutcomeSdk
 } from '@cf/api/gen/sdk.gen'
 import type {
   GraphChannelMutationOut,
@@ -25,6 +30,7 @@ import type {
   GraphMetaOut,
   GraphMutationEnvelopeOut,
   GraphNodeMutationOut,
+  GraphOutcomeMutationOut,
   GraphSectionMutationOut,
   GraphTagStubOut,
   GraphViewOut,
@@ -48,11 +54,17 @@ import type {
   InsertChannelBelowInput,
   InsertNodeBelowInput,
   InsertSectionBelowInput,
+  CreateOutcomeInput,
+  DeleteOutcomeInput,
+  DuplicateOutcomeInput,
   LinkNodeOutcomeInput,
+  MoveOutcomeInput,
+  UpdateOutcomeInput,
   LinkNodeWorkflowInput,
   MoveNodeGridInput,
   MoveNodeInput,
   NodeEntity,
+  OutcomeEntity,
   PlaceNodeInput,
   RenameNodeInput,
   ReorderChannelsInput,
@@ -113,6 +125,7 @@ export type GraphResourceBundle = {
   channels: ChannelEntity[]
   nodes: NodeEntity[]
   edges: EdgeEntity[]
+  outcomes: OutcomeEntity[]
 }
 
 function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
@@ -169,7 +182,19 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
     return acc
   }, [])
 
-  return { graph, workflow, sections, channels, nodes, edges }
+  const outcomes: OutcomeEntity[] = (view.outcomes ?? []).map((outcome) => ({
+    uuid: outcome.uuid,
+    graphUuid,
+    parentUuid: outcome.parentUuid ?? null,
+    order: outcome.order,
+    title: outcome.title ?? '',
+    description: outcome.description ?? '',
+    code: outcome.code ?? '',
+    tagIds: outcome.tagIds ?? [],
+    threadUuid: outcome.threadUuid ?? null
+  }))
+
+  return { graph, workflow, sections, channels, nodes, edges, outcomes }
 }
 
 export const fetchWorkflowGraphBundle = async (
@@ -263,6 +288,23 @@ function mapMutationNode(
   }
 }
 
+function mapMutationOutcome(
+  graphUuid: GraphUuid,
+  outcome: GraphOutcomeMutationOut
+): OutcomeEntity {
+  return {
+    uuid: outcome.uuid,
+    graphUuid: outcome.graphUuid ?? graphUuid,
+    parentUuid: outcome.parentUuid ?? null,
+    order: outcome.order,
+    title: outcome.title ?? '',
+    description: outcome.description ?? '',
+    code: outcome.code ?? '',
+    tagIds: outcome.tagIds ?? [],
+    threadUuid: outcome.threadUuid ?? null
+  }
+}
+
 function mapMutationEdge(
   graphUuid: GraphUuid,
   edge: GraphEdgeMutationOut
@@ -304,6 +346,9 @@ function mapMutationEnvelope(
   const tagCreated = payload.changes.tags.created ?? []
   const tagUpdated = payload.changes.tags.updated ?? []
   const tagDeleted = payload.changes.tags.deleted ?? []
+  const outcomeCreated = payload.changes.outcomes?.created ?? []
+  const outcomeUpdated = payload.changes.outcomes?.updated ?? []
+  const outcomeDeleted = payload.changes.outcomes?.deleted ?? []
 
   return {
     graphUuid: graphId,
@@ -341,6 +386,11 @@ function mapMutationEnvelope(
         created: tagCreated.map(mapTagStub),
         updated: tagUpdated.map(mapTagStub),
         deleted: tagDeleted.map(String)
+      },
+      outcomes: {
+        created: outcomeCreated.map((o) => mapMutationOutcome(graphId, o)),
+        updated: outcomeUpdated.map((o) => mapMutationOutcome(graphId, o)),
+        deleted: outcomeDeleted
       }
     },
     meta: {
@@ -618,6 +668,88 @@ export const changeSectionMetaCommand = async (
   return mapSectionOut(resp.item)
 }
 
+export const createOutcomeCommand = async (
+  input: CreateOutcomeInput
+): Promise<GraphMutationEnvelope> => {
+  const result = await createGraphOutcome({
+    path: { uuid: String(input.graphUuid) },
+    body: {
+      parentUuid: input.parentUuid ?? null,
+      insertIndex: input.insertIndex,
+      title: input.title ?? '',
+      description: input.description ?? '',
+      code: input.code ?? '',
+      tagIds: input.tagIds ?? []
+    }
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const updateOutcomeCommand = async (
+  input: UpdateOutcomeInput
+): Promise<GraphMutationEnvelope> => {
+  const { meta } = input
+  const body: Record<string, unknown> = {}
+  if (meta.title !== undefined) {
+    body.title = meta.title
+  }
+  if (meta.description !== undefined) {
+    body.description = meta.description
+  }
+  if (meta.code !== undefined) {
+    body.code = meta.code
+  }
+  if (meta.tagIds !== undefined) {
+    body.tagIds = meta.tagIds
+  }
+  const result = await patchOutcome({
+    path: { uuid: String(input.outcomeUuid) },
+    body: body as never
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const deleteOutcomeCommand = async (
+  input: DeleteOutcomeInput
+): Promise<GraphMutationEnvelope> => {
+  const result = await deleteOutcomeSdk({
+    path: { uuid: String(input.outcomeUuid) }
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const duplicateOutcomeCommand = async (
+  input: DuplicateOutcomeInput
+): Promise<GraphMutationEnvelope> => {
+  const result = await duplicateOutcome({
+    path: { uuid: String(input.outcomeUuid) }
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const moveOutcomeCommand = async (
+  input: MoveOutcomeInput
+): Promise<GraphMutationEnvelope> => {
+  const body: Record<string, unknown> = {}
+  if (input.parentUuidProvided) {
+    body.parentUuid = input.parentUuid ?? null
+  }
+  if (input.insertIndex !== undefined) {
+    body.insertIndex = input.insertIndex
+  }
+  if (input.beforeUuid !== undefined) {
+    body.beforeUuid = input.beforeUuid
+  }
+  if (input.afterUuid !== undefined) {
+    body.afterUuid = input.afterUuid
+  }
+  const result = await moveOutcomeSdk({
+    path: { uuid: String(input.outcomeUuid) },
+    body: body as never
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
 export const buildSectionMetaMutationEnvelope = (
   graphUuid: GraphUuid,
   revisionId: number,
@@ -630,7 +762,8 @@ export const buildSectionMetaMutationEnvelope = (
     channels: { created: [], updated: [], deleted: [] },
     sections: { created: [], updated: [section], deleted: [] },
     edges: { created: [], updated: [], deleted: [] },
-    tags: { created: [], updated: [], deleted: [] }
+    tags: { created: [], updated: [], deleted: [] },
+    outcomes: { created: [], updated: [], deleted: [] }
   },
   meta: {
     triggeredBy: 'changeSectionMeta',

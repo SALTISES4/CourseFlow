@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
-import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
@@ -114,9 +113,3 @@ CardChip.defaultProps = {
   size: 'small',
   variant: 'filled'
 }
-
-export const CardFavouriteBtn = styled(IconButton)({
-  marginTop: '-12px',
-  marginBottom: '-8px',
-  marginRight: '-8px'
-})

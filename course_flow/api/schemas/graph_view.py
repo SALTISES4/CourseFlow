@@ -44,6 +44,18 @@ class ChannelGraphOut(CamelSchema):
     thread_uuid: UUID | None = None
 
 
+class OutcomeGraphOut(CamelSchema):
+    uuid: UUID
+    graph_uuid: UUID
+    parent_uuid: UUID | None = None
+    order: int
+    title: str = ""
+    description: str = ""
+    code: str = ""
+    tag_ids: list[int] = Field(default_factory=list)
+    thread_uuid: UUID | None = None
+
+
 class NodeGraphOut(CamelSchema):
     uuid: UUID
     node_type: str
@@ -87,4 +99,5 @@ class GraphViewOut(CamelSchema):
     sections: list[SectionGraphOut]
     nodes: list[NodeGraphOut]
     edges: list[EdgeGraphOut]
+    outcomes: list[OutcomeGraphOut] = Field(default_factory=list)
     thread_comment_counts: list[ThreadCommentCountOut] = Field(default_factory=list)

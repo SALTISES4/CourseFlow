@@ -22,6 +22,9 @@ class GraphMutationDeltaBuilder:
     edges_created: list[dict] = field(default_factory=list)
     edges_updated: list[dict] = field(default_factory=list)
     edges_deleted: list[int] = field(default_factory=list)
+    outcomes_created: list[dict] = field(default_factory=list)
+    outcomes_updated: list[dict] = field(default_factory=list)
+    outcomes_deleted: list[UUID] = field(default_factory=list)
 
     def add_node_created(self, payload: dict) -> None:
         self.nodes_created.append(payload)
@@ -58,6 +61,15 @@ class GraphMutationDeltaBuilder:
 
     def add_edge_deleted(self, edge_id: int) -> None:
         self.edges_deleted.append(edge_id)
+
+    def add_outcome_created(self, payload: dict) -> None:
+        self.outcomes_created.append(payload)
+
+    def add_outcome_updated(self, payload: dict) -> None:
+        self.outcomes_updated.append(payload)
+
+    def add_outcome_deleted(self, outcome_uuid: UUID) -> None:
+        self.outcomes_deleted.append(outcome_uuid)
 
     def build_envelope(
         self,
@@ -97,6 +109,11 @@ class GraphMutationDeltaBuilder:
                     "created": [],
                     "updated": [],
                     "deleted": [],
+                },
+                "outcomes": {
+                    "created": list(self.outcomes_created),
+                    "updated": list(self.outcomes_updated),
+                    "deleted": list(self.outcomes_deleted),
                 },
             },
             "meta": {

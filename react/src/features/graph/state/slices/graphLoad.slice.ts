@@ -16,7 +16,8 @@ const makeInitialResourceState = (): GraphResourceLoadState => ({
   channels: 'idle',
   nodes: 'idle',
   edges: 'idle',
-  tags: 'idle'
+  tags: 'idle',
+  outcomes: 'idle'
 })
 
 const initialState: GraphLoadState = {

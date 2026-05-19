@@ -1,10 +1,13 @@
 import Alert from '@cf/components/common/UIPrimitives/Alert'
-import { selectOutcomeTagGroups } from '@cf/redux/selectors/outcomes.selector'
+import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import { selectOutcomeTagGroups } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/Utility.class'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import { useQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
+import { RootState } from '@cf/redux/store'
 import { useSelector } from 'react-redux'
 import { generatePath, useNavigate, useParams } from 'react-router-dom'
 
@@ -13,7 +16,14 @@ import * as Styled from '../../styles'
 
 const OutcomeTab = () => {
   const { uuid } = useParams()
-  const outcomeGroups = useSelector(selectOutcomeTagGroups)
+  const { data: workflowDetailResp } = useQuery({
+    ...getWorkflowOptions({ path: { uuid: uuid! } }),
+    enabled: Boolean(uuid)
+  })
+  const graphUuid = workflowDetailResp?.item?.graphUuid ?? ''
+  const outcomeGroups = useSelector((state: RootState) =>
+    selectOutcomeTagGroups(state, graphUuid)
+  )
   const navigate = useNavigate()
 
   const goToEditOutcomes = useCallback(() => {
@@ -70,8 +80,12 @@ const OutcomeTab = () => {
                 <Typography component="h6" variant="body2">
                   {group.title}
                 </Typography>
-                {group.outcomes.map((id) => (
-                  <Outcome key={id} id={id} />
+                {group.outcomes.map((outcomeUuid) => (
+                  <Outcome
+                    key={outcomeUuid}
+                    graphUuid={graphUuid}
+                    uuid={outcomeUuid}
+                  />
                 ))}
               </Styled.GroupWrap>
             )

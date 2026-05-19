@@ -67,6 +67,20 @@ class GraphSectionMutationOut(CamelSchema):
     thread_uuid: UUID | None = None
 
 
+class GraphOutcomeMutationOut(CamelSchema):
+    """Flat outcome snapshot for created/updated buckets (aligned with graph read shape)."""
+
+    uuid: UUID
+    graph_uuid: UUID
+    parent_uuid: UUID | None = None
+    order: int
+    title: str = ""
+    description: str = ""
+    code: str = ""
+    tag_ids: list[int] = Field(default_factory=list)
+    thread_uuid: UUID | None = None
+
+
 class GraphNodesDeltaOut(CamelSchema):
     created: list[GraphNodeMutationOut]
     updated: list[GraphNodeMutationOut]
@@ -97,12 +111,19 @@ class GraphSectionsDeltaOut(CamelSchema):
     deleted: list[UUID]
 
 
+class GraphOutcomesDeltaOut(CamelSchema):
+    created: list[GraphOutcomeMutationOut]
+    updated: list[GraphOutcomeMutationOut]
+    deleted: list[UUID]
+
+
 class GraphMutationChangesOut(CamelSchema):
     nodes: GraphNodesDeltaOut
     edges: GraphEdgesDeltaOut
     channels: GraphChannelsDeltaOut
     sections: GraphSectionsDeltaOut
     tags: GraphTagsDeltaOut
+    outcomes: GraphOutcomesDeltaOut
 
 
 class GraphMutationMetaOut(CamelSchema):
@@ -219,3 +240,28 @@ class GraphChannelInsertBelowIn(CamelSchema):
 
     channel_uuid: UUID | None = None
     duplicate: bool = False
+
+
+class GraphOutcomeCreateIn(CamelSchema):
+    parent_uuid: UUID | None = None
+    insert_index: int | None = None
+    title: str = ""
+    description: str = ""
+    code: str = ""
+    tag_ids: list[int] = Field(default_factory=list)
+
+
+class GraphOutcomePatchIn(CamelSchema):
+    title: str | None = None
+    description: str | None = None
+    code: str | None = None
+    tag_ids: list[int] | None = None
+
+
+class GraphOutcomeMoveIn(CamelSchema):
+    """Reparent and/or reorder among siblings; backend renumbers affected sibling orders."""
+
+    parent_uuid: UUID | None = None
+    insert_index: int | None = None
+    before_uuid: UUID | None = None
+    after_uuid: UUID | None = None

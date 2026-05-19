@@ -13,6 +13,8 @@ import type {
   CreateGraphEdgeResponses,
   CreateGraphNodeData,
   CreateGraphNodeResponses,
+  CreateGraphOutcomeData,
+  CreateGraphOutcomeResponses,
   CreateGraphSectionData,
   CreateGraphSectionResponses,
   CreateProjectData,
@@ -33,6 +35,8 @@ import type {
   DeleteNodeResponses,
   DeleteOneNotificationData,
   DeleteOneNotificationResponses,
+  DeleteOutcomeData,
+  DeleteOutcomeResponses,
   DeleteProjectData,
   DeleteProjectResponses,
   DeleteProjectTeamMemberData,
@@ -41,6 +45,8 @@ import type {
   DeleteSectionResponses,
   DeleteThreadCommentData,
   DeleteThreadCommentResponses,
+  DuplicateOutcomeData,
+  DuplicateOutcomeResponses,
   DuplicateProjectPlaceholderData,
   DuplicateProjectPlaceholderResponses,
   GetChannelData,
@@ -109,6 +115,8 @@ import type {
   MeResponses,
   MoveGraphNodeData,
   MoveGraphNodeResponses,
+  MoveOutcomeData,
+  MoveOutcomeResponses,
   PatchMyNotificationSettingsData,
   PatchMyNotificationSettingsResponses,
   PatchMyProfileSettingsData,
@@ -117,6 +125,8 @@ import type {
   PatchNodeMetaData,
   PatchNodeMetaResponses,
   PatchNodeResponses,
+  PatchOutcomeData,
+  PatchOutcomeResponses,
   PlaceGraphNodeData,
   PlaceGraphNodeResponses,
   RegisterData,
@@ -151,6 +161,8 @@ import {
   zCreateGraphEdgeResponse,
   zCreateGraphNodeData,
   zCreateGraphNodeResponse,
+  zCreateGraphOutcomeData,
+  zCreateGraphOutcomeResponse,
   zCreateGraphSectionData,
   zCreateGraphSectionResponse,
   zCreateProjectData,
@@ -171,6 +183,8 @@ import {
   zDeleteNodeResponse,
   zDeleteOneNotificationData,
   zDeleteOneNotificationResponse,
+  zDeleteOutcomeData,
+  zDeleteOutcomeResponse,
   zDeleteProjectData,
   zDeleteProjectResponse,
   zDeleteProjectTeamMemberData,
@@ -179,6 +193,8 @@ import {
   zDeleteSectionResponse,
   zDeleteThreadCommentData,
   zDeleteThreadCommentResponse,
+  zDuplicateOutcomeData,
+  zDuplicateOutcomeResponse,
   zDuplicateProjectPlaceholderData,
   zDuplicateProjectPlaceholderResponse,
   zGetChannelData,
@@ -247,6 +263,8 @@ import {
   zMeResponse,
   zMoveGraphNodeData,
   zMoveGraphNodeResponse,
+  zMoveOutcomeData,
+  zMoveOutcomeResponse,
   zPatchMyNotificationSettingsData,
   zPatchMyNotificationSettingsResponse,
   zPatchMyProfileSettingsData,
@@ -255,6 +273,8 @@ import {
   zPatchNodeMetaData,
   zPatchNodeMetaResponse,
   zPatchNodeResponse,
+  zPatchOutcomeData,
+  zPatchOutcomeResponse,
   zPlaceGraphNodeData,
   zPlaceGraphNodeResponse,
   zRegisterData,
@@ -911,6 +931,30 @@ export const placeGraphNode = <ThrowOnError extends boolean = false>(
   })
 
 /**
+ * Create Graph Outcome
+ */
+export const createGraphOutcome = <ThrowOnError extends boolean = false>(
+  options: Options<CreateGraphOutcomeData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    CreateGraphOutcomeResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zCreateGraphOutcomeData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zCreateGraphOutcomeResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/graph/{uuid}/outcomes',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
  * List Graph Edges
  */
 export const listGraphEdges = <ThrowOnError extends boolean = false>(
@@ -1275,6 +1319,87 @@ export const moveGraphNode = <ThrowOnError extends boolean = false>(
       await zMoveGraphNodeResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/node/{uuid}/move',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Delete Outcome
+ */
+export const deleteOutcome = <ThrowOnError extends boolean = false>(
+  options: Options<DeleteOutcomeData, ThrowOnError>
+) =>
+  (options.client ?? client).delete<
+    DeleteOutcomeResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) => await zDeleteOutcomeData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zDeleteOutcomeResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/outcome/{uuid}',
+    ...options
+  })
+
+/**
+ * Patch Outcome
+ */
+export const patchOutcome = <ThrowOnError extends boolean = false>(
+  options: Options<PatchOutcomeData, ThrowOnError>
+) =>
+  (options.client ?? client).patch<
+    PatchOutcomeResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) => await zPatchOutcomeData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zPatchOutcomeResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/outcome/{uuid}',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Duplicate Outcome
+ */
+export const duplicateOutcome = <ThrowOnError extends boolean = false>(
+  options: Options<DuplicateOutcomeData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    DuplicateOutcomeResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zDuplicateOutcomeData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zDuplicateOutcomeResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/outcome/{uuid}/duplicate',
+    ...options
+  })
+
+/**
+ * Move Outcome
+ */
+export const moveOutcome = <ThrowOnError extends boolean = false>(
+  options: Options<MoveOutcomeData, ThrowOnError>
+) =>
+  (options.client ?? client).post<MoveOutcomeResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await zMoveOutcomeData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zMoveOutcomeResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/outcome/{uuid}/move',
     ...options,
     headers: {
       'Content-Type': 'application/json',
