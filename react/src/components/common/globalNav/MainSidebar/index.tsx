@@ -1,6 +1,6 @@
+import { LibraryContentTypeOut } from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { CFRoutes } from '@cf/router/appRoutes'
-import { LibraryObjectType } from '@cf/types/enum'
 import strings from '@cf/utility/strings'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
@@ -20,8 +20,6 @@ import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { Link, generatePath, useLocation } from 'react-router-dom'
-
-import { mapObjectTypeToLibraryObjectType } from 'utility/marshalling/librarySearch'
 
 import * as SC from './styles'
 
@@ -74,22 +72,13 @@ const Favourites = () => {
 
         <List>
           {data.items.map((item, id) => {
-            const typedItem = item as typeof item & {
-              contentType: string
-              label: string
-              uuid: string
-            }
-            const libraryType = mapObjectTypeToLibraryObjectType(
-              typedItem.contentType,
-              typedItem.label
-            )
             const url =
-              libraryType === LibraryObjectType.PROJECT
+              item.contentType === LibraryContentTypeOut.PROJECT
                 ? generatePath(CFRoutes.PROJECT, {
-                    uuid: String(typedItem.uuid)
+                    uuid: String(item.uuid)
                   })
                 : generatePath(CFRoutes.WORKFLOW, {
-                    uuid: String(typedItem.uuid)
+                    uuid: String(item.uuid)
                   })
 
             return (
