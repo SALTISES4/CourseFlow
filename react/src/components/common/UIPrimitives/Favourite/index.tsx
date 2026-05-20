@@ -6,7 +6,6 @@ import { _t } from '@cf/utility/Utility.class'
 import StarIcon from '@mui/icons-material/Star'
 import IconButton from '@mui/material/IconButton'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { current } from 'immer'
 import { enqueueSnackbar } from 'notistack'
 import { MouseEvent, useCallback, useState } from 'react'
 

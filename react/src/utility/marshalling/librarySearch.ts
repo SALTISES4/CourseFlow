@@ -7,8 +7,7 @@ import { ObjectPermission } from '@cf/types/common'
 import { LibraryObjectType } from '@cf/types/enum'
 import { ELibraryObject, EUser } from '@XMLHTTP/types/entity'
 
-export type LibraryObjectsSearchQueryResp = {
-  message: string
+type LibraryObjectsSearchQueryResp = {
   dataPackage: {
     items: ELibraryObject[]
     meta: {
@@ -19,14 +18,14 @@ export type LibraryObjectsSearchQueryResp = {
   }
 }
 
-export type LibrarySearchMetaRaw = {
+type LibrarySearchMetaRaw = {
   total_results: number
   page_count: number
   current_page: number
   results_per_page: number
 }
 
-export type LibrarySearchResponseRaw = {
+type LibrarySearchResponseRaw = {
   items: LibraryItemOut[]
   meta: LibrarySearchMetaRaw
 }
@@ -60,9 +59,7 @@ export function mapObjectTypeToLibraryObjectType(
  * Navigation uuid: project UUID for projects; workflow UUID for unit-backed rows
  * (matches `useNavigateToLibraryItem` + workflow routes).
  */
-export function mapLibraryItemToELibraryObject(
-  item: LibraryItemOut
-): ELibraryObject {
+function mapLibraryItemToELibraryObject(item: LibraryItemOut): ELibraryObject {
   const isProject = item.contentType === 'project'
   const id = String(item.uuid ?? '')
 
@@ -122,7 +119,6 @@ export function transformLibrarySearchResponseToLegacy(
 ): LibraryObjectsSearchQueryResp {
   if (!raw || typeof raw !== 'object') {
     return {
-      message: '',
       dataPackage: {
         items: [],
         meta: { currentPage: 0, pageCount: 0, count: 0 }
@@ -136,7 +132,6 @@ export function transformLibrarySearchResponseToLegacy(
   const meta = r.meta
 
   return {
-    message: 'ok',
     dataPackage: {
       items,
       meta: {
