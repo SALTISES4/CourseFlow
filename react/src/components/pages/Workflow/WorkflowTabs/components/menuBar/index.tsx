@@ -1,3 +1,4 @@
+import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import {
   MenuItemType,
   MenuWithOverflow,
@@ -17,6 +18,7 @@ import TuneIcon from '@mui/icons-material/Tune'
 import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
 import { FormControlLabel, Switch } from '@mui/material'
+import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
 import {
   ChangeEvent,
@@ -25,21 +27,18 @@ import {
   useContext,
   useState
 } from 'react'
-import { useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 
 import SectionTitle from './SectionTitle'
 
 const ActionMenu = () => {
   const userContext = useContext(UserContext)
-  const workflow = useSelector((state: RootState) => state.workspace.workflow)
-  const project = useSelector((state: RootState) => state.workspace.project)
 
-  const isStrategy = workflow.isStrategy
-  const userId = userContext.uuid
-  const workflowId = workflow.uuid
-  const projectId = project.uuid
-  const workflowType = workflow.type
-  const publicView = workflow.publicView
+  const { uuid } = useParams()
+  const { data: workflowDetailResp } = useQuery({
+    ...getWorkflowOptions({ path: { uuid: uuid! } }),
+    enabled: Boolean(uuid)
+  })
 
   /*******************************************************
    * MODALS
@@ -50,8 +49,6 @@ const ActionMenu = () => {
     openShareDialog,
     openExportDialog,
     copyToProject,
-    importOutcomes,
-    importNodes,
     archiveWorkflow,
     restoreWorkflow,
     deleteWorkflowHard
@@ -65,7 +62,7 @@ const ActionMenu = () => {
       iconButton: {
         icon: <EditIcon />
       },
-      show: workflow.workflowPermissions.write
+      show: true
     },
     {
       uuid: 'share',
@@ -74,7 +71,7 @@ const ActionMenu = () => {
         icon: <PersonAddIcon />
       },
       action: openShareDialog,
-      show: workflow.workflowPermissions.write,
+      show: true,
       separator: true
     },
     // NOTE: scoped out temporarily, see COURSEFLOW-489
@@ -89,17 +86,14 @@ const ActionMenu = () => {
     {
       uuid: 'copy-to-project',
       content: _t('Copy into current project'),
-      // @ts-ignore @todo what is workflowType
-      action: () => copyToProject(workflowId, projectId, workflowType),
-      show: userId && !isStrategy
-      // @todo find the project permissions
-      // workflow.parentWorkflow\.projectPermission === Constants.permissionKeys.edit
+      action: copyToProject,
+      show: true
     },
     {
       uuid: 'copy-to-library',
       content: _t('Copy to my library'),
       action: openExportDialog,
-      show: !(publicView && !userId)
+      show: true
     },
     // NOTE: scoped out temporarily, see COURSEFLOW-489
     // {
@@ -119,20 +113,20 @@ const ActionMenu = () => {
       uuid: 'archive-workflow',
       action: archiveWorkflow,
       content: _t('Archive workflow'),
-      show: workflow.workflowPermissions.write && !workflow.deleted,
+      show: true,
       separator: 'top'
     },
     {
       uuid: 'restore-workflow',
       action: restoreWorkflow,
       content: _t('Restore workflow'),
-      show: workflow.workflowPermissions.write && workflow.deleted
+      show: true
     },
     {
       uuid: 'hard-delete-workflow',
-      action: () => deleteWorkflowHard(projectId, workflowId),
+      action: () => deleteWorkflowHard,
       content: _t('Permanently delete workflow'),
-      show: workflow.workflowPermissions.write && workflow.deleted
+      show: true
     }
   ]
 

@@ -6,6 +6,7 @@ import { useWorkflowSidebar } from '@cf/components/pages/Workflow/Sidebar/hooks/
 import { WorkflowType } from '@cf/components/pages/Workflow/types'
 import Header from '@cf/components/pages/Workflow/WorkflowTabs/components/Header'
 import {
+  ActionMenu,
   ExpandCollapseMenu,
   JumpToMenu
 } from '@cf/components/pages/Workflow/WorkflowTabs/components/menuBar'
@@ -17,7 +18,6 @@ import WorkflowLegend from '@cf/components/views/WorkflowView/GraphView/componen
 import { selectSectionUuidsOrderedForGraph } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { OuterContentWrap } from '@cf/styles/mui/helper'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
-import ActionMenu from '@cfPages/Project/components/ActionMenu'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Tabs from '@mui/material/Tabs'

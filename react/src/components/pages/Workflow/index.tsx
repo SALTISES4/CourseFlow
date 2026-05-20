@@ -54,16 +54,6 @@ const Workflow = () => {
 
   return (
     <WorkflowSidebarContextProvider>
-      <div style={{ padding: '1rem' }} data-test-id="graph-bootstrap-status">
-        <h2>{graphMeta?.workflowTitle || 'Workflow'}</h2>
-        <p>Graph hydration bootstrap active (new graph store path).</p>
-        <ul>
-          <li>shell: {String(shellReady)}</li>
-          <li>channels: {String(channelsReady)}</li>
-          <li>nodes: {String(nodesReady)}</li>
-          <li>edges: {String(edgesReady)}</li>
-        </ul>
-      </div>
       <WorkflowTabs />
     </WorkflowSidebarContextProvider>
   )

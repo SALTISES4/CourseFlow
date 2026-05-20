@@ -1,0 +1,48 @@
+---
+description: Consult tests/docs/requirements for product behavior when debugging or refactoring
+alwaysApply: true
+---
+
+# Functional requirements source of truth
+
+Architecture ADRs under `docs/architecture/` describe **how** the system is built (API contracts, repositories, graph state, concurrency). They do **not** define end-user product behavior.
+
+**Authoritative product / UI behavior** for refactoring, debugging, and feature work lives under:
+
+`tests/docs/requirements/`
+
+## When to consult it
+
+Before changing or fixing behavior in the app (not only when writing Playwright tests), search and read the relevant material in that folder when:
+
+- Debugging “expected vs actual” UI or workflow behavior
+- Refactoring features whose correct behavior is unclear from code alone
+- Implementing or restoring interactions (sidebar, graph, outcomes, project/workspace, forms, permissions)
+- Answering whether a regression is a bug or an intentional spec change
+
+## Where to look (in order)
+
+1. **Feature specs** — `tests/docs/requirements/original/*_requirements_v1.yaml` (and related normalized examples under `tests/docs/requirements/templates/examples/` if present)
+2. **Authoring rules** — `tests/docs/requirements/guidelines_functional_requirements.md`
+3. **Index and precedence** — `tests/docs/README.md`
+4. **Normalization ADR** (test pipeline only) — `tests/docs/requirements/adr_requirement_normalization_for_test_generation.md`
+
+`tests/docs/testing/` defines **how tests are written**, not what the product must do. Do not treat testing policy as product requirements.
+
+## Precedence when documents conflict
+
+1. Feature-specific requirement documents in `tests/docs/requirements/`
+2. `tests/docs/requirements/guidelines_functional_requirements.md`
+3. `docs/architecture/` (structure and contracts only — not a substitute for FRs)
+4. Current implementation or assumptions
+
+If requirements are missing or ambiguous for the area in question, state that explicitly and ask for clarification rather than inventing behavior.
+
+## Relationship to other docs
+
+| Question | Consult |
+| -------- | ------- |
+| What should this screen/control do? | `tests/docs/requirements/` |
+| How should HTTP/Redux/graph layers be shaped? | `docs/architecture/` |
+| How should Playwright tests be authored? | `tests/docs/testing/` |
+| OpenAPI / generated client rules | `.cursor/rules/openapi-generated-files-policy.mdc` |

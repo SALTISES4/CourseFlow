@@ -34,7 +34,7 @@ const MenuBar = ({ leftSection, viewbar, userbar }: PropsType) => {
           </div>
           <Stack direction="row" spacing={2}>
             <div data-test-id="user-bar">{userbar}</div>
-            <div data-test-id="viewbar">{viewbar}</div>
+            <div data-test-id="view-bar">{viewbar}</div>
           </Stack>
         </Styled.Inner>
       </OuterContentWrap>
