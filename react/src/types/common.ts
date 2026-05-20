@@ -89,7 +89,7 @@ export type ProjectDetailsType = {
   uuid: string
   title: string
   description: string
-  isFavourite: boolean
+  isFavorite: boolean
   isDeleted: boolean
   created: Date | string
   author: EUser

@@ -12,13 +12,13 @@ import { MouseEvent, useCallback, useState } from 'react'
 type PropsType = {
   id?: string
   uuid?: string
-  isFavourite: boolean
+  isFavorite: boolean
   type: LibraryObjectType
 }
 
-const Favourite = ({ id, uuid, isFavourite, type }: PropsType) => {
+const Favourite = ({ id, uuid, isFavorite, type }: PropsType) => {
   const targetUuid = uuid ?? id
-  const [isFavouriteState, setFavouriteState] = useState<boolean>(isFavourite)
+  const [isFavoriteState, setFavouriteState] = useState<boolean>(isFavorite)
   const queryClient = useQueryClient()
   const patchQueryCache = usePatchQueryCache()
   const toggleFavorite = useMutation({
@@ -33,15 +33,15 @@ const Favourite = ({ id, uuid, isFavourite, type }: PropsType) => {
         queryKey: [{ _id: 'getProject' }],
         callback: (draft) => {
           if (uuid === draft.item.uuid) {
-            draft.item.isFavourite = !isFavouriteState
+            draft.item.isFavorite = !isFavoriteState
           }
         }
       })
 
-      const msg = isFavouriteState
+      const msg = isFavoriteState
         ? _t('Removed from favorites')
         : _t('Saved to favorites')
-      setFavouriteState(!isFavouriteState)
+      setFavouriteState(!isFavoriteState)
       enqueueSnackbar(msg, { variant: 'success' })
     },
     onError: (error) => {
@@ -65,7 +65,7 @@ const Favourite = ({ id, uuid, isFavourite, type }: PropsType) => {
     <IconButton
       aria-label={_t('Favourite')}
       sx={{
-        color: isFavouriteState
+        color: isFavoriteState
           ? 'courseflow.favouriteActive'
           : 'courseflow.favouriteInactive'
       }}

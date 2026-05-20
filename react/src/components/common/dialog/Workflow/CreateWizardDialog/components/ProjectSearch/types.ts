@@ -6,6 +6,6 @@
 //   title: string | ReactNode
 //   description?: string
 //   isSelected?: boolean
-//   isFavourite?: boolean
+//   isFavorite?: boolean
 //   chips: (ReactNode | WorkflowCardChipType)[]
 // }

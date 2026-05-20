@@ -20,7 +20,7 @@ export type WorkflowCardWrapperPropsType = Pick<
   'uuid' | 'description' | 'chips'
 > & {
   title: string
-  isFavourite: boolean
+  isFavorite: boolean
   isLinked: boolean
   type: LibraryObjectType
   isSelected?: boolean
@@ -32,8 +32,8 @@ const WorkflowCardWrapper = ({
   title,
   description,
   chips,
-  isFavourite,
   type,
+  isFavorite,
   isLinked,
   isSelected = false,
   onClick
@@ -55,7 +55,7 @@ const WorkflowCardWrapper = ({
   const deleted = false
 
   const favourite = (
-    <Favourite uuid={uuid} isFavourite={isFavourite} type={type} />
+    <Favourite uuid={uuid} isFavorite={isFavorite} type={type} />
   )
 
   return (

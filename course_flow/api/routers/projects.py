@@ -87,7 +87,7 @@ def _project_detail_out(current_user_id: int, dto: ProjectDTO) -> ProjectDetailO
         for row in workflow_rows
     ]
 
-    is_favourite = FavoriteProject.objects.filter(
+    is_favorite = FavoriteProject.objects.filter(
         user_id=current_user_id,
         project_id=dto.id,
     ).exists()
@@ -98,7 +98,7 @@ def _project_detail_out(current_user_id: int, dto: ProjectDTO) -> ProjectDetailO
         description=dto.description,
         is_published=dto.is_published,
         is_template=dto.is_template,
-        is_favourite=is_favourite,
+        is_favorite=is_favorite,
         owner_id=dto.owner_id,
         date_created=dto.date_created,
         modified_on=dto.modified_on,
@@ -128,7 +128,7 @@ def create_project(request, payload: ProjectCreateIn):
         description=dto.description,
         is_published=dto.is_published,
         is_template=dto.is_template,
-        is_favourite=False,
+        is_favorite=False,
         owner_id=dto.owner_id,
         date_created=dto.date_created,
         modified_on=dto.modified_on,
