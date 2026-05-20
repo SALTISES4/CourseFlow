@@ -1,8 +1,8 @@
 /**
  * Builds the Workflow graph “board” view model from canonical graph Redux state.
  *
- * Keeps parity with legacy `workflow.selector` shape; color derivation stays here
- * (canonical `ChannelEntity` has no legacy column-type/theme fields).
+ * Keeps parity with legacy `workflow.selector` shape; column colours use persisted
+ * `ChannelEntity.colour` when set, otherwise cyclic theme defaults.
  */
 
 import { defaultColumnSettings } from '@cf/utility/constants'
@@ -15,7 +15,7 @@ import {
   selectNodesByGraphUuid,
   selectSectionsOrderedByGraphUuid
 } from './canonical.selectors'
-import type { GraphUuid, NodeEntity } from '../model/types'
+import type { ChannelEntity, GraphUuid, NodeEntity } from '../model/types'
 
 type StateWithGraph = {
   graph: GraphState
@@ -55,17 +55,17 @@ const emptyBoard = (graphUuid: string): GraphBoard => ({
 })
 
 const buildChannelColors = (
-  channelUuids: string[]
+  orderedChannels: ChannelEntity[]
 ): GraphBoard['columns']['colors'] => {
   const colors: GraphBoard['columns']['colors'] = {}
   const types = CYCLIC_DEFAULT_COLUMN_TYPES
   const typeCount = types.length > 0 ? types.length : 1
 
-  channelUuids.forEach((uuid, idx) => {
+  orderedChannels.forEach((channel, idx) => {
     const columnType = types.length > 0 ? types[idx % typeCount] : 0
-    colors[uuid] = ThemeHelper.getColumnColour({
+    colors[channel.uuid] = ThemeHelper.getColumnColour({
       columnType,
-      colour: null
+      colour: channel.colour || null
     })
   })
 
@@ -91,7 +91,7 @@ const makeSelectGraphBoard = lruMemoize(
           columnIndexMap.set(id, idx)
         })
 
-        const colors = buildChannelColors(columnIds)
+        const colors = buildChannelColors(orderedChannels)
 
         const sections: SectionBoard[] = orderedSections.map((section) => {
           const rows: SectionBoard['rows'] = []

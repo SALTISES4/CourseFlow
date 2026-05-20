@@ -1,4 +1,4 @@
-import { Fragment, MouseEvent, ReactNode, RefObject } from 'react'
+import { Fragment, ReactNode, RefObject } from 'react'
 
 import {
   CardCaption,

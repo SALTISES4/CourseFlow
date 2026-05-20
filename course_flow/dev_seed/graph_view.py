@@ -123,6 +123,8 @@ def persist_edges_from_pairs(
             source_node=nodes[s],
             target_node=nodes[t],
             line_type="",
+            source_port="1",
+            target_port="1",
         )
         for s, t in pairs
     ]

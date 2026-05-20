@@ -4,10 +4,16 @@ import {
   SidebarInnerWrap,
   SidebarTitle
 } from '@cf/components/pages/Workflow/Sidebar/styles'
-import { edgeLineTypeIsDashed } from '@cf/components/views/WorkflowView/GraphView/components/LineSVG/utility'
+import {
+  dashedToLineType,
+  edgeLineTypeIsDashed
+} from '@cf/components/views/WorkflowView/GraphView/components/LineSVG/utility'
 import type { EdgeEntity } from '@cf/features/graph/state/model/types'
 import { selectEdgeByEdgeId } from '@cf/features/graph/state/selectors/canonical.selectors'
-import { deleteEdge } from '@cf/features/graph/state/thunks/graphMutations.thunks'
+import {
+  deleteEdge,
+  updateEdge
+} from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import type { AppDispatch } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
@@ -19,6 +25,7 @@ import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { debounce } from '@mui/material'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -45,33 +52,69 @@ const EditNodeLink = ({ nodeLinkId }: { nodeLinkId: string }) => {
 
 const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const [titleDraft, setTitleDraft] = useState('')
-  const [textPosition, setTextPosition] = useState(50)
+  const [titleDraft, setTitleDraft] = useState(edge.title)
+  const [textPosition, setTextPosition] = useState(edge.textPosition)
   const [dashed, setDashed] = useState(() =>
     edgeLineTypeIsDashed(edge.lineType)
   )
 
   useEffect(() => {
+    setTitleDraft(edge.title)
+    setTextPosition(edge.textPosition)
     setDashed(edgeLineTypeIsDashed(edge.lineType))
-  }, [edge.edgeId, edge.lineType])
+  }, [edge.edgeId, edge.title, edge.textPosition, edge.lineType])
 
-  const onTitleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setTitleDraft(e.target.value)
-    // TODO(graph-state): persist edge label when the graph API supports it.
-  }, [])
+  const debouncedMetaDispatch = useMemo(
+    () =>
+      debounce(
+        (meta: { title?: string; textPosition?: number; lineType?: string }) => {
+          void dispatch(
+            updateEdge({
+              graphUuid: edge.graphUuid,
+              edgeId: edge.edgeId,
+              meta
+            })
+          )
+        },
+        300
+      ),
+    [dispatch, edge.edgeId, edge.graphUuid]
+  )
+
+  useEffect(() => () => debouncedMetaDispatch.clear(), [debouncedMetaDispatch])
+
+  const onTitleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value
+      setTitleDraft(value)
+      debouncedMetaDispatch({ title: value })
+    },
+    [debouncedMetaDispatch]
+  )
 
   const onDashChange = useCallback(
     (_: ChangeEvent<HTMLInputElement>, checked: boolean) => {
       setDashed(checked)
-      // TODO(graph-state): persist lineType (`dashed` / `solid`) via edge patch mutation when available.
+      debouncedMetaDispatch.clear()
+      void dispatch(
+        updateEdge({
+          graphUuid: edge.graphUuid,
+          edgeId: edge.edgeId,
+          meta: { lineType: dashedToLineType(checked) }
+        })
+      )
     },
-    []
+    [debouncedMetaDispatch, dispatch, edge.edgeId, edge.graphUuid]
   )
 
-  const onSliderChange = useCallback((_: Event, value: number | number[]) => {
-    setTextPosition(value as number)
-    // TODO(graph-state): persist edge text position when the graph API supports it.
-  }, [])
+  const onSliderChange = useCallback(
+    (_: Event, value: number | number[]) => {
+      const next = value as number
+      setTextPosition(next)
+      debouncedMetaDispatch({ textPosition: next })
+    },
+    [debouncedMetaDispatch]
+  )
 
   const onDelete = useCallback(() => {
     dispatch(

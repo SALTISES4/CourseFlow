@@ -1,10 +1,12 @@
 import { SnackbarOptions } from '@cf/utility/constants'
 import { enqueueSnackbar } from 'notistack'
 
+// message type has changed
 interface ResponseWithMessage {
   message?: string
 }
 
+// message type has changed
 interface ErrorWithMessage {
   message?: string
 }

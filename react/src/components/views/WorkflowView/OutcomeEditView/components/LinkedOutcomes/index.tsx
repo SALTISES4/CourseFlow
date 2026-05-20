@@ -1,5 +1,6 @@
 import { selectOutcomeChildrenById } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { RootState } from '@cfRedux/store'
+import Outcome from '@cfSidebar/components/OutcomesTab/Outcome'
 import { LinkedOutcomesPropsType } from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes/types'
 import * as StyledOutcome from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import { MouseEvent, useCallback, useRef, useState } from 'react'
@@ -54,7 +55,7 @@ const LinkedOutcomes = ({
         <StyledOutcome.OutcomeGroup sx={{ mt: 0 }}>
           {outcomes.map((outcome) => (
             <StyledOutcome.OutcomeGroupItem key={outcome}>
-              {/*<Outcome {...entities[outcome]} linkParent={parent} />*/}
+              <Outcome {...entities[outcome]} linkParent={parent} />
             </StyledOutcome.OutcomeGroupItem>
           ))}
         </StyledOutcome.OutcomeGroup>

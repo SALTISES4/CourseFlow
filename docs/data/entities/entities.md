@@ -58,10 +58,17 @@ This document is a **derived** view of that code. When code and prose disagree, 
 
 ### Node (`cf_node`)
 
-- `section` → `Section`, `channel` → `Channel`, `workflow` → `Workflow` (all required in code)
+- `section` → `Section`, `channel` → `Channel` (required)
+- `workflow` → `Workflow` (**parent workflow** — the graph this cell belongs to; required)
+- `linked_workflow` → `Workflow` (optional symbolic link to another library workflow in the same project; does not replace `workflow`)
+- `node_type` — semantic child layer (`course` | `activity` | `task`); set at creation from parent `workflow_type` per `course_flow/core/hierarchy.py`; not user-editable
 - `thread` → `Thread` (`OneToOne`, `SET_NULL`, optional)
 - `section_row` — grid row index
+- Identity fields on the node row: `title`, `description`
+- Typed metadata via **one** `OneToOne` (by `node_type`): `coursemeta`, `activitymeta`, or `taskmeta` — not `programmeta` (see [ADR: Typed meta for workflows and grid nodes](../../architecture/adr_node_and_workflow_typed_meta.md))
 - M2M `outcomes` through `NodeOutcome`, M2M `tags` through `NodeTag`
+
+**Terminology:** [ADR: Workflow hierarchy, node types, and linked workflows](../../architecture/adr_workflow_hierarchy_and_linked_nodes.md). Prefer “node of type `activity` in a course workflow” over ambiguous “course node”.
 
 ### Edge (`cf_edge`)
 
@@ -129,22 +136,25 @@ This document is a **derived** view of that code. When code and prose disagree, 
 
 ---
 
-## Meta models (typed workflow extensions)
+## Meta models (typed extensions)
 
-Each is `OneToOne` to `Workflow`:
+Shared pattern: typed fields live on `*meta` tables; `Workflow` and `Node` keep `title` / `description` on the parent row.
 
-| Model | Table | Related name on `Workflow` |
-|-------|--------|------------------------------|
-| `Programmeta` | `cf_programmeta` | `programmeta` |
-| `Coursemeta` | `cf_coursemeta` | `coursemeta` |
-| `Activitymeta` | `cf_activitymeta` | `activitymeta` |
-| `Taskmeta` | `cf_taskmeta` | `taskmeta` |
+| Model | Table | Attached to | Notes |
+|-------|--------|-------------|--------|
+| `Programmeta` | `cf_programmeta` | `Workflow` only (`workflow_type=program`) | Not used on nodes |
+| `Coursemeta` | `cf_coursemeta` | `Workflow` or `Node` (XOR) | Node: `node_type=course` |
+| `Activitymeta` | `cf_activitymeta` | `Workflow` or `Node` (XOR) | Node: `node_type=activity`; includes context/task/time fields |
+| `Taskmeta` | `cf_taskmeta` | `Node` only | Node: `node_type=task`; workflows do not have `taskmeta` |
+
+See [ADR: Typed meta for workflows and grid nodes](../../architecture/adr_node_and_workflow_typed_meta.md).
 
 ---
 
 ## Enums (`course_flow/core/enum.py`)
 
-- **WorkflowType:** `program`, `course`, `activity`, `task`
+- **WorkflowType:** `program`, `course`, `activity`, `task` (root graph types exclude `task`)
+- **NodeType:** `course`, `activity`, `task` (child layer for grid nodes; no `program` on nodes)
 - **Role:** `editor`, `commenter`, `viewer`
 - **LanguagePreference:** `en-ca`, `fr-ca` (values stored on `User.language_preference`)
 

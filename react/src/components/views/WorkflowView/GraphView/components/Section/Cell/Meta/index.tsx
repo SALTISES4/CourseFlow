@@ -12,7 +12,10 @@ import { getIcon } from './utility'
 const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
 type PropsType = {
-  workflow?: number | null
+  /** Linked library workflow UUID when set on the node. */
+  workflow?: string | null
+  /** Parent graph workflow type (`course` | `program`) for link label copy. */
+  parentWorkflowType?: string | null
   contextType: number
   taskType: number
   time?: {
@@ -21,31 +24,55 @@ type PropsType = {
   }
 }
 
-const Meta = ({ workflow, contextType, taskType, time }: PropsType) => {
+function linkedIndicatorLabel(
+  parentWorkflowType: string | null | undefined
+): string {
+  if (parentWorkflowType === 'program') {
+    return _t('Linked course')
+  }
+  if (parentWorkflowType === 'course') {
+    return _t('Linked activity')
+  }
+  return _t('Linked workflow')
+}
+
+const Meta = ({
+  workflow,
+  parentWorkflowType,
+  contextType,
+  taskType,
+  time
+}: PropsType) => {
   const contextIcon = getIcon('context', contextType)
   const taskIcon = getIcon('task', taskType)
-  const workflowUrl = generatePath(CFRoutes.WORKFLOW, {
-    uuid: String(workflow)
-  })
+  const workflowUrl = workflow
+    ? generatePath(CFRoutes.WORKFLOW, {
+        uuid: workflow
+      })
+    : ''
 
   const onWorkflowLinkClick = useCallback(
     (e: MouseEvent<HTMLAnchorElement>) => {
       e.preventDefault()
       e.stopPropagation()
 
-      // not using navigate(...) because we want to trigger a good ol' full reload
-      window.location.href = workflowUrl
+      window.open(workflowUrl, '_blank', 'noopener,noreferrer')
     },
     [workflowUrl]
   )
 
   return (
     <Styled.Wrap>
-      {workflow && (
+      {workflow && workflowUrl && (
         <Styled.WorkflowLink>
-          <Link href={workflowUrl} onClick={onWorkflowLinkClick}>
+          <Link
+            href={workflowUrl}
+            onClick={onWorkflowLinkClick}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <LaunchOutlinedIcon />
-            {_t('Linked workflow')}
+            {linkedIndicatorLabel(parentWorkflowType)}
           </Link>
         </Styled.WorkflowLink>
       )}

@@ -72,22 +72,23 @@ def _node_tag_ids(n: Node) -> list[int]:
 
 
 def _node_payload(n: Node) -> dict:
-    time_required = n.time_required
+    from course_flow.core.node_meta import read_node_meta_fields
+
+    meta_fields = read_node_meta_fields(n)
     return {
         "uuid": n.uuid,
         "node_type": n.node_type,
         "title": n.title or "",
         "description": n.description or "",
-        "context_classification": n.context_classification,
-        "task_classification": n.task_classification,
-        "time_required": float(time_required) if time_required is not None else None,
-        "time_units": n.time_units,
-        "represents_workflow": n.represents_workflow,
+        **meta_fields,
         "tag_ids": _node_tag_ids(n),
         "section_uuid": n.section.uuid if n.section_id else None,
         "channel_uuid": n.channel.uuid if n.channel_id else None,
         "section_row": n.section_row,
         "workflow_uuid": n.workflow.uuid if n.workflow_id else None,
+        "linked_workflow_uuid": (
+            n.linked_workflow.uuid if n.linked_workflow_id else None
+        ),
         "thread_uuid": n.thread.uuid if n.thread_id else None,
         "outcome_uuids": [o.uuid for o in n.outcomes.all()],
     }
@@ -118,6 +119,8 @@ def _edge_payload(e: Edge) -> dict:
         "id": e.id,
         "source_node_uuid": e.source_node.uuid,
         "target_node_uuid": e.target_node.uuid,
+        "title": e.title or "",
+        "text_position": e.text_position,
         "line_type": e.line_type,
         "source_port": e.source_port,
         "target_port": e.target_port,
@@ -129,6 +132,7 @@ def _channel_payload(ch: Channel) -> dict:
         "uuid": ch.uuid,
         "graph_uuid": ch.graph.uuid,
         "title": ch.title,
+        "colour": ch.colour or "",
         "position": ch.position,
         "thread_uuid": ch.thread.uuid if ch.thread_id else None,
     }
@@ -523,6 +527,7 @@ class GraphMutationService:
                 ch = Channel.objects.select_related("graph", "thread").get(pk=ch.pk)
                 builder.add_channel_updated(_channel_payload(ch))
 
+        colour = ""
         if duplicate:
             source = anchor if anchor is not None else (channels[0] if channels else None)
             if source is None:
@@ -530,12 +535,14 @@ class GraphMutationService:
             else:
                 source_title = (source.title or "").strip()
                 title = f"{source_title} (copy)" if source_title else " (copy)"
+                colour = source.colour or ""
         else:
             title = ""
 
         new_ch = Channel.objects.create(
             graph_id=wf.id,
             title=title,
+            colour=colour,
             position=insert_position,
         )
         new_ch = Channel.objects.select_related("graph", "thread").get(pk=new_ch.pk)
@@ -696,9 +703,14 @@ class GraphMutationService:
         source_node_uuid: UUID,
         target_node_uuid: UUID,
         line_type: str = "",
-        source_port: str = "",
-        target_port: str = "",
+        source_port: str,
+        target_port: str,
     ) -> tuple[dict | None, MutationError | None]:
+        source_port = source_port.strip()
+        target_port = target_port.strip()
+        if not source_port or not target_port:
+            return None, "bad_request"
+
         wf, err = self._lock_graph(graph_uuid, user_id)
 
         if err:
@@ -814,6 +826,95 @@ class GraphMutationService:
             revision_id=wf_locked.revision_id,
             triggered_by="delete_edge",
             trigger_entity_id=eid_str,
+        )
+        return env, None
+
+    @transaction.atomic
+    def update_edge(
+        self,
+        *,
+        user_id: int,
+        edge_id: int,
+        title: str | None = None,
+        text_position: int | None = None,
+        line_type: str | None = None,
+    ) -> tuple[dict | None, MutationError | None]:
+        try:
+            e = Edge.objects.select_related(
+                "source_node__section__graph",
+                "source_node__channel__graph",
+                "target_node__section__graph",
+                "target_node__channel__graph",
+            ).get(pk=edge_id)
+        except Edge.DoesNotExist:
+            return None, "not_found"
+
+        wf_s = graph_from_node(e.source_node)
+        wf_t = graph_from_node(e.target_node)
+
+        if (
+            wf_s is None
+            or wf_t is None
+            or wf_s.pk != wf_t.pk
+            or not _node_in_graph(e.source_node, wf_s.id)
+            or not _node_in_graph(e.target_node, wf_s.id)
+        ):
+            return None, "not_found"
+
+        try:
+            wf_locked = (
+                Graph.objects.select_for_update(of=("self",))
+                .select_related("workflow")
+                .get(pk=wf_s.pk)
+            )
+        except Graph.DoesNotExist:
+            return None, "not_found"
+
+        if wf_locked.workflow.author_id != user_id:
+            return None, "forbidden"
+
+        try:
+            e = Edge.objects.select_related("source_node", "target_node").get(
+                pk=edge_id
+            )
+        except Edge.DoesNotExist:
+            return None, "not_found"
+
+        if not _node_in_graph(e.source_node, wf_locked.id) or not _node_in_graph(
+            e.target_node,
+            wf_locked.id,
+        ):
+            return None, "not_found"
+
+        updates: list[str] = []
+        if title is not None:
+            e.title = title
+            updates.append("title")
+        if text_position is not None:
+            if text_position < 0 or text_position > 100:
+                return None, "bad_request"
+            e.text_position = text_position
+            updates.append("text_position")
+        if line_type is not None:
+            e.line_type = line_type
+            updates.append("line_type")
+
+        if not updates:
+            return None, "bad_request"
+
+        e.save(update_fields=updates)
+        e = Edge.objects.select_related("source_node", "target_node").get(pk=e.pk)
+
+        builder = GraphMutationDeltaBuilder()
+        builder.add_edge_updated(_edge_payload(e))
+
+        _bump_revision(wf_locked)
+
+        env = builder.build_envelope(
+            graph_uuid=wf_locked.uuid,
+            revision_id=wf_locked.revision_id,
+            triggered_by="update_edge",
+            trigger_entity_id=str(e.id),
         )
         return env, None
 
@@ -976,7 +1077,16 @@ class GraphMutationService:
 
     def _reload_node(self, node_pk: int) -> Node:
         return (
-            Node.objects.select_related("section", "channel", "workflow", "thread")
+            Node.objects.select_related(
+                "section",
+                "channel",
+                "workflow",
+                "linked_workflow",
+                "thread",
+                "activitymeta",
+                "coursemeta",
+                "taskmeta",
+            )
             .prefetch_related("outcomes", "tags")
             .get(pk=node_pk)
         )
@@ -1024,21 +1134,18 @@ class GraphMutationService:
         if "description" in patch and patch["description"] is not None:
             n.description = patch["description"]
             update_fields.append("description")
-        if "context_classification" in patch:
-            n.context_classification = patch["context_classification"]
-            update_fields.append("context_classification")
-        if "task_classification" in patch:
-            n.task_classification = patch["task_classification"]
-            update_fields.append("task_classification")
-        if "time_required" in patch:
-            n.time_required = patch["time_required"]
-            update_fields.append("time_required")
-        if "time_units" in patch:
-            n.time_units = patch["time_units"]
-            update_fields.append("time_units")
-        if "represents_workflow" in patch and patch["represents_workflow"] is not None:
-            n.represents_workflow = patch["represents_workflow"]
-            update_fields.append("represents_workflow")
+        from course_flow.core.node_meta import (
+            patch_node_typed_meta,
+            typed_meta_patch_keys,
+        )
+
+        meta_patch = {
+            k: patch[k]
+            for k in typed_meta_patch_keys()
+            if k in patch
+        }
+        if meta_patch:
+            patch_node_typed_meta(n, meta_patch)
 
         if update_fields:
             n.save(update_fields=update_fields)
@@ -1103,6 +1210,8 @@ class GraphMutationService:
             new_edge = Edge.objects.create(
                 source_node=src,
                 target_node=tgt,
+                title=edge.title,
+                text_position=edge.text_position,
                 line_type=edge.line_type,
                 source_port=edge.source_port,
                 target_port=edge.target_port,
@@ -1161,7 +1270,18 @@ class GraphMutationService:
         builder.add_node_created(_node_payload(new_node))
 
         if duplicate:
+            from course_flow.core.node_meta import copy_node_typed_meta
+
+            new_node.title = anchor.title
+            new_node.description = anchor.description
+            new_node.save(update_fields=["title", "description"])
+            copy_node_typed_meta(source=anchor, target=new_node)
             self._copy_edges_to_node(builder, source=anchor, target=new_node)
+            if anchor.linked_workflow_id:
+                new_node.linked_workflow = anchor.linked_workflow
+                new_node.save(update_fields=["linked_workflow_id"])
+            new_node = self._reload_node(new_node.pk)
+            builder.add_node_updated(_node_payload(new_node))
 
         _bump_revision(wf)
         triggered = "duplicate_node_below" if duplicate else "insert_node_below"
@@ -1329,6 +1449,7 @@ class GraphMutationService:
                 "section__graph",
                 "channel__graph",
                 "workflow__graph",
+                "linked_workflow__graph",
                 "thread",
             ).get(uuid=node_uuid)
         except Node.DoesNotExist:
@@ -1346,7 +1467,7 @@ class GraphMutationService:
             return None, "not_found"
 
         if workflow_uuid is None:
-            target_workflow = wf_locked.workflow
+            node.linked_workflow = None
         else:
             try:
                 target_workflow = Workflow.objects.select_related("graph").get(
@@ -1358,9 +1479,9 @@ class GraphMutationService:
             current_user = User.objects.get(pk=user_id)
             if not can_view_graph(current_user=current_user, graph=target_graph):
                 return None, "forbidden"
+            node.linked_workflow = target_workflow
 
-        node.workflow = target_workflow
-        node.save(update_fields=["workflow_id"])
+        node.save(update_fields=["linked_workflow_id"])
         node = self._reload_node(node.pk)
 
         builder = GraphMutationDeltaBuilder()

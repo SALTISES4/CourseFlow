@@ -26,6 +26,15 @@ class Node(UUIDModel):
         Workflow,
         on_delete=models.CASCADE,
         related_name="nodes",
+        help_text="Parent graph workflow for this grid cell (immutable placement context).",
+    )
+    linked_workflow = models.ForeignKey(
+        Workflow,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="nodes_linked_from",
+        help_text="Optional symbolic link to another library workflow.",
     )
     thread = models.OneToOneField(
         Thread,
@@ -45,13 +54,6 @@ class Node(UUIDModel):
     )
     title = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True)
-    context_classification = models.IntegerField(null=True, blank=True)
-    task_classification = models.IntegerField(null=True, blank=True)
-    time_required = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
-    )
-    time_units = models.PositiveSmallIntegerField(null=True, blank=True)
-    represents_workflow = models.BooleanField(default=False)
     outcomes = models.ManyToManyField(
         Outcome,
         through="NodeOutcome",

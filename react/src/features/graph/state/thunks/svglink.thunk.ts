@@ -33,6 +33,7 @@ export const dragEndThunk =
       !sourceNodeUuid ||
       !targetNodeUuid ||
       sourceNodeUuid === targetNodeUuid ||
+      !sourcePort ||
       !targetPort
     ) {
       return

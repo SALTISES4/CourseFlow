@@ -5,6 +5,7 @@ from uuid import UUID
 from django.db.models import Count, Q
 
 from course_flow.core.models import Comment, Edge, Graph, Node, Outcome, Thread
+from course_flow.core.node_meta import read_node_meta_fields
 
 
 class GraphViewService:
@@ -30,7 +31,16 @@ class GraphViewService:
             Node.objects.filter(
                 Q(section__graph_id=w.id) | Q(channel__graph_id=w.id),
             )
-            .select_related("section", "channel", "workflow", "thread")
+            .select_related(
+                "section",
+                "channel",
+                "workflow",
+                "linked_workflow",
+                "thread",
+                "activitymeta",
+                "coursemeta",
+                "taskmeta",
+            )
             .prefetch_related("outcomes", "tags")
             .order_by("section_id", "channel_id", "section_row", "id")
         )
@@ -114,6 +124,7 @@ class GraphViewService:
                     "uuid": c.uuid,
                     "graph_uuid": w.uuid,
                     "title": c.title,
+                    "colour": c.colour or "",
                     "position": c.position,
                     "thread_uuid": c.thread.uuid if c.thread_id else None,
                 }
@@ -125,18 +136,15 @@ class GraphViewService:
                     "node_type": n.node_type,
                     "title": n.title or "",
                     "description": n.description or "",
-                    "context_classification": n.context_classification,
-                    "task_classification": n.task_classification,
-                    "time_required": (
-                        float(n.time_required) if n.time_required is not None else None
-                    ),
-                    "time_units": n.time_units,
-                    "represents_workflow": n.represents_workflow,
+                    **read_node_meta_fields(n),
                     "tag_ids": list(n.tags.values_list("id", flat=True)),
                     "section_uuid": n.section.uuid if n.section_id else None,
                     "channel_uuid": n.channel.uuid if n.channel_id else None,
                     "section_row": n.section_row,
                     "workflow_uuid": n.workflow.uuid if n.workflow_id else None,
+                    "linked_workflow_uuid": (
+                        n.linked_workflow.uuid if n.linked_workflow_id else None
+                    ),
                     "thread_uuid": n.thread.uuid if n.thread_id else None,
                     "outcome_uuids": [o.uuid for o in n.outcomes.all()],
                 }
@@ -147,6 +155,8 @@ class GraphViewService:
                     "id": e.id,
                     "source_node_uuid": e.source_node.uuid,
                     "target_node_uuid": e.target_node.uuid,
+                    "title": e.title or "",
+                    "text_position": e.text_position,
                     "line_type": e.line_type,
                     "source_port": e.source_port,
                     "target_port": e.target_port,

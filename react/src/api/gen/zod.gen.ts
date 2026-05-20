@@ -271,6 +271,7 @@ export const zChannelGraphOut = z.object({
   uuid: z.string().uuid(),
   graphUuid: z.string().uuid(),
   title: z.string(),
+  colour: z.string().optional().default(''),
   position: z.number().int(),
   threadUuid: z.string().uuid().nullish()
 })
@@ -284,6 +285,8 @@ export const zEdgeGraphOut = z.object({
   id: z.number().int(),
   sourceNodeUuid: z.string().uuid(),
   targetNodeUuid: z.string().uuid(),
+  title: z.string().optional().default(''),
+  textPosition: z.number().int().optional().default(50),
   lineType: z.string(),
   sourcePort: z.string(),
   targetPort: z.string()
@@ -325,6 +328,7 @@ export const zNodeGraphOut = z.object({
   channelUuid: z.string().uuid().nullish(),
   sectionRow: z.number().int().nullish(),
   workflowUuid: z.string().uuid().nullish(),
+  linkedWorkflowUuid: z.string().uuid().nullish(),
   threadUuid: z.string().uuid().nullish(),
   outcomeUuids: z.array(z.string().uuid()).optional()
 })
@@ -412,6 +416,7 @@ export const zChannelOut = z.object({
   uuid: z.string().uuid(),
   graphUuid: z.string().uuid(),
   title: z.string(),
+  colour: z.string().optional().default(''),
   position: z.number().int(),
   threadUuid: z.string().uuid().nullable(),
   dateCreated: z.string().datetime(),
@@ -435,6 +440,7 @@ export const zGraphChannelMutationOut = z.object({
   uuid: z.string().uuid(),
   graphUuid: z.string().uuid(),
   title: z.string(),
+  colour: z.string().optional().default(''),
   position: z.number().int(),
   threadUuid: z.string().uuid().nullish()
 })
@@ -457,6 +463,8 @@ export const zGraphEdgeMutationOut = z.object({
   id: z.number().int(),
   sourceNodeUuid: z.string().uuid(),
   targetNodeUuid: z.string().uuid(),
+  title: z.string().optional().default(''),
+  textPosition: z.number().int().optional().default(50),
   lineType: z.string(),
   sourcePort: z.string(),
   targetPort: z.string()
@@ -499,6 +507,7 @@ export const zGraphNodeMutationOut = z.object({
   channelUuid: z.string().uuid().nullish(),
   sectionRow: z.number().int().nullish(),
   workflowUuid: z.string().uuid().nullish(),
+  linkedWorkflowUuid: z.string().uuid().nullish(),
   threadUuid: z.string().uuid().nullish(),
   outcomeUuids: z.array(z.string().uuid()).optional()
 })
@@ -731,8 +740,8 @@ export const zGraphEdgeCreateIn = z.object({
   sourceNodeUuid: z.string().uuid(),
   targetNodeUuid: z.string().uuid(),
   lineType: z.string().optional().default(''),
-  sourcePort: z.string().optional().default(''),
-  targetPort: z.string().optional().default('')
+  sourcePort: z.string().min(1),
+  targetPort: z.string().min(1)
 })
 
 /**
@@ -757,6 +766,7 @@ export const zChannelOutResp = z.object({
  */
 export const zChannelPatchIn = z.object({
   title: z.string().nullish(),
+  colour: z.string().nullish(),
   position: z.number().int().nullish(),
   threadUuid: z.string().uuid().nullish()
 })
@@ -825,7 +835,7 @@ export const zGraphNodeMetaPatchIn = z.object({
 /**
  * GraphNodeLinkWorkflowIn
  *
- * Point a grid node at a library workflow (or clear link back to the graph root workflow).
+ * Set or clear the node's symbolic link to a library workflow (parent ``workflow`` unchanged).
  */
 export const zGraphNodeLinkWorkflowIn = z.object({
   workflowUuid: z.string().uuid().nullish()
@@ -864,6 +874,15 @@ export const zGraphOutcomeMoveIn = z.object({
   insertIndex: z.number().int().nullish(),
   beforeUuid: z.string().uuid().nullish(),
   afterUuid: z.string().uuid().nullish()
+})
+
+/**
+ * GraphEdgePatchIn
+ */
+export const zGraphEdgePatchIn = z.object({
+  title: z.string().nullish(),
+  textPosition: z.number().int().nullish(),
+  lineType: z.string().nullish()
 })
 
 /**
@@ -1931,6 +1950,19 @@ export const zGetEdgeData = z.object({
  * OK
  */
 export const zGetEdgeResponse = zEdgeGraphOut
+
+export const zUpdateEdgeData = z.object({
+  body: zGraphEdgePatchIn,
+  path: z.object({
+    edge_id: z.number().int()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zUpdateEdgeResponse = zGraphMutationEnvelopeOut
 
 export const zDeleteAllThreadCommentsData = z.object({
   body: z.never().optional(),

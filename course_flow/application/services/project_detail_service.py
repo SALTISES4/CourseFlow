@@ -19,7 +19,6 @@ class ProjectDetailService:
             Graph.objects.filter(workflow__project_id=p.id)
             .select_related("workflow")
             .prefetch_related(
-                "workflow__taskmeta",
                 "workflow__programmeta",
                 "workflow__coursemeta",
                 "workflow__activitymeta",
@@ -32,9 +31,7 @@ class ProjectDetailService:
             workflow = g.workflow
             meta: dict | None = None
             if workflow.workflow_type == WorkflowType.TASK:
-                tm = getattr(workflow, "taskmeta", None)
-                if tm is not None:
-                    meta = {"kind": "task_meta", "context": tm.context}
+                meta = {"kind": "task_workflow"}
             elif workflow.workflow_type == WorkflowType.PROGRAM:
                 pm = getattr(workflow, "programmeta", None)
                 if pm is not None:
@@ -58,10 +55,17 @@ class ProjectDetailService:
             elif workflow.workflow_type == WorkflowType.ACTIVITY:
                 am = getattr(workflow, "activitymeta", None)
                 if am is not None:
+                    time_required = am.time_required
                     meta = {
                         "kind": "activity_meta",
                         "context": am.context,
                         "classification": am.classification,
+                        "context_classification": am.context_classification,
+                        "task_classification": am.task_classification,
+                        "time_required": (
+                            float(time_required) if time_required is not None else None
+                        ),
+                        "time_units": am.time_units,
                     }
 
             graph_items.append(

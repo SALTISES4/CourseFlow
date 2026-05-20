@@ -1,14 +1,14 @@
+import WorkflowCardDumb, {
+  PropsType as WorkflowCardDumbPropsType
+} from '@cf/components/common/cards/WorkflowCardDumb'
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
 import { LibraryObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import Favourite from '@cfComponents/UIPrimitives/Favourite'
-import { workflowTitle } from '../../UIPrimitives/Titles.tsx'
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
 import Tooltip from '@mui/material/Tooltip'
 
-import WorkflowCardDumb, {
-  PropsType as WorkflowCardDumbPropsType
-} from '../WorkflowCardDumb'
+import { workflowTitle } from '../../UIPrimitives/Titles'
 import { CardChip as WorkflowCardChip } from '../WorkflowCardDumb/styles'
 
 /*******************************************************

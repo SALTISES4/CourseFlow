@@ -2,6 +2,7 @@ import {
   createGraphEdge,
   deleteChannel,
   deleteEdge,
+  updateEdge,
   deleteNode,
   deleteSection,
   getGraphView,
@@ -18,6 +19,7 @@ import {
   reorderGraphSections,
   unlinkNodeOutcome as unlinkNodeOutcomeSdk,
   updateSection,
+  updateChannel,
   createGraphOutcome,
   patchOutcome,
   deleteOutcome as deleteOutcomeSdk,
@@ -35,16 +37,20 @@ import type {
   GraphTagStubOut,
   GraphViewOut,
   SectionOut,
-  SectionOutResp
+  SectionOutResp,
+  ChannelOut,
+  ChannelOutResp
 } from '@cf/api/gen/types.gen'
 
 import type {
   ChangeNodeMetaInput,
   ChangeSectionMetaInput,
+  ChangeChannelMetaInput,
   ChannelEntity,
   CreateEdgeInput,
   DeleteChannelInput,
   DeleteEdgeInput,
+  UpdateEdgeInput,
   DeleteNodeInput,
   DeleteSectionInput,
   EdgeEntity,
@@ -145,6 +151,7 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
     uuid: channel.uuid,
     graphUuid,
     title: channel.title,
+    colour: channel.colour ?? '',
     position: channel.position,
     threadUuid: channel.threadUuid ?? null
   }))
@@ -158,6 +165,7 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
     channelUuid: node.channelUuid ?? null,
     sectionRow: node.sectionRow ?? null,
     workflowUuid: node.workflowUuid ?? null,
+    linkedWorkflowUuid: node.linkedWorkflowUuid ?? null,
     threadUuid: node.threadUuid ?? null,
     outcomeUuids: node.outcomeUuids ?? []
   }))
@@ -175,6 +183,8 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
       graphUuid,
       sourceNodeUuid: edge.sourceNodeUuid,
       targetNodeUuid: edge.targetNodeUuid,
+      title: edge.title ?? '',
+      textPosition: edge.textPosition ?? 50,
       lineType: edge.lineType,
       sourcePort: edge.sourcePort,
       targetPort: edge.targetPort
@@ -252,6 +262,7 @@ function mapMutationChannel(
     uuid: channel.uuid,
     graphUuid: channel.graphUuid ?? graphUuid,
     title: channel.title,
+    colour: channel.colour ?? '',
     position: channel.position,
     threadUuid: channel.threadUuid ?? null
   }
@@ -283,6 +294,7 @@ function mapMutationNode(
     channelUuid: node.channelUuid ?? null,
     sectionRow: node.sectionRow ?? null,
     workflowUuid: node.workflowUuid ?? null,
+    linkedWorkflowUuid: node.linkedWorkflowUuid ?? null,
     threadUuid: node.threadUuid ?? null,
     outcomeUuids: node.outcomeUuids ?? []
   }
@@ -318,6 +330,8 @@ function mapMutationEdge(
     graphUuid,
     sourceNodeUuid: edge.sourceNodeUuid,
     targetNodeUuid: edge.targetNodeUuid,
+    title: edge.title ?? '',
+    textPosition: edge.textPosition ?? 50,
     lineType: edge.lineType,
     sourcePort: edge.sourcePort,
     targetPort: edge.targetPort
@@ -562,6 +576,26 @@ export const deleteEdgeCommand = async (
   return mapMutationEnvelope(unwrapSdkData(result))
 }
 
+export const updateEdgeCommand = async (
+  input: UpdateEdgeInput
+): Promise<GraphMutationEnvelope> => {
+  const body: Record<string, unknown> = {}
+  if (input.meta.title !== undefined) {
+    body.title = input.meta.title
+  }
+  if (input.meta.textPosition !== undefined) {
+    body.textPosition = input.meta.textPosition
+  }
+  if (input.meta.lineType !== undefined) {
+    body.lineType = input.meta.lineType
+  }
+  const result = await updateEdge({
+    path: { edge_id: parseEdgeId(String(input.edgeId)) },
+    body: body as never
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
 export const deleteNodeCommand = async (
   input: DeleteNodeInput
 ): Promise<GraphMutationEnvelope> => {
@@ -668,6 +702,32 @@ export const changeSectionMetaCommand = async (
   return mapSectionOut(resp.item)
 }
 
+function mapChannelOut(channel: ChannelOut): ChannelEntity {
+  return {
+    uuid: channel.uuid,
+    graphUuid: channel.graphUuid,
+    title: channel.title,
+    colour: channel.colour ?? '',
+    position: channel.position,
+    threadUuid: channel.threadUuid ?? null
+  }
+}
+
+/**
+ * Resource PATCH `/api/channel/{uuid}` — returns `ChannelOutResp`, not a graph envelope.
+ * Callers synthesize a minimal envelope for `applyGraphDelta` (channels.updated only).
+ */
+export const changeChannelMetaCommand = async (
+  input: ChangeChannelMetaInput
+): Promise<ChannelEntity> => {
+  const result = await updateChannel({
+    path: { uuid: String(input.channelUuid) },
+    body: input.meta
+  })
+  const resp = unwrapSdkData<ChannelOutResp>(result)
+  return mapChannelOut(resp.item)
+}
+
 export const createOutcomeCommand = async (
   input: CreateOutcomeInput
 ): Promise<GraphMutationEnvelope> => {
@@ -768,5 +828,26 @@ export const buildSectionMetaMutationEnvelope = (
   meta: {
     triggeredBy: 'changeSectionMeta',
     triggerEntityId: section.uuid
+  }
+})
+
+export const buildChannelMetaMutationEnvelope = (
+  graphUuid: GraphUuid,
+  revisionId: number,
+  channel: ChannelEntity
+): GraphMutationEnvelope => ({
+  graphUuid,
+  revisionId,
+  changes: {
+    nodes: { created: [], updated: [], deleted: [] },
+    channels: { created: [], updated: [channel], deleted: [] },
+    sections: { created: [], updated: [], deleted: [] },
+    edges: { created: [], updated: [], deleted: [] },
+    tags: { created: [], updated: [], deleted: [] },
+    outcomes: { created: [], updated: [], deleted: [] }
+  },
+  meta: {
+    triggeredBy: 'changeChannelMeta',
+    triggerEntityId: channel.uuid
   }
 })

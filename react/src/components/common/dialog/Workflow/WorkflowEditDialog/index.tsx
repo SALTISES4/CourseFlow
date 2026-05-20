@@ -9,6 +9,7 @@ import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import { WorkflowFormType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
+import { WorkflowType } from '@cfPages/Workflow/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -20,8 +21,6 @@ import { useCallback, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
-
-import { WorkflowType } from '../../../../pages/Workflow/types'
 
 const WorkflowLabels: Record<WorkflowType, string> = {
   [WorkflowType.PROGRAM]: _t('Program'),
@@ -91,7 +90,6 @@ const WorkflowEditDialog = () => {
     onError: (err) => onError(err)
   })
 
-  // TODO: still not sure if this should be handled by django or not
   const onSubmit = useCallback(
     (data: WorkflowFormType) => {
       updateWorkflow.mutate({

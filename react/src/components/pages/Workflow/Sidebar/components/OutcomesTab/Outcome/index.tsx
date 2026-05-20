@@ -1,7 +1,10 @@
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import * as Styled from '@cf/components/views/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import * as StyledOutcomes from '@cf/components/views/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
-import type { GraphUuid, OutcomeEntity } from '@cf/features/graph/state/model/types'
+import type {
+  GraphUuid,
+  OutcomeEntity
+} from '@cf/features/graph/state/model/types'
 import {
   getPrefixPath,
   selectOutcomeById,

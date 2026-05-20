@@ -191,6 +191,46 @@ def test_graph_view_node_includes_section_row(client: Client, user):
 
 
 @pytest.mark.django_db
+def test_graph_view_program_course_node_typed_meta_shape(client: Client, user):
+    """Course-type nodes use coursemeta; graph API still returns activity-layer keys as null."""
+    raw_token = _issue_token_for(user)
+    response = client.post(
+        "/api/workflow",
+        data={
+            "projectId": None,
+            "title": "Program",
+            "workflowType": "program",
+            "description": "",
+        },
+        content_type="application/json",
+        **_auth_header(raw_token),
+    )
+    assert response.status_code == 200, response.content
+    workflow_uuid = response.json()["uuid"]
+    graph_uuid = response.json()["graphUuid"]
+    wf = Graph.objects.select_related("workflow").get(uuid=graph_uuid)
+    channel = Channel.objects.create(graph=wf, title="Col", position=0)
+    section = Section.objects.create(graph=wf, title="Sec", position=0)
+    from course_flow.tests.node_helpers import create_grid_node
+
+    create_grid_node(
+        section=section, channel=channel, workflow=wf.workflow, section_row=0
+    )
+
+    body = client.get(
+        f"/api/graph/{workflow_uuid}/view",
+        **_auth_header(raw_token),
+    ).json()
+    assert len(body["nodes"]) == 1
+    node = body["nodes"][0]
+    assert node["nodeType"] == "course"
+    assert node["contextClassification"] is None
+    assert node["taskClassification"] is None
+    assert node["timeRequired"] is None
+    assert node["representsWorkflow"] is False
+
+
+@pytest.mark.django_db
 def test_graph_view_allows_non_owner_with_placeholder_permissions(
     client: Client, user, other_user
 ):

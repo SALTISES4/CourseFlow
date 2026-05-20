@@ -2,12 +2,15 @@ import type { ThunkAction, UnknownAction } from '@reduxjs/toolkit'
 
 import { applyGraphDelta } from '../applyGraphDelta'
 import {
+  buildChannelMetaMutationEnvelope,
   buildSectionMetaMutationEnvelope,
+  changeChannelMetaCommand,
   changeNodeMetaCommand,
   changeSectionMetaCommand,
   createEdgeCommand,
   deleteChannelCommand,
   deleteEdgeCommand,
+  updateEdgeCommand,
   deleteNodeCommand,
   deleteSectionCommand,
   insertChannelBelowCommand,
@@ -27,9 +30,11 @@ import type { GraphState } from '../graphState'
 import type {
   ChangeNodeMetaInput,
   ChangeSectionMetaInput,
+  ChangeChannelMetaInput,
   CreateEdgeInput,
   DeleteChannelInput,
   DeleteEdgeInput,
+  UpdateEdgeInput,
   DeleteNodeInput,
   DeleteSectionInput,
   InsertChannelBelowInput,
@@ -165,6 +170,20 @@ export const deleteEdge = (
   return async (dispatch) => {
     try {
       const delta = await deleteEdgeCommand(input)
+      applyGraphDelta(dispatch, delta)
+    } catch (error) {
+      dispatch(markGraphFailed(input.graphUuid))
+      throw error
+    }
+  }
+}
+
+export const updateEdge = (
+  input: UpdateEdgeInput
+): GraphMutationThunk<Promise<void>> => {
+  return async (dispatch) => {
+    try {
+      const delta = await updateEdgeCommand(input)
       applyGraphDelta(dispatch, delta)
     } catch (error) {
       dispatch(markGraphFailed(input.graphUuid))
@@ -346,6 +365,29 @@ export const changeSectionMeta = (
       applyGraphDelta(
         dispatch,
         buildSectionMetaMutationEnvelope(input.graphUuid, revisionId, section)
+      )
+    } catch (error) {
+      dispatch(markGraphFailed(input.graphUuid))
+      throw error
+    }
+  }
+}
+
+/**
+ * Resource PATCH for channel metadata (title, position, thread).
+ * Backend returns `ChannelOutResp`; canonical state is updated via a synthetic envelope.
+ */
+export const changeChannelMeta = (
+  input: ChangeChannelMetaInput
+): GraphMutationThunk<Promise<void>> => {
+  return async (dispatch, getState) => {
+    try {
+      const channel = await changeChannelMetaCommand(input)
+      const graph = selectGraphByUuid(input.graphUuid)(getState())
+      const revisionId = graph?.revisionId ?? 0
+      applyGraphDelta(
+        dispatch,
+        buildChannelMetaMutationEnvelope(input.graphUuid, revisionId, channel)
       )
     } catch (error) {
       dispatch(markGraphFailed(input.graphUuid))

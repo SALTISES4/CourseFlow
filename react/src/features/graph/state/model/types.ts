@@ -50,6 +50,8 @@ export interface ChannelEntity {
   uuid: ResourceUuid
   graphUuid: GraphUuid
   title: string
+  /** Hex colour (e.g. `#6738ff`); empty string uses cyclic theme default in the UI. */
+  colour: string
   position: number
   threadUuid: ResourceUuid | null
 }
@@ -71,8 +73,10 @@ export interface NodeEntity {
   sectionUuid: ResourceUuid | null
   channelUuid: ResourceUuid | null
   sectionRow: number | null
-  /** Optional workflow reference FK on the node (`NodeGraphOut.workflowUuid`). */
+  /** Parent graph workflow for this grid cell (`NodeGraphOut.workflowUuid`). */
   workflowUuid: WorkflowUuid | null
+  /** Optional symbolic link to another library workflow (`NodeGraphOut.linkedWorkflowUuid`). */
+  linkedWorkflowUuid: WorkflowUuid | null
   threadUuid: ResourceUuid | null
   outcomeUuids: ResourceUuid[]
 }
@@ -82,6 +86,8 @@ export interface EdgeEntity {
   graphUuid: GraphUuid
   sourceNodeUuid: ResourceUuid
   targetNodeUuid: ResourceUuid
+  title: string
+  textPosition: number
   lineType: string
   sourcePort: string
   targetPort: string
@@ -141,6 +147,7 @@ export type GraphOpType =
   | 'placeNode'
   | 'renameNode'
   | 'createEdge'
+  | 'updateEdge'
   | 'deleteEdge'
   | 'deleteChannel'
   | 'deleteSection'
@@ -149,6 +156,7 @@ export type GraphOpType =
   | 'reorderChannels'
   | 'reorderSections'
   | 'changeSectionMeta'
+  | 'changeChannelMeta'
   | 'linkNodeWorkflow'
   | 'changeNodeMeta'
   | 'linkNodeOutcome'
@@ -276,13 +284,26 @@ export interface CreateEdgeInput {
   sourceNodeUuid: ResourceUuid
   targetNodeUuid: ResourceUuid
   lineType?: string
-  sourcePort?: string
-  targetPort?: string
+  sourcePort: string
+  targetPort: string
 }
 
 export interface DeleteEdgeInput {
   graphUuid: GraphUuid
   edgeId: EdgeKey
+}
+
+/** Partial edge metadata (`GraphEdgePatchIn` on the resource API). */
+export interface EdgeMetaPatch {
+  title?: string
+  textPosition?: number
+  lineType?: string
+}
+
+export interface UpdateEdgeInput {
+  graphUuid: GraphUuid
+  edgeId: EdgeKey
+  meta: EdgeMetaPatch
 }
 
 export interface DeleteNodeInput {
@@ -334,6 +355,20 @@ export interface ChangeSectionMetaInput {
   graphUuid: GraphUuid
   sectionUuid: ResourceUuid
   meta: SectionMetaPatch
+}
+
+/** Partial channel metadata (`ChannelPatchIn` on the resource API). */
+export interface ChannelMetaPatch {
+  title?: string
+  colour?: string
+  position?: number
+  threadUuid?: ResourceUuid | null
+}
+
+export interface ChangeChannelMetaInput {
+  graphUuid: GraphUuid
+  channelUuid: ResourceUuid
+  meta: ChannelMetaPatch
 }
 
 /** Link a grid node to a library workflow, or clear link (root graph workflow). */

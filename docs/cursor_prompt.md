@@ -8,6 +8,8 @@ Use this file as a **paste-in appendix** for Cursor chat or cloud prompts. **Aut
 | ----- | ----------------- | ---- |
 | **What the app should do** (UI, workflows, permissions, forms) | Functional requirements | [`tests/docs/requirements/`](../tests/docs/requirements/) |
 | **How the system is built** (API, graph state, repos, OpenAPI) | Architecture ADRs | [`docs/architecture/`](architecture/) |
+| **Workflow / node / link terminology** (parent workflow vs `node_type` vs `linked_workflow`) | ADR + FR glossary | [`docs/architecture/adr_workflow_hierarchy_and_linked_nodes.md`](architecture/adr_workflow_hierarchy_and_linked_nodes.md), [`tests/docs/requirements/terminology_workflow_hierarchy_and_nodes.md`](../tests/docs/requirements/terminology_workflow_hierarchy_and_nodes.md) |
+| **Typed meta tables** (`*meta` on workflow vs node; no `programmeta` on nodes) | ADR | [`docs/architecture/adr_node_and_workflow_typed_meta.md`](architecture/adr_node_and_workflow_typed_meta.md) |
 | **How browser tests are written** | Testing policy | [`tests/docs/testing/`](../tests/docs/testing/) |
 
 When refactoring or debugging behavior, **read the relevant feature requirement under `tests/docs/requirements/`** (start with `original/*_requirements_v1.yaml` and `guidelines_functional_requirements.md`) before inferring intent from code alone.

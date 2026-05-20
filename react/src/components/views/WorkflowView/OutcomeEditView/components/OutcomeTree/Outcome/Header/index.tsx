@@ -24,7 +24,7 @@ import { MouseEvent, MutableRefObject, useCallback } from 'react'
 import type { AppDispatch } from '@cf/redux/store'
 import { useDispatch, useSelector } from 'react-redux'
 
-import editTabNodeData from '../../../../../../../pages/Workflow/Sidebar/components/EditTab/components/EditNode/optionsData'
+import editTabNodeData from '@cfPages/Workflow/Sidebar/components/EditTab/components/EditNode/optionsData'
 import * as Styled from '../../styles'
 
 const tagsData = editTabNodeData.tags

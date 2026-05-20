@@ -1,5 +1,8 @@
 import { searchLibrary } from '@cf/api/gen'
-import { selectNodeByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
+import {
+  selectGraphByUuid,
+  selectNodeByUuid
+} from '@cf/features/graph/state/selectors/canonical.selectors'
 import { linkNodeWorkflow } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { ELibraryObject } from '@cf/HTTP/XMLHTTP/types/entity'
@@ -44,6 +47,12 @@ function NodeLinkWorkflowDialog() {
   )
   const node = useSelector(nodeSelector)
   const graphUuid = payload?.graphUuid ?? node?.graphUuid ?? ''
+  const graphSelector = useMemo(
+    () => (graphUuid ? selectGraphByUuid(graphUuid) : () => undefined),
+    [graphUuid]
+  )
+  const graph = useSelector(graphSelector)
+  const parentWorkflowType = graph?.workflowType
 
   const [state, setState] = useState<StateType>({
     selected: null,
@@ -223,7 +232,11 @@ function NodeLinkWorkflowDialog() {
           disabled={!state.selected || !graphUuid}
           onClick={onSubmit}
         >
-          {_t('Link to node')}
+          {parentWorkflowType === 'program'
+            ? _t('Link course')
+            : parentWorkflowType === 'course'
+              ? _t('Link activity')
+              : _t('Link to node')}
         </Button>
       </DialogActions>
     </StyledDialog>

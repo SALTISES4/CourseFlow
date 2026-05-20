@@ -80,6 +80,7 @@ import {
   searchLibrary,
   unlinkNodeOutcome,
   updateChannel,
+  updateEdge,
   updateProject,
   updateProjectTeamMember,
   updateSection,
@@ -224,6 +225,8 @@ import type {
   UnlinkNodeOutcomeResponse,
   UpdateChannelData,
   UpdateChannelResponse,
+  UpdateEdgeData,
+  UpdateEdgeResponse,
   UpdateProjectData,
   UpdateProjectResponse,
   UpdateProjectTeamMemberData,
@@ -1709,6 +1712,33 @@ export const getEdgeOptions = (options: Options<GetEdgeData>) =>
     },
     queryKey: getEdgeQueryKey(options)
   })
+
+/**
+ * Update Edge
+ */
+export const updateEdgeMutation = (
+  options?: Partial<Options<UpdateEdgeData>>
+): UseMutationOptions<
+  UpdateEdgeResponse,
+  DefaultError,
+  Options<UpdateEdgeData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    UpdateEdgeResponse,
+    DefaultError,
+    Options<UpdateEdgeData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await updateEdge({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
 
 /**
  * Delete All Thread Comments

@@ -1,12 +1,15 @@
-import { RootState } from '@cf/redux/store'
+import {
+  getProjectOptions,
+  getWorkflowOptions
+} from '@cf/api/gen/@tanstack/react-query.gen'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/Utility.class'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
-import { useSelector } from 'react-redux'
-import { Link as RouterLink, generatePath } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { Link as RouterLink, generatePath, useMatch } from 'react-router-dom'
 
 /**
  * @todo did a first pass, but there is work to do still
@@ -14,23 +17,35 @@ import { Link as RouterLink, generatePath } from 'react-router-dom'
  * data source and 'should show' logic not well managed currently
  */
 const ReturnLinks = () => {
-  const canView = true // @todo temp because project is not in store yet
-  //  const project = useSelector((state: RootState) => state.workspace.project)
-  const project = {
-    uuid: 'temp-temp',
-    title: 'fake title'
-  }
+  const workflowMatch = useMatch({ path: CFRoutes.WORKFLOW, end: false })
+  const workflowUuid = workflowMatch?.params.uuid
 
-  /*******************************************************
-   * REDUX
-   *******************************************************/
-  // const publicView = useSelector(
-  //   (state: RootState) => state.workspace.workflow?.publicView
-  // )
-  const publicView = true
+  const { data: workflowDetailResp } = useQuery({
+    ...getWorkflowOptions({ path: { uuid: workflowUuid! } }),
+    enabled: Boolean(workflowUuid)
+  })
+
+  const projectUuid = workflowDetailResp?.item.projectUuid ?? null
+
+  const { data: projectDetailResp } = useQuery({
+    ...getProjectOptions({ path: { uuid: projectUuid! } }),
+    enabled: Boolean(projectUuid)
+  })
+
+  const project = projectDetailResp?.item
+    ? {
+        uuid: projectDetailResp.item.uuid,
+        title: projectDetailResp.item.title
+      }
+    : null
+
+  const canView = Boolean(project)
+  // @todo temp because project is not in store yet
+  // TODO(graph-state): Plumb `publicView` from workflow detail or route when public workflow links exist.
+  const publicView = false
 
   const BackToProjectLink = () => {
-    if (!project || !project?.uuid || publicView) {
+    if (!project?.uuid || publicView) {
       return <></>
     }
 
@@ -60,7 +75,7 @@ const ReturnLinks = () => {
   // this returns you to the editable version
   // not really understanding this yet, why not use the same link but with view permissions for all users?
   const BackToEditableProjectLink = () => {
-    if (!publicView || !canView) {
+    if (!publicView || !canView || !project?.uuid) {
       return <></>
     }
 
@@ -91,12 +106,12 @@ const ReturnLinks = () => {
   const BackToEditableWorkflowLink = () => {
     return null
 
-    if (!publicView || !canView) {
+    if (!publicView || !canView || !workflowUuid) {
       return <></>
     }
 
     const path = generatePath(CFRoutes.WORKFLOW, {
-      uuid: String(project.uuid)
+      uuid: String(workflowUuid)
     })
 
     return (

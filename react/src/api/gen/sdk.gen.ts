@@ -141,6 +141,8 @@ import type {
   UnlinkNodeOutcomeResponses,
   UpdateChannelData,
   UpdateChannelResponses,
+  UpdateEdgeData,
+  UpdateEdgeResponses,
   UpdateProjectData,
   UpdateProjectResponses,
   UpdateProjectTeamMemberData,
@@ -289,6 +291,8 @@ import {
   zUnlinkNodeOutcomeResponse,
   zUpdateChannelData,
   zUpdateChannelResponse,
+  zUpdateEdgeData,
+  zUpdateEdgeResponse,
   zUpdateProjectData,
   zUpdateProjectResponse,
   zUpdateProjectTeamMemberData,
@@ -1436,6 +1440,25 @@ export const getEdge = <ThrowOnError extends boolean = false>(
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/edge/{edge_id}',
     ...options
+  })
+
+/**
+ * Update Edge
+ */
+export const updateEdge = <ThrowOnError extends boolean = false>(
+  options: Options<UpdateEdgeData, ThrowOnError>
+) =>
+  (options.client ?? client).patch<UpdateEdgeResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await zUpdateEdgeData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zUpdateEdgeResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/edge/{edge_id}',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
   })
 
 /**

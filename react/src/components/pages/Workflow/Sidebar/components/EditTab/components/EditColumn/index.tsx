@@ -10,21 +10,44 @@ import {
   selectChannelByUuid,
   selectChannelThemeColumnType
 } from '@cf/features/graph/state/selectors/canonical.selectors'
+import {
+  changeChannelMeta,
+  insertChannelBelow
+} from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
-import { RootState } from '@cf/redux/store'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import type { AppDispatch } from '@cf/redux/store'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
+import { debounce } from '@mui/material'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import { ChangeEvent, useEffect, useMemo, useState } from 'react'
+import {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+
+function resolveChannelColour(
+  channel: ChannelEntity,
+  themeColumnType: number
+): string {
+  if (channel.colour) {
+    return channel.colour
+  }
+  return ThemeHelper.getColumnColour({
+    columnType: themeColumnType,
+    colour: null
+  })
+}
 
 const EditColumn = ({ columnId }: { columnId: string }) => {
   const dispatch = useDispatch()
-  const graphUuid = useSelector(
-    (state: RootState) => state.sidebar.edit.parentId ?? ''
-  )
+  const graphUuid = useSelector((state) => state.sidebar.edit.parentId ?? '')
   const channelSelector = useMemo(
     () => selectChannelByUuid(columnId),
     [columnId]
@@ -56,27 +79,68 @@ const EditColumnForm = ({
   channel: ChannelEntity
   themeColumnType: number
 }) => {
-  const columnColourHex = ThemeHelper.getColumnColour({
-    columnType: themeColumnType,
-    colour: null
-  })
+  const dispatch = useDispatch<AppDispatch>()
+  const { dispatch: dialogDispatch } = useDialog()
 
-  const [color, setColor] = useState(columnColourHex)
+  const [color, setColor] = useState(() =>
+    resolveChannelColour(channel, themeColumnType)
+  )
   const [titleDraft, setTitleDraft] = useState(channel.title ?? '')
 
   useEffect(() => {
     setTitleDraft(channel.title ?? '')
-  }, [channel.uuid, channel.title])
+    setColor(resolveChannelColour(channel, themeColumnType))
+  }, [channel.colour, channel.title, channel.uuid, themeColumnType])
 
-  const onTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTitleDraft(e.target.value)
-    // TODO(graph-state): persist channel title via graph/channel mutation API when available.
-  }
+  const debouncedPersistMeta = useMemo(
+    () =>
+      debounce((meta: { title?: string; colour?: string }) => {
+        void dispatch(
+          changeChannelMeta({
+            graphUuid: channel.graphUuid,
+            channelUuid: channel.uuid,
+            meta
+          })
+        )
+      }, 300),
+    [channel.graphUuid, channel.uuid, dispatch]
+  )
 
-  const onColorChange = (next: string) => {
-    setColor(next)
-    // TODO(graph-state): canonical ChannelEntity has no per-channel colour; colours follow cyclic theme.
-  }
+  useEffect(() => () => debouncedPersistMeta.clear(), [debouncedPersistMeta])
+
+  const onTitleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value
+      setTitleDraft(value)
+      debouncedPersistMeta({ title: value })
+    },
+    [debouncedPersistMeta]
+  )
+
+  const onColorChange = useCallback(
+    (next: string) => {
+      setColor(next)
+      debouncedPersistMeta({ colour: next })
+    },
+    [debouncedPersistMeta]
+  )
+
+  const onDuplicate = useCallback(() => {
+    dispatch(
+      insertChannelBelow({
+        graphUuid: channel.graphUuid,
+        channelUuid: channel.uuid,
+        duplicate: true
+      })
+    )
+  }, [channel.graphUuid, channel.uuid, dispatch])
+
+  const onDelete = useCallback(() => {
+    dialogDispatch(DialogMode.WORKFLOW_DELETE_NODE_CATEGORY, {
+      uuid: channel.uuid,
+      graphUuid: channel.graphUuid
+    })
+  }, [channel.graphUuid, channel.uuid, dialogDispatch])
 
   return (
     <SidebarInnerWrap>
@@ -96,10 +160,10 @@ const EditColumnForm = ({
         </Stack>
       </SidebarContent>
       <SidebarActions>
-        <Button variant="contained" color="secondary">
+        <Button variant="contained" color="secondary" onClick={onDuplicate}>
           {_t('Duplicate')}
         </Button>
-        <Button variant="contained" color="secondary">
+        <Button variant="contained" color="secondary" onClick={onDelete}>
           {_t('Delete')}
         </Button>
       </SidebarActions>

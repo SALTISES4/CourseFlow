@@ -35,6 +35,7 @@ def _channel_out(dto: ChannelDTO) -> ChannelOut:
         uuid=dto.uuid,
         graph_uuid=dto.graph_uuid,
         title=dto.title,
+        colour=dto.colour,
         position=dto.position,
         thread_uuid=dto.thread_uuid,
         date_created=dto.date_created,

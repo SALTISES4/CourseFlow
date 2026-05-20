@@ -535,6 +535,10 @@ export type ChannelGraphOut = {
    */
   title: string
   /**
+   * Colour
+   */
+  colour?: string
+  /**
    * Position
    */
   position: number
@@ -562,6 +566,14 @@ export type EdgeGraphOut = {
    * Targetnodeuuid
    */
   targetNodeUuid: string
+  /**
+   * Title
+   */
+  title?: string
+  /**
+   * Textposition
+   */
+  textPosition?: number
   /**
    * Linetype
    */
@@ -717,6 +729,10 @@ export type NodeGraphOut = {
    * Workflowuuid
    */
   workflowUuid?: string | null
+  /**
+   * Linkedworkflowuuid
+   */
+  linkedWorkflowUuid?: string | null
   /**
    * Threaduuid
    */
@@ -888,6 +904,10 @@ export type ChannelOut = {
    */
   title: string
   /**
+   * Colour
+   */
+  colour?: string
+  /**
    * Position
    */
   position: number
@@ -923,6 +943,10 @@ export type GraphChannelMutationOut = {
    * Title
    */
   title: string
+  /**
+   * Colour
+   */
+  colour?: string
   /**
    * Position
    */
@@ -969,6 +993,14 @@ export type GraphEdgeMutationOut = {
    * Targetnodeuuid
    */
   targetNodeUuid: string
+  /**
+   * Title
+   */
+  title?: string
+  /**
+   * Textposition
+   */
+  textPosition?: number
   /**
    * Linetype
    */
@@ -1105,6 +1137,10 @@ export type GraphNodeMutationOut = {
    * Workflowuuid
    */
   workflowUuid?: string | null
+  /**
+   * Linkedworkflowuuid
+   */
+  linkedWorkflowUuid?: string | null
   /**
    * Threaduuid
    */
@@ -1525,11 +1561,11 @@ export type GraphEdgeCreateIn = {
   /**
    * Sourceport
    */
-  sourcePort?: string
+  sourcePort: string
   /**
    * Targetport
    */
-  targetPort?: string
+  targetPort: string
 }
 
 /**
@@ -1569,6 +1605,10 @@ export type ChannelPatchIn = {
    * Title
    */
   title?: string | null
+  /**
+   * Colour
+   */
+  colour?: string | null
   /**
    * Position
    */
@@ -1703,7 +1743,7 @@ export type GraphNodeMetaPatchIn = {
 /**
  * GraphNodeLinkWorkflowIn
  *
- * Point a grid node at a library workflow (or clear link back to the graph root workflow).
+ * Set or clear the node's symbolic link to a library workflow (parent ``workflow`` unchanged).
  */
 export type GraphNodeLinkWorkflowIn = {
   /**
@@ -1784,6 +1824,24 @@ export type GraphOutcomeMoveIn = {
    * Afteruuid
    */
   afterUuid?: string | null
+}
+
+/**
+ * GraphEdgePatchIn
+ */
+export type GraphEdgePatchIn = {
+  /**
+   * Title
+   */
+  title?: string | null
+  /**
+   * Textposition
+   */
+  textPosition?: number | null
+  /**
+   * Linetype
+   */
+  lineType?: string | null
 }
 
 /**
@@ -3602,6 +3660,27 @@ export type GetEdgeResponses = {
 }
 
 export type GetEdgeResponse = GetEdgeResponses[keyof GetEdgeResponses]
+
+export type UpdateEdgeData = {
+  body: GraphEdgePatchIn
+  path: {
+    /**
+     * Edge Id
+     */
+    edge_id: number
+  }
+  query?: never
+  url: '/api/edge/{edge_id}'
+}
+
+export type UpdateEdgeResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type UpdateEdgeResponse = UpdateEdgeResponses[keyof UpdateEdgeResponses]
 
 export type DeleteAllThreadCommentsData = {
   body?: never

@@ -20,6 +20,7 @@ from course_flow.api.graph_common import graph_mutation_http
 from course_flow.api.permissions import can_view_graph
 from course_flow.api.schemas.graph_mutation import (
     GraphEdgeCreateIn,
+    GraphEdgePatchIn,
     GraphMutationEnvelopeOut,
 )
 from course_flow.api.schemas.graph_view import EdgeGraphOut
@@ -108,10 +109,32 @@ def get_edge(request, edge_id: int):
         id=e.id,
         source_node_uuid=e.source_node.uuid,
         target_node_uuid=e.target_node.uuid,
+        title=e.title or "",
+        text_position=e.text_position,
         line_type=e.line_type,
         source_port=e.source_port,
         target_port=e.target_port,
     )
+
+
+@edge_resource_router.patch(
+    "/{edge_id}",
+    response=GraphMutationEnvelopeOut,
+    auth=BearerAuth(),
+    operation_id="updateEdge",
+)
+def update_edge(request, edge_id: int, payload: GraphEdgePatchIn):
+    current_user = get_current_user(request)
+    svc = get_graph_mutation_service()
+    updates = payload.model_dump(exclude_unset=True)
+    out, err = svc.update_edge(
+        user_id=current_user.id,
+        edge_id=edge_id,
+        title=updates.get("title"),
+        text_position=updates.get("text_position"),
+        line_type=updates.get("line_type"),
+    )
+    return graph_mutation_http(out, err)
 
 
 @edge_resource_router.delete(

@@ -74,3 +74,7 @@ export function edgeLineTypeIsDashed(lineType: string): boolean {
   const t = lineType.toLowerCase()
   return t.includes('dash') || t === 'dotted' || t === 'dashed'
 }
+
+export function dashedToLineType(dashed: boolean): string {
+  return dashed ? 'dashed' : 'solid'
+}

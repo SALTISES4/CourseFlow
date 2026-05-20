@@ -1,10 +1,16 @@
-import type { NodeEntity } from '@cf/features/graph/state/model/types'
-import { selectNodeByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
+import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import { nodeTitleFallback } from '@cf/components/pages/Workflow/Sidebar/components/EditTab/components/EditNode/linkedWorkflowUi'
+import {
+  selectGraphByUuid,
+  selectNodeByUuid,
+  selectWorkflowByUuid
+} from '@cf/features/graph/state/selectors/canonical.selectors'
 import { isHighlightedViaOutcome } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { RootState } from '@cfRedux/store'
 import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
+import { useQuery } from '@tanstack/react-query'
 import { MouseEvent, useCallback, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { useSelector } from 'react-redux'
@@ -31,7 +37,26 @@ const SectionCellNode = ({
   onDrop
 }: SectionCellNodeTypeTypeInternal) => {
   const nodeSelector = useMemo(() => selectNodeByUuid(nodeId), [nodeId])
-  const node = useSelector(nodeSelector) as NodeEntity | undefined
+  const node = useSelector(nodeSelector)
+  const graphSelector = useMemo(
+    () => selectGraphByUuid(graphUuid),
+    [graphUuid]
+  )
+  const graph = useSelector(graphSelector)
+  const linkedWorkflowSelector = useMemo(
+    () =>
+      node?.linkedWorkflowUuid
+        ? selectWorkflowByUuid(node.linkedWorkflowUuid)
+        : () => undefined,
+    [node?.linkedWorkflowUuid]
+  )
+  const linkedWorkflow = useSelector(linkedWorkflowSelector)
+  const { data: linkedWorkflowResp } = useQuery({
+    ...getWorkflowOptions({
+      path: { uuid: node?.linkedWorkflowUuid ?? '' }
+    }),
+    enabled: Boolean(node?.linkedWorkflowUuid)
+  })
   const dnd = useCellNodeDnd({
     wrapRef,
     nodeId,
@@ -63,6 +88,13 @@ const SectionCellNode = ({
   if (!node) {
     return null
   }
+
+  const displayTitle = node.linkedWorkflowUuid
+    ? linkedWorkflowResp?.item?.title ||
+      linkedWorkflow?.title ||
+      node.title ||
+      nodeTitleFallback()
+    : node.title || nodeTitleFallback()
 
   return (
     <>
@@ -97,27 +129,17 @@ const SectionCellNode = ({
         <StyledNode.Border style={{ backgroundColor: borderColor }} />
         <StyledNode.Content onClick={onNodeClicked}>
           <StyledNode.Title variant="body2">
-            {node.title || _t('Blank title')} <br />
+            {displayTitle} <br />
             <small>{`#${nodeId}, row: ${node.sectionRow ?? '?'}`}</small>
           </StyledNode.Title>
           <Meta
-            workflow={
-              (node as unknown as { linkedWorkflow?: number | null })
-                .linkedWorkflow ?? null
-            }
-            contextType={
-              (node as unknown as { contextClassification?: number })
-                .contextClassification ?? 0
-            }
-            taskType={
-              (node as unknown as { taskClassification?: number })
-                .taskClassification ?? 0
-            }
+            workflow={node.linkedWorkflowUuid ?? null}
+            parentWorkflowType={graph?.workflowType}
+            contextType={node.contextClassification ?? 0}
+            taskType={node.taskClassification ?? 0}
             time={{
-              length:
-                (node as unknown as { timeRequired?: number }).timeRequired ??
-                0,
-              unit: (node as unknown as { timeUnits?: number }).timeUnits ?? 0
+              length: node.timeRequired ?? 0,
+              unit: node.timeUnits ?? 0
             }}
           />
         </StyledNode.Content>
@@ -135,10 +157,7 @@ const SectionCellNode = ({
           <StyledNode.CellInner style={{ width: '180px', minHeight: '70px' }}>
             <StyledNode.Border style={{ backgroundColor: borderColor }} />
             <StyledNode.Content>
-              <StyledNode.Title variant="body2">
-                {(node as unknown as { title?: string }).title ||
-                  _t('Blank title')}
-              </StyledNode.Title>
+              <StyledNode.Title variant="body2">{displayTitle}</StyledNode.Title>
             </StyledNode.Content>
           </StyledNode.CellInner>,
           dnd.previewTarget

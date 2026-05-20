@@ -40,22 +40,27 @@ node_resource_router = Router(tags=["nodes"], by_alias=True)
 
 
 def _node_graph_out(n: Node) -> NodeGraphOut:
-    time_required = n.time_required
+    from course_flow.core.node_meta import read_node_meta_fields
+
+    meta = read_node_meta_fields(n)
     return NodeGraphOut(
         uuid=n.uuid,
         node_type=n.node_type,
         title=n.title or "",
         description=n.description or "",
-        context_classification=n.context_classification,
-        task_classification=n.task_classification,
-        time_required=float(time_required) if time_required is not None else None,
-        time_units=n.time_units,
-        represents_workflow=n.represents_workflow,
+        context_classification=meta["context_classification"],
+        task_classification=meta["task_classification"],
+        time_required=meta["time_required"],
+        time_units=meta["time_units"],
+        represents_workflow=meta["represents_workflow"],
         tag_ids=list(n.tags.values_list("id", flat=True)),
         section_uuid=n.section.uuid if n.section_id else None,
         channel_uuid=n.channel.uuid if n.channel_id else None,
         section_row=n.section_row,
         workflow_uuid=n.workflow.uuid if n.workflow_id else None,
+        linked_workflow_uuid=(
+            n.linked_workflow.uuid if n.linked_workflow_id else None
+        ),
         thread_uuid=n.thread.uuid if n.thread_id else None,
         outcome_uuids=[o.uuid for o in n.outcomes.all()],
     )

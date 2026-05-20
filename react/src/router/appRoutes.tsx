@@ -10,8 +10,8 @@ import MyLibrary from '@cfPages/Library/MyLibrary'
 import NotificationsPage from '@cfPages/Notifications'
 import { Navigate, createBrowserRouter } from 'react-router-dom'
 
-import NotificationsSettingsPage from 'components/pages/Settings/NotificationsSettings'
-import ProfileSettingsPage from 'components/pages/Settings/ProfileSettings'
+import NotificationsSettingsPage from '@cfPages/Settings/NotificationsSettings'
+import ProfileSettingsPage from '@cfPages/Settings/ProfileSettings'
 
 import Project from '../components/pages/Project'
 import WorkflowPage from '../components/pages/Workflow'

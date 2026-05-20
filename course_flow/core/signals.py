@@ -109,9 +109,8 @@ def ensure_workflow_typed_meta_on_workflow_create(
 ) -> None:
     if not created:
         return
-    if instance.workflow_type == WorkflowType.TASK:
-        Taskmeta.objects.get_or_create(workflow=instance)
-    elif instance.workflow_type == WorkflowType.PROGRAM:
+    # Task workflows do not get taskmeta rows (taskmeta is for grid nodes only).
+    if instance.workflow_type == WorkflowType.PROGRAM:
         Programmeta.objects.get_or_create(workflow=instance)
     elif instance.workflow_type == WorkflowType.COURSE:
         Coursemeta.objects.get_or_create(workflow=instance)

@@ -19,6 +19,7 @@ class GraphChannelCreateIn(CamelSchema):
 
 class ChannelPatchIn(CamelSchema):
     title: str | None = None
+    colour: str | None = None
     position: int | None = None
     thread_uuid: UUID | None = None
 
@@ -27,6 +28,7 @@ class ChannelOut(CamelSchema):
     uuid: UUID
     graph_uuid: UUID
     title: str
+    colour: str = ""
     position: int
     thread_uuid: UUID | None
     date_created: datetime

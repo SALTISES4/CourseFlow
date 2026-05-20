@@ -28,6 +28,9 @@ erDiagram
     WORKFLOW ||--o{ NODE : ""
 
     NODE }o--o{ OUTCOME : nodeoutcome
+    NODE ||--o| COURSEMETA : ""
+    NODE ||--o| ACTIVITYMETA : ""
+    NODE ||--o| TASKMETA : ""
 
     EDGE }o--|| NODE : source_node
     EDGE }o--|| NODE : target_node
@@ -46,7 +49,6 @@ erDiagram
     WORKFLOW ||--o| PROGRAMMETA : ""
     WORKFLOW ||--o| COURSEMETA : ""
     WORKFLOW ||--o| ACTIVITYMETA : ""
-    WORKFLOW ||--o| TASKMETA : ""
 ```
 
 **Notes**
@@ -55,3 +57,5 @@ erDiagram
 - `FAVORITE_GRAPH` references a **Graph** row (`cf_favorite_graph`).
 - Outcome hierarchy uses a **self-FK** (`parent` / `children`) and `order`, not a separate outcome–outcome join table.
 - `Graph` has **no** `Project` foreign key in the current ORM; cross-project scoping for graphs is not expressed in `Graph` itself.
+- `TASKMETA` attaches to **nodes** only; `PROGRAMMETA` attaches to **workflows** only. A node has at most one typed-meta row matching its `node_type`.
+- `Node.linked_workflow` (optional FK to another `Workflow`) is omitted from this diagram; see [ADR: Workflow hierarchy and linked nodes](../../architecture/adr_workflow_hierarchy_and_linked_nodes.md).

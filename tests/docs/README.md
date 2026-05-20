@@ -18,6 +18,7 @@ These two domains are related, but they must not be conflated.
 Use this folder for requirement and design-adjacent documents, including:
 
 - functional requirement authoring guidance
+- workflow / node / linked-workflow terminology ([`requirements/terminology_workflow_hierarchy_and_nodes.md`](requirements/terminology_workflow_hierarchy_and_nodes.md))
 - FR-to-UI terminology mapping
 - feature-specific requirement documents
 - legacy or draft requirement references as needed

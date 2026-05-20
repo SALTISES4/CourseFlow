@@ -108,7 +108,12 @@ def test_delete_node_returns_delta_with_cascaded_edges_and_bumps_revision(
     n2 = create_grid_node(
         section=section, channel=channel, workflow=workflow, section_row=1
     )
-    edge = Edge.objects.create(source_node=n1, target_node=n2)
+    edge = Edge.objects.create(
+        source_node=n1,
+        target_node=n2,
+        source_port="1",
+        target_port="1",
+    )
 
     r = client.delete(
         f"/api/node/{n1.uuid}",
@@ -178,6 +183,83 @@ def test_create_and_delete_edge_envelopes(client: Client, user):
     assert b2["revisionId"] == 2
     assert b2["changes"]["edges"]["deleted"] == [eid]
     assert b2["meta"]["triggeredBy"] == "delete_edge"
+
+
+@pytest.mark.django_db
+def test_create_edge_requires_ports(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    n1 = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+    n2 = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=1
+    )
+
+    r = client.post(
+        f"/api/graph/{wf_uuid}/edges",
+        data={
+            "sourceNodeUuid": str(n1.uuid),
+            "targetNodeUuid": str(n2.uuid),
+            "lineType": "solid",
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert r.status_code == 422
+
+
+@pytest.mark.django_db
+def test_update_edge_metadata_envelope(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    n1 = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+    n2 = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=1
+    )
+
+    r1 = client.post(
+        f"/api/graph/{wf_uuid}/edges",
+        data={
+            "sourceNodeUuid": str(n1.uuid),
+            "targetNodeUuid": str(n2.uuid),
+            "sourcePort": "1",
+            "targetPort": "3",
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert r1.status_code == 200
+    eid = r1.json()["changes"]["edges"]["created"][0]["id"]
+
+    r2 = client.patch(
+        f"/api/edge/{eid}",
+        data={
+            "title": "Link label",
+            "textPosition": 25,
+            "lineType": "dashed",
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert r2.status_code == 200
+    body = r2.json()
+    _assert_envelope_shape(body)
+    assert body["meta"]["triggeredBy"] == "update_edge"
+    updated = body["changes"]["edges"]["updated"][0]
+    assert updated["id"] == eid
+    assert updated["title"] == "Link label"
+    assert updated["textPosition"] == 25
+    assert updated["lineType"] == "dashed"
+
+    edge = Edge.objects.get(pk=eid)
+    assert edge.title == "Link label"
+    assert edge.text_position == 25
+    assert edge.line_type == "dashed"
 
 
 @pytest.mark.django_db
@@ -351,7 +433,7 @@ def test_patch_node_meta_updates_fields_and_returns_envelope(client: Client, use
 
     node.refresh_from_db()
     assert node.title == "Lab 1"
-    assert node.context_classification == 2
+    assert node.activitymeta.context_classification == 2
 
 
 @pytest.mark.django_db
@@ -377,9 +459,10 @@ def test_link_node_workflow_and_unlink(client: Client, user):
     _assert_envelope_shape(body)
     assert body["meta"]["triggeredBy"] == "link_node_workflow"
     updated = body["changes"]["nodes"]["updated"][0]
-    assert updated["workflowUuid"] == str(other_workflow.uuid)
+    assert updated["linkedWorkflowUuid"] == str(other_workflow.uuid)
     node.refresh_from_db()
-    assert node.workflow_id == other_workflow.id
+    assert node.workflow_id == workflow.id
+    assert node.linked_workflow_id == other_workflow.id
 
     r2 = client.post(
         f"/api/node/{node.uuid}/link-workflow",
@@ -392,6 +475,7 @@ def test_link_node_workflow_and_unlink(client: Client, user):
     assert body2["meta"]["triggeredBy"] == "unlink_node_workflow"
     node.refresh_from_db()
     assert node.workflow_id == workflow.id
+    assert node.linked_workflow_id is None
 
 
 @pytest.mark.django_db
@@ -431,7 +515,12 @@ def test_delete_channel_returns_delta_with_cascaded_nodes_and_edges(
     n2 = create_grid_node(
         section=section, channel=channel, workflow=workflow, section_row=1
     )
-    edge = Edge.objects.create(source_node=n1, target_node=n2)
+    edge = Edge.objects.create(
+        source_node=n1,
+        target_node=n2,
+        source_port="1",
+        target_port="1",
+    )
 
     r = client.delete(
         f"/api/channel/{channel.uuid}",
@@ -470,7 +559,12 @@ def test_delete_section_returns_delta_with_cascaded_nodes_and_edges(
     n2 = create_grid_node(
         section=section, channel=channel, workflow=workflow, section_row=1
     )
-    edge = Edge.objects.create(source_node=n1, target_node=n2)
+    edge = Edge.objects.create(
+        source_node=n1,
+        target_node=n2,
+        source_port="1",
+        target_port="1",
+    )
 
     r = client.delete(
         f"/api/section/{section.uuid}",
@@ -581,6 +675,26 @@ def test_insert_channel_below_shifts_positions(client: Client, user):
     assert created["position"] == 1
     updated = {item["uuid"]: item["position"] for item in body["changes"]["channels"]["updated"]}
     assert updated[str(ch2.uuid)] == 2
+
+
+@pytest.mark.django_db
+def test_update_channel_colour(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    _section, channel, _workflow = _section_and_channel(wf_uuid)
+
+    r = client.patch(
+        f"/api/channel/{channel.uuid}",
+        data={"colour": "#ff00aa"},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["item"]["colour"] == "#ff00aa"
+
+    channel.refresh_from_db()
+    assert channel.colour == "#ff00aa"
 
 
 @pytest.mark.django_db

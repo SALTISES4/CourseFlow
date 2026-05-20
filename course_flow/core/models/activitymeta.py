@@ -1,10 +1,11 @@
 from django.db import models
 
+from course_flow.core.models.meta_fields import NodeActivityMetaFields
 from course_flow.core.models.node import Node
 from course_flow.core.models.workflow import Workflow
 
 
-class Activitymeta(models.Model):
+class Activitymeta(NodeActivityMetaFields):
     workflow = models.OneToOneField(
         Workflow,
         on_delete=models.CASCADE,

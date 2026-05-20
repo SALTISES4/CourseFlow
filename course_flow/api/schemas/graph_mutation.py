@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from course_flow.api.common.schemas import CamelSchema
 
@@ -26,6 +26,7 @@ class GraphNodeMutationOut(CamelSchema):
     channel_uuid: UUID | None = None
     section_row: int | None = None
     workflow_uuid: UUID | None = None
+    linked_workflow_uuid: UUID | None = None
     thread_uuid: UUID | None = None
     outcome_uuids: list[UUID] = Field(default_factory=list)
 
@@ -36,6 +37,8 @@ class GraphEdgeMutationOut(CamelSchema):
     id: int
     source_node_uuid: UUID
     target_node_uuid: UUID
+    title: str = ""
+    text_position: int = 50
     line_type: str
     source_port: str
     target_port: str
@@ -53,6 +56,7 @@ class GraphChannelMutationOut(CamelSchema):
     uuid: UUID
     graph_uuid: UUID
     title: str
+    colour: str = ""
     position: int
     thread_uuid: UUID | None = None
 
@@ -186,7 +190,7 @@ class GraphNodeMoveIn(CamelSchema):
 
 
 class GraphNodeLinkWorkflowIn(CamelSchema):
-    """Point a grid node at a library workflow (or clear link back to the graph root workflow)."""
+    """Set or clear the node's symbolic link to a library workflow (parent ``workflow`` unchanged)."""
 
     workflow_uuid: UUID | None = None
 
@@ -212,8 +216,22 @@ class GraphEdgeCreateIn(CamelSchema):
     source_node_uuid: UUID
     target_node_uuid: UUID
     line_type: str = ""
-    source_port: str = ""
-    target_port: str = ""
+    source_port: str = Field(min_length=1)
+    target_port: str = Field(min_length=1)
+
+    @field_validator("source_port", "target_port")
+    @classmethod
+    def strip_non_empty_port(cls, value: str) -> str:
+        stripped = value.strip()
+        if not stripped:
+            raise ValueError("port must be non-empty")
+        return stripped
+
+
+class GraphEdgePatchIn(CamelSchema):
+    title: str | None = None
+    text_position: int | None = None
+    line_type: str | None = None
 
 
 class GraphReorderChannelsIn(CamelSchema):

@@ -207,7 +207,12 @@ def test_node_delete_cascades_edges_and_thread(user_a):
     n2 = create_grid_node(
         section=sec, channel=ch, workflow=g.workflow, thread=th2, section_row=1
     )
-    Edge.objects.create(source_node=n1, target_node=n2)
+    Edge.objects.create(
+        source_node=n1,
+        target_node=n2,
+        source_port="1",
+        target_port="1",
+    )
 
     eid, tid, n1_id = (
         Edge.objects.get(source_node=n1).id,

@@ -91,6 +91,7 @@ class ChannelDTO:
     uuid: UUID
     graph_uuid: UUID
     title: str
+    colour: str
     position: int
     thread_uuid: UUID | None
     date_created: datetime

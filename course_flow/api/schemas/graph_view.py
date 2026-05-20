@@ -40,6 +40,7 @@ class ChannelGraphOut(CamelSchema):
     uuid: UUID
     graph_uuid: UUID
     title: str
+    colour: str = ""
     position: int
     thread_uuid: UUID | None = None
 
@@ -71,6 +72,7 @@ class NodeGraphOut(CamelSchema):
     channel_uuid: UUID | None = None
     section_row: int | None = None
     workflow_uuid: UUID | None = None
+    linked_workflow_uuid: UUID | None = None
     thread_uuid: UUID | None = None
     outcome_uuids: list[UUID] = Field(default_factory=list)
 
@@ -81,6 +83,8 @@ class EdgeGraphOut(CamelSchema):
     id: int
     source_node_uuid: UUID
     target_node_uuid: UUID
+    title: str = ""
+    text_position: int = 50
     line_type: str
     source_port: str
     target_port: str

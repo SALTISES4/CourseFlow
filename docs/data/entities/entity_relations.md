@@ -25,7 +25,7 @@ High-level relationships matching **`course_flow/core/models/`**. For fields and
 ## Sections, channels, nodes
 
 - **Sections** and **channels** belong to a **graph** and may have an optional **thread**.
-- **Nodes** reference a **section**, a **channel**, and a **workflow** (all required in code), optional **thread**, and `section_row`.
+- **Nodes** reference a **section**, a **channel**, and a **parent workflow** (`Node.workflow`, required), optional **linked workflow** (`Node.linked_workflow`), `node_type`, optional **thread**, and `section_row`. Typed fields (context, time, etc.) live on `coursemeta` / `activitymeta` / `taskmeta`, not on `Node`. See [ADR: Workflow hierarchy …](../../architecture/adr_workflow_hierarchy_and_linked_nodes.md) and [ADR: Typed meta …](../../architecture/adr_node_and_workflow_typed_meta.md).
 - **Nodes** connect to **outcomes** (M2M) and **tags** (M2M).
 - **Edges** connect two **nodes** (directed).
 

@@ -8,6 +8,8 @@ export type NodeForm = {
   tags?: number[]
   linkedWorkflow?: LinkedWorkflowType
   ponderation?: PonderationType
+  /** Program-node-local (FR-WF-EN-006); persisted when API supports it. */
+  specificEducation?: boolean
 }
 
 // for reference

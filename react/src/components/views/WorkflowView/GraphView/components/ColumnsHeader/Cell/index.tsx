@@ -130,7 +130,7 @@ const ColumnCellInner = ({
 
   const columnColourHex = ThemeHelper.getColumnColour({
     columnType: themeColumnType,
-    colour: null
+    colour: channel.colour || null
   })
 
   useEffect(() => {

@@ -2209,6 +2209,51 @@
           }
         ]
       },
+      "patch": {
+        "operationId": "updateEdge",
+        "summary": "Update Edge",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "edge_id",
+            "schema": {
+              "title": "Edge Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphMutationEnvelopeOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "edges"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphEdgePatchIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
       "delete": {
         "operationId": "deleteEdge",
         "summary": "Delete Edge",
@@ -3722,6 +3767,11 @@
             "title": "Title",
             "type": "string"
           },
+          "colour": {
+            "default": "",
+            "title": "Colour",
+            "type": "string"
+          },
           "position": {
             "title": "Position",
             "type": "integer"
@@ -3764,6 +3814,16 @@
             "format": "uuid",
             "title": "Targetnodeuuid",
             "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "textPosition": {
+            "default": 50,
+            "title": "Textposition",
+            "type": "integer"
           },
           "lineType": {
             "title": "Linetype",
@@ -4061,6 +4121,18 @@
             ],
             "title": "Workflowuuid"
           },
+          "linkedWorkflowUuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linkedworkflowuuid"
+          },
           "threadUuid": {
             "anyOf": [
               {
@@ -4342,6 +4414,11 @@
             "title": "Title",
             "type": "string"
           },
+          "colour": {
+            "default": "",
+            "title": "Colour",
+            "type": "string"
+          },
           "position": {
             "title": "Position",
             "type": "integer"
@@ -4396,6 +4473,11 @@
           },
           "title": {
             "title": "Title",
+            "type": "string"
+          },
+          "colour": {
+            "default": "",
+            "title": "Colour",
             "type": "string"
           },
           "position": {
@@ -4473,6 +4555,16 @@
             "format": "uuid",
             "title": "Targetnodeuuid",
             "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "textPosition": {
+            "default": 50,
+            "title": "Textposition",
+            "type": "integer"
           },
           "lineType": {
             "title": "Linetype",
@@ -4731,6 +4823,18 @@
               }
             ],
             "title": "Workflowuuid"
+          },
+          "linkedWorkflowUuid": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linkedworkflowuuid"
           },
           "threadUuid": {
             "anyOf": [
@@ -5398,19 +5502,21 @@
             "type": "string"
           },
           "sourcePort": {
-            "default": "",
+            "minLength": 1,
             "title": "Sourceport",
             "type": "string"
           },
           "targetPort": {
-            "default": "",
+            "minLength": 1,
             "title": "Targetport",
             "type": "string"
           }
         },
         "required": [
           "sourceNodeUuid",
-          "targetNodeUuid"
+          "targetNodeUuid",
+          "sourcePort",
+          "targetPort"
         ],
         "title": "GraphEdgeCreateIn",
         "type": "object"
@@ -5475,6 +5581,17 @@
               }
             ],
             "title": "Title"
+          },
+          "colour": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Colour"
           },
           "position": {
             "anyOf": [
@@ -5758,7 +5875,7 @@
         "type": "object"
       },
       "GraphNodeLinkWorkflowIn": {
-        "description": "Point a grid node at a library workflow (or clear link back to the graph root workflow).",
+        "description": "Set or clear the node's symbolic link to a library workflow (parent ``workflow`` unchanged).",
         "properties": {
           "workflowUuid": {
             "anyOf": [
@@ -5923,6 +6040,45 @@
           }
         },
         "title": "GraphOutcomeMoveIn",
+        "type": "object"
+      },
+      "GraphEdgePatchIn": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "textPosition": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Textposition"
+          },
+          "lineType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linetype"
+          }
+        },
+        "title": "GraphEdgePatchIn",
         "type": "object"
       },
       "CommentAuthorOut": {

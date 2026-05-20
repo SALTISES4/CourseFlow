@@ -12,6 +12,7 @@ class Channel(TimeStampedUUIDModel):
         related_name="channels",
     )
     title = models.CharField(max_length=200)
+    colour = models.CharField(max_length=7, blank=True, default="")
     position = models.IntegerField(default=0)
     thread = models.OneToOneField(
         Thread,
