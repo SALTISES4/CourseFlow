@@ -4,6 +4,7 @@ import ContributorAddDialog from '@cf/components/common/dialog/Workspace/Contrib
 import ContributorRemoveDialog from '@cf/components/common/dialog/Workspace/ContributorRemoveDialog'
 import RestoreDialog from '@cf/components/common/dialog/Workspace/RestoreDialog'
 import { WorkspaceType } from '@cf/types/enum'
+import ProjectEditDialog from '@cfComponents/dialog/Project/ProjectEditDialog'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
@@ -22,10 +23,7 @@ const ProjectDialogs = () => {
 
   return (
     <>
-      {
-        // @todo fix the project edit dialog
-        // <ProjectEditDialog />
-      }
+      <ProjectEditDialog />
       <RestoreDialog
         uuid={projectUuid}
         objectType={WorkspaceType.PROJECT}

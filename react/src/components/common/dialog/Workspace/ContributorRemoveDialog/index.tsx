@@ -14,6 +14,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+// @todo is this used?
 const ContributorRemoveDialog = ({
   uuid,
   type: _type
@@ -44,7 +45,7 @@ const ContributorRemoveDialog = ({
       await deleteMember.mutateAsync({
         path: {
           uuid,
-          membership_uuid: payload.membershipId
+          membership_id: payload.membershipId
         }
       })
       onSuccess({ message: _t('Success!') })

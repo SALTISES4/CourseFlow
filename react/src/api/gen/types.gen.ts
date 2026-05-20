@@ -283,10 +283,16 @@ export type ProjectTeamMemberOut = {
    * Userlastname
    */
   userLastName: string
-  /**
-   * Role
-   */
-  role: 'editor' | 'commenter' | 'viewer'
+  role: ProjectTeamRoleSchema
+}
+
+/**
+ * ProjectTeamRoleSchema
+ */
+export enum ProjectTeamRoleSchema {
+  EDITOR = 'editor',
+  COMMENTER = 'commenter',
+  VIEWER = 'viewer'
 }
 
 /**
@@ -299,20 +305,14 @@ export type ProjectTeamMemberAddIn = {
    * Useruuids
    */
   userUuids: Array<string>
-  /**
-   * Role
-   */
-  role: 'editor' | 'commenter' | 'viewer'
+  role: ProjectTeamRoleSchema
 }
 
 /**
  * ProjectTeamMemberRolePatchIn
  */
 export type ProjectTeamMemberRolePatchIn = {
-  /**
-   * Role
-   */
-  role: 'editor' | 'commenter' | 'viewer'
+  role: ProjectTeamRoleSchema
 }
 
 /**

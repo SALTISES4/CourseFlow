@@ -1,9 +1,13 @@
-from typing import Literal
+from enum import Enum
 from uuid import UUID
 
 from course_flow.api.common.schemas import CamelSchema
 
-ProjectTeamRoleSchema = Literal["editor", "commenter", "viewer"]
+
+class ProjectTeamRoleSchema(str, Enum):
+    EDITOR = "editor"
+    COMMENTER = "commenter"
+    VIEWER = "viewer"
 
 
 class DisciplineListItemOut(CamelSchema):
@@ -23,7 +27,9 @@ class ProjectTeamListMetaOut(CamelSchema):
 
 
 class ProjectTeamMemberOut(CamelSchema):
-    """Project team membership row."""
+    """
+    Project team membership row.
+    """
 
     id: int
     project_team_uuid: UUID
@@ -40,7 +46,9 @@ class ProjectTeamListOut(CamelSchema):
 
 
 class ProjectTeamMemberAddIn(CamelSchema):
-    """Add one or more users to the project team."""
+    """
+    Add one or more users to the project team.
+    """
 
     user_uuids: list[UUID]
     role: ProjectTeamRoleSchema

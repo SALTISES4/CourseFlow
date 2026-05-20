@@ -12,6 +12,7 @@ from course_flow.dev_seed.orchestrator import (
     clear_then_seed,
     generate_dev_seed,
 )
+from course_flow.dev_seed.project_builder import DevSeedAdminMissingError
 
 
 class Command(BaseCommand):
@@ -46,16 +47,14 @@ class Command(BaseCommand):
             help="Deterministic seed for structure and Faker (default: 42).",
         )
         parser.add_argument(
-            "--project-count",
-            type=int,
-            default=1,
-            help="How many DEV SEED projects to create (default: 1).",
-        )
-        parser.add_argument(
             "--graphs-per-project",
             type=int,
-            default=1,
-            help="Graphs per project (default: 1).",
+            default=3,
+            help=(
+                "Workflows (graphs) per seeded project (default: 3). "
+                "Each project always includes program, course, and activity roots; "
+                "values below 3 are raised to 3."
+            ),
         )
         parser.add_argument(
             "--section-count",
@@ -64,11 +63,6 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             "--channel-count",
-            type=int,
-            default=3,
-        )
-        parser.add_argument(
-            "--team-size",
             type=int,
             default=3,
         )
@@ -103,17 +97,18 @@ class Command(BaseCommand):
 
         cfg = SeedConfig(
             seed=options["seed"],
-            project_count=options["project_count"],
             graphs_per_project=options["graphs_per_project"],
             section_count=options["section_count"],
             channel_count=options["channel_count"],
-            team_size=options["team_size"],
         )
 
-        if clear_and_seed:
-            result = clear_then_seed(cfg, clear_all_projects=clear_all)
-        else:
-            result = generate_dev_seed(cfg)
+        try:
+            if clear_and_seed:
+                result = clear_then_seed(cfg, clear_all_projects=clear_all)
+            else:
+                result = generate_dev_seed(cfg)
+        except DevSeedAdminMissingError as exc:
+            raise CommandError(str(exc)) from exc
 
         payload = json.dumps(result, indent=2 if not options["json"] else None)
         self.stdout.write(payload)

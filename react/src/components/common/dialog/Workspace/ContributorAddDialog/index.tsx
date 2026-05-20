@@ -3,12 +3,12 @@ import {
   listProjectTeamQueryKey,
   listUsersOptions
 } from '@cf/api/gen/@tanstack/react-query.gen'
+import { ProjectTeamRoleSchema } from '@cf/api/gen/types.gen'
 import { StyledBox, StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { PermissionGroup } from '@cf/types/common'
 import { WorkspaceType } from '@cf/types/enum'
-import { permissionGroupMenuOptions } from '@cf/utility/permissions'
+import { projectTeamRoleMenuOptions } from '@cf/utility/permissions'
 import { _t } from '@cf/utility/Utility.class'
 import SearchIcon from '@mui/icons-material/Search'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -29,27 +29,12 @@ import { Controller, useForm } from 'react-hook-form'
 
 interface IFormInputs {
   userId: string[] | null
-  group: PermissionGroup | null
+  role: ProjectTeamRoleSchema | null
 }
 
 type UserFormOption = {
   name: string
   uuid: string
-}
-
-function permissionGroupToRole(
-  group: PermissionGroup
-): 'editor' | 'commenter' | 'viewer' {
-  switch (group) {
-    case PermissionGroup.EDIT:
-      return 'editor'
-    case PermissionGroup.COMMENT:
-      return 'commenter'
-    case PermissionGroup.VIEW:
-      return 'viewer'
-    default:
-      return 'viewer'
-  }
 }
 
 const ContributorAddDialog = ({
@@ -75,13 +60,13 @@ const ContributorAddDialog = ({
   const { control, reset, watch } = useForm<IFormInputs>({
     defaultValues: {
       userId: null,
-      group: null
+      role: null
     }
   })
 
-  const userIds = watch('userId')
-  const role = watch('group')
-  const disableSubmit = !userIds || userIds?.length === 0 || !role || !uuid
+  const userUuids = watch('userId')
+  const role = watch('role')
+  const disableSubmit = !userUuids || userUuids?.length === 0 || !role || !uuid
 
   const { data: listUsersData } = useQuery({
     ...listUsersOptions({
@@ -112,15 +97,15 @@ const ContributorAddDialog = ({
   })
 
   const onSubmit = useCallback(async () => {
-    if (!userIds?.length || role == null || !uuid) {
+    if (!userUuids?.length || role == null || !uuid) {
       return
     }
     try {
       await addMembers.mutateAsync({
         path: { uuid },
         body: {
-          userUuids: userIds,
-          role: permissionGroupToRole(role)
+          userUuids,
+          role
         }
       })
       onSuccess({ message: _t('Success!') })
@@ -129,7 +114,7 @@ const ContributorAddDialog = ({
     } catch (err) {
       onError(err)
     }
-  }, [addMembers, uuid, onClose, onError, onSuccess, refetch, role, userIds])
+  }, [addMembers, uuid, onClose, onError, onSuccess, refetch, role, userUuids])
 
   const onAutocompleteChange = useCallback((value: string) => {
     setSearch(value)
@@ -190,18 +175,18 @@ const ContributorAddDialog = ({
           <FormControl>
             <FormLabel id="add-contributor-role-label">{_t('Role')}</FormLabel>
             <Controller
-              name="group"
+              name="role"
               control={control}
               render={({ field }) => (
                 <RadioGroup
                   aria-labelledby="add-contributor-role-label"
                   {...field}
                 >
-                  {permissionGroupMenuOptions.map((permissionGroup, index) => (
+                  {projectTeamRoleMenuOptions.map((option) => (
                     <FormControlLabel
-                      key={index}
-                      value={permissionGroup.value}
-                      label={permissionGroup.label}
+                      key={option.value}
+                      value={option.value}
+                      label={option.label}
                       control={<Radio />}
                     />
                   ))}

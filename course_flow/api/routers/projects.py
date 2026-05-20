@@ -1,4 +1,3 @@
-from typing import cast
 from uuid import UUID
 
 from ninja import Router
@@ -47,7 +46,7 @@ def _team_member_out(dto: ProjectTeamMemberDTO) -> ProjectTeamMemberOut:
         user_email=dto.user_email,
         user_first_name=dto.user_first_name,
         user_last_name=dto.user_last_name,
-        role=cast(ProjectTeamRoleSchema, dto.role),
+        role=ProjectTeamRoleSchema(dto.role),
     )
 
 

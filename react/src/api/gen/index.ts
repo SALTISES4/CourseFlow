@@ -358,6 +358,7 @@ export {
   type ProjectTeamMemberAddIn,
   type ProjectTeamMemberOut,
   type ProjectTeamMemberRolePatchIn,
+  ProjectTeamRoleSchema,
   type ProjectUpdateIn,
   type ProjectWorkflowListItemOut,
   type RegisterData,
