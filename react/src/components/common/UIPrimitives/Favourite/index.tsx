@@ -1,9 +1,12 @@
+import { ProjectDetailOutResp } from '@cf/api/gen'
 import { libraryItemFavoriteToggleMutation } from '@cf/api/gen/@tanstack/react-query.gen'
+import { usePatchQueryCache } from '@cf/api/wrappedHooks'
 import { LibraryObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import StarIcon from '@mui/icons-material/Star'
 import IconButton from '@mui/material/IconButton'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { current } from 'immer'
 import { enqueueSnackbar } from 'notistack'
 import { MouseEvent, useCallback, useState } from 'react'
 
@@ -18,11 +21,22 @@ const Favourite = ({ id, uuid, isFavourite, type }: PropsType) => {
   const targetUuid = uuid ?? id
   const [isFavouriteState, setFavouriteState] = useState<boolean>(isFavourite)
   const queryClient = useQueryClient()
+  const patchQueryCache = usePatchQueryCache()
   const toggleFavorite = useMutation({
     ...libraryItemFavoriteToggleMutation(),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ['library-search']
+      })
+
+      // patch the getProject query
+      patchQueryCache<ProjectDetailOutResp>({
+        queryKey: [{ _id: 'getProject' }],
+        callback: (draft) => {
+          if (uuid === draft.item.uuid) {
+            draft.item.isFavourite = !isFavouriteState
+          }
+        }
       })
 
       const msg = isFavouriteState
