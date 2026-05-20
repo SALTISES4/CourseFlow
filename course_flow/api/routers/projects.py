@@ -128,6 +128,7 @@ def create_project(request, payload: ProjectCreateIn):
         description=dto.description,
         is_published=dto.is_published,
         is_template=dto.is_template,
+        is_favourite=False,
         owner_id=dto.owner_id,
         date_created=dto.date_created,
         modified_on=dto.modified_on,
