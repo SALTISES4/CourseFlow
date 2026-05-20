@@ -1,4 +1,4 @@
-import { searchLibrary } from '@cf/api/gen'
+import { LibraryContentTypeIn, searchLibrary } from '@cf/api/gen'
 import {
   selectGraphByUuid,
   selectNodeByUuid
@@ -64,8 +64,9 @@ function NodeLinkWorkflowDialog() {
 
   const { selected, workflowData, filteredWorkflows, loading, loadError } =
     state
-  const filteredResults =
-    filteredWorkflows ?? formatLibraryObjects(workflowData ?? [])
+  // const filteredResults =
+  //   filteredWorkflows ?? formatLibraryObjects(workflowData ?? [])
+  const filteredResults = []
 
   const onDialogClose = useCallback(() => {
     onClose()
@@ -94,19 +95,22 @@ function NodeLinkWorkflowDialog() {
     }
 
     const linked = workflowData?.find((w) => w.uuid === selected)
-    void dispatch(
-      linkNodeWorkflow({
-        graphUuid,
-        nodeUuid: payload.uuid,
-        workflowUuid: selected,
-        linkedWorkflow: linked
-          ? { uuid: linked.uuid, title: linked.title }
-          : { uuid: selected, title: '' }
-      })
-    )
+
+    // TODO: implement
+    console.log('TODO: dispatch linkNodeWorkflow with', { linked })
+    // dispatch(
+    //   linkNodeWorkflow({
+    //     graphUuid,
+    //     nodeUuid: payload.uuid,
+    //     workflowUuid: selected,
+    //     linkedWorkflow: linked
+    //       ? { uuid: linked.uuid, title: linked.title }
+    //       : { uuid: selected, title: '' }
+    //   })
+    // )
 
     onClose()
-  }, [dispatch, graphUuid, onClose, payload, selected, workflowData])
+  }, [graphUuid, onClose, payload?.uuid, selected, workflowData])
 
   const onSearchChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -130,7 +134,8 @@ function NodeLinkWorkflowDialog() {
             .search(value)
             .map((result) => result.item)
 
-          draft.filteredWorkflows = formatLibraryObjects(filtered)
+          console.log('set filtered workflows to', filtered)
+          // draft.filteredWorkflows = formatLibraryObjects(filtered)
         })
       )
     },
@@ -155,7 +160,7 @@ function NodeLinkWorkflowDialog() {
         const { data } = await searchLibrary({
           body: buildLibrarySearchRequestBody({
             pagination: { page: 0, resultsPerPage: 100 },
-            filters: { contentType: 'workflow' }
+            filters: { contentType: LibraryContentTypeIn.WORKFLOW }
           }) as never,
           throwOnError: true
         })
