@@ -197,10 +197,10 @@ def get_workflow_full_table(workflow, allowed_sets):
             Column.objects.filter(workflow=workflow, deleted=False).order_by("columnworkflow__rank"),
             many=True
         ).data, 
-        columns=["title", "colour"]
+        columns=["title", "colour","column_order"]
     )
     df_col = df_col.rename(columns={"title":"column_title"})
-    df_col["column_order"]=df_col.index
+
     #Merge it into our dataframe
     df = df.merge(df_col,on="column_order",how="left")
 
@@ -225,10 +225,11 @@ def get_workflow_full_table(workflow, allowed_sets):
 
 
     #Add a row at the top for the column
-    col_row = df_col.drop(columns=["colour","column_order"]).T
+    col_row = df_col.set_index("column_order").drop(columns=["colour"]).T
     col_row["week"]=_("Week")
     col_row["outcomes"]=_("Outcomes")
     col_row["rowtype"]=["columns"]
+
 
     #Add a few lines for the workflow info
     wf_serialized = WorkflowExportSerializerWithPonderation(workflow).data
