@@ -153,7 +153,6 @@ class TitleSerializerMixin:
         max_length = title_max_length
         if self.Meta.model == Outcome:
             max_length=500
-            print(max_length)
         return bleach_sanitizer(value, tags=bleach_allowed_tags_title)[
             :max_length
         ]
@@ -1615,9 +1614,11 @@ class ColumnExportSerializer(
             "id",
             "title",
             "colour",
+            "column_order",
         ]
 
     colour = serializers.SerializerMethodField()
+    column_order = serializers.SerializerMethodField()
 
     def get_colour(self, instance):
         if instance.colour: return str(hex(instance.colour)).replace("0x","#") 
@@ -1627,6 +1628,9 @@ class ColumnExportSerializer(
 
     def get_type(self, instance):
         return "column"
+
+    def get_column_order(self, instance):
+        return ColumnWorkflow.objects.filter(column=instance).first().rank
 
 
 class NodeExportSerializer(

@@ -283,7 +283,6 @@ def get_workflow_outcomes_table(workflow, allowed_sets):
 def get_outcomes_export(
     model_object, object_type, export_format, allowed_sets
 ):
-    print("in outcome export")
     if object_type == "project":
         workflows = list(model_object.workflows.filter(deleted=False))
     else:
