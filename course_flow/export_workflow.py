@@ -1,4 +1,5 @@
 from io import BytesIO
+import math
 import time
 import traceback
 import numpy as np
@@ -38,8 +39,29 @@ from .utils import (
 )
 
 def hex_to_rgb(hex_color):
-    hex_color = hex_color.lstrip("#")
-    return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+    """
+    Parse a 6-digit hex colour (with or without '#') into an RGB tuple.
+    add better checks for improperly stored / inconsistent formats
+    """
+
+    # basic checks, return none if anything seems off
+    if hex_color is None:
+        return None
+    try:
+        if not isinstance(hex_color, str):
+            hex_color = str(hex_color)
+        hc = hex_color.strip().lstrip("#").lower()
+        if len(hc) != 6:
+            return None
+        if not all(c in "0123456789abcdef" for c in hc):
+            return None
+
+        # finally convert it from hex to RGB,
+        # break into 3 str parts, loop and convert hex to r,g,b int / 255
+        return tuple(int(hc[i : i + 2], 16) for i in (0, 2, 4))
+
+    except (ValueError, TypeError, AttributeError):
+        return None
 
 
 def luminance(rgb):
@@ -47,12 +69,89 @@ def luminance(rgb):
     return 0.299 * r + 0.587 * g + 0.114 * b
 
 
+def _normalized_hex_body_for_export(bg_hex):
+    """
+    Best-effort to santize the malformed hex string and return None if it isn't.
+    """
+    if bg_hex is None:
+        return None
+    try:
+        if pd.isna(bg_hex):
+            return None
+    except TypeError:
+        return None
+    if not isinstance(bg_hex, str):
+        bg_hex = str(bg_hex)
+    body = bg_hex.strip().lstrip("#").lower()
+    if not body or body == "nan":
+        return None
+    if not all(c in "0123456789abcdef" for c in body):
+        return None
+    if len(body) == 3:
+        body = "".join(c * 2 for c in body)
+    elif len(body) > 6:
+        return None
+    elif len(body) < 6:
+        body = body.zfill(6)
+    if len(body) != 6:
+        return None
+    return body
+
+
 def readable_text_color(bg_hex, threshold=140):
     """
     Returns '#000000' or '#FFFFFF' depending on background brightness.
+    work around for tolerating missing, NaN, and non–6-digit hex from serialized data.
     """
-    lum = luminance(hex_to_rgb(bg_hex))
-    return "#000000" if lum > 140 else "#FFFFFF"
+    body = _normalized_hex_body_for_export(bg_hex)
+    if body is None:
+        return "#000000"
+    rgb = hex_to_rgb(body)
+    if rgb is None:
+        return "#000000"
+    try:
+        lum = luminance(rgb)
+    except (ValueError, TypeError):
+        return "#000000"
+    return "#000000" if lum > threshold else "#FFFFFF"
+
+
+def _xlsxwriter_cell_value(value):
+    """
+    a sanitizer for export, values safe for xlsxwriter.write (NaN/Inf raise TypeError in write_number).
+    """
+    if value is None:
+        return ""
+    try:
+        if pd.isna(value):
+            return ""
+    except TypeError:
+        pass
+    try:
+        if isinstance(value, (float, np.floating)):
+            v = float(value)
+            if not math.isfinite(v):
+                return ""
+    except (TypeError, ValueError, OverflowError):
+        return ""
+    return value
+
+
+def _column_order_int(column_order):
+    """
+    try to return int column_order for export lookups, or None if not possible
+    """
+    if column_order is None:
+        return None
+    try:
+        if pd.isna(column_order):
+            return None
+    except TypeError:
+        return None
+    try:
+        return int(column_order)
+    except (TypeError, ValueError):
+        return None
 
 
 def get_workflow_full_table(workflow, allowed_sets):
@@ -230,7 +329,6 @@ def get_workflows_export(model_object, object_type, export_format, allowed_sets)
                         index=False,
                         header=False,
                     )
-
                     ws = writer.sheets[sheet_name]
                     #Set column widths
                     ws.set_column(0, 20, 40, wrap_format)
@@ -242,20 +340,35 @@ def get_workflows_export(model_object, object_type, export_format, allowed_sets)
                     data_cols = {}
                     for i, name in enumerate(header):
                         if str(name).isdigit():
-                            data_cols[name] = i
-                    
-                    
+                            # workaround for inconsistent pivot field name, getting str or int
+                            # e.g. "7" vs 7
+                            data_cols[int(name)] = i
+
                     format_cache = {}
                     for row_idx, row in columns.iterrows():
                         colour = row["colour"]
-                        column_order = row["column_order"]
-                        if column_order in data_cols.keys():
+
+                        # fix for inconsistent type in column field
+                        column_order = _column_order_int(row["column_order"])
+                        if column_order is not None and column_order in data_cols:
                             format_cache[data_cols[column_order]] = workbook.add_format({
                                 "bg_color": colour,
                                 "border": 1,
                                 "font_size": 16,
                                 "bold": True,
                                 "font_color": readable_text_color(colour),
+                                "text_wrap": True,
+                                "valign": "top",
+                            })
+                    # workaround for integrity issue where columns can exist without matching row
+                    for col_idx in data_cols.values():
+                        if col_idx not in format_cache:
+                            format_cache[col_idx] = workbook.add_format({
+                                "bg_color": "#FFFFFF",
+                                "border": 1,
+                                "font_size": 16,
+                                "bold": True,
+                                "font_color": "#000000",
                                 "text_wrap": True,
                                 "valign": "top",
                             })
@@ -271,16 +384,44 @@ def get_workflows_export(model_object, object_type, export_format, allowed_sets)
                         elif rowtype == "columns":
                             ws.set_row(row_idx,None,week_header_format)
                             outcome_col = df.columns.get_loc("outcomes")
-                            ws.write(row_idx,outcome_col,row["outcomes"],outcome_header_format)
+
+                            # integrate cell sanitizer from above
+                            ws.write(
+                                row_idx,
+                                outcome_col,
+                                _xlsxwriter_cell_value(row["outcomes"]),
+                                outcome_header_format,
+                            )
                             for col_idx in data_cols.values():
-                                value = row.iloc[col_idx]
+
+                                # integrate cell sanitizer from above
+                                value = _xlsxwriter_cell_value(row.iloc[col_idx])
                                 ws.write(row_idx,col_idx,value,format_cache[col_idx])
                         elif rowtype == "wf_ponderation":
-                            ws.write(row_idx,0,row["week"],ponderation_format)
+                           # integrate cell sanitizer from above
+                            ws.write(
+                                row_idx,
+                                0,
+                                _xlsxwriter_cell_value(row["week"]),
+                                ponderation_format,
+                            )
                         elif rowtype == "wf_description":
                             ws.set_row(row_idx,60)
-                            ws.write(row_idx,0,row["week"],ponderation_format)
-                            ws.merge_range(row_idx,1,row_idx,len(df.columns)-3,row["outcomes"],description_text_format)
+                               # integrate cell sanitizer from above
+                            ws.write(
+                                row_idx,
+                                0,
+                                _xlsxwriter_cell_value(row["week"]),
+                                ponderation_format,
+                            )
+                            ws.merge_range(
+                                row_idx,
+                                1,
+                                row_idx,
+                                len(df.columns) - 3,
+                                _xlsxwriter_cell_value(row["outcomes"]),
+                                description_text_format,
+                            )
                         elif rowtype == "a_title" or rowtype == "b_description":
                             colour = row["colour"]
                             if pd.isna(colour) or colour == "":
@@ -306,8 +447,10 @@ def get_workflows_export(model_object, object_type, export_format, allowed_sets)
 
                             cell_format = format_cache[key]
                             for col_idx in data_cols.values():
-                                value = row.iloc[col_idx]
-                                if pd.notna(value) and value != "":
+
+                               # integrate cell sanitizer from above
+                                value = _xlsxwriter_cell_value(row.iloc[col_idx])
+                                if value != "":
                                     ws.write(row_idx, col_idx, value, cell_format)
         elif export_format == "csv":
             df = pd.DataFrame(

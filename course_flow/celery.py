@@ -2,6 +2,7 @@ import os
 from functools import wraps
 
 import celery
+from celery.exceptions import OperationalError
 from celery.utils.log import get_logger
 
 logger = get_logger("peerinst-scheduled")
@@ -31,36 +32,42 @@ def try_async(func):
     """
     From https://github.com/SALTISES4/dalite-ng/blob/master/dalite/celery.py
     Decorator for celery tasks such that they default to synchronous operation
-    if no workers are available
+    if the broker is unavailable or inspect cannot see workers (i.e. we don't always see the worker for some reason) 
     """
 
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
-            heartbeat.delay()
-
-        except heartbeat.OperationalError as e:
+            celery.current_app.control.ping()
+        except OperationalError as e:
             info = "Celery unavailable ({}).  Executing {} synchronously.".format(  # noqa
                 e, func.__name__
             )
             logger.info(info)
             return func(*args, **kwargs)
 
-        else:
-            logger.info("Checking for available workers...")
+        logger.info("Checking for available workers...")
+        try:
             available_workers = celery.current_app.control.inspect().active()
+        except Exception as e:
+            logger.warning(
+                "Celery inspect failed ({}). Executing {} synchronously.".format(
+                    e, func.__name__
+                )
+            )
+            return func(*args, **kwargs)
 
-            if available_workers:
-                info = "Celery workers available ({}).  Executing {} asynchronously.".format(  # noqa
-                    list(available_workers.keys()), func.__name__
-                )
-                logger.info(info)
-                return func.delay(*args, **kwargs)
-            else:
-                info = "No celery workers available.  Executing {} synchronously.".format(  # noqa
-                    func.__name__
-                )
-                logger.info(info)
-                return func(*args, **kwargs)
+        if available_workers:
+            info = "Celery workers available ({}).  Executing {} asynchronously.".format(  # noqa
+                list(available_workers.keys()), func.__name__
+            )
+            logger.info(info)
+            return func.delay(*args, **kwargs)
+
+        info = "No celery workers available.  Executing {} synchronously.".format(  # noqa
+            func.__name__
+        )
+        logger.info(info)
+        return func(*args, **kwargs)
 
     return wrapper
