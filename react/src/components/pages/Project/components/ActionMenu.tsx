@@ -7,17 +7,6 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
-/**
- * Until v2 exposes project ACLs, menu visibility assumes a writable project for authenticated users.
- * */
-const v2MenuPermissions = {
-  read: true,
-  write: true,
-  manage: true,
-  viewComments: true,
-  addComments: true
-}
-
 const ActionMenu = () => {
   const { uuid } = useParams()
   const projectUuid = uuid ?? ''
@@ -44,8 +33,6 @@ const ActionMenu = () => {
     return <></>
   }
 
-  const projectPermission = v2MenuPermissions
-
   const menuItems: MenuItemType[] = [
     {
       uuid: 'edit-project',
@@ -54,7 +41,7 @@ const ActionMenu = () => {
       iconButton: {
         icon: <EditIcon />
       },
-      show: projectPermission.write
+      show: true
     },
     {
       uuid: 'share',
@@ -63,19 +50,19 @@ const ActionMenu = () => {
         icon: <PersonAddIcon />
       },
       action: openShareDialog,
-      show: projectPermission.manage
+      show: true
     },
     {
       uuid: 'duplicate-project',
       content: _t('Copy project'),
       action: () => duplicateProject(projectUuid),
-      show: projectPermission.read
+      show: true
     },
     {
       uuid: 'archive-project',
       action: archiveProject,
       content: _t('Archive project'),
-      show: projectPermission.manage,
+      show: true,
       separator: 'top'
     },
     {

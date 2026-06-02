@@ -22,6 +22,15 @@ class Role(StrEnum):
     COMMENTER = "commenter"
     VIEWER = "viewer"
 
+
+class UserGroup(StrEnum):
+    """Canonical Django ``auth.Group`` names for account-level roles."""
+
+    ADMIN = "admin"
+    TEACHER = "teacher"
+    STUDENT = "student"
+
+
 class LanguagePreference(StrEnum):
     EN = "en-ca"
     FR = "fr-ca"

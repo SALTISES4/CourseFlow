@@ -7,3 +7,9 @@ DEV_SEED_PROJECT_TITLE_PREFIX = "DEV SEED -"
 # Tag labels created for seed projects use this prefix (tags may become orphan
 # on project delete via SET_NULL; we delete project-owned tags before delete).
 DEV_SEED_TAG_LABEL_PREFIX = "DEV SEED TAG -"
+
+# Admin is created separately (e.g. `just django-create-superuser`); seed only references it.
+DEV_SEED_ADMIN_EMAIL = "admin@courseflow.com"
+DEV_SEED_TEACHER_EMAIL = "teacher@courseflow.com"
+DEV_SEED_STUDENT_EMAIL = "student@courseflow.com"
+DEV_SEED_DEMO_PASSWORD = "password"

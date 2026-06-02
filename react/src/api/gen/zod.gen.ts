@@ -120,6 +120,11 @@ export const zProjectTeamListMetaOut = z.object({
 })
 
 /**
+ * ProjectTeamRoleSchema
+ */
+export const zProjectTeamRoleSchema = z.enum(['editor', 'commenter', 'viewer'])
+
+/**
  * ProjectTeamMemberOut
  *
  * Project team membership row.
@@ -131,7 +136,7 @@ export const zProjectTeamMemberOut = z.object({
   userEmail: z.string(),
   userFirstName: z.string(),
   userLastName: z.string(),
-  role: z.enum(['editor', 'commenter', 'viewer'])
+  role: zProjectTeamRoleSchema
 })
 
 /**
@@ -149,14 +154,14 @@ export const zProjectTeamListOut = z.object({
  */
 export const zProjectTeamMemberAddIn = z.object({
   userUuids: z.array(z.string().uuid()),
-  role: z.enum(['editor', 'commenter', 'viewer'])
+  role: zProjectTeamRoleSchema
 })
 
 /**
  * ProjectTeamMemberRolePatchIn
  */
 export const zProjectTeamMemberRolePatchIn = z.object({
-  role: z.enum(['editor', 'commenter', 'viewer'])
+  role: zProjectTeamRoleSchema
 })
 
 /**

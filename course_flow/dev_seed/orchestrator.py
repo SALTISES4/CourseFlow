@@ -4,9 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from faker import Faker
 
+from course_flow.core.enum import WorkflowType
 from course_flow.core.models import Edge, Graph
 from course_flow.dev_seed import clear
 from course_flow.dev_seed.graph_shape import GraphShapeParams
@@ -24,11 +26,20 @@ from course_flow.dev_seed.graph_view import (
 from course_flow.dev_seed.project_builder import (
     attach_disciplines,
     create_project,
-    ensure_seed_users,
+    ensure_dev_seed_accounts,
     ensure_team,
     get_or_create_disciplines,
 )
 from course_flow.dev_seed.rng import SeededRNG
+
+User = get_user_model()
+
+# Each seeded project includes at least one root workflow of each type.
+MANDATORY_WORKFLOW_TYPES: tuple[WorkflowType, ...] = (
+    WorkflowType.PROGRAM,
+    WorkflowType.COURSE,
+    WorkflowType.ACTIVITY,
+)
 
 
 @dataclass(frozen=True)
@@ -36,11 +47,9 @@ class SeedConfig:
     """Bounded defaults for visualization-friendly graphs."""
 
     seed: int = 42
-    project_count: int = 1
-    graphs_per_project: int = 1
+    graphs_per_project: int = 3
     section_count: int = 3
     channel_count: int = 3
-    team_size: int = 3
     tag_count: int = 3
 
 
@@ -53,18 +62,23 @@ def _shape_params(cfg: SeedConfig, rng: SeededRNG) -> GraphShapeParams:
     )
 
 
-def _generate_one_project(cfg: SeedConfig, project_index: int) -> dict:
-    """Single project with ``graphs_per_project`` graphs."""
+def _workflow_type_for_index(index: int, rng: SeededRNG) -> WorkflowType:
+    if index < len(MANDATORY_WORKFLOW_TYPES):
+        return MANDATORY_WORKFLOW_TYPES[index]
+    return rng.choice(list(MANDATORY_WORKFLOW_TYPES))
+
+
+def _generate_one_project(cfg: SeedConfig, project_index: int, owner: User) -> dict:
+    """Single project owned by ``owner`` with graphs_per_project workflows."""
     rng = SeededRNG.from_seed(cfg.seed + project_index * 10_007)
     fake = Faker()
     fake.seed_instance(cfg.seed + project_index * 10_007)
 
-    owner, members = ensure_seed_users(rng=rng, seed=cfg.seed + project_index, team_size=cfg.team_size)
     discipline_pool = get_or_create_disciplines()
 
     project = create_project(owner, fake=fake, rng=rng)
     attach_disciplines(project, discipline_pool, rng=rng, max_n=3)
-    ensure_team(project, members, rng=rng)
+    ensure_team(project, owner)
 
     tags = make_project_tags(
         project,
@@ -74,8 +88,9 @@ def _generate_one_project(cfg: SeedConfig, project_index: int) -> dict:
     )
 
     graphs_meta: list[dict] = []
+    graph_count = max(cfg.graphs_per_project, len(MANDATORY_WORKFLOW_TYPES))
 
-    for w in range(cfg.graphs_per_project):
+    for w in range(graph_count):
         wf_rng = SeededRNG.from_seed(cfg.seed + project_index * 10_007 + w * 97)
         wf_fake = Faker()
         wf_fake.seed_instance(cfg.seed + project_index * 10_007 + w * 97)
@@ -87,6 +102,7 @@ def _generate_one_project(cfg: SeedConfig, project_index: int) -> dict:
             project=project,
             fake=wf_fake,
             rng=wf_rng,
+            workflow_type=_workflow_type_for_index(w, wf_rng),
         )
 
         shape = _shape_params(cfg, wf_rng)
@@ -130,6 +146,7 @@ def _generate_one_project(cfg: SeedConfig, project_index: int) -> dict:
         )
 
     return {
+        "owner_email": owner.email,
         "project_uuid": str(project.uuid),
         "project_title": project.title,
         "graphs": graphs_meta,
@@ -137,11 +154,12 @@ def _generate_one_project(cfg: SeedConfig, project_index: int) -> dict:
 
 
 def generate_dev_seed(cfg: SeedConfig) -> dict:
-    """Create ``project_count`` seed projects in one atomic transaction."""
+    """Create one DEV SEED project per canonical dev account (admin, teacher, student)."""
+    owners = ensure_dev_seed_accounts()
     results: list[dict] = []
     with transaction.atomic():
-        for i in range(cfg.project_count):
-            results.append(_generate_one_project(cfg, i))
+        for i, owner in enumerate(owners):
+            results.append(_generate_one_project(cfg, i, owner))
     return {"seed": cfg.seed, "projects": results}
 
 

@@ -66,12 +66,20 @@ const OverviewView = () => {
       </Grid>
 
       <SC.InfoBlock sx={{ mt: 3 }}>
-        <SC.InfoBlockTitle>{_t('Permissions')}</SC.InfoBlockTitle>
-        <UserPermissions
-          workspaceId={workflowUuid}
-          author={workflowAuthor}
-          workspaceType={WorkspaceType.WORKFLOW}
-        />
+        {
+          // no permissions on the workflow in v1
+          /* eslint-disable-next-line no-constant-binary-expression */
+          false && (
+            <>
+              <SC.InfoBlockTitle>{_t('Permissions')}</SC.InfoBlockTitle>
+              <UserPermissions
+                workspaceId={workflowUuid}
+                author={workflowAuthor}
+                workspaceType={WorkspaceType.WORKFLOW}
+              />
+            </>
+          )
+        }
 
         <Stack
           direction="row"

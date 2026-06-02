@@ -1,21 +1,27 @@
-import { PermissionGroup } from '@cf/types/common'
+import { ProjectTeamRoleSchema } from '@cf/api/gen/types.gen'
 import { _t } from '@cf/utility/Utility.class'
 
-type SelectOption = {
-  value: string | number
+export type ProjectTeamRoleMenuOption = {
+  value: ProjectTeamRoleSchema
   label: string
 }
-export const permissionGroupMenuOptions: SelectOption[] = [
+
+/** Menu options for project team roles (editor / commenter / viewer). */
+export const projectTeamRoleMenuOptions: ProjectTeamRoleMenuOption[] = [
   {
-    value: PermissionGroup.EDIT,
+    value: ProjectTeamRoleSchema.EDITOR,
     label: _t('Editor')
   },
   {
-    value: PermissionGroup.COMMENT,
+    value: ProjectTeamRoleSchema.COMMENTER,
     label: _t('Commenter')
   },
   {
-    value: PermissionGroup.VIEW,
+    value: ProjectTeamRoleSchema.VIEWER,
     label: _t('Viewer')
   }
 ]
+
+export function projectTeamRoleLabel(role: ProjectTeamRoleSchema): string {
+  return projectTeamRoleMenuOptions.find((o) => o.value === role)?.label ?? role
+}

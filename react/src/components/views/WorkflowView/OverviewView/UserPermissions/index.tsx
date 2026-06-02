@@ -4,12 +4,15 @@ import {
   updateProjectTeamMemberMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import type { ProjectTeamMemberOut } from '@cf/api/gen/types.gen'
+import { ProjectTeamRoleSchema } from '@cf/api/gen/types.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { useTeamProjectUuidForWorkflow } from '@cf/hooks/useTeamProjectUuidForWorkflow'
-import { PermissionGroup } from '@cf/types/common'
 import { WorkspaceType } from '@cf/types/enum'
-import { permissionGroupMenuOptions } from '@cf/utility/permissions'
+import {
+  projectTeamRoleLabel,
+  projectTeamRoleMenuOptions
+} from '@cf/utility/permissions'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import MenuButton from '@cfComponents/menu/MenuButton'
@@ -30,36 +33,6 @@ type PropsType = {
   workspaceId: string
   workspaceType: WorkspaceType
   author: EUser
-}
-
-function roleToPermissionGroup(
-  role: ProjectTeamMemberOut['role']
-): PermissionGroup {
-  switch (role) {
-    case 'editor':
-      return PermissionGroup.EDIT
-    case 'commenter':
-      return PermissionGroup.COMMENT
-    case 'viewer':
-      return PermissionGroup.VIEW
-    default:
-      return PermissionGroup.VIEW
-  }
-}
-
-function permissionGroupToRole(
-  group: PermissionGroup
-): 'editor' | 'commenter' | 'viewer' {
-  switch (group) {
-    case PermissionGroup.EDIT:
-      return 'editor'
-    case PermissionGroup.COMMENT:
-      return 'commenter'
-    case PermissionGroup.VIEW:
-      return 'viewer'
-    default:
-      return 'viewer'
-  }
 }
 
 function memberDisplayName(m: ProjectTeamMemberOut): string {
@@ -105,7 +78,10 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
     }
   })
 
-  async function onChangeHandler(group: PermissionGroup, membershipId: number) {
+  async function onChangeHandler(
+    role: ProjectTeamRoleSchema,
+    membershipId: number
+  ) {
     if (!projectUuidForTeam) {
       return
     }
@@ -113,9 +89,9 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
       const resp = await updateMember.mutateAsync({
         path: {
           uuid: projectUuidForTeam,
-          membership_uuid: membershipId // should this be uid or uui?
+          membership_id: membershipId
         },
-        body: { role: permissionGroupToRole(group) }
+        body: { role }
       })
       onSuccess(resp)
     } catch (err) {
@@ -172,7 +148,7 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
         )}
 
         {members.map((user) => (
-          <SC.PermissionThumbnail key={user.uuid}>
+          <SC.PermissionThumbnail key={user.id}>
             <ListItemAvatar>
               <Avatar alt={memberDisplayName(user)}>
                 {ThemeHelper.getInitials(
@@ -190,14 +166,12 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
               // TODO: this needs to be a check on call to see if current user can edit
               disabled={false}
               options={[
-                ...permissionGroupMenuOptions.map((item) => ({
-                  name: String(item.value),
+                ...projectTeamRoleMenuOptions.map((item) => ({
+                  name: item.value,
                   label:
                     item.label +
-                    (roleToPermissionGroup(user.role) === item.value
-                      ? ' ' + '(current)'
-                      : ''),
-                  disabled: roleToPermissionGroup(user.role) === item.value
+                    (user.role === item.value ? ' ' + '(current)' : ''),
+                  disabled: user.role === item.value
                 })),
                 {
                   name: 'mui-divider'
@@ -205,17 +179,13 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
                 {
                   name: 'remove',
                   label: _t('Remove user'),
-                  onClick: onUserRemove(user.uuid, memberDisplayName(user))
+                  onClick: onUserRemove(user.id, memberDisplayName(user))
                 }
               ]}
-              onChange={(group) =>
-                onChangeHandler(Number(group) as PermissionGroup, user.uuid)
+              onChange={(role) =>
+                onChangeHandler(role as ProjectTeamRoleSchema, user.id)
               }
-              placeholder={
-                permissionGroupMenuOptions.find(
-                  (p) => p.value === roleToPermissionGroup(user.role)
-                )?.label || 'Choose Permissions (user should never see this)'
-              }
+              placeholder={projectTeamRoleLabel(user.role)}
             />
           </SC.PermissionThumbnail>
         ))}

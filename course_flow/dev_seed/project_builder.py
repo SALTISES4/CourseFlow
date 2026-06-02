@@ -12,11 +12,16 @@ from course_flow.core.models import (
     Team,
     TeamUser,
 )
-from course_flow.dev_seed.constants import DEV_SEED_PROJECT_TITLE_PREFIX
+from course_flow.dev_seed.constants import (
+    DEV_SEED_ADMIN_EMAIL,
+    DEV_SEED_DEMO_PASSWORD,
+    DEV_SEED_PROJECT_TITLE_PREFIX,
+    DEV_SEED_STUDENT_EMAIL,
+    DEV_SEED_TEACHER_EMAIL,
+)
 from course_flow.dev_seed.rng import SeededRNG
 
 User = get_user_model()
-DEV_SEED_OWNER_EMAIL = "admin@courseflow.com"
 
 # Global discipline catalog — we only link projects; we never delete these on clear.
 _CANONICAL_DISCIPLINES = (
@@ -39,49 +44,70 @@ def get_or_create_disciplines() -> list[Discipline]:
     return out
 
 
-def ensure_seed_users(
-    *,
-    rng: SeededRNG,
-    seed: int,
-    team_size: int = 3,
-) -> tuple:
-    """
-    Deterministic users for owner + team members.
+class DevSeedAdminMissingError(RuntimeError):
+    """Raised when the pre-created admin account is not in the database."""
 
-    Owner is always the local admin account so seeded projects/graphs are
-    authored by the same user across runs.
-    """
-    owner_email = DEV_SEED_OWNER_EMAIL
-    owner, _ = User.objects.get_or_create(
-        email=owner_email,
+
+def _get_existing_admin() -> User:
+    try:
+        return User.objects.get(email=DEV_SEED_ADMIN_EMAIL)
+    except User.DoesNotExist as exc:
+        raise DevSeedAdminMissingError(
+            f"{DEV_SEED_ADMIN_EMAIL} must exist before seeding "
+            "(run: just django-create-superuser)."
+        ) from exc
+
+
+def _ensure_demo_user(
+    *,
+    email: str,
+    first_name: str,
+    last_name: str,
+    password: str,
+) -> User:
+    user, _ = User.objects.get_or_create(
+        email=email,
         defaults={
-            "first_name": "Admin",
-            "last_name": "CourseFlow",
-            "is_staff": True,
-            "is_superuser": True,
+            "first_name": first_name,
+            "last_name": last_name,
         },
     )
-    if not owner.is_staff or not owner.is_superuser:
-        owner.is_staff = True
-        owner.is_superuser = True
-        owner.save(update_fields=["is_staff", "is_superuser"])
-    if not owner.has_usable_password():
-        owner.set_password("dev-seed-password")
-        owner.save()
+    changed: list[str] = []
+    if user.first_name != first_name:
+        user.first_name = first_name
+        changed.append("first_name")
+    if user.last_name != last_name:
+        user.last_name = last_name
+        changed.append("last_name")
+    user.set_password(password)
+    changed.append("password")
+    if changed:
+        user.save()
+    return user
 
-    members: list = [owner]
-    for i in range(1, team_size):
-        email = f"cf-dev-seed-{seed}-member{i}@local.test"
-        u, _ = User.objects.get_or_create(
-            email=email,
-            defaults={"first_name": f"Member{i}", "last_name": "Seed"},
-        )
-        if not u.has_usable_password():
-            u.set_password("dev-seed-password")
-            u.save()
-        members.append(u)
 
-    return owner, members
+def ensure_dev_seed_accounts() -> list[User]:
+    """
+    Resolve seed project owners: existing admin plus teacher/student demo users.
+
+    Admin is not created or modified here (see ``django-create-superuser``).
+    Teacher and student are created/updated with ``DEV_SEED_DEMO_PASSWORD``.
+    No extra member users are created.
+    """
+    admin = _get_existing_admin()
+    teacher = _ensure_demo_user(
+        email=DEV_SEED_TEACHER_EMAIL,
+        first_name="testteacher",
+        last_name="",
+        password=DEV_SEED_DEMO_PASSWORD,
+    )
+    student = _ensure_demo_user(
+        email=DEV_SEED_STUDENT_EMAIL,
+        first_name="teststudent",
+        last_name="",
+        password=DEV_SEED_DEMO_PASSWORD,
+    )
+    return [admin, teacher, student]
 
 
 def create_project(
@@ -114,22 +140,12 @@ def attach_disciplines(
         ProjectDiscipline.objects.get_or_create(project=project, discipline=d)
 
 
-def ensure_team(
-    project: Project,
-    members: list,
-    *,
-    rng: SeededRNG,
-) -> Team:
+def ensure_team(project: Project, owner: User) -> Team:
+    """Attach the project owner as the sole team member."""
     team, _ = Team.objects.get_or_create(project=project)
-    if len(members) == 1:
-        to_add = members
-    else:
-        extra = rng.randint(1, len(members) - 1)
-        to_add = [members[0]] + members[1 : 1 + extra]
-    for u in to_add:
-        TeamUser.objects.get_or_create(
-            team=team,
-            user=u,
-            defaults={"role": Role.VIEWER},
-        )
+    TeamUser.objects.get_or_create(
+        team=team,
+        user=owner,
+        defaults={"role": Role.VIEWER},
+    )
     return team

@@ -38,8 +38,9 @@ def build_workflow_with_graph(
     project: Project | None,
     fake,
     rng: SeededRNG,
+    workflow_type: WorkflowType | None = None,
 ) -> Workflow:
-    root_type = rng.choice(
+    root_type = workflow_type or rng.choice(
         [WorkflowType.PROGRAM, WorkflowType.COURSE],
     )
     return Workflow.objects.create(
@@ -145,9 +146,9 @@ def build_outcomes(
     outcomes: list[Outcome] = []
     take = min(outcome_count, len(nodes))
     chosen = nodes[:take]
-    for _ in chosen:
+    for order, _ in enumerate(chosen):
         th = _thread()
-        o = Outcome.objects.create(graph=graph, thread=th)
+        o = Outcome.objects.create(graph=graph, thread=th, order=order)
         outcomes.append(o)
 
     for node, out in zip(chosen, outcomes, strict=True):

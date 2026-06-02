@@ -1,5 +1,5 @@
 import { ProjectDetailOut } from '@cf/api/gen'
-import { PermissionGroup, ProjectDetailsType } from '@cf/types/common'
+import { ProjectDetailsType } from '@cf/types/common'
 
 /**
  * Map GET /api/project/{uuid} JSON into the simplified project UI model.
@@ -21,7 +21,6 @@ export function mapProjectV2ToProjectDetails(
       firstName: '',
       lastName: '',
       name: ''
-    },
-    permissionGroup: PermissionGroup.NONE
+    }
   }
 }
