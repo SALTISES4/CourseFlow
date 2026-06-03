@@ -1,8 +1,8 @@
-/**
- * Maps CourseFlow v2 `POST /api/library/search` JSON to the legacy library
- * envelope expected by LibrarySearchView / Sidebar (`dataPackage` + `ELibraryObject`).
- */
-import { LibraryItemOut, LibrarySearchIn } from '@cf/api/gen'
+import {
+  LibraryContentTypeOut,
+  LibraryItemOut,
+  LibrarySearchIn
+} from '@cf/api/gen'
 import { ObjectPermission } from '@cf/types/common'
 import { LibraryObjectType } from '@cf/types/enum'
 import { ELibraryObject, EUser } from '@XMLHTTP/types/entity'
@@ -39,12 +39,13 @@ const emptyAuthor = (): EUser => ({
 })
 
 export function mapObjectTypeToLibraryObjectType(
-  contentType: string,
+  contentType: LibraryContentTypeOut,
   label: string
-): LibraryObjectType {
+): LibraryContentTypeOut {
   if (contentType === 'project') {
-    return LibraryObjectType.PROJECT
+    return LibraryContentTypeOut.PROJECT
   }
+
   const validTypes = {
     program: LibraryObjectType.PROGRAM,
     course: LibraryObjectType.COURSE,
@@ -60,32 +61,29 @@ export function mapObjectTypeToLibraryObjectType(
  * (matches `useNavigateToLibraryItem` + workflow routes).
  */
 function mapLibraryItemToELibraryObject(item: LibraryItemOut): ELibraryObject {
-  const isProject = item.contentType === 'project'
-  const id = String(item.uuid ?? '')
+  const { uuid, title, description, isTemplate, isFavorite } = item
 
   return {
-    uuid: id,
+    uuid,
+    title,
+    description,
+    isTemplate,
+    isFavorite,
     hash: '',
     deleted: false,
     deletedOn: '',
     createdOn: item.dateCreated,
     lastModified: item.modifiedOn,
-    title: item.title,
-    description: item.description ?? '',
     author: emptyAuthor(),
-    favourite: item.isFavorite,
     published: false,
-    type: isProject
-      ? LibraryObjectType.PROJECT
-      : mapObjectTypeToLibraryObjectType(item.contentType, item.label),
-    isOwned: true,
-    isStrategy: false,
+    type: mapObjectTypeToLibraryObjectType(item.contentType, item.label),
     projectTitle: '',
     objectPermission: { permissionType: 0, roleType: 0 } as ObjectPermission,
     workflowCount: 0,
+    isOwned: true,
+    isStrategy: false,
     isLinked: false,
-    isVisible: true,
-    isTemplate: item.isTemplate
+    isVisible: true
   }
 }
 
