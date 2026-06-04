@@ -1,10 +1,10 @@
 import { createProjectMutation } from '@cf/api/gen/@tanstack/react-query.gen'
-import * as SC from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
 import ProjectForm, {
   ProjectFormValues
 } from '@cfComponents/dialog/Project/components/ProjectForm'
+import * as SC from '@cfComponents/dialog/styles'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
 import { generatePath, useNavigate } from 'react-router-dom'
@@ -43,9 +43,7 @@ const ProjectCreateDialog = () => {
   })
 
   function onSuccess(uuid: string) {
-    const path = generatePath(CFRoutes.PROJECT, {
-      id
-    })
+    const path = generatePath(CFRoutes.PROJECT, { uuid })
     onDialogClose()
     navigate(path)
     enqueueSnackbar('created project success', {

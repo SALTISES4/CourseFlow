@@ -1,16 +1,15 @@
 import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import { UserContext } from '@cf/context/userContext'
+import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/Utility.class'
 import {
   MenuItemType,
   MenuWithOverflow,
   SimpleMenu
-} from '@cf/components/common/menu/Menu'
-import { WorkflowViewType } from '@cf/components/pages/Workflow/types'
-import { useMenuActions } from '@cf/components/pages/Workflow/WorkflowTabs/hooks/useMenuActions'
-import { useWorkflowViewTypeFromRoute } from '@cf/components/pages/Workflow/WorkflowTabs/hooks/useWorkflowViewTypeFromRoute'
-import { UserContext } from '@cf/context/userContext'
-import { RootState } from '@cf/redux/store'
-import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/Utility.class'
+} from '@cfComponents/menu/Menu'
+import { WorkflowViewType } from '@cfPages/Workflow/types'
+import { useMenuActions } from '@cfPages/Workflow/WorkflowTabs/hooks/useMenuActions'
+import { useWorkflowViewTypeFromRoute } from '@cfPages/Workflow/WorkflowTabs/hooks/useWorkflowViewTypeFromRoute'
 import EditIcon from '@mui/icons-material/Edit'
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'

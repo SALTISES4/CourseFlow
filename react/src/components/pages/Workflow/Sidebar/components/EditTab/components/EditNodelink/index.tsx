@@ -1,13 +1,3 @@
-import {
-  SidebarActions,
-  SidebarContent,
-  SidebarInnerWrap,
-  SidebarTitle
-} from '@cf/components/pages/Workflow/Sidebar/styles'
-import {
-  dashedToLineType,
-  edgeLineTypeIsDashed
-} from '@cf/components/views/WorkflowView/GraphView/components/LineSVG/utility'
 import type { EdgeEntity } from '@cf/features/graph/state/model/types'
 import { selectEdgeByEdgeId } from '@cf/features/graph/state/selectors/canonical.selectors'
 import {
@@ -17,6 +7,17 @@ import {
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import type { AppDispatch } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
+import {
+  SidebarActions,
+  SidebarContent,
+  SidebarInnerWrap,
+  SidebarTitle
+} from '@cfSidebar/styles'
+import {
+  dashedToLineType,
+  edgeLineTypeIsDashed
+} from '@cfViews/WorkflowView/GraphView/components/LineSVG/utility'
+import { debounce } from '@mui/material'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -25,7 +26,6 @@ import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { debounce } from '@mui/material'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -67,7 +67,11 @@ const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
   const debouncedMetaDispatch = useMemo(
     () =>
       debounce(
-        (meta: { title?: string; textPosition?: number; lineType?: string }) => {
+        (meta: {
+          title?: string
+          textPosition?: number
+          lineType?: string
+        }) => {
           void dispatch(
             updateEdge({
               graphUuid: edge.graphUuid,

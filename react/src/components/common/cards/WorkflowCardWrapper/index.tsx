@@ -1,9 +1,9 @@
-import WorkflowCardDumb, {
-  PropsType as WorkflowCardDumbPropsType
-} from '@cf/components/common/cards/WorkflowCardDumb'
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
 import { LibraryObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
+import WorkflowCardDumb, {
+  PropsType as WorkflowCardDumbPropsType
+} from '@cfComponents/cards/WorkflowCardDumb'
 import Favourite from '@cfComponents/UIPrimitives/Favourite'
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
 import Tooltip from '@mui/material/Tooltip'
@@ -17,14 +17,12 @@ import { CardChip as WorkflowCardChip } from '../WorkflowCardDumb/styles'
 
 export type WorkflowCardWrapperPropsType = Pick<
   WorkflowCardDumbPropsType,
-  'uuid' | 'description' | 'chips'
+  'uuid' | 'description' | 'chips' | 'isSelected' | 'onClick'
 > & {
   title: string
   isFavorite: boolean
   isLinked: boolean
   type: LibraryObjectType
-  isSelected?: boolean
-  onClick?: () => void
 }
 
 const WorkflowCardWrapper = ({

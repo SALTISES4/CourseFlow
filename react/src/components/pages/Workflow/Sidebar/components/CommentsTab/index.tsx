@@ -4,11 +4,11 @@ import {
   listThreadCommentsOptions,
   listThreadCommentsQueryKey
 } from '@cf/api/gen/@tanstack/react-query.gen'
-import { useCommentThreadContext } from '@cf/components/pages/Workflow/Sidebar/hooks/useCommentThreadContext'
 import { UserContext } from '@cf/context/userContext'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
+import { useCommentThreadContext } from '@cfSidebar/hooks/useCommentThreadContext'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Link from '@mui/material/Link'

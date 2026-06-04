@@ -1,4 +1,4 @@
-import { timeUnits } from '@cf/components/common/dialog/Workflow/CreateWizardDialog/types'
+import { timeUnits } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
 
 const contexts = [
   {

@@ -1,7 +1,6 @@
+import LibrarySearchView from '@cfViews/LibrarySearchView'
+import { TypedLibrarySearchArgs } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import { useState } from 'react'
-
-import LibrarySearchView from 'components/views/LibrarySearchView'
-import { TypedLibrarySearchArgs } from 'components/views/LibrarySearchView/LibraryHelper.Class'
 
 /*******************************************************
  * @LibraryRenderer

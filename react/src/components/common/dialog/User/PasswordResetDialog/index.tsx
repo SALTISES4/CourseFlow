@@ -1,6 +1,6 @@
-import { StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import strings from '@cf/utility/strings'
+import { StyledDialog } from '@cfComponents/dialog/styles'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'

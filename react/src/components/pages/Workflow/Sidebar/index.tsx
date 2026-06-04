@@ -1,5 +1,3 @@
-import useWorkflowSidebar from '@cf/components/pages/Workflow/Sidebar/hooks/useSidebar'
-import { isTabVisible } from '@cf/components/pages/Workflow/Sidebar/hooks/useSidebar/permissions'
 import { SidebarState } from '@cf/features/sidebar/state/sidebar.slice'
 import {
   sidebarChangeTab,
@@ -7,6 +5,8 @@ import {
 } from '@cf/features/sidebar/state/sidebar.slice'
 import { RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
+import useWorkflowSidebar from '@cfSidebar/hooks/useSidebar'
+import { isTabVisible } from '@cfSidebar/hooks/useSidebar/permissions'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import ChatIcon from '@mui/icons-material/Chat'

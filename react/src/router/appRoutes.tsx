@@ -1,5 +1,4 @@
 import Base from '@cf/base'
-import UserRegisterPage from '@cf/components/pages/SignIn/Register'
 import { CFRoutes, RelativeRoutes } from '@cf/router/cfRoutes'
 import UserLoginPage from '@cf/router/LoginPage'
 import { RequireAuth } from '@cf/router/RequireAuth'
@@ -8,14 +7,13 @@ import Explore from '@cfPages/Library/Explore'
 import Favourites from '@cfPages/Library/Favourites'
 import MyLibrary from '@cfPages/Library/MyLibrary'
 import NotificationsPage from '@cfPages/Notifications'
-import { Navigate, createBrowserRouter } from 'react-router-dom'
-
+import Project from '@cfPages/Project'
 import NotificationsSettingsPage from '@cfPages/Settings/NotificationsSettings'
 import ProfileSettingsPage from '@cfPages/Settings/ProfileSettings'
-
-import Project from '../components/pages/Project'
-import WorkflowPage from '../components/pages/Workflow'
-import { WorkflowViewType } from '../components/pages/Workflow/types'
+import UserRegisterPage from '@cfPages/SignIn/Register'
+import WorkflowPage from '@cfPages/Workflow'
+import { WorkflowViewType } from '@cfPages/Workflow/types'
+import { Navigate, createBrowserRouter } from 'react-router-dom'
 
 /*******************************************************
  * NOTE:  RR6 drastically altered its approach and no longer robustly supports absolute paths

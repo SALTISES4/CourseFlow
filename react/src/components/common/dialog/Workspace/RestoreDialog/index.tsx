@@ -8,11 +8,11 @@ import {
   updateProjectMutation,
   updateWorkflowMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
-import { StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { WorkspaceType } from '@cf/types/enum'
 import strings from '@cf/utility/strings'
+import { StyledDialog } from '@cfComponents/dialog/styles'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'

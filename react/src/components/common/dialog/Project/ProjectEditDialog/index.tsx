@@ -4,10 +4,10 @@ import {
   listProjectsQueryKey,
   updateProjectMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
-import * as SC from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import ProjectForm from '@cfComponents/dialog/Project/components/ProjectForm'
+import * as SC from '@cfComponents/dialog/styles'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
