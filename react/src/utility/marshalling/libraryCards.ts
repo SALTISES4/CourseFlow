@@ -89,10 +89,10 @@ export function formatLibraryObject(
   | 'uuid'
   | 'title'
   | 'description'
-  | 'isFavorite'
   | 'chips'
-  | 'isLinked'
   | 'type'
+  | 'isFavorite'
+  | 'isLinked'
 > {
   const { uuid, title, description, isFavorite } = libraryObject
 

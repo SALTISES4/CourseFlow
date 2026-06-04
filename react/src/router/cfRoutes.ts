@@ -18,7 +18,7 @@ export enum RelativeRoutes {
 export enum CFRoutes {
   HOME = `/home`,
   LIBRARY = `/library`,
-  FAVOURITES = `/favourites`,
+  FAVORITES = `/favourites`,
   EXPLORE = `/explore`,
   NOTIFICATIONS = `/user/notifications`,
   NOTIFICATIONS_SETTINGS = `/user/notifications-settings`,

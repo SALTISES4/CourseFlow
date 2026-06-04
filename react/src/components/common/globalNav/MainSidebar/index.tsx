@@ -23,7 +23,7 @@ import { Link, generatePath, useLocation } from 'react-router-dom'
 
 import * as SC from './styles'
 
-const Favourites = () => {
+const Favorites = () => {
   const { data, isLoading, isError } = useLibrarySearch({
     pagination: {
       page: 0,
@@ -31,7 +31,7 @@ const Favourites = () => {
     },
     filters: {
       isFavorite: true
-    } as never
+    }
   })
 
   const SeeAll = () => {
@@ -45,7 +45,7 @@ const Favourites = () => {
           <ListItemText
             sx={{ margin: 0 }}
             primary={
-              <SC.SeeAllLink sx={{ px: 2, py: 1 }} to={CFRoutes.FAVOURITES}>
+              <SC.SeeAllLink sx={{ px: 2, py: 1 }} to={CFRoutes.FAVORITES}>
                 {strings.viewAll}
               </SC.SeeAllLink>
             }
@@ -181,7 +181,7 @@ const Sidebar = () => {
           </ListItem>
         </SC.MainMenuWrap>
 
-        <Favourites />
+        <Favorites />
         <RelatedWorkflowList />
 
         <SC.HelpLink>

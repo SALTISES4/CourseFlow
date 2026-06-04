@@ -1,5 +1,4 @@
 import { ProjectDetailsType } from '@cf/types/common'
-import { LibraryObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { ChipOptions } from '@cfComponents/cards/WorkflowCardDumb'
 import { CardChip } from '@cfComponents/cards/WorkflowCardDumb/styles'
@@ -37,11 +36,7 @@ const ProjectHeader = ({ project }: { project: ProjectDetailsType }) => (
       </Typography>
 
       <Box>
-        <Favourite
-          uuid={project.uuid}
-          isFavorite={project.isFavorite}
-          type={LibraryObjectType.PROJECT}
-        />
+        <Favourite uuid={project.uuid} isFavorite={project.isFavorite} />
       </Box>
     </Stack>
   </OuterContentWrap>

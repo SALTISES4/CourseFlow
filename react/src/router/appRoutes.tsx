@@ -4,7 +4,7 @@ import UserLoginPage from '@cf/router/LoginPage'
 import { RequireAuth } from '@cf/router/RequireAuth'
 import Home from '@cfPages/Home'
 import Explore from '@cfPages/Library/Explore'
-import Favourites from '@cfPages/Library/Favourites'
+import Favorites from '@cfPages/Library/Favourites'
 import MyLibrary from '@cfPages/Library/MyLibrary'
 import NotificationsPage from '@cfPages/Notifications'
 import Project from '@cfPages/Project'
@@ -48,10 +48,10 @@ export const CFRouter = createBrowserRouter([
         )
       },
       {
-        path: CFRoutes.FAVOURITES,
+        path: CFRoutes.FAVORITES,
         element: (
           <Base>
-            <Favourites />
+            <Favorites />
           </Base>
         )
       },

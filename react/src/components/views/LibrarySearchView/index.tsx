@@ -1,6 +1,5 @@
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
-import { LibraryObjectType } from '@cf/types/enum'
 import { getErrorMessage } from '@cf/utility/errorWrapper'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
 import { _t } from '@cf/utility/Utility.class'
@@ -97,7 +96,7 @@ const FilterWorkflowResults = ({
         if (!match) {
           return
         }
-        navigateToItem(match.uuid, match.type as LibraryObjectType)
+        navigateToItem(match.uuid, match.type)
       }}
     />
   )

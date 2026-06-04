@@ -1,7 +1,6 @@
 import { ProjectDetailOutResp } from '@cf/api/gen'
 import { libraryItemFavoriteToggleMutation } from '@cf/api/gen/@tanstack/react-query.gen'
 import { usePatchQueryCache } from '@cf/api/wrappedHooks'
-import { LibraryObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import StarIcon from '@mui/icons-material/Star'
 import IconButton from '@mui/material/IconButton'
@@ -13,12 +12,11 @@ type PropsType = {
   id?: string
   uuid?: string
   isFavorite: boolean
-  type: LibraryObjectType
 }
 
-const Favourite = ({ id, uuid, isFavorite, type }: PropsType) => {
+const Favorite = ({ id, uuid, isFavorite }: PropsType) => {
   const targetUuid = uuid ?? id
-  const [isFavoriteState, setFavouriteState] = useState<boolean>(isFavorite)
+  const [isFavoriteState, setFavoriteState] = useState<boolean>(isFavorite)
   const queryClient = useQueryClient()
   const patchQueryCache = usePatchQueryCache()
   const toggleFavorite = useMutation({
@@ -41,7 +39,7 @@ const Favourite = ({ id, uuid, isFavorite, type }: PropsType) => {
       const msg = isFavoriteState
         ? _t('Removed from favorites')
         : _t('Saved to favorites')
-      setFavouriteState(!isFavoriteState)
+      setFavoriteState(!isFavoriteState)
       enqueueSnackbar(msg, { variant: 'success' })
     },
     onError: (error) => {
@@ -76,4 +74,4 @@ const Favourite = ({ id, uuid, isFavorite, type }: PropsType) => {
   )
 }
 
-export default Favourite
+export default Favorite
