@@ -36,19 +36,6 @@ For each requirement, maintain a consistent skeleton:
 
 ## 4. Terminology: UI labels, roles, and disabled vs hidden
 
-### Workflow hierarchy and nodes
-
-Graph **workflowNodes** have two independent type dimensions; do not conflate them:
-
-- **Parent workflow type** — the `workflow_type` of the workflow graph being edited (`program`, `course`, `activity`).
-- **Node type** — the semantic child layer the cell represents (`course`, `activity`, `task`).
-
-Avoid unqualified phrases such as “course node” or “activity node.” Prefer *parent workflow type is `course`*, *node type is `activity`*, or *workflowNode of node type `activity` in a course workflow*.
-
-Full rules, link matrix, and legacy phrase mapping: [`terminology_workflow_hierarchy_and_nodes.md`](terminology_workflow_hierarchy_and_nodes.md) (implementation ADR: [`docs/architecture/adr_workflow_hierarchy_and_linked_nodes.md`](../../../docs/architecture/adr_workflow_hierarchy_and_linked_nodes.md)).
-
-### UI labels, roles, and disabled vs hidden
-
 - Use backticks for exact UI strings and control names (`Edit section`, `Delete section`) so they are searchable and unambiguous.
 - Reserve bold for rare emphasis; overusing bold makes scans noisy.
 - Align verbs with design: **hidden** vs **not hoverable** vs **visible but inactive** vs **read-only** vs **disabled**—these are different UX commitments; pick one per role and surface and reuse it in **Roles**, **Main Flow**, and **Acceptance Criteria**.
@@ -95,8 +82,7 @@ Full rules, link matrix, and legacy phrase mapping: [`terminology_workflow_hiera
 4. No duplicate ACs across FRs for the same behavior.  
 5. UI strings and roles are consistent; disabled/hidden/read-only wording matches design; user primary actions use **click**, not **activate**.  
 6. Traceability matrix and test catalog match the requirement set.  
-7. Changelog updated; obsolete requirements and tests removed.  
-8. Workflow/node/link wording follows [`terminology_workflow_hierarchy_and_nodes.md`](terminology_workflow_hierarchy_and_nodes.md) (no ambiguous “course node” without parent vs node type).
+7. Changelog updated; obsolete requirements and tests removed.
 
 ---
 

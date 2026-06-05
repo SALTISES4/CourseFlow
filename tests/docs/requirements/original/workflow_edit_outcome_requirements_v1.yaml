@@ -1,0 +1,627 @@
+# Normalized requirements: create and edit a workflowOutcome in the workflowOutcomeView ('Outcomes' view), including workflowEditOutcomeForm rendered in the right-sidebar Edit tab
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Scope (this file): creating an outcome from the workflowOutcomeView (empty state and hover-menu inserts), editing an outcome's fields via workflowEditOutcomeForm in the right sidebar Edit tab, and outcome header selection chrome (FR-WF-EO-018). Out of scope (companion FRs in other files): deleting an outcome (tests/docs/requirements/original/workflow_delete_outcome_requirements_v1.yaml), duplicating an outcome (tests/docs/requirements/original/workflow_duplicate_outcome_requirements_v1.yaml), drag-and-drop reorder/reparent/nest in workflowOutcomeTree (tests/docs/requirements/original/workflow_outcome_tree_drag_reorder_requirements_v1.yaml — FR-WF-EO-015 through FR-WF-EO-017), outcome-to-node assignment (workflowRightSidebar Outcomes tab in 'Workflow' view), outcome filter via View settings, and commenting on an outcome.
+# Cross-reference: tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebar, workflowRightSidebarEditTab, workflowRightSidebarEditTabContent — FR-WF-RS-001, FR-WF-RS-002, FR-WF-RS-004); tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml (workflowOutcomeHoverActionsMenu gating — FR-WF-NODE-004, FR-WF-NODE-005); tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml (sidebar Edit-tab patterns; workflowEditNodeFormTagsAutocomplete; workflowRichTextDescriptionEditor and FR-WF-EN-012 for workflowEditOutcomeFormDescriptionField); tests/docs/requirements/original/project_overview_requirements_v1.yaml (projectTagsSection, projectTagItem — canonical project-level tag catalog shared by workflowEditNodeFormTagsAutocomplete and workflowEditOutcomeFormTagsAutocomplete; catalog deletion removes tag from level-1 outcomes per FR-PROJ-OV-005); tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml (comments tab for a workflowOutcome host object — FR-WF-COMMENTS-004; entry via hover-menu Comments item, deferred to that file); tests/docs/requirements/original/workspace_access_requirements_v1.yaml (published-access vs contributor-role gating for the '/workflow/{id}/outcomes' route); tests/docs/requirements/original/workflow_outcome_tree_drag_reorder_requirements_v1.yaml (workflowOutcomeTree drag reorder — FR-WF-EO-015 through FR-WF-EO-017); tests/docs/requirements/guidelines_functional_requirements.md
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - current route is '/workflow/{id}/outcomes'
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+  - requirements in this file assume the above hold; when they do not, assert per FR-WS-ACCESS-002
+
+uiObjectDefinitions:
+  workflowOutcomeView:
+    meaning: Main content region of the 'Outcomes' view of a workflow.
+  workflowOutcomeViewEmptyState:
+    meaning: First-run region inside workflowOutcomeView for a workflow with no workflowOutcome entries.
+  workflowOutcomeViewEmptyStateAlert:
+    meaning: Informational alert inside workflowOutcomeViewEmptyState with literal title 'How to use outcomes' and body copy per FR-WF-EO-001.
+  workflowOutcomeViewAddOutcomeButton:
+    meaning: Action button inside workflowOutcomeViewEmptyState labeled 'Add outcome'.
+  workflowOutcomeTree:
+    meaning: Hierarchical list of workflowOutcome entries inside workflowOutcomeView.
+  workflowOutcome:
+    meaning: One outcome entity rendered as an entry in workflowOutcomeTree.
+  workflowOutcomeHeader:
+    meaning: Header strip of a workflowOutcome.
+  workflowOutcomeHeaderSelectedBorder:
+    meaning: Selection outline on workflowOutcomeHeader when workflowRightSidebar is bound to that workflowOutcome (Edit or Comments tab); parallel role to workflowNodeSelectedBorder per FR-WF-NODE-002.
+  workflowOutcomeHeaderTitle:
+    meaning: Title label inside workflowOutcomeHeader.
+  workflowOutcomeHeaderTagChips:
+    meaning: Chip group inside workflowOutcomeHeader for the workflowOutcome's assigned tag labels.
+  workflowOutcomeHeaderToggle:
+    meaning: Expand/collapse control inside workflowOutcomeHeader for the workflowOutcome's child entries.
+  workflowOutcomeHoverActionsMenu:
+    meaning: Floating icon-button group attached to workflowOutcomeHeader exposing per-outcome actions.
+  workflowOutcomeHoverActionsMenuInsertSiblingItem:
+    meaning: Hover-menu item on workflowOutcomeHoverActionsMenu with tooltip 'Insert outcome below'.
+  workflowOutcomeHoverActionsMenuInsertChildItem:
+    meaning: Hover-menu item on workflowOutcomeHoverActionsMenu with tooltip 'Insert child outcome'.
+  workflowOutcomeHoverActionsMenuDuplicateItem:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_duplicate_outcome_requirements_v1.yaml.
+  workflowOutcomeHoverActionsMenuDeleteItem:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_delete_outcome_requirements_v1.yaml.
+  workflowOutcomeHoverActionsMenuCommentsItem:
+    meaning: Hover-menu item on workflowOutcomeHoverActionsMenu with tooltip 'Comments'.
+  workflowRightSidebar:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarEditTab:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarEditTabContent:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarCommentsTab:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarCommentsTabContent:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowEditOutcomeForm:
+    meaning: Form inside workflowRightSidebarEditTabContent bound to the selected workflowOutcome.
+  workflowEditOutcomeFormHeading:
+    meaning: Heading inside workflowEditOutcomeForm with literal copy 'Edit outcome'.
+  workflowEditOutcomeFormTitleField:
+    meaning: Optional single-line text input inside workflowEditOutcomeForm labeled 'Title'.
+  workflowEditOutcomeFormDescriptionField:
+    meaning: Description field region on workflowEditOutcomeForm labeled 'Description'; contains workflowRichTextDescriptionEditor per FR-WF-EN-012 (canonical editor definition in workflow_edit_node_requirements_v1.yaml).
+  workflowEditOutcomeFormCodeField:
+    meaning: Optional single-line text input inside workflowEditOutcomeForm labeled 'Code'.
+  workflowEditOutcomeFormTagsAutocomplete:
+    meaning: Optional multi-select tag autocomplete inside workflowEditOutcomeForm labeled 'Tags' whose option list is the project-level tag catalog defined in tests/docs/requirements/original/project_overview_requirements_v1.yaml (projectTagsSection, projectTagItem).
+  workflowEditOutcomeFormDuplicateButton:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_duplicate_outcome_requirements_v1.yaml.
+  workflowEditOutcomeFormDeleteButton:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_delete_outcome_requirements_v1.yaml.
+
+locatorMappings:
+  workflowOutcomeView: "canonical_locators.yaml -> workflowOutcomeView"
+  workflowOutcomeViewEmptyState: "canonical_locators.yaml -> workflowOutcomeViewEmptyState"
+  workflowOutcomeViewEmptyStateAlert: "canonical_locators.yaml -> workflowOutcomeViewEmptyStateAlert"
+  workflowOutcomeViewAddOutcomeButton: "canonical_locators.yaml -> workflowOutcomeViewAddOutcomeButton"
+  workflowOutcomeTree: "canonical_locators.yaml -> workflowOutcomeTree"
+  workflowOutcome: "canonical_locators.yaml -> workflowOutcome"
+  workflowOutcomeHeader: "canonical_locators.yaml -> workflowOutcomeHeader"
+  workflowOutcomeHeaderSelectedBorder: "canonical_locators.yaml -> workflowOutcomeHeaderSelectedBorder"
+  workflowOutcomeHeaderTitle: "canonical_locators.yaml -> workflowOutcomeHeaderTitle"
+  workflowOutcomeHeaderTagChips: "canonical_locators.yaml -> workflowOutcomeHeaderTagChips"
+  workflowOutcomeHeaderToggle: "canonical_locators.yaml -> workflowOutcomeHeaderToggle"
+  workflowOutcomeHoverActionsMenu: "canonical_locators.yaml -> workflowOutcomeHoverActionsMenu"
+  workflowOutcomeHoverActionsMenuInsertSiblingItem: "canonical_locators.yaml -> workflowOutcomeHoverActionsMenuInsertSiblingItem"
+  workflowOutcomeHoverActionsMenuInsertChildItem: "canonical_locators.yaml -> workflowOutcomeHoverActionsMenuInsertChildItem"
+  workflowOutcomeHoverActionsMenuDuplicateItem: "canonical_locators.yaml -> workflowOutcomeHoverActionsMenuDuplicateItem"
+  workflowOutcomeHoverActionsMenuDeleteItem: "canonical_locators.yaml -> workflowOutcomeHoverActionsMenuDeleteItem"
+  workflowOutcomeHoverActionsMenuCommentsItem: "canonical_locators.yaml -> workflowOutcomeHoverActionsMenuCommentsItem"
+  workflowRightSidebar: "canonical_locators.yaml -> workflowRightSidebar"
+  workflowRightSidebarEditTab: "canonical_locators.yaml -> workflowRightSidebarEditTab"
+  workflowRightSidebarCommentsTab: "canonical_locators.yaml -> workflowRightSidebarCommentsTab"
+  workflowRightSidebarEditTabContent: "canonical_locators.yaml -> workflowRightSidebarEditTabContent"
+  workflowRightSidebarCommentsTabContent: "canonical_locators.yaml -> workflowRightSidebarCommentsTabContent"
+  workflowEditOutcomeForm: "canonical_locators.yaml -> workflowEditOutcomeForm"
+  workflowEditOutcomeFormHeading: "canonical_locators.yaml -> workflowEditOutcomeFormHeading"
+  workflowEditOutcomeFormTitleField: "canonical_locators.yaml -> workflowEditOutcomeFormTitleField"
+  workflowEditOutcomeFormDescriptionField: "canonical_locators.yaml -> workflowEditOutcomeFormDescriptionField"
+  workflowEditOutcomeFormCodeField: "canonical_locators.yaml -> workflowEditOutcomeFormCodeField"
+  workflowEditOutcomeFormTagsAutocomplete: "canonical_locators.yaml -> workflowEditOutcomeFormTagsAutocomplete"
+  workflowEditOutcomeFormDuplicateButton: "canonical_locators.yaml -> workflowEditOutcomeFormDuplicateButton"
+  workflowEditOutcomeFormDeleteButton: "canonical_locators.yaml -> workflowEditOutcomeFormDeleteButton"
+
+requirements:
+  - id: FR-WF-EO-001
+    title: 'Outcomes' view empty state presents 'How to use outcomes' alert and 'Add outcome' primary action
+    
+    designEvidence:
+      - FIGMA-WF-EO-OE-NO-OUTCOME (course / outcomes / owners and editors / no outcome)
+    
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+    
+    uiObjects:
+      - workflowOutcomeView
+      - workflowOutcomeViewEmptyState
+      - workflowOutcomeViewEmptyStateAlert
+      - workflowOutcomeViewAddOutcomeButton
+    
+    preconditions:
+      - workflowOutcomeView is open
+      - the workflow has zero workflowOutcome entries
+    
+    trigger:
+      - actor lands on '/workflow/{id}/outcomes' while the workflow has no outcomes
+    
+    mainFlow:
+      - system renders workflowOutcomeViewEmptyState inside workflowOutcomeView
+      - workflowOutcomeViewEmptyStateAlert is rendered with persistent (non-dismissible) presentation, literal title 'How to use outcomes', and body copy 'In this view you can add and edit outcomes for this [workflow type]. Once added, outcomes can be attached to nodes within your [workflow type] by navigating to the "Workflow" tab and drag and dropping your outcomes to your nodes from the Outcomes tab of the right sidebar.' after substituting the current workflow's user-visible type label for '[workflow type]'
+      - workflowOutcomeViewAddOutcomeButton is rendered with literal label 'Add outcome' as the primary action of the empty state for every actor; it is interactive for owner and editor and disabled (no-op on click) for commenter, viewer, and user
+      - workflowOutcomeTree is not rendered while the workflow has zero workflowOutcome entries
+    
+    roleBehavior:
+      owner:
+        workflowOutcomeViewEmptyStateAlert: visible
+        workflowOutcomeViewAddOutcomeButton: active
+      editor:
+        workflowOutcomeViewEmptyStateAlert: visible
+        workflowOutcomeViewAddOutcomeButton: active
+      commenter:
+        workflowOutcomeViewEmptyStateAlert: visible
+        workflowOutcomeViewAddOutcomeButton: disabled
+      viewer:
+        workflowOutcomeViewEmptyStateAlert: visible
+        workflowOutcomeViewAddOutcomeButton: disabled
+      user:
+        workflowOutcomeViewEmptyStateAlert: visible
+        workflowOutcomeViewAddOutcomeButton: disabled
+    
+    acceptanceCriteria:
+      - given workflowOutcomeView is open and the workflow has zero workflowOutcome entries, when the view is rendered, then workflowOutcomeViewEmptyState is rendered and workflowOutcomeTree is not rendered
+      - given workflowOutcomeViewEmptyState is rendered, then workflowOutcomeViewEmptyStateAlert presents the literal title 'How to use outcomes' and body copy 'In this view you can add and edit outcomes for this [workflow type]. Once added, outcomes can be attached to nodes within your [workflow type] by navigating to the "Workflow" tab and drag and dropping your outcomes to your nodes from the Outcomes tab of the right sidebar.' after substituting the current workflow's user-visible type label for '[workflow type]'
+      - given workflowOutcomeViewEmptyState is rendered, then workflowOutcomeViewAddOutcomeButton is rendered with literal label 'Add outcome' for every actor; it is interactive for owner and editor and disabled (no-op on click) for commenter, viewer, and user (published-access)
+    
+    openQuestions: []
+
+  - id: FR-WF-EO-002
+    title: Create the first root-level workflowOutcome from workflowOutcomeViewAddOutcomeButton
+    
+    designEvidence:
+      - FIGMA-WF-EO-OE-NO-OUTCOME
+    
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+    
+    uiObjects:
+      - workflowOutcomeView
+      - workflowOutcomeViewEmptyState
+      - workflowOutcomeViewAddOutcomeButton
+      - workflowOutcomeTree
+      - workflowOutcome
+      - workflowOutcomeHeader
+      - workflowOutcomeHeaderTitle
+    
+    preconditions:
+      - workflowOutcomeView is open
+      - the workflow has zero workflowOutcome entries
+    
+    trigger:
+      - actor clicks workflowOutcomeViewAddOutcomeButton
+   
+    mainFlow:
+      - system creates a new workflowOutcome at level 1 (root level) with no parent, an empty workflowEditOutcomeFormTitleField value, an empty workflowEditOutcomeFormDescriptionField value, no workflowEditOutcomeFormCodeField value, and no workflowEditOutcomeFormTagsAutocomplete selections
+      - system replaces workflowOutcomeViewEmptyState with workflowOutcomeTree containing the newly created workflowOutcome as its first root-level entry
+      - outcome selection and workflowRightSidebar binding are unchanged by this action; the newly created workflowOutcome is not auto-selected and workflowEditOutcomeForm does not open until the actor clicks that workflowOutcome's workflowOutcomeHeader (per FR-WF-EO-004)
+      - workflowOutcomeHeader for the newly created workflowOutcome shows the 'Untitled outcome' display fallback per FR-WF-EO-006 until the actor enters a value into workflowEditOutcomeFormTitleField
+    
+    roleBehavior:
+      owner:
+        workflowOutcomeViewAddOutcomeButton: active
+      editor:
+        workflowOutcomeViewAddOutcomeButton: active
+      commenter:
+        workflowOutcomeViewAddOutcomeButton: disabled
+      viewer:
+        workflowOutcomeViewAddOutcomeButton: disabled
+      user:
+        workflowOutcomeViewAddOutcomeButton: disabled
+    
+    acceptanceCriteria:
+      - given workflowOutcomeView is open with zero workflowOutcome entries, when owner or editor clicks workflowOutcomeViewAddOutcomeButton, then exactly one workflowOutcome is created at level 1 and rendered as the first entry of workflowOutcomeTree
+      - given the new workflowOutcome has been created from workflowOutcomeViewAddOutcomeButton, then workflowOutcomeViewEmptyState is no longer rendered
+      - given the new workflowOutcome has been created, then its persisted workflowEditOutcomeFormTitleField value is the empty string and workflowOutcomeHeaderTitle displays fallback per FR-WF-EO-006 until the actor enters a value into workflowEditOutcomeFormTitleField
+      - given actor clicks workflowOutcomeViewAddOutcomeButton, when the new workflowOutcome is created, then the newly created workflowOutcome is not selected and workflowEditOutcomeForm is not rendered in workflowRightSidebarEditTab as a result of that click alone
+      - given actor is commenter, viewer, or user, workflowOutcomeViewAddOutcomeButton is disabled (no-op on click) and clicking it does not create a workflowOutcome
+    
+    openQuestions: []
+
+  - id: FR-WF-EO-003
+    title: Insert a sibling or child workflowOutcome from workflowOutcomeHoverActionsMenu
+    
+    designEvidence:
+      - FIGMA-WF-EO-OE-EDIT (course / outcomes / owners and editors / edit outcome — confirms presence of workflowOutcomeHoverActionsMenu over a hovered workflowOutcomeHeader; insert items pending direct frame confirmation)
+    
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+    
+    uiObjects:
+      - workflowOutcomeTree
+      - workflowOutcome
+      - workflowOutcomeHeader
+      - workflowOutcomeHoverActionsMenu
+      - workflowOutcomeHoverActionsMenuInsertSiblingItem
+      - workflowOutcomeHoverActionsMenuInsertChildItem
+    
+    preconditions:
+      - workflowOutcomeView is open
+      - workflowOutcomeTree is rendered with at least one workflowOutcome
+    
+    trigger:
+      - owner or editor hovers a workflowOutcomeHeader and clicks workflowOutcomeHoverActionsMenuInsertSiblingItem, OR
+      - owner or editor hovers a workflowOutcomeHeader at level 1 or level 2 and clicks workflowOutcomeHoverActionsMenuInsertChildItem
+    
+    mainFlow:
+      - on workflowOutcomeHoverActionsMenuInsertSiblingItem click, system creates a new workflowOutcome at the same level as the hovered workflowOutcome and inserts it immediately after the hovered workflowOutcome in its sibling order
+      - on workflowOutcomeHoverActionsMenuInsertChildItem click, system creates a new workflowOutcome as the last child of the hovered workflowOutcome, increases the hovered outcome's direct-child count by one, and expands the hovered workflowOutcome so that the new child is visible
+      - newly created workflowOutcome has an empty workflowEditOutcomeFormTitleField value (workflowOutcomeHeaderTitle shows the fallback per FR-WF-EO-006), an empty workflowEditOutcomeFormDescriptionField value, no workflowEditOutcomeFormCodeField value, and no workflowEditOutcomeFormTagsAutocomplete selections
+      - 'Insert child outcome' is not exposed on workflowOutcomeHoverActionsMenu when the hovered workflowOutcome is at level 3 (workflow tree is capped at three levels: level 1, level 2, level 3 — see FR-WF-EO-008)
+      - outcome selection and workflowRightSidebar binding are unchanged by insert-sibling or insert-child; the newly created workflowOutcome is not auto-selected and workflowEditOutcomeForm does not open until the actor clicks that workflowOutcome's workflowOutcomeHeader (per FR-WF-EO-004)
+      - downstream workflow view — when a valid insert creates a workflowOutcome that becomes a direct or transitive child of an assigned parent workflowOutcome P, workflowNode assignment sets and linked-outcomes UI refresh per FR-WF-AO-006 (tree-change assign cascade), FR-WF-AO-007, and FR-WF-AO-009
+      - container visibility and per-item actionability follow this FR's roleBehavior block, mirroring workflowNode hover-menu gating (FR-WF-NODE-004, FR-WF-NODE-005)
+    
+    roleBehavior:
+      owner:
+        workflowOutcomeHoverActionsMenu: shownOnHover
+        workflowOutcomeHoverActionsMenuInsertSiblingItem: active
+        workflowOutcomeHoverActionsMenuInsertChildItem: activeWhenRendered
+      editor:
+        workflowOutcomeHoverActionsMenu: shownOnHover
+        workflowOutcomeHoverActionsMenuInsertSiblingItem: active
+        workflowOutcomeHoverActionsMenuInsertChildItem: activeWhenRendered
+      commenter:
+        workflowOutcomeHoverActionsMenu: shownOnHover
+        workflowOutcomeHoverActionsMenuInsertSiblingItem: disabled
+        workflowOutcomeHoverActionsMenuInsertChildItem: disabledWhenRendered
+      viewer:
+        workflowOutcomeHoverActionsMenu: notRendered
+        workflowOutcomeHoverActionsMenuInsertSiblingItem: notRendered
+        workflowOutcomeHoverActionsMenuInsertChildItem: notRendered
+      user:
+        workflowOutcomeHoverActionsMenu: notRendered
+        workflowOutcomeHoverActionsMenuInsertSiblingItem: notRendered
+        workflowOutcomeHoverActionsMenuInsertChildItem: notRendered
+    
+    acceptanceCriteria:
+      - given actor is owner, editor, or commenter and workflowOutcomeTree is rendered, when actor hovers a workflowOutcomeHeader, then workflowOutcomeHoverActionsMenu is visible on that workflowOutcomeHeader and not on others
+      - given actor is viewer or user (published-access), when actor hovers a workflowOutcomeHeader, then workflowOutcomeHoverActionsMenu is not rendered on that workflowOutcomeHeader
+      - given workflowOutcomeHoverActionsMenu is visible on a hovered workflowOutcome at level L and actor is owner or editor, when actor clicks workflowOutcomeHoverActionsMenuInsertSiblingItem, then a new workflowOutcome at level L is inserted immediately after the hovered workflowOutcome
+      - given workflowOutcomeHoverActionsMenu is visible on a hovered workflowOutcome at level 1 or level 2 and actor is owner or editor, when actor clicks workflowOutcomeHoverActionsMenuInsertChildItem, then a new workflowOutcome at level L+1 is appended as the last child of the hovered workflowOutcome
+      - given workflowOutcomeHoverActionsMenuInsertChildItem creates a new child, then the hovered workflowOutcome is expanded so the newly inserted child workflowOutcome is rendered
+      - given a hovered workflowOutcome is at level 3, then workflowOutcomeHoverActionsMenuInsertChildItem is not rendered on workflowOutcomeHoverActionsMenu for any actor that can see workflowOutcomeHoverActionsMenu
+      - given actor is commenter and workflowOutcomeHoverActionsMenu is visible on a hovered workflowOutcomeHeader, then workflowOutcomeHoverActionsMenuInsertSiblingItem and workflowOutcomeHoverActionsMenuInsertChildItem (when rendered per the level cap) are disabled
+      - given actor is owner or editor and a new workflowOutcome is created via workflowOutcomeHoverActionsMenuInsertSiblingItem or workflowOutcomeHoverActionsMenuInsertChildItem, when the insert completes, then the new workflowOutcome is not selected and workflowEditOutcomeForm is not rendered in workflowRightSidebarEditTab as a result of that insert alone
+      - given owner or editor completes a valid insert-child or insert-sibling per this FR, workflowNode assignment sets and linked-outcomes badge/popover refresh per FR-WF-AO-006, FR-WF-AO-007, and FR-WF-AO-009 when FR-WF-AO-006 tree-change assign cascade applies
+    
+    openQuestions: []
+
+  - id: FR-WF-EO-004
+    title: Open workflowEditOutcomeForm in workflowRightSidebarEditTab by clicking a workflowOutcomeHeader
+    
+    designEvidence:
+      - FIGMA-WF-EO-OE-EDIT
+    
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+    
+    uiObjects:
+      - workflowOutcomeTree
+      - workflowOutcome
+      - workflowOutcomeHeader
+      - workflowOutcomeHeaderToggle
+      - workflowRightSidebar
+      - workflowRightSidebarEditTab
+      - workflowRightSidebarEditTabContent
+      - workflowRightSidebarCommentsTab
+      - workflowRightSidebarCommentsTabContent
+      - workflowEditOutcomeForm
+      - workflowEditOutcomeFormHeading
+    
+    preconditions:
+      - workflowOutcomeView is open
+      - workflowOutcomeTree is rendered with at least one workflowOutcome
+    
+    trigger:
+      - actor clicks a workflowOutcomeHeader
+      - actor clicks a workflowOutcomeHeader while workflowRightSidebar is visible on '/workflow/{id}/outcomes'
+    
+    mainFlow:
+      - system identifies the clicked workflowOutcome from the clicked workflowOutcomeHeader and marks it as the currently selected outcome
+      - if workflowRightSidebar is collapsed, system expands workflowRightSidebar with workflowRightSidebarEditTab selected per FR-WF-RS-001
+      - if workflowRightSidebar is expanded on workflowRightSidebarCommentsTab or bound to a different workflowOutcome on workflowRightSidebarEditTab, system switches workflowRightSidebar to workflowRightSidebarEditTab and rebinds workflowRightSidebarEditTabContent to the clicked workflowOutcome
+      - if workflowRightSidebar is expanded on workflowRightSidebarEditTab and not bound to a workflowOutcome, system binds workflowRightSidebarEditTabContent to the clicked workflowOutcome
+      - workflowRightSidebarEditTabContent renders workflowEditOutcomeForm bound to the selected workflowOutcome
+      - workflowEditOutcomeFormHeading is rendered with literal copy 'Edit outcome'
+      - clicking the already-selected workflowOutcome's workflowOutcomeHeader a second time clears the selection and workflowRightSidebar returns to default presentation per FR-WF-RS-004
+      - clicking workflowOutcomeHeaderToggle inside a workflowOutcomeHeader strictly toggles the visibility of that workflowOutcome's child entries and never changes the currently selected workflowOutcome or the workflowEditOutcomeForm binding
+    
+    roleBehavior:
+      owner:
+        workflowEditOutcomeForm: editableWhereApplicable
+      editor:
+        workflowEditOutcomeForm: editableWhereApplicable
+      commenter:
+        workflowEditOutcomeForm: readOnlyPresentation
+      viewer:
+        workflowEditOutcomeForm: readOnlyPresentation
+      user:
+        workflowEditOutcomeForm: readOnlyPresentation
+    
+    acceptanceCriteria:
+      - given workflowOutcomeTree is rendered and no workflowOutcome is selected, when actor clicks a workflowOutcomeHeader, then workflowRightSidebar opens on workflowRightSidebarEditTab and workflowEditOutcomeForm is rendered bound to the clicked workflowOutcome
+      - given workflowEditOutcomeForm is rendered, then workflowEditOutcomeFormHeading reads exactly 'Edit outcome'
+      - given a workflowOutcome is currently selected, when actor clicks the same workflowOutcomeHeader again, then the selection is cleared and workflowRightSidebar returns to default presentation per FR-WF-RS-004
+      - given a workflowOutcome is currently selected, when actor clicks a different workflowOutcomeHeader, then the selection moves to the newly clicked workflowOutcome and workflowEditOutcomeForm rebinds to it
+      - given workflowRightSidebar is collapsed on '/workflow/{id}/outcomes', when actor clicks workflowOutcomeHeader for workflowOutcome O, workflowRightSidebar expands, workflowRightSidebarEditTab is selected, and workflowEditOutcomeForm binds to O
+      - given workflowRightSidebar is expanded on workflowRightSidebarCommentsTab, when actor clicks workflowOutcomeHeader for workflowOutcome O, workflowRightSidebar switches to workflowRightSidebarEditTab and workflowEditOutcomeForm binds to O
+      - given workflowEditOutcomeForm is bound to workflowOutcome A, when actor clicks workflowOutcomeHeader for workflowOutcome B, workflowEditOutcomeForm rebinds to B
+      - given the workflowOutcome bound to workflowEditOutcomeForm is removed from the workflow while other workflowOutcome entries remain, workflowRightSidebar returns to default presentation per FR-WF-RS-004
+      - given workflowOutcomeHeaderToggle is rendered on a workflowOutcomeHeader, when actor clicks workflowOutcomeHeaderToggle, then the visibility of that workflowOutcome's direct-child entries toggles between expanded and collapsed and the currently selected workflowOutcome is unchanged (workflowEditOutcomeForm binding, if any, is preserved)
+      - given no workflowOutcome is selected, when actor clicks workflowOutcomeHeaderToggle on any workflowOutcomeHeader, then no workflowOutcome becomes selected and workflowEditOutcomeForm does not open
+    
+    openQuestions: []
+
+  - id: FR-WF-EO-005
+    title: workflowEditOutcomeForm field set is determined by the selected workflowOutcome's level
+    
+    designEvidence:
+      - FIGMA-WF-EO-OE-EDIT
+    
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+    
+    uiObjects:
+      - workflowEditOutcomeForm
+      - workflowEditOutcomeFormTitleField
+      - workflowEditOutcomeFormDescriptionField
+      - workflowRichTextDescriptionEditor
+      - workflowEditOutcomeFormCodeField
+      - workflowEditOutcomeFormTagsAutocomplete
+      - workflowEditOutcomeFormDuplicateButton
+      - workflowEditOutcomeFormDeleteButton
+    
+    preconditions:
+      - workflowEditOutcomeForm is rendered and bound to a workflowOutcome (per FR-WF-EO-004)
+    
+    trigger:
+      - workflowEditOutcomeForm renders for the selected workflowOutcome
+    
+    mainFlow:
+      - workflowEditOutcomeFormTitleField, workflowEditOutcomeFormDescriptionField, and workflowEditOutcomeFormTagsAutocomplete (level 1 only) are rendered per level rules below; workflowEditOutcomeFormTitleField is optional and may be left empty (workflowOutcomeHeaderTitle shows the 'Untitled outcome' display fallback per FR-WF-EO-006 when the persisted value is the empty string); workflowEditOutcomeFormDescriptionField renders workflowRichTextDescriptionEditor labeled 'Description' per FR-WF-EN-012, matching workflowEditNodeFormDescriptionField
+      - workflowEditOutcomeFormCodeField is rendered only when the selected workflowOutcome is at level 1 (root level)
+      - workflowEditOutcomeFormDuplicateButton and workflowEditOutcomeFormDeleteButton are rendered in workflowEditOutcomeForm's action area
+      - edit affordance follows the actor's role per this FR's roleBehavior block
+    
+    roleBehavior:
+      owner:
+        workflowEditOutcomeForm: editableWhereApplicable
+      editor:
+        workflowEditOutcomeForm: editableWhereApplicable
+      commenter:
+        workflowEditOutcomeForm: readOnlyPresentation
+      viewer:
+        workflowEditOutcomeForm: readOnlyPresentation
+      user:
+        workflowEditOutcomeForm: readOnlyPresentation
+    
+    acceptanceCriteria:
+      - given workflowEditOutcomeForm is bound to any workflowOutcome regardless of level, then workflowEditOutcomeFormTitleField and workflowEditOutcomeFormDescriptionField are rendered
+      - given workflowEditOutcomeForm is rendered, workflowEditOutcomeFormDescriptionField hosts workflowRichTextDescriptionEditor per FR-WF-EN-012, matching workflowEditNodeFormDescriptionField
+      - given workflowEditOutcomeForm is bound to a level 1 workflowOutcome, then workflowEditOutcomeFormCodeField and workflowEditOutcomeFormTagsAutocomplete are rendered
+      - given workflowEditOutcomeForm is bound to a level 2 or level 3 workflowOutcome, then workflowEditOutcomeFormCodeField and workflowEditOutcomeFormTagsAutocomplete are not rendered
+      - given workflowEditOutcomeForm is rendered, then workflowEditOutcomeFormTitleField is not marked as required and may be left empty; when persisted workflowEditOutcomeFormTitleField value is the empty string, workflowOutcomeHeaderTitle shows the 'Untitled outcome' display fallback per FR-WF-EO-006
+      - given workflowEditOutcomeForm is rendered, then workflowEditOutcomeFormDescriptionField, workflowEditOutcomeFormCodeField when rendered, and workflowEditOutcomeFormTagsAutocomplete when rendered are not marked as required
+
+    openQuestions: []
+
+  - id: FR-WF-EO-006
+    title: Auto-save field changes on workflowEditOutcomeForm
+    
+    designEvidence:
+      - FIGMA-WF-EO-OE-EDIT
+    
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+    
+    uiObjects:
+      - workflowEditOutcomeForm
+      - workflowEditOutcomeFormTitleField
+      - workflowEditOutcomeFormDescriptionField
+      - workflowEditOutcomeFormCodeField
+      - workflowEditOutcomeFormTagsAutocomplete
+      - workflowOutcomeHeaderTitle
+      - workflowOutcomeHeaderTagChips
+    
+    preconditions:
+      - workflowEditOutcomeForm is rendered and bound to a workflowOutcome (per FR-WF-EO-004)
+    
+    trigger:
+      - owner or editor types, pastes, clears, applies a toolbar format on workflowEditOutcomeFormDescriptionField, inserts or edits a hyperlink on workflowEditOutcomeFormDescriptionField, or otherwise modifies a value in an editable field on workflowEditOutcomeForm
+    
+    mainFlow:
+      - system persists changes without an explicit save control on workflowEditOutcomeForm
+      - workflowEditOutcomeForm does not render any visible auto-save status indicator (e.g. 'Saving…' or 'Saved')
+      - applying a toolbar format on workflowEditOutcomeFormDescriptionField or inserting or editing a hyperlink via workflowRichTextDescriptionEditorLinkButton counts as a field modification for auto-save
+      - workflowOutcomeHeaderTitle and workflowOutcomeHeaderTagChips on the bound workflowOutcome reflect persisted values from workflowEditOutcomeFormTitleField, workflowEditOutcomeFormCodeField (level 1), and workflowEditOutcomeFormTagsAutocomplete; workflowEditOutcomeForm re-renders show persisted values for every rendered field including workflowEditOutcomeFormDescriptionField
+    
+    roleBehavior:
+      owner:
+        workflowEditOutcomeForm: editableWhereApplicable
+      editor:
+        workflowEditOutcomeForm: editableWhereApplicable
+      commenter:
+        workflowEditOutcomeForm: readOnlyPresentation
+      viewer:
+        workflowEditOutcomeForm: readOnlyPresentation
+      user:
+        workflowEditOutcomeForm: readOnlyPresentation
+    
+    acceptanceCriteria:
+      - given workflowEditOutcomeForm is bound to a workflowOutcome and actor is owner or editor, when actor types in workflowEditOutcomeFormTitleField, then workflowOutcomeHeaderTitle on the corresponding workflowOutcomeHeader updates to the typed value (with the numeric prefix preserved — see FR-WF-EO-007)
+      - given workflowEditOutcomeForm is bound to a workflowOutcome and actor is owner or editor, when actor modifies an editable field on workflowEditOutcomeForm, workflowEditOutcomeForm does not show any visible auto-save status indicator
+      - given workflowEditOutcomeForm is bound to a level 1 workflowOutcome and actor is owner or editor, when actor types in workflowEditOutcomeFormCodeField, then workflowOutcomeHeaderTitle updates to the format described in FR-WF-EO-007 for outcomes with a non-empty workflowEditOutcomeFormCodeField value
+      - given workflowEditOutcomeForm is bound to a level 1 workflowOutcome and actor is owner or editor, when actor adds or removes a tag in workflowEditOutcomeFormTagsAutocomplete, then workflowOutcomeHeaderTagChips on the corresponding workflowOutcomeHeader reflects the new tag set
+      - given the persisted workflowEditOutcomeFormTitleField value for the bound workflowOutcome is the empty string, whether because owner or editor cleared workflowEditOutcomeFormTitleField to an empty string or because no value has been entered since creation per FR-WF-EO-002 or FR-WF-EO-003, then the persisted value remains the empty string (the 'Untitled outcome' string is a display fallback only and is not auto-substituted into persisted storage) and workflowOutcomeHeaderTitle shows the 'Untitled outcome' display fallback
+
+    openQuestions: []
+
+  - id: FR-WF-EO-007
+    title: Automatic outcome numbering and Code display in workflowOutcomeHeaderTitle
+    
+    designEvidence:
+      - FIGMA-WF-EO-OE-EDIT
+    
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+    
+    uiObjects:
+      - workflowOutcomeTree
+      - workflowOutcome
+      - workflowOutcomeHeader
+      - workflowOutcomeHeaderTitle
+    
+    preconditions:
+      - workflowOutcomeView is open
+      - workflowOutcomeTree is rendered with at least one workflowOutcome
+    
+    trigger:
+      - workflowOutcomeTree renders, or its outcome set / ordering / persisted workflowEditOutcomeFormCodeField values change
+    
+    mainFlow:
+      - system assigns each workflowOutcome a hierarchical ordinal based on its position among its siblings and its ancestors' ordinals (root-level outcomes ordered 1, 2, 3, ...; their children 1.1, 1.2, ... 2.1, 2.2, ...; their grandchildren 1.1.1, 1.1.2, ... and so on)
+      - workflowOutcomeHeaderTitle renders the ordinal prefix followed by the persisted workflowEditOutcomeFormTitleField value; the ordinal prefix is formatted as follows — at level 2 the prefix is the dot-joined two-segment ordinal followed by a literal '. ' (period + space) before the persisted workflowEditOutcomeFormTitleField value (e.g., '1.1. Title of outcome'); at level 3 the prefix is the dot-joined three-segment ordinal followed by a literal '. ' before the persisted workflowEditOutcomeFormTitleField value (e.g., '1.1.1. Title of outcome'); at level 1 with no persisted workflowEditOutcomeFormCodeField value, the prefix is the single-segment ordinal followed by '. ' (e.g., '1. Title of outcome')
+      - when the workflowOutcome is at level 1 and has a non-empty persisted workflowEditOutcomeFormCodeField value, workflowOutcomeHeaderTitle renders the persisted workflowEditOutcomeFormCodeField value between the ordinal prefix and the persisted workflowEditOutcomeFormTitleField value, separated by ' - ' (e.g., '1 - CODE123 - Title of the Outcome')
+      - ordinals are recomputed automatically as workflowOutcome entries are added, removed, duplicated, reordered via FR-WF-EO-016 and FR-WF-EO-017, or reordered as a side effect of other mutations, so that workflowOutcomeHeaderTitle ordinals remain contiguous and consistent within each parent's sibling list
+    
+    roleBehavior:
+      owner:
+        workflowOutcomeHeaderTitle: visible
+      editor:
+        workflowOutcomeHeaderTitle: visible
+      commenter:
+        workflowOutcomeHeaderTitle: visible
+      viewer:
+        workflowOutcomeHeaderTitle: visible
+      user:
+        workflowOutcomeHeaderTitle: visible
+    
+    acceptanceCriteria:
+      - given workflowOutcomeTree contains three root-level workflowOutcome entries in order O_A, O_B, O_C, then their workflowOutcomeHeaderTitle prefixes correspond to ordinals 1, 2, 3 respectively
+      - given a workflowOutcome at level 1 has persisted workflowEditOutcomeFormCodeField value 'CODE123' and persisted workflowEditOutcomeFormTitleField value 'Title of the Outcome', then workflowOutcomeHeaderTitle for that workflowOutcome contains the literal sequence '1 - CODE123 - Title of the Outcome' when it is the first root-level outcome
+      - given a workflowOutcome at level 1 has an empty persisted workflowEditOutcomeFormCodeField value and persisted workflowEditOutcomeFormTitleField value 'Title of outcome', then workflowOutcomeHeaderTitle for that workflowOutcome contains the literal sequence '1. Title of outcome' when it is the first root-level outcome
+      - given a workflowOutcome at level 2 has persisted workflowEditOutcomeFormTitleField value 'Title of outcome' and is the first child of the first root-level workflowOutcome, then workflowOutcomeHeaderTitle for that workflowOutcome contains the literal sequence '1.1. Title of outcome'
+      - given a workflowOutcome at level 3 has persisted workflowEditOutcomeFormTitleField value 'Title of outcome' and is the first child of the first level-2 child of the first root-level workflowOutcome, then workflowOutcomeHeaderTitle for that workflowOutcome contains the literal sequence '1.1.1. Title of outcome'
+      - given a workflowOutcome at level 2 or level 3 (workflowEditOutcomeFormCodeField is restricted to level 1 per FR-WF-EO-005), then workflowOutcomeHeaderTitle for that workflowOutcome contains its ordinal prefix and the persisted workflowEditOutcomeFormTitleField value only, with no code segment
+      - given a new workflowOutcome is inserted via FR-WF-EO-002 or FR-WF-EO-003, reordered via FR-WF-EO-016 or FR-WF-EO-017, or deleted per FR-WF-EO-014, then ordinals of all affected sibling workflowOutcome entries update so that the sibling sequence remains contiguous starting at 1
+    
+    openQuestions: []
+
+  - id: FR-WF-EO-008
+    title: workflowOutcomeTree depth is capped at three levels
+    
+    designEvidence:
+      - FIGMA-WF-EO-OE-EDIT
+    
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+    
+    uiObjects:
+      - workflowOutcomeTree
+      - workflowOutcome
+      - workflowOutcomeHoverActionsMenuInsertChildItem
+    
+    preconditions:
+      - workflowOutcomeView is open
+      - workflowOutcomeTree is rendered with at least one workflowOutcome
+    
+    trigger:
+      - actor who can see workflowOutcomeHoverActionsMenu per FR-WF-EO-003 hovers a workflowOutcomeHeader at level 1, level 2, or level 3
+    
+    mainFlow:
+      - workflowOutcome entries are organized as a tree with a maximum of three levels (level 1 = root, level 2 = child of root, level 3 = grandchild of root)
+      - workflowOutcomeHoverActionsMenuInsertChildItem is not rendered on workflowOutcomeHoverActionsMenu when the hovered workflowOutcome is already at level 3
+    
+    roleBehavior:
+      owner:
+        workflowOutcomeHoverActionsMenuInsertChildItem: activeWhenRendered
+      editor:
+        workflowOutcomeHoverActionsMenuInsertChildItem: activeWhenRendered
+      commenter:
+        workflowOutcomeHoverActionsMenuInsertChildItem: disabledWhenRendered
+      viewer:
+        workflowOutcomeHoverActionsMenuInsertChildItem: notRendered
+      user:
+        workflowOutcomeHoverActionsMenuInsertChildItem: notRendered
+    
+    acceptanceCriteria:
+      - given a workflowOutcome at level 3, when actor is owner, editor, or commenter and hovers its workflowOutcomeHeader, then workflowOutcomeHoverActionsMenuInsertChildItem is not rendered on workflowOutcomeHoverActionsMenu
+      - given a workflowOutcome at level 1 or level 2, when actor is owner, editor, or commenter and hovers its workflowOutcomeHeader, then workflowOutcomeHoverActionsMenuInsertChildItem is rendered on workflowOutcomeHoverActionsMenu
+      - given actor is viewer or user (published-access), when actor hovers a workflowOutcomeHeader at any level, then workflowOutcomeHoverActionsMenuInsertChildItem is not rendered (workflowOutcomeHoverActionsMenu is not rendered per FR-WF-EO-003)
+      - given any workflowOutcome already exists, then no operation that changes tree shape when normatively defined in FR-WF-EO-001 through FR-WF-EO-003, FR-WF-EO-009 through FR-WF-EO-014, or FR-WF-EO-015 through FR-WF-EO-017 produces a workflowOutcome at a level greater than 3
+    
+    openQuestions: []
+
+  - id: FR-WF-EO-018
+    title: workflowOutcomeHeaderSelectedBorder when an outcome is the sidebar host
+    
+    designEvidence:
+      - FIGMA-WF-EO-OE-EDIT
+    
+    actors:
+      - system
+    
+    uiObjects:
+      - workflowOutcomeView
+      - workflowOutcomeTree
+      - workflowOutcome
+      - workflowOutcomeHeader
+      - workflowOutcomeHeaderSelectedBorder
+      - workflowRightSidebar
+      - workflowRightSidebarEditTab
+      - workflowRightSidebarEditTabContent
+      - workflowRightSidebarCommentsTab
+      - workflowRightSidebarCommentsTabContent
+    
+    preconditions:
+      - workflowOutcomeView is open
+      - workflowOutcomeTree is rendered with at least one workflowOutcome
+    
+    trigger:
+      - workflowRightSidebar becomes bound to a workflowOutcome (for example actor clicks workflowOutcomeHeader per FR-WF-EO-004; actor opens comments for an outcome per FR-WF-COMMENTS-004)
+      - workflowRightSidebar binding changes from workflowOutcome O1 to workflowOutcome O2 (for example actor clicks a different workflowOutcomeHeader per FR-WF-EO-004)
+      - workflowRightSidebar ceases to be bound to a workflowOutcome (for example actor deselects via second header click per FR-WF-EO-004; workflowRightSidebar returns to default presentation per FR-WF-RS-004 including after outcome delete while other outcomes remain per FR-WF-EO-004)
+    
+    mainFlow:
+      - this FR normalizes canvas selection chrome only — the same split as FR-WF-NODE-002 (workflowNodeSelectedBorder) vs FR-WF-EO-004 (open edit outcome form); FR-WF-EO-004 and FR-WF-COMMENTS-004 normalize sidebar open and rebind, not the header outline
+      - when workflowRightSidebar is bound to workflowOutcome O, workflowOutcomeHeaderSelectedBorder appears on exactly the workflowOutcomeHeader for O and on no other workflowOutcomeHeader, whether workflowRightSidebarEditTab or workflowRightSidebarCommentsTab is active
+      - when workflowRightSidebar is not bound to any workflowOutcome, no workflowOutcomeHeader shows workflowOutcomeHeaderSelectedBorder
+      - while an outcome tree reorder drag per FR-WF-EO-015 is in progress, workflowOutcomeHeaderSelectedBorder remains visible on the workflowOutcomeHeader for the drag-source workflowOutcome when that outcome is bound in workflowRightSidebar
+      - applying or clearing outcome binding in workflowRightSidebar does not change workflowOutcomeHeaderTitle ordinals or tag chips per FR-WF-EO-007
+    
+    roleBehavior: {}
+    
+    acceptanceCriteria:
+      - given workflowRightSidebar is bound to workflowOutcome O on workflowRightSidebarEditTab per FR-WF-EO-004, workflowOutcomeHeader for O shows workflowOutcomeHeaderSelectedBorder and no other workflowOutcomeHeader in workflowOutcomeTree shows workflowOutcomeHeaderSelectedBorder
+      - given workflowRightSidebarCommentsTabContent is bound to workflowOutcome O per FR-WF-COMMENTS-004, workflowOutcomeHeader for O shows workflowOutcomeHeaderSelectedBorder and no other workflowOutcomeHeader in workflowOutcomeTree shows workflowOutcomeHeaderSelectedBorder
+      - given workflowRightSidebar is not bound to any workflowOutcome, no workflowOutcomeHeader shows workflowOutcomeHeaderSelectedBorder
+      - given workflowRightSidebar binding changes from workflowOutcome O1 to workflowOutcome O2, workflowOutcomeHeaderSelectedBorder moves from O1 to O2
+      - given workflowOutcome O is selected and actor clicks O's workflowOutcomeHeader again per deselect-on-second-click in FR-WF-EO-004, no workflowOutcomeHeader shows workflowOutcomeHeaderSelectedBorder
+      - given workflowRightSidebar returns to default presentation per FR-WF-RS-004 after the workflowOutcome bound to workflowEditOutcomeForm is removed while other workflowOutcome entries remain per FR-WF-EO-004, no workflowOutcomeHeader shows workflowOutcomeHeaderSelectedBorder
+      - given owner or editor is in an in-flight outcome tree drag for workflowOutcome O per FR-WF-EO-015 and O is bound in workflowRightSidebar, workflowOutcomeHeaderSelectedBorder remains on the workflowOutcomeHeader for O
+    
+    openQuestions: []
+

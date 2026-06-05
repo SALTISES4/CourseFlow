@@ -3,10 +3,11 @@
 # Design evidence: CourseFlow 2.0 'My library' frames (filters, empty, error, archive, favourites, workflow restore)—see designEvidenceLinkTable
 # Application code evidence: react/src/components/pages/Library/MyLibrary/*
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Cross-reference: tests/docs/requirements/original/main_navigation_requirements_v1.yaml (library navigation plus '/favourites' navigation entry); tests/docs/requirements/original/card_content_requirements_v1.yaml (projectCard and workflowCard — FR-CARD-001 through FR-CARD-006 as applicable; FR-LIB-006 Owner restore/delete on archived rows on 'My library'); tests/docs/requirements/original/explore_page_requirements_v1.yaml, favourites_page_requirements_v1.yaml, and project_workflows_view_requirements_v1.yaml (consume FR-LIB-002 and FR-LIB-003; Explore route and shared search/summary patterns per FR-LIB-001 and FR-LIB-004 through FR-LIB-005)
+# Cross-reference: tests/docs/requirements/original/main_navigation_requirements_v1.yaml (library navigation plus '/favourites' navigation entry); tests/docs/requirements/original/card_content_requirements_v1.yaml (projectCard and workflowCard — FR-CARD-001 through FR-CARD-006 as applicable; FR-LIB-006 Owner restore/delete on archived rows on 'My library'); tests/docs/requirements/original/project_archive_requirements_v1.yaml (archive-time favourite and Explore removal—FR-PROJ-ARCH-003; in-project links preserved on project archive); tests/docs/requirements/original/workflow_archive_requirements_v1.yaml (archive-time link break, favourite removal—FR-WF-ARCH-003); tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml (archived workflowCard listing when parent project not archived—FR-PROJ-WF-003; permanent delete removes archived workflowCard from that listing—FR-LIB-006); tests/docs/requirements/original/explore_page_requirements_v1.yaml, favourites_page_requirements_v1.yaml, and project_workflows_view_requirements_v1.yaml (consume FR-LIB-002, FR-LIB-003, and FR-LIB-004 where cross-referenced per FR — Explore per FR-EXP-002/003/006, Favourites per FR-FAV-002/003/005, project 'Workflows' per FR-PROJ-WF-002/003/004; templatesToggle uiObject canonical in this file, used on 'Explore' and 'Favourites' only, behaviour per FR-EXP-005 and FR-FAV-004; Explore route and shared search/summary/pagination patterns per FR-LIB-001)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
+  - libraryPage base query scope is limited to projects and workflows in the user's 'My library' membership scope per FR-LIB-001
 
 uiObjectDefinitions:
   libraryPage:
@@ -14,33 +15,35 @@ uiObjectDefinitions:
   libraryFilterToolbar:
     meaning: Filter toolbar on libraryPage with sort, ownership, type, workflow-type, favourites, archive, and keyword controls.
   sortControl:
-    meaning: Sort control on libraryFilterToolbar with placeholder 'Sort' and options A–Z and Date created.
+    meaning: Sort control on 'My library', 'Explore', 'Favourites', and project 'Workflows' filter toolbars with placeholder 'Sort' and options 'A - Z' and 'Date created'.
   sortResetButton:
     meaning: Clear control on sortControl that resets active sort.
   ownershipFilter:
-    meaning: Single-select ownership filter on libraryFilterToolbar with placeholder 'Ownership'.
+    meaning: Single-select ownership filter with placeholder 'Ownership' and options 'Owned' and 'Shared' on 'My library', 'Favourites', and project 'Workflows' filter toolbars.
   ownershipFilterResetButton:
-    meaning: Clear (X) control on ownershipFilter when 'Owned' or 'Shared' is active
+    meaning: Clear (X) control on ownershipFilter that resets the active ownership selection.
   typeFilter:
-    meaning: Single-select type filter on libraryFilterToolbar with placeholder 'Type'.
+    meaning: Single-select type filter with placeholder 'Type' on 'My library', 'Explore', and 'Favourites' filter toolbars.
   typeFilterResetButton:
-    meaning: Clear (X) control on typeFilter when a non-default type scope is active per design
+    meaning: Clear (X) control on typeFilter that resets the committed type scope.
   workflowTypeFilter:
-    meaning: Multiselect workflow-type filter on the library filter toolbar with options Activity, Course, and Program.
+    meaning: Multiselect workflow-type filter with options 'Activity', 'Course', and 'Program' on 'My library', 'Explore', 'Favourites', and project 'Workflows' filter toolbars.
   workflowTypeFilterSelectionIndicator:
     meaning: Selection-count badge on the closed workflowTypeFilter trigger.
   favouritesToggle:
-    meaning: Favourites boolean filter toggle on libraryFilterToolbar.
+    meaning: Boolean filter toggle labeled 'Favourites' on 'My library', 'Explore', and project 'Workflows' filter toolbars.
   archiveToggle:
-    meaning: Archive boolean filter toggle on libraryFilterToolbar.
+    meaning: Boolean filter toggle labeled 'Archive' on 'My library' and project 'Workflows' filter toolbars.
+  templatesToggle:
+    meaning: Boolean filter toggle labeled 'Templates' on 'Explore' and 'Favourites' filter toolbars.
   keywordSearchField:
-    meaning: Keyword search field on libraryFilterToolbar.
+    meaning: Keyword search field on 'My library', 'Explore', 'Favourites', and project 'Workflows' filter toolbars.
   keywordSearchClearButton:
-    meaning: Clear control on keywordSearchField when the field is non-empty.
+    meaning: Clear control on keywordSearchField that clears the keyword input.
   resultsSummary:
-    meaning: Result-count summary region between the filter toolbar and resultsRegion.
+    meaning: Result-count summary region between the filter toolbar and resultsRegion on listing pages.
   resultsRegion:
-    meaning: Main two-column card grid listing library search results.
+    meaning: Two-column grid region on listing pages that renders projectCard and workflowCard instances for the current query page.
   projectCard:
     meaning: Canonical definition in tests/docs/requirements/original/card_content_requirements_v1.yaml.
   workflowCard:
@@ -68,129 +71,58 @@ uiObjectDefinitions:
   deleteWorkflowPermanentlyModalConfirmButton:
     meaning: Confirm action on deleteWorkflowPermanentlyModal.
   pagination:
-    meaning: Shared pagination control for listing surfaces when result count exceeds the page size.
+    meaning: Pagination control below resultsRegion on listing pages.
   paginationPageNumberButton:
-    meaning: Clickable numeric page control within pagination; clicking navigates to the selected page.
+    meaning: Numeric page item within pagination.
   paginationPreviousNextButton:
-    meaning: Single-arrow control within pagination that navigates one page backward or one page forward.
+    meaning: Single-arrow previous or next control within pagination.
   paginationFirstLastButton:
-    meaning: Double-arrow control within pagination that navigates directly to the first page or the last page.
+    meaning: Double-arrow first or last page control within pagination.
   libraryLoadingState:
-    meaning: Loading placeholders shown while library search query is in flight.
+    meaning: Loading placeholders shown in resultsRegion while a listing query is in flight.
   libraryEmptyState:
-    meaning: Empty state when library search returns zero matching cards; layout and copy per FIGMA-LIB-EMPTY.
+    meaning: Empty-state view shown in resultsRegion when the listing query returns zero projectCard and workflowCard instances; layout and copy per FIGMA-LIB-EMPTY.
   libraryErrorState:
-    meaning: Error state when library search query fails; layout and copy per FIGMA-LIB-ERROR.
+    meaning: Error-state view shown in resultsRegion when the listing query fails; layout and copy per FIGMA-LIB-ERROR.
 
 locatorMappings:
-  libraryPage:
-    strategy: "URL pathname /library"
-    confidence: inferred
-  libraryFilterToolbar:
-    strategy: null
-    confidence: unresolved
-  sortControl:
-    strategy: "{libraryFilterToolbar} control showing label 'Sort', 'A - Z', or 'Date created'"
-    confidence: inferred
-  sortResetButton:
-    strategy: "{sortControl} button[aria-label='close'] or icon-only clear control adjacent to active sort label"
-    confidence: inferred
-  ownershipFilter:
-    strategy: "{libraryFilterToolbar} single-select filter showing placeholder 'Ownership' or active label Owned or Shared"
-    confidence: inferred
-  ownershipFilterResetButton:
-    strategy: "{ownershipFilter} button[aria-label='close'] or icon-only clear control adjacent to active ownership label"
-    confidence: inferred
-  typeFilter:
-    strategy: "{libraryFilterToolbar} single-select filter showing label 'Type' or committed type label 'Projects' or 'Workflows'"
-    confidence: inferred
-  typeFilterResetButton:
-    strategy: "{typeFilter} button[aria-label='close'] or icon-only clear control when non-default type scope is active per design"
-    confidence: inferred
-  workflowTypeFilter:
-    strategy: "{libraryFilterToolbar} multiselect filter for workflow program types; present only when typeFilter is committed to 'Workflows' or is Unset (no committed 'Projects' or 'Workflows')"
-    confidence: inferred
-  workflowTypeFilterSelectionIndicator:
-    strategy: "{workflowTypeFilter} top-right count badge showing selected workflow-type count when count is at least one"
-    confidence: inferred
-  favouritesToggle:
-    strategy: "{libraryFilterToolbar} toggle or chip for favourites filter state"
-    confidence: inferred
-  archiveToggle:
-    strategy: "{libraryFilterToolbar} toggle or chip for archive filter state"
-    confidence: inferred
-  keywordSearchField:
-    strategy: null
-    confidence: unresolved
-  keywordSearchClearButton:
-    strategy: "{keywordSearchField} right-side icon button shown when input is non-empty"
-    confidence: inferred
-  resultsSummary:
-    strategy: null
-    confidence: unresolved
-  resultsRegion:
-    strategy: "main library listing grid; always exactly two cards per row, at most five rows (10 cards) per page"
-    confidence: inferred
-  projectCard:
-    strategy: "{resultsRegion} project card (project scope)"
-    confidence: inferred
-  workflowCard:
-    strategy: "{resultsRegion} workflow card (workflow scope)"
-    confidence: inferred
-  projectCardRestoreProjectButton:
-    strategy: "{projectCard} button with label 'Restore project' on thumbnail region when archived and offered"
-    confidence: inferred
-  projectCardDeletePermanentlyButton:
-    strategy: "{projectCard} button with label 'Delete permanently' when archived and offered"
-    confidence: inferred
-  deleteProjectPermanentlyModal:
-    strategy: "dialog presented after Delete permanently on archived projectCard; evidence FIGMA-LIB-MODAL-DELETE-PROJECT"
-    confidence: inferred
-  deleteProjectPermanentlyModalDeleteProjectButton:
-    strategy: "{deleteProjectPermanentlyModal} button with label 'Delete project'"
-    confidence: inferred
-  deleteProjectPermanentlyModalCancelButton:
-    strategy: "{deleteProjectPermanentlyModal} button with label 'Cancel'"
-    confidence: inferred
-  workflowCardRestoreButton:
-    strategy: "{workflowCard} button with label 'Restore' when archived and offered"
-    confidence: inferred
-  restoreParentProjectModal:
-    strategy: "dialog after Restore on archived workflowCard; evidence FIGMA-LIB-RESTORE-WORKFLOW"
-    confidence: inferred
-  restoreParentProjectModalRestoreProjectButton:
-    strategy: "{restoreParentProjectModal} button with label 'Restore project'"
-    confidence: inferred
-  workflowCardDeletePermanentlyButton:
-    strategy: "{workflowCard} button with label 'Delete permanently' when archived and offered"
-    confidence: inferred
-  deleteWorkflowPermanentlyModal:
-    strategy: "dialog after Delete permanently on archived workflowCard; evidence FIGMA-LIB-MODAL-DELETE-WORKFLOW"
-    confidence: inferred
-  deleteWorkflowPermanentlyModalConfirmButton:
-    strategy: "{deleteWorkflowPermanentlyModal} primary confirm button (label per FIGMA-LIB-MODAL-DELETE-WORKFLOW)"
-    confidence: inferred
-  pagination:
-    strategy: null
-    confidence: unresolved
-  paginationPageNumberButton:
-    strategy: "{pagination} clickable numeric page item"
-    confidence: inferred
-  paginationPreviousNextButton:
-    strategy: "{pagination} single-arrow previous/next control"
-    confidence: inferred
-  paginationFirstLastButton:
-    strategy: "{pagination} double-arrow first/last control"
-    confidence: inferred
-  libraryLoadingState:
-    strategy: null
-    confidence: unresolved
-  libraryEmptyState:
-    strategy: null
-    confidence: unresolved
-  libraryErrorState:
-    strategy: null
-    confidence: unresolved
+  libraryPage: "canonical_locators.yaml -> libraryPage"
+  libraryFilterToolbar: "canonical_locators.yaml -> libraryFilterToolbar"
+  sortControl: "canonical_locators.yaml -> sortControl"
+  sortResetButton: "canonical_locators.yaml -> sortResetButton"
+  ownershipFilter: "canonical_locators.yaml -> ownershipFilter"
+  ownershipFilterResetButton: "canonical_locators.yaml -> ownershipFilterResetButton"
+  typeFilter: "canonical_locators.yaml -> typeFilter"
+  typeFilterResetButton: "canonical_locators.yaml -> typeFilterResetButton"
+  workflowTypeFilter: "canonical_locators.yaml -> workflowTypeFilter"
+  workflowTypeFilterSelectionIndicator: "canonical_locators.yaml -> workflowTypeFilterSelectionIndicator"
+  favouritesToggle: "canonical_locators.yaml -> favouritesToggle"
+  archiveToggle: "canonical_locators.yaml -> archiveToggle"
+  templatesToggle: "canonical_locators.yaml -> templatesToggle"
+  keywordSearchField: "canonical_locators.yaml -> keywordSearchField"
+  keywordSearchClearButton: "canonical_locators.yaml -> keywordSearchClearButton"
+  resultsSummary: "canonical_locators.yaml -> resultsSummary"
+  resultsRegion: "canonical_locators.yaml -> resultsRegion"
+  projectCard: "canonical_locators.yaml -> projectCard"
+  workflowCard: "canonical_locators.yaml -> workflowCard"
+  projectCardRestoreProjectButton: "canonical_locators.yaml -> projectCardRestoreProjectButton"
+  projectCardDeletePermanentlyButton: "canonical_locators.yaml -> projectCardDeletePermanentlyButton"
+  deleteProjectPermanentlyModal: "canonical_locators.yaml -> deleteProjectPermanentlyModal"
+  deleteProjectPermanentlyModalDeleteProjectButton: "canonical_locators.yaml -> deleteProjectPermanentlyModalDeleteProjectButton"
+  deleteProjectPermanentlyModalCancelButton: "canonical_locators.yaml -> deleteProjectPermanentlyModalCancelButton"
+  workflowCardRestoreButton: "canonical_locators.yaml -> workflowCardRestoreButton"
+  restoreParentProjectModal: "canonical_locators.yaml -> restoreParentProjectModal"
+  restoreParentProjectModalRestoreProjectButton: "canonical_locators.yaml -> restoreParentProjectModalRestoreProjectButton"
+  workflowCardDeletePermanentlyButton: "canonical_locators.yaml -> workflowCardDeletePermanentlyButton"
+  deleteWorkflowPermanentlyModal: "canonical_locators.yaml -> deleteWorkflowPermanentlyModal"
+  deleteWorkflowPermanentlyModalConfirmButton: "canonical_locators.yaml -> deleteWorkflowPermanentlyModalConfirmButton"
+  pagination: "canonical_locators.yaml -> pagination"
+  paginationPageNumberButton: "canonical_locators.yaml -> paginationPageNumberButton"
+  paginationPreviousNextButton: "canonical_locators.yaml -> paginationPreviousNextButton"
+  paginationFirstLastButton: "canonical_locators.yaml -> paginationFirstLastButton"
+  libraryLoadingState: "canonical_locators.yaml -> libraryLoadingState"
+  libraryEmptyState: "canonical_locators.yaml -> libraryEmptyState"
+  libraryErrorState: "canonical_locators.yaml -> libraryErrorState"
 
 requirements:
   - id: FR-LIB-001
@@ -216,6 +148,9 @@ requirements:
       - resultsSummary
       - resultsRegion
       - pagination
+      - paginationPageNumberButton
+      - paginationPreviousNextButton
+      - paginationFirstLastButton
       - projectCard
       - workflowCard
       - libraryLoadingState
@@ -227,36 +162,48 @@ requirements:
 
     trigger:
       - user navigates to /library
+      - library search query state changes or user interacts with pagination controls
 
     mainFlow:
+      - libraryPage base query scope is projects and workflows created by the user or on which the user is an editor, a viewer, or a commenter; archived projectCard and workflowCard instances appear in resultsRegion only when archiveToggle is active per FR-LIB-003
+      - toolbar filters in FR-LIB-002 through FR-LIB-004 apply subtractively within this base scope only
       - system renders libraryPage with vertical order libraryFilterToolbar, then resultsSummary, then resultsRegion
       - on first land of /library, typeFilter active selection is 'Projects' (see FR-LIB-003); workflowTypeFilter is not visible because 'Type' does not include 'Workflows'
-      - on first land of /library, user does not need to use keywordSearchField to see results; system loads all projects visible to the user in 'My library' base scope (created by user or shared with user as Editor, Viewer, or Commenter) under the default filter state
+      - on first land of /library, user does not need to use keywordSearchField to see results; system loads all projects visible to the user in 'My library' base scope (created by the user or on which the user is an editor, a viewer, or a commenter) under the default filter state
       - keyword search on libraryPage is optional and uses the same search contract as 'Explore'; when used, it narrows the current result set
-      - result cards are projectCard and/or workflowCard according to typeFilter scope, but always constrained to the 'My library' base scope (created by user or shared with user)
+      - resultsRegion includes projectCard and/or workflowCard instances according to typeFilter scope, always constrained to the 'My library' base scope (created by the user or on which the user is an editor, a viewer, or a commenter)
       - when resultsRegion is not empty, resultsSummary shows a count summary (e.g. 'Showing X of XX results') consistent with the total matching objects and current page
-      - when library search returns results for the current page, system renders cards in resultsRegion
+      - resultsRegion shows at most 10 projectCard and/or workflowCard instances for the current page
+      - when library search returns results for the current page, system renders projectCard and/or workflowCard instances in resultsRegion
       - projectCard and workflowCard presentation and card interactions in resultsRegion conform to card_content_requirements_v1.yaml except where FR-LIB-006 defines Owner restore/delete on archived rows on 'My library'
       - when total matching objects are 11 or more, system shows pagination below resultsRegion
       - when total matching objects are 10 or fewer, system does not show pagination
       - while library search query is loading, system shows libraryLoadingState in resultsRegion
-      - when library search returns zero matching cards, system shows libraryEmptyState in resultsRegion
+      - when library search returns zero matching projectCard and workflowCard instances, system shows libraryEmptyState in resultsRegion
       - when library search query fails, system shows libraryErrorState in resultsRegion
+      - when user selects a page or uses paginationPageNumberButton, paginationPreviousNextButton, or paginationFirstLastButton, system loads that page of results into resultsRegion and updates resultsSummary as applicable
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given /library, libraryFilterToolbar is visible including ownershipFilter, typeFilter, favouritesToggle, and archiveToggle
-      - given first land on /library, typeFilter reflects 'Projects' as the active typeFilter selection and workflowTypeFilter is not visible
-      - given first land on /library with no keyword entered and at least one visible project, resultsSummary is visible and reflects result counts for the default query state
-      - given first land on /library, results include only projects in 'My library' base scope (created by user or shared with user as Editor, Viewer, or Commenter)
-      - given first land on /library with no keyword entered and at least one visible project, at least one projectCard is visible in resultsRegion
+      - given libraryPage is rendered, libraryFilterToolbar is visible including ownershipFilter, typeFilter, favouritesToggle, and archiveToggle
+      - given first land, typeFilter reflects 'Projects' as the active typeFilter selection and workflowTypeFilter is not visible
+      - given first land with no keyword entered and at least one visible project, resultsSummary is visible and reflects result counts for the default query state
+      - given first land, results include only projects in libraryPage base scope (created by the user or on which the user is an editor, a viewer, or a commenter)
+      - given first land with no keyword entered and at least one visible project, at least one projectCard is visible in resultsRegion
       - given user enters a keyword in keywordSearchField, results are narrowed according to the shared search contract
-      - given /library and successful search with at least one result row, projectCard and workflowCard in resultsRegion conform to card_content_requirements_v1.yaml except where FR-LIB-006 applies on archived rows
-      - given /library and successful search with zero matching cards, libraryEmptyState is visible
-      - given /library and failed library search, libraryErrorState is visible
-      - given /library and 11 or more matching objects, pagination is visible
-      - given /library and at most 10 matching objects, pagination is not visible
+      - given successful search with at least one result, at least one projectCard or workflowCard instance is visible in resultsRegion
+      - given successful search with at least one result, projectCard and workflowCard instances in resultsRegion conform to card_content_requirements_v1.yaml except where FR-LIB-006 applies on archived projectCard and workflowCard instances
+      - given library search query is loading, libraryLoadingState is visible in resultsRegion
+      - given successful search with zero matching projectCard or workflowCard instances, libraryEmptyState is visible
+      - given failed library search, libraryErrorState is visible
+      - given 11 or more matching objects, pagination is visible
+      - given at most 10 matching objects, pagination is not visible
+      - given pagination is visible, paginationPageNumberButton controls are clickable
+      - given pagination is visible, paginationPreviousNextButton single-arrow controls navigate one page backward or forward
+      - given pagination is visible, paginationFirstLastButton double-arrow controls navigate to the first or last page
+      - given user selects a different page, resultsRegion updates to show results for that page per backend contract
+      - given user selects a different page, resultsSummary reflects the current range (e.g. 'Showing X of XX results') per product rules
 
     openQuestions: []
 
@@ -284,26 +231,26 @@ requirements:
       - user interacts with sortControl or sortResetButton
 
     mainFlow:
-      - when user lands on /library, project list sort defaults to most recently modified project
+      - when user lands on /library, default sort is most recently modified applied to projectCard instances in resultsRegion (first land typeFilter is committed to 'Projects' per FR-LIB-001)
       - sortControl initially shows placeholder label 'Sort' until user chooses a sort option from the control
       - sortControl offers selectable sort options 'A - Z' and 'Date created'
       - when user selects a sort option the first time, system applies ascending order for that option and refreshes resultsRegion
       - when user selects the same sort option again, system toggles to descending order for that option and refreshes resultsRegion
       - when a non-default sort is active, sortControl displays the active sort as the visible label (not the 'Sort' placeholder) and shows sortResetButton
-      - when user clicks sortResetButton, system clears the active sort and restores default ordering by most recently modified project
+      - when user clicks sortResetButton, system clears the active sort and restores default ordering by most recently modified applied to projectCard and workflowCard instances in resultsRegion per current typeFilter scope
       - when user changes sort option or direction, system resets listing in resultsRegion for the new sort state
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given user lands on /library with no prior sort selection in session, results are ordered by most recently modified project
+      - given user lands with no prior sort selection in session, projectCard instances in resultsRegion are ordered by most recently modified (first land typeFilter is committed to 'Projects' per FR-LIB-001)
       - given libraryPage, sortControl is visible with initial placeholder 'Sort' before user selects A - Z or Date created
-      - given user selects 'A - Z' for the first time, results are ordered ascending A to Z per backend contract
-      - given user selects 'A - Z' a second time while it remains the active option, results are ordered descending Z to A per backend contract
-      - given user selects 'Date created' for the first time, results are ordered by creation date ascending per backend contract
-      - given user selects 'Date created' a second time while it remains the active option, results are ordered by creation date descending per backend contract
+      - given user selects 'A - Z' for the first time, projectCard and workflowCard instances in resultsRegion are ordered ascending A to Z per current typeFilter scope and backend contract
+      - given user selects 'A - Z' a second time while it remains the active option, projectCard and workflowCard instances in resultsRegion are ordered descending Z to A per current typeFilter scope and backend contract
+      - given user selects 'Date created' for the first time, projectCard and workflowCard instances in resultsRegion are ordered by creation date ascending per current typeFilter scope and backend contract
+      - given user selects 'Date created' a second time while it remains the active option, projectCard and workflowCard instances in resultsRegion are ordered by creation date descending per current typeFilter scope and backend contract
       - given a non-default sort is active, sortControl visible label is exactly 'A - Z' or 'Date created' (matching the selected option) and sortResetButton is visible
-      - given user clicks sortResetButton, sort returns to most recently modified project and sortControl shows label 'Sort'
+      - given user clicks sortResetButton, sort returns to most recently modified ordering for projectCard and workflowCard instances in resultsRegion per current typeFilter scope and sortControl shows label 'Sort'
 
     openQuestions: []
 
@@ -342,29 +289,29 @@ requirements:
 
     mainFlow:
       - filters and keyword search combine on the same result set; user may narrow keyword results with filters and narrow filtered results with keyword search
-      - ownershipFilter is single-select with only two options ('Owned' and 'Shared'); there is no 'All ownership' option; when user selects an ownership option, exactly one option is active; when reset (or initially unset), no ownership option is active and results include both owned and shared objects in scope
+      - templatesToggle behaviour on 'Explore' is per FR-EXP-005; on 'Favourites' is per FR-FAV-004
+      - 'Owned' on ownershipFilter restricts resultsRegion to projectCard and workflowCard instances on which the user is an owner within libraryPage base query scope per FR-LIB-001; 'Shared' restricts to instances on which the user is an editor, a viewer, or a commenter but is not an owner; when ownershipFilter is unset, resultsRegion includes both owned and shared instances in that base scope
       - typeFilter offers commitments 'Projects' and 'Workflows' only, plus Unset (no commitment, placeholder 'Type'); there is no selectable 'All types' row; when user selects 'Projects' or 'Workflows', exactly one commitment is active; when reset to Unset, no 'Projects' or 'Workflows' commitment is active and results include both projects and workflows in scope when other filters allow (first land defaults to committed 'Projects' per FR-LIB-001, not Unset)
       - workflowTypeFilter is multi-select with exactly three options ('Activity', 'Course', and 'Program'); selection is additive (OR semantics), so selecting multiple options includes results matching any selected workflow type; workflowTypeFilter is visible only when typeFilter includes 'Workflows' in scope (typeFilter committed to 'Workflows', or typeFilter Unset); when workflowTypeFilter has no workflow-type selections (initial state or after reset via None or manual clear), no workflow type is selected and all workflow types in scope are included; user resets by manually unselecting all selected options or using 'None'; user selects all three options with 'All'; when one or more workflow types are selected, workflowTypeFilterSelectionIndicator is visible with the selected-count value; when none are selected, the indicator is hidden
       - when a workflow type option has no matching results in the current query context, that option's checkbox is read-only and cannot be clicked
       - clicking 'All' selects each workflow type option that is selectable; options with zero matching results in the current query context stay read-only and are not toggled by 'All'
-      - favouritesToggle is boolean; first click turns it on and applies favourites filtering, second click turns it off and removes that filter
-      - archiveToggle is boolean; first click turns it on and applies archive filtering, second click turns it off and removes that filter
+      - favouritesToggle is boolean; first click turns it on and restricts resultsRegion to favourited projectCard and workflowCard instances within libraryPage base query scope per FR-LIB-001 only; second click turns it off and removes that constraint
+      - archiveToggle is boolean; first click turns it on and restricts resultsRegion to archived projectCard and workflowCard instances within libraryPage base query scope per FR-LIB-001 only; second click turns it off and removes that constraint so archived projectCard and workflowCard instances are excluded from resultsRegion
       - ownershipFilter, typeFilter, favouritesToggle, and archiveToggle apply as subtractive constraints (AND semantics) against the current result set
-      - when sortControl shows default most-recently-modified behavior (label 'Sort'), row order within the filtered set follows most recently modified until user changes sort per FR-LIB-002
-      - when sortControl shows 'A - Z' or 'Date created', ordering follows FR-LIB-002 within the filtered result set
+      - projectCard and workflowCard instance order within the filtered result set conforms to FR-LIB-002
       - when user changes any filter in this requirement, system resets listing to the first results page for the new filter state
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given user applies one or more filters and types in keywordSearchField, keyword and filter constraints both apply to resultsRegion
-      - given user commits keyword search and then changes filters, filter and keyword constraints both apply to resultsRegion
       - given typeFilter is unset (initial state or after reset), results include all supported object types in scope
       - given typeFilter is committed to 'Projects' only, workflowTypeFilter is not visible
       - given typeFilter includes 'Workflows' in scope (committed 'Workflows', or Unset with no 'Projects' or 'Workflows' commitment), workflowTypeFilter is visible
       - given typeFilter has an active option, the filter label is replaced by the active option label (instead of 'Type')
       - given typeFilter has an active option, typeFilterResetButton is visible
-      - given ownershipFilter is unset (initial state or after reset), results include both 'Owned' and 'Shared' objects in scope
+      - given ownershipFilter is unset (initial state or after reset), resultsRegion includes both owned and shared projectCard and workflowCard instances in libraryPage base query scope per FR-LIB-001
+      - given ownershipFilter is committed to 'Owned', resultsRegion includes only projectCard and workflowCard instances on which the user is an owner
+      - given ownershipFilter is committed to 'Shared', resultsRegion includes only projectCard and workflowCard instances on which the user is an editor, a viewer, or a commenter but is not an owner
       - given ownershipFilter, at most one of 'Owned' or 'Shared' is active as a committed single-select state, and ownershipFilterResetButton is visible when an ownership option is active
       - given ownershipFilter has an active option, the filter label is replaced by the active option label (instead of 'Ownership')
       - given workflowTypeFilter is visible, it offers exactly three options ('Activity', 'Course', and 'Program')
@@ -375,8 +322,12 @@ requirements:
       - given a workflow type option has no matching results in the current query context, that option's checkbox is read-only and does not change selection when the user attempts to click it
       - given one or more workflow-type options are selected, workflowTypeFilterSelectionIndicator is visible and shows the number of selected options
       - given no workflow-type options are selected, workflowTypeFilterSelectionIndicator is not visible
-      - given user clicks favouritesToggle once, the favourites filter is active; given user clicks favouritesToggle again, the favourites filter is inactive
-      - given user clicks archiveToggle once, the archive filter is active; given user clicks archiveToggle again, the archive filter is inactive
+      - given user clicks favouritesToggle once, the favourites filter is active within libraryPage base query scope per FR-LIB-001; given user clicks favouritesToggle again, the favourites filter is inactive
+      - given favouritesToggle is on, resultsRegion includes only favourited projectCard and workflowCard instances that are also in libraryPage base query scope per FR-LIB-001
+      - given a published object is favourited but the user is not an editor, a viewer, or a commenter on that object and did not create it, that object does not appear on 'My library' with favouritesToggle on (it appears on 'Favourites' per FR-FAV-001 instead)
+      - given user clicks archiveToggle once, the archive filter is active within libraryPage base query scope per FR-LIB-001; given user clicks archiveToggle again, the archive filter is inactive
+      - given archiveToggle is on, resultsRegion includes only archived projectCard and workflowCard instances in libraryPage base query scope per FR-LIB-001
+      - given archiveToggle is off, resultsRegion excludes archived projectCard and workflowCard instances
 
     openQuestions: []
 
@@ -407,7 +358,7 @@ requirements:
     mainFlow:
       - keyword search narrows results as user types in keywordSearchField; pressing 'Enter' is not required
       - no overlay or dropdown workflow picker is shown for keyword search on libraryPage
-      - keyword search uses the same contract as 'Explore'; resultsRegion lists matching cards (projectCard and/or workflowCard per 'Type' scope)
+      - keyword search uses the same contract as 'Explore'; resultsRegion lists matching projectCard and/or workflowCard instances per typeFilter scope
       - when search is triggered, system refreshes results directly in resultsRegion
       - when keywordSearchField is not empty, keywordSearchClearButton ('X') is visible on the right side of the field
       - when user clicks keywordSearchClearButton, system clears keywordSearchField and resets keyword-search filtering
@@ -422,51 +373,8 @@ requirements:
       - given user clicks keywordSearchClearButton ('X'), keywordSearchField is cleared and keyword search is reset
       - given user applies a keyword that matches a project title, matching project appears as a projectCard in resultsRegion when 'Type' scope and other filters allow it
       - given user applies a keyword that matches a workflow title, matching workflow appears as a workflowCard in resultsRegion when 'Type' scope includes workflows and other filters allow it
-
-    openQuestions: []
-
-  - id: FR-LIB-005
-    title: Pagination on 'My library'
-
-    designEvidence:
-      - FIGMA-LIB-DEFAULT
-
-    actors:
-      - user
-
-    uiObjects:
-      - libraryPage
-      - pagination
-      - paginationPageNumberButton
-      - paginationPreviousNextButton
-      - paginationFirstLastButton
-      - resultsSummary
-      - resultsRegion
-      - projectCard
-      - workflowCard
-
-    preconditions:
-      - libraryPage is rendered
-      - total matching library objects are 11 or more (pager applies; 10 cards per page in a 2×5 grid)
-
-    trigger:
-      - user changes page via paginationPageNumberButton, paginationPreviousNextButton, or paginationFirstLastButton
-
-    mainFlow:
-      - each page shows the page-specific subset of result cards in resultsRegion
-      - when user clicks paginationPageNumberButton, system loads the selected page of results into resultsRegion and updates resultsSummary as applicable
-      - when user clicks paginationPreviousNextButton, system loads the previous or next page into resultsRegion and updates resultsSummary as applicable
-      - when user clicks paginationFirstLastButton, system loads the first or last page into resultsRegion and updates resultsSummary as applicable
-
-    roleBehavior: {}
-
-    acceptanceCriteria:
-      - given 11 or more matching objects, pagination is visible
-      - given pagination is visible, paginationPageNumberButton controls are clickable
-      - given pagination is visible, paginationPreviousNextButton single-arrow controls navigate one page backward or forward
-      - given pagination is visible, paginationFirstLastButton double-arrow controls navigate to the first or last page
-      - given user selects a different page, resultsRegion updates to show results for that page per backend contract
-      - given user selects a different page, resultsSummary reflects the current range (e.g. 'Showing X of XX results') per product rules
+      - given user applies one or more filters and types in keywordSearchField, keyword and filter constraints both apply to resultsRegion
+      - given user types in keywordSearchField and then changes filters, keyword and filter constraints both apply to resultsRegion
 
     openQuestions: []
 
@@ -514,19 +422,26 @@ requirements:
     trigger:
       - user hovers an archived projectCard or workflowCard in resultsRegion, and clicks 'Restore' or 'Delete permanently'
       - user clicks deleteProjectPermanentlyModalCancelButton ('Cancel') or deleteProjectPermanentlyModalDeleteProjectButton ('Delete project') while deleteProjectPermanentlyModal is open
+      - user clicks deleteWorkflowPermanentlyModalConfirmButton while deleteWorkflowPermanentlyModal is open
 
     mainFlow:
       - when an Owner hovers an archived projectCard or workflowCard, system reveals 'Restore' and 'Delete permanently' buttons
       - projectCard and workflowCard that represent archived objects follow card_content_requirements_v1.yaml FR-CARD-006 for card-body click, archived visual presentation, and cardFavouriteToggle (non-favourited, not interactive); only Owner receives the hover-revealed 'Restore' and 'Delete permanently' actions on 'My library' (Editor, Viewer, and Commenter do not)
       - archived projects and workflows cannot be accessed or browsed by clicking on the cards
       - Editor, Viewer, and Commenter can only view the card, the 'Restore' and 'Delete permanently' buttons are not available to them
-      - when Owner clicks projectCardRestoreProjectButton, system restores the project and all its child workflows; afterward the project and those workflows are available again in 'My library' under normal listing rules, with the same project contributors and project metadata as when the project was archived
-      - when Owner clicks projectCardDeletePermanentlyButton, system shows deleteProjectPermanentlyModal; permanent deletion proceeds only if the user clicks deleteProjectPermanentlyModalDeleteProjectButton ('Delete project'); after permanent deletion the project and its child workflows can never be accessed or browsed again
+      - when Owner clicks projectCardRestoreProjectButton, system restores the project and all its child workflows; afterward the project and those workflows are available again in 'My library' under normal listing rules, with the same project contributors and project metadata as when the project was archived; linkedWorkflow associations within the restored project are reinstated as they were at project archival per tests/docs/requirements/original/project_archive_requirements_v1.yaml FR-PROJ-ARCH-003
+      - when Owner clicks projectCardDeletePermanentlyButton, system shows deleteProjectPermanentlyModal; permanent deletion proceeds only if the user clicks deleteProjectPermanentlyModalDeleteProjectButton ('Delete project'); only an archived project may be permanently deleted
+      - permanent delete project — archive-time side effects (favourite removal, Explore removal when the project was published at archive, unpublish per tests/docs/requirements/original/project_overview_requirements_v1.yaml FR-PROJ-OV-003) already applied at archive per tests/docs/requirements/original/project_archive_requirements_v1.yaml FR-PROJ-ARCH-003; permanent delete does not re-apply link break, favourite removal, or Explore removal
+      - permanent delete project outcomes — after successful deleteProjectPermanentlyModal confirm, the project and all its child workflows are irrecoverable with no restore path; archived projectCard and archived workflowCards for workflows in that project no longer appear in 'My library' resultsRegion when archiveToggle is on (archived projects are not listed in non-archived library queries per FR-LIB-003); direct navigation to any route matching '/project/{id}/*' for that project or '/workflow/{id}/*' for child workflows that belonged to that project is not available
       - when user clicks deleteProjectPermanentlyModalCancelButton ('Cancel') in deleteProjectPermanentlyModal, system closes deleteProjectPermanentlyModal and returns the user to the same prior place without permanent deletion
       - on an archived workflowCard, Owner may use workflowCardRestoreButton or workflowCardDeletePermanentlyButton
-      - a child workflow cannot be restored without restoring its parent project; when Owner clicks workflowCardRestoreButton, system shows restoreParentProjectModal (FIGMA-LIB-RESTORE-WORKFLOW); when the user clicks restoreParentProjectModalRestoreProjectButton ('Restore project'), system restores the parent project and all its child workflows together with the same post-restore availability and metadata rules as a direct project restore
-      - when Owner clicks workflowCardDeletePermanentlyButton, system shows deleteWorkflowPermanentlyModal; permanent deletion of the workflow proceeds only after the user confirms via deleteWorkflowPermanentlyModalConfirmButton; this path is allowed even when the parent project is still archived
+      - a child workflow cannot be restored without restoring its parent project; when Owner clicks workflowCardRestoreButton, system shows restoreParentProjectModal (FIGMA-LIB-RESTORE-WORKFLOW); when the user clicks restoreParentProjectModalRestoreProjectButton ('Restore project'), system restores the parent project and all its child workflows together with the same post-restore availability and metadata rules as a direct project restore, including reinstatement of in-project linkedWorkflow associations per FR-PROJ-ARCH-003 when the parent project had been archived
+      - when Owner clicks workflowCardDeletePermanentlyButton, system shows deleteWorkflowPermanentlyModal; permanent deletion of the workflow proceeds only after the user confirms via deleteWorkflowPermanentlyModalConfirmButton; this path is allowed even when the parent project is still archived; only an archived workflow may be permanently deleted
+      - permanent delete workflow — archive-time side effects (linkedWorkflow break on parent nodes when individually archived per tests/docs/requirements/original/workflow_archive_requirements_v1.yaml FR-WF-ARCH-003, favourite removal, Explore removal when applicable) already applied at archive; permanent delete does not re-apply link break, favourite removal, or Explore removal
+      - permanent delete workflow outcomes — after successful deleteWorkflowPermanentlyModal confirm, the workflow is irrecoverable with no restore path; the archived workflowCard for that workflow no longer appears in 'My library' resultsRegion when archiveToggle is on or in any other listing query; when the parent project is not archived, the workflowCard no longer appears in projectWorkflowsView resultsRegion when archiveToggle is on per tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml FR-PROJ-WF-003; direct navigation to any route matching '/workflow/{id}/*' for that workflow id is not available
       - when typeFilter includes workflows, archived workflowCards follow the same browse restriction pattern as archived projects
+      - restoring an archived workflow that was archived individually per FR-WF-ARCH-003 while its parent project remained not archived does not re-establish linkedWorkflow associations on parent workflowNodes that lost their link on that single-workflow archive
+      - restoring an archived project per this FR reinstates in-project linkedWorkflow associations per FR-PROJ-ARCH-003
 
     roleBehavior:
       owner:
@@ -551,20 +466,26 @@ requirements:
         workflowCardDeletePermanentlyButton: notAvailable
 
     acceptanceCriteria:
-      - given projectCard or workflowCard represents an archived object on 'My library', card-body click and cardFavouriteToggle behavior conform to card_content_requirements_v1.yaml FR-CARD-006
+      - given projectCard or workflowCard represents an archived object, card-body click and cardFavouriteToggle behavior conform to card_content_requirements_v1.yaml FR-CARD-006
       - given an archived project as Owner, when user hovers projectCard, projectCardRestoreProjectButton ('Restore project') and projectCardDeletePermanentlyButton ('Delete permanently') are visible
       - given an archived project as Owner, after successful restore via projectCardRestoreProjectButton, the project and its child workflows appear again in the library when filters and search would list them, with unchanged project contributors and metadata relative to the archived state
+      - given course workflow C and activity workflow A in project P, node N on C linked to A, owner archived P and later restores P via projectCardRestoreProjectButton, when owner reopens C on the Workflow sub-view and selects N, N still links to A and workflowNodeLinkedWorkflowIndicator is rendered per FR-PROJ-ARCH-003 and FR-WF-NODE-001
       - given an archived project as Owner, when user clicks projectCardDeletePermanentlyButton, deleteProjectPermanentlyModal is shown and permanent removal occurs only after deleteProjectPermanentlyModalDeleteProjectButton ('Delete project') is clicked
+      - given archived project P and owner confirms deleteProjectPermanentlyModal, P and all child workflows are irrecoverable, archived projectCard for P no longer appears in 'My library' resultsRegion when archiveToggle is on, and routes matching '/project/{id}/*' for P are not available
       - given deleteProjectPermanentlyModal is open, when user clicks deleteProjectPermanentlyModalCancelButton ('Cancel'), modal closes and user is returned to the same prior place without permanent deletion
       - given an archived project as Editor, Viewer, or Commenter, projectCardRestoreProjectButton and projectCardDeletePermanentlyButton are not visible
       - given an archived workflow as Owner, when user hovers workflowCard, workflowCardRestoreButton ('Restore') and workflowCardDeletePermanentlyButton ('Delete permanently') are visible
       - given an archived workflow as Owner, workflowCardRestoreButton ('Restore') opens restoreParentProjectModal, and clicking restoreParentProjectModalRestoreProjectButton ('Restore project') restores the parent project and all child workflows
       - given an archived workflow as Owner, when user clicks workflowCardDeletePermanentlyButton, deleteWorkflowPermanentlyModal is shown and permanent removal follows only after deleteWorkflowPermanentlyModalConfirmButton is clicked
+      - given archived workflow W and owner confirms deleteWorkflowPermanentlyModal, W is irrecoverable with no restore path, archived workflowCard for W no longer appears in 'My library' resultsRegion when archiveToggle is on, and routes matching '/workflow/{id}/*' for W are not available
+      - given archived workflow W in non-archived parent project P and owner permanently deletes W, when owner opens '/project/{id}/workflows' for P with archiveToggle on, workflowCard for W is not in projectWorkflowsView resultsRegion
       - given an archived workflow whose parent project is also archived, Owner may still complete permanent workflow deletion via deleteWorkflowPermanentlyModal after confirmation
       - given projectCard or workflowCard represents an archived object as Owner, hover-revealed 'Restore' and 'Delete permanently' actions are available in addition to FR-CARD-006
       - given an archived workflow as Editor, Viewer, or Commenter, workflowCardRestoreButton and workflowCardDeletePermanentlyButton are not available when the same non-owner rules as for projects apply
+      - given course node N was linked to activity A, owner archived A individually per FR-WF-ARCH-003 while parent project P remained not archived, and owner later restores A via workflowCardRestoreButton per this FR, when owner reopens the parent course and selects N, N has no linked workflow per FR-WF-ARCH-003
 
-    openQuestions: []
+    openQuestions:
+      - Until dedicated not-found or access-denied handling for permanently deleted project and workflow routes is implemented, confirm interim mapping from API failure to ErrorView vs workspace access-denied screens.
 
 designEvidenceLinkTable:
   - key: FIGMA-LIB-DEFAULT

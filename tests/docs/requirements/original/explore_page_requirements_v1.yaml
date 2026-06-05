@@ -2,10 +2,11 @@
 # Source: tests/docs/__ARCHIVE/functional-requirements.md ('Explore' section)
 # Illustrative implementation paths (traceability only; not normative for behaviour, especially filters not yet built): react/src/components/pages/Library/Explore/index.tsx
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Cross-reference: tests/docs/requirements/original/main_navigation_requirements_v1.yaml (explore navigation); tests/docs/requirements/original/library_page_requirements_v1.yaml (shared library search experience—typeFilter matches FR-LIB-003: Unset, committed 'Projects', or committed 'Workflows' only, with no 'All types' row ('Explore' first land leaves typeFilter Unset; 'My library' first land commits 'Projects' per FR-LIB-001); keywordSearchField, sortControl, workflowTypeFilter, favouritesToggle, templatesToggle, resultsSummary, resultsRegion, pagination—same interaction patterns as FR-LIB-002 through FR-LIB-005, including sort options and behaviour per FR-LIB-002; default list order before explicit sort is most recently modified, same as FR-LIB-002; 'Explore' only: disciplineFilter); tests/docs/requirements/original/project_create_edit_form_requirements_v1.yaml (createProjectDialog, projectForm, projectDisciplineField—disciplineFilter option catalogue aligns with projectDisciplineField); tests/docs/requirements/original/card_content_requirements_v1.yaml (projectCard and workflowCard — FR-CARD-001 through FR-CARD-006 as applicable)
+# Cross-reference: tests/docs/requirements/original/main_navigation_requirements_v1.yaml (explore navigation); tests/docs/requirements/original/library_page_requirements_v1.yaml (shared library search experience—typeFilter and workflowTypeFilter per FR-LIB-003; templatesToggle uiObject canonical here, behaviour per FR-EXP-005; keywordSearchField, sortControl, favouritesToggle, resultsSummary, resultsRegion, pagination—shared patterns with FR-LIB-002 through FR-LIB-004 where cross-referenced per FR; pagination per FR-LIB-001; default list order before explicit sort is most recently modified, same as FR-LIB-002; 'Explore' only: disciplineFilter); tests/docs/requirements/original/project_overview_requirements_v1.yaml (FR-PROJ-OV-003 — publish state and 'Explore' catalog eligibility); tests/docs/requirements/original/project_create_form_requirements_v1.yaml (createProjectDialog, projectForm, projectDisciplineField—disciplineFilter option catalogue aligns with projectDisciplineField); tests/docs/requirements/original/card_content_requirements_v1.yaml (projectCard and workflowCard — FR-CARD-001 through FR-CARD-006 as applicable)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
+  - explorePage base query scope is limited to published, non-archived projects and workflows per FR-EXP-001; publish state is defined in tests/docs/requirements/original/project_overview_requirements_v1.yaml FR-PROJ-OV-003
 
 uiObjectDefinitions:
   explorePage:
@@ -17,7 +18,7 @@ uiObjectDefinitions:
   sortResetButton:
     meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   disciplineFilter:
-    meaning: Multiselect discipline filter on the Explore filter toolbar.
+    meaning: Multiselect discipline filter on the Explore filter toolbar; selectable options are the fixed discipline catalogue per FR-PROJ-FORM-001 in tests/docs/requirements/original/project_create_form_requirements_v1.yaml, ordered alphabetically from A to Z
   disciplineFilterSearchField:
     meaning: Search field inside the disciplineFilter popover.
   disciplineFilterAllOption:
@@ -37,7 +38,7 @@ uiObjectDefinitions:
   favouritesToggle:
     meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   templatesToggle:
-    meaning: Templates boolean filter toggle on exploreFilterToolbar.
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   keywordSearchField:
     meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   keywordSearchClearButton:
@@ -61,100 +62,42 @@ uiObjectDefinitions:
   paginationFirstLastButton:
     meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   exploreLoadingState:
-    meaning: Loading placeholders shown while the library objects search query is in flight.
+    meaning: Loading placeholders shown in resultsRegion while the listing query is in flight on explorePage.
   exploreEmptyState:
-    meaning: Empty state shown on explorePage when the search returns zero matching objects.
+    meaning: Empty-state view shown in resultsRegion when the listing query returns zero projectCard and workflowCard instances on explorePage; copy per designEvidence on FR-EXP-001.
   exploreErrorState:
-    meaning: Error state when the library objects search query fails.
+    meaning: Error-state view shown in resultsRegion when the listing query fails on explorePage; copy per designEvidence on FR-EXP-001.
 
 locatorMappings:
-  explorePage:
-    strategy: "URL pathname /explore"
-    confidence: confirmed
-  exploreFilterToolbar:
-    strategy: null
-    confidence: unresolved
-  sortControl:
-    strategy: "{exploreFilterToolbar} control showing label 'Sort', 'A - Z', or 'Date created'"
-    confidence: inferred
-  sortResetButton:
-    strategy: "{sortControl} button[aria-label='close'] or icon-only clear control adjacent to active sort label"
-    confidence: inferred
-  disciplineFilter:
-    strategy: "{exploreFilterToolbar} multiselect with placeholder 'Discipline'"
-    confidence: inferred
-  disciplineFilterSearchField:
-    strategy: "{disciplineFilter} popover TextField labeled 'Find discipline'"
-    confidence: inferred
-  disciplineFilterAllOption:
-    strategy: "{disciplineFilter} popover footer button with label 'All'"
-    confidence: confirmed
-  disciplineFilterNoneOption:
-    strategy: "{disciplineFilter} popover footer button with label 'None'"
-    confidence: inferred
-  disciplineFilterSelectionIndicator:
-    strategy: "{disciplineFilter} trigger button circular counter span (StyledCounter) showing selected count when count is at least one"
-    confidence: confirmed
-  typeFilter:
-    strategy: "{exploreFilterToolbar} single-select filter showing label 'Type' or committed type label 'Projects' or 'Workflows'"
-    confidence: inferred
-  typeFilterResetButton:
-    strategy: "{typeFilter} button[aria-label='close'] or icon-only clear control when non-default type scope is active per design"
-    confidence: inferred
-  workflowTypeFilter:
-    strategy: "{exploreFilterToolbar} multiselect filter for workflow program types; present only when typeFilter is committed to 'Workflows' or is Unset (no committed 'Projects' or 'Workflows') (same rule as 'My library' FR-LIB-003)"
-    confidence: inferred
-  workflowTypeFilterSelectionIndicator:
-    strategy: "{workflowTypeFilter} top-right count badge showing selected workflow-type count when count is at least one"
-    confidence: inferred
-  favouritesToggle:
-    strategy: "{exploreFilterToolbar} toggle or chip for favourites filter state"
-    confidence: inferred
-  templatesToggle:
-    strategy: "{exploreFilterToolbar} toggle labeled 'Templates'"
-    confidence: inferred
-  keywordSearchField:
-    strategy: "{exploreFilterToolbar} inline text field on the right for keyword search (not an overlay)"
-    confidence: inferred
-  keywordSearchClearButton:
-    strategy: "{keywordSearchField} right-side icon button shown when input is non-empty"
-    confidence: inferred
-  resultsSummary:
-    strategy: null
-    confidence: unresolved
-  resultsRegion:
-    strategy: "main 'Explore' listing grid; always exactly two cards per row, at most five rows (10 cards) per page (same grid pattern as 'My library' resultsRegion)"
-    confidence: inferred
-  projectCard:
-    strategy: "{resultsRegion} project card (project scope)"
-    confidence: inferred
-  workflowCard:
-    strategy: "{resultsRegion} workflow card (workflow scope); when templatesToggle constrains listing to templates, template workflows are still represented as workflowCard with cardTemplateChip per FR-CARD-002"
-    confidence: inferred
-  cardTemplateChip:
-    strategy: "{workflowCard} chip with text 'Template' on template workflow rows"
-    confidence: inferred
-  pagination:
-    strategy: null
-    confidence: unresolved
-  paginationPageNumberButton:
-    strategy: "{pagination} clickable numeric page item"
-    confidence: inferred
-  paginationPreviousNextButton:
-    strategy: "{pagination} single-arrow previous/next control"
-    confidence: inferred
-  paginationFirstLastButton:
-    strategy: "{pagination} double-arrow first/last control"
-    confidence: inferred
-  exploreLoadingState:
-    strategy: null
-    confidence: unresolved
-  exploreEmptyState:
-    strategy: null
-    confidence: unresolved
-  exploreErrorState:
-    strategy: null
-    confidence: unresolved
+  explorePage: "canonical_locators.yaml -> explorePage"
+  exploreFilterToolbar: "canonical_locators.yaml -> exploreFilterToolbar"
+  sortControl: "canonical_locators.yaml -> sortControl"
+  sortResetButton: "canonical_locators.yaml -> sortResetButton"
+  disciplineFilter: "canonical_locators.yaml -> disciplineFilter"
+  disciplineFilterSearchField: "canonical_locators.yaml -> disciplineFilterSearchField"
+  disciplineFilterAllOption: "canonical_locators.yaml -> disciplineFilterAllOption"
+  disciplineFilterNoneOption: "canonical_locators.yaml -> disciplineFilterNoneOption"
+  disciplineFilterSelectionIndicator: "canonical_locators.yaml -> disciplineFilterSelectionIndicator"
+  typeFilter: "canonical_locators.yaml -> typeFilter"
+  typeFilterResetButton: "canonical_locators.yaml -> typeFilterResetButton"
+  workflowTypeFilter: "canonical_locators.yaml -> workflowTypeFilter"
+  workflowTypeFilterSelectionIndicator: "canonical_locators.yaml -> workflowTypeFilterSelectionIndicator"
+  favouritesToggle: "canonical_locators.yaml -> favouritesToggle"
+  templatesToggle: "canonical_locators.yaml -> templatesToggle"
+  keywordSearchField: "canonical_locators.yaml -> keywordSearchField"
+  keywordSearchClearButton: "canonical_locators.yaml -> keywordSearchClearButton"
+  resultsSummary: "canonical_locators.yaml -> resultsSummary"
+  resultsRegion: "canonical_locators.yaml -> resultsRegion"
+  projectCard: "canonical_locators.yaml -> projectCard"
+  workflowCard: "canonical_locators.yaml -> workflowCard"
+  cardTemplateChip: "canonical_locators.yaml -> cardTemplateChip"
+  pagination: "canonical_locators.yaml -> pagination"
+  paginationPageNumberButton: "canonical_locators.yaml -> paginationPageNumberButton"
+  paginationPreviousNextButton: "canonical_locators.yaml -> paginationPreviousNextButton"
+  paginationFirstLastButton: "canonical_locators.yaml -> paginationFirstLastButton"
+  exploreLoadingState: "canonical_locators.yaml -> exploreLoadingState"
+  exploreEmptyState: "canonical_locators.yaml -> exploreEmptyState"
+  exploreErrorState: "canonical_locators.yaml -> exploreErrorState"
 
 requirements:
   - id: FR-EXP-001
@@ -163,6 +106,7 @@ requirements:
     designEvidence:
       - FIGMA-EXPLORE-DEFAULT
       - FIGMA-EXPLORE-ERROR
+      - FIGMA-EXPLORE-SELECTED-FILTER-TEMPLATE
 
     actors:
       - user
@@ -173,6 +117,9 @@ requirements:
       - resultsSummary
       - resultsRegion
       - pagination
+      - paginationPageNumberButton
+      - paginationPreviousNextButton
+      - paginationFirstLastButton
       - projectCard
       - workflowCard
       - exploreLoadingState
@@ -185,40 +132,46 @@ requirements:
 
     trigger:
       - user navigates to explorePage
+      - library objects search query state changes or user interacts with pagination controls
 
     mainFlow:
+      - explorePage base query scope is limited to published, non-archived projects and workflows per FR-PROJ-OV-003; child workflows inherit parent project publish state
+      - toolbar filters in FR-EXP-002 through FR-EXP-006 apply subtractively within this base scope only
       - system renders explorePage with vertical order exploreFilterToolbar, then resultsSummary, then resultsRegion (same stacking contract as 'My library' FR-LIB-001)
       - projects and workflows marked as published are listed in resultsRegion
       - when resultsRegion is not empty, resultsSummary shows a count summary (e.g. 'Showing X of XX results') consistent with the total matching published objects and current page (same behavior as 'My library' FR-LIB-001)
       - disciplineFilter, typeFilter, workflowTypeFilter (when visible), favouritesToggle, and templatesToggle are cumulative (subtractive / AND semantics): when multiple filters are active, results include only items that satisfy all active filters simultaneously (same combined filter rule as 'My library' FR-LIB-003)
-      - by default, rows in resultsRegion are ordered by most recently modified
+      - default sort on explorePage conforms to FR-EXP-002
       - resultsRegion shows at most 10 projectCard and/or workflowCard instances for the current page
-      - when total matching published projects and workflows are 11 or more, system shows pagination below resultsRegion (or per layout rules)
+      - when total matching published projects and workflows are 11 or more, system shows pagination below resultsRegion
       - when total matching published projects and workflows are 10 or fewer, system does not show pagination
       - while library objects search query is loading, system shows exploreLoadingState in resultsRegion
       - when search returns published items for the current page, system renders one projectCard or workflowCard per item shown in resultsRegion (up to 10)
-      - primary click navigation for project rows follows FR-CARD-003 and for workflow rows follows FR-CARD-004
+      - primary click navigation for projectCard instances follows FR-CARD-003 and for workflowCard instances follows FR-CARD-004
       - when search returns zero matching published items, system shows exploreEmptyState in resultsRegion
       - when library objects search query fails, system shows exploreErrorState in resultsRegion
+      - when user selects a page or uses paginationPageNumberButton, paginationPreviousNextButton, or paginationFirstLastButton, system loads that page of results into resultsRegion per backend contract; resultsSummary reflects the current range when applicable (same pattern as 'My library' FR-LIB-001)
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given user navigates to pathname /explore, explorePage is rendered with exploreFilterToolbar, resultsSummary, and resultsRegion in vertical order (same pattern as 'My library' FR-LIB-001)
-      - given first land on /explore with no keyword entered and at least one visible published project or workflow, resultsSummary is visible and reflects result counts for the default query state
-      - given first land on /explore, typeFilter is Unset (placeholder 'Type') and workflowTypeFilter is visible
+      - given explorePage is rendered, exploreFilterToolbar, resultsSummary, and resultsRegion are in vertical order (same pattern as 'My library' FR-LIB-001)
+      - given first land with no keyword entered and at least one visible published project or workflow, resultsSummary is visible and reflects result counts for the default query state
+      - given first land, typeFilter is Unset (placeholder 'Type') and workflowTypeFilter is visible
       - given successful search, resultsRegion lists only published projects and workflows
-      - given more than one of disciplineFilter, typeFilter, workflowTypeFilter (when active), favouritesToggle, and templatesToggle constrains the query, resultsRegion contains only cards that match every active filter constraint
+      - given more than one of disciplineFilter, typeFilter, workflowTypeFilter (when active), favouritesToggle, and templatesToggle constrains the query, resultsRegion contains only projectCard and workflowCard instances that match every active filter constraint
       - given successful search with at least one result, at least one projectCard or workflowCard is visible and at most 10 projectCard or workflowCard instances appear in resultsRegion
       - given 11 or more matching published projects and workflows, pagination is visible
       - given at most 10 matching published projects and workflows, pagination is not visible
+      - given library objects search query is loading, exploreLoadingState is visible in resultsRegion
       - given successful search with zero matching items, exploreEmptyState is visible
       - given failed library objects search, exploreErrorState is visible
-      - given successful search with at least one result row, projectCard and workflowCard in resultsRegion conform to card_content_requirements_v1.yaml
-      - given user has not applied a non-default sort via sortControl, rows in resultsRegion appear in most recently modified order (same default as 'My library' FR-LIB-002)
+      - given successful search with at least one result, projectCard and workflowCard instances in resultsRegion conform to card_content_requirements_v1.yaml
+      - given user selects a different paginationPageNumberButton, resultsRegion updates to show up to 10 projectCard or workflowCard instances for that page per backend contract
+      - given pagination is visible, paginationPreviousNextButton and paginationFirstLastButton behave as on 'My library' (FR-LIB-001)
+      - given user selects a different page, resultsSummary reflects the current range (e.g. 'Showing X of XX results') per product rules (same pattern as 'My library' FR-LIB-001)
 
-    openQuestions:
-      - Confirm filter and sort query contract with the backend before acceptance tests treat the API as authoritative.
+    openQuestions: []
 
   - id: FR-EXP-002
     title: Sort on 'Explore' (same as 'My library', FR-LIB-002)
@@ -244,13 +197,15 @@ requirements:
       - user interacts with sortControl or sortResetButton
 
     mainFlow:
-      - sortControl behaviour conforms to library_page_requirements_v1.yaml FR-LIB-002 on explorePage resultsRegion
+      - sortControl behaviour conforms to library_page_requirements_v1.yaml FR-LIB-002 on explorePage resultsRegion, except default and reset sort apply to projectCard and workflowCard instances in resultsRegion per explorePage base query scope and active typeFilter (first land typeFilter is Unset per FR-EXP-001)
       - when user changes sortControl or sortResetButton on explorePage, listing resets to the first results page
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given explorePage is rendered, sortControl behaviour conforms to FR-LIB-002
+      - given explorePage is rendered, sortControl offers the same options and toggle/reset interaction as FR-LIB-002
+      - given user lands with no prior sort selection in session, projectCard and workflowCard instances in resultsRegion are ordered by most recently modified (first land typeFilter is Unset per FR-EXP-001)
+      - given user clicks sortResetButton, sort returns to most recently modified ordering for projectCard and workflowCard instances in resultsRegion per current typeFilter scope and sortControl shows label 'Sort'
 
     openQuestions: []
 
@@ -281,7 +236,7 @@ requirements:
       - user opens disciplineFilter and uses search, 'All', 'None', or individual discipline checkboxes, then closes or applies the selection
 
     mainFlow:
-      - user can restrict results to one or more disciplines; discipline options use the same catalogue as projectDisciplineField on projectForm in createProjectDialog (see project_create_edit_form_requirements_v1.yaml; dynamic catalogue from application context)
+      - user can restrict results to one or more disciplines; disciplineFilter selectable options match the fixed discipline catalogue per FR-PROJ-FORM-001 in tests/docs/requirements/original/project_create_form_requirements_v1.yaml, ordered alphabetically from A to Z
       - when a discipline row has no matching results in the current query context, that row's checkbox is read-only and cannot be clicked (same read-only zero-result rule as workflowTypeFilter per FR-LIB-003)
       - when more than one discipline is selected, discipline matching is additive (OR): a row is eligible if it matches any selected discipline
       - disciplineFilterSearchField lets the user type to narrow which disciplines appear in the checklist (label match)
@@ -295,6 +250,7 @@ requirements:
     roleBehavior: {}
 
     acceptanceCriteria:
+      - given user opens disciplineFilter, selectable discipline options match projectDisciplineField selectable options per FR-PROJ-FORM-001 in tests/docs/requirements/original/project_create_form_requirements_v1.yaml
       - given user opens disciplineFilter, disciplineFilterSearchField is available with 'Find discipline' (or equivalent) as the field label per design
       - given user types in disciplineFilterSearchField, only disciplines whose labels match the search term are shown in the checklist
       - given user chooses disciplineFilterAllOption, every selectable discipline currently visible in the popover checklist becomes selected, and no discipline hidden by disciplineFilterSearchField is selected solely because of 'All'; read-only disciplines with zero matching results stay unselected
@@ -303,8 +259,8 @@ requirements:
       - given user selects one or more disciplines, disciplineFilterSelectionIndicator is visible on the filter trigger, displays the count of selected disciplines in a grey badge
       - given no disciplines are selected, disciplineFilterSelectionIndicator is not visible
       - given user selects disciplines, resultsRegion reflects the constrained result set when backend returns matches
-      - given user selects two or more disciplines, resultsRegion includes cards matching discipline A or discipline B (or any other selected discipline)
-      - given user selects disciplines while other toolbar filters are active, resultsRegion includes only cards that match at least one selected discipline and also satisfy every other active filter
+      - given user selects two or more disciplines, resultsRegion includes projectCard and workflowCard instances matching discipline A or discipline B (or any other selected discipline)
+      - given user selects disciplines while other toolbar filters are active, resultsRegion includes only projectCard and workflowCard instances that match at least one selected discipline and satisfy every other active filter
       - given user clears all discipline selections (including via 'None'), discipline filter does not constrain by discipline (no discipline constraint in the reduced search request when none are selected)
 
     openQuestions: []
@@ -347,10 +303,10 @@ requirements:
       - given typeFilter is unset (initial state or after reset), resultsRegion includes both published projects and published workflows in scope when other filters allow
       - given typeFilter is committed to 'Projects' only, workflowTypeFilter is not visible
       - given user selects a type scope, resultsRegion reflects that constraint per backend contract for published objects
-      - given user clears type via typeFilterResetButton when shown, typeFilter returns to Unset on 'Explore' (both published projects and workflows in scope when other filters allow)
-      - given user applies typeFilter and workflowTypeFilter while other filters are active, resultsRegion includes only cards that satisfy every active filter
+      - given user clears type via typeFilterResetButton when shown, typeFilter returns to Unset (both published projects and workflows in scope when other filters allow)
+      - given user applies typeFilter and workflowTypeFilter while other filters are active, resultsRegion includes only projectCard and workflowCard instances that satisfy every active filter
 
-    openQuestions:
+    openQuestions: []
 
   - id: FR-EXP-005
     title: Templates and favourites toggles (boolean)
@@ -379,24 +335,25 @@ requirements:
       - user toggles templatesToggle or favouritesToggle on or off
 
     mainFlow:
-      - favouritesToggle and templatesToggle behaviour conform to library_page_requirements_v1.yaml FR-LIB-003 on exploreFilterToolbar
-      - when templatesToggle is active, every card in resultsRegion is projectCard or workflowCard per card_content_requirements_v1.yaml, depending on typeFilter scope
+      - favouritesToggle is boolean; first click turns it on and restricts resultsRegion to favourited projectCard and workflowCard instances within explorePage base query scope per FR-EXP-001; second click turns it off and removes that constraint
+      - templatesToggle is boolean; first click turns it on and restricts resultsRegion to template projectCard and workflowCard instances only (template workflows show cardTemplateChip per card_content_requirements_v1.yaml FR-CARD-002); second click turns it off and removes that constraint
+      - when templatesToggle is active, every projectCard and workflowCard instance in resultsRegion conforms to card_content_requirements_v1.yaml per typeFilter scope
       - when disciplineFilter, typeFilter, workflowTypeFilter (when visible), and the other boolean toggle are active, each boolean filter is subtractive with all other active filters (intersection)
       - toggling either control resets listing to the first results page
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given explorePage is rendered, favouritesToggle and templatesToggle behaviour conform to FR-LIB-003
-      - given templatesToggle is active and typeFilter is committed to 'Projects' only, every card in resultsRegion is a projectCard conforming to card_content_requirements_v1.yaml
-      - given templatesToggle is active and typeFilter is committed to 'Workflows' only, every card in resultsRegion is a workflowCard
-      - given templatesToggle is active and typeFilter is Unset, every card in resultsRegion is either projectCard or workflowCard
-      - given templatesToggle is inactive, resultsRegion lists projectCard and/or workflowCard items per typeFilter and object data
-      - given templatesToggle is active while other toolbar filters are active, resultsRegion includes only cards that satisfy the template constraint plus every other active filter
-      - given favouritesToggle is active while other toolbar filters are active, resultsRegion includes only cards that are favourites and satisfy every other active filter
+      - given user clicks favouritesToggle once, the favourites filter is active within explorePage base query scope; given user clicks favouritesToggle again, the favourites filter is inactive
+      - given user clicks templatesToggle once, the templates filter is active; given user clicks templatesToggle again, the templates filter is inactive
+      - given templatesToggle is active and typeFilter is committed to 'Projects' only, every projectCard in resultsRegion conforms to card_content_requirements_v1.yaml
+      - given templatesToggle is active and typeFilter is committed to 'Workflows' only, every instance in resultsRegion is a workflowCard
+      - given templatesToggle is active and typeFilter is Unset, every instance in resultsRegion is a projectCard or workflowCard
+      - given templatesToggle is inactive, resultsRegion includes projectCard and/or workflowCard instances per typeFilter and object data
+      - given templatesToggle is active while other toolbar filters are active, resultsRegion includes only projectCard and workflowCard instances that satisfy the template constraint and every other active filter
+      - given favouritesToggle is active while other toolbar filters are active, resultsRegion includes only favourited projectCard and workflowCard instances that satisfy every other active filter
 
-    openQuestions:
-      - Confirm mapping of toggle off state to API filter (`isTemplate` / undefined) vs explicit false if required by backend.
+    openQuestions: []
 
   - id: FR-EXP-006
     title: Keyword search (project and workflow titles)
@@ -423,55 +380,18 @@ requirements:
     mainFlow:
       - keywordSearchField is inline within exploreFilterToolbar (same toolbar row as other filters per design), not an overlay surface
       - Same contract as keyword search on 'My library' (FR-LIB-004)—keyword search matches project and workflow titles only; results narrow as user types; keywordSearchClearButton clears the field and removes keyword constraint
-      - resultsRegion lists matching projectCard and workflowCard items only, up to 10 per page with pager when 11 or more total matches (same paging rule as 'My library' FR-LIB-005)
+      - keyword and toolbar filter constraints combine on explorePage; both apply subtractively to resultsRegion within explorePage base query scope per FR-EXP-001
+      - resultsRegion lists matching projectCard and workflowCard items only, up to 10 per page with pager when 11 or more total matches (same paging rule as 'My library' FR-LIB-001)
       - when keyword search changes, system resets listing to the first results page
 
     roleBehavior: {}
 
     acceptanceCriteria:
       - given explorePage is rendered, keywordSearchField is inline within exploreFilterToolbar (not an overlay)
-      - given keyword matches a published project or workflow title, matching row appears in resultsRegion when other filters allow it
+      - given keyword matches a published project or workflow title, a matching projectCard or workflowCard instance appears in resultsRegion when other filters allow it
       - given keywordSearchField is non-empty, keywordSearchClearButton is visible; given user clicks it, field clears and keyword filter is removed
-
-    openQuestions: []
-
-  - id: FR-EXP-007
-    title: Pagination on 'Explore'
-
-    designEvidence:
-      - FIGMA-EXPLORE-DEFAULT
-      - FIGMA-EXPLORE-SELECTED-FILTER-TEMPLATE
-
-    actors:
-      - user
-
-    uiObjects:
-      - explorePage
-      - pagination
-      - paginationPageNumberButton
-      - paginationPreviousNextButton
-      - paginationFirstLastButton
-      - resultsRegion
-      - projectCard
-      - workflowCard
-
-    preconditions:
-      - explorePage is rendered
-      - total matching published projects and workflows are 11 or more (pager applies; 10 items per page)
-
-    trigger:
-      - user changes page via pagination (page number, previous/next, or first/last)
-
-    mainFlow:
-      - Same paging behavior as pagination on 'My library' (FR-LIB-005)—each page shows at most 10 projectCard and/or workflowCard instances in resultsRegion
-      - when user selects a page or uses paginationPreviousNextButton or paginationFirstLastButton, system loads that page of results into resultsRegion per backend contract; if resultsSummary is present per design, it reflects the current range for the query (same pattern as 'My library' FR-LIB-005)
-
-    roleBehavior: {}
-
-    acceptanceCriteria:
-      - given 11 or more matching published projects and workflows, pagination is visible
-      - given user selects a different paginationPageNumberButton, resultsRegion updates to show up to 10 items for that page per backend contract
-      - given pagination is visible, paginationPreviousNextButton and paginationFirstLastButton behave as on 'My library' (FR-LIB-005)
+      - given user applies one or more filters and types in keywordSearchField, keyword and filter constraints both apply to resultsRegion
+      - given user types in keywordSearchField and then changes filters, keyword and filter constraints both apply to resultsRegion
 
     openQuestions: []
 

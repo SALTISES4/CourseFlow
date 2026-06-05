@@ -1,0 +1,228 @@
+# Normalized requirements: edit project form (modal)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Project metadata)
+# Application code: shared ProjectForm in create and edit project dialogs (current implementation)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference:
+#   - tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (editPencilButton on project routes—FR-CAB-001 through FR-CAB-003)
+#   - tests/docs/requirements/original/project_create_form_requirements_v1.yaml (shared projectForm, projectTitleField, projectDescriptionField, projectDisciplineField, projectFormCancelButton, and projectFormFieldValidationMessage; inline title validation rules and message copy in FR-PROJ-FORM-004; editProjectFormDialogTitle, editProjectFormSubmitButton, and edit-scoped validation enablement in FR-PROJ-FORM-007 owned in this file)
+#   - tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml (parallel edit dialog pattern for workflows—FR-WF-FORM-001)
+#   - tests/docs/requirements/original/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-001)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the project on any route matching '/project/{id}/*', or (b) user (published-access, no explicit contributor role) viewing a project that is published
+  - routes matching '/project/{id}/*' include '/project/{id}' (empty suffix) and '/project/{id}/<sub-view>' for any sub-view
+  - requirements in this file assume the above hold; when they do not, assert per tests/docs/requirements/original/workspace_access_requirements_v1.yaml FR-WS-ACCESS-001
+
+uiObjectDefinitions:
+  editPencilButton:
+    meaning: Canonical definition in tests/docs/requirements/original/context_action_bar_requirements_v1.yaml.
+  editProjectDialog:
+    meaning: Modal dialog for editing an existing project.
+  projectForm:
+    meaning: Canonical definition in tests/docs/requirements/original/project_create_form_requirements_v1.yaml.
+  editProjectFormDialogTitle:
+    meaning: Dialog title on editProjectDialog.
+  projectTitleField:
+    meaning: Canonical definition in tests/docs/requirements/original/project_create_form_requirements_v1.yaml.
+  projectDescriptionField:
+    meaning: Canonical definition in tests/docs/requirements/original/project_create_form_requirements_v1.yaml.
+  projectDisciplineField:
+    meaning: Canonical definition in tests/docs/requirements/original/project_create_form_requirements_v1.yaml.
+  projectFormCancelButton:
+    meaning: Canonical definition in tests/docs/requirements/original/project_create_form_requirements_v1.yaml.
+  projectFormFieldValidationMessage:
+    meaning: Canonical definition in tests/docs/requirements/original/project_create_form_requirements_v1.yaml.
+  editProjectFormSubmitButton:
+    meaning: Primary submit action on projectForm in editProjectDialog.
+  projectTitle:
+    meaning: Canonical definition in tests/docs/requirements/original/project_header_requirements_v1.yaml.
+  globalMessageSnackbar:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_header_requirements_v1.yaml.
+
+locatorMappings:
+  editPencilButton: "canonical_locators.yaml -> editPencilButton"
+  editProjectDialog: "canonical_locators.yaml -> editProjectDialog"
+  projectForm: "canonical_locators.yaml -> projectForm"
+  editProjectFormDialogTitle: "canonical_locators.yaml -> editProjectFormDialogTitle"
+  projectTitleField: "canonical_locators.yaml -> projectTitleField"
+  projectDescriptionField: "canonical_locators.yaml -> projectDescriptionField"
+  projectDisciplineField: "canonical_locators.yaml -> projectDisciplineField"
+  projectFormCancelButton: "canonical_locators.yaml -> projectFormCancelButton"
+  projectFormFieldValidationMessage: "canonical_locators.yaml -> projectFormFieldValidationMessage"
+  editProjectFormSubmitButton: "canonical_locators.yaml -> editProjectFormSubmitButton"
+  projectTitle: "canonical_locators.yaml -> projectTitle"
+  globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
+
+requirements:
+  - id: FR-PROJ-FORM-003
+    title: Edit project dialog layout and prefilled fields
+
+    designEvidence:
+      - FIGMA-PROJ-EDIT
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - editPencilButton
+      - editProjectDialog
+      - projectForm
+      - editProjectFormDialogTitle
+      - projectTitleField
+      - projectDescriptionField
+      - projectDisciplineField
+      - projectFormCancelButton
+      - editProjectFormSubmitButton
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - FR-CAB-002 preconditions hold per tests/docs/requirements/original/context_action_bar_requirements_v1.yaml
+      - project being edited already exists
+      - current route matches route pattern '/project/{id}' or route pattern '/project/{id}/workflows'
+      - user is viewing that project in the main content area
+
+    trigger:
+      - user clicks editPencilButton on contextActionBar
+      - user clicks projectFormCancelButton while editProjectDialog is open
+
+    mainFlow:
+      - editPencilButton actionability conforms to roleBehavior for this FR
+      - given actor is owner or editor and clicks editPencilButton, system opens editProjectDialog
+      - editProjectDialog presents projectForm with editProjectFormDialogTitle 'Edit project'
+      - projectTitleField, projectDescriptionField, and projectDisciplineField are prefilled from loaded project data
+      - projectDisciplineField selectable options conform to FR-PROJ-FORM-001 per tests/docs/requirements/original/project_create_form_requirements_v1.yaml
+      - editProjectFormSubmitButton with label 'Update project'
+      - given editProjectDialog is open with prefilled values and no field has been changed from those values, editProjectFormSubmitButton is disabled and not clickable
+      - editProjectFormSubmitButton enablement after field changes follows FR-PROJ-FORM-007
+      - given user clicks projectFormCancelButton while editProjectDialog is open, cancel behavior conforms to acceptanceCriteria for this FR
+
+    roleBehavior:
+      owner:
+        editPencilButton: available
+      editor:
+        editPencilButton: available
+      viewer:
+        editPencilButton: disabled
+      commenter:
+        editPencilButton: disabled
+      user:
+        editPencilButton: disabled
+
+    acceptanceCriteria:
+      - given actor is owner or editor, editPencilButton is clickable and actor can open editProjectDialog via trigger
+      - given editPencilButton actionability is disabled per roleBehavior for this FR, editProjectDialog does not open when actor attempts to click editPencilButton
+      - given actor is owner or editor and FR-PROJ-FORM-003 preconditions hold and trigger fires, editProjectDialog is open
+      - editProjectFormDialogTitle matches 'Edit project'
+      - editProjectFormSubmitButton is visible with label 'Update project'
+      - projectTitleField, projectDescriptionField, and projectDisciplineField show values from the project being edited after load
+      - projectDisciplineField selectable options conform to FR-PROJ-FORM-001 per tests/docs/requirements/original/project_create_form_requirements_v1.yaml
+      - given editProjectDialog is open with prefilled values and no field has been changed from those values, editProjectFormSubmitButton is disabled and not clickable
+      - editProjectFormSubmitButton enablement after field changes conforms to FR-PROJ-FORM-007
+      - given user clicks projectFormCancelButton while editProjectDialog is open with no field changes from loaded values, editProjectDialog closes, current route is unchanged from immediately before opening editProjectDialog, and projectTitleField, projectDescriptionField, and projectDisciplineField on the project being edited are unchanged from immediately before opening editProjectDialog
+      - given user clicks projectFormCancelButton while editProjectDialog is open after changing projectForm fields from loaded values, editProjectDialog closes and projectTitleField, projectDescriptionField, and projectDisciplineField on the project being edited are unchanged from immediately before opening editProjectDialog
+      - given user clicks projectFormCancelButton while editProjectDialog is open after changing projectForm fields from loaded values, then opens editProjectDialog again via editPencilButton, projectTitleField, projectDescriptionField, and projectDisciplineField show values from the project being edited unchanged from immediately before the cancelled edit attempt
+
+    openQuestions: []
+
+  - id: FR-PROJ-FORM-007
+    title: Edit project form inline title validation
+
+    designEvidence:
+      - FIGMA-PROJ-EDIT
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - editProjectDialog
+      - projectForm
+      - projectTitleField
+      - projectDescriptionField
+      - projectDisciplineField
+      - projectFormFieldValidationMessage
+      - editProjectFormSubmitButton
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - projectForm is visible
+      - editProjectDialog is open per FR-PROJ-FORM-003
+
+    trigger:
+      - user edits projectTitleField, projectDescriptionField, or projectDisciplineField
+
+    mainFlow:
+      - projectTitleField inline validation rules, message copy, and optional-field rules for projectDescriptionField and projectDisciplineField follow FR-PROJ-FORM-004 per tests/docs/requirements/original/project_create_form_requirements_v1.yaml
+      - editProjectFormSubmitButton stays disabled and not clickable until projectTitleField satisfies FR-PROJ-FORM-004 title rules and user has changed at least one field from loaded values per FR-PROJ-FORM-003
+      - editProjectDialog remains open while projectFormFieldValidationMessage is visible for projectTitleField validation errors
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - title, description, and discipline validation behavior conforms to FR-PROJ-FORM-004 per tests/docs/requirements/original/project_create_form_requirements_v1.yaml
+      - given user has changed at least one field from loaded values and projectTitleField satisfies FR-PROJ-FORM-004 title rules, editProjectFormSubmitButton is enabled and clickable
+      - given projectFormFieldValidationMessage is visible for projectTitleField, editProjectDialog remains open
+
+    openQuestions: []
+
+  - id: FR-PROJ-FORM-006
+    title: Edit project save behavior and feedback
+
+    designEvidence:
+      - FIGMA-PROJ-EDIT
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - editProjectDialog
+      - projectForm
+      - projectTitleField
+      - projectDescriptionField
+      - projectDisciplineField
+      - editProjectFormSubmitButton
+      - projectTitle
+      - globalMessageSnackbar
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - project being edited already exists
+      - editProjectDialog is open per FR-PROJ-FORM-003
+      - projectForm is visible
+      - projectTitleField, projectDescriptionField, and projectDisciplineField show values from the project being edited per FR-PROJ-FORM-003
+      - editProjectFormSubmitButton is enabled and clickable per FR-PROJ-FORM-003 and FR-PROJ-FORM-007
+      - projectForm satisfies inline title validation rules per FR-PROJ-FORM-007
+
+    trigger:
+      - user clicks editProjectFormSubmitButton
+
+    mainFlow:
+      - given user clicks editProjectFormSubmitButton and edit submit succeeds, system updates project with title, description, and disciplines matching values from projectTitleField, projectDescriptionField, and projectDisciplineField immediately before submit, closes editProjectDialog, user remains on the same route as before submit (route pattern '/project/{id}' or '/project/{id}/workflows'), and globalMessageSnackbar shows 'Your project has been successfully updated'
+      - given user clicks editProjectFormSubmitButton and edit submit does not complete successfully, editProjectDialog remains open, projectTitleField, projectDescriptionField, and projectDisciplineField retain values from immediately before submit, editProjectFormSubmitButton is enabled and clickable, user remains on the same route as before submit, and globalMessageSnackbar shows 'We encountered an issue and your project was not updated'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given successful edit submit, editProjectDialog closes
+      - given successful edit submit, current route is unchanged from immediately before submit
+      - given successful edit submit, globalMessageSnackbar shows 'Your project has been successfully updated'
+      - given successful edit submit, updated project title matches projectTitleField value from immediately before submit
+      - given successful edit submit, updated project description matches projectDescriptionField value from immediately before submit
+      - given successful edit submit, updated project disciplines match projectDisciplineField selection from immediately before submit
+      - given successful edit submit, projectTitle on projectHeader matches projectTitleField value from immediately before submit
+      - given edit submit does not complete successfully, editProjectDialog remains open
+      - given edit submit does not complete successfully, projectTitleField, projectDescriptionField, and projectDisciplineField retain values from immediately before submit
+      - given edit submit does not complete successfully, globalMessageSnackbar shows 'We encountered an issue and your project was not updated'
+      - given edit submit does not complete successfully, editProjectFormSubmitButton is enabled and clickable
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-PROJ-EDIT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6463-46631&t=lsKQpS4Jq8MOZwMT-1

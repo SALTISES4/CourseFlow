@@ -1,0 +1,728 @@
+Total merge events: 121
+
+addMenuItemProject (higher confidence or non-null)
+  kept: [inferred] "{addMenuDropdown} row with label 'Project'"
+        from tests/docs/requirements/original/top_navigation_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/project_create_form_requirements_v1.yaml
+
+archiveToggle (same rank, first file wins)
+  kept: [inferred] '{libraryFilterToolbar} toggle or chip for archive filter state'
+        from tests/docs/requirements/original/library_page_requirements_v1.yaml
+  dropped: [inferred] "{projectWorkflowsFilterToolbar} archive toggle control (same canonical object as 'My library')"
+           from tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml
+
+cardTemplateChip (same rank, first file wins)
+  kept: [inferred] "{projectCard|workflowCard} chip with text 'Template'"
+        from tests/docs/requirements/original/card_content_requirements_v1.yaml
+  dropped: [inferred] "{workflowCard} chip with text 'Template' on template workflow rows"
+           from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+
+cardTemplateChip (same rank, first file wins)
+  kept: [inferred] "{projectCard|workflowCard} chip with text 'Template'"
+        from tests/docs/requirements/original/card_content_requirements_v1.yaml
+  dropped: [inferred] "{workflowCard} chip with text 'Template' on template workflow rows"
+           from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+
+favouritesToggle (same rank, first file wins)
+  kept: [inferred] '{exploreFilterToolbar} toggle or chip for favourites filter state'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] '{libraryFilterToolbar} toggle or chip for favourites filter state'
+           from tests/docs/requirements/original/library_page_requirements_v1.yaml
+
+favouritesToggle (same rank, first file wins)
+  kept: [inferred] '{exploreFilterToolbar} toggle or chip for favourites filter state'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] "{projectWorkflowsFilterToolbar} favourites toggle control (same canonical object as 'My library')"
+           from tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml
+
+keywordSearchClearButton (same rank, first file wins)
+  kept: [inferred] '{keywordSearchField} right-side icon button shown when input is non-empty'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] "{keywordSearchField} icon-only clear control ('X') shown when input is non-empty"
+           from tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml
+
+keywordSearchField (same rank, first file wins)
+  kept: [inferred] '{exploreFilterToolbar} inline text field on the right for keyword search (not an overlay)'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] "{favouritesFilterToolbar} inline search field using same interaction mechanism as 'My library'"
+           from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+
+keywordSearchField (same rank, first file wins)
+  kept: [inferred] '{exploreFilterToolbar} inline text field on the right for keyword search (not an overlay)'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/library_page_requirements_v1.yaml
+
+keywordSearchField (same rank, first file wins)
+  kept: [inferred] '{exploreFilterToolbar} inline text field on the right for keyword search (not an overlay)'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] '{projectWorkflowsFilterToolbar} inline keyword input on the right side'
+           from tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml
+
+ownershipFilter (same rank, first file wins)
+  kept: [inferred] "{favouritesFilterToolbar} single-select filter showing placeholder 'Ownership' or active label Owned or Shared"
+        from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+  dropped: [inferred] "{libraryFilterToolbar} single-select filter showing placeholder 'Ownership' or active label Owned or Shared"
+           from tests/docs/requirements/original/library_page_requirements_v1.yaml
+
+ownershipFilter (same rank, first file wins)
+  kept: [inferred] "{favouritesFilterToolbar} single-select filter showing placeholder 'Ownership' or active label Owned or Shared"
+        from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+  dropped: [inferred] "{projectWorkflowsFilterToolbar} ownership filter control (same canonical object as 'My library')"
+           from tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml
+
+ownershipFilterResetButton (same rank, first file wins)
+  kept: [inferred] "{ownershipFilter} button[aria-label='close'] or icon-only clear control adjacent to active ownership label"
+        from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+  dropped: [inferred] '{ownershipFilter} clear control when active'
+           from tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml
+
+pagination (higher confidence or non-null)
+  kept: [inferred] '{favouritesPage} pagination control shown when total matching favourited objects are 11 or more (10 per page)'
+        from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+
+pagination (same rank, first file wins)
+  kept: [inferred] '{favouritesPage} pagination control shown when total matching favourited objects are 11 or more (10 per page)'
+        from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/library_page_requirements_v1.yaml
+
+pagination (same rank, first file wins)
+  kept: [inferred] '{favouritesPage} pagination control shown when total matching favourited objects are 11 or more (10 per page)'
+        from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+  dropped: [inferred] '{projectWorkflowsView} pagination control shown when total matching workflowCard instances are 11 or more (10 per page)'
+           from tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml
+
+passwordResetPage (higher confidence or non-null)
+  kept: [confirmed] None
+        from tests/docs/requirements/original/top_navigation_requirements_v1.yaml
+  dropped: [inferred] 'URL pathname /user/password-reset'
+           from tests/docs/requirements/original/password_reset_requirements_v1.yaml
+
+projectCard (higher confidence or non-null)
+  kept: [inferred] '{resultsRegion} project card (project scope)'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/card_content_requirements_v1.yaml
+
+projectCard (same rank, first file wins)
+  kept: [inferred] '{resultsRegion} project card (project scope)'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] '{resultsRegion} card where object type is project'
+           from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+
+projectCard (same rank, first file wins)
+  kept: [inferred] '{resultsRegion} project card (project scope)'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] '{homeRecentProjectsSection} projectCard instance'
+           from tests/docs/requirements/original/homepage_requirements_v1.yaml
+
+projectCard (same rank, first file wins)
+  kept: [inferred] '{resultsRegion} project card (project scope)'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_copy_requirements_v1.yaml
+
+projectCard (same rank, first file wins)
+  kept: [inferred] '{resultsRegion} project card (project scope)'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml
+
+projectDescriptionField (same rank, first file wins)
+  kept: [inferred] '{projectForm} input[name="description"]'
+        from tests/docs/requirements/original/project_create_form_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/project_edit_form_requirements_v1.yaml
+
+projectDisciplineField (same rank, first file wins)
+  kept: [inferred] '{projectForm} [aria-labelledby="create-project-discipline"]'
+        from tests/docs/requirements/original/project_create_form_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/project_edit_form_requirements_v1.yaml
+
+projectTitle (higher confidence or non-null)
+  kept: [inferred] '{projectHeader} heading text for current project title'
+        from tests/docs/requirements/original/project_header_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/project_create_form_requirements_v1.yaml
+
+projectTitleField (same rank, first file wins)
+  kept: [inferred] '{projectForm} input[name="title"]'
+        from tests/docs/requirements/original/project_create_form_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/project_edit_form_requirements_v1.yaml
+
+resultsRegion (same rank, first file wins)
+  kept: [inferred] "main 'Explore' listing grid; always exactly two cards per row, at most five rows (10 cards) per page (same grid pattern as 'My library' resultsRegion)"
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] '{favouritesPage} main results grid/listing region'
+           from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+
+resultsRegion (same rank, first file wins)
+  kept: [inferred] "main 'Explore' listing grid; always exactly two cards per row, at most five rows (10 cards) per page (same grid pattern as 'My library' resultsRegion)"
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] 'main library listing grid; always exactly two cards per row, at most five rows (10 cards) per page'
+           from tests/docs/requirements/original/library_page_requirements_v1.yaml
+
+resultsRegion (same rank, first file wins)
+  kept: [inferred] "main 'Explore' listing grid; always exactly two cards per row, at most five rows (10 cards) per page (same grid pattern as 'My library' resultsRegion)"
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] 'project workflows listing grid; always exactly two workflowCard instances per row, at most five rows (10 instances) per page'
+           from tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml
+
+resultsSummary (higher confidence or non-null)
+  kept: [inferred] '{favouritesPage} region between favouritesFilterToolbar and resultsRegion showing count summary'
+        from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+
+resultsSummary (same rank, first file wins)
+  kept: [inferred] '{favouritesPage} region between favouritesFilterToolbar and resultsRegion showing count summary'
+        from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/library_page_requirements_v1.yaml
+
+resultsSummary (same rank, first file wins)
+  kept: [inferred] '{favouritesPage} region between favouritesFilterToolbar and resultsRegion showing count summary'
+        from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+  dropped: [inferred] '{projectWorkflowsView} region between projectWorkflowsFilterToolbar and resultsRegion showing count summary'
+           from tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml
+
+sortControl (same rank, first file wins)
+  kept: [inferred] "{exploreFilterToolbar} control showing label 'Sort', 'A - Z', or 'Date created'"
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] "{favouritesFilterToolbar} control showing label 'Sort', 'A - Z', or 'Date created'"
+           from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+
+sortControl (same rank, first file wins)
+  kept: [inferred] "{exploreFilterToolbar} control showing label 'Sort', 'A - Z', or 'Date created'"
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] "{libraryFilterToolbar} control showing label 'Sort', 'A - Z', or 'Date created'"
+           from tests/docs/requirements/original/library_page_requirements_v1.yaml
+
+sortControl (same rank, first file wins)
+  kept: [inferred] "{exploreFilterToolbar} control showing label 'Sort', 'A - Z', or 'Date created'"
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] "{projectWorkflowsFilterToolbar} control showing label 'Sort', 'A - Z', or 'Date created'"
+           from tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml
+
+sortResetButton (same rank, first file wins)
+  kept: [inferred] "{sortControl} button[aria-label='close'] or icon-only clear control adjacent to active sort label"
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] '{sortControl} clear control when non-default sort is active'
+           from tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml
+
+templatesToggle (same rank, first file wins)
+  kept: [inferred] "{exploreFilterToolbar} toggle labeled 'Templates'"
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] "{favouritesFilterToolbar} toggle labeled 'Templates'"
+           from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+
+templatesToggle (same rank, first file wins)
+  kept: [inferred] "{exploreFilterToolbar} toggle labeled 'Templates'"
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/library_page_requirements_v1.yaml
+
+topNavigationBar (higher confidence or non-null)
+  kept: [confirmed] '[data-test-id="top-bar"]'
+        from tests/docs/requirements/original/top_navigation_requirements_v1.yaml
+  dropped: [confirmed] None
+           from tests/docs/requirements/original/deferred/top_navigation_notifications_dropdown_requirements_v1.yaml
+
+typeFilter (same rank, first file wins)
+  kept: [inferred] "{exploreFilterToolbar} single-select filter showing label 'Type' or committed type label 'Projects' or 'Workflows'"
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] "{favouritesFilterToolbar} single-select filter showing label 'Type' or committed type label 'Projects' or 'Workflows'"
+           from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+
+typeFilter (same rank, first file wins)
+  kept: [inferred] "{exploreFilterToolbar} single-select filter showing label 'Type' or committed type label 'Projects' or 'Workflows'"
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] "{libraryFilterToolbar} single-select filter showing label 'Type' or committed type label 'Projects' or 'Workflows'"
+           from tests/docs/requirements/original/library_page_requirements_v1.yaml
+
+typeFilterResetButton (same rank, first file wins)
+  kept: [inferred] "{typeFilter} button[aria-label='close'] or icon-only clear control when non-default type scope is active per design"
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] "{typeFilter} button[aria-label='close'] or icon-only clear control when committed type scope is active"
+           from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+
+workflowCard (higher confidence or non-null)
+  kept: [inferred] '{resultsRegion} workflow card (workflow scope); when templatesToggle constrains listing to templates, template workflows are still represented as workflowCard with cardTemplateChip per FR-CARD-002'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/card_content_requirements_v1.yaml
+
+workflowCard (same rank, first file wins)
+  kept: [inferred] '{resultsRegion} workflow card (workflow scope); when templatesToggle constrains listing to templates, template workflows are still represented as workflowCard with cardTemplateChip per FR-CARD-002'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] '{resultsRegion} card where object type is workflow/program/course/activity; template workflows remain workflowCard and are identified by cardTemplateChip'
+           from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+
+workflowCard (same rank, first file wins)
+  kept: [inferred] '{resultsRegion} workflow card (workflow scope); when templatesToggle constrains listing to templates, template workflows are still represented as workflowCard with cardTemplateChip per FR-CARD-002'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] '{homeTemplatesSection} workflowCard instance'
+           from tests/docs/requirements/original/homepage_requirements_v1.yaml
+
+workflowCard (same rank, first file wins)
+  kept: [inferred] '{resultsRegion} workflow card (workflow scope); when templatesToggle constrains listing to templates, template workflows are still represented as workflowCard with cardTemplateChip per FR-CARD-002'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] '{resultsRegion} workflow card (workflow scope)'
+           from tests/docs/requirements/original/library_page_requirements_v1.yaml
+
+workflowCard (same rank, first file wins)
+  kept: [inferred] '{resultsRegion} workflow card (workflow scope); when templatesToggle constrains listing to templates, template workflows are still represented as workflowCard with cardTemplateChip per FR-CARD-002'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] '{resultsRegion} workflowCard instance'
+           from tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml
+
+workflowCard (same rank, first file wins)
+  kept: [inferred] '{resultsRegion} workflow card (workflow scope); when templatesToggle constrains listing to templates, template workflows are still represented as workflowCard with cardTemplateChip per FR-CARD-002'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml
+
+workflowCard (same rank, first file wins)
+  kept: [inferred] '{resultsRegion} workflow card (workflow scope); when templatesToggle constrains listing to templates, template workflows are still represented as workflowCard with cardTemplateChip per FR-CARD-002'
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] '{workflowLinkWorkflowDialogSearchResults} workflow card'
+           from tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml
+
+workflowChannel (higher confidence or non-null)
+  kept: [inferred] '[data-column-id]'
+        from tests/docs/requirements/original/workflow_delete_channel_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml
+
+workflowChannel (same rank, first file wins)
+  kept: [inferred] '[data-column-id]'
+        from tests/docs/requirements/original/workflow_delete_channel_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_delete_node_requirements_v1.yaml
+
+workflowChannel (same rank, first file wins)
+  kept: [inferred] '[data-column-id]'
+        from tests/docs/requirements/original/workflow_delete_channel_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_duplicate_node_requirements_v1.yaml
+
+workflowChannel (same rank, first file wins)
+  kept: [inferred] '[data-column-id]'
+        from tests/docs/requirements/original/workflow_delete_channel_requirements_v1.yaml
+  dropped: [inferred] '[data-column-id] on column header cell wrapper'
+           from tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml
+
+workflowChannel (same rank, first file wins)
+  kept: [inferred] '[data-column-id]'
+        from tests/docs/requirements/original/workflow_delete_channel_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_move_node_requirements_v1.yaml
+
+workflowChannelHeader (higher confidence or non-null)
+  kept: [inferred] '{workflowChannelsHeaderRow} [data-column-id] inner header region (ColumnWrap / Inner)'
+        from tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml
+
+workflowChannelHoverActionsMenu (higher confidence or non-null)
+  kept: [inferred] '{workflowChannelHeader} NodeHoverMenu cluster'
+        from tests/docs/requirements/original/workflow_delete_channel_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml
+
+workflowChannelHoverActionsMenuCommentsItem (same rank, first file wins)
+  kept: [inferred] "{workflowChannelHoverActionsMenu} button whose accessible name resolves to localized 'Comments'"
+        from tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml
+  dropped: [inferred] "{workflowChannelHoverActionsMenu} button with accessible name 'Comments'"
+           from tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml
+
+workflowChannelsHeaderRow (higher confidence or non-null)
+  kept: [confirmed] "[data-test-id='columns-block']"
+        from tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml
+
+workflowDescriptionField (same rank, first file wins)
+  kept: [inferred] '{workflowBlankForm} textarea[name="description"] or input[name="description"]'
+        from tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml
+  dropped: [inferred] '{workflowEditForm} textarea[name="description"] or input[name="description"]'
+           from tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml
+
+workflowEdge (higher confidence or non-null)
+  kept: [inferred] "{workflowView} SVG g[data-nodelink-id='{workflowEdgeId}']"
+        from tests/docs/requirements/original/workflow_edge_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml
+
+workflowEdge (same rank, first file wins)
+  kept: [inferred] "{workflowView} SVG g[data-nodelink-id='{workflowEdgeId}']"
+        from tests/docs/requirements/original/workflow_edge_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_move_node_requirements_v1.yaml
+
+workflowEdge (same rank, first file wins)
+  kept: [inferred] "{workflowView} SVG g[data-nodelink-id='{workflowEdgeId}']"
+        from tests/docs/requirements/original/workflow_edge_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml
+
+workflowEditOutcomeForm (higher confidence or non-null)
+  kept: [inferred] '{workflowRightSidebarEditTabContent} form bound to the selected workflowOutcome'
+        from tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_delete_outcome_requirements_v1.yaml
+
+workflowEditOutcomeForm (same rank, first file wins)
+  kept: [inferred] '{workflowRightSidebarEditTabContent} form bound to the selected workflowOutcome'
+        from tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_outcome_tree_drag_reorder_requirements_v1.yaml
+
+workflowEditOutcomeFormCodeField (higher confidence or non-null)
+  kept: [inferred] "{workflowEditOutcomeForm} input with label 'Code'"
+        from tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml
+
+workflowEditOutcomeFormTitleField (higher confidence or non-null)
+  kept: [inferred] "{workflowEditOutcomeForm} input with label 'Title'"
+        from tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml
+
+workflowManualPlacementDialog (same rank, first file wins)
+  kept: [inferred] "menu[id='node-insert-menu']"
+        from tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_duplicate_node_requirements_v1.yaml
+
+workflowManualPlacementDialog (same rank, first file wins)
+  kept: [inferred] "menu[id='node-insert-menu']"
+        from tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_move_node_requirements_v1.yaml
+
+workflowManualPlacementDialogColumnButton (same rank, first file wins)
+  kept: [inferred] "{workflowManualPlacementDialog} menuitem with text 'Keep in same column'"
+        from tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_duplicate_node_requirements_v1.yaml
+
+workflowManualPlacementDialogColumnButton (same rank, first file wins)
+  kept: [inferred] "{workflowManualPlacementDialog} menuitem with text 'Keep in same column'"
+        from tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_move_node_requirements_v1.yaml
+
+workflowManualPlacementDialogRowButton (same rank, first file wins)
+  kept: [inferred] "{workflowManualPlacementDialog} menuitem with text 'Insert row'"
+        from tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_duplicate_node_requirements_v1.yaml
+
+workflowManualPlacementDialogRowButton (same rank, first file wins)
+  kept: [inferred] "{workflowManualPlacementDialog} menuitem with text 'Insert row'"
+        from tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_move_node_requirements_v1.yaml
+
+workflowNode (higher confidence or non-null)
+  kept: [inferred] "[id='node-{workflowNodeId}']"
+        from tests/docs/requirements/original/workflow_edge_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml
+
+workflowNode (same rank, first file wins)
+  kept: [inferred] "[id='node-{workflowNodeId}']"
+        from tests/docs/requirements/original/workflow_edge_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml
+
+workflowNode (same rank, first file wins)
+  kept: [inferred] "[id='node-{workflowNodeId}']"
+        from tests/docs/requirements/original/workflow_edge_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_move_node_requirements_v1.yaml
+
+workflowNode (same rank, first file wins)
+  kept: [inferred] "[id='node-{workflowNodeId}']"
+        from tests/docs/requirements/original/workflow_edge_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_node_linked_outcomes_badge_requirements_v1.yaml
+
+workflowNode (same rank, first file wins)
+  kept: [inferred] "[id='node-{workflowNodeId}']"
+        from tests/docs/requirements/original/workflow_edge_requirements_v1.yaml
+  dropped: [inferred] "[id^='node-']"
+           from tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml
+
+workflowNodeEdgeHandleBottom (same rank, first file wins)
+  kept: [inferred] "{workflowNodeEdgeHandles} circle[data-edge='bottom']"
+        from tests/docs/requirements/original/workflow_edge_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml
+
+workflowNodeEdgeHandleLeft (same rank, first file wins)
+  kept: [inferred] "{workflowNodeEdgeHandles} circle[data-edge='left']"
+        from tests/docs/requirements/original/workflow_edge_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml
+
+workflowNodeEdgeHandleRight (same rank, first file wins)
+  kept: [inferred] "{workflowNodeEdgeHandles} circle[data-edge='right']"
+        from tests/docs/requirements/original/workflow_edge_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml
+
+workflowNodeEdgeHandleTop (same rank, first file wins)
+  kept: [inferred] "{workflowNodeEdgeHandles} circle[data-edge='top']"
+        from tests/docs/requirements/original/workflow_edge_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml
+
+workflowNodeEdgeHandles (same rank, first file wins)
+  kept: [inferred] '{workflowNode} LineSVG Handles overlay (four SVG circles on hover or during link preview)'
+        from tests/docs/requirements/original/workflow_edge_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml
+
+workflowNodeHoverActionsMenu (higher confidence or non-null)
+  kept: [inferred] '{workflowNode} floating group of icon buttons anchored to top-right (Mui Tooltip/IconButton cluster)'
+        from tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml
+
+workflowNodeHoverActionsMenu (same rank, first file wins)
+  kept: [inferred] '{workflowNode} floating group of icon buttons anchored to top-right (Mui Tooltip/IconButton cluster)'
+        from tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_delete_node_requirements_v1.yaml
+
+workflowNodeHoverActionsMenu (same rank, first file wins)
+  kept: [inferred] '{workflowNode} floating group of icon buttons anchored to top-right (Mui Tooltip/IconButton cluster)'
+        from tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_duplicate_node_requirements_v1.yaml
+
+workflowNodeHoverActionsMenu (same rank, first file wins)
+  kept: [inferred] '{workflowNode} floating group of icon buttons anchored to top-right (Mui Tooltip/IconButton cluster)'
+        from tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml
+  dropped: [inferred] '{workflowNode} floating group of icon buttons with tooltips, anchored to the top-right of the node'
+           from tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml
+
+workflowNodeLinkedOutcomeRow (higher confidence or non-null)
+  kept: [inferred] 'row inside {workflowNodeLinkedOutcomesPopover} for one assigned {workflowOutcome} per FR-WF-AO-009'
+        from tests/docs/requirements/original/workflow_node_linked_outcomes_badge_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml
+
+workflowNodeLinkedOutcomesBadge (higher confidence or non-null)
+  kept: [inferred] 'numeric badge on {workflowNode} when assigned-outcome set is non-empty per FR-WF-AO-007'
+        from tests/docs/requirements/original/workflow_node_linked_outcomes_badge_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml
+
+workflowNodeLinkedOutcomesPopover (higher confidence or non-null)
+  kept: [inferred] 'popover anchored to {workflowNodeLinkedOutcomesBadge} per FR-WF-AO-008'
+        from tests/docs/requirements/original/workflow_node_linked_outcomes_badge_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml
+
+workflowNodeOutcomeHighlightBorder (same rank, first file wins)
+  kept: [inferred] 'outcome-highlight presentation on {workflowNode} per FR-WF-AO-005'
+        from tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml
+
+workflowOutcomeHeader (higher confidence or non-null)
+  kept: [inferred] '{workflowOutcome} header strip containing workflowOutcomeHeaderTitle'
+        from tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_delete_outcome_requirements_v1.yaml
+
+workflowOutcomeHeader (same rank, first file wins)
+  kept: [inferred] '{workflowOutcome} header strip containing workflowOutcomeHeaderTitle'
+        from tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_outcome_tree_drag_reorder_requirements_v1.yaml
+
+workflowOutcomeHeaderTitle (higher confidence or non-null)
+  kept: [inferred] '{workflowOutcomeHeader} primary title label'
+        from tests/docs/requirements/original/workflow_delete_outcome_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml
+
+workflowOutcomeHeaderTitle (same rank, first file wins)
+  kept: [inferred] '{workflowOutcomeHeader} primary title label'
+        from tests/docs/requirements/original/workflow_delete_outcome_requirements_v1.yaml
+  dropped: [inferred] '{workflowNodeLinkedOutcomeRow} visible title line composed per FR-WF-EO-007'
+           from tests/docs/requirements/original/workflow_node_linked_outcomes_badge_requirements_v1.yaml
+
+workflowOutcomeHeaderToggle (same rank, first file wins)
+  kept: [inferred] '{workflowOutcomeHeader} expand/collapse control for child entries'
+        from tests/docs/requirements/original/workflow_duplicate_outcome_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_outcome_tree_drag_reorder_requirements_v1.yaml
+
+workflowOutcomeHoverActionsMenu (higher confidence or non-null)
+  kept: [inferred] '{workflowOutcomeHeader} floating group of icon buttons with tooltips, shown on hover'
+        from tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml
+
+workflowOutcomeHoverActionsMenuCommentsItem (same rank, first file wins)
+  kept: [inferred] "{workflowOutcomeHoverActionsMenu} button whose accessible name resolves to localized 'Comments'"
+        from tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml
+  dropped: [inferred] "{workflowOutcomeHoverActionsMenu} item with tooltip 'Comments'"
+           from tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml
+
+workflowOutcomeViewEmptyState (higher confidence or non-null)
+  kept: [inferred] '{workflowOutcomeView} region containing workflowOutcomeViewEmptyStateAlert and workflowOutcomeViewAddOutcomeButton when no workflowOutcome exists'
+        from tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_delete_outcome_requirements_v1.yaml
+
+workflowOutcomesAssignTabOutcomeRow (same rank, first file wins)
+  kept: [inferred] 'level-1 row inside {workflowOutcomesAssignTabTagGroup} or {workflowOutcomesAssignTabUntaggedGroup}, or nested row under expanded ancestor {workflowOutcomesAssignTabOutcomeRow} per FR-WF-AO-003'
+        from tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml
+  dropped: [inferred] 'level-1 row inside {workflowRightSidebarOutcomesTabContent} tag group or untagged group, or nested row under expanded ancestor {workflowOutcomesAssignTabOutcomeRow} per FR-WF-AO-003'
+           from tests/docs/requirements/original/workflow_node_linked_outcomes_badge_requirements_v1.yaml
+
+workflowOverviewView (same rank, first file wins)
+  kept: [inferred] 'URL pathname /workflow/{id}'
+        from tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml
+  dropped: [inferred] "Workflow tab route '/workflow/{id}' (index tab in workflow tabs)"
+           from tests/docs/requirements/original/workflow_overview_requirements_v1.yaml
+
+workflowRightSidebar (same rank, first file wins)
+  kept: [confirmed] "[data-test-id='sidebar']"
+        from tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_delete_node_requirements_v1.yaml
+
+workflowRightSidebarAddTab (same rank, first file wins)
+  kept: [confirmed] "{workflowRightSidebarTabStrip} [aria-label='add tab']"
+        from tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml
+  dropped: [confirmed] "{workflowRightSidebar} [aria-label='add tab']"
+           from tests/docs/requirements/original/workflow_node_linked_outcomes_badge_requirements_v1.yaml
+
+workflowRightSidebarCommentsTab (same rank, first file wins)
+  kept: [confirmed] "{workflowRightSidebarTabStrip} [aria-label='comments tab']"
+        from tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml
+  dropped: [inferred] "{workflowRightSidebar} [aria-label='comments tab']"
+           from tests/docs/requirements/original/workflow_delete_outcome_requirements_v1.yaml
+
+workflowRightSidebarCommentsTab (same rank, first file wins)
+  kept: [confirmed] "{workflowRightSidebarTabStrip} [aria-label='comments tab']"
+        from tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml
+  dropped: [inferred] "{workflowRightSidebar} [aria-label='comments tab']"
+           from tests/docs/requirements/original/workflow_duplicate_outcome_requirements_v1.yaml
+
+workflowRightSidebarCommentsTab (same rank, first file wins)
+  kept: [confirmed] "{workflowRightSidebarTabStrip} [aria-label='comments tab']"
+        from tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml
+  dropped: [inferred] "{workflowRightSidebar} [aria-label='comments tab']"
+           from tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml
+
+workflowRightSidebarCommentsTab (same rank, first file wins)
+  kept: [confirmed] "{workflowRightSidebarTabStrip} [aria-label='comments tab']"
+        from tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml
+  dropped: [confirmed] "{workflowRightSidebar} [aria-label='comments tab']"
+           from tests/docs/requirements/original/workflow_node_linked_outcomes_badge_requirements_v1.yaml
+
+workflowRightSidebarCommentsTab (same rank, first file wins)
+  kept: [confirmed] "{workflowRightSidebarTabStrip} [aria-label='comments tab']"
+        from tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml
+  dropped: [inferred] "{workflowRightSidebar} [aria-label='comments tab']"
+           from tests/docs/requirements/original/workflow_outcome_tree_drag_reorder_requirements_v1.yaml
+
+workflowRightSidebarEditTab (higher confidence or non-null)
+  kept: [inferred] "{workflowRightSidebar} [aria-label='edit tab']"
+        from tests/docs/requirements/original/workflow_delete_outcome_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml
+
+workflowRightSidebarEditTab (same rank, first file wins)
+  kept: [inferred] "{workflowRightSidebar} [aria-label='edit tab']"
+        from tests/docs/requirements/original/workflow_delete_outcome_requirements_v1.yaml
+  dropped: [inferred] "{workflowRightSidebarTabStrip} [aria-label='edit tab']"
+           from tests/docs/requirements/original/workflow_edge_requirements_v1.yaml
+
+workflowRightSidebarEditTab (higher confidence or non-null)
+  kept: [confirmed] "{workflowRightSidebar} [aria-label='edit tab']"
+        from tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml
+  dropped: [inferred] "{workflowRightSidebar} [aria-label='edit tab']"
+           from tests/docs/requirements/original/workflow_delete_outcome_requirements_v1.yaml
+
+workflowRightSidebarEditTab (same rank, first file wins)
+  kept: [confirmed] "{workflowRightSidebar} [aria-label='edit tab']"
+        from tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml
+  dropped: [confirmed] "{workflowRightSidebarTabStrip} [aria-label='edit tab']"
+           from tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml
+
+workflowRightSidebarOutcomesTab (same rank, first file wins)
+  kept: [confirmed] "{workflowRightSidebar} [aria-label='outcomes tab']"
+        from tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml
+  dropped: [confirmed] "{workflowRightSidebarTabStrip} [aria-label='outcomes tab']"
+           from tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml
+
+workflowRightSidebarOutcomesTabContent (same rank, first file wins)
+  kept: [inferred] '{workflowRightSidebar} content region when {workflowRightSidebarOutcomesTab} is selected'
+        from tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml
+
+workflowSectionContainer (higher confidence or non-null)
+  kept: [confirmed] '[data-week-id]'
+        from tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/context_action_bar_requirements_v1.yaml
+
+workflowSectionContainer (same rank, first file wins)
+  kept: [confirmed] '[data-week-id]'
+        from tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml
+
+workflowSectionContainer (same rank, first file wins)
+  kept: [confirmed] '[data-week-id]'
+        from tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml
+
+workflowTitle (higher confidence or non-null)
+  kept: [inferred] '{workflowHeader} heading text for current workflow title'
+        from tests/docs/requirements/original/workflow_header_requirements_v1.yaml
+  dropped: [unresolved] None
+           from tests/docs/requirements/original/workflow_copy_requirements_v1.yaml
+
+workflowTitleField (same rank, first file wins)
+  kept: [inferred] '{workflowBlankForm} input[name="title"]'
+        from tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml
+  dropped: [inferred] '{workflowEditForm} input[name="title"]'
+           from tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml
+
+workflowTypeFilter (same rank, first file wins)
+  kept: [inferred] "{exploreFilterToolbar} multiselect filter for workflow program types; present only when typeFilter is committed to 'Workflows' or is Unset (no committed 'Projects' or 'Workflows') (same rule as 'My library' FR-LIB-003)"
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] "{favouritesFilterToolbar} multiselect filter for workflow program types; present only when typeFilter is committed to 'Workflows' or is Unset (no committed 'Projects' or 'Workflows')"
+           from tests/docs/requirements/original/favourites_page_requirements_v1.yaml
+
+workflowTypeFilter (same rank, first file wins)
+  kept: [inferred] "{exploreFilterToolbar} multiselect filter for workflow program types; present only when typeFilter is committed to 'Workflows' or is Unset (no committed 'Projects' or 'Workflows') (same rule as 'My library' FR-LIB-003)"
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] "{libraryFilterToolbar} multiselect filter for workflow program types; present only when typeFilter is committed to 'Workflows' or is Unset (no committed 'Projects' or 'Workflows')"
+           from tests/docs/requirements/original/library_page_requirements_v1.yaml
+
+workflowTypeFilter (same rank, first file wins)
+  kept: [inferred] "{exploreFilterToolbar} multiselect filter for workflow program types; present only when typeFilter is committed to 'Workflows' or is Unset (no committed 'Projects' or 'Workflows') (same rule as 'My library' FR-LIB-003)"
+        from tests/docs/requirements/original/explore_page_requirements_v1.yaml
+  dropped: [inferred] "{projectWorkflowsFilterToolbar} workflow-type filter control (same canonical object as 'My library')"
+           from tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml
+

@@ -21,7 +21,6 @@ import {
  *   tests/docs/requirements/original/workflow_duplicate_section_requirements_v1.yaml (FR-SEC-005)
  *   tests/docs/requirements/original/workflow_delete_section_requirements_v1.yaml (FR-SEC-006)
  * Canonical section uiObjects and locators: tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml
- * Source archive: tests/docs/__ARCHIVE/edit_section_requirements_v1.md
  * This spec file name reflects FR-SEC-001–006 coverage; FR-SEC-007–009 are in the same edit YAML.
  *
  * Tooling note (protocol): Figma MCP and Playwright MCP were not available in the
