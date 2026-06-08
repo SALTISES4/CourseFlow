@@ -1,0 +1,14 @@
+.venv
+.git
+.github
+.cursor
+react
+tests
+docs
+assets
+logs
+*.pyc
+__pycache__
+.env
+.env.*
+!.env.default
