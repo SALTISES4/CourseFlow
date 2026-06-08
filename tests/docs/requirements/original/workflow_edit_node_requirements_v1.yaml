@@ -1,13 +1,26 @@
-# Normalized requirements: edit an existing workflowNode via workflowRightSidebarEditTab / workflowRightSidebarEditTabContent ('Workflow' view), including 'Link a workflow' dialog
-# Source: tests/docs/__ARCHIVE/functional-requirements.md (Nodes — Node Metadata, lines 641–840; Node Actions — Link a Workflow, lines 879–894)
+# Normalized requirements: edit an existing workflowNode via workflowRightSidebarEditTab / workflowRightSidebarEditTabContent ('Workflow' view), including link-workflow dialog (course → activity, program → course)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Nodes — Node Metadata; Node Actions — Link a Workflow)
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Terminology: tests/docs/requirements/terminology_workflow_hierarchy_and_nodes.md (parent workflow type vs node type vs linkedWorkflow)
-# Cross-reference: tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebar/Edit tab — FR-WF-RS-001, FR-WF-RS-002, FR-WF-RS-003); tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml (Insert mode toggle; add-node drops onto workflowSectionContainer); tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml (workflowSectionContainer definitions; section hover menu lockstep — FR-SEC-007); tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml (canvas layout and chrome — FR-WF-NODE-001, FR-WF-NODE-002, FR-WF-NODE-003; field values on canvas conform to FR-WF-EN-002 through FR-WF-EN-010 in this file); tests/docs/requirements/original/project_overview_requirements_v1.yaml (projectTagsSection, projectTagItem — tag catalog for workflowEditNodeFormTagsAutocomplete); tests/docs/requirements/original/workflow_overview_requirements_v1.yaml (workflowMetadataFieldTime — duration semantics aligned with workflowEditNodeFormTimeField); tests/docs/requirements/original/workflow_duplicate_node_requirements_v1.yaml (workflowEditNodeFormDuplicateButton click flow — FR-WF-DUP-001); tests/docs/requirements/original/workflow_delete_node_requirements_v1.yaml (detailed behavior of workflowEditNodeFormDeleteButton); tests/docs/requirements/original/card_content_requirements_v1.yaml (workflowCard in link dialog — FR-CARD-001 through FR-CARD-007 as applicable)
+# Cross-reference:
+#   - tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebar / Edit tab — FR-WF-RS-001, FR-WF-RS-002, FR-WF-RS-003)
+#   - tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml (add-node drops — FR-WF-ADD-004, FR-WF-ADD-005, FR-WF-ADD-006)
+#   - tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml (workflowSectionContainer — FR-SEC-*)
+#   - tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml (canvas layout and chrome — FR-WF-NODE-001, FR-WF-NODE-002, FR-WF-NODE-003)
+#   - tests/docs/requirements/original/project_overview_requirements_v1.yaml (projectTagsSection — tag catalog for workflowEditNodeFormTagsAutocomplete; catalog deletion removes tag from nodes per FR-PROJ-OV-005)
+#   - tests/docs/requirements/original/workflow_overview_requirements_v1.yaml (duration and overview totals — FR-WF-OV-003 through FR-WF-OV-006; Workflow-tab edits reflected on Overview — FR-WF-OV-010)
+#   - tests/docs/requirements/original/workflow_duplicate_node_requirements_v1.yaml (workflowEditNodeFormDuplicateButton — FR-WF-DUP-001)
+#   - tests/docs/requirements/original/workflow_delete_node_requirements_v1.yaml (workflowEditNodeFormDeleteButton — FR-WF-DEL-*)
+#   - tests/docs/requirements/original/card_content_requirements_v1.yaml (workflowCard in link dialog — FR-CARD-*)
+#   - tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml (workflowEditOutcomeFormDescriptionField hosts workflowRichTextDescriptionEditor per FR-WF-EN-012)
+#   - tests/docs/requirements/original/workflow_archive_requirements_v1.yaml (archive breaks parent node links and retains displayed node data—FR-WF-ARCH-003; batch project archive preserves links—FR-PROJ-ARCH-003)
+#   - tests/docs/requirements/original/workflow_copy_requirements_v1.yaml (cross-project copy link break matches FR-WF-ARCH-003; same-project copy preserves links—FR-WF-COPY-003)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
-  - current route is '/workflow/{id}/workflow'
+  - current route is '/workflow/{id}/graph'
   - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+  - requirements in this file assume documentPreconditions above hold; when they do not, assert per FR-WS-ACCESS-002
+  - field editing and link/remove-workflow actions in this file apply to owner and editor unless an FR states read-only presentation for other actors
 
 uiObjectDefinitions:
   workflowView:
@@ -15,168 +28,144 @@ uiObjectDefinitions:
   workflowSectionContainer:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml.
   workflowNode:
-    meaning: Placed workflow content unit at one workflowSectionRow × workflowChannel cell inside a workflowSectionContainer. Each workflowNode has a parent workflow type (the workflow_type of the graph being edited in workflowView), a node type (semantic child layer — course, activity, or task), and an optional linkedWorkflow. See tests/docs/requirements/terminology_workflow_hierarchy_and_nodes.md.
-  parentWorkflowType:
-    meaning: The workflow_type of the workflow whose graph contains the workflowNode (the workflow open in workflowView). Stated in preconditions as 'parent workflow type is …' (program, course, or activity).
-  nodeType:
-    meaning: Semantic child layer of the workflowNode (course, activity, or task). In a program workflow graph, workflowNodes have node type course; in a course workflow graph, node type activity; in an activity workflow graph, node type task.
-  linkedWorkflow:
-    meaning: Optional symbolic reference from the workflowNode to another workflow in the same parent project. When set, selected workflowEditNodeForm fields mirror linked workflow metadata read-only per FR-WF-EN-004 and FR-WF-EN-006; node-local fields remain on the workflowNode.
+    meaning: Placed workflow content unit at one workflowSectionRow × workflowChannel cell inside a workflowSectionContainer.
+  workflowNodeTitle:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml.
+  workflowNodeMeta:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml.
+  workflowNodeLinkedWorkflowIndicator:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml.
   workflowRightSidebar:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
   workflowRightSidebarEditTab:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
   workflowRightSidebarEditTabContent:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarAddTab:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
   workflowEditNodeForm:
-    meaning: Right-sidebar edit form for the selected workflowNode's metadata and node-scoped actions.
+    meaning: Right-sidebar edit form for the bound workflowNode's metadata and node-scoped actions.
   workflowEditNodeFormHeading:
-    meaning: Heading at the top of workflowEditNodeForm with literal copy 'Edit node'.
+    meaning: Heading on workflowEditNodeForm with text 'Edit node'.
   workflowEditNodeFormTitleField:
-    meaning: Single-line title input on workflowEditNodeForm labeled 'Title' for the selected workflowNode.
+    meaning: Single-line title input on workflowEditNodeForm labeled 'Title' for the bound workflowNode; shows display fallback 'Untitled node' when persisted title is empty.
   workflowEditNodeFormDescriptionField:
-    meaning: Multi-line description field labeled 'Description' on workflowEditNodeForm.
-  workflowEditNodeFormContextSelect:
-    meaning: Context dropdown labeled 'Context' on workflowEditNodeForm.
+    meaning: Description field region on workflowEditNodeForm labeled 'Description'; contains workflowRichTextDescriptionEditor per FR-WF-EN-012.
+  workflowRichTextDescriptionEditor:
+    meaning: Shared rich-text editor surface labeled 'Description'; hosts workflowRichTextDescriptionEditorToolbar and an editable content region; used inside workflowEditNodeFormDescriptionField and workflowEditOutcomeFormDescriptionField per FR-WF-EN-012.
+  workflowRichTextDescriptionEditorToolbar:
+    meaning: Formatting toolbar on workflowRichTextDescriptionEditor; exposes exactly the controls listed in FR-WF-EN-012 and no others.
+  workflowRichTextDescriptionEditorBoldButton:
+    meaning: Toolbar control on workflowRichTextDescriptionEditorToolbar that toggles bold on the current selection.
+  workflowRichTextDescriptionEditorItalicButton:
+    meaning: Toolbar control on workflowRichTextDescriptionEditorToolbar that toggles italic on the current selection.
+  workflowRichTextDescriptionEditorUnderlineButton:
+    meaning: Toolbar control on workflowRichTextDescriptionEditorToolbar that toggles underline on the current selection.
+  workflowRichTextDescriptionEditorSuperscriptButton:
+    meaning: Toolbar control on workflowRichTextDescriptionEditorToolbar that applies superscript to the current selection.
+  workflowRichTextDescriptionEditorSubscriptButton:
+    meaning: Toolbar control on workflowRichTextDescriptionEditorToolbar that applies subscript to the current selection.
+  workflowRichTextDescriptionEditorBulletListButton:
+    meaning: Toolbar control on workflowRichTextDescriptionEditorToolbar that toggles a bulleted list for the current block or selection.
+  workflowRichTextDescriptionEditorNumberedListButton:
+    meaning: Toolbar control on workflowRichTextDescriptionEditorToolbar that toggles a numbered list for the current block or selection.
+  workflowRichTextDescriptionEditorLinkButton:
+    meaning: Toolbar control on workflowRichTextDescriptionEditorToolbar that inserts or edits a hyperlink on the current selection per FR-WF-EN-012.
+  workflowRichTextDescriptionEditorLinkDialog:
+    meaning: Inline or modal prompt opened from workflowRichTextDescriptionEditorLinkButton for entering or editing a hyperlink URL.
+  workflowEditNodeFormActivityContextSelect:
+    meaning: Context select on workflowEditNodeForm labeled 'Context'; activity parent workflow type only; options are 'None', 'Individual Work', 'Work in Groups', and 'Whole Class'.
+  workflowEditNodeFormCourseContextSelect:
+    meaning: Context select on workflowEditNodeForm labeled 'Context'; course parent workflow type only; options are 'None', 'Formative', 'Summative', and 'Comprehensive'.
   workflowEditNodeFormTaskTypeSelect:
-    meaning: Task-type dropdown labeled 'Type of task' on workflowEditNodeForm.
+    meaning: Task-type select on workflowEditNodeForm labeled 'Type of task'; activity parent workflow type only; options are 'None', 'Gather Information', 'Discuss', 'Problem Solve', 'Analyze', 'Assess/Review Peers', 'Debate', 'Game/Roleplay', 'Create/Design', 'Revise/Improve', 'Read', 'Write', 'Present', 'Experiment/Inquiry', 'Quiz/Test', 'Instructor Resource Curation', 'Instructor Orchestration', 'Instructor Evaluation', and 'Other'.
   workflowEditNodeFormTimeField:
-    meaning: Duration field labeled 'Time' on workflowEditNodeForm.
+    meaning: Duration input on workflowEditNodeForm labeled 'Time'.
   workflowEditNodeFormCreditsField:
-    meaning: Credits numeric field on workflowEditNodeForm.
+    meaning: Numeric input on workflowEditNodeForm labeled 'Credits'; program workflow type only.
   workflowEditNodeFormTagsAutocomplete:
-    meaning: Tags multi-select autocomplete labeled 'Tags' on workflowEditNodeForm.
+    meaning: Tags multi-select autocomplete on workflowEditNodeForm labeled 'Tags'.
   workflowEditNodeFormPonderationGroup:
-    meaning: Ponderation field group on workflowEditNodeForm for program workflows.
+    meaning: Field group on workflowEditNodeForm with heading 'Ponderation'; program workflow type only.
   workflowEditNodeFormPonderationTheoryField:
-    meaning: Theory hours field inside workflowEditNodeFormPonderationGroup.
+    meaning: Numeric input inside workflowEditNodeFormPonderationGroup labeled 'Hrs. theory'.
   workflowEditNodeFormPonderationPracticeField:
-    meaning: Practice hours field inside workflowEditNodeFormPonderationGroup.
+    meaning: Numeric input inside workflowEditNodeFormPonderationGroup labeled 'Hrs. practice'.
   workflowEditNodeFormPonderationIndividualField:
-    meaning: Individual hours field inside workflowEditNodeFormPonderationGroup.
+    meaning: Numeric input inside workflowEditNodeFormPonderationGroup labeled 'Hrs. individual'.
   workflowEditNodeFormSpecificEducationSwitch:
-    meaning: Specific education toggle on workflowEditNodeForm.
+    meaning: Binary switch on workflowEditNodeForm labeled 'Specific education'; program workflow type only.
   workflowEditNodeFormLinkWorkflowButton:
-    meaning: Link-or-remove-workflow action button in workflowEditNodeForm's action area.
+    meaning: Link-or-remove-workflow action button in workflowEditNodeForm's action area; labeled 'Link an activity' when parent workflow type is course and the workflowNode has no linked workflow, 'Link a course' when parent workflow type is program and unlinked, 'Remove linked activity' when course parent and linked, or 'Remove linked course' when program parent and linked.
   workflowEditNodeFormDuplicateButton:
-    meaning: Duplicate button labeled 'Duplicate' on workflowEditNodeForm.
+    meaning: Duplicate button on workflowEditNodeForm labeled 'Duplicate'.
   workflowEditNodeFormDeleteButton:
-    meaning: Delete button labeled 'Delete' on workflowEditNodeForm.
+    meaning: Delete button on workflowEditNodeForm labeled 'Delete'.
   workflowLinkWorkflowDialog:
-    meaning: Modal dialog for searching and selecting a workflow to link to the current workflowNode.
+    meaning: Modal dialog for searching candidate workflows and linking one to the bound workflowNode via workflowCard click.
   workflowLinkWorkflowDialogTitle:
-    meaning: Accessible title on workflowLinkWorkflowDialog.
+    meaning: Accessible title on workflowLinkWorkflowDialog; reads 'Link an activity' when parent workflow type is course, or 'Link a course' when parent workflow type is program.
   workflowLinkWorkflowDialogSearchField:
-    meaning: Search field labeled 'Search' on workflowLinkWorkflowDialog.
+    meaning: Search input on workflowLinkWorkflowDialog labeled 'Search'.
   workflowLinkWorkflowDialogSearchResults:
     meaning: Search-results list of workflowCard candidates on workflowLinkWorkflowDialog.
   workflowCard:
     meaning: Canonical definition in tests/docs/requirements/original/card_content_requirements_v1.yaml.
   workflowLinkWorkflowDialogEmptyState:
-    meaning: Empty-state region on workflowLinkWorkflowDialog when no workflow candidates match.
+    meaning: Empty-state region on workflowLinkWorkflowDialog when workflowLinkWorkflowDialogSearchResults contains no workflowCard; copy distinguishes search-no-results from no eligible link target per FR-WF-EN-009.
   workflowLinkWorkflowDialogCancelButton:
-    meaning: Cancel action on workflowLinkWorkflowDialog.
+    meaning: Cancel button on workflowLinkWorkflowDialog labeled 'Cancel'.
   workflowLinkWorkflowDialogLinkButton:
-    meaning: Primary link action button at the bottom of workflowLinkWorkflowDialog.
+    meaning: Link button on workflowLinkWorkflowDialog; reads 'Link activity' when parent workflow type is course, or 'Link course' when parent workflow type is program.
 
 locatorMappings:
-  workflowView:
-    strategy: null
-    confidence: unresolved
-  workflowSectionContainer:
-    strategy: "[data-week-id]"
-    confidence: confirmed
-  workflowNode:
-    strategy: null
-    confidence: unresolved
-  workflowRightSidebar:
-    strategy: "[data-test-id='sidebar']"
-    confidence: confirmed
-  workflowRightSidebarEditTab:
-    strategy: "{workflowRightSidebar} [aria-label='edit tab']"
-    confidence: confirmed
-  workflowRightSidebarEditTabContent:
-    strategy: null
-    confidence: unresolved
-  workflowEditNodeForm:
-    strategy: null
-    confidence: unresolved
-  workflowEditNodeFormHeading:
-    strategy: "{workflowEditNodeForm} heading with text 'Edit node'"
-    confidence: inferred
-  workflowEditNodeFormTitleField:
-    strategy: "{workflowEditNodeForm} [name='title']"
-    confidence: inferred
-  workflowEditNodeFormDescriptionField:
-    strategy: "{workflowEditNodeForm} [name='description']"
-    confidence: inferred
-  workflowEditNodeFormContextSelect:
-    strategy: "{workflowEditNodeForm} [aria-labelledby='context-type-select-label']"
-    confidence: inferred
-  workflowEditNodeFormTaskTypeSelect:
-    strategy: "{workflowEditNodeForm} [aria-labelledby='task-type-select-label']"
-    confidence: inferred
-  workflowEditNodeFormTimeField:
-    strategy: null
-    confidence: unresolved
-  workflowEditNodeFormCreditsField:
-    strategy: null
-    confidence: unresolved
-  workflowEditNodeFormTagsAutocomplete:
-    strategy: "{workflowEditNodeForm} input[role='combobox']"
-    confidence: inferred
-  workflowEditNodeFormPonderationGroup:
-    strategy: null
-    confidence: unresolved
-  workflowEditNodeFormPonderationTheoryField:
-    strategy: "{workflowEditNodeFormPonderationGroup} [name='ponderation.theory']"
-    confidence: inferred
-  workflowEditNodeFormPonderationPracticeField:
-    strategy: "{workflowEditNodeFormPonderationGroup} [name='ponderation.practice']"
-    confidence: inferred
-  workflowEditNodeFormPonderationIndividualField:
-    strategy: "{workflowEditNodeFormPonderationGroup} [name='ponderation.individual']"
-    confidence: inferred
-  workflowEditNodeFormSpecificEducationSwitch:
-    strategy: null
-    confidence: unresolved
-  workflowEditNodeFormLinkWorkflowButton:
-    strategy: "{workflowEditNodeForm} first action button in action area with text 'Link workflow', or 'Remove linked activity' (course parent, linked), or 'Remove linked course' (program parent, linked)"
-    confidence: inferred
-  workflowEditNodeFormDuplicateButton:
-    strategy: "{workflowEditNodeForm} button with text 'Duplicate'"
-    confidence: inferred
-  workflowEditNodeFormDeleteButton:
-    strategy: "{workflowEditNodeForm} button with text 'Delete'"
-    confidence: inferred
-  workflowLinkWorkflowDialog:
-    strategy: null
-    confidence: unresolved
-  workflowLinkWorkflowDialogTitle:
-    strategy: null
-    confidence: unresolved
-  workflowLinkWorkflowDialogSearchField:
-    strategy: "{workflowLinkWorkflowDialog} input with label 'Search'"
-    confidence: inferred
-  workflowLinkWorkflowDialogSearchResults:
-    strategy: null
-    confidence: unresolved
-  workflowCard:
-    strategy: "{workflowLinkWorkflowDialogSearchResults} workflow card"
-    confidence: inferred
-  workflowLinkWorkflowDialogEmptyState:
-    strategy: null
-    confidence: unresolved
-  workflowLinkWorkflowDialogCancelButton:
-    strategy: "{workflowLinkWorkflowDialog} button with text 'Cancel'"
-    confidence: inferred
-  workflowLinkWorkflowDialogLinkButton:
-    strategy: "{workflowLinkWorkflowDialog} button with text 'Link activity' (course parent workflow type) or 'Link course' (program parent workflow type)"
-    confidence: inferred
+  workflowView: "canonical_locators.yaml -> workflowView"
+  workflowSectionContainer: "canonical_locators.yaml -> workflowSectionContainer"
+  workflowNode: "canonical_locators.yaml -> workflowNode"
+  workflowRightSidebar: "canonical_locators.yaml -> workflowRightSidebar"
+  workflowRightSidebarEditTab: "canonical_locators.yaml -> workflowRightSidebarEditTab"
+  workflowRightSidebarEditTabContent: "canonical_locators.yaml -> workflowRightSidebarEditTabContent"
+  workflowEditNodeForm: "canonical_locators.yaml -> workflowEditNodeForm"
+  workflowEditNodeFormHeading: "canonical_locators.yaml -> workflowEditNodeFormHeading"
+  workflowEditNodeFormTitleField: "canonical_locators.yaml -> workflowEditNodeFormTitleField"
+  workflowEditNodeFormDescriptionField: "canonical_locators.yaml -> workflowEditNodeFormDescriptionField"
+  workflowRichTextDescriptionEditor: "canonical_locators.yaml -> workflowRichTextDescriptionEditor"
+  workflowRichTextDescriptionEditorToolbar: "canonical_locators.yaml -> workflowRichTextDescriptionEditorToolbar"
+  workflowRichTextDescriptionEditorBoldButton: "canonical_locators.yaml -> workflowRichTextDescriptionEditorBoldButton"
+  workflowRichTextDescriptionEditorItalicButton: "canonical_locators.yaml -> workflowRichTextDescriptionEditorItalicButton"
+  workflowRichTextDescriptionEditorUnderlineButton: "canonical_locators.yaml -> workflowRichTextDescriptionEditorUnderlineButton"
+  workflowRichTextDescriptionEditorSuperscriptButton: "canonical_locators.yaml -> workflowRichTextDescriptionEditorSuperscriptButton"
+  workflowRichTextDescriptionEditorSubscriptButton: "canonical_locators.yaml -> workflowRichTextDescriptionEditorSubscriptButton"
+  workflowRichTextDescriptionEditorBulletListButton: "canonical_locators.yaml -> workflowRichTextDescriptionEditorBulletListButton"
+  workflowRichTextDescriptionEditorNumberedListButton: "canonical_locators.yaml -> workflowRichTextDescriptionEditorNumberedListButton"
+  workflowRichTextDescriptionEditorLinkButton: "canonical_locators.yaml -> workflowRichTextDescriptionEditorLinkButton"
+  workflowRichTextDescriptionEditorLinkDialog: "canonical_locators.yaml -> workflowRichTextDescriptionEditorLinkDialog"
+  workflowEditNodeFormActivityContextSelect: "canonical_locators.yaml -> workflowEditNodeFormActivityContextSelect"
+  workflowEditNodeFormCourseContextSelect: "canonical_locators.yaml -> workflowEditNodeFormCourseContextSelect"
+  workflowEditNodeFormTaskTypeSelect: "canonical_locators.yaml -> workflowEditNodeFormTaskTypeSelect"
+  workflowEditNodeFormTimeField: "canonical_locators.yaml -> workflowEditNodeFormTimeField"
+  workflowEditNodeFormCreditsField: "canonical_locators.yaml -> workflowEditNodeFormCreditsField"
+  workflowEditNodeFormTagsAutocomplete: "canonical_locators.yaml -> workflowEditNodeFormTagsAutocomplete"
+  workflowEditNodeFormPonderationGroup: "canonical_locators.yaml -> workflowEditNodeFormPonderationGroup"
+  workflowEditNodeFormPonderationTheoryField: "canonical_locators.yaml -> workflowEditNodeFormPonderationTheoryField"
+  workflowEditNodeFormPonderationPracticeField: "canonical_locators.yaml -> workflowEditNodeFormPonderationPracticeField"
+  workflowEditNodeFormPonderationIndividualField: "canonical_locators.yaml -> workflowEditNodeFormPonderationIndividualField"
+  workflowEditNodeFormSpecificEducationSwitch: "canonical_locators.yaml -> workflowEditNodeFormSpecificEducationSwitch"
+  workflowEditNodeFormLinkWorkflowButton: "canonical_locators.yaml -> workflowEditNodeFormLinkWorkflowButton"
+  workflowEditNodeFormDuplicateButton: "canonical_locators.yaml -> workflowEditNodeFormDuplicateButton"
+  workflowEditNodeFormDeleteButton: "canonical_locators.yaml -> workflowEditNodeFormDeleteButton"
+  workflowLinkWorkflowDialog: "canonical_locators.yaml -> workflowLinkWorkflowDialog"
+  workflowLinkWorkflowDialogTitle: "canonical_locators.yaml -> workflowLinkWorkflowDialogTitle"
+  workflowLinkWorkflowDialogSearchField: "canonical_locators.yaml -> workflowLinkWorkflowDialogSearchField"
+  workflowLinkWorkflowDialogSearchResults: "canonical_locators.yaml -> workflowLinkWorkflowDialogSearchResults"
+  workflowCard: "canonical_locators.yaml -> workflowCard"
+  workflowLinkWorkflowDialogEmptyState: "canonical_locators.yaml -> workflowLinkWorkflowDialogEmptyState"
+  workflowLinkWorkflowDialogCancelButton: "canonical_locators.yaml -> workflowLinkWorkflowDialogCancelButton"
+  workflowLinkWorkflowDialogLinkButton: "canonical_locators.yaml -> workflowLinkWorkflowDialogLinkButton"
 
 requirements:
   - id: FR-WF-EN-001
-    title: Open workflowEditNodeForm when a workflowNode is selected in workflowView
+    title: Open workflowEditNodeForm when user clicks a workflowNode in workflowView
 
     designEvidence:
       - FIGMA-WF-EN-ACTIVITY-OE
@@ -203,6 +192,7 @@ requirements:
       - workflowEditNodeFormHeading
 
     preconditions:
+      - documentPreconditions for this file hold
       - workflowView is rendered
       - workflowView contains at least one workflowSectionContainer
 
@@ -213,14 +203,15 @@ requirements:
 
     mainFlow:
       - system identifies the workflowNode to bind — for click triggers, the workflowNode under the clicked target; for drag-and-drop triggers, the workflowNode just finalized at the drop destination per FR-WF-ADD-004, FR-WF-ADD-005, or FR-WF-ADD-006
+      - for click triggers on workflowNodeContent only, if the clicked workflowNode shows workflowNodeOutcomeHighlightBorder per tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml FR-WF-NODE-003, the click is a no-op — workflowRightSidebar tab, selection, and binding are unchanged and workflowEditNodeForm is not opened or rebound; this no-op does not apply to workflowNodeHoverActionsMenuCommentsItem per FR-WF-NODE-005 or to workflowRightSidebarEditTab after comments for that workflowNode per FR-WF-COMMENTS-005
       - if workflowRightSidebar is closed, system opens workflowRightSidebar with workflowRightSidebarEditTab selected
-      - if workflowRightSidebar is open on a different tab (including workflowRightSidebarAddTab, which is the active tab at the moment of a drag-and-drop trigger) or a different selection, system switches workflowRightSidebar to workflowRightSidebarEditTab and rebinds workflowRightSidebarEditTabContent to the identified workflowNode
+      - if workflowRightSidebar is open on a different tab (including workflowRightSidebarAddTab at the moment of a drag-and-drop trigger) or a different selection, system switches workflowRightSidebar to workflowRightSidebarEditTab and rebinds workflowRightSidebarEditTabContent to the identified workflowNode; for drag-and-drop triggers, post-drop sidebar behavior per FR-WF-ADD-004
       - system renders workflowEditNodeForm inside workflowRightSidebarEditTabContent bound to the identified workflowNode
       - workflowEditNodeFormHeading reads 'Edit node'
       - field set inside workflowEditNodeForm follows the parent workflow type per FR-WF-EN-002 (activity), FR-WF-EN-003 / FR-WF-EN-004 (course, depending on whether the workflowNode has a linked workflow), or FR-WF-EN-005 / FR-WF-EN-006 (program, depending on whether the workflowNode has a linked workflow)
       - editable field changes auto-save per FR-WF-EN-007 without an explicit save control on workflowEditNodeForm
-      - canvas presentation of workflowNodeTitle, workflowNodeMeta tags, and workflowNodeLinkedWorkflowIndicator in workflowView uses the same field values and applicability as workflowEditNodeForm per FR-WF-EN-002 through FR-WF-EN-006 and FR-WF-EN-010; layout and chrome on the canvas conform to tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml FR-WF-NODE-001
-      - edit affordance follows the actor's role per this FR's roleBehavior block and the per-type field-set FRs (FR-WF-EN-002, FR-WF-EN-003, FR-WF-EN-004, FR-WF-EN-005, FR-WF-EN-006)
+      - canvas presentation of workflowNodeTitle, workflowNodeMeta tags, and workflowNodeLinkedWorkflowIndicator in workflowView uses the same field values and applicability as workflowEditNodeForm per FR-WF-EN-002 through FR-WF-EN-006; layout and chrome on the canvas conform to FR-WF-NODE-001
+      - field-level read-only when linked per FR-WF-EN-004 or FR-WF-EN-006
 
     roleBehavior:
       owner:
@@ -237,7 +228,9 @@ requirements:
     acceptanceCriteria:
       - given workflowRightSidebar is closed, when user clicks a workflowNode, then workflowRightSidebar opens, workflowRightSidebarEditTab is selected, and workflowEditNodeForm is rendered for that workflowNode
       - given workflowRightSidebar is already open on a different selection or tab, when user clicks a workflowNode, then workflowRightSidebar switches to workflowRightSidebarEditTab and workflowEditNodeForm is rebound to the clicked workflowNode
-      - given owner or editor completes a drop from workflowRightSidebarAddTabContent that finalizes a new workflowNode per FR-WF-ADD-004, FR-WF-ADD-005, or FR-WF-ADD-006, workflowRightSidebar switches from workflowRightSidebarAddTab to workflowRightSidebarEditTab and workflowEditNodeForm opens bound to the newly-created workflowNode
+      - given workflowNode N shows workflowNodeOutcomeHighlightBorder per tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml FR-WF-NODE-003, when the user clicks workflowNodeContent on workflowNode N, workflowRightSidebar state and workflowEditNodeForm binding are unchanged
+      - given workflowNode N shows workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003, when the user opens comments for N via workflowNodeHoverActionsMenuCommentsItem per FR-WF-NODE-005 and FR-WF-COMMENTS-001 and then clicks workflowRightSidebarEditTab, workflowEditNodeForm is rendered for N per this FR and is not blocked by N showing workflowNodeOutcomeHighlightBorder
+      - given owner or editor completes a drop from workflowRightSidebarAddTabContent that finalizes a new workflowNode per FR-WF-ADD-004, FR-WF-ADD-005, or FR-WF-ADD-006, post-drop sidebar and edit-form behavior per FR-WF-ADD-004
       - when workflowEditNodeForm is rendered, workflowEditNodeFormHeading text is 'Edit node'
 
     openQuestions: []
@@ -260,7 +253,7 @@ requirements:
       - workflowEditNodeForm
       - workflowEditNodeFormTitleField
       - workflowEditNodeFormDescriptionField
-      - workflowEditNodeFormContextSelect
+      - workflowEditNodeFormActivityContextSelect
       - workflowEditNodeFormTaskTypeSelect
       - workflowEditNodeFormTimeField
       - workflowEditNodeFormTagsAutocomplete
@@ -270,6 +263,7 @@ requirements:
     preconditions:
       - FR-WF-EN-001 has rendered workflowEditNodeForm
       - parent workflow type is activity
+      - workflowEditNodeForm permissions per FR-WF-EN-001 roleBehavior
 
     trigger:
       - workflowEditNodeForm is rendered for a workflowNode whose parent workflow type is activity
@@ -277,28 +271,23 @@ requirements:
     mainFlow:
       - workflowEditNodeForm shows workflowEditNodeFormTitleField
       - workflowEditNodeForm shows workflowEditNodeFormDescriptionField
-      - workflowEditNodeForm shows workflowEditNodeFormContextSelect
+      - workflowEditNodeForm shows workflowEditNodeFormActivityContextSelect
       - workflowEditNodeForm shows workflowEditNodeFormTaskTypeSelect
       - workflowEditNodeForm shows workflowEditNodeFormTimeField
       - workflowEditNodeForm shows workflowEditNodeFormTagsAutocomplete
-      - workflowEditNodeForm does not render program-only or course-only metadata controls when parent workflow type is activity
+      - workflowEditNodeForm does not render program-only or course-only metadata controls, including workflowEditNodeFormCourseContextSelect, when parent workflow type is activity
+      - workflowEditNodeForm does not render workflowEditNodeFormLinkWorkflowButton per FR-WF-EN-010
       - workflowEditNodeForm shows workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton in its action area
 
-    roleBehavior:
-      owner:
-        workflowEditNodeForm: editableWhereApplicable
-      editor:
-        workflowEditNodeForm: editableWhereApplicable
-      commenter:
-        workflowEditNodeForm: readOnlyPresentation
-      viewer:
-        workflowEditNodeForm: readOnlyPresentation
-      user:
-        workflowEditNodeForm: readOnlyPresentation
+    roleBehavior: {}
 
     acceptanceCriteria:
-      - given parent workflow type is activity, when workflowEditNodeForm is rendered, the visible fields are exactly workflowEditNodeFormTitleField, workflowEditNodeFormDescriptionField, workflowEditNodeFormContextSelect, workflowEditNodeFormTaskTypeSelect, workflowEditNodeFormTimeField, and workflowEditNodeFormTagsAutocomplete
+      - given parent workflow type is activity, when workflowEditNodeForm is rendered, the visible fields are exactly workflowEditNodeFormTitleField, workflowEditNodeFormDescriptionField, workflowEditNodeFormActivityContextSelect, workflowEditNodeFormTaskTypeSelect, workflowEditNodeFormTimeField, and workflowEditNodeFormTagsAutocomplete
+      - given parent workflow type is activity, when workflowEditNodeForm is rendered, workflowEditNodeFormActivityContextSelect offers exactly the options defined in uiObjectDefinitions for workflowEditNodeFormActivityContextSelect
+      - given parent workflow type is activity, when workflowEditNodeForm is rendered, workflowEditNodeFormTaskTypeSelect offers exactly the options defined in uiObjectDefinitions for workflowEditNodeFormTaskTypeSelect
       - given parent workflow type is activity, workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are present in the form's action area
+      - given parent workflow type is activity, workflowEditNodeForm does not render workflowEditNodeFormLinkWorkflowButton per FR-WF-EN-010
+      - given actor is commenter, viewer, or user (published-access), workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton actionability per FR-WF-DUP-001 and FR-WF-DEL-001 respectively
 
     openQuestions: []
 
@@ -319,7 +308,7 @@ requirements:
       - workflowEditNodeForm
       - workflowEditNodeFormTitleField
       - workflowEditNodeFormDescriptionField
-      - workflowEditNodeFormContextSelect
+      - workflowEditNodeFormCourseContextSelect
       - workflowEditNodeFormTimeField
       - workflowEditNodeFormTagsAutocomplete
       - workflowEditNodeFormLinkWorkflowButton
@@ -330,6 +319,8 @@ requirements:
       - FR-WF-EN-001 has rendered workflowEditNodeForm
       - parent workflow type is course
       - the workflowNode has no linked workflow
+      - workflowEditNodeForm permissions per FR-WF-EN-001 roleBehavior
+      - workflowEditNodeFormLinkWorkflowButton permissions per FR-WF-EN-010 roleBehavior
 
     trigger:
       - workflowEditNodeForm is rendered for an unlinked workflowNode whose parent workflow type is course
@@ -337,26 +328,18 @@ requirements:
     mainFlow:
       - workflowEditNodeForm shows workflowEditNodeFormTitleField
       - workflowEditNodeForm shows workflowEditNodeFormDescriptionField
-      - workflowEditNodeForm shows workflowEditNodeFormContextSelect
+      - workflowEditNodeForm shows workflowEditNodeFormCourseContextSelect
       - workflowEditNodeForm shows workflowEditNodeFormTimeField
       - workflowEditNodeForm shows workflowEditNodeFormTagsAutocomplete
-      - workflowEditNodeForm does not render activity-only or program-only metadata controls when parent workflow type is course
-      - workflowEditNodeForm shows workflowEditNodeFormLinkWorkflowButton, workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton in its action area;
+      - workflowEditNodeForm does not render activity-only or program-only metadata controls, including workflowEditNodeFormActivityContextSelect and workflowEditNodeFormTaskTypeSelect, when parent workflow type is course
+      - workflowEditNodeForm shows workflowEditNodeFormLinkWorkflowButton labeled 'Link an activity', workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton in its action area
 
-    roleBehavior:
-      owner:
-        workflowEditNodeForm: editableWhereApplicable
-      editor:
-        workflowEditNodeForm: editableWhereApplicable
-      commenter:
-        workflowEditNodeForm: readOnlyPresentation
-      viewer:
-        workflowEditNodeForm: readOnlyPresentation
-      user:
-        workflowEditNodeForm: readOnlyPresentation
+    roleBehavior: {}
 
     acceptanceCriteria:
-      - given parent workflow type is course and the workflowNode has no linked workflow, the visible fields in workflowEditNodeForm are workflowEditNodeFormTitleField, workflowEditNodeFormDescriptionField, workflowEditNodeFormContextSelect, workflowEditNodeFormTimeField, and workflowEditNodeFormTagsAutocomplete; workflowEditNodeFormLinkWorkflowButton, workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are also visible in the action area
+      - given parent workflow type is course and the workflowNode has no linked workflow, the visible fields in workflowEditNodeForm are workflowEditNodeFormTitleField, workflowEditNodeFormDescriptionField, workflowEditNodeFormCourseContextSelect, workflowEditNodeFormTimeField, and workflowEditNodeFormTagsAutocomplete; workflowEditNodeFormLinkWorkflowButton, workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are also visible in the action area
+      - given parent workflow type is course and the workflowNode has no linked workflow, workflowEditNodeFormCourseContextSelect offers exactly the options defined in uiObjectDefinitions for workflowEditNodeFormCourseContextSelect
+      - given parent workflow type is course and the workflowNode has no linked workflow, workflowEditNodeFormLinkWorkflowButton displays 'Link an activity'
 
     openQuestions: []
 
@@ -378,7 +361,7 @@ requirements:
       - workflowEditNodeFormTitleField
       - workflowEditNodeFormLinkWorkflowButton
       - workflowEditNodeFormDescriptionField
-      - workflowEditNodeFormContextSelect
+      - workflowEditNodeFormCourseContextSelect
       - workflowEditNodeFormTimeField
       - workflowEditNodeFormTagsAutocomplete
       - workflowEditNodeFormDuplicateButton
@@ -388,34 +371,27 @@ requirements:
       - FR-WF-EN-001 has rendered workflowEditNodeForm
       - parent workflow type is course
       - the workflowNode has a linked activity workflow per FR-WF-EN-010
+      - workflowEditNodeForm permissions per FR-WF-EN-001 roleBehavior
+      - workflowEditNodeFormLinkWorkflowButton permissions per FR-WF-EN-010 roleBehavior
 
     trigger:
-      - workflowEditNodeForm is rendered for a workflowNode of node type activity in a course workflow whose linkedWorkflow is set
+      - workflowEditNodeForm is rendered for a course workflowNode whose linkedWorkflow is set
 
     mainFlow:
       - workflowEditNodeFormTitleField is rendered at the top of workflowEditNodeForm and is read-only for every actor; its visible value is the linked activity workflow's workflowTitle
-      - workflowEditNodeFormLinkWorkflowButton is rendered as the first control in the action area with label 'Remove linked activity' for owner and editor (active — click clears the link per FR-WF-EN-011); for commenter, viewer, and user (published-access) it shows the same label but is disabled (no-op on click)
+      - workflowEditNodeFormLinkWorkflowButton is rendered as the first control in the action area with label 'Remove linked activity'; workflowEditNodeFormLinkWorkflowButton permissions per FR-WF-EN-010 roleBehavior; when owner or editor clicks workflowEditNodeFormLinkWorkflowButton, the link is cleared per FR-WF-EN-011
       - workflowEditNodeFormDescriptionField and workflowEditNodeFormTimeField display the linked activity workflow's workflowMetadataFieldDescription and workflowMetadataFieldTime respectively and are read-only for every actor; changing those values requires editing the linked activity workflow (not this node's form)
-      - workflowEditNodeForm still shows workflowEditNodeFormContextSelect and workflowEditNodeFormTagsAutocomplete; these are node-local metadata when parent workflow type is course (stored on the workflowNode, not mirrored from linkedWorkflow), are not sourced from the linked activity workflow, and remain editable for owner/editor
+      - workflowEditNodeForm still shows workflowEditNodeFormCourseContextSelect and workflowEditNodeFormTagsAutocomplete; these are course-node-local metadata, are not sourced from the linked activity workflow, and remain editable for owner/editor
       - workflowEditNodeForm shows workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton in its action area
 
-    roleBehavior:
-      owner:
-        workflowEditNodeForm: editableWhereApplicable
-      editor:
-        workflowEditNodeForm: editableWhereApplicable
-      commenter:
-        workflowEditNodeForm: readOnlyPresentation
-      viewer:
-        workflowEditNodeForm: readOnlyPresentation
-      user:
-        workflowEditNodeForm: readOnlyPresentation
+    roleBehavior: {}
 
     acceptanceCriteria:
       - given parent workflow type is course and the workflowNode has a linked activity workflow, workflowEditNodeFormTitleField is rendered read-only at the top and displays the linked activity workflow's workflowTitle
       - given parent workflow type is course and the workflowNode has a linked activity workflow, workflowEditNodeFormDescriptionField and workflowEditNodeFormTimeField are read-only for every actor and mirror the linked activity workflow's workflowMetadataFieldDescription and workflowMetadataFieldTime respectively; updates follow only when those metadata fields change on the linked activity workflow
-      - given parent workflow type is course and the workflowNode has a linked activity workflow, workflowEditNodeFormContextSelect and workflowEditNodeFormTagsAutocomplete are still rendered as node-local metadata when parent workflow type is course and remain editable for owner/editor (they are not forced to read-only by the linked workflow)
-      - given parent workflow type is course and the workflowNode has a linked activity workflow, workflowEditNodeFormLinkWorkflowButton displays 'Remove linked activity' and is active for owner and editor and disabled for commenter, viewer, and user; workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are present in the form's action area
+      - given parent workflow type is course and the workflowNode has a linked activity workflow, workflowEditNodeFormCourseContextSelect and workflowEditNodeFormTagsAutocomplete are still rendered as course-node-local metadata and remain editable for owner/editor (they are not forced to read-only by the linked workflow)
+      - given parent workflow type is course and the workflowNode has a linked activity workflow, workflowEditNodeFormCourseContextSelect offers the same option set as on unlinked course nodes per FR-WF-EN-003
+      - given parent workflow type is course and the workflowNode has a linked activity workflow, workflowEditNodeFormLinkWorkflowButton displays 'Remove linked activity' and permissions per FR-WF-EN-010 roleBehavior; workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are present in the form's action area
 
     openQuestions: []
 
@@ -452,6 +428,8 @@ requirements:
       - FR-WF-EN-001 has rendered workflowEditNodeForm
       - parent workflow type is program
       - the workflowNode has no linked workflow
+      - workflowEditNodeForm permissions per FR-WF-EN-001 roleBehavior
+      - workflowEditNodeFormLinkWorkflowButton permissions per FR-WF-EN-010 roleBehavior
 
     trigger:
       - workflowEditNodeForm is rendered for an unlinked workflowNode whose parent workflow type is program
@@ -464,23 +442,14 @@ requirements:
       - workflowEditNodeForm shows workflowEditNodeFormPonderationGroup containing workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField
       - workflowEditNodeForm shows workflowEditNodeFormSpecificEducationSwitch
       - workflowEditNodeForm shows workflowEditNodeFormTagsAutocomplete
-      - workflowEditNodeForm does not render activity-only or course-only metadata controls when parent workflow type is program
-      - workflowEditNodeForm shows workflowEditNodeFormLinkWorkflowButton, workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton in its action area
+      - workflowEditNodeForm does not render activity-only or course-only metadata controls, including workflowEditNodeFormActivityContextSelect, workflowEditNodeFormCourseContextSelect, and workflowEditNodeFormTaskTypeSelect, when parent workflow type is program
+      - workflowEditNodeForm shows workflowEditNodeFormLinkWorkflowButton labeled 'Link a course', workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton in its action area
 
-    roleBehavior:
-      owner:
-        workflowEditNodeForm: editableWhereApplicable
-      editor:
-        workflowEditNodeForm: editableWhereApplicable
-      commenter:
-        workflowEditNodeForm: readOnlyPresentation
-      viewer:
-        workflowEditNodeForm: readOnlyPresentation
-      user:
-        workflowEditNodeForm: readOnlyPresentation
+    roleBehavior: {}
 
     acceptanceCriteria:
       - given parent workflow type is program and the workflowNode has no linked workflow, the visible fields in workflowEditNodeForm are, in order, workflowEditNodeFormTitleField, workflowEditNodeFormDescriptionField, workflowEditNodeFormTimeField, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationGroup (with its three hours fields), workflowEditNodeFormSpecificEducationSwitch, and workflowEditNodeFormTagsAutocomplete; workflowEditNodeFormLinkWorkflowButton, workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are visible in the action area
+      - given parent workflow type is program and the workflowNode has no linked workflow, workflowEditNodeFormLinkWorkflowButton displays 'Link a course'
       - given parent workflow type is program and the workflowNode is newly created (no prior user interaction with workflowEditNodeFormSpecificEducationSwitch), workflowEditNodeFormSpecificEducationSwitch defaults to OFF
 
     openQuestions: []
@@ -518,37 +487,29 @@ requirements:
       - FR-WF-EN-001 has rendered workflowEditNodeForm
       - parent workflow type is program
       - the workflowNode has a linked course workflow per FR-WF-EN-010
+      - workflowEditNodeForm permissions per FR-WF-EN-001 roleBehavior
+      - workflowEditNodeFormLinkWorkflowButton permissions per FR-WF-EN-010 roleBehavior
 
     trigger:
-      - workflowEditNodeForm is rendered for a workflowNode of node type course in a program workflow whose linkedWorkflow is set
+      - workflowEditNodeForm is rendered for a program workflowNode whose linkedWorkflow is set
 
     mainFlow:
       - workflowEditNodeFormTitleField is rendered at the top of workflowEditNodeForm and is read-only for every actor; its visible value is the linked course workflow's workflowTitle
-      - workflowEditNodeFormLinkWorkflowButton is rendered as the first control in the action area with label 'Remove linked course' for owner and editor (active — click clears the link per FR-WF-EN-011); for commenter, viewer, and user (published-access) it shows the same label but is disabled (no-op on click)
-      - workflowEditNodeFormDescriptionField, workflowEditNodeFormTimeField, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField display the linked course workflow's workflowMetadataFieldDescription, workflowMetadataFieldTime, workflowMetadataFieldCredits, workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, and workflowMetadataFieldIndividualTime respectively (all canonically defined in tests/docs/requirements/original/workflow_overview_requirements_v1.yaml) and are read-only for every actor; changing those values requires editing the linked course workflow (not this node's form)
-      - workflowEditNodeForm still shows workflowEditNodeFormTagsAutocomplete; tags are node-local metadata when parent workflow type is program (stored on the workflowNode, not mirrored from linkedWorkflow), are not sourced from the linked course workflow, and remain editable for owner/editor
+      - workflowEditNodeFormLinkWorkflowButton is rendered as the first control in the action area with label 'Remove linked course'; workflowEditNodeFormLinkWorkflowButton permissions per FR-WF-EN-010 roleBehavior; when owner or editor clicks workflowEditNodeFormLinkWorkflowButton, the link is cleared per FR-WF-EN-011
+      - workflowEditNodeFormDescriptionField, workflowEditNodeFormTimeField, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField display the linked course workflow's workflowMetadataFieldDescription, workflowMetadataFieldTime, workflowMetadataFieldCredits, workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, and workflowMetadataFieldIndividualTime respectively (canonically defined as workflowMetadataField* per workflow_overview requirements; overview rollup per FR-WF-OV-003 through FR-WF-OV-006) and are read-only for every actor; changing those values requires editing the linked course workflow (not this node's form)
+      - workflowEditNodeForm still shows workflowEditNodeFormTagsAutocomplete; tags are program-node-local metadata, are not sourced from the linked course workflow, and remain editable for owner/editor
       - workflowEditNodeForm still shows workflowEditNodeFormSpecificEducationSwitch; it remains editable for owner/editor even while a link exists
-      - workflowEditNodeForm does not render activity-only or course-only metadata controls when parent workflow type is program
+      - workflowEditNodeForm does not render activity-only or course-only metadata controls, including workflowEditNodeFormActivityContextSelect, workflowEditNodeFormCourseContextSelect, and workflowEditNodeFormTaskTypeSelect, when parent workflow type is program
       - workflowEditNodeForm shows workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton in its action area
 
-    roleBehavior:
-      owner:
-        workflowEditNodeForm: editableWhereApplicable
-      editor:
-        workflowEditNodeForm: editableWhereApplicable
-      commenter:
-        workflowEditNodeForm: readOnlyPresentation
-      viewer:
-        workflowEditNodeForm: readOnlyPresentation
-      user:
-        workflowEditNodeForm: readOnlyPresentation
+    roleBehavior: {}
 
     acceptanceCriteria:
       - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormTitleField is rendered read-only at the top and displays the linked course workflow's workflowTitle
       - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormDescriptionField, workflowEditNodeFormTimeField, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField are read-only for every actor and mirror the linked course workflow's workflowMetadataFieldDescription, workflowMetadataFieldTime, workflowMetadataFieldCredits, workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, and workflowMetadataFieldIndividualTime respectively; updates follow only when those metadata fields change on the linked course workflow
-      - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormTagsAutocomplete is rendered as node-local metadata when parent workflow type is program and remains editable for owner/editor (it is not forced to read-only by the linked workflow)
+      - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormTagsAutocomplete is rendered as program-node-local metadata and remains editable for owner/editor (it is not forced to read-only by the linked workflow)
       - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormSpecificEducationSwitch is rendered and editable for owner/editor
-      - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormLinkWorkflowButton displays 'Remove linked course' and is active for owner and editor and disabled for commenter, viewer, and user; workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are present in the form's action area
+      - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormLinkWorkflowButton displays 'Remove linked course' and permissions per FR-WF-EN-010 roleBehavior; workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are present in the form's action area
 
     openQuestions: []
 
@@ -569,32 +530,100 @@ requirements:
 
     preconditions:
       - workflowEditNodeForm is rendered for a workflowNode
-      - actor is owner or editor
+      - workflowEditNodeForm permissions per FR-WF-EN-001 roleBehavior
 
     trigger:
-      - user types, pastes, clears, or otherwise modifies a value in any editable field on workflowEditNodeForm
+      - user types, pastes, clears, applies a toolbar format on workflowEditNodeFormDescriptionField, inserts or edits a hyperlink on workflowEditNodeFormDescriptionField, or otherwise modifies a value in any editable field on workflowEditNodeForm
 
     mainFlow:
       - system persists changes without an explicit save control on workflowEditNodeForm
-      - if workflowEditNodeFormTitleField is rendered and editable for the actor and the actor clears it, the empty string is persisted as the workflowNode's title; the 'Untitled node' placeholder is a display fallback only and is not auto-substituted into the persisted value; workflowNodeTitle in workflowView shows the same display fallback when persisted title is empty (canvas layout per tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml FR-WF-NODE-001)
+      - workflowEditNodeForm does not render any visible auto-save status indicator (e.g. 'Saving…' or 'Saved')
+      - applying a toolbar format on workflowEditNodeFormDescriptionField or inserting or editing a hyperlink via workflowRichTextDescriptionEditorLinkButton counts as a field modification for auto-save
+      - if workflowEditNodeFormTitleField is rendered and editable for the actor and the actor clears it, the empty string is persisted as the workflowNode's title; the 'Untitled node' placeholder is a display fallback only and is not auto-substituted into the persisted value; workflowNodeTitle in workflowView shows the same display fallback when persisted title is empty (canvas layout per FR-WF-NODE-001)
       - persisted field values are reflected on subsequent re-renders of workflowEditNodeForm for the same workflowNode
+      - downstream overview totals — when the parent workflow has workflowMetadataSwitchCalculateTimeAutomatically ON per FR-WF-OV-003, changes to workflowEditNodeFormTimeField on non-linked nodes and changes to mirrored linked workflowMetadataFieldTime per FR-WF-EN-004 and FR-WF-EN-006 cause workflowMetadataFieldTime on the parent workflow overview to recompute per FR-WF-OV-003
+      - downstream overview ponderation totals — when the parent program workflow has workflowMetadataSwitchCalculatePonderationAutomatically ON per FR-WF-OV-004, changes to workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, or workflowEditNodeFormPonderationIndividualField on non-linked nodes and changes to mirrored linked-course workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, or workflowMetadataFieldIndividualTime per FR-WF-EN-006 cause the corresponding overview ponderation fields to recompute per FR-WF-OV-004
+      - downstream overview credits totals — when the parent program workflow has workflowMetadataSwitchCalculateCreditsAutomatically ON per FR-WF-OV-005, changes to workflowEditNodeFormCreditsField on non-linked nodes and changes to mirrored linked-course workflowMetadataFieldCredits per FR-WF-EN-006 cause workflowMetadataFieldCredits on the parent program overview to recompute per FR-WF-OV-005
+      - downstream overview classification totals — when the parent program workflow has workflowMetadataSwitchCalculateClassificationAutomatically ON per FR-WF-OV-006, changes to workflowEditNodeFormTimeField or workflowEditNodeFormSpecificEducationSwitch on non-linked program nodes cause workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime on the parent program overview to recompute per FR-WF-OV-006
 
-    roleBehavior:
-      owner:
-        workflowEditNodeForm: editableWhereApplicable
-      editor:
-        workflowEditNodeForm: editableWhereApplicable
-      commenter:
-        workflowEditNodeForm: readOnlyPresentation
-      viewer:
-        workflowEditNodeForm: readOnlyPresentation
+    roleBehavior: {}
 
     acceptanceCriteria:
       - given workflowEditNodeForm is open for a workflowNode and actor is owner or editor, when user modifies an editable field, then the change is persisted without an explicit save control click
-      - given workflowEditNodeForm is open and actor is commenter, viewer, or user (published-access), no field is editable and no auto-save fires
+      - given workflowEditNodeForm is open for a workflowNode and actor is owner or editor, when user modifies an editable field, workflowEditNodeForm does not show any visible auto-save status indicator
 
-    openQuestions:
-      - Confirm the exact debounce / save policy and any visible auto-save indicator (e.g., a 'Saving…' or 'Saved' affordance) per Figma; the current implementation persists silently.
+    openQuestions: []
+
+  - id: FR-WF-EN-012
+    title: Rich-text Description field on workflowEditNodeForm and workflowEditOutcomeForm
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowEditNodeFormDescriptionField
+      - workflowEditOutcomeFormDescriptionField
+      - workflowRichTextDescriptionEditor
+      - workflowRichTextDescriptionEditorToolbar
+      - workflowRichTextDescriptionEditorBoldButton
+      - workflowRichTextDescriptionEditorItalicButton
+      - workflowRichTextDescriptionEditorUnderlineButton
+      - workflowRichTextDescriptionEditorSuperscriptButton
+      - workflowRichTextDescriptionEditorSubscriptButton
+      - workflowRichTextDescriptionEditorBulletListButton
+      - workflowRichTextDescriptionEditorNumberedListButton
+      - workflowRichTextDescriptionEditorLinkButton
+      - workflowRichTextDescriptionEditorLinkDialog
+
+    preconditions:
+      - workflowEditNodeFormDescriptionField or workflowEditOutcomeFormDescriptionField is rendered per FR-WF-EN-002 through FR-WF-EN-006 or FR-WF-EO-005
+
+    trigger:
+      - workflowEditNodeFormDescriptionField or workflowEditOutcomeFormDescriptionField renders
+
+    mainFlow:
+      - workflowEditNodeFormDescriptionField and workflowEditOutcomeFormDescriptionField each render workflowRichTextDescriptionEditor labeled 'Description'; neither field is a plain multiline text input
+      - when editable for the actor (owner or editor, and not read-only per FR-WF-EN-004, FR-WF-EN-006, or FR-WF-EO-005 roleBehavior), workflowRichTextDescriptionEditorToolbar is visible with exactly these controls — workflowRichTextDescriptionEditorBoldButton, workflowRichTextDescriptionEditorItalicButton, workflowRichTextDescriptionEditorUnderlineButton, workflowRichTextDescriptionEditorSuperscriptButton, workflowRichTextDescriptionEditorSubscriptButton, workflowRichTextDescriptionEditorBulletListButton, workflowRichTextDescriptionEditorNumberedListButton, and workflowRichTextDescriptionEditorLinkButton — and exposes no other formatting controls (no headings, font size, colour, tables, images, code blocks, or blockquote)
+      - owner or editor can apply each supported format to the current selection or insertion point via the corresponding toolbar control; formatting is reflected immediately in the editor content region
+      - owner or editor can create and edit bulleted and numbered lists via workflowRichTextDescriptionEditorBulletListButton and workflowRichTextDescriptionEditorNumberedListButton
+      - when owner or editor clicks workflowRichTextDescriptionEditorLinkButton with a non-empty text selection, workflowRichTextDescriptionEditorLinkDialog opens so the actor can enter or edit a URL; on confirm, the selected text becomes a hyperlink opening in a new browser tab with `http` or `https` protocol; when owner or editor clicks workflowRichTextDescriptionEditorLinkButton with an empty selection, the system inserts the literal link text 'link', selects it, and opens workflowRichTextDescriptionEditorLinkDialog so the actor can set the URL for that insertion
+      - URLs entered without a protocol are normalized to `https://` on save
+      - when owner or editor pastes content from an external source into workflowRichTextDescriptionEditor, the system strips unsupported formatting and retains only markup for the supported formats listed above (bold, italic, underline, superscript, subscript, bulleted lists, numbered lists, and hyperlinks)
+      - persisted description value is HTML markup limited to the supported formats above; empty description persists as an empty string (editor shows blank content, not placeholder markup)
+      - changes to description content or formatting auto-save per FR-WF-EN-007 when the field is on workflowEditNodeForm and per FR-WF-EO-006 when the field is on workflowEditOutcomeForm
+      - when workflowEditNodeFormDescriptionField mirrors workflowMetadataFieldDescription from a linked workflow per FR-WF-EN-004 or FR-WF-EN-006, the displayed value is the plain-text workflow description from the linked workflow (workflowMetadataFieldDescription remains plain text per workflow_overview requirements); workflowRichTextDescriptionEditorToolbar is not interactive and the content region is not editable
+      - when workflowEditNodeFormDescriptionField is read-only for other reasons per FR-WF-EN-004 or FR-WF-EN-006, or when workflowEditOutcomeFormDescriptionField is read-only per FR-WF-EO-005 roleBehavior, workflowRichTextDescriptionEditorToolbar is not interactive, the content region is not editable, and stored markup is rendered with its formatting applied (not as raw HTML source)
+      - workflowEditNodeFormDescriptionField and workflowEditOutcomeFormDescriptionField are not marked as required
+
+    roleBehavior:
+      owner:
+        workflowRichTextDescriptionEditorToolbar: interactiveWhenFieldEditable
+      editor:
+        workflowRichTextDescriptionEditorToolbar: interactiveWhenFieldEditable
+      commenter:
+        workflowRichTextDescriptionEditorToolbar: readOnlyPresentation
+      viewer:
+        workflowRichTextDescriptionEditorToolbar: readOnlyPresentation
+      user:
+        workflowRichTextDescriptionEditorToolbar: readOnlyPresentation
+
+    acceptanceCriteria:
+      - given workflowEditNodeFormDescriptionField is editable for owner or editor, workflowRichTextDescriptionEditorToolbar shows exactly bold, italic, underline, superscript, subscript, bullet list, numbered list, and link controls and no additional formatting controls
+      - given workflowEditOutcomeFormDescriptionField is editable for owner or editor, the same toolbar controls and restrictions apply per this FR
+      - given owner or editor selects text and applies bold, italic, underline, superscript, or subscript via the corresponding toolbar control, the formatted text is visible in the editor and persists on auto-save per FR-WF-EN-007 or FR-WF-EO-006
+      - given owner or editor creates a bulleted or numbered list, list markers and indentation persist on auto-save
+      - given owner or editor confirms a hyperlink via workflowRichTextDescriptionEditorLinkDialog, the linked text is clickable after reload and uses an `http` or `https` URL
+      - given owner or editor pastes rich content from an external source into workflowRichTextDescriptionEditor, only supported formatting (bold, italic, underline, superscript, subscript, bulleted lists, numbered lists, hyperlinks) is retained in the persisted markup
+      - given workflowEditNodeFormDescriptionField or workflowEditOutcomeFormDescriptionField is read-only for commenter, viewer, or user, workflowRichTextDescriptionEditorToolbar is not interactive and the content region is not editable
+      - given a persisted description contains supported HTML markup, reopening the bound workflowNode or workflowOutcome shows the same formatted content in the editor
+
+    openQuestions: []
 
   - id: FR-WF-EN-008
     title: Open workflowLinkWorkflowDialog from workflowEditNodeForm
@@ -611,11 +640,16 @@ requirements:
       - workflowEditNodeForm
       - workflowEditNodeFormLinkWorkflowButton
       - workflowLinkWorkflowDialog
+      - workflowLinkWorkflowDialogTitle
+      - workflowLinkWorkflowDialogSearchField
+      - workflowLinkWorkflowDialogSearchResults
+      - workflowLinkWorkflowDialogCancelButton
+      - workflowLinkWorkflowDialogLinkButton
 
     preconditions:
       - workflowEditNodeForm is rendered for a workflowNode whose parent workflow type is course or program
       - the workflowNode currently has no linked workflow
-      - actor is owner or editor
+      - workflowEditNodeFormLinkWorkflowButton permissions per FR-WF-EN-010 roleBehavior
 
     trigger:
       - user clicks workflowEditNodeFormLinkWorkflowButton
@@ -623,27 +657,15 @@ requirements:
     mainFlow:
       - system opens workflowLinkWorkflowDialog
       - workflowLinkWorkflowDialog renders workflowLinkWorkflowDialogTitle, workflowLinkWorkflowDialogSearchField, workflowLinkWorkflowDialogSearchResults, workflowLinkWorkflowDialogCancelButton, and workflowLinkWorkflowDialogLinkButton
-      - workflowLinkWorkflowDialogSearchResults is populated per FR-WF-EN-010 from the parent project's own workflows only
-      - when workflowLinkWorkflowDialogSearchResults contains at least one workflowCard, the first workflowCard is selected by default and workflowLinkWorkflowDialogLinkButton shows 'Link activity' or 'Link course' per FR-WF-EN-009
-      - when workflowLinkWorkflowDialogSearchResults contains no workflowCard (the parent project has no eligible same-type workflows), workflowLinkWorkflowDialogEmptyState is rendered in place of the list, no workflowCard is selected, and workflowLinkWorkflowDialogLinkButton is disabled per FR-WF-EN-009
+      - workflowLinkWorkflowDialogTitle reads 'Link an activity' when parent workflow type is course, or 'Link a course' when parent workflow type is program
+      - workflowLinkWorkflowDialogSearchResults is populated per FR-WF-EN-010; initial selection, empty-state, and link-button state on open per FR-WF-EN-009
 
-    roleBehavior:
-      owner:
-        workflowEditNodeFormLinkWorkflowButton: active
-      editor:
-        workflowEditNodeFormLinkWorkflowButton: active
-      commenter:
-        workflowEditNodeFormLinkWorkflowButton: disabled
-      viewer:
-        workflowEditNodeFormLinkWorkflowButton: disabled
-      user:
-        workflowEditNodeFormLinkWorkflowButton: disabled
+    roleBehavior: {}
 
     acceptanceCriteria:
-      - given owner or editor is viewing workflowEditNodeForm for a workflowNode whose parent workflow type is course or program with no linked workflow, when user clicks workflowEditNodeFormLinkWorkflowButton, workflowLinkWorkflowDialog opens with workflowLinkWorkflowDialogSearchField, workflowLinkWorkflowDialogSearchResults, workflowLinkWorkflowDialogCancelButton, and workflowLinkWorkflowDialogLinkButton; when workflowLinkWorkflowDialogSearchResults contains at least one workflowCard, the first card is selected by default and workflowLinkWorkflowDialogLinkButton shows 'Link activity' or 'Link course' per FR-WF-EN-009
-      - given the parent project has no eligible same-type workflow for the workflowNode being edited (per FR-WF-EN-010), when workflowLinkWorkflowDialog opens, workflowLinkWorkflowDialogSearchResults contains no workflowCard, workflowLinkWorkflowDialogEmptyState is rendered, and workflowLinkWorkflowDialogLinkButton is disabled per FR-WF-EN-009
-      - given workflowEditNodeForm is for a workflowNode whose parent workflow type is activity, workflowEditNodeFormLinkWorkflowButton is not present (no entry path to workflowLinkWorkflowDialog) per FR-WF-EN-010
-      - given actor is commenter, viewer, or user (published-access), workflowEditNodeFormLinkWorkflowButton is rendered and disabled (no-op on click) and workflowLinkWorkflowDialog does not open
+      - given owner or editor is viewing workflowEditNodeForm for a course or program workflowNode with no linked workflow, when user clicks workflowEditNodeFormLinkWorkflowButton, workflowLinkWorkflowDialog opens with workflowLinkWorkflowDialogSearchField, workflowLinkWorkflowDialogSearchResults, workflowLinkWorkflowDialogCancelButton, and workflowLinkWorkflowDialogLinkButton; initial selection, empty-state, and link-button state on open per FR-WF-EN-009
+      - given workflowLinkWorkflowDialog is open and parent workflow type is course, workflowLinkWorkflowDialogTitle text is 'Link an activity'
+      - given workflowLinkWorkflowDialog is open and parent workflow type is program, workflowLinkWorkflowDialogTitle text is 'Link a course'
 
     openQuestions: []
 
@@ -662,7 +684,6 @@ requirements:
 
     uiObjects:
       - workflowLinkWorkflowDialog
-      - workflowLinkWorkflowDialogTitle
       - workflowLinkWorkflowDialogSearchField
       - workflowLinkWorkflowDialogSearchResults
       - workflowCard
@@ -675,6 +696,7 @@ requirements:
       - workflowLinkWorkflowDialog is open per FR-WF-EN-008
 
     trigger:
+      - workflowLinkWorkflowDialog is opened per FR-WF-EN-008, or
       - user types in workflowLinkWorkflowDialogSearchField, or
       - user clicks a workflowCard, or
       - user clicks workflowLinkWorkflowDialogLinkButton, or
@@ -683,13 +705,14 @@ requirements:
       - user presses Escape
 
     mainFlow:
+      - on dialog open per FR-WF-EN-008, workflowLinkWorkflowDialogSearchResults is populated per FR-WF-EN-010; when it contains at least one workflowCard, the first workflowCard is selected by default and workflowLinkWorkflowDialogLinkButton shows 'Link activity' or 'Link course' and is enabled; when it contains no workflowCard, workflowLinkWorkflowDialogEmptyState is rendered in place of the list, no workflowCard is selected, and workflowLinkWorkflowDialogLinkButton is disabled
       - when user types in workflowLinkWorkflowDialogSearchField, workflowLinkWorkflowDialogSearchResults is filtered by workflow title; clearing workflowLinkWorkflowDialogSearchField restores the full list
       - workflowLinkWorkflowDialogSearchResults is a single flat list with no grouping; entries are drawn exclusively from the parent project's own workflows per FR-WF-EN-010 (workflows of other projects, including published workflows from other projects, are not eligible)
       - workflowLinkWorkflowDialog does not support keyboard navigation or selection of workflowCard entries; selection is mouse/pointer-based only
       - clicking a workflowCard selects that card as the single proposed link target; only one workflowCard may be selected at a time; clicking a different workflowCard replaces the prior selection
-      - workflowCard presentation and card interactions in workflowLinkWorkflowDialogSearchResults conform to card_content_requirements_v1.yaml
-      - workflowLinkWorkflowDialogLinkButton label is 'Link activity' (course parent) or 'Link course' (program parent) regardless of result-set state; it is enabled when a workflowCard is selected and disabled otherwise — on dialog open with at least one workflowCard, the first workflowCard is selected by default per FR-WF-EN-008 so the button is enabled
-      - when workflowLinkWorkflowDialogSearchResults contains no workflowCard, workflowLinkWorkflowDialogEmptyState is rendered in place of the list and workflowLinkWorkflowDialogLinkButton is disabled (no-op on click); this applies to both (a) the parent project has no eligible same-type workflow for the workflowNode being edited per FR-WF-EN-010 and (b) workflowLinkWorkflowDialogSearchField is non-empty and returns zero matches against a non-empty project candidate set; workflowLinkWorkflowDialog does not offer any affordance to create a new workflow
+      - workflowCard presentation and card interactions in workflowLinkWorkflowDialogSearchResults conform to FR-CARD-* as applicable
+      - workflowLinkWorkflowDialogLinkButton label is 'Link activity' when parent workflow type is course, or 'Link course' when parent workflow type is program, regardless of result-set state; it is enabled when a workflowCard is selected and disabled otherwise
+      - when workflowLinkWorkflowDialogSearchResults contains no workflowCard, workflowLinkWorkflowDialogEmptyState is rendered in place of the list and workflowLinkWorkflowDialogLinkButton is disabled (no-op on click); copy depends on why the list is empty — when workflowLinkWorkflowDialogSearchField is non-empty and returns zero matches against a non-empty eligible candidate set per FR-WF-EN-010, workflowLinkWorkflowDialogEmptyState displays 'There are no exact matches.'; when the parent project has no eligible same-type workflow for the workflowNode being edited per FR-WF-EN-010, workflowLinkWorkflowDialogEmptyState displays a title and subtitle for the link-target workflow type — for course parent workflows the title is 'No activity found' and the subtitle is 'There are currently no activities in this project. Before you can link an activity to a node here, you must first add or create the activity within the project.'; for program parent workflows the title is 'No course found' and the subtitle is 'There are currently no courses in this project. Before you can link a course to a node here, you must first add or create the course within the project.'; workflowLinkWorkflowDialog does not offer any affordance to create a new workflow
       - when user clicks workflowLinkWorkflowDialogLinkButton, system links the selected workflow to the workflowNode, closes workflowLinkWorkflowDialog, and returns to workflowEditNodeForm in its linked-workflow state per FR-WF-EN-004 and FR-WF-EN-006
       - when user clicks workflowLinkWorkflowDialogCancelButton, clicks outside workflowLinkWorkflowDialog, or presses Escape, system closes workflowLinkWorkflowDialog without linking; the workflowNode's linkedWorkflow state is unchanged
 
@@ -700,16 +723,17 @@ requirements:
         workflowLinkWorkflowDialog: editable
 
     acceptanceCriteria:
-      - given workflowLinkWorkflowDialog is open with at least one workflowCard in workflowLinkWorkflowDialogSearchResults, workflowCard conforms to card_content_requirements_v1.yaml
+      - given workflowLinkWorkflowDialog is open with at least one workflowCard in workflowLinkWorkflowDialogSearchResults, workflowCard conforms to FR-CARD-* as applicable
       - given workflowLinkWorkflowDialog is open and workflowLinkWorkflowDialogSearchResults contains at least one workflowCard, the first workflowCard is selected by default and workflowLinkWorkflowDialogLinkButton is enabled
       - given workflowLinkWorkflowDialog is open and workflowLinkWorkflowDialogSearchResults contains no workflowCard, workflowLinkWorkflowDialogEmptyState is rendered in place of the list and workflowLinkWorkflowDialogLinkButton is disabled
-      - given workflowLinkWorkflowDialogEmptyState is rendered and parent workflow type is course, workflowLinkWorkflowDialogEmptyState displays the title 'No activity found' and the subtitle 'There is currently no activity associated with this project. Before you can link an activity to a node here, you must first add or create an activity within the project.'
-      - given workflowLinkWorkflowDialogEmptyState is rendered and parent workflow type is program, workflowLinkWorkflowDialogEmptyState displays the title 'No course found' and the subtitle 'There is currently no course associated with this project. Before you can link a course to a node here, you must first add or create a course within the project.'
+      - given workflowLinkWorkflowDialogEmptyState is rendered because the parent project has no eligible same-type workflow per FR-WF-EN-010 and parent workflow type is course, workflowLinkWorkflowDialogEmptyState displays the title 'No activity found' and the subtitle 'There are currently no activities in this project. Before you can link an activity to a node here, you must first add or create the activity within the project.'
+      - given workflowLinkWorkflowDialogEmptyState is rendered because the parent project has no eligible same-type workflow per FR-WF-EN-010 and parent workflow type is program, workflowLinkWorkflowDialogEmptyState displays the title 'No course found' and the subtitle 'There are currently no courses in this project. Before you can link a course to a node here, you must first add or create the course within the project.'
+      - given workflowLinkWorkflowDialog is open with at least one eligible workflowCard in the candidate set per FR-WF-EN-010, when user types into workflowLinkWorkflowDialogSearchField and zero workflowCards match, workflowLinkWorkflowDialogEmptyState is rendered in place of the list, no workflowCard is selected, workflowLinkWorkflowDialogLinkButton is disabled, and workflowLinkWorkflowDialogEmptyState displays 'There are no exact matches.'
       - given workflowLinkWorkflowDialog is open, when user clicks a workflowCard, that card is shown as selected and any previously selected workflowCard is deselected; workflowLinkWorkflowDialogLinkButton is enabled
       - given a workflowCard is selected and user clicks workflowLinkWorkflowDialogLinkButton, the workflowNode is linked to that workflow, workflowLinkWorkflowDialog closes, and workflowEditNodeForm enters its linked-workflow state per FR-WF-EN-004 and FR-WF-EN-006
       - given workflowLinkWorkflowDialog is open and parent workflow type is course, workflowLinkWorkflowDialogLinkButton displays the label 'Link activity'
       - given workflowLinkWorkflowDialog is open and parent workflow type is program, workflowLinkWorkflowDialogLinkButton displays the label 'Link course'
-      - given workflowLinkWorkflowDialog is open, when user clicks workflowLinkWorkflowDialogCancelButton or clicks outside workflowLinkWorkflowDialog, workflowLinkWorkflowDialog closes and the workflowNode's linkedWorkflow state is unchanged
+      - given workflowLinkWorkflowDialog is open, when user clicks workflowLinkWorkflowDialogCancelButton, clicks outside workflowLinkWorkflowDialog, or presses Escape, workflowLinkWorkflowDialog closes and the workflowNode's linkedWorkflow state is unchanged
       - given workflowLinkWorkflowDialog is open, when user types into workflowLinkWorkflowDialogSearchField, workflowLinkWorkflowDialogSearchResults filters to entries whose title matches the search; when user clears workflowLinkWorkflowDialogSearchField, workflowLinkWorkflowDialogSearchResults restores to the full candidate set per FR-WF-EN-010
 
     openQuestions: []
@@ -724,6 +748,9 @@ requirements:
     actors:
       - owner
       - editor
+      - commenter
+      - viewer
+      - user
 
     uiObjects:
       - workflowEditNodeForm
@@ -734,26 +761,42 @@ requirements:
 
     preconditions:
       - workflowEditNodeForm is rendered for a workflowNode
+      - workflowEditNodeForm permissions per FR-WF-EN-001 roleBehavior
 
     trigger:
       - workflowEditNodeForm is rendered (determines whether workflowEditNodeFormLinkWorkflowButton is present), or
       - workflowLinkWorkflowDialog is opened (determines what workflowLinkWorkflowDialogSearchResults contains)
 
     mainFlow:
-      - when parent workflow type is activity, workflowEditNodeFormLinkWorkflowButton is not rendered; workflowNodes in an activity workflow (node type task) cannot be linked to any workflow
+      - when parent workflow type is activity, workflowEditNodeFormLinkWorkflowButton is not rendered; activity workflowNodes cannot be linked to any workflow
       - workflowLinkWorkflowDialogSearchResults is restricted to workflows whose parent project is the same as the workflowNode being edited; workflows of other projects, including published workflows owned by other projects, are not eligible link targets
-      - when parent workflow type is course, workflowLinkWorkflowDialogSearchResults includes only same-project workflows whose type is activity;
-      - when parent workflow type is program, workflowLinkWorkflowDialogSearchResults includes only same-project workflows whose type is course; 
+      - when parent workflow type is course, workflowLinkWorkflowDialogSearchResults includes only same-project workflows whose type is activity
+      - when parent workflow type is program, workflowLinkWorkflowDialogSearchResults includes only same-project workflows whose type is course
+      - workflowLinkWorkflowDialogSearchResults excludes archived workflows; only non-archived same-project workflows of the eligible type are offered
       - a workflowNode can be linked to at most one workflow at a time
+      - when workflowEditNodeFormLinkWorkflowButton is rendered on course or program workflowNodes, workflowEditNodeFormLinkWorkflowButton actionability per this FR's roleBehavior
 
-    roleBehavior: {}
+    roleBehavior:
+      owner:
+        workflowEditNodeFormLinkWorkflowButton: activeWhenPresent
+      editor:
+        workflowEditNodeFormLinkWorkflowButton: activeWhenPresent
+      commenter:
+        workflowEditNodeFormLinkWorkflowButton: disabledWhenPresent
+      viewer:
+        workflowEditNodeFormLinkWorkflowButton: disabledWhenPresent
+      user:
+        workflowEditNodeFormLinkWorkflowButton: disabledWhenPresent
 
     acceptanceCriteria:
       - given parent workflow type is activity, workflowEditNodeForm does not render workflowEditNodeFormLinkWorkflowButton
       - given workflowLinkWorkflowDialog is open, every workflowCard in workflowLinkWorkflowDialogSearchResults belongs to the same parent project as the workflowNode being edited (no cross-project workflows appear, regardless of published status)
       - given parent workflow type is course and workflowLinkWorkflowDialog is open, every workflowCard in workflowLinkWorkflowDialogSearchResults corresponds to an activity-type workflow within the parent project
       - given parent workflow type is program and workflowLinkWorkflowDialog is open, every workflowCard in workflowLinkWorkflowDialogSearchResults corresponds to a course-type workflow within the parent project
-      - given a workflowNode already has a linked workflow, workflowEditNodeFormLinkWorkflowButton is rendered with label 'Remove linked activity' (course parent) or 'Remove linked course' (program parent); owner and editor can click it to clear the link per FR-WF-EN-011; commenter, viewer, and user (published-access) see the same label but the control is disabled (no-op on click) until the link is cleared by an owner or editor
+      - given activity workflow A in the parent project is archived and parent workflow type is course, when owner or editor opens workflowLinkWorkflowDialog for an unlinked course node, A does not appear in workflowLinkWorkflowDialogSearchResults
+      - given course workflow C in the parent project is archived and parent workflow type is program, when owner or editor opens workflowLinkWorkflowDialog for an unlinked program node, C does not appear in workflowLinkWorkflowDialogSearchResults
+      - given a workflowNode already has a linked workflow, workflowEditNodeFormLinkWorkflowButton label and permissions per this FR's roleBehavior; field presentation per FR-WF-EN-004 or FR-WF-EN-006; unlink per FR-WF-EN-011
+      - given parent workflow type is course or program, the workflowNode has no linked workflow, and actor is commenter, viewer, or user (published-access), workflowEditNodeFormLinkWorkflowButton is rendered and disabled (no-op on click) and workflowLinkWorkflowDialog does not open per FR-WF-EN-008
 
     openQuestions: []
 
@@ -782,6 +825,7 @@ requirements:
     preconditions:
       - workflowEditNodeForm is rendered for a workflowNode whose parent workflow type is course or program
       - the workflowNode currently has a linked workflow
+      - workflowEditNodeFormLinkWorkflowButton permissions per FR-WF-EN-010 roleBehavior
 
     trigger:
       - user clicks workflowEditNodeFormLinkWorkflowButton while it displays 'Remove linked activity' or 'Remove linked course'
@@ -790,17 +834,15 @@ requirements:
       - system clears the workflowNode's linkedWorkflow association immediately on click
       - the workflowNode's own values for title, description, time, and (for program parent workflow type) credits and ponderation hours are preserved while the link is active (they are not overwritten by the linked workflow's metadata, only masked in the read-only mirror fields per FR-WF-EN-004 and FR-WF-EN-006); on link removal those persisted node-local values are restored to their respective fields
       - workflowEditNodeFormTitleField switches from read-only display of the linked workflow's workflowTitle to an editable field for owner/editor and shows the workflowNode's own previously-persisted title (or the placeholder 'Untitled node' if that persisted title is empty per FR-WF-EN-007)
-      - workflowEditNodeFormLinkWorkflowButton label returns to 'Link workflow' and becomes the active entry path to workflowLinkWorkflowDialog per FR-WF-EN-008 for owner and editor
+      - workflowEditNodeFormLinkWorkflowButton label returns to 'Link an activity' when parent workflow type is course, or 'Link a course' when parent workflow type is program, and becomes the active entry path to workflowLinkWorkflowDialog per FR-WF-EN-008 for owner and editor
       - workflowEditNodeFormDescriptionField and workflowEditNodeFormTimeField become editable for owner/editor again and show the workflowNode's own previously-persisted values; for parent workflow type program, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField also become editable for owner/editor again and show the workflowNode's own previously-persisted values
+      - archive-triggered link break — when a linked child workflow is archived individually per tests/docs/requirements/original/workflow_archive_requirements_v1.yaml FR-WF-ARCH-003 (not when the whole parent project is archived per tests/docs/requirements/original/project_archive_requirements_v1.yaml FR-PROJ-ARCH-003), parent nodes pointing at that child lose linkedWorkflow without user action; displayed field values remain on each affected node as editable node-local values per FR-WF-ARCH-003, which differs from this FR's manual unlink path that restores pre-link persisted values
+      - cross-project copy link break — when a workflow is copied to a different destination project per tests/docs/requirements/original/workflow_copy_requirements_v1.yaml FR-WF-COPY-003, copied nodes lose linkedWorkflow with the same node outcomes as FR-WF-ARCH-003; same-project copy preserves linkedWorkflow associations per FR-WF-COPY-003
 
-    roleBehavior:
-      owner:
-        workflowEditNodeFormLinkWorkflowButton: activeWhenLinked
-      editor:
-        workflowEditNodeFormLinkWorkflowButton: activeWhenLinked
+    roleBehavior: {}
 
     acceptanceCriteria:
-      - given the workflowNode has a linked workflow and owner or editor clicks workflowEditNodeFormLinkWorkflowButton ('Remove linked activity' or 'Remove linked course'), the link is cleared immediately with no confirmation dialog; workflowEditNodeFormTitleField becomes editable again and shows the workflowNode's own previously-persisted title (or placeholder), and workflowEditNodeFormLinkWorkflowButton shows 'Link workflow' and is active again as the dialog entry control
+      - given the workflowNode has a linked workflow and owner or editor clicks workflowEditNodeFormLinkWorkflowButton ('Remove linked activity' or 'Remove linked course'), the link is cleared immediately with no confirmation dialog; workflowEditNodeFormTitleField becomes editable again and shows the workflowNode's own previously-persisted title (or placeholder), and workflowEditNodeFormLinkWorkflowButton shows 'Link an activity' when parent workflow type is course or 'Link a course' when parent workflow type is program, and is active again as the dialog entry control
       - given the workflowNode had a linked workflow that is removed, workflowEditNodeFormTitleField, workflowEditNodeFormDescriptionField, and workflowEditNodeFormTimeField are editable for owner/editor again and show the workflowNode's own previously-persisted values (the node-local values that existed at the moment the link was created, plus any node-local edits made while the link existed)
       - given parent workflow type is program and the workflowNode had a linked course workflow that is removed, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField are editable for owner/editor again and show the workflowNode's own previously-persisted values
 

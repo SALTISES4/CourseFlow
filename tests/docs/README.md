@@ -18,7 +18,6 @@ These two domains are related, but they must not be conflated.
 Use this folder for requirement and design-adjacent documents, including:
 
 - functional requirement authoring guidance
-- workflow / node / linked-workflow terminology ([`requirements/terminology_workflow_hierarchy_and_nodes.md`](requirements/terminology_workflow_hierarchy_and_nodes.md))
 - FR-to-UI terminology mapping
 - feature-specific requirement documents
 - legacy or draft requirement references as needed
@@ -52,18 +51,6 @@ When documents overlap, use this order:
 2. testing policy in `testing/adr_ai_test_generation.md`
 3. testing standards and review documents in `testing/`
 4. example-only guides or illustrative snippets
-
-## Source of truth for implementation work
-
-This folder is not only input for Playwright generation. It is the **authoritative specification of product and UI behavior** for the CourseFlow application.
-
-Engineers and AI agents should consult `requirements/` when:
-
-- Debugging incorrect or regressed UI behavior
-- Refactoring features where expected behavior is not obvious from code
-- Deciding whether a change is a bug fix or a spec change
-
-Technical architecture (HTTP contracts, Redux graph model, repository layout) lives in `docs/architecture/`, not here. See [docs/architecture/adr_functional_requirements_source_of_truth.md](../../docs/architecture/adr_functional_requirements_source_of_truth.md).
 
 ## Structural rule
 

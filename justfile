@@ -2,7 +2,6 @@
 # This justfile is a collection of all workflow orchestration scripts
 #
 #  - note that it does not yest replace scripts/provisioning (although that might be a goal)
-#  - it does not replace entrypoint scripts defined in pyproject ('main' executables of the BB app), but it may wrap them
 #  - just cannot control iterm, or chrome etc, so these need to be triggered via osascript files (see scripts/dev_tabs.scpt)
 #  -
 # ----------------------------
@@ -269,7 +268,6 @@ init:
   just checkout-dev
   just init-env
 
-  # user needs to fill out .env values before continuing
   @echo "Before continuing you must fill out the appropriate values in your .env file"
   @echo "see: https://docs.google.com/spreadsheets/d/1yyOEbXIDyuK4Mr1OmnEuCDZtw7Ym2Hi8AB5QSvuKlHU/edit?gid=0#gid=0"
   just commamd-confirm

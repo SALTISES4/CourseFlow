@@ -1,49 +1,44 @@
 # Normalized requirements: workflow header (header, tabs, favourite)
-# Source: tests/docs/__ARCHIVE/functional-requirements.md (Workflow section: header/navigation)
-# Application code evidence: react/src/components/pages/Workspace/Workflow/WorkflowTabs/hooks/useWorkflowTabs.tsx; react/src/components/pages/Workspace/Workflow/index.tsx
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Workflow section: header/navigation) + Figma design evidence.
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Cross-reference: tests/docs/requirements/original/workflow_overview_requirements_v1.yaml (overview content); tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (workflow-level action bar controls); tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml (edit flow launched from context action bar); tests/docs/requirements/original/card_content_requirements_v1.yaml (FR-CARD-005 favourite snackbar copy for workflowHeaderFavouriteToggle)
+# Cross-reference:
+#   - tests/docs/requirements/original/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-002; mid-session unpublish revocation for published-access—FR-WS-ACCESS-003; mid-session contributor removal—FR-WS-ACCESS-004; mid-session archive eviction—FR-WS-ACCESS-005)
+#   - tests/docs/requirements/original/workflow_overview_requirements_v1.yaml (overview sub-view content)
+#   - tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (workflow-level action bar controls)
+#   - tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml (workflowTitle update on save—FR-WF-FORM-003; edit dialog open—FR-WF-FORM-001)
+#   - tests/docs/requirements/original/card_content_requirements_v1.yaml (FR-CARD-005 favourite snackbar copy for workflowHeaderFavouriteToggle)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project of the workflow on any route matching '/workflow/{id}/*', or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+  - routes matching '/workflow/{id}/*' include '/workflow/{id}' (empty suffix) and '/workflow/{id}/<sub-view>' for any sub-view
+  - requirements in this file assume the above hold; when they do not on navigation, assert per tests/docs/requirements/original/workspace_access_requirements_v1.yaml FR-WS-ACCESS-002; when published-access preconditions fail mid-session because the parent project becomes unpublished, assert per FR-WS-ACCESS-003 on the actor's next in-app action; when a former contributor's access changes mid-session because they were removed per tests/docs/requirements/original/project_overview_requirements_v1.yaml FR-PROJ-OV-002, assert per FR-WS-ACCESS-004 on the actor's next in-app action; when the parent project or the current workflow becomes archived while the actor is in workspace, assert per FR-WS-ACCESS-005 on the actor's next in-app action
 
 uiObjectDefinitions:
   workflowHeader:
     meaning: Header region showing workflow title, workflowHeaderFavouriteToggle, and workflowViewTabSelector.
   workflowTitle:
-    meaning: Primary workflow title shown in workflowHeader.
+    meaning: Workflow title text shown in workflowHeader across workflow sub-views.
   workflowHeaderFavouriteToggle:
-    meaning: Favourite toggle control in workflowHeader.
+    meaning: Favourite toggle control in workflowHeader; shows yellow star when favourited and grey star when not favourited.
   workflowViewTabSelector:
-    meaning: Tab selector in workflowHeader for Overview, Workflow, and Outcomes views.
+    meaning: Tab selector in workflowHeader for switching between workflow sub-views.
   globalMessageSnackbar:
-    meaning: Application-wide transient snackbar for async success and error feedback.
+    meaning: Canonical definition in tests/docs/requirements/original/card_content_requirements_v1.yaml (FR-CARD-005).
 
 locatorMappings:
-  workflowHeader:
-    strategy: "Workflow header with title + favourite toggle + tab selector"
-    confidence: inferred
-  workflowTitle:
-    strategy: "{workflowHeader} heading text for current workflow title"
-    confidence: inferred
-  workflowHeaderFavouriteToggle:
-    strategy: "{workflowHeader} favourite toggle control for current workflow"
-    confidence: inferred
-  workflowViewTabSelector:
-    strategy: "{workflowHeader} tab selector with tabs 'Overview', 'Workflow', and 'Outcomes'"
-    confidence: inferred
-  globalMessageSnackbar:
-    strategy: null
-    confidence: unresolved
+  workflowHeader: "canonical_locators.yaml -> workflowHeader"
+  workflowTitle: "canonical_locators.yaml -> workflowTitle"
+  workflowHeaderFavouriteToggle: "canonical_locators.yaml -> workflowHeaderFavouriteToggle"
+  workflowViewTabSelector: "canonical_locators.yaml -> workflowViewTabSelector"
+  globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
 
 requirements:
   - id: FR-WF-HEADER-001
-    title: Workflow header and tab selector
+    title: Workflow header and tab selector on workflow routes
 
     designEvidence:
-      - FIGMA-WF-OV-ACTIVITY-OWNER-EDITOR
-      - FIGMA-WF-OV-COURSE-OWNER-EDITOR
-      - FIGMA-WF-OV-PROGRAM-OWNER-EDITOR
+      - FIGMA-WF-HEADER-DEFAULT
 
     actors:
       - owner
@@ -58,38 +53,39 @@ requirements:
       - workflowViewTabSelector
 
     preconditions:
-      - user navigates to an existing workflow
-      - if actor is user (published-access, no explicit contributor role), parent project is published
+      - documentPreconditions for this file hold
+      - current route matches '/workflow/{id}/*'
 
     trigger:
-      - user opens a workflow and uses workflowViewTabSelector
+      - user opens any route matching '/workflow/{id}/*'
+      - user clicks a tab on workflowViewTabSelector
 
     mainFlow:
-      - workflow view renders workflowHeader with workflowTitle for the current workflow
-      - "workflowViewTabSelector provides exactly three tabs: 'Overview', 'Workflow', and 'Outcomes'"
-      - selecting 'Overview' shows '/workflow/{id}/overview'
-      - selecting 'Workflow' shows '/workflow/{id}/workflow'
-      - selecting 'Outcomes' shows '/workflow/{id}/outcomes'
+      - system renders workflowHeader with workflowTitle for the current workflow
+      - workflowTitle is display-only in workflowHeader; title updates on successful save through editWorkflowDialog per FR-WF-FORM-003
+      - workflowViewTabSelector provides exactly three tabs 'Overview', 'Workflow', and 'Outcomes'
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given workflowHeader is visible, workflowTitle is visible
-      - given actor is user (published-access, no explicit contributor role), workflowHeader is visible only when the parent project is published
-      - given workflowHeader is visible, workflowViewTabSelector shows tabs 'Overview', 'Workflow', and 'Outcomes'
-      - given path is '/workflow/{id}/overview', tab 'Overview' is active
-      - given path is '/workflow/{id}/workflow', tab 'Workflow' is active
-      - given path is '/workflow/{id}/outcomes', tab 'Outcomes' is active
+      - workflowTitle is visible
+      - given actor needs to change workflowTitle, edit path opens editWorkflowDialog per FR-WF-FORM-001; persisted title update per FR-WF-FORM-003
+      - workflowViewTabSelector shows tabs 'Overview', 'Workflow', and 'Outcomes'
+      - selecting 'Overview' on workflowViewTabSelector navigates to '/workflow/{id}'
+      - selecting 'Workflow' on workflowViewTabSelector navigates to '/workflow/{id}/graph'
+      - selecting 'Outcomes' on workflowViewTabSelector navigates to '/workflow/{id}/outcomes'
+      - given current route matches '/workflow/{id}', tab 'Overview' is active on workflowViewTabSelector
+      - given current route matches '/workflow/{id}/graph', tab 'Workflow' is active on workflowViewTabSelector
+      - given current route matches '/workflow/{id}/outcomes', tab 'Outcomes' is active on workflowViewTabSelector
 
     openQuestions: []
 
   - id: FR-WF-HEADER-002
-    title: Add and remove workflow favourite via workflowHeader
+    title: Add and remove workflow favourite on workflow routes
 
     designEvidence:
-      - FIGMA-WF-OV-ACTIVITY-OWNER-EDITOR
-      - FIGMA-WF-OV-COURSE-OWNER-EDITOR
-      - FIGMA-WF-OV-PROGRAM-OWNER-EDITOR
+      - FIGMA-WF-HEADER-DEFAULT
+      - FIGMA-WF-HEADER-FAVOURITE
 
     actors:
       - owner
@@ -104,30 +100,31 @@ requirements:
       - globalMessageSnackbar
 
     preconditions:
+      - documentPreconditions for this file hold
       - workflowHeaderFavouriteToggle is visible
-      - if actor is user (published-access, no explicit contributor role), parent project is published
 
     trigger:
       - user clicks workflowHeaderFavouriteToggle
 
     mainFlow:
+      - workflowHeaderFavouriteToggle shows yellow star when current workflow is favourited and grey star when not favourited on render
       - when user clicks workflowHeaderFavouriteToggle, system attempts to update favourite state for the current workflow
-      - on successful favourite-state update, workflowHeaderFavouriteToggle visual state reflects the new favourite state and globalMessageSnackbar success copy conforms to card_content_requirements_v1.yaml FR-CARD-005
-      - on failed favourite-state update, workflowHeaderFavouriteToggle visual state is unchanged and globalMessageSnackbar error copy conforms to card_content_requirements_v1.yaml FR-CARD-005
+      - on successful favourite-state update, workflowHeaderFavouriteToggle shows yellow star when workflow becomes favourited or grey star when workflow becomes non-favourited, and globalMessageSnackbar success copy conforms to FR-CARD-005
+      - on failed favourite-state update, workflowHeaderFavouriteToggle visual state is unchanged and globalMessageSnackbar error copy conforms to FR-CARD-005
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given actor is user (published-access, no explicit contributor role), workflowHeaderFavouriteToggle is visible only when the parent project is published
-      - given user clicks workflowHeaderFavouriteToggle and favourite-state update succeeds, workflowHeaderFavouriteToggle visual state reflects the new state and globalMessageSnackbar copy conforms to FR-CARD-005
+      - given current workflow is favourited, workflowHeaderFavouriteToggle shows yellow star
+      - given current workflow is not favourited, workflowHeaderFavouriteToggle shows grey star
+      - given user clicks workflowHeaderFavouriteToggle on a non-favourited workflow and favourite-state update succeeds, workflowHeaderFavouriteToggle shows yellow star and globalMessageSnackbar copy conforms to FR-CARD-005
+      - given user clicks workflowHeaderFavouriteToggle on a favourited workflow and favourite-state update succeeds, workflowHeaderFavouriteToggle shows grey star and globalMessageSnackbar copy conforms to FR-CARD-005
       - given user clicks workflowHeaderFavouriteToggle and favourite-state update fails, workflowHeaderFavouriteToggle visual state is unchanged and globalMessageSnackbar copy conforms to FR-CARD-005
 
     openQuestions: []
 
 designEvidenceLinkTable:
-  - key: FIGMA-WF-OV-ACTIVITY-OWNER-EDITOR
-    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-94010&t=6weYZA8hUf6tm7DF-1
-  - key: FIGMA-WF-OV-COURSE-OWNER-EDITOR
+  - key: FIGMA-WF-HEADER-DEFAULT
     hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-103751&t=6weYZA8hUf6tm7DF-1
-  - key: FIGMA-WF-OV-PROGRAM-OWNER-EDITOR
-    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-108254&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-HEADER-FAVOURITE
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-103751&t=6weYZA8hUf6tm7DF-1

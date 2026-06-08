@@ -12,7 +12,7 @@ const ProjectDialogs = () => {
   const { uuid } = useParams()
   const projectUuid = uuid ?? ''
 
-  const { data, refetch, isLoading } = useQuery({
+  const { refetch } = useQuery({
     ...getProjectOptions({
       path: {
         uuid: projectUuid as string

@@ -1,19 +1,22 @@
 # Normalized requirements: project 'Workflows' view (route /project/{id}/workflows)
-# Source: tests/docs/__ARCHIVE/functional-requirements.md (Project workflows scope) + current Project tabs implementation evidence.
-# Application code evidence: react/src/components/pages/Workspace/Project/index.tsx; react/src/components/views/ProjectView/TabWorkflows/index.tsx
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Project workflows scope) + Figma design evidence.
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
 # Cross-reference:
-#   - tests/docs/requirements/original/project_overview_requirements_v1.yaml (shared projectHeader and projectViewTabSelector contracts in FR-PROJ-OV-001; favourites behavior in FR-PROJ-OV-006)
-#   - tests/docs/requirements/original/library_page_requirements_v1.yaml (sort and shared filters — FR-LIB-002, FR-LIB-003)
+#   - tests/docs/requirements/original/workspace_access_requirements_v1.yaml (project access preconditions)
+#   - tests/docs/requirements/original/project_header_requirements_v1.yaml (FR-PROJ-HEADER-001 — projectHeader and projectViewTabSelector)
+#   - tests/docs/requirements/original/project_overview_requirements_v1.yaml (favourites behavior in FR-PROJ-OV-006 where applicable)
+#   - tests/docs/requirements/original/library_page_requirements_v1.yaml (sort and shared filters — FR-LIB-002, FR-LIB-003, FR-LIB-004; consumed by FR-PROJ-WF-002 through FR-PROJ-WF-004; permanent delete removes archived workflowCard from archiveToggle listing—FR-LIB-006)
 #   - tests/docs/requirements/original/card_content_requirements_v1.yaml (workflowCard — FR-CARD-001 through FR-CARD-006 as applicable)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
-  - user has access to a project route
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the project on any route matching '/project/{id}/*', or (b) user (published-access, no explicit contributor role) viewing a project that is published
+  - routes matching '/project/{id}/*' include '/project/{id}' (empty suffix) and '/project/{id}/<sub-view>' for any sub-view
+  - requirements in this file assume the above hold; when they do not, assert per tests/docs/requirements/original/workspace_access_requirements_v1.yaml FR-WS-ACCESS-001
 
 uiObjectDefinitions:
   projectWorkflowsView:
-    meaning: Project Workflows sub-view listing workflows belonging to the project.
+    meaning: Project 'Workflows' sub-view listing workflowCard instances belonging to the current project.
   projectWorkflowsFilterToolbar:
     meaning: Filter toolbar on projectWorkflowsView with sort, ownership, workflow-type, favourites, archive, and keyword controls.
   sortControl:
@@ -25,6 +28,8 @@ uiObjectDefinitions:
   ownershipFilterResetButton:
     meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   workflowTypeFilter:
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
+  workflowTypeFilterSelectionIndicator:
     meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   favouritesToggle:
     meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
@@ -51,74 +56,35 @@ uiObjectDefinitions:
   projectWorkflowsLoadingState:
     meaning: Loading placeholders shown while project workflows query is in progress.
   projectWorkflowsEmptyState:
-    meaning: Empty state shown when no workflows are present in the project workflows listing
+    meaning: Empty-state view in resultsRegion when base scope per FR-PROJ-WF-001 includes no workflowCard instances.
+  projectWorkflowsNoResultsState:
+    meaning: Empty-state view in resultsRegion when filters per FR-PROJ-WF-003 or keyword search per FR-PROJ-WF-004 return zero workflowCard instances within base scope.
   projectWorkflowsErrorState:
     meaning: Error state shown when project workflows query fails.
 
 locatorMappings:
-  projectWorkflowsView:
-    strategy: "URL route pattern '/project/{id}/workflows' with project tab content rendered by TabWorkflows"
-    confidence: inferred
-  projectWorkflowsFilterToolbar:
-    strategy: "{projectWorkflowsView} top filter toolbar region"
-    confidence: inferred
-  sortControl:
-    strategy: "{projectWorkflowsFilterToolbar} SortableFilterButton with placeholder 'Sort'"
-    confidence: inferred
-  sortResetButton:
-    strategy: "{sortControl} clear control when non-default sort is active"
-    confidence: inferred
-  ownershipFilter:
-    strategy: "{projectWorkflowsFilterToolbar} ownership filter control (same canonical object as 'My library')"
-    confidence: inferred
-  ownershipFilterResetButton:
-    strategy: "{ownershipFilter} clear control when active"
-    confidence: inferred
-  workflowTypeFilter:
-    strategy: "{projectWorkflowsFilterToolbar} workflow-type filter control (same canonical object as 'My library')"
-    confidence: inferred
-  favouritesToggle:
-    strategy: "{projectWorkflowsFilterToolbar} favourites toggle control (same canonical object as 'My library')"
-    confidence: inferred
-  archiveToggle:
-    strategy: "{projectWorkflowsFilterToolbar} archive toggle control (same canonical object as 'My library')"
-    confidence: inferred
-  keywordSearchField:
-    strategy: "{projectWorkflowsFilterToolbar} inline keyword input on the right side"
-    confidence: inferred
-  keywordSearchClearButton:
-    strategy: "{keywordSearchField} icon-only clear control ('X') shown when input is non-empty"
-    confidence: inferred
-  resultsSummary:
-    strategy: "{projectWorkflowsView} region between projectWorkflowsFilterToolbar and resultsRegion showing count summary"
-    confidence: inferred
-  resultsRegion:
-    strategy: "{projectWorkflowsView} GridWrap containing workflow cards"
-    confidence: inferred
-  workflowCard:
-    strategy: "{resultsRegion} WorkflowCardWrapper item"
-    confidence: inferred
-  pagination:
-    strategy: "{projectWorkflowsView} Pagination shown when dataPackage.meta.pageCount > 1"
-    confidence: inferred
-  paginationPageNumberButton:
-    strategy: "{pagination} clickable numeric page item"
-    confidence: inferred
-  paginationPreviousNextButton:
-    strategy: "{pagination} single-arrow previous/next control"
-    confidence: inferred
-  paginationFirstLastButton:
-    strategy: "{pagination} double-arrow first/last control"
-    confidence: inferred
-  projectWorkflowsLoadingState:
-    strategy: "{resultsRegion} rectangular skeleton placeholders while loading"
-    confidence: inferred
-  projectWorkflowsEmptyState:
-    strategy: "{resultsRegion} text 'There are no workflows in this project'"
-    confidence: inferred
-  projectWorkflowsErrorState:
-    strategy: "{resultsRegion} ErrorView"
-    confidence: inferred
+  projectWorkflowsView: "canonical_locators.yaml -> projectWorkflowsView"
+  projectWorkflowsFilterToolbar: "canonical_locators.yaml -> projectWorkflowsFilterToolbar"
+  sortControl: "canonical_locators.yaml -> sortControl"
+  sortResetButton: "canonical_locators.yaml -> sortResetButton"
+  ownershipFilter: "canonical_locators.yaml -> ownershipFilter"
+  ownershipFilterResetButton: "canonical_locators.yaml -> ownershipFilterResetButton"
+  workflowTypeFilter: "canonical_locators.yaml -> workflowTypeFilter"
+  favouritesToggle: "canonical_locators.yaml -> favouritesToggle"
+  archiveToggle: "canonical_locators.yaml -> archiveToggle"
+  keywordSearchField: "canonical_locators.yaml -> keywordSearchField"
+  keywordSearchClearButton: "canonical_locators.yaml -> keywordSearchClearButton"
+  resultsSummary: "canonical_locators.yaml -> resultsSummary"
+  resultsRegion: "canonical_locators.yaml -> resultsRegion"
+  workflowCard: "canonical_locators.yaml -> workflowCard"
+  pagination: "canonical_locators.yaml -> pagination"
+  paginationPageNumberButton: "canonical_locators.yaml -> paginationPageNumberButton"
+  paginationPreviousNextButton: "canonical_locators.yaml -> paginationPreviousNextButton"
+  paginationFirstLastButton: "canonical_locators.yaml -> paginationFirstLastButton"
+  projectWorkflowsLoadingState: "canonical_locators.yaml -> projectWorkflowsLoadingState"
+  projectWorkflowsEmptyState: "canonical_locators.yaml -> projectWorkflowsEmptyState"
+  projectWorkflowsNoResultsState: "canonical_locators.yaml -> projectWorkflowsNoResultsState"
+  projectWorkflowsErrorState: "canonical_locators.yaml -> projectWorkflowsErrorState"
 
 requirements:
   - id: FR-PROJ-WF-001
@@ -126,53 +92,50 @@ requirements:
 
     designEvidence:
       - FIGMA-PROJ-WF-DEFAULT
-      - FIGMA-PROJ-WF-EMPTY
-      - FIGMA-PROJ-WF-EMPTY-NO-WORKFLOWS
 
     actors:
-      - user
       - owner
       - editor
       - viewer
       - commenter
+      - user
 
     uiObjects:
       - projectWorkflowsView
       - projectWorkflowsFilterToolbar
-      - projectViewTabSelector
       - resultsSummary
       - resultsRegion
       - workflowCard
 
     preconditions:
-      - user navigates to route pattern '/project/{id}/workflows'
-      - shared projectHeader and projectViewTabSelector behavior is governed by FR-PROJ-OV-001
+      - documentPreconditions for this file hold
+      - current route matches '/project/{id}/workflows'
 
     trigger:
       - user opens the project 'Workflows' tab
 
     mainFlow:
-      - system renders projectWorkflowsView on route '/project/{id}/workflows'
-      - projectViewTabSelector indicates 'Workflows' as the active tab
-      - system renders projectWorkflowsFilterToolbar, resultsRegion and resultsSummary
-      - resultsRegion lists workflowCard items scoped to the current project id
+      - projectWorkflowsView base query scope is workflowCard instances belonging to the current project only
+      - archived workflowCard instances appear in resultsRegion only when archiveToggle is active per FR-PROJ-WF-003
+      - toolbar filters in FR-PROJ-WF-003 and keyword search in FR-PROJ-WF-004 apply subtractively within this base scope only; sort in FR-PROJ-WF-002 orders the current result set
+      - system renders projectWorkflowsView with projectWorkflowsFilterToolbar, resultsSummary, and resultsRegion
+      - resultsRegion lists workflowCard instances within projectWorkflowsView base query scope per active filters
       - workflowCard presentation and card interactions in resultsRegion conform to card_content_requirements_v1.yaml
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given user opens '/project/{id}/workflows', projectWorkflowsView is visible
-      - given user opens '/project/{id}/workflows', projectViewTabSelector shows 'Workflows' as active
+      - projectWorkflowsView is visible
       - projectWorkflowsFilterToolbar is visible
       - resultsSummary is visible between projectWorkflowsFilterToolbar and resultsRegion
-      - given query returns workflows for the current project, workflowCard items are shown in resultsRegion
-      - given query returns workflows for the current project, workflowCard in resultsRegion conforms to card_content_requirements_v1.yaml
+      - given successful query with at least one workflowCard instance in base scope, every workflowCard instance in resultsRegion belongs to the current project
+      - given archiveToggle is inactive, resultsRegion includes only non-archived workflowCard instances within projectWorkflowsView base query scope
+      - given successful query with at least one workflowCard instance in base scope, workflowCard instances in resultsRegion conform to card_content_requirements_v1.yaml
 
-    openQuestions:
-      - Confirm whether published-project users without authentication can access '/project/{id}/workflows', or if this route is authenticated-only in product contract.
+    openQuestions: []
 
   - id: FR-PROJ-WF-002
-    title: Sorting, filtering, and keyword search on project 'Workflows'
+    title: Sort on project 'Workflows' (same as 'My library', FR-LIB-002)
 
     designEvidence:
       - FIGMA-PROJ-WF-DEFAULT
@@ -185,11 +148,89 @@ requirements:
       - projectWorkflowsFilterToolbar
       - sortControl
       - sortResetButton
+      - resultsSummary
+      - resultsRegion
+
+    preconditions:
+      - projectWorkflowsView is visible
+
+    trigger:
+      - user interacts with sortControl or sortResetButton
+
+    mainFlow:
+      - sortControl behaviour conforms to library_page_requirements_v1.yaml FR-LIB-002 on projectWorkflowsView resultsRegion, except default and reset sort apply to workflowCard instances in resultsRegion per projectWorkflowsView base query scope per FR-PROJ-WF-001
+      - when user changes sortControl or sortResetButton, listing resets to the first results page and resultsSummary updates to reflect current query result counts
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given projectWorkflowsView is visible, sortControl offers the same options and toggle/reset interaction as FR-LIB-002
+      - given user lands with no prior sort selection in session, workflowCard instances in resultsRegion are ordered by most recently modified per FR-PROJ-WF-001 base query scope
+      - given user clicks sortResetButton, sort returns to most recently modified ordering for workflowCard instances in resultsRegion per FR-PROJ-WF-001 base query scope and sortControl shows label 'Sort'
+      - given user changes sortControl or sortResetButton, resultsSummary updates to current query result counts
+
+    openQuestions: []
+
+  - id: FR-PROJ-WF-003
+    title: Ownership, workflow type, favourites, and archive filters on project 'Workflows'
+
+    designEvidence:
+      - FIGMA-PROJ-WF-DEFAULT
+
+    actors:
+      - user
+
+    uiObjects:
+      - projectWorkflowsView
+      - projectWorkflowsFilterToolbar
       - ownershipFilter
       - ownershipFilterResetButton
       - workflowTypeFilter
+      - workflowTypeFilterSelectionIndicator
       - favouritesToggle
       - archiveToggle
+      - resultsSummary
+      - resultsRegion
+
+    preconditions:
+      - projectWorkflowsView is visible
+
+    trigger:
+      - user changes ownershipFilter, workflowTypeFilter, favouritesToggle, or archiveToggle, or uses a filter reset control
+
+    mainFlow:
+      - projectWorkflowsFilterToolbar includes ownershipFilter, workflowTypeFilter, favouritesToggle, and archiveToggle; it has no typeFilter, disciplineFilter, or templatesToggle
+      - ownershipFilter, workflowTypeFilter, favouritesToggle, and archiveToggle behaviour conform to library_page_requirements_v1.yaml FR-LIB-003 on projectWorkflowsFilterToolbar, applied to workflowCard instances within projectWorkflowsView base query scope per FR-PROJ-WF-001
+      - workflowTypeFilter is always visible on this workflows-only view
+      - active filter constraints combine with AND semantics against workflowCard instances within projectWorkflowsView base query scope per FR-PROJ-WF-001 and with active sort per FR-PROJ-WF-002 and keyword per FR-PROJ-WF-004 when present
+      - changing ownershipFilter, workflowTypeFilter, favouritesToggle, or archiveToggle resets listing to the first results page and resultsSummary updates to reflect current query result counts
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given projectWorkflowsView is visible, projectWorkflowsFilterToolbar includes ownershipFilter, workflowTypeFilter, favouritesToggle, and archiveToggle
+      - given projectWorkflowsView is visible, ownershipFilter, workflowTypeFilter, favouritesToggle, and archiveToggle behaviour conform to FR-LIB-003 within projectWorkflowsView base query scope per FR-PROJ-WF-001
+      - given workflowTypeFilter is visible, workflowTypeFilter behaviour conforms to FR-LIB-003 for workflow-type multiselect on a workflows-only listing
+      - given ownershipFilter has an active option, ownershipFilterResetButton is visible and clears ownership selection
+      - given favouritesToggle is enabled, only favourited workflowCard instances are included in resultsRegion
+      - given archiveToggle is enabled, only archived workflowCard instances within projectWorkflowsView base query scope are included in resultsRegion
+      - given user applies one or more filters while sort or keyword constraints are active, resultsRegion includes only workflowCard instances that satisfy every active constraint
+      - given user changes any filter in this requirement, resultsSummary updates to current query result counts
+
+    openQuestions: []
+
+  - id: FR-PROJ-WF-004
+    title: Keyword search (workflow titles)
+
+    designEvidence:
+      - FIGMA-PROJ-WF-DEFAULT
+
+    actors:
+      - user
+
+    uiObjects:
+      - projectWorkflowsView
+      - projectWorkflowsFilterToolbar
       - keywordSearchField
       - keywordSearchClearButton
       - resultsSummary
@@ -199,35 +240,33 @@ requirements:
       - projectWorkflowsView is visible
 
     trigger:
-      - user changes sort/filter/search controls on projectWorkflowsFilterToolbar
+      - user enters or commits keyword search via keywordSearchField, or clears via keywordSearchClearButton
 
     mainFlow:
-      - sortControl behaviour conforms to library_page_requirements_v1.yaml FR-LIB-002
-      - ownershipFilter, workflowTypeFilter, favouritesToggle, archiveToggle, keywordSearchField, and keywordSearchClearButton behaviour conform to library_page_requirements_v1.yaml FR-LIB-003 where those controls are present on projectWorkflowsFilterToolbar
-      - projectWorkflowsFilterToolbar has no typeFilter; results are workflows scoped to the current project per FR-PROJ-WF-001
-      - workflowTypeFilter is always visible on this workflows-only view
-      - active sort and filter constraints combine with AND semantics against the project-scoped workflow set
-      - changing sort or any filter/search control resets listing to the first page
-      - resultsSummary updates to reflect current filtered/sorted query result counts
+      - keywordSearchField and keywordSearchClearButton behaviour conform to library_page_requirements_v1.yaml FR-LIB-004 on projectWorkflowsFilterToolbar, applied within projectWorkflowsView base query scope per FR-PROJ-WF-001
+      - keyword matches workflow titles only within projectWorkflowsView base query scope
+      - keyword and toolbar filter constraints combine on projectWorkflowsView; both apply subtractively to resultsRegion within projectWorkflowsView base query scope per FR-PROJ-WF-001
+      - when keyword search changes, system resets listing to the first results page and resultsSummary updates to reflect current query result counts
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given projectWorkflowsView is visible, sortControl behaviour conforms to FR-LIB-002
-      - given projectWorkflowsView is visible, ownershipFilter, workflowTypeFilter, favouritesToggle, archiveToggle, and keywordSearchField behaviour conform to FR-LIB-003
-      - keywordSearchField is visible
-      - given keywordSearchField is non-empty, keywordSearchClearButton is visible and clears the input when clicked
-      - given favouritesToggle is enabled, only favourited workflows are included in resultsRegion
-      - given any sort or filter change, resultsSummary updates to current query result counts
+      - given projectWorkflowsView is visible, keywordSearchField is visible
+      - given projectWorkflowsView is visible, keywordSearchField behaviour conforms to FR-LIB-004 within projectWorkflowsView base query scope per FR-PROJ-WF-001
+      - given keyword matches a workflow title in base scope, a matching workflowCard instance appears in resultsRegion when other filters allow it
+      - given user applies one or more filters and types in keywordSearchField, keyword and filter constraints both apply to resultsRegion
+      - given user types in keywordSearchField and then changes filters, keyword and filter constraints both apply to resultsRegion
+      - given keyword search changes, resultsSummary updates to current query result counts
 
     openQuestions: []
 
-  - id: FR-PROJ-WF-003
+  - id: FR-PROJ-WF-005
     title: Loading, empty, error, and pagination states on project 'Workflows'
 
     designEvidence:
       - FIGMA-PROJ-WF-DEFAULT
       - FIGMA-PROJ-WF-EMPTY
+      - FIGMA-PROJ-WF-EMPTY-NO-WORKFLOWS
 
     actors:
       - user
@@ -237,6 +276,7 @@ requirements:
       - resultsRegion
       - projectWorkflowsLoadingState
       - projectWorkflowsEmptyState
+      - projectWorkflowsNoResultsState
       - projectWorkflowsErrorState
       - pagination
       - paginationPageNumberButton
@@ -251,25 +291,28 @@ requirements:
 
     mainFlow:
       - while query is loading, system shows projectWorkflowsLoadingState in resultsRegion
-      - when query returns zero matching workflows, system shows projectWorkflowsEmptyState
-      - when query fails, system shows projectWorkflowsErrorState
-      - resultsRegion displays at most 10 workflowCard items per page in a 2-cards-per-row grid (maximum 5 rows)
-      - pagination is shown only when total matching workflows are 11 or more and supports page navigation controls
+      - when query succeeds and base scope per FR-PROJ-WF-001 includes no workflowCard instances, system shows projectWorkflowsEmptyState in resultsRegion
+      - when query succeeds, base scope per FR-PROJ-WF-001 includes at least one workflowCard instance, but active filters per FR-PROJ-WF-003 or keyword per FR-PROJ-WF-004 return zero matches, system shows projectWorkflowsNoResultsState in resultsRegion
+      - when query fails, system shows projectWorkflowsErrorState in resultsRegion
+      - resultsRegion shows at most 10 workflowCard instances for the current page
+      - pagination is shown only when total matching workflowCard instances are 11 or more and supports page navigation controls
 
     roleBehavior: {}
 
     acceptanceCriteria:
       - given loading query, projectWorkflowsLoadingState is visible
-      - given successful query with zero workflows, projectWorkflowsEmptyState is visible and includes 'There are no workflows in this project'
+      - given successful query and no workflowCard instances in base scope per FR-PROJ-WF-001, projectWorkflowsEmptyState is visible and includes 'There are no workflows in this project'
+      - given successful query with at least one workflowCard instance in base scope per FR-PROJ-WF-001 but zero matches after active filters or keyword, projectWorkflowsNoResultsState is visible and includes 'No results found'
       - given failed query, projectWorkflowsErrorState is visible
-      - given successful query, at most 10 workflowCard items are visible in resultsRegion (2 cards per row, maximum 5 rows)
-      - given total matching workflows are 11 or more, pagination is visible
-      - given total matching workflows are fewer than 11, pagination is not visible
+      - given successful query, at most 10 workflowCard instances are visible in resultsRegion
+      - given total matching workflowCard instances are 11 or more, pagination is visible
+      - given total matching workflowCard instances are fewer than 11, pagination is not visible
       - given user selects a different paginationPageNumberButton, resultsRegion updates for that page
-      - given pagination is visible, paginationPreviousNextButton and paginationFirstLastButton navigate correctly
+      - given pagination is visible, paginationPageNumberButton controls are clickable
+      - given pagination is visible, paginationPreviousNextButton single-arrow controls navigate one page backward or forward
+      - given pagination is visible, paginationFirstLastButton double-arrow controls navigate to the first or last page
 
-    openQuestions:
-      - Confirm whether any project-workflows-specific empty-state copy beyond 'No results found' is required by product, or if generic empty copy remains canonical.
+    openQuestions: []
 
 designEvidenceLinkTable:
   - key: FIGMA-PROJ-WF-DEFAULT

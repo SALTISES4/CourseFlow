@@ -1,15 +1,18 @@
 # Normalized requirements: workflowNode visual appearance and hover actions in 'Workflow' view
+# Out of scope: canonical mapping of context-classification and task-classification values to workflowNodeMetaContextTag and workflowNodeMetaTaskTag icon glyphs and accessible names (deferred until a dedicated lookup or FR-WF-NODE-001 extension is authored).
 # Source: Figma workflow node frame (see designEvidenceLinkTable); tests/docs/requirements/guidelines_functional_requirements.md
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Terminology: tests/docs/requirements/terminology_workflow_hierarchy_and_nodes.md
-# Cross-reference: tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml (workflowView; workflowNode canonical in workflow_edit_node_requirements_v1.yaml); tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml (workflowChannel colour and workflowNodeBorder fill sync — FR-CHAN-003 canonical; workflowNodeBorder stripe presentation — FR-WF-NODE-001; channel hover menu lockstep — FR-CHAN-007); tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml (section hover menu lockstep — FR-SEC-007); tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml (canonical workflowNode, workflowEditNodeForm field values and applicability — FR-WF-EN-002 through FR-WF-EN-010; canvas layout and chrome — FR-WF-NODE-001); tests/docs/requirements/original/workflow_edge_requirements_v1.yaml (edge authoring — FR-WF-EDGE-001 through FR-WF-EDGE-004; aligns with workflowNodeEdgeHandles display — FR-WF-NODE-006 canonical); tests/docs/requirements/original/workflow_duplicate_node_requirements_v1.yaml (workflowNodeHoverActionsMenuDuplicateItem click outcomes — FR-WF-DUP-002; placement — FR-WF-DUP-003; defers hover-menu item roleBehavior to FR-WF-NODE-005); tests/docs/requirements/original/workflow_delete_node_requirements_v1.yaml (workflowNodeHoverActionsMenuDeleteItem click outcomes — FR-WF-DEL-002; defers hover-menu item roleBehavior to FR-WF-NODE-005); tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebarCommentsTab role actionability — FR-WF-RS-003, referenced by workflowNodeHoverActionsMenuCommentsItem); tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml (workflowNodeHoverActionsMenuCommentsItem click-to-open flow — FR-WF-COMMENTS-001).
+# Cross-reference: tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml (workflowView; workflowNode canonical in workflow_edit_node_requirements_v1.yaml); tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml (workflowChannel colour and workflowNodeBorder fill sync — FR-CHAN-003 canonical; workflowNodeBorder stripe presentation — FR-WF-NODE-001; channel hover menu lockstep — FR-CHAN-007); tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml (section hover menu lockstep — FR-SEC-007); tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml (canonical workflowNode, workflowEditNodeForm field values and applicability — FR-WF-EN-002 through FR-WF-EN-010; canvas layout and chrome — FR-WF-NODE-001); tests/docs/requirements/original/workflow_archive_requirements_v1.yaml (single-workflow archive clears parent node link—FR-WF-ARCH-003); tests/docs/requirements/original/project_archive_requirements_v1.yaml (project archive preserves in-project links—FR-PROJ-ARCH-003); tests/docs/requirements/original/workflow_copy_requirements_v1.yaml (same-project copy preserves links; cross-project copy clears links per FR-WF-ARCH-003—FR-WF-COPY-003); tests/docs/requirements/original/workflow_edge_requirements_v1.yaml (edge authoring — FR-WF-EDGE-001 through FR-WF-EDGE-004; aligns with workflowNodeEdgeHandles display — FR-WF-NODE-006 canonical); tests/docs/requirements/original/workflow_duplicate_node_requirements_v1.yaml (workflowNodeHoverActionsMenuDuplicateItem click outcomes — FR-WF-DUP-002; placement — FR-WF-DUP-003; defers hover-menu item roleBehavior to FR-WF-NODE-005); tests/docs/requirements/original/workflow_delete_node_requirements_v1.yaml (workflowNodeHoverActionsMenuDeleteItem click outcomes — FR-WF-DEL-002; defers hover-menu item roleBehavior to FR-WF-NODE-005); tests/docs/requirements/original/workflow_move_node_requirements_v1.yaml (move drag source — FR-WF-MV-001; workflowNodeHoverActionsMenu suppressed on all placed nodes during move drag — FR-WF-NODE-004); tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml (outcome-assign drag — FR-WF-AO-004; canvas hover-menu suppression during outcome-assign drag canonical in that FR); tests/docs/requirements/original/workflow_node_linked_outcomes_badge_requirements_v1.yaml (workflowNodeLinkedOutcomesBadge — FR-WF-AO-007 through FR-WF-AO-010); tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebarCommentsTab role actionability — FR-WF-RS-003, referenced by workflowNodeHoverActionsMenuCommentsItem); tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml (workflowNodeHoverActionsMenuCommentsItem click-to-open flow — FR-WF-COMMENTS-001).
+#   - tests/docs/requirements/original/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-002)
 #
 # Naming note: The earlier identifier 'workflowNodeHoverMenu' (and its items workflowNodeHoverMenuInsertItem, workflowNodeHoverMenuDuplicateItem, workflowNodeHoverMenuDeleteItem, workflowNodeHoverMenuCommentsItem) is replaced in this file by workflowNodeHoverActionsMenu (and workflowNodeHoverActionsMenuInsertItem, workflowNodeHoverActionsMenuDuplicateItem, workflowNodeHoverActionsMenuDeleteItem, workflowNodeHoverActionsMenuCommentsItem). tests/docs/requirements/original/workflow_delete_node_requirements_v1.yaml uses the same workflowNodeHoverActionsMenu* identifiers.
 
 documentPreconditions:
   - user is authenticated to CourseFlow and viewing an existing workflow
-  - current route is '/workflow/{id}/workflow' ('Workflow' view) with workflowView rendered
+  - current route is '/workflow/{id}/graph'
+  - workflowView is open
   - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+  - requirements in this file assume the above hold; when they do not, assert per FR-WS-ACCESS-002
 
 uiObjectDefinitions:
   workflowView:
@@ -38,12 +41,10 @@ uiObjectDefinitions:
     meaning: Icon-only task-type tag in workflowNodeMeta.
   workflowNodeMetaTimeTag:
     meaning: Icon-only time-duration tag in workflowNodeMeta.
-  workflowNodeOutcomesIndicator:
-    meaning: Outcome-association affordance region on workflowNodeContent
   workflowNodeSelectedBorder:
     meaning: Selection outline rendered on a selected workflowNode.
-  workflowNodeOutcomeHighlightRing:
-    meaning: Outcome-filter highlight outline on a workflowNode in workflowView.
+  workflowNodeOutcomeHighlightBorder:
+    meaning: Highlight outline on a workflowNode in workflowView when shown per FR-WF-NODE-003 (outcome-highlight presentation per FR-WF-AO-005).
   workflowNodeEdgeHandles:
     meaning: Grouped side-midpoint edge-attachment affordances on a workflowNode in workflowView.
   workflowNodeEdgeHandleTop:
@@ -70,7 +71,9 @@ uiObjectDefinitions:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
   workflowEditNodeFormTitleField:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
-  workflowEditNodeFormContextSelect:
+  workflowEditNodeFormActivityContextSelect:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
+  workflowEditNodeFormCourseContextSelect:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
   workflowEditNodeFormTaskTypeSelect:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
@@ -78,8 +81,8 @@ uiObjectDefinitions:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
   workflowAddTabInsertModeToggleGroup:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml.
-  workflowNodeManualInsertPopupMenu:
-    meaning: Canonical object in tests/docs/requirements/original/workflow_duplicate_node_requirements_v1.yaml.
+  workflowManualPlacementDialog:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml.
   workflowRightSidebar:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
   workflowRightSidebarEditTabContent:
@@ -90,81 +93,30 @@ uiObjectDefinitions:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
 
 locatorMappings:
-  workflowView:
-    strategy: null
-    confidence: unresolved
-  workflowSectionContainer:
-    strategy: "[data-week-id]"
-    confidence: confirmed
-  workflowNode:
-    strategy: "[id^='node-']"
-    confidence: confirmed
-  workflowNodeBorder:
-    strategy: null
-    confidence: unresolved
-  workflowNodeContent:
-    strategy: null
-    confidence: unresolved
-  workflowNodeTitle:
-    strategy: "{workflowNode} primary title label at the top of workflowNodeContent"
-    confidence: inferred
-  workflowNodeLinkedWorkflowIndicator:
-    strategy: "{workflowNode} hyperlink in workflowNodeContent to the linked workflow route, visible text 'Linked activity' (parent workflow type course, node type activity) or 'Linked course' (parent workflow type program, node type course), with leading icon per FIGMA-WF-NODE-LINKED-WORKFLOW-LINK (course) or FIGMA-WF-NODE-LINKED-WORKFLOW-LINK-PROGRAM (program)"
-    confidence: inferred
-  workflowNodeMeta:
-    strategy: null
-    confidence: unresolved
-  workflowNodeMetaContextTag:
-    strategy: null
-    confidence: unresolved
-  workflowNodeMetaTaskTag:
-    strategy: null
-    confidence: unresolved
-  workflowNodeMetaTimeTag:
-    strategy: null
-    confidence: unresolved
-  workflowNodeOutcomesIndicator:
-    strategy: null
-    confidence: unresolved
-  workflowNodeSelectedBorder:
-    strategy: null
-    confidence: unresolved
-  workflowNodeOutcomeHighlightRing:
-    strategy: null
-    confidence: unresolved
-  workflowNodeHoverActionsMenu:
-    strategy: "{workflowNode} floating group of icon buttons with tooltips, anchored to the top-right of the node"
-    confidence: inferred
-  workflowNodeHoverActionsMenuInsertItem:
-    strategy: "{workflowNodeHoverActionsMenu} button with accessible name 'Insert node below'"
-    confidence: inferred
-  workflowNodeHoverActionsMenuDuplicateItem:
-    strategy: "{workflowNodeHoverActionsMenu} button with accessible name 'Duplicate node below'"
-    confidence: inferred
-  workflowNodeHoverActionsMenuDeleteItem:
-    strategy: "{workflowNodeHoverActionsMenu} button with accessible name 'Delete node'"
-    confidence: inferred
-  workflowNodeHoverActionsMenuCommentsItem:
-    strategy: "{workflowNodeHoverActionsMenu} button with accessible name 'Comments'"
-    confidence: inferred
-  workflowNodeEdgeHandles:
-    strategy: null
-    confidence: unresolved
-  workflowNodeEdgeHandleTop:
-    strategy: null
-    confidence: unresolved
-  workflowNodeEdgeHandleRight:
-    strategy: null
-    confidence: unresolved
-  workflowNodeEdgeHandleBottom:
-    strategy: null
-    confidence: unresolved
-  workflowNodeEdgeHandleLeft:
-    strategy: null
-    confidence: unresolved
-  workflowEdge:
-    strategy: null
-    confidence: unresolved
+  workflowView: "canonical_locators.yaml -> workflowView"
+  workflowSectionContainer: "canonical_locators.yaml -> workflowSectionContainer"
+  workflowNode: "canonical_locators.yaml -> workflowNode"
+  workflowNodeBorder: "canonical_locators.yaml -> workflowNodeBorder"
+  workflowNodeContent: "canonical_locators.yaml -> workflowNodeContent"
+  workflowNodeTitle: "canonical_locators.yaml -> workflowNodeTitle"
+  workflowNodeLinkedWorkflowIndicator: "canonical_locators.yaml -> workflowNodeLinkedWorkflowIndicator"
+  workflowNodeMeta: "canonical_locators.yaml -> workflowNodeMeta"
+  workflowNodeMetaContextTag: "canonical_locators.yaml -> workflowNodeMetaContextTag"
+  workflowNodeMetaTaskTag: "canonical_locators.yaml -> workflowNodeMetaTaskTag"
+  workflowNodeMetaTimeTag: "canonical_locators.yaml -> workflowNodeMetaTimeTag"
+  workflowNodeSelectedBorder: "canonical_locators.yaml -> workflowNodeSelectedBorder"
+  workflowNodeOutcomeHighlightBorder: "canonical_locators.yaml -> workflowNodeOutcomeHighlightBorder"
+  workflowNodeHoverActionsMenu: "canonical_locators.yaml -> workflowNodeHoverActionsMenu"
+  workflowNodeHoverActionsMenuInsertItem: "canonical_locators.yaml -> workflowNodeHoverActionsMenuInsertItem"
+  workflowNodeHoverActionsMenuDuplicateItem: "canonical_locators.yaml -> workflowNodeHoverActionsMenuDuplicateItem"
+  workflowNodeHoverActionsMenuDeleteItem: "canonical_locators.yaml -> workflowNodeHoverActionsMenuDeleteItem"
+  workflowNodeHoverActionsMenuCommentsItem: "canonical_locators.yaml -> workflowNodeHoverActionsMenuCommentsItem"
+  workflowNodeEdgeHandles: "canonical_locators.yaml -> workflowNodeEdgeHandles"
+  workflowNodeEdgeHandleTop: "canonical_locators.yaml -> workflowNodeEdgeHandleTop"
+  workflowNodeEdgeHandleRight: "canonical_locators.yaml -> workflowNodeEdgeHandleRight"
+  workflowNodeEdgeHandleBottom: "canonical_locators.yaml -> workflowNodeEdgeHandleBottom"
+  workflowNodeEdgeHandleLeft: "canonical_locators.yaml -> workflowNodeEdgeHandleLeft"
+  workflowEdge: "canonical_locators.yaml -> workflowEdge"
 
 requirements:
   - id: FR-WF-NODE-001
@@ -178,8 +130,8 @@ requirements:
     actors:
       - owner
       - editor
-      - commenter
       - viewer
+      - commenter
       - user
 
     uiObjects:
@@ -197,7 +149,8 @@ requirements:
       - workflowNodeMetaTaskTag
       - workflowNodeMetaTimeTag
       - workflowEditNodeFormTitleField
-      - workflowEditNodeFormContextSelect
+      - workflowEditNodeFormActivityContextSelect
+      - workflowEditNodeFormCourseContextSelect
       - workflowEditNodeFormTaskTypeSelect
       - workflowEditNodeFormTimeField
       - workflowRightSidebar
@@ -211,8 +164,14 @@ requirements:
       - user clicks workflowNodeLinkedWorkflowIndicator on a workflowNode that has linkedWorkflow set
 
     mainFlow:
-      - workflowNodeTitle, workflowNodeMeta tags, and workflowNodeLinkedWorkflowIndicator use field values and applicability defined in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-002 through FR-WF-EN-006 and FR-WF-EN-010; this FR defines canvas layout and chrome only
+      - workflowNodeTitle, workflowNodeMeta tags, and workflowNodeLinkedWorkflowIndicator use field values and applicability defined in FR-WF-EN-002 through FR-WF-EN-006 and FR-WF-EN-010; this FR defines canvas layout and chrome only
+      - meta tags are optional on the canvas — context, task, and time are never mandatory for workflowNodeMeta to appear; each tag renders only when its corresponding edit-form field applies to the workflowNode per FR-WF-EN-002 through FR-WF-EN-006 and the persisted value is non-empty (context or task not 'None'; time has a persisted duration with a non-zero length and unit)
+      - workflowNodeMetaContextTag is rendered only when workflowEditNodeFormActivityContextSelect or workflowEditNodeFormCourseContextSelect applies to the workflowNode per FR-WF-EN-002, FR-WF-EN-003, or FR-WF-EN-004 and the persisted context value is not 'None'
+      - workflowNodeMetaTaskTag is rendered only when workflowEditNodeFormTaskTypeSelect applies to the workflowNode per FR-WF-EN-002 and the persisted task-type value is not 'None'
+      - workflowNodeMetaTimeTag is rendered only when workflowEditNodeFormTimeField applies to the workflowNode per FR-WF-EN-002 through FR-WF-EN-006 and the persisted time value has a non-zero length with a valid unit (empty or cleared time is not shown on the canvas)
+      - when no workflowNodeMeta tag would render for a workflowNode, workflowNodeMeta is not rendered for that workflowNode
       - when workflowNodeMetaContextTag and workflowNodeMetaTaskTag are both present, they are left-aligned within workflowNodeMeta; when workflowNodeMetaTimeTag is present, it is right-aligned within workflowNodeMeta
+      - out of scope — per-value icon glyphs and accessible names for workflowNodeMetaContextTag and workflowNodeMetaTaskTag; tag presence and layout per field applicability are in scope
 
     roleBehavior:
       owner:
@@ -233,19 +192,27 @@ requirements:
 
     acceptanceCriteria:
       - given workflowView has rendered a workflowNode, workflowNodeTitle is rendered for that workflowNode
-      - given a workflowNode, workflowNodeTitle visible text conforms to workflowEditNodeFormTitleField for that workflowNode per tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-002 through FR-WF-EN-006 and FR-WF-EN-007 (including 'Untitled node' display fallback when persisted title is empty)
+      - given a workflowNode, workflowNodeTitle visible text conforms to workflowEditNodeFormTitleField for that workflowNode per FR-WF-EN-002 through FR-WF-EN-006 and FR-WF-EN-007 (including 'Untitled node' display fallback when persisted title is empty)
       - given a workflowNode has no linked workflow, workflowNodeLinkedWorkflowIndicator is not rendered for that workflowNode
       - given a workflowNode has a linked workflow, workflowNodeLinkedWorkflowIndicator is rendered in workflowNodeContent between workflowNodeTitle and workflowNodeMeta
-      - given a workflowNode has a linked workflow, that link satisfies tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-010
+      - given a workflowNode has a linked workflow, that link satisfies FR-WF-EN-010
+      - when a parent node's linked child workflow is archived individually and parent node links are cleared per tests/docs/requirements/original/workflow_archive_requirements_v1.yaml FR-WF-ARCH-003, workflowNodeLinkedWorkflowIndicator is not rendered on that node after the parent workflow is next rendered in workflowView
+      - when a parent project's linked child workflows are archived together via project archive per tests/docs/requirements/original/project_archive_requirements_v1.yaml FR-PROJ-ARCH-003, linkedWorkflow associations are preserved for project restore per FR-LIB-006; workflowNodeLinkedWorkflowIndicator is rendered again after project restore when the link existed at archival
       - given workflowNodeLinkedWorkflowIndicator is rendered, when the user clicks workflowNodeLinkedWorkflowIndicator, the linked workflow opens in a new browser tab at that route; workflowRightSidebar does not switch its binding to the source workflowNode as a side effect of that click
-      - given workflowNodeLinkedWorkflowIndicator is rendered, the new-tab navigation outcome for the linked workflow route conforms to tests/docs/requirements/original/workspace_access_requirements_v1.yaml FR-WS-ACCESS-002 when that FR's preconditions apply to the linked workflow; otherwise the new tab shows the linked workflow workspace and the original tab does not change workflowRightSidebar selection
+      - given workflowNodeLinkedWorkflowIndicator is rendered, the new-tab navigation outcome for the linked workflow route conforms to FR-WS-ACCESS-002 when that FR's preconditions apply to the linked workflow; otherwise the new tab shows the linked workflow workspace and the original tab does not change workflowRightSidebar selection
       - given a workflowNode is rendered in workflowView, workflowEditNodeFormDescriptionField, workflowEditNodeFormTagsAutocomplete, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationGroup, and workflowEditNodeFormSpecificEducationSwitch are not shown on that workflowNode
-      - given a workflowNode, workflowNodeMeta tag presence and icon content conform to field applicability and persisted values per tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-002 through FR-WF-EN-006; when workflowNodeMeta is rendered, workflowNodeMetaContextTag and workflowNodeMetaTaskTag are left-aligned within workflowNodeMeta and workflowNodeMetaTimeTag is right-aligned when present
+      - given a workflowNode, workflowNodeMeta tag presence conforms to field applicability and persisted values per FR-WF-EN-002 through FR-WF-EN-006; when workflowNodeMeta is rendered, workflowNodeMetaContextTag and workflowNodeMetaTaskTag are left-aligned within workflowNodeMeta and workflowNodeMetaTimeTag is right-aligned when present
+      - given parent workflow type is activity and workflowEditNodeFormActivityContextSelect for the workflowNode is 'None' or unset, workflowNodeMetaContextTag is not rendered for that workflowNode
+      - given parent workflow type is activity and workflowEditNodeFormTaskTypeSelect for the workflowNode is 'None' or unset, workflowNodeMetaTaskTag is not rendered for that workflowNode
+      - given parent workflow type is course and workflowEditNodeFormCourseContextSelect for the workflowNode is 'None' or unset, workflowNodeMetaContextTag is not rendered for that workflowNode
+      - given parent workflow type is course or program, workflowNodeMetaTaskTag is not rendered for that workflowNode (workflowEditNodeFormTaskTypeSelect does not apply per FR-WF-EN-003 through FR-WF-EN-006)
+      - given parent workflow type is program, workflowNodeMetaContextTag is not rendered for that workflowNode (neither workflowEditNodeFormActivityContextSelect nor workflowEditNodeFormCourseContextSelect applies per FR-WF-EN-005 and FR-WF-EN-006)
+      - given workflowEditNodeFormTimeField for the workflowNode has no persisted duration (empty or cleared), workflowNodeMetaTimeTag is not rendered for that workflowNode
+      - given a workflowNode would show no workflowNodeMetaContextTag, workflowNodeMetaTaskTag, or workflowNodeMetaTimeTag, workflowNodeMeta is not rendered for that workflowNode
       - given a workflowNode is rendered in workflowView, workflowNodeBorder is rendered as the channel-colored top stripe on that workflowNode
-      - given a workflowNode is in workflowChannel C, workflowNodeBorder fill colour conforms to tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml FR-CHAN-003
+      - given a workflowNode is in workflowChannel C, workflowNodeBorder fill colour conforms to FR-CHAN-003
 
-    openQuestions:
-      - The full canonical mapping of context-classification values to icon glyphs and accessible names (and likewise for task-classification values) is not yet enumerated in the requirements layer; confirm whether the canonical mapping should live in this file or in a dedicated lookup document when meta-tag rules are finalized.
+    openQuestions: []
 
   - id: FR-WF-NODE-002
     title: workflowNode selected state
@@ -256,8 +223,8 @@ requirements:
     actors:
       - owner
       - editor
-      - commenter
       - viewer
+      - commenter
       - user
 
     uiObjects:
@@ -274,17 +241,20 @@ requirements:
       - workflowView is rendered with at least one workflowNode
 
     trigger:
-      - system updates which workflowNode is bound to workflowRightSidebarEditTabContent for editing (tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-001)
+      - system updates which workflowNode is bound to workflowRightSidebarEditTabContent for editing (FR-WF-EN-001)
 
     mainFlow:
-      - workflowNodeSelectedBorder appears on exactly the workflowNode bound to workflowRightSidebarEditTabContent for editing and on no other workflowNode
+      - workflowNodeSelectedBorder appears on exactly the workflowNode bound to workflowRightSidebarEditTabContent for editing and on no other workflowNode, except when that workflowNode shows workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003 (in which case no workflowNode shows workflowNodeSelectedBorder)
+      - workflowNodeSelectedBorder is not shown on a workflowNode that shows workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003
       - applying or clearing selection does not change workflowNodeBorder fill, workflowNodeTitle text, workflowNodeLinkedWorkflowIndicator when rendered, or workflowNodeMeta contents
       - applying or clearing selection does not remove workflowEdge instances from the canvas; any workflowEdge that is part of the loaded workflow remains displayed (how edges look when selection changes is deferred to the workflow-edge requirements file)
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given workflowEditNodeForm is bound to workflowNode N, workflowNode N shows workflowNodeSelectedBorder and no other workflowNode in the workflow shows workflowNodeSelectedBorder
+      - given workflowEditNodeForm is bound to workflowNode N and N does not show workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003, workflowNode N shows workflowNodeSelectedBorder and no other workflowNode in the workflow shows workflowNodeSelectedBorder
+      - given workflowNode N shows workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003, workflowNode N does not show workflowNodeSelectedBorder
+      - given workflowEditNodeForm is bound to workflowNode N and N shows workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003, workflowNode N does not show workflowNodeSelectedBorder
       - given workflowEditNodeForm is not currently bound to any workflowNode, no workflowNode in the workflow shows workflowNodeSelectedBorder
       - given workflowNode N transitions between selected states (binding changes for workflowEditNodeForm), workflowNodeBorder fill, workflowNodeTitle text, workflowNodeLinkedWorkflowIndicator when rendered, and workflowNodeMeta contents do not change
       - given the workflow canvas is displaying one or more workflowEdges, when workflowEditNodeForm binding changes from one workflowNode to another or is cleared, those workflowEdges remain displayed on the canvas (edge styling and emphasis are deferred to the workflow-edge requirements file)
@@ -292,7 +262,7 @@ requirements:
     openQuestions: []
 
   - id: FR-WF-NODE-003
-    title: workflowNode outcome-highlight ring (outcome filter)
+    title: workflowNodeOutcomeHighlightBorder when a highlighted outcome is assigned to the node
 
     designEvidence:
       - FIGMA-WF-NODE-WORKFLOW-VIEW
@@ -300,13 +270,13 @@ requirements:
     actors:
       - owner
       - editor
-      - commenter
       - viewer
+      - commenter
       - user
 
     uiObjects:
       - workflowNode
-      - workflowNodeOutcomeHighlightRing
+      - workflowNodeOutcomeHighlightBorder
       - workflowNodeSelectedBorder
       - workflowEditNodeForm
       - workflowRightSidebarEditTabContent
@@ -318,22 +288,23 @@ requirements:
       - workflowView is rendered with at least one workflowNode
 
     trigger:
-      - active outcome filter changes the set of workflowNodes highlighted for their outcome associations
+      - the outcome highlight set changes per FR-WF-AO-005, updating which workflowNodes are in outcome-highlight presentation per FR-WF-AO-005
 
     mainFlow:
-      - workflowNodeOutcomeHighlightRing toggles per outcome-filter highlighting on each workflowNode's outcome associations
-      - applying or clearing outcome-highlight does not change workflowNodeBorder fill, workflowNodeTitle text, workflowNodeLinkedWorkflowIndicator when rendered, or workflowNodeMeta contents
+      - workflowNodeOutcomeHighlightBorder is shown on workflowNode N if and only if N is in outcome-highlight presentation per FR-WF-AO-005
+      - workflowNodeOutcomeHighlightBorder and workflowNodeSelectedBorder are never shown on the same workflowNode at the same time
+      - clicking workflowNodeContent on a workflowNode that shows workflowNodeOutcomeHighlightBorder does not change sidebar binding or selection chrome per FR-WF-EN-001; workflowNodeHoverActionsMenuCommentsItem and workflowRightSidebarEditTab remain available for that workflowNode per FR-WF-NODE-005 and FR-WF-COMMENTS-005
+      - applying or clearing workflowNodeOutcomeHighlightBorder does not change workflowNodeBorder fill, workflowNodeTitle text, workflowNodeLinkedWorkflowIndicator when rendered, or workflowNodeMeta contents
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given workflowNode N is highlighted by the active outcome filter via its outcomenodeSet, workflowNode N shows workflowNodeOutcomeHighlightRing
-      - given workflowNode N is not highlighted by the active outcome filter, workflowNode N does not show workflowNodeOutcomeHighlightRing
-      - given workflowNode N is both bound to workflowEditNodeForm for editing and highlighted by the active outcome filter, workflowNode N shows both workflowNodeSelectedBorder and workflowNodeOutcomeHighlightRing
+      - given workflowNode N is in outcome-highlight presentation per FR-WF-AO-005, workflowNode N shows workflowNodeOutcomeHighlightBorder and does not show workflowNodeSelectedBorder
+      - given workflowNode N is not in outcome-highlight presentation per FR-WF-AO-005, workflowNode N does not show workflowNodeOutcomeHighlightBorder
+      - given the user clicks workflowNodeContent on workflowNode N while N shows workflowNodeOutcomeHighlightBorder, N continues to show workflowNodeOutcomeHighlightBorder, workflowEditNodeForm binding is unchanged, and no workflowNode shows workflowNodeSelectedBorder as a result of that click
+      - given workflowNode N shows workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003 and actor clicks workflowNodeHoverActionsMenuCommentsItem on N, behavior matches FR-WF-COMMENTS-001 and N does not show workflowNodeSelectedBorder; when the actor then clicks workflowRightSidebarEditTab, workflowEditNodeForm targets N per FR-WF-EN-001 and edit is not blocked by N showing workflowNodeOutcomeHighlightBorder
 
-    openQuestions:
-      - Full product rules for outcome filtering, outcomenodeSet semantics, and entry points from the workflow UI are not yet normalized here; revisit FR-WF-NODE-003 with design and engineering when outcome highlighting is finalized.
-      - Confirm visual specification when workflowNodeSelectedBorder and workflowNodeOutcomeHighlightRing coexist (e.g., concentric rings, color precedence, or single combined outline).
+    openQuestions: []
 
   - id: FR-WF-NODE-004
     title: workflowNodeHoverActionsMenu hover-only visibility and dismissal
@@ -344,8 +315,8 @@ requirements:
     actors:
       - owner
       - editor
-      - commenter
       - viewer
+      - commenter
       - user
 
     uiObjects:
@@ -359,10 +330,14 @@ requirements:
     trigger:
       - user moves the pointer over a workflowNode
       - user moves the pointer off a workflowNode
-      - user begins a drag gesture on a workflowNode (move drag per tests/docs/requirements/original/workflow_move_node_requirements_v1.yaml FR-WF-MV-001)
+      - user begins a drag gesture on a workflowNode (move drag per FR-WF-MV-001)
 
     mainFlow:
-      - workflowNodeHoverActionsMenu visibility tracks pointer hover on the workflowNode, actor item actionability per FR-WF-NODE-005 roleBehavior, and absence of an in-progress move drag on that workflowNode (tests/docs/requirements/original/workflow_move_node_requirements_v1.yaml FR-WF-MV-001)
+      - workflowNodeHoverActionsMenu visibility tracks pointer hover on the workflowNode and actor item actionability per FR-WF-NODE-005 roleBehavior, except while an add-tab drag per FR-WF-ADD-003 or a move drag per FR-WF-MV-001 is in progress
+      - while an add-tab drag from workflowRightSidebarAddTabContent is in progress per FR-WF-ADD-003, workflowNodeHoverActionsMenu is not rendered on any placed workflowNode in workflowView, including while workflowManualPlacementDialog is open after a valid 'Manual'-mode release per FR-WF-ADD-006
+      - while a move drag from an existing workflowNode is in progress per FR-WF-MV-001, workflowNodeHoverActionsMenu is not rendered on any placed workflowNode in workflowView (including nodes the dragged workflowNode or pointer passes over during the drag)
+      - canvas hover suppression during an outcome-assign drag is canonical in FR-WF-AO-004
+      - while workflowManualPlacementDialog is open pending duplicate or insert-below finalization on source workflowNode S initiated from workflowNodeHoverActionsMenuDuplicateItem per FR-WF-DUP-002 or workflowNodeHoverActionsMenuInsertItem per FR-WF-NODE-005, workflowNodeHoverActionsMenu is not rendered on workflowNode S; after the user clicks workflowManualPlacementDialogRowButton or workflowManualPlacementDialogColumnButton and placement finalizes, or dismisses workflowManualPlacementDialog per FR-WF-ADD-006, hover-based visibility on S resumes per the pointer rules above
       - the pointer-hover region that keeps workflowNodeHoverActionsMenu visible on a workflowNode includes that workflowNode's bounds and workflowNodeHoverActionsMenu's own bounds for that same workflowNode (so the pointer can move from the node onto a menu control without dismissing the menu)
       - workflowNodeHoverActionsMenu visibility is driven by pointer position only; keyboard focus on the workflowNode or on controls inside workflowNodeHoverActionsMenu does not substitute for pointer hover and does not show the menu when the pointer is outside that combined hover region
       - when the pointer leaves both the workflowNode and workflowNodeHoverActionsMenu anchored to that workflowNode, workflowNodeHoverActionsMenu hides
@@ -389,8 +364,10 @@ requirements:
       - given workflowNodeHoverActionsMenu is visible on workflowNode N, when the user moves the pointer off workflowNode N and off workflowNodeHoverActionsMenu on that node, workflowNodeHoverActionsMenu hides
       - given actor is owner, editor, or commenter, when the pointer is not within the combined pointer-hover region of workflowNode N and workflowNodeHoverActionsMenu anchored to workflowNode N, keyboard focus on workflowNode N alone does not cause workflowNodeHoverActionsMenu to become visible
       - given the user hovers workflowNode A then moves the pointer onto workflowNode B, workflowNodeHoverActionsMenu on workflowNode A hides and workflowNodeHoverActionsMenu on workflowNode B becomes visible (subject to FR-WF-NODE-005 roleBehavior: at least one menu item is active for the actor on that node)
-      - given the user begins a move drag on workflowNode N per FR-WF-MV-001, workflowNodeHoverActionsMenu on workflowNode N is not visible for the duration of the drag
-      - given the user finalizes or aborts a move drag of workflowNode N, hover-based visibility of workflowNodeHoverActionsMenu on workflowNode N resumes (visible whenever the pointer is hovering workflowNode N and at least one hover-menu item has roleBehavior state active for the actor per FR-WF-NODE-005)
+      - given owner or editor is dragging an existing workflowNode per FR-WF-MV-001, workflowNodeHoverActionsMenu is not rendered on any placed workflowNode in workflowView for the duration of the drag
+      - given owner or editor finalizes or aborts a move drag per FR-WF-MV-001, hover-based visibility on a workflowNode resumes per FR-WF-NODE-004 and FR-WF-NODE-005 when the pointer hovers that workflowNode
+      - given owner or editor is dragging from workflowRightSidebarAddTabContent per FR-WF-ADD-003, workflowNodeHoverActionsMenu is not rendered on any placed workflowNode in workflowView for the duration of the drag, including while workflowManualPlacementDialog is open after a valid 'Manual'-mode release per FR-WF-ADD-006
+      - given owner or editor clicked workflowNodeHoverActionsMenuDuplicateItem or workflowNodeHoverActionsMenuInsertItem on workflowNode S with insert mode 'Manual' per FR-WF-DUP-002 or FR-WF-NODE-005, workflowManualPlacementDialog is open anchored to S, and the pointer remains over workflowNode S, workflowNodeHoverActionsMenu is not rendered on S until placement finalizes or workflowManualPlacementDialog is dismissed per FR-WF-ADD-006
       - given the workflow canvas is displaying one or more workflowEdges incident to workflowNode N, when workflowNodeHoverActionsMenu visibility on N toggles per this FR, those workflowEdges remain displayed on the canvas (edge styling and emphasis are deferred to the workflow-edge requirements file)
 
     openQuestions: []
@@ -404,8 +381,8 @@ requirements:
     actors:
       - owner
       - editor
-      - commenter
       - viewer
+      - commenter
       - user
 
     uiObjects:
@@ -416,7 +393,7 @@ requirements:
       - workflowNodeHoverActionsMenuDeleteItem
       - workflowNodeHoverActionsMenuCommentsItem
       - workflowAddTabInsertModeToggleGroup
-      - workflowNodeManualInsertPopupMenu
+      - workflowManualPlacementDialog
       - workflowEditNodeForm
       - workflowNodeContent
       - workflowRightSidebarCommentsTab
@@ -431,10 +408,10 @@ requirements:
 
     mainFlow:
       - per-item actionability follows this FR's roleBehavior block; container visibility on hover is jointly governed by FR-WF-NODE-004
-      - workflowNodeHoverActionsMenuInsertItem ('Insert node below'), workflowNodeHoverActionsMenuDuplicateItem ('Duplicate node below'), and workflowNodeHoverActionsMenuDeleteItem ('Delete node') share identical role gating for every actor who can see workflowNodeHoverActionsMenu: owner and editor have those three items active; commenter has those three items read-only (not clickable); viewer and user do not see workflowNodeHoverActionsMenu on hover (workflowNodeHoverActionsMenu notRendered per FR-WF-NODE-004), so those three items are unreachable for those actors
-      - each item's click effect is delegated to the owning requirement set (insert-below placement per tests/docs/requirements/original/workflow_duplicate_node_requirements_v1.yaml FR-WF-DUP-003 with the hovered workflowNode as source, triggered by workflowNodeHoverActionsMenuInsertItem in this FR; duplicate per tests/docs/requirements/original/workflow_duplicate_node_requirements_v1.yaml FR-WF-DUP-002; delete per tests/docs/requirements/original/workflow_delete_node_requirements_v1.yaml FR-WF-DEL-002; workflowNodeHoverActionsMenuCommentsItem click path per tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml FR-WF-COMMENTS-001 with workflowRightSidebarCommentsTab actionability per tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml FR-WF-RS-003)
+      - workflowNodeHoverActionsMenuInsertItem ('Insert node below'), workflowNodeHoverActionsMenuDuplicateItem ('Duplicate node below'), and workflowNodeHoverActionsMenuDeleteItem ('Delete node') share identical role gating for every actor who can see workflowNodeHoverActionsMenu: owner and editor have those three items active; commenter has those three items disabled; viewer and user do not see workflowNodeHoverActionsMenu on hover (workflowNodeHoverActionsMenu notRendered per FR-WF-NODE-004), so those three items are unreachable for those actors
+      - each item's click effect is delegated to the owning requirement set (insert-below placement per FR-WF-DUP-003 with the hovered workflowNode as source, triggered by workflowNodeHoverActionsMenuInsertItem in this FR; duplicate per FR-WF-DUP-002; delete per FR-WF-DEL-002; workflowNodeHoverActionsMenuCommentsItem click path per FR-WF-COMMENTS-001 with workflowRightSidebarCommentsTab actionability per FR-WF-RS-003)
       - workflowNodeHoverActionsMenuInsertItem, workflowNodeHoverActionsMenuDuplicateItem, and workflowNodeHoverActionsMenuDeleteItem clicks do not use workflowNodeContent as a primary selection path that would rebind workflowEditNodeForm to the hovered workflowNode (outcomes per FR-WF-DUP-003, FR-WF-DUP-002, and FR-WF-DEL-002)
-      - workflowNodeHoverActionsMenuCommentsItem click selects the hovered workflowNode for workflowRightSidebar (comments for that node per FR-WF-COMMENTS-001; workflowRightSidebarEditTab shows workflowEditNodeForm for that same node when the user switches to it per FR-WF-COMMENTS-005 and tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-001)
+      - workflowNodeHoverActionsMenuCommentsItem click selects the hovered workflowNode for workflowRightSidebar (comments for that node per FR-WF-COMMENTS-001; workflowRightSidebarEditTab shows workflowEditNodeForm for that same node when the user switches to it per FR-WF-COMMENTS-005 and FR-WF-EN-001); showing workflowNodeOutcomeHighlightBorder on the hovered workflowNode per FR-WF-NODE-003 does not block workflowNodeHoverActionsMenuCommentsItem or subsequent edit via workflowRightSidebarEditTab
 
     roleBehavior:
       owner:
@@ -448,9 +425,9 @@ requirements:
         workflowNodeHoverActionsMenuDeleteItem: active
         workflowNodeHoverActionsMenuCommentsItem: active
       commenter:
-        workflowNodeHoverActionsMenuInsertItem: readOnly
-        workflowNodeHoverActionsMenuDuplicateItem: readOnly
-        workflowNodeHoverActionsMenuDeleteItem: readOnly
+        workflowNodeHoverActionsMenuInsertItem: disabled
+        workflowNodeHoverActionsMenuDuplicateItem: disabled
+        workflowNodeHoverActionsMenuDeleteItem: disabled
         workflowNodeHoverActionsMenuCommentsItem: active
       viewer:
         workflowNodeHoverActionsMenu: notRendered
@@ -459,19 +436,18 @@ requirements:
 
     acceptanceCriteria:
       - given actor is owner or editor and workflowNodeHoverActionsMenu is visible, all four hover-menu items are present and active and clickable
-      - given actor is commenter and workflowNodeHoverActionsMenu is visible, workflowNodeHoverActionsMenuInsertItem, workflowNodeHoverActionsMenuDuplicateItem, and workflowNodeHoverActionsMenuDeleteItem are rendered and read-only (not clickable) with identical role gating for those three items; workflowNodeHoverActionsMenuCommentsItem is present, active, and clickable
+      - given actor is commenter and workflowNodeHoverActionsMenu is visible, workflowNodeHoverActionsMenuInsertItem, workflowNodeHoverActionsMenuDuplicateItem, and workflowNodeHoverActionsMenuDeleteItem are rendered and disabled with identical role gating for those three items; workflowNodeHoverActionsMenuCommentsItem is present, active, and clickable
       - given actor is viewer or user (published-access), workflowNodeHoverActionsMenu is not rendered when the user hovers a workflowNode (per FR-WF-NODE-004)
-      - given owner or editor clicks workflowNodeHoverActionsMenuInsertItem on a hovered workflowNode, final placement of the new blank workflowNode for insert mode 'Row', 'Column', or 'Manual' (including workflowNodeManualInsertPopupMenu when insert mode is 'Manual') matches tests/docs/requirements/original/workflow_duplicate_node_requirements_v1.yaml FR-WF-DUP-003 with that hovered workflowNode as the source workflowNode
-      - given workflowNodeHoverActionsMenuDuplicateItem is clicked, the behavior matches tests/docs/requirements/original/workflow_duplicate_node_requirements_v1.yaml FR-WF-DUP-002
-      - given workflowNodeHoverActionsMenuDeleteItem is clicked, the behavior matches tests/docs/requirements/original/workflow_delete_node_requirements_v1.yaml FR-WF-DEL-002
-      - given workflowNodeHoverActionsMenuCommentsItem is clicked, behavior matches tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml FR-WF-COMMENTS-001 (workflowRightSidebarCommentsTab selected, comments list and composer for the hovered workflowNode; hovered workflowNode becomes sidebar edit selection per FR-WF-COMMENTS-005 and tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-001)
+      - given owner or editor clicks workflowNodeHoverActionsMenuInsertItem on a hovered workflowNode, final placement of the new blank workflowNode for insert mode 'Row', 'Column', or 'Manual' (including workflowManualPlacementDialog when insert mode is 'Manual') matches FR-WF-DUP-003 with that hovered workflowNode as the source workflowNode
+      - given workflowNodeHoverActionsMenuDuplicateItem is clicked, the behavior matches FR-WF-DUP-002
+      - given workflowNodeHoverActionsMenuDeleteItem is clicked, the behavior matches FR-WF-DEL-002
+      - given workflowNodeHoverActionsMenuCommentsItem is clicked, behavior matches FR-WF-COMMENTS-001 (workflowRightSidebarCommentsTab selected, comments list and composer for the hovered workflowNode; hovered workflowNode becomes sidebar edit selection per FR-WF-COMMENTS-005 and FR-WF-EN-001), including when the hovered workflowNode shows workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003
       - given workflowNodeHoverActionsMenuInsertItem, workflowNodeHoverActionsMenuDuplicateItem, or workflowNodeHoverActionsMenuDeleteItem is clicked, that click does not bind workflowEditNodeForm to the hovered workflowNode via workflowNodeContent primary selection (selection state of workflowRightSidebarEditTab is not changed as a side effect of that click path)
 
-    openQuestions:
-      - Fine-grained edge cases for hover insert-below or duplicate (e.g. section boundaries, multi-node rows) may still need cross-check against tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml and tests/docs/requirements/original/workflow_move_node_requirements_v1.yaml when those flows are aligned to FR-WF-DUP-003.
+    openQuestions: []
 
   - id: FR-WF-NODE-006
-    title: workflowNode edge handles — presence on hover or selection for edge authors only (edge drawing deferred)
+    title: workflowNode edge handles — presence on hover for edge authors only (edge drawing deferred)
 
     designEvidence:
       - FIGMA-WF-NODE-WORKFLOW-VIEW
@@ -479,8 +455,8 @@ requirements:
     actors:
       - owner
       - editor
-      - commenter
       - viewer
+      - commenter
       - user
 
     uiObjects:
@@ -492,27 +468,23 @@ requirements:
       - workflowNodeEdgeHandleRight
       - workflowNodeEdgeHandleBottom
       - workflowNodeEdgeHandleLeft
-      - workflowEditNodeForm
-      - workflowRightSidebarEditTabContent
 
     preconditions:
       - workflowView is rendered with at least one workflowNode
-      - selection state per FR-WF-NODE-002 and combined pointer-hover region per FR-WF-NODE-004 are the inputs that determine workflowNodeEdgeHandles visibility in this FR
 
     trigger:
       - user moves the pointer over a workflowNode
       - user moves the pointer off a workflowNode
-      - system binds or unbinds workflowEditNodeForm to a workflowNode for editing (tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-001; selected state per FR-WF-NODE-002)
 
     mainFlow:
-      - for owner and editor, workflowNodeEdgeHandles on workflowNode N transitions to shown when N is selected per FR-WF-NODE-002 or when the pointer is in N's combined pointer-hover region per FR-WF-NODE-004, and transitions to hidden when neither applies
+      - for owner and editor, workflowNodeEdgeHandles on workflowNode N is shown if and only if the pointer is in N's combined pointer-hover region per FR-WF-NODE-004; selection chrome per FR-WF-NODE-002 and workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003 do not substitute for pointer hover and do not suppress handles when N is hovered
       - dragging from a handle to author or edit workflow edges is out of scope here (workflow-edge requirements file)
 
     roleBehavior:
       owner:
-        workflowNodeEdgeHandles: shownOnHoverOrSelection
+        workflowNodeEdgeHandles: shownOnHover
       editor:
-        workflowNodeEdgeHandles: shownOnHoverOrSelection
+        workflowNodeEdgeHandles: shownOnHover
       commenter:
         workflowNodeEdgeHandles: notRendered
       viewer:
@@ -521,16 +493,12 @@ requirements:
         workflowNodeEdgeHandles: notRendered
 
     acceptanceCriteria:
-      - given actor is owner or editor and workflowNode N satisfies neither FR-WF-NODE-002 selection nor FR-WF-NODE-004 combined pointer-hover, workflowNodeEdgeHandles is not rendered on N
-      - given actor is owner or editor and workflowEditNodeForm is bound to workflowNode N while the pointer is outside N's FR-WF-NODE-004 combined region, workflowNodeEdgeHandles is rendered on N
-      - given actor is owner or editor and the pointer is within workflowNode N's FR-WF-NODE-004 combined region while N is not selected per FR-WF-NODE-002, workflowNodeEdgeHandles is rendered on N
+      - given actor is owner or editor and the pointer is outside workflowNode N's FR-WF-NODE-004 combined region, workflowNodeEdgeHandles is not rendered on N regardless of whether N shows workflowNodeSelectedBorder per FR-WF-NODE-002 or workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003
+      - given actor is owner or editor and the pointer is within workflowNode N's FR-WF-NODE-004 combined region, workflowNodeEdgeHandles is rendered on N regardless of whether N shows workflowNodeSelectedBorder or workflowNodeOutcomeHighlightBorder
       - given actor is commenter, workflowNodeEdgeHandles is not rendered on any workflowNode
       - given actor is viewer or user, workflowNodeEdgeHandles is not rendered on any workflowNode
 
-    openQuestions:
-      - Edge authoring (create, delete, reconnect, selection) is normalized in tests/docs/requirements/original/workflow_edge_requirements_v1.yaml (FR-WF-EDGE-001 through FR-WF-EDGE-004); align handle display rules with that file and FR-WF-NODE-006.
-      - Confirm whether workflowNodeEdgeHandles must appear when workflowNode N is selected per FR-WF-NODE-002 but the pointer is outside N's FR-WF-NODE-004 combined hover region, and whether handles remain visible during an in-progress edge draw when the pointer leaves the node; align with the hover-or-selection display rule in this FR when edge authoring is finalized in tests/docs/requirements/original/workflow_edge_requirements_v1.yaml.
-      - Beyond the display-only assertions for workflowEdge in FR-WF-NODE-002 and FR-WF-NODE-004, workflowEdge authoring and selection are specified in tests/docs/requirements/original/workflow_edge_requirements_v1.yaml; edge styling and overlap display rules remain deferred there (FR-WF-EDGE-004 openQuestions).
+    openQuestions: []
 
 designEvidenceLinkTable:
   - key: FIGMA-WF-NODE-WORKFLOW-VIEW

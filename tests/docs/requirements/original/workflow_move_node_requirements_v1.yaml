@@ -2,13 +2,15 @@
 # Source: tests/docs/__ARCHIVE/functional-requirements.md (Node Actions — Add New Node to Workflow insert modes; Edges — "When Nodes are moved" rules at lines 1039–1044)
 # Application code evidence: react/src/components/views/WorkflowView/WorkflowEditView/* (drag-and-drop infrastructure)
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Cross-reference: tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml (canonical Insert mode toggle and pre-drop visuals — FR-WF-ADD-002, FR-WF-ADD-004, FR-WF-ADD-005, FR-WF-ADD-006); tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml (workflowView, workflowSectionContainer canonical definitions)
+# Cross-reference: tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml (canonical Insert mode toggle and pre-drop visuals — FR-WF-ADD-002, FR-WF-ADD-004, FR-WF-ADD-005, FR-WF-ADD-006; collapsed section auto-expand on drag-over — FR-WF-ADD-007); tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml (workflowView, workflowSectionContainer canonical definitions); tests/docs/requirements/original/workflow_edge_requirements_v1.yaml (canonical workflowEdge; move edge identity/metadata preservation — FR-WF-MV-005; path re-routing after move — FR-WF-EDGE-005); tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml (workflowNodeHoverActionsMenu visibility during move drag — FR-WF-NODE-004)
+#   - FR-WS-ACCESS-002 (denied access when documentPreconditions fail)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
-  - current route is '/workflow/{id}/workflow'
-  - user has owner or editor role on the parent project
+  - current route is '/workflow/{id}/graph'
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
   - workflowView is open with at least one workflowSectionContainer that contains at least one workflowNode
+  - requirements in this file assume the above hold; when they do not, assert per FR-WS-ACCESS-002
 
 uiObjectDefinitions:
   workflowView:
@@ -39,45 +41,19 @@ uiObjectDefinitions:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml.
 
 locatorMappings:
-  workflowView:
-    strategy: null
-    confidence: unresolved
-  workflowSectionContainer:
-    strategy: "[data-week-id]"
-    confidence: confirmed
-  workflowSectionRow:
-    strategy: null
-    confidence: unresolved
-  workflowChannel:
-    strategy: null
-    confidence: unresolved
-  workflowNode:
-    strategy: null
-    confidence: unresolved
-  workflowEdge:
-    strategy: null
-    confidence: unresolved
-  workflowAddTabInsertModeToggleGroup:
-    strategy: "{workflowRightSidebarAddTabContent} [aria-label='Insert mode']"
-    confidence: inferred
-  workflowNodeMoveSourceCellDimming:
-    strategy: null
-    confidence: unresolved
-  workflowNodeDropIndicator:
-    strategy: null
-    confidence: unresolved
-  workflowRowInsertPreDropBand:
-    strategy: null
-    confidence: unresolved
-  workflowManualPlacementDialog:
-    strategy: null
-    confidence: unresolved
-  workflowManualPlacementDialogRowButton:
-    strategy: null
-    confidence: unresolved
-  workflowManualPlacementDialogColumnButton:
-    strategy: null
-    confidence: unresolved
+  workflowView: "canonical_locators.yaml -> workflowView"
+  workflowSectionContainer: "canonical_locators.yaml -> workflowSectionContainer"
+  workflowSectionRow: "canonical_locators.yaml -> workflowSectionRow"
+  workflowChannel: "canonical_locators.yaml -> workflowChannel"
+  workflowNode: "canonical_locators.yaml -> workflowNode"
+  workflowEdge: "canonical_locators.yaml -> workflowEdge"
+  workflowAddTabInsertModeToggleGroup: "canonical_locators.yaml -> workflowAddTabInsertModeToggleGroup"
+  workflowNodeMoveSourceCellDimming: "canonical_locators.yaml -> workflowNodeMoveSourceCellDimming"
+  workflowNodeDropIndicator: "canonical_locators.yaml -> workflowNodeDropIndicator"
+  workflowRowInsertPreDropBand: "canonical_locators.yaml -> workflowRowInsertPreDropBand"
+  workflowManualPlacementDialog: "canonical_locators.yaml -> workflowManualPlacementDialog"
+  workflowManualPlacementDialogRowButton: "canonical_locators.yaml -> workflowManualPlacementDialogRowButton"
+  workflowManualPlacementDialogColumnButton: "canonical_locators.yaml -> workflowManualPlacementDialogColumnButton"
 
 requirements:
   - id: FR-WF-MV-001
@@ -91,11 +67,15 @@ requirements:
     actors:
       - owner
       - editor
+      - commenter
+      - viewer
+      - user
 
     uiObjects:
       - workflowView
       - workflowSectionContainer
       - workflowNode
+      - workflowNodeMoveSourceCellDimming
 
     preconditions:
       - target workflowNode is visible inside a workflowSectionContainer in workflowView
@@ -104,21 +84,30 @@ requirements:
       - user begins a drag gesture on an existing workflowNode in workflowView
 
     mainFlow:
-      - only owner and editor may grab a placed workflowNode as a drag source to begin a move; commenter and viewer cannot initiate a move
       - the entire workflowNode is the drag origin (no dedicated drag handle exists on the workflowNode)
+      - for the entire duration of the move drag, the source workflowSectionRow × workflowChannel cell that held the workflowNode before the drag began is shown with workflowNodeMoveSourceCellDimming
+      - while a move drag is in progress, workflowNodeHoverActionsMenu visibility on all placed workflowNodes follows FR-WF-NODE-004
       - while the drag is in progress, the dragged workflowNode remains the source for the move; pre-drop preview behavior on the destination follows FR-WF-MV-002
-      - the in-progress drag can be aborted at any time before finalization, either by pressing Escape or by releasing the pointer on a non-droppable spot (a location that is not a valid drop target per FR-WF-MV-002, including but not limited to empty canvas outside any workflowSectionContainer); on abort, no placement change occurs at the destination, the source workflowNode remains in its original cell, and no source-cell or empty-row cleanup is performed
+      - the in-progress drag can be aborted at any time before finalization, either by pressing Escape or by releasing the pointer on a non-droppable spot (a location that is not a valid drop target per FR-WF-MV-002, including but not limited to empty canvas outside any workflowSectionContainer); on abort, no placement change occurs, the source workflowNode remains in its original cell, no source-cell or empty-row cleanup is performed, and active move pre-drop visuals (workflowNodeMoveSourceCellDimming, workflowNodeDropIndicator, workflowRowInsertPreDropBand) are cleared
 
     roleBehavior:
       owner:
-        workflowNode: draggableToWorkspace
+        workflowNode: draggableInWorkspace
       editor:
-        workflowNode: draggableToWorkspace
+        workflowNode: draggableInWorkspace
+      commenter:
+        workflowNode: notDraggableInWorkspace
+      viewer:
+        workflowNode: notDraggableInWorkspace
+      user:
+        workflowNode: notDraggableInWorkspace
 
     acceptanceCriteria:
       - given owner or editor sees a workflowNode in a workflowSectionContainer in workflowView, the workflowNode can be picked up by a drag gesture as the source of a move
-      - given owner or editor is dragging an existing workflowNode and presses Escape before releasing, the drag is aborted, the source workflowNode remains in its original cell, no placement change occurs, and no source-cell or empty-row cleanup is performed
-      - given owner or editor is dragging an existing workflowNode and releases the pointer on a non-droppable spot (e.g., empty canvas outside any workflowSectionContainer), the drag is aborted, the source workflowNode remains in its original cell, no placement change occurs, and no source-cell or empty-row cleanup is performed
+      - given actor is commenter, viewer, or user (published-access), the workflowNode cannot be picked up as the source of a move drag
+      - given owner or editor is dragging an existing workflowNode, the source workflowSectionRow × workflowChannel cell shows workflowNodeMoveSourceCellDimming for the entire drag until drop finalization or abort
+      - given owner or editor is dragging an existing workflowNode and presses Escape before releasing, the drag is aborted, the source workflowNode remains in its original cell, no placement change occurs, no source-cell or empty-row cleanup is performed, and workflowNodeMoveSourceCellDimming, workflowNodeDropIndicator, and workflowRowInsertPreDropBand are not shown
+      - given owner or editor is dragging an existing workflowNode and releases the pointer on a non-droppable spot (e.g., empty canvas outside any workflowSectionContainer), the drag is aborted, the source workflowNode remains in its original cell, no placement change occurs, no source-cell or empty-row cleanup is performed, and workflowNodeMoveSourceCellDimming, workflowNodeDropIndicator, and workflowRowInsertPreDropBand are not shown
 
     openQuestions: []
 
@@ -152,23 +141,21 @@ requirements:
       - while a drag from an existing workflowNode is in progress, the pointer moves over a workflowSectionContainer in workflowView
 
     mainFlow:
-      - for the entire duration of the move drag, the source workflowSectionRow × workflowChannel cell that held the workflowNode before the drag began is shown with workflowNodeMoveSourceCellDimming (dimmed vacancy at the original placement)
-      - while a move drag is in progress and the pointer enters a workflowSectionContainer that is currently in a collapsed state, that workflowSectionContainer automatically expands so its workflowSectionRows and workflowChannels are visible and addressable as drop targets; the auto-expanded workflowSectionContainer remains expanded for the remainder of the drag and stays expanded after the drag ends (whether the drop is finalized inside that workflowSectionContainer or the drag ends elsewhere); collapse state of other workflowSectionContainers is not affected
+      - while a move drag per FR-WF-MV-001 is in progress, collapsed workflowSectionContainer auto-expand on drag-over follows FR-WF-ADD-007
+      - a valid drop target on release is any drop surface that would show pre-drop preview per the active insert mode (FR-WF-ADD-004 for 'Row', FR-WF-ADD-005 for 'Column', FR-WF-ADD-006 for 'Manual'), including the move-specific 'Row' lateral exception below; release on the source cell is not a valid drop target for finalization (no-op per FR-WF-MV-003); release anywhere else that is not a valid drop target aborts the move per FR-WF-MV-001
       - while dragging an existing workflowNode in 'Row' insert mode, when the pointer is over a workflowSectionContainer and not over the source cell, pre-drop preview behavior is identical to the add-node 'Row' insert mode pre-drop preview per FR-WF-ADD-004, EXCEPT for the move-specific lateral exception below
       - move-specific 'Row' insert mode lateral exception: in 'Row' insert mode, an existing workflowNode can be moved laterally (staying on the source workflowSectionRow) into any empty workflowSectionRow × workflowChannel cell of that workflowSectionRow; while the pointer is over such an empty cell, workflowNodeDropIndicator is shown in that cell instead of workflowRowInsertPreDropBand
       - while dragging an existing workflowNode in 'Column' insert mode, when the pointer is over a workflowSectionContainer and not over the source cell, pre-drop preview behavior is identical to the add-node 'Column' insert mode pre-drop preview per FR-WF-ADD-005
       - while dragging an existing workflowNode in 'Manual' insert mode, when the pointer is over a workflowSectionContainer and not over the source cell, pre-drop preview behavior is identical to the add-node 'Manual' insert mode pre-drop preview per FR-WF-ADD-006
       - when the pointer is over the source cell (the original workflowSectionRow × workflowChannel cell from which the drag started), neither workflowNodeDropIndicator nor workflowRowInsertPreDropBand is shown, regardless of insert mode; workflowNodeMoveSourceCellDimming remains visible for that cell
 
-    roleBehavior:
-      owner:
-        workflowNodeMoveSourceCellDimming: visible
-      editor:
-        workflowNodeMoveSourceCellDimming: visible
+    roleBehavior: {}
 
     acceptanceCriteria:
-      - given owner or editor is dragging an existing workflowNode, the source workflowSectionRow × workflowChannel cell shows workflowNodeMoveSourceCellDimming for the entire drag until drop finalization or abort
-      - given owner or editor is dragging an existing workflowNode and the pointer enters a workflowSectionContainer that is currently collapsed, that workflowSectionContainer auto-expands and remains expanded for the remainder of the drag and after the drag ends; other workflowSectionContainers retain their collapse state
+      - given owner or editor is dragging an existing workflowNode per FR-WF-MV-001, collapsed workflowSectionContainer auto-expand on drag-over follows FR-WF-ADD-007
+      - given owner or editor releases a move drag on a drop surface that would show pre-drop preview for the active insert mode per this FR's mainFlow, the release is a valid drop target for finalization per FR-WF-MV-003 or FR-WF-MV-004
+      - given owner or editor releases a move drag on the source cell, no placement change occurs per FR-WF-MV-003 (no-op, not finalization)
+      - given owner or editor releases a move drag on a location that is not a valid drop target per this FR (e.g., empty canvas outside any workflowSectionContainer), the move is aborted per FR-WF-MV-001
       - given owner or editor is dragging an existing workflowNode in 'Row' insert mode with the pointer over a workflowSectionContainer and not over the source cell, pre-drop preview matches the 'Row' insert mode pre-drop acceptance criteria per FR-WF-ADD-004, EXCEPT when the lateral exception below applies
       - given owner or editor is dragging an existing workflowNode in 'Row' insert mode with the pointer over an empty workflowSectionRow × workflowChannel cell of the source workflowSectionRow (lateral move staying on the source row), workflowNodeDropIndicator is shown in that empty cell and workflowRowInsertPreDropBand is not shown
       - given owner or editor is dragging an existing workflowNode in 'Column' insert mode with the pointer over a workflowSectionContainer and not over the source cell, pre-drop preview matches the 'Column' insert mode pre-drop acceptance criteria per FR-WF-ADD-005
@@ -212,24 +199,20 @@ requirements:
       - on release in 'Row' insert mode, the moved workflowNode is finalized at the destination according to the 'Row' insert mode placement rules per FR-WF-ADD-004, EXCEPT for the move-specific lateral exception below
       - move-specific 'Row' insert mode lateral exception: on release in 'Row' insert mode over an empty workflowSectionRow × workflowChannel cell of the source workflowSectionRow (lateral move staying on the source row), the moved workflowNode is placed into that empty cell; no new workflowSectionRow is inserted and no full-width workflowSectionRow shift occurs
       - on release in 'Column' insert mode, the moved workflowNode is finalized at the destination according to the 'Column' insert mode placement rules per FR-WF-ADD-005
-      - on release in 'Manual' insert mode, the system displays workflowManualPlacementDialog before the move is finalized; on selection of workflowManualPlacementDialogRowButton, finalization follows the 'Row' insert mode placement rules per FR-WF-ADD-004 applied at the captured drop context; on selection of workflowManualPlacementDialogColumnButton, finalization follows the 'Column' insert mode placement rules per FR-WF-ADD-005 applied at the captured drop context
+      - on release in 'Manual' insert mode, the system displays workflowManualPlacementDialog before the move is finalized per FR-WF-ADD-006; on selection of workflowManualPlacementDialogRowButton, finalization follows FR-WF-ADD-004 applied at the captured drop context; on selection of workflowManualPlacementDialogColumnButton, finalization follows FR-WF-ADD-005 applied at the captured drop context; dismissing workflowManualPlacementDialog per FR-WF-ADD-006 aborts the move without placement change per FR-WF-MV-001
       - after the moved workflowNode is finalized at the destination, the source cell that previously held the workflowNode is left empty in the source workflowChannel; no shift-up of other workflowNodes in the source workflowChannel occurs to fill that vacancy
       - if, after the move, the source workflowSectionRow becomes entirely empty across every workflowChannel, that empty workflowSectionRow is removed from the workflowSectionContainer and remaining workflowSectionRows below it re-stack upward by one row; otherwise the source workflowSectionRow remains in place with its other workflowNodes unchanged
       - all workflowNode metadata (e.g., title, description, ponderation, linked workflows, assigned outcomes, comments) is preserved across the move; the moved workflowNode retains the same identity and the same field values it had before the drag began
 
-    roleBehavior:
-      owner:
-        workflowNode: draggableToWorkspace
-      editor:
-        workflowNode: draggableToWorkspace
+    roleBehavior: {}
 
     acceptanceCriteria:
       - given owner or editor releases a move drop in 'Row' insert mode on a valid drop target inside the same workflowSectionContainer that is NOT the lateral exception below, the moved workflowNode is finalized at the destination per FR-WF-ADD-004 placement rules, the source cell is left empty with no shift-up in the source workflowChannel, and if the source workflowSectionRow becomes entirely empty across every workflowChannel it is removed and the rows below it re-stack upward
       - given owner or editor releases a move drop in 'Row' insert mode on an empty workflowSectionRow × workflowChannel cell of the source workflowSectionRow (lateral move staying on the source row), the moved workflowNode is placed into that empty cell with no full-width workflowSectionRow shift and no new workflowSectionRow inserted, and the source cell is left empty with no shift-up in the source workflowChannel
       - given owner or editor releases a move drop in 'Column' insert mode on a valid drop target inside the same workflowSectionContainer, the moved workflowNode is finalized at the destination per FR-WF-ADD-005 placement rules, the source cell is left empty with no shift-up in the source workflowChannel, and if the source workflowSectionRow becomes entirely empty across every workflowChannel it is removed and the rows below it re-stack upward
-      - given owner or editor releases a move drop in 'Manual' insert mode on a valid drop target inside the same workflowSectionContainer, workflowManualPlacementDialog opens with workflowManualPlacementDialogRowButton labeled 'Row' and workflowManualPlacementDialogColumnButton labeled 'Column' and exposes no cancel control; on Row selection the move follows FR-WF-ADD-004 placement at the captured drop context; on Column selection the move follows FR-WF-ADD-005 placement at the captured drop context; in either case the source cell is left empty with no shift-up in the source workflowChannel, and the empty-row cleanup rule applies to the source workflowSectionRow
+      - given owner or editor releases a move drop in 'Manual' insert mode on a valid drop target inside the same workflowSectionContainer, workflowManualPlacementDialog opens per FR-WF-ADD-006; on Row selection the move follows FR-WF-ADD-004 placement at the captured drop context; on Column selection the move follows FR-WF-ADD-005 placement at the captured drop context; in either case the source cell is left empty with no shift-up in the source workflowChannel, and the empty-row cleanup rule applies to the source workflowSectionRow
+      - given workflowManualPlacementDialog is open during a move per FR-WF-MV-003, when the user dismisses it per FR-WF-ADD-006, the move is aborted without placement change and the source workflowNode remains in its original cell per FR-WF-MV-001
       - given the move places the workflowNode in a workflowChannel different from its original workflowChannel, the workflowNode is shown in the new workflowChannel and all its incoming and outgoing workflowEdges are preserved per FR-WF-MV-005
-      - given the destination drop context is the source cell of the dragged workflowNode itself (a no-op move), no placement change occurs and no workflowEdge is altered
       - given owner or editor moves an existing workflowNode within the same workflowSectionContainer, the moved workflowNode retains the same identity and all metadata (title, description, ponderation, linked workflows, assigned outcomes, comments) as before the drag began
 
     openQuestions: []
@@ -267,22 +250,18 @@ requirements:
       - user releases a drag of an existing workflowNode over a valid drop target inside a workflowSectionContainer different from the source workflowSectionContainer
 
     mainFlow:
-      - on release, the destination placement rules in the destination workflowSectionContainer follow the active Insert mode exactly as in FR-WF-MV-003
+      - on release, the destination placement rules in the destination workflowSectionContainer follow the active insert mode exactly as in FR-WF-MV-003
       - after the moved workflowNode is finalized at the destination workflowSectionContainer, the source workflowSectionContainer no longer contains that workflowNode; the source cell is left empty in the source workflowChannel with no shift-up of other workflowNodes in that workflowChannel
       - if, after the cross-section move, the source workflowSectionRow becomes entirely empty across every workflowChannel, that empty workflowSectionRow is removed from the source workflowSectionContainer and rows below it re-stack upward by one row; the source workflowSectionContainer itself is not removed by this rule even if all its rows become empty
       - all incoming and outgoing workflowEdges of the moved workflowNode are preserved across the cross-section move per FR-WF-MV-005
       - all workflowNode metadata (e.g., title, description, ponderation, linked workflows, assigned outcomes, comments) is preserved across the cross-section move; the moved workflowNode retains the same identity and the same field values it had before the drag began
 
-    roleBehavior:
-      owner:
-        workflowNode: draggableToWorkspace
-      editor:
-        workflowNode: draggableToWorkspace
+    roleBehavior: {}
 
     acceptanceCriteria:
       - given owner or editor releases a move drop in 'Row' insert mode on a valid drop target inside a different workflowSectionContainer, the moved workflowNode is finalized at the destination per FR-WF-ADD-004 placement rules, the source workflowSectionContainer no longer contains that workflowNode, the source cell is left empty with no shift-up in the source workflowChannel, the empty-row cleanup rule applies to the source workflowSectionRow, and all workflowEdges incident on the moved workflowNode are preserved per FR-WF-MV-005
       - given owner or editor releases a move drop in 'Column' insert mode on a valid drop target inside a different workflowSectionContainer, the moved workflowNode is finalized at the destination per FR-WF-ADD-005 placement rules, the source workflowSectionContainer no longer contains that workflowNode, the source cell is left empty with no shift-up in the source workflowChannel, the empty-row cleanup rule applies to the source workflowSectionRow, and all workflowEdges incident on the moved workflowNode are preserved per FR-WF-MV-005
-      - given owner or editor releases a move drop in 'Manual' insert mode on a valid drop target inside a different workflowSectionContainer, workflowManualPlacementDialog opens with workflowManualPlacementDialogRowButton labeled 'Row' and workflowManualPlacementDialogColumnButton labeled 'Column' and exposes no cancel control; on Row selection the move follows FR-WF-ADD-004 placement at the captured drop context; on Column selection the move follows FR-WF-ADD-005 placement at the captured drop context; in either case the source workflowSectionContainer no longer contains the moved workflowNode, the source cell is left empty with no shift-up in the source workflowChannel, the empty-row cleanup rule applies to the source workflowSectionRow, and incident workflowEdges are preserved per FR-WF-MV-005
+      - given owner or editor releases a move drop in 'Manual' insert mode on a valid drop target inside a different workflowSectionContainer, placement and workflowManualPlacementDialog behavior follow FR-WF-MV-003; after finalization the source workflowSectionContainer no longer contains the moved workflowNode, the source cell is left empty with no shift-up in the source workflowChannel, the empty-row cleanup rule applies to the source workflowSectionRow, and incident workflowEdges are preserved per FR-WF-MV-005
       - given owner or editor moves an existing workflowNode to a different workflowSectionContainer, the moved workflowNode retains the same identity and all metadata (title, description, ponderation, linked workflows, assigned outcomes, comments) as before the drag began
 
     openQuestions: []
@@ -313,16 +292,13 @@ requirements:
       - a move of an existing workflowNode is finalized (within the same workflowSectionContainer or across workflowSectionContainers)
 
     mainFlow:
-      - if the moved workflowNode is placed in a workflowChannel different from its original workflowChannel, all workflowEdges that were arriving at or departing from the moved workflowNode are preserved with the same source/target identities and metadata (per archive functional-requirements.md line 1040)
-      - if the moved workflowNode is shifted up or down within the same workflowChannel, all incident workflowEdges are preserved with the same source/target identities and metadata (per archive functional-requirements.md line 1043)
-      - if the moved workflowNode is placed between two workflowNodes that were related by a workflowEdge, that workflowEdge is preserved (per archive functional-requirements.md line 1044); the moved workflowNode is not auto-inserted into the path
+      - this FR governs workflowEdge source/target identity and metadata preservation on move only; workflowEdge path geometry and visual routing in workflowView after a move are specified in FR-WF-EDGE-005 and are not restated here
+      - if the moved workflowNode is placed in a workflowChannel different from its original workflowChannel, all workflowEdges that were arriving at or departing from the moved workflowNode are preserved with the same source/target identities and metadata
+      - if the moved workflowNode is shifted up or down within the same workflowChannel, all incident workflowEdges are preserved with the same source/target identities and metadata
+      - if the moved workflowNode is placed between two workflowNodes that were related by a workflowEdge, that workflowEdge is preserved; the moved workflowNode is not auto-inserted into the path
       - cross-section workflowEdges (edges whose source and target are in different workflowSectionContainers) are preserved on a cross-section move
 
-    roleBehavior:
-      owner:
-        workflowNode: draggableToWorkspace
-      editor:
-        workflowNode: draggableToWorkspace
+    roleBehavior: {}
 
     acceptanceCriteria:
       - given a workflowNode N with incoming workflowEdge from A and outgoing workflowEdge to B, when owner or editor moves N to a different workflowChannel within the same workflowSectionContainer, the workflowEdges A→N and N→B remain in place with the same metadata
@@ -330,9 +306,7 @@ requirements:
       - given a workflowEdge A→B and a workflowNode N being dragged into a position between A and B, when owner or editor finalizes the drop, the workflowEdge A→B is preserved as-is (no auto-insertion of N into the path)
       - given a workflowEdge A→B where A is in one workflowSectionContainer and B is in another, when owner or editor moves B (or A) to a third workflowSectionContainer, the workflowEdge A→B is preserved
 
-    openQuestions:
-      - Confirm whether the visual routing of preserved workflowEdges automatically re-routes after a move, and whether routing changes are part of this requirement or a downstream Edges-rendering requirement.
-      - Confirm behavior for self-loop workflowEdges (source equals target) on move — likely not a valid edge per upstream Edges rules, but worth confirming.
+    openQuestions: []
 
 designEvidenceLinkTable:
   - key: FIGMA-WF-MV-COLUMN

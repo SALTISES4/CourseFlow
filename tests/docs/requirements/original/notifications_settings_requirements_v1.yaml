@@ -2,7 +2,7 @@
 # Source: application code and Figma only (no separate Google Doc for this run)
 # Application code evidence: react/src/components/pages/Settings/NotificationsSettings/index.tsx; react/src/HTTP/XMLHTTP/API/user.rtk.ts; react/src/router/appRoutes.tsx; react/src/router/apiRoutes.ts; react/src/utility/strings.ts
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Cross-reference: tests/docs/requirements/original/top_navigation_requirements_v1.yaml (navigation entry to notifications settings route)
+# Cross-reference: tests/docs/requirements/original/top_navigation_requirements_v1.yaml FR-TOP-003 (entry path to '/user/notifications-settings' via accountMenuItemNotificationsSettings); tests/docs/requirements/original/card_content_requirements_v1.yaml (globalMessageSnackbar per FR-NOTIF-003)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
@@ -10,46 +10,29 @@ documentPreconditions:
 
 uiObjectDefinitions:
   notificationsSettingsPage:
-    meaning: Notifications settings page for email notification preferences.
+    meaning: Notifications settings page at route '/user/notifications-settings'.
   notificationsSettingsTitle:
-    meaning: Page title text on notificationsSettingsPage with copy 'Notification settings'.
+    meaning: Page title text for the notifications settings screen; 'Notification settings'.
   notificationsSettingsForm:
-    meaning: Form container on notificationsSettingsPage that binds notification preference state.
+    meaning: Form container on notificationsSettingsPage for productUpdatesToggle.
   productUpdatesToggle:
-    meaning: Product-updates email preference toggle on notificationsSettingsPage.
+    meaning: MUI Switch for product-updates email preference on notificationsSettingsPage.
   productUpdatesToggleLabel:
-    meaning: Visible label for productUpdatesToggle.
-  notificationSettingsMutationRequest:
-    meaning: Save operation triggered when productUpdatesToggle changes
+    meaning: Label for productUpdatesToggle; 'I want to receive product updates emails'.
   globalMessageSnackbar:
-    meaning: Canonical definition in tests/docs/requirements/original/workflow_header_requirements_v1.yaml.
+    meaning: Canonical definition in tests/docs/requirements/original/card_content_requirements_v1.yaml.
 
 locatorMappings:
-  notificationsSettingsPage:
-    strategy: "URL pathname /user/notifications-settings"
-    confidence: confirmed
-  notificationsSettingsTitle:
-    strategy: "{notificationsSettingsPage} h1"
-    confidence: inferred
-  notificationsSettingsForm:
-    strategy: "{notificationsSettingsPage} form"
-    confidence: inferred
-  productUpdatesToggle:
-    strategy: "{notificationsSettingsForm} input[type=\"checkbox\"]"
-    confidence: inferred
-  productUpdatesToggleLabel:
-    strategy: "{notificationsSettingsForm} label text 'I want to receive product updates emails'"
-    confidence: inferred
-  notificationSettingsMutationRequest:
-    strategy: "POST /user/notifications-settings/update with body { notifications: boolean }"
-    confidence: confirmed
-  globalMessageSnackbar:
-    strategy: "Application global snackbar message surface used by useGenericMsgHandler"
-    confidence: confirmed
+  notificationsSettingsPage: "canonical_locators.yaml -> notificationsSettingsPage"
+  notificationsSettingsTitle: "canonical_locators.yaml -> notificationsSettingsTitle"
+  notificationsSettingsForm: "canonical_locators.yaml -> notificationsSettingsForm"
+  productUpdatesToggle: "canonical_locators.yaml -> productUpdatesToggle"
+  productUpdatesToggleLabel: "canonical_locators.yaml -> productUpdatesToggleLabel"
+  globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
 
 requirements:
   - id: FR-NOTIF-001
-    title: Notifications settings route and primary controls
+    title: Notifications settings page route and primary form elements
 
     designEvidence:
       - FIGMA-NOTIFICATION-SETTINGS
@@ -65,28 +48,29 @@ requirements:
       - productUpdatesToggleLabel
 
     preconditions:
-      - user is authenticated
+      - documentPreconditions for this file hold
 
-    trigger:
-      - user navigates to '/user/notifications-settings'
+    trigger: []
 
     mainFlow:
-      - when user navigates to '/user/notifications-settings', system renders notificationsSettingsPage
-      - notificationsSettingsPage presents notificationsSettingsTitle with copy 'Notification settings'
-      - notificationsSettingsForm presents productUpdatesToggle with label productUpdatesToggleLabel
+      - given current route matches '/user/notifications-settings', notificationsSettingsPage is visible
+      - notificationsSettingsTitle is visible on notificationsSettingsPage
+      - notificationsSettingsForm is visible on notificationsSettingsPage
+      - notificationsSettingsForm shows productUpdatesToggle with label 'I want to receive product updates emails'
 
     roleBehavior: {}
 
     acceptanceCriteria:
       - current route matches '/user/notifications-settings'
-      - notificationsSettingsTitle is visible with text 'Notification settings'
+      - notificationsSettingsTitle is visible with label 'Notification settings'
+      - notificationsSettingsForm is visible
       - productUpdatesToggle is visible
-      - productUpdatesToggleLabel is visible with text 'I want to receive product updates emails'
+      - productUpdatesToggleLabel is visible with label 'I want to receive product updates emails'
 
     openQuestions: []
 
   - id: FR-NOTIF-002
-    title: Notifications settings initial state hydration
+    title: Notifications settings initial load behavior and preference binding
 
     designEvidence:
       - FIGMA-NOTIFICATION-SETTINGS
@@ -100,28 +84,27 @@ requirements:
       - productUpdatesToggle
 
     preconditions:
-      - user is authenticated to CourseFlow
+      - documentPreconditions for this file hold
+      - current route matches '/user/notifications-settings'
+      - notificationsSettingsPage is visible
 
-    trigger:
-      - user navigates to '/user/notifications-settings'
+    trigger: []
 
     mainFlow:
-      - system fetches current notification settings from '/user/notifications-settings'
-      - for a newly created account on first landing to notificationsSettingsPage, productUpdatesToggle default state is on (active)
-      - if user had previously set notification preferences, productUpdatesToggle state matches the previous preference
+      - productUpdatesToggle matches the user's saved email notification preference
+      - given user has just created an account and first visits notificationsSettingsPage, productUpdatesToggle is on
+      - given user had previously set notification preferences, productUpdatesToggle matches the saved preference
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given user has just created an account and first lands on notificationsSettingsPage, productUpdatesToggle is on (active)
-      - given user had previously set notification preferences, productUpdatesToggle state matches the previous preference
+      - given user has just created an account and first visits notificationsSettingsPage, productUpdatesToggle is on
+      - given user had previously set notification preferences, productUpdatesToggle matches the saved preference
 
-    openQuestions:
-      - Confirm intended user-visible behavior while notification settings query is loading (e.g. loader, disabled switch, or immediate interactive default).
-      - Confirm intended user-visible behavior when notification settings query fails (e.g. inline warning, retry affordance, fallback default state), since current page component does not render explicit query-error UI.
+    openQuestions: []
 
   - id: FR-NOTIF-003
-    title: Toggle change triggers immediate save and feedback
+    title: Product updates switch click saves immediately and shows feedback
 
     designEvidence:
       - FIGMA-NOTIFICATION-SETTINGS
@@ -132,32 +115,30 @@ requirements:
     uiObjects:
       - notificationsSettingsForm
       - productUpdatesToggle
-      - notificationSettingsMutationRequest
       - globalMessageSnackbar
 
     preconditions:
+      - documentPreconditions for this file hold
       - notificationsSettingsForm is visible
-      - productUpdatesToggle has an initial value from query state
+      - productUpdatesToggle matches saved preference per FR-NOTIF-002
 
     trigger:
-      - user toggles productUpdatesToggle
+      - user clicks productUpdatesToggle
 
     mainFlow:
-      - when user toggles productUpdatesToggle, system immediately updates local form value and submits notificationSettingsMutationRequest without separate submit button click
-      - notificationSettingsMutationRequest sends body `{ notifications: <current toggle boolean> }` to '/user/notifications-settings/update'
-      - when update succeeds, system shows success feedback in globalMessageSnackbar
-      - when update fails, system shows error feedback in globalMessageSnackbar
+      - given user clicks productUpdatesToggle, preference saves immediately without separate submit button click
+      - given save succeeds, globalMessageSnackbar shows 'Your notification settings have been updated'
+      - given save fails, productUpdatesToggle returns to its previous state and globalMessageSnackbar shows 'We encountered an issue and your notification settings were not updated'
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given user toggles productUpdatesToggle, update request is issued to '/user/notifications-settings/update' with `notifications` matching the new toggle state
-      - given update succeeds, success feedback is shown in globalMessageSnackbar
-      - given update fails, error feedback is shown in globalMessageSnackbar
+      - given user clicks productUpdatesToggle, preference is saved immediately
+      - given save succeeds, globalMessageSnackbar shows 'Your notification settings have been updated'
+      - given save fails, productUpdatesToggle shows its previous state
+      - given save fails, globalMessageSnackbar shows 'We encountered an issue and your notification settings were not updated'
 
-    openQuestions:
-      - Confirm whether productUpdatesToggle should remain in the new state or revert to previous state when update fails (current implementation sets local value before mutation and does not explicitly rollback).
-      - Confirm exact success and error copy for notification settings update in the global message surface.
+    openQuestions: []
 
 designEvidenceLinkTable:
   - key: FIGMA-NOTIFICATION-SETTINGS

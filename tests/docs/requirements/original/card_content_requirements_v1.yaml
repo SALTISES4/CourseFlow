@@ -9,10 +9,11 @@
 #   - tests/docs/requirements/original/project_workflows_view_requirements_v1.yaml
 #   - tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml
 #   - tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml (workflowLinkWorkflowDialog)
-#   - tests/docs/requirements/original/workflow_header_requirements_v1.yaml (globalMessageSnackbar uiObject hub; FR-CARD-005 snackbar copy consumed by FR-WF-HEADER-002)
 #   - tests/docs/requirements/original/project_header_requirements_v1.yaml (FR-CARD-005 snackbar copy consumed by FR-PROJ-HEADER-002)
+#   - tests/docs/requirements/original/workflow_header_requirements_v1.yaml (FR-CARD-005 snackbar copy consumed by FR-WF-HEADER-002)
 #   - tests/docs/requirements/original/workflow_archive_requirements_v1.yaml (favourite removal on archive confirm—FR-WF-ARCH-003)
 #   - tests/docs/requirements/original/project_archive_requirements_v1.yaml (favourite removal on archive confirm—FR-PROJ-ARCH-003)
+#   - tests/docs/requirements/original/workspace_access_requirements_v1.yaml (mid-session archive eviction—FR-WS-ACCESS-005)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
@@ -33,43 +34,23 @@ uiObjectDefinitions:
   cardWorkflowCountChip:
     meaning: Chip displaying workflow count on projectCard when count is greater than zero.
   cardFavouriteToggle:
-    meaning: Favourite control on projectCard or workflowCard; interactive per FR-CARD-005 when the object is not archived. On projectCard or workflowCard that represents an archived object, cardFavouriteToggle shows non-favourited state and does not accept interaction per FR-CARD-006.
+    meaning: Favourite control on projectCard or workflowCard; shows yellow star when favourited and grey star when not favourited; interactive per FR-CARD-005 when the object is not archived. On projectCard or workflowCard that represents an archived object, cardFavouriteToggle shows grey star and does not accept interaction per FR-CARD-006.
   cardLinkedInUseChip:
     meaning: Warning chip labeled 'Already in use' on workflowCard only inside workflowLinkWorkflowDialogSearchResults per workflow_edit_node_requirements_v1.yaml FR-WF-EN-008 and FR-WF-EN-009; indicates the candidate course or activity is already linked to another node in the same workflow per FR-CARD-007.
   globalMessageSnackbar:
-    meaning: Canonical definition in tests/docs/requirements/original/workflow_header_requirements_v1.yaml.
+    meaning: Application-wide transient snackbar for async success and error feedback.
 
 locatorMappings:
-  projectCard:
-    strategy: null
-    confidence: unresolved
-  workflowCard:
-    strategy: null
-    confidence: unresolved
-  cardTitleText:
-    strategy: "{projectCard|workflowCard} title region"
-    confidence: unresolved
-  cardOwnerText:
-    strategy: "{projectCard|workflowCard} text matching pattern 'Owned by {ownerName}'"
-    confidence: inferred
-  cardTypeChip:
-    strategy: "{projectCard|workflowCard} chip mapped from object type"
-    confidence: unresolved
-  cardTemplateChip:
-    strategy: "{projectCard|workflowCard} chip with text 'Template'"
-    confidence: inferred
-  cardWorkflowCountChip:
-    strategy: "{projectCard} chip with text pattern '{n} workflow' or '{n} workflows'"
-    confidence: inferred
-  cardFavouriteToggle:
-    strategy: "{projectCard|workflowCard} favourite control"
-    confidence: unresolved
-  cardLinkedInUseChip:
-    strategy: "{workflowLinkWorkflowDialogSearchResults} {workflowCard} chip with text 'Already in use'"
-    confidence: inferred
-  globalMessageSnackbar:
-    strategy: null
-    confidence: unresolved
+  projectCard: "canonical_locators.yaml -> projectCard"
+  workflowCard: "canonical_locators.yaml -> workflowCard"
+  cardTitleText: "canonical_locators.yaml -> cardTitleText"
+  cardOwnerText: "canonical_locators.yaml -> cardOwnerText"
+  cardTypeChip: "canonical_locators.yaml -> cardTypeChip"
+  cardTemplateChip: "canonical_locators.yaml -> cardTemplateChip"
+  cardWorkflowCountChip: "canonical_locators.yaml -> cardWorkflowCountChip"
+  cardFavouriteToggle: "canonical_locators.yaml -> cardFavouriteToggle"
+  cardLinkedInUseChip: "canonical_locators.yaml -> cardLinkedInUseChip"
+  globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
 
 requirements:
   - id: FR-CARD-001
@@ -117,7 +98,9 @@ requirements:
       - given project workflow count equals 1, cardWorkflowCountChip label matches '1 workflow'
       - given project workflow count is greater than 1, cardWorkflowCountChip label matches '{n} workflows'
       - given project workflow count is null or 0, cardWorkflowCountChip is not visible
-      - cardFavouriteToggle is visible on projectCard and reflects project favourite state
+      - cardFavouriteToggle is visible on projectCard
+      - given project is favourited, cardFavouriteToggle on projectCard shows yellow star
+      - given project is not favourited, cardFavouriteToggle on projectCard shows grey star
 
     openQuestions: []
 
@@ -164,7 +147,9 @@ requirements:
       - cardTypeChip label matches the workflow library object type mapping for that row (e.g. 'Program', 'Course', 'Activity')
       - given workflow is a template, cardTemplateChip is visible with label 'Template'
       - given workflow is not a template, cardTemplateChip is not visible
-      - cardFavouriteToggle is visible on workflowCard and reflects workflow favourite state
+      - cardFavouriteToggle is visible on workflowCard
+      - given workflow is favourited, cardFavouriteToggle on workflowCard shows yellow star
+      - given workflow is not favourited, cardFavouriteToggle on workflowCard shows grey star
 
     openQuestions: []
 
@@ -223,15 +208,14 @@ requirements:
       - user clicks workflowCard card body (not cardFavouriteToggle)
 
     mainFlow:
-      - when user clicks workflowCard card body, system navigates to that workflow's 'Workflow' sub-view at route pattern '/workflow/{id}/workflow'
+      - when user clicks workflowCard card body, system navigates to '/workflow/{id}/graph' with workflowView open
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given non-archived workflowCard, user clicks workflowCard card body, current route matches '/workflow/{id}/workflow'
+      - given non-archived workflowCard, user clicks workflowCard card body, current route matches '/workflow/{id}/graph'
 
-    openQuestions:
-      - Confirm whether workflowCard click lands on the workflow 'Workflow' sub-view at '/workflow/{id}/workflow' or on the workflow Overview index at '/workflow/{id}' until routing is finalized.
+    openQuestions: []
 
   - id: FR-CARD-005
     title: Favourite toggle updates favourite state and snackbar copy
@@ -259,7 +243,7 @@ requirements:
     mainFlow:
       - when user clicks cardFavouriteToggle, system attempts to update favourite state for that card without performing projectCard or workflowCard click navigation per FR-CARD-003 or FR-CARD-004
       - when user clicks cardFavouriteToggle, system does not change projectCard selection in createWorkflowDialog step 1 (workflowProjectSearchView per FR-WF-CREATE-STEPPER-003), workflowCard selection in workflowLinkWorkflowDialog (FR-WF-EN-009), or workflowCard selection in createWorkflowDialog step 3 template picker (FR-WF-CREATE-STEPPER-006)
-      - on successful request for projectCard or workflowCard, system updates cardFavouriteToggle visual state and shows globalMessageSnackbar with success copy 'Added to your favourites' when favourite becomes true, or 'Removed from your favourites' when favourite becomes false
+      - on successful request for projectCard or workflowCard, system updates cardFavouriteToggle to yellow star when favourite becomes true or grey star when favourite becomes false and shows globalMessageSnackbar with success copy 'Added to your favourites' when favourite becomes true, or 'Removed from your favourites' when favourite becomes false
       - on failed request, system preserves prior favourite state and shows globalMessageSnackbar with error copy 'We were not able to update favourite status'
       - globalMessageSnackbar success and error copy in this FR also apply to projectHeaderFavouriteToggle per project_header_requirements_v1.yaml FR-PROJ-HEADER-002 and workflowHeaderFavouriteToggle per workflow_header_requirements_v1.yaml FR-WF-HEADER-002
 
@@ -269,8 +253,8 @@ requirements:
       - given user clicks cardFavouriteToggle on a visible projectCard or workflowCard, current route is unchanged from immediately before the click
       - given user clicks cardFavouriteToggle on projectCard in createWorkflowDialog step 1 workflowProjectSearchView, selected projectCard for that dialog is unchanged from immediately before the click
       - given user clicks cardFavouriteToggle on workflowCard in workflowLinkWorkflowDialogSearchResults or on workflowCard in createWorkflowDialog step 3 workflowTemplateSearchView, selected workflowCard for that dialog is unchanged from immediately before the click
-      - given user clicks cardFavouriteToggle on a non-favourited projectCard or workflowCard and update succeeds, cardFavouriteToggle switches to favourited and globalMessageSnackbar shows 'Added to your favourites'
-      - given user clicks cardFavouriteToggle on a favourited projectCard or workflowCard and update succeeds, cardFavouriteToggle switches to non-favourited and globalMessageSnackbar shows 'Removed from your favourites'
+      - given user clicks cardFavouriteToggle on a non-favourited projectCard or workflowCard and update succeeds, cardFavouriteToggle shows yellow star and globalMessageSnackbar shows 'Added to your favourites'
+      - given user clicks cardFavouriteToggle on a favourited projectCard or workflowCard and update succeeds, cardFavouriteToggle shows grey star and globalMessageSnackbar shows 'Removed from your favourites'
       - given favourite-state update fails, cardFavouriteToggle visual state remains on previous state and globalMessageSnackbar shows 'We were not able to update favourite status'
 
     openQuestions: []
@@ -307,8 +291,9 @@ requirements:
       - when user clicks workflowCard that represents an archived workflow, system does not perform navigation defined in FR-CARD-004 (same exception for Owner actions on 'My library' per FR-LIB-006)
       - when projectCard represents an archived project, projectCard renders cardTitleText, cardOwnerText, cardTypeChip, cardTemplateChip when applicable, and cardWorkflowCountChip when applicable per FR-CARD-001 where data exists; cardFavouriteToggle follows this FR, not FR-CARD-001
       - when workflowCard represents an archived workflow, workflowCard renders cardTitleText, cardOwnerText, cardTypeChip, and cardTemplateChip when applicable per FR-CARD-002 where data exists; cardFavouriteToggle follows this FR, not FR-CARD-002
-      - on projectCard or workflowCard that represents an archived object, cardFavouriteToggle shows non-favourited state and does not accept interaction
+      - on projectCard or workflowCard that represents an archived object, cardFavouriteToggle shows grey star and does not accept interaction
       - projectCard or workflowCard that represents an archived object uses subdued archived styling on the card and thumbnail and does not present an active navigation affordance to open that archived workspace
+      - mid-session archive — when a project or workflow becomes archived while an actor is already in its workspace, eviction on the actor's next in-app action is specified in tests/docs/requirements/original/workspace_access_requirements_v1.yaml FR-WS-ACCESS-005 (access-denied presentation per FR-WS-ACCESS-001 or FR-WS-ACCESS-002); this FR covers card-click navigation only
 
     roleBehavior: {}
 
@@ -317,7 +302,7 @@ requirements:
       - given workflowCard represents an archived workflow, clicking the card does not perform navigation defined in FR-CARD-004
       - given projectCard represents an archived project, visible cardTitleText, cardOwnerText, cardTypeChip, cardTemplateChip, and cardWorkflowCountChip conform to FR-CARD-001 where applicable
       - given workflowCard represents an archived workflow, visible cardTitleText, cardOwnerText, cardTypeChip, and cardTemplateChip conform to FR-CARD-002 where applicable
-      - given projectCard or workflowCard represents an archived object, cardFavouriteToggle shows non-favourited state
+      - given projectCard or workflowCard represents an archived object, cardFavouriteToggle shows grey star
       - given projectCard or workflowCard represents an archived object, clicking cardFavouriteToggle does not change favourite state
       - given projectCard or workflowCard represents an archived object, the card and thumbnail use subdued archived styling and are not presented as an active link to the archived object workspace
 

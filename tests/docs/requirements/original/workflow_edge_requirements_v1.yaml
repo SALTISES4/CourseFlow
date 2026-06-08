@@ -1,15 +1,15 @@
 # Normalized requirements: create, delete, reconnect, select, and canvas presentation of workflowEdges in Workflow view ('Workflow' sub-view)
-# Source: tests/docs/__ARCHIVE/functional-requirements.md (Edges — lines 973–1054; Edges Metadata — lines 975–1026)
 # Application code evidence: react/src/components/views/WorkflowView/WorkflowEditView/components/LineSVG/* (Connection, DrawPreview, Handles); react/src/redux/slices/svglink.slice.ts; react/src/redux/slices/nodelink.slice.ts; react/src/components/pages/Workspace/Workflow/Sidebar/components/EditTab/components/EditNodelink/index.tsx
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Cross-reference: tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml (workflowView canonical); tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml (workflowNodeEdgeHandles — FR-WF-NODE-006); tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebar, workflowRightSidebarEditTab — FR-WF-RS-001, FR-WF-RS-002); tests/docs/requirements/original/workflow_move_node_requirements_v1.yaml (workflowEdge preservation when workflowNodes move — FR-WF-MV-005; do not re-specify preservation rules here); tests/docs/requirements/original/workflow_delete_node_requirements_v1.yaml (workflowEdge cleanup and bypass on workflowNode delete — FR-WF-DEL-004); tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml (lateral channel reorder edge preservation — FR-CHAN-008); tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml (section insert/delete/reorder edge integrity — FR-SEC-008, FR-SEC-009). Canvas layering and selection chrome for workflowEdge — FR-WF-EDGE-005.
+# Cross-reference: tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml (workflowView canonical); tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml (workflowNodeEdgeHandles — FR-WF-NODE-006); tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebar, workflowRightSidebarEditTab — FR-WF-RS-001, FR-WF-RS-002, FR-WF-RS-004); tests/docs/requirements/original/workflow_move_node_requirements_v1.yaml (workflowEdge identity/metadata preservation on move — FR-WF-MV-005; path re-routing after move — FR-WF-EDGE-005); tests/docs/requirements/original/workflow_delete_node_requirements_v1.yaml (workflowEdge cleanup and bypass on workflowNode delete — FR-WF-DEL-004); tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml (linked-node sidebar read-only — FR-WF-EN-004, FR-WF-EN-006; node edit selection — FR-WF-EN-001); tests/docs/requirements/original/workflow_edit_channel_requirements_v1.yaml (lateral channel reorder edge preservation — FR-CHAN-008); tests/docs/requirements/original/workflow_edit_section_requirements_v1.yaml (section insert/delete/reorder edge integrity — FR-SEC-008, FR-SEC-009).
+#   - tests/docs/requirements/original/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-002)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
-  - current route is '/workflow/{id}/workflow'
+  - current route is '/workflow/{id}/graph'
   - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
   - workflowView is open with at least two workflowNodes that can serve as edge endpoints
-  - moving a workflowNode within a workflowSectionContainer or to another workflowSectionContainer preserves every workflowEdge incident on that workflowNode (same edge identities and metadata) per tests/docs/requirements/original/workflow_move_node_requirements_v1.yaml FR-WF-MV-005; this file does not restate move preservation rules
+  - requirements in this file assume the above hold; when they do not, assert per FR-WS-ACCESS-002
 
 uiObjectDefinitions:
   workflowView:
@@ -20,6 +20,8 @@ uiObjectDefinitions:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
   workflowEdge:
     meaning: Directed canvas link between two workflowNodes with optional title, dashed style, and text-position metadata.
+  workflowEdgeTitleLabel:
+    meaning: Title label rendered along the path of a workflowEdge in workflowView.
   workflowNodeEdgeHandles:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml.
   workflowNodeEdgeHandleTop:
@@ -40,8 +42,14 @@ uiObjectDefinitions:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
   workflowRightSidebarEditTabContent:
     meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarAddTab:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarCommentsTab:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
   workflowEditEdgeForm:
     meaning: Right-sidebar edit form for the selected workflowEdge's title and dashed-line metadata.
+  workflowEditEdgeFormHeading:
+    meaning: Heading on workflowEditEdgeForm with text 'Edit node link'.
   workflowEditEdgeFormTitleField:
     meaning: Title text field on workflowEditEdgeForm.
   workflowEditEdgeFormDashedLineToggle:
@@ -50,30 +58,28 @@ uiObjectDefinitions:
     meaning: Delete button on workflowEditEdgeForm.
 
 locatorMappings:
-  workflowView:
-    strategy: null
-    confidence: unresolved
-  workflowSectionContainer:
-    strategy: "[data-week-id]"
-    confidence: confirmed
-  workflowNode:
-    strategy: "[id='node-{workflowNodeId}']"
-    confidence: inferred
-  workflowEdge:
-    strategy: null
-    confidence: unresolved
-  workflowNodeEdgeHandles:
-    strategy: "{workflowNode} LineSVG Handles overlay (four SVG circles on hover or during link preview)"
-    confidence: inferred
-  workflowRightSidebar:
-    strategy: "[data-test-id='sidebar']"
-    confidence: confirmed
-  workflowEditEdgeForm:
-    strategy: null
-    confidence: unresolved
-  workflowEditEdgeFormDeleteButton:
-    strategy: null
-    confidence: unresolved
+  workflowView: "canonical_locators.yaml -> workflowView"
+  workflowSectionContainer: "canonical_locators.yaml -> workflowSectionContainer"
+  workflowNode: "canonical_locators.yaml -> workflowNode"
+  workflowEdge: "canonical_locators.yaml -> workflowEdge"
+  workflowEdgeTitleLabel: "canonical_locators.yaml -> workflowEdgeTitleLabel"
+  workflowNodeEdgeHandles: "canonical_locators.yaml -> workflowNodeEdgeHandles"
+  workflowNodeEdgeHandleTop: "canonical_locators.yaml -> workflowNodeEdgeHandleTop"
+  workflowNodeEdgeHandleRight: "canonical_locators.yaml -> workflowNodeEdgeHandleRight"
+  workflowNodeEdgeHandleBottom: "canonical_locators.yaml -> workflowNodeEdgeHandleBottom"
+  workflowNodeEdgeHandleLeft: "canonical_locators.yaml -> workflowNodeEdgeHandleLeft"
+  workflowEdgeSourceReconnectHandle: "canonical_locators.yaml -> workflowEdgeSourceReconnectHandle"
+  workflowEdgeTargetReconnectHandle: "canonical_locators.yaml -> workflowEdgeTargetReconnectHandle"
+  workflowRightSidebar: "canonical_locators.yaml -> workflowRightSidebar"
+  workflowRightSidebarEditTab: "canonical_locators.yaml -> workflowRightSidebarEditTab"
+  workflowRightSidebarEditTabContent: "canonical_locators.yaml -> workflowRightSidebarEditTabContent"
+  workflowRightSidebarAddTab: "canonical_locators.yaml -> workflowRightSidebarAddTab"
+  workflowRightSidebarCommentsTab: "canonical_locators.yaml -> workflowRightSidebarCommentsTab"
+  workflowEditEdgeForm: "canonical_locators.yaml -> workflowEditEdgeForm"
+  workflowEditEdgeFormHeading: "canonical_locators.yaml -> workflowEditEdgeFormHeading"
+  workflowEditEdgeFormTitleField: "canonical_locators.yaml -> workflowEditEdgeFormTitleField"
+  workflowEditEdgeFormDashedLineToggle: "canonical_locators.yaml -> workflowEditEdgeFormDashedLineToggle"
+  workflowEditEdgeFormDeleteButton: "canonical_locators.yaml -> workflowEditEdgeFormDeleteButton"
 
 requirements:
   - id: FR-WF-EDGE-001
@@ -85,6 +91,9 @@ requirements:
     actors:
       - owner
       - editor
+      - commenter
+      - viewer
+      - user
 
     uiObjects:
       - workflowView
@@ -98,8 +107,7 @@ requirements:
 
     preconditions:
       - workflowView contains at least two workflowNodes
-      - actor is owner or editor
-      - workflowNodeEdgeHandles is rendered on the source workflowNode per tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml FR-WF-NODE-006
+      - workflowNodeEdgeHandles is rendered on the source workflowNode per FR-WF-NODE-006
 
     trigger:
       - user presses pointer on a workflowNodeEdgeHandle (top, right, bottom, or left) on workflowNode S and drags toward another workflowNode
@@ -111,10 +119,11 @@ requirements:
       - self-loop workflowEdges are not permitted — source workflowNode and target workflowNode must be different identities (S ≠ T); snap and create reject release on the same workflowNode as the departure node
       - a user may create a workflowEdge from source workflowNode to target workflowNode that displays later (below) in workflowView, earlier (above), or in a different workflowSectionContainer than the source
       - a user may attach departing or arriving ends on any of the four workflowNode handles; handle choice does not allow a second workflowEdge for the same ordered source→target workflowNode pair
-      - workflowEdge creation is permitted between endpoint workflowNodes that have linked workflows; sidebar read-only fields on those workflowNodes (per tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml) do not block creating or reconnecting workflowEdges
+      - workflowEdge creation is permitted between endpoint workflowNodes that have linked workflows; sidebar read-only fields on those workflowNodes per FR-WF-EN-004 or FR-WF-EN-006 do not block creating or reconnecting workflowEdges
       - at most one workflowEdge may exist per ordered source→target workflowNode pair (same source workflowNode id and same target workflowNode id, regardless of which handles are used); attempting to create another workflowEdge for an existing pair does not add a second workflowEdge (reconnect may change handles on the single existing edge per FR-WF-EDGE-003)
       - at most 50 workflowEdges may depart from the same source workflowNode; at most 50 workflowEdges may arrive at the same target workflowNode
       - on pointer release without a valid snap target on a different workflowNode, system clears the preview line and does not create a workflowEdge
+      - workflowView does not auto-scroll while the user drags to author a workflowEdge
 
     roleBehavior:
       owner:
@@ -137,11 +146,9 @@ requirements:
       - given owner or editor starts a link drag from workflowNode S but releases without snapping to a different workflowNode, no new workflowEdge is persisted and the preview line is cleared
       - given two workflowNodes both with linked workflows, owner or editor may still create a workflowEdge between them
       - given actor is commenter, viewer, or user, workflowNodeEdgeHandles is not rendered and no workflowEdge can be created via handle drag
+      - given owner or editor drags from a handle on workflowNode S toward another workflowNode while the pointer is near a workflowView boundary, workflowView does not auto-scroll
 
-    openQuestions:
-      - nodelink.slice create path deduplicates on sourceNode, sourcePort, targetNode, and targetPort (react/src/redux/slices/nodelink.slice.ts) — align with one-workflowEdge-per source→target pair regardless of handle.
-      - Confirm whether maximum-50 outgoing/incoming enforcement is implemented in API, client, or both.
-      - If the product introduces per-workflowNode locks or other graph-level restrictions independent of project role, confirm whether edge authoring is blocked when only one endpoint is restricted (today implementation does not branch on endpoint lock state in LineSVG Handles).
+    openQuestions: []
 
   - id: FR-WF-EDGE-002
     title: Delete workflowEdge
@@ -167,15 +174,16 @@ requirements:
 
     preconditions:
       - a target workflowEdge exists in workflowView
-      - workflowEditEdgeForm is open for that workflowEdge (user selected the workflowEdge per FR-WF-EDGE-004, or selection was already active)
+      - workflowEditEdgeForm is open for that workflowEdge per FR-WF-EDGE-004
 
     trigger:
       - user clicks workflowEditEdgeFormDeleteButton on workflowEditEdgeForm
 
     mainFlow:
       - workflowEdge deletion is available only through workflowEditEdgeFormDeleteButton on workflowEditEdgeForm in workflowRightSidebar (no canvas, hover-menu, or keyboard delete entry path)
-      - workflowEditEdgeFormDeleteButton uses the same active versus readOnly matrix as workflowEditEdgeFormTitleField and workflowEditEdgeFormDashedLineToggle in FR-WF-EDGE-004 roleBehavior
+      - workflowEditEdgeFormDeleteButton role gating for commenter, viewer, and user matches FR-WF-EDGE-004 roleBehavior (disabled)
       - system removes the target workflowEdge from persisted state and from workflowView
+      - on delete, workflowRightSidebar returns to default presentation per FR-WF-RS-004
       - no confirmation dialog intervenes before removal
       - deleting a workflowEdge does not remove either endpoint workflowNode
 
@@ -185,15 +193,15 @@ requirements:
       editor:
         workflowEditEdgeFormDeleteButton: active
       commenter:
-        workflowEditEdgeFormDeleteButton: readOnly
+        workflowEditEdgeFormDeleteButton: disabled
       viewer:
-        workflowEditEdgeFormDeleteButton: readOnly
+        workflowEditEdgeFormDeleteButton: disabled
       user:
-        workflowEditEdgeFormDeleteButton: readOnly
+        workflowEditEdgeFormDeleteButton: disabled
 
     acceptanceCriteria:
-      - given owner or editor has workflowEditEdgeForm open for workflowEdge E, when user clicks workflowEditEdgeFormDeleteButton, workflowEdge E is removed from workflowView and workflowEditEdgeForm closes or shows no bound workflowEdge
-      - given actor is commenter, viewer, or user, workflowEditEdgeFormDeleteButton is readOnly and clicking it does not remove the workflowEdge
+      - given owner or editor has workflowEditEdgeForm open for workflowEdge E, when user clicks workflowEditEdgeFormDeleteButton, workflowEdge E is removed from workflowView and workflowRightSidebar returns to default presentation per FR-WF-RS-004
+      - given actor is commenter, viewer, or user, workflowEditEdgeFormDeleteButton is disabled and clicking it does not remove the workflowEdge
       - given workflowEdge E is deleted, both endpoint workflowNodes remain in workflowView
       - no control outside workflowEditEdgeFormDeleteButton in workflowRightSidebar removes a workflowEdge
 
@@ -208,6 +216,9 @@ requirements:
     actors:
       - owner
       - editor
+      - commenter
+      - viewer
+      - user
 
     uiObjects:
       - workflowView
@@ -219,7 +230,6 @@ requirements:
 
     preconditions:
       - target workflowEdge E is selected in workflowView per FR-WF-EDGE-004
-      - actor is owner or editor
 
     trigger:
       - user presses pointer on workflowEdgeSourceReconnectHandle or workflowEdgeTargetReconnectHandle on the selected workflowEdge and drags to another workflowNode handle
@@ -233,6 +243,7 @@ requirements:
       - on valid release, system updates persisted source or target endpoint of E; on release without valid snap, system reverts E to its prior endpoints
       - reconnecting workflowEdgeTargetReconnectHandle to workflowNode U is rejected when U equals the current source workflowNode of E (would create a self-loop); reconnecting workflowEdgeSourceReconnectHandle to workflowNode U is rejected when U equals the current target workflowNode of E
       - reconnect that would yield the same source→target workflowNode pair as a different existing workflowEdge is rejected; one workflowEdge per ordered pair and per-node maximum of 50 outgoing and 50 incoming workflowEdges from FR-WF-EDGE-001 apply
+      - workflowView does not auto-scroll while the user drags a reconnect handle on a workflowEdge
 
     roleBehavior:
       owner:
@@ -258,12 +269,12 @@ requirements:
       - given selected workflowEdge E from S to T, when owner or editor drags workflowEdgeSourceReconnectHandle and releases on workflowNode T, E is unchanged (self-loop blocked)
       - given selected workflowEdge E, when owner or editor drags a reconnect handle but releases without valid snap, E retains its original source and target
       - given actor is commenter, viewer, or user, workflowEdgeSourceReconnectHandle and workflowEdgeTargetReconnectHandle are not rendered
+      - given owner or editor drags a reconnect handle on selected workflowEdge E while the pointer is near a workflowView boundary, workflowView does not auto-scroll
 
-    openQuestions:
-      - Align reconnect validation in nodelink.slice/svglink with one-workflowEdge-per source→target pair, self-loop rejection, and max-50 counts (create path today uses port-level dedupe only).
+    openQuestions: []
 
   - id: FR-WF-EDGE-004
-    title: Select workflowEdge and open workflowEditEdgeForm
+    title: Select workflowEdge, open workflowEditEdgeForm, and edit title and dashed style (save on change)
 
     designEvidence:
       - FIGMA-WF-EDGE-EDIT
@@ -278,10 +289,15 @@ requirements:
     uiObjects:
       - workflowView
       - workflowEdge
+      - workflowEdgeTitleLabel
+      - workflowNode
       - workflowRightSidebar
       - workflowRightSidebarEditTab
       - workflowRightSidebarEditTabContent
+      - workflowRightSidebarAddTab
+      - workflowRightSidebarCommentsTab
       - workflowEditEdgeForm
+      - workflowEditEdgeFormHeading
       - workflowEditEdgeFormTitleField
       - workflowEditEdgeFormDashedLineToggle
       - workflowEditEdgeFormDeleteButton
@@ -291,14 +307,24 @@ requirements:
 
     trigger:
       - user clicks a workflowEdge in workflowView
+      - user clicks a workflowEdge in workflowView while workflowRightSidebar is already open
+      - user types, pastes, or clears workflowEditEdgeFormTitleField
+      - user changes workflowEditEdgeFormDashedLineToggle
 
     mainFlow:
+      - if workflowRightSidebar is collapsed, system expands workflowRightSidebar with workflowRightSidebarEditTab selected per FR-WF-RS-001
+      - if workflowRightSidebar is open on a different tab (including workflowRightSidebarAddTab or workflowRightSidebarCommentsTab) or bound to a different host, system switches workflowRightSidebar to workflowRightSidebarEditTab and rebinds workflowRightSidebarEditTabContent to the clicked workflowEdge
       - system selects the clicked workflowEdge and binds workflowEditEdgeForm in workflowRightSidebarEditTabContent to that workflowEdge
-      - workflowRightSidebar presents workflowEditEdgeForm with heading 'Edit node link' and fields workflowEditEdgeFormTitleField, workflowEditEdgeFormDashedLineToggle, and workflowEditEdgeFormDeleteButton (text position control is out of scope)
-      - workflowEditEdgeFormTitleField, workflowEditEdgeFormDashedLineToggle, and workflowEditEdgeFormDeleteButton share one role matrix in this FR's roleBehavior (owner and editor may edit title and dashed style and may delete; commenter, viewer, and user have those controls readOnly)
+      - workflowRightSidebar presents workflowEditEdgeForm with workflowEditEdgeFormHeading and fields workflowEditEdgeFormTitleField, workflowEditEdgeFormDashedLineToggle, and workflowEditEdgeFormDeleteButton (text position control is out of scope)
+      - workflowEditEdgeFormHeading reads 'Edit node link'
+      - workflowEditEdgeFormTitleField and workflowEditEdgeFormDashedLineToggle are readOnly for commenter, viewer, and user; workflowEditEdgeFormDeleteButton is disabled for those actors (owner and editor may edit title and dashed style and may delete)
+      - system persists changes without an explicit save control on workflowEditEdgeForm
+      - workflowEditEdgeForm does not render any visible auto-save status indicator (e.g. 'Saving…' or 'Saved')
+      - when owner or editor changes workflowEditEdgeFormTitleField, the title is saved without an explicit save control; workflowEdgeTitleLabel is shown on the workflowEdge in workflowView when the stored title is non-empty and is not shown when the stored title is empty
       - when owner or editor changes workflowEditEdgeFormDashedLineToggle, the persisted dashed flag updates and workflowEdge in workflowView reflects dashed when the toggle is on and solid when the toggle is off
       - when another workflowEdge is selected, selection moves to that workflowEdge
-      - canvas layering, selected-stroke colour '#FCD748', and yellow border on the two incident workflowNodeEdgeHandles follow FR-WF-EDGE-005 when the workflowEdge is selected; when workflowRightSidebar edit selection is an endpoint workflowNode, incident workflowEdges use '#FCD748' stroke per FR-WF-EDGE-005 without moving above overlapping workflowNodes unless that workflowEdge is selected
+      - when multiple workflowEdges share the same target workflowNode, user selects a workflowEdge by clicking a segment of that workflowEdge where the line is visible without overlap from other workflowEdges sharing that target (typically an upstream segment before the lines converge on the target workflowNode)
+      - canvas layering and selection appearance for the selected workflowEdge follow FR-WF-EDGE-005
 
     roleBehavior:
       owner:
@@ -315,30 +341,35 @@ requirements:
         workflowEdge: selectable
         workflowEditEdgeFormTitleField: readOnly
         workflowEditEdgeFormDashedLineToggle: readOnly
-        workflowEditEdgeFormDeleteButton: readOnly
+        workflowEditEdgeFormDeleteButton: disabled
       viewer:
         workflowEdge: selectable
         workflowEditEdgeFormTitleField: readOnly
         workflowEditEdgeFormDashedLineToggle: readOnly
-        workflowEditEdgeFormDeleteButton: readOnly
+        workflowEditEdgeFormDeleteButton: disabled
       user:
         workflowEdge: selectable
         workflowEditEdgeFormTitleField: readOnly
         workflowEditEdgeFormDashedLineToggle: readOnly
-        workflowEditEdgeFormDeleteButton: readOnly
+        workflowEditEdgeFormDeleteButton: disabled
 
     acceptanceCriteria:
       - given owner or editor clicks workflowEdge E in workflowView, workflowEditEdgeForm opens for E in workflowRightSidebarEditTabContent and workflowEdgeSourceReconnectHandle and workflowEdgeTargetReconnectHandle are available per FR-WF-EDGE-003
-      - given commenter, viewer, or user clicks a workflowEdge in workflowView, workflowEditEdgeForm opens with workflowEditEdgeFormTitleField, workflowEditEdgeFormDashedLineToggle, and workflowEditEdgeFormDeleteButton readOnly
+      - given commenter, viewer, or user clicks a workflowEdge in workflowView, workflowEditEdgeForm opens with workflowEditEdgeFormTitleField and workflowEditEdgeFormDashedLineToggle readOnly and workflowEditEdgeFormDeleteButton disabled
       - given owner or editor has workflowEditEdgeForm open for workflowEdge E, when workflowEditEdgeFormDashedLineToggle is on, workflowEdge E is drawn dashed in workflowView; when the toggle is off, workflowEdge E is drawn solid
+      - given owner or editor has workflowEditEdgeForm open for workflowEdge E, when user modifies workflowEditEdgeFormTitleField, the change is saved without an explicit save control and workflowEdge E shows workflowEdgeTitleLabel in workflowView when the stored title is non-empty
+      - given owner or editor has workflowEditEdgeForm open for workflowEdge E, when user modifies an editable field on workflowEditEdgeForm, workflowEditEdgeForm does not show any visible auto-save status indicator
+      - given owner or editor clears workflowEditEdgeFormTitleField on workflowEdge E, when save completes, workflowEdge E does not show workflowEdgeTitleLabel in workflowView
       - given workflowEdge E is selected, when user clicks workflowEdge F in workflowView, workflowEditEdgeForm binds to F
+      - given workflowRightSidebar is collapsed, when user clicks workflowEdge E in workflowView, workflowRightSidebar expands, workflowRightSidebarEditTab is selected, and workflowEditEdgeForm opens for E
+      - given workflowRightSidebar is open on workflowRightSidebarAddTab or bound to a workflowNode per FR-WF-EN-001, when user clicks workflowEdge E in workflowView, workflowRightSidebar switches to workflowRightSidebarEditTab and workflowEditEdgeForm binds to E
+      - given workflowNode T is the target of workflowEdges E1 and E2, when user clicks a segment of E1 where E1's line is visible without overlap from E2, workflowEditEdgeForm binds to E1
+      - when workflowEditEdgeForm is rendered, workflowEditEdgeFormHeading text is 'Edit node link'
 
-    openQuestions:
-      - Archive states that when multiple workflowEdges share the same target workflowNode, the user selects an edge at an earlier segment where the line is seen by itself; confirm selection hit-testing rules for overlapping edges (not fully specified in current Connection hit path).
-      - Dragging an edge (authoring or reconnect) should automatically scroll the workspace — confirm in implementation and add acceptance criteria when interaction scope is finalized.
+    openQuestions: []
 
   - id: FR-WF-EDGE-005
-    title: workflowEdge canvas layering and selection appearance
+    title: workflowEdge canvas layering, selection appearance, and path re-routing on layout change
 
     designEvidence:
       - FIGMA-WF-EDGE-EDIT
@@ -351,6 +382,9 @@ requirements:
       - workflowNode
       - workflowEdge
       - workflowNodeEdgeHandles
+      - workflowRightSidebar
+      - workflowRightSidebarEditTab
+      - workflowRightSidebarEditTabContent
 
     preconditions:
       - workflowView displays at least one workflowEdge
@@ -358,8 +392,12 @@ requirements:
     trigger:
       - workflowEdge selection changes in workflowView
       - workflowRightSidebar edit selection binds to a workflowNode that is an endpoint of a workflowEdge or to a workflowEdge
+      - a workflowNode move is finalized per FR-WF-MV-003 or FR-WF-MV-004 and one or more workflowEdges are preserved per FR-WF-MV-005
 
     mainFlow:
+      - when a workflowNode move is finalized per FR-WF-MV-003 or FR-WF-MV-004, each workflowEdge preserved per FR-WF-MV-005 has its visible path in workflowView recalculated to connect the same persisted departure and arrival workflowNodeEdgeHandles on the updated canvas positions of its source and target workflowNodes; source/target identities and edge metadata are unchanged by re-routing
+      - workflowEdge path re-routing uses orthogonal smooth-step routing between the attachment points of the persisted handles on each endpoint workflowNode
+      - path re-routing applies to every preserved workflowEdge incident on the moved workflowNode and to every other preserved workflowEdge whose source or target workflowNode canvas position changed as a consequence of the move finalization
       - when workflowEdge E is not the selected workflowEdge in workflowView and workflowRightSidebar edit selection is not a workflowNode endpoint of E, E is stacked behind workflowNodes so overlapping regions show the workflowNode in front of the line
       - when workflowEdge E is the selected workflowEdge (user clicked E in workflowView per FR-WF-EDGE-004), E is stacked above workflowNodes so the line remains visible where it crosses workflowNode bounds
       - when workflowEdge E is the selected workflowEdge, its visible stroke colour is '#FCD748' (dashing per persisted dashed flag still applies)
@@ -369,6 +407,9 @@ requirements:
     roleBehavior: {}
 
     acceptanceCriteria:
+      - given workflowEdge E from workflowNode A to workflowNode B with persisted handle attachments, when owner or editor moves A or B per FR-WF-MV-003 or FR-WF-MV-004 and E is preserved per FR-WF-MV-005, E remains displayed in workflowView connecting A to B on the same handles with a path updated to the nodes' new canvas positions
+      - given workflowNode N with one or more incident workflowEdges preserved per FR-WF-MV-005 after a move finalization, each incident workflowEdge's visible path in workflowView reflects the updated endpoint positions while source/target identities and metadata are unchanged
+      - given workflowEdge E is preserved after a move per FR-WF-MV-005 and E is not the selected workflowEdge, E remains stacked behind overlapping workflowNodes per this FR after re-routing
       - given workflowEdge E overlaps a workflowNode, E is not the selected workflowEdge, and neither endpoint of E is the current workflowRightSidebar workflowNode edit target, the overlapping stretch of E is visually behind that workflowNode
       - given workflowEdge E is the selected workflowEdge, E is visually in front of workflowNodes it crosses, E's visible stroke is '#FCD748', and the two workflowNodeEdgeHandles that E uses at its endpoints each display a yellow border consistent with that emphasis
       - given workflowEdge E from A to B and workflowRightSidebar edit selection is workflowNode A or B and E is not the selected workflowEdge, E's visible stroke uses '#FCD748' and E remains stacked behind workflowNodes where they overlap

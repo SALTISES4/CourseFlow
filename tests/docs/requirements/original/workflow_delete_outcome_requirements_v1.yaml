@@ -1,0 +1,242 @@
+# Normalized requirements: delete an existing workflowOutcome in the workflowOutcomeView ('Outcomes' view)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Scope (this file): deletion of a single workflowOutcome from (a) workflowEditOutcomeFormDeleteButton on workflowEditOutcomeForm and (b) workflowOutcomeHoverActionsMenuDeleteItem on workflowOutcomeHoverActionsMenu, including subtree removal, sibling renumbering, sidebar binding follow-through (Edit and Comments tabs per FR-WF-RS-004; selection chrome per FR-WF-EO-018; last-outcome sidebar not rendered per FR-WF-RS-001), outcome-to-node assignment cleanup on delete per FR-WF-EO-014 (downstream badge and assign-tab updates per FR-WF-AO-007 and FR-WF-AO-002 and highlight-set cleanup per FR-WF-AO-005), and reversion to workflowOutcomeViewEmptyState when the last workflowOutcome is removed. Out of scope: drag-and-drop, outcome filter highlight.
+# Cross-reference: tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml (canonical workflowOutcomeView, workflowOutcomeViewEmptyState, workflowOutcomeTree, workflowOutcome, workflowOutcomeHeader, workflowOutcomeHoverActionsMenu, workflowEditOutcomeForm; hover-menu container visibility and per-item gating — FR-WF-EO-003; sidebar binding rules including clear-on-removed-outcome — FR-WF-EO-004; outcome header selection chrome — FR-WF-EO-018; auto-numbering recompute — FR-WF-EO-007; three-level depth cap — FR-WF-EO-008; drag reorder/reparent — tests/docs/requirements/original/workflow_outcome_tree_drag_reorder_requirements_v1.yaml FR-WF-EO-015 through FR-WF-EO-017; empty state reversion — FR-WF-EO-001); tests/docs/requirements/original/workflow_delete_node_requirements_v1.yaml (workflowNode delete convention this file is adapted from); tests/docs/requirements/original/workflow_assign_outcome_to_node_requirements_v1.yaml (FR-WF-AO-002 assign-tab content; FR-WF-AO-005 highlight-set cleanup on delete; FR-WF-AO-006 parent-assignment cascade on delete); tests/docs/requirements/original/workflow_node_linked_outcomes_badge_requirements_v1.yaml (FR-WF-AO-007 badge updates when assignments removed on delete); tests/docs/requirements/original/workflow_comments_tab_requirements_v1.yaml (comments tab host binding — FR-WF-COMMENTS-004); tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebar collapsed/expanded presentation — FR-WF-RS-001, FR-WF-RS-002, FR-WF-RS-004); tests/docs/requirements/guidelines_functional_requirements.md
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - current route is '/workflow/{id}/outcomes'
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+  - workflowOutcomeView is open with workflowOutcomeTree rendered and at least one workflowOutcome
+  - requirements in this file assume the above hold; when they do not, assert per FR-WS-ACCESS-002
+
+uiObjectDefinitions:
+  workflowOutcomeView:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml.
+  workflowOutcomeViewEmptyState:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml.
+  workflowOutcomeTree:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml.
+  workflowOutcome:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml.
+  workflowOutcomeHeader:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml.
+  workflowOutcomeHeaderTitle:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml.
+  workflowOutcomeHeaderSelectedBorder:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml (FR-WF-EO-018).
+  workflowOutcomeHoverActionsMenu:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml.
+  workflowOutcomeHoverActionsMenuDeleteItem:
+    meaning: Hover-menu item on workflowOutcomeHoverActionsMenu with tooltip 'Delete outcome'.
+  workflowEditOutcomeForm:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml.
+  workflowEditOutcomeFormDeleteButton:
+    meaning: Action button inside workflowEditOutcomeForm labeled 'Delete'.
+  workflowRightSidebar:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarEditTab:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarEditTabContent:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarCommentsTab:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarCommentsTabContent:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_right_sidebar_requirements_v1.yaml.
+
+locatorMappings:
+  workflowOutcomeView: "canonical_locators.yaml -> workflowOutcomeView"
+  workflowOutcomeViewEmptyState: "canonical_locators.yaml -> workflowOutcomeViewEmptyState"
+  workflowOutcomeTree: "canonical_locators.yaml -> workflowOutcomeTree"
+  workflowOutcome: "canonical_locators.yaml -> workflowOutcome"
+  workflowOutcomeHeader: "canonical_locators.yaml -> workflowOutcomeHeader"
+  workflowOutcomeHeaderTitle: "canonical_locators.yaml -> workflowOutcomeHeaderTitle"
+  workflowOutcomeHeaderSelectedBorder: "canonical_locators.yaml -> workflowOutcomeHeaderSelectedBorder"
+  workflowOutcomeHoverActionsMenu: "canonical_locators.yaml -> workflowOutcomeHoverActionsMenu"
+  workflowOutcomeHoverActionsMenuDeleteItem: "canonical_locators.yaml -> workflowOutcomeHoverActionsMenuDeleteItem"
+  workflowEditOutcomeForm: "canonical_locators.yaml -> workflowEditOutcomeForm"
+  workflowEditOutcomeFormDeleteButton: "canonical_locators.yaml -> workflowEditOutcomeFormDeleteButton"
+  workflowRightSidebar: "canonical_locators.yaml -> workflowRightSidebar"
+  workflowRightSidebarEditTab: "canonical_locators.yaml -> workflowRightSidebarEditTab"
+  workflowRightSidebarEditTabContent: "canonical_locators.yaml -> workflowRightSidebarEditTabContent"
+  workflowRightSidebarCommentsTab: "canonical_locators.yaml -> workflowRightSidebarCommentsTab"
+  workflowRightSidebarCommentsTabContent: "canonical_locators.yaml -> workflowRightSidebarCommentsTabContent"
+
+requirements:
+  - id: FR-WF-EO-012
+    title: Trigger deletion from workflowEditOutcomeFormDeleteButton
+    
+    designEvidence:
+      - FIGMA-WF-EO-OE-EDIT
+    
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+    
+    uiObjects:
+      - workflowEditOutcomeForm
+      - workflowEditOutcomeFormDeleteButton
+      - workflowOutcomeTree
+      - workflowOutcome
+      - workflowOutcomeHeader
+      - workflowOutcomeHeaderSelectedBorder
+      - workflowOutcomeView
+      - workflowOutcomeViewEmptyState
+      - workflowRightSidebar
+      - workflowRightSidebarEditTab
+    
+    preconditions:
+      - workflowEditOutcomeForm is rendered and bound to a workflowOutcome per FR-WF-EO-004
+    
+    trigger:
+      - owner or editor clicks workflowEditOutcomeFormDeleteButton
+    
+    mainFlow:
+      - deletion takes effect immediately when workflowEditOutcomeFormDeleteButton is clicked, with no confirmation dialog or other intermediate gate
+      - system removes the bound workflowOutcome and its subtree from workflowOutcomeTree per FR-WF-EO-014
+      - after deletion workflowEditOutcomeForm no longer targets the deleted workflowOutcome, workflowRightSidebar returns to default presentation per FR-WF-RS-004, and no workflowOutcomeHeader shows workflowOutcomeHeaderSelectedBorder per FR-WF-EO-018
+      - when the deletion removes the last workflowOutcome in the workflow per FR-WF-EO-014, workflowRightSidebar is not rendered per FR-WF-RS-001 and workflowOutcomeView renders workflowOutcomeViewEmptyState per FR-WF-EO-001 instead of default presentation
+    
+    roleBehavior:
+      owner:
+        workflowEditOutcomeFormDeleteButton: active
+      editor:
+        workflowEditOutcomeFormDeleteButton: active
+      commenter:
+        workflowEditOutcomeFormDeleteButton: disabled
+      viewer:
+        workflowEditOutcomeFormDeleteButton: disabled
+      user:
+        workflowEditOutcomeFormDeleteButton: disabled
+    
+    acceptanceCriteria:
+      - given owner or editor with workflowEditOutcomeForm open on a workflowOutcome clicks workflowEditOutcomeFormDeleteButton and at least one workflowOutcome remains after deletion per FR-WF-EO-014, no confirmation dialog intervenes before the bound workflowOutcome and its subtree are removed per FR-WF-EO-014, workflowRightSidebar returns to default presentation per FR-WF-RS-004, and no workflowOutcomeHeader shows workflowOutcomeHeaderSelectedBorder per FR-WF-EO-018
+      - given the workflow had exactly one workflowOutcome (or one root subtree) and owner or editor deletes it via workflowEditOutcomeFormDeleteButton, after deletion workflowOutcomeView renders workflowOutcomeViewEmptyState per FR-WF-EO-001, workflowOutcomeTree is not rendered, and workflowRightSidebar is not rendered per FR-WF-RS-001
+      - given actor is commenter, viewer, or user (published-access), workflowEditOutcomeFormDeleteButton is rendered and disabled (no-op on click) and no deletion is produced
+    
+    openQuestions: []
+
+  - id: FR-WF-EO-013
+    title: Trigger deletion from workflowOutcomeHoverActionsMenuDeleteItem
+    
+    designEvidence:
+      - FIGMA-WF-EO-OE-EDIT
+    
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+    
+    uiObjects:
+      - workflowOutcomeTree
+      - workflowOutcome
+      - workflowOutcomeHeader
+      - workflowOutcomeHeaderSelectedBorder
+      - workflowOutcomeHoverActionsMenu
+      - workflowOutcomeHoverActionsMenuDeleteItem
+      - workflowEditOutcomeForm
+      - workflowRightSidebar
+      - workflowRightSidebarEditTab
+      - workflowRightSidebarEditTabContent
+      - workflowRightSidebarCommentsTab
+      - workflowRightSidebarCommentsTabContent
+      - workflowOutcomeView
+      - workflowOutcomeViewEmptyState
+    
+    preconditions:
+      - workflowOutcomeView is open with workflowOutcomeTree rendered and at least one workflowOutcome
+    
+    trigger:
+      - owner or editor hovers a workflowOutcomeHeader and clicks workflowOutcomeHoverActionsMenuDeleteItem in the resulting workflowOutcomeHoverActionsMenu
+    
+    mainFlow:
+      - container visibility of workflowOutcomeHoverActionsMenu conforms to FR-WF-EO-003; per-item actionability of workflowOutcomeHoverActionsMenuDeleteItem follows this FR's roleBehavior block, mirroring insert-item gating in FR-WF-EO-003 (owner/editor active, commenter disabled with menu visible, viewer/user not rendered)
+      - when workflowOutcomeHoverActionsMenuDeleteItem is active for the actor, deletion takes effect immediately on click, with no confirmation dialog or other intermediate gate
+      - system removes the hovered workflowOutcome and its subtree from workflowOutcomeTree per FR-WF-EO-014
+      - sidebar follow-through — when the deleted workflowOutcome or any of its descendants was the object shown in workflowRightSidebarEditTabContent or workflowRightSidebarCommentsTabContent per FR-WF-RS-004, workflowRightSidebar returns to default presentation and no workflowOutcomeHeader shows workflowOutcomeHeaderSelectedBorder per FR-WF-EO-018; otherwise workflowEditOutcomeForm binding, workflowRightSidebarCommentsTabContent binding, workflowRightSidebar presentation, and workflowOutcomeHeaderSelectedBorder per FR-WF-EO-018 are unchanged by the delete (other than workflowOutcomeTree no longer showing the deleted subtree)
+      - when the deletion removes the last workflowOutcome in the workflow per FR-WF-EO-014, workflowRightSidebar is not rendered per FR-WF-RS-001 and workflowOutcomeView renders workflowOutcomeViewEmptyState per FR-WF-EO-001 instead of default presentation
+    
+    roleBehavior:
+      owner:
+        workflowOutcomeHoverActionsMenu: shownOnHover
+        workflowOutcomeHoverActionsMenuDeleteItem: active
+      editor:
+        workflowOutcomeHoverActionsMenu: shownOnHover
+        workflowOutcomeHoverActionsMenuDeleteItem: active
+      commenter:
+        workflowOutcomeHoverActionsMenu: shownOnHover
+        workflowOutcomeHoverActionsMenuDeleteItem: disabled
+      viewer:
+        workflowOutcomeHoverActionsMenu: notRendered
+        workflowOutcomeHoverActionsMenuDeleteItem: notRendered
+      user:
+        workflowOutcomeHoverActionsMenu: notRendered
+        workflowOutcomeHoverActionsMenuDeleteItem: notRendered
+
+    acceptanceCriteria:
+      - given owner or editor hovers a workflowOutcomeHeader and clicks workflowOutcomeHoverActionsMenuDeleteItem when active per this FR's roleBehavior, no confirmation dialog intervenes before the hovered workflowOutcome and its subtree are removed from workflowOutcomeTree per FR-WF-EO-014
+      - given owner or editor deletes a workflowOutcome via workflowOutcomeHoverActionsMenuDeleteItem while workflowEditOutcomeForm is bound to that same workflowOutcome or to one of its descendants and at least one workflowOutcome remains after deletion per FR-WF-EO-014, after deletion workflowRightSidebar returns to default presentation per FR-WF-RS-004, workflowEditOutcomeForm no longer targets a deleted workflowOutcome, and no workflowOutcomeHeader shows workflowOutcomeHeaderSelectedBorder per FR-WF-EO-018
+      - given owner or editor deletes a workflowOutcome via workflowOutcomeHoverActionsMenuDeleteItem while workflowEditOutcomeForm is bound to a different workflowOutcome S (S is not the deleted workflowOutcome and is not a descendant of it), after deletion workflowEditOutcomeForm remains bound to S, workflowRightSidebar presentation is unchanged, and workflowOutcomeHeaderSelectedBorder remains on S per FR-WF-EO-018
+      - given owner or editor deletes workflowOutcome T via workflowOutcomeHoverActionsMenuDeleteItem while workflowRightSidebarCommentsTabContent is bound to T or to a descendant of T per FR-WF-COMMENTS-004 and at least one workflowOutcome remains after deletion per FR-WF-EO-014, after deletion workflowRightSidebar returns to default presentation per FR-WF-RS-004 and no workflowOutcomeHeader shows workflowOutcomeHeaderSelectedBorder per FR-WF-EO-018
+      - given owner or editor deletes workflowOutcome B via workflowOutcomeHoverActionsMenuDeleteItem while workflowRightSidebarCommentsTabContent is bound to a different workflowOutcome S (S is not B and not a descendant of B), after deletion workflowRightSidebar remains on workflowRightSidebarCommentsTab bound to S and workflowOutcomeHeaderSelectedBorder remains on S per FR-WF-EO-018
+      - given the workflow had exactly one workflowOutcome (or one root subtree) and owner or editor deletes it via workflowOutcomeHoverActionsMenuDeleteItem, after deletion workflowOutcomeView renders workflowOutcomeViewEmptyState per FR-WF-EO-001, workflowOutcomeTree is not rendered, and workflowRightSidebar is not rendered per FR-WF-RS-001
+      - given actor is commenter with workflowOutcomeHoverActionsMenu visible per FR-WF-EO-003, workflowOutcomeHoverActionsMenuDeleteItem is disabled per this FR's roleBehavior
+      - given actor is viewer or user (published-access), workflowOutcomeHoverActionsMenuDeleteItem is not reachable per this FR's roleBehavior (workflowOutcomeHoverActionsMenu is notRendered)
+    
+    openQuestions: []
+
+  - id: FR-WF-EO-014
+    title: Effect of deletion on workflowOutcomeTree — subtree removal, renumbering, assignments, and empty-state reversion
+    
+    designEvidence:
+      - FIGMA-WF-EO-OE-EDIT
+      - FIGMA-WF-EO-OE-NO-OUTCOME
+    
+    actors:
+      - owner
+      - editor
+    
+    uiObjects:
+      - workflowOutcomeView
+      - workflowOutcomeViewEmptyState
+      - workflowOutcomeTree
+      - workflowOutcome
+      - workflowOutcomeHeader
+      - workflowOutcomeHeaderTitle
+    
+    preconditions:
+      - a deletion has been triggered against a target workflowOutcome per FR-WF-EO-012 or FR-WF-EO-013
+    
+    trigger: []
+    
+    mainFlow:
+      - subtree removal — system removes the target workflowOutcome and every descendant of the target workflowOutcome (children at level+1 and grandchildren at level+2, recursively) from workflowOutcomeTree; no descendant of the target survives the delete as an orphan
+      - outcome-to-node assignment cleanup — for the deleted target workflowOutcome and every descendant removed by this delete, any outcome-to-node assignments those workflowOutcomes had to workflowNodes in the 'Workflow' view are also removed; after the delete, no workflowNode retains an assignment to any deleted workflowOutcome
+      - parent-assignment invariant on delete — after removing assignments for deleted workflowOutcomes, the child-removed → parent-removal cascade per FR-WF-AO-006 is applied to each affected workflowNode so no workflowNode retains a parent outcome assignment when not all of that parent's direct children remain assigned
+      - downstream workflow view updates — assign-tab row removal, highlight-set cleanup, linked-outcomes badge visibility/count updates, and outcome-highlight presentation recalculation on delete are normatively specified in FR-WF-AO-002, FR-WF-AO-005, and FR-WF-AO-007; this FR triggers assignment removal and subtree deletion; those FRs define UI follow-through on the 'Workflow' view
+      - sibling renumbering — ordinals of the target's remaining siblings (and the entire workflowOutcomeTree) are recomputed per FR-WF-EO-007 so each parent's child sequence remains contiguous starting at 1
+      - empty-state reversion — when the deletion removes the last workflowOutcome in the workflow (no workflowOutcome of any level remains after the delete), workflowOutcomeView renders workflowOutcomeViewEmptyState per FR-WF-EO-001 and workflowOutcomeTree is no longer rendered
+    
+    roleBehavior: {}
+    
+    acceptanceCriteria:
+      - given a target workflowOutcome at level 1 with two child workflowOutcomes at level 2, after deletion none of those three workflowOutcomes remains in workflowOutcomeTree
+      - given a target workflowOutcome at level 2 with one child workflowOutcome at level 3, after deletion neither workflowOutcome remains in workflowOutcomeTree
+      - given a target workflowOutcome at level 3, after deletion only that workflowOutcome is removed from workflowOutcomeTree and its parent and grandparent remain
+      - given the target workflowOutcome had two siblings S1 and S2 ordered (target, S1, S2) before deletion, after deletion the parent's child sequence is (S1, S2) and their workflowOutcomeHeaderTitle ordinals are recomputed per FR-WF-EO-007 so the sequence is contiguous starting at 1
+      - given the workflow had exactly one workflowOutcome at level 1 with no descendants and that workflowOutcome is deleted, after deletion workflowOutcomeView renders workflowOutcomeViewEmptyState per FR-WF-EO-001 and workflowOutcomeTree is no longer rendered
+      - given the workflow had exactly one level-1 workflowOutcome with descendants and that level-1 workflowOutcome is deleted, after deletion the entire workflowOutcomeTree is empty and workflowOutcomeView renders workflowOutcomeViewEmptyState per FR-WF-EO-001
+      - given more than one workflowOutcome remains after the delete (the delete removed a subtree but other root-level workflowOutcomes remain), workflowOutcomeView continues to render workflowOutcomeTree and does not revert to workflowOutcomeViewEmptyState
+      - given a target workflowOutcome S (or any of its descendants) was assigned to one or more workflowNodes in the 'Workflow' view before deletion, after deletion none of those workflowNodes retains an outcome-to-node assignment to any of the deleted workflowOutcomes
+      - given workflowNode N had assigned outcomes {P, C1, C2} where {C1, C2} are the only direct children of level-1 outcome P and C1 is in the deleted subtree, after deletion per this FR none of the deleted workflowOutcomes remain assigned to N and N's remaining assignments satisfy the parent-assignment invariant per FR-WF-AO-006 (P is not assigned; C2 remains assigned if C2 was not deleted)
+      - given workflowOutcome O was in the highlight set per FR-WF-AO-005 and O is deleted per this FR, after deletion O and every deleted descendant of O are removed from the highlight set; assign-tab row highlight and node outcome-highlight presentation update per FR-WF-AO-005 and FR-WF-AO-007
+      - given a target workflowOutcome S (or any of its descendants) was assigned to workflowNode N in the 'Workflow' view before deletion, after deletion per this FR, N's assign-tab rows, workflowNodeLinkedOutcomesBadge, and outcome-highlight presentation update per FR-WF-AO-002 and FR-WF-AO-007
+    
+    openQuestions: []
+
+designEvidenceLinkTable: []
