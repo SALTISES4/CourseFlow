@@ -8,12 +8,12 @@ RUN apt-get update \
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-COPY ../pyproject.toml uv.lock manage.py ./
-COPY ../course_flow ./course_flow
+COPY pyproject.toml uv.lock manage.py README.md ./
+COPY course_flow ./course_flow
 
 RUN uv sync --frozen --no-dev
 
-COPY ./django-entrypoint.sh /entrypoint.sh
+COPY docker/django-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 8000
