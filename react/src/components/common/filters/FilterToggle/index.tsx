@@ -25,7 +25,7 @@ const FilterToggle = ({
       onClick={() => {
         const newVal = !state
         setState(newVal)
-        onChange && onChange(newVal)
+        onChange?.(newVal)
       }}
     >
       {label}

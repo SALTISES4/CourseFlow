@@ -193,7 +193,6 @@ const LibrarySearchView = ({
             })
           )
         }}
-        placeholder="Sort"
       />
     )
   }
