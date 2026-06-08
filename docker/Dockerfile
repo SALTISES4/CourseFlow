@@ -13,7 +13,7 @@ COPY ../course_flow ./course_flow
 
 RUN uv sync --frozen --no-dev
 
-COPY django-entrypoint.sh /entrypoint.sh
+COPY ./django-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 8000

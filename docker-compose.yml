@@ -47,7 +47,7 @@ services:
 
 volumes:
   courseflow_pgdata:
-  
+
 networks:
   cf-network:
     driver: bridge
