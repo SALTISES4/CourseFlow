@@ -11,7 +11,7 @@ import { mapObjectTypeToLibraryObjectType } from './librarySearch'
 
 type LibraryItemOutTyped = LibraryItemOut & {
   uuid: string
-  contentType: 'project' | 'workflow'
+  contentType: LibraryContentTypeOut
   label: string
 }
 
