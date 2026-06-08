@@ -30,13 +30,13 @@ type LibrarySearchResponseRaw = {
   meta: LibrarySearchMetaRaw
 }
 
-const emptyAuthor = (): EUser => ({
+const emptyAuthor: EUser = {
   uuid: '',
   username: '',
   firstName: '',
   lastName: '',
   name: ''
-})
+}
 
 export function mapObjectTypeToLibraryObjectType(
   contentType: LibraryContentTypeOut,
@@ -74,7 +74,7 @@ function mapLibraryItemToELibraryObject(item: LibraryItemOut): ELibraryObject {
     deletedOn: '',
     createdOn: item.dateCreated,
     lastModified: item.modifiedOn,
-    author: emptyAuthor(),
+    author: emptyAuthor,
     published: false,
     type: mapObjectTypeToLibraryObjectType(item.contentType, item.label),
     projectTitle: '',
