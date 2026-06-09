@@ -12,6 +12,10 @@
 #   - tests/docs/requirements/original/workflow_delete_node_requirements_v1.yaml (workflowEditNodeFormDeleteButton — FR-WF-DEL-*)
 #   - tests/docs/requirements/original/card_content_requirements_v1.yaml (workflowCard in link dialog — FR-CARD-*)
 #   - tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml (workflowEditOutcomeFormDescriptionField hosts workflowRichTextDescriptionEditor per FR-WF-EN-012)
+#   - tests/docs/requirements/original/project_create_form_requirements_v1.yaml (projectDescriptionField hosts workflowRichTextDescriptionEditor per FR-WF-EN-012)
+#   - tests/docs/requirements/original/project_edit_form_requirements_v1.yaml (projectDescriptionField in editProjectDialog per FR-WF-EN-012)
+#   - tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml (workflowDescriptionField hosts workflowRichTextDescriptionEditor per FR-WF-EN-012)
+#   - tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml (workflowDescriptionField in editWorkflowDialog per FR-WF-EN-012)
 #   - tests/docs/requirements/original/workflow_archive_requirements_v1.yaml (archive breaks parent node links and retains displayed node data—FR-WF-ARCH-003; batch project archive preserves links—FR-PROJ-ARCH-003)
 #   - tests/docs/requirements/original/workflow_copy_requirements_v1.yaml (cross-project copy link break matches FR-WF-ARCH-003; same-project copy preserves links—FR-WF-COPY-003)
 
@@ -52,7 +56,7 @@ uiObjectDefinitions:
   workflowEditNodeFormDescriptionField:
     meaning: Description field region on workflowEditNodeForm labeled 'Description'; contains workflowRichTextDescriptionEditor per FR-WF-EN-012.
   workflowRichTextDescriptionEditor:
-    meaning: Shared rich-text editor surface labeled 'Description'; hosts workflowRichTextDescriptionEditorToolbar and an editable content region; used inside workflowEditNodeFormDescriptionField and workflowEditOutcomeFormDescriptionField per FR-WF-EN-012.
+    meaning: Shared rich-text editor surface; hosts workflowRichTextDescriptionEditorToolbar and an editable content region; used inside workflowEditNodeFormDescriptionField, workflowEditOutcomeFormDescriptionField, projectDescriptionField, and workflowDescriptionField per FR-WF-EN-012.
   workflowRichTextDescriptionEditorToolbar:
     meaning: Formatting toolbar on workflowRichTextDescriptionEditor; exposes exactly the controls listed in FR-WF-EN-012 and no others.
   workflowRichTextDescriptionEditorBoldButton:
@@ -555,7 +559,7 @@ requirements:
     openQuestions: []
 
   - id: FR-WF-EN-012
-    title: Rich-text Description field on workflowEditNodeForm and workflowEditOutcomeForm
+    title: Rich-text Description field (shared editor contract)
 
     designEvidence: []
 
@@ -569,6 +573,8 @@ requirements:
     uiObjects:
       - workflowEditNodeFormDescriptionField
       - workflowEditOutcomeFormDescriptionField
+      - projectDescriptionField
+      - workflowDescriptionField
       - workflowRichTextDescriptionEditor
       - workflowRichTextDescriptionEditorToolbar
       - workflowRichTextDescriptionEditorBoldButton
@@ -582,13 +588,14 @@ requirements:
       - workflowRichTextDescriptionEditorLinkDialog
 
     preconditions:
-      - workflowEditNodeFormDescriptionField or workflowEditOutcomeFormDescriptionField is rendered per FR-WF-EN-002 through FR-WF-EN-006 or FR-WF-EO-005
+      - one of workflowEditNodeFormDescriptionField is rendered per FR-WF-EN-002 through FR-WF-EN-006, workflowEditOutcomeFormDescriptionField is rendered per FR-WF-EO-005, projectDescriptionField is rendered in createProjectDialog or editProjectDialog per tests/docs/requirements/original/project_create_form_requirements_v1.yaml FR-PROJ-FORM-001 or tests/docs/requirements/original/project_edit_form_requirements_v1.yaml FR-PROJ-FORM-003, or workflowDescriptionField is rendered in createWorkflowDialog or editWorkflowDialog per tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml FR-WF-CREATE-STEPPER-005 or tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml FR-WF-FORM-001
 
     trigger:
-      - workflowEditNodeFormDescriptionField or workflowEditOutcomeFormDescriptionField renders
+      - workflowEditNodeFormDescriptionField, workflowEditOutcomeFormDescriptionField, projectDescriptionField, or workflowDescriptionField renders
 
     mainFlow:
-      - workflowEditNodeFormDescriptionField and workflowEditOutcomeFormDescriptionField each render workflowRichTextDescriptionEditor labeled 'Description'; neither field is a plain multiline text input
+      - workflowEditNodeFormDescriptionField, workflowEditOutcomeFormDescriptionField, projectDescriptionField, and workflowDescriptionField each render workflowRichTextDescriptionEditor; none is a plain text input or plain multiline text input
+      - visible field label is 'Description' on workflowEditNodeFormDescriptionField, workflowEditOutcomeFormDescriptionField, and projectDescriptionField; on workflowDescriptionField the visible label matches the hosting workflow create or edit dialog pattern (e.g. 'Activity description') per the hosting form FR
       - when editable for the actor (owner or editor, and not read-only per FR-WF-EN-004, FR-WF-EN-006, or FR-WF-EO-005 roleBehavior), workflowRichTextDescriptionEditorToolbar is visible with exactly these controls — workflowRichTextDescriptionEditorBoldButton, workflowRichTextDescriptionEditorItalicButton, workflowRichTextDescriptionEditorUnderlineButton, workflowRichTextDescriptionEditorSuperscriptButton, workflowRichTextDescriptionEditorSubscriptButton, workflowRichTextDescriptionEditorBulletListButton, workflowRichTextDescriptionEditorNumberedListButton, and workflowRichTextDescriptionEditorLinkButton — and exposes no other formatting controls (no headings, font size, colour, tables, images, code blocks, or blockquote)
       - owner or editor can apply each supported format to the current selection or insertion point via the corresponding toolbar control; formatting is reflected immediately in the editor content region
       - owner or editor can create and edit bulleted and numbered lists via workflowRichTextDescriptionEditorBulletListButton and workflowRichTextDescriptionEditorNumberedListButton
@@ -597,9 +604,11 @@ requirements:
       - when owner or editor pastes content from an external source into workflowRichTextDescriptionEditor, the system strips unsupported formatting and retains only markup for the supported formats listed above (bold, italic, underline, superscript, subscript, bulleted lists, numbered lists, and hyperlinks)
       - persisted description value is HTML markup limited to the supported formats above; empty description persists as an empty string (editor shows blank content, not placeholder markup)
       - changes to description content or formatting auto-save per FR-WF-EN-007 when the field is on workflowEditNodeForm and per FR-WF-EO-006 when the field is on workflowEditOutcomeForm
-      - when workflowEditNodeFormDescriptionField mirrors workflowMetadataFieldDescription from a linked workflow per FR-WF-EN-004 or FR-WF-EN-006, the displayed value is the plain-text workflow description from the linked workflow (workflowMetadataFieldDescription remains plain text per workflow_overview requirements); workflowRichTextDescriptionEditorToolbar is not interactive and the content region is not editable
+      - changes to projectDescriptionField persist on createProjectFormSubmitButton or editProjectFormSubmitButton per tests/docs/requirements/original/project_create_form_requirements_v1.yaml FR-PROJ-FORM-005 and tests/docs/requirements/original/project_edit_form_requirements_v1.yaml FR-PROJ-FORM-008 respectively (not auto-save)
+      - changes to workflowDescriptionField persist on createWorkflowSubmitButton or editWorkflowFormSubmitButton per tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml FR-WF-CREATE-STEPPER-005 and tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml FR-WF-FORM-003 respectively (not auto-save)
+      - when workflowEditNodeFormDescriptionField mirrors workflowMetadataFieldDescription from a linked workflow per FR-WF-EN-004 or FR-WF-EN-006, the displayed value is the workflow description HTML from the linked workflow per workflow_overview requirements; workflowRichTextDescriptionEditorToolbar is not interactive and the content region is not editable
       - when workflowEditNodeFormDescriptionField is read-only for other reasons per FR-WF-EN-004 or FR-WF-EN-006, or when workflowEditOutcomeFormDescriptionField is read-only per FR-WF-EO-005 roleBehavior, workflowRichTextDescriptionEditorToolbar is not interactive, the content region is not editable, and stored markup is rendered with its formatting applied (not as raw HTML source)
-      - workflowEditNodeFormDescriptionField and workflowEditOutcomeFormDescriptionField are not marked as required
+      - workflowEditNodeFormDescriptionField, workflowEditOutcomeFormDescriptionField, projectDescriptionField, and workflowDescriptionField are not marked as required
 
     roleBehavior:
       owner:
@@ -616,6 +625,9 @@ requirements:
     acceptanceCriteria:
       - given workflowEditNodeFormDescriptionField is editable for owner or editor, workflowRichTextDescriptionEditorToolbar shows exactly bold, italic, underline, superscript, subscript, bullet list, numbered list, and link controls and no additional formatting controls
       - given workflowEditOutcomeFormDescriptionField is editable for owner or editor, the same toolbar controls and restrictions apply per this FR
+      - given projectDescriptionField is rendered in createProjectDialog or editProjectDialog for an actor who can edit that form, projectDescriptionField hosts workflowRichTextDescriptionEditor and the same toolbar controls and restrictions apply per this FR
+      - given workflowDescriptionField is rendered in createWorkflowDialog or editWorkflowDialog for an actor who can edit that form, workflowDescriptionField hosts workflowRichTextDescriptionEditor and the same toolbar controls and restrictions apply per this FR
+      - given projectDescriptionField or workflowDescriptionField is editable, neither field is a plain text input or plain multiline text input
       - given owner or editor selects text and applies bold, italic, underline, superscript, or subscript via the corresponding toolbar control, the formatted text is visible in the editor and persists on auto-save per FR-WF-EN-007 or FR-WF-EO-006
       - given owner or editor creates a bulleted or numbered list, list markers and indentation persist on auto-save
       - given owner or editor confirms a hyperlink via workflowRichTextDescriptionEditorLinkDialog, the linked text is clickable after reload and uses an `http` or `https` URL
@@ -836,8 +848,8 @@ requirements:
       - workflowEditNodeFormTitleField switches from read-only display of the linked workflow's workflowTitle to an editable field for owner/editor and shows the workflowNode's own previously-persisted title (or the placeholder 'Untitled node' if that persisted title is empty per FR-WF-EN-007)
       - workflowEditNodeFormLinkWorkflowButton label returns to 'Link an activity' when parent workflow type is course, or 'Link a course' when parent workflow type is program, and becomes the active entry path to workflowLinkWorkflowDialog per FR-WF-EN-008 for owner and editor
       - workflowEditNodeFormDescriptionField and workflowEditNodeFormTimeField become editable for owner/editor again and show the workflowNode's own previously-persisted values; for parent workflow type program, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField also become editable for owner/editor again and show the workflowNode's own previously-persisted values
-      - archive-triggered link break — when a linked child workflow is archived individually per tests/docs/requirements/original/workflow_archive_requirements_v1.yaml FR-WF-ARCH-003 (not when the whole parent project is archived per tests/docs/requirements/original/project_archive_requirements_v1.yaml FR-PROJ-ARCH-003), parent nodes pointing at that child lose linkedWorkflow without user action; displayed field values remain on each affected node as editable node-local values per FR-WF-ARCH-003, which differs from this FR's manual unlink path that restores pre-link persisted values
-      - cross-project copy link break — when a workflow is copied to a different destination project per tests/docs/requirements/original/workflow_copy_requirements_v1.yaml FR-WF-COPY-003, copied nodes lose linkedWorkflow with the same node outcomes as FR-WF-ARCH-003; same-project copy preserves linkedWorkflow associations per FR-WF-COPY-003
+      - archive-triggered link break — when a linked child workflow is archived individually per tests/docs/requirements/original/workflow_archive_requirements_v1.yaml FR-WF-ARCH-003 (not when the whole parent project is archived per tests/docs/requirements/original/project_archive_requirements_v1.yaml FR-PROJ-ARCH-003), parent nodes pointing at that child lose linkedWorkflow without user action with the same field-reset outcomes as manual unlink per this FR (pre-link persisted values, or empty or product default when no pre-link value exists; inherited linked-workflow metadata is not retained)
+      - cross-project copy link break — when a workflow is copied to a different destination project per tests/docs/requirements/original/workflow_copy_requirements_v1.yaml FR-WF-COPY-003, copied nodes lose linkedWorkflow with the same node field-reset outcomes as archive-triggered link break per FR-WF-ARCH-003; same-project copy preserves linkedWorkflow associations per FR-WF-COPY-003
 
     roleBehavior: {}
 

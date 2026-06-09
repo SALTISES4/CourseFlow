@@ -2,7 +2,7 @@
 # Source: tests/docs/__ARCHIVE/functional-requirements.md (Project, Project Metadata spreadsheet reference, Discipline field)
 # Application code: shared ProjectForm in create and edit project dialogs (current implementation)
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Cross-reference: createProjectDialog and add menu entry in tests/docs/requirements/original/top_navigation_requirements_v1.yaml (FR-TOP-002); edit project dialog in tests/docs/requirements/original/project_edit_form_requirements_v1.yaml (FR-PROJ-FORM-003); shared projectForm field definitions and createProjectFormDialogTitle/createProjectFormSubmitButton owned here; editProjectFormDialogTitle/editProjectFormSubmitButton owned in edit file
+# Cross-reference: createProjectDialog and add menu entry in tests/docs/requirements/original/top_navigation_requirements_v1.yaml (FR-TOP-002); edit project dialog in tests/docs/requirements/original/project_edit_form_requirements_v1.yaml (FR-PROJ-FORM-003); shared projectForm field definitions and createProjectFormDialogTitle/createProjectFormSubmitButton owned here; editProjectFormDialogTitle/editProjectFormSubmitButton owned in edit file; projectDescriptionField rich-text editor contract in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012
 
 documentPreconditions:
   - user is authenticated to CourseFlow
@@ -23,7 +23,7 @@ uiObjectDefinitions:
   projectTitle:
     meaning: Canonical definition in tests/docs/requirements/original/project_header_requirements_v1.yaml.
   projectDescriptionField:
-    meaning: Text input for project description; label 'Description'.
+    meaning: Description field region on projectForm labeled 'Description'; contains workflowRichTextDescriptionEditor per tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012.
   projectDisciplineField:
     meaning: Multi-select control for zero or more project disciplines; label 'Disciplines'.
   projectFormCancelButton:
@@ -95,7 +95,7 @@ requirements:
       - createProjectDialog is open
       - createProjectFormDialogTitle matches 'Create project'
       - projectTitleField is visible with label 'Title'
-      - projectDescriptionField is visible with label 'Description'
+      - projectDescriptionField is visible with label 'Description' and hosts workflowRichTextDescriptionEditor per FR-WF-EN-012 in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml
       - projectDisciplineField is visible with label 'Disciplines'
       - given createProjectDialog is open per trigger, projectTitleField and projectDescriptionField are empty
       - given createProjectDialog is open per trigger, projectDisciplineField has no selected disciplines

@@ -5,7 +5,7 @@
 # Cross-reference:
 #   - tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (editPencilButton on workflow routes—FR-CAB-004)
 #   - tests/docs/requirements/original/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-002)
-#   - tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml (shared workflowTitleField and workflowDescriptionField; edit-scoped title validation in FR-WF-FORM-002 owned in this file)
+#   - tests/docs/requirements/original/workflow_create_stepped_form_requirements_v1.yaml (shared workflowTitleField and workflowDescriptionField; edit-scoped title validation in FR-WF-FORM-002 owned in this file; workflowDescriptionField rich-text editor contract in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012)
 #   - tests/docs/requirements/original/workflow_header_requirements_v1.yaml (workflowTitle update path—FR-WF-FORM-003)
 #   - tests/docs/requirements/original/project_edit_form_requirements_v1.yaml (parallel edit dialog pattern for projects—FR-PROJ-FORM-003, FR-PROJ-FORM-006, FR-PROJ-FORM-007; edit-scoped title validation in FR-WF-FORM-002 owned in this file)
 

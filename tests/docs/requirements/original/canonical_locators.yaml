@@ -666,14 +666,14 @@ locatorMappings:
     strategy: "{profileSettingsForm} read-only field with label 'Email / Username'"
     confidence: inferred
   projectAccessDeniedSubtitle:
-    strategy: "{projectAccessDeniedView} subtitle body below title per FIGMA-WS-ACCESS-PROJECT-NO-ACCESS"
+    strategy: "{projectAccessDeniedView} informational body copy below primary heading"
     confidence: inferred
   projectAccessDeniedTitle:
-    strategy: "{projectAccessDeniedView} title heading per FIGMA-WS-ACCESS-PROJECT-NO-ACCESS"
+    strategy: "{projectAccessDeniedView} primary heading"
     confidence: inferred
   projectAccessDeniedView:
-    strategy: null
-    confidence: unresolved
+    strategy: "full-page access-denied block in place of project workspace content on route '/project/{id}/*'"
+    confidence: inferred
   projectCard:
     strategy: "{resultsRegion} project card (project scope)"
     confidence: inferred
@@ -684,7 +684,7 @@ locatorMappings:
     strategy: "{projectCard} button with label 'Restore project' on thumbnail region when archived and offered"
     confidence: inferred
   projectDescriptionField:
-    strategy: "{projectForm} input[name=\"description\"]"
+    strategy: "{projectForm} labeled field region 'Description' containing workflowRichTextDescriptionEditor"
     confidence: inferred
   projectDisciplineField:
     strategy: "{projectForm} [aria-labelledby=\"create-project-discipline\"]"
@@ -867,14 +867,14 @@ locatorMappings:
     strategy: "{favouritesSection} link with label 'View all'"
     confidence: inferred
   workflowAccessDeniedSubtitle:
-    strategy: "{workflowAccessDeniedView} subtitle body below title per FIGMA-WS-ACCESS-WORKFLOW-NO-ACCESS"
+    strategy: "{workflowAccessDeniedView} informational body copy below primary heading"
     confidence: inferred
   workflowAccessDeniedTitle:
-    strategy: "{workflowAccessDeniedView} title heading per FIGMA-WS-ACCESS-WORKFLOW-NO-ACCESS"
+    strategy: "{workflowAccessDeniedView} primary heading"
     confidence: inferred
   workflowAccessDeniedView:
-    strategy: null
-    confidence: unresolved
+    strategy: "full-page access-denied block in place of workflow workspace content on route '/workflow/{id}/*'"
+    confidence: inferred
   workflowAddTabCustomNodeCategoryItem:
     strategy: null
     confidence: unresolved
@@ -987,7 +987,7 @@ locatorMappings:
     strategy: null
     confidence: unresolved
   workflowDescriptionField:
-    strategy: "{workflowBlankForm} textarea[name=\"description\"] or input[name=\"description\"]"
+    strategy: "{workflowBlankForm} or {workflowEditForm} description field region containing workflowRichTextDescriptionEditor"
     confidence: inferred
   workflowEdge:
     strategy: "{workflowView} SVG g[data-nodelink-id='{workflowEdgeId}']"
@@ -1413,7 +1413,7 @@ locatorMappings:
     strategy: null
     confidence: unresolved
   workflowRichTextDescriptionEditor:
-    strategy: "{workflowEditNodeFormDescriptionField} rich-text editor with contenteditable region and workflowRichTextDescriptionEditorToolbar"
+    strategy: "rich-text editor with contenteditable region and workflowRichTextDescriptionEditorToolbar inside {workflowEditNodeFormDescriptionField}, {workflowEditOutcomeFormDescriptionField}, {projectDescriptionField}, or {workflowDescriptionField}"
     confidence: inferred
   workflowRichTextDescriptionEditorBoldButton:
     strategy: "{workflowRichTextDescriptionEditorToolbar} bold control"

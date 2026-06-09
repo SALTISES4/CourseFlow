@@ -4,7 +4,7 @@
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
 # Cross-reference:
 #   - tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (editPencilButton on project routes—FR-CAB-001 through FR-CAB-003)
-#   - tests/docs/requirements/original/project_create_form_requirements_v1.yaml (shared projectForm, projectTitleField, projectDescriptionField, projectDisciplineField, projectFormCancelButton, and projectFormFieldValidationMessage; inline title validation rules and message copy in FR-PROJ-FORM-004; editProjectFormDialogTitle, editProjectFormSubmitButton, and edit-scoped validation enablement in FR-PROJ-FORM-007 owned in this file)
+#   - tests/docs/requirements/original/project_create_form_requirements_v1.yaml (shared projectForm, projectTitleField, projectDescriptionField, projectDisciplineField, projectFormCancelButton, and projectFormFieldValidationMessage; inline title validation rules and message copy in FR-PROJ-FORM-004; editProjectFormDialogTitle, editProjectFormSubmitButton, and edit-scoped validation enablement in FR-PROJ-FORM-007 owned in this file; projectDescriptionField rich-text editor contract in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012)
 #   - tests/docs/requirements/original/workflow_edit_form_requirements_v1.yaml (parallel edit dialog pattern for workflows—FR-WF-FORM-001)
 #   - tests/docs/requirements/original/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-001)
 

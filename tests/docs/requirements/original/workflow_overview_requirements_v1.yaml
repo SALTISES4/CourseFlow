@@ -163,7 +163,7 @@ requirements:
     mainFlow:
       - workflowMetadataFieldDescription is displayed in workflowOverviewView with label 'Description'
       - when workflow description data is empty, workflowMetadataFieldDescription shows '-'
-      - workflowMetadataFieldDescription content is plain text only (no rich-text formatting) and has no maximum length limit
+      - workflowMetadataFieldDescription renders persisted description HTML with supported formatting applied per tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012 (not as raw HTML source); has no maximum length limit
       - workflowMetadataFieldDescription is not editable directly on workflowOverviewView for any role
       - owner and editor can update workflow description only through editWorkflowDialog (open per FR-WF-FORM-001; save per FR-WF-FORM-003)
       - on course and program workflows, workflowMetadataFieldCode is displayed in workflowMetadataSection within workflowOverviewView
@@ -193,10 +193,9 @@ requirements:
 
     acceptanceCriteria:
       - given workflowOverviewView is visible, workflowMetadataFieldDescription label 'Description' is visible
-      - given workflow description has a value, workflowMetadataFieldDescription shows that value on workflowOverviewView
+      - given workflow description has a value, workflowMetadataFieldDescription shows that value on workflowOverviewView with supported formatting rendered per FR-WF-EN-012 in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml
       - given workflow description is empty, workflowMetadataFieldDescription shows '-'
-      - workflowMetadataFieldDescription accepts plain text only (no rich-text formatting controls)
-      - workflow description has no maximum length limit
+      - workflowMetadataFieldDescription is display-only (no editing controls) and has no maximum length limit
       - given any actor on workflowOverviewView, workflowMetadataFieldDescription is read-only and cannot be edited in place
       - given owner or editor needs to change description, update path is editWorkflowDialog (open per FR-WF-FORM-001; save per FR-WF-FORM-003)
       - given workflow type is course or program, workflowMetadataFieldCode is visible in workflowMetadataSection on workflowOverviewView
