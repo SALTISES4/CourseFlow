@@ -5,7 +5,9 @@
 #   - tests/docs/requirements/original/workspace_access_requirements_v1.yaml (project access preconditions)
 #   - tests/docs/requirements/original/project_header_requirements_v1.yaml (FR-PROJ-HEADER-001 — projectHeader and projectViewTabSelector)
 #   - tests/docs/requirements/original/project_overview_requirements_v1.yaml (favourites behavior in FR-PROJ-OV-006 where applicable)
-#   - tests/docs/requirements/original/library_page_requirements_v1.yaml (sort and shared filters — FR-LIB-002, FR-LIB-003, FR-LIB-004; consumed by FR-PROJ-WF-002 through FR-PROJ-WF-004; permanent delete removes archived workflowCard from archiveToggle listing—FR-LIB-006)
+#   - tests/docs/requirements/original/library_page_requirements_v1.yaml (sort and shared filters — FR-LIB-002, FR-LIB-003, FR-LIB-004; consumed by FR-PROJ-WF-002 through FR-PROJ-WF-004; workflow restore entry on 'My library'—FR-LIB-006; permanent delete removes archived workflowCard from archiveToggle listing—FR-LIB-006)
+#   - tests/docs/requirements/original/workflow_archive_requirements_v1.yaml (archive-time link break and no link recovery on restore—FR-WF-ARCH-003)
+#   - tests/docs/requirements/original/project_archive_requirements_v1.yaml (in-project links preserved on project archive—FR-PROJ-ARCH-003)
 #   - tests/docs/requirements/original/card_content_requirements_v1.yaml (workflowCard — FR-CARD-001 through FR-CARD-006 as applicable)
 
 documentPreconditions:
@@ -61,6 +63,12 @@ uiObjectDefinitions:
     meaning: Empty-state view in resultsRegion when filters per FR-PROJ-WF-003 or keyword search per FR-PROJ-WF-004 return zero workflowCard instances within base scope.
   projectWorkflowsErrorState:
     meaning: Error state shown when project workflows query fails.
+  workflowCardRestoreButton:
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
+  restoreParentProjectModal:
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
+  restoreParentProjectModalRestoreProjectButton:
+    meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
 
 locatorMappings:
   projectWorkflowsView: "canonical_locators.yaml -> projectWorkflowsView"
@@ -85,6 +93,9 @@ locatorMappings:
   projectWorkflowsEmptyState: "canonical_locators.yaml -> projectWorkflowsEmptyState"
   projectWorkflowsNoResultsState: "canonical_locators.yaml -> projectWorkflowsNoResultsState"
   projectWorkflowsErrorState: "canonical_locators.yaml -> projectWorkflowsErrorState"
+  workflowCardRestoreButton: "canonical_locators.yaml -> workflowCardRestoreButton"
+  restoreParentProjectModal: "canonical_locators.yaml -> restoreParentProjectModal"
+  restoreParentProjectModalRestoreProjectButton: "canonical_locators.yaml -> restoreParentProjectModalRestoreProjectButton"
 
 requirements:
   - id: FR-PROJ-WF-001
@@ -311,6 +322,63 @@ requirements:
       - given pagination is visible, paginationPageNumberButton controls are clickable
       - given pagination is visible, paginationPreviousNextButton single-arrow controls navigate one page backward or forward
       - given pagination is visible, paginationFirstLastButton double-arrow controls navigate to the first or last page
+
+    openQuestions: []
+
+  - id: FR-PROJ-WF-006
+    title: Restore archived workflow on project 'Workflows' view
+
+    designEvidence:
+      - FIGMA-PROJ-WF-DEFAULT
+
+    actors:
+      - owner
+
+    uiObjects:
+      - projectWorkflowsView
+      - archiveToggle
+      - resultsRegion
+      - workflowCard
+      - workflowCardRestoreButton
+      - restoreParentProjectModal
+      - restoreParentProjectModalRestoreProjectButton
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - current route matches '/project/{id}/workflows'
+      - parent project for projectWorkflowsView is not archived
+      - archiveToggle is on so archived workflowCard instances in the current project may appear in resultsRegion per FR-PROJ-WF-003
+      - resultsRegion includes at least one archived workflowCard for the current project
+
+    trigger:
+      - owner hovers an archived workflowCard in resultsRegion and clicks workflowCardRestoreButton ('Restore')
+
+    mainFlow:
+      - workflow restore entry points — project 'Workflows' view is one of exactly two UI surfaces that offer workflow restore; the other is 'My library' per tests/docs/requirements/original/library_page_requirements_v1.yaml FR-LIB-006; no other route, dialog, or workspace action offers workflow restore
+      - when owner hovers an archived workflowCard in projectWorkflowsView resultsRegion, system reveals workflowCardRestoreButton ('Restore') on that card; Editor, Viewer, Commenter, and user do not receive restore actions on this view
+      - archived workflowCards in projectWorkflowsView follow card_content_requirements_v1.yaml FR-CARD-006 for card-body click and cardFavouriteToggle; only Owner receives hover-revealed workflowCardRestoreButton on this view
+      - parent project status — because preconditions require the parent project is not archived, owner may restore a single archived workflow independently via workflowCardRestoreButton without restoreParentProjectModal
+      - when owner clicks workflowCardRestoreButton on an archived workflow whose parent project is the current active project, system restores that workflow directly; afterward the workflow is available again under normal listing rules on projectWorkflowsView and elsewhere when filters would include it
+      - restoring a workflow archived individually per tests/docs/requirements/original/workflow_archive_requirements_v1.yaml FR-WF-ARCH-003 does not re-establish linkedWorkflow associations on parent workflowNodes that lost their link when that workflow was archived; historical project links severed during archiving are not automatically recreated per FR-WF-ARCH-003
+
+    roleBehavior:
+      owner:
+        workflowCardRestoreButton: availableWhenArchived
+      editor:
+        workflowCardRestoreButton: notAvailable
+      viewer:
+        workflowCardRestoreButton: notAvailable
+      commenter:
+        workflowCardRestoreButton: notAvailable
+      user:
+        workflowCardRestoreButton: notAvailable
+
+    acceptanceCriteria:
+      - given archived workflowCard W in projectWorkflowsView resultsRegion with archiveToggle on and parent project not archived, when owner hovers W, workflowCardRestoreButton ('Restore') is visible
+      - given archived workflow W in active parent project P and owner clicks workflowCardRestoreButton on projectWorkflowsView, W is restored directly without restoreParentProjectModal
+      - given restored workflow W per the preceding criterion, when owner turns archiveToggle off, W appears in projectWorkflowsView resultsRegion as a non-archived workflowCard
+      - given course node N was linked to activity A, owner archived A individually per FR-WF-ARCH-003 while parent project P remained not archived, and owner later restores A via workflowCardRestoreButton on projectWorkflowsView, when owner reopens the parent course and selects N, N has no linked workflow and historical link to A is not automatically restored per FR-WF-ARCH-003
+      - given archived workflowCard in projectWorkflowsView as Editor, Viewer, Commenter, or user, workflowCardRestoreButton is not visible on hover
 
     openQuestions: []
 

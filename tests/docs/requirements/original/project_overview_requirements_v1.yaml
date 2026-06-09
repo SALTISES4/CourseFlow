@@ -122,7 +122,7 @@ requirements:
       - system renders projectOverviewView at route '/project/{id}'
       - projectOverviewView displays projectMetadataFieldDescription, projectMetadataFieldDisciplines, projectMetadataPermissionsPanel, and projectTagsSection
       - projectMetadataFieldDescription always shows label 'Description'; when description is empty, displayed value is '-'
-      - projectMetadataFieldDescription content is plain text only (no rich-text formatting) and has no maximum length limit
+      - projectMetadataFieldDescription renders persisted description HTML with supported formatting applied per tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012 (not as raw HTML source); has no maximum length limit
       - projectMetadataFieldDescription is display-only on projectOverviewView; description updates are performed through editProjectDialog flow defined in tests/docs/requirements/original/project_edit_form_requirements_v1.yaml (FR-PROJ-FORM-003)
       - projectMetadataFieldDisciplines always shows label 'Disciplines'; when project has no disciplines, displayed value is '-'
       - when project has disciplines, disciplines in projectMetadataFieldDisciplines are sorted from A-Z and shown as comma-separated values
@@ -135,10 +135,9 @@ requirements:
     acceptanceCriteria:
       - projectOverviewView is visible
       - given projectOverviewView is visible, projectMetadataFieldDescription label 'Description' is visible
-      - given project description has a value, projectMetadataFieldDescription shows that value
+      - given project description has a value, projectMetadataFieldDescription shows that value with supported formatting rendered per FR-WF-EN-012 in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml
       - given project description is empty, projectMetadataFieldDescription shows '-'
-      - projectMetadataFieldDescription accepts plain text only (no rich-text formatting controls)
-      - project description has no maximum length limit
+      - projectMetadataFieldDescription is display-only (no editing controls) and has no maximum length limit
       - given user needs to change project description, update path is editProjectDialog defined in tests/docs/requirements/original/project_edit_form_requirements_v1.yaml (FR-PROJ-FORM-003)
       - given projectOverviewView is visible, projectMetadataFieldDisciplines label 'Disciplines' is visible
       - given project has no disciplines, projectMetadataFieldDisciplines shows '-'

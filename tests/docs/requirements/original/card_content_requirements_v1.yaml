@@ -287,8 +287,8 @@ requirements:
       - user clicks projectCard or workflowCard that represents an archived object
 
     mainFlow:
-      - when user clicks projectCard that represents an archived project, system does not perform navigation defined in FR-CARD-003 (the card is not a navigation affordance except surface-specific Owner actions on 'My library' per library_page_requirements_v1.yaml FR-LIB-006)
-      - when user clicks workflowCard that represents an archived workflow, system does not perform navigation defined in FR-CARD-004 (same exception for Owner actions on 'My library' per FR-LIB-006)
+      - when user clicks projectCard that represents an archived project, system does not perform navigation defined in FR-CARD-003 (the card is not a navigation affordance except surface-specific Owner restore actions on 'My library' per library_page_requirements_v1.yaml FR-LIB-006)
+      - when user clicks workflowCard that represents an archived workflow, system does not perform navigation defined in FR-CARD-004 (same exception for Owner restore actions on 'My library' per FR-LIB-006 or project 'Workflows' view per project_workflows_view_requirements_v1.yaml FR-PROJ-WF-006)
       - when projectCard represents an archived project, projectCard renders cardTitleText, cardOwnerText, cardTypeChip, cardTemplateChip when applicable, and cardWorkflowCountChip when applicable per FR-CARD-001 where data exists; cardFavouriteToggle follows this FR, not FR-CARD-001
       - when workflowCard represents an archived workflow, workflowCard renders cardTitleText, cardOwnerText, cardTypeChip, and cardTemplateChip when applicable per FR-CARD-002 where data exists; cardFavouriteToggle follows this FR, not FR-CARD-002
       - on projectCard or workflowCard that represents an archived object, cardFavouriteToggle shows grey star and does not accept interaction
