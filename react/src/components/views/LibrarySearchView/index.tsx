@@ -25,7 +25,14 @@ import { Link, Skeleton, Typography } from '@mui/material'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import { produce } from 'immer'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 import { Link as LinkRouter } from 'react-router-dom'
 
 export type LibraryFilterConfig = {
@@ -61,7 +68,7 @@ type PropsType = {
 const FilterWorkflowResults = ({
   setSearchFilterState
 }: {
-  setSearchFilterState: React.Dispatch<React.SetStateAction<SearchOptions>>
+  setSearchFilterState: Dispatch<SetStateAction<SearchOptions>>
 }) => {
   const navigateToItem = useNavigateToLibraryItem()
   const { data, isError } = useLibrarySearch({})
