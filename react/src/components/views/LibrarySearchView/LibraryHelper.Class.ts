@@ -1,5 +1,7 @@
 import {
-  LibraryContentTypeOut,
+  LibraryContentTypeIn,
+  LibraryFiltersIn,
+  LibraryOwnershipIn,
   LibrarySortDirectionIn,
   LibrarySortValueIn
 } from '@cf/api/gen'
@@ -13,17 +15,6 @@ import { WorkflowType } from '@cfPages/Workflow/types'
 
 type FilterGroups = { [key: string]: SearchFilterGroup }
 
-export type LibrarySearchFilters = {
-  keyword?: string | null
-  contentType?: LibraryContentTypeOut
-  projectUuid?: string | null
-  disciplineIds?: number[]
-  workflowTypes?: WorkflowType[]
-  ownership?: 'owned' | 'shared' | null
-  isFavorite?: boolean | null
-  isTemplate?: boolean | null
-}
-
 export type TypedLibrarySearchArgs = {
   pagination?: {
     page?: number
@@ -33,7 +24,7 @@ export type TypedLibrarySearchArgs = {
     value?: LibrarySortValueIn
     direction?: LibrarySortDirectionIn
   } | null
-  filters?: LibrarySearchFilters | null
+  filters?: LibraryFiltersIn | null
 }
 
 export type SearchOptions = {
@@ -64,15 +55,15 @@ class LibraryHelper {
       options: [
         {
           value: LibrarySortValueIn.DATE_MODIFIED,
-          label: 'Recent'
+          label: _t('Recent')
         },
         {
           value: LibrarySortValueIn.A_Z,
-          label: 'A - Z'
+          label: _t('A - Z')
         },
         {
           value: LibrarySortValueIn.DATE_CREATED,
-          label: 'Creation date'
+          label: _t('Creation date')
         }
       ]
     },
@@ -80,7 +71,7 @@ class LibraryHelper {
       // Filter group with dynamically populated options
       relationshipFilter: {
         name: 'type',
-        label: 'Type',
+        label: _t('Type'),
         options: [
           {
             value: null,
@@ -114,29 +105,29 @@ class LibraryHelper {
         label: _t('Type'),
         options: [
           {
-            label: 'All',
+            label: _t('All'),
             value: null,
             enabled: true
           },
           {
-            label: 'Project',
+            label: _t('Project'),
             value: 'project'
           },
           {
-            label: 'Program',
+            label: _t('Program'),
             value: WorkflowType.PROGRAM
           },
 
           {
-            label: 'Course',
+            label: _t('Course'),
             value: WorkflowType.COURSE
           },
           {
-            label: 'Activity',
+            label: _t('Activity'),
             value: WorkflowType.ACTIVITY
           },
           {
-            label: 'Task',
+            label: _t('Task'),
             value: WorkflowType.TASK
           }
         ]
@@ -206,7 +197,7 @@ class LibraryHelper {
    **/
   public static processFilterGroups = (
     filterGroups: FilterGroups
-  ): LibrarySearchFilters => {
+  ): LibraryFiltersIn => {
     const relationship = filterGroups.relationshipFilter?.options?.find(
       (option) => option.enabled
     )?.value
@@ -227,11 +218,11 @@ class LibraryHelper {
       ? [contentSelection as WorkflowType]
       : []
 
-    const contentType: LibraryContentTypeOut | null =
-      contentSelection === LibraryContentTypeOut.PROJECT
-        ? LibraryContentTypeOut.PROJECT
+    const contentType: LibraryContentTypeIn | null =
+      contentSelection === LibraryContentTypeIn.PROJECT
+        ? LibraryContentTypeIn.PROJECT
         : workflowTypes.length > 0 || contentSelection === 'workflow'
-          ? LibraryContentTypeOut.WORKFLOW
+          ? LibraryContentTypeIn.WORKFLOW
           : null
 
     return {
@@ -240,7 +231,8 @@ class LibraryHelper {
       disciplineIds,
       workflowTypes,
       ownership:
-        relationship === 'owned' || relationship === 'shared'
+        relationship === LibraryOwnershipIn.OWNED ||
+        relationship === LibraryOwnershipIn.SHARED
           ? relationship
           : null,
       isFavorite: relationship === 'favourited' ? true : null,
@@ -291,16 +283,16 @@ class LibraryHelper {
 
   public static applyLockedFilters(
     args: TypedLibrarySearchArgs,
-    locked: Partial<LibrarySearchFilters>
+    locked: Partial<LibraryFiltersIn>
   ): TypedLibrarySearchArgs {
     const base = args ?? {}
-    const mergedFilters: LibrarySearchFilters = {
+    const mergedFilters: LibraryFiltersIn = {
       ...(base.filters ?? {}),
       ...locked
     }
 
     if (
-      mergedFilters.contentType === 'project' &&
+      mergedFilters.contentType === LibraryContentTypeIn.PROJECT &&
       mergedFilters.workflowTypes?.length
     ) {
       mergedFilters.workflowTypes = []
