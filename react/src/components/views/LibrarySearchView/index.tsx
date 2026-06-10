@@ -28,14 +28,10 @@ import { produce } from 'immer'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link as LinkRouter } from 'react-router-dom'
 
-type FilterGroups = {
-  [key: string]: boolean
-}
-
-interface Config {
+export type LibraryFilterConfig = {
   pagination: boolean
   sortOptions: boolean
-  filterGroups: FilterGroups
+  filterGroups: Partial<Record<keyof SearchOptions['filterGroups'], boolean>>
   keywordFilter: boolean
 }
 
@@ -45,7 +41,7 @@ interface Config {
 type PropsType = {
   searchArgs: TypedLibrarySearchArgs
   setSearchArgs: (args: TypedLibrarySearchArgs) => void
-  config: Config
+  config: LibraryFilterConfig
   override?: {
     uuid: string
     onCardSelect: (uuid: string) => void
@@ -68,9 +64,7 @@ const FilterWorkflowResults = ({
   setSearchFilterState: React.Dispatch<React.SetStateAction<SearchOptions>>
 }) => {
   const navigateToItem = useNavigateToLibraryItem()
-
-  //  const { data, error, isLoading, isError } = useLibraryObjectsSearchQuery({})
-  const { data, isLoading, isError } = useLibrarySearch({})
+  const { data, isError } = useLibrarySearch({})
 
   if (isError) {
     return <div>error</div>
@@ -138,7 +132,7 @@ const LibrarySearchView = ({
      *    this grouping should not leak into the final API arguments calls
      *******************************************************/
     setSearchArgs(args)
-  }, [searchFilterState, defaultOptionsSearchOptions])
+  }, [searchFilterState, defaultOptionsSearchOptions, setSearchArgs])
 
   const disciplineOptions: SearchFilterOption[] = useMemo(
     () =>
@@ -171,7 +165,7 @@ const LibrarySearchView = ({
    * however it seems to be fine for now
    **/
 
-  const renderSort = () => {
+  const renderSort = useCallback(() => {
     if (!config.sortOptions) {
       return <></>
     }
@@ -195,15 +189,15 @@ const LibrarySearchView = ({
         }}
       />
     )
-  }
+  }, [config.sortOptions, searchFilterState.sortOptions.options])
 
-  const renderRelationshipFilter = () => {
+  const renderRelationshipFilter = useCallback(() => {
     if (!config.filterGroups.relationshipFilter) {
       return <></>
     }
 
     const filterGroup = searchFilterState.filterGroups.relationshipFilter
-    const { options, name } = filterGroup
+    const { options } = filterGroup
 
     return (
       <>
@@ -232,16 +226,18 @@ const LibrarySearchView = ({
         />
       </>
     )
-  }
+  }, [
+    config.filterGroups.relationshipFilter,
+    searchFilterState.filterGroups.relationshipFilter
+  ])
 
-  const renderContentTypeFilter = () => {
+  const renderContentTypeFilter = useCallback(() => {
     if (!config.filterGroups.contentTypeFilter) {
       return <></>
     }
 
     const filterGroup = searchFilterState.filterGroups.contentTypeFilter
-
-    const { options, name } = filterGroup
+    const { options } = filterGroup
 
     return (
       <>
@@ -269,7 +265,10 @@ const LibrarySearchView = ({
         />
       </>
     )
-  }
+  }, [
+    config.filterGroups.contentTypeFilter,
+    searchFilterState.filterGroups.contentTypeFilter
+  ])
 
   /*******************************************************
    *  DisciplineFilter
@@ -301,12 +300,12 @@ const LibrarySearchView = ({
         />
       </>
     )
-  }, [disciplineOptions, searchFilterState])
+  }, [config.filterGroups.disciplineFilter, disciplineOptions])
 
   /*******************************************************
    *  IS TEMPLATE
    *******************************************************/
-  const renderTemplateFilter = () => {
+  const renderTemplateFilter = useCallback(() => {
     if (!config.filterGroups.templateFilter) {
       return <></>
     }
@@ -326,7 +325,7 @@ const LibrarySearchView = ({
         />
       </>
     )
-  }
+  }, [config.filterGroups.templateFilter])
 
   /*******************************************************
    *  Pagination

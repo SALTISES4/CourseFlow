@@ -1,4 +1,6 @@
-import LibrarySearchView from '@cfViews/LibrarySearchView'
+import LibrarySearchView, {
+  LibraryFilterConfig
+} from '@cfViews/LibrarySearchView'
 import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import { TypedLibrarySearchArgs } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import { useState } from 'react'
@@ -11,7 +13,7 @@ const LibraryPage = () => {
    * HOOKS
    *******************************************************/
 
-  const config = {
+  const config: LibraryFilterConfig = {
     pagination: true,
     sortOptions: true,
     filterGroups: {
