@@ -2,6 +2,7 @@ import {
   LibraryContentTypeIn,
   LibraryFiltersIn,
   LibraryOwnershipIn,
+  LibrarySearchIn,
   LibrarySortDirectionIn,
   LibrarySortValueIn
 } from '@cf/api/gen'
@@ -14,18 +15,6 @@ import {
 import { WorkflowType } from '@cfPages/Workflow/types'
 
 type FilterGroups = { [key: string]: SearchFilterGroup }
-
-export type TypedLibrarySearchArgs = {
-  pagination?: {
-    page?: number
-    resultsPerPage?: number
-  }
-  sort?: {
-    value?: LibrarySortValueIn
-    direction?: LibrarySortDirectionIn
-  } | null
-  filters?: LibraryFiltersIn | null
-}
 
 export type SearchOptions = {
   pagination: {
@@ -261,7 +250,7 @@ class LibraryHelper {
    **/
   public static reduceStateToSearchArgs(
     stateParams: SearchOptions
-  ): TypedLibrarySearchArgs {
+  ): LibrarySearchIn {
     const activeSort = LibraryHelper.getActiveSortOption(
       stateParams.sortOptions.options
     )
@@ -269,7 +258,7 @@ class LibraryHelper {
     const filterGroups = stateParams.filterGroups
     const filters = LibraryHelper.processFilterGroups(filterGroups)
 
-    const payload: TypedLibrarySearchArgs = {
+    const payload: LibrarySearchIn = {
       pagination: {
         page: stateParams.pagination.page,
         resultsPerPage: 10
@@ -282,9 +271,9 @@ class LibraryHelper {
   }
 
   public static applyLockedFilters(
-    args: TypedLibrarySearchArgs,
+    args: LibrarySearchIn,
     locked: Partial<LibraryFiltersIn>
-  ): TypedLibrarySearchArgs {
+  ): LibrarySearchIn {
     const base = args ?? {}
     const mergedFilters: LibraryFiltersIn = {
       ...(base.filters ?? {}),

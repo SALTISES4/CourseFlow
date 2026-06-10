@@ -88,7 +88,7 @@ function mapLibraryItemToELibraryObject(item: LibraryItemOut): ELibraryObject {
 }
 
 export function buildLibrarySearchRequestBody(
-  args: LibrarySearchIn | Record<string, never>
+  args: LibrarySearchIn
 ): Record<string, unknown> {
   const pagination = args.pagination ?? { page: 0 }
   const sort = args.sort ?? undefined

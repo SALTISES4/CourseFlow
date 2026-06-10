@@ -1,9 +1,9 @@
+import { LibrarySearchIn } from '@cf/api/gen'
 import LibrarySearchView, {
   LibraryFilterConfig
 } from '@cfViews/LibrarySearchView'
 import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
-import { TypedLibrarySearchArgs } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 /*******************************************************
  * @LibraryRenderer
@@ -12,7 +12,6 @@ const LibraryPage = () => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-
   const config: LibraryFilterConfig = {
     pagination: true,
     sortOptions: true,
@@ -23,13 +22,11 @@ const LibraryPage = () => {
     keywordFilter: true
   }
 
-  const locked = { isFavorite: true }
+  const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
 
-  const [searchArgs, setSearchArgs] = useState<TypedLibrarySearchArgs>({})
-
-  const updateSearchArgsHandler = (args: TypedLibrarySearchArgs) => {
-    setSearchArgs(LibraryHelper.applyLockedFilters(args, locked))
-  }
+  const updateSearchArgsHandler = useCallback((args: LibrarySearchIn) => {
+    setSearchArgs(LibraryHelper.applyLockedFilters(args, { isFavorite: true }))
+  }, [])
 
   /*******************************************************
    * RENDER

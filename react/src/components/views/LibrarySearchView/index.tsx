@@ -1,3 +1,4 @@
+import { LibrarySearchIn } from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
 import { getErrorMessage } from '@cf/utility/errorWrapper'
@@ -14,8 +15,7 @@ import Pagination from '@cfComponents/UIPrimitives/Pagination'
 import { GridWrap, OuterContentWrap } from '@cfMUI/helper'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
 import LibraryHelper, {
-  SearchOptions,
-  TypedLibrarySearchArgs
+  SearchOptions
 } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import CategoryIcon from '@mui/icons-material/Category'
 import FilterIcon from '@mui/icons-material/FilterAlt'
@@ -46,8 +46,8 @@ export type LibraryFilterConfig = {
  * see:  https://docs.google.com/document/d/1LgSedmw-U6mDF8S48I3gMbaohfliZetki6AJAeIKKLw/edit?tab=t.0#heading=h.seafxrns9x1f
  *******************************************************/
 type PropsType = {
-  searchArgs: TypedLibrarySearchArgs
-  setSearchArgs: (args: TypedLibrarySearchArgs) => void
+  searchArgs: LibrarySearchIn
+  setSearchArgs: (args: LibrarySearchIn) => void
   config: LibraryFilterConfig
   override?: {
     uuid: string
