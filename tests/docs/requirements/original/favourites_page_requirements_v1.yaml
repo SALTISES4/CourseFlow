@@ -9,9 +9,9 @@ documentPreconditions:
 
 uiObjectDefinitions:
   favouritesPage:
-    meaning: Dedicated page at route pathname /favourites for favourited library objects.
+    meaning: Dedicated page at route /favourites for favourited projects and workflows.
   favouritesFilterToolbar:
-    meaning: Filter toolbar on favouritesPage with sort, ownership, type, workflow-type, templates, and keyword controls.
+    meaning: Filter toolbar on favouritesPage with sort, ownership, type, workflow-type, templates toggle, and keyword search controls.
   sortControl:
     meaning: Canonical definition in tests/docs/requirements/original/library_page_requirements_v1.yaml.
   sortResetButton:
@@ -120,12 +120,11 @@ requirements:
       - favourites query state changes or user interacts with pagination controls
 
     mainFlow:
-      - favouritesPage base query scope is favourited projects and workflows only; this includes favourited published objects even when the user is not an editor, a viewer, or a commenter on that object
+      - favouritesPage base query scope is favourited projects and workflows only; this includes favourited published projects and workflows even when the user is not an editor, a viewer, or a commenter on that project or workflow
       - toolbar filters in FR-FAV-002 through FR-FAV-005 apply subtractively within this base scope only
       - system renders favouritesPage with favouritesFilterToolbar, resultsSummary, and resultsRegion
-      - on first land of /favourites, typeFilter is committed to 'Projects' by default (same as 'My library')
-      - with default first-load typeFilter committed to 'Projects', resultsRegion includes favourited projectCard instances only
-      - results render as projectCard and/or workflowCard according to object type and active filters
+      - on first land of /favourites, typeFilter is committed to 'Projects' by default (same as 'My library') and resultsRegion includes favourited projectCard instances only
+      - results can render as projectCard and/or workflowCard according to object type and active filters
       - projectCard and workflowCard presentation and card interactions in resultsRegion conform to card_content_requirements_v1.yaml
       - when resultsRegion is not empty, resultsSummary shows a count summary (e.g. 'Showing X of XX results') consistent with the total matching favourited objects and current page (same behavior as 'My library' FR-LIB-001)
       - resultsRegion shows at most 10 projectCard and/or workflowCard instances for the current page
