@@ -349,7 +349,10 @@ const LibrarySearchView = ({
         }
       />
     )
-  }, [filters.filterGroups.templateFilter])
+  }, [
+    filters.filterGroups.templateFilter,
+    searchFilterState.filterGroups.templateFilter
+  ])
 
   /*******************************************************
    *  IS FAVORITE
