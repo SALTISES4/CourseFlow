@@ -41,7 +41,6 @@ import { Link as LinkRouter } from 'react-router-dom'
 export type LibraryFilterConfig = {
   pagination?: boolean
   sortOptions?: boolean
-  keywordFilter?: boolean
   filterGroups?: Partial<Record<keyof SearchOptions['filterGroups'], boolean>>
 }
 
@@ -120,7 +119,6 @@ const LibrarySearchView = ({
   const configDefaults: LibraryFilterConfig = {
     pagination: true,
     sortOptions: true,
-    keywordFilter: true,
     filterGroups: {
       ownershipFilter: false,
       disciplineFilter: false,
