@@ -24,7 +24,7 @@ export type SearchOptions = {
     options: SortOption[]
   }
   filterGroups: {
-    relationshipFilter: SearchFilterGroup
+    ownershipFilter: SearchFilterGroup
     disciplineFilter: SearchFilterGroup
     contentTypeFilter: SearchFilterGroup
     workflowTypeFilter: SearchFilterGroup
@@ -61,7 +61,7 @@ class LibraryHelper {
     },
     filterGroups: {
       // Filter group with dynamically populated options
-      relationshipFilter: {
+      ownershipFilter: {
         name: 'type',
         label: _t('Ownership'),
         options: [
@@ -207,7 +207,7 @@ class LibraryHelper {
   public static processFilterGroups = (
     filterGroups: FilterGroups
   ): LibraryFiltersIn => {
-    const relationship = filterGroups.relationshipFilter?.options?.find(
+    const relationship = filterGroups.ownershipFilter?.options?.find(
       (option) => option.enabled
     )?.value
     const contentSelection = filterGroups.contentTypeFilter?.options?.find(

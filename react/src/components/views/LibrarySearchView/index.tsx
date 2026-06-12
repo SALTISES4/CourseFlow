@@ -122,7 +122,7 @@ const LibrarySearchView = ({
     sortOptions: true,
     keywordFilter: true,
     filterGroups: {
-      relationshipFilter: false,
+      ownershipFilter: false,
       disciplineFilter: false,
       contentTypeFilter: false,
       keywordFilter: false,
@@ -220,11 +220,11 @@ const LibrarySearchView = ({
   }, [filters.sortOptions, searchFilterState.sortOptions.options])
 
   const renderOwnershipFilter = useCallback(() => {
-    if (!filters.filterGroups.relationshipFilter) {
+    if (!filters.filterGroups.ownershipFilter) {
       return <></>
     }
 
-    const filterGroup = searchFilterState.filterGroups.relationshipFilter
+    const filterGroup = searchFilterState.filterGroups.ownershipFilter
     const { options } = filterGroup
 
     /*******************************************************
@@ -245,7 +245,7 @@ const LibrarySearchView = ({
           )
           setSearchFilterState(
             produce((draft) => {
-              draft.filterGroups.relationshipFilter.options =
+              draft.filterGroups.ownershipFilter.options =
                 newFilterProjectOptions
               draft.pagination.page = 0
             })
@@ -254,8 +254,8 @@ const LibrarySearchView = ({
       />
     )
   }, [
-    filters.filterGroups.relationshipFilter,
-    searchFilterState.filterGroups.relationshipFilter
+    filters.filterGroups.ownershipFilter,
+    searchFilterState.filterGroups.ownershipFilter
   ])
 
   const renderContentTypeFilter = useCallback(() => {

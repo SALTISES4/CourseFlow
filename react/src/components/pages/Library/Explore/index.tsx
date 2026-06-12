@@ -23,7 +23,7 @@ const ExplorePage = () => {
    *******************************************************/
   const config: LibraryFilterConfig = {
     filterGroups: {
-      relationshipFilter: true,
+      ownershipFilter: true,
       disciplineFilter: true,
       contentTypeFilter: true,
       workflowTypeFilter: true,

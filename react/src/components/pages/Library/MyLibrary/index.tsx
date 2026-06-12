@@ -13,7 +13,7 @@ const LibraryPage = () => {
    *******************************************************/
   const config: LibraryFilterConfig = {
     filterGroups: {
-      relationshipFilter: true,
+      ownershipFilter: true,
       templateFilter: true
     }
   }
