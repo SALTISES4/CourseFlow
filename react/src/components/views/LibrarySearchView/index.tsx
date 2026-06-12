@@ -295,7 +295,11 @@ const LibrarySearchView = ({
   ])
 
   const renderWorkflowTypeFilter = useCallback(() => {
-    if (!filters.filterGroups.workflowTypeFilter) {
+    const contentType = searchArgs.filters?.contentType
+    const forceVisible =
+      contentType === LibraryContentTypeIn.WORKFLOW || !contentType
+
+    if (!filters.filterGroups.workflowTypeFilter || !forceVisible) {
       return <></>
     }
 
@@ -327,6 +331,7 @@ const LibrarySearchView = ({
     )
   }, [
     filters.filterGroups.workflowTypeFilter,
+    searchArgs.filters?.contentType,
     searchFilterState.filterGroups.workflowTypeFilter
   ])
 
