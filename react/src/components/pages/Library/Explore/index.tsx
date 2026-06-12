@@ -22,15 +22,11 @@ const ExplorePage = () => {
    * HOOKS
    *******************************************************/
   const config: LibraryFilterConfig = {
-    pagination: true,
-    sortOptions: true,
     filterGroups: {
-      relationshipFilter: false,
       disciplineFilter: true,
       contentTypeFilter: true,
       templateFilter: true
-    },
-    keywordFilter: true
+    }
   }
 
   const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})

@@ -15,15 +15,7 @@ const ProjectSearch = ({ selected, onProjectSelect }: PropsType) => {
    * HOOKS
    *******************************************************/
   const config: LibraryFilterConfig = {
-    pagination: true,
-    sortOptions: false,
-    filterGroups: {
-      relationshipFilter: false,
-      disciplineFilter: false,
-      contentTypeFilter: false,
-      templateFilter: false
-    },
-    keywordFilter: true
+    sortOptions: false
   }
 
   const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})

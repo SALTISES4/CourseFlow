@@ -13,13 +13,9 @@ const LibraryPage = () => {
    * HOOKS
    *******************************************************/
   const config: LibraryFilterConfig = {
-    pagination: true,
-    sortOptions: true,
     filterGroups: {
-      relationshipFilter: false,
       templateFilter: true
-    },
-    keywordFilter: true
+    }
   }
 
   const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})

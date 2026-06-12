@@ -36,10 +36,10 @@ import {
 import { Link as LinkRouter } from 'react-router-dom'
 
 export type LibraryFilterConfig = {
-  pagination: boolean
-  sortOptions: boolean
-  filterGroups: Partial<Record<keyof SearchOptions['filterGroups'], boolean>>
-  keywordFilter: boolean
+  pagination?: boolean
+  sortOptions?: boolean
+  keywordFilter?: boolean
+  filterGroups?: Partial<Record<keyof SearchOptions['filterGroups'], boolean>>
 }
 
 /*******************************************************
@@ -112,6 +112,24 @@ const LibrarySearchView = ({
   config,
   override
 }: PropsType) => {
+  // all base filters on by default (opt-out)
+  // all filter groups off by default (opt-in)
+  const configDefaults: LibraryFilterConfig = {
+    pagination: true,
+    sortOptions: true,
+    keywordFilter: true,
+    filterGroups: {
+      relationshipFilter: false,
+      disciplineFilter: false,
+      contentTypeFilter: false,
+      keywordFilter: false,
+      templateFilter: false
+    }
+  }
+
+  // final list of filters, non-overridden object merge
+  const filters = Object.assign(configDefaults, config)
+
   const defaultOptionsSearchOptions = LibraryHelper.defaultOptionsSearchOptions
   /*******************************************************
    * HOOKS
@@ -173,7 +191,7 @@ const LibrarySearchView = ({
    **/
 
   const renderSort = useCallback(() => {
-    if (!config.sortOptions) {
+    if (!filters.sortOptions) {
       return <></>
     }
 
@@ -196,10 +214,10 @@ const LibrarySearchView = ({
         }}
       />
     )
-  }, [config.sortOptions, searchFilterState.sortOptions.options])
+  }, [filters.sortOptions, searchFilterState.sortOptions.options])
 
   const renderRelationshipFilter = useCallback(() => {
-    if (!config.filterGroups.relationshipFilter) {
+    if (!filters.filterGroups.relationshipFilter) {
       return <></>
     }
 
@@ -234,12 +252,12 @@ const LibrarySearchView = ({
       </>
     )
   }, [
-    config.filterGroups.relationshipFilter,
+    filters.filterGroups.relationshipFilter,
     searchFilterState.filterGroups.relationshipFilter
   ])
 
   const renderContentTypeFilter = useCallback(() => {
-    if (!config.filterGroups.contentTypeFilter) {
+    if (!filters.filterGroups.contentTypeFilter) {
       return <></>
     }
 
@@ -273,7 +291,7 @@ const LibrarySearchView = ({
       </>
     )
   }, [
-    config.filterGroups.contentTypeFilter,
+    filters.filterGroups.contentTypeFilter,
     searchFilterState.filterGroups.contentTypeFilter
   ])
 
@@ -281,7 +299,7 @@ const LibrarySearchView = ({
    *  DisciplineFilter
    *******************************************************/
   const renderDisciplineFilter = useCallback(() => {
-    if (!config.filterGroups.disciplineFilter) {
+    if (!filters.filterGroups.disciplineFilter) {
       return <></>
     }
 
@@ -307,13 +325,13 @@ const LibrarySearchView = ({
         />
       </>
     )
-  }, [config.filterGroups.disciplineFilter, disciplineOptions])
+  }, [filters.filterGroups.disciplineFilter, disciplineOptions])
 
   /*******************************************************
    *  IS TEMPLATE
    *******************************************************/
   const renderTemplateFilter = useCallback(() => {
-    if (!config.filterGroups.templateFilter) {
+    if (!filters.filterGroups.templateFilter) {
       return <></>
     }
     return (
@@ -332,13 +350,13 @@ const LibrarySearchView = ({
         />
       </>
     )
-  }, [config.filterGroups.templateFilter])
+  }, [filters.filterGroups.templateFilter])
 
   /*******************************************************
    *  Pagination
    *******************************************************/
   const renderPagination = () => {
-    if (!config.pagination || !data || data.meta.pageCount <= 1) {
+    if (!filters.pagination || !data || data.meta.pageCount <= 1) {
       return <></>
     }
 
@@ -422,7 +440,7 @@ const LibrarySearchView = ({
             direction="row"
             spacing={2}
             justifyContent="space-between"
-            sx={{ width: '100%' }}
+            style={{ width: '100%' }}
           >
             <Stack direction="row" spacing={2}>
               {renderSort()}
