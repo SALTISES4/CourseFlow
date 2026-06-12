@@ -17,10 +17,12 @@ import ErrorView from '@cfPages/MsgViews/ErrorView'
 import LibraryHelper, {
   SearchOptions
 } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
+import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'
 import CategoryIcon from '@mui/icons-material/Category'
 import FilterIcon from '@mui/icons-material/FilterAlt'
 import SortIcon from '@mui/icons-material/Sort'
 import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlined'
+import StarIcon from '@mui/icons-material/Star'
 import { Link, Skeleton, Typography } from '@mui/material'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
@@ -216,7 +218,7 @@ const LibrarySearchView = ({
     )
   }, [filters.sortOptions, searchFilterState.sortOptions.options])
 
-  const renderRelationshipFilter = useCallback(() => {
+  const renderOwnershipFilter = useCallback(() => {
     if (!filters.filterGroups.relationshipFilter) {
       return <></>
     }
@@ -224,32 +226,31 @@ const LibrarySearchView = ({
     const filterGroup = searchFilterState.filterGroups.relationshipFilter
     const { options } = filterGroup
 
+    /*******************************************************
+     *  RELATIONSHIP TO USER FILTER
+     * owned
+     * shared
+     * archived etc
+     *******************************************************/
     return (
-      <>
-        {/*******************************************************
-         *  RELATIONSHIP TO USER FILTER
-         * owned
-         * shared
-         * archived etc
-         *******************************************************/}
-        <FilterButton
-          options={options}
-          icon={<FilterIcon />}
-          onChange={(val) => {
-            const newFilterProjectOptions = LibraryHelper.updateFilterOptions(
-              options,
-              val
-            )
-            setSearchFilterState(
-              produce((draft) => {
-                draft.filterGroups.relationshipFilter.options =
-                  newFilterProjectOptions
-                draft.pagination.page = 0
-              })
-            )
-          }}
-        />
-      </>
+      <FilterButton
+        placeholder={filterGroup.label}
+        options={options}
+        icon={<FilterIcon />}
+        onChange={(val) => {
+          const newFilterProjectOptions = LibraryHelper.updateFilterOptions(
+            options,
+            val
+          )
+          setSearchFilterState(
+            produce((draft) => {
+              draft.filterGroups.relationshipFilter.options =
+                newFilterProjectOptions
+              draft.pagination.page = 0
+            })
+          )
+        }}
+      />
     )
   }, [
     filters.filterGroups.relationshipFilter,
@@ -264,31 +265,30 @@ const LibrarySearchView = ({
     const filterGroup = searchFilterState.filterGroups.contentTypeFilter
     const { options } = filterGroup
 
+    /*******************************************************
+     *  Content Type
+     * project
+     * workflow types
+     *******************************************************/
     return (
-      <>
-        {/*******************************************************
-         *  Content Type
-         * project
-         * workflow types
-         *******************************************************/}
-        <FilterButton
-          options={options}
-          icon={<CategoryIcon />}
-          onChange={(val) => {
-            const newFilterProjectOptions = LibraryHelper.updateFilterOptions(
-              options,
-              val
-            )
-            setSearchFilterState(
-              produce((draft) => {
-                draft.filterGroups.contentTypeFilter.options =
-                  newFilterProjectOptions
-                draft.pagination.page = 0
-              })
-            )
-          }}
-        />
-      </>
+      <FilterButton
+        placeholder={filterGroup.label}
+        options={options}
+        icon={<CategoryIcon />}
+        onChange={(val) => {
+          const newFilterProjectOptions = LibraryHelper.updateFilterOptions(
+            options,
+            val
+          )
+          setSearchFilterState(
+            produce((draft) => {
+              draft.filterGroups.contentTypeFilter.options =
+                newFilterProjectOptions
+              draft.pagination.page = 0
+            })
+          )
+        }}
+      />
     )
   }, [
     filters.filterGroups.contentTypeFilter,
@@ -304,26 +304,24 @@ const LibrarySearchView = ({
     }
 
     return (
-      <>
-        <FilterMultiselect
-          placeholder="Discipline"
-          searchPlaceholder="Find discipline"
-          options={disciplineOptions}
-          onChange={(values) => {
-            const newFilterProjectOptions = LibraryHelper.updateFilterOptions(
-              disciplineOptions,
-              values
-            )
-            setSearchFilterState(
-              produce((draft) => {
-                draft.filterGroups.disciplineFilter.options =
-                  newFilterProjectOptions
-                draft.pagination.page = 0
-              })
-            )
-          }}
-        />
-      </>
+      <FilterMultiselect
+        placeholder="Discipline"
+        searchPlaceholder="Find discipline"
+        options={disciplineOptions}
+        onChange={(values) => {
+          const newFilterProjectOptions = LibraryHelper.updateFilterOptions(
+            disciplineOptions,
+            values
+          )
+          setSearchFilterState(
+            produce((draft) => {
+              draft.filterGroups.disciplineFilter.options =
+                newFilterProjectOptions
+              draft.pagination.page = 0
+            })
+          )
+        }}
+      />
     )
   }, [filters.filterGroups.disciplineFilter, disciplineOptions])
 
@@ -334,23 +332,82 @@ const LibrarySearchView = ({
     if (!filters.filterGroups.templateFilter) {
       return <></>
     }
+
+    const filterGroup = searchFilterState.filterGroups.templateFilter
     return (
-      <>
-        <FilterToggle
-          label="Templates"
-          icon={<SpaceDashboardOutlinedIcon />}
-          onChange={(checked) =>
-            setSearchFilterState(
-              produce((draft) => {
-                draft.filterGroups.templateFilter.value = !!checked || undefined
-                draft.pagination.page = 0
-              })
-            )
-          }
-        />
-      </>
+      <FilterToggle
+        label={filterGroup.label}
+        icon={<SpaceDashboardOutlinedIcon />}
+        color={filterGroup.color}
+        onChange={(checked) =>
+          setSearchFilterState(
+            produce((draft) => {
+              draft.filterGroups.templateFilter.value = !!checked || undefined
+              draft.pagination.page = 0
+            })
+          )
+        }
+      />
     )
   }, [filters.filterGroups.templateFilter])
+
+  /*******************************************************
+   *  IS FAVORITE
+   *******************************************************/
+  const renderFavoriteFilter = useCallback(() => {
+    if (!filters.filterGroups.favoritesFilter) {
+      return <></>
+    }
+
+    const filterGroup = searchFilterState.filterGroups.favoritesFilter
+    return (
+      <FilterToggle
+        label={filterGroup.label}
+        icon={<StarIcon />}
+        color={filterGroup.color}
+        onChange={(checked) =>
+          setSearchFilterState(
+            produce((draft) => {
+              draft.filterGroups.favoritesFilter.value = !!checked || undefined
+              draft.pagination.page = 0
+            })
+          )
+        }
+      />
+    )
+  }, [
+    filters.filterGroups.favoritesFilter,
+    searchFilterState.filterGroups.favoritesFilter
+  ])
+
+  /*******************************************************
+   *  IS ARCHIVE
+   *******************************************************/
+  const renderArchiveFilter = useCallback(() => {
+    if (!filters.filterGroups.archiveFilter) {
+      return <></>
+    }
+
+    const filterGroup = searchFilterState.filterGroups.archiveFilter
+    return (
+      <FilterToggle
+        label={filterGroup.label}
+        color={filterGroup.color}
+        icon={<ArchiveOutlinedIcon />}
+        onChange={(checked) =>
+          setSearchFilterState(
+            produce((draft) => {
+              draft.filterGroups.archiveFilter.value = !!checked || undefined
+              draft.pagination.page = 0
+            })
+          )
+        }
+      />
+    )
+  }, [
+    filters.filterGroups.archiveFilter,
+    searchFilterState.filterGroups.archiveFilter
+  ])
 
   /*******************************************************
    *  Pagination
@@ -444,10 +501,12 @@ const LibrarySearchView = ({
           >
             <Stack direction="row" spacing={2}>
               {renderSort()}
-              {renderRelationshipFilter()}
               {renderDisciplineFilter()}
+              {renderOwnershipFilter()}
               {renderContentTypeFilter()}
+              {renderFavoriteFilter()}
               {renderTemplateFilter()}
+              {renderArchiveFilter()}
             </Stack>
             <FilterWorkflowResults
               setSearchFilterState={setSearchFilterState}

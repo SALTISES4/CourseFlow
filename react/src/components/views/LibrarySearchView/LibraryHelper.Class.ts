@@ -29,6 +29,8 @@ export type SearchOptions = {
     contentTypeFilter: SearchFilterGroup
     keywordFilter: SearchFilterGroup
     templateFilter: SearchFilterGroup
+    archiveFilter: SearchFilterGroup
+    favoritesFilter: SearchFilterGroup
   }
 }
 
@@ -60,7 +62,7 @@ class LibraryHelper {
       // Filter group with dynamically populated options
       relationshipFilter: {
         name: 'type',
-        label: _t('Type'),
+        label: _t('Ownership'),
         options: [
           {
             value: null,
@@ -124,12 +126,24 @@ class LibraryHelper {
       // Filter group with no options or value is binary
       templateFilter: {
         name: 'isTemplate',
-        label: _t('template')
+        label: _t('Templates'),
+        color: 'template'
+      },
+      // Filter group with no options or value is binary
+      favoritesFilter: {
+        name: 'isFavorite',
+        label: _t('Favourites'),
+        color: 'favorite'
+      },
+      // Filter group with no options or value is binary
+      archiveFilter: {
+        name: 'isArchive',
+        label: _t('Archive')
       },
       // Filter group with a single value
       keywordFilter: {
         name: 'keyword',
-        label: _t('search'),
+        label: _t('Search'),
         value: ''
       }
     }

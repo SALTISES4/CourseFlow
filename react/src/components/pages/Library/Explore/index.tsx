@@ -23,9 +23,13 @@ const ExplorePage = () => {
    *******************************************************/
   const config: LibraryFilterConfig = {
     filterGroups: {
+      relationshipFilter: true,
       disciplineFilter: true,
       contentTypeFilter: true,
-      templateFilter: true
+      keywordFilter: true,
+      templateFilter: true,
+      archiveFilter: true,
+      favoritesFilter: true
     }
   }
 
