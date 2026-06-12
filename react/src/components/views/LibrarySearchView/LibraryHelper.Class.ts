@@ -134,14 +134,12 @@ class LibraryHelper {
       // Filter group with no options or value is binary
       templateFilter: {
         name: 'isTemplate',
-        label: _t('Templates'),
-        color: 'template'
+        label: _t('Templates')
       },
       // Filter group with no options or value is binary
       favoritesFilter: {
         name: 'isFavorite',
-        label: _t('Favourites'),
-        color: 'favorite'
+        label: _t('Favourites')
       },
       // Filter group with no options or value is binary
       archiveFilter: {

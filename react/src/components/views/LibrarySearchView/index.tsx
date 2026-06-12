@@ -378,7 +378,7 @@ const LibrarySearchView = ({
       <FilterToggle
         label={filterGroup.label}
         icon={<SpaceDashboardOutlinedIcon />}
-        color={filterGroup.color}
+        color="template"
         onChange={(checked) =>
           setSearchFilterState(
             produce((draft) => {
@@ -407,7 +407,7 @@ const LibrarySearchView = ({
       <FilterToggle
         label={filterGroup.label}
         icon={<StarIcon />}
-        color={filterGroup.color}
+        className="filter-favorite"
         onChange={(checked) =>
           setSearchFilterState(
             produce((draft) => {
@@ -435,7 +435,6 @@ const LibrarySearchView = ({
     return (
       <FilterToggle
         label={filterGroup.label}
-        color={filterGroup.color}
         icon={<ArchiveOutlinedIcon />}
         onChange={(checked) =>
           setSearchFilterState(

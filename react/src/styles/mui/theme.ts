@@ -3,7 +3,6 @@ import { Theme, createTheme } from '@mui/material/styles'
 declare module '@mui/material' {
   interface ButtonPropsColorOverrides {
     template: true
-    favorite: true
   }
 }
 
@@ -32,10 +31,6 @@ const palette = {
   workflow: {
     highlighted: 'rgb(253, 216, 53)',
     selected: 'rgba(4, 186, 116, 0.5)'
-  },
-  favorite: {
-    main: '#fbc02d',
-    contrastText: '#78909c'
   },
   template: {
     main: 'rgba(255, 64, 129, 1)',

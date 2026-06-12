@@ -1,5 +1,4 @@
 import { LibrarySortDirectionIn, LibrarySortValueIn } from '@cf/api/gen'
-import { PropsType as FilterPropsType } from '@cfComponents/filters/FilterToggle'
 
 export type SearchFilterGroup = {
   name: string
@@ -7,7 +6,6 @@ export type SearchFilterGroup = {
   selectMultiple?: boolean
   options?: SearchFilterOption[]
   value?: string | boolean
-  color?: FilterPropsType['color']
 }
 
 export type SearchFilterOption = {
