@@ -26,9 +26,10 @@ const ExplorePage = () => {
       relationshipFilter: true,
       disciplineFilter: true,
       contentTypeFilter: true,
+      workflowTypeFilter: true,
       keywordFilter: true,
-      templateFilter: true,
-      archiveFilter: true,
+      templateFilter: false,
+      archiveFilter: false,
       favoritesFilter: true
     }
   }

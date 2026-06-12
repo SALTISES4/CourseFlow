@@ -27,6 +27,7 @@ export type SearchOptions = {
     relationshipFilter: SearchFilterGroup
     disciplineFilter: SearchFilterGroup
     contentTypeFilter: SearchFilterGroup
+    workflowTypeFilter: SearchFilterGroup
     keywordFilter: SearchFilterGroup
     templateFilter: SearchFilterGroup
     archiveFilter: SearchFilterGroup
@@ -70,16 +71,12 @@ class LibraryHelper {
             enabled: true
           },
           {
-            value: 'owned',
+            value: LibraryOwnershipIn.OWNED,
             label: _t('Owned')
           },
           {
-            value: 'shared',
-            label: _t('Shared')
-          },
-          {
-            value: 'favourited',
-            label: _t('Favourites')
+            value: LibraryOwnershipIn.SHARED,
+            label: _t('Shared with me')
           }
         ]
       },
@@ -101,25 +98,36 @@ class LibraryHelper {
             enabled: true
           },
           {
-            label: _t('Project'),
-            value: 'project'
+            label: _t('Projects'),
+            value: LibraryContentTypeIn.PROJECT
           },
           {
-            label: _t('Program'),
+            label: _t('Workflows'),
+            value: LibraryContentTypeIn.WORKFLOW
+          }
+        ]
+      },
+      // Filter group with a single selectable options at one time
+      workflowTypeFilter: {
+        name: 'workflowType',
+        label: _t('Workflow Type'),
+        options: [
+          {
+            label: _t('All'),
+            value: null,
+            enabled: true
+          },
+          {
+            label: _t('Programs'),
             value: WorkflowType.PROGRAM
           },
-
           {
-            label: _t('Course'),
+            label: _t('Courses'),
             value: WorkflowType.COURSE
           },
           {
-            label: _t('Activity'),
+            label: _t('Activities'),
             value: WorkflowType.ACTIVITY
-          },
-          {
-            label: _t('Task'),
-            value: WorkflowType.TASK
           }
         ]
       },

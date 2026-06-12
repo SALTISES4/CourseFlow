@@ -1,4 +1,4 @@
-import { LibrarySearchIn } from '@cf/api/gen'
+import { LibraryContentTypeIn, LibrarySearchIn } from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
 import { getErrorMessage } from '@cf/utility/errorWrapper'
@@ -20,6 +20,7 @@ import LibraryHelper, {
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'
 import CategoryIcon from '@mui/icons-material/Category'
 import FilterIcon from '@mui/icons-material/FilterAlt'
+import SchemaOutlinedIcon from '@mui/icons-material/SchemaOutlined'
 import SortIcon from '@mui/icons-material/Sort'
 import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlined'
 import StarIcon from '@mui/icons-material/Star'
@@ -267,8 +268,6 @@ const LibrarySearchView = ({
 
     /*******************************************************
      *  Content Type
-     * project
-     * workflow types
      *******************************************************/
     return (
       <FilterButton
@@ -293,6 +292,42 @@ const LibrarySearchView = ({
   }, [
     filters.filterGroups.contentTypeFilter,
     searchFilterState.filterGroups.contentTypeFilter
+  ])
+
+  const renderWorkflowTypeFilter = useCallback(() => {
+    if (!filters.filterGroups.workflowTypeFilter) {
+      return <></>
+    }
+
+    const filterGroup = searchFilterState.filterGroups.workflowTypeFilter
+    const { options } = filterGroup
+
+    /*******************************************************
+     *  Workflow Type (condition on Content Type value)
+     *******************************************************/
+    return (
+      <FilterButton
+        placeholder={filterGroup.label}
+        options={options}
+        icon={<SchemaOutlinedIcon />}
+        onChange={(val) => {
+          const newFilterProjectOptions = LibraryHelper.updateFilterOptions(
+            options,
+            val
+          )
+          setSearchFilterState(
+            produce((draft) => {
+              draft.filterGroups.workflowTypeFilter.options =
+                newFilterProjectOptions
+              draft.pagination.page = 0
+            })
+          )
+        }}
+      />
+    )
+  }, [
+    filters.filterGroups.workflowTypeFilter,
+    searchFilterState.filterGroups.workflowTypeFilter
   ])
 
   /*******************************************************
@@ -442,16 +477,18 @@ const LibrarySearchView = ({
     if (isLoading) {
       return Array.from({ length: 10 }, (_, index) => (
         <Skeleton
-          sx={{ height: '150px' }}
-          variant={'rectangular'}
           key={index}
+          variant="rectangular"
+          style={{ height: '150px' }}
         />
       ))
     }
 
     if (!data) {
       return (
-        <ErrorView message="The content you were looking for is not found." />
+        <ErrorView
+          message={_t('The content you were looking for is not found.')}
+        />
       )
     }
     if (isError) {
@@ -479,7 +516,7 @@ const LibrarySearchView = ({
           />
         ))}
 
-        {/* ALL VIEW NOT IMPLEMENTED YET */}
+        {/* TODO: ALL VIEW NOT IMPLEMENTED YET */}
         {cards.length > 10 && (
           <Link component={LinkRouter} to={'$'}>
             <Typography>{_t('+ See all')}</Typography>
@@ -507,6 +544,7 @@ const LibrarySearchView = ({
               {renderDisciplineFilter()}
               {renderOwnershipFilter()}
               {renderContentTypeFilter()}
+              {renderWorkflowTypeFilter()}
               {renderFavoriteFilter()}
               {renderTemplateFilter()}
               {renderArchiveFilter()}
