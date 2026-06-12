@@ -23,7 +23,7 @@ uiObjectDefinitions:
   ownershipFilterResetButton:
     meaning: Clear (X) control on ownershipFilter that resets the active ownership selection.
   typeFilter:
-    meaning: Single-select type filter with placeholder 'Type' on 'My library', 'Explore', and 'Favourites' filter toolbars.
+    meaning: Single-select type filter with placeholder 'Type' on 'My library', 'Explore', and 'Favourites' filter toolbars. Includes 'Projects' and 'Workflows' options.
   typeFilterResetButton:
     meaning: Clear (X) control on typeFilter that resets the committed type scope.
   workflowTypeFilter:
