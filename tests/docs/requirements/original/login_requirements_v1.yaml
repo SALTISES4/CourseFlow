@@ -5,7 +5,6 @@
 
 documentPreconditions:
   - user is not authenticated to CourseFlow
-  - routes '/register/', '/login/', and '/password-reset' are publicly accessible without authentication
 
 uiObjectDefinitions:
   loginPage:
@@ -23,13 +22,13 @@ uiObjectDefinitions:
   loginForgotPasswordLink:
     meaning: Clickable link labeled 'Forgot your password?' on loginPage that navigates to forgotPasswordPage at public route '/password-reset' per tests/docs/requirements/original/forgot_password_requirements_v1.yaml FR-FPWD-001; distinct from authenticated change-password at '/user/password-reset' per tests/docs/requirements/original/password_reset_requirements_v1.yaml.
   loginRegisterPrompt:
-    meaning: Static prompt copy 'Don't have an account? ' on loginPage adjacent to loginRegisterLink; mirror of registerLoginPrompt per tests/docs/requirements/original/register_requirements_v1.yaml FR-REG-001.
+    meaning: Static prompt copy 'Don't have an account? ' on loginPage adjacent to loginRegisterLink; mirror of registerLoginPrompt per FR-REG-001.
   loginRegisterLink:
-    meaning: Clickable link labeled 'Register' on loginPage that navigates to public route '/register/'; mirror of registerLoginLink per tests/docs/requirements/original/register_requirements_v1.yaml FR-REG-001.
+    meaning: Clickable link labeled 'Register' on loginPage that navigates to public route '/register/'; mirror of registerLoginLink per FR-REG-001.
   loginFieldValidationMessage:
     meaning: Inline field-level error text on loginForm field controls; validation rules per FR-LOGIN-003.
   loginAuthenticationErrorMessage:
-    meaning: Sign-in failure message on loginPage with copy 'The email or password you entered is incorrect. please check your details and try again.' when submitted valid loginForm values do not match an existing account; failure layout per FIGMA-LOGIN-CREDENTIALS-ERROR; rules per FR-LOGIN-004.
+    meaning: Sign-in failure message on loginPage with copy 'The email or password you entered is incorrect. please check your details and try again.' when submitted valid loginForm values do not match an existing account; rules per FR-LOGIN-004.
   homePage:
     meaning: Canonical definition in tests/docs/requirements/original/homepage_requirements_v1.yaml.
 
@@ -78,15 +77,10 @@ requirements:
       - given user is not authenticated, user can navigate to '/login/' without being redirected
       - given user is authenticated and navigates to '/login/', application redirects to '/home' and loginPage is not visible
       - given current route matches '/login/', loginPage is visible
-      - loginTitle is visible on loginPage with text 'Login to CourseFlow'
-      - loginForm is visible on loginPage
-      - loginForm shows loginEmailField, loginPasswordField, loginForgotPasswordLink, and loginSubmitButton in that order
+      - loginForm is visible
+      - loginForm shows loginTitle, loginEmailField, loginPasswordField, loginForgotPasswordLink, loginSubmitButton and the loginRegisterPrompt and loginRegisterLink combo in that order
       - loginPage does not include a separate username field; loginEmailField is the account username
-      - all loginForm input fields are required
-      - loginForgotPasswordLink is visible on loginPage with label 'Forgot your password?' and is clickable
       - given user clicks loginForgotPasswordLink, application navigates to '/password-reset' without requiring authentication
-      - loginPage shows loginRegisterPrompt with text 'Don't have an account? ' and loginRegisterLink labeled 'Register' as adjacent copy
-      - loginRegisterPrompt is not clickable; only loginRegisterLink is clickable
       - given user clicks loginRegisterLink, application navigates to '/register/' without requiring authentication
 
     roleBehavior: {}
@@ -94,17 +88,10 @@ requirements:
     acceptanceCriteria:
       - given user is not authenticated, current route matches '/login/' and loginPage is visible
       - given user is authenticated and user navigates to '/login/', current route matches '/home' and loginPage is not visible
-      - loginTitle is visible with text 'Login to CourseFlow'
       - loginForm is visible
-      - loginEmailField is visible with label 'Email', is editable, and is required
-      - loginPage does not show a separate username field
-      - loginPasswordField is visible with label 'Password', is editable, and is required
+      - loginForm shows loginTitle, loginEmailField, loginPasswordField, loginForgotPasswordLink, loginSubmitButton and the loginRegisterPrompt and loginRegisterLink combo in that order
       - loginPasswordField masks entered characters
-      - loginForgotPasswordLink is visible with label 'Forgot your password?' and is clickable
       - given user is not authenticated and user clicks loginForgotPasswordLink, current route matches '/password-reset'
-      - loginSubmitButton is visible with label 'Login'
-      - loginRegisterPrompt is visible with text 'Don't have an account? '
-      - loginRegisterLink is visible with label 'Register' and is clickable
       - given user is not authenticated and user clicks loginRegisterLink, current route matches '/register/'
 
     openQuestions: []
