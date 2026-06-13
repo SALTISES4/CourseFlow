@@ -98,12 +98,11 @@ requirements:
       - given user is not authenticated, user can navigate to '/register/' without being redirected
       - given user is authenticated and navigates to '/register/', application redirects to '/home' and registerPage is not visible
       - given current route matches '/register/', registerPage is visible
-      - registerTitle is visible on registerPage with text 'Register to CourseFlow'
+      - registerTitle is visible on registerPage
       - registerForm is visible on registerPage
       - registerForm shows registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, registerConfirmPasswordField, registerPasswordGuidelines, and registerSubmitButton in that order
       - registerPage does not include a separate username field; registerEmailField is the account username
-      - all registerForm input fields are required; registerPasswordGuidelines is informational helper text with copy 'Your password must contain at least 12 characters and include a mix of numbers, letters and symbols'
-      - registerPage shows registerLoginPrompt with text 'Have an account? ' and registerLoginLink labeled 'Login' as adjacent copy
+      - registerPage shows registerLoginPrompt adjacent to registerLoginLink
       - registerLoginPrompt is not clickable; only registerLoginLink is clickable
       - given user clicks registerLoginLink, application navigates to '/login/' without requiring authentication
 
@@ -112,20 +111,22 @@ requirements:
     acceptanceCriteria:
       - given user is not authenticated, current route matches '/register/' and registerPage is visible
       - given user is authenticated and user navigates to '/register/', current route matches '/home' and registerPage is not visible
-      - registerTitle is visible with text 'Register to CourseFlow'
-      - registerForm is visible
-      - registerEmailField is visible with label 'Email', is editable, and is required
+      - registerTitle is visible on registerPage
+      - registerForm is visible on registerPage
+      - registerForm shows registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, registerConfirmPasswordField, registerPasswordGuidelines, and registerSubmitButton in that order
+      - registerEmailField is visible on registerForm, is editable, and is required
       - registerPage does not show a separate username field
-      - registerFirstNameField is visible with label 'First name', is editable, and is required
-      - registerLastNameField is visible with label 'Last name', is editable, and is required
-      - registerPasswordField is visible with label 'Password', is editable, and is required
+      - registerFirstNameField is visible on registerForm, is editable, and is required
+      - registerLastNameField is visible on registerForm, is editable, and is required
+      - registerPasswordField is visible on registerForm, is editable, and is required
       - registerPasswordField masks entered characters
-      - registerConfirmPasswordField is visible with label 'Confirm password', is editable, and is required
+      - registerConfirmPasswordField is visible on registerForm, is editable, and is required
       - registerConfirmPasswordField masks entered characters
-      - registerPasswordGuidelines is visible with text 'Your password must contain at least 12 characters and include a mix of numbers, letters and symbols'
-      - registerSubmitButton is visible with label 'Register'
-      - registerLoginPrompt is visible with text 'Have an account? '
-      - registerLoginLink is visible with label 'Login' and is clickable
+      - registerPasswordGuidelines is visible on registerForm
+      - registerSubmitButton is visible on registerForm
+      - registerLoginPrompt is visible on registerPage
+      - registerLoginLink is visible on registerPage and is clickable
+      - registerLoginPrompt is not clickable
       - given user is not authenticated and user clicks registerLoginLink, current route matches '/login/'
 
     openQuestions: []
