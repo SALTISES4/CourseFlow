@@ -9,14 +9,16 @@ documentPreconditions:
 uiObjectDefinitions:
   loginPage:
     meaning: Public full-page sign-in experience at route '/login/' accessible without authentication.
-  loginTitle:
-    meaning: Page title on loginPage labeled 'Login to CourseFlow'.
   loginForm:
     meaning: Form container on loginPage for sign-in fields.
+  brandLockup:
+    meaning: Canonical definition in tests/docs/requirements/original/main_navigation_requirements_v1.yaml.
+  loginTitle:
+    meaning: Page title on loginPage labeled 'Login to CourseFlow'.
   loginEmailField:
     meaning: Required text input labeled 'Email' on loginForm for the account email address; this value is the account username per tests/docs/requirements/original/register_requirements_v1.yaml FR-REG-001; valid when non-empty with at least one character before '@' and a domain name after '@' per FR-LOGIN-003.
   loginPasswordField:
-    meaning: Required secret input labeled 'Password' on loginForm for the account password; must be non-empty per FR-LOGIN-003.
+    meaning: Required secret input labeled 'Password' on loginForm for the account password; characters entered into this field must be masked natively by the browser.
   loginSubmitButton:
     meaning: Primary submit button on loginForm labeled 'Login'; disabled and not clickable until loginEmailField and loginPasswordField are valid per FR-LOGIN-003.
   loginForgotPasswordLink:
@@ -28,7 +30,7 @@ uiObjectDefinitions:
   loginFieldValidationMessage:
     meaning: Inline field-level error text on loginForm field controls; validation rules per FR-LOGIN-003.
   loginAuthenticationErrorMessage:
-    meaning: Sign-in failure message on loginPage with copy 'The email or password you entered is incorrect. please check your details and try again.' when submitted valid loginForm values do not match an existing account; rules per FR-LOGIN-004.
+    meaning: Sign-in failure message on loginPage with copy 'The email or password you entered is incorrect. please check your details and try again.'; rules per FR-LOGIN-004.
   homePage:
     meaning: Canonical definition in tests/docs/requirements/original/homepage_requirements_v1.yaml.
 
@@ -58,30 +60,29 @@ requirements:
 
     uiObjects:
       - loginPage
-      - loginTitle
       - loginForm
+      - loginTitle
+      - brandLockup
       - loginEmailField
       - loginPasswordField
       - loginForgotPasswordLink
       - loginSubmitButton
       - loginRegisterPrompt
       - loginRegisterLink
+      - loginFieldValidationMessage
 
     preconditions:
       - documentPreconditions for this file hold
 
     trigger:
       - user navigates to '/login/'
+      - user has not yet interacted with loginEmailField or loginPasswordField
 
     mainFlow:
-      - given user is not authenticated, user can navigate to '/login/' without being redirected
-      - given user is authenticated and navigates to '/login/', application redirects to '/home' and loginPage is not visible
-      - given current route matches '/login/', loginPage is visible
-      - loginForm is visible
-      - loginForm shows loginTitle, loginEmailField, loginPasswordField, loginForgotPasswordLink, loginSubmitButton and the loginRegisterPrompt and loginRegisterLink combo in that order
-      - loginPage does not include a separate username field; loginEmailField is the account username
-      - given user clicks loginForgotPasswordLink, application navigates to '/password-reset' without requiring authentication
-      - given user clicks loginRegisterLink, application navigates to '/register/' without requiring authentication
+      - system intercepts navigation and verifies unauthenticated status
+      - system renders loginPage matching loginForm layout constraints
+      - system initializes loginEmailField and loginPasswordField with empty values
+      - system initializes loginSubmitButton in a disabled state
 
     roleBehavior: {}
 
@@ -89,48 +90,42 @@ requirements:
       - given user is not authenticated, current route matches '/login/' and loginPage is visible
       - given user is authenticated and user navigates to '/login/', current route matches '/home' and loginPage is not visible
       - loginForm is visible
-      - loginForm shows loginTitle, loginEmailField, loginPasswordField, loginForgotPasswordLink, loginSubmitButton and the loginRegisterPrompt and loginRegisterLink combo in that order
-      - loginPasswordField masks entered characters
-      - given user is not authenticated and user clicks loginForgotPasswordLink, current route matches '/password-reset'
-      - given user is not authenticated and user clicks loginRegisterLink, current route matches '/register/'
+      - loginForm contains and renders the following child components in a strict, top-to-bottom vertical layout sequence: brandLockup, loginTitle, loginEmailField, loginPasswordField, loginForgotPasswordLink, loginSubmitButton and loginRegisterPrompt + loginRegisterLink rendered inline as a adjacent pair
+      - loginEmailField value is empty
+      - loginPasswordField value is empty
+      - loginSubmitButton is disabled
 
     openQuestions: []
 
   - id: FR-LOGIN-002
-    title: Login form initial state
-
+    title: Login page external link navigation
+    
     designEvidence:
       - FIGMA-LOGIN
-
+    
     actors:
       - user
 
     uiObjects:
       - loginPage
-      - loginForm
-      - loginEmailField
-      - loginPasswordField
-      - loginFieldValidationMessage
-      - loginSubmitButton
+      - loginForgotPasswordLink
+      - loginRegisterLink
 
     preconditions:
-      - documentPreconditions for this file hold
-      - current route matches '/login/'
+      - current route matches '/login/' and loginPage is visible
 
-    trigger: []
+    trigger:
+      - user clicks loginForgotPasswordLink or loginRegisterLink
 
     mainFlow:
-      - loginEmailField and loginPasswordField start empty
-      - loginSubmitButton is disabled and not clickable
-      - loginFieldValidationMessage is not visible for loginForm fields before user interaction
+      - given user clicks loginForgotPasswordLink, system routes to '/password-reset'
+      - given user clicks loginRegisterLink, system routes to '/register/'
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - loginEmailField value is empty
-      - loginPasswordField value is empty
-      - loginSubmitButton is disabled and not clickable
-      - given user has not interacted with loginForm, loginFieldValidationMessage is not visible for loginEmailField or loginPasswordField
+      - given user clicks loginForgotPasswordLink, then current route matches '/password-reset'
+      - given user clicks loginRegisterLink, then current route matches '/register/'
 
     openQuestions: []
 
@@ -207,10 +202,10 @@ requirements:
     preconditions:
       - documentPreconditions for this file hold
       - loginForm is visible
-      - loginForm is valid
+      - user has filled loginEmailField and loginPasswordField with valid values
 
     trigger:
-      - user changes loginForm content and clicks loginSubmitButton with valid loginForm values that do not match an existing account
+      - user clicks loginSubmitButton with valid loginEmailField and loginPasswordField that do not match an existing account
 
     mainFlow:
       - given user clicks loginSubmitButton with valid loginForm values that do not match an existing account, login fails
@@ -218,9 +213,9 @@ requirements:
       - given login fails, loginForm remains visible with loginEmailField and loginPasswordField retaining the submitted values
       - given login fails with a valid loginForm, loginSubmitButton is enabled and clickable
       - given login fails, loginTitle, loginForgotPasswordLink, loginRegisterPrompt, and loginRegisterLink remain visible on loginPage
-      - given login fails, loginAuthenticationErrorMessage is visible with text 'The email or password you entered is incorrect. please check your details and try again.' on loginPage per FIGMA-LOGIN-CREDENTIALS-ERROR
+      - given login fails, loginAuthenticationErrorMessage is visible within the loginForm, between loginTitle and loginEmailField
       - given login fails, current route remains '/login/'
-      - given login fails and user then changes any loginForm field value, loginAuthenticationErrorMessage is not visible
+      - given login fails and user then changes any loginForm field value, loginAuthenticationErrorMessage is hidden from view
 
     roleBehavior: {}
 
@@ -228,15 +223,10 @@ requirements:
       - given user clicks loginSubmitButton with valid loginForm values that do not match an existing account, login fails
       - given login fails, user is not authenticated to CourseFlow
       - given login fails, current route matches '/login/'
-      - given login fails, loginForm is visible
+      - given login fails, loginForm shows loginTitle, loginAuthenticationErrorMessage, loginEmailField, loginPasswordField, loginForgotPasswordLink, loginSubmitButton and the loginRegisterPrompt and loginRegisterLink combo in that order
       - given login fails, loginEmailField and loginPasswordField retain the values submitted on the failed attempt
-      - given login fails with a valid loginForm, loginSubmitButton is enabled and clickable
-      - given login fails, loginTitle is visible with text 'Login to CourseFlow'
-      - given login fails, loginForgotPasswordLink is visible with label 'Forgot your password?' and is clickable
-      - given login fails, loginRegisterPrompt is visible with text 'Don't have an account? '
-      - given login fails, loginRegisterLink is visible with label 'Register' and is clickable
-      - given login fails, loginAuthenticationErrorMessage is visible with text 'The email or password you entered is incorrect. please check your details and try again.' on loginPage per FIGMA-LOGIN-CREDENTIALS-ERROR
-      - given login fails and user then changes any loginForm field value, loginAuthenticationErrorMessage is not visible
+      - given login fails with a valid loginForm, loginSubmitButton remains enabled and clickable
+      - given login fails and user then changes any loginForm field value, loginAuthenticationErrorMessage is hidden from view
 
     openQuestions: []
 

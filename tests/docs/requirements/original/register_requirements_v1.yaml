@@ -87,6 +87,7 @@ requirements:
       - registerSubmitButton
       - registerLoginPrompt
       - registerLoginLink
+      - registerFieldValidationMessage
 
     preconditions:
       - documentPreconditions for this file hold
@@ -102,6 +103,9 @@ requirements:
       - registerForm is visible on registerPage
       - registerForm shows registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, registerConfirmPasswordField, registerPasswordGuidelines, and registerSubmitButton in that order
       - registerPage does not include a separate username field; registerEmailField is the account username
+      - registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, and registerConfirmPasswordField start empty
+      - registerSubmitButton is disabled and not clickable before user interaction
+      - registerFieldValidationMessage is not visible for registerForm fields before user interaction
       - registerPage shows registerLoginPrompt adjacent to registerLoginLink
       - registerLoginPrompt is not clickable; only registerLoginLink is clickable
       - given user clicks registerLoginLink, application navigates to '/login/' without requiring authentication
@@ -115,63 +119,26 @@ requirements:
       - registerForm is visible on registerPage
       - registerForm shows registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, registerConfirmPasswordField, registerPasswordGuidelines, and registerSubmitButton in that order
       - registerEmailField is visible on registerForm, is editable, and is required
+      - registerEmailField value is empty
       - registerPage does not show a separate username field
       - registerFirstNameField is visible on registerForm, is editable, and is required
+      - registerFirstNameField value is empty
       - registerLastNameField is visible on registerForm, is editable, and is required
+      - registerLastNameField value is empty
       - registerPasswordField is visible on registerForm, is editable, and is required
+      - registerPasswordField value is empty
       - registerPasswordField masks entered characters
       - registerConfirmPasswordField is visible on registerForm, is editable, and is required
+      - registerConfirmPasswordField value is empty
       - registerConfirmPasswordField masks entered characters
       - registerPasswordGuidelines is visible on registerForm
       - registerSubmitButton is visible on registerForm
+      - registerSubmitButton is disabled and not clickable
+      - given user has not interacted with registerForm, registerFieldValidationMessage is not visible for registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, or registerConfirmPasswordField
       - registerLoginPrompt is visible on registerPage
       - registerLoginLink is visible on registerPage and is clickable
       - registerLoginPrompt is not clickable
       - given user is not authenticated and user clicks registerLoginLink, current route matches '/login/'
-
-    openQuestions: []
-
-  - id: FR-REG-002
-    title: Register form initial state
-
-    designEvidence:
-      - FIGMA-REGISTER
-
-    actors:
-      - user
-
-    uiObjects:
-      - registerPage
-      - registerForm
-      - registerEmailField
-      - registerFirstNameField
-      - registerLastNameField
-      - registerPasswordField
-      - registerConfirmPasswordField
-      - registerFieldValidationMessage
-      - registerSubmitButton
-
-    preconditions:
-      - documentPreconditions for this file hold
-      - current route matches '/register/'
-
-    trigger: []
-
-    mainFlow:
-      - registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, and registerConfirmPasswordField start empty
-      - registerSubmitButton is disabled and not clickable
-      - registerFieldValidationMessage is not visible for registerForm fields before user interaction
-
-    roleBehavior: {}
-
-    acceptanceCriteria:
-      - registerEmailField value is empty
-      - registerFirstNameField value is empty
-      - registerLastNameField value is empty
-      - registerPasswordField value is empty
-      - registerConfirmPasswordField value is empty
-      - registerSubmitButton is disabled and not clickable
-      - given user has not interacted with registerForm, registerFieldValidationMessage is not visible for registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, or registerConfirmPasswordField
 
     openQuestions: []
 
