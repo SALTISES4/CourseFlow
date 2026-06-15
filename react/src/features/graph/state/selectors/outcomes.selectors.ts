@@ -1,11 +1,10 @@
+import { _t } from '@cf/utility/Utility.class'
+import editTabNodeData from '@cfSidebar/components/EditTab/components/EditNode/optionsData'
 import { createSelector } from 'reselect'
 
-import editTabNodeData from '@cf/components/pages/Workflow/Sidebar/components/EditTab/components/EditNode/optionsData'
-import { _t } from '@cf/utility/Utility.class'
-
-import { outcomesAdapter } from '../slices/canonical/outcomes.slice'
 import type { GraphState } from '../graphState'
 import type { GraphUuid, OutcomeEntity, ResourceUuid } from '../model/types'
+import { outcomesAdapter } from '../slices/canonical/outcomes.slice'
 
 type StateWithGraph = { graph: GraphState }
 
@@ -34,8 +33,11 @@ export const selectRootOutcomes = createSelector(
 export const selectOutcomeChildren = createSelector(
   [
     selectAllOutcomes,
-    (_: StateWithGraph, _graphUuid: GraphUuid, parentUuid: ResourceUuid | null) =>
-      parentUuid
+    (
+      _: StateWithGraph,
+      _graphUuid: GraphUuid,
+      parentUuid: ResourceUuid | null
+    ) => parentUuid
   ],
   (outcomes, parentUuid) =>
     outcomes
@@ -47,14 +49,15 @@ export const selectOutcomeChildrenById = createSelector(
   [
     selectAllOutcomes,
     (_: StateWithGraph, graphUuid: GraphUuid) => graphUuid,
-    (_: StateWithGraph, _graphUuid: GraphUuid, parentUuid: ResourceUuid | null) =>
-      parentUuid
+    (
+      _: StateWithGraph,
+      _graphUuid: GraphUuid,
+      parentUuid: ResourceUuid | null
+    ) => parentUuid
   ],
   (outcomes, graphUuid, parentUuid) =>
     outcomes
-      .filter(
-        (o) => o.graphUuid === graphUuid && o.parentUuid === parentUuid
-      )
+      .filter((o) => o.graphUuid === graphUuid && o.parentUuid === parentUuid)
       .sort((a, b) => a.order - b.order)
 )
 
@@ -64,7 +67,10 @@ export const selectHighlightedOutcomes = createSelector(
 )
 
 export const isHighlightedViaOutcome = createSelector(
-  [selectHighlightedOutcomes, (_: StateWithGraph, searchUuids: ResourceUuid[]) => searchUuids],
+  [
+    selectHighlightedOutcomes,
+    (_: StateWithGraph, searchUuids: ResourceUuid[]) => searchUuids
+  ],
   (haystack, needle) => needle.some((n) => haystack.includes(n))
 )
 
@@ -77,10 +83,7 @@ type TagGroup = {
 }
 
 export const selectOutcomeTagGroups = createSelector(
-  [
-    selectRootOutcomes,
-    (_: StateWithGraph, graphUuid: GraphUuid) => graphUuid
-  ],
+  [selectRootOutcomes, (_: StateWithGraph, graphUuid: GraphUuid) => graphUuid],
   (rootOutcomes) => {
     const tagGroups: TagGroup[] = []
     const untagged: TagGroup = {

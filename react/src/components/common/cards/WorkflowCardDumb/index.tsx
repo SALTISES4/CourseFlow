@@ -37,7 +37,7 @@ export type PropsType = {
   chips: (WorkflowCardChipType | ReactNode)[]
   footer?: ReactNode
   isDisabledLink?: boolean
-  favourite?: ReactNode
+  favorite?: ReactNode
 }
 
 // Type guard function to check if an item is of type WorkflowCardChipType
@@ -54,7 +54,7 @@ const WorkflowCardDumb = ({
   title,
   description,
   isSelected,
-  favourite,
+  favorite,
   onClick,
   chips,
   footer,
@@ -85,7 +85,7 @@ const WorkflowCardDumb = ({
           })}
         </CardFooterTags>
       )}
-      <CardFooterActions>{favourite}</CardFooterActions>
+      <CardFooterActions>{favorite}</CardFooterActions>
     </CardFooter>
   </CardWrap>
 )

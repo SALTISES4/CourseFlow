@@ -13,7 +13,7 @@ import { styled } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import React, { useEffect } from 'react'
+import { ChangeEvent, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
 const PageTitle = styled(Box)(({ theme }) => ({
@@ -55,7 +55,7 @@ const NotificationsSettingsPage = () => {
     }
   }, [data, reset])
 
-  const onSwitchChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onSwitchChange = async (event: ChangeEvent<HTMLInputElement>) => {
     setValue('notifications', event.target.checked)
     await handleSubmit(async (formData) => {
       try {

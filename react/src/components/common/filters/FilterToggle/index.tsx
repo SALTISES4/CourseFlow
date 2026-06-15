@@ -1,16 +1,21 @@
 import FilterIcon from '@mui/icons-material/FilterAlt'
-import Button from '@mui/material/Button'
 import { ReactNode, useState } from 'react'
 
-type PropsType = {
+import { StyledButton } from './styles'
+
+export type PropsType = {
+  className?: string
   icon?: ReactNode
+  color?: 'template' | 'secondary'
   checked?: boolean
   onChange?: (val: boolean) => void
-  label: ReactNode
+  label: string
 }
 
 const FilterToggle = ({
   checked = false,
+  color = 'secondary',
+  className,
   icon,
   label,
   onChange
@@ -18,18 +23,19 @@ const FilterToggle = ({
   const [state, setState] = useState(checked ?? false)
 
   return (
-    <Button
-      color="template"
+    <StyledButton
+      className={className}
+      color={color}
       startIcon={icon ?? <FilterIcon />}
       variant={state ? 'contained' : 'outlined'}
       onClick={() => {
         const newVal = !state
         setState(newVal)
-        onChange && onChange(newVal)
+        onChange?.(newVal)
       }}
     >
       {label}
-    </Button>
+    </StyledButton>
   )
 }
 

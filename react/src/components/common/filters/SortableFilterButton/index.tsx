@@ -1,5 +1,6 @@
 import { LibrarySortDirectionIn, LibrarySortValueIn } from '@cf/api/gen'
 import useMount from '@cf/hooks/useMount'
+import { _t } from '@cf/utility/Utility.class'
 import { SortOption } from '@cfComponents/filters/types'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
@@ -35,7 +36,7 @@ function toggleSortDirection(
 
 const SortableFilterButton = ({
   icon,
-  placeholder = 'Sort',
+  placeholder = _t('Sort'),
   options,
   onChange
 }: PropsType) => {

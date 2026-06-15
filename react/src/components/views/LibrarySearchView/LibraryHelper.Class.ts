@@ -1,4 +1,11 @@
-import { LibrarySortDirectionIn, LibrarySortValueIn } from '@cf/api/gen'
+import {
+  LibraryContentTypeIn,
+  LibraryFiltersIn,
+  LibraryOwnershipIn,
+  LibrarySearchIn,
+  LibrarySortDirectionIn,
+  LibrarySortValueIn
+} from '@cf/api/gen'
 import { _t } from '@cf/utility/Utility.class'
 import {
   SearchFilterGroup,
@@ -9,31 +16,6 @@ import { WorkflowType } from '@cfPages/Workflow/types'
 
 type FilterGroups = { [key: string]: SearchFilterGroup }
 
-type ContentTypeFilter = 'project' | 'workflow'
-
-export type LibrarySearchFilters = {
-  keyword?: string | null
-  contentType?: ContentTypeFilter | null
-  projectUuid?: string | null
-  disciplineIds?: number[]
-  workflowTypes?: WorkflowType[]
-  ownership?: 'owned' | 'shared' | null
-  isFavorite?: boolean | null
-  isTemplate?: boolean | null
-}
-
-export type TypedLibrarySearchArgs = {
-  pagination?: {
-    page?: number
-    resultsPerPage?: number
-  }
-  sort?: {
-    value?: LibrarySortValueIn
-    direction?: LibrarySortDirectionIn
-  } | null
-  filters?: LibrarySearchFilters | null
-}
-
 export type SearchOptions = {
   pagination: {
     page: number
@@ -42,11 +24,14 @@ export type SearchOptions = {
     options: SortOption[]
   }
   filterGroups: {
-    relationshipFilter: SearchFilterGroup
+    ownershipFilter: SearchFilterGroup
     disciplineFilter: SearchFilterGroup
     contentTypeFilter: SearchFilterGroup
+    workflowTypeFilter: SearchFilterGroup
     keywordFilter: SearchFilterGroup
     templateFilter: SearchFilterGroup
+    archiveFilter: SearchFilterGroup
+    favoritesFilter: SearchFilterGroup
   }
 }
 
@@ -62,23 +47,23 @@ class LibraryHelper {
       options: [
         {
           value: LibrarySortValueIn.DATE_MODIFIED,
-          label: 'Recent'
+          label: _t('Recent')
         },
         {
           value: LibrarySortValueIn.A_Z,
-          label: 'A - Z'
+          label: _t('A - Z')
         },
         {
           value: LibrarySortValueIn.DATE_CREATED,
-          label: 'Creation date'
+          label: _t('Creation date')
         }
       ]
     },
     filterGroups: {
       // Filter group with dynamically populated options
-      relationshipFilter: {
+      ownershipFilter: {
         name: 'type',
-        label: 'Type',
+        label: _t('Ownership'),
         options: [
           {
             value: null,
@@ -86,16 +71,12 @@ class LibraryHelper {
             enabled: true
           },
           {
-            value: 'owned',
+            value: LibraryOwnershipIn.OWNED,
             label: _t('Owned')
           },
           {
-            value: 'shared',
-            label: _t('Shared')
-          },
-          {
-            value: 'favourited',
-            label: _t('Favourites')
+            value: LibraryOwnershipIn.SHARED,
+            label: _t('Shared with me')
           }
         ]
       },
@@ -112,42 +93,63 @@ class LibraryHelper {
         label: _t('Type'),
         options: [
           {
-            label: 'All',
+            label: _t('All'),
             value: null,
             enabled: true
           },
           {
-            label: 'Project',
-            value: 'project'
+            label: _t('Projects'),
+            value: LibraryContentTypeIn.PROJECT
           },
           {
-            label: 'Program',
+            label: _t('Workflows'),
+            value: LibraryContentTypeIn.WORKFLOW
+          }
+        ]
+      },
+      // Filter group with a single selectable options at one time
+      workflowTypeFilter: {
+        name: 'workflowType',
+        label: _t('Workflow Type'),
+        options: [
+          {
+            label: _t('All'),
+            value: null,
+            enabled: true
+          },
+          {
+            label: _t('Programs'),
             value: WorkflowType.PROGRAM
           },
-
           {
-            label: 'Course',
+            label: _t('Courses'),
             value: WorkflowType.COURSE
           },
           {
-            label: 'Activity',
+            label: _t('Activities'),
             value: WorkflowType.ACTIVITY
-          },
-          {
-            label: 'Task',
-            value: WorkflowType.TASK
           }
         ]
       },
       // Filter group with no options or value is binary
       templateFilter: {
         name: 'isTemplate',
-        label: _t('template')
+        label: _t('Templates')
+      },
+      // Filter group with no options or value is binary
+      favoritesFilter: {
+        name: 'isFavorite',
+        label: _t('Favourites')
+      },
+      // Filter group with no options or value is binary
+      archiveFilter: {
+        name: 'isArchive',
+        label: _t('Archive')
       },
       // Filter group with a single value
       keywordFilter: {
         name: 'keyword',
-        label: _t('search'),
+        label: _t('Search'),
         value: ''
       }
     }
@@ -204,8 +206,8 @@ class LibraryHelper {
    **/
   public static processFilterGroups = (
     filterGroups: FilterGroups
-  ): LibrarySearchFilters => {
-    const relationship = filterGroups.relationshipFilter?.options?.find(
+  ): LibraryFiltersIn => {
+    const relationship = filterGroups.ownershipFilter?.options?.find(
       (option) => option.enabled
     )?.value
     const contentSelection = filterGroups.contentTypeFilter?.options?.find(
@@ -225,11 +227,11 @@ class LibraryHelper {
       ? [contentSelection as WorkflowType]
       : []
 
-    const contentType: ContentTypeFilter | null =
-      contentSelection === 'project'
-        ? 'project'
+    const contentType: LibraryContentTypeIn | null =
+      contentSelection === LibraryContentTypeIn.PROJECT
+        ? LibraryContentTypeIn.PROJECT
         : workflowTypes.length > 0 || contentSelection === 'workflow'
-          ? 'workflow'
+          ? LibraryContentTypeIn.WORKFLOW
           : null
 
     return {
@@ -238,7 +240,8 @@ class LibraryHelper {
       disciplineIds,
       workflowTypes,
       ownership:
-        relationship === 'owned' || relationship === 'shared'
+        relationship === LibraryOwnershipIn.OWNED ||
+        relationship === LibraryOwnershipIn.SHARED
           ? relationship
           : null,
       isFavorite: relationship === 'favourited' ? true : null,
@@ -267,7 +270,7 @@ class LibraryHelper {
    **/
   public static reduceStateToSearchArgs(
     stateParams: SearchOptions
-  ): TypedLibrarySearchArgs {
+  ): LibrarySearchIn {
     const activeSort = LibraryHelper.getActiveSortOption(
       stateParams.sortOptions.options
     )
@@ -275,7 +278,7 @@ class LibraryHelper {
     const filterGroups = stateParams.filterGroups
     const filters = LibraryHelper.processFilterGroups(filterGroups)
 
-    const payload: TypedLibrarySearchArgs = {
+    const payload: LibrarySearchIn = {
       pagination: {
         page: stateParams.pagination.page,
         resultsPerPage: 10
@@ -288,17 +291,17 @@ class LibraryHelper {
   }
 
   public static applyLockedFilters(
-    args: TypedLibrarySearchArgs,
-    locked: Partial<LibrarySearchFilters>
-  ): TypedLibrarySearchArgs {
+    args: LibrarySearchIn,
+    locked: Partial<LibraryFiltersIn>
+  ): LibrarySearchIn {
     const base = args ?? {}
-    const mergedFilters: LibrarySearchFilters = {
+    const mergedFilters: LibraryFiltersIn = {
       ...(base.filters ?? {}),
       ...locked
     }
 
     if (
-      mergedFilters.contentType === 'project' &&
+      mergedFilters.contentType === LibraryContentTypeIn.PROJECT &&
       mergedFilters.workflowTypes?.length
     ) {
       mergedFilters.workflowTypes = []

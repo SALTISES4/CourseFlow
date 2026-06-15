@@ -1,5 +1,6 @@
+import { ProjectDetailOutResp } from '@cf/api/gen'
 import { libraryItemFavoriteToggleMutation } from '@cf/api/gen/@tanstack/react-query.gen'
-import { LibraryObjectType } from '@cf/types/enum'
+import { usePatchQueryCache } from '@cf/api/wrappedHooks'
 import { _t } from '@cf/utility/Utility.class'
 import StarIcon from '@mui/icons-material/Star'
 import IconButton from '@mui/material/IconButton'
@@ -10,14 +11,14 @@ import { MouseEvent, useCallback, useState } from 'react'
 type PropsType = {
   id?: string
   uuid?: string
-  isFavourite: boolean
-  type: LibraryObjectType
+  isFavorite: boolean
 }
 
-const Favourite = ({ id, uuid, isFavourite, type }: PropsType) => {
+const Favorite = ({ id, uuid, isFavorite }: PropsType) => {
   const targetUuid = uuid ?? id
-  const [isFavouriteState, setFavouriteState] = useState<boolean>(isFavourite)
+  const [isFavoriteState, setFavoriteState] = useState<boolean>(isFavorite)
   const queryClient = useQueryClient()
+  const patchQueryCache = usePatchQueryCache()
   const toggleFavorite = useMutation({
     ...libraryItemFavoriteToggleMutation(),
     onSuccess: async () => {
@@ -25,10 +26,20 @@ const Favourite = ({ id, uuid, isFavourite, type }: PropsType) => {
         queryKey: ['library-search']
       })
 
-      const msg = isFavouriteState
+      // patch the getProject query
+      patchQueryCache<ProjectDetailOutResp>({
+        queryKey: [{ _id: 'getProject' }],
+        callback: (draft) => {
+          if (uuid === draft.item.uuid) {
+            draft.item.isFavorite = !isFavoriteState
+          }
+        }
+      })
+
+      const msg = isFavoriteState
         ? _t('Removed from favorites')
         : _t('Saved to favorites')
-      setFavouriteState(!isFavouriteState)
+      setFavoriteState(!isFavoriteState)
       enqueueSnackbar(msg, { variant: 'success' })
     },
     onError: (error) => {
@@ -52,7 +63,7 @@ const Favourite = ({ id, uuid, isFavourite, type }: PropsType) => {
     <IconButton
       aria-label={_t('Favourite')}
       sx={{
-        color: isFavouriteState
+        color: isFavoriteState
           ? 'courseflow.favouriteActive'
           : 'courseflow.favouriteInactive'
       }}
@@ -63,4 +74,4 @@ const Favourite = ({ id, uuid, isFavourite, type }: PropsType) => {
   )
 }
 
-export default Favourite
+export default Favorite

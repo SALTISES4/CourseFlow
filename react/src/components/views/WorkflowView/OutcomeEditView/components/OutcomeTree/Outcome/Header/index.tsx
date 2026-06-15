@@ -1,4 +1,3 @@
-import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import type { GraphUuid } from '@cf/features/graph/state/model/types'
 import { selectOutcomeById } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import {
@@ -6,11 +5,14 @@ import {
   deleteOutcome,
   duplicateOutcome
 } from '@cf/features/graph/state/thunks/outcomeMutations.thunks'
-import { RootState } from '@cf/redux/store'
+import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import useHover from '@cf/hooks/useHover'
+import { RootState } from '@cf/redux/store'
+import type { AppDispatch } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
+import editTabNodeData from '@cfSidebar/components/EditTab/components/EditNode/optionsData'
 import AddIcon from '@mui/icons-material/Add'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
@@ -21,10 +23,8 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import { MouseEvent, MutableRefObject, useCallback } from 'react'
-import type { AppDispatch } from '@cf/redux/store'
 import { useDispatch, useSelector } from 'react-redux'
 
-import editTabNodeData from '@cfPages/Workflow/Sidebar/components/EditTab/components/EditNode/optionsData'
 import * as Styled from '../../styles'
 
 const tagsData = editTabNodeData.tags

@@ -10,7 +10,6 @@ import {
   createEdgeCommand,
   deleteChannelCommand,
   deleteEdgeCommand,
-  updateEdgeCommand,
   deleteNodeCommand,
   deleteSectionCommand,
   insertChannelBelowCommand,
@@ -24,17 +23,17 @@ import {
   renameNodeCommand,
   reorderChannelsCommand,
   reorderSectionsCommand,
-  unlinkNodeOutcomeCommand
+  unlinkNodeOutcomeCommand,
+  updateEdgeCommand
 } from '../graphApi'
 import type { GraphState } from '../graphState'
 import type {
+  ChangeChannelMetaInput,
   ChangeNodeMetaInput,
   ChangeSectionMetaInput,
-  ChangeChannelMetaInput,
   CreateEdgeInput,
   DeleteChannelInput,
   DeleteEdgeInput,
-  UpdateEdgeInput,
   DeleteNodeInput,
   DeleteSectionInput,
   InsertChannelBelowInput,
@@ -49,7 +48,8 @@ import type {
   ReorderChannelsInput,
   ReorderSectionsInput,
   ResourceUuid,
-  UnlinkNodeOutcomeInput
+  UnlinkNodeOutcomeInput,
+  UpdateEdgeInput
 } from '../model/types'
 import { selectGraphByUuid } from '../selectors/canonical.selectors'
 import { workflowActions } from '../slices/canonical/workflow.slice'

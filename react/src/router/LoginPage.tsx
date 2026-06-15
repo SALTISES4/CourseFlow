@@ -1,8 +1,8 @@
-import Login from '@cf/components/pages/SignIn/Login'
 import {
   selectAuthStatus,
   selectIsBootstrapping
 } from '@cf/features/auth/state/auth.slice'
+import Login from '@cfPages/SignIn/Login'
 import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'
 

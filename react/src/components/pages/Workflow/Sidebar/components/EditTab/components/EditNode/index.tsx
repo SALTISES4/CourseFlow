@@ -1,4 +1,3 @@
-import * as SC from '@cf/components/pages/Workflow/Sidebar/styles'
 import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import type { NodeEntity } from '@cf/features/graph/state/model/types'
 import {
@@ -14,6 +13,7 @@ import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import type { AppDispatch } from '@cf/redux/store'
 import Utility, { _t } from '@cf/utility/Utility.class'
+import * as SC from '@cfSidebar/styles'
 import { debounce } from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'

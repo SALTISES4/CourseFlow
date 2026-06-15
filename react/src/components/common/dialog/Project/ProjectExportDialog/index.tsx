@@ -1,7 +1,7 @@
-import { StyledBox, StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
+import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import { TTag } from '@cfRedux/types/type'
 import Button from '@mui/material/Button'

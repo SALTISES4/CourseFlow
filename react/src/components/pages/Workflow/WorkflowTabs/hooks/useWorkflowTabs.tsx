@@ -1,11 +1,10 @@
-import { WorkflowDetailOut, WorkflowDetailOutResp } from '@cf/api/gen'
-import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
-import { WorkflowViewType } from '@cf/components/pages/Workflow/types'
-import GraphView from '@cf/components/views/WorkflowView/GraphView'
-import OutcomeEditView from '@cf/components/views/WorkflowView/OutcomeEditView'
-import OverviewView from '@cf/components/views/WorkflowView/OverviewView'
+import { WorkflowDetailOutResp } from '@cf/api/gen'
 import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/Utility.class'
+import { WorkflowViewType } from '@cfPages/Workflow/types'
+import GraphView from '@cfViews/WorkflowView/GraphView'
+import OutcomeEditView from '@cfViews/WorkflowView/OutcomeEditView'
+import OverviewView from '@cfViews/WorkflowView/OverviewView'
 import Tab from '@mui/material/Tab'
 import { ReactNode } from 'react'
 import { Route, generatePath, useNavigate, useParams } from 'react-router-dom'
@@ -54,9 +53,7 @@ const useWorkflowTabs = (
             route: CFRoutes.WORKFLOW_OUTCOME_EDIT,
             relRoute: RelativeRoutes.OUTCOME_EDIT,
             label: _t('Outcomes'),
-            content: (
-              <OutcomeEditView graphUuid={workflow.item.graphUuid} />
-            ),
+            content: <OutcomeEditView graphUuid={workflow.item.graphUuid} />,
             allowedTabs: workflow.item.workflowType == 'program' ? [3] : [2, 3] // @todo enum
           }
         ]

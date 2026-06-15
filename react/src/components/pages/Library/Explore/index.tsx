@@ -1,7 +1,8 @@
-import LibrarySearchView from '@cfViews/LibrarySearchView'
-import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
-import { TypedLibrarySearchArgs } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
-import { useState } from 'react'
+import { LibrarySearchIn } from '@cf/api/gen'
+import LibrarySearchView, {
+  LibraryFilterConfig
+} from '@cfViews/LibrarySearchView'
+import { useCallback, useState } from 'react'
 
 /*
  * @todo
@@ -20,24 +21,24 @@ const ExplorePage = () => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-
-  const config = {
-    pagination: true,
-    sortOptions: true,
+  const config: LibraryFilterConfig = {
     filterGroups: {
-      relationshipFilter: false,
+      ownershipFilter: true,
       disciplineFilter: true,
       contentTypeFilter: true,
-      templateFilter: true
-    },
-    keywordFilter: true
+      workflowTypeFilter: true,
+      keywordFilter: true,
+      templateFilter: false,
+      archiveFilter: false,
+      favoritesFilter: true
+    }
   }
 
-  const [searchArgs, setSearchArgs] = useState<TypedLibrarySearchArgs>({})
+  const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
 
-  const updateSearchArgsHandler = (args: TypedLibrarySearchArgs) => {
+  const updateSearchArgsHandler = useCallback((args: LibrarySearchIn) => {
     setSearchArgs(args)
-  }
+  }, [])
 
   /*******************************************************
    * RENDER

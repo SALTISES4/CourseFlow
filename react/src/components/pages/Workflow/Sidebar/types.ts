@@ -1,4 +1,4 @@
-import type { DraggableType } from '@cf/components/views/WorkflowView/GraphView/types'
+import type { DraggableType } from '@cfViews/WorkflowView/GraphView/types'
 
 import type { DraggableItemType } from './components/AddTab/Draggable/types'
 

@@ -1,7 +1,4 @@
-import {
-  WorkflowType,
-  WorkflowViewType
-} from '@cf/components/pages/Workflow/types'
+import { WorkflowType, WorkflowViewType } from '@cfPages/Workflow/types'
 
 export type ConfigType = {
   workflowType?: WorkflowType | null

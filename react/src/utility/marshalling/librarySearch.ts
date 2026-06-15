@@ -1,14 +1,13 @@
-/**
- * Maps CourseFlow v2 `POST /api/library/search` JSON to the legacy library
- * envelope expected by LibrarySearchView / Sidebar (`dataPackage` + `ELibraryObject`).
- */
-import { LibraryItemOut, LibrarySearchIn } from '@cf/api/gen'
+import {
+  LibraryContentTypeOut,
+  LibraryItemOut,
+  LibrarySearchIn
+} from '@cf/api/gen'
 import { ObjectPermission } from '@cf/types/common'
 import { LibraryObjectType } from '@cf/types/enum'
 import { ELibraryObject, EUser } from '@XMLHTTP/types/entity'
 
-export type LibraryObjectsSearchQueryResp = {
-  message: string
+type LibraryObjectsSearchQueryResp = {
   dataPackage: {
     items: ELibraryObject[]
     meta: {
@@ -19,33 +18,34 @@ export type LibraryObjectsSearchQueryResp = {
   }
 }
 
-export type LibrarySearchMetaRaw = {
+type LibrarySearchMetaRaw = {
   total_results: number
   page_count: number
   current_page: number
   results_per_page: number
 }
 
-export type LibrarySearchResponseRaw = {
+type LibrarySearchResponseRaw = {
   items: LibraryItemOut[]
   meta: LibrarySearchMetaRaw
 }
 
-const emptyAuthor = (): EUser => ({
+const emptyAuthor: EUser = {
   uuid: '',
   username: '',
   firstName: '',
   lastName: '',
   name: ''
-})
+}
 
 export function mapObjectTypeToLibraryObjectType(
-  contentType: string,
+  contentType: LibraryContentTypeOut,
   label: string
-): LibraryObjectType {
+): LibraryContentTypeOut {
   if (contentType === 'project') {
-    return LibraryObjectType.PROJECT
+    return LibraryContentTypeOut.PROJECT
   }
+
   const validTypes = {
     program: LibraryObjectType.PROGRAM,
     course: LibraryObjectType.COURSE,
@@ -60,40 +60,35 @@ export function mapObjectTypeToLibraryObjectType(
  * Navigation uuid: project UUID for projects; workflow UUID for unit-backed rows
  * (matches `useNavigateToLibraryItem` + workflow routes).
  */
-export function mapLibraryItemToELibraryObject(
-  item: LibraryItemOut
-): ELibraryObject {
-  const isProject = item.contentType === 'project'
-  const id = String(item.uuid ?? '')
+function mapLibraryItemToELibraryObject(item: LibraryItemOut): ELibraryObject {
+  const { uuid, title, description, isTemplate, isFavorite } = item
 
   return {
-    uuid: id,
+    uuid,
+    title,
+    description,
+    isTemplate,
+    isFavorite,
     hash: '',
     deleted: false,
     deletedOn: '',
     createdOn: item.dateCreated,
     lastModified: item.modifiedOn,
-    title: item.title,
-    description: item.description ?? '',
-    author: emptyAuthor(),
-    favourite: item.isFavorite,
+    author: emptyAuthor,
     published: false,
-    type: isProject
-      ? LibraryObjectType.PROJECT
-      : mapObjectTypeToLibraryObjectType(item.contentType, item.label),
-    isOwned: true,
-    isStrategy: false,
+    type: mapObjectTypeToLibraryObjectType(item.contentType, item.label),
     projectTitle: '',
     objectPermission: { permissionType: 0, roleType: 0 } as ObjectPermission,
     workflowCount: 0,
+    isOwned: true,
+    isStrategy: false,
     isLinked: false,
-    isVisible: true,
-    isTemplate: item.isTemplate
+    isVisible: true
   }
 }
 
 export function buildLibrarySearchRequestBody(
-  args: LibrarySearchIn | Record<string, never>
+  args: LibrarySearchIn
 ): Record<string, unknown> {
   const pagination = args.pagination ?? { page: 0 }
   const sort = args.sort ?? undefined
@@ -122,7 +117,6 @@ export function transformLibrarySearchResponseToLegacy(
 ): LibraryObjectsSearchQueryResp {
   if (!raw || typeof raw !== 'object') {
     return {
-      message: '',
       dataPackage: {
         items: [],
         meta: { currentPage: 0, pageCount: 0, count: 0 }
@@ -136,7 +130,6 @@ export function transformLibrarySearchResponseToLegacy(
   const meta = r.meta
 
   return {
-    message: 'ok',
     dataPackage: {
       items,
       meta: {

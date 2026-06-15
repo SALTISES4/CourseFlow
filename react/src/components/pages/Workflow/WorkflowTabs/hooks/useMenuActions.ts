@@ -1,7 +1,7 @@
-import { WorkflowType } from '@cf/components/pages/Workflow/types'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
+import { WorkflowType } from '@cfPages/Workflow/types'
 
 export const useMenuActions = () => {
   const { dispatch: dispatchDialog } = useDialog()

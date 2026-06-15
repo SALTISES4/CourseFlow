@@ -1,5 +1,4 @@
 import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
-import { nodeTitleFallback } from '@cf/components/pages/Workflow/Sidebar/components/EditTab/components/EditNode/linkedWorkflowUi'
 import {
   selectGraphByUuid,
   selectNodeByUuid,
@@ -9,6 +8,7 @@ import { isHighlightedViaOutcome } from '@cf/features/graph/state/selectors/outc
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { RootState } from '@cfRedux/store'
+import { nodeTitleFallback } from '@cfSidebar/components/EditTab/components/EditNode/linkedWorkflowUi'
 import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
 import { useQuery } from '@tanstack/react-query'
 import { MouseEvent, useCallback, useMemo } from 'react'

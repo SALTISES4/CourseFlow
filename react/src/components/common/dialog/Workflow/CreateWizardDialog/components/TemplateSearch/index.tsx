@@ -50,7 +50,7 @@ const TemplateSearch = ({ selected, onTemplateSelect }: PropsType) => {
         }}
       />
       <GridWrap sx={{ mt: 4 }}>
-        {workflowData.map((workflow, index) => (
+        {workflowData.map((workflow) => (
           <WorkflowCardDumb
             key={workflow.uuid}
             {...workflow}

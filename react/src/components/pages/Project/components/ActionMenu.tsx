@@ -1,7 +1,7 @@
 import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
-import { useMenuActions } from '@cf/components/pages/Project/hooks/useMenuActions'
 import { _t } from '@cf/utility/Utility.class'
 import { MenuItemType, MenuWithOverflow } from '@cfComponents/menu/Menu'
+import { useMenuActions } from '@cfPages/Project/hooks/useMenuActions'
 import EditIcon from '@mui/icons-material/Edit'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { useQuery } from '@tanstack/react-query'

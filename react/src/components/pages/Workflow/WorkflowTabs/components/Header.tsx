@@ -1,11 +1,10 @@
 import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
-import { ChipOptions } from '@cf/components/common/cards/WorkflowCardDumb'
-import { CardChip } from '@cf/components/common/cards/WorkflowCardDumb/styles'
-import Favourite from '@cf/components/common/UIPrimitives/Favourite'
-import { workflowTitle } from '../../../../common/UIPrimitives/Titles.tsx'
-import { OuterContentWrap } from '@cf/styles/mui/helper'
-import { LibraryObjectType } from '@cf/types/enum'
-import Utility, { _t } from '@cf/utility/Utility.class'
+import { _t } from '@cf/utility/Utility.class'
+import { ChipOptions } from '@cfComponents/cards/WorkflowCardDumb'
+import { CardChip } from '@cfComponents/cards/WorkflowCardDumb/styles'
+import Favourite from '@cfComponents/UIPrimitives/Favourite'
+import { workflowTitle } from '@cfComponents/UIPrimitives/Titles'
+import { OuterContentWrap } from '@cfMUI/helper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useQuery } from '@tanstack/react-query'
@@ -56,15 +55,7 @@ const Header = () => {
           />
         </Typography>
 
-        <Favourite
-          id={workflowUuid}
-          isFavourite={false}
-          type={Utility.convertEnum<LibraryObjectType>(
-            workflow?.workflowType ?? '',
-            LibraryObjectType,
-            LibraryObjectType.ACTIVITY
-          )}
-        />
+        <Favourite id={workflowUuid} isFavorite={false} />
       </Stack>
     </OuterContentWrap>
   )
