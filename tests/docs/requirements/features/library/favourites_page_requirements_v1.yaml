@@ -1,0 +1,336 @@
+# Normalized requirements: 'Favourites' page (route /favourites)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (library/navigation favourites behavior), implementation evidence in Library/Favourites page and Favourite toggle component.
+# Application code evidence: react/src/components/pages/Library/Favourites/index.tsx; react/src/components/common/UIPrimitives/Favourite/index.tsx; react/src/HTTP/XMLHTTP/API/library.rtk.ts
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/features/navigation/main_navigation_requirements_v1.yaml (FR-NAV-007 route entry to /favourites); tests/docs/requirements/features/library/library_page_requirements_v1.yaml (sort and shared filters — FR-LIB-002, FR-LIB-003, FR-LIB-004; templatesToggle uiObject canonical here, behaviour per FR-FAV-004; favouritesToggle on 'My library' is scoped to contributor objects only); tests/docs/requirements/features/shared/card_content_requirements_v1.yaml (projectCard and workflowCard — FR-CARD-001 through FR-CARD-006 as applicable)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+
+uiObjectDefinitions:
+  favouritesPage:
+    meaning: Dedicated page at route /favourites for favourited projects and workflows.
+  favouritesFilterToolbar:
+    meaning: Filter toolbar on favouritesPage with sort, ownership, type, workflow-type, templates toggle, and keyword search controls.
+  sortControl:
+    meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
+  sortResetButton:
+    meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
+  ownershipFilter:
+    meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
+  ownershipFilterResetButton:
+    meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
+  typeFilter:
+    meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
+  typeFilterResetButton:
+    meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
+  workflowTypeFilter:
+    meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
+  templatesToggle:
+    meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
+  keywordSearchField:
+    meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
+  keywordSearchClearButton:
+    meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
+  resultsSummary:
+    meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
+  resultsRegion:
+    meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
+  projectCard:
+    meaning: Canonical definition in tests/docs/requirements/features/shared/card_content_requirements_v1.yaml.
+  workflowCard:
+    meaning: Canonical definition in tests/docs/requirements/features/shared/card_content_requirements_v1.yaml.
+  cardTemplateChip:
+    meaning: Canonical definition in tests/docs/requirements/features/shared/card_content_requirements_v1.yaml.
+  pagination:
+    meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
+  paginationPageNumberButton:
+    meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
+  paginationPreviousNextButton:
+    meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
+  paginationFirstLastButton:
+    meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
+  favouritesLoadingState:
+    meaning: Loading placeholders shown in resultsRegion while the listing query is in flight on favouritesPage.
+  favouritesEmptyState:
+    meaning: Empty-state view shown in resultsRegion when the listing query returns zero projectCard and workflowCard instances on favouritesPage; copy per designEvidence on FR-FAV-001.
+  favouritesErrorState:
+    meaning: Error-state view shown in resultsRegion when the listing query fails on favouritesPage; copy per designEvidence on FR-FAV-001.
+
+locatorMappings:
+  favouritesPage: "canonical_locators.yaml -> favouritesPage"
+  favouritesFilterToolbar: "canonical_locators.yaml -> favouritesFilterToolbar"
+  sortControl: "canonical_locators.yaml -> sortControl"
+  sortResetButton: "canonical_locators.yaml -> sortResetButton"
+  ownershipFilter: "canonical_locators.yaml -> ownershipFilter"
+  ownershipFilterResetButton: "canonical_locators.yaml -> ownershipFilterResetButton"
+  typeFilter: "canonical_locators.yaml -> typeFilter"
+  typeFilterResetButton: "canonical_locators.yaml -> typeFilterResetButton"
+  workflowTypeFilter: "canonical_locators.yaml -> workflowTypeFilter"
+  templatesToggle: "canonical_locators.yaml -> templatesToggle"
+  keywordSearchField: "canonical_locators.yaml -> keywordSearchField"
+  keywordSearchClearButton: "canonical_locators.yaml -> keywordSearchClearButton"
+  resultsSummary: "canonical_locators.yaml -> resultsSummary"
+  resultsRegion: "canonical_locators.yaml -> resultsRegion"
+  projectCard: "canonical_locators.yaml -> projectCard"
+  workflowCard: "canonical_locators.yaml -> workflowCard"
+  cardTemplateChip: "canonical_locators.yaml -> cardTemplateChip"
+  pagination: "canonical_locators.yaml -> pagination"
+  paginationPageNumberButton: "canonical_locators.yaml -> paginationPageNumberButton"
+  paginationPreviousNextButton: "canonical_locators.yaml -> paginationPreviousNextButton"
+  paginationFirstLastButton: "canonical_locators.yaml -> paginationFirstLastButton"
+  favouritesLoadingState: "canonical_locators.yaml -> favouritesLoadingState"
+  favouritesEmptyState: "canonical_locators.yaml -> favouritesEmptyState"
+  favouritesErrorState: "canonical_locators.yaml -> favouritesErrorState"
+
+requirements:
+  - id: FR-FAV-001
+    title: Route and results region on 'Favourites'
+
+    designEvidence:
+      - FIGMA-FAV-DEFAULT
+      - FIGMA-FAV-WITH-WORKFLOWS
+      - FIGMA-FAV-EMPTY
+      - FIGMA-FAV-ERROR
+
+    actors:
+      - user
+
+    uiObjects:
+      - favouritesPage
+      - favouritesFilterToolbar
+      - resultsSummary
+      - resultsRegion
+      - projectCard
+      - workflowCard
+      - favouritesLoadingState
+      - favouritesEmptyState
+      - favouritesErrorState
+      - pagination
+      - paginationPageNumberButton
+      - paginationPreviousNextButton
+      - paginationFirstLastButton
+
+    preconditions:
+      - user is authenticated
+      - user navigates to route pattern /favourites (for example from viewAllLink in mainNavigation)
+
+    trigger:
+      - user lands on /favourites
+      - favourites query state changes or user interacts with pagination controls
+
+    mainFlow:
+      - favouritesPage base query scope is favourited projects and workflows only; this includes favourited published projects and workflows even when the user is not an editor, a viewer, or a commenter on that project or workflow
+      - toolbar filters in FR-FAV-002 through FR-FAV-005 apply subtractively within this base scope only
+      - system renders favouritesPage with favouritesFilterToolbar, resultsSummary, and resultsRegion
+      - on first land of /favourites, typeFilter is committed to 'Projects' by default (same as 'My library') and resultsRegion includes favourited projectCard instances only
+      - results can render as projectCard and/or workflowCard according to object type and active filters
+      - projectCard and workflowCard presentation and card interactions in resultsRegion conform to card_content_requirements_v1.yaml
+      - when resultsRegion is not empty, resultsSummary shows a count summary (e.g. 'Showing X of XX results') consistent with the total matching favourited objects and current page (same behavior as 'My library' FR-LIB-001)
+      - resultsRegion shows at most 10 projectCard and/or workflowCard instances for the current page
+      - when total matching favourited objects are 11 or more, system shows pagination below resultsRegion
+      - when total matching favourited objects are 10 or fewer, system does not show pagination
+      - while favourites query is loading, system shows favouritesLoadingState in resultsRegion
+      - when favourites query returns zero matching projectCard and workflowCard instances, system shows favouritesEmptyState in resultsRegion
+      - when favourites query fails, system shows favouritesErrorState in resultsRegion
+      - when user selects a page or uses paginationPreviousNextButton or paginationFirstLastButton, system loads that page of results into resultsRegion; resultsSummary reflects the current range when applicable (same pattern as 'My library' FR-LIB-001)
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - current route matches /favourites
+      - favouritesPage is visible
+      - favouritesFilterToolbar is visible
+      - given first land, typeFilter reflects committed 'Projects' by default
+      - resultsSummary is visible between favouritesFilterToolbar and resultsRegion
+      - given first land with at least one visible favourited projectCard or workflowCard, resultsSummary is visible and reflects result counts for the default query state
+      - given first land with default typeFilter state, resultsRegion includes favourited projectCard instances only
+      - given typeFilter includes workflows in scope, resultsRegion may include favourited projectCard and workflowCard instances according to active filters
+      - given resultsRegion shows at least one projectCard or workflowCard instance, projectCard and workflowCard instances in resultsRegion conform to card_content_requirements_v1.yaml
+      - given successful favourites query with at least one result, at most 10 projectCard or workflowCard instances appear in resultsRegion
+      - given loading favourites query, favouritesLoadingState is visible
+      - given successful favourites query with zero matching projectCard or workflowCard instances, favouritesEmptyState is visible
+      - given failed favourites query, favouritesErrorState is visible
+      - given 11 or more matching favourited objects, pagination is visible
+      - given at most 10 matching favourited objects, pagination is not visible
+      - given user selects a different paginationPageNumberButton, resultsRegion updates for that page
+      - given pagination is visible, paginationPreviousNextButton and paginationFirstLastButton navigate correctly between favourites result pages
+
+    openQuestions: []
+
+  - id: FR-FAV-002
+    title: Sort on 'Favourites' (same as 'My library', FR-LIB-002)
+
+    designEvidence:
+      - FIGMA-FAV-DEFAULT
+      - FIGMA-FAV-WITH-WORKFLOWS
+
+    actors:
+      - user
+
+    uiObjects:
+      - favouritesPage
+      - favouritesFilterToolbar
+      - sortControl
+      - sortResetButton
+      - resultsRegion
+
+    preconditions:
+      - favouritesPage is rendered
+
+    trigger:
+      - user interacts with sortControl or sortResetButton
+
+    mainFlow:
+      - sortControl behaviour conforms to library_page_requirements_v1.yaml FR-LIB-002 on favouritesPage resultsRegion, except default and reset sort apply to projectCard and workflowCard instances in resultsRegion per favouritesPage base query scope and active typeFilter (first land typeFilter is committed to 'Projects' per FR-FAV-001)
+      - when user changes sortControl or sortResetButton on favouritesPage, listing resets to the first results page
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given favouritesPage is rendered, sortControl offers the same options and toggle/reset interaction as FR-LIB-002
+      - given user lands with no prior sort selection in session, projectCard instances in resultsRegion are ordered by most recently modified (first land typeFilter is committed to 'Projects' per FR-FAV-001)
+      - given user clicks sortResetButton, sort returns to most recently modified ordering for projectCard and workflowCard instances in resultsRegion per current typeFilter scope and sortControl shows label 'Sort'
+
+    openQuestions: []
+
+  - id: FR-FAV-003
+    title: Ownership, type, and workflow type filters on 'Favourites'
+
+    designEvidence:
+      - FIGMA-FAV-DEFAULT
+      - FIGMA-FAV-WITH-WORKFLOWS
+
+    actors:
+      - user
+
+    uiObjects:
+      - favouritesPage
+      - favouritesFilterToolbar
+      - ownershipFilter
+      - ownershipFilterResetButton
+      - typeFilter
+      - typeFilterResetButton
+      - workflowTypeFilter
+      - workflowTypeFilterSelectionIndicator
+      - resultsRegion
+
+    preconditions:
+      - favouritesPage is rendered
+
+    trigger:
+      - user changes ownershipFilter, typeFilter, or workflowTypeFilter, or uses a filter reset control
+
+    mainFlow:
+      - ownershipFilter on favouritesFilterToolbar applied to favourited projectCard and workflowCard instances within favouritesPage base scope per FR-FAV-001; 'Owned' means the user is an owner on the object; 'Shared' means the user is an editor, a viewer, or a commenter on the object but is not an owner; favourited published-only objects (no contributor role) match neither option and appear only when ownershipFilter is unset
+      - typeFilter and workflowTypeFilter behaviour conform to library_page_requirements_v1.yaml FR-LIB-003 on favouritesFilterToolbar
+      - on first land on favouritesPage, typeFilter is committed to 'Projects' per FR-FAV-001
+      - when templatesToggle is active per FR-FAV-004, ownershipFilter, typeFilter, and workflowTypeFilter constraints are subtractive with that filter
+      - changing ownershipFilter, typeFilter, or workflowTypeFilter resets listing to the first results page
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given favouritesPage is rendered, typeFilter and workflowTypeFilter behaviour conform to FR-LIB-003
+      - given typeFilter is unset (after reset), resultsRegion includes both favourited projects and favourited workflows in scope when other filters allow
+      - given typeFilter is committed to 'Projects' only, workflowTypeFilter is not visible
+      - given user selects a type scope, resultsRegion reflects that constraint per backend contract for favourited objects
+      - given user clears type via typeFilterResetButton when shown, typeFilter returns to Unset (both favourited projects and workflows in scope when other filters allow)
+      - given user applies typeFilter and workflowTypeFilter while other filters are active, resultsRegion includes only projectCard and workflowCard instances that satisfy every active filter
+      - given ownershipFilter has an active option, ownershipFilterResetButton is visible and clears ownership selection
+      - given ownershipFilter is unset, resultsRegion may include favourited projectCard and workflowCard instances regardless of contributor role
+      - given ownershipFilter is committed to 'Owned', resultsRegion includes only favourited projectCard and workflowCard instances on which the user is an owner
+      - given ownershipFilter is committed to 'Shared', resultsRegion includes only favourited projectCard and workflowCard instances on which the user is an editor, a viewer, or a commenter but is not an owner
+
+    openQuestions: []
+
+  - id: FR-FAV-004
+    title: Templates toggle (boolean)
+
+    designEvidence:
+      - FIGMA-FAV-DEFAULT
+      - FIGMA-FAV-WITH-WORKFLOWS
+
+    actors:
+      - user
+
+    uiObjects:
+      - favouritesPage
+      - favouritesFilterToolbar
+      - typeFilter
+      - templatesToggle
+      - resultsRegion
+      - projectCard
+      - workflowCard
+
+    preconditions:
+      - favouritesPage is rendered
+
+    trigger:
+      - user toggles templatesToggle on or off
+
+    mainFlow:
+      - templatesToggle is boolean; first click turns it on and restricts resultsRegion to template favourited projectCard and workflowCard instances only within favouritesPage base scope per FR-FAV-001 (template workflows show cardTemplateChip per card_content_requirements_v1.yaml FR-CARD-002); second click turns it off and removes that constraint
+      - when templatesToggle is active, every projectCard and workflowCard instance in resultsRegion conforms to card_content_requirements_v1.yaml per typeFilter scope
+      - when ownershipFilter, typeFilter, workflowTypeFilter (when visible), and keyword search are active, templatesToggle is subtractive with all other active filters (intersection)
+      - toggling templatesToggle resets listing to the first results page
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user clicks templatesToggle once, the templates filter is active within favouritesPage base query scope per FR-FAV-001; given user clicks templatesToggle again, the templates filter is inactive
+      - given templatesToggle is active and typeFilter is committed to 'Projects' only, every projectCard in resultsRegion conforms to card_content_requirements_v1.yaml
+      - given templatesToggle is active and typeFilter is committed to 'Workflows' only, every instance in resultsRegion is a workflowCard
+      - given templatesToggle is active and typeFilter is Unset, every instance in resultsRegion is a projectCard or workflowCard
+      - given templatesToggle is inactive, resultsRegion includes projectCard and/or workflowCard instances per typeFilter and object data
+      - given templatesToggle is active while other toolbar filters are active, resultsRegion includes only projectCard and workflowCard instances that satisfy the template constraint and every other active filter
+
+    openQuestions: []
+
+  - id: FR-FAV-005
+    title: Keyword search (project and workflow titles)
+
+    designEvidence:
+      - FIGMA-FAV-DEFAULT
+      - FIGMA-FAV-WITH-WORKFLOWS
+
+    actors:
+      - user
+
+    uiObjects:
+      - favouritesPage
+      - favouritesFilterToolbar
+      - keywordSearchField
+      - keywordSearchClearButton
+      - resultsRegion
+
+    preconditions:
+      - favouritesPage is rendered
+
+    trigger:
+      - user enters or commits keyword search via keywordSearchField, or clears via keywordSearchClearButton
+
+    mainFlow:
+      - keywordSearchField and keywordSearchClearButton behaviour conform to library_page_requirements_v1.yaml FR-LIB-004 on favouritesFilterToolbar, applied within favouritesPage base query scope per FR-FAV-001
+      - keyword and toolbar filter constraints combine on favouritesPage; both apply subtractively to resultsRegion within favouritesPage base query scope per FR-FAV-001
+      - when keyword search changes, system resets listing to the first results page
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given favouritesPage is rendered, keywordSearchField behaviour conforms to FR-LIB-004 within favouritesPage base query scope per FR-FAV-001
+      - given keyword matches a favourited project or workflow title, a matching projectCard or workflowCard instance appears in resultsRegion when other filters allow it
+      - given user applies one or more filters and types in keywordSearchField, keyword and filter constraints both apply to resultsRegion
+      - given user types in keywordSearchField and then changes filters, keyword and filter constraints both apply to resultsRegion
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-FAV-DEFAULT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6624-27524&t=Q1Rlqw0f4xYnBv7M-1
+  - key: FIGMA-FAV-WITH-WORKFLOWS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6657-33060&t=Q1Rlqw0f4xYnBv7M-1
+  - key: FIGMA-FAV-EMPTY
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6661-33756&t=Q1Rlqw0f4xYnBv7M-1
+  - key: FIGMA-FAV-ERROR
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6661-33764&t=Q1Rlqw0f4xYnBv7M-1

@@ -1,0 +1,42 @@
+{
+  "name": "courseflow",
+  "version": "1.0.0",
+  "homepage": "https://github.com/SALTISES4/CourseFlow#readme",
+  "description": "https://circleci.com/gh/SALTISES4/CourseFlow",
+  "main": "index.js",
+  "directories": {
+    "doc": "../docs",
+    "test": "test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.5.2",
+    "dotenv": "^17.4.2"
+  },
+  "scripts": {
+    "test": "playwright test",
+    "test-setup": "playwright test --project=setup",
+    "test-ui": "playwright test --ui",
+    "test-debug": "playwright test --debug",
+    "test-report": "playwright show-report",
+    "test-list": "playwright test --list"
+  },
+  "volta": {
+    "node": "24.14.1",
+    "yarn": "1.22.22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SALTISES4/CourseFlow.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/SALTISES4/CourseFlow/issues"
+  },
+  "dependencies": {
+    "@playwright/cli": "^0.1.6"
+  }
+}

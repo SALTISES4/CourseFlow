@@ -28,7 +28,7 @@ Where practical, each generated test should include traceability comments with:
 Example:
 
 ```ts
-// FR: FR-SEC-006 — tests/docs/requirements/original/workflow_delete_section_requirements_v1.yaml
+// FR: FR-SEC-006 — tests/docs/requirements/features/workflow/workflow_delete_section_requirements_v1.yaml
 // Design evidence: FIGMA-SEC-OE-HOVER, FIGMA-SEC-DEL-WARN, FIGMA-SEC-OE-EDIT
 // Role: Owner/Editor
 ```

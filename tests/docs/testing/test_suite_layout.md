@@ -73,6 +73,7 @@ New **product areas** get a folder under `tests/e2e/` (mirror the domain languag
 ### `tests/docs/`
 
 - Requirements, ADRs, prompts, and **policy markdown** — not part of Playwright `testMatch`.
+- Feature FR YAML lives under `tests/docs/requirements/features/` in domain folders (`workflow/`, `project/`, `library/`, …) that mirror `tests/e2e/` — see [requirements/features/README.md](../requirements/features/README.md).
 
 ## Naming conventions
 
@@ -87,7 +88,7 @@ Use **domain-prefixed** spec names when helpful (`edit-section-fr-001-006.spec.t
 ## URLs and `baseURL`
 
 - Prefer **path-only** navigation: `page.goto('/course-flow/...')` so `baseURL` in `playwright.config.ts` stays authoritative.
-- Avoid hardcoding `http://localhost:8001` in specs except for documented exceptions.
+- Avoid hardcoding host/port in specs; use path-only navigation against `baseURL` (default `http://localhost:3000/` via `PLAYWRIGHT_BASE_URL`).
 
 ## Authentication
 
@@ -103,6 +104,7 @@ Use **domain-prefixed** spec names when helpful (`edit-section-fr-001-006.spec.t
 
 ## Related documents
 
+- [playwright_execution_guide.md](../runbooks/playwright_execution_guide.md) — install, env, UI Mode, and local run commands.
 - [playwright_authoring_standard.md](playwright_authoring_standard.md) — how to write tests (titles, traceability headers, structure).
 - [locator_contract_policy.md](locator_contract_policy.md) — selector contracts.
 - [generated_test_review_checklist.md](generated_test_review_checklist.md) — review criteria for generated specs.

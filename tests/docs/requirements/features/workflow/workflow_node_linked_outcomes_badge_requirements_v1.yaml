@@ -1,0 +1,405 @@
+# Normalized requirements: workflowNode linked-outcomes badge and popover (view assigned workflowOutcomes; unassign via 'Unlink outcome')
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Outcomes-to-Nodes Relationships — unassignment implied by child/parent cascade rules, lines 1193–1199; Outcomes Tab drag-and-drop complement, lines 1561–1567)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Scope (this file): workflowNodeLinkedOutcomesBadge rendered on a workflowNode in workflowView when that workflowNode has at least one assigned workflowOutcome id in its persisted set; click opens workflowNodeLinkedOutcomesPopover listing those assignments with hierarchical expansion for descendants; per-row hover actions include workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem only (canonical unassignment trigger, add-only complement to FR-WF-AO-004). Outcome comments from the linked-outcomes popover are out of scope (entry paths for outcome comments remain FR-WF-COMMENTS-004 in the Outcomes view only). Cascade rules on unassignment are per FR-WF-AO-006. Outcome-highlight presentation on workflowNodes (workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003 and badge highlight variant) follows highlight qualification per FR-WF-AO-005 and badge/border coupling per FR-WF-AO-007. Out of scope: drag-and-drop assignment from workflowRightSidebarOutcomesTab (FR-WF-AO-004); click-to-highlight from the Outcomes tab (FR-WF-AO-005); outcome CRUD and tree reorder in the 'Outcomes' view (FR-WF-EO-001 through FR-WF-EO-017); dedicated Figma frame for the badge (pending — see designEvidenceLinkTable).
+# Cross-reference: tests/docs/requirements/features/workflow/workflow_assign_outcome_to_node_requirements_v1.yaml (FR-WF-AO-004 add-only assignment; FR-WF-AO-006 cascade rules; FR-WF-AO-005 outcome-highlight qualification; FR-WF-AO-007 badge/border highlight variant coupling per FR-WF-NODE-003); tests/docs/requirements/features/workflow/workflow_delete_outcome_requirements_v1.yaml (FR-WF-EO-014 assignment cleanup on outcome delete); tests/docs/requirements/features/workflow/workflow_node_visual_requirements_v1.yaml (workflowNodeOutcomeHighlightBorder — FR-WF-NODE-003); tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml (workflowNode); tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml (workflowOutcome, workflowOutcomeHeaderTitle display rules — FR-WF-EO-007); tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebar, tab binding); tests/docs/requirements/guidelines_functional_requirements.md
+#   - tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-002)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - current route is '/workflow/{id}/graph'
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+  - workflowView renders at least one workflowNode
+  - requirements in this file assume the above hold; when they do not, assert per FR-WS-ACCESS-002
+
+uiObjectDefinitions:
+  workflowView:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_add_tab_requirements_v1.yaml.
+  workflowNode:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml.
+  workflowOutcome:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml.
+  workflowOutcomeTree:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml.
+  workflowOutcomeHeaderTitle:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml.
+  workflowNodeOutcomeHighlightBorder:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_node_visual_requirements_v1.yaml.
+  workflowNodeLinkedOutcomesBadge:
+    meaning: Numeric badge attached to a workflowNode.
+  workflowNodeLinkedOutcomesPopover:
+    meaning: Popover anchored to workflowNodeLinkedOutcomesBadge.
+  workflowNodeLinkedOutcomeRow:
+    meaning: Row inside workflowNodeLinkedOutcomesPopover representing a single workflowOutcome assigned to the workflowNode.
+  workflowNodeLinkedOutcomeRowExpandToggle:
+    meaning: Expand/collapse control on a workflowNodeLinkedOutcomeRow for the workflowOutcome's descendant rows.
+  workflowNodeLinkedOutcomeRowHoverActionsMenu:
+    meaning: Action menu attached to a workflowNodeLinkedOutcomeRow.
+  workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem:
+    meaning: Icon-only menu item inside workflowNodeLinkedOutcomeRowHoverActionsMenu with tooltip 'Unlink outcome' (no visible text label).
+  workflowRightSidebar:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarEditTab:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarAddTab:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarOutcomesTab:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarCommentsTab:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarOutcomesTabContent:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml.
+  workflowOutcomesAssignTabOutcomeRow:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_assign_outcome_to_node_requirements_v1.yaml.
+  workflowOutcomesAssignTabOutcomeRowToggle:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_assign_outcome_to_node_requirements_v1.yaml.
+  workflowEditNodeForm:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml.
+
+locatorMappings:
+  workflowView: "canonical_locators.yaml -> workflowView"
+  workflowNode: "canonical_locators.yaml -> workflowNode"
+  workflowNodeLinkedOutcomesBadge: "canonical_locators.yaml -> workflowNodeLinkedOutcomesBadge"
+  workflowNodeLinkedOutcomesPopover: "canonical_locators.yaml -> workflowNodeLinkedOutcomesPopover"
+  workflowNodeLinkedOutcomeRow: "canonical_locators.yaml -> workflowNodeLinkedOutcomeRow"
+  workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem: "canonical_locators.yaml -> workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem"
+  workflowOutcome: "canonical_locators.yaml -> workflowOutcome"
+  workflowOutcomeTree: "canonical_locators.yaml -> workflowOutcomeTree"
+  workflowOutcomeHeaderTitle: "canonical_locators.yaml -> workflowOutcomeHeaderTitle"
+  workflowNodeOutcomeHighlightBorder: "canonical_locators.yaml -> workflowNodeOutcomeHighlightBorder"
+  workflowNodeLinkedOutcomeRowExpandToggle: "canonical_locators.yaml -> workflowNodeLinkedOutcomeRowExpandToggle"
+  workflowNodeLinkedOutcomeRowHoverActionsMenu: "canonical_locators.yaml -> workflowNodeLinkedOutcomeRowHoverActionsMenu"
+  workflowRightSidebar: "canonical_locators.yaml -> workflowRightSidebar"
+  workflowRightSidebarEditTab: "canonical_locators.yaml -> workflowRightSidebarEditTab"
+  workflowRightSidebarAddTab: "canonical_locators.yaml -> workflowRightSidebarAddTab"
+  workflowRightSidebarOutcomesTab: "canonical_locators.yaml -> workflowRightSidebarOutcomesTab"
+  workflowRightSidebarCommentsTab: "canonical_locators.yaml -> workflowRightSidebarCommentsTab"
+  workflowRightSidebarOutcomesTabContent: "canonical_locators.yaml -> workflowRightSidebarOutcomesTabContent"
+  workflowOutcomesAssignTabOutcomeRow: "canonical_locators.yaml -> workflowOutcomesAssignTabOutcomeRow"
+  workflowOutcomesAssignTabOutcomeRowToggle: "canonical_locators.yaml -> workflowOutcomesAssignTabOutcomeRowToggle"
+  workflowEditNodeForm: "canonical_locators.yaml -> workflowEditNodeForm"
+
+requirements:
+  - id: FR-WF-AO-007
+    title: workflowNodeLinkedOutcomesBadge visibility, count, and highlight variant coupling
+    
+    designEvidence:
+      - FIGMA-WF-AO-NOTAGS
+    
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+    
+    uiObjects:
+      - workflowView
+      - workflowNode
+      - workflowNodeLinkedOutcomesBadge
+      - workflowNodeLinkedOutcomesPopover
+      - workflowNodeLinkedOutcomeRow
+      - workflowNodeOutcomeHighlightBorder
+      - workflowOutcome
+      - workflowOutcomeTree
+    
+    preconditions:
+      - workflowView renders the subject workflowNode
+    
+    trigger:
+      - the workflowNode is rendered or its assigned workflowOutcomes change (an outcome is assigned to the workflowNode, an outcome is unassigned from the workflowNode, or a cascade per FR-WF-AO-006 adds or removes outcomes)
+      - a workflowOutcome assigned to the workflowNode is deleted per FR-WF-EO-014, removing that assignment (and any deleted descendants) from the workflowNode's assigned workflowOutcomes
+      - the outcome highlight set per FR-WF-AO-005 changes
+      - workflowOutcomeTree parent/child structure changes per FR-WF-EO-003, FR-WF-EO-016, or FR-WF-EO-017 for any workflowOutcome relevant to a workflowNode's assignments (assignment sets may change per FR-WF-AO-006 tree-change assign cascade; top-level row grouping for badge count always depends on parent links in the outcome tree)
+    
+    mainFlow:
+      - when the workflowNode has no assigned workflowOutcomes, workflowNodeLinkedOutcomesBadge is not rendered on that workflowNode
+      - when the workflowNode has one or more assigned workflowOutcomes, workflowNodeLinkedOutcomesBadge is rendered and its displayed count equals the number of workflowOutcomes that are assigned to the workflowNode and whose direct parent in the outcome tree is not also assigned to the workflowNode; this is the same set of workflowOutcomes that workflowNodeLinkedOutcomesPopover renders as top-level workflowNodeLinkedOutcomeRow entries per FR-WF-AO-009 (the badge count and the popover top-level row count always match)
+      - badge and border highlight coupling — when workflowNode N is in outcome-highlight presentation per FR-WF-AO-005, N shows workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003 and workflowNodeLinkedOutcomesBadge on N (when rendered) uses the highlight visual variant; when N is not in outcome-highlight presentation per FR-WF-AO-005, N does not show workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003 and workflowNodeLinkedOutcomesBadge on N (when rendered) uses the non-highlight visual variant; the border and badge variant are one coupled presentation and never diverge on N; workflowNodeLinkedOutcomeRow entries inside workflowNodeLinkedOutcomesPopover never show highlight chrome
+    
+    roleBehavior:
+      owner:
+        workflowNodeLinkedOutcomesBadge: visibleWhenAssigned
+      editor:
+        workflowNodeLinkedOutcomesBadge: visibleWhenAssigned
+      commenter:
+        workflowNodeLinkedOutcomesBadge: visibleWhenAssigned
+      viewer:
+        workflowNodeLinkedOutcomesBadge: visibleWhenAssigned
+      user:
+        workflowNodeLinkedOutcomesBadge: visibleWhenAssigned
+    
+    acceptanceCriteria:
+      - given workflowNode N has no assigned workflowOutcomes, workflowNodeLinkedOutcomesBadge is not rendered on N
+      - given workflowNode N has at least one assigned workflowOutcome, workflowNodeLinkedOutcomesBadge is rendered on N and displays the count of workflowOutcomes assigned to N whose direct parent in the outcome tree is not also assigned to N; this integer equals the number of top-level workflowNodeLinkedOutcomeRow entries that workflowNodeLinkedOutcomesPopover would render for N per FR-WF-AO-009
+      - given workflowNode N has no assigned workflowOutcomes and workflowNodeLinkedOutcomesBadge is not rendered on N, when owner or editor assigns workflowOutcome O to N via FR-WF-AO-004, after release workflowNodeLinkedOutcomesBadge is rendered on N and displays the top-level row count per this FR and FR-WF-AO-009
+      - given level-1 workflowOutcome P has four direct children {C1, C2, C3, C4} and the actor assigns P to workflowNode N (cascade per FR-WF-AO-006 also adds all descendants), workflowNodeLinkedOutcomesBadge on N displays 1
+      - given level-1 workflowOutcome P has four direct children {C1, C2, C3, C4} and only C1 is assigned to workflowNode N (P is not assigned because not every direct child of P is in N's set, per FR-WF-AO-006), workflowNodeLinkedOutcomesBadge on N displays 1
+      - given level-1 workflowOutcome P has direct children {C1, C2, C3} and both C1 and C2 are assigned to workflowNode N (P is not assigned because C3 is missing, per FR-WF-AO-006), workflowNodeLinkedOutcomesBadge on N displays 2 (one count for C1, one for C2; P is not counted because P is not assigned)
+      - given a single level-3 workflowOutcome G is assigned to workflowNode N and no ancestor of G is assigned to N, workflowNodeLinkedOutcomesBadge on N displays 1
+      - given workflowNode N has outcomes from two distinct level-1 subtrees assigned (e.g., level-1 P1 fully assigned and only a level-2 descendant of P2 assigned with P2 not assigned), workflowNodeLinkedOutcomesBadge on N displays 2
+      - given workflowNode N is in outcome-highlight presentation per FR-WF-AO-005, N shows workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003 and workflowNodeLinkedOutcomesBadge on N (when rendered) uses the highlight visual variant
+      - given workflowNode N is not in outcome-highlight presentation per FR-WF-AO-005, N does not show workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003 and workflowNodeLinkedOutcomesBadge on N (when rendered) uses the non-highlight visual variant
+      - given workflowNode N toggles between in and not in outcome-highlight presentation per FR-WF-AO-005 (for any trigger defined in FR-WF-AO-005, including highlight set change, assignment via FR-WF-AO-004, or unlink via FR-WF-AO-010), workflowNodeOutcomeHighlightBorder and workflowNodeLinkedOutcomesBadge highlight variant update in the same moment and never diverge on N
+      - given workflowNode N had assigned workflowOutcome O and O is deleted per FR-WF-EO-014, after deletion O is not in N's assigned workflowOutcomes; if N has no remaining assigned workflowOutcomes, workflowNodeLinkedOutcomesBadge is not rendered on N; if N still has assigned workflowOutcomes, workflowNodeLinkedOutcomesBadge displays the updated top-level row count per this FR and FR-WF-AO-009
+      - given level-1 workflowOutcome P with direct children {C1, C2, C3, C4} is fully assigned to workflowNode N (badge displays 1), and owner reparents C1 under level-1 workflowOutcome Q (Q not assigned to N) via FR-WF-EO-016 or FR-WF-EO-017 while C1 remains assigned to N, after the tree move workflowNodeLinkedOutcomesBadge on N displays 2 (P remains one top-level row; C1 is a second top-level row because its direct parent Q is not assigned to N)
+      - given level-1 workflowOutcome P is assigned to workflowNode N and level-2 workflowOutcome S (not assigned to N) is reparented under P per FR-WF-EO-016 or FR-WF-EO-017, after FR-WF-AO-006 tree-change assign cascade S is assigned to N and workflowNodeLinkedOutcomesBadge count updates per this FR
+    
+    openQuestions: []
+
+  - id: FR-WF-AO-008
+    title: Open and close workflowNodeLinkedOutcomesPopover
+    
+    designEvidence:
+      - FIGMA-WF-AO-NOTAGS
+    
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+    
+    uiObjects:
+      - workflowView
+      - workflowNode
+      - workflowNodeLinkedOutcomesBadge
+      - workflowNodeLinkedOutcomesPopover
+      - workflowNodeLinkedOutcomeRow
+      - workflowNodeLinkedOutcomeRowExpandToggle
+      - workflowNodeLinkedOutcomeRowHoverActionsMenu
+      - workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem
+      - workflowRightSidebar
+      - workflowRightSidebarEditTab
+      - workflowRightSidebarAddTab
+      - workflowRightSidebarOutcomesTab
+      - workflowRightSidebarCommentsTab
+      - workflowRightSidebarOutcomesTabContent
+      - workflowOutcomesAssignTabOutcomeRow
+      - workflowOutcomesAssignTabOutcomeRowToggle
+      - workflowEditNodeForm
+    
+    preconditions:
+      - workflowNodeLinkedOutcomesBadge is rendered for a workflowNode (assigned-outcome set non-empty)
+    
+    trigger:
+      - actor clicks workflowNodeLinkedOutcomesBadge
+      - actor dismisses an open popover (backdrop click, Escape key, or other platform-consistent dismiss path supported by the popover component)
+      - actor navigates such that the current route is no longer '/workflow/{id}/graph' for the workflow where workflowNodeLinkedOutcomesPopover was open
+      - the workflow page is fully reloaded
+      - actor presses pointer on workflowOutcomesAssignTabOutcomeRow in workflowRightSidebarOutcomesTabContent (whether the gesture toggles highlight per FR-WF-AO-005 or proceeds to assignment drag per FR-WF-AO-004)
+      - actor clicks a workflowNode in workflowView for node selection per FR-WF-EN-001
+      - actor clicks a visible workflowRightSidebar tab while workflowView is open
+    
+    mainFlow:
+      - primary open path — clicking workflowNodeLinkedOutcomesBadge is the primary path to open workflowNodeLinkedOutcomesPopover; all other bullets in this FR define additional open, close, and dismiss paths
+      - popover browse and row actions — all roles may open workflowNodeLinkedOutcomesPopover via workflowNodeLinkedOutcomesBadge and browse assigned outcomes per FR-WF-AO-009; per-role row hover actions (workflowNodeLinkedOutcomeRowHoverActionsMenu and workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem only) per FR-WF-AO-010
+      - clicking workflowNodeLinkedOutcomesBadge while the popover is closed opens workflowNodeLinkedOutcomesPopover anchored to the badge wrapper
+      - at most one workflowNodeLinkedOutcomesPopover is open in workflowView at any time; if workflowNodeLinkedOutcomesPopover is open on workflowNode A and the actor clicks workflowNodeLinkedOutcomesBadge on a different workflowNode B, the popover on A closes and workflowNodeLinkedOutcomesPopover opens anchored to B's badge wrapper
+      - clicking workflowNodeLinkedOutcomesBadge while the popover is already open on the same workflowNode closes workflowNodeLinkedOutcomesPopover (the badge toggles the popover open/closed on each click)
+      - clicking workflowNodeLinkedOutcomesBadge does not also select the workflowNode (the workflowNode's selection state and its workflowRightSidebar Edit-tab binding are unchanged by the badge click); selection of the workflowNode is reached only by clicking the workflowNode body itself, per FR-WF-EN-001
+      - node body click dismiss — when actor clicks a workflowNode in workflowView on the node selection path per FR-WF-EN-001, any open workflowNodeLinkedOutcomesPopover in workflowView closes; node selection and sidebar Edit-tab binding proceed per FR-WF-EN-001 independently of the popover dismiss; this path is distinct from clicking workflowNodeLinkedOutcomesBadge, which toggles the popover without selecting the node
+      - dismissing the popover (badge click while open, backdrop click, Escape key, or other platform-consistent dismiss path supported by the popover component) removes workflowNodeLinkedOutcomesPopover from the open state without altering assigned outcomes
+      - view navigation dismiss — when the actor navigates such that the current route is no longer '/workflow/{id}/graph' (including another sub-view of the same workflow, a different workflow, or navigation outside the workflow shell), any open workflowNodeLinkedOutcomesPopover closes; navigating back to '/workflow/{id}/graph' does not re-open the popover until the actor clicks workflowNodeLinkedOutcomesBadge again
+      - full page reload dismiss — when the workflow page is fully reloaded, any open workflowNodeLinkedOutcomesPopover closes; after reload the popover remains closed until the actor clicks workflowNodeLinkedOutcomesBadge again
+      - sidebar tab switch dismiss — when actor clicks workflowRightSidebarEditTab, workflowRightSidebarAddTab, workflowRightSidebarOutcomesTab, or workflowRightSidebarCommentsTab on the sidebar tab bar while workflowView is open, any open workflowNodeLinkedOutcomesPopover in workflowView closes
+      - assign-tab row click dismiss — when actor presses pointer on workflowOutcomesAssignTabOutcomeRow in workflowRightSidebarOutcomesTabContent (whether the gesture toggles the highlight set per FR-WF-AO-005 or proceeds to assignment drag per FR-WF-AO-004), any open workflowNodeLinkedOutcomesPopover in workflowView closes; clicking workflowOutcomesAssignTabOutcomeRowToggle alone does not dismiss the popover per this rule; the popover does not re-open until the actor clicks workflowNodeLinkedOutcomesBadge again
+      - popover row expand toggle — clicking workflowNodeLinkedOutcomeRowExpandToggle on a row inside an open workflowNodeLinkedOutcomesPopover expands or collapses that row per FR-WF-AO-009 and does not dismiss workflowNodeLinkedOutcomesPopover
+      - in-popover interaction persistence — pointer interaction inside workflowNodeLinkedOutcomesPopover (including hovering workflowNodeLinkedOutcomeRow excluding workflowNodeLinkedOutcomeRowExpandToggle when rendered, invoking workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem per FR-WF-AO-010, and expanding or collapsing rows per FR-WF-AO-009) does not dismiss workflowNodeLinkedOutcomesPopover except where this FR or FR-WF-AO-010 explicitly closes it (e.g., unlink removes the last assignment on N)
+    
+    roleBehavior:
+      owner:
+        workflowNodeLinkedOutcomesBadge: clickableWhenRendered
+      editor:
+        workflowNodeLinkedOutcomesBadge: clickableWhenRendered
+      commenter:
+        workflowNodeLinkedOutcomesBadge: clickableWhenRendered
+      viewer:
+        workflowNodeLinkedOutcomesBadge: clickableWhenRendered
+      user:
+        workflowNodeLinkedOutcomesBadge: clickableWhenRendered
+    
+    acceptanceCriteria:
+      - given workflowNodeLinkedOutcomesBadge is rendered and the popover is closed, when actor clicks workflowNodeLinkedOutcomesBadge, then workflowNodeLinkedOutcomesPopover opens
+      - given actor is viewer or user and workflowNodeLinkedOutcomesBadge is rendered on workflowNode N, when actor clicks workflowNodeLinkedOutcomesBadge, workflowNodeLinkedOutcomesPopover opens and lists N's assigned workflowOutcomes per FR-WF-AO-009; workflowNodeLinkedOutcomeRowHoverActionsMenu is never shown for viewer or user per FR-WF-AO-010
+      - given actor is commenter and workflowNodeLinkedOutcomesBadge is rendered on workflowNode N, when actor clicks workflowNodeLinkedOutcomesBadge and hovers workflowNodeLinkedOutcomeRow (excluding workflowNodeLinkedOutcomeRowExpandToggle when rendered), workflowNodeLinkedOutcomesPopover is open, workflowNodeLinkedOutcomeRowHoverActionsMenu is shown, and workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem is rendered and disabled per FR-WF-AO-010
+      - given actor is owner or editor and workflowNodeLinkedOutcomesBadge is rendered on workflowNode N, when actor clicks workflowNodeLinkedOutcomesBadge and hovers workflowNodeLinkedOutcomeRow (excluding workflowNodeLinkedOutcomeRowExpandToggle when rendered), workflowNodeLinkedOutcomesPopover is open, workflowNodeLinkedOutcomeRowHoverActionsMenu is shown, and workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem is present, active, and clickable per FR-WF-AO-010
+      - given workflowNodeLinkedOutcomesPopover is open, when actor clicks workflowNodeLinkedOutcomesBadge again, then workflowNodeLinkedOutcomesPopover closes and the workflowNode's assigned workflowOutcomes are unchanged
+      - given workflowNodeLinkedOutcomesPopover is open, when actor dismisses via backdrop or Escape (if supported), then workflowNodeLinkedOutcomesPopover closes and the workflowNode's assigned workflowOutcomes are unchanged
+      - given workflowNodeLinkedOutcomesPopover is open on workflowNode A, when actor clicks workflowNodeLinkedOutcomesBadge on a different workflowNode B, then workflowNodeLinkedOutcomesPopover is no longer open on A and is open anchored to B; assigned workflowOutcomes on A and B are unchanged
+      - given workflowNodeLinkedOutcomesPopover is open on workflowNode N, when the actor navigates away from '/workflow/{id}/graph' to any other route (including another sub-view of the same workflow, a different workflow, or navigation outside the workflow shell), workflowNodeLinkedOutcomesPopover is not open; when the actor returns to '/workflow/{id}/graph', workflowNodeLinkedOutcomesPopover remains closed until the actor clicks workflowNodeLinkedOutcomesBadge on N
+      - given workflowNodeLinkedOutcomesPopover is open on workflowNode N, when the workflow page is fully reloaded, workflowNodeLinkedOutcomesPopover is not open after reload
+      - given workflowNodeLinkedOutcomesPopover is open on workflowNode N and actor clicks workflowRightSidebarEditTab, workflowRightSidebarAddTab, or workflowRightSidebarOutcomesTab, workflowNodeLinkedOutcomesPopover is not open
+      - given workflowNodeLinkedOutcomesPopover is open on workflowNode N and actor clicks workflowRightSidebarCommentsTab directly on the tab bar, workflowNodeLinkedOutcomesPopover is not open
+      - given workflowNodeLinkedOutcomesPopover is open on workflowNode N, when actor presses pointer on workflowOutcomesAssignTabOutcomeRow for workflowOutcome O (whether for highlight toggle per FR-WF-AO-005 or assignment drag per FR-WF-AO-004), workflowNodeLinkedOutcomesPopover is not open
+      - given workflowNodeLinkedOutcomesPopover was open and closed by a press on workflowOutcomesAssignTabOutcomeRow that completes as a highlight toggle per FR-WF-AO-005, workflowNodeLinkedOutcomesPopover remains closed and the highlight set toggles for O per FR-WF-AO-005
+      - given workflowNodeLinkedOutcomesPopover was open and closed by a press on workflowOutcomesAssignTabOutcomeRow that proceeds to assignment drag per FR-WF-AO-004, when owner or editor completes a valid drop onto workflowNode N, workflowNodeLinkedOutcomesPopover remains closed until the actor clicks workflowNodeLinkedOutcomesBadge on N; N's assigned workflowOutcomes and workflowNodeLinkedOutcomesBadge count update per FR-WF-AO-004 and FR-WF-AO-006 and per FR-WF-AO-007
+      - given workflowNodeLinkedOutcomesPopover is open on workflowNode N and actor clicks workflowOutcomesAssignTabOutcomeRowToggle without pressing workflowOutcomesAssignTabOutcomeRow, workflowNodeLinkedOutcomesPopover remains open
+      - given workflowNodeLinkedOutcomesPopover is open on workflowNode N and actor clicks workflowNodeLinkedOutcomeRowExpandToggle on a row inside the popover, workflowNodeLinkedOutcomesPopover remains open
+      - given workflowNodeLinkedOutcomesPopover is open on workflowNode N and actor hovers workflowNodeLinkedOutcomeRow (excluding workflowNodeLinkedOutcomeRowExpandToggle when rendered) without a dismiss trigger per this FR, workflowNodeLinkedOutcomesPopover remains open
+      - given workflowNodeLinkedOutcomesPopover is open on workflowNode N, when actor clicks workflowNode N on the node selection path per FR-WF-EN-001, workflowNodeLinkedOutcomesPopover is not open and workflowEditNodeForm is bound to N per FR-WF-EN-001
+      - given workflowNodeLinkedOutcomesPopover is open on workflowNode A, when actor clicks a different workflowNode B on the node selection path per FR-WF-EN-001, workflowNodeLinkedOutcomesPopover is not open and workflowEditNodeForm is bound to B per FR-WF-EN-001
+    
+    openQuestions: []
+
+  - id: FR-WF-AO-009
+    title: workflowNodeLinkedOutcomesPopover lists assigned workflowOutcomes with expandable hierarchy
+    
+    designEvidence:
+      - FIGMA-WF-AO-NOTAGS
+    
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+    
+    uiObjects:
+      - workflowNode
+      - workflowNodeLinkedOutcomesBadge
+      - workflowNodeLinkedOutcomesPopover
+      - workflowNodeLinkedOutcomeRow
+      - workflowNodeLinkedOutcomeRowExpandToggle
+      - workflowOutcome
+      - workflowOutcomeTree
+      - workflowOutcomeHeaderTitle
+    
+    preconditions:
+      - workflowNodeLinkedOutcomesPopover is open for workflowNode N
+    
+    trigger:
+      - workflowNodeLinkedOutcomesPopover renders or N's assigned workflowOutcomes change while the popover is open
+      - workflowOutcomeTree parent/child structure or sibling order changes per FR-WF-EO-003, FR-WF-EO-015, FR-WF-EO-016, or FR-WF-EO-017 for any workflowOutcome assigned to N while workflowNodeLinkedOutcomesPopover is closed (content on next open or reopen per this FR)
+      - assign-tab-relevant persisted field values change on a workflowOutcome assigned to N in the 'Outcomes' view per FR-WF-EO-004 through FR-WF-EO-006 while workflowNodeLinkedOutcomesPopover is closed (content on next open or reopen per this FR)
+    
+    mainFlow:
+      - top-level rows — workflowNodeLinkedOutcomesPopover renders one workflowNodeLinkedOutcomeRow at the top level for each workflowOutcome that is assigned to N and whose direct parent in the outcome tree is not also assigned to N (a level-1 workflowOutcome has no parent so, if assigned, it is always a top-level row); the popover never shows an unassigned ancestor as a top-level row solely because a descendant of that ancestor is assigned
+      - data parity on open — whenever workflowNodeLinkedOutcomesPopover opens or reopens for N, top-level and nested workflowNodeLinkedOutcomeRow entries reflect the current workflowOutcomeTree parent/child links among N's assigned outcomes and current workflowOutcomeHeaderTitle values per FR-WF-EO-007; edits performed in the 'Outcomes' view per FR-WF-EO-004 through FR-WF-EO-006 and tree moves or sibling order changes per FR-WF-EO-003, FR-WF-EO-015, FR-WF-EO-016, and FR-WF-EO-017 are visible on that open or reopen (popover is not open during those edits per FR-WF-AO-008); when FR-WF-AO-006 tree-change assign cascade applies, N's assignment set may have changed and the popover reflects the updated set; reparenting an assigned outcome away from a previously assigned ancestor does not by itself remove it from N's assignment set per FR-WF-AO-006
+      - each workflowNodeLinkedOutcomeRow displays a visible title line for the bound workflowOutcome using the same composition rules as workflowOutcomeHeaderTitle per FR-WF-EO-007 (ordinal prefix, workflowEditOutcomeFormTitleField value, and at level 1 with a non-empty workflowEditOutcomeFormCodeField value, the workflowEditOutcomeFormCodeField segment), including 'Untitled outcome' display fallback where applicable (FR-WF-EO-006)
+      - each workflowNodeLinkedOutcomeRow presents its title line on a single visual text line within the row width — the title text does not wrap to additional lines; when the composed string per FR-WF-EO-007 exceeds the available width for that text region, the visible presentation is truncated and suffixed with the literal '...' (three full stops); persisted field values on the bound workflowOutcome are not altered (display-only truncation)
+      - expand toggle — workflowNodeLinkedOutcomeRowExpandToggle is rendered on a workflowNodeLinkedOutcomeRow when the bound workflowOutcome has at least one direct child that is also assigned to N; the toggle is not rendered when the bound workflowOutcome has no assigned direct children (whether because it has no children in the outcome tree or because none of its children are assigned to N)
+      - on expand, the row shows nested workflowNodeLinkedOutcomeRow entries for each direct child of the bound workflowOutcome that is also assigned to N; nested rows follow the same rules recursively (each nested row may itself expand when it has at least one assigned direct child); workflowOutcomes that exist in the outcome tree but are not assigned to N are not rendered in the popover
+      - row order — at each nesting level in workflowNodeLinkedOutcomesPopover (top-level workflowNodeLinkedOutcomeRow entries and nested rows revealed by workflowNodeLinkedOutcomeRowExpandToggle), sibling workflowNodeLinkedOutcomeRow entries appear in the same sibling order as their bound workflowOutcomes appear among siblings in workflowOutcomeTree per FR-WF-EO-007 (ordinal order within each parent's child list; not assignment order, drag-drop order, or alphabetical by title)
+      - expanding or collapsing a row does not close workflowNodeLinkedOutcomesPopover
+      - assignment changes while open — when N's assigned workflowOutcomes change while workflowNodeLinkedOutcomesPopover is open, the popover list refreshes per this FR and workflowNodeLinkedOutcomesBadge count updates per FR-WF-AO-007; assignment added via drag from workflowOutcomesAssignTabOutcomeRow per FR-WF-AO-004 does not occur while the popover is open because FR-WF-AO-008 closes the popover on assign-tab row press before drop finalizes (after drop, the actor must click workflowNodeLinkedOutcomesBadge again to reopen)
+    
+    roleBehavior:
+      owner:
+        workflowNodeLinkedOutcomeRowExpandToggle: clickableWhenRendered
+      editor:
+        workflowNodeLinkedOutcomeRowExpandToggle: clickableWhenRendered
+      commenter:
+        workflowNodeLinkedOutcomeRowExpandToggle: clickableWhenRendered
+      viewer:
+        workflowNodeLinkedOutcomeRowExpandToggle: clickableWhenRendered
+      user:
+        workflowNodeLinkedOutcomeRowExpandToggle: clickableWhenRendered
+    
+    acceptanceCriteria:
+      - given level-1 workflowOutcome P with all of its descendants is assigned to workflowNode N (per FR-WF-AO-006 cascade), workflowNodeLinkedOutcomesPopover renders exactly one top-level workflowNodeLinkedOutcomeRow for P; that row renders workflowNodeLinkedOutcomeRowExpandToggle (because P has assigned direct children) and, when expanded, lists one nested workflowNodeLinkedOutcomeRow per direct child of P (each of which itself expands to its assigned direct children where applicable)
+      - given level-2 workflowOutcome C is assigned to workflowNode N along with all of C's level-3 children but C's parent (level-1 P) is not assigned to N, workflowNodeLinkedOutcomesPopover renders one top-level workflowNodeLinkedOutcomeRow for C with workflowNodeLinkedOutcomeRowExpandToggle; expanding shows one nested workflowNodeLinkedOutcomeRow per assigned level-3 child of C; no row for P appears in the popover
+      - given a single level-3 workflowOutcome G is assigned to workflowNode N (no ancestor of G is assigned to N), workflowNodeLinkedOutcomesPopover renders exactly one top-level workflowNodeLinkedOutcomeRow for G; workflowNodeLinkedOutcomeRowExpandToggle is not rendered on that row (G has no children); no row for G's parent or grandparent appears in the popover
+      - given workflowNode N has two assigned outcomes from distinct level-1 subtrees, workflowNodeLinkedOutcomesPopover renders two top-level workflowNodeLinkedOutcomeRow entries (one per subtree's highest-assigned outcome)
+      - given two level-2 sibling outcomes C1 and C2 (direct children of the same level-1 P) are assigned to workflowNode N but their parent P is not assigned (so P is not in N's assigned set per FR-WF-AO-006), workflowNodeLinkedOutcomesPopover renders two top-level workflowNodeLinkedOutcomeRow entries (one for C1 and one for C2); no row for P appears in the popover
+      - given a row is bound to workflowOutcome O, the visible title line matches workflowOutcomeHeaderTitle rules for O per FR-WF-EO-007
+      - given the composed workflowOutcomeHeaderTitle text for workflowOutcome O (ordinal prefix, workflowEditOutcomeFormTitleField value, and optional workflowEditOutcomeFormCodeField value per FR-WF-EO-007) is longer than the popover row allocates to the title text region in workflowNodeLinkedOutcomeRow, then workflowNodeLinkedOutcomeRow shows a single line with truncation and a literal '...' suffix and does not wrap the title to a second line; persisted values on O are unchanged
+      - given workflowNodeLinkedOutcomeRowExpandToggle on a workflowNodeLinkedOutcomeRow for workflowOutcome O is in the collapsed state, when actor clicks workflowNodeLinkedOutcomeRowExpandToggle, nested workflowNodeLinkedOutcomeRow entries appear for the assigned direct children of O and workflowNodeLinkedOutcomesPopover remains open; clicking workflowNodeLinkedOutcomeRowExpandToggle again collapses those nested rows
+      - given workflowNode N has two top-level assigned outcomes C1 and C2 that are direct children of the same level-1 parent P (P not assigned to N), and C1 precedes C2 in workflowOutcomeTree sibling order per FR-WF-EO-007, then workflowNodeLinkedOutcomesPopover renders the workflowNodeLinkedOutcomeRow for C1 above the workflowNodeLinkedOutcomeRow for C2
+      - given workflowNodeLinkedOutcomeRow for workflowOutcome O is expanded and O has assigned direct children C_a and C_b where C_a precedes C_b in workflowOutcomeTree sibling order, then the nested workflowNodeLinkedOutcomeRow for C_a appears above the nested workflowNodeLinkedOutcomeRow for C_b
+      - given workflowNodeLinkedOutcomesPopover is open on workflowNode N and owner unlinks workflowOutcome O from N via FR-WF-AO-010 leaving at least one assignment on N, after completion the popover list reflects N's remaining assignments per this FR
+      - given workflowNodeLinkedOutcomesPopover is open on workflowNode N, when owner presses pointer on workflowOutcomesAssignTabOutcomeRow and completes a valid drag-assign onto N per FR-WF-AO-004, workflowNodeLinkedOutcomesPopover is not open after the assign-tab row press per FR-WF-AO-008; when owner clicks workflowNodeLinkedOutcomesBadge on N again, the popover list includes the newly assigned outcome per this FR
+      - given workflowNodeLinkedOutcomeRow is shown in workflowNodeLinkedOutcomesPopover for workflowOutcome O assigned to workflowNode N and owner edits workflowEditOutcomeFormTitleField on O in the 'Outcomes' view per FR-WF-EO-004, when actor selects 'Workflow' on workflowViewTabSelector per FR-WF-HEADER-001 and clicks workflowNodeLinkedOutcomesBadge on N, workflowNodeLinkedOutcomeRow for O displays the updated workflowOutcomeHeaderTitle per this FR
+      - given workflowNodeLinkedOutcomeRow is shown in workflowNodeLinkedOutcomesPopover for level-1 workflowOutcome O assigned to workflowNode N and owner edits workflowEditOutcomeFormCodeField on O in the 'Outcomes' view per FR-WF-EO-004, when actor selects 'Workflow' on workflowViewTabSelector per FR-WF-HEADER-001 and clicks workflowNodeLinkedOutcomesBadge on N, workflowNodeLinkedOutcomeRow for O displays the updated workflowOutcomeHeaderTitle per this FR
+      - given level-1 workflowOutcome P with direct children {C1, C2, C3, C4} is fully assigned to workflowNode N and workflowNodeLinkedOutcomesPopover would render one top-level row for P, when owner reparents C1 under level-1 workflowOutcome Q (Q not assigned to N) via FR-WF-EO-016 or FR-WF-EO-017 while C1 remains assigned to N, then actor selects 'Workflow' on workflowViewTabSelector per FR-WF-HEADER-001 and clicks workflowNodeLinkedOutcomesBadge on N, workflowNodeLinkedOutcomesPopover renders two top-level workflowNodeLinkedOutcomeRow entries (P and C1) matching FR-WF-AO-007 top-level row grouping
+    
+    openQuestions: []
+
+  - id: FR-WF-AO-010
+    title: workflowNodeLinkedOutcomeRow hover actions menu and unlink via workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem
+    
+    designEvidence:
+      - FIGMA-WF-AO-NOTAGS
+    
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+    
+    uiObjects:
+      - workflowNode
+      - workflowNodeLinkedOutcomesPopover
+      - workflowNodeLinkedOutcomeRow
+      - workflowNodeLinkedOutcomeRowExpandToggle
+      - workflowNodeLinkedOutcomeRowHoverActionsMenu
+      - workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem
+      - workflowNodeLinkedOutcomesBadge
+      - workflowNodeOutcomeHighlightBorder
+      - workflowOutcome
+    
+    preconditions:
+      - workflowNodeLinkedOutcomesPopover is open on workflowNode N
+      - workflowNodeLinkedOutcomeRow is rendered for workflowOutcome O on N
+    
+    trigger:
+      - owner, editor, or commenter hovers workflowNodeLinkedOutcomeRow (excluding workflowNodeLinkedOutcomeRowExpandToggle when rendered) while workflowNodeLinkedOutcomesPopover is open on workflowNode N
+      - owner or editor invokes workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem for workflowOutcome O while hovering workflowNodeLinkedOutcomeRow (excluding workflowNodeLinkedOutcomeRowExpandToggle when rendered)
+    
+    mainFlow:
+      - workflowNodeLinkedOutcomeRowHoverActionsMenu is shown when owner, editor, or commenter hovers workflowNodeLinkedOutcomeRow excluding workflowNodeLinkedOutcomeRowExpandToggle when rendered; for viewer and user, workflowNodeLinkedOutcomeRowHoverActionsMenu is never shown (same visibility semantics as workflowNodeHoverActionsMenu per FR-WF-NODE-004)
+      - workflowNodeLinkedOutcomeRowHoverActionsMenu visibility tracks pointer hover on workflowNodeLinkedOutcomeRow excluding workflowNodeLinkedOutcomeRowExpandToggle when rendered, actor item actionability per this FR's roleBehavior, and workflowNodeLinkedOutcomesPopover open state
+      - the pointer-hover region that keeps workflowNodeLinkedOutcomeRowHoverActionsMenu visible on a workflowNodeLinkedOutcomeRow includes that row's bounds excluding workflowNodeLinkedOutcomeRowExpandToggle when rendered and workflowNodeLinkedOutcomeRowHoverActionsMenu's own bounds for that same row (so the pointer can move from the row onto a menu control without dismissing the menu)
+      - workflowNodeLinkedOutcomeRowHoverActionsMenu visibility is driven by pointer position only; keyboard focus on workflowNodeLinkedOutcomeRow or on controls inside workflowNodeLinkedOutcomeRowHoverActionsMenu does not substitute for pointer hover and does not show the menu when the pointer is outside that combined hover region
+      - when the pointer leaves both the workflowNodeLinkedOutcomeRow hover region (excluding workflowNodeLinkedOutcomeRowExpandToggle when rendered) and workflowNodeLinkedOutcomeRowHoverActionsMenu anchored to that row, workflowNodeLinkedOutcomeRowHoverActionsMenu hides
+      - at most one workflowNodeLinkedOutcomeRowHoverActionsMenu is visible at a time inside workflowNodeLinkedOutcomesPopover
+      - hovering workflowNodeLinkedOutcomeRowExpandToggle alone does not show workflowNodeLinkedOutcomeRowHoverActionsMenu
+      - workflowNodeLinkedOutcomeRowHoverActionsMenu on popover rows exposes workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem only; no Comments affordance is rendered on workflowNodeLinkedOutcomeRow in workflowNodeLinkedOutcomesPopover (outcome comments entry remains FR-WF-COMMENTS-004 Outcomes-view paths only)
+      - workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem is rendered as an icon-only control (no visible text label) with a tooltip whose text is exactly 'Unlink outcome' shown on pointer hover
+      - on invoke by owner or editor, system removes O from N's assigned-outcome set and applies the child-removed → parent-removal and related cascade rules per FR-WF-AO-006 (same normative cascade as drag-drop add path)
+      - after unassignment, if workflowNode N has no assigned workflowOutcomes, workflowNodeLinkedOutcomesPopover closes and workflowNodeLinkedOutcomesBadge is not rendered on N
+      - if workflowNode N still has at least one assigned workflowOutcome, workflowNodeLinkedOutcomesBadge displays the updated top-level row count per FR-WF-AO-007 and workflowNodeLinkedOutcomesPopover remains open listing the remaining assignments per FR-WF-AO-009
+      - highlight coupling on unlink — unlink via workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem does not add to or remove from the highlight set per FR-WF-AO-005; when N's outcome-highlight presentation changes as a result of unlink per FR-WF-AO-005, workflowNodeOutcomeHighlightBorder and workflowNodeLinkedOutcomesBadge highlight variant on N update together per FR-WF-AO-007 and never diverge
+    
+    roleBehavior:
+      owner:
+        workflowNodeLinkedOutcomeRowHoverActionsMenu: visibleWhenRowHovered
+        workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem: visibleAndEnabledWhenHovered
+      editor:
+        workflowNodeLinkedOutcomeRowHoverActionsMenu: visibleWhenRowHovered
+        workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem: visibleAndEnabledWhenHovered
+      commenter:
+        workflowNodeLinkedOutcomeRowHoverActionsMenu: visibleWhenRowHovered
+        workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem: disabledWhenHovered
+      viewer:
+        workflowNodeLinkedOutcomeRowHoverActionsMenu: notRendered
+        workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem: notRendered
+      user:
+        workflowNodeLinkedOutcomeRowHoverActionsMenu: notRendered
+        workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem: notRendered
+    
+    acceptanceCriteria:
+      - given actor is owner or editor and invokes workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem for O on N, after completion O is not in N's assigned-outcome set and FR-WF-AO-006 cascade rules have been applied to the resulting set
+      - given workflowNodeLinkedOutcomesPopover is open on workflowNode N and owner unlinks workflowOutcome O from N via workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem, after completion no workflowNodeLinkedOutcomeRow bound to O or to any workflowOutcome removed from N's assigned-outcome set by FR-WF-AO-006 cascade as a result of that unlink is rendered in workflowNodeLinkedOutcomesPopover; remaining assignments are listed per FR-WF-AO-009
+      - given workflowNodeLinkedOutcomesPopover is open on workflowNode N, level-1 workflowOutcome P with all descendants assigned to N per FR-WF-AO-006, and owner unlinks P from N via workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem, after completion workflowNodeLinkedOutcomesPopover renders no workflowNodeLinkedOutcomeRow for any workflowOutcome removed from N's assigned-outcome set by that unlink
+      - given actor is commenter and hovers workflowNodeLinkedOutcomeRow (excluding workflowNodeLinkedOutcomeRowExpandToggle when rendered), workflowNodeLinkedOutcomeRowHoverActionsMenu is shown and workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem is rendered and disabled
+      - given actor is owner or editor and hovers workflowNodeLinkedOutcomeRow (excluding workflowNodeLinkedOutcomeRowExpandToggle when rendered), workflowNodeLinkedOutcomeRowHoverActionsMenu is shown and workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem is present, active, and clickable
+      - given actor is viewer or user, hovering workflowNodeLinkedOutcomeRow (excluding workflowNodeLinkedOutcomeRowExpandToggle when rendered) does not render workflowNodeLinkedOutcomeRowHoverActionsMenu and workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem is not rendered
+      - given N had exactly one top-level assigned workflowOutcome per FR-WF-AO-009 and workflowNodeLinkedOutcomesPopover is open, when owner unlinks it (directly or via cascade such that N has no remaining assigned workflowOutcomes), after completion workflowNodeLinkedOutcomesPopover is not open and workflowNodeLinkedOutcomesBadge is not rendered on N
+      - given N had m ≥ 2 top-level assigned workflowOutcomes per FR-WF-AO-009 and workflowNodeLinkedOutcomesPopover is open, when owner unlinks one top-level row's bound outcome O (with FR-WF-AO-006 cascade applied), after completion workflowNodeLinkedOutcomesPopover remains open listing the remaining assignments per FR-WF-AO-009 and workflowNodeLinkedOutcomesBadge on N displays the updated top-level row count per FR-WF-AO-007 (not necessarily m − 1 on raw assignment cardinality when cascade removes or promotes other rows)
+      - given actor hovers workflowNodeLinkedOutcomeRow for row R (excluding workflowNodeLinkedOutcomeRowExpandToggle when rendered), workflowNodeLinkedOutcomeRowHoverActionsMenu for R is visible; when the pointer moves onto workflowNodeLinkedOutcomeRowHoverActionsMenu without leaving the combined row-plus-menu region, the menu remains visible
+      - given workflowNodeLinkedOutcomeRowHoverActionsMenu is visible for row R, when the pointer leaves both the workflowNodeLinkedOutcomeRow hover region (excluding workflowNodeLinkedOutcomeRowExpandToggle when rendered) and workflowNodeLinkedOutcomeRowHoverActionsMenu for R, the menu is hidden
+      - given workflowNodeLinkedOutcomesPopover lists rows R1 and R2, when actor hovers workflowNodeLinkedOutcomeRow for R1 then moves to hover workflowNodeLinkedOutcomeRow for R2 (excluding workflowNodeLinkedOutcomeRowExpandToggle on each row when rendered), at most one workflowNodeLinkedOutcomeRowHoverActionsMenu is visible and it is anchored to R2
+      - given actor hovers workflowNodeLinkedOutcomeRowExpandToggle without hovering the rest of workflowNodeLinkedOutcomeRow, workflowNodeLinkedOutcomeRowHoverActionsMenu is not shown
+    
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-WF-AO-NOTAGS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=2149-18932&t=ISqZMKvdOL1BJ6SG-1
+  - key: FIGMA-WF-AO-TAGS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=3802-32595&t=ISqZMKvdOL1BJ6SG-1
+
+openQuestions:
+  - dedicated Figma frame for workflowNodeLinkedOutcomesBadge and workflowNodeLinkedOutcomesPopover on the workflow canvas (FIGMA-WF-AO-NOTAGS is contextual evidence only until a canvas-specific node id is attached)

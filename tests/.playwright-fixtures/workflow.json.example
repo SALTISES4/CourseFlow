@@ -1,0 +1,34 @@
+{
+  "fixture_version": 2,
+  "owner_email": "admin@courseflow.com",
+  "project_uuid": "<generated-at-seed-time>",
+  "project_title": "E2E FIXTURE - Edit Section",
+  "contributors": [
+    {
+      "email": "teacher@courseflow.com",
+      "role": "editor",
+      "password": "password"
+    },
+    {
+      "email": "student@courseflow.com",
+      "role": "viewer",
+      "password": "password"
+    }
+  ],
+  "workflows": [
+    {
+      "graph_uuid": "<generated-at-seed-time>",
+      "workflow_uuid": "<generated-at-seed-time>",
+      "workflow_type": "activity",
+      "workflow_path": "/workflow/<workflow-uuid>/graph",
+      "sections": [
+        { "uuid": "<generated-at-seed-time>", "title": "E2E Section 1", "position": 0 },
+        { "uuid": "<generated-at-seed-time>", "title": "", "position": 1 },
+        { "uuid": "<generated-at-seed-time>", "title": "E2E Section 3", "position": 2 }
+      ],
+      "node_count": 0,
+      "edge_count": 0,
+      "channel_count": 3
+    }
+  ]
+}

@@ -1,0 +1,559 @@
+# Normalized requirements: main navigation (left sidebar)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (main navigation / sidebar)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/features/library/favourites_page_requirements_v1.yaml (FR-NAV-007 viewAllLink → /favourites; first land typeFilter committed to 'Projects' per FR-FAV-001); tests/docs/requirements/features/project/project_header_requirements_v1.yaml (projectTitle); tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml (workflowTitle; workflow-route access preconditions for FR-NAV-012 and FR-NAV-013); tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml (single-workflow archive clears parent node link—FR-WF-ARCH-003); tests/docs/requirements/features/project/project_archive_requirements_v1.yaml (project archive preserves in-project links—FR-PROJ-ARCH-003); tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-002 (denied workflow access — workflow-context mainNavigation blocks including containsSection and appearsInSection not rendered)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+
+uiObjectDefinitions:
+  mainNavigation:
+    meaning: Global left shell for primary app navigation.
+  mainNavigationPanel:
+    meaning: Left main navigation panel with primary product destinations.
+  collapseToggle:
+    meaning: Floating control on mainNavigation that collapses expanded main navigation.
+  expandIcon:
+    meaning: Expand affordance shown at top-left of mainNavigation when mainNavigation is collapsed.
+  brandLockup:
+    meaning: Product logo and product name label 'CourseFlow' at the top of mainNavigationPanel.
+  homeNavItem:
+    meaning: Navigation row labeled 'Home' in mainNavigation.
+  myLibraryNavItem:
+    meaning: Navigation row labeled 'My library' in mainNavigation.
+  exploreNavItem:
+    meaning: Navigation row labeled 'Explore' in mainNavigation.
+  favouritesSection:
+    meaning: Optional mainNavigation block labeled 'Favourites' with favouritedItemLink rows and optional viewAllLink beneath the section label.
+  favouritedItemLink:
+    meaning: Row link in favouritesSection; visible link text is that project's projectTitle.
+  projectTitle:
+    meaning: Canonical definition in tests/docs/requirements/features/project/project_header_requirements_v1.yaml.
+  viewAllLink:
+    meaning: Link labeled 'View all' in favouritesSection.
+  helpAndSupportLink:
+    meaning: Row labeled 'Help and support' in mainNavigation.
+  appearsInSection:
+    meaning: Optional mainNavigation block labeled 'Appears in' with relatedWorkflowList of relatedWorkflowLink rows beneath the section label.
+  containsSection:
+    meaning: Optional mainNavigation block labeled 'Contains' with relatedWorkflowList of relatedWorkflowLink rows beneath the section label.
+  relatedWorkflowList:
+    meaning: List container for relatedWorkflowLink rows inside appearsInSection or containsSection.
+  relatedWorkflowLink:
+    meaning: Row link in relatedWorkflowList; visible link text is that workflow's workflowTitle.
+  workflowTitle:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml.
+
+locatorMappings:
+  mainNavigation: "canonical_locators.yaml -> mainNavigation"
+  mainNavigationPanel: "canonical_locators.yaml -> mainNavigationPanel"
+  collapseToggle: "canonical_locators.yaml -> collapseToggle"
+  expandIcon: "canonical_locators.yaml -> expandIcon"
+  homeNavItem: "canonical_locators.yaml -> homeNavItem"
+  myLibraryNavItem: "canonical_locators.yaml -> myLibraryNavItem"
+  exploreNavItem: "canonical_locators.yaml -> exploreNavItem"
+  favouritedItemLink: "canonical_locators.yaml -> favouritedItemLink"
+  viewAllLink: "canonical_locators.yaml -> viewAllLink"
+  helpAndSupportLink: "canonical_locators.yaml -> helpAndSupportLink"
+  appearsInSection: "canonical_locators.yaml -> appearsInSection"
+  containsSection: "canonical_locators.yaml -> containsSection"
+  relatedWorkflowList: "canonical_locators.yaml -> relatedWorkflowList"
+  relatedWorkflowLink: "canonical_locators.yaml -> relatedWorkflowLink"
+
+requirements:
+  - id: FR-NAV-001
+    title: Main navigation presence
+
+    designEvidence:
+      - FIGMA-NAV-FAV-6PLUS
+      - FIGMA-NAV-FAV-5MINUS
+      - FIGMA-NAV-FAV-NONE
+      - FIGMA-NAV-HOVER-COLLAPSE
+      - FIGMA-NAV-WORKFLOW-CONTEXT
+      - FIGMA-NAV-SIDEBAR-COLLAPSED
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - mainNavigationPanel
+      - brandLockup
+      - homeNavItem
+      - myLibraryNavItem
+      - exploreNavItem
+      - favouritesSection
+      - helpAndSupportLink
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - mainNavigation is not collapsed
+
+    trigger: []
+
+    mainFlow:
+      - mainNavigationPanel shows brandLockup at the top
+      - mainNavigation shows homeNavItem, myLibraryNavItem, exploreNavItem, and helpAndSupportLink
+      - when user has at least one favourited project, mainNavigation shows favouritesSection
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - mainNavigation is visible
+      - mainNavigationPanel is visible
+      - brandLockup is visible in mainNavigationPanel with product name label 'CourseFlow'
+      - homeNavItem is visible with label 'Home'
+      - myLibraryNavItem is visible with label 'My library'
+      - exploreNavItem is visible with label 'Explore'
+      - helpAndSupportLink is visible with label 'Help and support'
+      - given user has at least one favourited project, favouritesSection is visible
+      - given user has zero favourited projects, favouritesSection is not visible in mainNavigation
+      - given user has zero favourited projects, viewAllLink is not visible in mainNavigation
+
+    openQuestions: []
+
+  - id: FR-NAV-002
+    title: Home
+
+    designEvidence:
+      - FIGMA-NAV-WORKFLOW-CONTEXT
+      - FIGMA-NAV-FAV-6PLUS
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - homeNavItem
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - mainNavigation is not collapsed
+
+    trigger:
+      - user clicks homeNavItem
+
+    mainFlow:
+      - application navigates to route pattern '/home'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - current route matches '/home'
+      - homeNavItem shows selected styling
+
+    openQuestions: []
+
+  - id: FR-NAV-003
+    title: My library
+
+    designEvidence:
+      - FIGMA-NAV-WORKFLOW-CONTEXT
+      - FIGMA-NAV-FAV-6PLUS
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - myLibraryNavItem
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - mainNavigation is not collapsed
+
+    trigger:
+      - user clicks myLibraryNavItem
+
+    mainFlow:
+      - application navigates to route pattern '/library'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - current route matches '/library'
+      - myLibraryNavItem shows selected styling
+
+    openQuestions: []
+
+  - id: FR-NAV-004
+    title: Explore
+
+    designEvidence:
+      - FIGMA-NAV-WORKFLOW-CONTEXT
+      - FIGMA-NAV-FAV-6PLUS
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - exploreNavItem
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - mainNavigation is not collapsed
+
+    trigger:
+      - user clicks exploreNavItem
+
+    mainFlow:
+      - application navigates to route pattern '/explore'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - current route matches '/explore'
+      - exploreNavItem shows selected styling
+
+    openQuestions: []
+
+  - id: FR-NAV-005
+    title: Favourites list
+
+    designEvidence:
+      - FIGMA-NAV-FAV-5MINUS
+      - FIGMA-NAV-FAV-NONE
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - favouritesSection
+      - favouritedItemLink
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - mainNavigation is not collapsed
+      - user has between 1 and 5 favourited projects
+
+    trigger: []
+
+    mainFlow:
+      - favouritesSection shows up to five favouritedItemLink rows ordered by most recently favourited first
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - favouritesSection is visible with section label 'Favourites'
+      - between 1 and 5 favouritedItemLink rows are visible in favouritesSection
+      - favouritedItemLink rows in favouritesSection are ordered most recently favourited first
+      - each visible favouritedItemLink shows projectTitle for its favourited project as link text
+      - visible favouritedItemLink rows are clickable
+
+    openQuestions: []
+
+  - id: FR-NAV-006
+    title: Favourites list and View all visibility
+
+    designEvidence:
+      - FIGMA-NAV-FAV-6PLUS
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - favouritesSection
+      - favouritedItemLink
+      - viewAllLink
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - mainNavigation is not collapsed
+      - user has at least six favourited projects
+
+    trigger: []
+
+    mainFlow:
+      - favouritesSection shows five favouritedItemLink rows ordered by most recently favourited first
+      - viewAllLink is visible with label 'View all' below those favouritedItemLink rows
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - favouritesSection is visible with section label 'Favourites'
+      - five favouritedItemLink rows are visible in favouritesSection
+      - favouritedItemLink rows in favouritesSection are ordered most recently favourited first
+      - each visible favouritedItemLink shows projectTitle for its favourited project as link text
+      - viewAllLink is visible with label 'View all' below the five favouritedItemLink rows
+
+    openQuestions: []
+
+  - id: FR-NAV-007
+    title: Favourites list and View all click
+
+    designEvidence:
+      - FIGMA-NAV-FAV-6PLUS
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - viewAllLink
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - mainNavigation is not collapsed
+      - user has at least six favourited projects
+      - viewAllLink is visible
+
+    trigger:
+      - user clicks viewAllLink
+
+    mainFlow:
+      - application navigates to route pattern '/favourites'
+      - on first land on favouritesPage, typeFilter is committed to 'Projects' by default per tests/docs/requirements/features/library/favourites_page_requirements_v1.yaml FR-FAV-001
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - current route matches '/favourites'
+      - given user clicks viewAllLink, favouritesPage typeFilter is committed to 'Projects' on first land per tests/docs/requirements/features/library/favourites_page_requirements_v1.yaml FR-FAV-001
+
+    openQuestions: []
+
+  - id: FR-NAV-008
+    title: Favourited project click
+
+    designEvidence:
+      - FIGMA-NAV-FAV-6PLUS
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - favouritedItemLink
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - mainNavigation is not collapsed
+      - user has at least one favourited project
+
+    trigger:
+      - user clicks favouritedItemLink
+
+    mainFlow:
+      - application navigates to route pattern '/project/{id}/workflows' for the clicked favourited project
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user clicks favouritedItemLink, current route matches '/project/{id}/workflows' for that favourited project
+
+    openQuestions: []
+
+  - id: FR-NAV-009
+    title: Main navigation collapse
+
+    designEvidence:
+      - FIGMA-NAV-HOVER-COLLAPSE
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - mainNavigationPanel
+      - collapseToggle
+      - expandIcon
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - mainNavigation is not collapsed
+      - user is hovering anywhere on mainNavigation
+
+    trigger:
+      - user clicks collapseToggle
+
+    mainFlow:
+      - when mainNavigation is expanded and user is hovering mainNavigation, collapseToggle is visible
+      - when mainNavigation is expanded and user is not hovering mainNavigation, collapseToggle is not visible
+      - user clicks collapseToggle
+      - mainNavigation expanded content is not visible
+      - when mainNavigation is collapsed, homeNavItem, myLibraryNavItem, exploreNavItem, favouritesSection, helpAndSupportLink, containsSection, and appearsInSection are not visible in mainNavigation
+      - expandIcon is visible at the top left of the main navigation region
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given mainNavigation is expanded and user is hovering mainNavigation, collapseToggle is visible
+      - given mainNavigation is expanded and user is not hovering mainNavigation, collapseToggle is not visible
+      - after user clicks collapseToggle, mainNavigation expanded content is not visible
+      - after user clicks collapseToggle, expandIcon is visible at the top left of the main navigation region
+      - given mainNavigation is collapsed, homeNavItem, myLibraryNavItem, exploreNavItem, favouritesSection, helpAndSupportLink, containsSection, and appearsInSection are not visible
+
+    openQuestions: []
+
+  - id: FR-NAV-010
+    title: Main navigation expand
+
+    designEvidence:
+      - FIGMA-NAV-SIDEBAR-COLLAPSED
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - mainNavigationPanel
+      - collapseToggle
+      - expandIcon
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - mainNavigation is collapsed
+
+    trigger:
+      - user clicks expandIcon
+
+    mainFlow:
+      - mainNavigationPanel is visible
+      - expandIcon is not visible
+      - collapseToggle is visible only while user is hovering mainNavigation per FR-NAV-009
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - mainNavigationPanel is visible
+      - expandIcon is not visible
+      - given user is hovering mainNavigation, collapseToggle is visible
+      - given user is not hovering mainNavigation, collapseToggle is not visible
+
+    openQuestions: []
+
+  - id: FR-NAV-011
+    title: Help and support
+
+    designEvidence:
+      - FIGMA-NAV-WORKFLOW-CONTEXT
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - helpAndSupportLink
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - mainNavigation is not collapsed
+
+    trigger:
+      - user clicks helpAndSupportLink
+
+    mainFlow:
+      - URL 'https://courseflow.freshdesk.com/support/home' is loaded in a new browser tab
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user clicks helpAndSupportLink, URL 'https://courseflow.freshdesk.com/support/home' is loaded in a new browser tab
+
+    openQuestions: []
+
+  - id: FR-NAV-012
+    title: Contains section on workflow routes
+
+    designEvidence:
+      - FIGMA-NAV-WORKFLOW-CONTEXT
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - containsSection
+      - relatedWorkflowList
+      - relatedWorkflowLink
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml documentPreconditions for workflow routes hold
+      - mainNavigation is not collapsed
+      - current route matches '/workflow/{id}/*'
+
+    trigger: []
+
+    mainFlow:
+      - when active workflow type is activity, containsSection is not visible in mainNavigation
+      - when active workflow type is course or program and no child workflow is linked through a workflowNode, containsSection is not visible in mainNavigation
+      - when active workflow type is course and at least one activity workflow is linked through a workflowNode, containsSection is visible in mainNavigation with label 'Contains'
+      - when active workflow type is program and at least one course workflow is linked through a workflowNode, containsSection is visible in mainNavigation with label 'Contains'
+      - relatedWorkflowList in containsSection shows one relatedWorkflowLink per linked child workflow, sorted A-Z by workflowTitle
+      - containsSection lists only child workflows currently linked through a workflowNode; when a linked child is archived individually and parent node links are cleared per tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml FR-WF-ARCH-003, that child no longer appears in relatedWorkflowList; when the whole parent project is archived per tests/docs/requirements/features/project/project_archive_requirements_v1.yaml FR-PROJ-ARCH-003, in-project links are preserved for project restore and relatedWorkflowList reflects those links again after restore per FR-LIB-006
+      - when user clicks relatedWorkflowLink in containsSection, route pattern '/workflow/{id}' for that linked workflow is loaded in a new browser tab
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given active workflow type is activity on a workflow route, containsSection is not visible in mainNavigation
+      - given active workflow type is course with no activity linked through a workflowNode, containsSection is not visible in mainNavigation
+      - given active workflow type is program with no course linked through a workflowNode, containsSection is not visible in mainNavigation
+      - given active workflow type is course with at least one linked activity workflow, containsSection is visible with label 'Contains' and relatedWorkflowList shows relatedWorkflowLink rows sorted A-Z by workflowTitle
+      - given active workflow type is program with at least one linked course workflow, containsSection is visible with label 'Contains' and relatedWorkflowList shows relatedWorkflowLink rows sorted A-Z by workflowTitle
+      - given user clicks relatedWorkflowLink in containsSection, route pattern '/workflow/{id}' for that linked workflow is loaded in a new browser tab
+      - given workflow workspace access preconditions do not hold on a workflow route, assert per tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-002
+
+    openQuestions: []
+
+  - id: FR-NAV-013
+    title: Appears in section on workflow routes
+
+    designEvidence:
+      - FIGMA-NAV-WORKFLOW-CONTEXT
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+      - appearsInSection
+      - relatedWorkflowList
+      - relatedWorkflowLink
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml documentPreconditions for workflow routes hold
+      - mainNavigation is not collapsed
+      - current route matches '/workflow/{id}/*'
+
+    trigger: []
+
+    mainFlow:
+      - when active workflow type is program, appearsInSection is not visible in mainNavigation
+      - when active workflow type is activity or course and no parent workflow links through a workflowNode, appearsInSection is not visible in mainNavigation
+      - when active workflow type is activity and at least one course workflow links to this activity through a workflowNode, appearsInSection is visible in mainNavigation with label 'Appears in'
+      - when active workflow type is course and at least one program workflow links to this course through a workflowNode, appearsInSection is visible in mainNavigation with label 'Appears in'
+      - relatedWorkflowList in appearsInSection shows one relatedWorkflowLink per linking parent workflow, sorted A-Z by workflowTitle
+      - when user clicks relatedWorkflowLink in appearsInSection, route pattern '/workflow/{id}' for that parent workflow is loaded in a new browser tab
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given active workflow type is program on a workflow route, appearsInSection is not visible in mainNavigation
+      - given active workflow type is activity with no linking course workflow, appearsInSection is not visible in mainNavigation
+      - given active workflow type is course with no linking program workflow, appearsInSection is not visible in mainNavigation
+      - given active workflow type is activity with at least one linking course workflow, appearsInSection is visible with label 'Appears in' and relatedWorkflowList shows relatedWorkflowLink rows sorted A-Z by workflowTitle
+      - given active workflow type is course with at least one linking program workflow, appearsInSection is visible with label 'Appears in' and relatedWorkflowList shows relatedWorkflowLink rows sorted A-Z by workflowTitle
+      - given user clicks relatedWorkflowLink in appearsInSection, route pattern '/workflow/{id}' for that parent workflow is loaded in a new browser tab
+      - given workflow workspace access preconditions do not hold on a workflow route, assert per tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-002
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-NAV-FAV-6PLUS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=608-4559&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-NAV-FAV-5MINUS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=2374-90306&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-NAV-FAV-NONE
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=2374-90508&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-NAV-HOVER-COLLAPSE
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=2374-91141&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-NAV-WORKFLOW-CONTEXT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=2726-96617&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-NAV-SIDEBAR-COLLAPSED
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=807-5882&t=lsKQpS4Jq8MOZwMT-1

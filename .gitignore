@@ -40,6 +40,12 @@ local_settings.py
 /react/node_modules/
 /react/build/
 /react/dist/
+/tests/.env
+/tests/node_modules/
+/tests/playwright/.auth/
+/tests/playwright-report/
+/tests/test-results/
+/tests/.playwright-fixtures/workflow.json
 dist
 /course_flow_legacy/static/course_flow/js/react/dist/
 

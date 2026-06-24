@@ -234,7 +234,7 @@ Do **not** interrogate the user for trivial style preferences.
 Where practical, generated tests should include traceability comments such as:
 
 ```ts
-// FR: FR-SEC-006 (tests/docs/requirements/original/workflow_delete_section_requirements_v1.yaml)
+// FR: FR-SEC-006 (tests/docs/requirements/features/workflow/workflow_delete_section_requirements_v1.yaml)
 // Design evidence: FIGMA_SEC_OE_HOVER, FIGMA_SEC_DEL_WARN, FIGMA_SEC_OE_EDIT
 // Role: owner
 ```

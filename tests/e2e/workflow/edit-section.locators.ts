@@ -1,79 +1,82 @@
 import type { Locator, Page } from '@playwright/test';
 
 /**
- * Locators for Edit Section e2e — aligned with tests/docs/Mapping FR UI.md
- * LOCATOR_CONSTANT column. Implementation references: react/.../Sidebar/index.tsx,
- * react/.../Week/index.tsx (Section = Week in code).
+ * Locators for Edit Section e2e — aligned with
+ * tests/docs/requirements/features/shared/canonical_locators.yaml (workflowSection* uiObjects).
  */
 
-/** Maps [Right sidebar] */
-export const SIDEBAR_LOCATOR = '[data-test-id="sidebar"]';
+export const WORKFLOW_RIGHT_SIDEBAR = '[data-test-id="workflow-right-sidebar"]';
+export const WORKFLOW_SECTION_CONTAINER = '[data-section-id]';
+export const WORKFLOW_EDIT_SECTION_FORM = '[data-test-id="workflow-edit-section-form"]';
 
 export function rightSidebar(page: Page): Locator {
-  return page.locator(SIDEBAR_LOCATOR);
+  return page.locator(WORKFLOW_RIGHT_SIDEBAR);
 }
 
-/**
- * Maps [Section header] — `StyledWeek.WeekHeader` renders as `header` inside
- * `[data-week-id]`.
- */
-export function sectionHeader(page: Page, weekId: string): Locator {
-  return page.locator(`[data-week-id="${weekId}"] > header`);
+export function editSectionForm(page: Page): Locator {
+  return page.locator(WORKFLOW_EDIT_SECTION_FORM);
 }
 
-/** First Section on the board when week id is unknown (use only when FR allows any Section). */
-export function firstSectionHeader(page: Page): Locator {
-  return page.locator('[data-week-id]').first().locator('> header');
+export function sectionContainer(page: Page, sectionUuid: string): Locator {
+  return page.locator(`[data-section-id="${sectionUuid}"]`);
 }
 
-/**
- * FR bracket [Insert below] / Mapping "Insert below" → AddCircleOutlineIcon.
- * Missing Requirement: accessible name in app is not the literal "Insert below".
- */
-export const INSERT_BELOW_SECTION_NAME = /Insert week below/i;
+export function sectionHeader(page: Page, sectionUuid: string): Locator {
+  return sectionContainer(page, sectionUuid).locator('> header');
+}
 
-/**
- * FR [Duplicate] on hover — Mapping Duplicate → ContentCopyIcon.
- * Missing Requirement: UI string is not literal "Duplicate".
- */
-export const DUPLICATE_SECTION_HOVER_NAME = /Duplicate week below/i;
+/** Maps uiObject workflowSectionNumberLabel */
+export function sectionNumberLabel(page: Page, sectionUuid: string): Locator {
+  return sectionHeader(page, sectionUuid).locator('span').first();
+}
 
-/**
- * FR [Delete] on hover — Mapping Delete → DeleteOutlinedIcon.
- * Missing Requirement: UI string is not literal "Delete".
- */
-export const DELETE_SECTION_HOVER_NAME = /Delete week/i;
+export function sectionHoverMenu(page: Page, sectionUuid: string): Locator {
+  return sectionHeader(page, sectionUuid).locator('.hover-menu');
+}
 
-/** FR [Comment] / [Comment icon] — Mapping Comment → CommentOutlinedIcon. */
-export const COMMENT_HOVER_NAME = /^Comments$/i;
+export function sectionContainers(page: Page): Locator {
+  return page.locator(WORKFLOW_SECTION_CONTAINER);
+}
 
-/** FR [Edit section] — SidebarTitle uses _t('Edit section'). */
+export const INSERT_SECTION_BELOW_NAME = 'Insert section below';
+export const DUPLICATE_SECTION_BELOW_NAME = 'Duplicate section below';
+export const DELETE_SECTION_HOVER_NAME = 'Delete section';
+export const COMMENT_HOVER_NAME = 'Comments';
+
 export const EDIT_SECTION_HEADING = 'Edit section';
 
-/**
- * FR [Title] — not in Mapping FR UI.md; literal would be "Title".
- * Missing Requirement: EditSection TextField uses label _t('Week'), not "Title".
- */
+export function insertBelowButtonInSectionHeader(page: Page, sectionUuid: string): Locator {
+  return sectionHoverMenu(page, sectionUuid).getByRole('button', {
+    name: INSERT_SECTION_BELOW_NAME,
+  });
+}
+
+export function duplicateBelowButtonInSectionHeader(page: Page, sectionUuid: string): Locator {
+  return sectionHoverMenu(page, sectionUuid).getByRole('button', {
+    name: DUPLICATE_SECTION_BELOW_NAME,
+  });
+}
+
 export function titleFieldInEditSectionForm(page: Page): Locator {
-  return rightSidebar(page).getByLabel(/^Week$/i);
+  return editSectionForm(page).getByLabel(/^Section$/i);
 }
 
-/** FR [Duplicate] button in sidebar — _t('Duplicate'). */
 export function duplicateButtonInSidebar(page: Page): Locator {
-  return rightSidebar(page).getByRole('button', { name: /^Duplicate$/i });
+  return editSectionForm(page).getByRole('button', { name: /^Duplicate$/i });
 }
 
-/** FR [Delete] button in sidebar — _t('Delete'). */
 export function deleteButtonInSidebar(page: Page): Locator {
-  return rightSidebar(page).getByRole('button', { name: /^Delete$/i });
+  return editSectionForm(page).getByRole('button', { name: /^Delete$/i });
 }
 
-/** Modal FR [Delete section] — _t('Delete section'). */
 export function deleteSectionConfirmButton(page: Page): Locator {
   return page.getByRole('button', { name: /^Delete section$/i });
 }
 
-/** Modal FR [Cancel] — _t('Cancel'). */
 export function deleteSectionCancelButton(page: Page): Locator {
   return page.getByRole('button', { name: /^Cancel$/i });
+}
+
+export function deleteSectionDialog(page: Page): Locator {
+  return page.locator('[aria-labelledby="delete-section-part-modal"]');
 }

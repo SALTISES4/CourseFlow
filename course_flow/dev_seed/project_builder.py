@@ -58,6 +58,11 @@ def _get_existing_admin() -> User:
         ) from exc
 
 
+def get_existing_admin() -> User:
+    """Return the pre-created admin account required for seed commands."""
+    return _get_existing_admin()
+
+
 def _ensure_demo_user(
     *,
     email: str,
@@ -115,12 +120,18 @@ def create_project(
     *,
     fake,
     rng: SeededRNG,
+    title: str | None = None,
+    description: str | None = None,
 ) -> Project:
-    title = f"{DEV_SEED_PROJECT_TITLE_PREFIX}{fake.catch_phrase()}"
+    resolved_title = (
+        title
+        if title is not None
+        else f"{DEV_SEED_PROJECT_TITLE_PREFIX}{fake.catch_phrase()}"
+    )
     return Project.objects.create(
         owner=owner,
-        title=title,
-        description=fake.text(max_nb_chars=400),
+        title=resolved_title,
+        description=description if description is not None else fake.text(max_nb_chars=400),
         is_published=False,
         is_template=False,
     )

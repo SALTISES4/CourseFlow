@@ -28,6 +28,11 @@ py_log_file := "logs/python.log"
 # Infra services you want Compose to manage in dev
 infra_services := "postgres"
 
+# Logical Postgres databases on the single compose postgres service.
+# Dev and E2E share one Python venv (.venv); switch target DB via POSTGRES_DB on each command.
+dev_db_name := "courseflow"
+e2e_db_name := "courseflow_e2e"
+
 # we need to use volta because nvm doens't play very well in
 # docker etc.
 frontend_bootstrap := "\
@@ -67,7 +72,7 @@ commamd-confirm:
 # ----------------------------
 [group: 'aux']
 export-xml:
-    repomix ./course_flow -o ./assets/repomix.xml --ignore ./assets/
+    repomix --include "./course_flow,./tests,./react,./docs,./cursor,./circleci"  -o ./assets/repomix.xml --ignore ./assets/
 
 # ----------------------------
 # VCS
@@ -131,6 +136,31 @@ docker-restart:
 docker-reset:
   {{ compose_cmd }} down -v
 
+# Create courseflow_e2e on an existing volume (idempotent; safe alongside dev data).
+[group: 'docker aliases']
+postgres-ensure-e2e-db:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  user="${POSTGRES_USER:-courseflow}"
+  {{ compose_cmd }} up -d postgres
+  if {{ compose_cmd }} exec -T postgres psql -U "$user" -d "{{ e2e_db_name }}" -c "SELECT 1" >/dev/null 2>&1; then
+    exit 0
+  fi
+  {{ compose_cmd }} exec -T postgres psql -U "$user" -d postgres -v ON_ERROR_STOP=1 \
+    -c "CREATE DATABASE {{ e2e_db_name }} OWNER \"$user\";"
+
+# Drop and recreate only the E2E database (dev database untouched).
+[group: 'docker aliases']
+postgres-reset-e2e-db:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  user="${POSTGRES_USER:-courseflow}"
+  just postgres-ensure-e2e-db
+  {{ compose_cmd }} exec -T postgres psql -U "$user" -d postgres -v ON_ERROR_STOP=1 \
+    -c "DROP DATABASE IF EXISTS {{ e2e_db_name }};"
+  {{ compose_cmd }} exec -T postgres psql -U "$user" -d postgres -v ON_ERROR_STOP=1 \
+    -c "CREATE DATABASE {{ e2e_db_name }} OWNER \"$user\";"
+
 # ----------------------------
 # Django
 # ----------------------------
@@ -167,16 +197,38 @@ django-seed-graph:
 django-seed-notifications:
   uv run cf-seed-dev-notifications
 
+# Synthetic Faker-driven data for local UI development — not for Playwright E2E.
 [group: 'Django']
 django-seed:
   just django-seed-graph
   just django-seed-notifications
 
+[group: 'Django']
+django-migrate-e2e:
+  POSTGRES_DB={{ e2e_db_name }} uv run python manage.py migrate
+
+[group: 'Django']
+django-create-superuser-e2e:
+  POSTGRES_DB={{ e2e_db_name }} DJANGO_SUPERUSER_EMAIL=admin@courseflow.com DJANGO_SUPERUSER_PASSWORD='password' uv run python manage.py createsuperuser --noinput
+
+[group: 'Django']
+django-run-e2e:
+  POSTGRES_DB={{ e2e_db_name }} uv run python manage.py runserver
+
+# Deterministic contract fixtures for Playwright E2E (writes manifest for tests).
+[group: 'Django']
+django-seed-e2e-tests:
+  POSTGRES_DB={{ e2e_db_name }} uv run cf-seed-e2e-data --clear-and-seed --manifest-path tests/.playwright-fixtures/workflow.json
+
+[group: 'Django']
+django-clear-e2e-tests:
+  POSTGRES_DB={{ e2e_db_name }} uv run cf-seed-e2e-data --clear
+
 
 [group: 'Django']
 django-wait-db:
   bash -lc 'for i in {1..60}; do \
-    uv run python -c "import psycopg; psycopg.connect(\"host=127.0.0.1 port=5432 dbname=courseflow user=courseflow password=courseflow\").close()" \
+    uv run python -c "import psycopg; psycopg.connect(\"host=127.0.0.1 port=5433 dbname=courseflow user=courseflow password=courseflow\").close()" \
       && exit 0; \
     sleep 2; \
   done; echo "DB not ready"; exit 1'
@@ -185,14 +237,28 @@ django-wait-db:
 # Backend
 # ----------------------------
 
-# create the python virtual env
+# Create .venv once for all workflows (dev, E2E, pytest). Do not delete or recreate when
+# switching databases — IDE interpreters (e.g. PyCharm) are bound to this path.
+# Recreates only when .venv/bin/python is missing (e.g. stale symlink to removed /usr/local/bin/python3).
 [group: 'Backend']
 create-venv:
-  pip install uv
-  uv venv .venv
+  #!/usr/bin/env bash
+  set -euo pipefail
+  if ! command -v uv >/dev/null 2>&1; then
+    pip install uv
+  fi
+  if [ -d .venv ] && ! .venv/bin/python -c "import sys" 2>/dev/null; then
+    echo ".venv exists but its Python interpreter is missing or broken — recreating with uv-managed 3.12."
+    rm -rf .venv
+  fi
+  if [ -d .venv ]; then
+    echo ".venv already exists — keeping it."
+  else
+    uv venv .venv --python 3.12
+  fi
 
 [group: 'Backend']
-uv-sync:
+uv-sync: create-venv
   uv sync --all-extras
 
 [group: 'Backend']
@@ -275,7 +341,7 @@ init:
   just docker-build
   just create-venv
   just uv-sync
-  just migrate
+  just django-migrate
 
   just pre-commit-install
 
@@ -305,10 +371,8 @@ dev:
   just django-run
 
 
-
-
 [group: 'Workflows']
-rebuild-test-db:
+rebuild-dev-db:
   just django-kill-background
   just docker-reset
   just docker-up
@@ -317,3 +381,30 @@ rebuild-test-db:
   just django-create-superuser
   just django-seed
   just django-kill-background
+
+# Reset E2E database only (dev database and volume unchanged).
+[group: 'Workflows']
+rebuild-e2e-db:
+  just django-kill-background
+  just docker-up
+  just django-wait-db
+  just postgres-reset-e2e-db
+  just django-migrate-e2e
+  just django-create-superuser-e2e
+  just django-seed-e2e-tests
+  just django-kill-background
+
+# Idempotent E2E harness prep: DB exists, migrate, superuser, fixtures + manifest (no volume wipe).
+[group: 'Workflows']
+e2e-prepare:
+  just docker-up
+  just django-wait-db
+  just postgres-ensure-e2e-db
+  just django-migrate-e2e
+  just django-create-superuser-e2e || true
+  just django-seed-e2e-tests
+
+# Deprecated alias — use rebuild-dev-db (UI dev seed, not E2E fixtures).
+[group: 'Workflows']
+rebuild-test-db:
+  just rebuild-dev-db

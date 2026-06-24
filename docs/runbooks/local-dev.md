@@ -26,10 +26,26 @@ cp .env.example .env
 Variables:
 
 - **Compose**: `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_PORT`
-- **Django (host → container)**: `POSTGRES_HOST` (default `127.0.0.1`); database name/user/password/port align with the same values Compose uses
+- **E2E database** (same Postgres container): `POSTGRES_E2E_DB` (default `courseflow_e2e`); created on first volume init or via `just postgres-ensure-e2e-db`
+- **Django (host → container)**: `POSTGRES_HOST` (default `127.0.0.1`); database name/user/password/port align with the target logical database (`courseflow` for dev, `courseflow_e2e` for Playwright — see `just django-run-e2e`)
 - **Optional**: `DJANGO_SECRET_KEY`, `DJANGO_DEBUG`, `DJANGO_ALLOWED_HOSTS`
 
 `course_flow/settings.py` loads `.env` from the repository root via `python-dotenv`.
+
+## Dev vs E2E databases (one venv, two logical DBs)
+
+Local UI development and Playwright E2E use **one Python virtual environment** (`.venv` at the repo root). Do **not** create separate venvs or delete/recreate `.venv` when switching contexts — IDE interpreters (PyCharm, VS Code) are configured against that path.
+
+| Context | Logical database | Typical Django command |
+| --- | --- | --- |
+| UI development | `courseflow` | `just django-run` (reads `POSTGRES_DB` from root `.env`) |
+| Playwright E2E | `courseflow_e2e` | `just django-run-e2e` (sets `POSTGRES_DB` for that process only) |
+
+Both databases live on the **same** Postgres Docker service. E2E recipes (`just django-migrate-e2e`, `just django-seed-e2e-tests`, `just e2e-prepare`) pass `POSTGRES_DB=courseflow_e2e` on the command line; root `.env` can keep `POSTGRES_DB=courseflow` for everyday dev.
+
+**PyCharm:** Point the project SDK at `.venv` once. For E2E work, run `just django-run-e2e` in a terminal or add `POSTGRES_DB=courseflow_e2e` to a run configuration — do not point the IDE at a second venv.
+
+See [playwright_execution_guide.md](../../tests/docs/runbooks/playwright_execution_guide.md) for the full E2E stack.
 
 ## 2. Start Postgres
 
@@ -41,9 +57,15 @@ Persistence uses the named volume `courseflow_pgdata`. Check health with `docker
 
 ## 3. Python dependencies
 
+One-time (or after `pyproject.toml` changes):
+
 ```bash
 uv sync
 ```
+
+`just create-venv` creates `.venv` only if it is missing; it does not remove a healthy environment. If `.venv/bin/python` is broken (common when an IDE pointed at a removed `/usr/local/bin/python3`), it is recreated using uv-managed Python 3.12 (see repo-root `.python-version`).
+
+If `just uv-sync` prints `Removed virtual environment at: .venv` on every run, the existing `.venv` had a stale interpreter — run `just create-venv && just uv-sync` once, then point PyCharm at `.venv/bin/python` (not a separate interpreter path).
 
 Runtime packages: `django`, `django-ninja`, `psycopg[binary]`, `python-dotenv`. Dev: `pytest`, `pytest-django`, `ruff`.
 
