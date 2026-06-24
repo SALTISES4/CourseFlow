@@ -42,9 +42,8 @@ export function workflowNodeHoverDeleteItem(page: Page, nodeUuid: string): Locat
   return workflowNode(page, nodeUuid).getByRole('button', { name: DELETE_NODE_HOVER_NAME });
 }
 
-/** Color band at top of workflowNode */
 export function workflowNodeBorder(page: Page, nodeUuid: string): Locator {
-  return workflowNode(page, nodeUuid).locator('> div').first();
+  return workflowNode(page, nodeUuid).locator('> div').nth(1);
 }
 
 export async function workflowNodeHasSelectedBorder(page: Page, nodeUuid: string): Promise<boolean> {
@@ -64,7 +63,9 @@ export function workflowChannelHeader(page: Page, channelUuid: string): Locator 
 }
 
 export function workflowChannelHeaderByTitle(page: Page, title: string): Locator {
-  return workflowChannelHeaders(page).filter({ hasText: title });
+  return workflowChannelHeaders(page).filter({
+    has: page.getByText(title, { exact: true }),
+  });
 }
 
 export function workflowChannelHoverCommentsItem(page: Page, channelUuid: string): Locator {
@@ -97,6 +98,27 @@ export function workflowChannelHoverDeleteItem(page: Page, channelUuid: string):
 
 export function workflowEditChannelFormColorField(page: Page): Locator {
   return workflowRightSidebarContentPanel(page).getByLabel(/^Color$/i);
+}
+
+export function workflowEditChannelFormDuplicateButton(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByRole('button', { name: 'Duplicate', exact: true });
+}
+
+export function workflowEditChannelFormDeleteButton(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByRole('button', { name: 'Delete', exact: true });
+}
+
+/** canonical: workflowChannelDeleteDialog */
+export function workflowChannelDeleteDialog(page: Page): Locator {
+  return page.getByRole('dialog').filter({ hasText: 'You are about to delete a node category' });
+}
+
+export function workflowChannelDeleteDialogCancelButton(page: Page): Locator {
+  return workflowChannelDeleteDialog(page).getByRole('button', { name: 'Cancel', exact: true });
+}
+
+export function workflowChannelDeleteDialogConfirmButton(page: Page): Locator {
+  return workflowChannelDeleteDialog(page).getByRole('button', { name: 'Delete node category', exact: true });
 }
 
 /** canonical: workflowEditNodeForm heading */
@@ -149,4 +171,31 @@ export function workflowEditNodeFormDeleteButton(page: Page): Locator {
 /** canonical: workflowEditChannelFormTitleField */
 export function workflowEditChannelFormTitleField(page: Page): Locator {
   return workflowRightSidebarContentPanel(page).getByLabel(/^Title$/i);
+}
+
+export function workflowChannelHeaderBackground(page: Page, channelUuid: string): Locator {
+  return workflowChannelHeader(page, channelUuid).locator('> div > div').first();
+}
+
+export async function workflowChannelHasSelectedBorder(
+  page: Page,
+  channelUuid: string,
+): Promise<boolean> {
+  const shadow = await workflowChannelHeaderBackground(page, channelUuid).evaluate((el) =>
+    getComputedStyle(el).boxShadow,
+  );
+  return /2px/.test(shadow);
+}
+
+export async function workflowChannelSelectedBorderCount(page: Page): Promise<number> {
+  const headers = workflowChannelHeaders(page);
+  const count = await headers.count();
+  let selected = 0;
+  for (let i = 0; i < count; i++) {
+    const uuid = await headers.nth(i).getAttribute('data-column-id');
+    if (uuid && (await workflowChannelHasSelectedBorder(page, uuid))) {
+      selected += 1;
+    }
+  }
+  return selected;
 }

@@ -5,8 +5,13 @@ import {
   sectionHeader,
   titleFieldInEditSectionForm,
 } from './edit-section.locators';
-import { openSectionCommentsViaHover, openNodeCommentsViaHover, openChannelCommentsViaHover, firstWorkflowNodeUuid, channelUuidByTitle } from './comments-tab.helpers';
+import { openSectionCommentsViaHover, openNodeCommentsViaHover, openChannelCommentsViaHover, openOutcomeCommentsViaHover, firstWorkflowNodeUuid, channelUuidByTitle, gotoOutcomesView } from './comments-tab.helpers';
 import { workflowEditNodeForm, workflowEditChannelForm } from './workflow-graph.locators';
+import {
+  workflowEditOutcomeForm,
+  workflowEditOutcomeFormTitleField,
+  workflowOutcomeHeader,
+} from './workflow-outcome.locators';
 import { workflowRightSidebarEditTab } from '../../shared/locators/workflow';
 
 /**
@@ -15,6 +20,7 @@ import { workflowRightSidebarEditTab } from '../../shared/locators/workflow';
  */
 
 const E2E_CHANNEL_A = 'E2E Channel A';
+const E2E_OUTCOME_TITLE = 'E2E Outcome 1';
 
 test.describe('Comments tab — host matches Edit tab (FR-WF-COMMENTS-005)', () => {
   test.beforeEach(async ({ page, workflow }) => {
@@ -60,5 +66,25 @@ test.describe('Comments tab — host matches Edit tab (FR-WF-COMMENTS-005)', () 
 
     await expect(commentsTabInSidebar(page)).not.toHaveAttribute('aria-pressed', 'true');
     await expect(workflowEditChannelForm(page)).toBeVisible();
+  });
+
+  test('FR-WF-COMMENTS-005: Edit tab after outcome comments shows workflowEditOutcomeForm for same outcome', async ({
+    page,
+    workflow,
+  }) => {
+    if (workflow.outcomes.length === 0) {
+      test.skip(true, 'E2E fixture has no outcomes; run just django-seed-e2e-tests.');
+    }
+
+    await gotoOutcomesView(page, workflow.path);
+    const outcome = workflow.firstOutcome();
+
+    await openOutcomeCommentsViaHover(page, E2E_OUTCOME_TITLE);
+    await workflowRightSidebarEditTab(page).click();
+
+    await expect(commentsTabInSidebar(page)).not.toHaveAttribute('aria-pressed', 'true');
+    await expect(workflowEditOutcomeForm(page)).toBeVisible();
+    await expect(workflowEditOutcomeFormTitleField(page)).toHaveValue(outcome.title);
+    await expect(workflowOutcomeHeader(page, E2E_OUTCOME_TITLE)).toBeVisible();
   });
 });

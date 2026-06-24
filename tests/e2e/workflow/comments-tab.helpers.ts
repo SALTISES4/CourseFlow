@@ -19,6 +19,9 @@ import {
 } from './workflow-outcome.locators';
 import {
   workflowCommentsComposerField,
+  workflowCommentsTabComposerSubmitButton,
+  workflowCommentsTabListItemBody,
+  workflowCommentsTabListItemDeleteLink,
   workflowRightSidebarCommentsTabContent,
 } from '../../shared/locators/workflow';
 import { workflowOutcomesPath } from '../../helpers/workflow-navigation';
@@ -45,7 +48,7 @@ export async function secondWorkflowNodeUuid(page: Page): Promise<string> {
 }
 
 export async function channelUuidByTitle(page: Page, title: string): Promise<string> {
-  const header = workflowChannelHeaderByTitle(page, title);
+  const header = workflowChannelHeaderByTitle(page, title).first();
   await expect(header).toBeVisible({ timeout: 15_000 });
   const uuid = await header.getAttribute('data-column-id');
   if (!uuid) {
@@ -131,4 +134,17 @@ export async function gotoOutcomesView(page: Page, graphPath: string) {
   await page.goto(graphPath);
   await workflowOutcomesTab(page).click();
   await expect(page).toHaveURL(new RegExp(`${workflowOutcomesPath(graphPath)}/?$`));
+}
+
+export async function composeComment(page: Page, body: string) {
+  await workflowCommentsComposerField(page).fill(body);
+  await expect(workflowCommentsTabComposerSubmitButton(page)).toBeEnabled();
+  await workflowCommentsTabComposerSubmitButton(page).click();
+  await expect(workflowCommentsTabListItemBody(page, body)).toBeVisible({ timeout: 15_000 });
+}
+
+export async function deleteOwnComment(page: Page, body: string) {
+  await workflowCommentsTabListItemDeleteLink(page, body).click();
+  await expect(workflowCommentsTabListItemBody(page, body)).toHaveCount(0, { timeout: 15_000 });
+  await expect(page.getByText('Success!').last()).toBeVisible({ timeout: 15_000 });
 }

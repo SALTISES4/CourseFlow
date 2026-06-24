@@ -34,6 +34,10 @@ export function workflowMetadataFieldTime(page: Page): Locator {
   return workflowOverviewView(page).getByLabel(/^Time$/i);
 }
 
+export function workflowMetadataFieldCredits(page: Page): Locator {
+  return workflowOverviewView(page).getByLabel(/^Credits$/i);
+}
+
 export function workflowMetadataPermissionsPanel(page: Page): Locator {
   return workflowOverviewView(page).getByText('Permissions', { exact: true });
 }
