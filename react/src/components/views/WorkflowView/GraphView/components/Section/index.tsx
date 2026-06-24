@@ -258,6 +258,7 @@ const Section = (props: SectionPropsType) => {
         selected={selected}
         hovering={isHovered}
         data-section-id={props.sectionId}
+        data-selected={selected ? 'true' : undefined}
       >
         <StyledSection.SectionHeader
           ref={dragHandleRef}
@@ -272,7 +273,12 @@ const Section = (props: SectionPropsType) => {
             {section.title ?? defaultText}
           </StyledSection.SectionTitle>
 
-          <IconButton onClick={onCollapseIconClick} className="arrow-icon">
+          <IconButton
+            onClick={onCollapseIconClick}
+            className="arrow-icon"
+            aria-label={props.condensed ? 'Expand section' : 'Collapse section'}
+            aria-expanded={!props.condensed}
+          >
             <KeyboardArrowDown />
           </IconButton>
 

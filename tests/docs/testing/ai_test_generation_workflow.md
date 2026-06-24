@@ -64,7 +64,19 @@ This mapping step is a translation aid only. It does not replace live DOM verifi
 
 ## 4. Live DOM validation
 
-Before finalizing test code, validate the flow against the implemented app.
+Before finalizing test code, validate the flow against the implemented app on `courseflow_e2e`.
+
+### Environment prerequisites
+
+Prepare the same stack committed specs use. See `tests/docs/runbooks/playwright_execution_guide.md`.
+
+1. E2E database seeded (`just django-seed-e2e-tests` or `just rebuild-e2e-db`)
+2. Django running against `courseflow_e2e` (`just django-run-e2e`)
+3. React app on `:3000`
+4. Auth storage state (`cd tests && yarn test-setup`)
+5. Fixture manifest when routes depend on seeded UUIDs (`just e2e-prepare`)
+
+### Validation checklist
 
 The generator should confirm:
 
@@ -74,18 +86,47 @@ The generator should confirm:
 - the interaction path matches the implemented DOM
 - the requirement has not drifted from the UI
 
+### Browser automation tooling
+
 The QA-supported browser automation tooling available for this stage includes:
 
-- Playwright MCP
-- `playwright-cli`
+- **Playwright MCP** — preferred when flows are ambiguous (tabs, modals, hover menus, sidebars)
+- **`playwright-cli`** — preferred for narrow selector or single-step checks
 
-Use these tools when they materially improve selector validation, flow verification, review quality, or debugging quality.
+See `browser_automation_tooling_guide.md` for setup, the requirement-field validation table, committed artifact rules, and the agent prompt pattern.
+
+### Per-requirement validation
+
+| Requirement input | Validate in live app |
+| --- | --- |
+| `preconditions` / route | Open manifest or seeded URL |
+| `uiObjects` / `locatorMappings` | Confirm selector exists in DOM |
+| `trigger` / `mainFlow` | Walk the interaction path |
+| `acceptanceCriteria` | Confirm post-action state |
+| `inferred` mappings | Verify before writing `*.locators.ts` |
+| `unresolved` mappings | Stop or interrogate — do not invent |
+| No allowed selector after MCP | Escalate per `locator_contract_policy.md` § When to add `data-test-id` — React + registry, not XPath/MUI |
+
+### Selector escalation (after MCP)
+
+1. Use an existing acceptable contract if one exists.
+2. If MCP shows only forbidden anchors (MUI, XPath, layout wrappers), **add `data-test-id`** (or block the slice).
+3. Do not commit structural fallbacks as a substitute for testability work.
+
+See `locator_contract_policy.md` § When to add `data-test-id`.
+
+### Outputs of this stage
+
+- Confirmed selectors → colocated `tests/e2e/<domain>/*.locators.ts` (shared canonical objects imported/re-exported per `adr_ai_test_generation.md`)
+- No MCP or CLI code in committed artifacts
+- No forbidden structural/MUI/XPath selectors — see `locator_contract_policy.md` § Explicitly forbidden selectors
+- Implementation drift → note in spec comments or return for clarification
 
 The exact mechanism is less important than the requirement that selectors be validated against the real UI before authored tests are accepted.
 
 ## 5. Test generation
 
-Generate the durable Playwright test code.
+Generate the durable Playwright test code in `tests/e2e/<domain>/*.spec.ts`.
 
 The output should include:
 
@@ -159,11 +200,12 @@ For a requirement such as `FR-SEC-006 Delete Section (modal)` in `tests/docs/req
 
 1. Read the FR and identify the deletion flow.
 2. Confirm which role is allowed.
-3. Confirm the starting workflow route and section state.
-4. Validate the actual section hover affordance in the DOM.
-5. Validate the delete action and confirmation dialog.
-6. Generate a test that deletes the section and asserts its absence.
-7. Review whether the selector choices and assumptions are durable.
+3. Prepare E2E env and confirm the starting workflow route and section state from `workflow.json`.
+4. Use Playwright MCP to validate the section hover affordance in the DOM.
+5. Validate the delete action and confirmation dialog in the live app.
+6. Write confirmed selectors to `edit-section.locators.ts`.
+7. Generate a spec that deletes the section and asserts its absence.
+8. Run `yarn test` and review whether selector choices and assumptions are durable.
 
 ## Output quality bar
 

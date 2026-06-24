@@ -30,6 +30,7 @@ export type PropsType = {
   uuid: string
   ref?: RefObject<HTMLDivElement>
   className?: string
+  'data-test-id'?: string
   title: string | ReactNode
   description?: string
   isSelected?: boolean
@@ -58,11 +59,13 @@ const WorkflowCardDumb = ({
   onClick,
   chips,
   footer,
-  isDisabledLink
+  isDisabledLink,
+  'data-test-id': dataTestId
 }: PropsType) => (
   <CardWrap
     onClick={!isDisabledLink ? onClick : null}
     className={isSelected ? 'selected' : ''}
+    data-test-id={dataTestId}
   >
     <CardHeader>
       <CardTitle>{title}</CardTitle>

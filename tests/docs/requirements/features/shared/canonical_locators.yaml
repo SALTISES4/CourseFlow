@@ -21,8 +21,8 @@ locatorMappings:
     strategy: "{accountMenuDropdown} row with label 'Sign out'"
     confidence: inferred
   accountMenuTrigger:
-    strategy: "[aria-label=\"account of current user\"]"
-    confidence: inferred
+    strategy: "[data-test-id=\"account-menu-button\"]"
+    confidence: confirmed
   addContributorsCancelButton:
     strategy: "{addContributorsDialog} action button with label 'Cancel'"
     confidence: inferred
@@ -57,8 +57,8 @@ locatorMappings:
     strategy: "{addMenuDropdown} row with label 'Project'"
     confidence: inferred
   addMenuTrigger:
-    strategy: "[aria-label=\"add menu\"]"
-    confidence: inferred
+    strategy: "[data-test-id=\"add-menu-button\"]"
+    confidence: confirmed
   addNewTagInput:
     strategy: "{projectTagsSection} create tag input placeholder 'Add new tag'"
     confidence: inferred
@@ -717,8 +717,8 @@ locatorMappings:
     strategy: "{projectOverviewView} info block title 'Permissions'"
     confidence: inferred
   projectOverviewView:
-    strategy: "URL route pattern '/project/{id}' with overview view active"
-    confidence: inferred
+    strategy: "[data-test-id=\"project-overview-view\"]"
+    confidence: implemented
   projectStartWithProjectAlert:
     strategy: null
     confidence: unresolved
@@ -756,8 +756,8 @@ locatorMappings:
     strategy: "{resultsRegion} text 'No results found'"
     confidence: inferred
   projectWorkflowsView:
-    strategy: "URL route pattern '/project/{id}/workflows' with project 'Workflows' tab content"
-    confidence: inferred
+    strategy: "[data-test-id=\"project-workflows-view\"]"
+    confidence: implemented
   publishProjectButton:
     strategy: "{projectOverviewView} control with label 'Publish project' shown when project is unpublished"
     confidence: inferred
@@ -1488,7 +1488,8 @@ locatorMappings:
     strategy: "[data-section-id]"
     confidence: confirmed
   workflowSectionContainerHoverActionsMenu:
-    strategy: "{workflowSectionContainer} .hover-menu"
+    strategy: "[data-test-id=\"workflow-section-hover-menu\"]"
+    confidence: implemented
     confidence: inferred
   workflowSectionContainerHoverActionsMenuCommentsItem:
     strategy: "{workflowSectionContainerHoverActionsMenu} button with accessible name 'Comments'"
@@ -1503,7 +1504,8 @@ locatorMappings:
     strategy: "{workflowSectionContainerHoverActionsMenu} button with accessible name 'Insert section below'"
     confidence: confirmed
   workflowSectionContainerSelectedBorder:
-    strategy: "{workflowSectionContainer} outer SectionWrapper box-shadow 2px when that workflowSectionContainer is selected in workflowRightSidebar"
+    strategy: "{workflowSectionContainer}[data-selected=\"true\"]"
+    confidence: implemented
     confidence: inferred
   workflowSectionDeleteDialog:
     strategy: "[aria-labelledby='delete-section-part-modal']"
@@ -1518,7 +1520,8 @@ locatorMappings:
     strategy: "{workflowSectionContainer} > header"
     confidence: confirmed
   workflowSectionHeaderCollapseButton:
-    strategy: "{workflowSectionHeader} .arrow-icon IconButton"
+    strategy: "{workflowSectionHeader} button[aria-label='Collapse section' or aria-label='Expand section']"
+    confidence: implemented
     confidence: inferred
   workflowSectionNumberLabel:
     strategy: "{workflowSectionHeader} circular section index badge (SectionNumber span)"

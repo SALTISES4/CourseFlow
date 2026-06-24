@@ -481,6 +481,7 @@ const LibrarySearchView = ({
         <Skeleton
           key={index}
           variant="rectangular"
+          data-test-id="library-loading-skeleton"
           style={{ height: '150px' }}
         />
       ))
@@ -534,7 +535,7 @@ const LibrarySearchView = ({
   return (
     <OuterContentWrap>
       {defaultOptionsSearchOptions && (
-        <Toolbar disableGutters sx={{ mt: 4, mb: 4 }}>
+        <Toolbar disableGutters sx={{ mt: 4, mb: 4 }} data-test-id="library-filter-toolbar">
           <Stack
             direction="row"
             spacing={2}
@@ -558,7 +559,7 @@ const LibrarySearchView = ({
         </Toolbar>
       )}
 
-      <GridWrap>
+      <GridWrap data-test-id="library-results">
         <Results />
       </GridWrap>
       {renderPagination()}

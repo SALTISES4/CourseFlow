@@ -1,8 +1,17 @@
 import { test, expect } from '@playwright/test';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import { createWorkflowDialog } from '../home/home.locators';
+import { profileSettingsTitle, notificationsSettingsTitle } from '../user/user.locators';
 import {
+  accountMenuItemNotificationsSettings,
+  accountMenuItemPassword,
+  accountMenuItemProfile,
+  accountMenuItemSignOut,
   accountMenuTrigger,
+  addMenuItemActivity,
+  addMenuItemCourse,
+  addMenuItemProgram,
+  addMenuItemProject,
   addMenuTrigger,
   backToProjectLink,
   createProjectDialog,
@@ -36,12 +45,12 @@ test.describe('Top navigation — calibration (FR-TOP-001–005)', () => {
   test('FR-TOP-002: add menu lists create rows and opens dialogs', async ({ page }) => {
     await addMenuTrigger(page).click();
 
-    await expect(page.getByRole('menuitem', { name: 'Project', exact: true })).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: 'Program', exact: true })).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: 'Course', exact: true })).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: 'Activity', exact: true })).toBeVisible();
+    await expect(addMenuItemProject(page)).toBeVisible();
+    await expect(addMenuItemProgram(page)).toBeVisible();
+    await expect(addMenuItemCourse(page)).toBeVisible();
+    await expect(addMenuItemActivity(page)).toBeVisible();
 
-    await page.getByRole('menuitem', { name: 'Project', exact: true }).click();
+    await addMenuItemProject(page).click();
     await expect(createProjectDialog(page)).toBeVisible();
     await expect(
       createProjectDialog(page).getByRole('heading', { name: 'Create project', exact: true }),
@@ -49,7 +58,7 @@ test.describe('Top navigation — calibration (FR-TOP-001–005)', () => {
     await page.keyboard.press('Escape');
 
     await addMenuTrigger(page).click();
-    await page.getByRole('menuitem', { name: 'Program', exact: true }).click();
+    await addMenuItemProgram(page).click();
     await expect(createWorkflowDialog(page)).toBeVisible();
     await expect(createWorkflowDialog(page).getByRole('heading')).toHaveText('Select project');
   });
@@ -57,23 +66,21 @@ test.describe('Top navigation — calibration (FR-TOP-001–005)', () => {
   test('FR-TOP-003: account menu lists destinations and Profile navigates', async ({ page }) => {
     await accountMenuTrigger(page).click();
 
-    await expect(page.getByRole('menuitem', { name: 'Profile', exact: true })).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: 'Password reset', exact: true })).toBeVisible();
-    await expect(
-      page.getByRole('menuitem', { name: 'Notification settings', exact: true }),
-    ).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: 'Sign out', exact: true })).toBeVisible();
+    await expect(accountMenuItemProfile(page)).toBeVisible();
+    await expect(accountMenuItemPassword(page)).toBeVisible();
+    await expect(accountMenuItemNotificationsSettings(page)).toBeVisible();
+    await expect(accountMenuItemSignOut(page)).toBeVisible();
 
-    await page.getByRole('menuitem', { name: 'Profile', exact: true }).click();
+    await accountMenuItemProfile(page).click();
     await expect(page).toHaveURL(/\/user\/profile-settings\/?$/);
-    await expect(page.getByRole('heading', { name: 'Profile settings', exact: true })).toBeVisible();
+    await expect(profileSettingsTitle(page)).toBeVisible();
   });
 
   test('FR-TOP-003: Password reset opens dialog (not /user/password-reset route yet)', async ({
     page,
   }) => {
     await accountMenuTrigger(page).click();
-    await page.getByRole('menuitem', { name: 'Password reset', exact: true }).click();
+    await accountMenuItemPassword(page).click();
 
     await expect(passwordResetDialog(page)).toBeVisible();
     await expect(page).not.toHaveURL(/\/user\/password-reset/);
@@ -81,12 +88,10 @@ test.describe('Top navigation — calibration (FR-TOP-001–005)', () => {
 
   test('FR-TOP-003: Notification settings navigates to settings page', async ({ page }) => {
     await accountMenuTrigger(page).click();
-    await page.getByRole('menuitem', { name: 'Notification settings', exact: true }).click();
+    await accountMenuItemNotificationsSettings(page).click();
 
     await expect(page).toHaveURL(/\/user\/notifications-settings\/?$/);
-    await expect(
-      page.getByRole('heading', { name: 'Notification settings', exact: true }),
-    ).toBeVisible();
+    await expect(notificationsSettingsTitle(page)).toBeVisible();
   });
 });
 

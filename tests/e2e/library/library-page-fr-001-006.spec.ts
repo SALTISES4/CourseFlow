@@ -14,6 +14,9 @@ import {
   selectFilterOption,
   selectSortOption,
   sortControl,
+  sortMenuItem,
+  SORT_OPTION_A_TO_Z,
+  SORT_OPTION_CREATION_DATE,
   templatesToggle,
   typeFilter,
   waitForLibraryResultsLoaded,
@@ -71,12 +74,12 @@ test.describe('My library — calibration (FR-LIB-001–004, FR-LIB-006 deferred
     await expect(sortControl(page)).toBeVisible();
 
     await sortControl(page).click();
-    await expect(page.getByRole('menuitem', { name: 'A - Z', exact: true })).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: 'Creation date', exact: true })).toBeVisible();
+    await expect(sortMenuItem(page, SORT_OPTION_A_TO_Z)).toBeVisible();
+    await expect(sortMenuItem(page, SORT_OPTION_CREATION_DATE)).toBeVisible();
     await page.keyboard.press('Escape');
 
-    await selectSortOption(page, 'A - Z');
-    await expect(sortControl(page)).toHaveText('A - Z');
+    await selectSortOption(page, SORT_OPTION_A_TO_Z);
+    await expect(sortControl(page)).toHaveText(SORT_OPTION_A_TO_Z);
   });
 
   test('FR-LIB-003: ownership filter commits Owned selection', async ({ page }) => {

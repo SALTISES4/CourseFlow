@@ -120,11 +120,50 @@ Follow this sequence:
    - acceptanceCriteria
    - openQuestions
 3. Check whether `openQuestions` or unresolved locator mappings block reliable spec generation.
-4. Consult the project testing docs.
-5. Validate candidate selectors and interaction paths against the implemented UI.
-6. Generate Playwright spec code.
-7. Keep test structure and selectors consistent with the project's authoring and locator policies.
-8. If a critical ambiguity remains, interrogate the user instead of guessing.
+4. Consult the project testing docs — **including `locator_contract_policy.md` and `canonical_locators.yaml`**.
+5. **Live DOM validation (Playwright MCP)** — see [Browser tooling usage](#browser-tooling-usage) below.
+6. Write or update locators per [Locator file rules](#locator-file-rules) below.
+7. Generate Playwright spec code in the stated output path.
+8. Keep test structure and selectors consistent with the project's authoring and locator policies.
+9. If a critical ambiguity remains, interrogate the user instead of guessing.
+
+## Locator file rules
+
+Before writing selectors, read:
+
+- `tests/docs/requirements/features/shared/canonical_locators.yaml` (in-scope uiObjects)
+- `tests/docs/testing/locator_contract_policy.md` (binding selector rules)
+- `tests/docs/testing/test_suite_layout.md` (where `*.locators.ts` files live)
+- `tests/docs/testing/adr_ai_test_generation.md` (organization and governance)
+
+### Placement
+
+| Case | Where |
+| --- | --- |
+| Shared canonical uiObject (library filter toolbar, keyword search, cards, global nav) | Owning `tests/e2e/<domain>/*.locators.ts`; **re-export** from other domains — never duplicate selector strings |
+| Domain-only canonical uiObject | `tests/e2e/<domain>/*.locators.ts` for that domain |
+| One-off selector, single spec, not in canonical registry | Inline in the spec is acceptable |
+
+Function names should match canonical uiObject names (`projectTitle`, `libraryFilterToolbar`, …).
+
+### Forbidden patterns (review will reject)
+
+Do not commit locators using:
+
+- XPath axes (`ancestor::`, `following-sibling::`, …)
+- MUI generated classes (`MuiStack-root`, `MuiToolbar-root`, `MuiInputBase-root`, …)
+- `.main-block` / layout wrappers as the primary anchor
+- Figma or YAML strategy text copied into structure selectors without a stable contract
+
+When no allowed selector exists, follow `locator_contract_policy.md` § **When to add `data-test-id`**:
+
+1. Check existing `data-test-id`, role/name, and canonical strategies
+2. Validate in live DOM via Playwright MCP
+3. Add `data-test-id` to React + update `canonical_locators.yaml`, **or** block the slice — do not use forbidden fallbacks
+
+Do not add new CSS classes solely as test hooks; prefer `data-test-id`.
+
+Incremental FR-slice generation is expected; each slice must still respect shared grouping and policy.
 
 ## Selector rules
 
@@ -204,8 +243,8 @@ Do not derive final selectors from Figma alone.
 
 The following tools are available during generation, review, and debugging:
 
-- Playwright MCP
-- `playwright-cli`
+- **Playwright MCP** — interactive browser session for the coding agent (see `browser_automation_tooling_guide.md`)
+- **`playwright-cli`** — fast CLI checks for narrow validation
 
 Use them when they materially improve:
 
@@ -215,6 +254,49 @@ Use them when they materially improve:
 - debugging failing candidate tests
 
 Do not make them part of the committed Playwright test artifact.
+
+### Environment prerequisites
+
+Before MCP validation, ensure the E2E stack matches `tests/docs/runbooks/playwright_execution_guide.md`:
+
+1. `courseflow_e2e` seeded
+2. `just django-run-e2e` and React on `:3000`
+3. `cd tests && yarn test-setup` (auth storage state)
+4. `just e2e-prepare` when specs need `tests/.playwright-fixtures/workflow.json`
+
+### Required MCP validation steps
+
+Before writing `*.locators.ts` or `*.spec.ts`:
+
+1. Navigate to the route implied by preconditions (use manifest UUIDs when applicable).
+2. For each in-scope `uiObject` and `locatorMapping`, confirm the selector in the live DOM.
+3. Walk `trigger` and `mainFlow` steps; confirm `acceptanceCriteria` observables.
+4. Respect mapping confidence:
+   - `confirmed` — use if still valid in live DOM
+   - `inferred` — verify live before promoting to locators
+   - `unresolved` — do not invent; interrogate or stop
+5. If live UI differs from the requirement, note drift in spec comments or stop for clarification.
+
+Prefer Playwright MCP when the flow is ambiguous. Prefer `playwright-cli` for a single locator or short path check.
+
+### Committed outputs
+
+| File | Content |
+| --- | --- |
+| `tests/e2e/<domain>/*.locators.ts` | Confirmed selectors and wait helpers |
+| `tests/e2e/<domain>/*.spec.ts` | FR traceability, setup, assertions — no MCP runtime |
+
+### Agent session template
+
+When invoking this prompt in Cursor or JetBrains with Playwright MCP enabled, fill in the [In-scope task](#in-scope-task-for-this-run) section and include:
+
+```text
+Before writing locators or assertions, use Playwright MCP to validate all in-scope
+uiObjects and locatorMappings against the live app on courseflow_e2e.
+Promote only confirmed selectors. Do not guess unresolved mappings.
+```
+
+Full prompt pattern: `tests/docs/testing/browser_automation_tooling_guide.md` § Agent prompt pattern.
 
 ## Interrogate mode rules
 
@@ -276,8 +358,24 @@ Output spec file path:
 
 * [FILL IN OUTPUT FILE PATH HERE]
 
+Output locators file path (if new or updated):
+
+* [FILL IN LOCATORS FILE PATH HERE, e.g. tests/e2e/project/project.locators.ts]
+
+E2E environment:
+
+* [ ] `courseflow_e2e` seeded and `just django-run-e2e` running
+* [ ] React app on `:3000`
+* [ ] `yarn test-setup` completed
+* [ ] `just e2e-prepare` completed (if manifest routes required)
+
+Playwright MCP:
+
+* Before writing locators or assertions, validate in-scope uiObjects and locatorMappings in the live app.
+* Do not commit MCP calls — output durable Playwright code only.
+
 ## Deliverable
 
-Produce the Playwright spec file(s) only.
+Produce the Playwright spec file(s) and any new or updated colocated `*.locators.ts` required by the in-scope selectors.
 
 If generation is blocked by missing or contradictory inputs, do not guess. Interrogate the user with a concise list of blocking questions.

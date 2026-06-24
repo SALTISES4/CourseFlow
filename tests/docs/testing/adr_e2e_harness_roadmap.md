@@ -97,7 +97,7 @@ Per feature slice:
 1. Pick FR IDs from `*_requirements_v1.yaml`
 2. Verify fixture contract — extend `e2e_seed` if preconditions missing
 3. Map `canonical_locators.yaml` → colocated `*.locators.ts`
-4. Live DOM validation on `courseflow_e2e` (Playwright MCP / UI Mode)
+4. Live DOM validation on `courseflow_e2e` (Playwright MCP per `browser_automation_tooling_guide.md`, or Playwright UI Mode)
 5. Generate spec via `tests/docs/prompts/test_spec_generation.md`
 6. Review against `generated_test_review_checklist.md`
 7. Run `yarn test-ui -g "FR-…"`

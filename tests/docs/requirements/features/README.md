@@ -9,6 +9,8 @@ Folder layout mirrors product domains (aligned with `tests/e2e/` and `tests/docs
 | Folder | Scope | Examples |
 | ------ | ----- | -------- |
 | `shared/` | Cross-route contracts, locator registry, workspace access | `canonical_locators.yaml`, `workspace_access_requirements_v1.yaml` |
+
+`canonical_locators.yaml` is the requirements-side registry for uiObject names and semantic strategies. Playwright implements them in `tests/e2e/<domain>/*.locators.ts` per `tests/docs/testing/adr_ai_test_generation.md` and `test_suite_layout.md` (shared objects grouped in the owning domain module; re-export elsewhere).
 | `auth/` | Login, register, password flows | `login_requirements_v1.yaml` |
 | `navigation/` | App shell navigation | `main_navigation_requirements_v1.yaml` |
 | `home/` | Authenticated home | `homepage_requirements_v1.yaml` |

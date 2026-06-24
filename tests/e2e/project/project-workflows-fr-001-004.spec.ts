@@ -2,6 +2,11 @@ import { test, expect } from '@playwright/test';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import { getProjectWorkflowsPath, loadWorkflowManifest } from '../../helpers/manifest';
 import {
+  SORT_OPTION_A_TO_Z,
+  SORT_OPTION_CREATION_DATE,
+  sortMenuItem,
+} from '../../shared/locators/library';
+import {
   keywordSearchClearButton,
   keywordSearchField,
   projectWorkflowCards,
@@ -71,12 +76,12 @@ test.describe('Project workflows — calibration (FR-PROJ-WF-001–004)', () => 
     await expect(projectWorkflowsSortControl(page)).toBeVisible();
 
     await projectWorkflowsSortControl(page).click();
-    await expect(page.getByRole('menuitem', { name: 'A - Z', exact: true })).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: 'Creation date', exact: true })).toBeVisible();
+    await expect(sortMenuItem(page, SORT_OPTION_A_TO_Z)).toBeVisible();
+    await expect(sortMenuItem(page, SORT_OPTION_CREATION_DATE)).toBeVisible();
     await page.keyboard.press('Escape');
 
-    await selectProjectWorkflowSortOption(page, 'A - Z');
-    await expect(projectWorkflowsSortControl(page)).toHaveText('A - Z');
+    await selectProjectWorkflowSortOption(page, SORT_OPTION_A_TO_Z);
+    await expect(projectWorkflowsSortControl(page)).toHaveText(SORT_OPTION_A_TO_Z);
   });
 
   test('FR-PROJ-WF-004: keyword search filters workflow cards by title', async ({ page }) => {

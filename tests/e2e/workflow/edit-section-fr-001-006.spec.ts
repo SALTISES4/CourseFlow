@@ -41,7 +41,8 @@ test.describe('Edit Section — calibration (FR-SEC-001, FR-SEC-003, FR-SEC-006)
   });
 
   test('FR-SEC-003: owner/editor title change persists after reload', async ({ page, workflow }) => {
-    const sectionUuid = workflow.firstSection().uuid;
+    const section = workflow.sectionByTitle('E2E Section 3');
+    const sectionUuid = section.uuid;
     const uniqueTitle = `E2E ${Date.now()}`;
 
     await sectionHeader(page, sectionUuid).click();

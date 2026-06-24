@@ -6,9 +6,12 @@ import {
   libraryCards,
   libraryEmptyState,
   libraryErrorState,
+  libraryFilterToolbar,
   libraryLoadingSkeletons,
   selectFilterOption,
-} from '../library/library.locators';
+  sortMenuItem,
+} from '../../shared/locators/library';
+import { addMenuItemProject, addMenuTrigger } from '../navigation/navigation.locators';
 
 export {
   KEYWORD_SEARCH_PLACEHOLDER,
@@ -20,14 +23,12 @@ export {
   selectFilterOption,
 };
 
-/**
- * Locators for project pages — aligned with
- * tests/docs/requirements/features/project/* and canonical_locators.yaml.
- */
+export { globalMessageSnackbar } from '../../shared/locators/global';
 
-export function projectHeader(page: Page): Locator {
-  return page.locator('h1').locator('xpath=ancestor::div[contains(@class,"MuiStack-root")]').first();
-}
+/**
+ * Project-domain uiObjects — canonical_locators.yaml (project*).
+ * Shared listing/toolbar uiObjects re-export from tests/shared/locators/library.ts.
+ */
 
 export function projectTitle(page: Page): Locator {
   return page.getByRole('heading', { level: 1 });
@@ -49,20 +50,31 @@ export function projectWorkflowsTab(page: Page): Locator {
   return page.getByRole('tab', { name: 'Workflows', exact: true });
 }
 
+/** canonical: projectOverviewView — main content region on /project/{id} */
 export function projectOverviewView(page: Page): Locator {
-  return page.locator('.main-block').filter({ has: projectViewTabSelector(page) });
+  return page.locator('[data-test-id="project-overview-view"]');
 }
 
 export function projectMetadataFieldDescription(page: Page): Locator {
-  return page.getByText('Description', { exact: true }).first();
+  return projectOverviewView(page).getByText('Description', { exact: true }).first();
 }
 
 export function projectMetadataFieldDisciplines(page: Page): Locator {
-  return page.getByText('Disciplines', { exact: true }).first();
+  return projectOverviewView(page).getByText('Disciplines', { exact: true }).first();
+}
+
+export function projectMetadataFieldCreatedOn(page: Page): Locator {
+  return projectOverviewView(page).getByText('Created on', { exact: true }).first();
+}
+
+/** Disciplines info block (label + value or empty copy). */
+export function projectMetadataDisciplinesBlock(page: Page): Locator {
+  const overview = projectOverviewView(page);
+  return overview.locator('div').filter({ hasText: 'Disciplines' }).first();
 }
 
 export function projectMetadataPermissionsPanel(page: Page): Locator {
-  return page.getByText('Permissions', { exact: true }).first();
+  return projectOverviewView(page).getByText('Permissions', { exact: true }).first();
 }
 
 export function projectMetadataAddContributorsButton(page: Page): Locator {
@@ -70,19 +82,21 @@ export function projectMetadataAddContributorsButton(page: Page): Locator {
 }
 
 export function projectTagsSection(page: Page): Locator {
-  return page.getByText('Tags', { exact: true }).first();
+  return projectOverviewView(page).getByText('Tags', { exact: true }).first();
 }
 
 export function addNewTagInput(page: Page): Locator {
   return page.getByPlaceholder('Add new tag');
 }
 
+/** canonical: projectWorkflowsView — main content region on /project/{id}/workflows */
 export function projectWorkflowsView(page: Page): Locator {
-  return page.locator('.main-block').filter({ has: projectWorkflowsTab(page) });
+  return page.locator('[data-test-id="project-workflows-view"]');
 }
 
+/** canonical: projectWorkflowsFilterToolbar — alias of libraryFilterToolbar */
 export function projectWorkflowsFilterToolbar(page: Page): Locator {
-  return page.locator('.MuiToolbar-root').filter({ has: keywordSearchField(page) });
+  return libraryFilterToolbar(page);
 }
 
 export function projectWorkflowsSortControl(page: Page): Locator {
@@ -125,6 +139,14 @@ export function shareProjectButton(page: Page): Locator {
 
 export function projectOverflowButton(page: Page): Locator {
   return page.locator('[data-test-id="overflow-button"]');
+}
+
+export function archiveProjectMenuItem(page: Page): Locator {
+  return page.getByRole('menuitem', { name: 'Archive project', exact: true });
+}
+
+export function publishProjectButton(page: Page): Locator {
+  return projectOverviewView(page).getByRole('button', { name: 'Publish project', exact: true });
 }
 
 export function createProjectDialog(page: Page): Locator {
@@ -171,10 +193,6 @@ export function addContributorsDialog(page: Page): Locator {
   return page.getByRole('dialog').filter({ hasText: 'Add contributor' });
 }
 
-export function globalMessageSnackbar(page: Page): Locator {
-  return page.locator('#notistack-snackbar');
-}
-
 export async function waitForProjectOverviewLoaded(page: Page): Promise<void> {
   await expect(projectTitle(page)).toBeVisible({ timeout: 15_000 });
   await expect(projectOverviewTab(page)).toBeVisible();
@@ -193,15 +211,14 @@ export async function waitForProjectWorkflowsLoaded(page: Page): Promise<void> {
 
 export async function selectProjectWorkflowSortOption(page: Page, optionLabel: string): Promise<void> {
   await projectWorkflowsSortControl(page).click();
-  await page.getByRole('menuitem', { name: optionLabel, exact: true }).click();
+  await sortMenuItem(page, optionLabel).click();
   await page.keyboard.press('Escape');
   await expect(page.getByRole('menu')).toHaveCount(0);
 }
 
 export async function openCreateProjectDialog(page: Page): Promise<void> {
-  const { addMenuTrigger } = await import('../navigation/navigation.locators');
   await addMenuTrigger(page).click();
-  await page.getByRole('menuitem', { name: 'Project', exact: true }).click();
+  await addMenuItemProject(page).click();
   await expect(createProjectDialog(page)).toBeVisible();
 }
 

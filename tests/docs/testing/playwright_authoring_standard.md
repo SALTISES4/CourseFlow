@@ -57,6 +57,10 @@ At a minimum:
 - use role and accessible-name selectors when they are truly stable product contracts
 - avoid brittle structure-only CSS selectors
 - avoid selecting by incidental copy unless the requirement verifies that copy
+- **never** use XPath axes, MUI generated classes (`Mui*`), or `.main-block` layout anchors in committed locators
+- re-export shared canonical locators from the owning module — do not duplicate selector strings across domains
+
+Reload `locator_contract_policy.md` and `canonical_locators.yaml` each generation session; agents do not retain policy automatically.
 
 ## Assertions and waiting
 

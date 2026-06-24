@@ -5,11 +5,14 @@ import {
   addContributorsDialog,
   addNewTagInput,
   projectMetadataAddContributorsButton,
+  projectMetadataDisciplinesBlock,
+  projectMetadataFieldCreatedOn,
   projectMetadataFieldDescription,
   projectMetadataFieldDisciplines,
   projectMetadataPermissionsPanel,
   projectOverviewView,
   projectTagsSection,
+  publishProjectButton,
   shareProjectButton,
   waitForProjectOverviewLoaded,
 } from './project.locators';
@@ -33,7 +36,7 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001–005)', () => {
   test('FR-PROJ-OV-001: overview renders metadata blocks', async ({ page }) => {
     await expect(projectOverviewView(page)).toBeVisible();
     await expect(projectMetadataFieldDisciplines(page)).toBeVisible();
-    await expect(page.getByText('Created on', { exact: true })).toBeVisible();
+    await expect(projectMetadataFieldCreatedOn(page)).toBeVisible();
     await expect(projectMetadataPermissionsPanel(page)).toBeVisible();
 
     const tagsVisible = (await projectTagsSection(page).count()) > 0;
@@ -52,10 +55,7 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001–005)', () => {
   });
 
   test('FR-PROJ-OV-001: disciplines panel shows label and value or empty copy', async ({ page }) => {
-    const disciplinesBlock = page
-      .locator('div')
-      .filter({ has: page.getByText('Disciplines', { exact: true }) })
-      .first();
+    const disciplinesBlock = projectMetadataDisciplinesBlock(page);
 
     await expect(disciplinesBlock).toBeVisible();
     const text = await disciplinesBlock.innerText();
@@ -79,8 +79,10 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001–005)', () => {
     await addContributorsDialog(page).getByRole('button', { name: 'Cancel', exact: true }).click();
   });
 
-  test.skip('FR-PROJ-OV-003: publish/unpublish controls — not implemented on project overview', async () => {
-    await expect(page.getByRole('button', { name: 'Publish project', exact: true })).toBeVisible();
+  test.skip('FR-PROJ-OV-003: publish/unpublish controls — not implemented on project overview', async ({
+    page,
+  }) => {
+    await expect(publishProjectButton(page)).toBeVisible();
   });
 
   test.skip('FR-PROJ-OV-004: contributor add success flow — deferred (requires user search fixture)', async () => {

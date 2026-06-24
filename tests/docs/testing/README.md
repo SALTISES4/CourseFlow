@@ -25,7 +25,7 @@ This folder defines the testing side of that split.
 
 ### 3. Locator Contract Policy
 - File: `locator_contract_policy.md`
-- Purpose: defines which selector types are acceptable, when `data-*` contracts are required, and when generated tests must reject unstable selectors.
+- Purpose: defines which selector types are acceptable, when `data-test-id` hooks should be added (existing contract → MCP validate → escalate), when `data-*` contracts are required, and when generated tests must reject unstable selectors.
 
 ### 4. AI Test Generation Workflow
 - File: `ai_test_generation_workflow.md`
@@ -37,7 +37,7 @@ This folder defines the testing side of that split.
 
 ### 6. Browser Automation Tooling Guide
 - File: `browser_automation_tooling_guide.md`
-- Purpose: explains how Playwright MCP and `playwright-cli` should be used during test generation, review, and debugging, while keeping authored Playwright tests as the final artifact.
+- Purpose: explains how Playwright MCP and `playwright-cli` should be used during test generation, review, and debugging — including E2E environment prerequisites, per-requirement DOM validation, committed artifact rules, and the agent prompt pattern — while keeping authored Playwright tests as the final artifact.
 
 ### 7. Test suite layout
 - File: `test_suite_layout.md`

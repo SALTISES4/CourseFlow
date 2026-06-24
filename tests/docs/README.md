@@ -64,3 +64,7 @@ Use this decision rule when adding new docs:
 
 - if the document defines product or feature intent, place it in `requirements/`
 - if the document defines how tests should be generated or written, place it in `testing/`
+
+# Prompting
+make sure to include
+"Follow tests/docs/testing/adr_ai_test_generation.md and locator_contract_policy.md"

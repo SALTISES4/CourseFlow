@@ -57,9 +57,7 @@ export function productUpdatesToggle(page: Page): Locator {
   return page.getByRole('checkbox', { name: PRODUCT_UPDATES_TOGGLE_LABEL });
 }
 
-export function globalMessageSnackbar(page: Page): Locator {
-  return page.locator('#notistack-snackbar');
-}
+export { globalMessageSnackbar } from '../../shared/locators/global';
 
 export async function waitForProfileSettingsLoaded(page: Page): Promise<void> {
   await expect(page.locator('.load-screen')).toHaveCount(0, { timeout: 15_000 });

@@ -333,5 +333,5 @@ On a brand-new volume, the init script creates it automatically when Postgres fi
 - [test_suite_layout.md](../testing/test_suite_layout.md) — folder conventions
 - [playwright_authoring_standard.md](../testing/playwright_authoring_standard.md) — writing and waiting rules
 - [locator_contract_policy.md](../testing/locator_contract_policy.md) — selector contracts
-- [browser_automation_tooling_guide.md](../testing/browser_automation_tooling_guide.md) — MCP/CLI during generation
+- [browser_automation_tooling_guide.md](../testing/browser_automation_tooling_guide.md) — Playwright MCP setup, E2E prerequisites, and DOM validation during generation
 - [local-dev.md](../../../docs/runbooks/local-dev.md) — general local development (dev database)
