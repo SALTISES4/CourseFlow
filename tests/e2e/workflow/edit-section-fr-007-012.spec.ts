@@ -63,25 +63,23 @@ test.describe('Edit Section — hover menu (FR-SEC-007)', () => {
     await expect(rightSidebar(page)).toBeVisible();
     await expect(commentsTabInSidebar(page)).toHaveAttribute('aria-pressed', 'true');
   });
+});
 
-  test.skip(
-    true,
-    'FR-SEC-007 commenter disabled items: E2E manifest has no commenter contributor yet.',
-  );
+test.describe('Edit Section — hover menu commenter (FR-SEC-007)', () => {
+  test('FR-SEC-007: commenter sees disabled insert, duplicate, and delete hover items', async () => {
+    test.skip(true, 'E2E manifest has no commenter contributor yet.');
+  });
 });
 
 test.describe('Edit Section — hover menu viewer (FR-SEC-007)', () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
-  test.skip(
-    true,
-    'FR-SEC-007 viewer notRendered: section HoverMenu does not enforce project team roles yet (v1).',
-  );
-
   test('FR-SEC-007: viewer does not see workflowSectionContainerHoverActionsMenu on hover', async ({
     page,
     workflow,
   }) => {
+    test.skip(true, 'Section HoverMenu does not enforce project team roles yet (v1).');
+
     const viewer = workflow.contributorByRole('viewer');
     await loginAs(page, { email: viewer.email, password: viewer.password });
     await page.goto(workflow.path);

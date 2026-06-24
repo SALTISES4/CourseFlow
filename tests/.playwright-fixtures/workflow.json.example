@@ -28,7 +28,11 @@
       ],
       "node_count": 0,
       "edge_count": 0,
-      "channel_count": 3
+      "channel_count": 3,
+      "outcome_count": 1,
+      "outcomes": [
+        { "uuid": "<generated-at-seed-time>", "title": "E2E Outcome 1" }
+      ]
     }
   ]
 }

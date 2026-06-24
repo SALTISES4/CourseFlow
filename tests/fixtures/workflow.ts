@@ -5,17 +5,23 @@ import {
   loadWorkflowManifest,
   orderedSections,
   type ContributorEntry,
+  type OutcomeEntry,
   type SectionEntry,
   type WorkflowManifest,
 } from '../helpers/manifest';
+
+export type { OutcomeEntry };
 
 export type WorkflowHandle = {
   manifest: WorkflowManifest;
   path: string;
   graphUuid: string;
   sections: SectionEntry[];
+  outcomes: OutcomeEntry[];
   sectionByPosition: (position: number) => SectionEntry;
   sectionByTitle: (title: string) => SectionEntry;
+  outcomeByTitle: (title: string) => OutcomeEntry;
+  firstOutcome: () => OutcomeEntry;
   blankSection: () => SectionEntry;
   firstSection: () => SectionEntry;
   contributorByRole: (role: string) => ContributorEntry;
@@ -24,12 +30,14 @@ export type WorkflowHandle = {
 function buildWorkflowHandle(manifest: WorkflowManifest): WorkflowHandle {
   const entry = getPrimaryWorkflow(manifest);
   const sections = orderedSections(entry);
+  const outcomes = entry.outcomes ?? [];
 
   return {
     manifest,
     path: entry.workflow_path,
     graphUuid: entry.graph_uuid,
     sections,
+    outcomes,
     sectionByPosition(position: number) {
       const section = sections.find((item) => item.position === position);
       if (!section) {
@@ -47,6 +55,22 @@ function buildWorkflowHandle(manifest: WorkflowManifest): WorkflowHandle {
         );
       }
       return section;
+    },
+    outcomeByTitle(title: string) {
+      const outcome = outcomes.find((item) => item.title === title);
+      if (!outcome) {
+        throw new Error(
+          `No outcome with title ${JSON.stringify(title)}. Manifest titles: ${outcomes.map((o) => JSON.stringify(o.title)).join(', ')}`,
+        );
+      }
+      return outcome;
+    },
+    firstOutcome() {
+      const outcome = outcomes[0];
+      if (!outcome) {
+        throw new Error('E2E workflow manifest has no outcomes.');
+      }
+      return outcome;
     },
     blankSection() {
       const section = sections.find((item) => item.title === '');

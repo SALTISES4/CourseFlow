@@ -13,6 +13,7 @@ from course_flow.core.models import Edge, Graph
 from course_flow.dev_seed.graph_shape import GraphShapeParams
 from course_flow.dev_seed.graph_view import (
     build_nodes_from_layout,
+    build_outcomes,
     build_sections_and_channels,
     build_workflow_with_graph,
     generate_graph_shape,
@@ -30,6 +31,7 @@ from course_flow.e2e_seed.constants import (
     E2E_FIXTURE_GRAPH_SEED,
     E2E_FIXTURE_PROJECT_TITLE,
     E2E_FIXTURE_WORKFLOW_TITLE,
+    E2E_OUTCOME_TITLE,
     E2E_SECTION_TITLES,
 )
 from course_flow.e2e_seed.team import ensure_e2e_contributors
@@ -100,7 +102,7 @@ def generate_e2e_fixtures(
         shape = GraphShapeParams(
             section_count=len(E2E_SECTION_TITLES),
             channel_count=len(E2E_CHANNEL_TITLES),
-            outcome_count=0,
+            outcome_count=1,
             max_cross_section_edges=2,
         )
         layout, edge_pairs = generate_graph_shape(rng, shape)
@@ -115,6 +117,11 @@ def generate_e2e_fixtures(
         )
         nodes = build_nodes_from_layout(graph, sections, channels, layout)
         persist_edges_from_pairs(nodes, edge_pairs)
+        outcomes = build_outcomes(graph, nodes, rng=rng, outcome_count=shape.outcome_count)
+        if outcomes:
+            root = outcomes[0]
+            root.title = E2E_OUTCOME_TITLE
+            root.save(update_fields=["title"])
 
         edge_count = Edge.objects.filter(
             source_node__section__graph=graph,
@@ -129,6 +136,10 @@ def generate_e2e_fixtures(
         workflow_manifest["node_count"] = len(nodes)
         workflow_manifest["edge_count"] = edge_count
         workflow_manifest["channel_count"] = len(channels)
+        workflow_manifest["outcome_count"] = len(outcomes)
+        workflow_manifest["outcomes"] = [
+            {"uuid": str(outcome.uuid), "title": outcome.title} for outcome in outcomes
+        ]
 
         manifest = {
             "fixture_version": 2,

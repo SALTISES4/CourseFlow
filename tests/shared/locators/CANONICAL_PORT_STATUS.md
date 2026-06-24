@@ -12,7 +12,9 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 | --- | --- | --- |
 | `shared/locators/navigation.ts` | `mainNavigation`, `homeNavItem`, `myLibraryNavItem`, `exploreNavItem`, `favouritedItemLink`, `collapseToggle`, `topNavigationBar`, `addMenuTrigger`, `accountMenuTrigger`, `addMenuItem*`, `accountMenuItem*`, `containsSection`, `appearsInSection`, `backToProjectLink`, … | `data-test-id="main-nav"`, `data-test-id="top-bar"` |
 | `shared/locators/library.ts` | `keywordSearchField`, `libraryFilterToolbar`, filter toggles, `libraryCards`, `projectCard`, `workflowCard`, `libraryLoadingSkeletons`, `sortMenuItem`, `SORT_OPTION_*`, … | `library-filter-toolbar`, `library-results`, `library-loading-skeleton`, `project-card` / `workflow-card` |
-| `shared/locators/workflow.ts` | `workflowRightSidebar`, `workflowEditSectionForm`, `workflowSectionContainer`, `workflowSectionHeader`, `workflowSectionDeleteDialog`, … | Existing React `data-test-id` / `data-section-id` |
+| `shared/locators/workflow.ts` | `workflowRightSidebar`, … `workflowCommentsTabListItem*`, … | sidebar tabs via `aria-label='{tab} tab'` |
+| `e2e/workflow/workflow-graph.locators.ts` | `workflowNode`, `workflowNodeHoverActionsMenuCommentsItem`, `workflowChannelHeader`, `workflowChannelHoverActionsMenuCommentsItem`, `workflowEditNodeForm`, `workflowEditChannelForm`, … | node `#node-{uuid}`; channel `[data-column-id]` |
+| `e2e/workflow/workflow-outcome.locators.ts` | `workflowOutcomeHeader`, `workflowOutcomeHoverActionsMenuCommentsItem`, `workflowEditOutcomeForm` | outcome title text on `/outcomedit` |
 | `shared/locators/global.ts` | `globalMessageSnackbar` | Notistack host — needs stable contract review |
 | `e2e/project/project.locators.ts` | `project*` domain uiObjects | `project-overview-view`, `project-workflows-view`; re-exports shared library toolbar/cards |
 
@@ -24,6 +26,26 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 - `tests/e2e/project/project-workflows-fr-001-004.spec.ts` — shared sort locators
 - `tests/e2e/project/project-overview-fr-001-005.spec.ts` — `projectMetadataFieldCreatedOn`, `projectMetadataDisciplinesBlock`, `publishProjectButton`
 - `tests/e2e/project/project-archive-fr-001-002.spec.ts` — `archiveProjectMenuItem`
+
+- `tests/e2e/workflow/edit-section-fr-007-012.spec.ts` — FR-SEC-007, FR-SEC-010, FR-SEC-011
+- `tests/e2e/workflow/delete-section-fr-006.spec.ts` — FR-SEC-006 hover path
+- `tests/e2e/workflow/duplicate-section-fr-005.spec.ts` — FR-SEC-005 hover path
+- `tests/e2e/workflow/workflow-header-fr-001-002.spec.ts` — FR-WF-HEADER-001/002
+- `tests/e2e/workflow/comments-tab-section-fr-002.spec.ts` — FR-WF-COMMENTS-002
+- `tests/e2e/workflow/right-sidebar-fr-001-004.spec.ts` — FR-WF-RS-001–004 (partial)
+- `tests/e2e/workflow/comments-tab-fr-005.spec.ts` — FR-WF-COMMENTS-005 (section, node, channel)
+- `tests/e2e/workflow/workflow-overview.locators.ts` — workflowOverviewView, workflowMetadata* (partial)
+- `tests/e2e/workflow/comments-tab-compose-delete-fr-006-007.spec.ts` — FR-WF-COMMENTS-006/007 (section, partial)
+- `tests/e2e/workflow/workflow-overview-fr-001-002.spec.ts` — FR-WF-OV-001/002 (activity, partial)
+- `tests/e2e/workflow/comments-tab-node-fr-001.spec.ts` — FR-WF-COMMENTS-001
+- `tests/e2e/workflow/comments-tab-channel-fr-003.spec.ts` — FR-WF-COMMENTS-003
+- `tests/e2e/workflow/comments-presence-fr-008.spec.ts` — FR-WF-COMMENTS-008 (deferred)
+- `tests/e2e/workflow/edit-node-fr-001.spec.ts` — FR-WF-EN-001 (partial FR-WF-EN-002)
+- `tests/e2e/workflow/edit-channel-fr-001.spec.ts` — FR-CHAN-001
+- `tests/e2e/workflow/comments-tab-outcome-fr-004.spec.ts` — FR-WF-COMMENTS-004
+- `tests/e2e/workflow/workflow-overview-fr-003.spec.ts` — FR-WF-OV-003 (deferred)
+- `tests/e2e/workflow/workflow-graph.locators.ts` — workflowNode*, workflowChannel*, edit form headings
+- `tests/e2e/workflow/workflow.locators.ts` — workflow header/tab shell uiObjects
 
 ## Workflow E2E fixture hygiene
 
@@ -46,5 +68,6 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 | --- | --- |
 | Playwright report (localhost:9323) | 81 passed / 4 failed before slice 3 (all `edit-section-fr-phase2`) |
 | `yarn test` full suite (after slice 3) | **85 passed / 25 skipped / 0 failed** (with `just django-seed-e2e-tests` before run) |
+| `edit-section-fr-007-012.spec.ts` | **7 passed / 2 skipped** (commenter + viewer role gaps) |
 
 Re-validate with `just rebuild-e2e-db` then `cd tests && yarn test` when the E2E stack is running.

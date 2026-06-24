@@ -18,6 +18,7 @@ from course_flow.e2e_seed.clear import clear_e2e_fixtures
 from course_flow.e2e_seed.constants import (
     E2E_FIXTURE_PROJECT_TITLE,
     E2E_FIXTURE_PROJECT_TITLE_PREFIX,
+    E2E_OUTCOME_TITLE,
     E2E_SECTION_TITLES,
 )
 from course_flow.e2e_seed.orchestrator import (
@@ -78,6 +79,18 @@ def test_e2e_fixture_manifest_includes_workflow_path_and_sections():
     assert workflow["workflow_path"] == f"/workflow/{workflow_uuid}/graph"
     assert len(workflow["sections"]) == len(E2E_SECTION_TITLES)
     assert all(section["uuid"] for section in workflow["sections"])
+
+
+@pytest.mark.django_db
+def test_e2e_fixture_manifest_includes_outcomes():
+    manifest = generate_e2e_fixtures()
+    workflow = manifest["workflows"][0]
+
+    assert workflow.get("outcome_count", 0) >= 1
+    outcomes = workflow.get("outcomes") or []
+    assert len(outcomes) >= 1
+    assert outcomes[0]["title"] == E2E_OUTCOME_TITLE
+    assert outcomes[0]["uuid"]
 
 
 @pytest.mark.django_db

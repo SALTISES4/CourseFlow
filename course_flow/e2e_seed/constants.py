@@ -22,5 +22,7 @@ E2E_CHANNEL_TITLES: tuple[str, ...] = (
     "E2E Channel C",
 )
 
+E2E_OUTCOME_TITLE = "E2E Outcome 1"
+
 # Structural graph layout seed — topology only; section/channel copy is fixed above.
 E2E_FIXTURE_GRAPH_SEED = 9001

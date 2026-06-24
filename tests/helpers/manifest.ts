@@ -16,14 +16,21 @@ export type ContributorEntry = {
   password: string;
 };
 
+export type OutcomeEntry = {
+  uuid: string;
+  title: string;
+};
+
 export type WorkflowEntry = {
   graph_uuid: string;
   workflow_type: string;
   workflow_path: string;
   sections: SectionEntry[];
+  outcomes?: OutcomeEntry[];
   node_count?: number;
   edge_count?: number;
   channel_count?: number;
+  outcome_count?: number;
 };
 
 export type WorkflowManifest = {
