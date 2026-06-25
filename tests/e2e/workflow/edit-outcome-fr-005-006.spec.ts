@@ -57,5 +57,9 @@ test.describe('Edit outcome — fields and auto-save (FR-WF-EO-005, FR-WF-EO-006
     await page.waitForTimeout(500);
 
     await expect(workflowOutcomeHeader(page, uniqueTitle)).toBeVisible();
+
+    await workflowEditOutcomeFormTitleField(page).fill(E2E_OUTCOME_TITLE);
+    await page.waitForTimeout(500);
+    await expect(workflowOutcomeHeader(page, E2E_OUTCOME_TITLE)).toBeVisible();
   });
 });

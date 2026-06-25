@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
   commentsButtonInSectionHeader,
   commentsTabInSidebar,
@@ -16,6 +16,7 @@ import {
 import {
   workflowOutcomeHeader,
   workflowOutcomeHoverCommentsItem,
+  workflowOutcomeRowForHeader,
 } from './workflow-outcome.locators';
 import {
   workflowCommentsComposerField,
@@ -121,6 +122,15 @@ export async function openSectionCommentsViaHover(page: Page, sectionUuid: strin
 export async function hoverWorkflowOutcomeHeader(page: Page, title: string) {
   await workflowOutcomeHeader(page, title).hover();
   await expect(workflowOutcomeHoverCommentsItem(page, title)).toBeVisible();
+}
+
+export async function hoverWorkflowOutcomeHeaderLocator(page: Page, header: Locator) {
+  await header.hover();
+  await expect(
+    workflowOutcomeRowForHeader(page, header)
+      .getByRole('button', { name: 'Comments', exact: true })
+      .first(),
+  ).toBeVisible();
 }
 
 export async function openOutcomeCommentsViaHover(page: Page, title: string) {

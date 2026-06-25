@@ -154,5 +154,5 @@ export async function findNodeBelowSourceInSection(
 }
 
 export async function workflowOutcomeHeaderCount(page: Page): Promise<number> {
-  return page.getByText(/^\d+\.\s+E2E Outcome/).count();
+  return page.getByRole('listitem').filter({ hasText: /^\d+(\.\d+)*\.\s/ }).count();
 }

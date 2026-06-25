@@ -4,6 +4,7 @@ import {
   hoverWorkflowOutcomeHeader,
 } from './comments-tab.helpers';
 import { workflowOutcomeHeaderCount } from './add-tab.helpers';
+import { skipUnlessPristineOutcome, ensureSeedOutcomeTitle, E2E_SEED_OUTCOME_TITLE } from '../../helpers/workflow-pristine';
 import {
   workflowEditOutcomeForm,
   workflowEditOutcomeFormDeleteButton,
@@ -29,11 +30,9 @@ test.describe('Outcome — duplicate and delete (FR-WF-EO-009–014)', () => {
   test.describe.configure({ mode: 'serial' });
 
   test.beforeEach(async ({ page, workflow }) => {
-    if (workflow.outcomes.length === 0) {
-      test.skip(true, 'E2E fixture has no outcomes; run just django-seed-e2e-tests.');
-    }
     await gotoOutcomesView(page, workflow.path);
-    await expect(workflowOutcomeHeader(page, E2E_OUTCOME_TITLE)).toBeVisible();
+    await ensureSeedOutcomeTitle(page, E2E_SEED_OUTCOME_TITLE);
+    await skipUnlessPristineOutcome(page, workflow, E2E_OUTCOME_TITLE);
   });
 
   test('FR-WF-EO-009: workflowEditOutcomeFormDuplicateButton creates sibling copy', async ({
@@ -113,5 +112,10 @@ test.describe('Outcome — duplicate and delete (FR-WF-EO-009–014)', () => {
       .toBe(beforeCount - 1);
     await expect(workflowOutcomeHeader(page, duplicateTitle)).toHaveCount(0);
     await expect(workflowRightSidebarContentPanel(page)).toBeHidden();
+  });
+
+  test('cleanup: restore seeded root outcome title after duplicate/delete flow', async ({ page }) => {
+    await ensureSeedOutcomeTitle(page, E2E_OUTCOME_TITLE);
+    await expect(workflowOutcomeHeader(page, E2E_OUTCOME_TITLE)).toBeVisible();
   });
 });
