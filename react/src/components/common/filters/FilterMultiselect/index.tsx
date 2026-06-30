@@ -1,4 +1,4 @@
-import useSkipFirstRender from '@cf/hooks/useSkipFirstRender'
+import { _t } from '@cf/utility/Utility.class'
 import { SearchFilterOption } from '@cfComponents/filters/types'
 import FilterIcon from '@mui/icons-material/FilterAlt'
 import { debounce } from '@mui/material'
@@ -64,17 +64,6 @@ const FilterMultiselect = ({
   const [search, setSearch] = useState('')
   const [filteredOptions, setFilteredOptions] = useState(options)
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null)
-  const hasRendered = useSkipFirstRender()
-
-  useEffect(() => {
-    if (hasRendered) {
-      onChange(value)
-    }
-  }, [value, options, filteredOptions])
-
-  useEffect(() => {
-    debouncedFilter(search)
-  }, [search, options])
 
   const debouncedFilter = useMemo(() => {
     return debounce((term: string) => {
@@ -144,6 +133,14 @@ const FilterMultiselect = ({
     }
   }, [value, filteredOptions])
 
+  useEffect(() => {
+    onChange(value)
+  }, [onChange, value])
+
+  useEffect(() => {
+    debouncedFilter(search)
+  }, [search, debouncedFilter])
+
   return (
     <>
       <StyledButton
@@ -163,9 +160,7 @@ const FilterMultiselect = ({
           open={!!menuAnchor}
           anchorEl={menuAnchor}
           onClose={onClose}
-          TransitionProps={{
-            onExited: resetState
-          }}
+          TransitionProps={{ onExited: resetState }}
           anchorOrigin={{
             vertical: 'bottom',
             horizontal: menuAlign
@@ -205,8 +200,8 @@ const FilterMultiselect = ({
             })}
           </StyledMenu>
           <StyledActions>
-            <Button onClick={onSelectNone}>None</Button>
-            <Button onClick={onSelectAll}>All</Button>
+            <Button onClick={onSelectNone}>{_t('None')}</Button>
+            <Button onClick={onSelectAll}>{_t('All')}</Button>
           </StyledActions>
         </StyledPopover>
       )}
