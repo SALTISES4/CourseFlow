@@ -86,6 +86,9 @@ locatorMappings:
   archiveWorkflowConfirmationModalConfirmButton:
     strategy: null
     confidence: unresolved
+  brandLockup:
+    strategy: "product logo and name label 'CourseFlow' at top of {mainNavigationPanel} or top of {loginForm} on {loginPage} or top of {registerForm} on {registerPage} or top of {forgotPasswordForm} on {forgotPasswordPage} or top of {forgotPasswordSetPasswordForm} on {forgotPasswordSetPasswordPage} or top of {forgotPasswordInvalidLinkPage}"
+    confidence: inferred
   backToProjectLink:
     strategy: "{returnLinksRegion} link with label including 'Return to' and parent project projectTitle"
     confidence: inferred
@@ -366,7 +369,7 @@ locatorMappings:
     strategy: "button with text 'Reset password' on forgotPasswordSetPasswordForm"
     confidence: inferred
   forgotPasswordSetPasswordTitle:
-    strategy: "heading with text 'Reset your CourseFlow password'"
+    strategy: "{forgotPasswordSetPasswordForm} heading with text 'Reset your CourseFlow password'"
     confidence: inferred
   forgotPasswordSubmitButton:
     strategy: "button with text 'Reset password' on forgotPasswordForm"
@@ -375,7 +378,7 @@ locatorMappings:
     strategy: "text 'If the email address matches an active account, you will receive instructions to reset your password shortly.' on forgotPasswordPage"
     confidence: inferred
   forgotPasswordTitle:
-    strategy: "heading with text 'Reset your CourseFlow password'"
+    strategy: "{forgotPasswordForm} heading with text 'Reset your CourseFlow password'"
     confidence: inferred
   globalMessageSnackbar:
     strategy: null
@@ -819,7 +822,7 @@ locatorMappings:
     strategy: "#register-button"
     confidence: confirmed
   registerTitle:
-    strategy: "heading with text 'Register to CourseFlow'"
+    strategy: "{registerForm} heading with text 'Register to CourseFlow'"
     confidence: inferred
   relatedWorkflowLink:
     strategy: "{relatedWorkflowList} row link showing workflowTitle"

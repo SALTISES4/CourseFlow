@@ -1,7 +1,11 @@
 # Normalized requirements: login
 # Source: Figma design evidence; application code (course_flow/routes/aggregated_urls.py LoginView; course_flow/templates/course_flow/html/registration/login.html; course_flow/settings.py LOGIN_REDIRECT_URL)
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+<<<<<<< HEAD:tests/docs/requirements/original/login_requirements_v1.yaml
 # Cross-reference: tests/docs/requirements/original/register_requirements_v1.yaml (public auth routes per documentPreconditions; registerEmailField value is account username per FR-REG-001; loginRegisterPrompt and loginRegisterLink mirror registerLoginPrompt and registerLoginLink per FR-REG-001; registerLoginLink navigates to '/login/' per FR-REG-002); tests/docs/requirements/original/homepage_requirements_v1.yaml (post-login destination Home per FR-LOGIN-005); tests/docs/requirements/original/main_navigation_requirements_v1.yaml (homeNavItem labeled 'Home'); tests/docs/requirements/original/password_reset_requirements_v1.yaml (authenticated change-password at '/user/password-reset' is a separate flow); tests/docs/requirements/original/forgot_password_requirements_v1.yaml (forgotPasswordPage at '/password-reset' per FR-FPWD-001; entry via loginForgotPasswordLink)
+=======
+# Cross-reference: tests/docs/requirements/features/auth/register_requirements_v1.yaml (public auth routes per documentPreconditions; registerEmailField value is account username per FR-REG-001; loginRegisterPrompt and loginRegisterLink mirror registerLoginPrompt and registerLoginLink per FR-REG-001); tests/docs/requirements/features/home/homepage_requirements_v1.yaml (post-login destination Home per FR-LOGIN-005); tests/docs/requirements/features/navigation/main_navigation_requirements_v1.yaml (homeNavItem labeled 'Home'); tests/docs/requirements/features/auth/password_reset_requirements_v1.yaml (authenticated change-password at '/user/password-reset' is a separate flow); tests/docs/requirements/features/auth/forgot_password_requirements_v1.yaml (forgotPasswordPage at '/password-reset' per FR-FPWD-001; entry via loginForgotPasswordLink)
+>>>>>>> dc6c8f27b400368e3c0e36656ce738f65399fcdc:tests/docs/requirements/features/auth/login_requirements_v1.yaml
 
 documentPreconditions:
   - user is not authenticated to CourseFlow
@@ -13,17 +17,25 @@ uiObjectDefinitions:
   loginForm:
     meaning: Form container on loginPage for sign-in fields.
   brandLockup:
-    meaning: Canonical definition in tests/docs/requirements/original/main_navigation_requirements_v1.yaml.
+    meaning: Canonical definition in tests/docs/requirements/features/navigation/main_navigation_requirements_v1.yaml.
   loginTitle:
     meaning: Page title on loginPage labeled 'Login to CourseFlow'.
   loginEmailField:
+<<<<<<< HEAD:tests/docs/requirements/original/login_requirements_v1.yaml
     meaning: Required text input labeled 'Email' on loginForm for the account email address; this value is the account username per tests/docs/requirements/original/register_requirements_v1.yaml FR-REG-001.
+=======
+    meaning: Required text input labeled 'Email' on loginForm for the account email address; this value is the account username per tests/docs/requirements/features/auth/register_requirements_v1.yaml FR-REG-001; valid when non-empty with at least one character before '@' and a domain name after '@' per FR-LOGIN-003.
+>>>>>>> dc6c8f27b400368e3c0e36656ce738f65399fcdc:tests/docs/requirements/features/auth/login_requirements_v1.yaml
   loginPasswordField:
     meaning: Required secret input labeled 'Password' on loginForm for the account password.
   loginSubmitButton:
     meaning: Primary submit button on loginForm labeled 'Login'.
   loginForgotPasswordLink:
+<<<<<<< HEAD:tests/docs/requirements/original/login_requirements_v1.yaml
     meaning: Clickable link labeled 'Forgot your password?' on loginPage.
+=======
+    meaning: Clickable link labeled 'Forgot your password?' on loginPage that navigates to forgotPasswordPage at public route '/password-reset' per tests/docs/requirements/features/auth/forgot_password_requirements_v1.yaml FR-FPWD-001; distinct from authenticated change-password at '/user/password-reset' per tests/docs/requirements/features/auth/password_reset_requirements_v1.yaml.
+>>>>>>> dc6c8f27b400368e3c0e36656ce738f65399fcdc:tests/docs/requirements/features/auth/login_requirements_v1.yaml
   loginRegisterPrompt:
     meaning: Static prompt copy 'Don't have an account? ' on loginPage adjacent to loginRegisterLink.
   loginRegisterLink:
@@ -33,7 +45,7 @@ uiObjectDefinitions:
   loginAuthenticationErrorMessage:
     meaning: Sign-in failure message shown on loginPage when credentials do not match an existing account.
   homePage:
-    meaning: Canonical definition in tests/docs/requirements/original/homepage_requirements_v1.yaml.
+    meaning: Canonical definition in tests/docs/requirements/features/home/homepage_requirements_v1.yaml.
 
 locatorMappings:
   brandLockup: "canonical_locators.yaml -> brandLockup"
@@ -274,7 +286,7 @@ requirements:
       - given login succeeds, user is authenticated to CourseFlow
       - given login succeeds, application navigates immediately to '/home' with no interim confirmation copy or snackbar
       - given login succeeds, current route matches '/home'
-      - given login succeeds, homePage is visible per tests/docs/requirements/original/homepage_requirements_v1.yaml FR-HOME-001
+      - given login succeeds, homePage is visible per tests/docs/requirements/features/home/homepage_requirements_v1.yaml FR-HOME-001
 
     openQuestions: []
 

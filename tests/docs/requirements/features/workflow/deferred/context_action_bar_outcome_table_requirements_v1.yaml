@@ -1,0 +1,253 @@
+# Normalized requirements: context action bar — 'Outcome table' sub-view extensions (deferred)
+# Deferred from current test-generation phase; requirements retained for future work.
+# Promotion target: extend tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (FR-CAB-006 sub-view visibility; new FR-CAB-008, FR-CAB-009, FR-CAB-010) when Outcome table ships.
+# Source: Figma CourseFlow-2.0 frames (see designEvidenceLinkTable); engineering interview 2026-06-25
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference:
+#   - tests/docs/requirements/original/context_action_bar_requirements_v1.yaml (contextActionBar, workflowViewSettingsTrigger, workflowViewSettingsMenu — FR-CAB-004, FR-CAB-006)
+#   - tests/docs/requirements/original/deferred/workflow_outcome_table_requirements_v1.yaml (workflowOutcomeTableView, 'Normal' and 'Competency matrix' style presentations — FR-WF-OT-001, FR-WF-OT-002; expand/collapse — FR-WF-OT-003)
+#   - tests/docs/requirements/original/deferred/workflow_header_outcome_table_tab_requirements_v1.yaml (workflowOutcomeTableTab — FR-WF-HEADER-003)
+#   - tests/docs/requirements/original/project_overview_requirements_v1.yaml (projectTagsSection, projectTagItem — tag catalog per FR-PROJ-OV-005; in-use tags for workflowOutcomeTableViewSettingsMenuTagsSection per FR-CAB-008)
+#   - tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml (workflowView)
+#   - tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml (workflowEditNodeFormCourseContextSelect — FR-WF-EN-003; node category via workflowChannel — FR-CHAN-003)
+#   - tests/docs/requirements/original/workspace_access_requirements_v1.yaml (denied access — FR-WS-ACCESS-002)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project of the workflow, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+  - current route matches '/workflow/{id}/outcome-table'
+  - requirements in this file assume the above hold; when they do not, assert per FR-WS-ACCESS-002
+
+uiObjectDefinitions:
+  contextActionBar:
+    meaning: Canonical definition in tests/docs/requirements/original/context_action_bar_requirements_v1.yaml.
+  workflowViewSettingsTrigger:
+    meaning: Canonical definition in tests/docs/requirements/original/context_action_bar_requirements_v1.yaml.
+  workflowViewSettingsMenu:
+    meaning: Canonical definition in tests/docs/requirements/original/context_action_bar_requirements_v1.yaml.
+  workflowOutcomeTableView:
+    meaning: Canonical definition in tests/docs/requirements/original/deferred/workflow_outcome_table_requirements_v1.yaml.
+  workflowOutcomeTableNormalLayout:
+    meaning: Canonical definition in tests/docs/requirements/original/deferred/workflow_outcome_table_requirements_v1.yaml.
+  workflowOutcomeTableCompetencyMatrixLayout:
+    meaning: Canonical definition in tests/docs/requirements/original/deferred/workflow_outcome_table_requirements_v1.yaml.
+  workflowOutcomeTableStyleTrigger:
+    meaning: Table-style dropdown on contextActionBar when active sub-view is 'Outcome table'; shows the active style label ('Normal' or 'Competency matrix').
+  workflowOutcomeTableStyleMenu:
+    meaning: Menu opened from workflowOutcomeTableStyleTrigger listing table style rows per FR-CAB-010.
+  workflowOutcomeTableStyleMenuItemNormal:
+    meaning: Table style menu row labeled 'Normal' in workflowOutcomeTableStyleMenu.
+  workflowOutcomeTableStyleMenuItemCompetencyMatrix:
+    meaning: Table style menu row labeled 'Competency matrix' in workflowOutcomeTableStyleMenu.
+  workflowOutcomeTableViewSettingsMenuItemExpandOutcomes:
+    meaning: Menu row labeled 'Expand outcomes' in workflowViewSettingsMenu when active sub-view is 'Outcome table'.
+  workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes:
+    meaning: Menu row labeled 'Collapse outcomes' in workflowViewSettingsMenu when active sub-view is 'Outcome table'.
+  workflowOutcomeTableViewSettingsMenuTagsSection:
+    meaning: "'TAGS' area in workflowViewSettingsMenu on 'Outcome table' sub-view listing tags assigned to workflowNodes or workflowOutcomes in the current workflow."
+  workflowOutcomeTableSortTrigger:
+    meaning: 'Sort' dropdown on contextActionBar when active sub-view is 'Outcome table'; separate from workflowViewSettingsTrigger and workflowOutcomeTableStyleTrigger.
+  workflowOutcomeTableSortMenu:
+    meaning: Menu opened from workflowOutcomeTableSortTrigger listing sort mode rows per FR-CAB-009.
+  workflowOutcomeTableSortMenuItemChronological:
+    meaning: Sort menu row labeled 'Chronological' in workflowOutcomeTableSortMenu.
+  workflowOutcomeTableSortMenuItemNodeCategory:
+    meaning: Sort menu row labeled 'Node category' in workflowOutcomeTableSortMenu.
+  workflowOutcomeTableSortMenuItemContext:
+    meaning: Course-only sort menu row labeled 'Context' in workflowOutcomeTableSortMenu.
+  workflowView:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_add_tab_requirements_v1.yaml.
+  workflowEditNodeFormCourseContextSelect:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml.
+  projectTagItem:
+    meaning: Canonical definition in tests/docs/requirements/original/project_overview_requirements_v1.yaml.
+
+locatorMappings:
+  contextActionBar: "canonical_locators.yaml -> contextActionBar"
+  workflowViewSettingsTrigger: "canonical_locators.yaml -> workflowViewSettingsTrigger"
+  workflowViewSettingsMenu: "canonical_locators.yaml -> workflowViewSettingsMenu"
+  workflowOutcomeTableStyleTrigger:
+    strategy: "{contextActionBar} table-style dropdown on 'Outcome table' sub-view"
+    confidence: inferred
+  workflowOutcomeTableStyleMenu:
+    strategy: "menu opened from {workflowOutcomeTableStyleTrigger}"
+    confidence: inferred
+  workflowOutcomeTableStyleMenuItemNormal:
+    strategy: "{workflowOutcomeTableStyleMenu} row with label 'Normal'"
+    confidence: inferred
+  workflowOutcomeTableStyleMenuItemCompetencyMatrix:
+    strategy: "{workflowOutcomeTableStyleMenu} row with label 'Competency matrix'"
+    confidence: inferred
+  workflowOutcomeTableViewSettingsMenuItemExpandOutcomes:
+    strategy: "{workflowViewSettingsMenu} row with label 'Expand outcomes'"
+    confidence: inferred
+  workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes:
+    strategy: "{workflowViewSettingsMenu} row with label 'Collapse outcomes'"
+    confidence: inferred
+  workflowOutcomeTableViewSettingsMenuTagsSection:
+    strategy: "{workflowViewSettingsMenu} 'TAGS' section on 'Outcome table' sub-view"
+    confidence: inferred
+  workflowOutcomeTableSortTrigger:
+    strategy: "{contextActionBar} 'Sort' control on 'Outcome table' sub-view"
+    confidence: inferred
+  workflowOutcomeTableSortMenu:
+    strategy: "menu opened from {workflowOutcomeTableSortTrigger}"
+    confidence: inferred
+  workflowOutcomeTableSortMenuItemChronological:
+    strategy: "{workflowOutcomeTableSortMenu} row with label 'Chronological'"
+    confidence: inferred
+  workflowOutcomeTableSortMenuItemNodeCategory:
+    strategy: "{workflowOutcomeTableSortMenu} row with label 'Node category'"
+    confidence: inferred
+  workflowOutcomeTableSortMenuItemContext:
+    strategy: "{workflowOutcomeTableSortMenu} row with label 'Context'"
+    confidence: inferred
+
+requirements:
+  - id: FR-CAB-008
+    title: "'View settings' on contextActionBar for 'Outcome table' sub-view"
+
+    designEvidence:
+      - FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - contextActionBar
+      - workflowViewSettingsTrigger
+      - workflowViewSettingsMenu
+      - workflowOutcomeTableViewSettingsMenuItemExpandOutcomes
+      - workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes
+      - workflowOutcomeTableViewSettingsMenuTagsSection
+      - workflowOutcomeTableCompetencyMatrixLayout
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - current workflow is a course or program workflow
+      - tests/docs/requirements/original/context_action_bar_requirements_v1.yaml FR-CAB-004 preconditions hold
+
+    trigger:
+      - user clicks workflowViewSettingsTrigger on 'Outcome table' sub-view
+      - user toggles a tag in workflowOutcomeTableViewSettingsMenuTagsSection
+
+    mainFlow:
+      - when active sub-view is 'Outcome table', workflowViewSettingsTrigger is visible on contextActionBar and opens workflowViewSettingsMenu when clicked
+      - workflowViewSettingsMenu shows workflowOutcomeTableViewSettingsMenuItemExpandOutcomes labeled 'Expand outcomes' and workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes labeled 'Collapse outcomes'; workflowOutcomeTableViewSettingsMenuTagsSection is shown only when at least one projectTagItem from FR-PROJ-OV-005 is assigned to at least one workflowNode or workflowOutcome in the current workflow
+      - expand and collapse behavior for workflowOutcomeTableViewSettingsMenuItemExpandOutcomes and workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes per tests/docs/requirements/original/deferred/workflow_outcome_table_requirements_v1.yaml FR-WF-OT-003
+      - workflowOutcomeTableViewSettingsMenuTagsSection lists each projectTagItem from FR-PROJ-OV-005 assigned to at least one workflowOutcome in the current workflow; toggling a tag off hides workflowOutcome rows or columns carrying that tag from the active layout; toggling on restores visibility
+      - when a workflowOutcome carries multiple tags, it is hidden if any assigned tag matches a toggled-off tag per tests/docs/requirements/original/context_action_bar_requirements_v1.yaml FR-CAB-006
+      - workflowOutcome entries with no tags remain visible regardless of tag toggle state
+      - hidden workflowOutcome rows or columns are excluded from total and metric column calculations in workflowOutcomeTableCompetencyMatrixLayout
+
+    roleBehavior: {}
+
+    acceptanceCriteria: []
+
+    openQuestions: []
+
+  - id: FR-CAB-009
+    title: "'Sort' control on contextActionBar for 'Outcome table' sub-view"
+
+    designEvidence:
+      - FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - contextActionBar
+      - workflowOutcomeTableSortTrigger
+      - workflowOutcomeTableSortMenu
+      - workflowOutcomeTableSortMenuItemChronological
+      - workflowOutcomeTableSortMenuItemNodeCategory
+      - workflowOutcomeTableSortMenuItemContext
+      - workflowOutcomeTableStyleMenuItemNormal
+      - workflowOutcomeTableStyleMenuItemCompetencyMatrix
+      - workflowOutcomeTableNormalLayout
+      - workflowOutcomeTableCompetencyMatrixLayout
+      - workflowView
+      - workflowEditNodeFormCourseContextSelect
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - tests/docs/requirements/original/context_action_bar_requirements_v1.yaml FR-CAB-004 preconditions hold
+
+    trigger:
+      - user clicks workflowOutcomeTableSortTrigger
+      - user selects a row in workflowOutcomeTableSortMenu
+
+    mainFlow:
+      - workflowOutcomeTableSortTrigger is visible on contextActionBar on 'Outcome table' sub-view and is separate from workflowViewSettingsTrigger and workflowOutcomeTableStyleTrigger
+      - workflowOutcomeTableSortMenu lists workflowOutcomeTableSortMenuItemChronological labeled 'Chronological', workflowOutcomeTableSortMenuItemNodeCategory labeled 'Node category', and on course workflows only workflowOutcomeTableSortMenuItemContext labeled 'Context'
+      - on program workflows, workflowOutcomeTableSortMenuItemContext is not shown
+      - default selection is workflowOutcomeTableSortMenuItemChronological on initial render of 'Outcome table' and when user selects workflowOutcomeTableStyleMenuItemNormal or workflowOutcomeTableStyleMenuItemCompetencyMatrix per FR-CAB-010 — within each workflowSectionContainer in workflowView, node order matches 'Workflow' sub-view grid order row-by-row from top to bottom; within each workflowSectionRow, workflowNode entries are ordered left to right across workflowChannels before advancing to the next row; in workflowOutcomeTableNormalLayout per FR-WF-OT-001, that order applies to workflowOutcomeTableColumnHeader entries within each workflowOutcomeTableSectionGroupBand; in workflowOutcomeTableCompetencyMatrixLayout per FR-WF-OT-002, that order applies to workflowOutcomeTableNodeRowLabel rows within each workflowOutcomeTableSectionGroupBand
+      - when user selects workflowOutcomeTableSortMenuItemNodeCategory, node rows or node columns re-order by node category in workflowOutcomeTableNormalLayout per FR-WF-OT-001 or workflowOutcomeTableCompetencyMatrixLayout per FR-WF-OT-002
+      - on course workflows, when user selects workflowOutcomeTableSortMenuItemContext, node rows or node columns re-order by workflowEditNodeFormCourseContextSelect on each workflowNode in workflowOutcomeTableNormalLayout per FR-WF-OT-001 or workflowOutcomeTableCompetencyMatrixLayout per FR-WF-OT-002
+
+    roleBehavior: {}
+
+    acceptanceCriteria: []
+
+    openQuestions: []
+
+  - id: FR-CAB-010
+    title: "Table style control on contextActionBar for 'Outcome table' sub-view"
+
+    designEvidence:
+      - FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
+      - FIGMA-WF-OT-COURSE-COMPETENCY-MATRIX-SCROLLED-LEFT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - contextActionBar
+      - workflowOutcomeTableStyleTrigger
+      - workflowOutcomeTableStyleMenu
+      - workflowOutcomeTableStyleMenuItemNormal
+      - workflowOutcomeTableStyleMenuItemCompetencyMatrix
+      - workflowOutcomeTableView
+      - workflowOutcomeTableNormalLayout
+      - workflowOutcomeTableCompetencyMatrixLayout
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - tests/docs/requirements/original/context_action_bar_requirements_v1.yaml FR-CAB-004 preconditions hold
+
+    trigger:
+      - user navigates to 'Outcome table' sub-view
+      - user clicks workflowOutcomeTableStyleTrigger
+      - user selects workflowOutcomeTableStyleMenuItemNormal or workflowOutcomeTableStyleMenuItemCompetencyMatrix
+
+    mainFlow:
+      - workflowOutcomeTableStyleTrigger is visible on contextActionBar when active sub-view is 'Outcome table' and is separate from workflowViewSettingsTrigger and workflowOutcomeTableSortTrigger
+      - when user first lands on 'Outcome table' sub-view, workflowOutcomeTableStyleTrigger shows 'Normal' as the active table style and workflowOutcomeTableView renders workflowOutcomeTableNormalLayout per FR-WF-OT-001
+      - workflowOutcomeTableStyleMenu lists workflowOutcomeTableStyleMenuItemNormal labeled 'Normal' and workflowOutcomeTableStyleMenuItemCompetencyMatrix labeled 'Competency matrix'
+      - when user selects 'Normal', workflowOutcomeTableView renders workflowOutcomeTableNormalLayout per FR-WF-OT-001 without changing route
+      - when user selects 'Competency matrix', workflowOutcomeTableView renders workflowOutcomeTableCompetencyMatrixLayout per FR-WF-OT-002 without changing route
+      - both course and program workflows support both table styles
+
+    roleBehavior: {}
+
+    acceptanceCriteria: []
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
+    url: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5445-53117
+  - key: FIGMA-WF-OT-COURSE-COMPETENCY-MATRIX-SCROLLED-LEFT
+    url: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7199-51650

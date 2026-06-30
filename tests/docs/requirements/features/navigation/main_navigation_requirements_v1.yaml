@@ -16,7 +16,7 @@ uiObjectDefinitions:
   expandIcon:
     meaning: Expand affordance shown at top-left of mainNavigation when mainNavigation is collapsed.
   brandLockup:
-    meaning: Product logo and product name label 'CourseFlow' at the top of mainNavigationPanel.
+    meaning: Reusable product logo and product name label 'CourseFlow'; rendered at the top of mainNavigationPanel in mainNavigation, at the top of loginForm on loginPage per tests/docs/requirements/original/login_requirements_v1.yaml FR-LOGIN-001, at the top of registerForm on registerPage per tests/docs/requirements/original/register_requirements_v1.yaml FR-REG-001, at the top of forgotPasswordForm on forgotPasswordPage per tests/docs/requirements/original/forgot_password_requirements_v1.yaml FR-FPWD-001, at the top of forgotPasswordSetPasswordForm on forgotPasswordSetPasswordPage per FR-FPWD-005, and at the top of forgotPasswordInvalidLinkPage per FR-FPWD-009.
   homeNavItem:
     meaning: Navigation row labeled 'Home' in mainNavigation.
   myLibraryNavItem:
@@ -49,6 +49,7 @@ locatorMappings:
   mainNavigationPanel: "canonical_locators.yaml -> mainNavigationPanel"
   collapseToggle: "canonical_locators.yaml -> collapseToggle"
   expandIcon: "canonical_locators.yaml -> expandIcon"
+  brandLockup: "canonical_locators.yaml -> brandLockup"
   homeNavItem: "canonical_locators.yaml -> homeNavItem"
   myLibraryNavItem: "canonical_locators.yaml -> myLibraryNavItem"
   exploreNavItem: "canonical_locators.yaml -> exploreNavItem"
