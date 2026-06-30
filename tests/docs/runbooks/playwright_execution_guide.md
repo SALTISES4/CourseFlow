@@ -86,7 +86,7 @@ Use **Yarn Classic 1.22.x** (same as `react/`), not Yarn 4 Berry/PnP. Volta is p
 ### 1. Install Playwright dependencies
 
 ```bash
-cd CourseFlow/tests
+cd ./tests
 yarn
 yarn exec playwright install chromium
 ```
@@ -94,7 +94,7 @@ yarn exec playwright install chromium
 ### 2. Configure `tests/.env`
 
 ```bash
-cd CourseFlow/tests
+cd ./tests
 cp .env.example .env
 ```
 
@@ -143,7 +143,7 @@ just rebuild-e2e-db
 With the E2E stack running (see [Run E2E locally](#run-e2e-locally)):
 
 ```bash
-cd CourseFlow/tests
+cd ./tests
 yarn test-setup
 ```
 
@@ -152,7 +152,7 @@ This performs a real UI login and writes `playwright/.auth/user.json`. Chromium 
 ### 5. Verify discovery
 
 ```bash
-cd CourseFlow/tests
+cd ./tests
 yarn test-list
 ```
 
@@ -183,7 +183,7 @@ just frontend-dev
 **Terminal 4 — Playwright:**
 
 ```bash
-cd CourseFlow/tests
+cd ./tests
 yarn test-setup    # when auth storage is missing or stale
 yarn test          # headless full suite
 # or
@@ -203,7 +203,7 @@ The `chromium` project depends on `setup`.
 
 ### Yarn scripts
 
-Run from `CourseFlow/tests/`:
+Run from `./tests/`:
 
 | Command | What it does |
 | ------- | ------------ |

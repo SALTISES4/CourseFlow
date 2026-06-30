@@ -18,7 +18,39 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    networks:
+      - cf-network
 
+  django:
+    profiles:
+      - staging
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "${DJANGO_PORT:-8000}:8000"
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PORT: "5432"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-insecure-change-me}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-true}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,django}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - cf-network
 
 volumes:
   courseflow_pgdata:
+
+networks:
+  cf-network:
+    driver: bridge
