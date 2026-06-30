@@ -1,7 +1,9 @@
-import LibrarySearchView from '@cfViews/LibrarySearchView'
+import { LibraryContentTypeIn, LibrarySearchIn } from '@cf/api/gen'
+import LibrarySearchView, {
+  LibraryFilterConfig
+} from '@cfViews/LibrarySearchView'
 import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
-import { TypedLibrarySearchArgs } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 type PropsType = {
   selected?: string
@@ -12,26 +14,19 @@ const ProjectSearch = ({ selected, onProjectSelect }: PropsType) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-
-  const config = {
-    pagination: true,
-    sortOptions: false,
-    filterGroups: {
-      relationshipFilter: false,
-      disciplineFilter: false,
-      contentTypeFilter: false,
-      templateFilter: false
-    },
-    keywordFilter: true
+  const config: LibraryFilterConfig = {
+    sortOptions: false
   }
 
-  const locked = { contentType: 'project' as const }
+  const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
 
-  const [searchArgs, setSearchArgs] = useState<TypedLibrarySearchArgs>({})
-
-  const updateSearchArgsHandler = (args: TypedLibrarySearchArgs) => {
-    setSearchArgs(LibraryHelper.applyLockedFilters(args, locked))
-  }
+  const updateSearchArgsHandler = useCallback((args: LibrarySearchIn) => {
+    setSearchArgs(
+      LibraryHelper.applyLockedFilters(args, {
+        contentType: LibraryContentTypeIn.PROJECT
+      })
+    )
+  }, [])
 
   /*******************************************************
    * RENDER

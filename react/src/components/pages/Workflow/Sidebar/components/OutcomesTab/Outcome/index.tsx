@@ -1,6 +1,4 @@
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import * as Styled from '@cf/components/views/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
-import * as StyledOutcomes from '@cf/components/views/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import type {
   GraphUuid,
   OutcomeEntity
@@ -12,6 +10,8 @@ import {
 } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { outcomeUiActions } from '@cf/features/graph/state/slices/outcomeUi.slice'
 import { RootState } from '@cf/redux/store'
+import * as StyledOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
+import * as Styled from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'

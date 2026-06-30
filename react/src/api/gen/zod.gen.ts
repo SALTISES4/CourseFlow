@@ -38,6 +38,7 @@ export const zProjectDetailOut = z.object({
   description: z.string(),
   isPublished: z.boolean(),
   isTemplate: z.boolean(),
+  isFavorite: z.boolean(),
   ownerId: z.number().int(),
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime(),

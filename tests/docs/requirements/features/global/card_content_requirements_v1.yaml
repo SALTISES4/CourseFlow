@@ -1,0 +1,365 @@
+# Normalized requirements: shared card content contracts
+# Source: CourseFlow 2.0 card designs; shared projectCard and workflowCard on home, 'My library', 'Explore', 'Favourites', project 'Workflows' listing, create-workflow stepped dialog, and link-workflow dialog
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference:
+#   - tests/docs/requirements/features/home/homepage_requirements_v1.yaml
+#   - tests/docs/requirements/features/library/library_page_requirements_v1.yaml (FR-LIB-006 Owner restore/delete on archived rows)
+#   - tests/docs/requirements/features/library/explore_page_requirements_v1.yaml
+#   - tests/docs/requirements/features/library/favourites_page_requirements_v1.yaml
+#   - tests/docs/requirements/features/project/project_workflows_view_requirements_v1.yaml
+#   - tests/docs/requirements/features/workflow/workflow_create_stepped_form_requirements_v1.yaml
+#   - tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml (workflowLinkWorkflowDialog)
+#   - tests/docs/requirements/features/project/project_header_requirements_v1.yaml (FR-CARD-005 snackbar copy consumed by FR-PROJ-HEADER-002)
+#   - tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml (FR-CARD-005 snackbar copy consumed by FR-WF-HEADER-002)
+#   - tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml (favourite removal on archive confirm—FR-WF-ARCH-003)
+#   - tests/docs/requirements/features/project/project_archive_requirements_v1.yaml (favourite removal on archive confirm—FR-PROJ-ARCH-003)
+#   - tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml (mid-session archive eviction—FR-WS-ACCESS-005)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+
+uiObjectDefinitions:
+  projectCard:
+    meaning: Shared card tile for a project library object; card-body click navigates per FR-CARD-003 when preconditions there are met, per FR-CARD-006 when the project is archived.
+  workflowCard:
+    meaning: Shared card tile for a workflow library object; card-body click navigates per FR-CARD-004 when preconditions there are met, per FR-CARD-006 when the workflow is archived.
+  cardTitleText:
+    meaning: Primary card title text rendered on projectCard or workflowCard.
+  cardOwnerText:
+    meaning: Ownership text on projectCard or workflowCard with format 'Owned by {ownerName}'; shown whenever owner data exists. Template cards use the same presentation as non-template cards.
+  cardTypeChip:
+    meaning: Type chip on projectCard or workflowCard reflecting library object type; projectCard shows the project type label (e.g. 'Project'); workflowCard shows the workflow subtype label (e.g. 'Program', 'Course', 'Activity') per object type mapping.
+  cardTemplateChip:
+    meaning: Template chip labeled 'Template' on a template projectCard or template workflowCard.
+  cardWorkflowCountChip:
+    meaning: Chip displaying workflow count on projectCard when count is greater than zero.
+  cardFavouriteToggle:
+    meaning: Favourite control on projectCard or workflowCard; shows yellow star when favourited and grey star when not favourited; interactive per FR-CARD-005 when the object is not archived. On projectCard or workflowCard that represents an archived object, cardFavouriteToggle shows grey star and does not accept interaction per FR-CARD-006.
+  cardLinkedInUseChip:
+    meaning: Warning chip labeled 'Already in use' on workflowCard only inside workflowLinkWorkflowDialogSearchResults per workflow_edit_node_requirements_v1.yaml FR-WF-EN-008 and FR-WF-EN-009; indicates the candidate course or activity is already linked to another node in the same workflow per FR-CARD-007.
+  globalMessageSnackbar:
+    meaning: Application-wide transient snackbar for async success and error feedback.
+
+locatorMappings:
+  projectCard: "canonical_locators.yaml -> projectCard"
+  workflowCard: "canonical_locators.yaml -> workflowCard"
+  cardTitleText: "canonical_locators.yaml -> cardTitleText"
+  cardOwnerText: "canonical_locators.yaml -> cardOwnerText"
+  cardTypeChip: "canonical_locators.yaml -> cardTypeChip"
+  cardTemplateChip: "canonical_locators.yaml -> cardTemplateChip"
+  cardWorkflowCountChip: "canonical_locators.yaml -> cardWorkflowCountChip"
+  cardFavouriteToggle: "canonical_locators.yaml -> cardFavouriteToggle"
+  cardLinkedInUseChip: "canonical_locators.yaml -> cardLinkedInUseChip"
+  globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
+
+requirements:
+  - id: FR-CARD-001
+    title: projectCard displays mapped project content
+
+    designEvidence:
+      - FIGMA-HOME-DASHBOARD
+
+    actors:
+      - user
+
+    uiObjects:
+      - projectCard
+      - cardTitleText
+      - cardOwnerText
+      - cardTypeChip
+      - cardTemplateChip
+      - cardWorkflowCountChip
+      - cardFavouriteToggle
+
+    preconditions:
+      - a projectCard instance is rendered
+      - the card does not represent an archived project
+
+    trigger:
+      - system renders projectCard
+
+    mainFlow:
+      - system renders cardTitleText from project title
+      - when owner data exists, system renders cardOwnerText with format 'Owned by {ownerName}'
+      - system renders cardTypeChip from project object type mapping
+      - when template flag is true, system renders cardTemplateChip with label 'Template' on projectCard
+      - when project workflow count is greater than zero, system renders cardWorkflowCountChip with singular/plural workflow label
+      - system renders cardFavouriteToggle bound to project favourite state
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given project title exists, cardTitleText matches project title
+      - given owner data exists, cardOwnerText matches pattern 'Owned by {ownerName}'
+      - given owner data does not exist, cardOwnerText is not visible
+      - cardTypeChip label matches 'Project' for projectCard
+      - given project is a template, cardTemplateChip is visible with label 'Template'
+      - given project is not a template, cardTemplateChip is not visible
+      - given project workflow count equals 1, cardWorkflowCountChip label matches '1 workflow'
+      - given project workflow count is greater than 1, cardWorkflowCountChip label matches '{n} workflows'
+      - given project workflow count is null or 0, cardWorkflowCountChip is not visible
+      - cardFavouriteToggle is visible on projectCard
+      - given project is favourited, cardFavouriteToggle on projectCard shows yellow star
+      - given project is not favourited, cardFavouriteToggle on projectCard shows grey star
+
+    openQuestions: []
+
+  - id: FR-CARD-002
+    title: workflowCard displays mapped workflow content
+
+    designEvidence:
+      - FIGMA-HOME-DASHBOARD
+      - FIGMA-CARD-DESIGNS
+      - FIGMA-WF-CREATE-STEP-3-TEMPLATE
+      - FIGMA-EXPLORE-DEFAULT
+
+    actors:
+      - user
+
+    uiObjects:
+      - workflowCard
+      - cardTitleText
+      - cardOwnerText
+      - cardTypeChip
+      - cardTemplateChip
+      - cardFavouriteToggle
+
+    preconditions:
+      - a workflowCard instance is rendered
+      - the card does not represent an archived workflow
+
+    trigger:
+      - system renders workflowCard
+
+    mainFlow:
+      - system renders cardTitleText from workflow title
+      - when owner data exists, system renders cardOwnerText with format 'Owned by {ownerName}'
+      - system renders cardTypeChip from workflow object type mapping
+      - when template flag is true, system renders cardTemplateChip with label 'Template' on workflowCard
+      - system renders cardFavouriteToggle bound to workflow favourite state
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given workflow title exists, cardTitleText matches that title
+      - given owner data exists, cardOwnerText matches pattern 'Owned by {ownerName}'
+      - given owner data does not exist, cardOwnerText is not visible
+      - cardTypeChip label matches the workflow library object type mapping for that row (e.g. 'Program', 'Course', 'Activity')
+      - given workflow is a template, cardTemplateChip is visible with label 'Template'
+      - given workflow is not a template, cardTemplateChip is not visible
+      - cardFavouriteToggle is visible on workflowCard
+      - given workflow is favourited, cardFavouriteToggle on workflowCard shows yellow star
+      - given workflow is not favourited, cardFavouriteToggle on workflowCard shows grey star
+
+    openQuestions: []
+
+  - id: FR-CARD-003
+    title: projectCard click destination
+
+    designEvidence:
+      - FIGMA-HOME-DASHBOARD
+
+    actors:
+      - user
+
+    uiObjects:
+      - projectCard
+
+    preconditions:
+      - projectCard is visible
+      - project is not archived
+      - projectCard is not used for destination-project selection inside createWorkflowDialog step 1 (workflowProjectSearchView per workflow_create_stepped_form_requirements_v1.yaml FR-WF-CREATE-STEPPER-003)
+
+    trigger:
+      - user clicks projectCard card body (not cardFavouriteToggle)
+
+    mainFlow:
+      - when user clicks projectCard card body, system navigates to that project's 'Workflows' view at route pattern /project/{id}/workflows
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given non-archived projectCard, user clicks projectCard card body, current route matches /project/{id}/workflows
+
+    openQuestions:
+      - Confirm whether projectCard click lands on the project 'Workflows' tab at '/project/{id}/workflows' or on another project route (e.g. Overview) until routing is finalized.
+
+  - id: FR-CARD-004
+    title: workflowCard click destination
+
+    designEvidence:
+      - FIGMA-HOME-DASHBOARD
+      - FIGMA-CARD-DESIGNS
+      - FIGMA-EXPLORE-DEFAULT
+
+    actors:
+      - user
+
+    uiObjects:
+      - workflowCard
+
+    preconditions:
+      - workflowCard is visible
+      - workflow is not archived
+      - workflowCard is not used for link target selection inside workflowLinkWorkflowDialog (workflowLinkWorkflowDialogSearchResults per workflow_edit_node_requirements_v1.yaml FR-WF-EN-009)
+      - workflowCard is not used for template selection inside createWorkflowDialog step 3 (workflowTemplateSearchView per workflow_create_stepped_form_requirements_v1.yaml FR-WF-CREATE-STEPPER-006)
+
+    trigger:
+      - user clicks workflowCard card body (not cardFavouriteToggle)
+
+    mainFlow:
+      - when user clicks workflowCard card body, system navigates to '/workflow/{id}/graph' with workflowView open
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given non-archived workflowCard, user clicks workflowCard card body, current route matches '/workflow/{id}/graph'
+
+    openQuestions: []
+
+  - id: FR-CARD-005
+    title: Favourite toggle updates favourite state and snackbar copy
+
+    designEvidence:
+      - FIGMA-EXPLORE-DEFAULT
+
+    actors:
+      - user
+
+    uiObjects:
+      - projectCard
+      - workflowCard
+      - cardFavouriteToggle
+      - globalMessageSnackbar
+
+    preconditions:
+      - a projectCard or workflowCard is visible
+      - the card does not represent an archived project or archived workflow
+      - cardFavouriteToggle is visible on that card
+
+    trigger:
+      - user clicks cardFavouriteToggle
+
+    mainFlow:
+      - when user clicks cardFavouriteToggle, system attempts to update favourite state for that card without performing projectCard or workflowCard click navigation per FR-CARD-003 or FR-CARD-004
+      - when user clicks cardFavouriteToggle, system does not change projectCard selection in createWorkflowDialog step 1 (workflowProjectSearchView per FR-WF-CREATE-STEPPER-003), workflowCard selection in workflowLinkWorkflowDialog (FR-WF-EN-009), or workflowCard selection in createWorkflowDialog step 3 template picker (FR-WF-CREATE-STEPPER-006)
+      - on successful request for projectCard or workflowCard, system updates cardFavouriteToggle to yellow star when favourite becomes true or grey star when favourite becomes false and shows globalMessageSnackbar with success copy 'Added to your favourites' when favourite becomes true, or 'Removed from your favourites' when favourite becomes false
+      - on failed request, system preserves prior favourite state and shows globalMessageSnackbar with error copy 'We were not able to update favourite status'
+      - globalMessageSnackbar success and error copy in this FR also apply to projectHeaderFavouriteToggle per project_header_requirements_v1.yaml FR-PROJ-HEADER-002 and workflowHeaderFavouriteToggle per workflow_header_requirements_v1.yaml FR-WF-HEADER-002
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user clicks cardFavouriteToggle on a visible projectCard or workflowCard, current route is unchanged from immediately before the click
+      - given user clicks cardFavouriteToggle on projectCard in createWorkflowDialog step 1 workflowProjectSearchView, selected projectCard for that dialog is unchanged from immediately before the click
+      - given user clicks cardFavouriteToggle on workflowCard in workflowLinkWorkflowDialogSearchResults or on workflowCard in createWorkflowDialog step 3 workflowTemplateSearchView, selected workflowCard for that dialog is unchanged from immediately before the click
+      - given user clicks cardFavouriteToggle on a non-favourited projectCard or workflowCard and update succeeds, cardFavouriteToggle shows yellow star and globalMessageSnackbar shows 'Added to your favourites'
+      - given user clicks cardFavouriteToggle on a favourited projectCard or workflowCard and update succeeds, cardFavouriteToggle shows grey star and globalMessageSnackbar shows 'Removed from your favourites'
+      - given favourite-state update fails, cardFavouriteToggle visual state remains on previous state and globalMessageSnackbar shows 'We were not able to update favourite status'
+
+    openQuestions: []
+
+  - id: FR-CARD-006
+    title: Archived projectCard and workflowCard — no browse on card click
+
+    designEvidence:
+      - FIGMA-LIB-FILTER-ARCHIVE
+      - FIGMA-LIB-FILTER-ARCHIVED-ROWS
+
+    actors:
+      - user
+
+    uiObjects:
+      - projectCard
+      - workflowCard
+      - cardTitleText
+      - cardOwnerText
+      - cardTypeChip
+      - cardTemplateChip
+      - cardWorkflowCountChip
+      - cardFavouriteToggle
+
+    preconditions:
+      - projectCard or workflowCard is visible
+      - the card represents an archived project or archived workflow
+
+    trigger:
+      - user clicks projectCard or workflowCard that represents an archived object
+
+    mainFlow:
+      - when user clicks projectCard that represents an archived project, system does not perform navigation defined in FR-CARD-003 (the card is not a navigation affordance except surface-specific Owner restore actions on 'My library' per library_page_requirements_v1.yaml FR-LIB-006)
+      - when user clicks workflowCard that represents an archived workflow, system does not perform navigation defined in FR-CARD-004 (same exception for Owner restore actions on 'My library' per FR-LIB-006 or project 'Workflows' view per project_workflows_view_requirements_v1.yaml FR-PROJ-WF-006)
+      - when projectCard represents an archived project, projectCard renders cardTitleText, cardOwnerText, cardTypeChip, cardTemplateChip when applicable, and cardWorkflowCountChip when applicable per FR-CARD-001 where data exists; cardFavouriteToggle follows this FR, not FR-CARD-001
+      - when workflowCard represents an archived workflow, workflowCard renders cardTitleText, cardOwnerText, cardTypeChip, and cardTemplateChip when applicable per FR-CARD-002 where data exists; cardFavouriteToggle follows this FR, not FR-CARD-002
+      - on projectCard or workflowCard that represents an archived object, cardFavouriteToggle shows grey star and does not accept interaction
+      - projectCard or workflowCard that represents an archived object uses subdued archived styling on the card and thumbnail and does not present an active navigation affordance to open that archived workspace
+      - mid-session archive — when a project or workflow becomes archived while an actor is already in its workspace, eviction on the actor's next in-app action is specified in tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-005 (access-denied presentation per FR-WS-ACCESS-001 or FR-WS-ACCESS-002); this FR covers card-click navigation only
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given projectCard represents an archived project, clicking the card does not perform navigation defined in FR-CARD-003
+      - given workflowCard represents an archived workflow, clicking the card does not perform navigation defined in FR-CARD-004
+      - given projectCard represents an archived project, visible cardTitleText, cardOwnerText, cardTypeChip, cardTemplateChip, and cardWorkflowCountChip conform to FR-CARD-001 where applicable
+      - given workflowCard represents an archived workflow, visible cardTitleText, cardOwnerText, cardTypeChip, and cardTemplateChip conform to FR-CARD-002 where applicable
+      - given projectCard or workflowCard represents an archived object, cardFavouriteToggle shows grey star
+      - given projectCard or workflowCard represents an archived object, clicking cardFavouriteToggle does not change favourite state
+      - given projectCard or workflowCard represents an archived object, the card and thumbnail use subdued archived styling and are not presented as an active link to the archived object workspace
+
+    openQuestions: []
+
+  - id: FR-CARD-007
+    title: workflowCard 'Already in use' chip in link-workflow dialog
+
+    designEvidence:
+      - FIGMA-WF-EN-COURSE-LINK-DIALOG
+      - FIGMA-WF-EN-PROGRAM-LINK-DIALOG
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowCard
+      - cardLinkedInUseChip
+
+    preconditions:
+      - workflowLinkWorkflowDialog is open per workflow_edit_node_requirements_v1.yaml FR-WF-EN-009
+      - workflowCard is listed in workflowLinkWorkflowDialogSearchResults per FR-WF-EN-008 and FR-WF-EN-010
+      - dialog context is 'Link an activity' when parent workflow type is course (FR-WF-EN-009) or 'Link a course' when parent workflow type is program (FR-WF-EN-009)
+
+    trigger:
+      - system renders workflowCard rows in workflowLinkWorkflowDialogSearchResults
+
+    mainFlow:
+      - cardLinkedInUseChip appears only on workflowCard inside workflowLinkWorkflowDialogSearchResults per workflow_edit_node_requirements_v1.yaml FR-WF-EN-008 and FR-WF-EN-009
+      - when the candidate course or activity workflow is already linked to another node in the same parent workflow, workflowCard in the dialog renders cardLinkedInUseChip with label 'Already in use'
+      - when the candidate course or activity workflow is not already linked to another node in that workflow, cardLinkedInUseChip is not visible on that workflowCard
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given workflowLinkWorkflowDialog is open for 'Link an activity' and a listed activity workflow is already linked to another node in the workflow, that workflowCard shows cardLinkedInUseChip with label 'Already in use'
+      - given workflowLinkWorkflowDialog is open for 'Link a course' and a listed course workflow is already linked to another node in the workflow, that workflowCard shows cardLinkedInUseChip with label 'Already in use'
+      - given workflowLinkWorkflowDialog is open and a listed candidate workflow is not already linked to another node in the workflow, that workflowCard does not show cardLinkedInUseChip
+      - given workflowCard outside workflowLinkWorkflowDialogSearchResults, cardLinkedInUseChip is not visible
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-EXPLORE-DEFAULT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=4151-30580&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-HOME-DASHBOARD
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6492-61051&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-CARD-DESIGNS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=612-4041&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-WF-CREATE-STEP-3-TEMPLATE
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5678-97152&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-LIB-FILTER-ARCHIVE
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=4141-38505&t=Q1Rlqw0f4xYnBv7M-1
+  - key: FIGMA-LIB-FILTER-ARCHIVED-ROWS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6581-101626&t=Q1Rlqw0f4xYnBv7M-1
+  - key: FIGMA-WF-EN-COURSE-LINK-DIALOG
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=1937-25525&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-EN-PROGRAM-LINK-DIALOG
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5677-55541&t=6weYZA8hUf6tm7DF-1

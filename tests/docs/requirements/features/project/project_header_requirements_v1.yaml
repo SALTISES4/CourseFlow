@@ -1,0 +1,130 @@
+# Normalized requirements: project header (header, tabs, favourite)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Project section: Overview, Workflows, favourites) + Figma design evidence.
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference:
+#   - tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-001; mid-session unpublish revocation for published-access—FR-WS-ACCESS-003; mid-session contributor removal—FR-WS-ACCESS-004; mid-session archive eviction—FR-WS-ACCESS-005)
+#   - tests/docs/requirements/features/project/project_workflows_view_requirements_v1.yaml (project 'Workflows' sub-view; tab ownership in FR-PROJ-HEADER-001)
+#   - tests/docs/requirements/features/project/project_overview_requirements_v1.yaml (overview content blocks)
+#   - tests/docs/requirements/features/shared/context_action_bar_requirements_v1.yaml (project-level action bar controls)
+#   - tests/docs/requirements/features/project/project_edit_form_requirements_v1.yaml (project title update path via editProjectDialog, FR-PROJ-FORM-003)
+#   - tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml (project title initial set path via createProjectDialog, FR-PROJ-FORM-005)
+#   - tests/docs/requirements/features/shared/card_content_requirements_v1.yaml (FR-CARD-005 favourite snackbar copy for projectHeaderFavouriteToggle)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the project on any route matching '/project/{id}/*', or (b) user (published-access, no explicit contributor role) viewing a project that is published
+  - routes matching '/project/{id}/*' include '/project/{id}' (empty suffix) and '/project/{id}/<sub-view>' for any sub-view
+  - requirements in this file assume the above hold; when they do not on navigation, assert per tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-001; when published-access preconditions fail mid-session because the project becomes unpublished, assert per FR-WS-ACCESS-003 on the actor's next in-app action; when a former contributor's access changes mid-session because they were removed per tests/docs/requirements/features/project/project_overview_requirements_v1.yaml FR-PROJ-OV-002, assert per FR-WS-ACCESS-004 on the actor's next in-app action; when the project or a child workflow becomes archived while the actor is in workspace, assert per FR-WS-ACCESS-005 on the actor's next in-app action
+
+uiObjectDefinitions:
+  projectHeader:
+    meaning: Header region showing project title, projectHeaderFavouriteToggle, and projectViewTabSelector.
+  projectTitle:
+    meaning: Project title text shown in projectHeader across project sub-views.
+  projectHeaderFavouriteToggle:
+    meaning: Favourite toggle control in projectHeader; shows yellow star when favourited and grey star when not favourited.
+  projectViewTabSelector:
+    meaning: Tab selector in projectHeader for switching between project sub-views per FR-PROJ-HEADER-001.
+  globalMessageSnackbar:
+    meaning: Canonical definition in tests/docs/requirements/features/shared/card_content_requirements_v1.yaml (FR-CARD-005).
+
+locatorMappings:
+  projectHeader: "canonical_locators.yaml -> projectHeader"
+  projectTitle: "canonical_locators.yaml -> projectTitle"
+  projectHeaderFavouriteToggle: "canonical_locators.yaml -> projectHeaderFavouriteToggle"
+  projectViewTabSelector: "canonical_locators.yaml -> projectViewTabSelector"
+  globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
+
+requirements:
+  - id: FR-PROJ-HEADER-001
+    title: Project header and tab selector on project routes
+
+    designEvidence:
+      - FIGMA-PROJ-HEADER-DEFAULT
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - projectHeader
+      - projectTitle
+      - projectViewTabSelector
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - current route matches '/project/{id}/*'
+
+    trigger:
+      - user opens any route matching '/project/{id}/*'
+      - user selects a tab on projectViewTabSelector
+
+    mainFlow:
+      - system renders projectHeader with projectTitle for the current project
+      - projectTitle is display-only in projectHeader; initial title is set through createProjectDialog flow in tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml (FR-PROJ-FORM-005); subsequent updates are performed through editProjectDialog flow defined in tests/docs/requirements/features/project/project_edit_form_requirements_v1.yaml (FR-PROJ-FORM-003)
+      - projectViewTabSelector provides exactly two tabs 'Overview' and 'Workflows'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - projectTitle is visible
+      - given user needs to change projectTitle, update path is editProjectDialog defined in tests/docs/requirements/features/project/project_edit_form_requirements_v1.yaml (FR-PROJ-FORM-003)
+      - projectViewTabSelector shows tabs 'Overview' and 'Workflows'
+      - selecting 'Overview' on projectViewTabSelector navigates to '/project/{id}'
+      - selecting 'Workflows' on projectViewTabSelector navigates to '/project/{id}/workflows'
+      - given current route matches '/project/{id}', tab 'Overview' is active on projectViewTabSelector
+      - given current route matches '/project/{id}/workflows', tab 'Workflows' is active on projectViewTabSelector
+
+    openQuestions: []
+
+  - id: FR-PROJ-HEADER-002
+    title: Add and remove project favourite on project routes
+
+    designEvidence:
+      - FIGMA-PROJ-HEADER-DEFAULT
+      - FIGMA-PROJ-HEADER-FAVOURITE
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - projectHeader
+      - projectHeaderFavouriteToggle
+      - globalMessageSnackbar
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - projectHeaderFavouriteToggle is visible
+
+    trigger:
+      - user clicks projectHeaderFavouriteToggle
+
+    mainFlow:
+      - projectHeaderFavouriteToggle shows yellow star when current project is favourited and grey star when not favourited on render
+      - when user clicks projectHeaderFavouriteToggle, system attempts to update favourite state for the current project
+      - on successful favourite-state update, projectHeaderFavouriteToggle shows yellow star when project becomes favourited or grey star when project becomes non-favourited, and globalMessageSnackbar success copy conforms to FR-CARD-005
+      - on failed favourite-state update, projectHeaderFavouriteToggle visual state is unchanged and globalMessageSnackbar error copy conforms to FR-CARD-005
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given current project is favourited, projectHeaderFavouriteToggle shows yellow star
+      - given current project is not favourited, projectHeaderFavouriteToggle shows grey star
+      - given user clicks projectHeaderFavouriteToggle on a non-favourited project and favourite-state update succeeds, projectHeaderFavouriteToggle shows yellow star and globalMessageSnackbar copy conforms to FR-CARD-005
+      - given user clicks projectHeaderFavouriteToggle on a favourited project and favourite-state update succeeds, projectHeaderFavouriteToggle shows grey star and globalMessageSnackbar copy conforms to FR-CARD-005
+      - given user clicks projectHeaderFavouriteToggle and favourite-state update fails, projectHeaderFavouriteToggle visual state is unchanged and globalMessageSnackbar copy conforms to FR-CARD-005
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-PROJ-HEADER-DEFAULT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=3566-42791&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-PROJ-HEADER-FAVOURITE
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=3566-42816&t=lsKQpS4Jq8MOZwMT-1

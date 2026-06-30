@@ -4,12 +4,12 @@ import {
   listUsersOptions
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { ProjectTeamRoleSchema } from '@cf/api/gen/types.gen'
-import { StyledBox, StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { WorkspaceType } from '@cf/types/enum'
 import { projectTeamRoleMenuOptions } from '@cf/utility/permissions'
 import { _t } from '@cf/utility/Utility.class'
+import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import SearchIcon from '@mui/icons-material/Search'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'

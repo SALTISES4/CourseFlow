@@ -41,6 +41,10 @@ export type ProjectDetailOut = {
    */
   isTemplate: boolean
   /**
+   * Isfavorite
+   */
+  isFavorite: boolean
+  /**
    * Ownerid
    */
   ownerId: number

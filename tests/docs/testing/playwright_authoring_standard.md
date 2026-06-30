@@ -28,7 +28,7 @@ Where practical, each generated test should include traceability comments with:
 Example:
 
 ```ts
-// FR: FR-SEC-006 — tests/docs/requirements/original/workflow_delete_section_requirements_v1.yaml
+// FR: FR-SEC-006 — tests/docs/requirements/features/workflow/workflow_delete_section_requirements_v1.yaml
 // Design evidence: FIGMA-SEC-OE-HOVER, FIGMA-SEC-DEL-WARN, FIGMA-SEC-OE-EDIT
 // Role: Owner/Editor
 ```
@@ -57,6 +57,10 @@ At a minimum:
 - use role and accessible-name selectors when they are truly stable product contracts
 - avoid brittle structure-only CSS selectors
 - avoid selecting by incidental copy unless the requirement verifies that copy
+- **never** use XPath axes, MUI generated classes (`Mui*`), or `.main-block` layout anchors in committed locators
+- re-export shared canonical locators from the owning module — do not duplicate selector strings across domains
+
+Reload `locator_contract_policy.md` and `canonical_locators.yaml` each generation session; agents do not retain policy automatically.
 
 ## Assertions and waiting
 

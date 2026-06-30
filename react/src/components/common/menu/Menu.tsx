@@ -1,6 +1,5 @@
 import { _t } from '@cf/utility/Utility.class'
 import { StyledMenu } from '@cfComponents/globalNav/TopBar/styles'
-import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -63,13 +62,20 @@ const MenuToggleButton = (props: MenuItemType) => {
   }
 
   if ('iconButton' in props) {
+    const { icon, ...iconButtonProps } = props.iconButton
     return (
       <IconButton
-        size={buttonProps.iconButton.size ?? 'small'}
-        color={buttonProps.iconButton.color}
-        {...buttonProps}
+        size={iconButtonProps.size ?? 'small'}
+        color={iconButtonProps.color}
+        {...iconButtonProps}
+        id={props.id}
+        data-test-id={props['data-test-id']}
+        aria-controls={props['aria-controls']}
+        aria-haspopup={props['aria-haspopup']}
+        aria-expanded={props['aria-expanded']}
+        onClick={props.action}
       >
-        {props.iconButton.icon}
+        {icon}
       </IconButton>
     )
   }

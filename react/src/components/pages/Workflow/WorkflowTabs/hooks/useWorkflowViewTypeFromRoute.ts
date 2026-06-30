@@ -1,5 +1,5 @@
-import { WorkflowViewType } from '@cf/components/pages/Workflow/types'
 import { CFRoutes } from '@cf/router/appRoutes'
+import { WorkflowViewType } from '@cfPages/Workflow/types'
 import { matchPath, useLocation } from 'react-router-dom'
 
 /**

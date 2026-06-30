@@ -1,10 +1,3 @@
-import {
-  SidebarActions,
-  SidebarContent,
-  SidebarInnerWrap,
-  SidebarTitle
-} from '@cf/components/pages/Workflow/Sidebar/styles'
-import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import type { OutcomeEntity } from '@cf/features/graph/state/model/types'
 import { selectOutcomeById } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { selectOutcomeLevel } from '@cf/features/graph/state/selectors/outcomes.selectors'
@@ -13,9 +6,16 @@ import {
   duplicateOutcome,
   updateOutcome
 } from '@cf/features/graph/state/thunks/outcomeMutations.thunks'
+import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import type { AppDispatch } from '@cf/redux/store'
 import { RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
+import {
+  SidebarActions,
+  SidebarContent,
+  SidebarInnerWrap,
+  SidebarTitle
+} from '@cfSidebar/styles'
 import { debounce } from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'

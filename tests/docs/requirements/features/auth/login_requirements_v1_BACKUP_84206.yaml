@@ -1,0 +1,299 @@
+# Normalized requirements: login
+# Source: Figma design evidence; application code (course_flow/routes/aggregated_urls.py LoginView; course_flow/templates/course_flow/html/registration/login.html; course_flow/settings.py LOGIN_REDIRECT_URL)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+<<<<<<< HEAD:tests/docs/requirements/original/login_requirements_v1.yaml
+# Cross-reference: tests/docs/requirements/original/register_requirements_v1.yaml (public auth routes per documentPreconditions; registerEmailField value is account username per FR-REG-001; loginRegisterPrompt and loginRegisterLink mirror registerLoginPrompt and registerLoginLink per FR-REG-001; registerLoginLink navigates to '/login/' per FR-REG-002); tests/docs/requirements/original/homepage_requirements_v1.yaml (post-login destination Home per FR-LOGIN-005); tests/docs/requirements/original/main_navigation_requirements_v1.yaml (homeNavItem labeled 'Home'); tests/docs/requirements/original/password_reset_requirements_v1.yaml (authenticated change-password at '/user/password-reset' is a separate flow); tests/docs/requirements/original/forgot_password_requirements_v1.yaml (forgotPasswordPage at '/password-reset' per FR-FPWD-001; entry via loginForgotPasswordLink)
+=======
+# Cross-reference: tests/docs/requirements/features/auth/register_requirements_v1.yaml (public auth routes per documentPreconditions; registerEmailField value is account username per FR-REG-001; loginRegisterPrompt and loginRegisterLink mirror registerLoginPrompt and registerLoginLink per FR-REG-001); tests/docs/requirements/features/home/homepage_requirements_v1.yaml (post-login destination Home per FR-LOGIN-005); tests/docs/requirements/features/navigation/main_navigation_requirements_v1.yaml (homeNavItem labeled 'Home'); tests/docs/requirements/features/auth/password_reset_requirements_v1.yaml (authenticated change-password at '/user/password-reset' is a separate flow); tests/docs/requirements/features/auth/forgot_password_requirements_v1.yaml (forgotPasswordPage at '/password-reset' per FR-FPWD-001; entry via loginForgotPasswordLink)
+>>>>>>> dc6c8f27b400368e3c0e36656ce738f65399fcdc:tests/docs/requirements/features/auth/login_requirements_v1.yaml
+
+documentPreconditions:
+  - user is not authenticated to CourseFlow
+  - routes '/login/', '/register/', and '/password-reset' are publicly accessible without authentication
+
+uiObjectDefinitions:
+  loginPage:
+    meaning: Public full-page sign-in experience at route '/login/' accessible without authentication.
+  loginForm:
+    meaning: Form container on loginPage for sign-in fields.
+  brandLockup:
+    meaning: Canonical definition in tests/docs/requirements/features/navigation/main_navigation_requirements_v1.yaml.
+  loginTitle:
+    meaning: Page title on loginPage labeled 'Login to CourseFlow'.
+  loginEmailField:
+<<<<<<< HEAD:tests/docs/requirements/original/login_requirements_v1.yaml
+    meaning: Required text input labeled 'Email' on loginForm for the account email address; this value is the account username per tests/docs/requirements/original/register_requirements_v1.yaml FR-REG-001.
+=======
+    meaning: Required text input labeled 'Email' on loginForm for the account email address; this value is the account username per tests/docs/requirements/features/auth/register_requirements_v1.yaml FR-REG-001; valid when non-empty with at least one character before '@' and a domain name after '@' per FR-LOGIN-003.
+>>>>>>> dc6c8f27b400368e3c0e36656ce738f65399fcdc:tests/docs/requirements/features/auth/login_requirements_v1.yaml
+  loginPasswordField:
+    meaning: Required secret input labeled 'Password' on loginForm for the account password.
+  loginSubmitButton:
+    meaning: Primary submit button on loginForm labeled 'Login'.
+  loginForgotPasswordLink:
+<<<<<<< HEAD:tests/docs/requirements/original/login_requirements_v1.yaml
+    meaning: Clickable link labeled 'Forgot your password?' on loginPage.
+=======
+    meaning: Clickable link labeled 'Forgot your password?' on loginPage that navigates to forgotPasswordPage at public route '/password-reset' per tests/docs/requirements/features/auth/forgot_password_requirements_v1.yaml FR-FPWD-001; distinct from authenticated change-password at '/user/password-reset' per tests/docs/requirements/features/auth/password_reset_requirements_v1.yaml.
+>>>>>>> dc6c8f27b400368e3c0e36656ce738f65399fcdc:tests/docs/requirements/features/auth/login_requirements_v1.yaml
+  loginRegisterPrompt:
+    meaning: Static prompt copy 'Don't have an account? ' on loginPage adjacent to loginRegisterLink.
+  loginRegisterLink:
+    meaning: Clickable link labeled 'Register' on loginPage.
+  loginFieldValidationMessage:
+    meaning: Inline field-level error text on loginForm field controls.
+  loginAuthenticationErrorMessage:
+    meaning: Sign-in failure message shown on loginPage when credentials do not match an existing account.
+  homePage:
+    meaning: Canonical definition in tests/docs/requirements/features/home/homepage_requirements_v1.yaml.
+
+locatorMappings:
+  brandLockup: "canonical_locators.yaml -> brandLockup"
+  loginPage: "canonical_locators.yaml -> loginPage"
+  loginTitle: "canonical_locators.yaml -> loginTitle"
+  loginForm: "canonical_locators.yaml -> loginForm"
+  loginEmailField: "canonical_locators.yaml -> loginEmailField"
+  loginPasswordField: "canonical_locators.yaml -> loginPasswordField"
+  loginSubmitButton: "canonical_locators.yaml -> loginSubmitButton"
+  loginForgotPasswordLink: "canonical_locators.yaml -> loginForgotPasswordLink"
+  loginRegisterPrompt: "canonical_locators.yaml -> loginRegisterPrompt"
+  loginRegisterLink: "canonical_locators.yaml -> loginRegisterLink"
+  loginFieldValidationMessage: "canonical_locators.yaml -> loginFieldValidationMessage"
+  loginAuthenticationErrorMessage: "canonical_locators.yaml -> loginAuthenticationErrorMessage"
+  homePage: "canonical_locators.yaml -> homePage"
+
+requirements:
+  - id: FR-LOGIN-001
+    title: Login route and primary form elements
+
+    designEvidence:
+      - FIGMA-LOGIN
+      - FIGMA-LOGIN-FORGOT-PASSWORD
+
+    actors:
+      - user
+
+    uiObjects:
+      - loginPage
+      - loginForm
+      - loginTitle
+      - brandLockup
+      - loginEmailField
+      - loginPasswordField
+      - loginForgotPasswordLink
+      - loginSubmitButton
+      - loginRegisterPrompt
+      - loginRegisterLink
+      - loginFieldValidationMessage
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - user has not yet interacted with loginEmailField or loginPasswordField
+
+    trigger:
+      - user navigates to '/login/'
+
+    mainFlow:
+      - system intercepts navigation and verifies unauthenticated status
+      - system renders loginPage matching loginForm layout constraints
+      - system initializes loginEmailField and loginPasswordField with empty values
+      - system initializes loginSubmitButton in a disabled state
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user is not authenticated, current route matches '/login/' and loginPage is visible
+      - given user is authenticated and user navigates to '/login/', current route matches '/home' and loginPage is not visible
+      - loginForm is visible
+      - loginForm contains and renders the following child components in a strict, top-to-bottom vertical layout sequence: brandLockup, loginTitle, loginEmailField, loginPasswordField, loginForgotPasswordLink, loginSubmitButton and loginRegisterPrompt + loginRegisterLink rendered inline as a adjacent pair
+      - loginEmailField value is empty
+      - loginPasswordField value is empty
+      - loginSubmitButton is disabled
+
+    openQuestions: []
+
+  - id: FR-LOGIN-002
+    title: Login page external link navigation
+    
+    designEvidence:
+      - FIGMA-LOGIN
+    
+    actors:
+      - user
+
+    uiObjects:
+      - loginPage
+      - loginForgotPasswordLink
+      - loginRegisterLink
+
+    preconditions:
+      - current route matches '/login/' and loginPage is visible
+
+    trigger:
+      - user clicks loginForgotPasswordLink or loginRegisterLink
+
+    mainFlow:
+      - given user clicks loginForgotPasswordLink, system routes to public forgotPasswordPage at '/password-reset' per tests/docs/requirements/original/forgot_password_requirements_v1.yaml FR-FPWD-001; distinct from authenticated change-password at '/user/password-reset' per tests/docs/requirements/original/password_reset_requirements_v1.yaml
+      - given user clicks loginRegisterLink, system routes to '/register/'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user clicks loginForgotPasswordLink, then current route matches '/password-reset'
+      - given user clicks loginRegisterLink, then current route matches '/register/'
+
+    openQuestions: []
+
+  - id: FR-LOGIN-003
+    title: Login field validation rules
+
+    designEvidence:
+      - FIGMA-LOGIN
+
+    actors:
+      - user
+
+    uiObjects:
+      - loginForm
+      - loginEmailField
+      - loginPasswordField
+      - loginFieldValidationMessage
+      - loginSubmitButton
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - loginForm is visible
+
+    trigger:
+      - user changes loginForm field content
+
+    mainFlow:
+      - all loginForm input fields are mandatory; user cannot submit loginForm with any required field empty or invalid
+      - loginEmailField requires a non-empty valid email address with at least one character before '@' and a domain name after '@'
+      - given loginEmailField value is non-empty but not a valid email address after interaction, loginFieldValidationMessage is visible with text 'Invalid email format' for loginEmailField and loginSubmitButton is disabled and not clickable
+      - loginPasswordField requires a non-empty value
+      - given user enters a value in loginPasswordField, loginPasswordField masks the entered characters (native secret input)
+      - validation for loginForm fields starts after user interaction with the relevant field and runs before user clicks loginSubmitButton
+      - loginSubmitButton is disabled and not clickable until loginEmailField and loginPasswordField are valid per this requirement
+      - when all loginForm fields are valid, loginSubmitButton becomes enabled and clickable
+      - given loginFieldValidationMessage is visible for a loginForm field and the user corrects that field to a valid value, loginFieldValidationMessage is not visible for that field
+      - given validation fails for a loginForm field, loginFieldValidationMessage is visible on the invalid field, loginSubmitButton is disabled and not clickable, and loginForm is not submitted while invalid values remain
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user clears loginEmailField after interaction, loginFieldValidationMessage is visible with text 'Email is required' for loginEmailField
+      - given loginEmailField value is non-empty but not a valid email address after interaction, loginFieldValidationMessage is visible with text 'Invalid email format' for loginEmailField
+      - given loginEmailField value is non-empty but not a valid email address, loginSubmitButton is disabled and not clickable
+      - given user clears loginPasswordField after interaction, loginFieldValidationMessage is visible with text 'Password is required' for loginPasswordField
+      - given user enters a value in loginPasswordField, loginPasswordField masks the entered characters (native secret input)
+      - given any loginForm field is empty or invalid, loginSubmitButton is disabled and not clickable
+      - given loginFieldValidationMessage is visible for loginEmailField and user then enters a valid email address, loginFieldValidationMessage is not visible for loginEmailField
+      - given loginFieldValidationMessage is visible for loginPasswordField with text 'Password is required' and user then enters a non-empty value, loginFieldValidationMessage is not visible for loginPasswordField
+      - given all loginForm fields are valid, loginSubmitButton is enabled and clickable
+
+    openQuestions: []
+
+  - id: FR-LOGIN-004
+    title: Failed login with invalid credentials
+
+    designEvidence:
+      - FIGMA-LOGIN
+      - FIGMA-LOGIN-CREDENTIALS-ERROR
+
+    actors:
+      - user
+
+    uiObjects:
+      - loginPage
+      - loginTitle
+      - loginForm
+      - loginEmailField
+      - loginPasswordField
+      - loginForgotPasswordLink
+      - loginSubmitButton
+      - loginRegisterPrompt
+      - loginRegisterLink
+      - loginAuthenticationErrorMessage
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - loginForm is visible
+      - user has filled loginEmailField and loginPasswordField with valid values
+
+    trigger:
+      - user clicks loginSubmitButton with valid loginEmailField and loginPasswordField that do not match an existing account
+
+    mainFlow:
+      - given user clicks loginSubmitButton with valid loginForm values that do not match an existing account, login fails
+      - given login fails, user remains on loginPage and is not authenticated to CourseFlow
+      - given login fails, loginForm remains visible with loginEmailField and loginPasswordField retaining the submitted values
+      - given login fails with a valid loginForm, loginSubmitButton is enabled and clickable
+      - given login fails, loginTitle, loginForgotPasswordLink, loginRegisterPrompt, and loginRegisterLink remain visible on loginPage
+      - given login fails, loginAuthenticationErrorMessage is visible within the loginForm, between loginTitle and loginEmailField, with text 'The email or password you entered is incorrect. please check your details and try again.'
+      - given login fails, current route remains '/login/'
+      - given login fails and user then changes any loginForm field value, loginAuthenticationErrorMessage is hidden from view
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user clicks loginSubmitButton with valid loginForm values that do not match an existing account, login fails
+      - given login fails, user is not authenticated to CourseFlow
+      - given login fails, current route matches '/login/'
+      - given login fails, loginForm shows loginTitle, loginAuthenticationErrorMessage, loginEmailField, loginPasswordField, loginForgotPasswordLink, loginSubmitButton and the loginRegisterPrompt and loginRegisterLink combo in that order
+      - given login fails, loginAuthenticationErrorMessage is visible with text 'The email or password you entered is incorrect. please check your details and try again.'
+      - given login fails, loginEmailField and loginPasswordField retain the values submitted on the failed attempt
+      - given login fails with a valid loginForm, loginSubmitButton remains enabled and clickable
+      - given login fails and user then changes any loginForm field value, loginAuthenticationErrorMessage is hidden from view
+
+    openQuestions: []
+
+  - id: FR-LOGIN-005
+    title: Successful login and redirect to 'Home'
+
+    designEvidence:
+      - FIGMA-LOGIN
+
+    actors:
+      - user
+
+    uiObjects:
+      - loginPage
+      - loginForm
+      - loginEmailField
+      - loginPasswordField
+      - loginSubmitButton
+      - homePage
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - loginForm is visible
+      - loginForm is valid
+      - valid loginForm values match an existing account
+
+    trigger:
+      - user changes loginForm content and clicks loginSubmitButton
+
+    mainFlow:
+      - given user clicks loginSubmitButton with valid loginForm values that match an existing account, user is authenticated to CourseFlow
+      - given login succeeds, application navigates immediately to route '/home' with no interim confirmation copy or snackbar on loginPage
+      - given login succeeds, homePage is visible
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user clicks loginSubmitButton with valid loginForm values that match an existing account, login succeeds
+      - given login succeeds, user is authenticated to CourseFlow
+      - given login succeeds, application navigates immediately to '/home' with no interim confirmation copy or snackbar
+      - given login succeeds, current route matches '/home'
+      - given login succeeds, homePage is visible per tests/docs/requirements/features/home/homepage_requirements_v1.yaml FR-HOME-001
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-LOGIN
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6305-29562&t=YGr3frO6Anl5v6Od-1
+  - key: FIGMA-LOGIN-FORGOT-PASSWORD
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6446-45488&t=YGr3frO6Anl5v6Od-1
+  - key: FIGMA-LOGIN-CREDENTIALS-ERROR
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7002-21207&t=YGr3frO6Anl5v6Od-1

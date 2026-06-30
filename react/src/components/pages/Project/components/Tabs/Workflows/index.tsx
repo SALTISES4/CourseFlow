@@ -1,7 +1,9 @@
-import LibrarySearchView from '@cfViews/LibrarySearchView'
+import { LibrarySearchIn } from '@cf/api/gen'
+import LibrarySearchView, {
+  LibraryFilterConfig
+} from '@cfViews/LibrarySearchView'
 import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
-import { TypedLibrarySearchArgs } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 type PropsType = {
   uuid: string
@@ -11,35 +13,36 @@ const TabWorkflows = ({ uuid }: PropsType) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const config = {
-    pagination: true,
-    sortOptions: true,
+  const config: LibraryFilterConfig = {
     filterGroups: {
-      relationshipFilter: false,
       disciplineFilter: true,
       contentTypeFilter: true,
       templateFilter: true
+    }
+  }
+
+  const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
+
+  const updateSearchArgsHandler = useCallback(
+    (args: LibrarySearchIn) => {
+      setSearchArgs(
+        LibraryHelper.applyLockedFilters(args, { projectUuid: uuid })
+      )
     },
-    keywordFilter: true
-  }
-
-  const locked = { projectUuid: uuid }
-
-  const [searchArgs, setSearchArgs] = useState<TypedLibrarySearchArgs>({})
-
-  const updateSearchArgsHandler = (args: TypedLibrarySearchArgs) => {
-    setSearchArgs(LibraryHelper.applyLockedFilters(args, locked))
-  }
+    [uuid]
+  )
 
   /*******************************************************
    * RENDER
    *******************************************************/
   return (
-    <LibrarySearchView
-      config={config}
-      searchArgs={searchArgs}
-      setSearchArgs={updateSearchArgsHandler}
-    />
+    <div data-test-id="project-workflows-view">
+      <LibrarySearchView
+        config={config}
+        searchArgs={searchArgs}
+        setSearchArgs={updateSearchArgsHandler}
+      />
+    </div>
   )
 }
 

@@ -1,4 +1,4 @@
-import Alert from '@cf/components/common/UIPrimitives/Alert'
+import Alert from '@cfComponents/UIPrimitives/Alert'
 
 import EditColumn from './components/EditColumn'
 import EditNode from './components/EditNode'

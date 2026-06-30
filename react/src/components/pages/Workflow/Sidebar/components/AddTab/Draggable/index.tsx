@@ -1,6 +1,6 @@
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { DraggableType } from '@cf/components/views/WorkflowView/GraphView/types'
 import { svglinkAllowDND } from '@cf/features/graph/state/slices/svglink.slice'
+import { DraggableType } from '@cfViews/WorkflowView/GraphView/types'
 import { SxProps } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import { ElementType, ReactNode, useEffect, useRef } from 'react'

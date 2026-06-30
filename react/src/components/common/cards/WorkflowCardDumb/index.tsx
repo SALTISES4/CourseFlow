@@ -30,6 +30,7 @@ export type PropsType = {
   uuid: string
   ref?: RefObject<HTMLDivElement>
   className?: string
+  'data-test-id'?: string
   title: string | ReactNode
   description?: string
   isSelected?: boolean
@@ -37,7 +38,7 @@ export type PropsType = {
   chips: (WorkflowCardChipType | ReactNode)[]
   footer?: ReactNode
   isDisabledLink?: boolean
-  favourite?: ReactNode
+  favorite?: ReactNode
 }
 
 // Type guard function to check if an item is of type WorkflowCardChipType
@@ -54,15 +55,17 @@ const WorkflowCardDumb = ({
   title,
   description,
   isSelected,
-  favourite,
+  favorite,
   onClick,
   chips,
   footer,
-  isDisabledLink
+  isDisabledLink,
+  'data-test-id': dataTestId
 }: PropsType) => (
   <CardWrap
     onClick={!isDisabledLink ? onClick : null}
     className={isSelected ? 'selected' : ''}
+    data-test-id={dataTestId}
   >
     <CardHeader>
       <CardTitle>{title}</CardTitle>
@@ -85,7 +88,7 @@ const WorkflowCardDumb = ({
           })}
         </CardFooterTags>
       )}
-      <CardFooterActions>{favourite}</CardFooterActions>
+      <CardFooterActions>{favorite}</CardFooterActions>
     </CardFooter>
   </CardWrap>
 )

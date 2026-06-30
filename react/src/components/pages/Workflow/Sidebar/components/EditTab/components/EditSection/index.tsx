@@ -1,4 +1,3 @@
-import * as SC from '@cf/components/pages/Workflow/Sidebar/styles'
 import type { SectionEntity } from '@cf/features/graph/state/model/types'
 import { selectSectionByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
 import {
@@ -9,6 +8,7 @@ import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import type { AppDispatch } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
+import * as SC from '@cfSidebar/styles'
 import { debounce } from '@mui/material'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
@@ -143,7 +143,7 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
       onCancel={toggleTemplateForm}
     />
   ) : (
-    <SC.SidebarInnerWrap>
+    <SC.SidebarInnerWrap data-test-id="workflow-edit-section-form">
       <SC.SidebarContent>
         <SC.SidebarTitle as="h3" variant="h6">
           {_t('Edit section')}

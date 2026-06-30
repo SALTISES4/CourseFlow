@@ -1,5 +1,4 @@
-import { LibraryItemOut } from '@cf/api/gen'
-import { LibraryObjectType } from '@cf/types/enum'
+import { LibraryContentTypeOut, LibraryItemOut } from '@cf/api/gen'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import {
@@ -12,15 +11,14 @@ import { mapObjectTypeToLibraryObjectType } from './librarySearch'
 
 type LibraryItemOutTyped = LibraryItemOut & {
   uuid: string
-  contentType: 'project' | 'workflow'
+  contentType: LibraryContentTypeOut
   label: string
 }
 
 /**
  * this thin wrapper is for when we move CHIP_TYPE away from the domain
- * @param type
  */
-function mapChipType(type: LibraryObjectType): ChipOptions {
+function mapChipType(type: LibraryContentTypeOut): ChipOptions {
   return Utility.convertEnum<ChipOptions>(
     type,
     ChipOptions,
@@ -28,7 +26,7 @@ function mapChipType(type: LibraryObjectType): ChipOptions {
   )
 }
 
-function getTypeChip(workflow: LibraryItemOutTyped): WorkflowCardChipType {
+function getTypeChip(workflow: LibraryItemOut): WorkflowCardChipType {
   const typeLabel = workflow.label
   let typeText = _t(typeLabel)
 
@@ -52,7 +50,7 @@ function getTypeChip(workflow: LibraryItemOutTyped): WorkflowCardChipType {
   }
 }
 
-function getTemplateChip(workflow: LibraryItemOutTyped): WorkflowCardChipType {
+function getTemplateChip(workflow: LibraryItemOut): WorkflowCardChipType {
   const isTemplate = workflow.isTemplate
   if (isTemplate) {
     return {
@@ -63,12 +61,9 @@ function getTemplateChip(workflow: LibraryItemOutTyped): WorkflowCardChipType {
   return null
 }
 
-function getWorkflowCountChip(
-  workflow: LibraryItemOutTyped
-): WorkflowCardChipType {
-  // TODO:
+function getWorkflowCountChip(workflow: LibraryItemOut): WorkflowCardChipType {
   // if (
-  //   workflow.objectType === LibraryObjectType.PROJECT &&
+  //   workflow.contentType === LibraryContentTypeOut.PROJECT &&
   //   workflow.workflowCount !== null &&
   //   workflow.workflowCount > 0
   // ) {
@@ -88,17 +83,19 @@ export function formatLibraryObjects(data: LibraryItemOut[]) {
 
 // TODO: should this whole thing be a selector instead?
 export function formatLibraryObject(
-  libraryObject: LibraryItemOutTyped
+  libraryObject: LibraryItemOut
 ): Pick<
   WorkflowCardWrapperPropsType,
   | 'uuid'
   | 'title'
   | 'description'
-  | 'isFavourite'
   | 'chips'
-  | 'isLinked'
   | 'type'
+  | 'isFavorite'
+  | 'isLinked'
 > {
+  const { uuid, title, description, isFavorite } = libraryObject
+
   const typeChip = getTypeChip(libraryObject)
   const templateChip = getTemplateChip(libraryObject)
   const countChip = getWorkflowCountChip(libraryObject)
@@ -109,10 +106,10 @@ export function formatLibraryObject(
   )
 
   return {
-    uuid: libraryObject.uuid,
-    title: libraryObject.title,
-    description: libraryObject.description,
-    isFavourite: libraryObject.isFavorite,
+    uuid,
+    title,
+    description,
+    isFavorite,
     // TODO: figure out where this comes from
     // isLinked: libraryObject.isLinked,
     isLinked: false,

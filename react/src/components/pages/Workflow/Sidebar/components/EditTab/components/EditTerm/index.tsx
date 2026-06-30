@@ -1,10 +1,10 @@
+import { _t } from '@cf/utility/Utility.class'
 import {
   SidebarActions,
   SidebarContent,
   SidebarInnerWrap,
   SidebarTitle
-} from '@cf/components/pages/Workflow/Sidebar/styles'
-import { _t } from '@cf/utility/Utility.class'
+} from '@cfSidebar/styles'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import { produce } from 'immer'

@@ -1,7 +1,8 @@
-import { useState } from 'react'
-
-import LibrarySearchView from 'components/views/LibrarySearchView'
-import { TypedLibrarySearchArgs } from 'components/views/LibrarySearchView/LibraryHelper.Class'
+import { LibrarySearchIn } from '@cf/api/gen'
+import LibrarySearchView, {
+  LibraryFilterConfig
+} from '@cfViews/LibrarySearchView'
+import { useCallback, useState } from 'react'
 
 /*******************************************************
  * @LibraryRenderer
@@ -10,22 +11,18 @@ const LibraryPage = () => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-
-  const config = {
-    pagination: true,
-    sortOptions: true,
+  const config: LibraryFilterConfig = {
     filterGroups: {
-      relationshipFilter: true,
+      ownershipFilter: true,
       templateFilter: true
-    },
-    keywordFilter: true
+    }
   }
 
-  const [searchArgs, setSearchArgs] = useState<TypedLibrarySearchArgs>({})
+  const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
 
-  const updateSearchArgsHandler = (args: TypedLibrarySearchArgs) => {
+  const updateSearchArgsHandler = useCallback((args: LibrarySearchIn) => {
     setSearchArgs(args)
-  }
+  }, [])
 
   /*******************************************************
    * RENDER

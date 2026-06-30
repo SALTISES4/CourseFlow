@@ -1,5 +1,5 @@
+import { LibraryContentTypeOut } from '@cf/api/gen'
 import { ObjectPermission } from '@cf/types/common'
-import { LibraryObjectType } from '@cf/types/enum'
 
 /*******************************************************
  * PRIMITIVES
@@ -35,14 +35,14 @@ export type EUser = {
  *******************************************************/
 export interface ELibraryObject extends CourseFlowEntity {
   author: EUser
-  favourite: boolean
   published: boolean
-  type: LibraryObjectType
-  isOwned: boolean
-  isStrategy: boolean
+  type: LibraryContentTypeOut
   projectTitle: string
   objectPermission: ObjectPermission
   workflowCount: number
+  isFavorite: boolean
+  isStrategy: boolean
+  isOwned: boolean
   isLinked: boolean
   isVisible: boolean
   isTemplate: boolean

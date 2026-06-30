@@ -1,10 +1,10 @@
+import { LibraryContentTypeOut } from '@cf/api/gen'
+import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
+import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardDumb, {
   PropsType as WorkflowCardDumbPropsType
-} from '@cf/components/common/cards/WorkflowCardDumb'
-import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
-import { LibraryObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/Utility.class'
-import Favourite from '@cfComponents/UIPrimitives/Favourite'
+} from '@cfComponents/cards/WorkflowCardDumb'
+import Favorite from '@cfComponents/UIPrimitives/Favourite'
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
 import Tooltip from '@mui/material/Tooltip'
 
@@ -17,14 +17,12 @@ import { CardChip as WorkflowCardChip } from '../WorkflowCardDumb/styles'
 
 export type WorkflowCardWrapperPropsType = Pick<
   WorkflowCardDumbPropsType,
-  'uuid' | 'description' | 'chips'
+  'uuid' | 'description' | 'chips' | 'isSelected' | 'onClick'
 > & {
   title: string
-  isFavourite: boolean
+  isFavorite: boolean
   isLinked: boolean
-  type: LibraryObjectType
-  isSelected?: boolean
-  onClick?: () => void
+  type: LibraryContentTypeOut
 }
 
 const WorkflowCardWrapper = ({
@@ -32,8 +30,8 @@ const WorkflowCardWrapper = ({
   title,
   description,
   chips,
-  isFavourite,
   type,
+  isFavorite,
   isLinked,
   isSelected = false,
   onClick
@@ -54,15 +52,12 @@ const WorkflowCardWrapper = ({
   const code = ''
   const deleted = false
 
-  const favourite = (
-    <Favourite uuid={uuid} isFavourite={isFavourite} type={type} />
-  )
-
   return (
     <WorkflowCardDumb
       uuid={uuid}
+      data-test-id={type === LibraryContentTypeOut.PROJECT ? 'project-card' : 'workflow-card'}
       title={workflowTitle({ title, code, deleted })}
-      favourite={favourite}
+      favorite={<Favorite uuid={uuid} isFavorite={isFavorite} />}
       isDisabledLink={isDisabledLink}
       description={description}
       isSelected={isSelected}

@@ -33,7 +33,12 @@ from course_flow.api.schemas.projects import (
     ProjectWorkflowListItemOut,
 )
 from course_flow.application.dto import ProjectDTO, ProjectTeamMemberDTO
-from course_flow.core.models import FavoriteGraph, Graph
+from course_flow.core.enum import WorkflowType
+from course_flow.core.models import (
+    FavoriteGraph,
+    FavoriteProject,
+    Graph
+)
 
 router = Router(tags=["projects"], by_alias=True)
 
@@ -75,17 +80,24 @@ def _project_detail_out(current_user_id: int, dto: ProjectDTO) -> ProjectDetailO
             uuid=row.workflow_uuid,
             title=row.title,
             description=row.description,
-            workflow_type=row.workflow_type,
+            workflow_type=WorkflowType(row.workflow_type),
             is_favorite=row.graph_uuid in favorite_graph_uuids,
         )
         for row in workflow_rows
     ]
+
+    is_favorite = FavoriteProject.objects.filter(
+        user_id=current_user_id,
+        project_id=dto.id,
+    ).exists()
+
     return ProjectDetailOut(
         uuid=dto.uuid,
         title=dto.title,
         description=dto.description,
         is_published=dto.is_published,
         is_template=dto.is_template,
+        is_favorite=is_favorite,
         owner_id=dto.owner_id,
         date_created=dto.date_created,
         modified_on=dto.modified_on,
@@ -115,6 +127,7 @@ def create_project(request, payload: ProjectCreateIn):
         description=dto.description,
         is_published=dto.is_published,
         is_template=dto.is_template,
+        is_favorite=False,
         owner_id=dto.owner_id,
         date_created=dto.date_created,
         modified_on=dto.modified_on,

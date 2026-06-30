@@ -1,0 +1,466 @@
+# Normalized requirements: create workflow stepped form
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Workflows, Templates; especially "When creating a workflow within a Project, users get prompted to start from a template instead of starting from scratch" and template-copy behavior)
+# Application code evidence: react/src/components/common/dialog/Workflow/CreateWizardDialog/*
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: workflow-create entry points — tests/docs/requirements/features/navigation/top_navigation_requirements_v1.yaml (FR-TOP-002: addMenuItemProgram, addMenuItemCourse, addMenuItemActivity); tests/docs/requirements/features/home/homepage_requirements_v1.yaml (FR-HOME-002: homeWelcomeProgramButton, homeWelcomeCourseButton, homeWelcomeActivityButton); shared card content in tests/docs/requirements/features/shared/card_content_requirements_v1.yaml (projectCard and workflowCard in this dialog — FR-CARD-001 through FR-CARD-005 as applicable); edit workflow metadata dialog in tests/docs/requirements/features/workflow/workflow_edit_form_requirements_v1.yaml (FR-WF-FORM-001); workflowDescriptionField rich-text editor contract in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012; default workflowChannel sets at blank create — tests/docs/requirements/features/workflow/workflow_add_tab_requirements_v1.yaml FR-WF-ADD-003 and tests/docs/requirements/features/workflow/workflow_edit_channel_requirements_v1.yaml FR-CHAN-002; initial workflowSectionContainer at blank create — tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml (workflowSectionContainer); template Overview metadata copy — tests/docs/requirements/features/workflow/workflow_overview_requirements_v1.yaml FR-WF-OV-009
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - createWorkflowDialog is opened from a workflow-create entry point per this file's cross-references (FR-TOP-002, FR-HOME-002)
+  - opening createWorkflowDialog is not gated by project membership role; any authenticated user may trigger it from those entry points
+  - destination project eligibility (owner or editor on that project) is enforced at step 1 only per FR-WF-CREATE-STEPPER-003
+  - created workflows must be associated with a project (no standalone workflow entity)
+
+uiObjectDefinitions:
+  createWorkflowDialog:
+    meaning: Modal dialog for creating a new workflow via the stepped form.
+  createWorkflowDialogTitle:
+    meaning: Title region of createWorkflowDialog that changes by current step and selected workflow type.
+  createWorkflowStepper:
+    meaning: Step indicator strip at the top of createWorkflowDialog.
+  createWorkflowCancelButton:
+    meaning: Cancel action in createWorkflowDialog footer.
+  createWorkflowPreviousStepButton:
+    meaning: Previous-step action in createWorkflowDialog footer.
+  createWorkflowNextStepButton:
+    meaning: Primary forward action in createWorkflowDialog footer before the final step.
+  createWorkflowSubmitButton:
+    meaning: Primary submit action in createWorkflowDialog footer on the final step.
+  workflowProjectSearchView:
+    meaning: Project selection surface rendered at step 1, listing project cards and allowing project selection.
+  workflowProjectSearchField:
+    meaning: Search input on step 1 used to filter project list by project title.
+  workflowProjectSearchEmptyState:
+    meaning: Empty-results region in workflowProjectSearchView.
+  projectCard:
+    meaning: Canonical definition in tests/docs/requirements/features/shared/card_content_requirements_v1.yaml.
+  createWorkflowNoEligibleProjectsDialog:
+    meaning: Warning region on createWorkflowDialog step 1 when no eligible destination project exists.
+  workflowCreationModeBlankOption:
+    meaning: Selectable option in step 2 for creating a blank workflow structure.
+  workflowCreationModeTemplateOption:
+    meaning: Selectable option in step 2 for creating from a template.
+  workflowBlankForm:
+    meaning: Blank-workflow metadata form used in createWorkflowDialog.
+  workflowTitleField:
+    meaning: Text input for workflow title; required; label 'Title'.
+  workflowDescriptionField:
+    meaning: Description field region on workflowBlankForm and workflowEditForm; optional; visible label matches workflow type (e.g. 'Activity description'); contains workflowRichTextDescriptionEditor per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012.
+  workflowTemplateSearchView:
+    meaning: Template selection surface shown on step 3 when template mode is selected.
+  workflowTemplateSearchField:
+    meaning: Search input in workflowTemplateSearchView.
+  workflowTemplateSearchEmptyState:
+    meaning: Empty-results region in workflowTemplateSearchView.
+  workflowCard:
+    meaning: Canonical definition in tests/docs/requirements/features/shared/card_content_requirements_v1.yaml.
+  workflowView:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_add_tab_requirements_v1.yaml.
+  workflowSectionContainer:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml.
+  workflowChannelsHeaderRow:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_channel_requirements_v1.yaml.
+  workflowNode:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml.
+  workflowEdge:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edge_requirements_v1.yaml.
+  workflowOverviewView:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_overview_requirements_v1.yaml.
+  workflowTitle:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml.
+  globalMessageSnackbar:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml.
+
+locatorMappings:
+  createWorkflowDialog: "canonical_locators.yaml -> createWorkflowDialog"
+  createWorkflowDialogTitle: "canonical_locators.yaml -> createWorkflowDialogTitle"
+  createWorkflowStepper: "canonical_locators.yaml -> createWorkflowStepper"
+  createWorkflowCancelButton: "canonical_locators.yaml -> createWorkflowCancelButton"
+  createWorkflowPreviousStepButton: "canonical_locators.yaml -> createWorkflowPreviousStepButton"
+  createWorkflowNextStepButton: "canonical_locators.yaml -> createWorkflowNextStepButton"
+  createWorkflowSubmitButton: "canonical_locators.yaml -> createWorkflowSubmitButton"
+  workflowProjectSearchView: "canonical_locators.yaml -> workflowProjectSearchView"
+  workflowProjectSearchField: "canonical_locators.yaml -> workflowProjectSearchField"
+  workflowProjectSearchEmptyState: "canonical_locators.yaml -> workflowProjectSearchEmptyState"
+  projectCard: "canonical_locators.yaml -> projectCard"
+  createWorkflowNoEligibleProjectsDialog: "canonical_locators.yaml -> createWorkflowNoEligibleProjectsDialog"
+  workflowCreationModeBlankOption: "canonical_locators.yaml -> workflowCreationModeBlankOption"
+  workflowCreationModeTemplateOption: "canonical_locators.yaml -> workflowCreationModeTemplateOption"
+  workflowBlankForm: "canonical_locators.yaml -> workflowBlankForm"
+  workflowTitleField: "canonical_locators.yaml -> workflowTitleField"
+  workflowDescriptionField: "canonical_locators.yaml -> workflowDescriptionField"
+  workflowTemplateSearchView: "canonical_locators.yaml -> workflowTemplateSearchView"
+  workflowTemplateSearchField: "canonical_locators.yaml -> workflowTemplateSearchField"
+  workflowTemplateSearchEmptyState: "canonical_locators.yaml -> workflowTemplateSearchEmptyState"
+  workflowCard: "canonical_locators.yaml -> workflowCard"
+  workflowView: "canonical_locators.yaml -> workflowView"
+  workflowSectionContainer: "canonical_locators.yaml -> workflowSectionContainer"
+  workflowChannelsHeaderRow: "canonical_locators.yaml -> workflowChannelsHeaderRow"
+  workflowNode: "canonical_locators.yaml -> workflowNode"
+  workflowEdge: "canonical_locators.yaml -> workflowEdge"
+  workflowOverviewView: "canonical_locators.yaml -> workflowOverviewView"
+  workflowTitle: "canonical_locators.yaml -> workflowTitle"
+  globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
+
+requirements:
+  - id: FR-WF-CREATE-STEPPER-001
+    title: Stepper path when actor is owner or editor on at least one project
+
+    designEvidence:
+      - FIGMA-WF-CREATE-STEP-1
+      - FIGMA-WF-CREATE-STEP-2
+      - FIGMA-WF-CREATE-STEP-3-BLANK
+      - FIGMA-WF-CREATE-STEP-3-TEMPLATE
+
+    actors:
+      - user
+
+    uiObjects:
+      - createWorkflowDialog
+      - createWorkflowDialogTitle
+      - createWorkflowStepper
+      - createWorkflowCancelButton
+      - createWorkflowPreviousStepButton
+      - createWorkflowNextStepButton
+      - workflowProjectSearchView
+      - workflowProjectSearchField
+      - projectCard
+
+    preconditions:
+      - given documentPreconditions hold
+      - actor clicks a workflow-create entry point per tests/docs/requirements/features/navigation/top_navigation_requirements_v1.yaml FR-TOP-002 or tests/docs/requirements/features/home/homepage_requirements_v1.yaml FR-HOME-002
+      - after createWorkflowDialog opens, actor holds owner or editor role on at least one project
+
+    trigger:
+      - actor clicks a workflow-create entry point
+
+    mainFlow:
+      - workflow-create entry points per FR-TOP-002 and FR-HOME-002 are available regardless of the actor's current route; opening createWorkflowDialog does not navigate away until cancel or successful submit
+      - system opens createWorkflowDialog with workflowType set from the triggering entry point — addMenuItemProgram or homeWelcomeProgramButton → program; addMenuItemCourse or homeWelcomeCourseButton → course; addMenuItemActivity or homeWelcomeActivityButton → activity
+      - when actor holds owner or editor role on at least one project, system shows stepper step 1 (project selection); when actor holds owner or editor role on no project, system follows FR-WF-CREATE-STEPPER-002 instead
+      - workflowType does not change across steps for this createWorkflowDialog session
+      - createWorkflowDialog renders createWorkflowStepper with three steps
+      - initial step is project selection and createWorkflowDialogTitle matches 'Select project'
+      - step-1 project search/list/ordering/selection behavior is defined in FR-WF-CREATE-STEPPER-003
+      - createWorkflowCancelButton is visible
+      - when actor clicks createWorkflowCancelButton on any step of createWorkflowDialog, system closes createWorkflowDialog without creating a workflow and returns actor to the page/route that was open before the dialog was triggered
+      - createWorkflowPreviousStepButton is not visible on the first step
+      - createWorkflowNextStepButton is visible with label 'Next step'; enablement rules are defined in FR-WF-CREATE-STEPPER-003 and FR-WF-CREATE-STEPPER-002
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given actor holds owner or editor role on at least one project and clicks a workflow-create entry point, createWorkflowDialog opens on step 1 project selection
+      - given actor holds owner or editor role on no project and clicks a workflow-create entry point, createWorkflowNoEligibleProjectsDialog warning is shown on step 1 per FR-WF-CREATE-STEPPER-002
+      - given actor opened createWorkflowDialog via addMenuItemCourse per FR-TOP-002, workflowType for the session is course and createWorkflowDialogTitle on step 2 matches 'Select course type'
+      - given actor opened createWorkflowDialog via homeWelcomeProgramButton per FR-HOME-002 from homePage, workflowType for the session is program
+      - given step 1 is shown, workflowProjectSearchField, workflowProjectSearchView, projectCard, and createWorkflowNextStepButton behavior follows FR-WF-CREATE-STEPPER-003
+      - given actor clicks createWorkflowCancelButton from any step, createWorkflowDialog closes and current route matches the route that was active immediately before dialog open
+
+    openQuestions: []
+
+  - id: FR-WF-CREATE-STEPPER-002
+    title: No eligible destination projects when actor is owner or editor on no project
+
+    designEvidence:
+      - FIGMA-WF-CREATE-NO-ELIGIBLE-PROJECT
+
+    actors:
+      - user
+
+    uiObjects:
+      - createWorkflowDialog
+      - createWorkflowDialogTitle
+      - createWorkflowStepper
+      - createWorkflowNoEligibleProjectsDialog
+      - createWorkflowCancelButton
+      - createWorkflowNextStepButton
+
+    preconditions:
+      - given documentPreconditions hold
+      - actor clicks a workflow-create entry point per tests/docs/requirements/features/navigation/top_navigation_requirements_v1.yaml FR-TOP-002 or tests/docs/requirements/features/home/homepage_requirements_v1.yaml FR-HOME-002
+      - after createWorkflowDialog opens, actor holds owner or editor role on no project
+
+    trigger:
+      - actor clicks a workflow-create entry point
+
+    mainFlow:
+      - system shows createWorkflowNoEligibleProjectsDialog warning on step 1 because actor holds owner or editor role on no project
+      - createWorkflowDialog step 1 shell matches FR-WF-CREATE-STEPPER-001 except createWorkflowNextStepButton is disabled per this FR
+      - actor cannot advance past step 1 until actor holds owner or editor role on at least one project
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given actor holds owner or editor role on no project and clicks a workflow-create entry point, createWorkflowNoEligibleProjectsDialog warning is shown on step 1
+      - given createWorkflowNoEligibleProjectsDialog warning is shown, createWorkflowNextStepButton is visible with label 'Next step' and is disabled
+      - given createWorkflowNoEligibleProjectsDialog warning is shown, actor cannot advance to step 2
+      - given actor clicks createWorkflowCancelButton from the no-eligible step 1 state, createWorkflowDialog closes and current route matches the route that was active immediately before dialog open
+
+    openQuestions: []
+
+  - id: FR-WF-CREATE-STEPPER-003
+    title: Step 1 select destination project
+
+    designEvidence:
+      - FIGMA-WF-CREATE-STEP-1
+      - FIGMA-WF-CREATE-STEP-1-NO-RESULTS
+
+    actors:
+      - user
+
+    uiObjects:
+      - createWorkflowDialog
+      - workflowProjectSearchView
+      - workflowProjectSearchField
+      - workflowProjectSearchEmptyState
+      - projectCard
+      - createWorkflowNextStepButton
+
+    preconditions:
+      - createWorkflowDialog is open on step 1 per FR-WF-CREATE-STEPPER-001
+
+    trigger:
+      - user clicks projectCard
+
+    mainFlow:
+      - when user holds owner or editor role on no project, step-1 behavior is defined in FR-WF-CREATE-STEPPER-002 only
+      - workflowProjectSearchView lists only projects where the user's role on that project is owner or editor
+      - if user opened createWorkflowDialog while currently viewing a project route (/project/{id}) or a child workflow route under that project (/workflow/{id} with known parent project), and user holds owner or editor role on that project, that current project appears first in the list and is preselected
+      - if user opened createWorkflowDialog from a project or child workflow where user does not hold owner or editor role on that project, that project is not included in the step-1 list
+      - after any context-pinned current project, remaining listed projects are ordered by modified date from most recently modified to least recently modified
+      - workflowProjectSearchField filters projects by title match
+      - when workflowProjectSearchField matches no eligible project title, workflowProjectSearchView shows workflowProjectSearchEmptyState and no projectCard; any prior projectCard selection is cleared and createWorkflowNextStepButton is disabled
+      - to advance from step 1 after a zero-match search, user clears workflowProjectSearchField, then selects a visible projectCard; createWorkflowNextStepButton becomes enabled only after a projectCard is selected
+      - when user clears or revises workflowProjectSearchField so eligible projects match again, workflowProjectSearchView restores matching projectCard items; context-pinned preselection per this FR is restored when applicable
+      - projectCard presentation and card interactions in workflowProjectSearchView conform to card_content_requirements_v1.yaml
+      - workflowProjectSearchView shows at most 4 projectCard items in total (context-pinned current project counts toward this cap when present); there is no pager on this step
+      - system marks clicked projectCard as selected
+      - createWorkflowNextStepButton becomes enabled
+      - when user clicks createWorkflowPreviousStepButton from step 2, system returns to step 1 with the previously selected projectCard still selected and createWorkflowNextStepButton enabled
+      - when user clicks createWorkflowNextStepButton, system advances createWorkflowStepper to step 2
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user holds owner or editor role on no project on step 1, FR-WF-CREATE-STEPPER-002 applies and this FR's list/selection rules do not apply
+      - given user holds owner or editor role on at least one project on step 1, workflowProjectSearchView and projectCard selection rules in this FR apply
+      - given user enters text in workflowProjectSearchField, visible projectCard items match project title search criteria
+      - given user is on step 1 per FR-WF-CREATE-STEPPER-001 and workflowProjectSearchField text matches no eligible project title, workflowProjectSearchEmptyState is shown, no projectCard is visible, and createWorkflowNextStepButton is disabled
+      - given workflowProjectSearchEmptyState is shown, user cannot advance to step 2 until user clears workflowProjectSearchField and selects a visible projectCard
+      - given user clears workflowProjectSearchField after a zero-match search, matching projectCard items reappear and context-pinned preselection is restored when applicable per this FR
+      - given user was not already in a project or child workflow context when opening dialog and has not selected a project on step 1, createWorkflowNextStepButton is disabled
+      - given user was already in a project or child workflow context when opening dialog and user holds owner or editor role on that current project, that project appears first and is preselected on step 1 and createWorkflowNextStepButton is enabled
+      - given user was already in a project or child workflow context when opening dialog and user does not hold owner or editor role on that current project, that current project is not displayed in workflowProjectSearchView
+      - given step 1 is shown, workflowProjectSearchView displays at most 4 projectCard items and no pager is shown
+      - given step 1 is shown, visible projectCard items after any context-pinned current project are ordered by modified date most recent first
+      - given user opened createWorkflowDialog from an eligible current project context and more than four eligible projects exist, workflowProjectSearchView shows exactly 4 projectCard items with the current project first
+      - given user clicks a projectCard, selected state is visible on that card
+      - given a projectCard is selected, createWorkflowNextStepButton is enabled
+      - given user navigates from step 2 back to step 1, previously selected projectCard remains selected and createWorkflowNextStepButton is enabled
+      - given user clicks createWorkflowNextStepButton after project selection, step 2 is displayed
+
+    openQuestions: []
+
+  - id: FR-WF-CREATE-STEPPER-004
+    title: Step 2 choose blank or template creation mode
+
+    designEvidence:
+      - FIGMA-WF-CREATE-STEP-2
+
+    actors:
+      - user
+
+    uiObjects:
+      - createWorkflowDialog
+      - createWorkflowDialogTitle
+      - workflowCreationModeBlankOption
+      - workflowCreationModeTemplateOption
+      - createWorkflowPreviousStepButton
+      - createWorkflowNextStepButton
+
+    preconditions:
+      - createWorkflowDialog is open on step 2
+      - a destination project is already selected from step 1 per FR-WF-CREATE-STEPPER-003
+
+    trigger:
+      - user clicks workflowCreationModeBlankOption or workflowCreationModeTemplateOption
+
+    mainFlow:
+      - createWorkflowDialogTitle matches 'Select {workflowType} type'
+      - step 2 presents both workflowCreationModeBlankOption and workflowCreationModeTemplateOption
+      - on first visit to step 2 in this createWorkflowDialog session, workflowCreationModeBlankOption is selected by default; createWorkflowNextStepButton is enabled
+      - exactly one creation mode is selected at a time — workflowCreationModeBlankOption or workflowCreationModeTemplateOption
+      - step-2 option titles and descriptions use localized copy; literal text is not final and may change
+      - when user clicks workflowCreationModeBlankOption, blank mode is selected for step 3
+      - when user clicks workflowCreationModeTemplateOption, template mode is selected for step 3
+      - when user returns to step 2 after navigating back from step 3, previously selected creation mode (blank or template) remains selected and createWorkflowNextStepButton is enabled
+      - createWorkflowPreviousStepButton is visible; when user clicks createWorkflowPreviousStepButton from step 2, system returns to step 1 per FR-WF-CREATE-STEPPER-003 with destination project selection preserved
+      - when user clicks createWorkflowNextStepButton, system advances to step 3 with content matching the selected mode
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - both creation-mode options are visible on step 2
+      - createWorkflowDialogTitle matches 'Select {workflowType} type'
+      - given user advances to step 2 for the first time without clicking a creation-mode option, workflowCreationModeBlankOption is selected and createWorkflowNextStepButton is enabled
+      - step-2 option titles and descriptions remain localized and non-final; assertions should not require fixed English literals for option copy
+      - given user returns to step 2 from step 3, previously selected creation mode remains selected and createWorkflowNextStepButton is enabled
+      - given user returns to step 1 from step 2, previously selected projectCard remains selected per FR-WF-CREATE-STEPPER-003
+      - clicking createWorkflowPreviousStepButton from step 2 returns to step 1
+      - clicking createWorkflowNextStepButton from step 2 opens step 3 variant for the selected mode
+      - given user clicks workflowCreationModeTemplateOption on step 2, template mode is selected for step 3
+      - given user clicks workflowCreationModeBlankOption on step 2, blank mode is selected for step 3
+
+    openQuestions: []
+
+  - id: FR-WF-CREATE-STEPPER-005
+    title: Step 3 blank workflow form and submit outcome
+
+    designEvidence:
+      - FIGMA-WF-CREATE-STEP-3-BLANK
+
+    actors:
+      - user
+
+    uiObjects:
+      - createWorkflowDialog
+      - createWorkflowDialogTitle
+      - workflowBlankForm
+      - workflowTitleField
+      - workflowDescriptionField
+      - createWorkflowCancelButton
+      - createWorkflowPreviousStepButton
+      - createWorkflowSubmitButton
+      - workflowView
+      - workflowSectionContainer
+      - workflowChannelsHeaderRow
+      - globalMessageSnackbar
+
+    preconditions:
+      - createWorkflowDialog is open on step 3
+      - blank mode was selected at step 2
+      - destination project is selected from step 1 per FR-WF-CREATE-STEPPER-003
+
+    trigger:
+      - user edits workflowBlankForm and clicks createWorkflowSubmitButton
+
+    mainFlow:
+      - createWorkflowDialogTitle follows pattern 'Create blank {workflowType}'
+      - workflowBlankForm is rendered
+      - workflowBlankForm metadata fields do not differ by workflow type
+      - workflowTitleField is required
+      - workflowDescriptionField is optional
+      - createWorkflowSubmitButton is disabled until workflowTitleField has a non-empty value
+      - when user returns to step 3 blank mode after navigating back from step 2, previously entered workflowBlankForm values and createWorkflowSubmitButton enablement state are preserved
+      - when user clicks createWorkflowPreviousStepButton, system returns to step 2 with the previously selected destination project preserved
+      - when user clicks createWorkflowCancelButton, system closes createWorkflowDialog without creating a workflow and returns user to the page/route that was open before createWorkflowDialog was triggered
+      - when submit succeeds, system creates workflow in selected project with exactly one empty workflowSectionContainer in workflowView, closes createWorkflowDialog, navigates to '/workflow/{id}/graph' with workflowView open per FR-WF-HEADER-001, and shows success feedback in globalMessageSnackbar with copy 'Your [workflow type] has been successfully created'
+      - when submit fails, createWorkflowDialog remains open and system shows error feedback in globalMessageSnackbar with copy 'We encountered an issue and your [workflow type] was not created'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given blank mode on step 3 and workflowTitleField is empty, createWorkflowSubmitButton is disabled
+      - given blank mode on step 3 and workflowTitleField has a non-empty value, createWorkflowSubmitButton is enabled
+      - given user clicks createWorkflowPreviousStepButton on step 3 blank mode, dialog returns to step 2 and keeps previously selected destination project
+      - given user returns to step 3 blank mode from step 2, previously entered workflowBlankForm values are preserved
+      - given user clicks createWorkflowCancelButton on step 3 blank mode, createWorkflowDialog closes, no workflow is created, and current route matches the route active before dialog open
+      - given blank-mode submit succeeds, current route matches /workflow/{id}/graph
+      - given blank-mode submit succeeds, globalMessageSnackbar copy matches 'Your [workflow type] has been successfully created'
+      - given blank-mode submit fails, globalMessageSnackbar copy matches 'We encountered an issue and your [workflow type] was not created'
+      - given blank-mode submit succeeds, workflowView contains exactly one empty workflowSectionContainer
+      - given blank-mode submit succeeds, workflowChannelsHeaderRow lists the predefined default workflowChannels (titles and colours) for the created workflow type per tests/docs/requirements/features/workflow/workflow_add_tab_requirements_v1.yaml FR-WF-ADD-003 and tests/docs/requirements/features/workflow/workflow_edit_channel_requirements_v1.yaml FR-CHAN-002
+
+    openQuestions: []
+
+  - id: FR-WF-CREATE-STEPPER-006
+    title: Step 3 template selection and template-based creation intent
+
+    designEvidence:
+      - FIGMA-WF-CREATE-STEP-3-TEMPLATE
+      - FIGMA-WF-CREATE-STEP-3-TEMPLATE-NO-RESULTS
+
+    actors:
+      - user
+
+    uiObjects:
+      - createWorkflowDialog
+      - createWorkflowDialogTitle
+      - workflowTemplateSearchView
+      - workflowTemplateSearchField
+      - workflowTemplateSearchEmptyState
+      - workflowCard
+      - createWorkflowCancelButton
+      - createWorkflowPreviousStepButton
+      - createWorkflowSubmitButton
+      - workflowView
+      - workflowSectionContainer
+      - workflowChannelsHeaderRow
+      - workflowNode
+      - workflowEdge
+      - workflowOverviewView
+      - workflowTitle
+      - globalMessageSnackbar
+
+    preconditions:
+      - createWorkflowDialog is open on step 3
+      - template mode was selected at step 2
+      - destination project is selected from step 1 per FR-WF-CREATE-STEPPER-003
+
+    trigger:
+      - user clicks workflowCard and clicks createWorkflowSubmitButton
+
+    mainFlow:
+      - createWorkflowDialogTitle follows pattern 'Create {workflowType} from a template'
+      - workflowTemplateSearchView list, search, ordering, cap, selection, and empty-results behavior per acceptanceCriteria in this FR; workflowCard conforms to card_content_requirements_v1.yaml
+      - at least one template workflowCard exists for each workflowType (activity, course, program)
+      - createWorkflowSubmitButton remains disabled until a workflowCard is selected
+      - when user returns to step 3 template mode from step 2, previously selected workflowCard and submit enablement are preserved
+      - cancel per FR-WF-CREATE-STEPPER-001; step 3 previous-step behavior per acceptanceCriteria in this FR
+      - on submit, selected workflowCard template is copied into the selected project as a new workflow; workflowTitle on the new workflow matches cardTitleText of the selected template workflowCard source; workflowView includes template-derived workflowSectionContainer, workflowChannelsHeaderRow, workflowNode, and workflowEdge content from the template source; workflowOverviewView metadata matches template source per tests/docs/requirements/features/workflow/workflow_overview_requirements_v1.yaml FR-WF-OV-009 when user opens Overview
+      - submit success and failure outcomes parallel FR-WF-CREATE-STEPPER-005
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given template mode on step 3, createWorkflowDialogTitle follows pattern 'Create {workflowType} from a template'
+      - given template mode on step 3, workflowTemplateSearchField is visible
+      - given template mode on step 3, workflowCard in workflowTemplateSearchView conforms to card_content_requirements_v1.yaml
+      - given template mode on step 3, visible workflowCard items are ordered by created date most recent first
+      - given template mode on step 3, workflowTemplateSearchView displays at most 4 workflowCard template options that match selected workflowType and no pager is shown
+      - given more than four templates exist for selected workflowType, workflowTemplateSearchView shows the four most recently created workflowCard items with no pager
+      - given user enters text in workflowTemplateSearchField, visible workflowCard template options match title search criteria within the selected workflowType
+      - given template mode on step 3 and workflowTemplateSearchField text matches no template title within selected workflowType, workflowTemplateSearchEmptyState is shown, no workflowCard is visible, and createWorkflowSubmitButton is disabled
+      - given workflowTemplateSearchEmptyState is shown, user cannot submit until user clears workflowTemplateSearchField and selects a visible workflowCard
+      - given user clears workflowTemplateSearchField after a zero-match search, matching template workflowCard items reappear within selected workflowType
+      - given template mode on step 3 and no selected workflowCard, createWorkflowSubmitButton is disabled
+      - given template mode on step 3 and selected workflowCard, createWorkflowSubmitButton is enabled
+      - given user clicks a workflowCard on step 3 template mode, selected state is visible on that card
+      - given user clicks createWorkflowPreviousStepButton on step 3 template mode, dialog returns to step 2 and keeps previously selected destination project
+      - given user returns to step 3 template mode from step 2, previously selected workflowCard remains selected and createWorkflowSubmitButton is enabled
+      - given user clicks createWorkflowCancelButton on step 3 template mode, createWorkflowDialog closes, no workflow is created, and current route matches the route active before dialog open
+      - given template mode on step 3, workflowTemplateSearchView results include only templates matching selected workflowType
+      - given successful template-based create, createWorkflowDialog closes and current route matches /workflow/{id}/graph
+      - given successful template-based create, workflowTitle matches cardTitleText of the selected template workflowCard source
+      - given successful template-based create, workflowView includes template-derived workflowSectionContainer, workflowChannelsHeaderRow, workflowNode, and workflowEdge content matching the selected template workflowCard source
+      - given successful template-based create, globalMessageSnackbar copy matches 'Your [workflow type] has been successfully created'
+      - given template-based create failure, createWorkflowDialog remains open and globalMessageSnackbar copy matches 'We encountered an issue and your [workflow type] was not created'
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-WF-CREATE-STEP-1
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5678-97150&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-WF-CREATE-STEP-1-NO-RESULTS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6953-31788&t=DnUoswczzR2bEVYo-1
+  - key: FIGMA-WF-CREATE-STEP-2
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5678-97151&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-WF-CREATE-STEP-3-BLANK
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5678-90587&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-WF-CREATE-STEP-3-TEMPLATE
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5678-97152&t=lsKQpS4Jq8MOZwMT-1
+  - key: FIGMA-WF-CREATE-STEP-3-TEMPLATE-NO-RESULTS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6953-41069&t=DnUoswczzR2bEVYo-1
+  - key: FIGMA-WF-CREATE-NO-ELIGIBLE-PROJECT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6476-52918&t=lsKQpS4Jq8MOZwMT-1

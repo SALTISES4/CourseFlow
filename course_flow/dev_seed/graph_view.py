@@ -39,6 +39,8 @@ def build_workflow_with_graph(
     fake,
     rng: SeededRNG,
     workflow_type: WorkflowType | None = None,
+    title: str | None = None,
+    description: str | None = None,
 ) -> Workflow:
     root_type = workflow_type or rng.choice(
         [WorkflowType.PROGRAM, WorkflowType.COURSE],
@@ -47,8 +49,8 @@ def build_workflow_with_graph(
         graph=graph,
         author=author,
         project=project,
-        title=fake.sentence(nb_words=4).rstrip("."),
-        description=fake.text(max_nb_chars=200),
+        title=title if title is not None else fake.sentence(nb_words=4).rstrip("."),
+        description=description if description is not None else fake.text(max_nb_chars=200),
         workflow_type=root_type,
     )
 
@@ -60,14 +62,20 @@ def build_sections_and_channels(
     rng: SeededRNG,
     section_count: int,
     channel_count: int,
+    section_titles: list[str] | None = None,
+    channel_titles: list[str] | None = None,
 ) -> tuple[list[Section], list[Channel]]:
     sections: list[Section] = []
     for i in range(section_count):
         th = _thread()
+        if section_titles is not None:
+            title = section_titles[i] if i < len(section_titles) else ""
+        else:
+            title = fake.sentence(nb_words=3).rstrip(".")
         sections.append(
             Section.objects.create(
                 graph=graph,
-                title=fake.sentence(nb_words=3).rstrip("."),
+                title=title,
                 position=i,
                 thread=th,
             )
@@ -76,10 +84,14 @@ def build_sections_and_channels(
     channels: list[Channel] = []
     for j in range(channel_count):
         th = _thread()
+        if channel_titles is not None:
+            title = channel_titles[j] if j < len(channel_titles) else f"Channel {j + 1}"
+        else:
+            title = fake.word().title() + " lane"
         channels.append(
             Channel.objects.create(
                 graph=graph,
-                title=fake.word().title() + " lane",
+                title=title,
                 position=j,
                 thread=th,
             )

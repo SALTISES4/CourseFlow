@@ -7,6 +7,8 @@ export function requireTestCredentials(): { username: string; password: string }
   return { username, password };
 }
 
+import { getWorkflowPath } from './manifest';
+
 export function getWorkflowPathFromEnv(): string {
-  return process.env.PLAYWRIGHT_WORKFLOW_PATH ?? '';
+  return getWorkflowPath();
 }

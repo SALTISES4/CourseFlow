@@ -11,7 +11,7 @@ export function mapProjectV2ToProjectDetails(
     uuid: p.uuid,
     title: p.title,
     description: p.description,
-    isFavourite: p.isFavourite,
+    isFavorite: p.isFavorite,
     isDeleted: false,
     created: p.dateCreated,
     disciplines: [],

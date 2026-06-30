@@ -1,7 +1,7 @@
-import { connectionEdgeToCanonicalPort } from '@cf/components/views/WorkflowView/GraphView/components/LineSVG/utility'
-import { svglinkDragEnd } from '@cf/features/graph/state/slices/svglink.slice'
 import { selectNodeByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
+import { svglinkDragEnd } from '@cf/features/graph/state/slices/svglink.slice'
 import type { AppDispatch, RootState } from '@cfRedux/store'
+import { connectionEdgeToCanonicalPort } from '@cfViews/WorkflowView/GraphView/components/LineSVG/utility'
 
 import { createEdge } from './graphMutations.thunks'
 

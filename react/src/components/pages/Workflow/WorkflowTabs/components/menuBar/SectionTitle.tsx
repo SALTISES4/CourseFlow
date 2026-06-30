@@ -1,5 +1,5 @@
-import { TitleText } from '@cf/components/common/UIPrimitives/Titles'
 import { selectSectionByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
+import { TitleText } from '@cfComponents/UIPrimitives/Titles'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 

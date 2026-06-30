@@ -1,10 +1,3 @@
-import ColorPicker from '@cf/components/common/UIPrimitives/ColorPicker'
-import {
-  SidebarActions,
-  SidebarContent,
-  SidebarInnerWrap,
-  SidebarTitle
-} from '@cf/components/pages/Workflow/Sidebar/styles'
 import type { ChannelEntity } from '@cf/features/graph/state/model/types'
 import {
   selectChannelByUuid,
@@ -16,20 +9,21 @@ import {
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import type { AppDispatch } from '@cf/redux/store'
+import type { AppDispatch, RootState } from '@cf/redux/store'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
+import ColorPicker from '@cfComponents/UIPrimitives/ColorPicker'
+import {
+  SidebarActions,
+  SidebarContent,
+  SidebarInnerWrap,
+  SidebarTitle
+} from '@cfSidebar/styles'
 import { debounce } from '@mui/material'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from 'react'
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 function resolveChannelColour(
@@ -47,7 +41,9 @@ function resolveChannelColour(
 
 const EditColumn = ({ columnId }: { columnId: string }) => {
   const dispatch = useDispatch()
-  const graphUuid = useSelector((state) => state.sidebar.edit.parentId ?? '')
+  const graphUuid = useSelector(
+    (state: RootState) => state.sidebar.edit.parentId ?? ''
+  )
   const channelSelector = useMemo(
     () => selectChannelByUuid(columnId),
     [columnId]

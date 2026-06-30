@@ -1,10 +1,10 @@
-import Alert from '@cf/components/common/UIPrimitives/Alert'
+import Alert from '@cfComponents/UIPrimitives/Alert'
 import {
   SidebarActions,
   SidebarContent,
   SidebarInnerWrap,
   SidebarTitle
-} from '@cf/components/pages/Workflow/Sidebar/styles'
+} from '@cfSidebar/styles'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'

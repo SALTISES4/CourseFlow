@@ -1,6 +1,6 @@
+import { LibraryContentTypeOut } from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { CFRoutes } from '@cf/router/appRoutes'
-import { LibraryObjectType } from '@cf/types/enum'
 import strings from '@cf/utility/strings'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
@@ -21,11 +21,9 @@ import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { Link, generatePath, useLocation } from 'react-router-dom'
 
-import { mapObjectTypeToLibraryObjectType } from 'utility/marshalling/librarySearch'
-
 import * as SC from './styles'
 
-const Favourites = () => {
+const Favorites = () => {
   const { data, isLoading, isError } = useLibrarySearch({
     pagination: {
       page: 0,
@@ -33,7 +31,7 @@ const Favourites = () => {
     },
     filters: {
       isFavorite: true
-    } as never
+    }
   })
 
   const SeeAll = () => {
@@ -47,7 +45,7 @@ const Favourites = () => {
           <ListItemText
             sx={{ margin: 0 }}
             primary={
-              <SC.SeeAllLink sx={{ px: 2, py: 1 }} to={CFRoutes.FAVOURITES}>
+              <SC.SeeAllLink sx={{ px: 2, py: 1 }} to={CFRoutes.FAVORITES}>
                 {strings.viewAll}
               </SC.SeeAllLink>
             }
@@ -74,22 +72,13 @@ const Favourites = () => {
 
         <List>
           {data.items.map((item, id) => {
-            const typedItem = item as typeof item & {
-              contentType: string
-              label: string
-              uuid: string
-            }
-            const libraryType = mapObjectTypeToLibraryObjectType(
-              typedItem.contentType,
-              typedItem.label
-            )
             const url =
-              libraryType === LibraryObjectType.PROJECT
+              item.contentType === LibraryContentTypeOut.PROJECT
                 ? generatePath(CFRoutes.PROJECT, {
-                    uuid: String(typedItem.uuid)
+                    uuid: String(item.uuid)
                   })
                 : generatePath(CFRoutes.WORKFLOW, {
-                    uuid: String(typedItem.uuid)
+                    uuid: String(item.uuid)
                   })
 
             return (
@@ -131,7 +120,7 @@ const Sidebar = () => {
   }
 
   return (
-    <SC.SidebarWrap collapsed={collapsed}>
+    <SC.SidebarWrap collapsed={collapsed} data-test-id="main-nav">
       <SC.Collapse
         color="primary"
         size="small"
@@ -192,7 +181,7 @@ const Sidebar = () => {
           </ListItem>
         </SC.MainMenuWrap>
 
-        <Favourites />
+        <Favorites />
         <RelatedWorkflowList />
 
         <SC.HelpLink>

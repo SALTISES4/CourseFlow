@@ -1,10 +1,9 @@
-import { ChipOptions } from '@cf/components/common/cards/WorkflowCardDumb'
-import { CardChip } from '@cf/components/common/cards/WorkflowCardDumb/styles'
-import Favourite from '@cf/components/common/UIPrimitives/Favourite'
-import { OuterContentWrap } from '@cf/styles/mui/helper'
 import { ProjectDetailsType } from '@cf/types/common'
-import { LibraryObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
+import { ChipOptions } from '@cfComponents/cards/WorkflowCardDumb'
+import { CardChip } from '@cfComponents/cards/WorkflowCardDumb/styles'
+import Favourite from '@cfComponents/UIPrimitives/Favourite'
+import { OuterContentWrap } from '@cfMUI/helper'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -37,11 +36,7 @@ const ProjectHeader = ({ project }: { project: ProjectDetailsType }) => (
       </Typography>
 
       <Box>
-        <Favourite
-          uuid={project.uuid}
-          isFavourite={project.isFavourite}
-          type={LibraryObjectType.PROJECT}
-        />
+        <Favourite uuid={project.uuid} isFavorite={project.isFavorite} />
       </Box>
     </Stack>
   </OuterContentWrap>

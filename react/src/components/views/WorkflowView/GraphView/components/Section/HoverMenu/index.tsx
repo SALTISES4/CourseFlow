@@ -73,6 +73,7 @@ const HoverMenu = ({ graphUuid, sectionId, show }: PropsType) => {
     <NodeHoverMenu
       sx={{ top: '0.7em', right: '4em' }}
       classNames="hover-menu"
+      data-test-id="workflow-section-hover-menu"
       show={show}
       items={[
         {

@@ -228,7 +228,7 @@ const TopBar = () => {
    * RENDER
    *******************************************************/
   return (
-    <SC.TopBarWrap>
+    <SC.TopBarWrap data-test-id="top-bar">
       <AppBar position="static">
         <Toolbar variant="dense">
           <ReturnLinks />

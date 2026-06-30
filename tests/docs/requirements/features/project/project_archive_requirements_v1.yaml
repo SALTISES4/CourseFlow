@@ -1,0 +1,194 @@
+# Normalized requirements: archive project (confirmation and outcomes)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Archiving a Project)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference:
+#   - tests/docs/requirements/features/shared/context_action_bar_requirements_v1.yaml (FR-CAB-003 entry from contextActionBarOverflowItemArchiveProject)
+#   - tests/docs/requirements/features/library/library_page_requirements_v1.yaml (post-archive navigation target—/library, FR-LIB-001; project restore reinstates in-project links—FR-LIB-006)
+#   - tests/docs/requirements/features/project/project_overview_requirements_v1.yaml (unpublish when archiving a published project—FR-PROJ-OV-003)
+#   - tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml (single-workflow archive link break—FR-WF-ARCH-003; distinct from batch project archive in FR-PROJ-ARCH-003)
+#   - tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml (linkedWorkflow same-project only—FR-WF-EN-010)
+#   - tests/docs/requirements/features/workflow/workflow_node_visual_requirements_v1.yaml (workflowNodeLinkedWorkflowIndicator—FR-WF-NODE-001)
+#   - tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-001; mid-session unpublish revocation for published-access—FR-WS-ACCESS-003; mid-session archive eviction—FR-WS-ACCESS-005)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - requirements in this file assume the above hold; when they do not, assert per tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-001
+
+uiObjectDefinitions:
+  contextActionBarOverflowItemArchiveProject:
+    meaning: Canonical definition in context_action_bar_requirements_v1.yaml (FR-CAB-003).
+  archiveProjectConfirmationModal:
+    meaning: Confirmation modal for archiving a project.
+  archiveProjectConfirmationModalCancelButton:
+    meaning: Cancel action on archiveProjectConfirmationModal.
+  archiveProjectConfirmationModalConfirmButton:
+    meaning: Confirm action on archiveProjectConfirmationModal.
+  globalMessageSnackbar:
+    meaning: Canonical definition in workflow_header_requirements_v1.yaml.
+
+locatorMappings:
+  contextActionBarOverflowItemArchiveProject: "canonical_locators.yaml -> contextActionBarOverflowItemArchiveProject"
+  archiveProjectConfirmationModal: "canonical_locators.yaml -> archiveProjectConfirmationModal"
+  archiveProjectConfirmationModalCancelButton: "canonical_locators.yaml -> archiveProjectConfirmationModalCancelButton"
+  archiveProjectConfirmationModalConfirmButton: "canonical_locators.yaml -> archiveProjectConfirmationModalConfirmButton"
+  globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
+
+requirements:
+  - id: FR-PROJ-ARCH-001
+    title: Archive project confirmation modal opens from contextActionBar overflow
+
+    designEvidence:
+      - FIGMA-PROJ-ARCH-MODAL
+
+    actors:
+      - owner
+
+    uiObjects:
+      - contextActionBarOverflowItemArchiveProject
+      - archiveProjectConfirmationModal
+      - archiveProjectConfirmationModalCancelButton
+      - archiveProjectConfirmationModalConfirmButton
+
+    preconditions:
+      - current route matches route pattern '/project/{id}' or '/project/{id}/workflows'
+      - user is owner of the project
+      - contextActionBarOverflowMenu is open with contextActionBarOverflowItemArchiveProject actionable per FR-CAB-003
+
+    trigger:
+      - owner clicks contextActionBarOverflowItemArchiveProject
+
+    mainFlow:
+      - system presents archiveProjectConfirmationModal per FIGMA-PROJ-ARCH-MODAL
+      - archiveProjectConfirmationModal includes archiveProjectConfirmationModalCancelButton and archiveProjectConfirmationModalConfirmButton; modal title, body copy, and both button labels match the user-visible strings shown in FIGMA-PROJ-ARCH-MODAL
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given owner trigger, archiveProjectConfirmationModal is visible
+      - archiveProjectConfirmationModalCancelButton and archiveProjectConfirmationModalConfirmButton are visible
+      - modal title and body copy match FIGMA-PROJ-ARCH-MODAL
+      - archiveProjectConfirmationModalCancelButton and archiveProjectConfirmationModalConfirmButton labels match FIGMA-PROJ-ARCH-MODAL
+
+    openQuestions: []
+
+  - id: FR-PROJ-ARCH-002
+    title: Cancel archive project leaves project unchanged
+
+    designEvidence:
+      - FIGMA-PROJ-ARCH-MODAL
+
+    actors:
+      - owner
+
+    uiObjects:
+      - archiveProjectConfirmationModal
+      - archiveProjectConfirmationModalCancelButton
+
+    preconditions:
+      - archiveProjectConfirmationModal is open
+      - owner opened archiveProjectConfirmationModal from contextActionBar on a project route ('/project/{id}' or '/project/{id}/workflows') per FR-PROJ-ARCH-001
+
+    trigger:
+      - owner clicks archiveProjectConfirmationModalCancelButton
+
+    mainFlow:
+      - system closes archiveProjectConfirmationModal
+      - owner remains on the same application location as when owner opened the modal—pathname matches the pathname that was current when the modal opened ('/project/{id}' or '/project/{id}/workflows' for the same project id)
+      - project and its child workflows remain not archived
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given trigger, archiveProjectConfirmationModal is not visible
+      - given trigger, application URL pathname equals the pathname when owner opened archiveProjectConfirmationModal ('/project/{id}' or '/project/{id}/workflows' for the same project id)
+      - project is not archived as a result of clicking archiveProjectConfirmationModalCancelButton
+      - given trigger, each child workflow of the project is not archived
+
+    openQuestions: []
+
+  - id: FR-PROJ-ARCH-003
+    title: Confirm archive project applies archived state and navigates to /library
+
+    designEvidence:
+      - FIGMA-PROJ-ARCH-MODAL
+
+    actors:
+      - owner
+
+    uiObjects:
+      - archiveProjectConfirmationModal
+      - archiveProjectConfirmationModalConfirmButton
+      - globalMessageSnackbar
+
+    preconditions:
+      - archiveProjectConfirmationModal is open
+
+    trigger:
+      - owner clicks archiveProjectConfirmationModalConfirmButton
+
+    mainFlow:
+      - system closes archiveProjectConfirmationModal after successful archive
+      - project and its child workflows are archived; project and each child workflow are removed from favourites
+      - if the project was published at the time of archiving, it becomes unpublished per FR-PROJ-OV-003; any user (published-access) already in '/project/{id}/*' or '/workflow/{id}/*' for that project loses workspace access on their next in-app action per tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-003
+      - in-project link preservation on project archive — when owner archives project P, linkedWorkflow associations between workflowNodes and child workflows that all belong to P are preserved in archived state (not cleared); links exist only within a project per FR-WF-EN-010, and archiving P archives every workflow in P together; this differs from single-workflow archive per FR-WF-ARCH-003, which breaks parent links when only the child workflow is archived
+      - archived browse — while P and its workflows are archived, workflows are not browsable via card click per card_content_requirements_v1.yaml FR-CARD-006; in-project links are restored when P is restored per FR-LIB-006, not live-navigable while archived; any actor already on '/project/{id}/*' or '/workflow/{id}/*' for P or a child workflow loses workspace access on their next in-app action per tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-005 (access-denied presentation per FR-WS-ACCESS-001 or FR-WS-ACCESS-002), except the archiving owner who is navigated to /library per this FR
+      - application navigates owner to route pathname /library
+      - system shows globalMessageSnackbar with copy exactly 'Your project has been successfully archived'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given successful confirm, archiveProjectConfirmationModal is not visible
+      - given successful confirm, project is archived
+      - given successful confirm, each child workflow of the project is archived
+      - given successful confirm, project is removed from favourites
+      - given successful confirm, each child workflow of the project is removed from favourites
+      - given course workflow C and activity workflow A in project P, node N on C linked to A, when owner confirms archive of P, linkedWorkflow between N and A is preserved in archived state and is not cleared as in single-workflow archive per FR-WF-ARCH-003
+      - given course C and activity A in project P, node N on C linked to A, owner archived P, and owner later restores P via projectCardRestoreProjectButton per FR-LIB-006, when owner reopens C on the Workflow sub-view and selects N, N still links to A, workflowNodeLinkedWorkflowIndicator is rendered per FR-WF-NODE-001, and linked field presentation follows FR-WF-EN-004 or FR-WF-EN-006
+      - given successful confirm, current route pathname is /library (per FR-LIB-001)
+      - given successful confirm, globalMessageSnackbar is visible with copy exactly 'Your project has been successfully archived'
+      - given project was published before archive, after confirm project publish state is unpublished per FR-PROJ-OV-003
+
+    openQuestions: []
+
+  - id: FR-PROJ-ARCH-004
+    title: Confirm archive project failure keeps modal open and shows error snackbar
+
+    designEvidence:
+      - FIGMA-PROJ-ARCH-MODAL
+
+    actors:
+      - owner
+
+    uiObjects:
+      - archiveProjectConfirmationModal
+      - archiveProjectConfirmationModalConfirmButton
+      - globalMessageSnackbar
+
+    preconditions:
+      - archiveProjectConfirmationModal is open
+      - owner opened archiveProjectConfirmationModal from contextActionBar on a project route ('/project/{id}' or '/project/{id}/workflows') per FR-PROJ-ARCH-001
+
+    trigger:
+      - owner clicks archiveProjectConfirmationModalConfirmButton and the archive operation does not complete successfully (for example API or server error), leaving the project in a non-archived state
+
+    mainFlow:
+      - archiveProjectConfirmationModal remains open
+      - archiveProjectConfirmationModalConfirmButton is enabled and clickable
+      - project and its child workflows remain not archived
+      - system shows globalMessageSnackbar with copy exactly 'We encountered an issue and your project was not archived'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given failed confirm outcome described in trigger, archiveProjectConfirmationModal remains open
+      - given failed confirm, project is not archived
+      - given failed confirm, each child workflow of the project is not archived
+      - given failed confirm, globalMessageSnackbar is visible with copy exactly 'We encountered an issue and your project was not archived'
+      - given failed confirm, archiveProjectConfirmationModalConfirmButton is enabled and clickable
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-PROJ-ARCH-MODAL
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5688-84300&t=6weYZA8hUf6tm7DF-1

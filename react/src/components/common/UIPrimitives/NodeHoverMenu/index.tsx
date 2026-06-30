@@ -16,10 +16,11 @@ type PropsType = {
   items: MenuItem[]
   sx?: SxProps
   classNames?: string
+  'data-test-id'?: string
 }
 
-const HoverMenu = ({ items, show, sx, classNames }: PropsType) => (
-  <Styled.Wrap sx={sx} show={show} className={classNames}>
+const HoverMenu = ({ items, show, sx, classNames, 'data-test-id': dataTestId }: PropsType) => (
+  <Styled.Wrap sx={sx} show={show} className={classNames} data-test-id={dataTestId}>
     {items.map((item, index) => (
       <Tooltip key={index} placement="top" arrow title={item.label}>
         <IconButton color="secondary" size="small" onClick={item.onClick}>

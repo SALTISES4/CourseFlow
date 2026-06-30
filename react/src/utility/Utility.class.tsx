@@ -131,8 +131,8 @@ class Utility {
    *  temp console logs for debugging
    *  versus permanent logger functions
    *******************************************************/
-  static logger(data: any, data2: any) {
-    console.log(data, data2)
+  static logger(...args: any[]) {
+    console.log(...args)
   }
 }
 

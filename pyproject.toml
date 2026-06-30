@@ -33,6 +33,7 @@ dependencies = [
 [project.scripts]
 cf-seed-dev-data = "course_flow.cli:main"
 cf-seed-dev-notifications = "course_flow.cli:seed_notifications_main"
+cf-seed-e2e-data = "course_flow.cli:seed_e2e_main"
 
 [build-system]
 requires = ["hatchling"]
