@@ -1,0 +1,94 @@
+# Normalized requirements: workflow header — 'Outcome table' tab (deferred)
+# Deferred from current test-generation phase; requirements retained for future work.
+# Promotion target: merge FR-WF-HEADER-003 into tests/docs/requirements/original/workflow_header_requirements_v1.yaml when Outcome table ships (extends FR-WF-HEADER-001 tab set).
+# Source: Figma CourseFlow-2.0 frames; engineering interview 2026-06-25
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference:
+#   - tests/docs/requirements/original/workflow_header_requirements_v1.yaml (workflowHeader, workflowViewTabSelector — FR-WF-HEADER-001; in-scope file lists three tabs only until this deferred scope ships)
+#   - tests/docs/requirements/original/deferred/workflow_outcome_table_requirements_v1.yaml (workflowOutcomeTableView and sub-view behavior — FR-WF-OT-001 onward)
+#   - tests/docs/requirements/original/workflow_edit_outcome_requirements_v1.yaml (workflowOutcome)
+#   - tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml (workflowNode)
+#   - tests/docs/requirements/original/workspace_access_requirements_v1.yaml (denied access — FR-WS-ACCESS-002)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project of the workflow on any route matching '/workflow/{id}/*', or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+  - routes matching '/workflow/{id}/*' include '/workflow/{id}' (empty suffix) and '/workflow/{id}/<sub-view>' for any sub-view
+  - requirements in this file assume the above hold; when they do not on navigation, assert per FR-WS-ACCESS-002
+
+uiObjectDefinitions:
+  workflowHeader:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_header_requirements_v1.yaml.
+  workflowViewTabSelector:
+    meaning: Canonical definition in tests/docs/requirements/original/workflow_header_requirements_v1.yaml.
+  workflowOutcomeTableTab:
+    meaning: Fourth tab on workflowViewTabSelector labeled 'Outcome table'; navigates to '/workflow/{id}/outcome-table'.
+  workflowOutcomeTableView:
+    meaning: Canonical definition in tests/docs/requirements/original/deferred/workflow_outcome_table_requirements_v1.yaml.
+
+locatorMappings:
+  workflowHeader: "canonical_locators.yaml -> workflowHeader"
+  workflowViewTabSelector: "canonical_locators.yaml -> workflowViewTabSelector"
+  workflowOutcomeTableTab:
+    strategy: "{workflowViewTabSelector} tab with label 'Outcome table'"
+    confidence: inferred
+  workflowOutcomeTableView:
+    strategy: "main content region on route '/workflow/{id}/outcome-table'"
+    confidence: inferred
+
+requirements:
+  - id: FR-WF-HEADER-003
+    title: "'Outcome table' tab on course and program workflows"
+
+    designEvidence:
+      - FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
+      - FIGMA-WF-OT-VIEW-SETTINGS-DEFAULT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowHeader
+      - workflowViewTabSelector
+      - workflowOutcomeTableTab
+      - workflowOutcomeTableView
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - current route matches '/workflow/{id}/*'
+
+    trigger:
+      - user clicks workflowOutcomeTableTab on workflowViewTabSelector
+
+    mainFlow:
+      - on course and program workflows, workflowViewTabSelector includes a fourth tab workflowOutcomeTableTab labeled 'Outcome table' in addition to 'Overview', 'Workflow', and 'Outcomes'
+      - when the workflow has at least one workflowOutcome and at least one workflowNode, workflowOutcomeTableTab is enabled
+      - when the workflow lacks at least one workflowOutcome or lacks at least one workflowNode, workflowOutcomeTableTab is disabled
+      - when workflowOutcomeTableTab is enabled and user clicks workflowOutcomeTableTab, application navigates to '/workflow/{id}/outcome-table' and renders workflowOutcomeTableView per tests/docs/requirements/original/deferred/workflow_outcome_table_requirements_v1.yaml
+      - given current route matches '/workflow/{id}/outcome-table', workflowOutcomeTableTab is the active tab on workflowViewTabSelector
+
+    roleBehavior:
+      owner:
+        workflowOutcomeTableTab: enabled when eligibility preconditions hold
+      editor:
+        workflowOutcomeTableTab: enabled when eligibility preconditions hold
+      commenter:
+        workflowOutcomeTableTab: enabled when eligibility preconditions hold
+      viewer:
+        workflowOutcomeTableTab: enabled when eligibility preconditions hold
+      user:
+        workflowOutcomeTableTab: enabled when eligibility preconditions hold
+
+    acceptanceCriteria: []
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
+    url: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5445-53117
+  - key: FIGMA-WF-OT-VIEW-SETTINGS-DEFAULT
+    url: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7199-37068

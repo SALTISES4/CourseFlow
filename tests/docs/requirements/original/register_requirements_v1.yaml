@@ -1,7 +1,7 @@
 # Normalized requirements: register (create account)
 # Source: Figma design evidence; application code (course_flow/forms.py RegistrationForm; course_flow/views/HTTP/HTTP.py registration_view; course_flow/templates/course_flow/html/registration/registration.html)
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Cross-reference: tests/docs/requirements/original/homepage_requirements_v1.yaml (post-registration destination Home per FR-REG-004); tests/docs/requirements/original/main_navigation_requirements_v1.yaml (homeNavItem labeled 'Home'); tests/docs/requirements/original/profile_settings_requirements_v1.yaml (registerFirstNameField and registerLastNameField values collected at signup per FR-PROFILE-002; registerEmailField value is the user's sign-up email shown in profileUsernameField per FR-PROFILE-002); tests/docs/requirements/original/forgot_password_requirements_v1.yaml (registerDuplicateEmailPasswordResetLink navigates to '/password-reset' per FR-REG-005); tests/docs/requirements/original/login_requirements_v1.yaml (registerLoginPrompt and registerLoginLink mirror loginRegisterPrompt and loginRegisterLink per FR-LOGIN-001; registerLoginLink navigates to '/login/' per FR-REG-001; registerDuplicateEmailLoginLink navigates to '/login/' per FR-REG-005)
+# Cross-reference: tests/docs/requirements/original/homepage_requirements_v1.yaml (post-registration destination Home per FR-REG-004); tests/docs/requirements/original/main_navigation_requirements_v1.yaml (homeNavItem labeled 'Home'); tests/docs/requirements/original/profile_settings_requirements_v1.yaml (registerFirstNameField and registerLastNameField values collected at signup per FR-PROFILE-002; registerEmailField value is the user's sign-up email shown in profileUsernameField per FR-PROFILE-002); tests/docs/requirements/original/forgot_password_requirements_v1.yaml (registerDuplicateEmailPasswordResetLink navigates to '/password-reset' per FR-REG-005); tests/docs/requirements/original/login_requirements_v1.yaml (registerLoginPrompt and registerLoginLink mirror loginRegisterPrompt and loginRegisterLink per FR-LOGIN-001; registerLoginLink navigates to '/login/' per FR-REG-002; registerDuplicateEmailLoginLink navigates to '/login/' per FR-REG-005)
 
 documentPreconditions:
   - user is not authenticated to CourseFlow
@@ -11,9 +11,11 @@ uiObjectDefinitions:
   registerPage:
     meaning: Public full-page create-account experience at route '/register/' accessible without authentication.
   registerTitle:
-    meaning: Page title on registerPage labeled 'Register to CourseFlow'.
+    meaning: Page title on registerForm labeled 'Register to CourseFlow'.
   registerForm:
     meaning: Form container on registerPage for account creation fields.
+  brandLockup:
+    meaning: Canonical definition in tests/docs/requirements/original/main_navigation_requirements_v1.yaml.
   registerEmailField:
     meaning: Required text input labeled 'Email' on registerForm for the new account email address; this value is also the account username; persisted to profileUsernameField on first profile-settings visit per FR-REG-004 and tests/docs/requirements/original/profile_settings_requirements_v1.yaml FR-PROFILE-002; valid when non-empty with at least one character before '@' and a domain name after '@' per FR-REG-003.
   registerFirstNameField:
@@ -29,9 +31,9 @@ uiObjectDefinitions:
   registerSubmitButton:
     meaning: Primary submit button on registerForm labeled 'Register'; disabled and not clickable until all registerForm fields are valid per FR-REG-003.
   registerLoginPrompt:
-    meaning: Static prompt copy 'Have an account? ' on registerPage adjacent to registerLoginLink; mirror of loginRegisterPrompt per tests/docs/requirements/original/login_requirements_v1.yaml FR-LOGIN-001.
+    meaning: Static prompt copy 'Have an account? ' on registerPage adjacent to registerLoginLink.
   registerLoginLink:
-    meaning: Clickable link labeled 'Login' on registerPage that navigates to public route '/login/'; mirror of loginRegisterLink per tests/docs/requirements/original/login_requirements_v1.yaml FR-LOGIN-001.
+    meaning: Clickable link labeled 'Login' on registerPage.
   registerFieldValidationMessage:
     meaning: Inline field-level error text on registerForm field controls; validation rules per FR-REG-003.
   registerDuplicateEmailErrorMessage:
@@ -46,6 +48,7 @@ uiObjectDefinitions:
     meaning: Canonical definition in tests/docs/requirements/original/homepage_requirements_v1.yaml.
 
 locatorMappings:
+  brandLockup: "canonical_locators.yaml -> brandLockup"
   registerPage: "canonical_locators.yaml -> registerPage"
   registerTitle: "canonical_locators.yaml -> registerTitle"
   registerForm: "canonical_locators.yaml -> registerForm"
@@ -76,8 +79,9 @@ requirements:
 
     uiObjects:
       - registerPage
-      - registerTitle
       - registerForm
+      - brandLockup
+      - registerTitle
       - registerEmailField
       - registerFirstNameField
       - registerLastNameField
@@ -91,54 +95,60 @@ requirements:
 
     preconditions:
       - documentPreconditions for this file hold
+      - user has not yet interacted with registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, or registerConfirmPasswordField
 
     trigger:
       - user navigates to '/register/'
 
     mainFlow:
-      - given user is not authenticated, user can navigate to '/register/' without being redirected
-      - given user is authenticated and navigates to '/register/', application redirects to '/home' and registerPage is not visible
-      - given current route matches '/register/', registerPage is visible
-      - registerTitle is visible on registerPage
-      - registerForm is visible on registerPage
-      - registerForm shows registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, registerConfirmPasswordField, registerPasswordGuidelines, and registerSubmitButton in that order
-      - registerPage does not include a separate username field; registerEmailField is the account username
-      - registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, and registerConfirmPasswordField start empty
-      - registerSubmitButton is disabled and not clickable before user interaction
-      - registerFieldValidationMessage is not visible for registerForm fields before user interaction
-      - registerPage shows registerLoginPrompt adjacent to registerLoginLink
-      - registerLoginPrompt is not clickable; only registerLoginLink is clickable
-      - given user clicks registerLoginLink, application navigates to '/login/' without requiring authentication
+      - system intercepts navigation and verifies unauthenticated status
+      - system renders registerPage matching registerForm layout constraints
+      - system initializes registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, and registerConfirmPasswordField with empty values
+      - system initializes registerSubmitButton in a disabled state
 
     roleBehavior: {}
 
     acceptanceCriteria:
       - given user is not authenticated, current route matches '/register/' and registerPage is visible
       - given user is authenticated and user navigates to '/register/', current route matches '/home' and registerPage is not visible
-      - registerTitle is visible on registerPage
-      - registerForm is visible on registerPage
-      - registerForm shows registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, registerConfirmPasswordField, registerPasswordGuidelines, and registerSubmitButton in that order
-      - registerEmailField is visible on registerForm, is editable, and is required
-      - registerEmailField value is empty
+      - registerForm is visible
+      - registerForm contains and renders the following child components in a strict, top-to-bottom vertical layout sequence: brandLockup, registerTitle, registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, registerConfirmPasswordField, registerPasswordGuidelines, registerSubmitButton and registerLoginPrompt adjacent to registerLoginLink as an inline pair
       - registerPage does not show a separate username field
-      - registerFirstNameField is visible on registerForm, is editable, and is required
+      - registerEmailField value is empty
       - registerFirstNameField value is empty
-      - registerLastNameField is visible on registerForm, is editable, and is required
       - registerLastNameField value is empty
-      - registerPasswordField is visible on registerForm, is editable, and is required
       - registerPasswordField value is empty
-      - registerPasswordField masks entered characters
-      - registerConfirmPasswordField is visible on registerForm, is editable, and is required
       - registerConfirmPasswordField value is empty
-      - registerConfirmPasswordField masks entered characters
-      - registerPasswordGuidelines is visible on registerForm
-      - registerSubmitButton is visible on registerForm
-      - registerSubmitButton is disabled and not clickable
-      - given user has not interacted with registerForm, registerFieldValidationMessage is not visible for registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, or registerConfirmPasswordField
-      - registerLoginPrompt is visible on registerPage
-      - registerLoginLink is visible on registerPage and is clickable
-      - registerLoginPrompt is not clickable
-      - given user is not authenticated and user clicks registerLoginLink, current route matches '/login/'
+      - registerSubmitButton is disabled
+
+    openQuestions: []
+
+  - id: FR-REG-002
+    title: Register page external link navigation
+
+    designEvidence:
+      - FIGMA-REGISTER
+
+    actors:
+      - user
+
+    uiObjects:
+      - registerPage
+      - registerLoginLink
+
+    preconditions:
+      - current route matches '/register/' and registerPage is visible
+
+    trigger:
+      - user clicks registerLoginLink
+
+    mainFlow:
+      - given user clicks registerLoginLink, system routes to '/login/'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user clicks registerLoginLink, then current route matches '/login/'
 
     openQuestions: []
 
@@ -175,8 +185,10 @@ requirements:
       - registerFirstNameField requires a non-empty value with maximum length 200 characters
       - registerLastNameField requires a non-empty value with maximum length 200 characters
       - registerPasswordField requires a non-empty value that satisfies registerPasswordGuidelines
+      - given user enters a value in registerPasswordField, registerPasswordField masks the entered characters (native secret input)
       - given registerPasswordField fails registerPasswordGuidelines after interaction, registerFieldValidationMessage is visible with text 'Your password must contain at least 12 characters and include a mix of numbers, letters and symbols' for registerPasswordField and registerSubmitButton is disabled and not clickable
       - registerConfirmPasswordField requires a non-empty value that matches registerPasswordField
+      - given user enters a value in registerConfirmPasswordField, registerConfirmPasswordField masks the entered characters (native secret input)
       - registerPasswordField and registerConfirmPasswordField must match; when they do not match, registerFieldValidationMessage shows text 'Passwords do not match' on registerConfirmPasswordField
       - given registerConfirmPasswordField has a non-empty value, changing registerPasswordField re-evaluates whether registerConfirmPasswordField matches registerPasswordField
       - given registerPasswordField and registerConfirmPasswordField do not match after registerPasswordField changes, registerFieldValidationMessage is visible with text 'Passwords do not match' for registerConfirmPasswordField and registerSubmitButton is disabled and not clickable
@@ -197,7 +209,9 @@ requirements:
       - given registerFirstNameField value length exceeds 200 characters after interaction, registerFieldValidationMessage is visible with text 'First name is limited to 200 characters' for registerFirstNameField
       - given registerLastNameField value length exceeds 200 characters after interaction, registerFieldValidationMessage is visible with text 'Last name is limited to 200 characters' for registerLastNameField
       - given user clears registerPasswordField after interaction, registerFieldValidationMessage is visible with text 'Password is required' for registerPasswordField
+      - given user enters a value in registerPasswordField, registerPasswordField masks the entered characters (native secret input)
       - given user clears registerConfirmPasswordField after interaction, registerFieldValidationMessage is visible with text 'Confirm password is required' for registerConfirmPasswordField
+      - given user enters a value in registerConfirmPasswordField, registerConfirmPasswordField masks the entered characters (native secret input)
       - given registerPasswordField and registerConfirmPasswordField do not match after interaction, registerFieldValidationMessage is visible with text 'Passwords do not match' for registerConfirmPasswordField
       - given registerConfirmPasswordField matches registerPasswordField and user then changes registerPasswordField so the values no longer match, registerFieldValidationMessage is visible with text 'Passwords do not match' for registerConfirmPasswordField
       - given registerPasswordField and registerConfirmPasswordField do not match after registerPasswordField changes, registerSubmitButton is disabled and not clickable
@@ -272,8 +286,9 @@ requirements:
 
     uiObjects:
       - registerPage
-      - registerTitle
       - registerForm
+      - brandLockup
+      - registerTitle
       - registerEmailField
       - registerFirstNameField
       - registerLastNameField
@@ -302,7 +317,9 @@ requirements:
       - given registration fails, user is not authenticated to CourseFlow
       - given registration fails, user remains on registerPage and current route remains '/register/'
       - given registration fails, registerForm remains visible with registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, and registerConfirmPasswordField retaining the submitted values
-      - given registration fails, registerTitle, registerPasswordGuidelines, registerLoginPrompt, and registerLoginLink remain visible on registerPage
+      - given registration fails, brandLockup, registerTitle, registerPasswordGuidelines, registerLoginPrompt, and registerLoginLink remain visible within registerForm
+      - given registration fails because registerEmailField value is already registered, registerDuplicateEmailErrorMessage is visible within registerForm between registerTitle and registerEmailField
+      - given registration fails for a reason other than duplicate email, registerSubmissionErrorMessage is visible within registerForm between registerTitle and registerEmailField
       - given registration fails with a valid registerForm, registerSubmitButton is enabled and clickable
       - given registration fails because registerEmailField value is already registered, registerDuplicateEmailErrorMessage is visible with text 'An account with this email address already exists. Try logging in or use the password reset page to regain access.' and registerSubmissionErrorMessage is not visible
       - given duplicate-email registration failure, registerDuplicateEmailLoginLink labeled 'logging in' and registerDuplicateEmailPasswordResetLink labeled 'password reset' are visible and clickable within registerDuplicateEmailErrorMessage
@@ -318,6 +335,7 @@ requirements:
       - given registration fails, user is not authenticated to CourseFlow
       - given registration fails, current route matches '/register/'
       - given registration fails, registerForm is visible
+      - given registration fails, registerForm shows brandLockup, registerTitle, registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, registerConfirmPasswordField, registerPasswordGuidelines, registerSubmitButton and registerLoginPrompt adjacent to registerLoginLink as an inline pair in that order
       - given registration fails, registerEmailField, registerFirstNameField, registerLastNameField, registerPasswordField, and registerConfirmPasswordField retain the values submitted on the failed attempt
       - given registration fails, registerTitle is visible with text 'Register to CourseFlow'
       - given registration fails, registerPasswordGuidelines is visible with text 'Your password must contain at least 12 characters and include a mix of numbers, letters and symbols'
@@ -325,12 +343,14 @@ requirements:
       - given registration fails, registerLoginLink is visible with label 'Login' and is clickable
       - given registration fails with a valid registerForm, registerSubmitButton is enabled and clickable
       - given registration fails because registerEmailField value is already registered, registerDuplicateEmailErrorMessage is visible with text 'An account with this email address already exists. Try logging in or use the password reset page to regain access.' and registerSubmissionErrorMessage is not visible
+      - given registration fails because registerEmailField value is already registered, registerDuplicateEmailErrorMessage is visible within registerForm between registerTitle and registerEmailField
       - given duplicate-email registration failure, registerDuplicateEmailLoginLink is visible with label 'logging in' and is clickable
       - given duplicate-email registration failure, registerDuplicateEmailPasswordResetLink is visible with label 'password reset' and is clickable
       - given user clicks registerDuplicateEmailLoginLink, current route matches '/login/'
       - given user clicks registerDuplicateEmailPasswordResetLink, current route matches '/password-reset'
       - given registration fails for a reason other than duplicate email, registerSubmissionErrorMessage is visible with text 'We were unable to complete your registration. Please try again in a few moments.' and registerDuplicateEmailErrorMessage is not visible
-      - given registration fails for a reason other than duplicate email, registerSubmissionErrorMessage is visible with text 'We were unable to complete your registration. Please try again in a few moments.' on registerPage in the same failure layout as duplicate-email failures per FIGMA-REGISTER-FAIL
+      - given registration fails for a reason other than duplicate email, registerSubmissionErrorMessage is visible within registerForm between registerTitle and registerEmailField
+      - given registration fails for a reason other than duplicate email, registerSubmissionErrorMessage is visible with text 'We were unable to complete your registration. Please try again in a few moments.' within registerForm in the same failure layout as duplicate-email failures per FIGMA-REGISTER-FAIL
       - given duplicate-email registration failure and user then changes registerEmailField value, registerDuplicateEmailErrorMessage is not visible
       - given registration fails for a reason other than duplicate email and user then changes any registerForm field value, registerSubmissionErrorMessage is not visible
 
