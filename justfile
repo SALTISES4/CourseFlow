@@ -204,28 +204,6 @@ django-seed:
   just django-seed-notifications
 
 [group: 'Django']
-django-migrate-e2e:
-  POSTGRES_DB={{ e2e_db_name }} uv run python manage.py migrate
-
-[group: 'Django']
-django-create-superuser-e2e:
-  POSTGRES_DB={{ e2e_db_name }} DJANGO_SUPERUSER_EMAIL=admin@courseflow.com DJANGO_SUPERUSER_PASSWORD='password' uv run python manage.py createsuperuser --noinput
-
-[group: 'Django']
-django-run-e2e:
-  POSTGRES_DB={{ e2e_db_name }} uv run python manage.py runserver
-
-# Deterministic contract fixtures for Playwright E2E (writes manifest for tests).
-[group: 'Django']
-django-seed-e2e-tests:
-  POSTGRES_DB={{ e2e_db_name }} uv run cf-seed-e2e-data --clear-and-seed --manifest-path tests/.playwright-fixtures/workflow.json
-
-[group: 'Django']
-django-clear-e2e-tests:
-  POSTGRES_DB={{ e2e_db_name }} uv run cf-seed-e2e-data --clear
-
-
-[group: 'Django']
 django-wait-db:
   bash -lc 'for i in {1..60}; do \
     uv run python -c "import psycopg; psycopg.connect(\"host=127.0.0.1 port=5433 dbname=courseflow user=courseflow password=courseflow\").close()" \
@@ -284,31 +262,62 @@ frontend-dev:
 frontend-openapi-codegen:
   {{ frontend_bootstrap }} && yarn run openapi-ts && yarn run eslint --fix ./src/api/gen
 
-# ----------------------------
-# Quality / validation
-# ----------------------------
+
+#########################################################
+#  TESTING
+#########################################################
+
+#########################################################
+#  TESTING : SETUP
+#########################################################
+
+[group: 'Testing:setup']
+django-migrate-e2e:
+  POSTGRES_DB={{ e2e_db_name }} uv run python manage.py migrate
+
+[group: 'Testing:setup']
+django-create-superuser-e2e:
+  POSTGRES_DB={{ e2e_db_name }} DJANGO_SUPERUSER_EMAIL=admin@courseflow.com DJANGO_SUPERUSER_PASSWORD='password' uv run python manage.py createsuperuser --noinput
+
+[group: 'Testing:setup']
+django-run-e2e:
+  POSTGRES_DB={{ e2e_db_name }} uv run python manage.py runserver
+
+# Deterministic contract fixtures for Playwright E2E (writes manifest for tests).
+[group: 'Testing:setup']
+django-seed-e2e-tests:
+  POSTGRES_DB={{ e2e_db_name }} uv run cf-seed-e2e-data --clear-and-seed --manifest-path tests/.playwright-fixtures/workflow.json
+
+[group: 'Testing:setup']
+django-clear-e2e-tests:
+  POSTGRES_DB={{ e2e_db_name }} uv run cf-seed-e2e-data --clear
+
+
+#########################################################
+#  TESTING : RUN
+#########################################################
 
 # run all the precommit hooks including (ruff, safety) see .pre-commit-config.yaml
-[group: 'Quality']
+[group: 'Testing:run']
 pre-commit-run:
   pre-commit run
 
-[group: 'Quality']
+[group: 'Testing:run']
 test:
   uv run pytest
 
-[group: 'Quality']
+[group: 'Testing:run']
 test-unit:
   uv run pytest tests/unit_tests
 
-[group: 'Quality']
+[group: 'Testing:run']
 typecheck:
   uv run pyright
 
-# ----------------------------
-# Apple Scripts
-# ----------------------------
 
+#########################################################
+# APPLE SCRIPTS
+#########################################################
 # launch iterm
 [group: 'Applescripts']
 iterm:
@@ -404,7 +413,3 @@ e2e-prepare:
   just django-create-superuser-e2e || true
   just django-seed-e2e-tests
 
-# Deprecated alias — use rebuild-dev-db (UI dev seed, not E2E fixtures).
-[group: 'Workflows']
-rebuild-test-db:
-  just rebuild-dev-db
