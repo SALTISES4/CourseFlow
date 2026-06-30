@@ -308,14 +308,14 @@ const LibrarySearchView = ({
      *  Workflow Type (condition on Content Type value)
      *******************************************************/
     return (
-      <FilterButton
+      <FilterMultiselect
         placeholder={filterGroup.label}
         options={options}
-        icon={<SchemaOutlinedIcon />}
-        onChange={(val) => {
+        showSearch={false}
+        onChange={(values) => {
           const newFilterProjectOptions = LibraryHelper.updateFilterOptions(
             options,
-            val
+            values
           )
           setSearchFilterState(
             produce((draft) => {

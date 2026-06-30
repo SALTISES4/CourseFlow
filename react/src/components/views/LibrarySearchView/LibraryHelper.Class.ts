@@ -113,11 +113,6 @@ class LibraryHelper {
         label: _t('Workflow Type'),
         options: [
           {
-            label: _t('All'),
-            value: null,
-            enabled: true
-          },
-          {
             label: _t('Programs'),
             value: WorkflowType.PROGRAM
           },
