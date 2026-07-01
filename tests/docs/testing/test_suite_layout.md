@@ -55,8 +55,23 @@ New **product areas** get a folder under `tests/e2e/` (mirror the domain languag
 ### `tests/shared/`
 
 - **`auth-state.ts`**: Single definition of the saved auth file path (must stay aligned with `playwright.config.ts` `storageState`).
-- **`locators/`**: Selectors and locator factories used in **more than one domain** (navigation shell, global modals, app-wide `data-test-id`s).
-- Do not move **feature-specific** locators here “because they might be reused later”; colocate first, promote to `shared/` when a second domain actually imports them.
+- **`locators/`**: TypeScript implementation of `canonical_locators.yaml` shared uiObjects. See `locators/CANONICAL_PORT_STATUS.md` for port progress.
+- Domain `tests/e2e/<domain>/*.locators.ts` files **re-export** shared locators and add domain-only uiObjects.
+
+### Canonical locator registry → TypeScript modules
+
+Requirements define shared uiObjects in `tests/docs/requirements/features/shared/canonical_locators.yaml`. Playwright implements them as follows:
+
+| Registry scope | TypeScript home | Notes |
+| --- | --- | --- |
+| Cross-domain shell (`topNavigationBar`, `addMenuTrigger`, …) | `tests/e2e/navigation/navigation.locators.ts` or `tests/shared/locators/` | Promote to `shared/` when imported broadly |
+| Library listing (`keywordSearchField`, `libraryFilterToolbar`, `libraryCards`, …) | `tests/e2e/library/library.locators.ts` | Project workflows tab re-exports these — do not duplicate |
+| Domain-only (`projectOverviewView`, `workflowSectionContainer`, …) | `tests/e2e/<domain>/*.locators.ts` | Match canonical uiObject function names |
+| One-off, single-spec | Inline in `*.spec.ts` | Only when not a named canonical uiObject |
+
+When generating tests incrementally (one FR block at a time), still check `canonical_locators.yaml` first: shared objects belong in the owning module and are imported elsewhere.
+
+See `adr_ai_test_generation.md` and `locator_contract_policy.md` § Locator file organization.
 
 ### `tests/e2e/smoke/`
 
@@ -73,6 +88,7 @@ New **product areas** get a folder under `tests/e2e/` (mirror the domain languag
 ### `tests/docs/`
 
 - Requirements, ADRs, prompts, and **policy markdown** — not part of Playwright `testMatch`.
+- Feature FR YAML lives under `tests/docs/requirements/features/` in domain folders (`workflow/`, `project/`, `library/`, …) that mirror `tests/e2e/` — see [requirements/features/README.md](../requirements/features/README.md).
 
 ## Naming conventions
 
@@ -87,7 +103,7 @@ Use **domain-prefixed** spec names when helpful (`edit-section-fr-001-006.spec.t
 ## URLs and `baseURL`
 
 - Prefer **path-only** navigation: `page.goto('/course-flow/...')` so `baseURL` in `playwright.config.ts` stays authoritative.
-- Avoid hardcoding `http://localhost:8001` in specs except for documented exceptions.
+- Avoid hardcoding host/port in specs; use path-only navigation against `baseURL` (default `http://localhost:3000/` via `PLAYWRIGHT_BASE_URL`).
 
 ## Authentication
 
@@ -100,9 +116,13 @@ Use **domain-prefixed** spec names when helpful (`edit-section-fr-001-006.spec.t
 - A single `tests/locators/all.ts` that mirrors the entire app.
 - Duplicating the auth storage path string outside `tests/shared/auth-state.ts` and `playwright.config.ts`.
 - Putting heavy page objects in `helpers/`; use domain colocation or `fixtures/` for cohesive test-facing APIs.
+- Copying the same canonical selector into multiple `*.locators.ts` files instead of import/re-export.
+- Implementing `canonical_locators.yaml` strategy prose as XPath or MUI class selectors (see `locator_contract_policy.md`).
 
 ## Related documents
 
+- [playwright_execution_guide.md](../runbooks/playwright_execution_guide.md) — install, env, UI Mode, and local run commands.
+- [adr_ai_test_generation.md](adr_ai_test_generation.md) — architectural decisions for AI-assisted generation.
 - [playwright_authoring_standard.md](playwright_authoring_standard.md) — how to write tests (titles, traceability headers, structure).
 - [locator_contract_policy.md](locator_contract_policy.md) — selector contracts.
 - [generated_test_review_checklist.md](generated_test_review_checklist.md) — review criteria for generated specs.

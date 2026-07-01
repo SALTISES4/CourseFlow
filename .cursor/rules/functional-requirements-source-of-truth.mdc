@@ -22,7 +22,7 @@ Before changing or fixing behavior in the app (not only when writing Playwright 
 
 ## Where to look (in order)
 
-1. **Feature specs** — `tests/docs/requirements/original/*_requirements_v1.yaml` (and related normalized examples under `tests/docs/requirements/templates/examples/` if present)
+1. **Feature specs** — `tests/docs/requirements/features/**/*_requirements_v1.yaml` (domain layout in `tests/docs/requirements/features/README.md`; normalized examples under `tests/docs/requirements/templates/examples/` if present)
 2. **Authoring rules** — `tests/docs/requirements/guidelines_functional_requirements.md`
 3. **Index and precedence** — `tests/docs/README.md`
 4. **Normalization ADR** (test pipeline only) — `tests/docs/requirements/adr_requirement_normalization_for_test_generation.md`

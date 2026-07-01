@@ -87,7 +87,7 @@ Product copy examples (FR-WF-EN-009 / FR-WF-NODE-001): “Link activity” / “
 
 ### 5. Mapping legacy functional-requirement wording
 
-Existing YAML under `tests/docs/requirements/original/` often says **“parent workflow type is course”** and **“linked activity workflow”**. Read them as:
+Existing YAML under `tests/docs/requirements/features/` often says **“parent workflow type is course”** and **“linked activity workflow”**. Read them as:
 
 | FR phrase | Precise meaning |
 |-----------|-----------------|
@@ -119,6 +119,6 @@ Do **not** rewrite historical FR IDs in this ADR; use this table when implementi
 - Hierarchy helpers: `course_flow/core/hierarchy.py`
 - Model: `course_flow/core/models/node.py`
 - FR terminology (authoring): `tests/docs/requirements/terminology_workflow_hierarchy_and_nodes.md`
-- Edit-node behavior: `tests/docs/requirements/original/workflow_edit_node_requirements_v1.yaml` (FR-WF-EN-004, FR-WF-EN-006, FR-WF-EN-010, FR-WF-EN-011)
-- Canvas behavior: `tests/docs/requirements/original/workflow_node_visual_requirements_v1.yaml` (FR-WF-NODE-001)
+- Edit-node behavior: `tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml` (FR-WF-EN-004, FR-WF-EN-006, FR-WF-EN-010, FR-WF-EN-011)
+- Canvas behavior: `tests/docs/requirements/features/workflow/workflow_node_visual_requirements_v1.yaml` (FR-WF-NODE-001)
 - Entity summary: `docs/data/entities/entities.md`

@@ -151,7 +151,7 @@ const WorkspaceSidebar = () => {
   }
 
   return (
-    <SidebarWrap collapsed={sidebar.collapsed}>
+    <SidebarWrap collapsed={sidebar.collapsed} data-test-id="workflow-right-sidebar">
       <SidebarTabsWrap
         exclusive
         orientation="vertical"

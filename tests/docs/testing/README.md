@@ -25,7 +25,7 @@ This folder defines the testing side of that split.
 
 ### 3. Locator Contract Policy
 - File: `locator_contract_policy.md`
-- Purpose: defines which selector types are acceptable, when `data-*` contracts are required, and when generated tests must reject unstable selectors.
+- Purpose: defines which selector types are acceptable, when `data-test-id` hooks should be added (existing contract → MCP validate → escalate), when `data-*` contracts are required, and when generated tests must reject unstable selectors.
 
 ### 4. AI Test Generation Workflow
 - File: `ai_test_generation_workflow.md`
@@ -37,7 +37,19 @@ This folder defines the testing side of that split.
 
 ### 6. Browser Automation Tooling Guide
 - File: `browser_automation_tooling_guide.md`
-- Purpose: explains how Playwright MCP and `playwright-cli` should be used during test generation, review, and debugging, while keeping authored Playwright tests as the final artifact.
+- Purpose: explains how Playwright MCP and `playwright-cli` should be used during test generation, review, and debugging — including E2E environment prerequisites, per-requirement DOM validation, committed artifact rules, and the agent prompt pattern — while keeping authored Playwright tests as the final artifact.
+
+### 7. Test suite layout
+- File: `test_suite_layout.md`
+- Purpose: defines where specs, setup, helpers, and locators live under `tests/`.
+
+### 8. E2E harness roadmap
+- File: [adr_e2e_harness_roadmap.md](adr_e2e_harness_roadmap.md)
+- Purpose: phased plan for Playwright fixtures, manifest, FR-driven generation, and CI.
+
+### 9. Playwright execution runbook
+- File: [../runbooks/playwright_execution_guide.md](../runbooks/playwright_execution_guide.md)
+- Purpose: how to install dependencies, configure env, run headless/UI/debug modes, prepare the E2E database, and troubleshoot local browser test execution.
 
 ## Relationship to requirement docs
 
@@ -54,7 +66,9 @@ When these documents appear to overlap, use this precedence:
 3. `locator_contract_policy.md`
 4. `playwright_authoring_standard.md`
 5. `ai_test_generation_workflow.md`
-6. Example-only guidance and illustrative snippets
+6. [adr_e2e_harness_roadmap.md](adr_e2e_harness_roadmap.md) (harness phases — fixtures, generation, CI)
+7. [playwright_execution_guide.md](../runbooks/playwright_execution_guide.md) (local run commands and env — not product requirements)
+7. Example-only guidance and illustrative snippets
 
 ## Expected usage
 

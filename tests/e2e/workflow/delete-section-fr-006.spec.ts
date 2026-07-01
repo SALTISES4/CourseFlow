@@ -1,0 +1,93 @@
+import { test, expect } from '../../fixtures';
+import { skipUnlessPristineWorkflow } from '../../helpers/workflow-pristine';
+import {
+  deleteButtonInSectionHeader,
+  deleteSectionCancelButton,
+  deleteSectionConfirmButton,
+  deleteSectionDialog,
+  sectionContainers,
+  sectionHeader,
+  sectionHoverMenu,
+} from './edit-section.locators';
+import {
+  workflowSectionDeleteDialogBody,
+  workflowSectionDeleteDialogTitle,
+} from '../../shared/locators/workflow';
+
+/**
+ * Delete section — hover path and dialog (FR-SEC-006).
+ * Requirements: workflow_delete_section_requirements_v1.yaml
+ * Sidebar cancel branch: edit-section-fr-001-006.spec.ts; confirm via sidebar: edit-section-fr-phase2.spec.ts
+ */
+
+async function hoverSectionHeader(page: import('@playwright/test').Page, sectionUuid: string) {
+  await sectionHeader(page, sectionUuid).hover();
+  await expect(sectionHoverMenu(page, sectionUuid)).toBeVisible();
+}
+
+test.describe('Delete Section — hover path (FR-SEC-006)', () => {
+  test.describe.configure({ mode: 'serial' });
+
+  test.beforeEach(async ({ page, workflow }) => {
+    await page.goto(workflow.path);
+    await skipUnlessPristineWorkflow(page, workflow);
+  });
+
+  test('FR-SEC-006: hover delete opens workflowSectionDeleteDialog with title and body copy', async ({
+    page,
+    workflow,
+  }) => {
+    const sectionUuid = workflow.sectionByTitle('E2E Section 3').uuid;
+
+    await hoverSectionHeader(page, sectionUuid);
+    await deleteButtonInSectionHeader(page, sectionUuid).click();
+
+    await expect(deleteSectionDialog(page)).toBeVisible();
+    await expect(workflowSectionDeleteDialogTitle(page)).toBeVisible();
+    await expect(workflowSectionDeleteDialogBody(page)).toBeVisible();
+    await expect(deleteSectionCancelButton(page)).toBeVisible();
+    await expect(deleteSectionConfirmButton(page)).toBeVisible();
+    await deleteSectionCancelButton(page).click();
+    await expect(deleteSectionDialog(page)).toBeHidden();
+  });
+
+  test('FR-SEC-006: hover delete Cancel leaves section count unchanged', async ({
+    page,
+    workflow,
+  }) => {
+    const sectionUuid = workflow.sectionByTitle('E2E Section 3').uuid;
+    const before = await sectionContainers(page).count();
+
+    await hoverSectionHeader(page, sectionUuid);
+    await deleteButtonInSectionHeader(page, sectionUuid).click();
+    await expect(deleteSectionDialog(page)).toBeVisible();
+    await deleteSectionCancelButton(page).click();
+
+    await expect(deleteSectionDialog(page)).toBeHidden();
+    await expect(sectionContainers(page)).toHaveCount(before);
+  });
+
+  test('FR-SEC-006: hover delete confirm removes target workflowSectionContainer', async ({
+    page,
+    workflow,
+  }) => {
+    const disposable = workflow.sectionByTitle('E2E Section 3');
+    const before = await sectionContainers(page).count();
+
+    await hoverSectionHeader(page, disposable.uuid);
+    await deleteButtonInSectionHeader(page, disposable.uuid).click();
+    await expect(deleteSectionDialog(page)).toBeVisible();
+    await deleteSectionConfirmButton(page).click();
+
+    await expect(deleteSectionDialog(page)).toBeHidden({ timeout: 15_000 });
+    await expect(sectionContainers(page)).toHaveCount(before - 1, { timeout: 15_000 });
+    await expect(page.locator(`[data-section-id="${disposable.uuid}"]`)).toHaveCount(0);
+  });
+
+  test('FR-SEC-006: last-section delete guard deferred', async () => {
+    test.skip(
+      true,
+      'Delete controls stay disabled when workflowView has exactly one workflowSectionContainer (product gap).',
+    );
+  });
+});

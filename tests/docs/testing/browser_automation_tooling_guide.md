@@ -23,12 +23,88 @@ The final durable artifact remains normal Playwright test code that follows the 
 
 The following browser-automation tools are available during test generation workflows:
 
-- Playwright MCP
-- `playwright-cli`
+- **Playwright MCP** — interactive browser session exposed to the coding agent (Cursor, JetBrains AI, etc.)
+- **`playwright-cli`** — fast command-line browser checks during generation or debugging
 
 Use them as operational aids while generating or repairing tests.
 
 Do not treat them as substitutes for authored Playwright tests.
+
+## Playwright MCP setup
+
+Playwright MCP is configured outside the committed test suite. Typical project or IDE config:
+
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
+    }
+  }
+}
+```
+
+| IDE | Config location |
+| --- | --- |
+| Cursor | `~/.cursor/mcp.json` or project `.cursor/mcp.json` |
+| JetBrains (PyCharm, etc.) | project `.ai/mcp/mcp.json` |
+
+After adding or changing MCP config, restart the IDE or toggle the server in MCP settings before starting a generation session.
+
+Playwright MCP exposes **tools** (navigate, snapshot, click, etc.), not MCP resources. An empty resource list does not mean the server failed.
+
+## Environment prerequisites
+
+Before using Playwright MCP or `playwright-cli` for requirement-driven generation, prepare the same stack the committed specs expect. See `tests/docs/runbooks/playwright_execution_guide.md` for full detail.
+
+Minimum local stack:
+
+1. **E2E database** — `just rebuild-e2e-db` or `just django-seed-e2e-tests` (`courseflow_e2e`)
+2. **Django on E2E DB** — `just django-run-e2e` (`:8000`)
+3. **React app** — Vite dev server (`:3000`)
+4. **Auth storage state** — `cd tests && yarn test-setup` → `tests/playwright/.auth/user.json`
+5. **Fixture manifest** (workflow/project routes) — `just e2e-prepare` → `tests/.playwright-fixtures/workflow.json`
+
+Do not use the dev database (`courseflow`) or `just django-seed` when validating selectors for E2E specs.
+
+## Role in the generation workflow
+
+Playwright MCP belongs at **stage 4 — Live DOM validation** in `ai_test_generation_workflow.md`:
+
+```
+Requirement YAML → decompose → map UI vocabulary → Playwright MCP / CLI → write locators + spec → yarn test → review
+```
+
+MCP is for exploration by the engineer or agent. Committed output is always normal `@playwright/test` code in `tests/e2e/**/*.spec.ts` and colocated `*.locators.ts`.
+
+## What to validate with Playwright MCP
+
+For each in-scope requirement slice, validate against the live app before writing locators or assertions:
+
+| Requirement input | MCP validation |
+| --- | --- |
+| `preconditions` / route | Navigate to the manifest or seeded route (e.g. `/project/{uuid}`) |
+| `uiObjects` / `locatorMappings` | Snapshot DOM; confirm role, name, text, or `data-test-id` exists |
+| `trigger` / `mainFlow` | Step through the interaction path |
+| `acceptanceCriteria` | Confirm post-action observable state |
+| `locatorMappings` with `confirmed` | Re-check in live DOM if UI may have changed |
+| `locatorMappings` with `inferred` | Must be verified live before promotion to `*.locators.ts` |
+| `locatorMappings` with `unresolved` | Do not invent; stop or interrogate |
+
+MCP confirms what the implemented UI actually renders. **Selector choice must still comply with `locator_contract_policy.md`** — do not adopt XPath, MUI class, or layout-wrapper selectors just because they appear in the DOM snapshot.
+
+When MCP reveals no acceptable selector, follow § **When to add `data-test-id`** in `locator_contract_policy.md` (existing contract → MCP validate → add `data-test-id` or block).
+
+## Committed artifacts
+
+| Artifact | Source |
+| --- | --- |
+| `tests/e2e/<domain>/*.locators.ts` | Selectors confirmed via MCP (or existing project contracts), per `locator_contract_policy.md` |
+| `tests/e2e/<domain>/*.spec.ts` | Requirement IDs, setup, assertions per `playwright_authoring_standard.md` |
+| Requirement YAML | Unchanged unless MCP reveals implementation drift — then flag in spec comments or return for clarification |
+
+Do not embed MCP calls, CLI scripts, or agent-specific runtime behavior in committed tests. Specs must pass in CI without Cursor or MCP.
 
 ## When to use Playwright MCP
 
@@ -91,14 +167,39 @@ At minimum, generation should confirm:
 
 ## Recommended generation workflow with tooling
 
-1. Read the approved functional requirement.
-2. Extract actor, preconditions, trigger, and acceptance criteria.
-3. Review Figma/design evidence as intent only.
-4. Use Playwright MCP or `playwright-cli` to inspect the implemented UI.
-5. Validate candidate selectors and flow steps against the live DOM.
-6. Generate the durable Playwright test.
-7. Run the real test.
-8. If it fails ambiguously, use the tooling again for debugging rather than patching the test blindly.
+1. Read the normalized or approved functional requirement and `tests/docs/requirements/mapping_fr_ui.md`.
+2. Extract actors, route, `uiObjects`, preconditions, trigger, `mainFlow`, and acceptance criteria.
+3. Prepare the E2E environment (database, API, app, auth, manifest).
+4. Review Figma/design evidence as intent only.
+5. Use Playwright MCP (or `playwright-cli` for narrow checks) to inspect the implemented UI.
+6. Validate candidate selectors and flow steps against the live DOM; respect `locatorMappings` confidence.
+7. Write or update colocated `*.locators.ts` with confirmed selectors only.
+8. Generate the durable `*.spec.ts` with requirement traceability comments.
+9. Run the real test (`cd tests && yarn test <spec-path>`).
+10. If it fails ambiguously, use the tooling again for debugging rather than patching the test blindly.
+11. Review against `generated_test_review_checklist.md`.
+
+## Agent prompt pattern (Cursor / JetBrains)
+
+When starting a generation run, include explicit MCP instructions alongside `tests/docs/prompts/test_spec_generation.md` inputs:
+
+```text
+Generate Playwright specs per tests/docs/prompts/test_spec_generation.md.
+
+Normalized requirement: [PATH]
+Requirement IDs: [IDS]
+Output spec: tests/e2e/[domain]/[file].spec.ts
+Locators: tests/e2e/[domain]/[file].locators.ts
+
+Before writing locators or assertions:
+1. Confirm the E2E stack is up (see playwright_execution_guide.md).
+2. Use Playwright MCP to navigate to the seeded route from workflow.json (or stated preconditions).
+3. Validate each in-scope uiObject and locatorMapping against the live DOM.
+4. Promote only confirmed selectors into *.locators.ts.
+5. Flag inferred or unresolved mappings as open questions — do not guess.
+
+Do not commit MCP calls. Output durable Playwright test code only.
+```
 
 ## Review workflow with tooling
 

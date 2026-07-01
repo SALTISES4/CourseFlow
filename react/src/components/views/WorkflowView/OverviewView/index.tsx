@@ -36,7 +36,7 @@ const OverviewView = () => {
   const createdOn = workflow?.dateCreated
 
   return (
-    <OuterContentWrap sx={{ pt: 4 }}>
+    <OuterContentWrap sx={{ pt: 4 }} data-test-id="workflow-overview-view">
       {description && (
         <SC.InfoBlock sx={{ mb: 3 }}>
           <SC.InfoBlockTitle>{_t('Description')}</SC.InfoBlockTitle>

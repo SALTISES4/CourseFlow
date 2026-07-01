@@ -1,0 +1,341 @@
+# Normalized requirements: workspace route access denial (project and workflow)
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Published Projects; permissions); Figma no-access and archived block frames (project and workflow)
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference:
+#   - tests/docs/requirements/features/project/project_overview_requirements_v1.yaml (publish/unpublish—FR-PROJ-OV-003; contributor remove—FR-PROJ-OV-002; documentPreconditions for in-scope project overview tests)
+#   - tests/docs/requirements/features/project/project_archive_requirements_v1.yaml (archive-triggered unpublish—FR-PROJ-ARCH-003 side effect via FR-PROJ-OV-003; mid-session archive eviction—FR-WS-ACCESS-005)
+#   - tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml (single-workflow archive—FR-WF-ARCH-003; mid-session archive eviction—FR-WS-ACCESS-005)
+#   - tests/docs/requirements/features/shared/card_content_requirements_v1.yaml (archived objects not browsable—FR-CARD-006)
+#   - tests/docs/requirements/features/project/project_header_requirements_v1.yaml (projectHeader — not rendered when hard-load access block applies)
+#   - tests/docs/requirements/features/project/project_workflows_view_requirements_v1.yaml (projectWorkflowsView — not rendered when hard-load access block applies)
+#   - tests/docs/requirements/features/shared/context_action_bar_requirements_v1.yaml (contextActionBar — not rendered when hard-load access block applies)
+#   - tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml (workflowHeader — not rendered when hard-load access block applies)
+#   - tests/docs/requirements/features/workflow/workflow_node_visual_requirements_v1.yaml (linked-workflow new-tab — FR-WF-NODE-001; workflow denial when FR-WS-ACCESS-002 preconditions apply)
+#   - tests/docs/requirements/features/shared/card_content_requirements_v1.yaml (globalMessageSnackbar canonical uiObject — FR-CARD-001 through FR-CARD-006 as applicable)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+
+uiObjectDefinitions:
+  projectAccessDeniedView:
+    meaning: Full-page access-denied block rendered in place of project workspace content on any route matching '/project/{id}/*' when hard-load presentation per FR-WS-ACCESS-006 applies; replaces projectHeader, contextActionBar, and all project sub-view content for the requested project.
+  projectAccessDeniedTitle:
+    meaning: Primary heading on projectAccessDeniedView; copy per FR-WS-ACCESS-001, FR-WS-ACCESS-004, or FR-WS-ACCESS-005 hard-load presentation in FR-WS-ACCESS-006.
+  projectAccessDeniedSubtitle:
+    meaning: Informational body copy on projectAccessDeniedView displayed directly below projectAccessDeniedTitle; copy per FR-WS-ACCESS-001, FR-WS-ACCESS-004, or FR-WS-ACCESS-005 hard-load presentation in FR-WS-ACCESS-006.
+  workflowAccessDeniedView:
+    meaning: Full-page access-denied block rendered in place of workflow workspace content on any route matching '/workflow/{id}/*' when hard-load presentation per FR-WS-ACCESS-006 applies; replaces workflowHeader, workflowRightSidebar, contextActionBar, and all workflow sub-view content for the requested workflow.
+  workflowAccessDeniedTitle:
+    meaning: Primary heading on workflowAccessDeniedView; copy per FR-WS-ACCESS-002, FR-WS-ACCESS-004, or FR-WS-ACCESS-005 hard-load presentation in FR-WS-ACCESS-006.
+  workflowAccessDeniedSubtitle:
+    meaning: Informational body copy on workflowAccessDeniedView displayed directly below workflowAccessDeniedTitle; copy per FR-WS-ACCESS-002, FR-WS-ACCESS-004, or FR-WS-ACCESS-005 hard-load presentation in FR-WS-ACCESS-006.
+  globalMessageSnackbar:
+    meaning: Canonical definition in tests/docs/requirements/features/shared/card_content_requirements_v1.yaml; transient application-wide feedback surface for mid-session workspace access restriction notifications per FR-WS-ACCESS-006.
+
+locatorMappings:
+  projectAccessDeniedView: "canonical_locators.yaml -> projectAccessDeniedView"
+  projectAccessDeniedTitle: "canonical_locators.yaml -> projectAccessDeniedTitle"
+  projectAccessDeniedSubtitle: "canonical_locators.yaml -> projectAccessDeniedSubtitle"
+  workflowAccessDeniedView: "canonical_locators.yaml -> workflowAccessDeniedView"
+  workflowAccessDeniedTitle: "canonical_locators.yaml -> workflowAccessDeniedTitle"
+  workflowAccessDeniedSubtitle: "canonical_locators.yaml -> workflowAccessDeniedSubtitle"
+  globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
+
+requirements:
+  - id: FR-WS-ACCESS-001
+    title: Denied access — non-contributor on unpublished project routes (hard-load)
+
+    designEvidence:
+      - FIGMA-WS-ACCESS-PROJECT-BLOCK
+
+    actors:
+      - user
+
+    uiObjects:
+      - projectAccessDeniedView
+      - projectAccessDeniedTitle
+      - projectAccessDeniedSubtitle
+
+    preconditions:
+      - user is authenticated to CourseFlow
+      - actor has no owner, editor, viewer, or commenter role on the target project (not a project contributor; on positive-path specs this actor is labeled user per tests/docs/requirements/features/project/project_overview_requirements_v1.yaml documentPreconditions)
+      - target project is unpublished
+      - presentation context is hard-load per FR-WS-ACCESS-006 (initial mount, full page reload, or direct deep-link — not mid-session stale workspace)
+
+    trigger:
+      - user navigates directly to any route matching '/project/{id}/*' for that project under hard-load presentation context
+
+    mainFlow:
+      - this FR is the negative path when tests/docs/requirements/features/project/project_header_requirements_v1.yaml documentPreconditions fail — contributor roles (owner, editor, viewer, commenter) may access unpublished projects on any route matching '/project/{id}/*'; non-contributors may access only published projects
+      - hard-load presentation conforms to FR-WS-ACCESS-006; copy per this FR
+      - system does not render project workspace chrome for the requested project — projectHeader, contextActionBar, and any project sub-view content under '/project/{id}/*' are not visible
+      - system renders projectAccessDeniedView per FIGMA-WS-ACCESS-PROJECT-BLOCK in place of the project workspace content
+      - projectAccessDeniedTitle shows exactly 'no project access'
+      - projectAccessDeniedSubtitle shows exactly 'this project is private. you need permission from the owner to view or edit its contents.'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given actor has no contributor role on the target project and the project is unpublished, when user opens any route matching '/project/{id}/*' under hard-load presentation context, projectAccessDeniedView is visible and matches FIGMA-WS-ACCESS-PROJECT-BLOCK
+      - given actor has no contributor role on the target project and the project is unpublished, when user opens any route matching '/project/{id}/*' under hard-load presentation context, projectHeader is not visible
+      - given actor has no contributor role on the target project and the project is unpublished, when user opens any route matching '/project/{id}/*' under hard-load presentation context, contextActionBar is not visible
+      - given actor has no contributor role on the target project and the project is unpublished, when user opens any route matching '/project/{id}/*' under hard-load presentation context, no project sub-view content is visible
+      - given actor has no contributor role on the target project and the project is unpublished, when user opens any route matching '/project/{id}/*' under hard-load presentation context, projectAccessDeniedTitle is visible with text exactly 'no project access'
+      - given actor has no contributor role on the target project and the project is unpublished, when user opens any route matching '/project/{id}/*' under hard-load presentation context, projectAccessDeniedSubtitle is visible with text exactly 'this project is private. you need permission from the owner to view or edit its contents.'
+
+    openQuestions: []
+
+  - id: FR-WS-ACCESS-002
+    title: Denied access — non-contributor on workflow routes (unpublished parent project, hard-load)
+
+    designEvidence:
+      - FIGMA-WS-ACCESS-WORKFLOW-BLOCK
+
+    actors:
+      - user
+
+    uiObjects:
+      - workflowAccessDeniedView
+      - workflowAccessDeniedTitle
+      - workflowAccessDeniedSubtitle
+
+    preconditions:
+      - user is authenticated to CourseFlow
+      - actor has no owner, editor, viewer, or commenter role on the parent project of the target workflow (not a project contributor)
+      - parent project of the target workflow is unpublished
+      - presentation context is hard-load per FR-WS-ACCESS-006 (initial mount, full page reload, or direct deep-link — not mid-session stale workspace)
+
+    trigger:
+      - user navigates directly to any route matching '/workflow/{id}/*' for a workflow whose parent project is unpublished under hard-load presentation context
+
+    mainFlow:
+      - hard-load presentation conforms to FR-WS-ACCESS-006; copy per this FR
+      - system does not render workflow workspace chrome for that workflow — workflowHeader, workflowRightSidebar, contextActionBar, and any workflow sub-view content under '/workflow/{id}/*' (including but not limited to workflowOverviewView and workflowView) are not visible
+      - system renders workflowAccessDeniedView per FIGMA-WS-ACCESS-WORKFLOW-BLOCK in place of the workflow workspace content
+      - workflowAccessDeniedTitle shows exactly 'no workflow access'
+      - workflowAccessDeniedSubtitle shows exactly 'this workflow is private. you need permission from the owner to view or edit its contents.'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given actor has no contributor role on the parent project and the parent project is unpublished, when user opens any route matching '/workflow/{id}/*' for that workflow under hard-load presentation context, workflowAccessDeniedView is visible and matches FIGMA-WS-ACCESS-WORKFLOW-BLOCK
+      - given actor has no contributor role on the parent project and the parent project is unpublished, when user opens any route matching '/workflow/{id}/*' for that workflow under hard-load presentation context, workflowHeader and any workflow sub-view content (e.g. workflowOverviewView, workflowView) are not visible
+      - given actor has no contributor role on the parent project and the parent project is unpublished, when user opens any route matching '/workflow/{id}/*' for that workflow under hard-load presentation context, workflowAccessDeniedTitle is visible with text exactly 'no workflow access'
+      - given actor has no contributor role on the parent project and the parent project is unpublished, when user opens any route matching '/workflow/{id}/*' for that workflow under hard-load presentation context, workflowAccessDeniedSubtitle is visible with text exactly 'this workflow is private. you need permission from the owner to view or edit its contents.'
+
+    openQuestions: []
+
+  - id: FR-WS-ACCESS-003
+    title: Access revocation for non-contributors when parent project becomes unpublished while already in workspace
+
+    designEvidence:
+      - FIGMA-WS-ACCESS-PROJECT-BLOCK
+      - FIGMA-WS-ACCESS-WORKFLOW-BLOCK
+
+    actors:
+      - user
+
+    uiObjects:
+      - projectAccessDeniedView
+      - projectAccessDeniedTitle
+      - projectAccessDeniedSubtitle
+      - workflowAccessDeniedView
+      - workflowAccessDeniedTitle
+      - workflowAccessDeniedSubtitle
+
+    preconditions:
+      - user is authenticated to CourseFlow
+      - actor has no owner, editor, viewer, or commenter role on the target project (not a project contributor; on positive-path specs this actor is labeled user per tests/docs/requirements/features/project/project_overview_requirements_v1.yaml documentPreconditions)
+      - actor is already on a route matching '/project/{id}/*' for that project or '/workflow/{id}/*' for a workflow whose parent project is that project
+      - parent project visibility was published when the actor entered the current workspace session and has since transitioned to unpublished per tests/docs/requirements/features/project/project_overview_requirements_v1.yaml FR-PROJ-OV-003 (direct unpublish or side effect such as project archive per tests/docs/requirements/features/project/project_archive_requirements_v1.yaml FR-PROJ-ARCH-003 when the project was published at archive time)
+
+    trigger:
+      - user performs an in-app action in the project or workflow workspace after the parent project has become unpublished
+
+    mainFlow:
+      - timing — access revocation is not applied while the user is idle; it is applied on the next in-app action after the parent project becomes unpublished; in-app action means route navigation within the SPA (including workflowViewTabSelector or projectViewTabSelector tab switches), click on an interactive control in the workspace shell or sub-view content, or any interaction that triggers an API request scoped to the current project or workflow workspace
+      - until that next in-app action, the currently rendered project or workflow workspace may remain visible as a stale session; the client is not required to revoke access on a timer or push notification alone while the user performs no in-app action
+      - contributor roles (owner, editor, viewer, commenter) are not subject to this FR; they retain access to unpublished projects on any route matching '/project/{id}/*' and child workflow routes per FR-WS-ACCESS-001 mainFlow
+      - project route — when the actor's current route matches '/project/{id}/*' and the next in-app action reveals the project is unpublished, system applies the same denial presentation as FR-WS-ACCESS-001 — projectHeader, contextActionBar, and any project sub-view content under '/project/{id}/*' are not visible; projectAccessDeniedView is rendered per FIGMA-WS-ACCESS-PROJECT-BLOCK; projectAccessDeniedTitle shows exactly 'no project access'; projectAccessDeniedSubtitle shows exactly 'this project is private. you need permission from the owner to view or edit its contents.'
+      - workflow route — when the actor's current route matches '/workflow/{id}/*' for a workflow in that project and the next in-app action reveals the parent project is unpublished, system applies the same denial presentation as FR-WS-ACCESS-002 — workflowHeader, workflowRightSidebar, contextActionBar, and any workflow sub-view content under '/workflow/{id}/*' are not visible; workflowAccessDeniedView is rendered per FIGMA-WS-ACCESS-WORKFLOW-BLOCK; workflowAccessDeniedTitle shows exactly 'no workflow access'; workflowAccessDeniedSubtitle shows exactly 'this workflow is private. you need permission from the owner to view or edit its contents.'
+      - modal dismissal — when access-denied presentation replaces the workspace, any open modal or dialog scoped to that project or workflow workspace shell (including but not limited to editProjectDialog, editWorkflowDialog, addContributorsDialog, and workflow sidebar edit forms) is dismissed and is not visible on the access-denied screen
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user is on '/workflow/{id}/graph' for workflow W in published project P, owner unpublishes P per FR-PROJ-OV-003, and user performs no further in-app action, workflow workspace chrome and workflowView may remain visible until the user's next in-app action
+      - given user is on '/workflow/{id}/graph' for workflow W in published project P, owner unpublishes P, when user next performs an in-app action in the workflow workspace, workflowAccessDeniedView is visible and matches FIGMA-WS-ACCESS-WORKFLOW-BLOCK, workflowHeader and workflowView are not visible, workflowAccessDeniedTitle shows 'no workflow access', and workflowAccessDeniedSubtitle shows 'this workflow is private. you need permission from the owner to view or edit its contents.'
+      - given user is on '/project/{id}' for published project P, owner unpublishes P, when user next performs an in-app action in the project workspace, projectAccessDeniedView is visible and matches FIGMA-WS-ACCESS-PROJECT-BLOCK, projectHeader and project sub-view content are not visible, projectAccessDeniedTitle shows 'no project access', and projectAccessDeniedSubtitle shows 'this project is private. you need permission from the owner to view or edit its contents.'
+      - given user is on '/workflow/{id}/graph' for workflow W in published project P, owner unpublishes P, and user clicks workflowViewTabSelector to switch to another workflow sub-view before any other in-app action, workflowAccessDeniedView is shown per this FR on that tab switch
+      - given owner or editor is on '/workflow/{id}/graph' for workflow W in project P when owner unpublishes P, when owner or editor next performs an in-app action, project and workflow workspace chrome remain visible and access-denied views are not shown
+      - given user is on '/workflow/{id}/graph' for W in published P with editWorkflowDialog open, owner unpublishes P, when user next performs an in-app action, editWorkflowDialog is not visible and workflowAccessDeniedView is shown
+
+    openQuestions: []
+
+  - id: FR-WS-ACCESS-006
+    title: Workspace access restriction presentation (shared contract for FR-WS-ACCESS-001, FR-WS-ACCESS-002, FR-WS-ACCESS-004, and FR-WS-ACCESS-005)
+
+    designEvidence:
+      - FIGMA-WS-ACCESS-PROJECT-BLOCK
+      - FIGMA-WS-ACCESS-WORKFLOW-BLOCK
+
+    actors:
+      - editor
+      - viewer
+      - commenter
+      - owner
+      - user
+
+    uiObjects:
+      - projectAccessDeniedView
+      - projectAccessDeniedTitle
+      - projectAccessDeniedSubtitle
+      - workflowAccessDeniedView
+      - workflowAccessDeniedTitle
+      - workflowAccessDeniedSubtitle
+      - globalMessageSnackbar
+
+    preconditions:
+      - user is authenticated to CourseFlow
+      - a workspace access restriction applies per FR-WS-ACCESS-001, FR-WS-ACCESS-002, FR-WS-ACCESS-004, or FR-WS-ACCESS-005
+
+    trigger:
+      - system detects a workspace access restriction in either mid-session presentation context or hard-load presentation context
+
+    mainFlow:
+      - owning FRs — FR-WS-ACCESS-004 covers contributor removal on an unpublished parent project; FR-WS-ACCESS-001 and FR-WS-ACCESS-002 cover non-contributor hard-load access to unpublished project or workflow routes; FR-WS-ACCESS-005 covers archived project or workflow per FR-CARD-006
+      - presentation contexts — mid-session presentation context means the actor already had a successful workspace load in the current browser session and the restriction is detected on a subsequent in-app action without a full page reload; hard-load presentation context means initial mount, full page reload, or direct deep-link navigation to the restricted route before a successful workspace load in that session
+      - FR-WS-ACCESS-004 and FR-WS-ACCESS-005 share identical runtime detection and timing rules (next in-app action after the restriction event in mid-session context); they differ only in which owning FR applies and therefore in user-visible copy
+      - hard-load view structure — projectAccessDeniedView and workflowAccessDeniedView each occupy the main workspace content region in place of the normal project or workflow shell and sub-views; each view shows projectAccessDeniedTitle or workflowAccessDeniedTitle as the primary heading and projectAccessDeniedSubtitle or workflowAccessDeniedSubtitle as informational body copy stacked directly below that heading; neither view includes a back-navigation control, link, or in-place restore action
+      - mid-session presentation (FR-WS-ACCESS-004 and FR-WS-ACCESS-005) — system preserves the currently loaded project or workflow workspace UI (stale session content remains visible); system does not replace the workspace with projectAccessDeniedView or workflowAccessDeniedView; system does not hide projectHeader, workflowHeader, or other workspace chrome solely because of the restriction notification; system shows globalMessageSnackbar immediately with copy per the mid-session snackbar copy table below for the applicable owning FR and route context; open modals and dialogs are not required to dismiss solely because of the snackbar
+      - hard-load presentation (FR-WS-ACCESS-001, FR-WS-ACCESS-002, FR-WS-ACCESS-004 reload or deep-link path, FR-WS-ACCESS-005) — system intercepts the route and renders projectAccessDeniedView or workflowAccessDeniedView per hard-load view structure above; projectHeader, workflowHeader, workflowRightSidebar, contextActionBar, and all project or workflow sub-view content under the restricted route are not visible; projectAccessDeniedTitle and projectAccessDeniedSubtitle or workflowAccessDeniedTitle and workflowAccessDeniedSubtitle copy match the hard-load copy table below for the applicable owning FR; when hard-load presentation replaces the workspace, any open modal or dialog scoped to that project or workflow workspace shell is dismissed and is not visible on the access-denied block
+      - mid-session snackbar copy table — FR-WS-ACCESS-004 on a project route — globalMessageSnackbar shows exactly 'you do not have access to this project'; FR-WS-ACCESS-004 on a workflow route — globalMessageSnackbar shows exactly 'you do not have access to this workflow'; FR-WS-ACCESS-005 on a project route — globalMessageSnackbar shows exactly 'this project has been archived'; FR-WS-ACCESS-005 on a workflow route — globalMessageSnackbar shows exactly 'this workflow has been archived'
+      - hard-load copy table — FR-WS-ACCESS-001 and FR-WS-ACCESS-004 hard-load on a project route — system renders projectAccessDeniedView with projectAccessDeniedTitle showing exactly 'no project access' and projectAccessDeniedSubtitle showing exactly 'this project is private. you need permission from the owner to view or edit its contents.'; FR-WS-ACCESS-002 and FR-WS-ACCESS-004 hard-load on a workflow route — system renders workflowAccessDeniedView with workflowAccessDeniedTitle showing exactly 'no workflow access' and workflowAccessDeniedSubtitle showing exactly 'this workflow is private. you need permission from the owner to view or edit its contents.'; FR-WS-ACCESS-005 hard-load on an archived project route — system renders projectAccessDeniedView with projectAccessDeniedTitle showing exactly 'the project is archived' and projectAccessDeniedSubtitle showing exactly 'the project must be restored by the owner to enable viewing and editing.'; FR-WS-ACCESS-005 hard-load on an archived workflow route — system renders workflowAccessDeniedView with workflowAccessDeniedTitle showing exactly 'the workflow is archived' and workflowAccessDeniedSubtitle showing exactly 'the workflow must be restored by the owner to enable viewing and editing.'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given mid-session presentation context per FR-WS-ACCESS-004 on an unpublished project route, when the next in-app action detects the restriction, globalMessageSnackbar is visible with text exactly 'you do not have access to this project', projectHeader remains visible, and projectAccessDeniedView is not visible
+      - given mid-session presentation context per FR-WS-ACCESS-004 on an unpublished workflow route, when the next in-app action detects the restriction, globalMessageSnackbar is visible with text exactly 'you do not have access to this workflow', workflowHeader remains visible, and workflowAccessDeniedView is not visible
+      - given mid-session presentation context per FR-WS-ACCESS-005 on a project route, when the next in-app action detects the restriction, globalMessageSnackbar is visible with text exactly 'this project has been archived', previously rendered project workspace content remains visible, and projectAccessDeniedView is not visible
+      - given mid-session presentation context per FR-WS-ACCESS-005 on a workflow route, when the next in-app action detects the restriction, globalMessageSnackbar is visible with text exactly 'this workflow has been archived', previously rendered workflow workspace content remains visible, and workflowAccessDeniedView is not visible
+      - given hard-load presentation context per FR-WS-ACCESS-005 on an archived project route, projectAccessDeniedView is visible, projectAccessDeniedTitle is visible with text exactly 'the project is archived', projectAccessDeniedSubtitle is visible with text exactly 'the project must be restored by the owner to enable viewing and editing.', projectHeader is not visible, and projectAccessDeniedView does not include a back-navigation control, link, or in-place restore action
+      - given hard-load presentation context per FR-WS-ACCESS-005 on an archived workflow route, workflowAccessDeniedView is visible, workflowAccessDeniedTitle is visible with text exactly 'the workflow is archived', workflowAccessDeniedSubtitle is visible with text exactly 'the workflow must be restored by the owner to enable viewing and editing.', workflowHeader is not visible, and workflowAccessDeniedView does not include a back-navigation control, link, or in-place restore action
+      - given hard-load presentation context per FR-WS-ACCESS-001 or FR-WS-ACCESS-002, projectAccessDeniedView or workflowAccessDeniedView is visible per hard-load view structure in this FR with title and subtitle copy matching the FR-WS-ACCESS-001 or FR-WS-ACCESS-002 rows of the hard-load copy table
+
+    openQuestions: []
+
+  - id: FR-WS-ACCESS-004
+    title: Access change when a contributor is removed while already in workspace (permission revoked)
+
+    designEvidence:
+      - FIGMA-WS-ACCESS-PROJECT-BLOCK
+      - FIGMA-WS-ACCESS-WORKFLOW-BLOCK
+
+    actors:
+      - editor
+      - viewer
+      - commenter
+
+    uiObjects:
+      - globalMessageSnackbar
+      - projectAccessDeniedView
+      - projectAccessDeniedTitle
+      - projectAccessDeniedSubtitle
+      - workflowAccessDeniedView
+      - workflowAccessDeniedTitle
+      - workflowAccessDeniedSubtitle
+
+    preconditions:
+      - user is authenticated to CourseFlow
+      - actor had owner, editor, viewer, or commenter role on the target project when entering the current workspace session and has since been removed as a contributor per FR-PROJ-OV-002 (this FR applies to former editor, viewer, and commenter actors; project owner cannot be removed via contributorRoleDropdown)
+      - actor is already on a route matching '/project/{id}/*' for that project or '/workflow/{id}/*' for a workflow whose parent project is that project
+
+    trigger:
+      - actor performs an in-app action in the project or workflow workspace after being removed as a contributor
+
+    mainFlow:
+      - timing — access or role change is not applied while the actor is idle; it is applied on the next in-app action after contributor removal; in-app action means route navigation within the SPA (including workflowViewTabSelector or projectViewTabSelector tab switches), click on an interactive control in the workspace shell or sub-view content, or any interaction that triggers an API request scoped to the current project or workflow workspace
+      - until that next in-app action, the currently rendered project or workflow workspace may remain visible with the actor's prior contributor roleBehavior as a stale session; the client is not required to apply removal on a timer or push notification alone while the actor performs no in-app action
+      - scope — this FR covers contributor removal only; contributor role changes without removal (for example editor to viewer) are out of scope
+      - unpublished parent project — when the parent project is unpublished and the next in-app action reveals the actor no longer has a contributor role, mid-session presentation applies per FR-WS-ACCESS-006 for FR-WS-ACCESS-004 (globalMessageSnackbar only; stale workspace UI preserved; projectAccessDeniedView and workflowAccessDeniedView are not shown)
+      - hard-load after removal — when the actor later reloads, deep-links, or initially mounts a route matching '/project/{id}/*' or '/workflow/{id}/*' for that unpublished project without a successful prior load in the session, hard-load presentation applies per FR-WS-ACCESS-006 for FR-WS-ACCESS-004; system renders projectAccessDeniedView or workflowAccessDeniedView per FR-WS-ACCESS-006 hard-load view structure with copy per FR-WS-ACCESS-001 or FR-WS-ACCESS-002
+      - published parent project — when the parent project is published and the next in-app action reveals the actor no longer has a contributor role, the actor's effective role becomes user (published-access, no explicit contributor role) per documentPreconditions in tests/docs/requirements/features/project/project_header_requirements_v1.yaml and tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml; project and workflow workspace chrome remain visible; access-denied views and FR-WS-ACCESS-006 mid-session snackbars for FR-WS-ACCESS-004 are not shown; roleBehavior across project and workflow FRs is re-evaluated for user on and after that in-app action (read-only published-access, not contributor edit capabilities)
+      - permissions panel refresh — when the parent project's contributor list changes per FR-PROJ-OV-002 (add, remove, or role edit) and an actor has workflowOverviewView open, workflowMetadataPermissionsPanel listed users and roles match the parent project's projectMetadataPermissionsPanel on that actor's next in-app action per tests/docs/requirements/features/workflow/workflow_overview_requirements_v1.yaml FR-WF-OV-007
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given editor is on '/workflow/{id}/graph' for workflow W in unpublished project P, owner removes editor via contributorRoleDropdown per FR-PROJ-OV-002, and editor performs no further in-app action, workflow workspace chrome and workflowView may remain visible until editor's next in-app action
+      - given editor is on '/workflow/{id}/graph' for W in unpublished P and owner removes editor, when editor next performs an in-app action, globalMessageSnackbar is visible with text exactly 'you do not have access to this workflow', workflowHeader and workflowView remain visible, and workflowAccessDeniedView is not visible
+      - given editor is on '/project/{id}' for unpublished P and owner removes editor, when editor next performs an in-app action, globalMessageSnackbar is visible with text exactly 'you do not have access to this project', projectHeader remains visible, and projectAccessDeniedView is not visible
+      - given editor is on '/workflow/{id}/graph' for W in unpublished P, owner removes editor, and editor later performs a full page reload on that workflow route, workflowAccessDeniedView is visible, workflowAccessDeniedTitle is visible with text exactly 'no workflow access', workflowAccessDeniedSubtitle is visible with text exactly 'this workflow is private. you need permission from the owner to view or edit its contents.', workflowHeader is not visible, and workflowAccessDeniedView does not include a back-navigation control, link, or in-place restore action
+      - given editor is on '/workflow/{id}/graph' for W in published project P and owner removes editor, when editor next performs an in-app action, workflowHeader and workflowView remain visible, FR-WS-ACCESS-006 mid-session snackbar for FR-WS-ACCESS-004 is not shown, and subsequent interactions follow user (published-access) roleBehavior (for example workflowEditNodeFormDuplicateButton disabled per FR-WF-DUP-001)
+      - given owner has workflowOverviewView open on W and owner removes a contributor via FR-PROJ-OV-002, when owner next performs an in-app action on that Overview view, workflowMetadataPermissionsPanel listed users and roles match projectMetadataPermissionsPanel on the parent project
+      - given owner or editor on '/workflow/{id}/graph' in project P is not the removed contributor, when another contributor is removed via FR-PROJ-OV-002, owner or editor next in-app action does not show access-denied views or FR-WS-ACCESS-006 mid-session snackbars for FR-WS-ACCESS-004
+
+    openQuestions: []
+
+  - id: FR-WS-ACCESS-005
+    title: Workspace eviction when project or workflow becomes archived while already in workspace
+
+    designEvidence:
+      - FIGMA-WS-ACCESS-PROJECT-BLOCK
+      - FIGMA-WS-ACCESS-WORKFLOW-BLOCK
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - globalMessageSnackbar
+      - projectAccessDeniedView
+      - projectAccessDeniedTitle
+      - projectAccessDeniedSubtitle
+      - workflowAccessDeniedView
+      - workflowAccessDeniedTitle
+      - workflowAccessDeniedSubtitle
+
+    preconditions:
+      - user is authenticated to CourseFlow
+      - actor is already on a route matching '/project/{id}/*' for project P or '/workflow/{id}/*' for workflow W, or navigates directly to such a route under hard-load presentation context per FR-WS-ACCESS-006
+      - actor is not the owner who confirmed archive of P or W in the current archive action (the archiving owner is navigated away per tests/docs/requirements/features/project/project_archive_requirements_v1.yaml FR-PROJ-ARCH-003 or tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml FR-WF-ARCH-003 and is not subject to this FR)
+      - P or W has become archived and is not browsable per tests/docs/requirements/features/shared/card_content_requirements_v1.yaml FR-CARD-006
+
+    trigger:
+      - actor performs an in-app action in the project or workflow workspace after P or W became archived while already in workspace (mid-session presentation context)
+      - actor reloads the page, deep-links directly, or encounters the archived project or workflow on initial mount for a restricted route (hard-load presentation context)
+
+    mainFlow:
+      - timing — workspace eviction in mid-session presentation context is not applied while the actor is idle; it is applied on the next in-app action after archive completes; in-app action means route navigation within the SPA (including workflowViewTabSelector or projectViewTabSelector tab switches), click on an interactive control in the workspace shell or sub-view content, or any interaction that triggers an API request scoped to the current project or workflow workspace
+      - until that next in-app action in mid-session presentation context, the currently rendered project or workflow workspace may remain visible as a stale session; the client is not required to evict on a timer or push notification alone while the actor performs no in-app action
+      - archived not browsable — archived projects and workflows are not accessible or browsable per tests/docs/requirements/features/shared/card_content_requirements_v1.yaml FR-CARD-006; this FR applies that rule to actors already in workspace when archive occurs and to hard-load navigation to archived routes
+      - mid-session presentation (actor already in workspace when archive completes) — applies per FR-WS-ACCESS-006 for FR-WS-ACCESS-005; globalMessageSnackbar shows copy per FR-WS-ACCESS-006 mid-session snackbar copy table for the current route context; previously loaded workspace UI remains visible; projectAccessDeniedView and workflowAccessDeniedView are not shown; open modals and dialogs are not required to dismiss solely because of the snackbar
+      - hard-load presentation (reload, deep-link, or initial mount to an archived route) — applies per FR-WS-ACCESS-006 for FR-WS-ACCESS-005; system renders projectAccessDeniedView or workflowAccessDeniedView per FR-WS-ACCESS-006 hard-load view structure with title and subtitle copy per FR-WS-ACCESS-005 rows of the hard-load copy table; projectHeader, workflowHeader, workflowRightSidebar, contextActionBar, and all project or workflow sub-view content under the restricted route are not visible; modal dismissal follows FR-WS-ACCESS-006 hard-load presentation bullet
+      - relationship to FR-WS-ACCESS-003 — when project archive also unpublishes a published project per FR-PROJ-OV-003, user (published-access) actors may be subject to both FR-WS-ACCESS-003 and this FR; on mid-session in-app action, FR-WS-ACCESS-005 mid-session snackbar presentation takes precedence over FR-WS-ACCESS-003 full-screen replacement when both apply; on hard-load, hard-load copy per FR-WS-ACCESS-005 and FR-WS-ACCESS-006 applies when the target is archived
+      - project archive — when whole project P is archived per FR-PROJ-ARCH-003 and the actor's current or requested route matches '/project/{id}/*' for P or '/workflow/{id}/*' for any workflow in P, presentation follows FR-WS-ACCESS-006 for FR-WS-ACCESS-005 for the matching route context
+      - single-workflow archive — when workflow W is archived individually per FR-WF-ARCH-003 and the actor's current or requested route matches '/workflow/{id}/*' for W, presentation follows FR-WS-ACCESS-006 for FR-WS-ACCESS-005 on that workflow route; parent project routes and other non-archived child workflow routes in the same project are not affected by W's archive alone
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given editor is on '/workflow/{id}/graph' for W in project P, owner archives P per FR-PROJ-ARCH-003, and editor performs no further in-app action, workflow workspace chrome and workflowView may remain visible until editor's next in-app action
+      - given editor is on '/workflow/{id}/graph' for W in P and owner archives P, when editor next performs an in-app action, globalMessageSnackbar is visible with text exactly 'this workflow has been archived', workflowHeader and workflowView remain visible, and workflowAccessDeniedView is not visible
+      - given editor is on '/project/{id}/workflows' for P and owner archives P, when editor next performs an in-app action, globalMessageSnackbar is visible with text exactly 'this project has been archived', projectHeader remains visible, and projectAccessDeniedView is not visible
+      - given user is on '/workflow/{id}/graph' for W in published P, owner archives P, when user next performs an in-app action, globalMessageSnackbar is visible with text exactly 'this workflow has been archived' and workflowAccessDeniedView is not visible
+      - given editor is on '/workflow/{id}/graph' for activity A in project P, owner archives A individually per FR-WF-ARCH-003 while P remains not archived, when editor next performs an in-app action on A's route, globalMessageSnackbar is visible with text exactly 'this workflow has been archived' and workflowAccessDeniedView is not visible
+      - given editor is on '/workflow/{id}/graph' for course C in P and owner archives activity A individually per FR-WF-ARCH-003 where A is not C, when editor next performs an in-app action on C's route, workflow workspace chrome remains visible, FR-WS-ACCESS-006 mid-session snackbar for FR-WS-ACCESS-005 is not shown, and workflowAccessDeniedView is not shown
+      - given editor navigates directly or reloads onto '/workflow/{id}/graph' for archived workflow W, workflowAccessDeniedView is visible, workflowAccessDeniedTitle is visible with text exactly 'the workflow is archived', workflowAccessDeniedSubtitle is visible with text exactly 'the workflow must be restored by the owner to enable viewing and editing.', workflowHeader is not visible, and workflowAccessDeniedView does not include a back-navigation control, link, or in-place restore action
+      - given editor navigates directly or reloads onto '/project/{id}/workflows' for archived project P, projectAccessDeniedView is visible, projectAccessDeniedTitle is visible with text exactly 'the project is archived', projectAccessDeniedSubtitle is visible with text exactly 'the project must be restored by the owner to enable viewing and editing.', projectHeader is not visible, and projectAccessDeniedView does not include a back-navigation control, link, or in-place restore action
+      - given owner confirms archive of P or W per FR-PROJ-ARCH-003 or FR-WF-ARCH-003, owner is navigated per those FRs and is not subject to this FR's restriction presentation on that archive action
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-WS-ACCESS-PROJECT-BLOCK
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7157-22525&t=rQZe3KZB8wPP5okf-1
+  - key: FIGMA-WS-ACCESS-WORKFLOW-BLOCK
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7159-25595&t=rQZe3KZB8wPP5okf-1

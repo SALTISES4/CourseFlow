@@ -5,21 +5,18 @@ on run argv
         activate
 
         if (count of windows) = 0 then
-            set targetWindow to (create window with default profile)
-        else
-            set targetWindow to current window
+            create window with default profile
         end if
 
-        tell targetWindow
+        tell current window
             tell current session
                 write text "cd " & quoted form of repoRoot & " && just frontend-dev"
             end tell
 
-            set dockerLogsTab to (create tab with default profile)
-            tell current session of dockerLogsTab
+            create tab with default profile
+            tell session 1 of last tab
                 write text "cd " & quoted form of repoRoot & " && just docker-logs"
             end tell
-
         end tell
     end tell
 end run

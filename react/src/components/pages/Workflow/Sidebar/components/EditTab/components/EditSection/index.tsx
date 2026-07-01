@@ -143,7 +143,7 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
       onCancel={toggleTemplateForm}
     />
   ) : (
-    <SC.SidebarInnerWrap>
+    <SC.SidebarInnerWrap data-test-id="workflow-edit-section-form">
       <SC.SidebarContent>
         <SC.SidebarTitle as="h3" variant="h6">
           {_t('Edit section')}

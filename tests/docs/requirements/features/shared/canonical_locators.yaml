@@ -1,0 +1,1585 @@
+# Canonical locator dictionary — single source of truth for uiObject locator strategies.
+# Location: tests/docs/requirements/features/shared/canonical_locators.yaml
+# Source: locatorMappings extracted from tests/docs/requirements/**/*.yaml (excluding this file)
+# Conflict resolution: confirmed > inferred > unresolved; ties prefer non-null strategy.
+# Individual requirement files reference entries as: canonical_locators.yaml -> <uiObject>
+
+locatorMappings:
+  accountMenuDropdown:
+    strategy: "{topNavigationBar} dropdown for accountMenuTrigger"
+    confidence: inferred
+  accountMenuItemNotificationsSettings:
+    strategy: "{accountMenuDropdown} row with label 'Notification settings'"
+    confidence: inferred
+  accountMenuItemPassword:
+    strategy: "{accountMenuDropdown} row with label 'Password reset'"
+    confidence: inferred
+  accountMenuItemProfile:
+    strategy: "{accountMenuDropdown} row with label 'Profile'"
+    confidence: inferred
+  accountMenuItemSignOut:
+    strategy: "{accountMenuDropdown} row with label 'Sign out'"
+    confidence: inferred
+  accountMenuTrigger:
+    strategy: "[data-test-id=\"account-menu-button\"]"
+    confidence: confirmed
+  addContributorsCancelButton:
+    strategy: "{addContributorsDialog} action button with label 'Cancel'"
+    confidence: inferred
+  addContributorsDialog:
+    strategy: "Dialog with title 'Add contributor' shown after click on projectMetadataAddContributorsButton or contextActionBarAddContributorsButton"
+    confidence: inferred
+  addContributorsRoleSelector:
+    strategy: "{addContributorsDialog} role selector with assignable options 'Editor', 'Commenter', 'Viewer'"
+    confidence: inferred
+  addContributorsSubmitButton:
+    strategy: "{addContributorsDialog} primary action button with label 'Add contributor'"
+    confidence: inferred
+  addContributorsUserSelector:
+    strategy: "{addContributorsDialog} 'CourseFlow Users' autocomplete control for selecting existing contributor account(s) with live narrowed results while typing"
+    confidence: inferred
+  addContributorsUserSelectorClearButton:
+    strategy: "{addContributorsUserSelector} icon-only clear control ('X') shown when input is non-empty"
+    confidence: inferred
+  addMenuDropdown:
+    strategy: "{topNavigationBar} dropdown for addMenuTrigger"
+    confidence: inferred
+  addMenuItemActivity:
+    strategy: "{addMenuDropdown} row with label 'Activity'"
+    confidence: inferred
+  addMenuItemCourse:
+    strategy: "{addMenuDropdown} row with label 'Course'"
+    confidence: inferred
+  addMenuItemProgram:
+    strategy: "{addMenuDropdown} row with label 'Program'"
+    confidence: inferred
+  addMenuItemProject:
+    strategy: "{addMenuDropdown} row with label 'Project'"
+    confidence: inferred
+  addMenuTrigger:
+    strategy: "[data-test-id=\"add-menu-button\"]"
+    confidence: confirmed
+  addNewTagInput:
+    strategy: "{projectTagsSection} create tag input placeholder 'Add new tag'"
+    confidence: inferred
+  appearsInSection:
+    strategy: "{mainNavigation} section with label 'Appears in'"
+    confidence: inferred
+  archiveProjectConfirmationModal:
+    strategy: null
+    confidence: unresolved
+  archiveProjectConfirmationModalCancelButton:
+    strategy: null
+    confidence: unresolved
+  archiveProjectConfirmationModalConfirmButton:
+    strategy: null
+    confidence: unresolved
+  archiveToggle:
+    strategy: "{libraryFilterToolbar} toggle or chip for archive filter state"
+    confidence: inferred
+  archiveWorkflowConfirmationModal:
+    strategy: null
+    confidence: unresolved
+  archiveWorkflowConfirmationModalCancelButton:
+    strategy: null
+    confidence: unresolved
+  archiveWorkflowConfirmationModalConfirmButton:
+    strategy: null
+    confidence: unresolved
+  brandLockup:
+    strategy: "product logo and name label 'CourseFlow' at top of {mainNavigationPanel} or top of {loginForm} on {loginPage} or top of {registerForm} on {registerPage} or top of {forgotPasswordForm} on {forgotPasswordPage} or top of {forgotPasswordSetPasswordForm} on {forgotPasswordSetPasswordPage} or top of {forgotPasswordInvalidLinkPage}"
+    confidence: inferred
+  backToProjectLink:
+    strategy: "{returnLinksRegion} link with label including 'Return to' and parent project projectTitle"
+    confidence: inferred
+  cardFavouriteToggle:
+    strategy: "{projectCard|workflowCard} favourite control"
+    confidence: unresolved
+  cardLinkedInUseChip:
+    strategy: "{workflowLinkWorkflowDialogSearchResults} {workflowCard} chip with text 'Already in use'"
+    confidence: inferred
+  cardOwnerText:
+    strategy: "{projectCard|workflowCard} text matching pattern 'Owned by {ownerName}'"
+    confidence: inferred
+  cardTemplateChip:
+    strategy: "{projectCard|workflowCard} chip with text 'Template'"
+    confidence: inferred
+  cardTitleText:
+    strategy: "{projectCard|workflowCard} title region"
+    confidence: unresolved
+  cardTypeChip:
+    strategy: "{projectCard|workflowCard} chip mapped from object type"
+    confidence: unresolved
+  cardWorkflowCountChip:
+    strategy: "{projectCard} chip with text pattern '{n} workflow' or '{n} workflows'"
+    confidence: inferred
+  collapseToggle:
+    strategy: "{mainNavigation} control with aria-label 'collapse sidebar'"
+    confidence: inferred
+  confirmNewPasswordField:
+    strategy: null
+    confidence: unresolved
+  containsSection:
+    strategy: "{mainNavigation} section with label 'Contains'"
+    confidence: inferred
+  contextActionBar:
+    strategy: null
+    confidence: unresolved
+  contextActionBarAddContributorsButton:
+    strategy: null
+    confidence: unresolved
+  contextActionBarOverflowItemArchiveProject:
+    strategy: null
+    confidence: unresolved
+  contextActionBarOverflowItemArchiveWorkflow:
+    strategy: null
+    confidence: unresolved
+  contextActionBarOverflowItemCopyWorkflow:
+    strategy: null
+    confidence: unresolved
+  contextActionBarOverflowMenu:
+    strategy: null
+    confidence: unresolved
+  contextActionBarOverflowTrigger:
+    strategy: null
+    confidence: unresolved
+  contributorRoleDropdown:
+    strategy: "{projectMetadataPermissionsPanel} role dropdown on a contributor entry with selectable roles and remove action"
+    confidence: inferred
+  copyWorkflowDialog:
+    strategy: null
+    confidence: unresolved
+  copyWorkflowDialogCancelButton:
+    strategy: null
+    confidence: unresolved
+  copyWorkflowDialogSubmitButton:
+    strategy: null
+    confidence: unresolved
+  copyWorkflowDialogTitle:
+    strategy: null
+    confidence: unresolved
+  copyWorkflowFormFieldValidationMessage:
+    strategy: null
+    confidence: unresolved
+  copyWorkflowNoEligibleProjectsState:
+    strategy: null
+    confidence: unresolved
+  copyWorkflowProjectSearchEmptyState:
+    strategy: null
+    confidence: unresolved
+  copyWorkflowProjectSearchField:
+    strategy: null
+    confidence: unresolved
+  copyWorkflowSelectProjectPanel:
+    strategy: null
+    confidence: unresolved
+  copyWorkflowTitleField:
+    strategy: null
+    confidence: unresolved
+  createProjectDialog:
+    strategy: null
+    confidence: unresolved
+  createProjectFormDialogTitle:
+    strategy: null
+    confidence: unresolved
+  createProjectFormSubmitButton:
+    strategy: "{projectForm} button[type=\"submit\"]"
+    confidence: inferred
+  createWorkflowCancelButton:
+    strategy: "{createWorkflowDialog} button with label 'Cancel'"
+    confidence: inferred
+  createWorkflowDialog:
+    strategy: null
+    confidence: unresolved
+  createWorkflowDialogTitle:
+    strategy: "{createWorkflowDialog} [role=\"heading\"]"
+    confidence: inferred
+  createWorkflowNextStepButton:
+    strategy: "{createWorkflowDialog} button with label 'Next step'"
+    confidence: inferred
+  createWorkflowNoEligibleProjectsDialog:
+    strategy: null
+    confidence: unresolved
+  createWorkflowPreviousStepButton:
+    strategy: "{createWorkflowDialog} button with label 'Previous step'"
+    confidence: inferred
+  createWorkflowStepper:
+    strategy: "{createWorkflowDialog} stepper container"
+    confidence: unresolved
+  createWorkflowSubmitButton:
+    strategy: "{createWorkflowDialog} button with label pattern 'Create {workflowType}'"
+    confidence: inferred
+  currentPasswordField:
+    strategy: null
+    confidence: unresolved
+  deleteProjectPermanentlyModal:
+    strategy: "dialog presented after Delete permanently on archived projectCard; evidence FIGMA-LIB-MODAL-DELETE-PROJECT"
+    confidence: inferred
+  deleteProjectPermanentlyModalCancelButton:
+    strategy: "{deleteProjectPermanentlyModal} button with label 'Cancel'"
+    confidence: inferred
+  deleteProjectPermanentlyModalDeleteProjectButton:
+    strategy: "{deleteProjectPermanentlyModal} button with label 'Delete project'"
+    confidence: inferred
+  deleteTagButton:
+    strategy: "{projectTagItem} remove control for that tag"
+    confidence: inferred
+  deleteWorkflowPermanentlyModal:
+    strategy: "dialog after Delete permanently on archived workflowCard; evidence FIGMA-LIB-MODAL-DELETE-WORKFLOW"
+    confidence: inferred
+  deleteWorkflowPermanentlyModalConfirmButton:
+    strategy: "{deleteWorkflowPermanentlyModal} primary confirm button (label per FIGMA-LIB-MODAL-DELETE-WORKFLOW)"
+    confidence: inferred
+  disciplineFilter:
+    strategy: "{exploreFilterToolbar} multiselect with placeholder 'Discipline'"
+    confidence: inferred
+  disciplineFilterAllOption:
+    strategy: "{disciplineFilter} popover footer button with label 'All'"
+    confidence: confirmed
+  disciplineFilterNoneOption:
+    strategy: "{disciplineFilter} popover footer button with label 'None'"
+    confidence: inferred
+  disciplineFilterSearchField:
+    strategy: "{disciplineFilter} popover TextField labeled 'Find discipline'"
+    confidence: inferred
+  disciplineFilterSelectionIndicator:
+    strategy: "{disciplineFilter} trigger button circular counter span (StyledCounter) showing selected count when count is at least one"
+    confidence: confirmed
+  editPencilButton:
+    strategy: null
+    confidence: unresolved
+  editProjectDialog:
+    strategy: null
+    confidence: unresolved
+  editProjectFormDialogTitle:
+    strategy: null
+    confidence: unresolved
+  editProjectFormSubmitButton:
+    strategy: null
+    confidence: unresolved
+  editTagInput:
+    strategy: "{projectTagItem} inline text input"
+    confidence: inferred
+  editWorkflowDialog:
+    strategy: null
+    confidence: unresolved
+  editWorkflowFormCancelButton:
+    strategy: null
+    confidence: unresolved
+  editWorkflowFormDialogTitle:
+    strategy: null
+    confidence: unresolved
+  editWorkflowFormSubmitButton:
+    strategy: "{workflowEditForm} button[type=\"submit\"]"
+    confidence: inferred
+  expandIcon:
+    strategy: "{mainNavigation} control with aria-label 'collapse sidebar' when mainNavigation is collapsed"
+    confidence: inferred
+  exploreEmptyState:
+    strategy: null
+    confidence: unresolved
+  exploreErrorState:
+    strategy: null
+    confidence: unresolved
+  exploreFilterToolbar:
+    strategy: null
+    confidence: unresolved
+  exploreLoadingState:
+    strategy: null
+    confidence: unresolved
+  exploreNavItem:
+    strategy: "[data-test-id=\"panel-explore\"]"
+    confidence: confirmed
+  explorePage:
+    strategy: "URL pathname /explore"
+    confidence: confirmed
+  favouritedItemLink:
+    strategy: "[data-test-id=\"panel-favourite\"]"
+    confidence: confirmed
+  favouritesEmptyState:
+    strategy: "{resultsRegion} text 'No results found'"
+    confidence: inferred
+  favouritesErrorState:
+    strategy: "{resultsRegion} error view"
+    confidence: inferred
+  favouritesFilterToolbar:
+    strategy: "{favouritesPage} top filter toolbar row"
+    confidence: inferred
+  favouritesLoadingState:
+    strategy: "{resultsRegion} 10 rectangular skeleton rows while loading"
+    confidence: inferred
+  favouritesPage:
+    strategy: "URL pathname /favourites"
+    confidence: confirmed
+  favouritesToggle:
+    strategy: "{exploreFilterToolbar} toggle or chip for favourites filter state"
+    confidence: inferred
+  forgotPasswordConfirmPasswordField:
+    strategy: "{forgotPasswordSetPasswordForm} input[name=\"confirmPassword\"][type=\"password\"]"
+    confidence: inferred
+  forgotPasswordEmailField:
+    strategy: "{forgotPasswordForm} input[name=\"email\"]"
+    confidence: inferred
+  forgotPasswordFieldValidationMessage:
+    strategy: "validation error text within {forgotPasswordForm} adjacent to the invalid field control"
+    confidence: inferred
+  forgotPasswordForm:
+    strategy: null
+    confidence: unresolved
+  forgotPasswordInvalidLinkPage:
+    strategy: "URL pathname '/password-reset/confirm'"
+    confidence: inferred
+  forgotPasswordInvalidLinkRequestButton:
+    strategy: "button with text 'Request a new link'"
+    confidence: inferred
+  forgotPasswordInvalidLinkSubtitle:
+    strategy: "text 'For your security, password reset links expire after 24 hours and can only be used once.'"
+    confidence: inferred
+  forgotPasswordInvalidLinkTitle:
+    strategy: "heading with text 'Link expired or invalid'"
+    confidence: inferred
+  forgotPasswordNewPasswordField:
+    strategy: "{forgotPasswordSetPasswordForm} input[name=\"password\"][type=\"password\"]"
+    confidence: inferred
+  forgotPasswordPage:
+    strategy: "URL pathname '/password-reset'"
+    confidence: confirmed
+  forgotPasswordResetRequestEmail:
+    strategy: null
+    confidence: unresolved
+  forgotPasswordResetRequestEmailResetButton:
+    strategy: null
+    confidence: unresolved
+  forgotPasswordSetPasswordConfirmationEmail:
+    strategy: null
+    confidence: unresolved
+  forgotPasswordSetPasswordFieldValidationMessage:
+    strategy: "validation error text within {forgotPasswordSetPasswordForm} adjacent to the invalid field control"
+    confidence: inferred
+  forgotPasswordSetPasswordForm:
+    strategy: null
+    confidence: unresolved
+  forgotPasswordSetPasswordGuidelines:
+    strategy: "helper text with copy 'Your password must contain at least 12 characters and include a mix of numbers, letters and symbols' on forgotPasswordSetPasswordForm"
+    confidence: inferred
+  forgotPasswordSetPasswordPage:
+    strategy: "URL pathname '/password-reset/confirm'"
+    confidence: inferred
+  forgotPasswordSetPasswordSubmitButton:
+    strategy: "button with text 'Reset password' on forgotPasswordSetPasswordForm"
+    confidence: inferred
+  forgotPasswordSetPasswordTitle:
+    strategy: "{forgotPasswordSetPasswordForm} heading with text 'Reset your CourseFlow password'"
+    confidence: inferred
+  forgotPasswordSubmitButton:
+    strategy: "button with text 'Reset password' on forgotPasswordForm"
+    confidence: inferred
+  forgotPasswordSuccessMessage:
+    strategy: "text 'If the email address matches an active account, you will receive instructions to reset your password shortly.' on forgotPasswordPage"
+    confidence: inferred
+  forgotPasswordTitle:
+    strategy: "{forgotPasswordForm} heading with text 'Reset your CourseFlow password'"
+    confidence: inferred
+  globalMessageSnackbar:
+    strategy: null
+    confidence: unresolved
+  helpAndSupportLink:
+    strategy: "{mainNavigation} row with label 'Help and support'"
+    confidence: inferred
+  homeErrorState:
+    strategy: "{homePage} error view"
+    confidence: inferred
+  homeLoadingIndicator:
+    strategy: null
+    confidence: unresolved
+  homeNavItem:
+    strategy: "[data-test-id=\"panel-home\"]"
+    confidence: confirmed
+  homePage:
+    strategy: "URL pathname /home"
+    confidence: confirmed
+  homeRecentProjectsSection:
+    strategy: null
+    confidence: unresolved
+  homeRecentProjectsTitle:
+    strategy: "{homeRecentProjectsSection} heading with text 'Recent projects'"
+    confidence: inferred
+  homeTemplatesInfoAlert:
+    strategy: "{homeTemplatesSection} info alert with title 'How to use templates'"
+    confidence: inferred
+  homeTemplatesInfoAlertCloseButton:
+    strategy: "{homeTemplatesInfoAlert} button[aria-label='close']"
+    confidence: inferred
+  homeTemplatesSection:
+    strategy: null
+    confidence: unresolved
+  homeTemplatesSectionTitle:
+    strategy: "{homeTemplatesSection} heading with text 'Explore templates' or 'Get started with templates'"
+    confidence: inferred
+  homeViewAllProjectsLink:
+    strategy: "{homeRecentProjectsSection} link with text 'View all projects'"
+    confidence: inferred
+  homeViewAllTemplatesLink:
+    strategy: "{homeTemplatesSection} link with text 'View all templates'"
+    confidence: inferred
+  homeWelcomeActivityButton:
+    strategy: "{homeWelcomePanel} button with label 'I want to create an activity'"
+    confidence: inferred
+  homeWelcomeCourseButton:
+    strategy: "{homeWelcomePanel} button with label 'I want to create a course'"
+    confidence: inferred
+  homeWelcomeDismissButton:
+    strategy: "{homeWelcomePanel} button[aria-label='close']"
+    confidence: inferred
+  homeWelcomePanel:
+    strategy: null
+    confidence: unresolved
+  homeWelcomeProgramButton:
+    strategy: "{homeWelcomePanel} button with label 'I want to create a program'"
+    confidence: inferred
+  keywordSearchClearButton:
+    strategy: "{keywordSearchField} right-side icon button shown when input is non-empty"
+    confidence: inferred
+  keywordSearchField:
+    strategy: "{exploreFilterToolbar} inline text field on the right for keyword search (not an overlay)"
+    confidence: inferred
+  libraryEmptyState:
+    strategy: null
+    confidence: unresolved
+  libraryErrorState:
+    strategy: null
+    confidence: unresolved
+  libraryFilterToolbar:
+    strategy: null
+    confidence: unresolved
+  libraryLoadingState:
+    strategy: null
+    confidence: unresolved
+  libraryPage:
+    strategy: "URL pathname /library"
+    confidence: inferred
+  loginAuthenticationErrorMessage:
+    strategy: "text 'The email or password you entered is incorrect. please check your details and try again.' on loginPage per FIGMA-LOGIN-CREDENTIALS-ERROR layout"
+    confidence: inferred
+  loginEmailField:
+    strategy: "{loginForm} input[name=\"email\"]"
+    confidence: inferred
+  loginFieldValidationMessage:
+    strategy: "validation error text within {loginForm} adjacent to the invalid field control"
+    confidence: inferred
+  loginForgotPasswordLink:
+    strategy: "link with text 'Forgot your password?' on loginPage"
+    confidence: inferred
+  loginForm:
+    strategy: "form on loginPage"
+    confidence: inferred
+  loginPage:
+    strategy: "URL pathname '/login/'"
+    confidence: confirmed
+  loginPasswordField:
+    strategy: "{loginForm} input[name=\"password\"][type=\"password\"]"
+    confidence: inferred
+  loginRegisterLink:
+    strategy: "link with text 'Register' on loginPage"
+    confidence: inferred
+  loginRegisterPrompt:
+    strategy: "text 'Don't have an account? ' on loginPage"
+    confidence: inferred
+  loginSubmitButton:
+    strategy: "{loginForm} button[type=\"submit\"] with text 'Login'"
+    confidence: inferred
+  loginTitle:
+    strategy: "heading with text 'Login to CourseFlow'"
+    confidence: inferred
+  mainNavigation:
+    strategy: "[data-test-id=\"main-nav\"]"
+    confidence: confirmed
+  mainNavigationPanel:
+    strategy: "{mainNavigation} expanded navigation panel"
+    confidence: inferred
+  markAllAsReadLink:
+    strategy: "{notificationsPage} Link text 'Mark all as read'"
+    confidence: inferred
+  myLibraryNavItem:
+    strategy: "[data-test-id=\"panel-library\"]"
+    confidence: confirmed
+  newPasswordField:
+    strategy: null
+    confidence: unresolved
+  notificationActionsMenu:
+    strategy: "MUI Menu with id 'notification-menu' and aria-label 'Notification options'"
+    confidence: inferred
+  notificationDeleteRequest:
+    strategy: "POST '/notification/delete' body { notification_id: <id> }"
+    confidence: confirmed
+  notificationListItem:
+    strategy: "{notificationsList} list item row (StyledListItem)"
+    confidence: inferred
+  notificationListItemContent:
+    strategy: "{notificationListItem} secondary message text region"
+    confidence: inferred
+  notificationListItemRelativeTimestamp:
+    strategy: "{notificationListItem} primary timestamp text region"
+    confidence: inferred
+  notificationListItemUnreadDot:
+    strategy: "{notificationListItem} MUI Badge variant 'dot'"
+    confidence: inferred
+  notificationListItemUserAvatar:
+    strategy: "{notificationListItem} avatar component showing initials"
+    confidence: inferred
+  notificationListItemUserName:
+    strategy: "{notificationListItem} text region for notificationListItemUserName"
+    confidence: inferred
+  notificationMarkAllReadRequest:
+    strategy: "POST '/notification/mark-all-as-read'"
+    confidence: confirmed
+  notificationMenuDeleteItem:
+    strategy: "{notificationActionsMenu} MenuItem text 'Delete'"
+    confidence: inferred
+  notificationMenuMarkAsReadItem:
+    strategy: "{notificationActionsMenu} MenuItem text 'Mark as read'"
+    confidence: inferred
+  notificationRowActionTrigger:
+    strategy: "{notificationListItem} icon-only trigger button showing MoreHoriz icon"
+    confidence: inferred
+  notificationsDropdownEmptyStateMessage:
+    strategy: "{notificationsDropdownPanel} text 'You do not have any notifications.'"
+    confidence: inferred
+  notificationsDropdownHeading:
+    strategy: "{notificationsDropdownPanel} heading with label 'Notifications'"
+    confidence: inferred
+  notificationsDropdownPanel:
+    strategy: "{topNavigationBar} dropdown for notificationsMenuTrigger"
+    confidence: inferred
+  notificationsEmptyStateMessage:
+    strategy: "{notificationsPage} text 'You have no notifications yet.'"
+    confidence: inferred
+  notificationsErrorState:
+    strategy: "{notificationsPage} text starting with 'An error occurred:'"
+    confidence: inferred
+  notificationsList:
+    strategy: "{notificationsPage} MUI List container in NotificationsList"
+    confidence: inferred
+  notificationsListQuery:
+    strategy: "GET '/notification/list'"
+    confidence: confirmed
+  notificationsLoadingState:
+    strategy: "Loader component rendered by notifications page during query load"
+    confidence: inferred
+  notificationsMenuTrigger:
+    strategy: "[aria-controls=\"notifications-menu\"]"
+    confidence: inferred
+  notificationsPage:
+    strategy: "URL pathname '/user/notifications'"
+    confidence: confirmed
+  notificationsPagination:
+    strategy: "{notificationsPage} MUI Pagination with first/last buttons enabled"
+    confidence: inferred
+  notificationsSeeAllLink:
+    strategy: "{notificationsDropdownPanel} link with label 'See all'"
+    confidence: inferred
+  notificationsSettingsForm:
+    strategy: "{notificationsSettingsPage} form"
+    confidence: inferred
+  notificationsSettingsPage:
+    strategy: "URL pathname '/user/notifications-settings'"
+    confidence: confirmed
+  notificationsSettingsTitle:
+    strategy: "{notificationsSettingsPage} h1 with label 'Notification settings'"
+    confidence: inferred
+  notificationsTitle:
+    strategy: "{notificationsPage} h1 text 'Notifications'"
+    confidence: inferred
+  notificationsUnreadBadge:
+    strategy: "{notificationsMenuTrigger} badge showing unread notification count"
+    confidence: inferred
+  ownershipFilter:
+    strategy: "{favouritesFilterToolbar} single-select filter showing placeholder 'Ownership' or active label Owned or Shared"
+    confidence: inferred
+  ownershipFilterResetButton:
+    strategy: "{ownershipFilter} button[aria-label='close'] or icon-only clear control adjacent to active ownership label"
+    confidence: inferred
+  pagination:
+    strategy: "{favouritesPage} pagination control shown when total matching favourited objects are 11 or more (10 per page)"
+    confidence: inferred
+  paginationFirstLastButton:
+    strategy: "{pagination} double-arrow first/last control"
+    confidence: inferred
+  paginationPageNumberButton:
+    strategy: "{pagination} clickable numeric page item"
+    confidence: inferred
+  paginationPreviousNextButton:
+    strategy: "{pagination} single-arrow previous/next control"
+    confidence: inferred
+  passwordNewPasswordGuidelines:
+    strategy: "helper text with copy 'Your password must contain at least 12 characters and include a mix of numbers, letters and symbols' on passwordResetForm"
+    confidence: inferred
+  passwordResetFieldValidationMessage:
+    strategy: "validation error text within {passwordResetForm} adjacent to the invalid field control"
+    confidence: inferred
+  passwordResetForm:
+    strategy: null
+    confidence: unresolved
+  passwordResetPage:
+    strategy: null
+    confidence: confirmed
+  passwordResetSubmitButton:
+    strategy: null
+    confidence: unresolved
+  passwordResetTitle:
+    strategy: null
+    confidence: unresolved
+  productUpdatesToggle:
+    strategy: "{notificationsSettingsForm} MUI Switch for productUpdatesToggleLabel"
+    confidence: inferred
+  productUpdatesToggleLabel:
+    strategy: "{notificationsSettingsForm} FormControlLabel with label 'I want to receive product updates emails'"
+    confidence: inferred
+  profileFieldValidationMessage:
+    strategy: null
+    confidence: unresolved
+  profileFirstNameField:
+    strategy: "{profileSettingsForm} input[name=\"firstName\"] with label 'First name'"
+    confidence: inferred
+  profileLanguageOptionEnglish:
+    strategy: "{profileLanguagePreferenceGroup} radio option with label 'English' and value 'en'"
+    confidence: inferred
+  profileLanguageOptionFrench:
+    strategy: "{profileLanguagePreferenceGroup} radio option with label 'French' and value 'fr'"
+    confidence: inferred
+  profileLanguagePreferenceGroup:
+    strategy: "{profileSettingsForm} fieldset with legend label 'Language preferences'"
+    confidence: inferred
+  profileLastNameField:
+    strategy: "{profileSettingsForm} input[name=\"lastName\"] with label 'Last name'"
+    confidence: inferred
+  profileSettingsForm:
+    strategy: "{profileSettingsPage} form"
+    confidence: inferred
+  profileSettingsPage:
+    strategy: "URL pathname '/user/profile-settings'"
+    confidence: confirmed
+  profileSettingsTitle:
+    strategy: "{profileSettingsPage} h1 with label 'Profile settings'"
+    confidence: inferred
+  profileUpdateButton:
+    strategy: "{profileSettingsForm} button[type=\"submit\"] with label 'Update profile'"
+    confidence: inferred
+  profileUsernameField:
+    strategy: "{profileSettingsForm} read-only field with label 'Email / Username'"
+    confidence: inferred
+  projectAccessDeniedSubtitle:
+    strategy: "{projectAccessDeniedView} informational body copy below primary heading"
+    confidence: inferred
+  projectAccessDeniedTitle:
+    strategy: "{projectAccessDeniedView} primary heading"
+    confidence: inferred
+  projectAccessDeniedView:
+    strategy: "full-page access-denied block in place of project workspace content on route '/project/{id}/*'"
+    confidence: inferred
+  projectCard:
+    strategy: "{resultsRegion} project card (project scope)"
+    confidence: inferred
+  projectCardDeletePermanentlyButton:
+    strategy: "{projectCard} button with label 'Delete permanently' when archived and offered"
+    confidence: inferred
+  projectCardRestoreProjectButton:
+    strategy: "{projectCard} button with label 'Restore project' on thumbnail region when archived and offered"
+    confidence: inferred
+  projectDescriptionField:
+    strategy: "{projectForm} labeled field region 'Description' containing workflowRichTextDescriptionEditor"
+    confidence: inferred
+  projectDisciplineField:
+    strategy: "{projectForm} [aria-labelledby=\"create-project-discipline\"]"
+    confidence: inferred
+  projectForm:
+    strategy: null
+    confidence: unresolved
+  projectFormCancelButton:
+    strategy: null
+    confidence: unresolved
+  projectFormFieldValidationMessage:
+    strategy: null
+    confidence: unresolved
+  projectHeader:
+    strategy: "URL route pattern '/project/{id}/*' with project header chrome (title, favourite toggle, tab selector)"
+    confidence: inferred
+  projectHeaderFavouriteToggle:
+    strategy: "{projectHeader} favourite toggle control for current project"
+    confidence: inferred
+  projectMetadataAddContributorsButton:
+    strategy: "{projectMetadataPermissionsPanel} control with label 'Add CourseFlow user' that shows the same addContributorsDialog as contextActionBarAddContributorsButton"
+    confidence: inferred
+  projectMetadataFieldDescription:
+    strategy: "{projectOverviewView} info block title 'Description'"
+    confidence: inferred
+  projectMetadataFieldDisciplines:
+    strategy: "{projectOverviewView} info block title 'Disciplines'"
+    confidence: inferred
+  projectMetadataPermissionsPanel:
+    strategy: "{projectOverviewView} info block title 'Permissions'"
+    confidence: inferred
+  projectOverviewView:
+    strategy: "[data-test-id=\"project-overview-view\"]"
+    confidence: implemented
+  projectStartWithProjectAlert:
+    strategy: null
+    confidence: unresolved
+  projectTagItem:
+    strategy: "{projectTagsSection} tag row showing tag label"
+    confidence: inferred
+  projectTagsSection:
+    strategy: "{projectOverviewView} info block title 'Tags'"
+    confidence: inferred
+  projectTitle:
+    strategy: "{projectHeader} heading text for current project title"
+    confidence: inferred
+  projectTitleField:
+    strategy: "{projectForm} input[name=\"title\"]"
+    confidence: inferred
+  projectViewTabSelector:
+    strategy: "{projectHeader} tab selector for project sub-views per FR-PROJ-HEADER-001"
+    confidence: inferred
+  projectVisibilityStateMessage:
+    strategy: "{projectOverviewView} visibility-state text adjacent to publishProjectButton or unpublishProjectButton"
+    confidence: inferred
+  projectWorkflowsEmptyState:
+    strategy: "{resultsRegion} text 'There are no workflows in this project'"
+    confidence: inferred
+  projectWorkflowsErrorState:
+    strategy: "{resultsRegion} error view"
+    confidence: inferred
+  projectWorkflowsFilterToolbar:
+    strategy: "{projectWorkflowsView} top filter toolbar region"
+    confidence: inferred
+  projectWorkflowsLoadingState:
+    strategy: "{resultsRegion} rectangular skeleton placeholders while loading"
+    confidence: inferred
+  projectWorkflowsNoResultsState:
+    strategy: "{resultsRegion} text 'No results found'"
+    confidence: inferred
+  projectWorkflowsView:
+    strategy: "[data-test-id=\"project-workflows-view\"]"
+    confidence: implemented
+  publishProjectButton:
+    strategy: "{projectOverviewView} control with label 'Publish project' shown when project is unpublished"
+    confidence: inferred
+  publishProjectConfirmationModal:
+    strategy: "Confirmation modal shown after click on publishProjectButton per FIGMA-PROJ-OV-PUBLISH-PROJECT-MODAL"
+    confidence: inferred
+  publishProjectConfirmationModalCancelButton:
+    strategy: "{publishProjectConfirmationModal} cancel action"
+    confidence: inferred
+  publishProjectConfirmationModalConfirmButton:
+    strategy: "{publishProjectConfirmationModal} confirm action that publishes project"
+    confidence: inferred
+  registerConfirmPasswordField:
+    strategy: "{registerForm} input[name=\"password2\"][type=\"password\"]"
+    confidence: inferred
+  registerDuplicateEmailErrorMessage:
+    strategy: "text 'An account with this email address already exists. Try logging in or use the password reset page to regain access.' on registerPage"
+    confidence: inferred
+  registerDuplicateEmailLoginLink:
+    strategy: "link with text 'logging in' within registerDuplicateEmailErrorMessage"
+    confidence: inferred
+  registerDuplicateEmailPasswordResetLink:
+    strategy: "link with text 'password reset' within registerDuplicateEmailErrorMessage"
+    confidence: inferred
+  registerEmailField:
+    strategy: "{registerForm} input[name=\"email\"]"
+    confidence: inferred
+  registerFieldValidationMessage:
+    strategy: "validation error text within {registerForm} adjacent to the invalid field control"
+    confidence: inferred
+  registerFirstNameField:
+    strategy: "{registerForm} input[name=\"firstName\"]"
+    confidence: inferred
+  registerForm:
+    strategy: "#registration-form"
+    confidence: confirmed
+  registerLastNameField:
+    strategy: "{registerForm} input[name=\"lastName\"]"
+    confidence: inferred
+  registerLoginLink:
+    strategy: "link with text 'Login' on registerPage"
+    confidence: inferred
+  registerLoginPrompt:
+    strategy: "text 'Have an account? ' on registerPage"
+    confidence: inferred
+  registerPage:
+    strategy: "URL pathname '/register/'"
+    confidence: confirmed
+  registerPasswordField:
+    strategy: "{registerForm} input[name=\"password1\"][type=\"password\"]"
+    confidence: inferred
+  registerPasswordGuidelines:
+    strategy: "helper text with copy 'Your password must contain at least 12 characters and include a mix of numbers, letters and symbols' on registerForm"
+    confidence: inferred
+  registerSubmissionErrorMessage:
+    strategy: "text 'We were unable to complete your registration. Please try again in a few moments.' on registerPage"
+    confidence: inferred
+  registerSubmitButton:
+    strategy: "#register-button"
+    confidence: confirmed
+  registerTitle:
+    strategy: "{registerForm} heading with text 'Register to CourseFlow'"
+    confidence: inferred
+  relatedWorkflowLink:
+    strategy: "{relatedWorkflowList} row link showing workflowTitle"
+    confidence: inferred
+  relatedWorkflowList:
+    strategy: "{appearsInSection} or {containsSection} list of relatedWorkflowLink rows"
+    confidence: inferred
+  restoreParentProjectModal:
+    strategy: "dialog after Restore on archived workflowCard; evidence FIGMA-LIB-RESTORE-WORKFLOW"
+    confidence: inferred
+  restoreParentProjectModalRestoreProjectButton:
+    strategy: "{restoreParentProjectModal} button with label 'Restore project'"
+    confidence: inferred
+  resultsRegion:
+    strategy: "main 'Explore' listing grid; always exactly two cards per row, at most five rows (10 cards) per page (same grid pattern as 'My library' resultsRegion)"
+    confidence: inferred
+  resultsSummary:
+    strategy: "{favouritesPage} region between favouritesFilterToolbar and resultsRegion showing count summary"
+    confidence: inferred
+  returnLinksRegion:
+    strategy: "{topNavigationBar} leading region for contextual return links including backToProjectLink"
+    confidence: inferred
+  sortControl:
+    strategy: "{exploreFilterToolbar} control showing label 'Sort', 'A - Z', or 'Date created'"
+    confidence: inferred
+  sortResetButton:
+    strategy: "{sortControl} button[aria-label='close'] or icon-only clear control adjacent to active sort label"
+    confidence: inferred
+  templatesToggle:
+    strategy: "{exploreFilterToolbar} toggle labeled 'Templates'"
+    confidence: inferred
+  topNavigationBar:
+    strategy: "[data-test-id=\"top-bar\"]"
+    confidence: confirmed
+  typeFilter:
+    strategy: "{exploreFilterToolbar} single-select filter showing label 'Type' or committed type label 'Projects' or 'Workflows'"
+    confidence: inferred
+  typeFilterResetButton:
+    strategy: "{typeFilter} button[aria-label='close'] or icon-only clear control when non-default type scope is active per design"
+    confidence: inferred
+  unpublishProjectButton:
+    strategy: "{projectOverviewView} control with label 'Unpublish project' shown when project is published"
+    confidence: inferred
+  viewAllLink:
+    strategy: "{favouritesSection} link with label 'View all'"
+    confidence: inferred
+  workflowAccessDeniedSubtitle:
+    strategy: "{workflowAccessDeniedView} informational body copy below primary heading"
+    confidence: inferred
+  workflowAccessDeniedTitle:
+    strategy: "{workflowAccessDeniedView} primary heading"
+    confidence: inferred
+  workflowAccessDeniedView:
+    strategy: "full-page access-denied block in place of workflow workspace content on route '/workflow/{id}/*'"
+    confidence: inferred
+  workflowAddTabCustomNodeCategoryItem:
+    strategy: null
+    confidence: unresolved
+  workflowAddTabInsertModeToggleGroup:
+    strategy: "{workflowRightSidebarAddTabContent} [aria-label='Insert mode']"
+    confidence: inferred
+  workflowAddTabNodeCategoryItem:
+    strategy: null
+    confidence: unresolved
+  workflowBlankForm:
+    strategy: "{createWorkflowDialog} form (blank mode step 3)"
+    confidence: inferred
+  workflowCard:
+    strategy: "{resultsRegion} workflow card (workflow scope); when templatesToggle constrains listing to templates, template workflows are still represented as workflowCard with cardTemplateChip per FR-CARD-002"
+    confidence: inferred
+  workflowCardDeletePermanentlyButton:
+    strategy: "{workflowCard} button with label 'Delete permanently' when archived and offered"
+    confidence: inferred
+  workflowCardRestoreButton:
+    strategy: "{workflowCard} button with label 'Restore' when archived and offered"
+    confidence: inferred
+  workflowChannel:
+    strategy: "[data-column-id]"
+    confidence: inferred
+  workflowChannelDeleteDialog:
+    strategy: "[aria-labelledby='delete-week-node-category-modal']"
+    confidence: inferred
+  workflowChannelDeleteDialogCancelButton:
+    strategy: "{workflowChannelDeleteDialog} button with accessible name 'Cancel'"
+    confidence: inferred
+  workflowChannelDeleteDialogConfirmButton:
+    strategy: "{workflowChannelDeleteDialog} button with accessible name 'Delete node category'"
+    confidence: inferred
+  workflowChannelHeader:
+    strategy: "{workflowChannelsHeaderRow} [data-column-id] inner header region (ColumnWrap / Inner)"
+    confidence: inferred
+  workflowChannelHeaderColorIndicator:
+    strategy: "{workflowChannelHeader} top border color stripe (Styled.Border)"
+    confidence: inferred
+  workflowChannelHeaderSelectedBorder:
+    strategy: "{workflowChannelHeader} Background box-shadow 2px when that workflowChannel is selected in workflowRightSidebar"
+    confidence: inferred
+  workflowChannelHeaderTitleText:
+    strategy: "{workflowChannelHeader} title span (Styled.Title — single line, overflow hidden, text-overflow ellipsis)"
+    confidence: inferred
+  workflowChannelHoverActionsMenu:
+    strategy: "{workflowChannelHeader} NodeHoverMenu cluster"
+    confidence: inferred
+  workflowChannelHoverActionsMenuCommentsItem:
+    strategy: "{workflowChannelHoverActionsMenu} button whose accessible name resolves to localized 'Comments'"
+    confidence: inferred
+  workflowChannelHoverActionsMenuDeleteItem:
+    strategy: "{workflowChannelHoverActionsMenu} button with accessible name 'Delete'"
+    confidence: inferred
+  workflowChannelHoverActionsMenuDuplicateItem:
+    strategy: "{workflowChannelHoverActionsMenu} button with accessible name 'Duplicate'"
+    confidence: inferred
+  workflowChannelHoverActionsMenuInsertRightItem:
+    strategy: "{workflowChannelHoverActionsMenu} button with accessible name 'Insert right'"
+    confidence: inferred
+  workflowChannelReorderDragPreview:
+    strategy: "Drag preview for channel lateral reorder — presentation that follows the pointer during column drag (native or custom drag preview), showing the same channel header chrome as the source without workflowChannelHoverActionsMenu"
+    confidence: inferred
+  workflowChannelReorderDropIndicator:
+    strategy: "{workflowChannelsHeaderRow} Atlaskit DropIndicator (box, type no-terminal) on closest left or right edge of destination workflowChannelHeader cell during column drag"
+    confidence: inferred
+  workflowChannelReorderSourceDimming:
+    strategy: "{workflowChannelsHeaderRow} drag-source workflowChannelHeader ColumnWrap reduced opacity while column reorder drag in progress"
+    confidence: inferred
+  workflowChannelsHeaderRow:
+    strategy: "[data-test-id='columns-block']"
+    confidence: confirmed
+  workflowCommentsHostObject:
+    strategy: null
+    confidence: unresolved
+  workflowCommentsPresenceIndicator:
+    strategy: null
+    confidence: unresolved
+  workflowCommentsTabComposer:
+    strategy: null
+    confidence: unresolved
+  workflowCommentsTabComposerSubmitButton:
+    strategy: "{workflowCommentsTabComposer} contained button with text 'Add comment'"
+    confidence: inferred
+  workflowCommentsTabComposerTextField:
+    strategy: "{workflowCommentsTabComposer} multiline textbox with label 'Add a comment'"
+    confidence: inferred
+  workflowCommentsTabList:
+    strategy: null
+    confidence: unresolved
+  workflowCommentsTabListItem:
+    strategy: null
+    confidence: unresolved
+  workflowCommentsTabListItemBody:
+    strategy: null
+    confidence: unresolved
+  workflowCommentsTabListItemDeleteLink:
+    strategy: "{workflowCommentsTabListItem} button with text 'Delete' (Mui Link rendered as button)"
+    confidence: inferred
+  workflowCommentsTabListItemHeader:
+    strategy: null
+    confidence: unresolved
+  workflowCommentsTabTitle:
+    strategy: "{workflowRightSidebarCommentsTabContent} heading with text 'Comments' (h3)"
+    confidence: inferred
+  workflowCreationModeBlankOption:
+    strategy: null
+    confidence: unresolved
+  workflowCreationModeTemplateOption:
+    strategy: null
+    confidence: unresolved
+  workflowDescriptionField:
+    strategy: "{workflowBlankForm} or {workflowEditForm} description field region containing workflowRichTextDescriptionEditor"
+    confidence: inferred
+  workflowEdge:
+    strategy: "{workflowView} SVG g[data-nodelink-id='{workflowEdgeId}']"
+    confidence: inferred
+  workflowEdgeSourceReconnectHandle:
+    strategy: "{workflowEdge} source-end StyledHandle circle shown when workflowEdge is selected"
+    confidence: inferred
+  workflowEdgeTargetReconnectHandle:
+    strategy: "{workflowEdge} target-end StyledHandle circle shown when workflowEdge is selected"
+    confidence: inferred
+  workflowEdgeTitleLabel:
+    strategy: null
+    confidence: unresolved
+  workflowEditChannelForm:
+    strategy: null
+    confidence: unresolved
+  workflowEditChannelFormColorField:
+    strategy: null
+    confidence: unresolved
+  workflowEditChannelFormDeleteButton:
+    strategy: null
+    confidence: unresolved
+  workflowEditChannelFormDuplicateButton:
+    strategy: null
+    confidence: unresolved
+  workflowEditChannelFormTitleField:
+    strategy: null
+    confidence: unresolved
+  workflowEditEdgeForm:
+    strategy: "{workflowRightSidebarEditTabContent} edit panel when bound to a workflowEdge (EditNodelink)"
+    confidence: inferred
+  workflowEditEdgeFormDashedLineToggle:
+    strategy: "{workflowEditEdgeForm} Switch labeled 'Dashed line'"
+    confidence: inferred
+  workflowEditEdgeFormDeleteButton:
+    strategy: "{workflowEditEdgeForm} Button 'Delete'"
+    confidence: inferred
+  workflowEditEdgeFormHeading:
+    strategy: "{workflowRightSidebarEditTabContent} h3 with text 'Edit node link'"
+    confidence: inferred
+  workflowEditEdgeFormTitleField:
+    strategy: "{workflowEditEdgeForm} TextField labeled 'Title'"
+    confidence: inferred
+  workflowEditForm:
+    strategy: null
+    confidence: unresolved
+  workflowEditNodeForm:
+    strategy: null
+    confidence: unresolved
+  workflowEditNodeFormActivityContextSelect:
+    strategy: "{workflowEditNodeForm} [aria-labelledby='context-type-select-label']"
+    confidence: inferred
+  workflowEditNodeFormCourseContextSelect:
+    strategy: "{workflowEditNodeForm} [aria-labelledby='context-type-select-label']"
+    confidence: inferred
+  workflowEditNodeFormCreditsField:
+    strategy: null
+    confidence: unresolved
+  workflowEditNodeFormDeleteButton:
+    strategy: "{workflowEditNodeForm} button with text 'Delete'"
+    confidence: inferred
+  workflowEditNodeFormDescriptionField:
+    strategy: "{workflowEditNodeForm} labeled field region 'Description' containing workflowRichTextDescriptionEditor"
+    confidence: inferred
+  workflowEditNodeFormDuplicateButton:
+    strategy: "{workflowEditNodeForm} button with text 'Duplicate'"
+    confidence: inferred
+  workflowEditNodeFormHeading:
+    strategy: "{workflowEditNodeForm} heading with text 'Edit node'"
+    confidence: inferred
+  workflowEditNodeFormLinkWorkflowButton:
+    strategy: "{workflowEditNodeForm} first action button in action area with text 'Link an activity' (course parent, unlinked), 'Link a course' (program parent, unlinked), 'Remove linked activity' (course parent, linked), or 'Remove linked course' (program parent, linked)"
+    confidence: inferred
+  workflowEditNodeFormPonderationGroup:
+    strategy: null
+    confidence: unresolved
+  workflowEditNodeFormPonderationIndividualField:
+    strategy: "{workflowEditNodeFormPonderationGroup} [name='ponderation.individual']"
+    confidence: inferred
+  workflowEditNodeFormPonderationPracticeField:
+    strategy: "{workflowEditNodeFormPonderationGroup} [name='ponderation.practice']"
+    confidence: inferred
+  workflowEditNodeFormPonderationTheoryField:
+    strategy: "{workflowEditNodeFormPonderationGroup} [name='ponderation.theory']"
+    confidence: inferred
+  workflowEditNodeFormSpecificEducationSwitch:
+    strategy: null
+    confidence: unresolved
+  workflowEditNodeFormTagsAutocomplete:
+    strategy: "{workflowEditNodeForm} input[role='combobox']"
+    confidence: inferred
+  workflowEditNodeFormTaskTypeSelect:
+    strategy: "{workflowEditNodeForm} [aria-labelledby='task-type-select-label']"
+    confidence: inferred
+  workflowEditNodeFormTimeField:
+    strategy: null
+    confidence: unresolved
+  workflowEditNodeFormTitleField:
+    strategy: "{workflowEditNodeForm} [name='title']"
+    confidence: inferred
+  workflowEditOutcomeForm:
+    strategy: "{workflowRightSidebarEditTabContent} form bound to the selected workflowOutcome"
+    confidence: inferred
+  workflowEditOutcomeFormCodeField:
+    strategy: "{workflowEditOutcomeForm} input with label 'Code'"
+    confidence: inferred
+  workflowEditOutcomeFormDeleteButton:
+    strategy: "{workflowEditOutcomeForm} button with text 'Delete'"
+    confidence: inferred
+  workflowEditOutcomeFormDescriptionField:
+    strategy: "{workflowEditOutcomeForm} labeled field region 'Description' containing workflowRichTextDescriptionEditor"
+    confidence: inferred
+  workflowEditOutcomeFormDuplicateButton:
+    strategy: "{workflowEditOutcomeForm} button with text 'Duplicate'"
+    confidence: inferred
+  workflowEditOutcomeFormHeading:
+    strategy: "{workflowEditOutcomeForm} heading with text 'Edit outcome'"
+    confidence: inferred
+  workflowEditOutcomeFormTagsAutocomplete:
+    strategy: "{workflowEditOutcomeForm} input[role='combobox'] with label 'Tags'"
+    confidence: inferred
+  workflowEditOutcomeFormTitleField:
+    strategy: "{workflowEditOutcomeForm} input with label 'Title'"
+    confidence: inferred
+  workflowEditSectionForm:
+    strategy: "[data-test-id='workflow-edit-section-form']"
+    confidence: confirmed
+  workflowEditSectionFormDeleteButton:
+    strategy: "{workflowEditSectionForm} button with accessible name 'Delete'"
+    confidence: confirmed
+  workflowEditSectionFormDuplicateButton:
+    strategy: "{workflowEditSectionForm} button with accessible name 'Duplicate'"
+    confidence: confirmed
+  workflowEditSectionFormTitleField:
+    strategy: "{workflowEditSectionForm} TextField labeled 'Section'"
+    confidence: confirmed
+  workflowFormFieldValidationMessage:
+    strategy: null
+    confidence: unresolved
+  workflowHeader:
+    strategy: "URL route pattern '/workflow/{id}/*' with workflow header chrome (title, favourite toggle, tab selector)"
+    confidence: inferred
+  workflowHeaderFavouriteToggle:
+    strategy: "{workflowHeader} favourite toggle control for current workflow"
+    confidence: inferred
+  workflowJumpToMenu:
+    strategy: null
+    confidence: unresolved
+  workflowJumpToMenuSectionItem:
+    strategy: null
+    confidence: unresolved
+  workflowJumpToTrigger:
+    strategy: null
+    confidence: unresolved
+  workflowLinkWorkflowDialog:
+    strategy: null
+    confidence: unresolved
+  workflowLinkWorkflowDialogCancelButton:
+    strategy: "{workflowLinkWorkflowDialog} button with text 'Cancel'"
+    confidence: inferred
+  workflowLinkWorkflowDialogEmptyState:
+    strategy: null
+    confidence: unresolved
+  workflowLinkWorkflowDialogLinkButton:
+    strategy: "{workflowLinkWorkflowDialog} button with text 'Link activity' (course parent workflow type) or 'Link course' (program parent workflow type)"
+    confidence: inferred
+  workflowLinkWorkflowDialogSearchField:
+    strategy: "{workflowLinkWorkflowDialog} input with label 'Search'"
+    confidence: inferred
+  workflowLinkWorkflowDialogSearchResults:
+    strategy: null
+    confidence: unresolved
+  workflowLinkWorkflowDialogTitle:
+    strategy: "{workflowLinkWorkflowDialog} title with text 'Link an activity' (course parent workflow type) or 'Link a course' (program parent workflow type)"
+    confidence: inferred
+  workflowManualPlacementDialog:
+    strategy: "menu[id='node-insert-menu']"
+    confidence: inferred
+  workflowManualPlacementDialogColumnButton:
+    strategy: "{workflowManualPlacementDialog} menuitem with text 'Keep in same column'"
+    confidence: inferred
+  workflowManualPlacementDialogRowButton:
+    strategy: "{workflowManualPlacementDialog} menuitem with text 'Insert row'"
+    confidence: inferred
+  workflowMetadataClassificationWarningBanner:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldCode:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldCredits:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldDescription:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldGeneralTime:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldIndividualTime:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldPracticalTime:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldSpecificTime:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldTheoryTime:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataFieldTime:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataPermissionsPanel:
+    strategy: "{workflowOverviewView} contributors and permissions summary panel"
+    confidence: inferred
+  workflowMetadataSection:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataSwitchCalculateClassificationAutomatically:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataSwitchCalculateCreditsAutomatically:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataSwitchCalculatePonderationAutomatically:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataSwitchCalculateTimeAutomatically:
+    strategy: null
+    confidence: unresolved
+  workflowMetadataWarningBanner:
+    strategy: null
+    confidence: unresolved
+  workflowNode:
+    strategy: "[id='node-{workflowNodeId}']"
+    confidence: inferred
+  workflowNodeBorder:
+    strategy: null
+    confidence: unresolved
+  workflowNodeContent:
+    strategy: null
+    confidence: unresolved
+  workflowNodeDropIndicator:
+    strategy: null
+    confidence: unresolved
+  workflowNodeEdgeHandleBottom:
+    strategy: "{workflowNodeEdgeHandles} circle[data-edge='bottom']"
+    confidence: inferred
+  workflowNodeEdgeHandleLeft:
+    strategy: "{workflowNodeEdgeHandles} circle[data-edge='left']"
+    confidence: inferred
+  workflowNodeEdgeHandleRight:
+    strategy: "{workflowNodeEdgeHandles} circle[data-edge='right']"
+    confidence: inferred
+  workflowNodeEdgeHandleTop:
+    strategy: "{workflowNodeEdgeHandles} circle[data-edge='top']"
+    confidence: inferred
+  workflowNodeEdgeHandles:
+    strategy: "{workflowNode} LineSVG Handles overlay (four SVG circles on hover or during link preview)"
+    confidence: inferred
+  workflowNodeHoverActionsMenu:
+    strategy: "{workflowNode} floating group of icon buttons anchored to top-right (Mui Tooltip/IconButton cluster)"
+    confidence: inferred
+  workflowNodeHoverActionsMenuCommentsItem:
+    strategy: "{workflowNodeHoverActionsMenu} button with accessible name 'Comments'"
+    confidence: inferred
+  workflowNodeHoverActionsMenuDeleteItem:
+    strategy: "{workflowNodeHoverActionsMenu} button with accessible name 'Delete node'"
+    confidence: inferred
+  workflowNodeHoverActionsMenuDuplicateItem:
+    strategy: "{workflowNodeHoverActionsMenu} button with accessible name 'Duplicate node below'"
+    confidence: inferred
+  workflowNodeHoverActionsMenuInsertItem:
+    strategy: "{workflowNodeHoverActionsMenu} button with accessible name 'Insert node below'"
+    confidence: inferred
+  workflowNodeLinkedOutcomeRow:
+    strategy: "row inside {workflowNodeLinkedOutcomesPopover} for one assigned {workflowOutcome} per FR-WF-AO-009"
+    confidence: inferred
+  workflowNodeLinkedOutcomeRowExpandToggle:
+    strategy: "{workflowNodeLinkedOutcomeRow} expand/collapse control"
+    confidence: inferred
+  workflowNodeLinkedOutcomeRowHoverActionsMenu:
+    strategy: "hover action menu on {workflowNodeLinkedOutcomeRow} per FR-WF-AO-010"
+    confidence: inferred
+  workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem:
+    strategy: "{workflowNodeLinkedOutcomeRowHoverActionsMenu} button with accessible name 'Unlink outcome'"
+    confidence: inferred
+  workflowNodeLinkedOutcomesBadge:
+    strategy: "numeric badge on {workflowNode} when assigned-outcome set is non-empty per FR-WF-AO-007"
+    confidence: inferred
+  workflowNodeLinkedOutcomesPopover:
+    strategy: "popover anchored to {workflowNodeLinkedOutcomesBadge} per FR-WF-AO-008"
+    confidence: inferred
+  workflowNodeLinkedWorkflowIndicator:
+    strategy: "{workflowNode} hyperlink in workflowNodeContent to the linked workflow route, visible text 'Linked activity' (parent workflow type course) or 'Linked course' (parent workflow type program), with leading icon per FIGMA-WF-NODE-LINKED-WORKFLOW-LINK (course) or FIGMA-WF-NODE-LINKED-WORKFLOW-LINK-PROGRAM (program)"
+    confidence: inferred
+  workflowNodeMeta:
+    strategy: null
+    confidence: unresolved
+  workflowNodeMetaContextTag:
+    strategy: null
+    confidence: unresolved
+  workflowNodeMetaTaskTag:
+    strategy: null
+    confidence: unresolved
+  workflowNodeMetaTimeTag:
+    strategy: null
+    confidence: unresolved
+  workflowNodeMoveSourceCellDimming:
+    strategy: null
+    confidence: unresolved
+  workflowNodeOutcomeDropTargetBorder:
+    strategy: "transient drop-target presentation on {workflowNode} during outcome-assign drag per FR-WF-AO-004"
+    confidence: inferred
+  workflowNodeOutcomeHighlightBorder:
+    strategy: "outcome-highlight presentation on {workflowNode} per FR-WF-AO-005"
+    confidence: inferred
+  workflowNodeSelectedBorder:
+    strategy: null
+    confidence: unresolved
+  workflowNodeTitle:
+    strategy: "{workflowNode} primary title label at the top of workflowNodeContent"
+    confidence: inferred
+  workflowOutcome:
+    strategy: null
+    confidence: unresolved
+  workflowOutcomeHeader:
+    strategy: "{workflowOutcome} header strip containing workflowOutcomeHeaderTitle"
+    confidence: inferred
+  workflowOutcomeHeaderSelectedBorder:
+    strategy: "{workflowOutcomeHeader} selection outline when workflowOutcome is the workflowRightSidebar host"
+    confidence: inferred
+  workflowOutcomeHeaderTagChips:
+    strategy: "{workflowOutcomeHeader} chip group for assigned tag labels"
+    confidence: inferred
+  workflowOutcomeHeaderTitle:
+    strategy: "{workflowOutcomeHeader} primary title label"
+    confidence: inferred
+  workflowOutcomeHeaderToggle:
+    strategy: "{workflowOutcomeHeader} expand/collapse control for child entries"
+    confidence: inferred
+  workflowOutcomeHighlightBorder:
+    strategy: "highlight presentation on {workflowOutcomesAssignTabOutcomeRow}"
+    confidence: inferred
+  workflowOutcomeHoverActionsMenu:
+    strategy: "{workflowOutcomeHeader} floating group of icon buttons with tooltips, shown on hover"
+    confidence: inferred
+  workflowOutcomeHoverActionsMenuCommentsItem:
+    strategy: "{workflowOutcomeHoverActionsMenu} button whose accessible name resolves to localized 'Comments'"
+    confidence: inferred
+  workflowOutcomeHoverActionsMenuDeleteItem:
+    strategy: "{workflowOutcomeHoverActionsMenu} item with tooltip 'Delete outcome'"
+    confidence: inferred
+  workflowOutcomeHoverActionsMenuDuplicateItem:
+    strategy: "{workflowOutcomeHoverActionsMenu} item with tooltip 'Duplicate outcome below'"
+    confidence: inferred
+  workflowOutcomeHoverActionsMenuInsertChildItem:
+    strategy: "{workflowOutcomeHoverActionsMenu} item with tooltip 'Insert child outcome'"
+    confidence: inferred
+  workflowOutcomeHoverActionsMenuInsertSiblingItem:
+    strategy: "{workflowOutcomeHoverActionsMenu} item with tooltip 'Insert outcome below'"
+    confidence: inferred
+  workflowOutcomeTree:
+    strategy: null
+    confidence: unresolved
+  workflowOutcomeTreeRowDropIndicator:
+    strategy: null
+    confidence: unresolved
+  workflowOutcomeView:
+    strategy: null
+    confidence: unresolved
+  workflowOutcomeViewAddOutcomeButton:
+    strategy: "{workflowOutcomeViewEmptyState} button with text 'Add outcome'"
+    confidence: inferred
+  workflowOutcomeViewEmptyState:
+    strategy: "{workflowOutcomeView} region containing workflowOutcomeViewEmptyStateAlert and workflowOutcomeViewAddOutcomeButton when no workflowOutcome exists"
+    confidence: inferred
+  workflowOutcomeViewEmptyStateAlert:
+    strategy: "{workflowOutcomeViewEmptyState} alert with title 'How to use outcomes'"
+    confidence: inferred
+  workflowOutcomesAssignTabAddOutcomesButton:
+    strategy: "{workflowOutcomesAssignTabEmptyState} button with text 'Add outcomes'"
+    confidence: inferred
+  workflowOutcomesAssignTabEditOutcomesButton:
+    strategy: "{workflowRightSidebarOutcomesTabContent} button with text 'Edit outcomes'"
+    confidence: inferred
+  workflowOutcomesAssignTabEmptyState:
+    strategy: "{workflowRightSidebarOutcomesTabContent} region containing workflowOutcomesAssignTabEmptyStateAlert and workflowOutcomesAssignTabAddOutcomesButton"
+    confidence: inferred
+  workflowOutcomesAssignTabEmptyStateAlert:
+    strategy: "{workflowOutcomesAssignTabEmptyState} persistent alert"
+    confidence: inferred
+  workflowOutcomesAssignTabHeading:
+    strategy: "{workflowRightSidebarOutcomesTabContent} heading with text 'Outcomes'"
+    confidence: inferred
+  workflowOutcomesAssignTabOutcomeRow:
+    strategy: "level-1 row inside {workflowOutcomesAssignTabTagGroup} or {workflowOutcomesAssignTabUntaggedGroup}, or nested row under expanded ancestor {workflowOutcomesAssignTabOutcomeRow} per FR-WF-AO-003"
+    confidence: inferred
+  workflowOutcomesAssignTabOutcomeRowToggle:
+    strategy: "{workflowOutcomesAssignTabOutcomeRow} expand/collapse control"
+    confidence: inferred
+  workflowOutcomesAssignTabTagGroup:
+    strategy: "{workflowRightSidebarOutcomesTabContent} tagged group section containing workflowOutcomesAssignTabTagGroupTitle and level-1 workflowOutcomesAssignTabOutcomeRow entries"
+    confidence: inferred
+  workflowOutcomesAssignTabTagGroupTitle:
+    strategy: "{workflowOutcomesAssignTabTagGroup} title element, or {workflowOutcomesAssignTabUntaggedGroup} title element with text 'Untagged' when rendered per FR-WF-AO-002"
+    confidence: inferred
+  workflowOutcomesAssignTabUntaggedGroup:
+    strategy: "{workflowRightSidebarOutcomesTabContent} untagged group section containing level-1 workflowOutcomesAssignTabOutcomeRow entries per FR-WF-AO-002"
+    confidence: inferred
+  workflowOverviewView:
+    strategy: "URL pathname /workflow/{id}"
+    confidence: inferred
+  workflowProjectSearchEmptyState:
+    strategy: "{workflowProjectSearchView} empty-results state when search matches no projectCard"
+    confidence: unresolved
+  workflowProjectSearchField:
+    strategy: null
+    confidence: unresolved
+  workflowProjectSearchView:
+    strategy: null
+    confidence: unresolved
+  workflowRichTextDescriptionEditor:
+    strategy: "rich-text editor with contenteditable region and workflowRichTextDescriptionEditorToolbar inside {workflowEditNodeFormDescriptionField}, {workflowEditOutcomeFormDescriptionField}, {projectDescriptionField}, or {workflowDescriptionField}"
+    confidence: inferred
+  workflowRichTextDescriptionEditorBoldButton:
+    strategy: "{workflowRichTextDescriptionEditorToolbar} bold control"
+    confidence: inferred
+  workflowRichTextDescriptionEditorBulletListButton:
+    strategy: "{workflowRichTextDescriptionEditorToolbar} bulleted-list control"
+    confidence: inferred
+  workflowRichTextDescriptionEditorItalicButton:
+    strategy: "{workflowRichTextDescriptionEditorToolbar} italic control"
+    confidence: inferred
+  workflowRichTextDescriptionEditorLinkButton:
+    strategy: "{workflowRichTextDescriptionEditorToolbar} link control"
+    confidence: inferred
+  workflowRichTextDescriptionEditorLinkDialog:
+    strategy: "prompt or dialog opened from workflowRichTextDescriptionEditorLinkButton for hyperlink URL entry"
+    confidence: unresolved
+  workflowRichTextDescriptionEditorNumberedListButton:
+    strategy: "{workflowRichTextDescriptionEditorToolbar} numbered-list control"
+    confidence: inferred
+  workflowRichTextDescriptionEditorSubscriptButton:
+    strategy: "{workflowRichTextDescriptionEditorToolbar} subscript control"
+    confidence: inferred
+  workflowRichTextDescriptionEditorSuperscriptButton:
+    strategy: "{workflowRichTextDescriptionEditorToolbar} superscript control"
+    confidence: inferred
+  workflowRichTextDescriptionEditorToolbar:
+    strategy: "{workflowRichTextDescriptionEditor} toolbar with formatting controls per FR-WF-EN-012"
+    confidence: inferred
+  workflowRichTextDescriptionEditorUnderlineButton:
+    strategy: "{workflowRichTextDescriptionEditorToolbar} underline control"
+    confidence: inferred
+  workflowRightSidebar:
+    strategy: "[data-test-id='workflow-right-sidebar']"
+    confidence: confirmed
+  workflowRightSidebarAddTab:
+    strategy: "{workflowRightSidebarTabStrip} [aria-label='add tab']"
+    confidence: confirmed
+  workflowRightSidebarAddTabContent:
+    strategy: null
+    confidence: unresolved
+  workflowRightSidebarCommentsTab:
+    strategy: "{workflowRightSidebarTabStrip} [aria-label='comments tab']"
+    confidence: confirmed
+  workflowRightSidebarCommentsTabContent:
+    strategy: null
+    confidence: unresolved
+  workflowRightSidebarContentPanel:
+    strategy: "{workflowRightSidebar} .MuiPaper-root (content panel when expanded)"
+    confidence: inferred
+  workflowRightSidebarEditTab:
+    strategy: "{workflowRightSidebar} [aria-label='edit tab']"
+    confidence: confirmed
+  workflowRightSidebarEditTabContent:
+    strategy: null
+    confidence: unresolved
+  workflowRightSidebarOutcomesTab:
+    strategy: "{workflowRightSidebar} [aria-label='outcomes tab']"
+    confidence: confirmed
+  workflowRightSidebarOutcomesTabContent:
+    strategy: "{workflowRightSidebar} content region when {workflowRightSidebarOutcomesTab} is selected"
+    confidence: inferred
+  workflowRightSidebarTabStrip:
+    strategy: "{workflowRightSidebar} [role='group'] (Mui ToggleButtonGroup)"
+    confidence: inferred
+  workflowRightSidebarToggleButton:
+    strategy: "{workflowRightSidebar} IconButton at top-right of expanded panel"
+    confidence: inferred
+  workflowRowInsertPreDropBand:
+    strategy: null
+    confidence: unresolved
+  workflowSectionContainer:
+    strategy: "[data-section-id]"
+    confidence: confirmed
+  workflowSectionContainerHoverActionsMenu:
+    strategy: "[data-test-id=\"workflow-section-hover-menu\"]"
+    confidence: implemented
+    confidence: inferred
+  workflowSectionContainerHoverActionsMenuCommentsItem:
+    strategy: "{workflowSectionContainerHoverActionsMenu} button with accessible name 'Comments'"
+    confidence: inferred
+  workflowSectionContainerHoverActionsMenuDeleteItem:
+    strategy: "{workflowSectionContainerHoverActionsMenu} button with accessible name 'Delete section'"
+    confidence: confirmed
+  workflowSectionContainerHoverActionsMenuDuplicateItem:
+    strategy: "{workflowSectionContainerHoverActionsMenu} button with accessible name 'Duplicate section below'"
+    confidence: confirmed
+  workflowSectionContainerHoverActionsMenuInsertBelowItem:
+    strategy: "{workflowSectionContainerHoverActionsMenu} button with accessible name 'Insert section below'"
+    confidence: confirmed
+  workflowSectionContainerSelectedBorder:
+    strategy: "{workflowSectionContainer}[data-selected=\"true\"]"
+    confidence: implemented
+    confidence: inferred
+  workflowSectionDeleteDialog:
+    strategy: "[aria-labelledby='delete-section-part-modal']"
+    confidence: confirmed
+  workflowSectionDeleteDialogCancelButton:
+    strategy: "{workflowSectionDeleteDialog} button with accessible name 'Cancel'"
+    confidence: inferred
+  workflowSectionDeleteDialogConfirmButton:
+    strategy: "{workflowSectionDeleteDialog} button with accessible name 'Delete section'"
+    confidence: inferred
+  workflowSectionHeader:
+    strategy: "{workflowSectionContainer} > header"
+    confidence: confirmed
+  workflowSectionHeaderCollapseButton:
+    strategy: "{workflowSectionHeader} button[aria-label='Collapse section' or aria-label='Expand section']"
+    confidence: implemented
+    confidence: inferred
+  workflowSectionNumberLabel:
+    strategy: "{workflowSectionHeader} circular section index badge (SectionNumber span)"
+    confidence: confirmed
+  workflowSectionRow:
+    strategy: null
+    confidence: unresolved
+  workflowSectionTitleText:
+    strategy: "{workflowSectionHeader} title text adjacent to workflowSectionNumberLabel when section title is non-empty"
+    confidence: inferred
+  workflowTemplateSearchEmptyState:
+    strategy: "{workflowTemplateSearchView} empty-results state when search matches no workflowCard"
+    confidence: unresolved
+  workflowTemplateSearchField:
+    strategy: "{workflowTemplateSearchView} input with label 'Search'"
+    confidence: inferred
+  workflowTemplateSearchView:
+    strategy: null
+    confidence: unresolved
+  workflowTitle:
+    strategy: "{workflowHeader} heading text for current workflow title"
+    confidence: inferred
+  workflowTitleField:
+    strategy: "{workflowBlankForm} input[name=\"title\"]"
+    confidence: inferred
+  workflowTypeFilter:
+    strategy: "{exploreFilterToolbar} multiselect filter for workflow program types; present only when typeFilter is committed to 'Workflows' or is Unset (no committed 'Projects' or 'Workflows') (same rule as 'My library' FR-LIB-003)"
+    confidence: inferred
+  workflowTypeFilterSelectionIndicator:
+    strategy: "{workflowTypeFilter} top-right count badge showing selected workflow-type count when count is at least one"
+    confidence: inferred
+  workflowView:
+    strategy: null
+    confidence: unresolved
+  workflowViewSettingsMenu:
+    strategy: null
+    confidence: unresolved
+  workflowViewSettingsMenuItemCollapseAllOutcomes:
+    strategy: null
+    confidence: unresolved
+  workflowViewSettingsMenuItemCollapseAllSections:
+    strategy: null
+    confidence: unresolved
+  workflowViewSettingsMenuItemExpandAllOutcomes:
+    strategy: null
+    confidence: unresolved
+  workflowViewSettingsMenuItemExpandAllSections:
+    strategy: null
+    confidence: unresolved
+  workflowViewSettingsMenuTagsSection:
+    strategy: null
+    confidence: unresolved
+  workflowViewSettingsTrigger:
+    strategy: null
+    confidence: unresolved
+  workflowViewTabSelector:
+    strategy: "{workflowHeader} tab selector for workflow sub-views"
+    confidence: inferred

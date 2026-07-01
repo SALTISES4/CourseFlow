@@ -120,7 +120,7 @@ const Sidebar = () => {
   }
 
   return (
-    <SC.SidebarWrap collapsed={collapsed}>
+    <SC.SidebarWrap collapsed={collapsed} data-test-id="main-nav">
       <SC.Collapse
         color="primary"
         size="small"

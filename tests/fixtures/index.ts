@@ -1,8 +1,6 @@
-import { test as baseTest, expect } from '@playwright/test';
-
 /**
- * Default test export. Replace with `baseTest.extend({ ... })` when you add
- * custom fixtures (typed `page`, role-specific storage, API clients, etc.).
+ * Extended Playwright test entry point.
+ * Import `test` and `expect` from here in workflow E2E specs that need the manifest fixture.
  */
-export const test = baseTest;
-export { expect };
+export { test, type WorkflowHandle } from './workflow';
+export { expect } from '@playwright/test';

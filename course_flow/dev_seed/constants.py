@@ -1,4 +1,7 @@
-"""Naming and bounds for dev seed data (not a generic fixture dump)."""
+"""Naming and bounds for dev seed data (not a generic fixture dump).
+
+For Playwright E2E contract data see ``course_flow.e2e_seed``.
+"""
 
 # Projects created by the generator use this title prefix so `--clear` can
 # remove them without touching unrelated rows. Documented contract for local dev.

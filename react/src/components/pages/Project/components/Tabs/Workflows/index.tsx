@@ -36,11 +36,13 @@ const TabWorkflows = ({ uuid }: PropsType) => {
    * RENDER
    *******************************************************/
   return (
-    <LibrarySearchView
-      config={config}
-      searchArgs={searchArgs}
-      setSearchArgs={updateSearchArgsHandler}
-    />
+    <div data-test-id="project-workflows-view">
+      <LibrarySearchView
+        config={config}
+        searchArgs={searchArgs}
+        setSearchArgs={updateSearchArgsHandler}
+      />
+    </div>
   )
 }
 

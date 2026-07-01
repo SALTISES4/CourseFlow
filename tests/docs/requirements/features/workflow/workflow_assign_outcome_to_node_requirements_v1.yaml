@@ -1,0 +1,529 @@
+# Normalized requirements: assign workflowOutcomes to workflowNodes from workflowRightSidebarOutcomesTab in the 'Workflow' view
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Scope (this file): content states of workflowRightSidebarOutcomesTab in the 'Workflow' view (empty state when the workflow has no workflowOutcome entries, populated state with tag grouping and an 'Untagged'-labeled group only when some level-1 outcomes are tagged and others are not, navigation to Outcomes view via 'Edit outcomes' button); drag-and-drop assignment from a workflowOutcome row in workflowRightSidebarOutcomesTab onto a workflowNode in workflowView; cascade assignment rules on workflowNodes (manual assign/unassign/delete plus tree-change triggers per FR-WF-AO-006 — assign→descendants, all-children→parent, child-removed→parent removal, tree-change→assign when a child is inserted or reparented under an assigned parent); click-to-highlight semantics that drive workflowNode outcome-highlight presentation — FR-WF-AO-005 defines qualification (highlight set scoped to '/workflow/{id}/graph', persists across workflowRightSidebar tab switches within that view, clears on navigation away from that route or full page reload; highlight–assignment branch overlap — assigned outcome A and highlighted outcome H overlap when A = H or A is an ancestor of H, not when only proper descendants of H are assigned on the node without H; badge/border coupling per FR-WF-AO-007). Out of scope (companion FRs that already exist or are to be authored separately): tab visibility and availability in workflowRightSidebar (canonical in tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml); outcome creation, editing, deletion, duplication in the 'Outcomes' view (tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml, workflow_duplicate_outcome_requirements_v1.yaml, workflow_delete_outcome_requirements_v1.yaml); per-node linked-outcomes badge and popover (canonical in tests/docs/requirements/features/workflow/workflow_node_linked_outcomes_badge_requirements_v1.yaml — FR-WF-AO-007 through FR-WF-AO-010).
+# Cross-reference: tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebar, workflowRightSidebarOutcomesTab, workflowRightSidebarOutcomesTabContent — canonical definitions and tab visibility — FR-WF-RS-001 through FR-WF-RS-003); tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml (canonical workflowOutcome, workflowOutcomeHeaderTitle and ordinal-prefix display — FR-WF-EO-007; outcome levels — FR-WF-EO-005, FR-WF-EO-008; tag catalog parity with workflowEditNodeFormTagsAutocomplete — FR-WF-EO-005; insert sibling or child — FR-WF-EO-003 triggers FR-WF-AO-006 tree-change assign cascade); tests/docs/requirements/features/workflow/workflow_outcome_tree_drag_reorder_requirements_v1.yaml (outcome-tree reparent/combine — FR-WF-EO-016, FR-WF-EO-017; assignment side effects canonical in FR-WF-AO-006); tests/docs/requirements/features/project/project_overview_requirements_v1.yaml (projectTagsSection, projectTagItem — canonical project-level tag catalog feeding tag groupings on workflowRightSidebarOutcomesTabContent); tests/docs/requirements/features/workflow/workflow_node_visual_requirements_v1.yaml (workflowNodeOutcomeHighlightBorder visual presentation — FR-WF-NODE-003; workflowNodeHoverActionsMenu — FR-WF-NODE-004, FR-WF-NODE-005); tests/docs/requirements/features/workflow/workflow_edit_channel_requirements_v1.yaml (workflowChannelHoverActionsMenu — FR-CHAN-007); tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml (workflowNode canonical; sidebar Edit tab patterns); tests/docs/requirements/features/workflow/workflow_node_linked_outcomes_badge_requirements_v1.yaml (workflowNodeLinkedOutcomesBadge, popover, unlink — FR-WF-AO-007 through FR-WF-AO-010); tests/docs/requirements/features/workflow/workflow_delete_outcome_requirements_v1.yaml (FR-WF-EO-014 removes assign-tab rows and node assignments when a workflowOutcome is deleted); tests/docs/requirements/guidelines_functional_requirements.md
+#   - tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-002)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - current route is '/workflow/{id}/graph'
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+  - workflowRightSidebar is visible per FR-WF-RS-001
+  - workflowRightSidebarOutcomesTab is visible per FR-WF-RS-002
+  - requirements in this file assume the above hold; when they do not, assert per FR-WS-ACCESS-002
+
+uiObjectDefinitions:
+  workflowView:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_add_tab_requirements_v1.yaml.
+  workflowSectionContainer:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_add_tab_requirements_v1.yaml.
+  workflowNode:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml.
+  workflowOutcome:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml.
+  workflowOutcomeTree:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml.
+  workflowOutcomeHeaderTitle:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml.
+  workflowEditOutcomeFormTitleField:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml.
+  workflowEditOutcomeFormCodeField:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml.
+  workflowRightSidebar:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarOutcomesTab:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml.
+  workflowRightSidebarOutcomesTabContent:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml.
+  workflowOutcomesAssignTabEmptyState:
+    meaning: Assign-tab content region inside workflowRightSidebarOutcomesTabContent; mutually exclusive with workflowOutcomesAssignTabTagGroup, workflowOutcomesAssignTabUntaggedGroup, and workflowOutcomesAssignTabOutcomeRow. Corresponds to the sole case where the current workflow has zero workflowOutcome entries at any level (nothing to list from the 'Outcomes' view) per FR-WF-AO-001.
+  workflowOutcomesAssignTabHeading:
+    meaning: Heading inside workflowRightSidebarOutcomesTabContent with literal copy 'Outcomes'.
+  workflowOutcomesAssignTabEmptyStateAlert:
+    meaning: Informational alert inside workflowOutcomesAssignTabEmptyState; body copy per FR-WF-AO-001.
+  workflowOutcomesAssignTabAddOutcomesButton:
+    meaning: Action button inside workflowOutcomesAssignTabEmptyState labeled 'Add outcomes'.
+  workflowOutcomesAssignTabEditOutcomesButton:
+    meaning: Action button inside workflowRightSidebarOutcomesTabContent labeled 'Edit outcomes'.
+  workflowOutcomesAssignTabTagGroup:
+    meaning: Visual group inside workflowRightSidebarOutcomesTabContent for a single tag from the project-level tag catalog per FR-PROJ-OV-005.
+  workflowOutcomesAssignTabTagGroupTitle:
+    meaning: Heading of a workflowOutcomesAssignTabTagGroup (tag catalog label from FR-PROJ-OV-005) or, in the mixed tagged/untagged case per FR-WF-AO-002, of workflowOutcomesAssignTabUntaggedGroup with literal 'Untagged'.
+  workflowOutcomesAssignTabUntaggedGroup:
+    meaning: Group section inside workflowRightSidebarOutcomesTabContent for level-1 workflowOutcomes with zero tags assigned; workflowOutcomesAssignTabTagGroupTitle with literal 'Untagged' is rendered only in the mixed tagged/untagged case per FR-WF-AO-002.
+  workflowOutcomesAssignTabOutcomeRow:
+    meaning: Row inside workflowRightSidebarOutcomesTabContent representing a single workflowOutcome within the workflowOutcomesAssignTabTagGroup or workflowOutcomesAssignTabUntaggedGroup section of its level-1 ancestor in workflowOutcomeTree; level-1 rows are rendered at the top of that section, level-2 and level-3 rows are rendered nested under expanded ancestor rows per FR-WF-AO-003.
+  workflowOutcomesAssignTabOutcomeRowToggle:
+    meaning: Expand/collapse control inside a workflowOutcomesAssignTabOutcomeRow for the workflowOutcome's descendant rows.
+  workflowOutcomeHighlightBorder:
+    meaning: Visual highlight outline applied to a workflowOutcomesAssignTabOutcomeRow.
+  workflowNodeOutcomeHighlightBorder:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_node_visual_requirements_v1.yaml.
+  workflowNodeOutcomeDropTargetBorder:
+    meaning: Transient drop-target outline on a workflowNode.
+  workflowNodeHoverActionsMenu:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_node_visual_requirements_v1.yaml.
+  workflowChannelHeader:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_channel_requirements_v1.yaml.
+  workflowChannelHoverActionsMenu:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_channel_requirements_v1.yaml.
+  workflowChannelsHeaderRow:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_channel_requirements_v1.yaml.
+  workflowNodeLinkedOutcomesBadge:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_node_linked_outcomes_badge_requirements_v1.yaml.
+  workflowNodeLinkedOutcomesPopover:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_node_linked_outcomes_badge_requirements_v1.yaml.
+  workflowNodeLinkedOutcomeRow:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_node_linked_outcomes_badge_requirements_v1.yaml.
+
+locatorMappings:
+  workflowView: "canonical_locators.yaml -> workflowView"
+  workflowSectionContainer: "canonical_locators.yaml -> workflowSectionContainer"
+  workflowNode: "canonical_locators.yaml -> workflowNode"
+  workflowOutcome: "canonical_locators.yaml -> workflowOutcome"
+  workflowOutcomeTree: "canonical_locators.yaml -> workflowOutcomeTree"
+  workflowOutcomeHeaderTitle: "canonical_locators.yaml -> workflowOutcomeHeaderTitle"
+  workflowEditOutcomeFormTitleField: "canonical_locators.yaml -> workflowEditOutcomeFormTitleField"
+  workflowEditOutcomeFormCodeField: "canonical_locators.yaml -> workflowEditOutcomeFormCodeField"
+  workflowRightSidebar: "canonical_locators.yaml -> workflowRightSidebar"
+  workflowRightSidebarOutcomesTab: "canonical_locators.yaml -> workflowRightSidebarOutcomesTab"
+  workflowRightSidebarOutcomesTabContent: "canonical_locators.yaml -> workflowRightSidebarOutcomesTabContent"
+  workflowOutcomesAssignTabHeading: "canonical_locators.yaml -> workflowOutcomesAssignTabHeading"
+  workflowOutcomesAssignTabEmptyState: "canonical_locators.yaml -> workflowOutcomesAssignTabEmptyState"
+  workflowOutcomesAssignTabEmptyStateAlert: "canonical_locators.yaml -> workflowOutcomesAssignTabEmptyStateAlert"
+  workflowOutcomesAssignTabAddOutcomesButton: "canonical_locators.yaml -> workflowOutcomesAssignTabAddOutcomesButton"
+  workflowOutcomesAssignTabEditOutcomesButton: "canonical_locators.yaml -> workflowOutcomesAssignTabEditOutcomesButton"
+  workflowOutcomesAssignTabTagGroup: "canonical_locators.yaml -> workflowOutcomesAssignTabTagGroup"
+  workflowOutcomesAssignTabTagGroupTitle: "canonical_locators.yaml -> workflowOutcomesAssignTabTagGroupTitle"
+  workflowOutcomesAssignTabUntaggedGroup: "canonical_locators.yaml -> workflowOutcomesAssignTabUntaggedGroup"
+  workflowOutcomesAssignTabOutcomeRow: "canonical_locators.yaml -> workflowOutcomesAssignTabOutcomeRow"
+  workflowOutcomesAssignTabOutcomeRowToggle: "canonical_locators.yaml -> workflowOutcomesAssignTabOutcomeRowToggle"
+  workflowOutcomeHighlightBorder: "canonical_locators.yaml -> workflowOutcomeHighlightBorder"
+  workflowNodeOutcomeHighlightBorder: "canonical_locators.yaml -> workflowNodeOutcomeHighlightBorder"
+  workflowNodeOutcomeDropTargetBorder: "canonical_locators.yaml -> workflowNodeOutcomeDropTargetBorder"
+  workflowNodeHoverActionsMenu: "canonical_locators.yaml -> workflowNodeHoverActionsMenu"
+  workflowChannelHeader: "canonical_locators.yaml -> workflowChannelHeader"
+  workflowChannelHoverActionsMenu: "canonical_locators.yaml -> workflowChannelHoverActionsMenu"
+  workflowChannelsHeaderRow: "canonical_locators.yaml -> workflowChannelsHeaderRow"
+  workflowNodeLinkedOutcomesBadge: "canonical_locators.yaml -> workflowNodeLinkedOutcomesBadge"
+  workflowNodeLinkedOutcomesPopover: "canonical_locators.yaml -> workflowNodeLinkedOutcomesPopover"
+  workflowNodeLinkedOutcomeRow: "canonical_locators.yaml -> workflowNodeLinkedOutcomeRow"
+
+requirements:
+  - id: FR-WF-AO-001
+    title: workflowRightSidebarOutcomesTabContent empty state when the workflow has zero workflowOutcome entries
+    
+    designEvidence:
+      - FIGMA-WF-AO-NOOUT
+    
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+    
+    uiObjects:
+      - workflowRightSidebarOutcomesTabContent
+      - workflowOutcomesAssignTabHeading
+      - workflowOutcomesAssignTabEmptyState
+      - workflowOutcomesAssignTabEmptyStateAlert
+      - workflowOutcomesAssignTabAddOutcomesButton
+    
+    preconditions:
+      - workflowRightSidebarOutcomesTab is the active tab
+      - the workflow has zero workflowOutcome entries at any level
+    
+    trigger:
+      - workflowRightSidebarOutcomesTab is rendered with no workflowOutcome entries in the workflow
+      - the workflow's last workflowOutcome is removed per FR-WF-EO-014
+    
+    mainFlow:
+      - workflowRightSidebarOutcomesTabContent renders workflowOutcomesAssignTabHeading with literal copy 'Outcomes'
+      - workflowRightSidebarOutcomesTabContent renders workflowOutcomesAssignTabEmptyState in place of workflowOutcomesAssignTabTagGroup, workflowOutcomesAssignTabUntaggedGroup, and workflowOutcomesAssignTabOutcomeRow
+      - workflowOutcomesAssignTabEmptyStateAlert is rendered with a persistent (non-dismissible) presentation and body copy matching 'There are currently no outcomes in this [workflow type], navigate to the outcomes view to add outcomes.' after substituting the current workflow's user-visible type label for '[workflow type]'
+      - workflowOutcomesAssignTabAddOutcomesButton is rendered with literal label 'Add outcomes' as the primary action of the empty state; it is interactive for owner and editor and presented in a disabled (non-interactive) state for commenter, viewer, and user
+      - when workflowOutcomesAssignTabAddOutcomesButton is interactive for the actor (owner or editor), clicking it navigates the actor to the 'Outcomes' view of the current workflow at route '/workflow/{id}/outcomes'; the click does not modify any workflowOutcome data
+    
+    roleBehavior:
+      owner:
+        workflowOutcomesAssignTabEmptyStateAlert: visible
+        workflowOutcomesAssignTabAddOutcomesButton: visibleAndEnabled
+      editor:
+        workflowOutcomesAssignTabEmptyStateAlert: visible
+        workflowOutcomesAssignTabAddOutcomesButton: visibleAndEnabled
+      commenter:
+        workflowOutcomesAssignTabEmptyStateAlert: visible
+        workflowOutcomesAssignTabAddOutcomesButton: visibleAndDisabled
+      viewer:
+        workflowOutcomesAssignTabEmptyStateAlert: visible
+        workflowOutcomesAssignTabAddOutcomesButton: visibleAndDisabled
+      user:
+        workflowOutcomesAssignTabEmptyStateAlert: visible
+        workflowOutcomesAssignTabAddOutcomesButton: visibleAndDisabled
+    
+    acceptanceCriteria:
+      - given the workflow has zero workflowOutcome entries and workflowRightSidebarOutcomesTab is the active tab, then workflowRightSidebarOutcomesTabContent renders workflowOutcomesAssignTabHeading 'Outcomes', workflowOutcomesAssignTabEmptyStateAlert with body copy matching 'There are currently no outcomes in this [workflow type], navigate to the outcomes view to add outcomes.' after substituting the current workflow's user-visible type label for '[workflow type]', and workflowOutcomesAssignTabAddOutcomesButton with label 'Add outcomes'
+      - given workflowRightSidebarOutcomesTab is the active tab and actor is owner or editor and workflowOutcomesAssignTabEmptyState is rendered, then workflowOutcomesAssignTabAddOutcomesButton is rendered with literal label 'Add outcomes' in an enabled (interactive) presentation
+      - given workflowRightSidebarOutcomesTab is the active tab and actor is commenter, viewer, or user (published-access) and workflowOutcomesAssignTabEmptyState is rendered, then workflowOutcomesAssignTabAddOutcomesButton is rendered with literal label 'Add outcomes' in a disabled (non-interactive) presentation and clicks on it are a no-op
+      - given workflowRightSidebarOutcomesTab is the active tab and actor is owner or editor and workflowOutcomesAssignTabEmptyState is rendered, when actor clicks workflowOutcomesAssignTabAddOutcomesButton, then the actor is navigated to the 'Outcomes' view at route '/workflow/{id}/outcomes' and no workflowOutcome data is created or modified by the click itself
+      - given workflowRightSidebarOutcomesTab is the active tab and workflowOutcomesAssignTabEmptyState is rendered, then no workflowOutcomesAssignTabTagGroup, workflowOutcomesAssignTabUntaggedGroup, or workflowOutcomesAssignTabOutcomeRow is rendered
+      - given workflowRightSidebarOutcomesTab is the active tab and workflowOutcomesAssignTabEmptyState is rendered, then workflowOutcomesAssignTabEditOutcomesButton (the populated-state button per FR-WF-AO-002) is not rendered
+    
+    openQuestions: []
+
+  - id: FR-WF-AO-002
+    title: workflowRightSidebarOutcomesTabContent populated state — tag grouping and conditional 'Untagged' label
+    
+    designEvidence:
+      - FIGMA-WF-AO-NOTAGS
+      - FIGMA-WF-AO-TAGS
+    
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+    
+    uiObjects:
+      - workflowRightSidebarOutcomesTabContent
+      - workflowOutcomesAssignTabHeading
+      - workflowOutcomesAssignTabTagGroup
+      - workflowOutcomesAssignTabTagGroupTitle
+      - workflowOutcomesAssignTabUntaggedGroup
+      - workflowOutcomesAssignTabOutcomeRow
+      - workflowOutcomesAssignTabEditOutcomesButton
+    
+    preconditions:
+      - workflowRightSidebarOutcomesTab is the active tab
+      - the workflow has at least one level-1 workflowOutcome
+    
+    trigger:
+      - workflowRightSidebarOutcomesTab is rendered with at least one workflowOutcome in the workflow
+      - workflowOutcomeTree composition or assign-tab-relevant persisted fields change in the current workflow, including create per FR-WF-EO-001 through FR-WF-EO-003, edit per FR-WF-EO-004 through FR-WF-EO-006, delete per FR-WF-EO-014, duplicate per FR-WF-EO-009 through FR-WF-EO-011, and sibling order change per FR-WF-EO-015 through FR-WF-EO-017
+      - the project-level tag catalog changes per FR-PROJ-OV-005 (tag created, tag label edited, or tag deleted), affecting tag labels or membership used by workflowOutcomesAssignTabTagGroup on workflowRightSidebarOutcomesTab; tag deletion also clears the deleted tag from level-1 outcome tag assignments project-wide per FR-PROJ-OV-005 before assign-tab grouping is re-evaluated
+    
+    mainFlow:
+      - tag catalog deletion — when tag T is deleted per FR-PROJ-OV-005, entity tag assignments are cleared there before workflowOutcomesAssignTabTagGroup layout refreshes per this FR; assign-tab group removal for T follows the existing AC below when no level-1 workflowOutcome retains T
+      - workflowRightSidebarOutcomesTabContent renders workflowOutcomesAssignTabHeading with literal copy 'Outcomes'
+      - the workflowOutcome entities listed in workflowRightSidebarOutcomesTabContent (across all workflowOutcomesAssignTabTagGroup and workflowOutcomesAssignTabUntaggedGroup occurrences, plus any descendant rows revealed by workflowOutcomesAssignTabOutcomeRowToggle) are exactly the workflowOutcome entities that appear in workflowOutcomeTree of the 'Outcomes' view of the current workflow (same set of entity ids, same hierarchical parent/child structure, same persisted field values such as workflowEditOutcomeFormTitleField, workflowEditOutcomeFormCodeField, workflowEditOutcomeFormDescriptionField, workflowEditOutcomeFormTagsAutocomplete); the two surfaces differ only in layout (tag-grouped flat-with-expansion here vs. nested tree there), not in the underlying workflowOutcome set
+      - workflowRightSidebarOutcomesTabContent renders one workflowOutcomesAssignTabTagGroup per tag from the project-level tag catalog per FR-PROJ-OV-005 that is currently assigned to at least one level-1 workflowOutcome of the workflow
+      - each workflowOutcomesAssignTabTagGroup contains the level-1 workflowOutcomes that have that tag assigned, each as a workflowOutcomesAssignTabOutcomeRow; the tag-group title (workflowOutcomesAssignTabTagGroupTitle) renders the tag label from the project-level tag catalog
+      - workflowOutcomesAssignTabTagGroup entries are ordered alphabetically by their tag label (case-insensitive); workflowOutcomesAssignTabUntaggedGroup, when rendered, is appended last after all alphabetically-ordered tag groups
+      - row order within groups — within each workflowOutcomesAssignTabTagGroup and within workflowOutcomesAssignTabUntaggedGroup, level-1 workflowOutcomesAssignTabOutcomeRow entries appear in the same sibling order as their bound level-1 workflowOutcomes appear in workflowOutcomeTree per FR-WF-EO-007 (ordinal order among level-1 siblings; not alphabetical by title or creation order)
+      - when at least one workflowOutcomesAssignTabTagGroup is rendered (i.e., at least one level-1 workflowOutcome has at least one tag assigned) AND at least one level-1 workflowOutcome has zero tags assigned, workflowRightSidebarOutcomesTabContent additionally renders workflowOutcomesAssignTabUntaggedGroup with literal title 'Untagged' (rendered in workflowOutcomesAssignTabTagGroupTitle) containing every level-1 workflowOutcome with zero tags
+      - when no level-1 workflowOutcome has any tag assigned (no workflowOutcomesAssignTabTagGroup is rendered), workflowRightSidebarOutcomesTabContent renders every level-1 workflowOutcome inside workflowOutcomesAssignTabUntaggedGroup without workflowOutcomesAssignTabTagGroupTitle; the literal title 'Untagged' is not rendered in this case (the group appears as a single unlabeled section)
+      - when a level-1 workflowOutcome has multiple tags assigned, that workflowOutcome appears once inside each of its tag groups (it is listed once per tag group it qualifies for)
+      - workflowOutcomesAssignTabEditOutcomesButton is rendered with literal label 'Edit outcomes' as a secondary action in the action area; it is interactive for owner and editor and presented in a disabled (non-interactive) state for commenter, viewer, and user
+      - when workflowOutcomesAssignTabEditOutcomesButton is interactive for the actor (owner or editor), clicking it navigates the actor to the 'Outcomes' view of the current workflow at route '/workflow/{id}/outcomes'; the click does not modify any workflowOutcome data
+    
+    roleBehavior:
+      owner:
+        workflowOutcomesAssignTabEditOutcomesButton: visibleAndEnabled
+      editor:
+        workflowOutcomesAssignTabEditOutcomesButton: visibleAndEnabled
+      commenter:
+        workflowOutcomesAssignTabEditOutcomesButton: visibleAndDisabled
+      viewer:
+        workflowOutcomesAssignTabEditOutcomesButton: visibleAndDisabled
+      user:
+        workflowOutcomesAssignTabEditOutcomesButton: visibleAndDisabled
+    
+    acceptanceCriteria:
+      - given the workflow has at least one level-1 workflowOutcome and workflowRightSidebarOutcomesTab is the active tab, then workflowRightSidebarOutcomesTabContent renders workflowOutcomesAssignTabHeading 'Outcomes', at least one workflowOutcomesAssignTabTagGroup or workflowOutcomesAssignTabUntaggedGroup, and workflowOutcomesAssignTabEditOutcomesButton
+      - given workflowRightSidebarOutcomesTab is the active tab and a tag T from the project-level tag catalog is assigned to N level-1 workflowOutcomes of the workflow, then workflowRightSidebarOutcomesTabContent renders a workflowOutcomesAssignTabTagGroup with title T containing exactly those N level-1 workflowOutcomes, each as a workflowOutcomesAssignTabOutcomeRow
+      - given workflowRightSidebarOutcomesTab is the active tab and a level-1 workflowOutcome has multiple tags {T1, T2}, then it appears as a workflowOutcomesAssignTabOutcomeRow once in each of workflowOutcomesAssignTabTagGroup T1 and workflowOutcomesAssignTabTagGroup T2
+      - given workflowRightSidebarOutcomesTab is the active tab and every level-1 workflowOutcome of the workflow has at least one tag assigned, then workflowOutcomesAssignTabUntaggedGroup is not rendered
+      - given workflowRightSidebarOutcomesTab is the active tab and at least one level-1 workflowOutcome has at least one tag assigned AND at least one level-1 workflowOutcome has zero tags assigned (mixed case), then workflowOutcomesAssignTabUntaggedGroup is rendered with workflowOutcomesAssignTabTagGroupTitle showing the literal title 'Untagged' and contains exactly the level-1 workflowOutcomes with zero tags
+      - given workflowRightSidebarOutcomesTab is the active tab and no level-1 workflowOutcome of the workflow has any tag assigned (every level-1 workflowOutcome has zero tags), then workflowRightSidebarOutcomesTabContent renders a single workflowOutcomesAssignTabUntaggedGroup containing every level-1 workflowOutcome and workflowOutcomesAssignTabTagGroupTitle is not rendered for that group (no 'Untagged' label is shown)
+      - given workflowRightSidebarOutcomesTab is the active tab and a tag T from the project-level tag catalog exists but no level-1 workflowOutcome of the workflow has T assigned, then no workflowOutcomesAssignTabTagGroup with title T is rendered
+      - given workflowRightSidebarOutcomesTab is the active tab and workflowOutcomesAssignTabTagGroup entries G1, G2, …, Gk are rendered, then they are ordered alphabetically (case-insensitive) by their tag labels; workflowOutcomesAssignTabUntaggedGroup, when rendered, appears after Gk as the last group
+      - given workflowRightSidebarOutcomesTab is the active tab and actor is owner or editor and the populated state is rendered, then workflowOutcomesAssignTabEditOutcomesButton is rendered with literal label 'Edit outcomes' in an enabled (interactive) presentation
+      - given workflowRightSidebarOutcomesTab is the active tab and actor is commenter, viewer, or user (published-access) and the populated state is rendered, then workflowOutcomesAssignTabEditOutcomesButton is rendered with literal label 'Edit outcomes' in a disabled (non-interactive) presentation and clicks on it are a no-op
+      - given workflowRightSidebarOutcomesTab is the active tab and actor is owner or editor and the populated state is rendered, when actor clicks workflowOutcomesAssignTabEditOutcomesButton, then the actor is navigated to the 'Outcomes' view at route '/workflow/{id}/outcomes' and no workflowOutcome data is modified by the click itself
+      - given workflowRightSidebarOutcomesTab is the active tab and the 'Outcomes' view of the current workflow renders workflowOutcomeTree with workflowOutcome entities {O1, O2, …, On} (at any level, with any parent/child structure), then workflowRightSidebarOutcomesTabContent in the 'Workflow' view (in its populated state) sources its rows from exactly that same set {O1, O2, …, On}: every Oi appears as at least one workflowOutcomesAssignTabOutcomeRow reachable in workflowRightSidebarOutcomesTabContent (directly or via expansion of a level-1 row through workflowOutcomesAssignTabOutcomeRowToggle), and no workflowOutcomesAssignTabOutcomeRow is rendered for any workflowOutcome that is not present in workflowOutcomeTree of the current workflow
+      - given workflowRightSidebarOutcomesTab is the active tab and workflowOutcomesAssignTabTagGroup G contains level-1 workflowOutcomes O1 and O2 that both have G's tag assigned, and O1 precedes O2 in workflowOutcomeTree sibling order per FR-WF-EO-007, then the workflowOutcomesAssignTabOutcomeRow for O1 appears above the workflowOutcomesAssignTabOutcomeRow for O2 inside G
+      - given workflowRightSidebarOutcomesTab is the active tab and workflowOutcomesAssignTabUntaggedGroup contains level-1 workflowOutcomes U1 and U2 with zero tags, and U1 precedes U2 in workflowOutcomeTree sibling order per FR-WF-EO-007, then the workflowOutcomesAssignTabOutcomeRow for U1 appears above the workflowOutcomesAssignTabOutcomeRow for U2 inside workflowOutcomesAssignTabUntaggedGroup
+      - given workflowOutcome O appears as a workflowOutcomesAssignTabOutcomeRow in workflowRightSidebarOutcomesTabContent and O is deleted per FR-WF-EO-014, when actor selects 'Workflow' on workflowViewTabSelector per FR-WF-HEADER-001 and clicks workflowRightSidebarOutcomesTab, then no workflowOutcomesAssignTabOutcomeRow for O or any deleted descendant of O remains rendered in workflowRightSidebarOutcomesTabContent
+      - given the workflow had exactly one workflowOutcome and that workflowOutcome is deleted per FR-WF-EO-014, when actor selects 'Workflow' on workflowViewTabSelector per FR-WF-HEADER-001 and clicks workflowRightSidebarOutcomesTab, then workflowRightSidebarOutcomesTabContent renders the empty state per FR-WF-AO-001
+      - given the workflow had zero workflowOutcome entries and owner creates the first workflowOutcome in the 'Outcomes' view per FR-WF-EO-001, when actor selects 'Workflow' on workflowViewTabSelector per FR-WF-HEADER-001 and clicks workflowRightSidebarOutcomesTab, workflowRightSidebarOutcomesTabContent renders the populated state per this FR and not the empty state per FR-WF-AO-001
+      - given workflowRightSidebarOutcomesTabContent is in populated state and owner duplicates a workflowOutcome in the 'Outcomes' view per FR-WF-EO-009, when actor selects 'Workflow' on workflowViewTabSelector per FR-WF-HEADER-001 and clicks workflowRightSidebarOutcomesTab, the duplicate appears as a workflowOutcomesAssignTabOutcomeRow per this FR's parity rules with workflowOutcomeTree
+      - given workflowRightSidebarOutcomesTabContent is in populated state and owner changes tag assignments on a level-1 workflowOutcome per FR-WF-EO-005 in the 'Outcomes' view, when actor selects 'Workflow' on workflowViewTabSelector per FR-WF-HEADER-001 and clicks workflowRightSidebarOutcomesTab, that workflowOutcome appears in the correct workflowOutcomesAssignTabTagGroup(s) per this FR
+      - given level-1 workflowOutcome L1 has tag T assigned and workflowOutcomesAssignTabTagGroup for T is rendered with title equal to T's catalog label, when owner edits T's label in projectTagsSection per FR-PROJ-OV-005 and actor selects 'Workflow' on workflowViewTabSelector per FR-WF-HEADER-001 and clicks workflowRightSidebarOutcomesTab, then workflowOutcomesAssignTabTagGroup for T displays the updated label in workflowOutcomesAssignTabTagGroupTitle and tag groups re-order alphabetically by the new label if applicable
+      - given tag T is deleted from the project-level tag catalog per FR-PROJ-OV-005 and no level-1 workflowOutcome in the workflow retains tag T, when actor selects 'Workflow' on workflowViewTabSelector per FR-WF-HEADER-001 and clicks workflowRightSidebarOutcomesTab, then workflowOutcomesAssignTabTagGroup for T is no longer rendered on workflowRightSidebarOutcomesTab
+    
+    openQuestions: []
+
+  - id: FR-WF-AO-003
+    title: workflowOutcomesAssignTabOutcomeRow displays workflowOutcomeHeaderTitle and supports descendant expansion
+    
+    designEvidence:
+      - FIGMA-WF-AO-NOTAGS
+      - FIGMA-WF-AO-TAGS
+    
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+    
+    uiObjects:
+      - workflowOutcomesAssignTabOutcomeRow
+      - workflowOutcomesAssignTabOutcomeRowToggle
+      - workflowOutcome
+      - workflowOutcomeHeaderTitle
+      - workflowEditOutcomeFormTitleField
+      - workflowEditOutcomeFormCodeField
+    
+    preconditions:
+      - workflowRightSidebarOutcomesTab is the active tab
+      - workflowRightSidebarOutcomesTabContent populated state is rendered per FR-WF-AO-002
+    
+    trigger:
+      - workflowOutcomesAssignTabOutcomeRow is rendered or re-rendered for a workflowOutcome (level 1 at top level, or level 2 or level 3 when revealed by workflowOutcomesAssignTabOutcomeRowToggle on an ancestor row)
+      - assign-tab-relevant persisted fields or hierarchy of a workflowOutcome shown in workflowOutcomesAssignTabOutcomeRow change while workflowRightSidebarOutcomesTabContent populated state is rendered per FR-WF-AO-002 (same events as FR-WF-AO-002 trigger, including create, edit, delete, duplicate, and sibling reorder)
+    
+    mainFlow:
+      - workflowOutcomesAssignTabOutcomeRow renders workflowOutcomeHeaderTitle for the bound workflowOutcome, including its ordinal prefix and optional Code per FR-WF-EO-007
+      - workflowOutcomesAssignTabOutcomeRow presents workflowOutcomeHeaderTitle on a single visual text line within the row width — the title text does not wrap to additional lines; when the composed string per FR-WF-EO-007 exceeds the available width for that text region, the visible presentation is truncated and suffixed with the literal '...' (three full stops); persisted field values on the bound workflowOutcome are not altered (display-only truncation)
+      - workflowOutcomesAssignTabOutcomeRowToggle is rendered for the bound workflowOutcome only when it has at least one child workflowOutcome (level 2 if the bound row is level 1; level 3 if the bound row is level 2)
+      - clicking workflowOutcomesAssignTabOutcomeRowToggle expands or collapses the bound workflowOutcome to show or hide its direct-child workflowOutcomesAssignTabOutcomeRow entries; clicking the toggle does not change the highlight state of the bound workflowOutcome (per FR-WF-AO-005) and does not trigger a drag-and-drop assignment (per FR-WF-AO-004)
+      - descendant rows (level 2 and level 3) are themselves rendered as workflowOutcomesAssignTabOutcomeRow entries that support the same drag-source semantics (FR-WF-AO-004) and the same click-to-highlight semantics (FR-WF-AO-005)
+      - nested row order — when a workflowOutcomesAssignTabOutcomeRow is expanded, nested workflowOutcomesAssignTabOutcomeRow entries for direct children appear in the same sibling order as those child workflowOutcomes appear in workflowOutcomeTree per FR-WF-EO-007 (ordinal order within each parent's child list; same rule as level-1 rows within tag groups per FR-WF-AO-002)
+      - the bound workflowOutcome's ordinal prefix, workflowEditOutcomeFormTitleField value, and (level 1 only) workflowEditOutcomeFormCodeField value displayed in workflowOutcomesAssignTabOutcomeRow follow the same rendering rules as workflowOutcomeHeaderTitle in workflowOutcomeTree per FR-WF-EO-007 and the 'Untitled outcome' display fallback per FR-WF-EO-006
+    
+    roleBehavior:
+      owner:
+        workflowOutcomesAssignTabOutcomeRowToggle: clickableWhenRendered
+      editor:
+        workflowOutcomesAssignTabOutcomeRowToggle: clickableWhenRendered
+      commenter:
+        workflowOutcomesAssignTabOutcomeRowToggle: clickableWhenRendered
+      viewer:
+        workflowOutcomesAssignTabOutcomeRowToggle: clickableWhenRendered
+      user:
+        workflowOutcomesAssignTabOutcomeRowToggle: clickableWhenRendered
+    
+    acceptanceCriteria:
+      - given workflowRightSidebarOutcomesTab is the active tab and a workflowOutcomesAssignTabOutcomeRow is rendered for workflowOutcome O, then workflowOutcomesAssignTabOutcomeRow displays workflowOutcomeHeaderTitle for O per FR-WF-EO-007 (including ordinal prefix, the workflowEditOutcomeFormTitleField value, and at level 1 with a non-empty workflowEditOutcomeFormCodeField value, the workflowEditOutcomeFormCodeField segment)
+      - given workflowRightSidebarOutcomesTab is the active tab and the composed workflowOutcomeHeaderTitle text for workflowOutcome O (ordinal prefix, workflowEditOutcomeFormTitleField value, and optional workflowEditOutcomeFormCodeField value per FR-WF-EO-007) is longer than the assign-tab row allocates to the title text region in workflowOutcomesAssignTabOutcomeRow, then workflowOutcomesAssignTabOutcomeRow shows a single line with truncation and a literal '...' suffix and does not wrap the title to a second line; persisted values on O are unchanged
+      - given workflowRightSidebarOutcomesTab is the active tab and the bound workflowOutcome has no children, then workflowOutcomesAssignTabOutcomeRowToggle is not rendered
+      - given workflowRightSidebarOutcomesTab is the active tab and the bound workflowOutcome has at least one child, then workflowOutcomesAssignTabOutcomeRowToggle is rendered; when actor clicks workflowOutcomesAssignTabOutcomeRowToggle, the row toggles between expanded and collapsed
+      - given workflowRightSidebarOutcomesTab is the active tab and workflowOutcomesAssignTabOutcomeRow is expanded, descendant workflowOutcomesAssignTabOutcomeRow entries are rendered nested under the bound row and each descendant row is itself a draggable assignment source (FR-WF-AO-004) and a click-to-highlight target (FR-WF-AO-005)
+      - given workflowRightSidebarOutcomesTab is the active tab, when actor clicks workflowOutcomesAssignTabOutcomeRowToggle, the bound workflowOutcome's highlight state does not change (per FR-WF-AO-005) and no drag-and-drop assignment is initiated (per FR-WF-AO-004)
+      - given workflowRightSidebarOutcomesTab is the active tab and workflowOutcomesAssignTabOutcomeRow for level-1 workflowOutcome P is expanded and P has direct children C1 and C2 where C1 precedes C2 in workflowOutcomeTree sibling order per FR-WF-EO-007, then the nested workflowOutcomesAssignTabOutcomeRow for C1 appears above the nested workflowOutcomesAssignTabOutcomeRow for C2
+      - given workflowRightSidebarOutcomesTab is the active tab and workflowOutcomesAssignTabOutcomeRow for level-2 workflowOutcome C is expanded and C has direct level-3 children G1 and G2 where G1 precedes G2 in workflowOutcomeTree sibling order per FR-WF-EO-007, then the nested workflowOutcomesAssignTabOutcomeRow for G1 appears above the nested workflowOutcomesAssignTabOutcomeRow for G2
+      - given workflowOutcomesAssignTabOutcomeRow is rendered for workflowOutcome O and owner edits workflowEditOutcomeFormTitleField on O in the 'Outcomes' view per FR-WF-EO-004, when actor selects 'Workflow' on workflowViewTabSelector per FR-WF-HEADER-001 and clicks workflowRightSidebarOutcomesTab, the row displays the updated workflowOutcomeHeaderTitle for O per this FR
+      - given workflowRightSidebarOutcomesTab is the active tab and level-1 workflowOutcomesAssignTabOutcomeRow for workflowOutcome P is expanded and a nested workflowOutcomesAssignTabOutcomeRow is rendered for direct child C, the nested row displays workflowOutcomeHeaderTitle for C per FR-WF-EO-007 and follows the same single-line truncation rule as top-level rows per this FR
+    
+    openQuestions: []
+
+  - id: FR-WF-AO-004
+    title: Drag a workflowOutcomesAssignTabOutcomeRow onto a workflowNode to assign the workflowOutcome
+    
+    designEvidence:
+      - FIGMA-WF-AO-NOTAGS
+      - FIGMA-WF-AO-TAGS
+    
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+    
+    uiObjects:
+      - workflowOutcomesAssignTabOutcomeRow
+      - workflowOutcome
+      - workflowNode
+      - workflowView
+      - workflowNodeOutcomeDropTargetBorder
+      - workflowNodeHoverActionsMenu
+      - workflowChannelHeader
+      - workflowChannelHoverActionsMenu
+      - workflowChannelsHeaderRow
+      - workflowSectionContainer
+    
+    preconditions:
+      - workflowRightSidebarOutcomesTab is the active tab
+      - workflowRightSidebarOutcomesTabContent populated state is rendered per FR-WF-AO-002
+    
+    trigger:
+      - owner or editor presses pointer on a workflowOutcomesAssignTabOutcomeRow, drags onto a workflowNode in workflowView, and releases
+    
+    mainFlow:
+      - pointer-only — assignment via this FR is initiated only by a pointer press-drag-release gesture from workflowOutcomesAssignTabOutcomeRow onto a workflowNode
+      - disabled drag source — for commenter, viewer, and user, a pointer gesture on workflowOutcomesAssignTabOutcomeRow never initiates an assignment drag session (no in-drag presentation, no workflowNodeOutcomeDropTargetBorder on workflowNodes during the gesture); click-to-highlight per FR-WF-AO-005 remains available on qualifying row click for those roles
+      - drag source — workflowOutcomesAssignTabOutcomeRow at any outcome level (level 1, level 2, or level 3) is a valid drag source for the assignment interaction; the dragged payload identifies the source workflowOutcome
+      - click vs drag on row — a pointer press on workflowOutcomesAssignTabOutcomeRow that moves beyond the platform drag threshold initiates assignment drag per this FR; the highlight set per FR-WF-AO-005 is unchanged by drag initiation alone; a press-release on workflowOutcomesAssignTabOutcomeRow without movement sufficient to initiate a drag does not assign an outcome
+      - assign-tab row click dismiss — pressing pointer on workflowOutcomesAssignTabOutcomeRow per this FR or FR-WF-AO-005 closes any open workflowNodeLinkedOutcomesPopover per FR-WF-AO-008
+      - valid drop target — a workflowNode rendered in workflowView is a valid drop target; the dragged outcome row is dropped onto the workflowNode under the pointer at release
+      - drag-over highlight — while an outcome drag (drag payload sourced from workflowOutcomesAssignTabOutcomeRow per the drag-source bullet above) is in flight and the pointer is inside the boundary of a workflowNode in workflowView, that workflowNode shows workflowNodeOutcomeDropTargetBorder; when the pointer leaves the workflowNode boundary (either to another workflowNode or to a non-node region), workflowNodeOutcomeDropTargetBorder is removed from that workflowNode (and applied to the new workflowNode if applicable); at any moment during the drag, at most one workflowNode shows workflowNodeOutcomeDropTargetBorder; workflowNodeOutcomeDropTargetBorder is independent of outcome-highlight presentation per FR-WF-AO-005 (a workflowNode may show both simultaneously when it is both a valid drop target under the pointer and in outcome-highlight presentation)
+      - canvas hover suppression — while an outcome-assign drag from workflowOutcomesAssignTabOutcomeRow is in progress, workflowNodeHoverActionsMenu is not rendered on any placed workflowNode in workflowView and workflowChannelHoverActionsMenu is not rendered on any workflowChannelHeader in workflowChannelsHeaderRow (including hosts the pointer passes over during the drag)
+      - after owner or editor finalizes or aborts an outcome-assign drag, hover-based visibility on workflowNode and workflowChannelHeader resumes per FR-WF-NODE-004, FR-WF-NODE-005, and FR-CHAN-007 when the pointer hovers those hosts
+      - assignment effect — the drag-and-drop trigger is add-only: on a valid drop by owner or editor, system adds the source workflowOutcome to the target workflowNode's set of assigned outcomes if it is not already assigned; if the source workflowOutcome was already assigned to the target workflowNode, the assignment set for that workflowNode is left unchanged by the drop (this trigger never unassigns; unassignment is canonical in FR-WF-AO-010)
+      - cascade rules — assignment cascade rules from FR-WF-AO-006 are applied as part of finalizing the drop
+      - dropping outside any workflowNode (release over empty workflowView background, a workflowSectionContainer header, a workflowChannel header, or any non-node region) cancels the drag with no assignment change
+    
+    roleBehavior:
+      owner:
+        workflowOutcomesAssignTabOutcomeRow: dragSourceActive
+      editor:
+        workflowOutcomesAssignTabOutcomeRow: dragSourceActive
+      commenter:
+        workflowOutcomesAssignTabOutcomeRow: dragSourceDisabled
+      viewer:
+        workflowOutcomesAssignTabOutcomeRow: dragSourceDisabled
+      user:
+        workflowOutcomesAssignTabOutcomeRow: dragSourceDisabled
+    
+    acceptanceCriteria:
+      - given workflowRightSidebarOutcomesTab is the active tab and actor is owner or editor and drags a workflowOutcomesAssignTabOutcomeRow for workflowOutcome O onto workflowNode N where O is not yet assigned to N per this FR's roleBehavior (workflowOutcomesAssignTabOutcomeRow is dragSourceActive), after release N's set of assigned outcomes contains O (plus any descendants added by cascade per FR-WF-AO-006)
+      - given workflowRightSidebarOutcomesTab is the active tab and actor is owner or editor and drags a workflowOutcomesAssignTabOutcomeRow for workflowOutcome O onto workflowNode N where O is already assigned to N, after release N's set of assigned outcomes is unchanged with respect to O (the drag-drop trigger never unassigns; unassignment uses FR-WF-AO-010)
+      - given workflowRightSidebarOutcomesTab is the active tab and actor is owner or editor and releases a drag of a workflowOutcomesAssignTabOutcomeRow over a region of workflowView that is not a workflowNode (workflowSectionContainer background, workflowChannel header, empty canvas), no workflowNode's assignment set changes
+      - given workflowRightSidebarOutcomesTab is the active tab and actor is commenter, viewer, or user (published-access) and performs a pointer press-move-release gesture from workflowOutcomesAssignTabOutcomeRow onto a workflowNode, no assignment drag session is initiated per this FR's roleBehavior (workflowOutcomesAssignTabOutcomeRow is dragSourceDisabled), no workflowNode shows workflowNodeOutcomeDropTargetBorder during the gesture, and no workflowNode's assignment set changes; a qualifying press-release without drag per FR-WF-AO-005 may still toggle the highlight set
+      - given workflowRightSidebarOutcomesTab is the active tab and actor is owner or editor and an outcome drag from workflowOutcomesAssignTabOutcomeRow is in flight, when the pointer enters the boundary of workflowNode N in workflowView, then N shows workflowNodeOutcomeDropTargetBorder; when the pointer leaves N's boundary, workflowNodeOutcomeDropTargetBorder is removed from N; at any moment during the drag at most one workflowNode shows workflowNodeOutcomeDropTargetBorder; when workflowNode N is in outcome-highlight presentation per FR-WF-AO-005 and the pointer is inside N's boundary during the drag, N shows workflowNodeOutcomeDropTargetBorder in addition to remaining in outcome-highlight presentation
+      - given workflowRightSidebarOutcomesTab is the active tab and actor is owner or editor, there is no keyboard-only sequence that assigns a workflowOutcome to a workflowNode via the interaction defined in this FR (assignment from workflowOutcomesAssignTabOutcomeRow onto workflowNode requires a pointer drag-and-drop)
+      - given workflowRightSidebarOutcomesTab is the active tab, the workflow has at least one workflowOutcome per FR-WF-AO-002 and workflowView contains zero workflowNodes, when owner or editor presses pointer on workflowOutcomesAssignTabOutcomeRow and moves beyond the platform drag threshold, assignment drag from the row initiates per this FR; no workflowNode is rendered in workflowView so no workflowNode shows workflowNodeOutcomeDropTargetBorder during the gesture; when the actor releases anywhere over workflowView, the drag is cancelled with no assignment change per the dropping-outside-any-workflowNode rule; click-to-highlight per FR-WF-AO-005 may still apply on qualifying press-release without drag
+    
+    openQuestions: []
+
+  - id: FR-WF-AO-005
+    title: Click a workflowOutcomesAssignTabOutcomeRow to highlight workflowNodes with highlight–assignment branch overlap to that workflowOutcome
+    
+    designEvidence:
+      - FIGMA-WF-AO-NOTAGS
+      - FIGMA-WF-AO-TAGS
+    
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+    
+    uiObjects:
+      - workflowOutcomesAssignTabOutcomeRow
+      - workflowOutcomesAssignTabOutcomeRowToggle
+      - workflowOutcome
+      - workflowOutcomeHighlightBorder
+      - workflowNode
+      - workflowNodeOutcomeHighlightBorder
+    
+    preconditions:
+      - the workflow has at least one level-1 workflowOutcome
+      - workflowRightSidebarOutcomesTab is the active tab when the trigger is actor clicks workflowOutcomesAssignTabOutcomeRow for a workflowOutcome
+    
+    trigger:
+      - actor clicks workflowOutcomesAssignTabOutcomeRow for a workflowOutcome
+      - actor navigates such that the current route is no longer '/workflow/{id}/graph' for the workflow where the highlight set was active
+      - the workflow page is fully reloaded
+      - owner or editor unlinks a workflowOutcome from a workflowNode via FR-WF-AO-010
+      - owner or editor assigns a workflowOutcome to a workflowNode via FR-WF-AO-004 (drag from workflowOutcomesAssignTabOutcomeRow onto workflowNode)
+    
+    mainFlow:
+      - system maintains a highlight set of workflowOutcomes that are currently turned on for highlighting; clicking workflowOutcomesAssignTabOutcomeRow for a workflowOutcome flips its presence in the highlight set on or off (added if absent, removed if present); multiple workflowOutcomes can be on at the same time
+      - outcomes-tab for row click — toggling the highlight set via workflowOutcomesAssignTabOutcomeRow requires workflowRightSidebarOutcomesTab to be the active tab; highlight-set persistence, node border re-evaluation on assign/unlink per FR-WF-AO-004 and FR-WF-AO-010, and canvas highlight presentation while another workflowRightSidebar tab is active apply regardless of which sidebar tab is currently active
+      - click vs drag on row — only a press-release on workflowOutcomesAssignTabOutcomeRow without pointer movement sufficient to initiate a drag per FR-WF-AO-004 toggles the highlight set; if the pointer moves beyond the platform drag threshold while pressed on workflowOutcomesAssignTabOutcomeRow, FR-WF-AO-004 drag semantics apply and the highlight set is unchanged by that gesture until a qualifying row click occurs
+      - cascade-down for row highlight — workflowOutcomeHighlightBorder is rendered on every workflowOutcomesAssignTabOutcomeRow whose bound workflowOutcome is in the highlight set OR whose bound workflowOutcome has an ancestor in the highlight set (i.e., highlighting a parent row visually highlights all descendant rows in the same subtree); no row is highlighted purely because a descendant or sibling is in the set (no cascade-up, no cross-branch propagation)
+      - highlight–assignment branch overlap — workflowOutcome A (assigned to a workflowNode) and workflowOutcome H (in the highlight set) overlap for node highlighting when A and H are the same workflowOutcome or A is an ancestor of H in workflowOutcomeTree (assignment at or above the highlighted level); when H is an ancestor of A but A is not an ancestor of H (highlighted parent, only proper descendants assigned on the node without the parent), they do not overlap; outcomes on different branches do not overlap
+      - outcome-highlight on workflowNodes — a workflowNode is in outcome-highlight presentation when the highlight set is non-empty and at least one outcome assigned to that workflowNode has highlight–assignment branch overlap with at least one workflowOutcome in the highlight set; workflowNodes with no such overlap are not in outcome-highlight presentation; workflowNodeLinkedOutcomeRow entries inside workflowNodeLinkedOutcomesPopover never show workflowOutcomeHighlightBorder or workflowNodeOutcomeHighlightBorder
+      - the row-highlight presentation does not depend on whether the bound workflowOutcome (or any of its descendants) is assigned to any workflowNode; it is driven purely by the highlight set defined by row clicks
+      - clicking workflowOutcomesAssignTabOutcomeRowToggle (the expand/collapse control) does not change the highlight set (the toggle and workflowOutcomesAssignTabOutcomeRow are independent click targets)
+      - assign-tab row click dismiss — clicking workflowOutcomesAssignTabOutcomeRow closes any open workflowNodeLinkedOutcomesPopover per FR-WF-AO-008; clicking workflowOutcomesAssignTabOutcomeRowToggle does not dismiss the popover
+      - persistence — the highlight set persists while the actor switches workflowRightSidebar tabs with workflowView is open (e.g., away from workflowRightSidebarOutcomesTab to another sidebar tab and back); the highlight set is reset to empty whenever current route is no longer '/workflow/{id}/graph' for the current workflow (including navigation to any other sub-view of the same workflow such as '/workflow/{id}/overview' or '/workflow/{id}/outcomes', navigation to a different workflow, or navigation outside the workflow shell); the highlight set is scoped to the current workflow and does not persist when the actor leaves and later returns; the highlight set is reset to empty on a full page reload of the workflow; while workflowView is open with a non-empty highlight set, workflowNodeOutcomeHighlightBorder on each workflowNode is re-evaluated per FR-WF-AO-007 whenever assignment sets change via FR-WF-AO-004 or FR-WF-AO-010
+      - highlight set on unlink — unlink via FR-WF-AO-010 does not add to or remove from the highlight set; workflowNodeOutcomeHighlightBorder on each affected workflowNode is re-evaluated per FR-WF-AO-007 from that node's remaining assigned outcomes and highlight–assignment branch overlap with the highlight set (if O was highlighted and was the only branch overlap on workflowNode N, N no longer shows workflowNodeOutcomeHighlightBorder after O is unlinked from N)
+      - highlight set on assign — assignment via FR-WF-AO-004 does not add to or remove from the highlight set; workflowNodeOutcomeHighlightBorder on each affected workflowNode is re-evaluated per FR-WF-AO-007 from that node's updated assigned outcomes and highlight–assignment branch overlap with the highlight set (if O was highlighted and N had no branch overlap with O before the drop, N shows workflowNodeOutcomeHighlightBorder after O is assigned to N)
+    
+    roleBehavior:
+      owner:
+        workflowOutcomesAssignTabOutcomeRow: clickable
+      editor:
+        workflowOutcomesAssignTabOutcomeRow: clickable
+      commenter:
+        workflowOutcomesAssignTabOutcomeRow: clickable
+      viewer:
+        workflowOutcomesAssignTabOutcomeRow: clickable
+      user:
+        workflowOutcomesAssignTabOutcomeRow: clickable
+    
+    acceptanceCriteria:
+      - given workflowRightSidebarOutcomesTab is the active tab and workflowOutcome O is not in the highlight set, when actor clicks workflowOutcomesAssignTabOutcomeRow for O, then O is added to the highlight set, workflowOutcomesAssignTabOutcomeRow for O shows workflowOutcomeHighlightBorder, and every workflowNode that has highlight–assignment branch overlap with O per this FR is in outcome-highlight presentation per this FR
+      - given workflowRightSidebarOutcomesTab is the active tab and workflowOutcome O is currently in the highlight set, when actor clicks workflowOutcomesAssignTabOutcomeRow for O, then O is removed from the highlight set; workflowOutcomesAssignTabOutcomeRow rows that were showing workflowOutcomeHighlightBorder only because of O (i.e., O itself and descendants of O whose only highlight-set ancestor was O) no longer show it; workflowNodes that were in outcome-highlight presentation only because of highlight–assignment branch overlap involving O per this FR are no longer in outcome-highlight presentation per this FR, while workflowNodes that still have highlight–assignment branch overlap with another highlighted workflowOutcome remain in outcome-highlight presentation per this FR
+      - given workflowRightSidebarOutcomesTab is the active tab and actor presses pointer on workflowOutcomesAssignTabOutcomeRow for workflowOutcome O and moves beyond the platform drag threshold before release, FR-WF-AO-004 drag semantics apply and the highlight set is unchanged by that gesture alone
+      - given workflowRightSidebarOutcomesTab is the active tab and the highlight set contains workflowOutcome P (a level-1 or level-2 workflowOutcome with one or more direct or transitive descendants), every workflowOutcomesAssignTabOutcomeRow for P and for each descendant of P shows workflowOutcomeHighlightBorder; sibling and ancestor rows of P (rows whose bound workflowOutcome is neither P nor a descendant of P) do not show workflowOutcomeHighlightBorder as a result of P alone
+      - given workflowRightSidebarOutcomesTab is the active tab and the highlight set contains workflowOutcome C (a non-root workflowOutcome) and does not contain any ancestor of C, the workflowOutcomesAssignTabOutcomeRow for each ancestor of C does not show workflowOutcomeHighlightBorder (no cascade-up), even when every sibling of C under the same parent is also in the highlight set
+      - given the highlight set contains at least two workflowOutcomes {O1, O2}, every workflowNode that has highlight–assignment branch overlap with at least one of {O1, O2} per this FR is in outcome-highlight presentation per this FR; workflowNodes with no such overlap are not in outcome-highlight presentation
+      - given workflowRightSidebarOutcomesTab is the active tab, workflowOutcome L1 has direct children {L2.1, L2.2, L2.3}, L1 is in the highlight set, workflowNode N has L2.2 and L2.3 assigned and does not have L1 assigned (L2.1 is not assigned to N per FR-WF-AO-006 parent-assignment invariant), when actor has clicked workflowOutcomesAssignTabOutcomeRow for L1 per this FR, then N is not in outcome-highlight presentation per this FR and workflowOutcomesAssignTabOutcomeRow rows for L1, L2.1, L2.2, and L2.3 still show workflowOutcomeHighlightBorder per cascade-down
+      - given workflowRightSidebarOutcomesTab is the active tab, workflowOutcome L1 has direct children {L2.1, L2.2, L2.3}, L1 is in the highlight set, and workflowNode N has L1 assigned (and therefore L2.1, L2.2, and L2.3 assigned per FR-WF-AO-006), when actor has clicked workflowOutcomesAssignTabOutcomeRow for L1 per this FR, then N is in outcome-highlight presentation per this FR
+      - given workflowRightSidebarOutcomesTab is the active tab, workflowOutcome L1 has direct children {L2.1, L2.2, L2.3}, L2.2 is in the highlight set, and workflowNode N has L1 assigned (and therefore L2.1, L2.2, and L2.3 assigned per FR-WF-AO-006), when actor has clicked workflowOutcomesAssignTabOutcomeRow for L2.2 per this FR, then N is in outcome-highlight presentation per this FR
+      - given workflowRightSidebarOutcomesTab is the active tab, workflowOutcome L1 has direct children {L2.1, L2.2, L2.3}, L1 is in the highlight set, workflowNode N has L2.2 and L2.3 assigned and does not have L1 assigned, and N is not in outcome-highlight presentation, when owner or editor assigns L2.1 to N via FR-WF-AO-004, then L2.1 and L1 are added to N's assignment set per FR-WF-AO-006 and N is in outcome-highlight presentation per this FR
+      - given workflowOutcome L1 has direct children {L2.1, L2.2, L2.3}, L1 is in the highlight set, workflowNode N has L1 assigned (and therefore L2.1, L2.2, and L2.3 assigned per FR-WF-AO-006), and N is in outcome-highlight presentation, when owner unlinks L2.1 from N via FR-WF-AO-010, then L1 and L2.1 are removed from N's assignment set per FR-WF-AO-006, L1 remains in the highlight set, and N is not in outcome-highlight presentation per this FR
+      - given the highlight set contains one or more workflowOutcomes, when the actor switches workflowRightSidebar to another tab and back to workflowRightSidebarOutcomesTab without any assignment-set changes during the visit, the highlight set is unchanged, workflowOutcomesAssignTabOutcomeRow rows whose bound workflowOutcome is in the set or is a descendant of a workflowOutcome in the set still show workflowOutcomeHighlightBorder, and the same workflowNodes show workflowNodeOutcomeHighlightBorder per FR-WF-AO-007 as before the tab switch
+      - given the highlight set contains workflowOutcome O and workflowNode N has highlight–assignment branch overlap with O per this FR, when the actor switches workflowRightSidebar to a tab other than workflowRightSidebarOutcomesTab without leaving '/workflow/{id}/graph', then N continues to show workflowNodeOutcomeHighlightBorder per FR-WF-AO-007 until the actor navigates away from '/workflow/{id}/graph' or removes O from the highlight set
+      - given workflowOutcome O is in the highlight set, O is assigned to workflowNode N, and N shows workflowNodeOutcomeHighlightBorder, when the actor switches workflowRightSidebar away from workflowRightSidebarOutcomesTab and owner unlinks O from N via FR-WF-AO-010, then switches back to workflowRightSidebarOutcomesTab, the highlight set is unchanged, workflowOutcomesAssignTabOutcomeRow for O still shows workflowOutcomeHighlightBorder, and N no longer shows workflowNodeOutcomeHighlightBorder per FR-WF-AO-007
+      - given the highlight set contains one or more workflowOutcomes, when the actor navigates away from '/workflow/{id}/graph' to any other route (including another sub-view of the same workflow, a different workflow, or navigation outside the workflow shell), or when the workflow page is fully reloaded, the highlight set is reset to empty; no workflowOutcomesAssignTabOutcomeRow shows workflowOutcomeHighlightBorder and no workflowNode is in outcome-highlight presentation per this FR; when the actor navigates away and later returns to '/workflow/{id}/graph' and clicks workflowRightSidebarOutcomesTab, the highlight set remains empty until the actor clicks workflowOutcomesAssignTabOutcomeRow again while workflowRightSidebarOutcomesTab is the active tab
+      - given workflowOutcome O is in the highlight set, O is assigned to workflowNode N, and N is in outcome-highlight presentation because of highlight–assignment branch overlap with O per this FR, when owner unlinks O from N via FR-WF-AO-010, then O remains in the highlight set, workflowOutcomesAssignTabOutcomeRow for O still shows workflowOutcomeHighlightBorder, and N is no longer in outcome-highlight presentation per this FR
+      - given workflowRightSidebarOutcomesTab is the active tab, workflowOutcome O is in the highlight set, O is not assigned to workflowNode N, and N does not show workflowNodeOutcomeHighlightBorder, when owner or editor assigns O to N via FR-WF-AO-004, then O remains in the highlight set, workflowOutcomesAssignTabOutcomeRow for O still shows workflowOutcomeHighlightBorder, and N shows workflowNodeOutcomeHighlightBorder per FR-WF-AO-007
+      - given workflowRightSidebarOutcomesTab is the active tab and workflowOutcome O is not in the highlight set, when owner or editor assigns O to workflowNode N via FR-WF-AO-004, then the highlight set is unchanged and N does not show workflowNodeOutcomeHighlightBorder solely because of O unless N has highlight–assignment branch overlap with another workflowOutcome in the highlight set per this FR
+    
+    openQuestions: []
+
+  - id: FR-WF-AO-006
+    title: Cascade rules for workflowOutcome assignment on a workflowNode
+    
+    designEvidence:
+      - FIGMA-WF-AO-NOTAGS
+      - FIGMA-WF-AO-TAGS
+    
+    actors:
+      - owner
+      - editor
+    
+    uiObjects:
+      - workflowOutcome
+      - workflowOutcomeTree
+      - workflowNode
+    
+    preconditions:
+      - an assignment change against a workflowNode has been triggered by one of: assignment via FR-WF-AO-004 (drag from workflowOutcomesAssignTabOutcomeRow onto workflowNode); unassignment via FR-WF-AO-010 (workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem); assignment removal for deleted workflowOutcomes per FR-WF-EO-014; or workflowOutcomeTree parent/child structure change because a workflowOutcome becomes a direct or transitive child of another workflowOutcome per FR-WF-EO-003 (insert sibling or child), FR-WF-EO-016 (reorder/reparent), or FR-WF-EO-017 (combine reparent)
+    
+    trigger: []
+    
+    mainFlow:
+      - parent-assignment invariant — for any non-leaf workflowOutcome P that has at least one direct child, P is in workflowNode N's set of assigned outcomes if and only if every direct child of P is also in N's set; the following cascade bullets are the operational expression of this invariant and the system maintains the invariant after every assignment change
+      - assign → descendants cascade — when a workflowOutcome is assigned to a workflowNode N, every direct and transitive descendant of that workflowOutcome in the outcome tree is also added to N's set of assigned outcomes if not already present (assigning level 1 adds all level-2 and level-3 descendants; assigning level 2 adds all level-3 descendants; assigning level 3 adds no descendants)
+      - tree-change → assign cascade — when workflowOutcome S (and any subtree moved with S) becomes a direct or transitive child of workflowOutcome P in workflowOutcomeTree per FR-WF-EO-003, FR-WF-EO-016, or FR-WF-EO-017, then for every workflowNode N that has P in its set of assigned workflowOutcomes, S and every descendant of S in the affected subtree are added to N's set per assign→descendants cascade above; all-children→parent cascade on N is re-evaluated after the change; reparenting S away from a previously assigned ancestor does not by itself remove S or its descendants from N's set (child-removed → parent removal cascade applies only to explicit unassignment per FR-WF-AO-010 or deletion per FR-WF-EO-014, not to outcome-tree moves alone)
+      - all-children → parent cascade — when an assignment change to N's set of assigned outcomes results in every direct child of a workflowOutcome P being individually present in N's set, P itself is added to N's set if not already present; this rule applies recursively up the parent chain (so the newly-added P may in turn satisfy its own parent's all-children condition, and so on)
+      - child-removed → parent removal cascade — when any direct child workflowOutcome C of parent P is removed from N's set of assigned outcomes while P is currently assigned to N, P is also removed from N's set; this applies regardless of how many other direct children of P remain in N's set (a single missing child is sufficient to take P off N); the remaining sibling children of C that are in N's set stay in N's set; this rule applies recursively up the parent chain (so after P is removed, P's own parent is re-evaluated under the same rule, all the way to the level-1 ancestor)
+      - idempotence — the cascade rules are idempotent: applying them when N's set of assigned outcomes already satisfies the invariant yields no change
+    
+    roleBehavior: {}
+    
+    acceptanceCriteria:
+      - given workflowNode N has no assigned outcomes and actor assigns level-1 workflowOutcome P (which has child outcomes C1, C2 at level 2 where C1 has its own child G1 at level 3) per FR-WF-AO-004, after the assignment N's set of assigned outcomes contains exactly {P, C1, C2, G1}
+      - given workflowNode N has no assigned outcomes and actor assigns level-2 workflowOutcome C (which has level-3 child G) per FR-WF-AO-004, after the assignment N's set of assigned outcomes contains exactly {C, G}; the level-1 parent of C is not added to N's set unless all direct children of that parent are present per the all-children → parent cascade
+      - given level-1 outcome P has direct children {C1, C2} and workflowNode N has assigned outcomes {C1}, when actor assigns C2 to N (so that all direct children of P are now in N's set), after the cascade P is added to N's set and N's set is {C1, C2, P}
+      - given workflowNode N has assigned outcomes {P, C1, C2} where {C1, C2} are the only direct children of level-1 outcome P, when owner or editor unlinks C1 from N via workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem per FR-WF-AO-010, after the cascade P is removed from N's set, C2 remains assigned, and N's set is {C2}
+      - given a chain P (level 1) → C (level 2) → G (level 3) is fully assigned to N (i.e., N's set is {P, C, G}) and owner or editor unlinks G from N via workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem per FR-WF-AO-010, after the cascade C is removed from N's set (because not every direct child of C is now in N's set), and P is then also removed from N's set (because not every direct child of P is now in N's set); N's set is empty
+      - given P (level 1) has direct children {C1, C2} where C1 has its own children {G1, G2} and C2 has its own children {G3, G4}, and N's set is {P, C1, C2, G1, G2, G3, G4} (fully assigned), when owner or editor unlinks G1 from N via workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem per FR-WF-AO-010, after the cascade C1 is removed from N's set and P is removed from N's set; G2 (sibling of G1 under C1) remains in N's set, and C2, G3, G4 (the unaffected subtree under P) remain in N's set; N's set is {C2, G2, G3, G4}
+      - given workflowNode N has assigned outcomes {P, C1, C2} where {C1, C2} are the only direct children of level-1 outcome P, and C1 is deleted per FR-WF-EO-014, after deletion and cascade P is removed from N's set, C2 remains assigned, and N's set is {C2}
+      - given level-1 workflowOutcome P is assigned to workflowNode N and owner or editor inserts a new level-2 child workflowOutcome C under P per FR-WF-EO-003, after the insert C is added to N's set of assigned workflowOutcomes per assign→descendants cascade
+      - given level-1 workflowOutcome P is assigned to workflowNode N and direct child C1 of P already exists, when owner or editor inserts a new level-2 sibling workflowOutcome C2 immediately after C1 via workflowOutcomeHoverActionsMenuInsertSiblingItem per FR-WF-EO-003, after the insert C2 is added to N's set of assigned workflowOutcomes per assign→descendants cascade
+      - given level-1 workflowOutcome P is assigned to workflowNode N and level-2 workflowOutcome S (direct child of a different level-1 parent) is not assigned to N, when owner reparents S under P per FR-WF-EO-016 or FR-WF-EO-017, then S and any descendants of S are added to N's set per assign→descendants cascade
+      - given level-2 workflowOutcome P is assigned to workflowNode N and level-3 workflowOutcome S (direct child of a different level-2 parent) is not assigned to N, when owner reparents S under P per FR-WF-EO-016 or FR-WF-EO-017, then S is added to N's set per assign→descendants cascade
+      - given workflowOutcome S is assigned to workflowNode N and owner reparents S under a level-1 parent P2 that is not assigned to N per FR-WF-EO-016 or FR-WF-EO-017, after the move S remains in N's set (outcome-tree reparent alone does not remove S from N)
+    
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-WF-AO-NOOUT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5680-120065&t=ISqZMKvdOL1BJ6SG-1
+  - key: FIGMA-WF-AO-NOTAGS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=2149-18932&t=ISqZMKvdOL1BJ6SG-1
+  - key: FIGMA-WF-AO-TAGS
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=3802-32595&t=ISqZMKvdOL1BJ6SG-1
+
+openQuestions: []

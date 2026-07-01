@@ -1,0 +1,441 @@
+# Normalized requirements: copy workflow (target project selection and completion)
+# Source: tests/docs/requirements/features/shared/context_action_bar_requirements_v1.yaml (FR-CAB-005 entry from contextActionBarOverflowItemCopyWorkflow); Figma copy flow frames.
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference:
+#   - tests/docs/requirements/features/shared/context_action_bar_requirements_v1.yaml (FR-CAB-004, FR-CAB-005)
+#   - tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml (workflowTitle on copied workflow—FR-WF-COPY-003)
+#   - tests/docs/requirements/features/workflow/workflow_edit_form_requirements_v1.yaml (workflowTitleField required rule—FR-WF-FORM-002; copied title becomes workflowTitle—FR-WF-COPY-003)
+#   - tests/docs/requirements/features/workflow/workflow_create_stepped_form_requirements_v1.yaml (destination project eligibility—FR-WF-CREATE-STEPPER-003)
+#   - tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml (node link preservation vs break on copy—FR-WF-COPY-003; link eligibility—FR-WF-EN-010)
+#   - tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml (cross-project copy link break matches archive link break on node data—FR-WF-ARCH-003)
+#   - tests/docs/requirements/features/workflow/workflow_node_visual_requirements_v1.yaml (workflowNodeLinkedWorkflowIndicator on copied nodes—FR-WF-NODE-001)
+#   - tests/docs/requirements/features/workflow/workflow_overview_requirements_v1.yaml (overview metadata copy—FR-WF-COPY-003; overview auto-calculate—FR-WF-OV-003 through FR-WF-OV-010; permissions panel not copied—FR-WF-OV-007)
+#   - tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml (outcome tree field copy—FR-WF-EO-005; ordinals—FR-WF-EO-007)
+#   - tests/docs/requirements/features/workflow/workflow_assign_outcome_to_node_requirements_v1.yaml (outcome-to-node assignment copy—FR-WF-COPY-003)
+#   - tests/docs/requirements/features/project/project_overview_requirements_v1.yaml (publish state at project level—FR-PROJ-OV-003; same-project tag catalog—FR-PROJ-OV-005)
+#   - tests/docs/requirements/features/workflow/workflow_comments_tab_requirements_v1.yaml (comments not copied—FR-WF-COPY-003)
+#   - tests/docs/requirements/features/workflow/workflow_duplicate_section_requirements_v1.yaml (intra-workflow section duplicate graph pattern; workflow copy is full-workflow scope—FR-WF-COPY-003)
+#   - tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-002)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project of the workflow, or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+  - routes matching '/workflow/{id}/*' include '/workflow/{id}' (empty suffix) and '/workflow/{id}/<sub-view>' for any sub-view
+  - requirements in this file assume documentPreconditions above hold; when they do not, assert per FR-WS-ACCESS-002
+
+uiObjectDefinitions:
+  contextActionBarOverflowItemCopyWorkflow:
+    meaning: Canonical definition in context_action_bar_requirements_v1.yaml.
+  copyWorkflowDialog:
+    meaning: Modal dialog for copying the current workflow to a destination project selected within the dialog.
+  copyWorkflowDialogTitle:
+    meaning: Dialog title on copyWorkflowDialog.
+  copyWorkflowTitleField:
+    meaning: Text input for the copied workflow title; required; label 'Title'; inline validation per FR-WF-COPY-007; persisted as workflowTitle on successful copy per FR-WF-COPY-003.
+  copyWorkflowFormFieldValidationMessage:
+    meaning: Inline helper or error text shown on copyWorkflowTitleField when copy title validation fails.
+  copyWorkflowSelectProjectPanel:
+    meaning: Destination project selection content inside copyWorkflowDialog.
+  copyWorkflowProjectSearchField:
+    meaning: Search input on copyWorkflowSelectProjectPanel.
+  copyWorkflowProjectSearchEmptyState:
+    meaning: Empty-results region in copyWorkflowSelectProjectPanel.
+  copyWorkflowNoEligibleProjectsState:
+    meaning: Warning region in copyWorkflowSelectProjectPanel when actor holds owner or editor role on no destination project.
+  projectCard:
+    meaning: Canonical definition in card_content_requirements_v1.yaml.
+  copyWorkflowDialogCancelButton:
+    meaning: Cancel action on copyWorkflowDialog.
+  copyWorkflowDialogSubmitButton:
+    meaning: Primary submit action on copyWorkflowDialog.
+  workflowTitle:
+    meaning: Canonical definition in workflow_header_requirements_v1.yaml.
+  globalMessageSnackbar:
+    meaning: Canonical definition in workflow_header_requirements_v1.yaml.
+
+locatorMappings:
+  contextActionBarOverflowItemCopyWorkflow: "canonical_locators.yaml -> contextActionBarOverflowItemCopyWorkflow"
+  copyWorkflowDialog: "canonical_locators.yaml -> copyWorkflowDialog"
+  copyWorkflowDialogTitle: "canonical_locators.yaml -> copyWorkflowDialogTitle"
+  copyWorkflowTitleField: "canonical_locators.yaml -> copyWorkflowTitleField"
+  copyWorkflowFormFieldValidationMessage: "canonical_locators.yaml -> copyWorkflowFormFieldValidationMessage"
+  copyWorkflowSelectProjectPanel: "canonical_locators.yaml -> copyWorkflowSelectProjectPanel"
+  copyWorkflowProjectSearchField: "canonical_locators.yaml -> copyWorkflowProjectSearchField"
+  copyWorkflowProjectSearchEmptyState: "canonical_locators.yaml -> copyWorkflowProjectSearchEmptyState"
+  copyWorkflowNoEligibleProjectsState: "canonical_locators.yaml -> copyWorkflowNoEligibleProjectsState"
+  projectCard: "canonical_locators.yaml -> projectCard"
+  copyWorkflowDialogCancelButton: "canonical_locators.yaml -> copyWorkflowDialogCancelButton"
+  copyWorkflowDialogSubmitButton: "canonical_locators.yaml -> copyWorkflowDialogSubmitButton"
+  workflowTitle: "canonical_locators.yaml -> workflowTitle"
+  globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
+
+requirements:
+  - id: FR-WF-COPY-001
+    title: Copy workflow dialog opens from overflow menu
+
+    designEvidence:
+      - FIGMA-CAB-WF-COPY-SELECT-PROJECT
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - contextActionBarOverflowItemCopyWorkflow
+      - copyWorkflowDialog
+      - copyWorkflowDialogTitle
+      - copyWorkflowTitleField
+      - copyWorkflowSelectProjectPanel
+      - copyWorkflowDialogCancelButton
+      - copyWorkflowDialogSubmitButton
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - FR-CAB-005 preconditions hold
+      - current route matches route pattern '/workflow/{id}' or '/workflow/{id}/...' (workflow sub-views such as overview or outcomes)
+      - contextActionBarOverflowMenu is open with contextActionBarOverflowItemCopyWorkflow actionable per FR-CAB-005
+
+    trigger:
+      - actor clicks contextActionBarOverflowItemCopyWorkflow
+
+    mainFlow:
+      - system opens copyWorkflowDialog for copying the current workflow to a destination project selected within the same dialog
+      - copyWorkflowDialog presents copyWorkflowDialogTitle, copyWorkflowTitleField, copyWorkflowSelectProjectPanel, copyWorkflowDialogCancelButton, and copyWorkflowDialogSubmitButton
+      - copyWorkflowDialogTitle matches the 'Copy [workflow type]' template after lowercase substitution for the source workflow's type label
+      - copyWorkflowTitleField is prefilled with the source workflow's workflowTitle value with literal '(copy)' appended
+      - copyWorkflowTitleField inline validation conforms to FR-WF-COPY-007
+      - copyWorkflowDialogSubmitButton shows label matching the 'Copy [workflow type]' template after the same lowercase substitution for the source workflow's type label
+      - destination project selection and copyWorkflowDialogSubmitButton enablement follow FR-WF-COPY-002 when actor holds owner or editor role on at least one destination project; when actor holds owner or editor role on no destination project, FR-WF-COPY-006 applies instead
+      - successful copy on copyWorkflowDialogSubmitButton is specified in FR-WF-COPY-003
+      - cancel on copyWorkflowDialogCancelButton is specified in FR-WF-COPY-004
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given FR-WF-COPY-001 preconditions hold and trigger fires, copyWorkflowDialog is visible
+      - copyWorkflowDialogTitle matches the 'Copy [workflow type]' template after lowercase substitution for the source workflow's type label
+      - copyWorkflowTitleField is visible and prefilled with the source workflow's workflowTitle value with literal '(copy)' appended
+      - copyWorkflowTitleField inline validation conforms to FR-WF-COPY-007
+      - copyWorkflowSelectProjectPanel is visible
+      - copyWorkflowDialogCancelButton is visible
+      - copyWorkflowDialogSubmitButton is visible with label matching the 'Copy [workflow type]' template after the same lowercase substitution for the source workflow's type label
+      - destination project selection and copyWorkflowDialogSubmitButton enablement conform to FR-WF-COPY-002 when actor holds owner or editor role on at least one destination project; when actor holds owner or editor role on no destination project, no-eligible state conforms to FR-WF-COPY-006
+      - copy outcomes on copyWorkflowDialogSubmitButton conform to FR-WF-COPY-003 and FR-WF-COPY-005
+      - cancel outcomes on copyWorkflowDialogCancelButton conform to FR-WF-COPY-004
+
+    openQuestions: []
+
+  - id: FR-WF-COPY-002
+    title: Select target project for copied workflow
+
+    designEvidence:
+      - FIGMA-CAB-WF-COPY-SELECT-PROJECT
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - copyWorkflowDialog
+      - copyWorkflowTitleField
+      - copyWorkflowSelectProjectPanel
+      - copyWorkflowProjectSearchField
+      - copyWorkflowProjectSearchEmptyState
+      - projectCard
+      - copyWorkflowDialogSubmitButton
+
+    preconditions:
+      - copyWorkflowDialog is open per FR-WF-COPY-001
+      - copyWorkflowSelectProjectPanel is visible
+
+    trigger:
+      - actor clicks projectCard in copyWorkflowSelectProjectPanel
+      - actor enters or revises text in copyWorkflowProjectSearchField
+
+    mainFlow:
+      - when actor holds owner or editor role on no destination project, FR-WF-COPY-006 applies and this FR's list/selection rules do not apply
+      - destination project list, search, empty state, projectCard selection, ordering, list cap, and submit enablement in copyWorkflowSelectProjectPanel follow FR-WF-CREATE-STEPPER-003 with uiObject mapping copyWorkflowSelectProjectPanel for workflowProjectSearchView, copyWorkflowProjectSearchField for workflowProjectSearchField, copyWorkflowProjectSearchEmptyState for workflowProjectSearchEmptyState, and copyWorkflowDialogSubmitButton for createWorkflowNextStepButton
+      - context-pinned current project for FR-WF-CREATE-STEPPER-003 is the source workflow's parent project because copyWorkflowDialog is opened from a workflow route
+      - copyWorkflowDialogSubmitButton is enabled and clickable only when a projectCard is selected per this FR and copyWorkflowTitleField satisfies validation rules per FR-WF-COPY-007
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given actor holds owner or editor role on no destination project and copyWorkflowDialog is open, FR-WF-COPY-006 applies and this FR's list/selection rules do not apply
+      - given copyWorkflowDialog is open and actor holds owner or editor role on at least one destination project, destination project list and selection behavior conforms to FR-WF-CREATE-STEPPER-003 with the uiObject mapping and context-pinned parent project rule in this FR's mainFlow
+      - given copyWorkflowDialog is open and actor holds owner or editor role on at least one destination project, copyWorkflowDialogSubmitButton enablement conforms to FR-WF-COPY-007 and projectCard selection rules in this FR
+
+    openQuestions: []
+
+  - id: FR-WF-COPY-003
+    title: Confirm copy workflow creates copy and navigates to new workflow
+
+    designEvidence:
+      - FIGMA-CAB-WF-COPY-SELECT-PROJECT
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - copyWorkflowDialog
+      - copyWorkflowTitleField
+      - copyWorkflowSelectProjectPanel
+      - copyWorkflowDialogSubmitButton
+      - workflowTitle
+      - globalMessageSnackbar
+
+    preconditions:
+      - copyWorkflowDialog is open per FR-WF-COPY-001
+      - copyWorkflowTitleField satisfies validation rules per FR-WF-COPY-007
+      - a projectCard is selected in copyWorkflowSelectProjectPanel per FR-WF-COPY-002
+      - copyWorkflowDialogSubmitButton is enabled and clickable
+
+    trigger:
+      - actor clicks copyWorkflowDialogSubmitButton and copy completes successfully
+
+    mainFlow:
+      - system creates a new workflow in the selected destination project as a copy of the source workflow
+      - content fidelity — graph — copied workflow includes workflowSectionContainer, workflowChannel, workflowNode, and workflowEdge content matching the source at copy time; same section order and workflowSectionTitleText values; same channel titles and colors per tests/docs/requirements/features/workflow/workflow_edit_channel_requirements_v1.yaml FR-CHAN-003; same node placement (workflowSectionRow × workflowChannel coordinates within each section); same persisted node metadata per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-002 through FR-WF-EN-006 except linkedWorkflow rules below; same intra-workflow workflowEdges whose source and target workflowNodes are both in the copied workflow, with the same endpoints and edge metadata; persisted workflowNode titles unchanged from source (only workflowTitle uses copyWorkflowTitleField from the dialog)
+      - content fidelity — outcome tree — workflowOutcomeTree in the copied workflow mirrors source structure and persisted field values per tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml FR-WF-EO-005 at copy time; workflowOutcomeHeaderTitle ordinals are recomputed per FR-WF-EO-007 after copy
+      - content fidelity — outcome assignments — each copied workflowNode receives the same workflowOutcome assignments as its source node, mapped to the corresponding copied workflowOutcomes in the copied workflow
+      - content fidelity — overview metadata — workflowMetadataSection fields and auto-calculate switches on the copied workflow match the source at copy time per tests/docs/requirements/features/workflow/workflow_overview_requirements_v1.yaml FR-WF-OV-001 through FR-WF-OV-006 (same fidelity rule as template copy in FR-WF-OV-009); workflowMetadataPermissionsPanel is not copied from the source and follows the destination parent project per FR-WF-OV-007
+      - permissions and publish state — source workflow contributor roles and permissions are not copied; copied workflow publish visibility inherits the destination parent project's visibility state per tests/docs/requirements/features/project/project_overview_requirements_v1.yaml FR-PROJ-OV-003 (child workflows inherit parent project publish state; source project publish state is not transferred to the copy)
+      - tags — when the selected destination project is the same project as the source workflow's parent project, workflowEditNodeFormTagsAutocomplete selections on copied workflowNodes and workflowEditOutcomeFormTagsAutocomplete selections on copied level-1 workflowOutcomes match the source at copy time (shared project tag catalog per FR-PROJ-OV-005); when the destination project is different, tag selections on copied workflowNodes and copied level-1 workflowOutcomes are empty regardless of source assignments
+      - comments — comments on source workflowNodes, workflowSectionContainers, workflowOutcomes, and other workflow comment hosts per tests/docs/requirements/features/workflow/workflow_comments_tab_requirements_v1.yaml are not copied; the copied workflow starts with empty comment collections throughout
+      - same-project copy — when the selected destination project is the same project as the source workflow's parent project, linkedWorkflow associations on copied workflowNodes are preserved and still point at the same activity or course workflows in that project; workflowNodeLinkedWorkflowIndicator is rendered on copied nodes where the source had links per tests/docs/requirements/features/workflow/workflow_node_visual_requirements_v1.yaml FR-WF-NODE-001
+      - cross-project copy — when the selected destination project is a different project from the source workflow's parent project, linkedWorkflow associations on copied workflowNodes are not copied; each such node is unlinked in the copy with the same node field-reset outcomes as archive-triggered link break per tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml FR-WF-ARCH-003 (pre-link persisted values, or empty or product default when no pre-link value exists; inherited linked-workflow metadata is not retained; workflowNodeLinkedWorkflowIndicator is not rendered; workflowEditNodeFormLinkWorkflowButton shows 'Link an activity' or 'Link a course' when that node is opened)
+      - parent overview on copy — when auto-calculate switches are ON on the copied workflow, Overview totals per FR-WF-OV-003 through FR-WF-OV-006 reflect same-project preserved links or cross-project unlinked node-local contributions only (no cross-project mirrored child metadata)
+      - workflowTitle on the copied workflow's workflowHeader matches copyWorkflowTitleField value from immediately before submit
+      - actor who initiated copy becomes owner of the copied workflow
+      - system closes copyWorkflowDialog
+      - application navigates actor to route pattern '/workflow/{id}/graph' for the copied workflow
+      - globalMessageSnackbar shows copy matching 'The [workflow type] has been successfully copied' after substituting the source workflow's user-visible type label for '[workflow type]' (same rule as copyWorkflowDialogTitle in FR-WF-COPY-001)
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given successful submit, copyWorkflowDialog is not visible
+      - given successful submit, a new workflow exists in the selected destination project
+      - given source workflow W has workflowSectionContainer, workflowChannel, workflowNode, and intra-workflow workflowEdge content, when owner copies W successfully, the copy's workflowView matches W's graph structure, section titles, channel titles and colors, node placement, node persisted metadata (except linkedWorkflow per destination project rules below), and intra-workflow workflowEdges at copy time
+      - given source workflow W has workflowOutcomeTree with assignments to workflowNodes, when owner copies W successfully, the copy's workflowOutcomeTree mirrors W's structure and field values per FR-WF-EO-005 and each copied workflowNode has the same outcome assignments mapped to copied workflowOutcomes
+      - given source workflow W has overview metadata per FR-WF-OV-001 through FR-WF-OV-006, when owner copies W and opens Overview on the copy, copied overview fields and auto-calculate switches match W at copy time; workflowMetadataPermissionsPanel follows the destination parent project per FR-WF-OV-007 and is not copied from W
+      - given source workflow W in published project P and owner copies W to unpublished project Q, when a non-contributor attempts to open the copy, access is denied per FR-WS-ACCESS-002; copied workflow visibility follows Q's publish state per FR-PROJ-OV-003 and is not transferred from P
+      - given workflowNode N in W had tag T via workflowEditNodeFormTagsAutocomplete and level-1 workflowOutcome O had tag T via workflowEditOutcomeFormTagsAutocomplete, when owner copies W to the same parent project P, copied N and copied O retain tag T
+      - given workflowNode N in W had tag T and level-1 workflowOutcome O had tag T, when owner copies W to destination project Q where Q is not the source parent project, copied N and copied O have empty tag selections
+      - given workflowNode N in W had one or more comments and workflowOutcome O had comments, when owner copies W successfully, the corresponding copied node and copied outcome have zero comments
+      - given course workflow W with node N linked to activity A in project P and owner copies W to destination project P, when owner opens the copy on the Workflow sub-view and selects the node corresponding to N, that node still links to A and workflowNodeLinkedWorkflowIndicator is rendered per FR-WF-NODE-001
+      - given course workflow W with node N linked to activity A in project P and owner copies W to destination project Q where Q is not P, when owner opens the copy on the Workflow sub-view and selects the node corresponding to N, that node has no linked workflow, workflowNodeLinkedWorkflowIndicator is not rendered, workflowEditNodeFormLinkWorkflowButton shows 'Link an activity', and applicable fields are editable for owner with pre-link persisted values or empty or product defaults per FR-WF-ARCH-003 and FR-WF-EN-011 (not mirrored metadata from A)
+      - given cross-project copy per the preceding criterion and auto-calculate time is ON on the copy, when owner selects Overview on the copied workflow per FR-WF-HEADER-001, workflowMetadataFieldTime reflects only node-local contributions in the copy (no mirrored activity metadata from project P)
+      - given successful submit, workflowTitle on the copied workflow's workflowHeader equals copyWorkflowTitleField value from immediately before submit
+      - given successful submit, actor is owner of the copied workflow
+      - given successful submit, current route pathname matches '/workflow/{id}/graph' for the copied workflow id
+      - given successful submit, globalMessageSnackbar shows copy matching 'The [workflow type] has been successfully copied' after substituting the source workflow's user-visible type label for '[workflow type]' (same rule as copyWorkflowDialogTitle in FR-WF-COPY-001)
+
+    openQuestions: []
+
+  - id: FR-WF-COPY-004
+    title: Cancel copy workflow flow leaves source workflow unchanged
+
+    designEvidence:
+      - FIGMA-CAB-WF-COPY-SELECT-PROJECT
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - copyWorkflowDialog
+      - copyWorkflowTitleField
+      - copyWorkflowDialogCancelButton
+
+    preconditions:
+      - copyWorkflowDialog is open per FR-WF-COPY-001
+
+    trigger:
+      - actor clicks copyWorkflowDialogCancelButton
+
+    mainFlow:
+      - system closes copyWorkflowDialog without creating a copy
+      - actor remains on the same route/view as immediately before opening copyWorkflowDialog
+      - source workflow is unchanged and copyWorkflowTitleField edits from this copy attempt are discarded
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given trigger, copyWorkflowDialog is not visible
+      - given trigger, current route/view is unchanged from immediately before opening copyWorkflowDialog
+      - given trigger, no new workflow was created from this copy attempt
+      - given trigger, copyWorkflowTitleField edits from this copy attempt are discarded
+
+    openQuestions: []
+
+  - id: FR-WF-COPY-005
+    title: Confirm copy workflow failure keeps dialog open and shows error snackbar
+
+    designEvidence:
+      - FIGMA-CAB-WF-COPY-SELECT-PROJECT
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - copyWorkflowDialog
+      - copyWorkflowTitleField
+      - copyWorkflowSelectProjectPanel
+      - copyWorkflowDialogSubmitButton
+      - globalMessageSnackbar
+
+    preconditions:
+      - copyWorkflowDialog is open per FR-WF-COPY-001
+      - copyWorkflowTitleField satisfies validation rules per FR-WF-COPY-007
+      - a projectCard is selected in copyWorkflowSelectProjectPanel per FR-WF-COPY-002
+      - copyWorkflowDialogSubmitButton is enabled and clickable
+
+    trigger:
+      - actor clicks copyWorkflowDialogSubmitButton and copy does not complete successfully
+
+    mainFlow:
+      - copyWorkflowDialog remains open
+      - copyWorkflowTitleField retains value from immediately before submit
+      - copyWorkflowDialogSubmitButton is enabled and clickable
+      - no new workflow is created from this copy attempt
+      - globalMessageSnackbar shows copy matching 'We encountered an issue and your [workflow type] was not copied' after substituting the source workflow's user-visible type label for '[workflow type]' (same rule as copyWorkflowDialogTitle in FR-WF-COPY-001)
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given failed submit, copyWorkflowDialog remains open
+      - given failed submit, copyWorkflowTitleField retains value from immediately before submit
+      - given failed submit, no new workflow was created from this copy attempt
+      - given failed submit, copyWorkflowDialogSubmitButton is enabled and clickable
+      - given failed submit, globalMessageSnackbar shows copy matching 'We encountered an issue and your [workflow type] was not copied' after substituting the source workflow's user-visible type label for '[workflow type]' (same rule as copyWorkflowDialogTitle in FR-WF-COPY-001)
+
+    openQuestions: []
+
+  - id: FR-WF-COPY-006
+    title: No eligible destination projects for copy workflow
+
+    designEvidence:
+      - FIGMA-CAB-WF-COPY-SELECT-PROJECT
+      - FIGMA-CAB-WF-COPY-NO-ELIGIBLE-PROJECT
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - copyWorkflowDialog
+      - copyWorkflowDialogTitle
+      - copyWorkflowTitleField
+      - copyWorkflowFormFieldValidationMessage
+      - copyWorkflowSelectProjectPanel
+      - copyWorkflowProjectSearchField
+      - copyWorkflowNoEligibleProjectsState
+      - copyWorkflowDialogSubmitButton
+      - copyWorkflowDialogCancelButton
+
+    preconditions:
+      - copyWorkflowDialog is open per FR-WF-COPY-001
+      - actor holds owner or editor role on no destination project
+
+    trigger:
+      - copyWorkflowDialog opens under preconditions above
+
+    mainFlow:
+      - copyWorkflowSelectProjectPanel shows copyWorkflowNoEligibleProjectsState
+      - copyWorkflowDialogTitle matches the 'Copy [workflow type]' template after lowercase substitution for the source workflow's type label
+      - copyWorkflowTitleField is visible and prefilled with the source workflow's workflowTitle value with literal '(copy)' appended
+      - copyWorkflowTitleField inline validation conforms to FR-WF-COPY-007
+      - copyWorkflowNoEligibleProjectsState shows warning title copy exactly 'You are not an owner or editor of any projects' and subtitle copy exactly 'All workflows, whether they are programs, courses, or activities, exist within projects. You must always start by creating a project before proceeding to create any type of workflow. Currently you are not the owner and have not been added as an editor of any project.'
+      - copyWorkflowProjectSearchField is not visible in copyWorkflowSelectProjectPanel
+      - no projectCard is shown in copyWorkflowSelectProjectPanel
+      - copyWorkflowDialogSubmitButton is disabled and not clickable
+      - copyWorkflowDialogCancelButton remains visible and clickable
+      - actor can dismiss copyWorkflowDialog via copyWorkflowDialogCancelButton per FR-WF-COPY-004 without creating a copy
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given actor holds owner or editor role on no destination project and copyWorkflowDialog is open, copyWorkflowNoEligibleProjectsState is visible
+      - given copyWorkflowNoEligibleProjectsState is visible, copyWorkflowDialogTitle matches the 'Copy [workflow type]' template after lowercase substitution for the source workflow's type label
+      - given copyWorkflowNoEligibleProjectsState is visible, copyWorkflowTitleField is visible and prefilled with the source workflow's workflowTitle value with literal '(copy)' appended
+      - given copyWorkflowNoEligibleProjectsState is visible, copyWorkflowTitleField inline validation conforms to FR-WF-COPY-007
+      - given copyWorkflowNoEligibleProjectsState is visible, warning title copy is exactly 'You are not an owner or editor of any projects'
+      - given copyWorkflowNoEligibleProjectsState is visible, subtitle copy is exactly 'All workflows, whether they are programs, courses, or activities, exist within projects. You must always start by creating a project before proceeding to create any type of workflow. Currently you are not the owner and have not been added as an editor of any project.'
+      - given copyWorkflowNoEligibleProjectsState is visible, copyWorkflowProjectSearchField is not visible
+      - given actor holds owner or editor role on no destination project, no projectCard is visible in copyWorkflowSelectProjectPanel
+      - given actor holds owner or editor role on no destination project, copyWorkflowDialogSubmitButton is disabled and not clickable
+      - given actor holds owner or editor role on no destination project, copyWorkflowDialogCancelButton is visible and clickable
+
+    openQuestions: []
+
+  - id: FR-WF-COPY-007
+    title: Copy workflow title field inline validation
+
+    designEvidence:
+      - FIGMA-CAB-WF-COPY-SELECT-PROJECT
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - copyWorkflowDialog
+      - copyWorkflowTitleField
+      - copyWorkflowFormFieldValidationMessage
+      - copyWorkflowDialogSubmitButton
+
+    preconditions:
+      - copyWorkflowDialog is open per FR-WF-COPY-001
+      - copyWorkflowTitleField is visible
+
+    trigger:
+      - actor edits copyWorkflowTitleField
+
+    mainFlow:
+      - copyWorkflowTitleField follows the same required non-empty after trim rule as workflowTitleField in FR-WF-FORM-002
+      - copyWorkflowTitleField value is at most 200 characters
+      - when copyWorkflowTitleField is empty after trim, copyWorkflowFormFieldValidationMessage is visible on copyWorkflowTitleField with copy exactly 'Title is required'
+      - when copyWorkflowTitleField value length exceeds 200 characters, copyWorkflowFormFieldValidationMessage is visible on copyWorkflowTitleField with copy exactly 'Title cannot be longer than 200 characters'
+      - copyWorkflowDialogSubmitButton stays disabled and not clickable until copyWorkflowTitleField is non-empty after trim and at most 200 characters
+      - copyWorkflowDialog remains open while copyWorkflowFormFieldValidationMessage is visible for copyWorkflowTitleField
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given copyWorkflowTitleField is empty after trim, copyWorkflowFormFieldValidationMessage is visible with copy exactly 'Title is required'
+      - given copyWorkflowTitleField value length exceeds 200 characters, copyWorkflowFormFieldValidationMessage is visible with copy exactly 'Title cannot be longer than 200 characters'
+      - given copyWorkflowTitleField is non-empty after trim and at most 200 characters, copyWorkflowTitleField does not show copyWorkflowFormFieldValidationMessage for empty or length rules
+      - given copyWorkflowTitleField is non-empty after trim and at most 200 characters and a projectCard is selected per FR-WF-COPY-002, copyWorkflowDialogSubmitButton is enabled and clickable
+      - given copyWorkflowFormFieldValidationMessage is visible for copyWorkflowTitleField, copyWorkflowDialog remains open
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-CAB-WF-COPY-SELECT-PROJECT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5716-49665&t=YGr3frO6Anl5v6Od-1
+  - key: FIGMA-CAB-WF-COPY-NO-ELIGIBLE-PROJECT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6733-53700&t=YGr3frO6Anl5v6Od-1
