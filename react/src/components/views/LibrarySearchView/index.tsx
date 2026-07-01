@@ -20,7 +20,6 @@ import LibraryHelper, {
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'
 import CategoryIcon from '@mui/icons-material/Category'
 import FilterIcon from '@mui/icons-material/FilterAlt'
-import SchemaOutlinedIcon from '@mui/icons-material/SchemaOutlined'
 import SortIcon from '@mui/icons-material/Sort'
 import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlined'
 import StarIcon from '@mui/icons-material/Star'
@@ -28,14 +27,7 @@ import { Link, Skeleton, Typography } from '@mui/material'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import { produce } from 'immer'
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from 'react'
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react'
 import { Link as LinkRouter } from 'react-router-dom'
 
 export type LibraryFilterConfig = {
@@ -191,7 +183,7 @@ const LibrarySearchView = ({
    * however it seems to be fine for now
    **/
 
-  const renderSort = useCallback(() => {
+  const renderSort = () => {
     if (!filters.sortOptions) {
       return <></>
     }
@@ -215,9 +207,9 @@ const LibrarySearchView = ({
         }}
       />
     )
-  }, [filters.sortOptions, searchFilterState.sortOptions.options])
+  }
 
-  const renderOwnershipFilter = useCallback(() => {
+  const renderOwnershipFilter = () => {
     if (!filters.filterGroups.ownershipFilter) {
       return <></>
     }
@@ -251,12 +243,9 @@ const LibrarySearchView = ({
         }}
       />
     )
-  }, [
-    filters.filterGroups.ownershipFilter,
-    searchFilterState.filterGroups.ownershipFilter
-  ])
+  }
 
-  const renderContentTypeFilter = useCallback(() => {
+  const renderContentTypeFilter = () => {
     if (!filters.filterGroups.contentTypeFilter) {
       return <></>
     }
@@ -287,12 +276,9 @@ const LibrarySearchView = ({
         }}
       />
     )
-  }, [
-    filters.filterGroups.contentTypeFilter,
-    searchFilterState.filterGroups.contentTypeFilter
-  ])
+  }
 
-  const renderWorkflowTypeFilter = useCallback(() => {
+  const renderWorkflowTypeFilter = () => {
     const contentType = searchArgs.filters?.contentType
     const forceVisible =
       contentType === LibraryContentTypeIn.WORKFLOW || !contentType
@@ -327,16 +313,12 @@ const LibrarySearchView = ({
         }}
       />
     )
-  }, [
-    filters.filterGroups.workflowTypeFilter,
-    searchArgs.filters?.contentType,
-    searchFilterState.filterGroups.workflowTypeFilter
-  ])
+  }
 
   /*******************************************************
    *  DisciplineFilter
    *******************************************************/
-  const renderDisciplineFilter = useCallback(() => {
+  const renderDisciplineFilter = () => {
     if (!filters.filterGroups.disciplineFilter) {
       return <></>
     }
@@ -361,12 +343,12 @@ const LibrarySearchView = ({
         }}
       />
     )
-  }, [filters.filterGroups.disciplineFilter, disciplineOptions])
+  }
 
   /*******************************************************
    *  IS TEMPLATE
    *******************************************************/
-  const renderTemplateFilter = useCallback(() => {
+  const renderTemplateFilter = () => {
     if (!filters.filterGroups.templateFilter) {
       return <></>
     }
@@ -387,15 +369,12 @@ const LibrarySearchView = ({
         }
       />
     )
-  }, [
-    filters.filterGroups.templateFilter,
-    searchFilterState.filterGroups.templateFilter
-  ])
+  }
 
   /*******************************************************
    *  IS FAVORITE
    *******************************************************/
-  const renderFavoriteFilter = useCallback(() => {
+  const renderFavoriteFilter = () => {
     if (!filters.filterGroups.favoritesFilter) {
       return <></>
     }
@@ -416,15 +395,12 @@ const LibrarySearchView = ({
         }
       />
     )
-  }, [
-    filters.filterGroups.favoritesFilter,
-    searchFilterState.filterGroups.favoritesFilter
-  ])
+  }
 
   /*******************************************************
    *  IS ARCHIVE
    *******************************************************/
-  const renderArchiveFilter = useCallback(() => {
+  const renderArchiveFilter = () => {
     if (!filters.filterGroups.archiveFilter) {
       return <></>
     }
@@ -444,10 +420,7 @@ const LibrarySearchView = ({
         }
       />
     )
-  }, [
-    filters.filterGroups.archiveFilter,
-    searchFilterState.filterGroups.archiveFilter
-  ])
+  }
 
   /*******************************************************
    *  Pagination
@@ -521,7 +494,7 @@ const LibrarySearchView = ({
 
         {/* TODO: ALL VIEW NOT IMPLEMENTED YET */}
         {cards.length > 10 && (
-          <Link component={LinkRouter} to={'$'}>
+          <Link component={LinkRouter} to="#">
             <Typography>{_t('+ See all')}</Typography>
           </Link>
         )}
@@ -535,7 +508,11 @@ const LibrarySearchView = ({
   return (
     <OuterContentWrap>
       {defaultOptionsSearchOptions && (
-        <Toolbar disableGutters sx={{ mt: 4, mb: 4 }} data-test-id="library-filter-toolbar">
+        <Toolbar
+          disableGutters
+          sx={{ mt: 4, mb: 4 }}
+          data-test-id="library-filter-toolbar"
+        >
           <Stack
             direction="row"
             spacing={2}
