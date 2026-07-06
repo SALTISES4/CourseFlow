@@ -1,0 +1,37 @@
+/**
+ * Fixed discipline catalogue per FR-PROJ-FORM-001 / FR-EXP-003 — ordered A to Z.
+ * Shared by explore disciplineFilter and projectDisciplineField calibration tests.
+ */
+export const DISCIPLINE_CATALOGUE_AZ = [
+  'Anthropology',
+  'Biology',
+  'Chemistry',
+  'Computer Science',
+  'Design',
+  'Economics',
+  'Engineering',
+  'English',
+  'Environmental Science',
+  'French',
+  'Geography',
+  'History',
+  'Humanities (General)',
+  'Languages',
+  'Law',
+  'Literature',
+  'Mathematics',
+  'Medicine',
+  'Nursing',
+  'Other',
+  'Performing Arts',
+  'Philosophy',
+  'Physics',
+  'Political Science',
+  'Psychology',
+  'Science (General)',
+  'Social Sciences (General)',
+  'Social Work',
+  'Sociology',
+  'Theology',
+  'Visual Arts',
+] as const;

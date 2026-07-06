@@ -2,6 +2,10 @@ import { test, expect } from '@playwright/test';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import { getProjectPath, getProjectWorkflowsPath, loadWorkflowManifest } from '../../helpers/manifest';
 import {
+  CARD_FAVOURITE_SNACKBAR_ADDED,
+  CARD_FAVOURITE_SNACKBAR_REMOVED,
+} from '../../shared/locators/cards';
+import {
   globalMessageSnackbar,
   projectHeaderFavouriteToggle,
   projectOverviewTab,
@@ -60,7 +64,9 @@ test.describe('Project header — calibration (FR-PROJ-HEADER-001–002)', () =>
 
       await toggle.click();
       await expect(globalMessageSnackbar(page)).toBeVisible({ timeout: 15_000 });
-      await expect(globalMessageSnackbar(page)).toHaveText(/Saved to favorites|Removed from favorites/);
+      await expect(globalMessageSnackbar(page)).toHaveText(
+        new RegExp(`^(${CARD_FAVOURITE_SNACKBAR_ADDED}|${CARD_FAVOURITE_SNACKBAR_REMOVED})$`),
+      );
     });
   });
 });

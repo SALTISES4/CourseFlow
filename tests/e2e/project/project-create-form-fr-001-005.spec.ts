@@ -1,4 +1,10 @@
 import { test, expect } from '@playwright/test';
+import { DISCIPLINE_CATALOGUE_AZ } from '../../helpers/discipline-catalogue';
+import {
+  closeProjectDisciplineSelect,
+  openProjectDisciplineSelect,
+  projectDisciplineOptionLabels,
+} from '../../helpers/project-discipline';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import {
   createProjectDialog,
@@ -36,6 +42,18 @@ test.describe('Create project form — calibration (FR-PROJ-FORM-001–005)', ()
     await expect(projectFormCancelButton(page)).toBeVisible();
     await expect(createProjectFormSubmitButton(page)).toBeVisible();
     await expect(createProjectFormSubmitButton(page)).toBeDisabled();
+  });
+
+  test('FR-PROJ-FORM-001: projectDisciplineField options match fixed discipline catalogue A–Z', async ({
+    page,
+  }) => {
+    await openCreateProjectDialog(page);
+    await openProjectDisciplineSelect(page);
+
+    const labels = await projectDisciplineOptionLabels(page);
+    expect(labels).toEqual([...DISCIPLINE_CATALOGUE_AZ]);
+
+    await closeProjectDisciplineSelect(page);
   });
 
   test('FR-PROJ-FORM-002: onboarding alert always shown (FR expects hide when user owns projects)', async ({

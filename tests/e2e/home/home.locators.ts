@@ -1,5 +1,10 @@
 import type { Locator, Page } from '@playwright/test';
 
+import {
+  KEYWORD_SEARCH_PLACEHOLDER,
+  LIBRARY_EMPTY_MESSAGE,
+} from '../../shared/locators/library';
+
 /**
  * Locators for Home dashboard e2e — aligned with
  * tests/docs/requirements/features/shared/canonical_locators.yaml (home* uiObjects).
@@ -8,6 +13,7 @@ import type { Locator, Page } from '@playwright/test';
 export const HOME_WELCOME_HEADING = 'Welcome to CourseFlow';
 export const HOME_RECENT_PROJECTS_TITLE = 'Recent projects';
 export const HOME_VIEW_ALL_PROJECTS = 'View all projects';
+export const HOME_VIEW_ALL_TEMPLATES = 'View all templates';
 export const HOME_TEMPLATES_TITLE_EXPLORE = 'Explore templates';
 export const HOME_TEMPLATES_TITLE_GET_STARTED = 'Get started with templates';
 export const HOME_TEMPLATES_ALERT_TITLE = 'How to use templates';
@@ -42,14 +48,75 @@ export function homeRecentProjectsTitle(page: Page): Locator {
   return page.getByRole('heading', { name: HOME_RECENT_PROJECTS_TITLE, exact: true });
 }
 
+/** canonical: homeRecentProjectsSection — section wrapping recent project cards on /home */
+export function homeRecentProjectsSection(page: Page): Locator {
+  return page
+    .locator('header')
+    .filter({
+      has: page.getByRole('heading', { name: HOME_RECENT_PROJECTS_TITLE, exact: true }),
+    })
+    .locator('..');
+}
+
+/** canonical: projectCard instances within homeRecentProjectsSection */
+export function homeRecentProjectsProjectCards(page: Page): Locator {
+  return homeRecentProjectsSection(page).locator('[data-test-id="project-card"]');
+}
+
+/** canonical: workflowCard instances within homeRecentProjectsSection (must be absent per FR-HOME-003) */
+export function homeRecentProjectsWorkflowCards(page: Page): Locator {
+  return homeRecentProjectsSection(page).locator('[data-test-id="workflow-card"]');
+}
+
+/** projectCard and workflowCard instances within homeRecentProjectsSection */
+export function homeRecentProjectsCards(page: Page): Locator {
+  return homeRecentProjectsSection(page).locator('[data-test-id$="-card"]');
+}
+
 export function homeViewAllProjectsLink(page: Page): Locator {
   return page.getByRole('link', { name: HOME_VIEW_ALL_PROJECTS, exact: true });
+}
+
+/** canonical: homeViewAllTemplatesLink */
+export function homeViewAllTemplatesLink(page: Page): Locator {
+  return homeTemplatesSection(page).getByRole('link', {
+    name: HOME_VIEW_ALL_TEMPLATES,
+    exact: true,
+  });
+}
+
+/** workflowCard instances within homeTemplatesSection */
+export function homeTemplatesWorkflowCards(page: Page): Locator {
+  return homeTemplatesSection(page).locator('[data-test-id="workflow-card"]');
+}
+
+/** projectCard instances within homeTemplatesSection (must be absent per FR-HOME-004) */
+export function homeTemplatesProjectCards(page: Page): Locator {
+  return homeTemplatesSection(page).locator('[data-test-id="project-card"]');
+}
+
+/** projectCard and workflowCard instances within homeTemplatesSection */
+export function homeTemplatesCards(page: Page): Locator {
+  return homeTemplatesSection(page).locator('[data-test-id$="-card"]');
 }
 
 export function homeTemplatesSectionTitle(page: Page): Locator {
   return page.getByRole('heading', {
     name: new RegExp(`^(${HOME_TEMPLATES_TITLE_EXPLORE}|${HOME_TEMPLATES_TITLE_GET_STARTED})$`),
   });
+}
+
+/** canonical: homeTemplatesSection — section wrapping template content on /home */
+export function homeTemplatesSection(page: Page): Locator {
+  return page
+    .locator('header')
+    .filter({ has: homeTemplatesSectionTitle(page) })
+    .locator('..');
+}
+
+/** canonical: homeLoadingIndicator — full-page loader while home context loads */
+export function homeLoadingIndicator(page: Page): Locator {
+  return page.locator('.load-screen');
 }
 
 export function homeTemplatesInfoAlert(page: Page): Locator {
@@ -66,6 +133,97 @@ export function createWorkflowDialog(page: Page): Locator {
 
 export function createWorkflowDialogTitle(page: Page): Locator {
   return createWorkflowDialog(page).getByRole('heading').first();
+}
+
+export function createWorkflowDialogNextStep(page: Page): Locator {
+  return createWorkflowDialog(page).getByRole('button', { name: 'Next step', exact: true });
+}
+
+/** canonical: createWorkflowCancelButton */
+export function createWorkflowCancelButton(page: Page): Locator {
+  return createWorkflowDialog(page).getByRole('button', { name: 'Cancel', exact: true });
+}
+
+/** canonical: createWorkflowPreviousStepButton */
+export function createWorkflowPreviousStepButton(page: Page): Locator {
+  return createWorkflowDialog(page).getByRole('button', { name: 'Previous step', exact: true });
+}
+
+/** canonical: createWorkflowStepper — step indicator strip (MUI Stepper root) */
+export function createWorkflowStepper(page: Page): Locator {
+  return createWorkflowDialog(page).locator('.MuiStepper-root');
+}
+
+export function createWorkflowDialogFromTemplateOption(page: Page): Locator {
+  return workflowCreationModeTemplateOption(page);
+}
+
+/** canonical: workflowCreationModeTemplateOption (step 2) */
+export function workflowCreationModeTemplateOption(page: Page): Locator {
+  return createWorkflowDialog(page).getByText('From a template', { exact: true });
+}
+
+/** canonical: workflowCreationModeBlankOption (step 2) */
+export function workflowCreationModeBlankOption(
+  page: Page,
+  workflowType: 'activity' | 'course' | 'program',
+): Locator {
+  return createWorkflowDialog(page).getByText(`Blank ${workflowType}`, { exact: true });
+}
+
+/** canonical: workflowProjectSearchView (step 1) */
+export function workflowProjectSearchView(page: Page): Locator {
+  return createWorkflowDialog(page).locator('[data-test-id="library-results"]');
+}
+
+/** canonical: workflowProjectSearchField (step 1) */
+export function workflowProjectSearchField(page: Page): Locator {
+  return createWorkflowDialog(page).getByPlaceholder(KEYWORD_SEARCH_PLACEHOLDER);
+}
+
+/** canonical: workflowProjectSearchEmptyState (step 1) */
+export function workflowProjectSearchEmptyState(page: Page): Locator {
+  return createWorkflowDialog(page).getByText(LIBRARY_EMPTY_MESSAGE, { exact: true });
+}
+
+/** projectCard instances in createWorkflowDialog step 1 */
+export function createWorkflowDialogProjectCards(page: Page): Locator {
+  return createWorkflowDialog(page).locator('[data-test-id="project-card"]');
+}
+
+/** canonical: workflowTitleField (blank mode step 3) */
+export function workflowTitleField(page: Page): Locator {
+  return createWorkflowDialog(page).locator('input[name="title"]');
+}
+
+/** canonical: workflowBlankForm (blank mode step 3) */
+export function workflowBlankForm(page: Page): Locator {
+  return createWorkflowDialog(page).locator('form');
+}
+
+/** canonical: workflowDescriptionField (blank mode step 3) */
+export function workflowDescriptionField(
+  page: Page,
+  workflowType: 'activity' | 'course' | 'program',
+): Locator {
+  return createWorkflowDialog(page).getByLabel(`${workflowType} description`, { exact: true });
+}
+
+/** canonical: createWorkflowSubmitButton — label pattern 'Create {workflowType}' */
+export function createWorkflowSubmitButton(
+  page: Page,
+  workflowType: 'activity' | 'course' | 'program',
+): Locator {
+  return createWorkflowDialog(page).getByRole('button', {
+    name: `Create ${workflowType}`,
+    exact: true,
+  });
+}
+
+export function createWorkflowDialogProjectCardByTitle(page: Page, title: string): Locator {
+  return createWorkflowDialog(page)
+    .locator('[data-test-id="project-card"]')
+    .filter({ has: page.getByRole('heading', { name: title, exact: true }) });
 }
 
 export function homeErrorState(page: Page): Locator {

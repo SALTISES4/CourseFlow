@@ -1,4 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { describeLibraryPaginationTests } from '../../helpers/library-pagination';
+import { describeLibraryResultsSummaryTests } from '../../helpers/library-results-summary';
+import { expectSortControlPerFrLib002 } from '../../helpers/library-sort';
 import { gotoFavourites } from '../../helpers/navigation';
 import {
   keywordSearchClearButton,
@@ -7,9 +10,7 @@ import {
   libraryEmptyState,
   libraryErrorState,
   libraryFilterToolbar,
-  libraryPagination,
   ownershipFilter,
-  selectSortOption,
   sortControl,
   templatesToggle,
   typeFilter,
@@ -53,11 +54,10 @@ test.describe('Favourites — calibration (FR-FAV-001–005)', () => {
     await expect(workflowTypeFilter(page)).toHaveCount(0);
   });
 
-  test('FR-FAV-002: sort control exposes options and updates label on selection', async ({
+  test('FR-FAV-002: selected option replaces Sort placeholder; sortResetButton restores default', async ({
     page,
   }) => {
-    await selectSortOption(page, 'A - Z');
-    await expect(sortControl(page)).toHaveText('A - Z');
+    await expectSortControlPerFrLib002(page);
   });
 
   test.describe('FR-FAV-003: ownership/type filters (deferred)', () => {
@@ -100,17 +100,18 @@ test.describe('Favourites — calibration (FR-FAV-001–005)', () => {
   });
 });
 
-test.describe('Favourites — pagination (FR-FAV-001)', () => {
-  test('pagination hidden when result count is at most 10', async ({ page }) => {
-    await gotoFavourites(page);
-    await waitForLibraryResultsLoaded(page);
+describeLibraryPaginationTests({
+  suiteLabel: 'Favourites',
+  frRef: 'FR-FAV-001',
+  gotoListing: gotoFavourites,
+  waitForLoaded: waitForLibraryResultsLoaded,
+  cards: libraryCards,
+});
 
-    const cardCount = await libraryCards(page).count();
-    if (cardCount > 10) {
-      await expect(libraryPagination(page)).toBeVisible();
-      return;
-    }
-
-    await expect(libraryPagination(page)).toHaveCount(0);
-  });
+describeLibraryResultsSummaryTests({
+  suiteLabel: 'Favourites',
+  frRef: 'FR-FAV-001',
+  gotoListing: gotoFavourites,
+  waitForLoaded: waitForLibraryResultsLoaded,
+  cards: libraryCards,
 });

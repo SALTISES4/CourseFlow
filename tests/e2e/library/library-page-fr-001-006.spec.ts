@@ -1,4 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { describeLibraryPaginationTests } from '../../helpers/library-pagination';
+import { describeLibraryResultsSummaryTests } from '../../helpers/library-results-summary';
+import { expectSortControlPerFrLib002 } from '../../helpers/library-sort';
 import { gotoLibrary } from '../../helpers/navigation';
 import {
   archiveToggle,
@@ -9,14 +12,9 @@ import {
   libraryEmptyState,
   libraryErrorState,
   libraryFilterToolbar,
-  libraryPagination,
   ownershipFilter,
   selectFilterOption,
-  selectSortOption,
   sortControl,
-  sortMenuItem,
-  SORT_OPTION_A_TO_Z,
-  SORT_OPTION_CREATION_DATE,
   templatesToggle,
   typeFilter,
   waitForLibraryResultsLoaded,
@@ -70,16 +68,10 @@ test.describe('My library — calibration (FR-LIB-001–004, FR-LIB-006 deferred
     await expect(workflowTypeFilter(page)).toHaveCount(0);
   });
 
-  test('FR-LIB-002: sort control exposes options and updates label on selection', async ({ page }) => {
-    await expect(sortControl(page)).toBeVisible();
-
-    await sortControl(page).click();
-    await expect(sortMenuItem(page, SORT_OPTION_A_TO_Z)).toBeVisible();
-    await expect(sortMenuItem(page, SORT_OPTION_CREATION_DATE)).toBeVisible();
-    await page.keyboard.press('Escape');
-
-    await selectSortOption(page, SORT_OPTION_A_TO_Z);
-    await expect(sortControl(page)).toHaveText(SORT_OPTION_A_TO_Z);
+  test('FR-LIB-002: selected option replaces Sort placeholder; sortResetButton restores default', async ({
+    page,
+  }) => {
+    await expectSortControlPerFrLib002(page);
   });
 
   test('FR-LIB-003: ownership filter commits Owned selection', async ({ page }) => {
@@ -131,17 +123,18 @@ test.describe('My library — calibration (FR-LIB-001–004, FR-LIB-006 deferred
   });
 });
 
-test.describe('My library — pagination (FR-LIB-001)', () => {
-  test('pagination hidden when result count is at most 10', async ({ page }) => {
-    await gotoLibrary(page);
-    await waitForLibraryResultsLoaded(page);
+describeLibraryPaginationTests({
+  suiteLabel: 'My library',
+  frRef: 'FR-LIB-001',
+  gotoListing: gotoLibrary,
+  waitForLoaded: waitForLibraryResultsLoaded,
+  cards: libraryCards,
+});
 
-    const cardCount = await libraryCards(page).count();
-    if (cardCount > 10) {
-      await expect(libraryPagination(page)).toBeVisible();
-      return;
-    }
-
-    await expect(libraryPagination(page)).toHaveCount(0);
-  });
+describeLibraryResultsSummaryTests({
+  suiteLabel: 'My library',
+  frRef: 'FR-LIB-001',
+  gotoListing: gotoLibrary,
+  waitForLoaded: waitForLibraryResultsLoaded,
+  cards: libraryCards,
 });

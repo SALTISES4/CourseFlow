@@ -1,11 +1,10 @@
 import { test, expect } from '@playwright/test';
+import { describeLibraryPaginationTests } from '../../helpers/library-pagination';
+import { describeLibraryResultsSummaryTests } from '../../helpers/library-results-summary';
+import { expectSortControlPerFrLib002 } from '../../helpers/library-sort';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import { getProjectWorkflowsPath, loadWorkflowManifest } from '../../helpers/manifest';
-import {
-  SORT_OPTION_A_TO_Z,
-  SORT_OPTION_CREATION_DATE,
-  sortMenuItem,
-} from '../../shared/locators/library';
+import { sortResetButton } from '../../shared/locators/library';
 import {
   keywordSearchClearButton,
   keywordSearchField,
@@ -72,16 +71,14 @@ test.describe('Project workflows — calibration (FR-PROJ-WF-001–004)', () => 
     await expect(projectWorkflowsTemplatesToggle(page)).toBeVisible();
   });
 
-  test('FR-PROJ-WF-002: sort control exposes options and updates label on selection', async ({ page }) => {
-    await expect(projectWorkflowsSortControl(page)).toBeVisible();
-
-    await projectWorkflowsSortControl(page).click();
-    await expect(sortMenuItem(page, SORT_OPTION_A_TO_Z)).toBeVisible();
-    await expect(sortMenuItem(page, SORT_OPTION_CREATION_DATE)).toBeVisible();
-    await page.keyboard.press('Escape');
-
-    await selectProjectWorkflowSortOption(page, SORT_OPTION_A_TO_Z);
-    await expect(projectWorkflowsSortControl(page)).toHaveText(SORT_OPTION_A_TO_Z);
+  test('FR-PROJ-WF-002: selected option replaces Sort placeholder; sortResetButton restores default', async ({
+    page,
+  }) => {
+    await expectSortControlPerFrLib002(page, {
+      sortControl: projectWorkflowsSortControl(page),
+      sortResetButton: sortResetButton(page, projectWorkflowsFilterToolbar(page)),
+      selectSortOption: selectProjectWorkflowSortOption,
+    });
   });
 
   test('FR-PROJ-WF-004: keyword search filters workflow cards by title', async ({ page }) => {
@@ -101,4 +98,33 @@ test.describe('Project workflows — calibration (FR-PROJ-WF-001–004)', () => 
       await waitForProjectWorkflowsLoaded(page);
     }
   });
+});
+
+const projectWorkflowsManifest = loadWorkflowManifest();
+const projectWorkflowsPath = getProjectWorkflowsPath(projectWorkflowsManifest);
+
+describeLibraryPaginationTests({
+  suiteLabel: 'Project workflows',
+  frRef: 'FR-PROJ-WF-001',
+  gotoListing: async (page) => {
+    await gotoAuthenticatedShell(page, projectWorkflowsPath);
+    await expect(page).toHaveURL(
+      new RegExp(`/project/${projectWorkflowsManifest.project_uuid}/workflows/?$`),
+    );
+  },
+  waitForLoaded: waitForProjectWorkflowsLoaded,
+  cards: projectWorkflowCards,
+});
+
+describeLibraryResultsSummaryTests({
+  suiteLabel: 'Project workflows',
+  frRef: 'FR-PROJ-WF-001',
+  gotoListing: async (page) => {
+    await gotoAuthenticatedShell(page, projectWorkflowsPath);
+    await expect(page).toHaveURL(
+      new RegExp(`/project/${projectWorkflowsManifest.project_uuid}/workflows/?$`),
+    );
+  },
+  waitForLoaded: waitForProjectWorkflowsLoaded,
+  cards: projectWorkflowCards,
 });
