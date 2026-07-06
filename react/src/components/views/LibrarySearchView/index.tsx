@@ -6,7 +6,9 @@ import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
 import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import FilterButton from '@cfComponents/filters/FilterButton'
-import FilterMultiselect from '@cfComponents/filters/FilterMultiselect'
+import FilterMultiselect, {
+  FilterMultiselectOption
+} from '@cfComponents/filters/FilterMultiselect'
 import FilterToggle from '@cfComponents/filters/FilterToggle'
 import FilterWorkflows from '@cfComponents/filters/FilterWorkflows'
 import SortableFilterButton from '@cfComponents/filters/SortableFilterButton'
@@ -27,7 +29,14 @@ import { Link, Skeleton, Typography } from '@mui/material'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import { produce } from 'immer'
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react'
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 import { Link as LinkRouter } from 'react-router-dom'
 
 export type LibraryFilterConfig = {
@@ -106,6 +115,8 @@ const LibrarySearchView = ({
   config,
   override
 }: PropsType) => {
+  console.log('---- LibrarySearchView')
+
   // all base filters on by default (opt-out)
   // all filter groups off by default (opt-in)
   const configDefaults: LibraryFilterConfig = {
@@ -269,73 +280,6 @@ const LibrarySearchView = ({
           setSearchFilterState(
             produce((draft) => {
               draft.filterGroups.contentTypeFilter.options =
-                newFilterProjectOptions
-              draft.pagination.page = 0
-            })
-          )
-        }}
-      />
-    )
-  }
-
-  const renderWorkflowTypeFilter = () => {
-    const contentType = searchArgs.filters?.contentType
-    const forceVisible =
-      contentType === LibraryContentTypeIn.WORKFLOW || !contentType
-
-    if (!filters.filterGroups.workflowTypeFilter || !forceVisible) {
-      return <></>
-    }
-
-    const filterGroup = searchFilterState.filterGroups.workflowTypeFilter
-    const { options } = filterGroup
-
-    /*******************************************************
-     *  Workflow Type (condition on Content Type value)
-     *******************************************************/
-    return (
-      <FilterMultiselect
-        placeholder={filterGroup.label}
-        options={options}
-        showSearch={false}
-        onChange={(values) => {
-          const newFilterProjectOptions = LibraryHelper.updateFilterOptions(
-            options,
-            values
-          )
-          setSearchFilterState(
-            produce((draft) => {
-              draft.filterGroups.workflowTypeFilter.options =
-                newFilterProjectOptions
-              draft.pagination.page = 0
-            })
-          )
-        }}
-      />
-    )
-  }
-
-  /*******************************************************
-   *  DisciplineFilter
-   *******************************************************/
-  const renderDisciplineFilter = () => {
-    if (!filters.filterGroups.disciplineFilter) {
-      return <></>
-    }
-
-    return (
-      <FilterMultiselect
-        placeholder="Discipline"
-        searchPlaceholder="Find discipline"
-        options={disciplineOptions}
-        onChange={(values) => {
-          const newFilterProjectOptions = LibraryHelper.updateFilterOptions(
-            disciplineOptions,
-            values
-          )
-          setSearchFilterState(
-            produce((draft) => {
-              draft.filterGroups.disciplineFilter.options =
                 newFilterProjectOptions
               draft.pagination.page = 0
             })
@@ -521,10 +465,20 @@ const LibrarySearchView = ({
           >
             <Stack direction="row" spacing={2}>
               {renderSort()}
-              {renderDisciplineFilter()}
+
+              <DisciplineFilter
+                show={filters.filterGroups.disciplineFilter}
+                options={disciplineOptions}
+                setSearchFilterState={setSearchFilterState}
+              />
               {renderOwnershipFilter()}
               {renderContentTypeFilter()}
-              {renderWorkflowTypeFilter()}
+              <WorkflowTypeFilter
+                show={filters.filterGroups.workflowTypeFilter}
+                setSearchFilterState={setSearchFilterState}
+                searchArgs={searchArgs}
+                filterGroup={searchFilterState.filterGroups.workflowTypeFilter}
+              />
               {renderFavoriteFilter()}
               {renderTemplateFilter()}
               {renderArchiveFilter()}
@@ -541,6 +495,95 @@ const LibrarySearchView = ({
       </GridWrap>
       {renderPagination()}
     </OuterContentWrap>
+  )
+}
+
+// extracted into a separate component to be able to memoize onChange
+// and avoid constant rerenders when references change within the FilterMultiselect
+// trigger internal useEffect loop
+const DisciplineFilter = ({
+  show,
+  options,
+  setSearchFilterState
+}: {
+  show: boolean
+  options: FilterMultiselectOption[]
+  setSearchFilterState: Dispatch<SetStateAction<SearchOptions>>
+}) => {
+  const onChange = useCallback(
+    (values: SearchFilterOption[]) => {
+      setSearchFilterState(
+        produce((draft) => {
+          const current = draft.filterGroups.disciplineFilter.options
+
+          draft.filterGroups.disciplineFilter.options =
+            LibraryHelper.updateFilterOptions(current, values)
+          draft.pagination.page = 0
+        })
+      )
+    },
+    [setSearchFilterState]
+  )
+
+  if (!show) {
+    return null
+  }
+
+  return (
+    <FilterMultiselect
+      placeholder={_t('Discipline')}
+      searchPlaceholder={_t('Find discipline')}
+      options={options}
+      onChange={onChange}
+    />
+  )
+}
+
+// extracted into a separate component to be able to memoize onChange
+// and avoid constant rerenders when references change within the FilterMultiselect
+// trigger internal useEffect loop
+const WorkflowTypeFilter = ({
+  show,
+  setSearchFilterState,
+  searchArgs,
+  filterGroup
+}: {
+  show: boolean
+  setSearchFilterState: Dispatch<SetStateAction<SearchOptions>>
+  searchArgs: LibrarySearchIn
+  filterGroup: SearchOptions['filterGroups']['workflowTypeFilter']
+}) => {
+  const contentType = searchArgs.filters?.contentType
+  const forceVisible =
+    contentType === LibraryContentTypeIn.WORKFLOW || !contentType
+  const { options } = filterGroup
+
+  const onChange = useCallback(
+    (values: SearchFilterOption[]) => {
+      setSearchFilterState(
+        produce((draft) => {
+          const current = draft.filterGroups.workflowTypeFilter.options
+
+          draft.filterGroups.workflowTypeFilter.options =
+            LibraryHelper.updateFilterOptions(current, values)
+          draft.pagination.page = 0
+        })
+      )
+    },
+    [setSearchFilterState]
+  )
+
+  if (!show || !forceVisible) {
+    return null
+  }
+
+  return (
+    <FilterMultiselect
+      placeholder={filterGroup.label}
+      options={options}
+      showSearch={false}
+      onChange={onChange}
+    />
   )
 }
 
