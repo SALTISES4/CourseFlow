@@ -4,7 +4,8 @@ import {
   LibraryOwnershipIn,
   LibrarySearchIn,
   LibrarySortDirectionIn,
-  LibrarySortValueIn
+  LibrarySortValueIn,
+  WorkflowType
 } from '@cf/api/gen'
 import { _t } from '@cf/utility/Utility.class'
 import {
@@ -12,7 +13,6 @@ import {
   SearchFilterOption,
   SortOption
 } from '@cfComponents/filters/types'
-import { WorkflowType } from '@cfPages/Workflow/types'
 
 type FilterGroups = { [key: string]: SearchFilterGroup }
 
@@ -205,9 +205,9 @@ class LibraryHelper {
     const relationship = filterGroups.ownershipFilter?.options?.find(
       (option) => option.enabled
     )?.value
-    const contentSelection = filterGroups.contentTypeFilter?.options?.find(
+    const contentType = filterGroups.contentTypeFilter?.options?.find(
       (option) => option.enabled
-    )?.value
+    )?.value as LibraryContentTypeIn | null
     const disciplineIds = (filterGroups.disciplineFilter?.options
       ?.filter((option) => option.enabled)
       .map((option) => Number(option.value))
@@ -216,31 +216,25 @@ class LibraryHelper {
     const keyword =
       String(filterGroups.keywordFilter?.value ?? '').trim() || null
 
-    const workflowTypes = (
-      ['activity', 'course', 'program', 'task'] as const
-    ).includes(contentSelection as WorkflowType)
-      ? [contentSelection as WorkflowType]
-      : []
-
-    const contentType: LibraryContentTypeIn | null =
-      contentSelection === LibraryContentTypeIn.PROJECT
-        ? LibraryContentTypeIn.PROJECT
-        : workflowTypes.length > 0 || contentSelection === 'workflow'
-          ? LibraryContentTypeIn.WORKFLOW
-          : null
+    const workflowTypes = filterGroups.workflowTypeFilter?.options
+      ?.filter((option) => option.enabled)
+      .map((option) => option.value) as WorkflowType[]
 
     return {
       keyword,
       contentType,
       disciplineIds,
-      workflowTypes,
+      workflowTypes:
+        contentType === LibraryContentTypeIn.PROJECT ? [] : workflowTypes,
       ownership:
         relationship === LibraryOwnershipIn.OWNED ||
         relationship === LibraryOwnershipIn.SHARED
           ? relationship
           : null,
-      isFavorite: relationship === 'favourited' ? true : null,
+
       // Boolean filters are "only when true" for this endpoint.
+      isFavorite: filterGroups.favoritesFilter?.value ? true : null,
+      // isArchive: filterGroups.archiveFilter?.value ? true : null,
       isTemplate: filterGroups.templateFilter?.value ? true : null
     }
   }
