@@ -37,6 +37,11 @@ export function workflowSectionContainers(page: Page): Locator {
   return page.locator(WORKFLOW_SECTION_CONTAINER);
 }
 
+/** canonical: workflowChannelsHeaderRow */
+export function workflowChannelsHeaderRow(page: Page): Locator {
+  return page.locator('[data-test-id="columns-block"]');
+}
+
 /** canonical: workflowSectionDeleteDialog */
 export function workflowSectionDeleteDialog(page: Page): Locator {
   return page.locator('[aria-labelledby="delete-section-part-modal"]');

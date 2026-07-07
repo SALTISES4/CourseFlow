@@ -33,11 +33,20 @@ export type WorkflowEntry = {
   outcome_count?: number;
 };
 
+export type TemplateWorkflowEntry = {
+  workflow_uuid: string;
+  workflow_title: string;
+  workflow_type: string;
+};
+
 export type WorkflowManifest = {
   fixture_version: number;
   owner_email: string;
   project_uuid: string;
   project_title: string;
+  template_project_uuid?: string;
+  template_project_title?: string;
+  template_workflows?: TemplateWorkflowEntry[];
   contributors?: ContributorEntry[];
   workflows: WorkflowEntry[];
 };
@@ -113,6 +122,46 @@ export function assertManifestReady(): void {
 
 export function getPrimaryWorkflow(manifest: WorkflowManifest): WorkflowEntry {
   return manifest.workflows[0]!;
+}
+
+export type TemplateWorkflowFixture = TemplateWorkflowEntry & {
+  project_uuid: string;
+  project_title: string;
+};
+
+export type TemplateWorkflowType = 'activity' | 'course' | 'program';
+
+export function listTemplateWorkflowFixtures(manifest: WorkflowManifest): TemplateWorkflowFixture[] {
+  const { template_project_uuid, template_project_title, template_workflows } = manifest;
+
+  if (!template_project_uuid || !template_project_title || !template_workflows?.length) {
+    throw new Error(
+      `E2E workflow manifest is missing template_workflows fixture data. ${MANIFEST_MISSING_HINT}`,
+    );
+  }
+
+  return template_workflows.map((entry) => ({
+    project_uuid: template_project_uuid,
+    project_title: template_project_title,
+    workflow_uuid: entry.workflow_uuid,
+    workflow_title: entry.workflow_title,
+    workflow_type: entry.workflow_type,
+  }));
+}
+
+export function getTemplateWorkflowFixture(
+  manifest: WorkflowManifest,
+  workflowType: TemplateWorkflowType,
+): TemplateWorkflowFixture {
+  const match = listTemplateWorkflowFixtures(manifest).find(
+    (entry) => entry.workflow_type === workflowType,
+  );
+  if (!match) {
+    throw new Error(
+      `E2E workflow manifest has no template workflow for type ${JSON.stringify(workflowType)}.`,
+    );
+  }
+  return match;
 }
 
 export function orderedSections(workflow: WorkflowEntry): SectionEntry[] {

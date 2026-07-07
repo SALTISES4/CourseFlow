@@ -93,25 +93,40 @@ locatorMappings:
     strategy: "{returnLinksRegion} link with label including 'Return to' and parent project projectTitle"
     confidence: inferred
   cardFavouriteToggle:
-    strategy: "{projectCard|workflowCard} favourite control"
-    confidence: unresolved
+    strategy: "{cardFooterRegion} favourite control"
+    confidence: inferred
+  cardFooterRegion:
+    strategy: "{projectCard|workflowCard} footer element containing cardFooterTagsRegion and cardFavouriteToggle"
+    confidence: inferred
+  cardFooterTagsRegion:
+    strategy: "{cardFooterRegion} chip group excluding cardFavouriteToggle"
+    confidence: inferred
+  cardHeaderRegion:
+    strategy: "{projectCard|workflowCard} header element containing cardTitleText and cardOwnerText when present"
+    confidence: inferred
   cardLinkedInUseChip:
     strategy: "{workflowLinkWorkflowDialogSearchResults} {workflowCard} chip with text 'Already in use'"
     confidence: inferred
   cardOwnerText:
-    strategy: "{projectCard|workflowCard} text matching pattern 'Owned by {ownerName}'"
+    strategy: "{cardHeaderRegion} text matching pattern 'Owned by {ownerName}'"
+    confidence: inferred
+  cardDescriptionText:
+    strategy: "{cardHeaderRegion} description body text when rendered; not present on workflowCard per FR-CARD-002"
     confidence: inferred
   cardTemplateChip:
-    strategy: "{projectCard|workflowCard} chip with text 'Template'"
+    strategy: "{cardFooterTagsRegion} chip with text 'Template'"
     confidence: inferred
   cardTitleText:
-    strategy: "{projectCard|workflowCard} title region"
-    confidence: unresolved
+    strategy: "{cardHeaderRegion} title region"
+    confidence: inferred
   cardTypeChip:
-    strategy: "{projectCard|workflowCard} chip mapped from object type"
-    confidence: unresolved
+    strategy: "{cardFooterTagsRegion} chip mapped from object type"
+    confidence: inferred
   cardWorkflowCountChip:
-    strategy: "{projectCard} chip with text pattern '{n} workflow' or '{n} workflows'"
+    strategy: "{cardFooterTagsRegion} chip with text pattern '{n} workflow' or '{n} workflows'"
+    confidence: inferred
+  cardArchivedChip:
+    strategy: "{cardFooterTagsRegion} chip with text 'Archived' when the card represents an archived object"
     confidence: inferred
   collapseToggle:
     strategy: "{mainNavigation} control with aria-label 'collapse sidebar'"
@@ -276,11 +291,11 @@ locatorMappings:
     strategy: "{mainNavigation} control with aria-label 'collapse sidebar' when mainNavigation is collapsed"
     confidence: inferred
   exploreEmptyState:
-    strategy: null
-    confidence: unresolved
+    strategy: "{resultsRegion} plain body text below exploreFilterToolbar with message exactly 'No results found'; no projectCard or workflowCard; no pagination"
+    confidence: inferred
   exploreErrorState:
-    strategy: null
-    confidence: unresolved
+    strategy: "{resultsRegion} full-width horizontal error alert below exploreFilterToolbar with warning icon and message exactly 'We encountered an issue and were not able to load the content.'; no projectCard or workflowCard"
+    confidence: inferred
   exploreFilterToolbar:
     strategy: null
     confidence: unresolved

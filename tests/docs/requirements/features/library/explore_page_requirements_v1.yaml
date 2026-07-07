@@ -64,9 +64,9 @@ uiObjectDefinitions:
   exploreLoadingState:
     meaning: Loading placeholders shown in resultsRegion while the listing query is in flight on explorePage.
   exploreEmptyState:
-    meaning: Empty-state view shown in resultsRegion when the listing query returns zero projectCard and workflowCard instances on explorePage; copy per designEvidence on FR-EXP-001.
+    meaning: Zero-result message in resultsRegion when the library objects search query succeeds but returns no projectCard or workflowCard instances on explorePage; rendered as plain body text in the listing area below exploreFilterToolbar with copy exactly 'No results found'; no projectCard or workflowCard instances and no pagination are shown.
   exploreErrorState:
-    meaning: Error-state view shown in resultsRegion when the listing query fails on explorePage; copy per designEvidence on FR-EXP-001.
+    meaning: Inline error alert in resultsRegion when the library objects search query fails on explorePage; rendered as a full-width horizontal banner directly below exploreFilterToolbar with a warning icon and body copy exactly 'We encountered an issue and were not able to load the content.'; no projectCard or workflowCard instances are shown.
 
 locatorMappings:
   explorePage: "canonical_locators.yaml -> explorePage"
@@ -148,8 +148,8 @@ requirements:
       - while library objects search query is loading, system shows exploreLoadingState in resultsRegion
       - when search returns published items for the current page, system renders one projectCard or workflowCard per item shown in resultsRegion (up to 10)
       - primary click navigation for projectCard instances follows FR-CARD-003 and for workflowCard instances follows FR-CARD-004
-      - when search returns zero matching published items, system shows exploreEmptyState in resultsRegion
-      - when library objects search query fails, system shows exploreErrorState in resultsRegion
+      - when search returns zero matching published items, system shows exploreEmptyState in resultsRegion with message exactly 'No results found'
+      - when library objects search query fails, system shows exploreErrorState in resultsRegion with message exactly 'We encountered an issue and were not able to load the content.'
       - when user selects a page or uses paginationPageNumberButton, paginationPreviousNextButton, or paginationFirstLastButton, system loads that page of results into resultsRegion per backend contract; resultsSummary reflects the current range when applicable (same pattern as 'My library' FR-LIB-001)
 
     roleBehavior: {}
@@ -164,8 +164,8 @@ requirements:
       - given 11 or more matching published projects and workflows, pagination is visible
       - given at most 10 matching published projects and workflows, pagination is not visible
       - given library objects search query is loading, exploreLoadingState is visible in resultsRegion
-      - given successful search with zero matching items, exploreEmptyState is visible
-      - given failed library objects search, exploreErrorState is visible
+      - given successful search with zero matching items, exploreEmptyState is visible with message exactly 'No results found'
+      - given failed library objects search, exploreErrorState is visible with message exactly 'We encountered an issue and were not able to load the content.'
       - given successful search with at least one result, projectCard and workflowCard instances in resultsRegion conform to card_content_requirements_v1.yaml
       - given user selects a different paginationPageNumberButton, resultsRegion updates to show up to 10 projectCard or workflowCard instances for that page per backend contract
       - given pagination is visible, paginationPreviousNextButton and paginationFirstLastButton behave as on 'My library' (FR-LIB-001)

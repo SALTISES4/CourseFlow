@@ -9,7 +9,7 @@ from django.db import transaction
 from faker import Faker
 
 from course_flow.core.enum import WorkflowType
-from course_flow.core.models import Edge, Graph
+from course_flow.core.models import Edge, FavoriteGraph, Graph
 from course_flow.dev_seed.graph_shape import GraphShapeParams
 from course_flow.dev_seed.graph_view import (
     build_nodes_from_layout,
@@ -30,6 +30,10 @@ from course_flow.e2e_seed.constants import (
     E2E_CHANNEL_TITLES,
     E2E_FIXTURE_GRAPH_SEED,
     E2E_FIXTURE_PROJECT_TITLE,
+    E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE,
+    E2E_FIXTURE_TEMPLATE_COURSE_TITLE,
+    E2E_FIXTURE_TEMPLATE_PROGRAM_TITLE,
+    E2E_FIXTURE_TEMPLATE_PROJECT_TITLE,
     E2E_FIXTURE_WORKFLOW_TITLE,
     E2E_OUTCOME_TITLE,
     E2E_SECTION_TITLES,
@@ -47,6 +51,45 @@ def _section_manifest(sections) -> list[dict]:
         }
         for section in ordered
     ]
+
+
+def _seed_template_workflow(
+    *,
+    admin,
+    template_project,
+    fake,
+    rng: SeededRNG,
+    workflow_type: WorkflowType,
+    title: str,
+    section_title: str,
+    channel_title: str,
+) -> dict:
+    template_graph = Graph.objects.create()
+    template_workflow = build_workflow_with_graph(
+        template_graph,
+        author=admin,
+        project=template_project,
+        fake=fake,
+        rng=rng,
+        workflow_type=workflow_type,
+        title=title,
+        description=f"{workflow_type.value} template workflow for cardTemplateChip E2E tests.",
+    )
+    build_sections_and_channels(
+        template_graph,
+        fake=fake,
+        rng=rng,
+        section_count=1,
+        channel_count=1,
+        section_titles=[section_title],
+        channel_titles=[channel_title],
+    )
+    FavoriteGraph.objects.get_or_create(user=admin, graph=template_graph)
+    return {
+        "workflow_uuid": str(template_workflow.uuid),
+        "workflow_title": template_workflow.title,
+        "workflow_type": template_workflow.workflow_type,
+    }
 
 
 def _workflow_manifest(*, graph: Graph, workflow, sections) -> dict:
@@ -141,11 +184,59 @@ def generate_e2e_fixtures(
             {"uuid": str(outcome.uuid), "title": outcome.title} for outcome in outcomes
         ]
 
+        template_project = create_project(
+            admin,
+            fake=fake,
+            rng=rng,
+            title=E2E_FIXTURE_TEMPLATE_PROJECT_TITLE,
+            description="Deterministic Playwright E2E template project.",
+        )
+        template_project.is_template = True
+        template_project.is_published = True
+        template_project.save(update_fields=["is_template", "is_published"])
+        ensure_team(template_project, admin)
+
+        template_workflows = [
+            _seed_template_workflow(
+                admin=admin,
+                template_project=template_project,
+                fake=fake,
+                rng=rng,
+                workflow_type=WorkflowType.ACTIVITY,
+                title=E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE,
+                section_title="E2E Activity Template Section",
+                channel_title="E2E Activity Template Channel",
+            ),
+            _seed_template_workflow(
+                admin=admin,
+                template_project=template_project,
+                fake=fake,
+                rng=rng,
+                workflow_type=WorkflowType.COURSE,
+                title=E2E_FIXTURE_TEMPLATE_COURSE_TITLE,
+                section_title="E2E Course Template Section",
+                channel_title="E2E Course Template Channel",
+            ),
+            _seed_template_workflow(
+                admin=admin,
+                template_project=template_project,
+                fake=fake,
+                rng=rng,
+                workflow_type=WorkflowType.PROGRAM,
+                title=E2E_FIXTURE_TEMPLATE_PROGRAM_TITLE,
+                section_title="E2E Program Template Section",
+                channel_title="E2E Program Template Channel",
+            ),
+        ]
+
         manifest = {
             "fixture_version": 2,
             "owner_email": admin.email,
             "project_uuid": str(project.uuid),
             "project_title": project.title,
+            "template_project_uuid": str(template_project.uuid),
+            "template_project_title": template_project.title,
+            "template_workflows": template_workflows,
             "contributors": contributors,
             "workflows": [workflow_manifest],
         }

@@ -26,13 +26,23 @@ uiObjectDefinitions:
   cardTitleText:
     meaning: Primary card title text rendered on projectCard or workflowCard.
   cardOwnerText:
-    meaning: Ownership text on projectCard or workflowCard with format 'Owned by {ownerName}'; shown whenever owner data exists. Template cards use the same presentation as non-template cards.
+    meaning: Ownership text on projectCard or workflowCard with format 'Owned by {ownerName}'; shown whenever owner data exists, rendered in cardHeaderRegion directly below cardTitleText in the description slot per FIGMA-CARD-DESIGNS. Template cards use the same presentation as non-template cards.
+  cardDescriptionText:
+    meaning: Optional library object description body in cardHeaderRegion below cardTitleText; not rendered on workflowCard per FR-CARD-002 even when workflow description data exists.
+  cardHeaderRegion:
+    meaning: Top region of projectCard or workflowCard containing cardTitleText and, when owner data exists, cardOwnerText rendered directly below cardTitleText in the description slot per FIGMA-CARD-DESIGNS.
+  cardFooterRegion:
+    meaning: Bottom region of projectCard or workflowCard containing cardFooterTagsRegion and cardFavouriteToggle on one horizontal band.
+  cardFooterTagsRegion:
+    meaning: Chip group within cardFooterRegion holding cardTypeChip and optional cardTemplateChip, cardWorkflowCountChip (projectCard only), or cardArchivedChip (archived cards per FR-CARD-006); excludes cardOwnerText and cardFavouriteToggle.
   cardTypeChip:
     meaning: Type chip on projectCard or workflowCard reflecting library object type; projectCard shows the project type label (e.g. 'Project'); workflowCard shows the workflow subtype label (e.g. 'Program', 'Course', 'Activity') per object type mapping.
   cardTemplateChip:
     meaning: Template chip labeled 'Template' on a template projectCard or template workflowCard.
   cardWorkflowCountChip:
     meaning: Chip displaying workflow count on projectCard when count is greater than zero.
+  cardArchivedChip:
+    meaning: Archived chip labeled 'Archived' on projectCard or workflowCard that represents an archived project or archived workflow.
   cardFavouriteToggle:
     meaning: Favourite control on projectCard or workflowCard; shows yellow star when favourited and grey star when not favourited; interactive per FR-CARD-005 when the object is not archived. On projectCard or workflowCard that represents an archived object, cardFavouriteToggle shows grey star and does not accept interaction per FR-CARD-006.
   cardLinkedInUseChip:
@@ -45,9 +55,13 @@ locatorMappings:
   workflowCard: "canonical_locators.yaml -> workflowCard"
   cardTitleText: "canonical_locators.yaml -> cardTitleText"
   cardOwnerText: "canonical_locators.yaml -> cardOwnerText"
+  cardHeaderRegion: "canonical_locators.yaml -> cardHeaderRegion"
+  cardFooterRegion: "canonical_locators.yaml -> cardFooterRegion"
+  cardFooterTagsRegion: "canonical_locators.yaml -> cardFooterTagsRegion"
   cardTypeChip: "canonical_locators.yaml -> cardTypeChip"
   cardTemplateChip: "canonical_locators.yaml -> cardTemplateChip"
   cardWorkflowCountChip: "canonical_locators.yaml -> cardWorkflowCountChip"
+  cardArchivedChip: "canonical_locators.yaml -> cardArchivedChip"
   cardFavouriteToggle: "canonical_locators.yaml -> cardFavouriteToggle"
   cardLinkedInUseChip: "canonical_locators.yaml -> cardLinkedInUseChip"
   globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
@@ -58,12 +72,16 @@ requirements:
 
     designEvidence:
       - FIGMA-HOME-DASHBOARD
+      - FIGMA-CARD-DESIGNS
 
     actors:
       - user
 
     uiObjects:
       - projectCard
+      - cardHeaderRegion
+      - cardFooterRegion
+      - cardFooterTagsRegion
       - cardTitleText
       - cardOwnerText
       - cardTypeChip
@@ -79,30 +97,35 @@ requirements:
       - system renders projectCard
 
     mainFlow:
-      - system renders cardTitleText from project title
-      - when owner data exists, system renders cardOwnerText with format 'Owned by {ownerName}'
-      - system renders cardTypeChip from project object type mapping
-      - when template flag is true, system renders cardTemplateChip with label 'Template' on projectCard
-      - when project workflow count is greater than zero, system renders cardWorkflowCountChip with singular/plural workflow label
-      - system renders cardFavouriteToggle bound to project favourite state
+      - projectCard layout uses cardHeaderRegion above cardFooterRegion per FIGMA-CARD-DESIGNS
+      - system renders cardTitleText from project title inside cardHeaderRegion
+      - when owner data exists, system renders cardOwnerText inside cardHeaderRegion directly below cardTitleText in the description slot with format 'Owned by {ownerName}'
+      - system renders cardTypeChip from project object type mapping inside cardFooterTagsRegion within cardFooterRegion
+      - when template flag is true, system renders cardTemplateChip with label 'Template' on projectCard inside cardFooterTagsRegion
+      - when project workflow count is greater than zero, system renders cardWorkflowCountChip with singular/plural workflow label inside cardFooterTagsRegion
+      - system renders cardFavouriteToggle bound to project favourite state inside cardFooterRegion after cardFooterTagsRegion, aligned to the trailing edge of the footer row per FIGMA-CARD-DESIGNS
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given project title exists, cardTitleText matches project title
-      - given owner data exists, cardOwnerText matches pattern 'Owned by {ownerName}'
-      - given owner data does not exist, cardOwnerText is not visible
-      - cardTypeChip label matches 'Project' for projectCard
-      - given project is a template, cardTemplateChip is visible with label 'Template'
+      - given projectCard is rendered, cardHeaderRegion is visible above cardFooterRegion
+      - given project title exists, cardTitleText matches project title and is visible inside cardHeaderRegion
+      - given owner data exists, cardOwnerText matches pattern 'Owned by {ownerName}' and is visible inside cardHeaderRegion after cardTitleText in document order within cardHeaderRegion
+      - given owner data exists, cardOwnerText is not visible inside cardFooterRegion
+      - given owner data does not exist, cardOwnerText is not visible inside cardHeaderRegion
+      - cardTypeChip label matches 'Project' for projectCard and is visible inside cardFooterTagsRegion
+      - given project is a template, cardTemplateChip is visible with label 'Template' inside cardFooterTagsRegion immediately after cardTypeChip in document order
       - given project is not a template, cardTemplateChip is not visible
-      - given project workflow count equals 1, cardWorkflowCountChip label matches '1 workflow'
-      - given project workflow count is greater than 1, cardWorkflowCountChip label matches '{n} workflows'
+      - given project workflow count equals 1, cardWorkflowCountChip label matches '1 workflow' and is visible inside cardFooterTagsRegion
+      - given project workflow count is greater than 1, cardWorkflowCountChip label matches '{n} workflows' and is visible inside cardFooterTagsRegion
       - given project workflow count is null or 0, cardWorkflowCountChip is not visible
-      - cardFavouriteToggle is visible on projectCard
+      - cardFavouriteToggle is visible on projectCard inside cardFooterRegion and is not inside cardHeaderRegion
       - given project is favourited, cardFavouriteToggle on projectCard shows yellow star
       - given project is not favourited, cardFavouriteToggle on projectCard shows grey star
 
-    openQuestions: []
+    openQuestions:
+      - When both owner text and project description exist, confirm stack order in cardHeaderRegion (title, then owner, then description — or another order per FIGMA-CARD-DESIGNS).
+      - Confirm chip order within cardFooterTagsRegion when multiple optional chips are present.
 
   - id: FR-CARD-002
     title: workflowCard displays mapped workflow content
@@ -118,8 +141,12 @@ requirements:
 
     uiObjects:
       - workflowCard
+      - cardHeaderRegion
+      - cardFooterRegion
+      - cardFooterTagsRegion
       - cardTitleText
       - cardOwnerText
+      - cardDescriptionText
       - cardTypeChip
       - cardTemplateChip
       - cardFavouriteToggle
@@ -132,26 +159,32 @@ requirements:
       - system renders workflowCard
 
     mainFlow:
-      - system renders cardTitleText from workflow title
-      - when owner data exists, system renders cardOwnerText with format 'Owned by {ownerName}'
-      - system renders cardTypeChip from workflow object type mapping
-      - when template flag is true, system renders cardTemplateChip with label 'Template' on workflowCard
-      - system renders cardFavouriteToggle bound to workflow favourite state
+      - workflowCard layout uses cardHeaderRegion above cardFooterRegion per FIGMA-CARD-DESIGNS
+      - system renders cardTitleText from workflow title inside cardHeaderRegion
+      - when owner data exists, system renders cardOwnerText inside cardHeaderRegion directly below cardTitleText in the description slot with format 'Owned by {ownerName}'
+      - system does not render cardDescriptionText on workflowCard even when workflow description data exists
+      - system renders cardTypeChip from workflow object type mapping inside cardFooterTagsRegion within cardFooterRegion
+      - when template flag is true, system renders cardTemplateChip with label 'Template' on workflowCard inside cardFooterTagsRegion
+      - system renders cardFavouriteToggle bound to workflow favourite state inside cardFooterRegion after cardFooterTagsRegion, aligned to the trailing edge of the footer row per FIGMA-CARD-DESIGNS
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given workflow title exists, cardTitleText matches that title
-      - given owner data exists, cardOwnerText matches pattern 'Owned by {ownerName}'
-      - given owner data does not exist, cardOwnerText is not visible
-      - cardTypeChip label matches the workflow library object type mapping for that row (e.g. 'Program', 'Course', 'Activity')
-      - given workflow is a template, cardTemplateChip is visible with label 'Template'
+      - given workflowCard is rendered, cardHeaderRegion is visible above cardFooterRegion
+      - given workflow title exists, cardTitleText matches that title and is visible inside cardHeaderRegion
+      - given owner data exists, cardOwnerText matches pattern 'Owned by {ownerName}' and is visible inside cardHeaderRegion after cardTitleText in document order within cardHeaderRegion
+      - given owner data exists, cardOwnerText is not visible inside cardFooterRegion
+      - given owner data does not exist, cardOwnerText is not visible inside cardHeaderRegion
+      - given workflow description data exists, cardDescriptionText is not visible on workflowCard
+      - cardTypeChip label matches the workflow library object type mapping for that row (e.g. 'Program', 'Course', 'Activity') and is visible inside cardFooterTagsRegion
+      - given workflow is a template, cardTemplateChip is visible with label 'Template' inside cardFooterTagsRegion immediately after cardTypeChip in document order
       - given workflow is not a template, cardTemplateChip is not visible
-      - cardFavouriteToggle is visible on workflowCard
+      - cardFavouriteToggle is visible on workflowCard inside cardFooterRegion and is not inside cardHeaderRegion
       - given workflow is favourited, cardFavouriteToggle on workflowCard shows yellow star
       - given workflow is not favourited, cardFavouriteToggle on workflowCard shows grey star
 
-    openQuestions: []
+    openQuestions:
+      - Confirm chip order within cardFooterTagsRegion when multiple optional chips are present.
 
   - id: FR-CARD-003
     title: projectCard click destination
@@ -277,6 +310,7 @@ requirements:
       - cardTypeChip
       - cardTemplateChip
       - cardWorkflowCountChip
+      - cardArchivedChip
       - cardFavouriteToggle
 
     preconditions:
@@ -289,9 +323,10 @@ requirements:
     mainFlow:
       - when user clicks projectCard that represents an archived project, system does not perform navigation defined in FR-CARD-003 (the card is not a navigation affordance except surface-specific Owner restore actions on 'My library' per library_page_requirements_v1.yaml FR-LIB-006)
       - when user clicks workflowCard that represents an archived workflow, system does not perform navigation defined in FR-CARD-004 (same exception for Owner restore actions on 'My library' per FR-LIB-006 or project 'Workflows' view per project_workflows_view_requirements_v1.yaml FR-PROJ-WF-006)
-      - when projectCard represents an archived project, projectCard renders cardTitleText, cardOwnerText, cardTypeChip, cardTemplateChip when applicable, and cardWorkflowCountChip when applicable per FR-CARD-001 where data exists; cardFavouriteToggle follows this FR, not FR-CARD-001
-      - when workflowCard represents an archived workflow, workflowCard renders cardTitleText, cardOwnerText, cardTypeChip, and cardTemplateChip when applicable per FR-CARD-002 where data exists; cardFavouriteToggle follows this FR, not FR-CARD-002
+      - when projectCard represents an archived project, projectCard renders cardTitleText, cardOwnerText, cardTypeChip, cardTemplateChip when applicable, cardWorkflowCountChip when applicable per FR-CARD-001 where data exists, and cardArchivedChip with label 'Archived' inside cardFooterTagsRegion; cardFavouriteToggle follows this FR, not FR-CARD-001
+      - when workflowCard represents an archived workflow, workflowCard renders cardTitleText, cardOwnerText, cardTypeChip, and cardTemplateChip when applicable per FR-CARD-002 where data exists, and cardArchivedChip with label 'Archived' inside cardFooterTagsRegion; cardFavouriteToggle follows this FR, not FR-CARD-002
       - on projectCard or workflowCard that represents an archived object, cardFavouriteToggle shows grey star and does not accept interaction
+      - cardArchivedChip is rendered inside cardFooterTagsRegion on archived projectCard or workflowCard per FIGMA-LIB-FILTER-ARCHIVED-ROWS
       - projectCard or workflowCard that represents an archived object uses subdued archived styling on the card and thumbnail and does not present an active navigation affordance to open that archived workspace
       - mid-session archive — when a project or workflow becomes archived while an actor is already in its workspace, eviction on the actor's next in-app action is specified in tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-005 (access-denied presentation per FR-WS-ACCESS-001 or FR-WS-ACCESS-002); this FR covers card-click navigation only
 
@@ -301,7 +336,9 @@ requirements:
       - given projectCard represents an archived project, clicking the card does not perform navigation defined in FR-CARD-003
       - given workflowCard represents an archived workflow, clicking the card does not perform navigation defined in FR-CARD-004
       - given projectCard represents an archived project, visible cardTitleText, cardOwnerText, cardTypeChip, cardTemplateChip, and cardWorkflowCountChip conform to FR-CARD-001 where applicable
+      - given projectCard represents an archived project, cardArchivedChip is visible with label 'Archived' inside cardFooterTagsRegion
       - given workflowCard represents an archived workflow, visible cardTitleText, cardOwnerText, cardTypeChip, and cardTemplateChip conform to FR-CARD-002 where applicable
+      - given workflowCard represents an archived workflow, cardArchivedChip is visible with label 'Archived' inside cardFooterTagsRegion
       - given projectCard or workflowCard represents an archived object, cardFavouriteToggle shows grey star
       - given projectCard or workflowCard represents an archived object, clicking cardFavouriteToggle does not change favourite state
       - given projectCard or workflowCard represents an archived object, the card and thumbnail use subdued archived styling and are not presented as an active link to the archived object workspace

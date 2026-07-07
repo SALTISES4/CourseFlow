@@ -37,14 +37,14 @@ const Favorite = ({ id, uuid, isFavorite }: PropsType) => {
       })
 
       const msg = isFavoriteState
-        ? _t('Removed from favorites')
-        : _t('Saved to favorites')
+        ? _t('Removed from your favourites')
+        : _t('Added to your favourites')
       setFavoriteState(!isFavoriteState)
       enqueueSnackbar(msg, { variant: 'success' })
     },
     onError: (error) => {
       console.error('Error updating toggle:', error)
-      enqueueSnackbar('Error toggling favourites', { variant: 'error' })
+      enqueueSnackbar(_t('We were not able to update favourite status'), { variant: 'error' })
     }
   })
 

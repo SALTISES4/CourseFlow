@@ -9,6 +9,12 @@ E2E_FIXTURE_PROJECT_TITLE_PREFIX = "E2E FIXTURE -"
 E2E_FIXTURE_PROJECT_TITLE = f"{E2E_FIXTURE_PROJECT_TITLE_PREFIX} Edit Section"
 E2E_FIXTURE_WORKFLOW_TITLE = "E2E Activity Workflow"
 
+# Template project + workflow templates for cardTemplateChip e2e (FR-CARD-001/002).
+E2E_FIXTURE_TEMPLATE_PROJECT_TITLE = f"{E2E_FIXTURE_PROJECT_TITLE_PREFIX} Workflow Templates"
+E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE = "E2E Activity Template"
+E2E_FIXTURE_TEMPLATE_COURSE_TITLE = "E2E Course Template"
+E2E_FIXTURE_TEMPLATE_PROGRAM_TITLE = "E2E Program Template"
+
 # Fixed section titles — position 1 is intentionally blank (FR-SEC-002 / empty-title FR-SEC-003).
 E2E_SECTION_TITLES: tuple[str, ...] = (
     "E2E Section 1",

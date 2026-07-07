@@ -3,6 +3,25 @@
   "owner_email": "admin@courseflow.com",
   "project_uuid": "<generated-at-seed-time>",
   "project_title": "E2E FIXTURE - Edit Section",
+  "template_project_uuid": "<generated-at-seed-time>",
+  "template_project_title": "E2E FIXTURE - Workflow Templates",
+  "template_workflows": [
+    {
+      "workflow_uuid": "<generated-at-seed-time>",
+      "workflow_title": "E2E Activity Template",
+      "workflow_type": "activity"
+    },
+    {
+      "workflow_uuid": "<generated-at-seed-time>",
+      "workflow_title": "E2E Course Template",
+      "workflow_type": "course"
+    },
+    {
+      "workflow_uuid": "<generated-at-seed-time>",
+      "workflow_title": "E2E Program Template",
+      "workflow_type": "program"
+    }
+  ],
   "contributors": [
     {
       "email": "teacher@courseflow.com",

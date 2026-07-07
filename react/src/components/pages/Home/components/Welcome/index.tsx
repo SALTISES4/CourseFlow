@@ -64,11 +64,11 @@ const Welcome = ({ hide }: PropsType) => {
           variant="contained"
           onClick={() =>
             dispatch(DialogMode.WORKFLOW_CREATE, {
-              workflowType: WorkflowType.PROGRAM
+              workflowType: WorkflowType.ACTIVITY
             })
           }
         >
-          {_t('I want to create a program')}
+          {_t('I want to create an activity')}
         </Button>
         <Button
           variant="contained"
@@ -84,11 +84,11 @@ const Welcome = ({ hide }: PropsType) => {
           variant="contained"
           onClick={() =>
             dispatch(DialogMode.WORKFLOW_CREATE, {
-              workflowType: WorkflowType.ACTIVITY
+              workflowType: WorkflowType.PROGRAM
             })
           }
         >
-          {_t('I want to create an activity')}
+          {_t('I want to create a program')}
         </Button>
       </SC.Actions>
     </SC.Wrap>

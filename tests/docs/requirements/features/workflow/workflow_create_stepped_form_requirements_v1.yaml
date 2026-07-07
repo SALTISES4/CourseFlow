@@ -17,7 +17,7 @@ uiObjectDefinitions:
   createWorkflowDialogTitle:
     meaning: Title region of createWorkflowDialog that changes by current step and selected workflow type.
   createWorkflowStepper:
-    meaning: Step indicator strip at the top of createWorkflowDialog.
+    meaning: Step indicator strip at the top of createWorkflowDialog with three fixed step labels for the session workflowType — step 1 'Select project'; step 2 'Select {workflowType} type' where workflowType is activity, course, or program; step 3 'Create {workflowType}' for the same workflowType.
   createWorkflowCancelButton:
     meaning: Cancel action in createWorkflowDialog footer.
   createWorkflowPreviousStepButton:
@@ -139,7 +139,7 @@ requirements:
       - system opens createWorkflowDialog with workflowType set from the triggering entry point — addMenuItemProgram or homeWelcomeProgramButton → program; addMenuItemCourse or homeWelcomeCourseButton → course; addMenuItemActivity or homeWelcomeActivityButton → activity
       - when actor holds owner or editor role on at least one project, system shows stepper step 1 (project selection); when actor holds owner or editor role on no project, system follows FR-WF-CREATE-STEPPER-002 instead
       - workflowType does not change across steps for this createWorkflowDialog session
-      - createWorkflowDialog renders createWorkflowStepper with three steps
+      - createWorkflowDialog renders createWorkflowStepper with three steps labeled in order — 'Select project'; 'Select {workflowType} type'; 'Create {workflowType}' — where workflowType is the session value activity, course, or program set from the triggering entry point
       - initial step is project selection and createWorkflowDialogTitle matches 'Select project'
       - step-1 project search/list/ordering/selection behavior is defined in FR-WF-CREATE-STEPPER-003
       - createWorkflowCancelButton is visible
@@ -152,6 +152,9 @@ requirements:
     acceptanceCriteria:
       - given actor holds owner or editor role on at least one project and clicks a workflow-create entry point, createWorkflowDialog opens on step 1 project selection
       - given actor holds owner or editor role on no project and clicks a workflow-create entry point, createWorkflowNoEligibleProjectsDialog warning is shown on step 1 per FR-WF-CREATE-STEPPER-002
+      - given createWorkflowDialog is open on step 1, createWorkflowStepper shows step labels 'Select project', 'Select activity type', and 'Create activity' when workflowType is activity
+      - given createWorkflowDialog is open on step 1, createWorkflowStepper shows step labels 'Select project', 'Select course type', and 'Create course' when workflowType is course
+      - given createWorkflowDialog is open on step 1, createWorkflowStepper shows step labels 'Select project', 'Select program type', and 'Create program' when workflowType is program
       - given actor opened createWorkflowDialog via addMenuItemCourse per FR-TOP-002, workflowType for the session is course and createWorkflowDialogTitle on step 2 matches 'Select course type'
       - given actor opened createWorkflowDialog via homeWelcomeProgramButton per FR-HOME-002 from homePage, workflowType for the session is program
       - given step 1 is shown, workflowProjectSearchField, workflowProjectSearchView, projectCard, and createWorkflowNextStepButton behavior follows FR-WF-CREATE-STEPPER-003
