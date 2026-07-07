@@ -1150,6 +1150,7 @@ export const zLibraryItemOut = z.object({
   description: z.string(),
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime(),
+  isArchived: z.boolean(),
   isTemplate: z.boolean(),
   isFavorite: z.boolean()
 })
@@ -1170,6 +1171,7 @@ export const zLibraryAppliedFiltersOut = z.object({
   workflowTypes: z.array(zWorkflowType).optional(),
   ownership: zLibraryOwnershipIn.nullish(),
   isFavorite: z.boolean().nullish(),
+  isArchived: z.boolean().nullish(),
   isTemplate: z.boolean().nullish()
 })
 
@@ -1204,6 +1206,7 @@ export const zLibraryFiltersIn = z.object({
   workflowTypes: z.array(zWorkflowType).optional(),
   ownership: zLibraryOwnershipIn.nullish(),
   isFavorite: z.boolean().nullish(),
+  isArchived: z.boolean().nullish(),
   isTemplate: z.boolean().nullish()
 })
 

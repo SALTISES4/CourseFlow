@@ -60,6 +60,7 @@ class LibraryFiltersIn(CamelSchema):
     workflow_types: list[WorkflowType] = Field(default_factory=list)
     ownership: LibraryOwnershipIn | None = None
     is_favorite: bool | None = None
+    is_archived: bool | None = None
     is_template: bool | None = None
 
     @model_validator(mode="after")
@@ -106,6 +107,7 @@ class LibraryItemOut(CamelSchema):
     description: str
     date_created: datetime
     modified_on: datetime
+    is_archived: bool
     is_template: bool
     is_favorite: bool
 
@@ -128,6 +130,7 @@ class LibraryAppliedFiltersOut(CamelSchema):
     workflow_types: list[WorkflowType] = Field(default_factory=list)
     ownership: LibraryOwnershipIn | None = None
     is_favorite: bool | None = None
+    is_archived: bool | None = None
     is_template: bool | None = None
 
 

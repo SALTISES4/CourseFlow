@@ -2278,6 +2278,10 @@ export type LibraryAppliedFiltersOut = {
    */
   isFavorite?: boolean | null
   /**
+   * Isarchived
+   */
+  isArchived?: boolean | null
+  /**
    * Istemplate
    */
   isTemplate?: boolean | null
@@ -2346,6 +2350,10 @@ export type LibraryItemOut = {
    * Modifiedon
    */
   modifiedOn: string
+  /**
+   * Isarchived
+   */
+  isArchived: boolean
   /**
    * Istemplate
    */
@@ -2427,6 +2435,10 @@ export type LibraryFiltersIn = {
    * Isfavorite
    */
   isFavorite?: boolean | null
+  /**
+   * Isarchived
+   */
+  isArchived?: boolean | null
   /**
    * Istemplate
    */

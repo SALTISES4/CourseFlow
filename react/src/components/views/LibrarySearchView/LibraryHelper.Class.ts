@@ -234,7 +234,7 @@ class LibraryHelper {
 
       // Boolean filters are "only when true" for this endpoint.
       isFavorite: filterGroups.favoritesFilter?.value ? true : null,
-      // isArchive: filterGroups.archiveFilter?.value ? true : null,
+      isArchived: filterGroups.archiveFilter?.value ? true : null,
       isTemplate: filterGroups.templateFilter?.value ? true : null
     }
   }
