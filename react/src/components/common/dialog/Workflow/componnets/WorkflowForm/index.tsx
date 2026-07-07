@@ -1,9 +1,9 @@
+import { WorkflowTypeIn } from '@cf/api/gen'
 import { StyledBox } from '@cfComponents/dialog/styles'
 import {
   WorkflowFormType,
   timeUnits
 } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
-import { WorkflowType } from '@cfPages/Workflow/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -28,7 +28,7 @@ export enum FormField {
   UNITS = 'units'
 }
 
-function configFields(workflowType: WorkflowType): FormField[] {
+function configFields(workflowType: WorkflowTypeIn): FormField[] {
   const allFields = [
     FormField.TITLE,
     FormField.DESCRIPTION,
@@ -39,21 +39,21 @@ function configFields(workflowType: WorkflowType): FormField[] {
   ]
 
   switch (workflowType) {
-    case WorkflowType.ACTIVITY:
+    case WorkflowTypeIn.ACTIVITY:
       return [
         FormField.TITLE,
         FormField.DESCRIPTION,
         FormField.DURATION,
         FormField.UNITS
       ]
-    case WorkflowType.PROGRAM:
+    case WorkflowTypeIn.PROGRAM:
       return [
         FormField.TITLE,
         FormField.DESCRIPTION,
         FormField.DURATION,
         FormField.UNITS
       ]
-    case WorkflowType.COURSE:
+    case WorkflowTypeIn.COURSE:
     default:
       return allFields
   }
@@ -102,7 +102,7 @@ const WorkflowForm = ({
   closeCallback: () => void
   label: string
   defaultValues?: WorkflowFormType
-  workflowType?: WorkflowType
+  workflowType?: WorkflowTypeIn
   setIsFormReady: (isReady: boolean) => void
   formRef: RefObject<HTMLFormElement>
 }) => {

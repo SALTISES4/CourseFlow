@@ -12,10 +12,3 @@ export enum WorkflowViewType {
   OUTCOME_ANALYTICS = 'alignmentanalysis',
   HORIZONTAL_OUTCOME_TABLE = 'horizontaloutcometable'
 }
-
-export enum WorkflowType {
-  PROGRAM = 'program',
-  ACTIVITY = 'activity',
-  COURSE = 'course',
-  TASK = 'task'
-}

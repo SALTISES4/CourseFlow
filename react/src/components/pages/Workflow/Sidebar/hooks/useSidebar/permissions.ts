@@ -1,5 +1,6 @@
+import { WorkflowType } from '@cf/api/gen'
 import { SidebarState } from '@cf/features/sidebar/state/sidebar.slice'
-import { WorkflowType, WorkflowViewType } from '@cfPages/Workflow/types'
+import { WorkflowViewType } from '@cfPages/Workflow/types'
 
 import { ConfigType } from './types'
 

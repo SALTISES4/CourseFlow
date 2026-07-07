@@ -1,3 +1,4 @@
+import { WorkflowType } from '@cf/api/gen'
 import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { selectSectionUuidsOrderedForGraph } from '@cf/features/graph/state/selectors/canonical.selectors'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
@@ -5,7 +6,6 @@ import Loader from '@cfComponents/UIPrimitives/Loader'
 import { OuterContentWrap } from '@cfMUI/helper'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
 import WorkspaceSidebar from '@cfPages/Workflow/Sidebar'
-import { WorkflowType } from '@cfPages/Workflow/types'
 import Header from '@cfPages/Workflow/WorkflowTabs/components/Header'
 import {
   ActionMenu,
@@ -61,10 +61,11 @@ const WorkflowTabs = () => {
   )
   const sectionIdsOrdered = useSelector(sectionIdsOrderedSelector)
 
-  const workflowType = workflowDetailResp?.item.workflowType
+  // TODO: enum no properly assigned in python schema
+  const workflowType = workflowDetailResp?.item.workflowType as WorkflowType
 
   useWorkflowSidebar({
-    workflowType, // enum no properly assigned in python schema
+    workflowType,
     viewType: workflowViewType
   })
 
