@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
 
+from course_flow.core.enum import WorkflowType
+
 
 @dataclass(frozen=True, slots=True)
 class ProjectDTO:
@@ -34,7 +36,7 @@ class WorkflowDTO:
     author_id: int | None
     project_id: int | None
     project_uuid: UUID | None
-    workflow_type: str
+    workflow_type: WorkflowType
     title: str
     description: str
     date_created: datetime

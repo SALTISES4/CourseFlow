@@ -60,9 +60,7 @@ const WorkflowTabs = () => {
     [workflowDetailResp?.item?.graphUuid]
   )
   const sectionIdsOrdered = useSelector(sectionIdsOrderedSelector)
-
-  // TODO: enum no properly assigned in python schema
-  const workflowType = workflowDetailResp?.item.workflowType as WorkflowType
+  const workflowType = workflowDetailResp?.item.workflowType
 
   useWorkflowSidebar({
     workflowType,

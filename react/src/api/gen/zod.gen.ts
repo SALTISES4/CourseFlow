@@ -198,7 +198,7 @@ export const zWorkflowDetailOut = z.object({
   graphUuid: z.string().uuid(),
   title: z.string(),
   description: z.string(),
-  workflowType: z.string(),
+  workflowType: zWorkflowType,
   authorId: z.number().int().nullable(),
   projectUuid: z.string().uuid().nullable(),
   revisionId: z.number().int(),

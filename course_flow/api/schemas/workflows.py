@@ -3,6 +3,7 @@ from enum import Enum
 from uuid import UUID
 
 from course_flow.api.common.schemas import CamelSchema
+from course_flow.core.enum import WorkflowType
 
 
 class WorkflowTypeIn(str, Enum):
@@ -53,7 +54,7 @@ class WorkflowDetailOut(CamelSchema):
     graph_uuid: UUID
     title: str
     description: str
-    workflow_type: str
+    workflow_type: WorkflowType
     author_id: int | None
     project_uuid: UUID | None
     revision_id: int

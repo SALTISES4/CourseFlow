@@ -380,10 +380,7 @@ export type WorkflowDetailOut = {
    * Description
    */
   description: string
-  /**
-   * Workflowtype
-   */
-  workflowType: string
+  workflowType: WorkflowType
   /**
    * Authorid
    */
