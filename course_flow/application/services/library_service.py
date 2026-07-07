@@ -19,6 +19,8 @@ from course_flow.api.schemas.library import (
     LibraryItemOut,
     LibrarySearchIn,
     LibrarySearchOut,
+    LibrarySortDirectionIn,
+    LibrarySortValueIn,
 )
 from course_flow.core.models import (
     Discipline,
@@ -57,8 +59,8 @@ class LibraryService:
 
         page = max(int((pagination.page if pagination else 0) or 0), 0)
         results_per_page = max(int((pagination.results_per_page if pagination else 10) or 10), 1)
-        sort_value = ((sort.value if sort else "DATE_CREATED") or "DATE_CREATED").upper()
-        sort_direction = ((sort.direction if sort else "DESC") or "DESC").upper()
+        sort_value = (sort.value if sort else LibrarySortValueIn.DATE_CREATED).upper()
+        sort_direction = (sort.direction if sort else LibrarySortDirectionIn.DESC).upper()
 
         keyword = self._normalize_keyword(raw_filters.keyword)
 
@@ -145,6 +147,11 @@ class LibraryService:
         if filters.is_favorite:
             project_qs = project_qs.filter(favorite_links__user_id=user_id)
             workflow_graph_qs = workflow_graph_qs.filter(favorite_links__user_id=user_id)
+
+        # Boolean filters are "only when true":
+        # False/None means the filter is not applied.
+        if filters.is_archived:
+            pass # TODO: properly handle archiving
 
         project_favorite_uuids = self._favorite_project_uuids(
             user_id=user_id, project_qs=project_qs
