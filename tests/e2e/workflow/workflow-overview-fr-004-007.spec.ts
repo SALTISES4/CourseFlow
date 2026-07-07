@@ -13,7 +13,7 @@ import {
  * Requirements: workflow_overview_requirements_v1.yaml
  */
 
-test.describe('Workflow overview — course/program metadata (FR-WF-OV-004–007)', () => {
+test.describe('Workflow overview — course/program metadata (FR-WF-OV-004-007)', () => {
   test.beforeEach(async ({ page, workflow }) => {
     await page.goto(workflowOverviewPath(workflow.path));
     await expect(workflowOverviewView(page)).toBeVisible({ timeout: 15_000 });

@@ -27,7 +27,7 @@ import {
  * Auth: chromium project storage state (admin@courseflow.com).
  */
 
-test.describe('Explore — calibration (FR-EXP-001–006)', () => {
+test.describe('Explore — calibration (FR-EXP-001-006)', () => {
   test.beforeEach(async ({ page }) => {
     await gotoExplore(page);
     await expect(page).toHaveURL(/\/explore\/?$/);

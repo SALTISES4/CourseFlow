@@ -24,7 +24,7 @@ import {
  * Auth: chromium project storage state (admin@courseflow.com).
  */
 
-test.describe('Main navigation — calibration (FR-NAV-001–013)', () => {
+test.describe('Main navigation — calibration (FR-NAV-001-013)', () => {
   test.beforeEach(async ({ page }) => {
     await gotoAuthenticatedShell(page, '/home');
     await waitForMainNavigationReady(page);
@@ -74,7 +74,7 @@ test.describe('Main navigation — calibration (FR-NAV-001–013)', () => {
     await expect(exploreNavItem(page)).toHaveClass(/Mui-selected/);
   });
 
-  test.describe('Favourites sidebar (FR-NAV-005–008)', () => {
+  test.describe('Favourites sidebar (FR-NAV-005-008)', () => {
     test('FR-NAV-005/006: favourites section lists up to five favourited projects', async ({
       page,
     }) => {
@@ -155,7 +155,7 @@ test.describe('Main navigation — calibration (FR-NAV-001–013)', () => {
   });
 });
 
-test.describe('Main navigation — workflow context (FR-NAV-012–013)', () => {
+test.describe('Main navigation — workflow context (FR-NAV-012-013)', () => {
   test('FR-NAV-012/013: E2E activity workflow hides Contains and Appears in when no links', async ({
     page,
   }) => {

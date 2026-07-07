@@ -9,7 +9,7 @@ import { projectOverflowButton, archiveProjectMenuItem, waitForProjectOverviewLo
  * Auth: chromium project storage state (admin@courseflow.com).
  */
 
-test.describe('Project archive — calibration (FR-PROJ-ARCH-001–002 deferred)', () => {
+test.describe('Project archive — calibration (FR-PROJ-ARCH-001-002 deferred)', () => {
   const manifest = loadWorkflowManifest();
   const projectPath = getProjectPath(manifest);
 

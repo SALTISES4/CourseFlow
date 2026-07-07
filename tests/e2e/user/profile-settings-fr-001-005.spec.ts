@@ -20,7 +20,7 @@ import {
  * Auth: chromium project storage state (admin@courseflow.com).
  */
 
-test.describe('Profile settings — calibration (FR-PROFILE-001–005)', () => {
+test.describe('Profile settings — calibration (FR-PROFILE-001-005)', () => {
   test.describe.configure({ mode: 'serial' });
 
   test.beforeEach(async ({ page }) => {

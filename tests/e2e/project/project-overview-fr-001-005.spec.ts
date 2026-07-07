@@ -24,7 +24,7 @@ import {
  * Auth: chromium project storage state (admin@courseflow.com).
  */
 
-test.describe('Project overview — calibration (FR-PROJ-OV-001–005)', () => {
+test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
   const manifest = loadWorkflowManifest();
   const projectPath = getProjectPath(manifest);
 

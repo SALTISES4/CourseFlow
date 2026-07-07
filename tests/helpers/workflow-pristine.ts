@@ -18,8 +18,16 @@ export async function skipUnlessPristineWorkflow(
 ): Promise<void> {
   await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
 
+
+
   const count = await sectionContainers(page).count();
   const expectedCount = workflow.sections.length;
+
+  console.log('workflow')
+  console.log(workflow)
+  console.log('count')
+  console.log(count)
+
   if (count !== expectedCount) {
     test.skip(
       true,

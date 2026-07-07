@@ -23,7 +23,7 @@ import {
  * Auth: chromium project storage state (admin@courseflow.com).
  */
 
-test.describe('Home dashboard — calibration (FR-HOME-001–004)', () => {
+test.describe('Home dashboard — calibration (FR-HOME-001-004)', () => {
   test.beforeEach(async ({ page }) => {
     await gotoCourseFlowHome(page);
     await expect(homeErrorState(page)).toBeHidden({ timeout: 15_000 });

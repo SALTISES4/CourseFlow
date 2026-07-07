@@ -26,7 +26,7 @@ import { workflowRightSidebarContentPanel } from '../../shared/locators/workflow
 const E2E_OUTCOME_TITLE = 'E2E Outcome 1';
 const E2E_OUTCOME_DUPLICATE = `${E2E_OUTCOME_TITLE} (duplicate)`;
 
-test.describe('Outcome — duplicate and delete (FR-WF-EO-009–014)', () => {
+test.describe('Outcome — duplicate and delete (FR-WF-EO-009-014)', () => {
   test.describe.configure({ mode: 'serial' });
 
   test.beforeEach(async ({ page, workflow }) => {

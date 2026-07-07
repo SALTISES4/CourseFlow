@@ -15,7 +15,7 @@ import {
  * Auth: chromium project storage state (admin@courseflow.com).
  */
 
-test.describe('Notifications settings — calibration (FR-NOTIF-001–003)', () => {
+test.describe('Notifications settings — calibration (FR-NOTIF-001-003)', () => {
   test.beforeEach(async ({ page }) => {
     await gotoAuthenticatedShell(page, '/user/notifications-settings');
     await waitForNotificationsSettingsLoaded(page);

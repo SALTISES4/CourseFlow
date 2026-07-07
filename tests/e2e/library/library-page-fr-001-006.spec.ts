@@ -30,7 +30,7 @@ import {
  * Auth: chromium project storage state (admin@courseflow.com).
  */
 
-test.describe('My library — calibration (FR-LIB-001–004, FR-LIB-006 deferred)', () => {
+test.describe('My library — calibration (FR-LIB-001-004, FR-LIB-006 deferred)', () => {
   test.beforeEach(async ({ page }) => {
     await gotoLibrary(page);
     await expect(page).toHaveURL(/\/library\/?$/);

@@ -27,7 +27,7 @@ import {
  * Auth: chromium project storage state (admin@courseflow.com).
  */
 
-test.describe('Top navigation — calibration (FR-TOP-001–005)', () => {
+test.describe('Top navigation — calibration (FR-TOP-001-005)', () => {
   test.beforeEach(async ({ page }) => {
     await gotoAuthenticatedShell(page, '/home');
     await waitForMainNavigationReady(page);
