@@ -1,9 +1,10 @@
 import { logoutRequest } from '@cf/api/auth'
-import { WorkflowType } from '@cf/api/gen'
+import { WorkflowTypeIn } from '@cf/api/gen'
 import { listMyNotificationsOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
 import strings from '@cf/utility/strings'
+import { _t } from '@cf/utility/Utility.class'
 import { MenuItemType, SimpleMenu, StaticMenu } from '@cfComponents/menu/Menu'
 import ReturnLinks from '@cfPages/Workflow/WorkflowTabs/components/ReturnLinks'
 import AccountCircle from '@mui/icons-material/AccountCircle'
@@ -69,7 +70,7 @@ const TopBar = () => {
         content: strings.program,
         action: () =>
           dispatch(DialogMode.WORKFLOW_CREATE, {
-            workflowType: WorkflowType.PROGRAM
+            workflowType: WorkflowTypeIn.PROGRAM
           }),
         show: true
       },
@@ -77,7 +78,7 @@ const TopBar = () => {
         content: strings.course,
         action: () =>
           dispatch(DialogMode.WORKFLOW_CREATE, {
-            workflowType: WorkflowType.COURSE
+            workflowType: WorkflowTypeIn.COURSE
           }),
         show: true
       },
@@ -85,13 +86,13 @@ const TopBar = () => {
         content: strings.activity,
         action: () =>
           dispatch(DialogMode.WORKFLOW_CREATE, {
-            workflowType: WorkflowType.ACTIVITY
+            workflowType: WorkflowTypeIn.ACTIVITY
           }),
         show: true
       }
     ]
 
-    return <SimpleMenu id={'add-menu'} header={header} menuItems={menuItems} />
+    return <SimpleMenu id="add-menu" header={header} menuItems={menuItems} />
   }
 
   const AccountMenu = () => {
@@ -108,13 +109,13 @@ const TopBar = () => {
 
     const menuItems: MenuItemType[] = [
       {
-        content: strings.profile,
+        content: _t('Profile'),
         action: () => navigate(CFRoutes.PROFILE_SETTINGS),
         show: true
       },
       {
-        content: strings.passwordReset,
-        action: () => dispatch(DialogMode.PASSWORD_RESET),
+        content: _t('Password reset'),
+        action: () => navigate(CFRoutes.PASSWORD_RESET),
         show: true
       },
       {
@@ -124,7 +125,7 @@ const TopBar = () => {
         separator: true
       },
       {
-        content: strings.signOut,
+        content: _t('Sign out'),
         action: handleLogout,
         icon: <LogoutIcon />,
         showIconInList: true,

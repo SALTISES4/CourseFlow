@@ -23,6 +23,7 @@ export enum CFRoutes {
   NOTIFICATIONS = `/user/notifications`,
   NOTIFICATIONS_SETTINGS = `/user/notifications-settings`,
   PROFILE_SETTINGS = `/user/profile-settings`,
+  PASSWORD_RESET = `/user/password-reset`,
   PROJECT = `/project/:uuid`,
   PROJECT_WORKFLOW = `/project/:uuid/workflows`,
   WORKFLOW = `/workflow/:uuid`,

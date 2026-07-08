@@ -40,12 +40,6 @@ const StyledFormBox = styled(Box)({
   }
 })
 
-type FormValues = {
-  firstName: string
-  lastName: string
-  languagePreference: string
-}
-
 const projectSchema = z.object({
   firstName: z
     .string()
@@ -62,6 +56,8 @@ const projectSchema = z.object({
     .min(1, { message: _t('Language is required') })
     .max(200)
 })
+
+type FormValues = z.infer<typeof projectSchema>
 
 const ProfileSettingsPage = () => {
   const queryClient = useQueryClient()

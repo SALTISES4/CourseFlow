@@ -16,11 +16,7 @@ const stringsRoot = {
   viewAll: 'View all',
   helpSupport: 'Help and Support',
   cancel: 'Cancel',
-  passwordReset: 'Password reset',
-  passwordResetMsg:
-    'By choosing to reset your password, you will be directed to the SALTISE lobby and will have to navigate to the myDALITE application to set a new password.',
   notificationSettings: 'Notification settings',
-  signOut: 'Sign out',
   profile: 'Profile',
   project: 'Project',
   program: 'Program',

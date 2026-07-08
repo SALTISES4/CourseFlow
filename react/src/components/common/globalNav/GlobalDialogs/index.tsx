@@ -1,5 +1,4 @@
 import ProjectCreateDialog from '@cfComponents/dialog/Project/ProjectCreateDialog'
-import PasswordResetDialog from '@cfComponents/dialog/User/PasswordResetDialog'
 import CreateWizardDialog from '@cfComponents/dialog/Workflow/CreateWizardDialog'
 
 const GlobalDialogs = () => {
@@ -11,7 +10,6 @@ const GlobalDialogs = () => {
         ?
         */}
 
-      <PasswordResetDialog />
       <ProjectCreateDialog />
       <CreateWizardDialog />
     </>

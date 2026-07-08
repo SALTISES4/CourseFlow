@@ -7,9 +7,6 @@ export enum DialogMode {
   NODE_LINK_WORKFLOW = 'link_workflow',
   TARGET_PROJECT = 'target_project',
 
-  // USER
-  PASSWORD_RESET = 'password_reset',
-
   PROJECT_CREATE = 'project_create',
   PROJECT_EDIT = 'project_edit',
   PROJECT_EXPORT = 'project_export',
@@ -56,7 +53,6 @@ export type DialogPayloadMap = {
    * but i couldn't get the typing correct for now
    *******************************************************/
   [DialogMode.TARGET_PROJECT]: undefined
-  [DialogMode.PASSWORD_RESET]: undefined
   [DialogMode.PROJECT_CREATE]: undefined
   [DialogMode.PROJECT_EDIT]: undefined
   [DialogMode.PROJECT_EXPORT]: undefined
