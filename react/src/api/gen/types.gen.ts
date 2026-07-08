@@ -2080,6 +2080,30 @@ export type UserProfileSettingsPatchIn = {
 }
 
 /**
+ * UserProfilePasswordPatchResp
+ */
+export type UserProfilePasswordPatchResp = {
+  /**
+   * Uuid
+   */
+  uuid: string
+}
+
+/**
+ * UserProfilePasswordPatchIn
+ */
+export type UserProfilePasswordPatchIn = {
+  /**
+   * Password
+   */
+  password?: string | null
+  /**
+   * Newpassword
+   */
+  newPassword?: string | null
+}
+
+/**
  * UserNotificationSettingsOut
  */
 export type UserNotificationSettingsOut = {
@@ -3886,6 +3910,23 @@ export type PatchMyProfileSettingsResponses = {
 
 export type PatchMyProfileSettingsResponse =
   PatchMyProfileSettingsResponses[keyof PatchMyProfileSettingsResponses]
+
+export type PatchMyProfilePasswordData = {
+  body: UserProfilePasswordPatchIn
+  path?: never
+  query?: never
+  url: '/api/user/me/password-reset'
+}
+
+export type PatchMyProfilePasswordResponses = {
+  /**
+   * OK
+   */
+  200: UserProfilePasswordPatchResp
+}
+
+export type PatchMyProfilePasswordResponse =
+  PatchMyProfilePasswordResponses[keyof PatchMyProfilePasswordResponses]
 
 export type GetMyNotificationSettingsData = {
   body?: never

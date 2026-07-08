@@ -1015,6 +1015,21 @@ export const zUserProfileSettingsPatchIn = z.object({
 })
 
 /**
+ * UserProfilePasswordPatchResp
+ */
+export const zUserProfilePasswordPatchResp = z.object({
+  uuid: z.string().uuid()
+})
+
+/**
+ * UserProfilePasswordPatchIn
+ */
+export const zUserProfilePasswordPatchIn = z.object({
+  password: z.string().nullish(),
+  newPassword: z.string().nullish()
+})
+
+/**
  * UserNotificationSettingsOut
  */
 export const zUserNotificationSettingsOut = z.object({
@@ -2093,6 +2108,17 @@ export const zPatchMyProfileSettingsData = z.object({
  * OK
  */
 export const zPatchMyProfileSettingsResponse = zUserProfileSettingsOutResp
+
+export const zPatchMyProfilePasswordData = z.object({
+  body: zUserProfilePasswordPatchIn,
+  path: z.never().optional(),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zPatchMyProfilePasswordResponse = zUserProfilePasswordPatchResp
 
 export const zGetMyNotificationSettingsData = z.object({
   body: z.never().optional(),

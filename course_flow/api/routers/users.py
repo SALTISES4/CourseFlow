@@ -10,6 +10,8 @@ from course_flow.api.schemas.users import (
     UserNotificationSettingsOut,
     UserNotificationSettingsOutResp,
     UserNotificationSettingsPatchIn,
+    UserProfilePasswordPatchIn,
+    UserProfilePasswordPatchResp,
     UserProfileSettingsOut,
     UserProfileSettingsOutResp,
     UserProfileSettingsPatchIn,
@@ -80,6 +82,26 @@ def patch_my_profile_settings(request, payload: UserProfileSettingsPatchIn):
     if user is None:
         raise HttpError(404, "User not found")
     return UserProfileSettingsOutResp(item=_profile_out(user))
+
+@router.patch(
+    "/me/password-reset",
+    response=UserProfilePasswordPatchResp,
+    auth=BearerAuth(),
+    operation_id="patchMyProfilePassword",
+)
+def patch_my_profile_password(request, payload: UserProfilePasswordPatchIn):
+    current_user = get_current_user(request)
+    patch = payload.model_dump(exclude_unset=True)
+    if "password" not in patch:
+        raise HttpError(400, "Missing new password")
+    try:
+        user = get_user_service().reset_password(user_id=current_user.id, **patch)
+    except ValueError as exc:
+        raise HttpError(400, str(exc))
+    if user is None:
+        raise HttpError(404, "User not found")
+
+    return UserProfilePasswordPatchResp(uuid=user.uuid)
 
 
 @router.get(

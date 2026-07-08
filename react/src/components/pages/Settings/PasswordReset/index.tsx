@@ -1,3 +1,6 @@
+import {} from '@cf/api/gen/@tanstack/react-query.gen'
+import { patchMyProfilePasswordMutation } from '@cf/api/gen/@tanstack/react-query.gen'
+import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { _t } from '@cf/utility/Utility.class'
 import { OuterContentWrap } from '@cfMUI/helper'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -7,6 +10,7 @@ import FormControl from '@mui/material/FormControl'
 import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -58,11 +62,16 @@ const projectSchema = z
 type FormValues = z.infer<typeof projectSchema>
 
 const PasswordResetPage = () => {
+  const patchMyProfilePassword = useMutation({
+    ...patchMyProfilePasswordMutation()
+  })
+
+  const { onError, onSuccess } = useGenericMsgHandler()
+
   const {
     register,
     handleSubmit,
     reset,
-    watch,
     formState: { errors, isDirty }
   } = useForm<FormValues>({
     // mode: 'onChange', // NOTE: we could also do it a bit faster?
@@ -75,8 +84,18 @@ const PasswordResetPage = () => {
   })
 
   const onFormSubmit = async (formData: FormValues) => {
-    console.log('submitting with', formData)
-    reset()
+    try {
+      await patchMyProfilePassword.mutateAsync({
+        body: {
+          password: formData.oldPass,
+          newPassword: formData.newPass
+        }
+      })
+      onSuccess({ message: _t('Password updated!') })
+      reset()
+    } catch (err) {
+      onError(err)
+    }
   }
 
   return (

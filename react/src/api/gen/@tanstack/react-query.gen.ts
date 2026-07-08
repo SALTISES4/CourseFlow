@@ -69,6 +69,7 @@ import {
   moveGraphNode,
   moveOutcome,
   patchMyNotificationSettings,
+  patchMyProfilePassword,
   patchMyProfileSettings,
   patchNode,
   patchNodeMeta,
@@ -203,6 +204,8 @@ import type {
   MoveOutcomeResponse,
   PatchMyNotificationSettingsData,
   PatchMyNotificationSettingsResponse,
+  PatchMyProfilePasswordData,
+  PatchMyProfilePasswordResponse,
   PatchMyProfileSettingsData,
   PatchMyProfileSettingsResponse,
   PatchNodeData,
@@ -1992,6 +1995,33 @@ export const patchMyProfileSettingsMutation = (
   > = {
     mutationFn: async (fnOptions) => {
       const { data } = await patchMyProfileSettings({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Patch My Profile Password
+ */
+export const patchMyProfilePasswordMutation = (
+  options?: Partial<Options<PatchMyProfilePasswordData>>
+): UseMutationOptions<
+  PatchMyProfilePasswordResponse,
+  DefaultError,
+  Options<PatchMyProfilePasswordData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    PatchMyProfilePasswordResponse,
+    DefaultError,
+    Options<PatchMyProfilePasswordData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await patchMyProfilePassword({
         ...options,
         ...fnOptions,
         throwOnError: true

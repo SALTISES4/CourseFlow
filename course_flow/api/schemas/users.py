@@ -38,6 +38,15 @@ class UserProfileSettingsPatchIn(CamelSchema):
     email: str | None = None
 
 
+class UserProfilePasswordPatchIn(CamelSchema):
+    password: str | None = None
+    new_password: str | None = None
+
+
+class UserProfilePasswordPatchResp(CamelSchema):
+    uuid: UUID
+
+
 class UserNotificationSettingsOut(CamelSchema):
     notifications_active: bool
 
