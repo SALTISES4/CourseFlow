@@ -92,7 +92,7 @@ def patch_my_profile_settings(request, payload: UserProfileSettingsPatchIn):
 def patch_my_profile_password(request, payload: UserProfilePasswordPatchIn):
     current_user = get_current_user(request)
     patch = payload.model_dump(exclude_unset=True)
-    if "password" not in patch:
+    if "password" not in patch or "new_password" not in patch:
         raise HttpError(400, "Missing new password")
     try:
         user = get_user_service().reset_password(user_id=current_user.id, **patch)
