@@ -1,10 +1,17 @@
 import { test, expect } from '@playwright/test';
+import {
+  expectRelatedWorkflowLinkOpensInNewTab,
+  expectRelatedWorkflowLinksSortedAz,
+  expectWorkflowContextSectionHidden,
+  expectWorkflowContextSectionVisible,
+  getNavigationLinkedWorkflows,
+} from '../../helpers/main-navigation-workflow-context';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import {
   appearsInSection,
   brandLockup,
-  collapseToggle,
   containsSection,
+  collapseToggle,
   exploreNavItem,
   favouritedItemLinks,
   favouritesSectionLabel,
@@ -156,17 +163,88 @@ test.describe('Main navigation — calibration (FR-NAV-001–013)', () => {
 });
 
 test.describe('Main navigation — workflow context (FR-NAV-012–013)', () => {
-  test('FR-NAV-012/013: E2E activity workflow hides Contains and Appears in when no links', async ({
-    page,
-  }) => {
-    const { loadWorkflowManifest, getPrimaryWorkflow } = await import('../../helpers/manifest');
-    const manifest = loadWorkflowManifest();
-    const workflow = getPrimaryWorkflow(manifest);
+  test.describe('when workflow has no related links', () => {
+    test('FR-NAV-012: activity workflow hides Contains', async ({ page }) => {
+      const linked = getNavigationLinkedWorkflows();
+      await gotoAuthenticatedShell(page, linked.activity.workflow_path);
+      await waitForMainNavigationReady(page);
 
-    await gotoAuthenticatedShell(page, workflow.workflow_path);
-    await waitForMainNavigationReady(page);
+      await expectWorkflowContextSectionHidden(page, 'contains');
+    });
 
-    await expect(containsSection(page)).toHaveCount(0);
-    await expect(appearsInSection(page)).toHaveCount(0);
+    test('FR-NAV-012/013: program workflow without linked course hides Contains and Appears in', async ({
+      page,
+    }) => {
+      const linked = getNavigationLinkedWorkflows();
+      await gotoAuthenticatedShell(page, linked.program.workflow_path);
+      await waitForMainNavigationReady(page);
+
+      await expectWorkflowContextSectionHidden(page, 'contains');
+      await expectWorkflowContextSectionHidden(page, 'appearsIn');
+    });
+  });
+
+  test.describe('FR-NAV-012: Contains section', () => {
+    test('course with linked activity shows Contains with child workflow links sorted A-Z', async ({
+      page,
+    }) => {
+      const linked = getNavigationLinkedWorkflows();
+      await gotoAuthenticatedShell(page, linked.course.workflow_path);
+      await waitForMainNavigationReady(page);
+
+      await expectWorkflowContextSectionVisible(page, 'Contains');
+      await expect(appearsInSection(page)).toHaveCount(0);
+      await expectRelatedWorkflowLinksSortedAz(page, 'Contains', [linked.activity.workflow_title]);
+    });
+
+    test('relatedWorkflowLink in Contains opens workflow route in a new browser tab', async ({
+      page,
+    }) => {
+      const linked = getNavigationLinkedWorkflows();
+      await gotoAuthenticatedShell(page, linked.course.workflow_path);
+      await waitForMainNavigationReady(page);
+
+      await expectRelatedWorkflowLinkOpensInNewTab(
+        page,
+        'Contains',
+        linked.activity.workflow_title,
+      );
+    });
+  });
+
+  test.describe('FR-NAV-013: Appears in section', () => {
+    test('linked activity shows Appears in with parent course workflow link sorted A-Z', async ({
+      page,
+    }) => {
+      const linked = getNavigationLinkedWorkflows();
+      await gotoAuthenticatedShell(page, linked.activity.workflow_path);
+      await waitForMainNavigationReady(page);
+
+      await expectWorkflowContextSectionVisible(page, 'Appears in');
+      await expect(containsSection(page)).toHaveCount(0);
+      await expectRelatedWorkflowLinksSortedAz(page, 'Appears in', [linked.course.workflow_title]);
+    });
+
+    test('relatedWorkflowLink in Appears in opens workflow route in a new browser tab', async ({
+      page,
+    }) => {
+      const linked = getNavigationLinkedWorkflows();
+      await gotoAuthenticatedShell(page, linked.activity.workflow_path);
+      await waitForMainNavigationReady(page);
+
+      await expectRelatedWorkflowLinkOpensInNewTab(
+        page,
+        'Appears in',
+        linked.course.workflow_title,
+      );
+    });
+
+    test('program workflow hides Appears in', async ({ page }) => {
+      const linked = getNavigationLinkedWorkflows();
+      await gotoAuthenticatedShell(page, linked.program.workflow_path);
+      await waitForMainNavigationReady(page);
+
+      await expectWorkflowContextSectionHidden(page, 'appearsIn');
+    });
   });
 });

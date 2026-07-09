@@ -8,6 +8,8 @@ E2E_FIXTURE_PROJECT_TITLE_PREFIX = "E2E FIXTURE -"
 # Primary workflow graph used by edit-section calibration and related specs.
 E2E_FIXTURE_PROJECT_TITLE = f"{E2E_FIXTURE_PROJECT_TITLE_PREFIX} Edit Section"
 E2E_FIXTURE_WORKFLOW_TITLE = "E2E Activity Workflow"
+E2E_FIXTURE_COURSE_WORKFLOW_TITLE = "E2E Course Workflow"
+E2E_FIXTURE_PROGRAM_WORKFLOW_TITLE = "E2E Program Workflow"
 
 # Template project + workflow templates for cardTemplateChip e2e (FR-CARD-001/002).
 E2E_FIXTURE_TEMPLATE_PROJECT_TITLE = f"{E2E_FIXTURE_PROJECT_TITLE_PREFIX} Workflow Templates"

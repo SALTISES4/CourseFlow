@@ -95,20 +95,33 @@ export async function expectExploreWorkflowCardsMatchSelectedWorkflowTypes(
 }
 
 /** FR-EXP-004 / FR-LIB-003 — committing one workflow type narrows workflow results to that type chip. */
-export async function expectWorkflowTypeFilterSingleSelectionNarrowsResults(
+export async function expectWorkflowTypeFilterSingleSelectionNarrowsWorkflowOnlyResults(
   page: Page,
   workflowTypeLabel: (typeof WORKFLOW_TYPE_FILTER_OPTIONS_FR_LIB_003)[number],
+  waitForLoaded: (page: Page) => Promise<void> = waitForLibraryResultsLoaded,
 ): Promise<void> {
-  await selectFilterOption(page, typeFilter(page), 'Workflows');
   await expect(workflowTypeFilter(page)).toBeVisible();
 
   await openWorkflowTypeFilterPopover(page);
   await workflowTypeFilterCheckboxOption(page, workflowTypeLabel).click();
   await closeWorkflowTypeFilterPopover(page);
-  await waitForLibraryResultsLoaded(page);
+  await waitForLoaded(page);
 
   await expect(workflowTypeFilterSelectionIndicator(page)).toHaveText('1');
   await expectExploreWorkflowCardsMatchSelectedWorkflowTypes(page, [workflowTypeLabel]);
+}
+
+/** FR-EXP-004 / FR-LIB-003 — committing one workflow type narrows workflow results to that type chip. */
+export async function expectWorkflowTypeFilterSingleSelectionNarrowsResults(
+  page: Page,
+  workflowTypeLabel: (typeof WORKFLOW_TYPE_FILTER_OPTIONS_FR_LIB_003)[number],
+): Promise<void> {
+  await selectFilterOption(page, typeFilter(page), 'Workflows');
+  await expectWorkflowTypeFilterSingleSelectionNarrowsWorkflowOnlyResults(
+    page,
+    workflowTypeLabel,
+    waitForLibraryResultsLoaded,
+  );
 }
 
 /** FR-EXP-004 / FR-LIB-003 — multiselect OR semantics: results match any selected workflow type. */

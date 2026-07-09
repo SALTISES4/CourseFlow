@@ -9,7 +9,8 @@ from django.db import transaction
 from faker import Faker
 
 from course_flow.core.enum import WorkflowType
-from course_flow.core.models import Edge, FavoriteGraph, Graph
+from course_flow.core.hierarchy import child_node_type_value_for_workflow
+from course_flow.core.models import Channel, Edge, FavoriteGraph, Graph, Node, Section, Thread, Workflow
 from course_flow.dev_seed.graph_shape import GraphShapeParams
 from course_flow.dev_seed.graph_view import (
     build_nodes_from_layout,
@@ -34,6 +35,8 @@ from course_flow.e2e_seed.constants import (
     E2E_FIXTURE_TEMPLATE_COURSE_TITLE,
     E2E_FIXTURE_TEMPLATE_PROGRAM_TITLE,
     E2E_FIXTURE_TEMPLATE_PROJECT_TITLE,
+    E2E_FIXTURE_COURSE_WORKFLOW_TITLE,
+    E2E_FIXTURE_PROGRAM_WORKFLOW_TITLE,
     E2E_FIXTURE_WORKFLOW_TITLE,
     E2E_OUTCOME_TITLE,
     E2E_SECTION_TITLES,
@@ -102,6 +105,73 @@ def _workflow_manifest(*, graph: Graph, workflow, sections) -> dict:
         "workflow_path": f"/workflow/{workflow_uuid}/graph",
         "sections": _section_manifest(sections),
     }
+
+
+def _seed_minimal_workflow(
+    *,
+    admin,
+    project,
+    fake,
+    rng: SeededRNG,
+    workflow_type: WorkflowType,
+    title: str,
+    description: str,
+    section_title: str,
+    channel_title: str,
+) -> tuple[Workflow, list[Section], list[Channel], dict]:
+    graph = Graph.objects.create()
+    workflow = build_workflow_with_graph(
+        graph,
+        author=admin,
+        project=project,
+        fake=fake,
+        rng=rng,
+        workflow_type=workflow_type,
+        title=title,
+        description=description,
+    )
+    sections, channels = build_sections_and_channels(
+        graph,
+        fake=fake,
+        rng=rng,
+        section_count=1,
+        channel_count=1,
+        section_titles=[section_title],
+        channel_titles=[channel_title],
+    )
+    return workflow, sections, channels, _workflow_manifest(graph=graph, workflow=workflow, sections=sections)
+
+
+def _seed_course_workflow_linked_to_activity(
+    *,
+    admin,
+    project,
+    activity_workflow,
+    fake,
+    rng: SeededRNG,
+) -> tuple[Workflow, dict]:
+    course_workflow, sections, channels, course_manifest = _seed_minimal_workflow(
+        admin=admin,
+        project=project,
+        fake=fake,
+        rng=rng,
+        workflow_type=WorkflowType.COURSE,
+        title=E2E_FIXTURE_COURSE_WORKFLOW_TITLE,
+        description="Course workflow for main navigation Contains/Appears in E2E tests.",
+        section_title="E2E Nav Course Section",
+        channel_title="E2E Nav Course Channel",
+    )
+    Node.objects.create(
+        section=sections[0],
+        channel=channels[0],
+        section_row=0,
+        workflow=course_workflow,
+        node_type=child_node_type_value_for_workflow(course_workflow.workflow_type),
+        thread=Thread.objects.create(),
+        linked_workflow=activity_workflow,
+    )
+    course_manifest["linked_child_workflow_uuid"] = str(activity_workflow.uuid)
+    return course_workflow, course_manifest
 
 
 def generate_e2e_fixtures(
@@ -184,6 +254,27 @@ def generate_e2e_fixtures(
             {"uuid": str(outcome.uuid), "title": outcome.title} for outcome in outcomes
         ]
 
+        course_workflow, course_workflow_manifest = _seed_course_workflow_linked_to_activity(
+            admin=admin,
+            project=project,
+            activity_workflow=workflow,
+            fake=fake,
+            rng=rng,
+        )
+        _program_workflow, _program_sections, _program_channels, program_workflow_manifest = (
+            _seed_minimal_workflow(
+                admin=admin,
+                project=project,
+                fake=fake,
+                rng=rng,
+                workflow_type=WorkflowType.PROGRAM,
+                title=E2E_FIXTURE_PROGRAM_WORKFLOW_TITLE,
+                description="Program workflow for main navigation negative-path E2E tests.",
+                section_title="E2E Nav Program Section",
+                channel_title="E2E Nav Program Channel",
+            )
+        )
+
         template_project = create_project(
             admin,
             fake=fake,
@@ -238,7 +329,30 @@ def generate_e2e_fixtures(
             "template_project_title": template_project.title,
             "template_workflows": template_workflows,
             "contributors": contributors,
-            "workflows": [workflow_manifest],
+            "workflows": [workflow_manifest, course_workflow_manifest, program_workflow_manifest],
+            "navigation_linked_workflows": {
+                "activity": {
+                    "workflow_uuid": workflow_manifest["workflow_uuid"],
+                    "workflow_title": E2E_FIXTURE_WORKFLOW_TITLE,
+                    "workflow_type": workflow_manifest["workflow_type"],
+                    "workflow_path": workflow_manifest["workflow_path"],
+                },
+                "course": {
+                    "workflow_uuid": course_workflow_manifest["workflow_uuid"],
+                    "workflow_title": E2E_FIXTURE_COURSE_WORKFLOW_TITLE,
+                    "workflow_type": course_workflow_manifest["workflow_type"],
+                    "workflow_path": course_workflow_manifest["workflow_path"],
+                    "linked_child_workflow_uuid": course_workflow_manifest[
+                        "linked_child_workflow_uuid"
+                    ],
+                },
+                "program": {
+                    "workflow_uuid": program_workflow_manifest["workflow_uuid"],
+                    "workflow_title": E2E_FIXTURE_PROGRAM_WORKFLOW_TITLE,
+                    "workflow_type": program_workflow_manifest["workflow_type"],
+                    "workflow_path": program_workflow_manifest["workflow_path"],
+                },
+            },
         }
 
     if manifest_path is not None:

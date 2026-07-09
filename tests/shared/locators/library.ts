@@ -22,6 +22,12 @@ export const SORT_OPTION_RECENT = 'Recent';
 /** FR-LIB-003 — workflowTypeFilter checklist options (singular labels). */
 export const WORKFLOW_TYPE_FILTER_OPTIONS_FR_LIB_003 = ['Activity', 'Course', 'Program'] as const;
 export const TYPE_FILTER_PLACEHOLDER = 'Type';
+export const OWNERSHIP_PLACEHOLDER = 'Ownership';
+export const OWNERSHIP_OPTION_OWNED = 'Owned';
+/** FR-LIB-003 committed label per requirements (menu row may still read "Shared with me" in app). */
+export const OWNERSHIP_OPTION_SHARED = 'Shared';
+/** App menu copy for Shared ownership option until UI matches requirements label exactly. */
+export const OWNERSHIP_MENU_OPTION_SHARED = 'Shared with me';
 
 /** FR-LIB-001 — resultsSummary copy pattern (range per "current range" acceptance criteria). */
 export const RESULTS_SUMMARY_REGEX = /^Showing (?:(\d+)-(\d+)|(\d+)) of (\d+) results$/;
@@ -52,7 +58,17 @@ export function sortResetButton(page: Page, toolbar: Locator = libraryFilterTool
 
 /** canonical: ownershipFilter */
 export function ownershipFilter(page: Page): Locator {
-  return libraryFilterToolbar(page).getByRole('button', { name: /^(Ownership|All|Owned|Shared with me)$/ });
+  return libraryFilterToolbar(page).getByRole('button', {
+    name: /^(Ownership|All|Owned|Shared( with me)?)$/,
+  });
+}
+
+/** canonical: ownershipFilterResetButton — clear control on active ownershipFilter */
+export function ownershipFilterResetButton(
+  page: Page,
+  filter: Locator = ownershipFilter(page),
+): Locator {
+  return filter.locator('..').getByRole('button', { name: 'close', exact: true });
 }
 
 /** canonical: typeFilter / contentTypeFilter */

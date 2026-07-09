@@ -68,6 +68,17 @@ export function appearsInSection(page: Page): Locator {
   return mainNavigation(page).getByText('Appears in', { exact: true });
 }
 
+export type WorkflowContextSectionLabel = 'Contains' | 'Appears in';
+
+/** canonical: relatedWorkflowList — links under containsSection or appearsInSection */
+export function relatedWorkflowLinksInWorkflowContextSection(
+  page: Page,
+  sectionLabel: WorkflowContextSectionLabel,
+): Locator {
+  const sectionLabelLocator = mainNavigation(page).getByText(sectionLabel, { exact: true });
+  return sectionLabelLocator.locator('..').getByRole('link');
+}
+
 /** canonical: topNavigationBar — [data-test-id="top-bar"] */
 export function topNavigationBar(page: Page): Locator {
   return page.locator('[data-test-id="top-bar"]');
@@ -81,6 +92,11 @@ export function addMenuTrigger(page: Page): Locator {
 /** canonical: accountMenuTrigger — SimpleMenu sets data-test-id="account-menu-button" */
 export function accountMenuTrigger(page: Page): Locator {
   return page.locator('[data-test-id="account-menu-button"]');
+}
+
+/** canonical: notificationsMenuTrigger — deferred FR-TOP-004/006/008; absent in current phase */
+export function notificationsMenuTrigger(page: Page): Locator {
+  return topNavigationBar(page).locator('[aria-controls="notifications-menu"]');
 }
 
 export function returnLinksRegion(page: Page): Locator {
