@@ -1,14 +1,11 @@
+import { WorkflowTypeIn } from '@cf/api/gen'
 import { DialogContext, DialogDispatchContext } from '@cf/context/dialogContext'
-import { WorkflowType } from '@cfPages/Workflow/types'
 import { useContext } from 'react'
 
 export enum DialogMode {
   // Define your dialog modes here
   NODE_LINK_WORKFLOW = 'link_workflow',
   TARGET_PROJECT = 'target_project',
-
-  // USER
-  PASSWORD_RESET = 'password_reset',
 
   PROJECT_CREATE = 'project_create',
   PROJECT_EDIT = 'project_edit',
@@ -37,7 +34,7 @@ export enum DialogMode {
 export type DialogPayloadMap = {
   [DialogMode.CONTRIBUTOR_REMOVE]: { membershipId: number; username: string }
   [DialogMode.ARCHIVE]: { peopleId: string }
-  [DialogMode.WORKFLOW_CREATE]: { workflowType: WorkflowType }
+  [DialogMode.WORKFLOW_CREATE]: { workflowType: WorkflowTypeIn }
   [DialogMode.GRAPH_DELETE_SECTION]: {
     sectionId: string
     graphUuid: string
@@ -56,7 +53,6 @@ export type DialogPayloadMap = {
    * but i couldn't get the typing correct for now
    *******************************************************/
   [DialogMode.TARGET_PROJECT]: undefined
-  [DialogMode.PASSWORD_RESET]: undefined
   [DialogMode.PROJECT_CREATE]: undefined
   [DialogMode.PROJECT_EDIT]: undefined
   [DialogMode.PROJECT_EXPORT]: undefined

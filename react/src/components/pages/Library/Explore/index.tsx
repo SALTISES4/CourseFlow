@@ -28,8 +28,8 @@ const ExplorePage = () => {
       contentTypeFilter: true,
       workflowTypeFilter: true,
       keywordFilter: true,
-      templateFilter: false,
-      archiveFilter: false,
+      templateFilter: true,
+      archiveFilter: true,
       favoritesFilter: true
     }
   }

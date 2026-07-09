@@ -46,7 +46,7 @@ import {
  * Auth: chromium project storage state (admin@courseflow.com).
  */
 
-test.describe('Favourites — calibration (FR-FAV-001–005)', () => {
+test.describe('Favourites — calibration (FR-FAV-001-005)', () => {
   test.beforeEach(async ({ page }) => {
     await gotoFavourites(page);
     await expect(page).toHaveURL(/\/favourites\/?$/);

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import random
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
@@ -12,10 +13,14 @@ from course_flow.api.schemas.library import (
     LibraryAllowedFiltersOut,
     LibraryAppliedFiltersOut,
     LibraryContentTypeIn,
+    LibraryContentTypeOut,
     LibraryFavoriteOut,
     LibraryFiltersIn,
+    LibraryItemOut,
     LibrarySearchIn,
     LibrarySearchOut,
+    LibrarySortDirectionIn,
+    LibrarySortValueIn,
 )
 from course_flow.core.models import (
     Discipline,
@@ -54,8 +59,8 @@ class LibraryService:
 
         page = max(int((pagination.page if pagination else 0) or 0), 0)
         results_per_page = max(int((pagination.results_per_page if pagination else 10) or 10), 1)
-        sort_value = ((sort.value if sort else "DATE_CREATED") or "DATE_CREATED").upper()
-        sort_direction = ((sort.direction if sort else "DESC") or "DESC").upper()
+        sort_value = (sort.value if sort else LibrarySortValueIn.DATE_CREATED).upper()
+        sort_direction = (sort.direction if sort else LibrarySortDirectionIn.DESC).upper()
 
         keyword = self._normalize_keyword(raw_filters.keyword)
 
@@ -66,6 +71,7 @@ class LibraryService:
             discipline_ids=list(raw_filters.discipline_ids or []),
             workflow_types=list(raw_filters.workflow_types or []),
             ownership=raw_filters.ownership,
+            is_archived=raw_filters.is_archived,
             is_favorite=raw_filters.is_favorite,
             is_template=raw_filters.is_template,
         )
@@ -142,6 +148,11 @@ class LibraryService:
             project_qs = project_qs.filter(favorite_links__user_id=user_id)
             workflow_graph_qs = workflow_graph_qs.filter(favorite_links__user_id=user_id)
 
+        # Boolean filters are "only when true":
+        # False/None means the filter is not applied.
+        if filters.is_archived:
+            pass # TODO: properly handle archiving
+
         project_favorite_uuids = self._favorite_project_uuids(
             user_id=user_id, project_qs=project_qs
         )
@@ -166,7 +177,7 @@ class LibraryService:
         start_idx = page * results_per_page
         end_idx = start_idx + results_per_page
 
-        res =  {
+        res = {
             "items": items[start_idx:end_idx],
             "meta": {
                 "total_results": total_results,
@@ -257,43 +268,45 @@ class LibraryService:
 
     def _normalize_project_items(
         self, project_qs: QuerySet[Project], favorite_uuids: set[UUID]
-    ) -> list[dict[str, Any]]:
-        rows: list[dict[str, Any]] = []
+    ) -> list[LibraryItemOut]:
+        rows: list[LibraryItemOut] = []
         for project in project_qs:
             rows.append(
-                {
-                    "content_type": "project",
-                    "label": "project",
-                    "uuid": project.uuid,
-                    "title": project.title,
-                    "description": project.description,
-                    "date_created": project.date_created,
-                    "modified_on": project.modified_on,
-                    "is_template": project.is_template,
-                    "is_favorite": project.uuid in favorite_uuids,
-                }
+                LibraryItemOut(
+                    uuid=project.uuid,
+                    content_type=LibraryContentTypeOut.PROJECT,
+                    label="project",
+                    title=project.title,
+                    description=project.description,
+                    date_created=project.date_created,
+                    modified_on=project.modified_on,
+                    is_archived=random.choice([False, True]), # TODO; implement
+                    is_template=project.is_template,
+                    is_favorite=project.uuid in favorite_uuids,
+                )
             )
         return rows
 
     def _normalize_workflow_items(
         self, workflow_graph_qs: QuerySet[Graph], favorite_uuids: set[UUID]
-    ) -> list[dict[str, Any]]:
-        rows: list[dict[str, Any]] = []
+    ) -> list[LibraryItemOut]:
+        rows: list[LibraryItemOut] = []
         for graph in workflow_graph_qs:
             workflow = graph.workflow
             proj = workflow.project
             rows.append(
-                {
-                    "content_type": "workflow",
-                    "label": workflow.workflow_type,
-                    "uuid": workflow.uuid,
-                    "title": workflow.title,
-                    "description": workflow.description,
-                    "date_created": graph.date_created,
-                    "modified_on": graph.modified_on,
-                    "is_template": bool(proj and proj.is_template),
-                    "is_favorite": graph.uuid in favorite_uuids,
-                }
+                LibraryItemOut(
+                    content_type=LibraryContentTypeOut.WORKFLOW,
+                    label=workflow.workflow_type,
+                    uuid=workflow.uuid,
+                    title=workflow.title,
+                    description=workflow.description,
+                    date_created=graph.date_created,
+                    modified_on=graph.modified_on,
+                    is_archived=random.choice([False, True]), # TODO; implement
+                    is_template=proj.is_template,
+                    is_favorite=graph.uuid in favorite_uuids,
+                )
             )
         return rows
 
@@ -308,14 +321,14 @@ class LibraryService:
         ]
 
     def _sort_items(
-        self, items: list[dict[str, Any]], *, sort_value: str, sort_direction: str
-    ) -> list[dict[str, Any]]:
+        self, items: list[LibraryItemOut], *, sort_value: str, sort_direction: str
+    ) -> list[LibraryItemOut]:
         reverse = sort_direction != "ASC"
 
         if sort_value == "A_Z":
             return sorted(
-                items, key=lambda row: row["title"].casefold(), reverse=reverse
+                items, key=lambda row: row.title.casefold(), reverse=reverse
             )
         if sort_value == "DATE_MODIFIED":
-            return sorted(items, key=lambda row: row["modified_on"], reverse=reverse)
-        return sorted(items, key=lambda row: row["date_created"], reverse=reverse)
+            return sorted(items, key=lambda row: row.modified_on, reverse=reverse)
+        return sorted(items, key=lambda row: row.date_created, reverse=reverse)

@@ -15,7 +15,6 @@ import {
   CreateResourceOptions,
   WorkflowFormType
 } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
-import { WorkflowType } from '@cfPages/Workflow/types'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -32,7 +31,7 @@ import { generatePath, useNavigate } from 'react-router-dom'
 type StateType = {
   step: number
   resourceType: CreateResourceOptions
-  workflowType?: WorkflowType
+  workflowType?: WorkflowTypeIn
   title?: string
   template?: string
 }
@@ -144,13 +143,13 @@ const CreateWizardDialog = () => {
    * FUNCTIONS: form
    *******************************************************/
 
-  function resetState() {
+  const resetState = useCallback(() => {
     setState(initialState)
-  }
+  }, [])
 
-  function onCloseHandler() {
+  const onCloseHandler = useCallback(() => {
     onDialogClose()
-  }
+  }, [onDialogClose])
 
   const onSuccess = useCallback(
     (uuid: string) => {

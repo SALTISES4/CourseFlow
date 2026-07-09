@@ -198,7 +198,7 @@ export const zWorkflowDetailOut = z.object({
   graphUuid: z.string().uuid(),
   title: z.string(),
   description: z.string(),
-  workflowType: z.string(),
+  workflowType: zWorkflowType,
   authorId: z.number().int().nullable(),
   projectUuid: z.string().uuid().nullable(),
   revisionId: z.number().int(),
@@ -1015,6 +1015,21 @@ export const zUserProfileSettingsPatchIn = z.object({
 })
 
 /**
+ * UserProfilePasswordPatchResp
+ */
+export const zUserProfilePasswordPatchResp = z.object({
+  uuid: z.string().uuid()
+})
+
+/**
+ * UserProfilePasswordPatchIn
+ */
+export const zUserProfilePasswordPatchIn = z.object({
+  password: z.string().nullish(),
+  newPassword: z.string().nullish()
+})
+
+/**
  * UserNotificationSettingsOut
  */
 export const zUserNotificationSettingsOut = z.object({
@@ -1150,6 +1165,7 @@ export const zLibraryItemOut = z.object({
   description: z.string(),
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime(),
+  isArchived: z.boolean(),
   isTemplate: z.boolean(),
   isFavorite: z.boolean()
 })
@@ -1170,6 +1186,7 @@ export const zLibraryAppliedFiltersOut = z.object({
   workflowTypes: z.array(zWorkflowType).optional(),
   ownership: zLibraryOwnershipIn.nullish(),
   isFavorite: z.boolean().nullish(),
+  isArchived: z.boolean().nullish(),
   isTemplate: z.boolean().nullish()
 })
 
@@ -1204,6 +1221,7 @@ export const zLibraryFiltersIn = z.object({
   workflowTypes: z.array(zWorkflowType).optional(),
   ownership: zLibraryOwnershipIn.nullish(),
   isFavorite: z.boolean().nullish(),
+  isArchived: z.boolean().nullish(),
   isTemplate: z.boolean().nullish()
 })
 
@@ -2090,6 +2108,17 @@ export const zPatchMyProfileSettingsData = z.object({
  * OK
  */
 export const zPatchMyProfileSettingsResponse = zUserProfileSettingsOutResp
+
+export const zPatchMyProfilePasswordData = z.object({
+  body: zUserProfilePasswordPatchIn,
+  path: z.never().optional(),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zPatchMyProfilePasswordResponse = zUserProfilePasswordPatchResp
 
 export const zGetMyNotificationSettingsData = z.object({
   body: z.never().optional(),

@@ -1,5 +1,5 @@
 import { searchLibrary } from '@cf/api/gen'
-import { QueryKey, useQuery } from '@tanstack/react-query'
+import { QueryKey, keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useQueryClient } from '@tanstack/react-query'
 import { Draft, produce } from 'immer'
 
@@ -12,7 +12,8 @@ export function useLibrarySearch(input: Record<string, unknown>) {
         throwOnError: true
       })
       return data
-    }
+    },
+    placeholderData: keepPreviousData
   })
 }
 

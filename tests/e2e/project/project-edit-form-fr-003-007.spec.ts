@@ -20,7 +20,7 @@ import {
  * Note: edit entry is project ActionMenu (edit-project-button), not contextActionBar pencil.
  */
 
-test.describe('Edit project form — calibration (FR-PROJ-FORM-003–007)', () => {
+test.describe('Edit project form — calibration (FR-PROJ-FORM-003-007)', () => {
   const manifest = loadWorkflowManifest();
   const projectPath = getProjectPath(manifest);
 

@@ -9,6 +9,7 @@ import MyLibrary from '@cfPages/Library/MyLibrary'
 import NotificationsPage from '@cfPages/Notifications'
 import Project from '@cfPages/Project'
 import NotificationsSettingsPage from '@cfPages/Settings/NotificationsSettings'
+import PasswordResetPage from '@cfPages/Settings/PasswordReset'
 import ProfileSettingsPage from '@cfPages/Settings/ProfileSettings'
 import UserRegisterPage from '@cfPages/SignIn/Register'
 import WorkflowPage from '@cfPages/Workflow'
@@ -92,6 +93,14 @@ export const CFRouter = createBrowserRouter([
         element: (
           <Base>
             <ProfileSettingsPage />
+          </Base>
+        )
+      },
+      {
+        path: CFRoutes.PASSWORD_RESET,
+        element: (
+          <Base>
+            <PasswordResetPage />
           </Base>
         )
       },

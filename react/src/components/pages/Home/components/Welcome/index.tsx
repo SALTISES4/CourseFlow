@@ -1,13 +1,13 @@
+import { WorkflowType } from '@cf/api/gen'
 import { CookieTypes, useCookies } from '@cf/context/cookieContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/Utility.class'
 import CloseIcon from '@mui/icons-material/Close'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import * as SC from './style'
-import { WorkflowType } from '../../../Workflow/types'
 
 type PropsType = {
   hide?: boolean
@@ -19,7 +19,7 @@ const Welcome = ({ hide }: PropsType) => {
    *******************************************************/
   const { dispatch } = useDialog()
   const [visible, setVisible] = useState(true)
-  const { cookies, updateCookie, removeCookie } = useCookies()
+  const { cookies, updateCookie } = useCookies()
 
   useEffect(() => {
     const showWelcomeMessageCookie =

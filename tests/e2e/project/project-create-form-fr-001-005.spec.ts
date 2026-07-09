@@ -40,7 +40,7 @@ import {
  * Auth: chromium project storage state (admin@courseflow.com) unless noted.
  */
 
-test.describe('Create project form — calibration (FR-PROJ-FORM-001–005)', () => {
+test.describe('Create project form — calibration (FR-PROJ-FORM-001-005)', () => {
   test.beforeEach(async ({ page }) => {
     await gotoAuthenticatedShell(page, '/home');
   });

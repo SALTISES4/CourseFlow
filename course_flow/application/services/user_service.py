@@ -52,6 +52,26 @@ class UserService:
         user.save(update_fields=["first_name", "last_name", "language_preference"])
         return user
 
+    # TODO: add more robust password validation rules to match the frontend
+    # length, alphanumerics, etc
+    def reset_password(
+        self,
+        *,
+        user_id: int,
+        password: str | None = None,
+        new_password: str | None = None,
+    ) -> User | None:
+        user = User.objects.filter(pk=user_id).first()
+        if user is None or password is None or new_password is None:
+            return None
+
+        if not user.check_password(password):
+            return None
+
+        user.set_password(new_password)
+        user.save(update_fields=["password"])
+        return user
+
     def get_notification_settings(self, user_id: int) -> User | None:
         return User.objects.filter(pk=user_id).first()
 

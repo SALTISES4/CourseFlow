@@ -1,3 +1,4 @@
+import { WorkflowType } from '@cf/api/gen'
 import {
   getWorkflowOptions,
   getWorkflowQueryKey,
@@ -9,7 +10,6 @@ import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import { WorkflowFormType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
-import { WorkflowType } from '@cfPages/Workflow/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -25,7 +25,8 @@ import { z } from 'zod'
 const WorkflowLabels: Record<WorkflowType, string> = {
   [WorkflowType.PROGRAM]: _t('Program'),
   [WorkflowType.ACTIVITY]: _t('Activity'),
-  [WorkflowType.COURSE]: _t('Course')
+  [WorkflowType.COURSE]: _t('Course'),
+  [WorkflowType.TASK]: _t('Task')
 }
 
 // Define the Zod schema for validation

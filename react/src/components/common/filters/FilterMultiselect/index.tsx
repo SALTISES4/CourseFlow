@@ -1,5 +1,4 @@
-import useMount from '@cf/hooks/useMount'
-import useSkipFirstRender from '@cf/hooks/useSkipFirstRender'
+import { _t } from '@cf/utility/Utility.class'
 import { SearchFilterOption } from '@cfComponents/filters/types'
 import FilterIcon from '@mui/icons-material/FilterAlt'
 import { debounce } from '@mui/material'
@@ -41,6 +40,7 @@ type PropsType = {
   searchPlaceholder?: string
   menuAlign?: 'left' | 'right'
   disabled?: boolean
+  showSearch?: boolean
   selected?: string
   options: FilterMultiselectOption[]
   onChange: (values: SearchFilterOption[]) => void
@@ -52,6 +52,7 @@ const FilterMultiselect = ({
   menuAlign = 'left',
   placeholder = 'Filter',
   searchPlaceholder = 'Find',
+  showSearch = true,
   options,
   selected,
   onChange
@@ -63,19 +64,6 @@ const FilterMultiselect = ({
   const [search, setSearch] = useState('')
   const [filteredOptions, setFilteredOptions] = useState(options)
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null)
-  const hasRendered = useSkipFirstRender()
-
-  useMount()
-
-  useEffect(() => {
-    if (hasRendered) {
-      onChange(value)
-    }
-  }, [value, options, filteredOptions])
-
-  useEffect(() => {
-    debouncedFilter(search)
-  }, [search, options])
 
   const debouncedFilter = useMemo(() => {
     return debounce((term: string) => {
@@ -145,6 +133,14 @@ const FilterMultiselect = ({
     }
   }, [value, filteredOptions])
 
+  useEffect(() => {
+    onChange(value)
+  }, [onChange, value])
+
+  useEffect(() => {
+    debouncedFilter(search)
+  }, [search, debouncedFilter])
+
   return (
     <>
       <StyledButton
@@ -164,9 +160,7 @@ const FilterMultiselect = ({
           open={!!menuAnchor}
           anchorEl={menuAnchor}
           onClose={onClose}
-          TransitionProps={{
-            onExited: resetState
-          }}
+          TransitionProps={{ onExited: resetState }}
           anchorOrigin={{
             vertical: 'bottom',
             horizontal: menuAlign
@@ -176,16 +170,18 @@ const FilterMultiselect = ({
             horizontal: menuAlign
           }}
         >
-          <StyledSearch>
-            <TextField
-              fullWidth
-              name="search"
-              variant="standard"
-              label={searchPlaceholder}
-              value={search}
-              onChange={onSearchChange}
-            />
-          </StyledSearch>
+          {showSearch && (
+            <StyledSearch>
+              <TextField
+                fullWidth
+                name="search"
+                variant="standard"
+                label={searchPlaceholder}
+                value={search}
+                onChange={onSearchChange}
+              />
+            </StyledSearch>
+          )}
           <StyledMenu>
             {filteredOptions.map((option) => {
               const isSelected =
@@ -204,8 +200,8 @@ const FilterMultiselect = ({
             })}
           </StyledMenu>
           <StyledActions>
-            <Button onClick={onSelectNone}>None</Button>
-            <Button onClick={onSelectAll}>All</Button>
+            <Button onClick={onSelectNone}>{_t('None')}</Button>
+            <Button onClick={onSelectAll}>{_t('All')}</Button>
           </StyledActions>
         </StyledPopover>
       )}

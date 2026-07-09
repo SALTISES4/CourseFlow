@@ -119,6 +119,8 @@ import type {
   MoveOutcomeResponses,
   PatchMyNotificationSettingsData,
   PatchMyNotificationSettingsResponses,
+  PatchMyProfilePasswordData,
+  PatchMyProfilePasswordResponses,
   PatchMyProfileSettingsData,
   PatchMyProfileSettingsResponses,
   PatchNodeData,
@@ -269,6 +271,8 @@ import {
   zMoveOutcomeResponse,
   zPatchMyNotificationSettingsData,
   zPatchMyNotificationSettingsResponse,
+  zPatchMyProfilePasswordData,
+  zPatchMyProfilePasswordResponse,
   zPatchMyProfileSettingsData,
   zPatchMyProfileSettingsResponse,
   zPatchNodeData,
@@ -1644,6 +1648,30 @@ export const patchMyProfileSettings = <ThrowOnError extends boolean = false>(
       await zPatchMyProfileSettingsResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/user/me/profile-settings',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Patch My Profile Password
+ */
+export const patchMyProfilePassword = <ThrowOnError extends boolean = false>(
+  options: Options<PatchMyProfilePasswordData, ThrowOnError>
+) =>
+  (options.client ?? client).patch<
+    PatchMyProfilePasswordResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zPatchMyProfilePasswordData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zPatchMyProfilePasswordResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/user/me/password-reset',
     ...options,
     headers: {
       'Content-Type': 'application/json',
