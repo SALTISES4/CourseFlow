@@ -404,7 +404,7 @@ rebuild-e2e-db:
   just django-kill-background
 
 # Idempotent E2E harness prep: DB exists, migrate, superuser, fixtures + manifest (no volume wipe).
-[group: 'Workflows']
+[group: 'Workflows test']
 e2e-prepare:
   just docker-up
   just django-wait-db
@@ -412,4 +412,5 @@ e2e-prepare:
   just django-migrate-e2e
   just django-create-superuser-e2e || true
   just django-seed-e2e-tests
+
 
