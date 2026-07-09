@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from django.db.models import Q
 
 from course_flow.core.enum import LanguagePreference
@@ -52,8 +53,6 @@ class UserService:
         user.save(update_fields=["first_name", "last_name", "language_preference"])
         return user
 
-    # TODO: add more robust password validation rules to match the frontend
-    # length, alphanumerics, etc
     def reset_password(
         self,
         *,
@@ -66,6 +65,16 @@ class UserService:
             return None
 
         if not user.check_password(password):
+            return None
+
+        is_new_pass_valid = (
+            len(new_password) >= 12
+            and re.search(r"[a-zA-Z]", new_password)
+            and re.search(r"\d", new_password) # at least one digit
+            and re.search(r"[^a-zA-Z0-9]", new_password) # at least one symbol
+        )
+
+        if not is_new_pass_valid:
             return None
 
         user.set_password(new_password)
