@@ -64,11 +64,26 @@ export function cardFavouriteToggle(card: Locator): Locator {
 }
 
 /** MUI theme courseflow.favouriteActive — FR-CARD-005 yellow star when favourited. */
-export const CARD_FAVOURITE_ACTIVE_COLOR = 'rgb(255, 180, 0)';
+export const CARD_FAVOURITE_ACTIVE_COLOR = 'rgba(255, 180, 0, 1)';
+
+/** Matches theme favouriteActive whether the browser normalizes to rgb or rgba. */
+export const CARD_FAVOURITE_ACTIVE_COLOR_PATTERN = /rgba?\(\s*255\s*,\s*180\s*,\s*0(?:\s*,\s*1)?\s*\)/;
+
+/** Matches theme favouriteInactive whether the browser normalizes to rgb or rgba. */
+export const CARD_FAVOURITE_INACTIVE_COLOR_PATTERN = /rgba?\(\s*0\s*,\s*0\s*,\s*0(?:\s*,\s*0\.23)?\s*\)/;
 
 /** FR-CARD-005 — cardFavouriteToggle shows yellow star when object is favourited. */
 export async function expectCardFavouriteToggleShowsFavourited(card: Locator): Promise<void> {
-  await expect(cardFavouriteToggle(card)).toHaveCSS('color', CARD_FAVOURITE_ACTIVE_COLOR);
+  const toggle = cardFavouriteToggle(card);
+  await expect(toggle).toBeVisible();
+  await expect(toggle).toHaveCSS('color', CARD_FAVOURITE_ACTIVE_COLOR_PATTERN);
+}
+
+/** FR-CARD-005 — cardFavouriteToggle shows grey star when object is not favourited. */
+export async function expectCardFavouriteToggleShowsNotFavourited(card: Locator): Promise<void> {
+  const toggle = cardFavouriteToggle(card);
+  await expect(toggle).toBeVisible();
+  await expect(toggle).toHaveCSS('color', CARD_FAVOURITE_INACTIVE_COLOR_PATTERN);
 }
 
 /**

@@ -49,6 +49,19 @@ export type WorkflowManifest = {
   template_workflows?: TemplateWorkflowEntry[];
   contributors?: ContributorEntry[];
   workflows: WorkflowEntry[];
+  navigation_linked_workflows?: {
+    activity: NavigationLinkedWorkflowEntry;
+    course: NavigationLinkedWorkflowEntry;
+    program: NavigationLinkedWorkflowEntry;
+  };
+};
+
+export type NavigationLinkedWorkflowEntry = {
+  workflow_uuid: string;
+  workflow_title: string;
+  workflow_type: string;
+  workflow_path: string;
+  linked_child_workflow_uuid?: string;
 };
 
 export function resolveManifestPath(): string {

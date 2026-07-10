@@ -1,21 +1,22 @@
 import { test, expect } from '@playwright/test';
-import { gotoAuthenticatedShell } from '../../helpers/navigation';
-import { createWorkflowDialog } from '../home/home.locators';
-import { profileSettingsTitle, notificationsSettingsTitle } from '../user/user.locators';
 import {
-  accountMenuItemNotificationsSettings,
+  expectAccountMenuInScopeRowsPerFrTop003,
+  expectNotificationsNotInTopNavigationPerCurrentPhase,
+} from '../../helpers/account-menu';
+import { gotoAuthenticatedShell } from '../../helpers/navigation';
+import { expectPasswordResetPagePrimaryLayoutPerFrPwd001 } from '../../helpers/password-reset-page';
+import {
+  expectAddMenuCreateRowsVisiblePerFrTop002,
+  expectAddMenuProjectOpensCreateProjectFormPerFrTop002,
+  expectAddMenuWorkflowOpensCreateWorkflowDialogPerFrTop002,
+} from '../../helpers/top-navigation-add-menu';
+import { profileSettingsTitle } from '../user/user.locators';
+import {
   accountMenuItemPassword,
   accountMenuItemProfile,
-  accountMenuItemSignOut,
   accountMenuTrigger,
-  addMenuItemActivity,
-  addMenuItemCourse,
-  addMenuItemProgram,
-  addMenuItemProject,
   addMenuTrigger,
   backToProjectLink,
-  createProjectDialog,
-  passwordResetDialog,
   returnLinksRegion,
   topNavigationBar,
   waitForMainNavigationReady,
@@ -23,6 +24,7 @@ import {
 
 /**
  * Calibration slice — FR-TOP-001 through FR-TOP-005 (FR-TOP-004/006/008 deferred).
+ * Notifications dropdown and notification settings are out of scope this phase.
  * Requirements: tests/docs/requirements/features/navigation/top_navigation_requirements_v1.yaml
  * Auth: chromium project storage state (admin@courseflow.com).
  */
@@ -39,59 +41,42 @@ test.describe('Top navigation — calibration (FR-TOP-001-005)', () => {
     await expect(topNavigationBar(page)).toBeVisible();
     await expect(addMenuTrigger(page)).toBeVisible();
     await expect(accountMenuTrigger(page)).toBeVisible();
+    await expectNotificationsNotInTopNavigationPerCurrentPhase(page);
     await expect(backToProjectLink(page)).toHaveCount(0);
   });
 
-  test('FR-TOP-002: add menu lists create rows and opens dialogs', async ({ page }) => {
-    await addMenuTrigger(page).click();
-
-    await expect(addMenuItemProject(page)).toBeVisible();
-    await expect(addMenuItemProgram(page)).toBeVisible();
-    await expect(addMenuItemCourse(page)).toBeVisible();
-    await expect(addMenuItemActivity(page)).toBeVisible();
-
-    await addMenuItemProject(page).click();
-    await expect(createProjectDialog(page)).toBeVisible();
-    await expect(
-      createProjectDialog(page).getByRole('heading', { name: 'Create project', exact: true }),
-    ).toBeVisible();
-    await page.keyboard.press('Escape');
-
-    await addMenuTrigger(page).click();
-    await addMenuItemProgram(page).click();
-    await expect(createWorkflowDialog(page)).toBeVisible();
-    await expect(createWorkflowDialog(page).getByRole('heading')).toHaveText('Select project');
+  test('FR-TOP-002: add menu lists create rows', async ({ page }) => {
+    await expectAddMenuCreateRowsVisiblePerFrTop002(page);
   });
 
-  test('FR-TOP-003: account menu lists destinations and Profile navigates', async ({ page }) => {
+  test('FR-TOP-002: Project opens create project form', async ({ page }) => {
+    await expectAddMenuProjectOpensCreateProjectFormPerFrTop002(page);
+  });
+
+  for (const workflowType of ['program', 'course', 'activity'] as const) {
+    test(`FR-TOP-002: ${workflowType} opens create workflow dialog with type-specific stepper`, async ({
+      page,
+    }) => {
+      await expectAddMenuWorkflowOpensCreateWorkflowDialogPerFrTop002(page, workflowType);
+    });
+  }
+
+  test('FR-TOP-003: account menu lists in-scope destinations', async ({ page }) => {
+    await expectAccountMenuInScopeRowsPerFrTop003(page);
+  });
+
+  test('FR-TOP-003: Profile navigates to profile settings', async ({ page }) => {
     await accountMenuTrigger(page).click();
-
-    await expect(accountMenuItemProfile(page)).toBeVisible();
-    await expect(accountMenuItemPassword(page)).toBeVisible();
-    await expect(accountMenuItemNotificationsSettings(page)).toBeVisible();
-    await expect(accountMenuItemSignOut(page)).toBeVisible();
-
     await accountMenuItemProfile(page).click();
     await expect(page).toHaveURL(/\/user\/profile-settings\/?$/);
     await expect(profileSettingsTitle(page)).toBeVisible();
   });
 
-  test('FR-TOP-003: Password reset opens dialog (not /user/password-reset route yet)', async ({
-    page,
-  }) => {
+  test('FR-TOP-003: Password reset navigates to password reset page', async ({ page }) => {
     await accountMenuTrigger(page).click();
     await accountMenuItemPassword(page).click();
 
-    await expect(passwordResetDialog(page)).toBeVisible();
-    await expect(page).not.toHaveURL(/\/user\/password-reset/);
-  });
-
-  test('FR-TOP-003: Notification settings navigates to settings page', async ({ page }) => {
-    await accountMenuTrigger(page).click();
-    await accountMenuItemNotificationsSettings(page).click();
-
-    await expect(page).toHaveURL(/\/user\/notifications-settings\/?$/);
-    await expect(notificationsSettingsTitle(page)).toBeVisible();
+    await expectPasswordResetPagePrimaryLayoutPerFrPwd001(page);
   });
 });
 

@@ -1,27 +1,44 @@
 import { test, expect } from '@playwright/test';
+import { loginAs } from '../../helpers/auth';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import { getProjectPath, loadWorkflowManifest } from '../../helpers/manifest';
 import {
+  buildProjectDetailApiResponse,
+  expectProjectOverviewDescriptionPerFrProjOv001,
+  expectProjectOverviewDisciplinesPerFrProjOv001,
+  expectProjectOverviewMetadataLabelsPerFrProjOv001,
+  expectProjectPublishSnackbarMessage,
+  expectProjectUnpublishSnackbarMessage,
+  expectPublishedUnpublishControlsPerFrProjOv003,
+  expectUnpublishedPublishControlsPerFrProjOv003,
+  fetchProjectDetail,
+  installProjectDetailRouteMock,
+  installProjectUpdateRouteMock,
+  openPublishProjectConfirmationModal,
+  PROJECT_PUBLISH_SNACKBAR_MESSAGES,
+  PROJECT_UNPUBLISH_SNACKBAR_MESSAGES,
+} from '../../helpers/project-overview';
+import {
   addContributorsDialog,
   addNewTagInput,
+  E2E_CONTRIBUTOR_STUDENT_EMAIL,
   projectMetadataAddContributorsButton,
-  projectMetadataDisciplinesBlock,
   projectMetadataFieldCreatedOn,
-  projectMetadataFieldDescription,
-  projectMetadataFieldDisciplines,
-  projectMetadataPermissionsPanel,
-  projectOverviewView,
   projectTagsSection,
+  publishProjectConfirmationModal,
+  publishProjectConfirmationModalCancelButton,
+  publishProjectConfirmationModalConfirmButton,
   publishProjectButton,
+  projectVisibilityStateMessage,
   shareProjectButton,
+  unpublishProjectButton,
   waitForProjectOverviewLoaded,
 } from './project.locators';
 
 /**
- * Calibration slice — FR-PROJ-OV-001, FR-PROJ-OV-002 (partial), FR-PROJ-OV-005;
- * FR-PROJ-OV-003/004 deferred (publish / contributor dialog flows not fully wired).
+ * Calibration slice — FR-PROJ-OV-001 through FR-PROJ-OV-005.
  * Requirements: tests/docs/requirements/features/project/project_overview_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (admin@courseflow.com) unless noted.
  */
 
 test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
@@ -33,34 +50,24 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
     await waitForProjectOverviewLoaded(page);
   });
 
-  test('FR-PROJ-OV-001: overview renders metadata blocks', async ({ page }) => {
-    await expect(projectOverviewView(page)).toBeVisible();
-    await expect(projectMetadataFieldDisciplines(page)).toBeVisible();
-    await expect(projectMetadataFieldCreatedOn(page)).toBeVisible();
-    await expect(projectMetadataPermissionsPanel(page)).toBeVisible();
-
-    const tagsVisible = (await projectTagsSection(page).count()) > 0;
-    if (tagsVisible) {
-      await expect(projectTagsSection(page)).toBeVisible();
-    }
-
-    const hasDescription = (await projectMetadataFieldDescription(page).count()) > 0;
-    if (hasDescription) {
-      await expect(projectMetadataFieldDescription(page)).toBeVisible();
-      return;
-    }
-
-    // Implementation hides Description block when empty; FR expects label with '-'.
-    await expect(projectMetadataFieldDescription(page)).toHaveCount(0);
+  test('FR-PROJ-OV-001: overview route renders required metadata labels without date field', async ({
+    page,
+  }) => {
+    await expectProjectOverviewMetadataLabelsPerFrProjOv001(page);
+    await expect(projectMetadataFieldCreatedOn(page)).toHaveCount(0);
   });
 
-  test('FR-PROJ-OV-001: disciplines panel shows label and value or empty copy', async ({ page }) => {
-    const disciplinesBlock = projectMetadataDisciplinesBlock(page);
+  test('FR-PROJ-OV-001: description block is display-only and reflects project API value', async ({
+    page,
+  }) => {
+    const project = await fetchProjectDetail(page, manifest.project_uuid);
+    await expectProjectOverviewDescriptionPerFrProjOv001(page, project);
+  });
 
-    await expect(disciplinesBlock).toBeVisible();
-    const text = await disciplinesBlock.innerText();
-    expect(text).toMatch(/Disciplines/);
-    expect(text.length).toBeGreaterThan('Disciplines'.length);
+  test('FR-PROJ-OV-001: disciplines block shows empty copy or A–Z comma-separated values', async ({
+    page,
+  }) => {
+    await expectProjectOverviewDisciplinesPerFrProjOv001(page);
   });
 
   test('FR-PROJ-OV-002: Add CourseFlow user entry opens add contributor dialog', async ({ page }) => {
@@ -79,13 +86,200 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
     await addContributorsDialog(page).getByRole('button', { name: 'Cancel', exact: true }).click();
   });
 
-  test.skip('FR-PROJ-OV-003: publish/unpublish controls — not implemented on project overview', async ({
-    page,
-  }) => {
-    await expect(publishProjectButton(page)).toBeVisible();
+  test.describe('FR-PROJ-OV-003: publish and unpublish controls', () => {
+    test.describe.configure({ mode: 'serial' });
+
+    const projectUpdateRoute = `**/api/project/${manifest.project_uuid}`;
+
+    test.beforeEach(async ({ page }) => {
+      await page.unroute(projectUpdateRoute);
+    });
+
+    test.describe('from unpublished project state', () => {
+      test('shows private visibility message and publish control', async ({ page }) => {
+        const project = await fetchProjectDetail(page, manifest.project_uuid);
+        expect(project.isPublished).toBe(false);
+        await expectUnpublishedPublishControlsPerFrProjOv003(page);
+      });
+
+      test('clicking publish opens publishProjectConfirmationModal with required copy', async ({
+        page,
+      }) => {
+        await openPublishProjectConfirmationModal(page);
+      });
+
+      test('cancel closes publishProjectConfirmationModal and keeps project unpublished', async ({
+        page,
+      }) => {
+        await openPublishProjectConfirmationModal(page);
+        await publishProjectConfirmationModalCancelButton(page).click();
+        await expect(publishProjectConfirmationModal(page)).toBeHidden();
+        await expectUnpublishedPublishControlsPerFrProjOv003(page);
+      });
+
+      test('failed publish keeps modal open and shows failure snackbar', async ({ page }) => {
+        await installProjectUpdateRouteMock(page, manifest.project_uuid, (route) => {
+          if (route.request().method() !== 'PATCH') {
+            void route.continue();
+            return;
+          }
+
+          void route.fulfill({
+            status: 500,
+            contentType: 'application/json',
+            body: JSON.stringify({ detail: 'E2E simulated publish failure' }),
+          });
+        });
+
+        await openPublishProjectConfirmationModal(page);
+        await publishProjectConfirmationModalConfirmButton(page).click();
+
+        await expect(publishProjectConfirmationModal(page)).toBeVisible();
+        await expect(publishProjectConfirmationModalConfirmButton(page)).toBeEnabled();
+        await expectUnpublishedPublishControlsPerFrProjOv003(page);
+        await expectProjectPublishSnackbarMessage(
+          page,
+          PROJECT_PUBLISH_SNACKBAR_MESSAGES.failure,
+        );
+      });
+
+      test('successful publish closes modal, shows success snackbar, and switches to published controls', async ({
+        page,
+      }) => {
+        const project = await fetchProjectDetail(page, manifest.project_uuid);
+
+        await installProjectUpdateRouteMock(page, manifest.project_uuid, (route) => {
+          if (route.request().method() !== 'PATCH') {
+            void route.continue();
+            return;
+          }
+
+          void route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify(
+              buildProjectDetailApiResponse({
+                ...project,
+                isPublished: true,
+              }),
+            ),
+          });
+        });
+
+        await openPublishProjectConfirmationModal(page);
+        await publishProjectConfirmationModalConfirmButton(page).click();
+
+        await expect(publishProjectConfirmationModal(page)).toBeHidden({ timeout: 15_000 });
+        await expectPublishedUnpublishControlsPerFrProjOv003(page);
+        await expectProjectPublishSnackbarMessage(
+          page,
+          PROJECT_PUBLISH_SNACKBAR_MESSAGES.success,
+        );
+      });
+    });
+
+    test.describe('from published project state', () => {
+      test.beforeEach(async ({ page }) => {
+        const project = await fetchProjectDetail(page, manifest.project_uuid);
+
+        await installProjectDetailRouteMock(page, manifest.project_uuid, {
+          ...project,
+          isPublished: true,
+        });
+        await page.reload();
+        await waitForProjectOverviewLoaded(page);
+        await expectPublishedUnpublishControlsPerFrProjOv003(page);
+      });
+
+      test('shows public visibility message and unpublish control on initial load', async ({
+        page,
+      }) => {
+        await expectPublishedUnpublishControlsPerFrProjOv003(page);
+      });
+
+      test('failed unpublish keeps project published and shows failure snackbar', async ({
+        page,
+      }) => {
+        await installProjectUpdateRouteMock(page, manifest.project_uuid, (route) => {
+          if (route.request().method() !== 'PATCH') {
+            void route.continue();
+            return;
+          }
+
+          void route.fulfill({
+            status: 500,
+            contentType: 'application/json',
+            body: JSON.stringify({ detail: 'E2E simulated unpublish failure' }),
+          });
+        });
+
+        await expect(unpublishProjectButton(page)).toBeVisible();
+        await unpublishProjectButton(page).click();
+
+        await expectPublishedUnpublishControlsPerFrProjOv003(page);
+        await expectProjectUnpublishSnackbarMessage(
+          page,
+          PROJECT_UNPUBLISH_SNACKBAR_MESSAGES.failure,
+        );
+      });
+
+      test('successful unpublish shows success snackbar and returns to private visibility controls', async ({
+        page,
+      }) => {
+        const project = await fetchProjectDetail(page, manifest.project_uuid);
+
+        await installProjectUpdateRouteMock(page, manifest.project_uuid, (route) => {
+          if (route.request().method() !== 'PATCH') {
+            void route.continue();
+            return;
+          }
+
+          void route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify(
+              buildProjectDetailApiResponse({
+                ...project,
+                isPublished: false,
+              }),
+            ),
+          });
+        });
+
+        await expect(unpublishProjectButton(page)).toBeVisible();
+        await unpublishProjectButton(page).click();
+
+        await expectUnpublishedPublishControlsPerFrProjOv003(page);
+        await expectProjectUnpublishSnackbarMessage(
+          page,
+          PROJECT_UNPUBLISH_SNACKBAR_MESSAGES.success,
+        );
+      });
+    });
   });
 
-  test.skip('FR-PROJ-OV-004: contributor add success flow — deferred (requires user search fixture)', async () => {
+  test.describe('FR-PROJ-OV-003: viewer role visibility controls', () => {
+    test.use({ storageState: { cookies: [], origins: [] } });
+
+    test.beforeEach(async ({ page }) => {
+      await loginAs(page, {
+        email: E2E_CONTRIBUTOR_STUDENT_EMAIL,
+        password: 'password',
+      });
+      await gotoAuthenticatedShell(page, projectPath);
+      await waitForProjectOverviewLoaded(page);
+    });
+
+    test('viewer sees visibility message but not publish or unpublish controls', async ({ page }) => {
+      await expect(projectVisibilityStateMessage(page)).toBeVisible();
+      await expect(publishProjectButton(page)).toHaveCount(0);
+      await expect(unpublishProjectButton(page)).toHaveCount(0);
+    });
+  });
+
+  test.skip('FR-PROJ-OV-004: contributor add success flow — deferred (requires user search fixture)', async ({
+    page,
+  }) => {
     await projectMetadataAddContributorsButton(page).click();
   });
 

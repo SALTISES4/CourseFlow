@@ -8,6 +8,9 @@ import {
   libraryErrorState,
   libraryFilterToolbar,
   libraryLoadingSkeletons,
+  libraryResultsProjectCards,
+  libraryResultsWorkflowCards,
+  ownershipFilterResetButton,
   selectFilterOption,
   sortMenuItem,
 } from '../../shared/locators/library';
@@ -20,10 +23,71 @@ export {
   libraryCards as projectWorkflowCards,
   libraryEmptyState as projectWorkflowsEmptyState,
   libraryErrorState as projectWorkflowsErrorState,
+  libraryResultsProjectCards as projectWorkflowsResultsProjectCards,
+  libraryResultsWorkflowCards as projectWorkflowsResultsWorkflowCards,
   selectFilterOption,
 };
 
 export { globalMessageSnackbar } from '../../shared/locators/global';
+
+export const PROJECT_CREATE_FORM_VISIBLE_LABELS = {
+  title: 'Title',
+  description: 'Description',
+  disciplines: 'Disciplines',
+} as const;
+export const PROJECT_CREATE_FORM_REQUIRED_FIELD_LABELS = [
+  PROJECT_CREATE_FORM_VISIBLE_LABELS.title,
+] as const;
+export const PROJECT_START_WITH_PROJECT_ALERT_COPY = {
+  title: 'Start by creating a project',
+  subtitle:
+    'All workflows, whether they are programs, courses, or activities, exist within projects. You must start by creating a project before proceeding to create any type of workflow.',
+} as const;
+export const PROJECT_FORM_VALIDATION_MESSAGES = {
+  titleRequired: 'Project title cannot be empty',
+  titleMaxLength: 'Project title cannot be longer than 200 characters',
+} as const;
+export const PROJECT_CREATE_SNACKBAR_MESSAGES = {
+  success: 'Your project has been successfully created',
+  failure: 'We encountered an issue and your project was not created',
+} as const;
+export const PROJECT_CREATE_API_ROUTE = '**/api/project';
+/** E2E seed contributor — editor on fixture project, not project owner (FR-PROJ-FORM-002). */
+export const E2E_CONTRIBUTOR_TEACHER_EMAIL = 'teacher@courseflow.com';
+
+export const PROJECT_OVERVIEW_METADATA_LABELS = {
+  description: 'Description',
+  disciplines: 'Disciplines',
+  permissions: 'Permissions',
+  tags: 'Tags',
+} as const;
+/** Displayed value when description or disciplines are empty per FR-PROJ-OV-001. */
+export const PROJECT_OVERVIEW_EMPTY_METADATA_VALUE = '-';
+/** Date metadata is out of scope for project overview per FR-PROJ-OV-001. */
+export const PROJECT_OVERVIEW_FORBIDDEN_METADATA_LABELS = ['Created on'] as const;
+
+export const PROJECT_VISIBILITY_STATE_MESSAGES = {
+  private: 'The project is currently private',
+  public: 'The project is currently public',
+} as const;
+export const PROJECT_PUBLISH_SNACKBAR_MESSAGES = {
+  success: 'Your project has been successfully published',
+  failure: 'We encountered an issue and your project was not published',
+} as const;
+export const PROJECT_UNPUBLISH_SNACKBAR_MESSAGES = {
+  success: 'Your project has been successfully unpublished',
+  failure: 'We encountered an issue and your project was not unpublished',
+} as const;
+/** FIGMA-PROJ-OV-PUBLISH-PROJECT-MODAL — FR-PROJ-OV-003 */
+export const PROJECT_PUBLISH_CONFIRMATION_MODAL_COPY = {
+  title: 'Publish project',
+  body: 'Publishing this project will make all associated workflows visible to all CourseFlow users. Are you ready to share this content?',
+  cancelButton: 'Cancel',
+  confirmButton: 'Publish project',
+} as const;
+export const PROJECT_UPDATE_API_ROUTE = '**/api/project/*';
+/** E2E seed contributor — viewer on fixture project (FR-PROJ-OV-003 roleBehavior). */
+export const E2E_CONTRIBUTOR_STUDENT_EMAIL = 'student@courseflow.com';
 
 /**
  * Project-domain uiObjects — canonical_locators.yaml (project*).
@@ -56,25 +120,38 @@ export function projectOverviewView(page: Page): Locator {
 }
 
 export function projectMetadataFieldDescription(page: Page): Locator {
-  return projectOverviewView(page).getByText('Description', { exact: true }).first();
+  return projectOverviewView(page).getByText(PROJECT_OVERVIEW_METADATA_LABELS.description, {
+    exact: true,
+  });
 }
 
 export function projectMetadataFieldDisciplines(page: Page): Locator {
-  return projectOverviewView(page).getByText('Disciplines', { exact: true }).first();
+  return projectOverviewView(page).getByText(PROJECT_OVERVIEW_METADATA_LABELS.disciplines, {
+    exact: true,
+  });
+}
+
+/** Metadata info block containing a label and its displayed value. */
+export function projectMetadataBlock(page: Page, label: string): Locator {
+  return projectOverviewView(page)
+    .locator('div')
+    .filter({ has: page.getByText(label, { exact: true }) })
+    .first();
 }
 
 export function projectMetadataFieldCreatedOn(page: Page): Locator {
   return projectOverviewView(page).getByText('Created on', { exact: true }).first();
 }
 
-/** Disciplines info block (label + value or empty copy). */
+/** @deprecated Use projectMetadataBlock(page, 'Disciplines') — kept for existing imports. */
 export function projectMetadataDisciplinesBlock(page: Page): Locator {
-  const overview = projectOverviewView(page);
-  return overview.locator('div').filter({ hasText: 'Disciplines' }).first();
+  return projectMetadataBlock(page, PROJECT_OVERVIEW_METADATA_LABELS.disciplines);
 }
 
 export function projectMetadataPermissionsPanel(page: Page): Locator {
-  return projectOverviewView(page).getByText('Permissions', { exact: true }).first();
+  return projectOverviewView(page).getByText(PROJECT_OVERVIEW_METADATA_LABELS.permissions, {
+    exact: true,
+  });
 }
 
 export function projectMetadataAddContributorsButton(page: Page): Locator {
@@ -82,7 +159,9 @@ export function projectMetadataAddContributorsButton(page: Page): Locator {
 }
 
 export function projectTagsSection(page: Page): Locator {
-  return projectOverviewView(page).getByText('Tags', { exact: true }).first();
+  return projectOverviewView(page).getByText(PROJECT_OVERVIEW_METADATA_LABELS.tags, {
+    exact: true,
+  });
 }
 
 export function addNewTagInput(page: Page): Locator {
@@ -117,8 +196,12 @@ export function projectWorkflowsTemplatesToggle(page: Page): Locator {
 
 export function projectWorkflowsOwnershipFilter(page: Page): Locator {
   return projectWorkflowsFilterToolbar(page).getByRole('button', {
-    name: /^(Ownership|All|Owned|Shared with me)$/,
+    name: /^(Ownership|All|Owned|Shared( with me)?)$/,
   });
+}
+
+export function projectWorkflowsOwnershipFilterResetButton(page: Page): Locator {
+  return ownershipFilterResetButton(page, projectWorkflowsOwnershipFilter(page));
 }
 
 export function projectWorkflowsArchiveToggle(page: Page): Locator {
@@ -128,6 +211,8 @@ export function projectWorkflowsArchiveToggle(page: Page): Locator {
 export function projectWorkflowsFavouritesToggle(page: Page): Locator {
   return projectWorkflowsFilterToolbar(page).getByRole('button', { name: 'Favourites', exact: true });
 }
+
+export { workflowTypeFilter as projectWorkflowsWorkflowTypeFilter } from '../../shared/locators/library';
 
 export function editProjectButton(page: Page): Locator {
   return page.locator('[data-test-id="edit-project-button"]');
@@ -149,6 +234,41 @@ export function publishProjectButton(page: Page): Locator {
   return projectOverviewView(page).getByRole('button', { name: 'Publish project', exact: true });
 }
 
+export function unpublishProjectButton(page: Page): Locator {
+  return projectOverviewView(page).getByRole('button', { name: 'Unpublish project', exact: true });
+}
+
+export function projectVisibilityStateMessage(page: Page): Locator {
+  return projectOverviewView(page).getByText(
+    new RegExp(
+      `^(${PROJECT_VISIBILITY_STATE_MESSAGES.private}|${PROJECT_VISIBILITY_STATE_MESSAGES.public})$`,
+    ),
+  );
+}
+
+export function publishProjectConfirmationModal(page: Page): Locator {
+  return page.getByRole('dialog').filter({
+    has: page.getByRole('heading', {
+      name: PROJECT_PUBLISH_CONFIRMATION_MODAL_COPY.title,
+      exact: true,
+    }),
+  });
+}
+
+export function publishProjectConfirmationModalCancelButton(page: Page): Locator {
+  return publishProjectConfirmationModal(page).getByRole('button', {
+    name: PROJECT_PUBLISH_CONFIRMATION_MODAL_COPY.cancelButton,
+    exact: true,
+  });
+}
+
+export function publishProjectConfirmationModalConfirmButton(page: Page): Locator {
+  return publishProjectConfirmationModal(page).getByRole('button', {
+    name: PROJECT_PUBLISH_CONFIRMATION_MODAL_COPY.confirmButton,
+    exact: true,
+  });
+}
+
 export function createProjectDialog(page: Page): Locator {
   return page.getByRole('dialog');
 }
@@ -161,16 +281,48 @@ export function editProjectFormDialogTitle(page: Page): Locator {
   return createProjectDialog(page).getByRole('heading', { name: 'Edit project', exact: true });
 }
 
+export function projectForm(page: Page): Locator {
+  return createProjectDialog(page).locator('form');
+}
+
 export function projectTitleField(page: Page): Locator {
-  return createProjectDialog(page).getByRole('textbox', { name: 'Title' });
+  return createProjectDialog(page).getByLabel(PROJECT_CREATE_FORM_VISIBLE_LABELS.title, {
+    exact: true,
+  });
 }
 
 export function projectDescriptionField(page: Page): Locator {
-  return createProjectDialog(page).getByRole('textbox', { name: 'Description' });
+  return createProjectDialog(page).getByLabel(PROJECT_CREATE_FORM_VISIBLE_LABELS.description, {
+    exact: true,
+  });
 }
 
 export function projectDisciplineField(page: Page): Locator {
-  return createProjectDialog(page).getByLabel('Discipline');
+  return createProjectDialog(page).getByLabel(PROJECT_CREATE_FORM_VISIBLE_LABELS.disciplines, {
+    exact: true,
+  });
+}
+
+/** Visible label text on projectForm (not accessibility-name inference). */
+export function projectFormVisibleLabel(page: Page, label: string): Locator {
+  return projectForm(page).locator('label').filter({
+    hasText: new RegExp(`^${escapeRegExp(label)}( \\*)?$`),
+  });
+}
+
+/** FR-PROJ-FORM-001 — required fields show label with mandatory asterisk. */
+export function projectFormRequiredFieldLabel(page: Page, label: string): Locator {
+  return projectForm(page).locator('label').filter({
+    hasText: new RegExp(`^${escapeRegExp(label)} \\*$`),
+  });
+}
+
+export function projectFormFieldValidationMessage(page: Page, message: string): Locator {
+  return createProjectDialog(page).getByText(message, { exact: true });
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 export function projectFormCancelButton(page: Page): Locator {
@@ -186,7 +338,13 @@ export function editProjectFormSubmitButton(page: Page): Locator {
 }
 
 export function projectStartWithProjectAlert(page: Page): Locator {
-  return createProjectDialog(page).getByText('Start by creating a project', { exact: true });
+  return createProjectDialog(page).getByText(PROJECT_START_WITH_PROJECT_ALERT_COPY.title, {
+    exact: true,
+  });
+}
+
+export function projectStartWithProjectAlertRegion(page: Page): Locator {
+  return createProjectDialog(page).getByRole('alert');
 }
 
 export function addContributorsDialog(page: Page): Locator {

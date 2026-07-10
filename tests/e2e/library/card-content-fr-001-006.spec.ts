@@ -7,12 +7,15 @@ import {
   cardDescriptionText,
   cardFavouriteToggle,
   expectCardFavouriteToggleRoundTrip,
+  expectCardFavouriteToggleShowsFavourited,
+  expectCardFavouriteToggleShowsNotFavourited,
   cardFooterRegion,
   cardHeaderRegion,
   cardOwnerText,
   cardTitleText,
   cardWorkflowCountChip,
   cardWorkflowCountChipLabel,
+  E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE,
   E2E_FIXTURE_TEMPLATE_WORKFLOW_TITLES,
   E2E_FIXTURE_WORKFLOW_DESCRIPTION,
   E2E_FIXTURE_WORKFLOW_TITLE,
@@ -137,6 +140,44 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
 
   test.describe('FR-CARD-005: card favourite toggle', () => {
     test.describe.configure({ mode: 'serial' });
+
+    test.describe('favourite star reflects API isFavorite', () => {
+      test('workflow card shows grey star when API isFavorite is false', async ({ page }) => {
+        const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
+        if ((await card.count()) === 0) {
+          test.skip(true, 'E2E fixture workflow card not visible on /library.');
+        }
+
+        await expectCardFavouriteToggleShowsNotFavourited(card);
+      });
+
+      test('project card shows grey star when API isFavorite is false', async ({ page }) => {
+        const card = libraryProjectCardByTitle(page, manifest.project_title);
+        if ((await card.count()) === 0) {
+          test.skip(true, 'E2E fixture project card not visible on /library.');
+        }
+
+        await expectCardFavouriteToggleShowsNotFavourited(card);
+      });
+
+      test('workflow card shows yellow star when API isFavorite is true', async ({ page }) => {
+        await gotoExplore(page);
+        await expect(page).toHaveURL(/\/explore\/?$/);
+        await waitForLibraryResultsLoaded(page);
+        await templatesToggle(page).click();
+        await waitForLibraryResultsLoaded(page);
+
+        const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE);
+        if ((await card.count()) === 0) {
+          test.skip(
+            true,
+            `Favourited template workflow "${E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE}" not visible on Explore — re-run e2e seed.`,
+          );
+        }
+
+        await expectCardFavouriteToggleShowsFavourited(card);
+      });
+    });
 
     test('project card favourite toggle does not change route', async ({ page }) => {
       const card = libraryProjectCardByTitle(page, manifest.project_title);
