@@ -21,7 +21,6 @@ interface EProject extends CourseFlowEntity {
   author: EUser
   userPermissions: number
   favourite: boolean
-  // objectPermission: ObjectPermission
   disciplines: number[]
   tags: TTag[]
   published: boolean

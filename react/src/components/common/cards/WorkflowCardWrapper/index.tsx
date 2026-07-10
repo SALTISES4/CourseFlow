@@ -55,7 +55,11 @@ const WorkflowCardWrapper = ({
   return (
     <WorkflowCardDumb
       uuid={uuid}
-      data-test-id={type === LibraryContentTypeOut.PROJECT ? 'project-card' : 'workflow-card'}
+      data-test-id={
+        type === LibraryContentTypeOut.PROJECT
+          ? 'project-card'
+          : 'workflow-card'
+      }
       title={workflowTitle({ title, code, deleted })}
       favorite={<Favorite uuid={uuid} isFavorite={isFavorite} />}
       isDisabledLink={isDisabledLink}

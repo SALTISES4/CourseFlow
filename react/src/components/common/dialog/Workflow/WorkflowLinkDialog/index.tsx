@@ -1,16 +1,16 @@
-import { LibraryContentTypeIn, searchLibrary } from '@cf/api/gen'
+import {
+  LibraryContentTypeIn,
+  LibraryItemOut,
+  searchLibrary
+} from '@cf/api/gen'
 import {
   selectGraphByUuid,
   selectNodeByUuid
 } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { linkNodeWorkflow } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { ELibraryObject } from '@cf/HTTP/XMLHTTP/types/entity'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
-import {
-  buildLibrarySearchRequestBody,
-  transformLibrarySearchResponseToLegacy
-} from '@cf/utility/marshalling/librarySearch'
+import { buildLibrarySearchRequestBody } from '@cf/utility/marshalling/librarySearch'
 import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import { StyledDialog } from '@cfComponents/dialog/styles'
@@ -32,8 +32,8 @@ import { useDispatch, useSelector } from 'react-redux'
 
 type StateType = {
   selected: string | null
-  workflowData: ELibraryObject[] | null
-  filteredWorkflows: ReturnType<typeof formatLibraryObjects> | null
+  workflowData: LibraryItemOut[] | null
+  filteredWorkflows: LibraryItemOut[]
   loading: boolean
   loadError: boolean
 }
@@ -64,9 +64,9 @@ function NodeLinkWorkflowDialog() {
 
   const { selected, workflowData, filteredWorkflows, loading, loadError } =
     state
-  // const filteredResults =
-  //   filteredWorkflows ?? formatLibraryObjects(workflowData ?? [])
-  const filteredResults = []
+  const filteredResults = formatLibraryObjects(
+    filteredWorkflows ?? workflowData
+  )
 
   const onDialogClose = useCallback(() => {
     onClose()
@@ -94,10 +94,14 @@ function NodeLinkWorkflowDialog() {
       return
     }
 
-    const linked = workflowData?.find((w) => w.uuid === selected)
+    // const linked = workflowData?.find((w) => w.uuid === selected)
 
     // TODO: implement
-    console.log('TODO: dispatch linkNodeWorkflow with', { linked })
+    console.log('TODO: linkNodeWorkflow submit', {
+      uuid: payload?.uuid,
+      workflowData
+    })
+
     // dispatch(
     //   linkNodeWorkflow({
     //     graphUuid,
@@ -110,10 +114,11 @@ function NodeLinkWorkflowDialog() {
     // )
 
     onClose()
-  }, [graphUuid, onClose, payload?.uuid, selected, workflowData])
+  }, [graphUuid, payload?.uuid, selected, workflowData, onClose])
 
   const onSearchChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
+      console.log('search changed to', e.target.value.trim())
       const value = e.target.value.trim()
 
       if (value === '' || !workflowData) {
@@ -130,12 +135,9 @@ function NodeLinkWorkflowDialog() {
             keys: ['title']
           })
 
-          const filtered: typeof workflowData = fuse
+          draft.filteredWorkflows = fuse
             .search(value)
             .map((result) => result.item)
-
-          console.log('set filtered workflows to', filtered)
-          // draft.filteredWorkflows = formatLibraryObjects(filtered)
         })
       )
     },
@@ -167,10 +169,10 @@ function NodeLinkWorkflowDialog() {
         if (cancelled) {
           return
         }
-        const legacy = transformLibrarySearchResponseToLegacy(data)
         setState(
           produce((draft) => {
-            draft.workflowData = legacy.dataPackage.items
+            console.log('setting data to', data.items)
+            draft.workflowData = data.items
             draft.loading = false
           })
         )
@@ -214,7 +216,7 @@ function NodeLinkWorkflowDialog() {
           {loadError && (
             <Box sx={{ py: 4 }}>{_t('Could not load workflows.')}</Box>
           )}
-          {!loading && !loadError && workflowData !== null && (
+          {!loading && !loadError && filteredResults && (
             <GridWrap sx={{ mt: 4 }}>
               {filteredResults.map((item) => (
                 <WorkflowCardWrapper

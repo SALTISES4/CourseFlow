@@ -53,7 +53,8 @@ const EditNode = ({ nodeId }: { nodeId: string }) => {
   }, [node, nodeId, dispatch])
 
   const graphSelector = useMemo(
-    () => (node?.graphUuid ? selectGraphByUuid(node.graphUuid) : () => undefined),
+    () =>
+      node?.graphUuid ? selectGraphByUuid(node.graphUuid) : () => undefined,
     [node?.graphUuid]
   )
   const graph = useSelector(graphSelector)
@@ -133,7 +134,7 @@ const EditNodeForm = ({
       contextType: node.contextClassification ?? '',
       taskType: node.taskClassification ?? '',
       timeRequired: node.timeRequired ?? undefined,
-      timeUnits: node.timeUnits ?? '',
+      timeUnits: node.timeUnits ?? null,
       tags: node.tagIds ?? [],
       specificEducation: false
     }
@@ -153,8 +154,8 @@ const EditNodeForm = ({
         },
         contextType: node.contextClassification ?? '',
         taskType: node.taskClassification ?? '',
-        timeRequired: node.timeRequired ?? undefined,
-        timeUnits: node.timeUnits ?? '',
+        timeRequired: node.timeRequired ?? null,
+        timeUnits: node.timeUnits ?? null,
         tags: node.tagIds ?? [],
         specificEducation: false
       })
@@ -172,16 +173,10 @@ const EditNodeForm = ({
           data.taskType === '' || data.taskType === null
             ? null
             : parseInt(String(data.taskType), 10)
-        const timeRequired =
-          data.timeRequired === '' ||
-          data.timeRequired === null ||
-          data.timeRequired === undefined
-            ? null
-            : Number(data.timeRequired)
-        const timeUnits =
-          data.timeUnits === '' || data.timeUnits === null
-            ? null
-            : Number(data.timeUnits)
+        const timeRequired = !data.timeRequired
+          ? null
+          : Number(data.timeRequired)
+        const timeUnits = !data.timeUnits ? null : Number(data.timeUnits)
 
         const meta: Parameters<typeof changeNodeMeta>[0]['meta'] = {
           tagIds: data.tags.map((id) => Number(id))
