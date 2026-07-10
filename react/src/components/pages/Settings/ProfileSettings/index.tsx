@@ -41,6 +41,8 @@ const StyledFormBox = styled(Box)({
 })
 
 const projectSchema = z.object({
+  email: z.string(),
+
   firstName: z
     .string()
     .min(1, { message: _t('First Name is required') })
@@ -90,6 +92,7 @@ const ProfileSettingsPage = () => {
   useEffect(() => {
     if (data?.item) {
       reset({
+        email: data.item.email,
         firstName: data.item.firstName,
         lastName: data.item.lastName,
         languagePreference: data.item.languagePreference
@@ -128,8 +131,20 @@ const ProfileSettingsPage = () => {
           <Box sx={{ mb: 4 }}>
             <FormControl>
               <TextField
-                label={_t('First Name')}
+                {...register('email')}
+                required
+                disabled
+                label={_t('Email / Username')}
+                variant="standard"
+              />
+            </FormControl>
+          </Box>
+
+          <Box sx={{ mb: 4 }}>
+            <FormControl>
+              <TextField
                 {...register('firstName')}
+                label={_t('First Name')}
                 error={!!errors.firstName}
                 helperText={errors && errors.firstName?.message}
                 variant="standard"
