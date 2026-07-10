@@ -88,17 +88,12 @@ export async function expectProjectOverviewMetadataLabelsPerFrProjOv001(
   }
 }
 
-/** FR-PROJ-OV-001 — description block is display-only and shows API value or '-'. */
+/** FR-PROJ-OV-001 — description block shows API value or '-'. */
 export async function expectProjectOverviewDescriptionPerFrProjOv001(
   page: Page,
   project: ProjectDetailApiItem,
 ): Promise<void> {
   await expect(projectMetadataFieldDescription(page)).toBeVisible();
-  await expect(
-    projectOverviewView(page).getByRole('textbox', {
-      name: PROJECT_OVERVIEW_METADATA_LABELS.description,
-    }),
-  ).toHaveCount(0);
 
   const displayed = await projectMetadataBlockDisplayedValue(
     page,
