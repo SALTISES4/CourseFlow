@@ -10,7 +10,6 @@ import {
 import { linkNodeWorkflow } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
-import { buildLibrarySearchRequestBody } from '@cf/utility/marshalling/librarySearch'
 import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import { StyledDialog } from '@cfComponents/dialog/styles'
@@ -157,13 +156,13 @@ function NodeLinkWorkflowDialog() {
       })
     )
 
-    void (async () => {
+    const loadWorkflows = async () => {
       try {
         const { data } = await searchLibrary({
-          body: buildLibrarySearchRequestBody({
+          body: {
             pagination: { page: 0, resultsPerPage: 100 },
             filters: { contentType: LibraryContentTypeIn.WORKFLOW }
-          }) as never,
+          },
           throwOnError: true
         })
         if (cancelled) {
@@ -171,7 +170,6 @@ function NodeLinkWorkflowDialog() {
         }
         setState(
           produce((draft) => {
-            console.log('setting data to', data.items)
             draft.workflowData = data.items
             draft.loading = false
           })
@@ -186,7 +184,9 @@ function NodeLinkWorkflowDialog() {
           )
         }
       }
-    })()
+    }
+
+    loadWorkflows()
 
     return () => {
       cancelled = true
