@@ -72,14 +72,11 @@ const CreateWizardDialog = () => {
       canSubmit: projectUuid
     },
     {
-      title: `Select a ${state.workflowType} type`,
+      title: `Select ${state.workflowType} type`,
       canSubmit: state.resourceType
     },
     {
-      title:
-        state.resourceType === CreateResourceOptions.TEMPLATE
-          ? `Create a ${state.workflowType} from a template`
-          : `Create a blank ${state.workflowType}`,
+      title: `Create ${state.workflowType}`,
       canSubmit: ((): boolean => {
         if (state.resourceType === CreateResourceOptions.TEMPLATE) {
           return !!state.template
