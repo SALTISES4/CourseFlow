@@ -137,93 +137,94 @@ const TopBar = () => {
     )
   }
 
-  const NotificationsMenu = () => {
-    const { data, isLoading } = useQuery({
-      ...listMyNotificationsOptions({
-        query: { page: 1, page_size: TOPBAR_NOTIFICATION_PREVIEW_PAGE_SIZE }
-      })
-    })
+  // NOTE: Notifications temporarily out of scope
+  // const NotificationsMenu = () => {
+  //   const { data, isLoading } = useQuery({
+  //     ...listMyNotificationsOptions({
+  //       query: { page: 1, page_size: TOPBAR_NOTIFICATION_PREVIEW_PAGE_SIZE }
+  //     })
+  //   })
 
-    if (isLoading) {
-      return <></>
-    }
+  //   if (isLoading) {
+  //     return <></>
+  //   }
 
-    const items = data?.items ?? []
-    const unreadCount = data?.meta.unreadCount ?? 0
+  //   const items = data?.items ?? []
+  //   const unreadCount = data?.meta.unreadCount ?? 0
 
-    const content = (
-      <>
-        <SC.NotificationsHeader>
-          <Typography variant="h5">{strings.notifications}</Typography>
-          <Link
-            component={RouterLink}
-            to={CFRoutes.NOTIFICATIONS}
-            underline="always"
-          >
-            {strings.seeAll}
-          </Link>
-        </SC.NotificationsHeader>
+  //   const content = (
+  //     <>
+  //       <SC.NotificationsHeader>
+  //         <Typography variant="h5">{strings.notifications}</Typography>
+  //         <Link
+  //           component={RouterLink}
+  //           to={CFRoutes.NOTIFICATIONS}
+  //           underline="always"
+  //         >
+  //           {strings.seeAll}
+  //         </Link>
+  //       </SC.NotificationsHeader>
 
-        <SC.NotificationsList>
-          {items.map((item) => (
-            <ListItem
-              key={String(item.uuid)}
-              alignItems="flex-start"
-              sx={{
-                backgroundColor: !item.isRead ? 'courseflow.lightest' : null
-              }}
-            >
-              <ListItemButton
-                component={RouterLink}
-                to={CFRoutes.NOTIFICATIONS}
-              >
-                {!item.isRead && <Badge color="primary" variant="dot" />}
-                <ListItemText
-                  primary={item.dateCreated}
-                  secondary={
-                    <Typography
-                      style={{ display: 'inline' }}
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      {item.message}
-                    </Typography>
-                  }
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </SC.NotificationsList>
-      </>
-    )
+  //       <SC.NotificationsList>
+  //         {items.map((item) => (
+  //           <ListItem
+  //             key={String(item.uuid)}
+  //             alignItems="flex-start"
+  //             sx={{
+  //               backgroundColor: !item.isRead ? 'courseflow.lightest' : null
+  //             }}
+  //           >
+  //             <ListItemButton
+  //               component={RouterLink}
+  //               to={CFRoutes.NOTIFICATIONS}
+  //             >
+  //               {!item.isRead && <Badge color="primary" variant="dot" />}
+  //               <ListItemText
+  //                 primary={item.dateCreated}
+  //                 secondary={
+  //                   <Typography
+  //                     style={{ display: 'inline' }}
+  //                     component="span"
+  //                     variant="body2"
+  //                     color="text.primary"
+  //                   >
+  //                     {item.message}
+  //                   </Typography>
+  //                 }
+  //               />
+  //             </ListItemButton>
+  //           </ListItem>
+  //         ))}
+  //       </SC.NotificationsList>
+  //     </>
+  //   )
 
-    const header: MenuItemType = {
-      iconButton: {
-        icon: (
-          <Badge badgeContent={unreadCount} color="primary">
-            <NotificationsIcon />
-          </Badge>
-        ),
-        'aria-label':
-          unreadCount >= 1
-            ? `show ${unreadCount} new notifications`
-            : 'no new notifications',
-        'aria-controls': 'notifications-menu',
-        'aria-haspopup': 'true',
-        size: 'large'
-      },
-      show: true
-    }
+  //   const header: MenuItemType = {
+  //     iconButton: {
+  //       icon: (
+  //         <Badge badgeContent={unreadCount} color="primary">
+  //           <NotificationsIcon />
+  //         </Badge>
+  //       ),
+  //       'aria-label':
+  //         unreadCount >= 1
+  //           ? `show ${unreadCount} new notifications`
+  //           : 'no new notifications',
+  //       'aria-controls': 'notifications-menu',
+  //       'aria-haspopup': 'true',
+  //       size: 'large'
+  //     },
+  //     show: true
+  //   }
 
-    return (
-      <StaticMenu
-        id="notificationsMenu-menu"
-        header={header}
-        content={content}
-      />
-    )
-  }
+  //   return (
+  //     <StaticMenu
+  //       id="notificationsMenu-menu"
+  //       header={header}
+  //       content={content}
+  //     />
+  //   )
+  // }
 
   /*******************************************************
    * RENDER
@@ -236,7 +237,7 @@ const TopBar = () => {
           <Box style={{ flexGrow: 1 }} className="title" />
           <Stack direction="row" spacing={1}>
             <AddMenu show />
-            <NotificationsMenu />
+            {/* <NotificationsMenu /> */}
             <AccountMenu />
           </Stack>
         </Toolbar>
