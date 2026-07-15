@@ -1,7 +1,7 @@
+import { DisciplineOption } from '@cf/api/gen'
 import * as d3 from 'd3'
 
 import {
-  Discipline,
   FieldChoice,
   FormFieldSerialized,
   SidebarProps,
@@ -40,7 +40,7 @@ interface UpdatePath {
 }
 
 export interface GlobalContextData {
-  disciplines: Discipline[]
+  disciplines: DisciplineOption[]
   workflowChoices: {
     taskChoices: FieldChoice[]
     timeChoices: FieldChoice[]

@@ -21,13 +21,13 @@ import { z } from 'zod'
 export type ProjectFormValues = {
   title: string
   description: string
-  disciplines: string[]
+  disciplines: number[]
 }
 
 const projectSchema = z.object({
   title: z.string().min(1, { message: 'Title is required' }).max(200),
   description: z.string().nullish(),
-  disciplines: z.array(z.string()).optional()
+  disciplines: z.array(z.number()).optional()
 })
 
 /**
@@ -51,6 +51,7 @@ const ProjectForm = ({
   label: string
   submitLabel?: string
 }) => {
+  // TODO: grab this from the API / cf_disciplines
   const disciplineOptions = COURSEFLOW_APP.globalContextData.disciplines
   const [state, setState] = useState({
     disciplines: false
@@ -154,7 +155,7 @@ const ProjectForm = ({
                           clickable
                           label={
                             disciplineOptions.find(
-                              (option) => String(option.uuid) === String(value)
+                              (option) => option.id === value
                             )?.title
                           }
                           deleteIcon={
@@ -173,7 +174,7 @@ const ProjectForm = ({
                   )}
                 >
                   {disciplineOptions.map((option) => (
-                    <MenuItem key={option.uuid} value={option.uuid}>
+                    <MenuItem key={option.id} value={option.id}>
                       {option.title}
                     </MenuItem>
                   ))}

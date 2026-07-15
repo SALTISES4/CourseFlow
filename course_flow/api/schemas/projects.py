@@ -5,11 +5,17 @@ from course_flow.api.common.schemas import CamelSchema
 from course_flow.core.enum import WorkflowType
 
 
+class DisciplineOption(CamelSchema):
+    id: int
+    title: str
+
+
 class ProjectCreateIn(CamelSchema):
     title: str
     description: str = ""
     is_published: bool = False
     is_template: bool = False
+    disciplines: list[int]
 
 
 class ProjectUpdateIn(CamelSchema):
@@ -17,6 +23,7 @@ class ProjectUpdateIn(CamelSchema):
     description: str | None = None
     is_published: bool | None = None
     is_template: bool | None = None
+    disciplines: list[int]
 
 
 class ProjectListItemOut(CamelSchema):
@@ -60,9 +67,11 @@ class ProjectDetailOut(CamelSchema):
     is_published: bool
     is_template: bool
     is_favorite: bool
+    is_archived: bool
     owner_id: int
     date_created: datetime
     modified_on: datetime
+    disciplines: list[DisciplineOption] = []
     workflows: list[ProjectWorkflowListItemOut] = []
 
 

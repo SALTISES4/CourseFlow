@@ -15,6 +15,20 @@ export type HealthResponse = {
 }
 
 /**
+ * DisciplineOption
+ */
+export type DisciplineOption = {
+  /**
+   * Id
+   */
+  id: number
+  /**
+   * Title
+   */
+  title: string
+}
+
+/**
  * ProjectDetailOut
  *
  * Single project resource with minimal child workflow list metadata.
@@ -45,6 +59,10 @@ export type ProjectDetailOut = {
    */
   isFavorite: boolean
   /**
+   * Isarchived
+   */
+  isArchived: boolean
+  /**
    * Ownerid
    */
   ownerId: number
@@ -56,6 +74,10 @@ export type ProjectDetailOut = {
    * Modifiedon
    */
   modifiedOn: string
+  /**
+   * Disciplines
+   */
+  disciplines?: Array<DisciplineOption>
   /**
    * Workflows
    */
@@ -117,6 +139,10 @@ export type ProjectCreateIn = {
    * Istemplate
    */
   isTemplate?: boolean
+  /**
+   * Disciplines
+   */
+  disciplines: Array<number>
 }
 
 /**
@@ -358,6 +384,10 @@ export type ProjectUpdateIn = {
    * Istemplate
    */
   isTemplate?: boolean | null
+  /**
+   * Disciplines
+   */
+  disciplines: Array<number>
 }
 
 /**

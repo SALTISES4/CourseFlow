@@ -1,7 +1,7 @@
+import { ProjectDetailOut } from '@cf/api/gen'
 import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { ProjectDetailsType } from '@cf/types/common'
 import { getErrorMessage } from '@cf/utility/errorWrapper'
-import { mapProjectV2ToProjectDetails } from '@cf/utility/marshalling/projectDetail'
 import { _t } from '@cf/utility/Utility.class'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -53,3 +53,16 @@ const ProjectDetails = () => {
 }
 
 export default ProjectDetails
+
+function mapProjectV2ToProjectDetails(p: ProjectDetailOut): ProjectDetailsType {
+  return {
+    ...p,
+    author: {
+      uuid: '',
+      username: '',
+      firstName: '',
+      lastName: '',
+      name: ''
+    }
+  }
+}

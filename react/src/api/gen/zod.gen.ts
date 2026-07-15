@@ -10,6 +10,14 @@ export const zHealthResponse = z.object({
 })
 
 /**
+ * DisciplineOption
+ */
+export const zDisciplineOption = z.object({
+  id: z.number().int(),
+  title: z.string()
+})
+
+/**
  * WorkflowType
  *
  * Root graph workflow semantic layer (``task`` is not a valid root type).
@@ -39,9 +47,11 @@ export const zProjectDetailOut = z.object({
   isPublished: z.boolean(),
   isTemplate: z.boolean(),
   isFavorite: z.boolean(),
+  isArchived: z.boolean(),
   ownerId: z.number().int(),
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime(),
+  disciplines: z.array(zDisciplineOption).optional().default([]),
   workflows: z.array(zProjectWorkflowListItemOut).optional().default([])
 })
 
@@ -52,7 +62,8 @@ export const zProjectCreateIn = z.object({
   title: z.string(),
   description: z.string().optional().default(''),
   isPublished: z.boolean().optional().default(false),
-  isTemplate: z.boolean().optional().default(false)
+  isTemplate: z.boolean().optional().default(false),
+  disciplines: z.array(z.number().int())
 })
 
 /**
@@ -187,7 +198,8 @@ export const zProjectUpdateIn = z.object({
   title: z.string().nullish(),
   description: z.string().nullish(),
   isPublished: z.boolean().nullish(),
-  isTemplate: z.boolean().nullish()
+  isTemplate: z.boolean().nullish(),
+  disciplines: z.array(z.number().int())
 })
 
 /**

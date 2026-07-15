@@ -15,7 +15,7 @@ import TagsSection from './TagsSection'
 const OverviewTab = ({
   description,
   disciplines,
-  created,
+  dateCreated,
   tags,
   author
 }: ProjectDetailsType) => {
@@ -36,7 +36,7 @@ const OverviewTab = ({
             <SC.InfoBlockTitle>{_t('Disciplines')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
               {disciplines.length
-                ? disciplines?.join(', ')
+                ? disciplines.map((d) => d.title).join(', ')
                 : _t('No disciplines found.')}
             </SC.InfoBlockContent>
           </SC.InfoBlock>
@@ -45,7 +45,7 @@ const OverviewTab = ({
         <Grid item xs={6}>
           <SC.InfoBlock>
             <SC.InfoBlockTitle>{_t('Created on')}</SC.InfoBlockTitle>
-            <SC.InfoBlockContent>{String(created)}</SC.InfoBlockContent>
+            <SC.InfoBlockContent>{String(dateCreated)}</SC.InfoBlockContent>
           </SC.InfoBlock>
         </Grid>
       </Grid>

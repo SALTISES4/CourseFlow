@@ -153,6 +153,7 @@ export {
   type DeleteThreadCommentData,
   type DeleteThreadCommentResponse,
   type DeleteThreadCommentResponses,
+  type DisciplineOption,
   type DuplicateOutcomeData,
   type DuplicateOutcomeResponse,
   type DuplicateOutcomeResponses,

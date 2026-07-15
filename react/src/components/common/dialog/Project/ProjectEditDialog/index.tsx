@@ -6,38 +6,20 @@ import {
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
+import { _t } from '@cf/utility/Utility.class'
 import ProjectForm from '@cfComponents/dialog/Project/components/ProjectForm'
+import { ProjectFormValues } from '@cfComponents/dialog/Project/components/ProjectForm'
 import * as SC from '@cfComponents/dialog/styles'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 
-type ProjectFormValues = {
-  title: string
-  description: string
-  disciplines: string[]
-}
-
-/**
- *
- * @param showNoProjectsAlert
- * @param formFields
- * @constructor
- */
 const ProjectEditDialog = () => {
-  /*******************************************************
-   * HOOKS
-   *******************************************************/
   const { show, onClose } = useDialog(DialogMode.PROJECT_EDIT)
   const { uuid } = useParams()
   const projectUuid = uuid ?? ''
   const queryClient = useQueryClient()
 
-  // TODO: grab amount of projects data from elsewhere?
-  const noProjects = true
-
-  /*******************************************************
-   * QUERY HOOK
-   *******************************************************/
   const { data, refetch, isLoading } = useQuery({
     ...getProjectOptions({
       path: {
@@ -60,7 +42,13 @@ const ProjectEditDialog = () => {
         queryKey: listProjectsQueryKey()
       })
 
-      onSuccess({ message: 'Success' }, onSuccessHandler)
+      onSuccess(
+        { message: _t('Your project has been successfully updated') },
+        () => {
+          refetch()
+          onClose()
+        }
+      )
     },
     onError: (err) => {
       onError(err)
@@ -69,36 +57,23 @@ const ProjectEditDialog = () => {
 
   const { onError, onSuccess } = useGenericMsgHandler()
 
-  /*******************************************************
-   * RHF
-   *******************************************************/
   const defaultValues: ProjectFormValues = {
     title: data?.item.title ?? '',
     description: data?.item.description ?? '',
-    disciplines: []
+    disciplines: data?.item.disciplines?.map((d) => d.id) ?? []
   }
 
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  function onSubmit(formData: ProjectFormValues) {
-    updateProject.mutate({
-      path: { uuid: projectUuid },
-      body: {
-        ...formData,
-        disciplines: formData.disciplines.map((item) => Number(item))
-      }
-    })
-  }
+  const onSubmit = useCallback(
+    (formData: ProjectFormValues) => {
+      console.log('updating with', formData)
+      updateProject.mutate({
+        path: { uuid: projectUuid },
+        body: formData
+      })
+    },
+    [projectUuid, updateProject]
+  )
 
-  function onSuccessHandler() {
-    refetch()
-    onClose()
-  }
-
-  /*******************************************************
-   * RENDER
-   *******************************************************/
   if (isLoading || !data) {
     return null
   }
@@ -109,9 +84,9 @@ const ProjectEditDialog = () => {
         defaultValues={defaultValues}
         submitHandler={onSubmit}
         closeCallback={onClose}
-        showNoProjectsAlert={noProjects}
-        label={'Edit project'}
-        submitLabel={'Update project'}
+        showNoProjectsAlert={false}
+        label={_t('Edit project')}
+        submitLabel={_t('Update project')}
       />
     </SC.StyledDialog>
   )

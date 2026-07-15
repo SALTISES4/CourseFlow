@@ -22,6 +22,7 @@ from course_flow.api.schemas.project_subresources import (
     ProjectTeamRoleSchema,
 )
 from course_flow.api.schemas.projects import (
+    DisciplineOption,
     ProjectCreateIn,
     ProjectDetailOut,
     ProjectDetailOutResp,
@@ -35,6 +36,7 @@ from course_flow.api.schemas.projects import (
 from course_flow.application.dto import ProjectDTO, ProjectTeamMemberDTO
 from course_flow.core.enum import WorkflowType
 from course_flow.core.models import (
+    Discipline,
     FavoriteGraph,
     FavoriteProject,
     Graph
@@ -91,6 +93,14 @@ def _project_detail_out(current_user_id: int, dto: ProjectDTO) -> ProjectDetailO
         project_id=dto.id,
     ).exists()
 
+    # TODO: properly handle archived flag
+    is_archived = False
+
+    disciplines = [
+        DisciplineOption(id=d.id, title=d.label)
+        for d in Discipline.objects.filter(projects__id=dto.id)
+    ]
+
     return ProjectDetailOut(
         uuid=dto.uuid,
         title=dto.title,
@@ -98,10 +108,12 @@ def _project_detail_out(current_user_id: int, dto: ProjectDTO) -> ProjectDetailO
         is_published=dto.is_published,
         is_template=dto.is_template,
         is_favorite=is_favorite,
+        is_archived=is_archived,
         owner_id=dto.owner_id,
         date_created=dto.date_created,
         modified_on=dto.modified_on,
         workflows=workflows,
+        disciplines=disciplines
     )
 
 
@@ -120,6 +132,7 @@ def create_project(request, payload: ProjectCreateIn):
         description=payload.description,
         is_published=payload.is_published,
         is_template=payload.is_template,
+        # disciplines=[1,2,3] # TODO: handle disciplines
     )
     return ProjectDetailOut(
         uuid=dto.uuid,
@@ -128,9 +141,11 @@ def create_project(request, payload: ProjectCreateIn):
         is_published=dto.is_published,
         is_template=dto.is_template,
         is_favorite=False,
+        is_archived=False,
         owner_id=dto.owner_id,
         date_created=dto.date_created,
         modified_on=dto.modified_on,
+        disciplines=[] # TODO: handle disciplines
     )
 
 
