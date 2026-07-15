@@ -15,6 +15,7 @@ import {
   projectMetadataPermissionsPanel,
   projectOverviewView,
   projectTagsSection,
+  projectTitle,
   publishProjectButton,
   publishProjectConfirmationModal,
   publishProjectConfirmationModalCancelButton,
@@ -61,6 +62,40 @@ export function formatExpectedDisciplinesDisplay(disciplineLabels: string[]): st
   }
 
   return [...disciplineLabels].sort((a, b) => a.localeCompare(b)).join(', ');
+}
+
+/**
+ * FR-PROJ-FORM-005 / FR-PROJ-FORM-006 — after successful create/edit submit,
+ * projectHeader title and overview description/disciplines match submitted values.
+ */
+export async function expectProjectOverviewShowsSubmittedFormValues(
+  page: Page,
+  values: {
+    title: string;
+    description: string;
+    disciplineLabels: string[];
+  },
+): Promise<void> {
+  await expect(projectTitle(page)).toHaveText(values.title, { exact: true });
+
+  const expectedDescription = values.description.trim()
+    ? values.description.trim()
+    : PROJECT_OVERVIEW_EMPTY_METADATA_VALUE;
+  const displayedDescription = await projectMetadataBlockDisplayedValue(
+    page,
+    PROJECT_OVERVIEW_METADATA_LABELS.description,
+  );
+  if (values.description.trim()) {
+    expect(displayedDescription).toContain(expectedDescription);
+  } else {
+    expect(displayedDescription).toBe(PROJECT_OVERVIEW_EMPTY_METADATA_VALUE);
+  }
+
+  const displayedDisciplines = await projectMetadataBlockDisplayedValue(
+    page,
+    PROJECT_OVERVIEW_METADATA_LABELS.disciplines,
+  );
+  expect(displayedDisciplines).toBe(formatExpectedDisciplinesDisplay(values.disciplineLabels));
 }
 
 function parseCommaSeparatedDisciplines(value: string): string[] {

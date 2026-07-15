@@ -26,6 +26,7 @@ import {
   expectContributorRoleUpdateSnackbarMessage,
   expectContributorRowHidden,
   expectContributorRowVisible,
+  expectProjectOwnerRoleReadOnlyPerFrProjOv002,
   installProjectTeamMemberRouteMock,
   selectContributorRemoveAction,
   selectContributorRoleOption,
@@ -55,8 +56,6 @@ import {
   addContributorsUserSelector,
   addContributorsUserSelectorClearButton,
   addNewTagInput,
-  contributorRemoveDialogCancelButton,
-  contributorRemoveDialogConfirmButton,
   contributorRoleDropdown,
   E2E_CONTRIBUTOR_STUDENT_EMAIL,
   E2E_CONTRIBUTOR_TEACHER_EMAIL,
@@ -130,7 +129,11 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
       await page.unroute(teamMemberRoute);
     });
 
-    test('shows role options with current role disabled and Remove contributor enabled', async ({
+    test('owner role control is read-only and cannot open a role menu', async ({ page }) => {
+      await expectProjectOwnerRoleReadOnlyPerFrProjOv002(page);
+    });
+
+    test('shows role options', async ({
       page,
     }) => {
       const existingTeam = await fetchProjectTeam(page, manifest.project_uuid);
@@ -257,7 +260,6 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
       });
 
       await selectContributorRemoveAction(page, E2E_CONTRIBUTOR_STUDENT_EMAIL);
-      await contributorRemoveDialogConfirmButton(page).click();
 
       await expectContributorRowHidden(page, E2E_CONTRIBUTOR_STUDENT_EMAIL);
       await expectContributorRemoveSnackbarMessage(
@@ -281,24 +283,12 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
       });
 
       await selectContributorRemoveAction(page, E2E_CONTRIBUTOR_TEACHER_EMAIL);
-      await contributorRemoveDialogConfirmButton(page).click();
 
       await expectContributorRowVisible(page, E2E_CONTRIBUTOR_TEACHER_EMAIL);
       await expectContributorRemoveSnackbarMessage(
         page,
         CONTRIBUTOR_REMOVE_SNACKBAR_MESSAGES.failure,
       );
-    });
-
-    test('cancel on remove dialog keeps contributor row unchanged', async ({ page }) => {
-      const teamBefore = await fetchProjectTeam(page, manifest.project_uuid);
-
-      await selectContributorRemoveAction(page, E2E_CONTRIBUTOR_TEACHER_EMAIL);
-      await contributorRemoveDialogCancelButton(page).click();
-
-      await expectContributorRowVisible(page, E2E_CONTRIBUTOR_TEACHER_EMAIL);
-      const teamAfter = await fetchProjectTeam(page, manifest.project_uuid);
-      expect(teamAfter).toEqual(teamBefore);
     });
   });
 

@@ -5,13 +5,11 @@ import {
   CONTRIBUTOR_ROLE_DROPDOWN_REMOVE_ACTION,
   CONTRIBUTOR_ROLE_UPDATE_SNACKBAR_MESSAGES,
   CONTRIBUTOR_REMOVE_SNACKBAR_MESSAGES,
-  contributorRemoveDialog,
-  contributorRemoveDialogCancelButton,
-  contributorRemoveDialogConfirmButton,
   contributorRoleDropdown,
   contributorRoleMenuItem,
   globalMessageSnackbar,
   projectContributorRow,
+  projectOwnerRoleControl,
   projectPermissionsPanelContributorEmail,
   projectTeamMemberApiRoute,
 } from '../e2e/project/project.locators';
@@ -19,6 +17,14 @@ import { fetchProjectTeam, type ProjectTeamApiItem } from './add-contributors-di
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** FR-PROJ-OV-002 — project owner row shows disabled Owner control; role cannot be changed. */
+export async function expectProjectOwnerRoleReadOnlyPerFrProjOv002(page: Page): Promise<void> {
+  await expect(projectOwnerRoleControl(page)).toBeVisible();
+  await expect(projectOwnerRoleControl(page)).toBeDisabled();
+  await projectOwnerRoleControl(page).click({ force: true });
+  await expect(page.getByRole('menu')).toHaveCount(0);
 }
 
 export async function openContributorRoleDropdown(
@@ -90,7 +96,7 @@ export async function selectContributorRemoveAction(
 ): Promise<void> {
   await openContributorRoleDropdown(page, contributorEmail);
   await contributorRoleMenuItem(page, CONTRIBUTOR_ROLE_DROPDOWN_REMOVE_ACTION).click();
-  await expect(contributorRemoveDialog(page)).toBeVisible();
+  await expect(page.getByRole('menu')).toHaveCount(0);
 }
 
 export async function expectContributorRoleButtonShows(

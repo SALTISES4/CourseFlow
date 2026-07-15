@@ -33,7 +33,7 @@ export { globalMessageSnackbar } from '../../shared/locators/global';
 export const PROJECT_CREATE_FORM_VISIBLE_LABELS = {
   title: 'Title',
   description: 'Description',
-  disciplines: 'Disciplines',
+  disciplines: 'Discipline',
 } as const;
 export const PROJECT_CREATE_FORM_REQUIRED_FIELD_LABELS = [
   PROJECT_CREATE_FORM_VISIBLE_LABELS.title,
@@ -50,6 +50,10 @@ export const PROJECT_FORM_VALIDATION_MESSAGES = {
 export const PROJECT_CREATE_SNACKBAR_MESSAGES = {
   success: 'Your project has been successfully created',
   failure: 'We encountered an issue and your project was not created',
+} as const;
+export const PROJECT_EDIT_SNACKBAR_MESSAGES = {
+  success: 'Your project has been successfully updated',
+  failure: 'We encountered an issue and your project was not updated',
 } as const;
 export const PROJECT_CREATE_API_ROUTE = '**/api/project';
 /** E2E seed contributor — editor on fixture project, not project owner (FR-PROJ-FORM-002). */
@@ -99,10 +103,6 @@ export const CONTRIBUTOR_ROLE_UPDATE_SNACKBAR_MESSAGES = {
 export const CONTRIBUTOR_REMOVE_SNACKBAR_MESSAGES = {
   success: 'The contributor was successfully removed from your project',
   failure: 'We encountered an issue and the contributor was not removed from your project',
-} as const;
-export const CONTRIBUTOR_REMOVE_DIALOG_COPY = {
-  confirmButton: 'Remove',
-  cancelButton: 'Cancel',
 } as const;
 
 export function projectTeamMemberApiRoute(projectUuid: string): string {
@@ -185,6 +185,16 @@ export function projectContributorRow(page: Page, contributorEmail: string): Loc
     .filter({ has: page.getByText(contributorEmail, { exact: true }) });
 }
 
+/** FR-PROJ-OV-002 — read-only Owner control on the project owner row (not contributorRoleDropdown). */
+export const PROJECT_OWNER_ROLE_LABEL = 'Owner';
+
+export function projectOwnerRoleControl(page: Page): Locator {
+  return projectOverviewView(page).getByRole('button', {
+    name: PROJECT_OWNER_ROLE_LABEL,
+    exact: true,
+  });
+}
+
 /** canonical: contributorRoleDropdown — role menu on a contributor row. */
 export function contributorRoleDropdown(page: Page, contributorEmail: string): Locator {
   return projectContributorRow(page, contributorEmail).getByRole('button').last();
@@ -196,24 +206,6 @@ export function contributorRoleMenuItem(page: Page, optionLabel: string): Locato
   }
 
   return page.getByRole('menuitem', { name: new RegExp(`^${optionLabel}`) });
-}
-
-export function contributorRemoveDialog(page: Page): Locator {
-  return page.getByRole('dialog').filter({ has: page.getByRole('button', { name: CONTRIBUTOR_REMOVE_DIALOG_COPY.confirmButton, exact: true }) });
-}
-
-export function contributorRemoveDialogConfirmButton(page: Page): Locator {
-  return contributorRemoveDialog(page).getByRole('button', {
-    name: CONTRIBUTOR_REMOVE_DIALOG_COPY.confirmButton,
-    exact: true,
-  });
-}
-
-export function contributorRemoveDialogCancelButton(page: Page): Locator {
-  return contributorRemoveDialog(page).getByRole('button', {
-    name: CONTRIBUTOR_REMOVE_DIALOG_COPY.cancelButton,
-    exact: true,
-  });
 }
 
 export function projectTagsSection(page: Page): Locator {
@@ -344,9 +336,12 @@ export function projectForm(page: Page): Locator {
 }
 
 export function projectTitleField(page: Page): Locator {
-  return createProjectDialog(page).getByLabel(PROJECT_CREATE_FORM_VISIBLE_LABELS.title, {
-    exact: true,
-  });
+  // Required Title includes MUI FormLabel asterisk (U+2009 + '*') in the accessible name.
+  return createProjectDialog(page).getByLabel(
+    new RegExp(
+      `^${escapeRegExp(PROJECT_CREATE_FORM_VISIBLE_LABELS.title)}([\\s\\u2009]*\\*)?$`,
+    ),
+  );
 }
 
 export function projectDescriptionField(page: Page): Locator {
@@ -363,16 +358,18 @@ export function projectDisciplineField(page: Page): Locator {
 
 /** Visible label text on projectForm (not accessibility-name inference). */
 export function projectFormVisibleLabel(page: Page, label: string): Locator {
+  // MUI required markers use U+2009 thin space before '*', not a regular space.
   return projectForm(page).locator('label').filter({
-    hasText: new RegExp(`^${escapeRegExp(label)}( \\*)?$`),
+    hasText: new RegExp(`^${escapeRegExp(label)}([\\s\\u2009]*\\*)?$`),
   });
 }
 
-/** FR-PROJ-FORM-001 — required fields show label with mandatory asterisk. */
+/** FR-PROJ-FORM-001 — required fields show MUI mandatory asterisk (Figma / FormLabel). */
 export function projectFormRequiredFieldLabel(page: Page, label: string): Locator {
-  return projectForm(page).locator('label').filter({
-    hasText: new RegExp(`^${escapeRegExp(label)} \\*$`),
-  });
+  return projectForm(page)
+    .locator('label')
+    .filter({ hasText: new RegExp(`^${escapeRegExp(label)}`) })
+    .filter({ has: page.locator('.MuiFormLabel-asterisk') });
 }
 
 export function projectFormFieldValidationMessage(page: Page, message: string): Locator {

@@ -49,7 +49,7 @@ export async function expectUserOwnsNoProjects(page: Page): Promise<void> {
   expect(await countOwnedProjects(page)).toBe(0);
 }
 
-/** FR-PROJ-FORM-001 — visible labels and required-field markers on projectForm. */
+/** FR-PROJ-FORM-001 — visible labels; required Title shows MUI FormLabel asterisk. */
 export async function expectCreateProjectFormVisibleLabelsPerFrProjForm001(
   page: Page,
 ): Promise<void> {

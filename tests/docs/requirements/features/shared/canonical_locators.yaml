@@ -705,7 +705,7 @@ locatorMappings:
     strategy: "{projectForm} labeled field region 'Description' containing workflowRichTextDescriptionEditor"
     confidence: inferred
   projectDisciplineField:
-    strategy: "{projectForm} [aria-labelledby=\"create-project-discipline\"]"
+    strategy: "{projectForm} labeled field 'Discipline' (multi-select; aria-labelledby=\"create-project-discipline\")"
     confidence: inferred
   projectForm:
     strategy: null
