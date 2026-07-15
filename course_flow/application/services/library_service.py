@@ -4,7 +4,6 @@ import math
 import random
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
 from uuid import UUID
 
 from django.db.models import Q, QuerySet
@@ -14,6 +13,7 @@ from course_flow.api.schemas.library import (
     LibraryAppliedFiltersOut,
     LibraryContentTypeIn,
     LibraryContentTypeOut,
+    LibraryDisciplineOptionOut,
     LibraryFavoriteOut,
     LibraryFiltersIn,
     LibraryItemOut,
@@ -310,13 +310,13 @@ class LibraryService:
             )
         return rows
 
-    def _discipline_options(self) -> list[dict[str, Any]]:
+    def _discipline_options(self) -> list[LibraryDisciplineOptionOut]:
         return [
-            {
-                "id": discipline.id,
-                "label": discipline.label,
-                "translation_plural": discipline.translation_plural,
-            }
+            LibraryDisciplineOptionOut(
+                id=discipline.id,
+                label=discipline.label,
+                translation_plural=discipline.translation_plural,
+            )
             for discipline in Discipline.objects.all().order_by("label", "id")
         ]
 
