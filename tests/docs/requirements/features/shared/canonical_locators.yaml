@@ -36,7 +36,7 @@ locatorMappings:
     strategy: "{addContributorsDialog} primary action button with label 'Add contributor'"
     confidence: inferred
   addContributorsUserSelector:
-    strategy: "{addContributorsDialog} 'CourseFlow Users' autocomplete control for selecting existing contributor account(s) with live narrowed results while typing"
+    strategy: "{addContributorsDialog} 'CourseFlow users' autocomplete control for selecting existing contributor account(s) with live narrowed results while typing"
     confidence: inferred
   addContributorsUserSelectorClearButton:
     strategy: "{addContributorsUserSelector} icon-only clear control ('X') shown when input is non-empty"
@@ -159,7 +159,7 @@ locatorMappings:
     strategy: null
     confidence: unresolved
   contributorRoleDropdown:
-    strategy: "{projectMetadataPermissionsPanel} role dropdown on a contributor entry with selectable roles and remove action"
+    strategy: "{projectMetadataPermissionsPanel} role dropdown on a contributor entry with assignable options 'Editor', 'Commenter', and 'Viewer' (current role disabled) and 'Remove contributor'"
     confidence: inferred
   copyWorkflowDialog:
     strategy: null
@@ -705,7 +705,7 @@ locatorMappings:
     strategy: "{projectForm} labeled field region 'Description' containing workflowRichTextDescriptionEditor"
     confidence: inferred
   projectDisciplineField:
-    strategy: "{projectForm} [aria-labelledby=\"create-project-discipline\"]"
+    strategy: "{projectForm} labeled field 'Discipline' (multi-select; aria-labelledby=\"create-project-discipline\")"
     confidence: inferred
   projectForm:
     strategy: null
@@ -732,7 +732,7 @@ locatorMappings:
     strategy: "{projectOverviewView} info block title 'Disciplines'"
     confidence: inferred
   projectMetadataPermissionsPanel:
-    strategy: "{projectOverviewView} info block title 'Permissions'"
+    strategy: "{projectOverviewView} info block title 'Contributors'"
     confidence: inferred
   projectOverviewView:
     strategy: "[data-test-id=\"project-overview-view\"]"

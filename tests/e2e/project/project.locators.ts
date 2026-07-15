@@ -33,7 +33,7 @@ export { globalMessageSnackbar } from '../../shared/locators/global';
 export const PROJECT_CREATE_FORM_VISIBLE_LABELS = {
   title: 'Title',
   description: 'Description',
-  disciplines: 'Disciplines',
+  disciplines: 'Discipline',
 } as const;
 export const PROJECT_CREATE_FORM_REQUIRED_FIELD_LABELS = [
   PROJECT_CREATE_FORM_VISIBLE_LABELS.title,
@@ -51,6 +51,10 @@ export const PROJECT_CREATE_SNACKBAR_MESSAGES = {
   success: 'Your project has been successfully created',
   failure: 'We encountered an issue and your project was not created',
 } as const;
+export const PROJECT_EDIT_SNACKBAR_MESSAGES = {
+  success: 'Your project has been successfully updated',
+  failure: 'We encountered an issue and your project was not updated',
+} as const;
 export const PROJECT_CREATE_API_ROUTE = '**/api/project';
 /** E2E seed contributor — editor on fixture project, not project owner (FR-PROJ-FORM-002). */
 export const E2E_CONTRIBUTOR_TEACHER_EMAIL = 'teacher@courseflow.com';
@@ -58,7 +62,7 @@ export const E2E_CONTRIBUTOR_TEACHER_EMAIL = 'teacher@courseflow.com';
 export const PROJECT_OVERVIEW_METADATA_LABELS = {
   description: 'Description',
   disciplines: 'Disciplines',
-  permissions: 'Permissions',
+  contributors: 'Contributors',
   tags: 'Tags',
 } as const;
 /** Displayed value when description or disciplines are empty per FR-PROJ-OV-001. */
@@ -88,6 +92,22 @@ export const PROJECT_PUBLISH_CONFIRMATION_MODAL_COPY = {
 export const PROJECT_UPDATE_API_ROUTE = '**/api/project/*';
 /** E2E seed contributor — viewer on fixture project (FR-PROJ-OV-003 roleBehavior). */
 export const E2E_CONTRIBUTOR_STUDENT_EMAIL = 'student@courseflow.com';
+
+/** FR-PROJ-OV-002 — contributorRoleDropdown assignable roles and 'Remove contributor' option. */
+export const CONTRIBUTOR_ROLE_DROPDOWN_OPTIONS = ['Editor', 'Commenter', 'Viewer'] as const;
+export const CONTRIBUTOR_ROLE_DROPDOWN_REMOVE_ACTION = 'Remove contributor';
+export const CONTRIBUTOR_ROLE_UPDATE_SNACKBAR_MESSAGES = {
+  success: "The contributor's role was successfully updated",
+  failure: "We encountered an issue and the contributor's role was not updated",
+} as const;
+export const CONTRIBUTOR_REMOVE_SNACKBAR_MESSAGES = {
+  success: 'The contributor was successfully removed from your project',
+  failure: 'We encountered an issue and the contributor was not removed from your project',
+} as const;
+
+export function projectTeamMemberApiRoute(projectUuid: string): string {
+  return `**/api/project/${projectUuid}/team/**`;
+}
 
 /**
  * Project-domain uiObjects — canonical_locators.yaml (project*).
@@ -149,13 +169,43 @@ export function projectMetadataDisciplinesBlock(page: Page): Locator {
 }
 
 export function projectMetadataPermissionsPanel(page: Page): Locator {
-  return projectOverviewView(page).getByText(PROJECT_OVERVIEW_METADATA_LABELS.permissions, {
+  return projectOverviewView(page).getByText(PROJECT_OVERVIEW_METADATA_LABELS.contributors, {
     exact: true,
   });
 }
 
 export function projectMetadataAddContributorsButton(page: Page): Locator {
   return page.getByRole('button', { name: 'Add CourseFlow user', exact: true });
+}
+
+/** Contributor row in projectMetadataPermissionsPanel, located by email. */
+export function projectContributorRow(page: Page, contributorEmail: string): Locator {
+  return projectOverviewView(page)
+    .getByRole('listitem')
+    .filter({ has: page.getByText(contributorEmail, { exact: true }) });
+}
+
+/** FR-PROJ-OV-002 — read-only Owner control on the project owner row (not contributorRoleDropdown). */
+export const PROJECT_OWNER_ROLE_LABEL = 'Owner';
+
+export function projectOwnerRoleControl(page: Page): Locator {
+  return projectOverviewView(page).getByRole('button', {
+    name: PROJECT_OWNER_ROLE_LABEL,
+    exact: true,
+  });
+}
+
+/** canonical: contributorRoleDropdown — role menu on a contributor row. */
+export function contributorRoleDropdown(page: Page, contributorEmail: string): Locator {
+  return projectContributorRow(page, contributorEmail).getByRole('button').last();
+}
+
+export function contributorRoleMenuItem(page: Page, optionLabel: string): Locator {
+  if (optionLabel === CONTRIBUTOR_ROLE_DROPDOWN_REMOVE_ACTION) {
+    return page.getByRole('menuitem', { name: optionLabel, exact: true });
+  }
+
+  return page.getByRole('menuitem', { name: new RegExp(`^${optionLabel}`) });
 }
 
 export function projectTagsSection(page: Page): Locator {
@@ -286,9 +336,12 @@ export function projectForm(page: Page): Locator {
 }
 
 export function projectTitleField(page: Page): Locator {
-  return createProjectDialog(page).getByLabel(PROJECT_CREATE_FORM_VISIBLE_LABELS.title, {
-    exact: true,
-  });
+  // Required Title includes MUI FormLabel asterisk (U+2009 + '*') in the accessible name.
+  return createProjectDialog(page).getByLabel(
+    new RegExp(
+      `^${escapeRegExp(PROJECT_CREATE_FORM_VISIBLE_LABELS.title)}([\\s\\u2009]*\\*)?$`,
+    ),
+  );
 }
 
 export function projectDescriptionField(page: Page): Locator {
@@ -305,16 +358,18 @@ export function projectDisciplineField(page: Page): Locator {
 
 /** Visible label text on projectForm (not accessibility-name inference). */
 export function projectFormVisibleLabel(page: Page, label: string): Locator {
+  // MUI required markers use U+2009 thin space before '*', not a regular space.
   return projectForm(page).locator('label').filter({
-    hasText: new RegExp(`^${escapeRegExp(label)}( \\*)?$`),
+    hasText: new RegExp(`^${escapeRegExp(label)}([\\s\\u2009]*\\*)?$`),
   });
 }
 
-/** FR-PROJ-FORM-001 — required fields show label with mandatory asterisk. */
+/** FR-PROJ-FORM-001 — required fields show MUI mandatory asterisk (Figma / FormLabel). */
 export function projectFormRequiredFieldLabel(page: Page, label: string): Locator {
-  return projectForm(page).locator('label').filter({
-    hasText: new RegExp(`^${escapeRegExp(label)} \\*$`),
-  });
+  return projectForm(page)
+    .locator('label')
+    .filter({ hasText: new RegExp(`^${escapeRegExp(label)}`) })
+    .filter({ has: page.locator('.MuiFormLabel-asterisk') });
 }
 
 export function projectFormFieldValidationMessage(page: Page, message: string): Locator {
@@ -349,6 +404,74 @@ export function projectStartWithProjectAlertRegion(page: Page): Locator {
 
 export function addContributorsDialog(page: Page): Locator {
   return page.getByRole('dialog').filter({ hasText: 'Add contributor' });
+}
+
+/** FR-PROJ-OV-004 — dialog copy and control labels per project_overview_requirements_v1.yaml */
+export const ADD_CONTRIBUTORS_DIALOG_COPY = {
+  title: 'Add contributor',
+  userSelectorLabel: 'CourseFlow users',
+  roleLabel: 'Role',
+  cancelButton: 'Cancel',
+  submitButton: 'Add contributor',
+} as const;
+export const ADD_CONTRIBUTORS_ASSIGNABLE_ROLES = ['Editor', 'Commenter', 'Viewer'] as const;
+export const ADD_CONTRIBUTORS_SNACKBAR_MESSAGES = {
+  success: 'The contributor was successfully added to your project',
+  failure: 'We encountered an issue and the contributor could not be added to your project',
+} as const;
+export const E2E_ADD_CONTRIBUTOR_CANDIDATE = {
+  uuid: 'e2e00000-0000-4000-8000-000000000099',
+  email: 'newcontributor@courseflow.com',
+  firstName: 'New',
+  lastName: 'Contributor',
+  displayName: 'New Contributor',
+  searchTerm: 'new',
+} as const;
+export const LIST_USERS_API_ROUTE = '**/api/user**';
+export function projectTeamApiRoute(projectUuid: string): string {
+  return `**/api/project/${projectUuid}/team**`;
+}
+
+export function addContributorsDialogTitle(page: Page): Locator {
+  return addContributorsDialog(page).getByRole('heading', {
+    name: ADD_CONTRIBUTORS_DIALOG_COPY.title,
+    exact: true,
+  });
+}
+
+export function addContributorsUserSelector(page: Page): Locator {
+  return addContributorsDialog(page).getByLabel(ADD_CONTRIBUTORS_DIALOG_COPY.userSelectorLabel, {
+    exact: true,
+  });
+}
+
+export function addContributorsRoleSelector(page: Page): Locator {
+  return addContributorsDialog(page).getByRole('radiogroup', {
+    name: ADD_CONTRIBUTORS_DIALOG_COPY.roleLabel,
+    exact: true,
+  });
+}
+
+export function addContributorsSubmitButton(page: Page): Locator {
+  return addContributorsDialog(page).getByRole('button', {
+    name: ADD_CONTRIBUTORS_DIALOG_COPY.submitButton,
+    exact: true,
+  });
+}
+
+export function addContributorsCancelButton(page: Page): Locator {
+  return addContributorsDialog(page).getByRole('button', {
+    name: ADD_CONTRIBUTORS_DIALOG_COPY.cancelButton,
+    exact: true,
+  });
+}
+
+export function addContributorsUserSelectorClearButton(page: Page): Locator {
+  return addContributorsDialog(page).getByRole('button', { name: 'Clear', exact: true });
+}
+
+export function projectPermissionsPanelContributorEmail(page: Page, email: string): Locator {
+  return projectOverviewView(page).getByText(email, { exact: true });
 }
 
 export async function waitForProjectOverviewLoaded(page: Page): Promise<void> {

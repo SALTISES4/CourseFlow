@@ -18,17 +18,17 @@ uiObjectDefinitions:
   projectMetadataFieldDisciplines:
     meaning: Overview metadata block labeled 'Disciplines' showing project disciplines.
   projectMetadataPermissionsPanel:
-    meaning: Contributors and permissions panel on projectOverviewView.
+    meaning: Contributors panel on projectOverviewView labeled 'Contributors'.
   contributorRoleDropdown:
-    meaning: Role dropdown on a contributor row in projectMetadataPermissionsPanel.
+    meaning: Role dropdown on a contributor row in projectMetadataPermissionsPanel with assignable roles 'Editor', 'Commenter', and 'Viewer' (current role disabled), plus a 'Remove contributor' action.
   projectMetadataAddContributorsButton:
-    meaning: Add CourseFlow user button in the project Overview permissions area.
+    meaning: Add CourseFlow user button in the project Overview contributors area.
   contextActionBarAddContributorsButton:
     meaning: Canonical definition in tests/docs/requirements/features/shared/context_action_bar_requirements_v1.yaml.
   addContributorsDialog:
     meaning: Modal dialog for adding contributors to a project.
   addContributorsUserSelector:
-    meaning: CourseFlow Users autocomplete on addContributorsDialog.
+    meaning: CourseFlow users autocomplete on addContributorsDialog.
   addContributorsUserSelectorClearButton:
     meaning: Icon-only clear ('X') control on addContributorsUserSelector that removes the current typed input.
   addContributorsRoleSelector:
@@ -143,7 +143,7 @@ requirements:
       - given project has no disciplines, projectMetadataFieldDisciplines shows '-'
       - given project has disciplines, projectMetadataFieldDisciplines displays disciplines sorted A-Z as comma-separated values
       - given user needs to change project disciplines, update path is editProjectDialog defined in tests/docs/requirements/features/project/project_edit_form_requirements_v1.yaml (FR-PROJ-FORM-003)
-      - given projectOverviewView is visible, projectMetadataPermissionsPanel label 'Permissions' is visible
+      - given projectOverviewView is visible, projectMetadataPermissionsPanel label 'Contributors' is visible
       - given projectOverviewView is visible, projectTagsSection label 'Tags' is visible
 
     openQuestions: []
@@ -181,17 +181,20 @@ requirements:
       - user clicks projectMetadataAddContributorsButton or contextActionBarAddContributorsButton, or changes/removes an existing contributor via contributorRoleDropdown when projectMetadataPermissionsPanel is visible
 
     mainFlow:
-      - projectMetadataAddContributorsButton is the permissions-context entry point on projectOverviewView with label 'Add CourseFlow user'; contextActionBarAddContributorsButton is a separate icon-only entry point on contextActionBar per FR-CAB-002 (no user-visible label); both are distinct controls and addContributorsDialog is visible when owner or editor clicks either control
+      - projectMetadataAddContributorsButton is the contributors-context entry point on projectOverviewView with label 'Add CourseFlow user'; contextActionBarAddContributorsButton is a separate icon-only entry point on contextActionBar per FR-CAB-002 (no user-visible label); both are distinct controls and addContributorsDialog is visible when owner or editor clicks either control
       - for viewer, commenter, or user (published-access) per documentPreconditions, projectMetadataAddContributorsButton is disabled where rendered (addContributorsDialog does not become visible on click attempt); contextActionBarAddContributorsButton visibility and disabled state per FR-CAB-002
       - addContributorsDialog allows selecting CourseFlow users and assigning a project role; addContributorsDialog submit success and failure outcomes per FR-PROJ-OV-004
       - projectMetadataPermissionsPanel lists current contributors and their roles
       - owner or editor may use contributorRoleDropdown on an existing contributor to select a different role among 'Editor', 'Commenter', and 'Viewer'
+      - contributorRoleDropdown disables the menuitem for the contributor's current role; only the other assignable roles among 'Editor', 'Commenter', and 'Viewer' are selectable
       - when owner or editor selects a different role via contributorRoleDropdown and role update succeeds, projectMetadataPermissionsPanel updates to that selected role and system shows globalMessageSnackbar with copy "The contributor's role was successfully updated"
       - when owner or editor selects a different role via contributorRoleDropdown and role update fails, projectMetadataPermissionsPanel is unchanged and system shows globalMessageSnackbar with copy "We encountered an issue and the contributor's role was not updated"
       - contributorRoleDropdown includes a 'Remove contributor' action to remove a contributor from projectMetadataPermissionsPanel
       - when owner or editor uses 'Remove contributor' in contributorRoleDropdown and remove succeeds, that contributor no longer appears in projectMetadataPermissionsPanel and system shows globalMessageSnackbar with copy 'The contributor was successfully removed from your project'; when the removed contributor is already on a route matching '/project/{id}/*' or '/workflow/{id}/*' for a workflow in that project, that actor's effective access changes on their next in-app action per tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-004
+      - when owner or editor uses 'Remove contributor' in contributorRoleDropdown and remove succeeds, ownership of every workflow in that project that was owned by the removed contributor transfers to the project owner; the removed contributor loses ownership of those workflows and loses access to them (and to the project) per FR-WS-ACCESS-004 — they do not retain workflow-owner privileges after removal
       - when owner or editor uses 'Remove contributor' in contributorRoleDropdown and remove fails, projectMetadataPermissionsPanel is unchanged and system shows globalMessageSnackbar with copy 'We encountered an issue and the contributor was not removed from your project'
       - contributorRoleDropdown does not offer an 'Owner' assignment; project ownership cannot be transferred from this control
+      - the project owner row in projectMetadataPermissionsPanel shows a read-only 'Owner' control that is disabled and cannot be triggered; the owner role cannot be changed via contributorRoleDropdown or any other control on projectOverviewView
       - for viewer, commenter, or user (published-access, no explicit project role), contributor roles remain visible in projectMetadataPermissionsPanel but contributorRoleDropdown is read-only and not actionable
       - when contributor is added at project level, child workflows inherit project contributors and roles by default
       - workflow-level contributor modifications are not allowed
@@ -215,14 +218,17 @@ requirements:
         contributorRoleDropdown: readOnly
 
     acceptanceCriteria:
-      - given projectOverviewView at '/project/{id}', projectMetadataAddContributorsButton is visible with label 'Add CourseFlow user' in the permissions context for owner, editor, viewer, commenter, and user when projectMetadataPermissionsPanel is visible
+      - given projectOverviewView at '/project/{id}', projectMetadataAddContributorsButton is visible with label 'Add CourseFlow user' in the contributors context for owner, editor, viewer, commenter, and user when projectMetadataPermissionsPanel is visible
       - given owner or editor clicks projectMetadataAddContributorsButton or contextActionBarAddContributorsButton, addContributorsDialog is visible
       - given viewer, commenter, or user (published-access) per documentPreconditions, projectMetadataAddContributorsButton is disabled and addContributorsDialog does not become visible on click attempt; contextActionBarAddContributorsButton visibility and disabled state per FR-CAB-002
       - given owner or editor clicks contributorRoleDropdown, available options are exactly 'Editor', 'Commenter', 'Viewer', and 'Remove contributor'
+      - given owner or editor opens contributorRoleDropdown for a contributor, the menuitem matching that contributor's current role is disabled and the other assignable role menuitems are enabled
+      - given projectMetadataPermissionsPanel is visible, the project owner row shows a disabled read-only 'Owner' control that cannot be triggered and does not open a role menu
       - given owner or editor changes a contributor role via contributorRoleDropdown and role update succeeds, projectMetadataPermissionsPanel updates to the selected role and globalMessageSnackbar shows "The contributor's role was successfully updated"
       - given owner or editor changes a contributor role via contributorRoleDropdown and role update fails, projectMetadataPermissionsPanel is unchanged and globalMessageSnackbar shows "We encountered an issue and the contributor's role was not updated"
-      - given owner or editor uses remove action in contributorRoleDropdown and remove succeeds, that contributor no longer appears in projectMetadataPermissionsPanel and globalMessageSnackbar shows 'The contributor was successfully removed from your project'
-      - given owner or editor uses remove action in contributorRoleDropdown and remove fails, projectMetadataPermissionsPanel is unchanged and globalMessageSnackbar shows 'We encountered an issue and the contributor was not removed from your project'
+      - given owner or editor uses 'Remove contributor' in contributorRoleDropdown and remove succeeds, that contributor no longer appears in projectMetadataPermissionsPanel and globalMessageSnackbar shows 'The contributor was successfully removed from your project'
+      - given owner or editor uses 'Remove contributor' in contributorRoleDropdown and remove succeeds, every workflow in that project previously owned by the removed contributor is owned by the project owner; the removed contributor no longer owns those workflows and loses access to them per FR-WS-ACCESS-004
+      - given owner or editor uses 'Remove contributor' in contributorRoleDropdown and remove fails, projectMetadataPermissionsPanel is unchanged and globalMessageSnackbar shows 'We encountered an issue and the contributor was not removed from your project'
       - given viewer, commenter, or user (published-access) per documentPreconditions, projectMetadataPermissionsPanel shows contributor roles and contributorRoleDropdown is read-only
       - given contributor is added at project level, child workflow access reflects inherited project contributor role
 
