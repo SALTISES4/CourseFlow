@@ -41,14 +41,16 @@ const StyledFormBox = styled(Box)({
 })
 
 const projectSchema = z.object({
+  email: z.string(),
+
   firstName: z
     .string()
-    .min(1, { message: _t('First Name is required') })
+    .min(1, { message: _t('First name is required') })
     .max(200),
 
   lastName: z
     .string()
-    .min(1, { message: _t('Last Name is required') })
+    .min(1, { message: _t('Last name is required') })
     .max(200),
 
   languagePreference: z
@@ -58,6 +60,7 @@ const projectSchema = z.object({
 })
 
 type FormValues = z.infer<typeof projectSchema>
+type FormField = keyof FormValues
 
 const ProfileSettingsPage = () => {
   const queryClient = useQueryClient()
@@ -74,13 +77,14 @@ const ProfileSettingsPage = () => {
     }
   })
 
-  const { onError, onSuccess } = useGenericMsgHandler()
+  const { onSuccess } = useGenericMsgHandler()
 
   const {
     register,
     control,
     handleSubmit,
     reset,
+    setError,
     formState: { errors, isDirty }
   } = useForm<FormValues>({
     resolver: zodResolver(projectSchema),
@@ -90,6 +94,7 @@ const ProfileSettingsPage = () => {
   useEffect(() => {
     if (data?.item) {
       reset({
+        email: data.item.email,
         firstName: data.item.firstName,
         lastName: data.item.lastName,
         languagePreference: data.item.languagePreference
@@ -109,7 +114,12 @@ const ProfileSettingsPage = () => {
 
       onSuccess({ message: _t('User details updated!') })
     } catch (err) {
-      onError(err)
+      const errFields = Object.keys(err) as FormField[]
+      errFields.forEach((field: FormField) => {
+        setError(field, {
+          message: err[field]
+        })
+      })
     }
   }
 
@@ -128,8 +138,21 @@ const ProfileSettingsPage = () => {
           <Box sx={{ mb: 4 }}>
             <FormControl>
               <TextField
-                label={_t('First Name')}
+                {...register('email')}
+                required
+                disabled
+                label={_t('Email / Username')}
+                variant="standard"
+              />
+            </FormControl>
+          </Box>
+
+          <Box sx={{ mb: 4 }}>
+            <FormControl>
+              <TextField
                 {...register('firstName')}
+                required
+                label={_t('First name')}
                 error={!!errors.firstName}
                 helperText={errors && errors.firstName?.message}
                 variant="standard"
@@ -141,7 +164,8 @@ const ProfileSettingsPage = () => {
             <FormControl>
               <TextField
                 {...register('lastName')}
-                label={_t('Last Name')}
+                required
+                label={_t('Last name')}
                 error={!!errors.lastName}
                 helperText={errors && errors.lastName?.message}
                 variant="standard"
@@ -155,7 +179,7 @@ const ProfileSettingsPage = () => {
               error={!!errors.languagePreference}
             >
               <FormLabel component="legend">
-                {_t('Language Preferences')}
+                {_t('Language preferences')}
               </FormLabel>
               <Controller
                 name="languagePreference"

@@ -2,12 +2,6 @@ import { TTag } from '@cf/redux/types/type'
 import { EUser } from '@XMLHTTP/types/entity'
 import { MouseEvent as ReactMouseEvent } from 'react'
 
-export type ObjectPermission = {
-  permissionType: number
-  roleType: number
-  lastViewed?: Date
-}
-
 export type Discipline = {
   uuid: string
   title: string
@@ -34,11 +28,8 @@ export type EventUnion =
   | ReactMouseEvent<Element>
   | MouseEvent
 
+// TODO: verify we still need this, why not just use the project type from the API/codegen
 export type ProjectDetailsType = {
-  /**
-   *
-   *  @todo verify we still need this, why not just use the project type from the API/codegen
-   *   */
   uuid: string
   title: string
   description: string

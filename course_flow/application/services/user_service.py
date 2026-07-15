@@ -32,23 +32,31 @@ class UserService:
         if user is None:
             return None
 
+        errors: dict[str, str] = {}
+
         if first_name is not None:
             value = first_name.strip()
             if not value:
-                raise ValueError("first_name must be non-empty")
-            user.first_name = value
+                errors["firstName"] = "First name is required"
+            else:
+                user.first_name = value
 
         if last_name is not None:
             value = last_name.strip()
             if not value:
-                raise ValueError("last_name must be non-empty")
-            user.last_name = value
+                errors["lastName"] = "Last name is required"
+            else:
+                user.last_name = value
 
         if language_preference is not None:
             value = language_preference.strip().lower()
             if value not in self.ALLOWED_LANGUAGE_PREFERENCES:
-                raise ValueError("language_preference is invalid")
-            user.language_preference = _CANONICAL_LANG[value]
+                errors["languagePreference"] = "Language is required"
+            else:
+                user.language_preference = _CANONICAL_LANG[value]
+
+        if errors:
+            raise ValidationError(errors)
 
         user.save(update_fields=["first_name", "last_name", "language_preference"])
         return user
@@ -111,3 +119,8 @@ class UserService:
                     | Q(email__icontains=term)
                 )
         return list(qs.order_by("first_name", "last_name", "id"))
+
+class ValidationError(Exception):
+    def __init__(self, errors: dict[str, str]):
+        super().__init__("Validation failed")
+        self.errors = errors
