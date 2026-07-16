@@ -1,6 +1,7 @@
 import { _t } from '@cf/utility/Utility.class'
 import { StyledBox } from '@cfComponents/dialog/styles'
 import Alert from '@cfComponents/UIPrimitives/Alert'
+import { zodResolver } from '@hookform/resolvers/zod'
 import CancelIcon from '@mui/icons-material/Cancel'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -18,24 +19,14 @@ import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-export type ProjectFormValues = {
-  title: string
-  description: string
-  disciplines: number[]
-}
-
 const projectSchema = z.object({
   title: z.string().min(1, { message: 'Title is required' }).max(200),
   description: z.string().nullish(),
-  disciplines: z.array(z.number()).optional()
+  disciplines: z.array(z.number())
 })
 
-/**
- *
- * @param showNoProjectsAlert
- * @param formFields
- * @constructor
- */
+export type ProjectFormValues = z.infer<typeof projectSchema>
+
 const ProjectForm = ({
   defaultValues,
   submitHandler,
@@ -53,9 +44,7 @@ const ProjectForm = ({
 }) => {
   // TODO: grab this from the API / cf_disciplines
   const disciplineOptions = COURSEFLOW_APP.globalContextData.disciplines
-  const [state, setState] = useState({
-    disciplines: false
-  })
+  const [showDisciplines, setShowDisciplines] = useState(false)
 
   const {
     register,
@@ -64,7 +53,7 @@ const ProjectForm = ({
     formState: { errors, isDirty },
     reset
   } = useForm<ProjectFormValues>({
-    // resolver: zodResolver(projectSchema),
+    resolver: zodResolver(projectSchema),
     defaultValues
   })
 
@@ -74,10 +63,8 @@ const ProjectForm = ({
   }
 
   // Open or close a controlled Select component
-  function showDisciplines(open: boolean) {
-    setState({
-      disciplines: open
-    })
+  function setDisciplineDropdown(open: boolean) {
+    setShowDisciplines(open)
   }
 
   /*******************************************************
@@ -133,12 +120,12 @@ const ProjectForm = ({
                   label={_t('Discipline')}
                   labelId="create-project-discipline"
                   variant="outlined"
-                  open={state.disciplines}
-                  onOpen={() => showDisciplines(true)}
-                  onClose={() => showDisciplines(false)}
+                  open={showDisciplines}
+                  onOpen={() => setDisciplineDropdown(true)}
+                  onClose={() => setDisciplineDropdown(false)}
                   onChange={(e) => {
                     field.onChange(e.target.value)
-                    showDisciplines(false)
+                    setDisciplineDropdown(false)
                   }}
                   multiple
                   renderValue={(selected) => (

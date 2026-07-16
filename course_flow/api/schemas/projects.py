@@ -12,7 +12,7 @@ class DisciplineOption(CamelSchema):
 
 class ProjectCreateIn(CamelSchema):
     title: str
-    description: str = ""
+    description: str | None = None
     is_published: bool = False
     is_template: bool = False
     disciplines: list[int]

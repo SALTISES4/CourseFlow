@@ -60,7 +60,7 @@ export const zProjectDetailOut = z.object({
  */
 export const zProjectCreateIn = z.object({
   title: z.string(),
-  description: z.string().optional().default(''),
+  description: z.string().nullish(),
   isPublished: z.boolean().optional().default(false),
   isTemplate: z.boolean().optional().default(false),
   disciplines: z.array(z.number().int())

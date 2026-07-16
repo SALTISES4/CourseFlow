@@ -7,8 +7,9 @@ import {
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { _t } from '@cf/utility/Utility.class'
-import ProjectForm from '@cfComponents/dialog/Project/components/ProjectForm'
-import { ProjectFormValues } from '@cfComponents/dialog/Project/components/ProjectForm'
+import ProjectForm, {
+  ProjectFormValues
+} from '@cfComponents/dialog/Project/components/ProjectForm'
 import * as SC from '@cfComponents/dialog/styles'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
@@ -65,7 +66,6 @@ const ProjectEditDialog = () => {
 
   const onSubmit = useCallback(
     (formData: ProjectFormValues) => {
-      console.log('updating with', formData)
       updateProject.mutate({
         path: { uuid: projectUuid },
         body: formData

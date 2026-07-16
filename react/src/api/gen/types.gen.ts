@@ -130,7 +130,7 @@ export type ProjectCreateIn = {
   /**
    * Description
    */
-  description?: string
+  description?: string | null
   /**
    * Ispublished
    */
