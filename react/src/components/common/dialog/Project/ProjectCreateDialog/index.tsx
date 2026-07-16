@@ -15,23 +15,10 @@ const defaultValues = {
   description: '',
   disciplines: []
 }
-/**
- *
- * @param showNoProjectsAlert
- * @param formFields
- * @constructor
- */
+
 const ProjectCreateDialog = () => {
-  /*******************************************************
-   * HOOKS
-   *******************************************************/
   const { show, onClose } = useDialog(DialogMode.PROJECT_CREATE)
-
   const navigate = useNavigate()
-
-  /*******************************************************
-   * QUERY HOOK
-   *******************************************************/
   const queryClient = useQueryClient()
 
   const createProject = useMutation({
@@ -62,9 +49,6 @@ const ProjectCreateDialog = () => {
     // setErrors(error.name)
   }
 
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
   const onSubmit = async (data: ProjectFormValues) => {
     try {
       const response = await createProject.mutateAsync({
@@ -81,9 +65,6 @@ const ProjectCreateDialog = () => {
     onClose()
   }
 
-  /*******************************************************
-   * RENDER
-   *******************************************************/
   return (
     <SC.StyledDialog
       open={show}
