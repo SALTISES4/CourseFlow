@@ -32,7 +32,7 @@ const ProjectDetails = () => {
     setProject(mapProjectV2ToProjectDetails(data.item))
   }, [data])
 
-  if (isLoading || !project) {
+  if (isLoading) {
     return <Loader />
   }
 
@@ -40,6 +40,10 @@ const ProjectDetails = () => {
     return (
       <ErrorView message={`An error occurred: ${getErrorMessage(error)}`} />
     )
+  }
+
+  if (!project) {
+    return <ErrorView message={`Project does not exist`} />
   }
 
   return (
