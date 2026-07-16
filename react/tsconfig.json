@@ -5,7 +5,7 @@
     // try to make TS ignore as much as possible for now
     "noImplicitAny": false,
     // allow 'any' types
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     // allow fuzziness in our null definitions
     "strict": true,
     // lol
