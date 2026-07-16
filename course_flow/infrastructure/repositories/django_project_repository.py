@@ -1,8 +1,10 @@
 from typing import Any
 from uuid import UUID
 
+from django.db import transaction
+
 from course_flow.application.dto import ProjectDTO
-from course_flow.core.models import Project
+from course_flow.core.models import Discipline, Project
 
 
 def _to_dto(p: Project) -> ProjectDTO:
@@ -12,6 +14,7 @@ def _to_dto(p: Project) -> ProjectDTO:
         title=p.title,
         description=p.description,
         is_published=p.is_published,
+        is_archived=p.is_archived,
         is_template=p.is_template,
         owner_id=p.owner_id,
         date_created=p.date_created,
@@ -28,14 +31,18 @@ class DjangoProjectRepository:
         description: str,
         is_published: bool,
         is_template: bool,
+        discipline_ids: list[int],
     ) -> ProjectDTO:
-        p = Project.objects.create(
-            owner_id=owner_id,
-            title=title,
-            description=description,
-            is_published=is_published,
-            is_template=is_template,
-        )
+        disciplines = self._resolve_disciplines(discipline_ids)
+        with transaction.atomic():
+            p = Project.objects.create(
+                owner_id=owner_id,
+                title=title,
+                description=description,
+                is_published=is_published,
+                is_template=is_template,
+            )
+            p.disciplines.set(disciplines)
         return _to_dto(p)
 
     def get_by_uuid(self, uuid: UUID) -> ProjectDTO | None:
@@ -58,18 +65,37 @@ class DjangoProjectRepository:
             for p in Project.objects.filter(owner_id=owner_id).order_by("-modified_on")
         ]
 
+    @transaction.atomic
     def update(self, uuid: UUID, updates: dict[str, Any]) -> ProjectDTO | None:
         try:
-            p = Project.objects.get(uuid=uuid)
+            p = Project.objects.select_for_update().get(uuid=uuid)
         except Project.DoesNotExist:
             return None
-        allowed = {"title", "description", "is_published", "is_template"}
-        for key, value in updates.items():
+        changes = dict(updates)
+        discipline_ids = changes.pop("disciplines", None)
+        allowed = {
+            "title",
+            "description",
+            "is_published",
+            "is_archived",
+            "is_template",
+        }
+        for key, value in changes.items():
             if key in allowed:
                 setattr(p, key, value)
         p.save()
+        if discipline_ids is not None:
+            p.disciplines.set(self._resolve_disciplines(discipline_ids))
         p.refresh_from_db()
         return _to_dto(p)
+
+    @staticmethod
+    def _resolve_disciplines(discipline_ids: list[int]) -> list[Discipline]:
+        unique_ids = list(dict.fromkeys(discipline_ids))
+        disciplines = list(Discipline.objects.filter(id__in=unique_ids))
+        if len(disciplines) != len(unique_ids):
+            raise ValueError("Unknown discipline")
+        return disciplines
 
     def delete(self, uuid: UUID) -> bool:
         deleted, _ = Project.objects.filter(uuid=uuid).delete()

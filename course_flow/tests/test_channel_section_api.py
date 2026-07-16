@@ -105,7 +105,7 @@ def test_channel_crud_and_graph_collection(client: Client, user):
 
 
 @pytest.mark.django_db
-def test_section_crud_allows_cross_owner_with_placeholder_permissions(
+def test_section_reads_deny_non_contributor(
     client: Client, user, other_user
 ):
     raw_owner = _issue_token_for(user)
@@ -122,13 +122,15 @@ def test_section_crud_allows_cross_owner_with_placeholder_permissions(
 
     raw_other = _issue_token_for(other_user)
 
-    forbidden_detail = client.get(f"/api/section/{section_uuid}", **_auth_header(raw_other))
-    assert forbidden_detail.status_code == 200
+    forbidden_detail = client.get(
+        f"/api/section/{section_uuid}", **_auth_header(raw_other)
+    )
+    assert forbidden_detail.status_code == 403
 
     forbidden_list = client.get(
         f"/api/graph/{graph_uuid}/sections", **_auth_header(raw_other)
     )
-    assert forbidden_list.status_code == 200
+    assert forbidden_list.status_code == 403
 
     owner_patch = client.patch(
         f"/api/section/{section_uuid}",

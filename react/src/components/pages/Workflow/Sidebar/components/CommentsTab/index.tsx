@@ -4,7 +4,9 @@ import {
   listThreadCommentsOptions,
   listThreadCommentsQueryKey
 } from '@cf/api/gen/@tanstack/react-query.gen'
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import { UserContext } from '@cf/context/userContext'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
@@ -39,6 +41,10 @@ const CommentsTab = () => {
   const { onError, onSuccess } = useGenericMsgHandler()
   const { entityUuid, threadUuid, isCommentHost } = useCommentThreadContext()
   const [draft, setDraft] = useState('')
+  const canComment = useResourcePermission(WorkflowPermission.COMMENT)
+  const canDeleteOwn = useResourcePermission(
+    WorkflowPermission.DELETE_OWN_COMMENT
+  )
 
   const commentsQuery = useQuery({
     ...listThreadCommentsOptions({
@@ -182,7 +188,7 @@ const CommentsTab = () => {
                   {authorLabel} &bull; {Utility.formatDate(comment.dateCreated)}
                 </Styled.CommentHeader>
                 <Styled.CommentText>{comment.body}</Styled.CommentText>
-                {isMe && (
+                {isMe && canDeleteOwn && (
                   <Link
                     component="button"
                     variant="body2"
@@ -206,12 +212,12 @@ const CommentsTab = () => {
           maxRows={5}
           value={draft}
           onChange={onTextChange}
-          disabled={createMutation.isPending}
+          disabled={!canComment || createMutation.isPending}
         />
         <Button
           variant="contained"
           onClick={onCommentSubmit}
-          disabled={!draft.trim() || createMutation.isPending}
+          disabled={!canComment || !draft.trim() || createMutation.isPending}
         >
           {_t('Comment')}
         </Button>

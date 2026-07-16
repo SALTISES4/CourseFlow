@@ -11,6 +11,7 @@ from django.utils import timezone
 from course_flow.core.auth import generate_raw_token, hash_token
 from course_flow.core.models import (
     Authtoken,
+    Discipline,
     FavoriteGraph,
     Graph,
     Project,
@@ -132,6 +133,36 @@ def test_patch_project_success_updates_fields(client: Client, user):
 
 
 @pytest.mark.django_db
+def test_project_create_and_update_persist_disciplines(client: Client, user):
+    raw = _issue_token_for(user)
+    first = Discipline.objects.create(label="Biology", translation_plural="Biologies")
+    second = Discipline.objects.create(label="History", translation_plural="Histories")
+
+    created = client.post(
+        "/api/project",
+        data={"title": "Disciplines", "disciplines": [first.id]},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert created.status_code == 200, created.content
+    assert created.json()["disciplines"] == [
+        {"id": first.id, "label": "Biology", "translationPlural": "Biologies"}
+    ]
+
+    project_uuid = created.json()["uuid"]
+    updated = client.patch(
+        f"/api/project/{project_uuid}",
+        data={"disciplines": [second.id]},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert updated.status_code == 200, updated.content
+    assert updated.json()["item"]["disciplines"] == [
+        {"id": second.id, "label": "History", "translationPlural": "Histories"}
+    ]
+
+
+@pytest.mark.django_db
 def test_patch_project_partial_leaves_other_fields_unchanged(client: Client, user):
     raw = _issue_token_for(user)
     project_uuid = _create_project(client, raw)
@@ -208,10 +239,18 @@ def test_patch_project_not_found(client: Client, user):
 
 
 @pytest.mark.django_db
-def test_delete_project_success_and_get_returns_404(client: Client, user):
+def test_delete_project_requires_archived_owner_and_get_returns_404(
+    client: Client, user
+):
     raw = _issue_token_for(user)
     project_uuid = _create_project(client, raw)
 
+    active_delete = client.delete(
+        f"/api/project/{project_uuid}", **_auth_header(raw)
+    )
+    assert active_delete.status_code == 403
+
+    Project.objects.filter(uuid=project_uuid).update(is_archived=True)
     deleted = client.delete(f"/api/project/{project_uuid}", **_auth_header(raw))
     assert deleted.status_code == 200
     assert deleted.json() == {"success": True}

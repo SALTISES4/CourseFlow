@@ -1,12 +1,8 @@
 import {
-  getProjectOptions,
-  getProjectQueryKey,
-  getWorkflowOptions,
-  getWorkflowQueryKey,
   listProjectsQueryKey,
   listWorkflowsQueryKey,
-  updateProjectMutation,
-  updateWorkflowMutation
+  restoreProjectMutation,
+  restoreWorkflowMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
@@ -18,8 +14,7 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useCallback } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 const RestoreDialog = ({
   objectType,
@@ -33,105 +28,43 @@ const RestoreDialog = ({
   callback?: () => void | Promise<unknown>
 }) => {
   const entityUuid = uuid ?? id ?? ''
-
   const { show, onClose } = useDialog(DialogMode.RESTORE)
   const { onError, onSuccess } = useGenericMsgHandler()
   const queryClient = useQueryClient()
 
-  const { data: workflowDetail } = useQuery({
-    ...getWorkflowOptions({ path: { uuid: entityUuid } }),
-    enabled:
-      Boolean(entityUuid) && !!show && objectType === WorkspaceType.WORKFLOW
-  })
-
-  const { data: projectDetail } = useQuery({
-    ...getProjectOptions({ path: { uuid: entityUuid } }),
-    enabled:
-      Boolean(entityUuid) && !!show && objectType === WorkspaceType.PROJECT
-  })
-
   const restoreWorkflow = useMutation({
-    ...updateWorkflowMutation(),
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: getWorkflowQueryKey({ path: { uuid: variables.path.uuid } })
-      })
+    ...restoreWorkflowMutation(),
+    onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: listWorkflowsQueryKey() })
-      onSuccess({ message: strings.workflowUnarchiveSuccess }, () => {
-        void Promise.resolve(callback?.())
-        onClose()
-      })
-    },
-    onError: (err) => onError(err)
   })
-
   const restoreProject = useMutation({
-    ...updateProjectMutation(),
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: getProjectQueryKey({ path: { uuid: variables.path.uuid } })
-      })
+    ...restoreProjectMutation(),
+    onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: listProjectsQueryKey() })
-      onSuccess({ message: strings.projectUnarchiveSuccess }, () => {
-        void Promise.resolve(callback?.())
-        onClose()
-      })
-    },
-    onError: (err) => onError(err)
   })
 
-  const onSubmit = useCallback(async () => {
-    // TODO(openapi): replace with a dedicated restore/unarchive endpoint (or
-    // WorkflowUpdateIn/ProjectUpdateIn fields) when the API supports undo-archive.
-    // Today v2 PATCH only updates metadata; we round-trip current title/description
-    // so the mutation succeeds and cache invalidation runs.
+  const onSubmit = async () => {
     if (!entityUuid) {
       return
     }
-
     try {
       if (objectType === WorkspaceType.WORKFLOW) {
-        const item = workflowDetail?.item
-        if (!item) {
-          throw new Error('Workflow not loaded')
-        }
-        await restoreWorkflow.mutateAsync({
-          path: { uuid: entityUuid },
-          body: {
-            title: item.title,
-            description: item.description
-          }
-        })
+        await restoreWorkflow.mutateAsync({ path: { uuid: entityUuid } })
+        onSuccess({ message: strings.workflowUnarchiveSuccess })
       } else {
-        const item = projectDetail?.item
-        if (!item) {
-          throw new Error('Project not loaded')
-        }
-        await restoreProject.mutateAsync({
-          path: { uuid: entityUuid },
-          body: {
-            title: item.title,
-            description: item.description
-          }
-        })
+        await restoreProject.mutateAsync({ path: { uuid: entityUuid } })
+        onSuccess({ message: strings.projectUnarchiveSuccess })
       }
-    } catch (err) {
-      onError(err)
+      onClose()
+      await callback?.()
+    } catch (error) {
+      onError(error)
     }
-  }, [
-    entityUuid,
-    objectType,
-    workflowDetail?.item,
-    projectDetail?.item,
-    restoreWorkflow,
-    restoreProject,
-    onError
-  ])
-
-  const busy = restoreWorkflow.isPending || restoreProject.isPending
+  }
 
   const objectLabel =
     objectType === WorkspaceType.WORKFLOW ? 'workflow' : 'project'
+  const busy = restoreWorkflow.isPending || restoreProject.isPending
 
   return (
     <StyledDialog
@@ -144,13 +77,11 @@ const RestoreDialog = ({
       <DialogTitle id={`restore-${objectType}-modal`}>
         Restore {objectLabel}
       </DialogTitle>
-
       <DialogContent dividers>
         <Typography gutterBottom>
           Do you want to restore your {objectLabel}?
         </Typography>
       </DialogContent>
-
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onClose}>
           Cancel
@@ -158,12 +89,7 @@ const RestoreDialog = ({
         <Button
           variant="contained"
           onClick={onSubmit}
-          disabled={
-            busy ||
-            !entityUuid ||
-            (objectType === WorkspaceType.WORKFLOW && !workflowDetail?.item) ||
-            (objectType === WorkspaceType.PROJECT && !projectDetail?.item)
-          }
+          disabled={busy || !entityUuid}
         >
           Restore {objectLabel}
         </Button>

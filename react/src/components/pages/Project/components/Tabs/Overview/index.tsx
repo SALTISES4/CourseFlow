@@ -1,13 +1,19 @@
+import {
+  getProjectQueryKey,
+  updateProjectMutation
+} from '@cf/api/gen/@tanstack/react-query.gen'
+import { ProjectPermission } from '@cf/api/gen/types.gen'
+import { hasPermission } from '@cf/context/workspacePermissionsContext'
 import { ProjectDetailsType } from '@cf/types/common'
 import { WorkspaceType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { OuterContentWrap } from '@cfMUI/helper'
 import * as SC from '@cfViews/WorkflowView/OverviewView/styles'
 import UserPermissions from '@cfViews/WorkflowView/OverviewView/UserPermissions'
-import LinkIcon from '@mui/icons-material/Link'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 import TagsSection from './TagsSection'
@@ -17,9 +23,23 @@ const OverviewTab = ({
   disciplines,
   created,
   tags,
-  author
+  author,
+  isPublished,
+  permissions
 }: ProjectDetailsType) => {
   const { uuid } = useParams()
+  const queryClient = useQueryClient()
+  const canPublish = hasPermission(
+    permissions,
+    ProjectPermission.PUBLISH_PROJECT
+  )
+  const visibilityMutation = useMutation({
+    ...updateProjectMutation(),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: getProjectQueryKey({ path: { uuid: uuid ?? '' } })
+      })
+  })
 
   return (
     <OuterContentWrap sx={{ pt: 4 }} data-test-id="project-overview-view">
@@ -65,14 +85,29 @@ const OverviewTab = ({
           justifyContent="flex-end"
           sx={{ mt: 2 }}
         >
-          <Button
-            size="medium"
-            variant="contained"
-            color="secondary"
-            startIcon={<LinkIcon />}
-          >
-            {_t('Generate public link')}
-          </Button>
+          <SC.InfoBlockContent>
+            {_t(
+              isPublished
+                ? 'The project is currently public'
+                : 'The project is currently private'
+            )}
+          </SC.InfoBlockContent>
+          {canPublish && (
+            <Button
+              size="medium"
+              variant="contained"
+              color="secondary"
+              disabled={visibilityMutation.isPending}
+              onClick={() =>
+                visibilityMutation.mutate({
+                  path: { uuid: uuid ?? '' },
+                  body: { isPublished: !isPublished }
+                })
+              }
+            >
+              {_t(isPublished ? 'Unpublish project' : 'Publish project')}
+            </Button>
+          )}
         </Stack>
       </SC.InfoBlock>
 

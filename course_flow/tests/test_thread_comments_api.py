@@ -184,9 +184,41 @@ def test_delete_one_thread_comment(client: Client, user):
 
 
 @pytest.mark.django_db
-def test_delete_all_thread_comments(client: Client, user):
+def test_owner_cannot_delete_another_users_comment(
+    client: Client,
+    user,
+    other_user,
+):
     raw_token = _issue_token_for(user)
     _, thread = _graph_with_section_thread(user)
+    comment = Comment.objects.create(
+        thread=thread,
+        author=other_user,
+        body="Not the owner's comment",
+    )
+
+    deleted = client.delete(
+        f"/api/thread/{thread.uuid}/comments/{comment.uuid}",
+        **_auth_header(raw_token),
+    )
+
+    assert deleted.status_code == 403
+    assert Comment.objects.filter(pk=comment.pk).exists()
+
+
+@pytest.mark.django_db
+def test_delete_all_thread_comments_deletes_only_current_users_comments(
+    client: Client,
+    user,
+    other_user,
+):
+    raw_token = _issue_token_for(user)
+    _, thread = _graph_with_section_thread(user)
+    other_comment = Comment.objects.create(
+        thread=thread,
+        author=other_user,
+        body="Another user's comment",
+    )
     client.post(
         f"/api/thread/{thread.uuid}/comments",
         data={"body": "Second"},
@@ -202,12 +234,13 @@ def test_delete_all_thread_comments(client: Client, user):
     body = deleted.json()
     assert body["success"] is True
     assert body["deletedCount"] == 2
+    assert Comment.objects.filter(pk=other_comment.pk).exists()
 
     listed = client.get(
         f"/api/thread/{thread.uuid}/comments",
         **_auth_header(raw_token),
     )
-    assert listed.json() == []
+    assert [row["uuid"] for row in listed.json()] == [str(other_comment.uuid)]
 
 
 @pytest.mark.django_db

@@ -1,4 +1,4 @@
-import { GraphBoard } from '@cf/features/graph/state'
+import type { GraphBoard } from '@cf/features/graph/state/selectors/graphBoard.selectors'
 import { RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import { memo, useRef } from 'react'

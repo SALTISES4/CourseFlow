@@ -1,5 +1,9 @@
 import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
-import { UserContext } from '@cf/context/userContext'
+import { ProjectPermission, WorkflowPermission } from '@cf/api/gen/types.gen'
+import {
+  hasPermission,
+  useWorkspacePermissions
+} from '@cf/context/workspacePermissionsContext'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import {
@@ -19,25 +23,21 @@ import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
 import { FormControlLabel, Switch } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
-import {
-  ChangeEvent,
-  ReactElement,
-  useCallback,
-  useContext,
-  useState
-} from 'react'
+import { ChangeEvent, ReactElement, useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import SectionTitle from './SectionTitle'
 
 const ActionMenu = () => {
-  const userContext = useContext(UserContext)
-
   const { uuid } = useParams()
   const { data: workflowDetailResp } = useQuery({
     ...getWorkflowOptions({ path: { uuid: uuid! } }),
     enabled: Boolean(uuid)
   })
+  const workflow = workflowDetailResp?.item
+  const { resource: permissions, project: projectPermissions } =
+    useWorkspacePermissions()
+  const isArchived = permissions.state === 'archived'
 
   /*******************************************************
    * MODALS
@@ -61,7 +61,9 @@ const ActionMenu = () => {
       iconButton: {
         icon: <EditIcon />
       },
-      show: true
+      show:
+        !isArchived &&
+        hasPermission(permissions, WorkflowPermission.EDIT_ATTRIBUTES)
     },
     {
       uuid: 'share',
@@ -70,7 +72,9 @@ const ActionMenu = () => {
         icon: <PersonAddIcon />
       },
       action: openShareDialog,
-      show: true,
+      show:
+        !isArchived &&
+        hasPermission(projectPermissions, ProjectPermission.MANAGE_MEMBERS),
       separator: true
     },
     // NOTE: scoped out temporarily, see COURSEFLOW-489
@@ -86,13 +90,13 @@ const ActionMenu = () => {
       uuid: 'copy-to-project',
       content: _t('Copy into current project'),
       action: copyToProject,
-      show: true
+      show: !isArchived && hasPermission(permissions, WorkflowPermission.COPY)
     },
     {
       uuid: 'copy-to-library',
       content: _t('Copy to my library'),
       action: openExportDialog,
-      show: true
+      show: !isArchived && hasPermission(permissions, WorkflowPermission.COPY)
     },
     // NOTE: scoped out temporarily, see COURSEFLOW-489
     // {
@@ -112,20 +116,23 @@ const ActionMenu = () => {
       uuid: 'archive-workflow',
       action: archiveWorkflow,
       content: _t('Archive workflow'),
-      show: true,
+      show:
+        !isArchived && hasPermission(permissions, WorkflowPermission.ARCHIVE),
       separator: 'top'
     },
     {
       uuid: 'restore-workflow',
       action: restoreWorkflow,
       content: _t('Restore workflow'),
-      show: true
+      show: isArchived && hasPermission(permissions, WorkflowPermission.RESTORE)
     },
     {
       uuid: 'hard-delete-workflow',
-      action: () => deleteWorkflowHard,
+      action: () => deleteWorkflowHard(workflow?.uuid ?? ''),
       content: _t('Permanently delete workflow'),
-      show: true
+      show:
+        isArchived &&
+        hasPermission(permissions, WorkflowPermission.DELETE_PERMANENTLY)
     }
   ]
 

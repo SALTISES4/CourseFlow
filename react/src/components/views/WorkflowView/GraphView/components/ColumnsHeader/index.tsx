@@ -1,4 +1,4 @@
-import { GraphBoard } from '@cf/features/graph/state'
+import type { GraphBoard } from '@cf/features/graph/state/selectors/graphBoard.selectors'
 
 import Cell from './Cell'
 import * as Styled from '../../styles'

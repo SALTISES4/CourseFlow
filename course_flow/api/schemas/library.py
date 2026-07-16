@@ -7,6 +7,7 @@ from uuid import UUID
 from pydantic import Field, field_validator, model_validator
 
 from course_flow.api.common.schemas import CamelSchema
+from course_flow.api.schemas.permissions import PermissionContextOut
 from course_flow.core.enum import WorkflowType
 
 
@@ -88,7 +89,7 @@ class LibrarySearchIn(CamelSchema):
 
 
 class LibraryFavoriteIn(CamelSchema):
-    uuid: UUID | None = None
+    uuid: UUID
 
 
 # TODO: this is temporary, should actually be LibraryItemOut
@@ -110,6 +111,9 @@ class LibraryItemOut(CamelSchema):
     is_archived: bool
     is_template: bool
     is_favorite: bool
+    project_uuid: UUID | None = None
+    project_is_archived: bool | None = None
+    permissions: PermissionContextOut
 
 
 class LibraryDisciplineOptionOut(CamelSchema):

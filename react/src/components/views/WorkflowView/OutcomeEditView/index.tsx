@@ -1,3 +1,5 @@
+import { WorkflowPermission } from '@cf/api/gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { GraphUuid } from '@cf/features/graph/state/model/types'
 import { selectOutcomeChildrenById } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { createOutcome } from '@cf/features/graph/state/thunks/outcomeMutations.thunks'
@@ -16,13 +18,18 @@ import OutcomeTree from './components/OutcomeTree'
 
 const OutcomeEditView = ({ graphUuid }: { graphUuid: GraphUuid }) => {
   const dispatch = useDispatch<AppDispatch>()
+  const canManageOutcomes = useResourcePermission(
+    WorkflowPermission.OUTCOME_MANAGEMENT
+  )
   const outcomes = useSelector((state: RootState) =>
     selectOutcomeChildrenById(state, graphUuid, null)
   )
 
   const onAddNewOutcome = useCallback(() => {
-    dispatch(createOutcome({ graphUuid }))
-  }, [dispatch, graphUuid])
+    if (canManageOutcomes) {
+      dispatch(createOutcome({ graphUuid }))
+    }
+  }, [canManageOutcomes, dispatch, graphUuid])
 
   return (
     <OuterContentWrap sx={{ pt: 4 }}>
@@ -36,9 +43,15 @@ const OutcomeEditView = ({ graphUuid }: { graphUuid: GraphUuid }) => {
               'In this view you can add and edit outcomes for this workflow. Once added, outcomes can be attached to nodes within your workflow by navigating to the “Workflow” tab and drag and dropping your outcomes to your nodes from the Outcomes tab of the right sidebar.'
             )}
           />
-          <Button color="primary" variant="contained" onClick={onAddNewOutcome}>
-            {_t('Add outcome')}
-          </Button>
+          {canManageOutcomes && (
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={onAddNewOutcome}
+            >
+              {_t('Add outcome')}
+            </Button>
+          )}
         </Box>
       ) : (
         <Stack spacing={3} direction="column">

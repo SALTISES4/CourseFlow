@@ -1,13 +1,15 @@
-import { LibraryContentTypeOut } from '@cf/api/gen'
+import { LibraryContentTypeOut, type PermissionContextOut } from '@cf/api/gen'
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
 import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardDumb, {
+  ChipOptions,
   PropsType as WorkflowCardDumbPropsType
 } from '@cfComponents/cards/WorkflowCardDumb'
 import Favorite from '@cfComponents/UIPrimitives/Favourite'
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
 import Tooltip from '@mui/material/Tooltip'
 
+import LibraryLifecycleActions from './LibraryLifecycleActions'
 import { workflowTitle } from '../../UIPrimitives/Titles'
 import { CardChip as WorkflowCardChip } from '../WorkflowCardDumb/styles'
 
@@ -23,6 +25,10 @@ export type WorkflowCardWrapperPropsType = Pick<
   isFavorite: boolean
   isLinked: boolean
   type: LibraryContentTypeOut
+  isArchived?: boolean
+  permissions?: PermissionContextOut
+  projectUuid?: string | null
+  projectIsArchived?: boolean | null
 }
 
 const WorkflowCardWrapper = ({
@@ -33,6 +39,10 @@ const WorkflowCardWrapper = ({
   type,
   isFavorite,
   isLinked,
+  isArchived = false,
+  permissions,
+  projectUuid,
+  projectIsArchived,
   isSelected = false,
   onClick
 }: WorkflowCardWrapperPropsType) => {
@@ -46,11 +56,24 @@ const WorkflowCardWrapper = ({
    *******************************************************/
   // @todo
   // const isDisabledLink = noHyperlink
-  const isDisabledLink = false
+  const isDisabledLink = isArchived
 
   // @todo
   const code = ''
-  const deleted = false
+  const deleted = isArchived
+
+  const actions =
+    isArchived && permissions ? (
+      <LibraryLifecycleActions
+        uuid={uuid}
+        type={type}
+        permissions={permissions}
+        projectUuid={projectUuid}
+        projectIsArchived={projectIsArchived}
+      />
+    ) : (
+      <Favorite uuid={uuid} isFavorite={isFavorite} />
+    )
 
   return (
     <WorkflowCardDumb
@@ -61,12 +84,16 @@ const WorkflowCardWrapper = ({
           : 'workflow-card'
       }
       title={workflowTitle({ title, code, deleted })}
-      favorite={<Favorite uuid={uuid} isFavorite={isFavorite} />}
+      favorite={actions}
       isDisabledLink={isDisabledLink}
       description={description}
       isSelected={isSelected}
       onClick={onClick ? onClick : () => navigateToItem(uuid, type)}
-      chips={[...chips, isLinked && <InUseChip key="in-use" />]}
+      chips={[
+        ...chips,
+        isArchived && { type: ChipOptions.DEFAULT, label: _t('Archived') },
+        isLinked && <InUseChip key="in-use" />
+      ]}
     />
   )
 }

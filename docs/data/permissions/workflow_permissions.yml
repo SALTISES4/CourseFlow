@@ -1,9 +1,10 @@
-version: 1
+version: 2
 
-resource: graph
+resource: workflow
 
 states:
-  - active
+  - private
+  - public
   - archived
 
 roles:
@@ -11,41 +12,43 @@ roles:
   - editor
   - commenter
   - viewer
-  - anonymous
+  - public
 
 actions:
 
   view:
-    active:
+    private:
       owner: true
       editor: true
       commenter: true
       viewer: true
-      anonymous: false
+      public: false
+    public:
+      owner: true
+      editor: true
+      commenter: true
+      viewer: true
+      public: true
     archived:
-      owner: true
-      editor: true
-      commenter: true
-      viewer: true
-      anonymous: false
-
-  edit_attributes:
-    active:
-      owner: true
-      editor: true
+      owner: false
+      editor: false
       commenter: false
       viewer: false
-      anonymous: false
+      public: false
 
-  manage_contributors:
-    active:
+  edit_attributes: &owner_editor_active
+    private:
+      owner: true
+      editor: true
+    public:
       owner: true
       editor: true
 
   archive:
-    active:
+    private:
       owner: true
-      editor: true
+    public:
+      owner: true
 
   restore:
     archived:
@@ -55,83 +58,45 @@ actions:
     archived:
       owner: true
 
-  export:
-    active:
+  export: &contributor_active
+    private:
       owner: true
       editor: true
       commenter: true
       viewer: true
-    archived:
+    public:
       owner: true
       editor: true
       commenter: true
       viewer: true
+      public: false
 
-  copy:
-    active:
-      owner: true
-      editor: true
-      commenter: true
-      viewer: true
-    archived:
-      owner: true
-      editor: true
-      commenter: true
-      viewer: true
-
-  import_nodes:
-    active:
-      owner: true
-      editor: true
-
-  import_outcomes:
-    active:
-      owner: true
-      editor: true
-
-  node_management:
-    active:
-      owner: true
-      editor: true
-
-  part_management:
-    active:
-      owner: true
-      editor: true
-
-  node_category_management:
-    active:
-      owner: true
-      editor: true
-
-  node_link_management:
-    active:
-      owner: true
-      editor: true
-
-  outcome_management:
-    active:
-      owner: true
-      editor: true
+  copy: *contributor_active
+  import_nodes: *owner_editor_active
+  import_outcomes: *owner_editor_active
+  node_management: *owner_editor_active
+  part_management: *owner_editor_active
+  node_category_management: *owner_editor_active
+  node_link_management: *owner_editor_active
+  outcome_management: *owner_editor_active
+  assign_outcomes: *owner_editor_active
 
   comment:
-    active:
+    private:
+      owner: true
+      editor: true
+      commenter: true
+    public:
       owner: true
       editor: true
       commenter: true
 
   delete_own_comment:
-    active:
+    private:
       owner: true
       editor: true
       commenter: true
-
-  delete_any_comment:
-    active:
+    public:
       owner: true
       editor: true
-
-  assign_outcomes:
-    active:
-      owner: true
-      editor: true
+      commenter: true

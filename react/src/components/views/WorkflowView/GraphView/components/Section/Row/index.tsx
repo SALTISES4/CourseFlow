@@ -1,3 +1,5 @@
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { RootState } from '@cf/redux/store'
 import { defaultColumnSettings } from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
@@ -15,9 +17,16 @@ import * as StyledSection from '../styles'
 
 const SectionRow = (props: SectionRowPropsType) => {
   const rowRef = useRef<HTMLDivElement>(null)
-  const dnd = useRowDnd({ ...props, rowRef })
-  const { sectionId, rowIndex, columnIds, columnColors, onNodeDrop, graphUuid } =
-    props
+  const canAddNodes = useResourcePermission(WorkflowPermission.NODE_MANAGEMENT)
+  const dnd = useRowDnd({ ...props, rowRef, enabled: canAddNodes })
+  const {
+    sectionId,
+    rowIndex,
+    columnIds,
+    columnColors,
+    onNodeDrop,
+    graphUuid
+  } = props
 
   const draggingCustomNode = dnd.dragId === '-1'
 

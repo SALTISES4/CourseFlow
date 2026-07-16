@@ -127,6 +127,10 @@ def test_search_no_filters_returns_project_and_workflow_items(client: Client, us
     assert project_item["label"] == "project"
     assert workflow_item["uuid"] == str(graph.workflow.uuid)
     assert workflow_item["label"] == WorkflowType.COURSE
+    assert workflow_item["projectUuid"] == str(project.uuid)
+    assert workflow_item["projectIsArchived"] is False
+    assert project_item["projectUuid"] is None
+    assert project_item["projectIsArchived"] is None
 
     expected_keys = {
         "uuid",
@@ -136,13 +140,16 @@ def test_search_no_filters_returns_project_and_workflow_items(client: Client, us
         "description",
         "dateCreated",
         "modifiedOn",
+        "isArchived",
         "isTemplate",
         "isFavorite",
+        "projectUuid",
+        "projectIsArchived",
+        "permissions",
     }
     for item in body["items"]:
         assert set(item.keys()) == expected_keys
         assert "graphUuid" not in item
-        assert "projectUuid" not in item
         assert "workflowUuid" not in item
         assert "objectType" not in item
 

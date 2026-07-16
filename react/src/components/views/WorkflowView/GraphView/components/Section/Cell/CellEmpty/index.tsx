@@ -1,3 +1,5 @@
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { alpha } from '@mui/material'
 import Box from '@mui/material/Box'
 
@@ -15,13 +17,15 @@ const SectionCellEmpty = ({
   emptyRow,
   onDrop
 }: SectionCellEmptyTypeInternal) => {
+  const canMoveNodes = useResourcePermission(WorkflowPermission.NODE_MANAGEMENT)
   const dnd = useCellEmptyDnd({
     wrapRef,
     columnId,
     coordsSection,
     coordsY,
     emptyRow,
-    onDrop
+    onDrop,
+    enabled: canMoveNodes
   })
 
   // only highlighting the border when we're not highligting the full cell

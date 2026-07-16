@@ -45,13 +45,16 @@ const Tag = ({
   const inputRef = useRef<HTMLInputElement>(null)
 
   const onWrapClick = useCallback(() => {
+    if (disabled) {
+      return
+    }
     setState(
       produce((draft) => {
         draft.focused = true
         inputRef?.current.focus()
       })
     )
-  }, [])
+  }, [disabled])
 
   const onInputChange: ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
@@ -77,7 +80,7 @@ const Tag = ({
       return
     }
 
-    onChange(uuid, state.label, create)
+    onChange(uuid, state.label, Boolean(create))
 
     setState(
       produce((draft) => {
@@ -94,7 +97,7 @@ const Tag = ({
       }
 
       if (e.key === 'Enter') {
-        onChange(uuid, state.label, create)
+        onChange(uuid, state.label, Boolean(create))
         setState(
           produce((draft) => {
             draft.label = ''
@@ -116,7 +119,7 @@ const Tag = ({
   const onDeleteClick = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation()
-      onDelete(uuid)
+      onDelete?.(uuid)
     },
     [onDelete, uuid]
   )
@@ -141,7 +144,7 @@ const Tag = ({
           onKeyDown={onInputKeyDown}
           placeholder={create ? _t('Add new tag') : null}
         />
-        {!create && (
+        {!create && !disabled && (
           <Styled.DeleteButton tabIndex={-1} onClick={onDeleteClick}>
             <CloseIcon />
           </Styled.DeleteButton>

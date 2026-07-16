@@ -26,6 +26,7 @@ type StateType = {
 
 type PropsType = SectionRowPropsType & {
   rowRef: MutableRefObject<HTMLDivElement>
+  enabled: boolean
 }
 
 function useRowDnd(props: PropsType) {
@@ -33,7 +34,7 @@ function useRowDnd(props: PropsType) {
   const insertMode = useSelector(
     (state: RootState) => state.graph.graphUi.nodeInsertMode
   )
-  const { graphUuid, sectionId, rowIndex, rowRef, columnIds } = props
+  const { graphUuid, sectionId, rowIndex, rowRef, columnIds, enabled } = props
   const [state, setState] = useState<StateType>({
     highlightRow: false,
     highlightEdge: null,
@@ -51,6 +52,9 @@ function useRowDnd(props: PropsType) {
   }, [])
 
   useEffect(() => {
+    if (!rowRef.current || !enabled) {
+      return
+    }
     return dropTargetForElements({
       element: rowRef.current,
       getData: ({ element, input }) => {
@@ -123,7 +127,7 @@ function useRowDnd(props: PropsType) {
           closestEdge = insertMode === 'column' ? 'top' : state.highlightEdge
           const createdChannelUuid = await dispatch(
             insertChannelBelow({ graphUuid, channelUuid: null })
-          ).unwrap()
+          )
           if (createdChannelUuid) {
             channelId = createdChannelUuid
           }
@@ -163,7 +167,8 @@ function useRowDnd(props: PropsType) {
     rowRef,
     sectionId,
     state.highlightEdge,
-    columnIds
+    columnIds,
+    enabled
   ])
 
   return state

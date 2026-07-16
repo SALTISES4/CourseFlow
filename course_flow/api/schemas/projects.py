@@ -1,7 +1,11 @@
 from datetime import datetime
 from uuid import UUID
 
+from pydantic import Field
+
 from course_flow.api.common.schemas import CamelSchema
+from course_flow.api.schemas.permissions import PermissionContextOut
+from course_flow.api.schemas.project_subresources import DisciplineListItemOut
 from course_flow.core.enum import WorkflowType
 
 
@@ -10,6 +14,7 @@ class ProjectCreateIn(CamelSchema):
     description: str = ""
     is_published: bool = False
     is_template: bool = False
+    disciplines: list[int] = Field(default_factory=list)
 
 
 class ProjectUpdateIn(CamelSchema):
@@ -17,6 +22,7 @@ class ProjectUpdateIn(CamelSchema):
     description: str | None = None
     is_published: bool | None = None
     is_template: bool | None = None
+    disciplines: list[int] | None = None
 
 
 class ProjectListItemOut(CamelSchema):
@@ -28,8 +34,10 @@ class ProjectListItemOut(CamelSchema):
     title: str
     owner_id: int
     is_published: bool
+    is_archived: bool
     is_template: bool
     modified_on: datetime
+    permissions: PermissionContextOut
 
 
 class ProjectListMetaOut(CamelSchema):
@@ -46,7 +54,9 @@ class ProjectWorkflowListItemOut(CamelSchema):
     title: str
     description: str
     workflow_type: WorkflowType
+    is_archived: bool
     is_favorite: bool
+    permissions: PermissionContextOut
 
 
 class ProjectDetailOut(CamelSchema):
@@ -58,12 +68,15 @@ class ProjectDetailOut(CamelSchema):
     title: str
     description: str
     is_published: bool
+    is_archived: bool
     is_template: bool
     is_favorite: bool
     owner_id: int
     date_created: datetime
     modified_on: datetime
-    workflows: list[ProjectWorkflowListItemOut] = []
+    disciplines: list[DisciplineListItemOut] = Field(default_factory=list)
+    workflows: list[ProjectWorkflowListItemOut] = Field(default_factory=list)
+    permissions: PermissionContextOut
 
 
 class ProjectDetailOutResp(CamelSchema):

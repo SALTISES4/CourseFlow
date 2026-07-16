@@ -26,7 +26,7 @@ const ProjectHeader = ({ project }: { project: ProjectDetailsType }) => (
         variant="h4"
       >
         {project.title}
-        {project.isDeleted && (
+        {project.isArchived && (
           <CardChip
             style={{ display: 'flex', alignItems: 'center' }}
             className={ChipOptions.ACTIVITY as string}

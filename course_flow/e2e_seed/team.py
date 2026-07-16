@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from course_flow.core.enum import Role
+from course_flow.core.enum import AccountRole, Role
 from course_flow.core.models import Project, TeamUser, User
 from course_flow.dev_seed.constants import (
     DEV_SEED_DEMO_PASSWORD,
@@ -31,12 +31,14 @@ def ensure_e2e_contributors(project: Project, owner: User) -> list[dict]:
         first_name="testteacher",
         last_name="",
         password=DEV_SEED_DEMO_PASSWORD,
+        account_role=AccountRole.TEACHER,
     )
     student = _ensure_demo_user(
         email=DEV_SEED_STUDENT_EMAIL,
         first_name="teststudent",
         last_name="",
         password=DEV_SEED_DEMO_PASSWORD,
+        account_role=AccountRole.STUDENT,
     )
     team = ensure_team(project, owner)
     TeamUser.objects.update_or_create(

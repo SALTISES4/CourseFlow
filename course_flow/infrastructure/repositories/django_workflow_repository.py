@@ -19,6 +19,10 @@ def _to_dto(g: Graph) -> WorkflowDTO:
         author_id=workflow.author_id,
         project_id=workflow.project_id,
         project_uuid=project.uuid if project is not None else None,
+        project_owner_id=project.owner_id if project is not None else None,
+        project_is_published=project.is_published if project is not None else False,
+        project_is_archived=project.is_archived if project is not None else False,
+        is_archived=workflow.is_archived,
         workflow_type=workflow.workflow_type,
         title=workflow.title,
         description=workflow.description,
@@ -81,6 +85,35 @@ class DjangoWorkflowRepository(WorkflowRepositoryPort):
         )
         return [_to_dto(g) for g in qs]
 
+    def list_related(
+        self, workflow_uuid: UUID
+    ) -> tuple[list[WorkflowDTO], list[WorkflowDTO]]:
+        try:
+            workflow = Workflow.objects.only("id").get(uuid=workflow_uuid)
+        except Workflow.DoesNotExist:
+            return [], []
+
+        contains = (
+            Graph.objects.filter(
+                workflow__nodes_linked_from__workflow_id=workflow.id,
+            )
+            .select_related("workflow__project")
+            .distinct()
+            .order_by("workflow__title", "workflow__uuid")
+        )
+        appears_in = (
+            Graph.objects.filter(
+                workflow__nodes__linked_workflow_id=workflow.id,
+            )
+            .select_related("workflow__project")
+            .distinct()
+            .order_by("workflow__title", "workflow__uuid")
+        )
+        return (
+            [_to_dto(graph) for graph in contains],
+            [_to_dto(graph) for graph in appears_in],
+        )
+
     def update(self, graph_uuid: UUID, updates: dict[str, Any]) -> WorkflowDTO | None:
         try:
             g = Graph.objects.select_related("workflow__project").get(uuid=graph_uuid)
@@ -96,6 +129,9 @@ class DjangoWorkflowRepository(WorkflowRepositoryPort):
             changed = True
         if "description" in updates and updates["description"] is not None:
             wf.description = updates["description"]
+            changed = True
+        if "is_archived" in updates and updates["is_archived"] is not None:
+            wf.is_archived = updates["is_archived"]
             changed = True
         if changed:
             wf.save()

@@ -8,6 +8,8 @@ import {
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box'
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import {
   selectChannelByUuid,
   selectChannelThemeColumnType,
@@ -35,11 +37,18 @@ type CellProps = {
 
 const ColumnCell = ({ index, columnId, parentId, onReorder }: CellProps) => {
   const ref = useRef<HTMLDivElement>(null)
+  const canEdit = useResourcePermission(
+    WorkflowPermission.NODE_CATEGORY_MANAGEMENT
+  )
 
   const [closestEdge, setClosestEdge] = useState<Edge>(null)
 
   useEffect(() => {
     const el = ref.current
+
+    if (!el || !canEdit) {
+      return
+    }
 
     return dropTargetForElements({
       element: el,
@@ -78,7 +87,7 @@ const ColumnCell = ({ index, columnId, parentId, onReorder }: CellProps) => {
         setClosestEdge(null)
       }
     })
-  }, [index, closestEdge, onReorder])
+  }, [index, closestEdge, onReorder, canEdit])
 
   return (
     <StyledWorkflow.Cell ref={ref} data-column-id={columnId}>
@@ -115,6 +124,9 @@ const ColumnCellInner = ({
       state.sidebar.edit.uuid === columnId
   )
   const [dragging, setDragging] = useState(false)
+  const canEdit = useResourcePermission(
+    WorkflowPermission.NODE_CATEGORY_MANAGEMENT
+  )
 
   const manager = useMemo(
     () => new BetterSelectionManager(dispatch),
@@ -135,6 +147,9 @@ const ColumnCellInner = ({
 
   useEffect(() => {
     const el = ref.current
+    if (!el || !canEdit) {
+      return
+    }
 
     return draggable({
       element: el,
@@ -142,7 +157,7 @@ const ColumnCellInner = ({
       onDragStart: () => setDragging(!dragging),
       onDrop: () => setDragging(false)
     })
-  }, [columnId, dragging, index, ref])
+  }, [canEdit, columnId, dragging, index, ref])
 
   if (!channel || !graph) {
     return null

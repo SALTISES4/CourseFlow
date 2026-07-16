@@ -30,6 +30,7 @@ class Workflow(TimeStampedUUIDModel):
     )
     title = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True)
+    is_archived = models.BooleanField(default=False)
     workflow_type = models.CharField(
         max_length=8,
         choices=WORKFLOW_TYPE_CHOICES,

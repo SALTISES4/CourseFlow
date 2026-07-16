@@ -1,3 +1,5 @@
+import { LibraryContentTypeIn } from '@cf/api/gen'
+import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { formatLibraryObject } from '@cf/utility/marshalling/libraryCards'
 import WorkflowCardDumb from '@cfComponents/cards/WorkflowCardDumb'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -7,7 +9,7 @@ import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { debounce } from '@mui/material/utils'
-import { ChangeEvent } from 'react'
+import { ChangeEvent, useState } from 'react'
 
 type PropsType = {
   selected?: string
@@ -18,17 +20,26 @@ const TemplateSearch = ({ selected, onTemplateSelect }: PropsType) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  // todo search as workflow, by type and as template
-  const { data, isLoading } = useLibraryObjectsSearchQuery({})
+  const [keyword, setKeyword] = useState('')
+  const { data, isLoading } = useLibrarySearch({
+    filters: {
+      contentType: LibraryContentTypeIn.WORKFLOW,
+      isTemplate: true,
+      isArchived: false,
+      keyword
+    }
+  })
 
-  function onSearchChange(e: ChangeEvent<HTMLInputElement>) {}
+  function onSearchChange(e: ChangeEvent<HTMLInputElement>) {
+    setKeyword(e.target.value)
+  }
 
   if (!data || isLoading) {
     return <Loader />
   }
 
-  const workflowData = data.dataPackage.items.map((project) => {
-    return formatLibraryObject(project)
+  const workflowData = data.items.map((workflow) => {
+    return formatLibraryObject(workflow)
   })
 
   /*******************************************************

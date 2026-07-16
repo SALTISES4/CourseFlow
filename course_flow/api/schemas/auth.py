@@ -4,6 +4,7 @@ from datetime import datetime
 from uuid import UUID
 
 from course_flow.api.common.schemas import CamelSchema
+from course_flow.core.enum import AccountRole
 
 
 class LoginIn(CamelSchema):
@@ -25,6 +26,7 @@ class UserSummaryOut(CamelSchema):
     email: str
     first_name: str
     last_name: str
+    account_role: AccountRole | None
 
 
 class UserSummaryOutResp(CamelSchema):

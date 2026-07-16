@@ -1,3 +1,4 @@
+import type { PermissionContextOut } from '@cf/api/gen'
 import { TTag } from '@cf/redux/types/type'
 import { EUser } from '@XMLHTTP/types/entity'
 import { MouseEvent as ReactMouseEvent } from 'react'
@@ -35,6 +36,9 @@ export type ProjectDetailsType = {
   description: string
   isFavorite: boolean
   isDeleted: boolean
+  isPublished: boolean
+  isArchived: boolean
+  permissions: PermissionContextOut
   created: Date | string
   author: EUser
   disciplines?: string[]

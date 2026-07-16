@@ -20,6 +20,7 @@ class ProjectService:
         description: str = "",
         is_published: bool = False,
         is_template: bool = False,
+        discipline_ids: list[int] | None = None,
     ) -> ProjectDTO:
         return self._repository.create(
             owner_id=owner_id,
@@ -27,6 +28,7 @@ class ProjectService:
             description=description,
             is_published=is_published,
             is_template=is_template,
+            discipline_ids=discipline_ids or [],
         )
 
     def get_by_uuid(self, uuid: UUID) -> ProjectDTO | None:

@@ -34,6 +34,7 @@ def _to_user_summary(user: User) -> UserSummaryOut:
         email=user.email,
         first_name=user.first_name,
         last_name=user.last_name,
+        account_role=user.account_role,
     )
 
 

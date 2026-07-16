@@ -3,13 +3,14 @@ from __future__ import annotations
 from uuid import UUID
 
 from django.contrib.auth import get_user_model
+from django.db import transaction
 
 from course_flow.application.dto import (
     DisciplineDTO,
     ProjectTeamMemberDTO,
     TagDTO,
 )
-from course_flow.core.models import Project, Tag, Team, TeamUser
+from course_flow.core.models import Project, Tag, Team, TeamUser, Workflow
 
 User = get_user_model()
 
@@ -134,15 +135,28 @@ class ProjectRelationsService:
         m.save(update_fields=["role"])
         return self._team_member_to_dto(m, team)
 
+    @transaction.atomic
     def remove_team_member(
         self, project_uuid: UUID, membership_id: int
     ) -> bool:
         try:
-            p = Project.objects.get(uuid=project_uuid)
+            p = Project.objects.select_for_update().get(uuid=project_uuid)
         except Project.DoesNotExist:
             return False
         team, _ = Team.objects.get_or_create(project=p)
-        deleted, _ = TeamUser.objects.filter(
-            pk=membership_id, team_id=team.id
-        ).delete()
-        return deleted > 0
+        membership = (
+            TeamUser.objects.select_for_update()
+            .filter(pk=membership_id, team_id=team.id)
+            .first()
+        )
+        if membership is None:
+            return False
+
+        # Workflow authorship conveys owner permissions. Transfer it before
+        # removing membership so a former contributor cannot retain access.
+        Workflow.objects.filter(
+            project_id=p.id,
+            author_id=membership.user_id,
+        ).update(author_id=p.owner_id)
+        membership.delete()
+        return True

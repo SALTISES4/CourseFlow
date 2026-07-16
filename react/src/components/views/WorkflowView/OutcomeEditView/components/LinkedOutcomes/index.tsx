@@ -18,9 +18,6 @@ const LinkedOutcomes = ({
   const [show, setShow] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
   const badgeRef = useRef<HTMLSpanElement>(null)
-  const entities = useSelector(
-    (state: RootState) => state.graph.canonical.outcomes.entities
-  )
 
   const showPopover = useCallback((val: boolean) => {
     return (e: MouseEvent<HTMLSpanElement>) => {
@@ -55,7 +52,7 @@ const LinkedOutcomes = ({
         <StyledOutcome.OutcomeGroup sx={{ mt: 0 }}>
           {outcomes.map((outcome) => (
             <StyledOutcome.OutcomeGroupItem key={outcome}>
-              <Outcome {...entities[outcome]} linkParent={parent} />
+              <Outcome graphUuid={graphUuid} uuid={outcome} />
             </StyledOutcome.OutcomeGroupItem>
           ))}
         </StyledOutcome.OutcomeGroup>

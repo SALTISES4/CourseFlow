@@ -9,17 +9,22 @@ import {
   extractInstruction
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item'
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/list-item'
-import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
-import type { GraphUuid, OutcomeEntity } from '@cf/features/graph/state/model/types'
+import { WorkflowPermission } from '@cf/api/gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
+import type {
+  GraphUuid,
+  OutcomeEntity
+} from '@cf/features/graph/state/model/types'
 import {
   getPrefixPath,
   selectOutcomeChildrenById
 } from '@cf/features/graph/state/selectors/outcomes.selectors'
-import { moveOutcome } from '@cf/features/graph/state/thunks/outcomeMutations.thunks'
 import { outcomeUiActions } from '@cf/features/graph/state/slices/outcomeUi.slice'
-import { CfObjectType } from '@cf/types/enum'
+import { moveOutcome } from '@cf/features/graph/state/thunks/outcomeMutations.thunks'
+import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
 import type { AppDispatch } from '@cf/redux/store'
 import { RootState } from '@cf/redux/store'
+import { CfObjectType } from '@cf/types/enum'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -45,6 +50,9 @@ const Outcome = ({
 }) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch<AppDispatch>()
+  const canManageOutcomes = useResourcePermission(
+    WorkflowPermission.OUTCOME_MANAGEMENT
+  )
   const sidebarData = useSelector((state: RootState) => state.sidebar.edit)
   const dragging = useSelector(
     (state: RootState) => state.graph.outcomeUi.dragging
@@ -79,7 +87,7 @@ const Outcome = ({
   useEffect(() => {
     const el = dragHandleRef.current
 
-    if (!el) {
+    if (!el || !canManageOutcomes) {
       return
     }
 
@@ -103,8 +111,7 @@ const Outcome = ({
 
           const reorder = dragging?.uuid !== uuid && dragging?.level === level
 
-          let combine =
-            dragging?.uuid !== uuid && dragging?.level === level + 1
+          let combine = dragging?.uuid !== uuid && dragging?.level === level + 1
 
           if (childUuids.includes(dragging?.uuid ?? '')) {
             combine = false
@@ -191,7 +198,16 @@ const Outcome = ({
         }
       })
     )
-  }, [dispatch, dragging?.uuid, dragging?.level, uuid, level, childOutcomes, graphUuid])
+  }, [
+    canManageOutcomes,
+    dispatch,
+    dragging?.uuid,
+    dragging?.level,
+    uuid,
+    level,
+    childOutcomes,
+    graphUuid
+  ])
 
   const setCollapsed = useCallback((value: boolean) => {
     setState(
@@ -210,12 +226,15 @@ const Outcome = ({
   )
 
   const onHeaderClick = useCallback(() => {
+    if (!canManageOutcomes) {
+      return
+    }
     if (selected) {
       manager.current.clearSidebar()
     } else {
       manager.current.updateSidebar(uuid, CfObjectType.OUTCOME, '-1')
     }
-  }, [uuid, selected])
+  }, [canManageOutcomes, uuid, selected])
 
   return (
     <Styled.OutcomeWrapper dragging={dragging?.uuid === uuid}>

@@ -4,7 +4,8 @@ import {
   updateProjectTeamMemberMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import type { ProjectTeamMemberOut } from '@cf/api/gen/types.gen'
-import { ProjectTeamRoleSchema } from '@cf/api/gen/types.gen'
+import { ProjectPermission, ProjectTeamRoleSchema } from '@cf/api/gen/types.gen'
+import { useProjectPermission } from '@cf/context/workspacePermissionsContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { useTeamProjectUuidForWorkflow } from '@cf/hooks/useTeamProjectUuidForWorkflow'
@@ -48,6 +49,9 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
   const { dispatch } = useDialog()
   const queryClient = useQueryClient()
   const { uuid: routeWorkflowUuid } = useParams()
+  const canManageMembers = useProjectPermission(
+    ProjectPermission.MANAGE_MEMBERS
+  )
 
   const { data: workflowTeamProjectUuid } = useTeamProjectUuidForWorkflow(
     workspaceType === WorkspaceType.WORKFLOW ? routeWorkflowUuid : undefined
@@ -82,7 +86,7 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
     role: ProjectTeamRoleSchema,
     membershipId: number
   ) {
-    if (!projectUuidForTeam) {
+    if (!projectUuidForTeam || !canManageMembers) {
       return
     }
     try {
@@ -163,8 +167,7 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
               secondary={user.userEmail}
             />
             <MenuButton
-              // TODO: this needs to be a check on call to see if current user can edit
-              disabled={false}
+              disabled={!canManageMembers}
               options={[
                 ...projectTeamRoleMenuOptions.map((item) => ({
                   name: item.value,
@@ -190,14 +193,16 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
           </SC.PermissionThumbnail>
         ))}
 
-        <SC.PermissionThumbnail addNew as={Button} onClick={onUserAdd}>
-          <ListItemAvatar>
-            <Avatar>
-              <PersonAddAlt1Icon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={_t('Add CourseFlow user')} />
-        </SC.PermissionThumbnail>
+        {canManageMembers && (
+          <SC.PermissionThumbnail addNew as={Button} onClick={onUserAdd}>
+            <ListItemAvatar>
+              <Avatar>
+                <PersonAddAlt1Icon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary={_t('Add CourseFlow user')} />
+          </SC.PermissionThumbnail>
+        )}
       </SC.PermissionGrid>
     </SC.InfoBlockContent>
   )

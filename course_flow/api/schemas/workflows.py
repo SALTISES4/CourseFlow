@@ -3,6 +3,7 @@ from enum import Enum
 from uuid import UUID
 
 from course_flow.api.common.schemas import CamelSchema
+from course_flow.api.schemas.permissions import PermissionContextOut
 from course_flow.core.enum import WorkflowType
 
 
@@ -36,8 +37,11 @@ class WorkflowListItemOut(CamelSchema):
     author_id: int | None
     project_uuid: UUID | None
     workflow_type: str
+    is_archived: bool
     revision_id: int
     modified_on: datetime
+    permissions: PermissionContextOut
+    project_permissions: PermissionContextOut | None
 
 
 class WorkflowListMetaOut(CamelSchema):
@@ -49,6 +53,11 @@ class WorkflowListOut(CamelSchema):
     meta: WorkflowListMetaOut
 
 
+class WorkflowRelatedOut(CamelSchema):
+    contains: list[WorkflowListItemOut]
+    appears_in: list[WorkflowListItemOut]
+
+
 class WorkflowDetailOut(CamelSchema):
     uuid: UUID
     graph_uuid: UUID
@@ -57,9 +66,12 @@ class WorkflowDetailOut(CamelSchema):
     workflow_type: WorkflowType
     author_id: int | None
     project_uuid: UUID | None
+    is_archived: bool
     revision_id: int
     date_created: datetime
     modified_on: datetime
+    permissions: PermissionContextOut
+    project_permissions: PermissionContextOut | None
 
 
 class WorkflowDetailOutResp(CamelSchema):

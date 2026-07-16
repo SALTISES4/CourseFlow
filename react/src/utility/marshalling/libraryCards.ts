@@ -95,8 +95,21 @@ export function formatLibraryObject(
   | 'type'
   | 'isFavorite'
   | 'isLinked'
+  | 'isArchived'
+  | 'permissions'
+  | 'projectUuid'
+  | 'projectIsArchived'
 > {
-  const { uuid, title, description, isFavorite } = libraryObject
+  const {
+    uuid,
+    title,
+    description,
+    isFavorite,
+    isArchived,
+    permissions,
+    projectUuid,
+    projectIsArchived
+  } = libraryObject
 
   const typeChip = getTypeChip(libraryObject)
   const templateChip = getTemplateChip(libraryObject)
@@ -107,6 +120,10 @@ export function formatLibraryObject(
     title,
     description,
     isFavorite,
+    isArchived,
+    permissions,
+    projectUuid,
+    projectIsArchived,
     // TODO: figure out where this comes from
     // isLinked: libraryObject.isLinked,
     isLinked: false,

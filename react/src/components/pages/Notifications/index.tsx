@@ -52,7 +52,7 @@ const invalidateAllNotificationListQueries = (queryClient: QueryClient) =>
         head != null &&
         typeof head === 'object' &&
         '_id' in head &&
-        (head as { _uuid: string })._id === 'listMyNotifications'
+        (head as { _id: string })._id === 'listMyNotifications'
       )
     }
   })

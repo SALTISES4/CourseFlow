@@ -1,4 +1,4 @@
-import { WorkflowType } from '@cf/api/gen'
+import { WorkflowTypeIn } from '@cf/api/gen'
 import { CookieTypes, useCookies } from '@cf/context/cookieContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/Utility.class'
@@ -64,7 +64,7 @@ const Welcome = ({ hide }: PropsType) => {
           variant="contained"
           onClick={() =>
             dispatch(DialogMode.WORKFLOW_CREATE, {
-              workflowType: WorkflowType.ACTIVITY
+              workflowType: WorkflowTypeIn.ACTIVITY
             })
           }
         >
@@ -74,7 +74,7 @@ const Welcome = ({ hide }: PropsType) => {
           variant="contained"
           onClick={() =>
             dispatch(DialogMode.WORKFLOW_CREATE, {
-              workflowType: WorkflowType.COURSE
+              workflowType: WorkflowTypeIn.COURSE
             })
           }
         >
@@ -84,7 +84,7 @@ const Welcome = ({ hide }: PropsType) => {
           variant="contained"
           onClick={() =>
             dispatch(DialogMode.WORKFLOW_CREATE, {
-              workflowType: WorkflowType.PROGRAM
+              workflowType: WorkflowTypeIn.PROGRAM
             })
           }
         >

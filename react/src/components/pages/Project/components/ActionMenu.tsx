@@ -1,24 +1,20 @@
-import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import { ProjectPermission } from '@cf/api/gen'
+import {
+  hasPermission,
+  useWorkspacePermissions
+} from '@cf/context/workspacePermissionsContext'
 import { _t } from '@cf/utility/Utility.class'
 import { MenuItemType, MenuWithOverflow } from '@cfComponents/menu/Menu'
 import { useMenuActions } from '@cfPages/Project/hooks/useMenuActions'
 import EditIcon from '@mui/icons-material/Edit'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
-import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 const ActionMenu = () => {
   const { uuid } = useParams()
   const projectUuid = uuid ?? ''
-
-  const { data, refetch, isLoading } = useQuery({
-    ...getProjectOptions({
-      path: {
-        uuid: projectUuid as string
-      }
-    }),
-    enabled: Boolean(projectUuid)
-  })
+  const { resource: permissions } = useWorkspacePermissions()
+  const isArchived = permissions.state === 'archived'
 
   const {
     openEditDialog,
@@ -29,10 +25,6 @@ const ActionMenu = () => {
     deleteProject
   } = useMenuActions()
 
-  if (isLoading || !data) {
-    return <></>
-  }
-
   const menuItems: MenuItemType[] = [
     {
       uuid: 'edit-project',
@@ -41,7 +33,9 @@ const ActionMenu = () => {
       iconButton: {
         icon: <EditIcon />
       },
-      show: true
+      show:
+        !isArchived &&
+        hasPermission(permissions, ProjectPermission.EDIT_PROJECT)
     },
     {
       uuid: 'share',
@@ -50,32 +44,40 @@ const ActionMenu = () => {
         icon: <PersonAddIcon />
       },
       action: openShareDialog,
-      show: true
+      show:
+        !isArchived &&
+        hasPermission(permissions, ProjectPermission.MANAGE_MEMBERS)
     },
     {
       uuid: 'duplicate-project',
       content: _t('Copy project'),
       action: () => duplicateProject(projectUuid),
-      show: true
+      show: false
     },
     {
       uuid: 'archive-project',
       action: archiveProject,
       content: _t('Archive project'),
-      show: true,
+      show:
+        !isArchived &&
+        hasPermission(permissions, ProjectPermission.ARCHIVE_PROJECT),
       separator: 'top'
     },
     {
       uuid: 'unarchive-project',
       action: unarchiveProject,
       content: _t('Restore project'),
-      show: false
+      show:
+        isArchived &&
+        hasPermission(permissions, ProjectPermission.RESTORE_PROJECT)
     },
     {
       uuid: 'hard-delete-project',
       action: deleteProject,
-      content: _t('Permanently delete workflow'),
-      show: false
+      content: _t('Permanently delete project'),
+      show:
+        isArchived &&
+        hasPermission(permissions, ProjectPermission.DELETE_PROJECT)
     }
   ]
 

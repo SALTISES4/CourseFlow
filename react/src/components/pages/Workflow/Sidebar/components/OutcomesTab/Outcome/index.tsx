@@ -1,4 +1,6 @@
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { WorkflowPermission } from '@cf/api/gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type {
   GraphUuid,
   OutcomeEntity
@@ -49,6 +51,9 @@ const OutcomeBlock = ({
 }: OutcomeEntity & { graphUuid: GraphUuid }) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
+  const canAssignOutcomes = useResourcePermission(
+    WorkflowPermission.ASSIGN_OUTCOMES
+  )
   const prefix = useSelector((state: RootState) =>
     getPrefixPath(state, graphUuid, uuid)
   )
@@ -79,7 +84,7 @@ const OutcomeBlock = ({
   useEffect(() => {
     const el = dragHandleRef.current
 
-    if (!el) {
+    if (!el || !canAssignOutcomes) {
       return
     }
 
@@ -101,7 +106,7 @@ const OutcomeBlock = ({
         )
       }
     })
-  }, [level, uuid])
+  }, [canAssignOutcomes, level, uuid])
 
   const onToggleClick = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()

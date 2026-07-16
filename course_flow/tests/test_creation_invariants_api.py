@@ -86,12 +86,11 @@ def test_project_detail_includes_workflow_list_metadata(client: Client, user):
     )
     assert create_project.status_code == 200, create_project.content
     project_uuid = create_project.json()["uuid"]
-    project = Project.objects.get(uuid=project_uuid)
 
     create_graph = client.post(
         "/api/workflow",
         data={
-            "projectId": project.id,
+            "projectUuid": project_uuid,
             "title": "Course Workflow",
             "workflowType": "course",
             "description": "",
@@ -112,6 +111,8 @@ def test_project_detail_includes_workflow_list_metadata(client: Client, user):
     assert workflow["description"] == ""
     assert workflow["workflowType"] == "course"
     assert workflow["isFavorite"] is False
+    assert workflow["isArchived"] is False
+    assert workflow["permissions"]["resourceRole"] == "owner"
 
 
 @pytest.mark.django_db

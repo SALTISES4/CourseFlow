@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from django.contrib.auth import get_user_model
 
-from course_flow.core.enum import Role
+from course_flow.core.enum import AccountRole, Role
 from course_flow.core.models import (
     Discipline,
     Project,
@@ -69,6 +69,7 @@ def _ensure_demo_user(
     first_name: str,
     last_name: str,
     password: str,
+    account_role: AccountRole,
 ) -> User:
     user, _ = User.objects.get_or_create(
         email=email,
@@ -88,6 +89,7 @@ def _ensure_demo_user(
     changed.append("password")
     if changed:
         user.save()
+    user.set_account_role(account_role)
     return user
 
 
@@ -100,17 +102,20 @@ def ensure_dev_seed_accounts() -> list[User]:
     No extra member users are created.
     """
     admin = _get_existing_admin()
+    admin.set_account_role(AccountRole.ADMIN)
     teacher = _ensure_demo_user(
         email=DEV_SEED_TEACHER_EMAIL,
         first_name="testteacher",
         last_name="",
         password=DEV_SEED_DEMO_PASSWORD,
+        account_role=AccountRole.TEACHER,
     )
     student = _ensure_demo_user(
         email=DEV_SEED_STUDENT_EMAIL,
         first_name="teststudent",
         last_name="",
         password=DEV_SEED_DEMO_PASSWORD,
+        account_role=AccountRole.STUDENT,
     )
     return [admin, teacher, student]
 

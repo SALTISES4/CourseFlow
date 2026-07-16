@@ -1,3 +1,5 @@
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { insertChannelBelow } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
@@ -23,6 +25,10 @@ type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
 const HoverMenu = ({ nodeId, graphUuid, show }: PropsType) => {
   const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
+  const canEdit = useResourcePermission(
+    WorkflowPermission.NODE_CATEGORY_MANAGEMENT
+  )
+  const canComment = useResourcePermission(WorkflowPermission.COMMENT)
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {
@@ -74,27 +80,27 @@ const HoverMenu = ({ nodeId, graphUuid, show }: PropsType) => {
     <NodeHoverMenu
       show={show}
       items={[
-        {
+        canEdit && {
           label: _t('Insert right'),
           icon: <AddCircleOutlineIcon />,
           onClick: onActionClick('insert')
         },
-        {
+        canEdit && {
           label: _t('Duplicate'),
           icon: <ContentCopyIcon />,
           onClick: onActionClick('duplicate')
         },
-        {
+        canEdit && {
           label: _t('Delete'),
           icon: <DeleteOutlinedIcon />,
           onClick: onActionClick('delete')
         },
-        {
+        canComment && {
           label: _t('Comments'),
           icon: <CommentOutlinedIcon />,
           onClick: onActionClick('comments')
         }
-      ]}
+      ].filter(Boolean)}
     />
   )
 }

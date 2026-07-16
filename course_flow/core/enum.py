@@ -17,18 +17,27 @@ class NodeType(StrEnum):
     ACTIVITY = "activity"
     TASK = "task"
 
-class Role(StrEnum):
+
+class TeamRole(StrEnum):
+    """A user's role within one project team."""
+
     EDITOR = "editor"
     COMMENTER = "commenter"
     VIEWER = "viewer"
 
 
-class UserGroup(StrEnum):
+class AccountRole(StrEnum):
     """Canonical Django ``auth.Group`` names for account-level roles."""
 
     ADMIN = "admin"
     TEACHER = "teacher"
     STUDENT = "student"
+
+
+# Compatibility aliases for existing imports and historical migrations. New code
+# should use the names that make the role scope explicit.
+Role = TeamRole
+UserGroup = AccountRole
 
 
 class LanguagePreference(StrEnum):

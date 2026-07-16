@@ -9,6 +9,8 @@ import {
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box'
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { selectSectionByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { GraphBoard } from '@cf/features/graph/state/selectors/graphBoard.selectors'
 import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
@@ -64,6 +66,7 @@ type SectionStateType = {
 
 const Section = (props: SectionPropsType) => {
   const dispatch = useDispatch()
+  const canEditParts = useResourcePermission(WorkflowPermission.PART_MANAGEMENT)
   const [state, setState] = useState<SectionStateType>({
     closestEdge: null,
     draggedOver: false,
@@ -99,6 +102,9 @@ const Section = (props: SectionPropsType) => {
   useEffect(() => {
     const outerEl = sectionWrapperRef.current
     const el = dragHandleRef.current
+    if (!outerEl || !el || !canEditParts) {
+      return
+    }
     return combine(
       draggable({
         element: el,
@@ -188,7 +194,7 @@ const Section = (props: SectionPropsType) => {
         }
       })
     )
-  }, [resetState, props])
+  }, [canEditParts, resetState, props])
 
   const onSectionWrapperClick = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {

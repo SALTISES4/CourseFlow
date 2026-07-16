@@ -81,6 +81,7 @@ def test_register_creates_user_and_returns_usable_token(client: Client):
     assert body["user"]["email"] == "NewUser@example.com"
     assert body["user"]["firstName"] == "New"
     assert body["user"]["lastName"] == "User"
+    assert body["user"]["accountRole"] == "student"
 
     user_model = get_user_model()
     db_user = user_model.objects.get(email="NewUser@example.com")
@@ -90,6 +91,7 @@ def test_register_creates_user_and_returns_usable_token(client: Client):
     me_response = client.get("/api/auth/me", **_auth_header(body["accessToken"]))
     assert me_response.status_code == 200
     assert me_response.json()["item"]["uuid"] == str(db_user.uuid)
+    assert me_response.json()["item"]["accountRole"] == "student"
 
 
 @pytest.mark.django_db

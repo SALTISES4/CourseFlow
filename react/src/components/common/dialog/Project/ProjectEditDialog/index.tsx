@@ -75,7 +75,7 @@ const ProjectEditDialog = () => {
   const defaultValues: ProjectFormValues = {
     title: data?.item.title ?? '',
     description: data?.item.description ?? '',
-    disciplines: []
+    disciplines: data?.item.disciplines.map((item) => String(item.id)) ?? []
   }
 
   /*******************************************************

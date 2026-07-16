@@ -1,3 +1,5 @@
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { NodeInsertMode } from '@cf/features/graph/state/resolveNodeDropRow'
 import {
   deleteNode,
@@ -40,6 +42,8 @@ const HoverMenu = ({ nodeId, graphUuid, nodeRef }: PropsType) => {
   const insertMode = useSelector(
     (state: RootState) => state.graph.graphUi.nodeInsertMode
   )
+  const canEdit = useResourcePermission(WorkflowPermission.NODE_MANAGEMENT)
+  const canComment = useResourcePermission(WorkflowPermission.COMMENT)
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {
@@ -114,27 +118,27 @@ const HoverMenu = ({ nodeId, graphUuid, nodeRef }: PropsType) => {
       <NodeHoverMenu
         show={hovering}
         items={[
-          {
+          canEdit && {
             label: 'Insert node below',
             icon: <AddCircleOutlineIcon />,
             onClick: onActionClick('insert')
           },
-          {
+          canEdit && {
             label: 'Duplicate node below',
             icon: <ContentCopyIcon />,
             onClick: onActionClick('duplicate')
           },
-          {
+          canEdit && {
             label: 'Delete node',
             icon: <DeleteOutlinedIcon />,
             onClick: onActionClick('delete')
           },
-          {
+          canComment && {
             label: 'Comments',
             icon: <CommentOutlinedIcon />,
             onClick: onActionClick('comments')
           }
-        ]}
+        ].filter(Boolean)}
       />
       <InsertMenu
         anchorEl={state.anchor}

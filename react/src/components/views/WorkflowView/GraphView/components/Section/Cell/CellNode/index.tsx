@@ -1,4 +1,6 @@
 import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import {
   selectGraphByUuid,
   selectNodeByUuid,
@@ -38,10 +40,7 @@ const SectionCellNode = ({
 }: SectionCellNodeTypeTypeInternal) => {
   const nodeSelector = useMemo(() => selectNodeByUuid(nodeId), [nodeId])
   const node = useSelector(nodeSelector)
-  const graphSelector = useMemo(
-    () => selectGraphByUuid(graphUuid),
-    [graphUuid]
-  )
+  const graphSelector = useMemo(() => selectGraphByUuid(graphUuid), [graphUuid])
   const graph = useSelector(graphSelector)
   const linkedWorkflowSelector = useMemo(
     () =>
@@ -51,6 +50,13 @@ const SectionCellNode = ({
     [node?.linkedWorkflowUuid]
   )
   const linkedWorkflow = useSelector(linkedWorkflowSelector)
+  const canMoveNodes = useResourcePermission(WorkflowPermission.NODE_MANAGEMENT)
+  const canAssignOutcomes = useResourcePermission(
+    WorkflowPermission.ASSIGN_OUTCOMES
+  )
+  const canManageLinks = useResourcePermission(
+    WorkflowPermission.NODE_LINK_MANAGEMENT
+  )
   const { data: linkedWorkflowResp } = useQuery({
     ...getWorkflowOptions({
       path: { uuid: node?.linkedWorkflowUuid ?? '' }
@@ -65,7 +71,9 @@ const SectionCellNode = ({
     coordsSection,
     coordsX,
     coordsY,
-    onDrop
+    onDrop,
+    nodeManagementEnabled: canMoveNodes,
+    outcomeAssignmentEnabled: canAssignOutcomes
   })
 
   const onNodeClicked = useCallback(
@@ -144,7 +152,9 @@ const SectionCellNode = ({
           />
         </StyledNode.Content>
 
-        {!dnd.dragging && <Handles nodeUuid={nodeId} nodeRef={wrapRef} />}
+        {!dnd.dragging && canManageLinks && (
+          <Handles nodeUuid={nodeId} nodeRef={wrapRef} />
+        )}
       </StyledNode.CellInner>
 
       {(dnd.closestEdge || edgeIndicator) && (
@@ -157,7 +167,9 @@ const SectionCellNode = ({
           <StyledNode.CellInner style={{ width: '180px', minHeight: '70px' }}>
             <StyledNode.Border style={{ backgroundColor: borderColor }} />
             <StyledNode.Content>
-              <StyledNode.Title variant="body2">{displayTitle}</StyledNode.Title>
+              <StyledNode.Title variant="body2">
+                {displayTitle}
+              </StyledNode.Title>
             </StyledNode.Content>
           </StyledNode.CellInner>,
           dnd.previewTarget

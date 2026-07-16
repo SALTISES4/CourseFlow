@@ -1,3 +1,3 @@
-graph: graph_permissions.yml
+workflow: workflow_permissions.yml
 project: project_permissions.yml
 organization: organization_permissions.yml

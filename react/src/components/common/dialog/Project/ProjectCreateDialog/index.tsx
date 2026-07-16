@@ -67,8 +67,10 @@ const ProjectCreateDialog = () => {
   const onSubmit = async (data: ProjectFormValues) => {
     try {
       const response = await createProject.mutateAsync({
-        ...data,
-        disciplines: data.disciplines.map((item) => Number(item))
+        body: {
+          ...data,
+          disciplines: data.disciplines.map((item) => Number(item))
+        }
       })
 
       onSuccess(String(response.uuid))
