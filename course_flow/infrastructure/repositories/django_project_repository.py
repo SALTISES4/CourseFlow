@@ -31,18 +31,17 @@ class DjangoProjectRepository:
         description: str,
         is_published: bool,
         is_template: bool,
-        discipline_ids: list[int],
+        disciplines: list[int],
     ) -> ProjectDTO:
-        disciplines = self._resolve_disciplines(discipline_ids)
-        with transaction.atomic():
-            p = Project.objects.create(
-                owner_id=owner_id,
-                title=title,
-                description=description,
-                is_published=is_published,
-                is_template=is_template,
-            )
-            p.disciplines.set(disciplines)
+        p = Project.objects.create(
+            owner_id=owner_id,
+            title=title,
+            description=description,
+            is_published=is_published,
+            is_template=is_template
+        )
+
+        p.disciplines.set(disciplines)
         return _to_dto(p)
 
     def get_by_uuid(self, uuid: UUID) -> ProjectDTO | None:

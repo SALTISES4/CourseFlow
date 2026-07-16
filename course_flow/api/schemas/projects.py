@@ -9,12 +9,17 @@ from course_flow.api.schemas.project_subresources import DisciplineListItemOut
 from course_flow.core.enum import WorkflowType
 
 
+class DisciplineOption(CamelSchema):
+    id: int
+    title: str
+
+
 class ProjectCreateIn(CamelSchema):
     title: str
-    description: str = ""
+    description: str | None = None
     is_published: bool = False
     is_template: bool = False
-    disciplines: list[int] = Field(default_factory=list)
+    disciplines: list[int]
 
 
 class ProjectUpdateIn(CamelSchema):
@@ -22,7 +27,7 @@ class ProjectUpdateIn(CamelSchema):
     description: str | None = None
     is_published: bool | None = None
     is_template: bool | None = None
-    disciplines: list[int] | None = None
+    disciplines: list[int]
 
 
 class ProjectListItemOut(CamelSchema):
@@ -71,11 +76,12 @@ class ProjectDetailOut(CamelSchema):
     is_archived: bool
     is_template: bool
     is_favorite: bool
+    is_archived: bool
     owner_id: int
     date_created: datetime
     modified_on: datetime
-    disciplines: list[DisciplineListItemOut] = Field(default_factory=list)
-    workflows: list[ProjectWorkflowListItemOut] = Field(default_factory=list)
+    disciplines: list[DisciplineOption] = []
+    workflows: list[ProjectWorkflowListItemOut] = []
     permissions: PermissionContextOut
 
 

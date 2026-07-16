@@ -25,6 +25,7 @@ from course_flow.api.schemas.project_subresources import (
     ProjectTeamRoleSchema,
 )
 from course_flow.api.schemas.projects import (
+    DisciplineOption,
     ProjectCreateIn,
     ProjectDetailOut,
     ProjectDetailOutResp,
@@ -40,7 +41,13 @@ from course_flow.application.services.authorization_service import (
     AuthorizationDenied,
 )
 from course_flow.core.enum import WorkflowType
-from course_flow.core.models import FavoriteGraph, FavoriteProject, Graph, User
+from course_flow.core.models import (
+    Discipline,
+    FavoriteGraph,
+    FavoriteProject,
+    Graph,
+    User,
+)
 from course_flow.core.permissions import (
     ProjectPermission,
     ResourceRole,
@@ -134,6 +141,14 @@ def _project_detail_out(current_user: User, dto: ProjectDTO) -> ProjectDetailOut
     ).exists()
     disciplines = get_project_relations_service().list_disciplines(dto.uuid) or []
 
+    # TODO: properly handle archived flag
+    is_archived = False
+
+    disciplines = [
+        DisciplineOption(id=d.id, title=d.label)
+        for d in Discipline.objects.filter(projects__id=dto.id)
+    ]
+
     return ProjectDetailOut(
         uuid=dto.uuid,
         title=dto.title,
@@ -142,19 +157,13 @@ def _project_detail_out(current_user: User, dto: ProjectDTO) -> ProjectDetailOut
         is_archived=dto.is_archived,
         is_template=dto.is_template,
         is_favorite=is_favorite,
+        is_archived=is_archived,
         owner_id=dto.owner_id,
         date_created=dto.date_created,
         modified_on=dto.modified_on,
-        disciplines=[
-            DisciplineListItemOut(
-                id=discipline.id,
-                label=discipline.label,
-                translation_plural=discipline.translation_plural,
-            )
-            for discipline in disciplines
-        ],
         workflows=workflows,
         permissions=permission_context_out(_project_permissions(current_user, dto)),
+        disciplines=disciplines
     )
 
 
@@ -166,7 +175,18 @@ def _project_detail_out(current_user: User, dto: ProjectDTO) -> ProjectDetailOut
 )
 def create_project(request, payload: ProjectCreateIn):
     current_user = get_current_user(request)
+
+    # verify discipline actually exist in the db, otherwise reject
+    # TODO: maybe more extensive validation here?
+    discipline_objs = Discipline.objects.filter(id__in=payload.disciplines)
+    if discipline_objs.count() != len(payload.disciplines):
+        raise ValueError("invalid discipline IDs")
+
     svc = get_project_service()
+
+
+
+
     try:
         dto = svc.create(
             owner_id=current_user.id,
@@ -174,8 +194,25 @@ def create_project(request, payload: ProjectCreateIn):
             description=payload.description,
             is_published=payload.is_published,
             is_template=payload.is_template,
-            discipline_ids=payload.disciplines,
+            disciplines=payload.disciplines
         )
+
+    # permissions edit, look at the project detail out helper
+
+    # return ProjectDetailOut(
+    #     uuid=dto.uuid,
+    #     title=dto.title,
+    #     description=dto.description,
+    #     is_published=dto.is_published,
+    #     is_template=dto.is_template,
+    #     is_favorite=False,
+    #     is_archived=False,
+    #     owner_id=dto.owner_id,
+    #     date_created=dto.date_created,
+    #     modified_on=dto.modified_on,
+    #     disciplines=[] # TODO: dto.disciplines
+    # )
+
     except ValueError as exc:
         raise HttpError(422, str(exc)) from exc
     return _project_detail_out(current_user, dto)

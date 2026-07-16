@@ -1,10 +1,10 @@
 import { getApiErrorStatus, isArchivedApiError } from '@cf/api/apiError'
+import { ProjectDetailOut } from '@cf/api/gen'
 import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { WorkspacePermissionsProvider } from '@cf/context/workspacePermissionsContext'
 import { useWorkspaceAccessGuard } from '@cf/hooks/useWorkspaceAccessGuard'
 import { ProjectDetailsType } from '@cf/types/common'
 import { getErrorMessage } from '@cf/utility/errorWrapper'
-import { mapProjectV2ToProjectDetails } from '@cf/utility/marshalling/projectDetail'
 import { _t } from '@cf/utility/Utility.class'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -53,6 +53,11 @@ const ProjectDetails = () => {
 
   if (privateAccessRevoked) {
     return <WorkspaceAccessDenied workspace="project" />
+    setProject(mapProjectV2ToProjectDetails(data.item))
+  }, [data])
+
+  if (isLoading) {
+    return <Loader />
   }
 
   if (isError && !projectResponse) {
@@ -77,6 +82,10 @@ const ProjectDetails = () => {
     projectResponse.item
   )
 
+  if (!project) {
+    return <ErrorView message={`Project does not exist`} />
+  }
+
   return (
     <WorkspacePermissionsProvider resource={projectResponse.item.permissions}>
       <MenuBar leftSection={<ProjectActionMenu />} />
@@ -88,3 +97,16 @@ const ProjectDetails = () => {
 }
 
 export default ProjectDetails
+
+function mapProjectV2ToProjectDetails(p: ProjectDetailOut): ProjectDetailsType {
+  return {
+    ...p,
+    author: {
+      uuid: '',
+      username: '',
+      firstName: '',
+      lastName: '',
+      name: ''
+    }
+  }
+}

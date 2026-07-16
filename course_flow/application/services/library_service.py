@@ -13,6 +13,7 @@ from course_flow.api.schemas.library import (
     LibraryAppliedFiltersOut,
     LibraryContentTypeIn,
     LibraryContentTypeOut,
+    LibraryDisciplineOptionOut,
     LibraryFavoriteOut,
     LibraryFiltersIn,
     LibraryItemOut,
@@ -388,11 +389,11 @@ class LibraryService:
 
     def _discipline_options(self) -> list[dict[str, Any]]:
         return [
-            {
-                "id": discipline.id,
-                "label": discipline.label,
-                "translation_plural": discipline.translation_plural,
-            }
+            LibraryDisciplineOptionOut(
+                id=discipline.id,
+                label=discipline.label,
+                translation_plural=discipline.translation_plural,
+            )
             for discipline in Discipline.objects.all().order_by("label", "id")
         ]
 

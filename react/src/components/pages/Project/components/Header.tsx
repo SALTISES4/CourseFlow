@@ -15,7 +15,6 @@ const ProjectHeader = ({ project }: { project: ProjectDetailsType }) => (
       spacing={3}
       justifyContent="space-between"
       sx={{ mt: 6, mb: 3 }}
-      // @todo selection manager is only defined in workflow currently so we'll need to go get that
     >
       <Typography
         style={{

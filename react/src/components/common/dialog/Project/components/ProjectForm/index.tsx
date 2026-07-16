@@ -1,6 +1,7 @@
 import { _t } from '@cf/utility/Utility.class'
 import { StyledBox } from '@cfComponents/dialog/styles'
 import Alert from '@cfComponents/UIPrimitives/Alert'
+import { zodResolver } from '@hookform/resolvers/zod'
 import CancelIcon from '@mui/icons-material/Cancel'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -18,24 +19,19 @@ import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-export type ProjectFormValues = {
-  title: string
-  description: string
-  disciplines: string[]
-}
-
 const projectSchema = z.object({
-  title: z.string().min(1, { message: 'Title is required' }).max(200),
+  title: z
+    .string()
+    .min(1, { message: _t('Project title is required') })
+    .max(200, {
+      message: _t('Project title can be up to 200 characters long')
+    }),
   description: z.string().nullish(),
-  disciplines: z.array(z.string()).optional()
+  disciplines: z.array(z.number())
 })
 
-/**
- *
- * @param showNoProjectsAlert
- * @param formFields
- * @constructor
- */
+export type ProjectFormValues = z.infer<typeof projectSchema>
+
 const ProjectForm = ({
   defaultValues,
   submitHandler,
@@ -51,10 +47,9 @@ const ProjectForm = ({
   label: string
   submitLabel?: string
 }) => {
+  // TODO: grab this from the API / cf_disciplines
   const disciplineOptions = COURSEFLOW_APP.globalContextData.disciplines
-  const [state, setState] = useState({
-    disciplines: false
-  })
+  const [showDisciplines, setShowDisciplines] = useState(false)
 
   const {
     register,
@@ -63,7 +58,7 @@ const ProjectForm = ({
     formState: { errors, isDirty },
     reset
   } = useForm<ProjectFormValues>({
-    // resolver: zodResolver(projectSchema),
+    resolver: zodResolver(projectSchema),
     defaultValues
   })
 
@@ -73,10 +68,8 @@ const ProjectForm = ({
   }
 
   // Open or close a controlled Select component
-  function showDisciplines(open: boolean) {
-    setState({
-      disciplines: open
-    })
+  function setDisciplineDropdown(open: boolean) {
+    setShowDisciplines(open)
   }
 
   /*******************************************************
@@ -132,12 +125,12 @@ const ProjectForm = ({
                   label={_t('Discipline')}
                   labelId="create-project-discipline"
                   variant="outlined"
-                  open={state.disciplines}
-                  onOpen={() => showDisciplines(true)}
-                  onClose={() => showDisciplines(false)}
+                  open={showDisciplines}
+                  onOpen={() => setDisciplineDropdown(true)}
+                  onClose={() => setDisciplineDropdown(false)}
                   onChange={(e) => {
                     field.onChange(e.target.value)
-                    showDisciplines(false)
+                    setDisciplineDropdown(false)
                   }}
                   multiple
                   renderValue={(selected) => (
@@ -154,7 +147,7 @@ const ProjectForm = ({
                           clickable
                           label={
                             disciplineOptions.find(
-                              (option) => String(option.uuid) === String(value)
+                              (option) => option.id === value
                             )?.title
                           }
                           deleteIcon={
@@ -173,7 +166,7 @@ const ProjectForm = ({
                   )}
                 >
                   {disciplineOptions.map((option) => (
-                    <MenuItem key={option.uuid} value={option.uuid}>
+                    <MenuItem key={option.id} value={option.id}>
                       {option.title}
                     </MenuItem>
                   ))}
@@ -194,7 +187,7 @@ const ProjectForm = ({
           type="submit"
           variant="contained"
           color="primary"
-          disabled={!isDirty}
+          disabled={!isDirty || !!Object.keys(errors).length}
         >
           {submitLabel ?? _t('Edit project')}
         </Button>

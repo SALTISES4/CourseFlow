@@ -50,7 +50,7 @@ const OverviewView = () => {
             <SC.InfoBlockTitle>{_t('Disciplines')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
               {disciplines.length
-                ? disciplines?.join(', ')
+                ? disciplines.map((d) => d.title).join(', ')
                 : _t('No disciplines found.')}
             </SC.InfoBlockContent>
           </SC.InfoBlock>
