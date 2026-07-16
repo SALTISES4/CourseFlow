@@ -154,7 +154,6 @@ def _project_detail_out(current_user: User, dto: ProjectDTO) -> ProjectDetailOut
         title=dto.title,
         description=dto.description,
         is_published=dto.is_published,
-        is_archived=dto.is_archived,
         is_template=dto.is_template,
         is_favorite=is_favorite,
         is_archived=is_archived,

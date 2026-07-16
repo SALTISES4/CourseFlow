@@ -53,8 +53,7 @@ const ProjectDetails = () => {
 
   if (privateAccessRevoked) {
     return <WorkspaceAccessDenied workspace="project" />
-    setProject(mapProjectV2ToProjectDetails(data.item))
-  }, [data])
+  }
 
   if (isLoading) {
     return <Loader />

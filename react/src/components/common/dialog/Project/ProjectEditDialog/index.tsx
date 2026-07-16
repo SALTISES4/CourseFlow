@@ -20,6 +20,7 @@ const ProjectEditDialog = () => {
   const { uuid } = useParams()
   const projectUuid = uuid ?? ''
   const queryClient = useQueryClient()
+  const { onError, onSuccess } = useGenericMsgHandler()
 
   const { data, refetch, isLoading } = useQuery({
     ...getProjectOptions({
@@ -52,11 +53,11 @@ const ProjectEditDialog = () => {
       )
     },
     onError: (err) => {
-      onError(err)
+      onError({
+        message: _t('We encountered an issue and your project was not updated')
+      })
     }
   })
-
-  const { onError, onSuccess } = useGenericMsgHandler()
 
   /*******************************************************
    * RHF

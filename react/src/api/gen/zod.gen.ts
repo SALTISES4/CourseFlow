@@ -10,11 +10,77 @@ export const zHealthResponse = z.object({
 })
 
 /**
+ * AccountRole
+ *
+ * Canonical Django ``auth.Group`` names for account-level roles.
+ */
+export const zAccountRole = z.enum(['admin', 'teacher', 'student'])
+
+/**
  * DisciplineOption
  */
 export const zDisciplineOption = z.object({
   id: z.number().int(),
   title: z.string()
+})
+
+/**
+ * ProjectPermission
+ */
+export const zProjectPermission = z.enum([
+  'view',
+  'edit_project',
+  'manage_members',
+  'create_workflow',
+  'archive_project',
+  'restore_project',
+  'delete_project',
+  'publish_project'
+])
+
+/**
+ * ResourceRole
+ */
+export const zResourceRole = z.enum([
+  'owner',
+  'editor',
+  'commenter',
+  'viewer',
+  'public'
+])
+
+/**
+ * WorkflowPermission
+ */
+export const zWorkflowPermission = z.enum([
+  'view',
+  'edit_attributes',
+  'archive',
+  'restore',
+  'delete_permanently',
+  'export',
+  'copy',
+  'import_nodes',
+  'import_outcomes',
+  'node_management',
+  'part_management',
+  'node_category_management',
+  'node_link_management',
+  'outcome_management',
+  'comment',
+  'delete_own_comment',
+  'assign_outcomes'
+])
+
+/**
+ * PermissionContextOut
+ */
+export const zPermissionContextOut = z.object({
+  accountRole: zAccountRole.nullable(),
+  resourceRole: zResourceRole.nullable(),
+  state: z.string(),
+  actions: z.array(z.union([zProjectPermission, zWorkflowPermission])),
+  adminOverride: z.boolean()
 })
 
 /**
@@ -32,7 +98,9 @@ export const zProjectWorkflowListItemOut = z.object({
   title: z.string(),
   description: z.string(),
   workflowType: zWorkflowType,
-  isFavorite: z.boolean()
+  isArchived: z.boolean(),
+  isFavorite: z.boolean(),
+  permissions: zPermissionContextOut
 })
 
 /**
@@ -45,14 +113,15 @@ export const zProjectDetailOut = z.object({
   title: z.string(),
   description: z.string(),
   isPublished: z.boolean(),
+  isArchived: z.boolean(),
   isTemplate: z.boolean(),
   isFavorite: z.boolean(),
-  isArchived: z.boolean(),
   ownerId: z.number().int(),
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime(),
   disciplines: z.array(zDisciplineOption).optional().default([]),
-  workflows: z.array(zProjectWorkflowListItemOut).optional().default([])
+  workflows: z.array(zProjectWorkflowListItemOut).optional().default([]),
+  permissions: zPermissionContextOut
 })
 
 /**
@@ -76,8 +145,10 @@ export const zProjectListItemOut = z.object({
   title: z.string(),
   ownerId: z.number().int(),
   isPublished: z.boolean(),
+  isArchived: z.boolean(),
   isTemplate: z.boolean(),
-  modifiedOn: z.string().datetime()
+  modifiedOn: z.string().datetime(),
+  permissions: zPermissionContextOut
 })
 
 /**
@@ -105,11 +176,13 @@ export const zProjectGraphViewOut = z.object({
   title: z.string(),
   description: z.string(),
   isPublished: z.boolean(),
+  isArchived: z.boolean(),
   isTemplate: z.boolean(),
   ownerId: z.number().int(),
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime(),
-  graphUuids: z.array(z.string().uuid())
+  graphUuids: z.array(z.string().uuid()),
+  permissions: zPermissionContextOut
 })
 
 /**
@@ -213,9 +286,12 @@ export const zWorkflowDetailOut = z.object({
   workflowType: zWorkflowType,
   authorId: z.number().int().nullable(),
   projectUuid: z.string().uuid().nullable(),
+  isArchived: z.boolean(),
   revisionId: z.number().int(),
   dateCreated: z.string().datetime(),
-  modifiedOn: z.string().datetime()
+  modifiedOn: z.string().datetime(),
+  permissions: zPermissionContextOut,
+  projectPermissions: zPermissionContextOut.nullable()
 })
 
 /**
@@ -247,8 +323,11 @@ export const zWorkflowListItemOut = z.object({
   authorId: z.number().int().nullable(),
   projectUuid: z.string().uuid().nullable(),
   workflowType: z.string(),
+  isArchived: z.boolean(),
   revisionId: z.number().int(),
-  modifiedOn: z.string().datetime()
+  modifiedOn: z.string().datetime(),
+  permissions: zPermissionContextOut,
+  projectPermissions: zPermissionContextOut.nullable()
 })
 
 /**
@@ -280,6 +359,14 @@ export const zWorkflowUpdateIn = z.object({
   title: z.string().nullish(),
   projectUuid: z.string().uuid().nullish(),
   description: z.string().nullish()
+})
+
+/**
+ * WorkflowRelatedOut
+ */
+export const zWorkflowRelatedOut = z.object({
+  contains: z.array(zWorkflowListItemOut),
+  appearsIn: z.array(zWorkflowListItemOut)
 })
 
 /**
@@ -397,7 +484,9 @@ export const zGraphViewOut = z.object({
   nodes: z.array(zNodeGraphOut),
   edges: z.array(zEdgeGraphOut),
   outcomes: z.array(zOutcomeGraphOut).optional(),
-  threadCommentCounts: z.array(zThreadCommentCountOut).optional()
+  threadCommentCounts: z.array(zThreadCommentCountOut).optional(),
+  permissions: zPermissionContextOut,
+  projectPermissions: zPermissionContextOut.nullable()
 })
 
 /**
@@ -408,9 +497,11 @@ export const zGraphDetailOut = z.object({
   workflowTitle: z.string(),
   authorId: z.number().int().nullable(),
   workflowProjectId: z.number().int().nullable(),
+  isArchived: z.boolean(),
   revisionId: z.number().int(),
   dateCreated: z.string().datetime(),
-  modifiedOn: z.string().datetime()
+  modifiedOn: z.string().datetime(),
+  permissions: zPermissionContextOut
 })
 
 /**
@@ -937,7 +1028,7 @@ export const zCommentCreateIn = z.object({
 /**
  * ThreadCommentsBulkDeleteOut
  *
- * Response for DELETE /thread/{uuid}/comments (delete all).
+ * Response for deleting all comments authored by the current actor.
  */
 export const zThreadCommentsBulkDeleteOut = z.object({
   success: z.boolean().optional().default(true),
@@ -951,7 +1042,8 @@ export const zUserSummaryOut = z.object({
   uuid: z.string().uuid(),
   email: z.string(),
   firstName: z.string(),
-  lastName: z.string()
+  lastName: z.string(),
+  accountRole: zAccountRole.nullable()
 })
 
 /**
@@ -1179,7 +1271,10 @@ export const zLibraryItemOut = z.object({
   modifiedOn: z.string().datetime(),
   isArchived: z.boolean(),
   isTemplate: z.boolean(),
-  isFavorite: z.boolean()
+  isFavorite: z.boolean(),
+  projectUuid: z.string().uuid().nullish(),
+  projectIsArchived: z.boolean().nullish(),
+  permissions: zPermissionContextOut
 })
 
 /**
@@ -1289,7 +1384,7 @@ export const zLibraryFavoriteOut = z.object({
  * LibraryFavoriteIn
  */
 export const zLibraryFavoriteIn = z.object({
-  uuid: z.string().uuid().nullish()
+  uuid: z.string().uuid()
 })
 
 export const zCourseFlowApiNinjaAppHealthData = z.object({
@@ -1445,6 +1540,32 @@ export const zUpdateProjectData = z.object({
  */
 export const zUpdateProjectResponse = zProjectDetailOutResp
 
+export const zArchiveProjectData = z.object({
+  body: z.never().optional(),
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zArchiveProjectResponse = zSuccessOut
+
+export const zRestoreProjectData = z.object({
+  body: z.never().optional(),
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zRestoreProjectResponse = zSuccessOut
+
 export const zListWorkflowsData = z.object({
   body: z.never().optional(),
   path: z.never().optional(),
@@ -1466,6 +1587,19 @@ export const zCreateWorkflowData = z.object({
  * OK
  */
 export const zCreateWorkflowResponse = zWorkflowDetailOut
+
+export const zDeleteWorkflowPermanentlyData = z.object({
+  body: z.never().optional(),
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zDeleteWorkflowPermanentlyResponse = zSuccessOut
 
 export const zGetWorkflowData = z.object({
   body: z.never().optional(),
@@ -1492,6 +1626,45 @@ export const zUpdateWorkflowData = z.object({
  * OK
  */
 export const zUpdateWorkflowResponse = zWorkflowDetailOutResp
+
+export const zArchiveWorkflowData = z.object({
+  body: z.never().optional(),
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zArchiveWorkflowResponse = zSuccessOut
+
+export const zRestoreWorkflowData = z.object({
+  body: z.never().optional(),
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zRestoreWorkflowResponse = zSuccessOut
+
+export const zGetRelatedWorkflowsData = z.object({
+  body: z.never().optional(),
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zGetRelatedWorkflowsResponse = zWorkflowRelatedOut
 
 export const zGetGraphViewData = z.object({
   body: z.never().optional(),
