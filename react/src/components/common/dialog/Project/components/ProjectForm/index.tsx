@@ -20,7 +20,12 @@ import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 const projectSchema = z.object({
-  title: z.string().min(1, { message: 'Title is required' }).max(200),
+  title: z
+    .string()
+    .min(1, { message: _t('Project title is required') })
+    .max(200, {
+      message: _t('Project title can be up to 200 characters long')
+    }),
   description: z.string().nullish(),
   disciplines: z.array(z.number())
 })
@@ -182,7 +187,7 @@ const ProjectForm = ({
           type="submit"
           variant="contained"
           color="primary"
-          disabled={!isDirty}
+          disabled={!isDirty || !!Object.keys(errors).length}
         >
           {submitLabel ?? _t('Edit project')}
         </Button>
