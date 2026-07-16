@@ -2,7 +2,10 @@ from typing import Any
 from uuid import UUID
 
 from course_flow.application.dto import ProjectDTO
-from course_flow.core.models import Project
+from course_flow.core.models import (
+    Project,
+    Discipline
+)
 
 
 def _to_dto(p: Project) -> ProjectDTO:
@@ -28,14 +31,21 @@ class DjangoProjectRepository:
         description: str,
         is_published: bool,
         is_template: bool,
+        disciplines: list[int],
     ) -> ProjectDTO:
         p = Project.objects.create(
             owner_id=owner_id,
             title=title,
             description=description,
             is_published=is_published,
-            is_template=is_template,
+            is_template=is_template
         )
+
+        discipline_objs = Discipline.objects.filter(id__in=disciplines)
+        if discipline_objs.count() != len(disciplines):
+            raise ValueError("invalid discipline IDs")
+
+        p.disciplines.set(disciplines)
         return _to_dto(p)
 
     def get_by_uuid(self, uuid: UUID) -> ProjectDTO | None:

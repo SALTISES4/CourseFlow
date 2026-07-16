@@ -132,8 +132,9 @@ def create_project(request, payload: ProjectCreateIn):
         description=payload.description,
         is_published=payload.is_published,
         is_template=payload.is_template,
-        # disciplines=[1,2,3] # TODO: handle disciplines
+        disciplines=payload.disciplines
     )
+
     return ProjectDetailOut(
         uuid=dto.uuid,
         title=dto.title,
@@ -145,7 +146,7 @@ def create_project(request, payload: ProjectCreateIn):
         owner_id=dto.owner_id,
         date_created=dto.date_created,
         modified_on=dto.modified_on,
-        disciplines=[] # TODO: handle disciplines
+        disciplines=[] # TODO: dto.disciplines
     )
 
 

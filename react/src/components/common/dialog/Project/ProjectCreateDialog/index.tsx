@@ -1,6 +1,7 @@
 import { createProjectMutation } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
+import { _t } from '@cf/utility/Utility.class'
 import ProjectForm, {
   ProjectFormValues
 } from '@cfComponents/dialog/Project/components/ProjectForm'
@@ -67,8 +68,7 @@ const ProjectCreateDialog = () => {
   const onSubmit = async (data: ProjectFormValues) => {
     try {
       const response = await createProject.mutateAsync({
-        ...data,
-        disciplines: data.disciplines.map((item) => Number(item))
+        body: data
       })
 
       onSuccess(String(response.uuid))
@@ -96,8 +96,8 @@ const ProjectCreateDialog = () => {
         submitHandler={onSubmit}
         closeCallback={onDialogClose}
         showNoProjectsAlert={true}
-        label={'Create project'}
-        submitLabel={'Create project'}
+        label={_t('Create project')}
+        submitLabel={_t('Create project')}
       />
     </SC.StyledDialog>
   )
