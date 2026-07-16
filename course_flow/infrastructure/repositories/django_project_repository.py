@@ -41,10 +41,6 @@ class DjangoProjectRepository:
             is_template=is_template
         )
 
-        discipline_objs = Discipline.objects.filter(id__in=disciplines)
-        if discipline_objs.count() != len(disciplines):
-            raise ValueError("invalid discipline IDs")
-
         p.disciplines.set(disciplines)
         return _to_dto(p)
 

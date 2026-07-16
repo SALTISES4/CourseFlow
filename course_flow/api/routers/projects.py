@@ -125,6 +125,13 @@ def _project_detail_out(current_user_id: int, dto: ProjectDTO) -> ProjectDetailO
 )
 def create_project(request, payload: ProjectCreateIn):
     current_user = get_current_user(request)
+
+    # verify discipline actually exist in the db, otherwise reject
+    # TODO: maybe more extensive validation here?
+    discipline_objs = Discipline.objects.filter(id__in=payload.disciplines)
+    if discipline_objs.count() != len(payload.disciplines):
+        raise ValueError("invalid discipline IDs")
+
     svc = get_project_service()
     dto = svc.create(
         owner_id=current_user.id,
