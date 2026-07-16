@@ -10,7 +10,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
 import { generatePath, useNavigate } from 'react-router-dom'
 
-const defaultValues = {
+const defaultValues: ProjectFormValues = {
   title: '',
   description: '',
   disciplines: []
@@ -34,15 +34,14 @@ const ProjectCreateDialog = () => {
     const path = generatePath(CFRoutes.PROJECT, { uuid })
     onDialogClose()
     navigate(path)
-    enqueueSnackbar('created project success', {
-      variant: 'success'
-    })
+    enqueueSnackbar(_t('Project created'), { variant: 'success' })
   }
 
   function onError(error) {
-    enqueueSnackbar('created project error', {
-      variant: 'error'
-    })
+    enqueueSnackbar(
+      _t('We encountered an issue and your project was not created'),
+      { variant: 'error' }
+    )
     // this won't work because we're getting back errors from the serializer
     // but it's a start
     console.error('Error creating project:', error)
