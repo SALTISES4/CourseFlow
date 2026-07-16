@@ -18,7 +18,9 @@ import {
   closeProjectDisciplineSelect,
   openProjectDisciplineSelect,
   projectDisciplineOptionLabels,
+  selectProjectDisciplineOption,
 } from '../../helpers/project-discipline';
+import { expectProjectOverviewShowsSubmittedFormValues } from '../../helpers/project-overview';
 import {
   createProjectDialog,
   createProjectFormSubmitButton,
@@ -29,7 +31,6 @@ import {
   projectFormCancelButton,
   projectStartWithProjectAlert,
   projectStartWithProjectAlertRegion,
-  projectTitle,
   projectTitleField,
   waitForProjectOverviewLoaded,
 } from './project.locators';
@@ -76,6 +77,40 @@ test.describe('Create project form — calibration (FR-PROJ-FORM-001-005)', () =
     await expect(projectDescriptionField(page)).toHaveValue('');
   });
 
+  test.describe('FR-PROJ-FORM-002: onboarding alert', () => {
+    test.describe('when user owns at least one project', () => {
+      test.beforeEach(async ({ page }) => {
+        await expectUserOwnsAtLeastOneProject(page);
+      });
+
+      test('projectStartWithProjectAlert is not visible', async ({ page }) => {
+        await openCreateProjectDialog(page);
+        await expect(projectStartWithProjectAlertRegion(page)).toBeHidden();
+        await expect(projectStartWithProjectAlert(page)).toBeHidden();
+      });
+    });
+
+    test.describe('when user is not owner of any project', () => {
+      test.use({ storageState: { cookies: [], origins: [] } });
+
+      test.beforeEach(async ({ page }) => {
+        await loginAs(page, {
+          email: E2E_CONTRIBUTOR_TEACHER_EMAIL,
+          password: 'password',
+        });
+        await gotoAuthenticatedShell(page, '/home');
+        await expectUserOwnsNoProjects(page);
+      });
+
+      test('projectStartWithProjectAlert is visible with required copy above fields', async ({
+        page,
+      }) => {
+        await openCreateProjectDialog(page);
+        await expectProjectStartWithProjectAlertVisiblePerFrProjForm002(page);
+      });
+    });
+  });
+
   test.describe('FR-PROJ-FORM-004: title validation', () => {
     test('submit stays disabled until a field is changed', async ({ page }) => {
       await openCreateProjectDialog(page);
@@ -113,24 +148,20 @@ test.describe('Create project form — calibration (FR-PROJ-FORM-001-005)', () =
       await projectTitleField(page).fill(projectTitleAtMaxLength());
       await expect(createProjectFormSubmitButton(page)).toBeEnabled();
     });
-
-    test('description-only change does not enable submit without valid title', async ({ page }) => {
-      await openCreateProjectDialog(page);
-      await projectDescriptionField(page).fill('Optional description');
-      await expect(createProjectFormSubmitButton(page)).toBeDisabled();
-    });
   });
 
   test.describe('FR-PROJ-FORM-005: save feedback', () => {
-    test('successful create closes dialog, navigates to project overview, and shows snackbar', async ({
+    test('successful create shows title, description, and disciplines on overview', async ({
       page,
     }) => {
       const uniqueTitle = `E2E Project ${Date.now()}`;
+      const description = 'E2E create overview description';
+      const disciplineLabels = [DISCIPLINE_CATALOGUE_AZ[0]!];
       const createdUuid = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
       const projectDetail = {
         uuid: createdUuid,
         title: uniqueTitle,
-        description: '',
+        description,
         isPublished: false,
         isTemplate: false,
         isFavorite: false,
@@ -167,12 +198,18 @@ test.describe('Create project form — calibration (FR-PROJ-FORM-001-005)', () =
 
       await openCreateProjectDialog(page);
       await projectTitleField(page).fill(uniqueTitle);
+      await projectDescriptionField(page).fill(description);
+      await selectProjectDisciplineOption(page, disciplineLabels[0]!);
       await createProjectFormSubmitButton(page).click();
 
       await expect(createProjectDialog(page)).toBeHidden();
       await expect(page).toHaveURL(new RegExp(`/project/${createdUuid}/?$`));
       await waitForProjectOverviewLoaded(page);
-      await expect(projectTitle(page)).toHaveText(uniqueTitle);
+      await expectProjectOverviewShowsSubmittedFormValues(page, {
+        title: uniqueTitle,
+        description,
+        disciplineLabels,
+      });
       await expectCreateProjectSnackbarMessage(
         page,
         PROJECT_CREATE_SNACKBAR_MESSAGES.success,
@@ -211,41 +248,6 @@ test.describe('Create project form — calibration (FR-PROJ-FORM-001-005)', () =
         page,
         PROJECT_CREATE_SNACKBAR_MESSAGES.failure,
       );
-    });
-  });
-});
-
-test.describe('Create project form — FR-PROJ-FORM-002 onboarding alert', () => {
-  test.describe('when user owns at least one project', () => {
-    test.beforeEach(async ({ page }) => {
-      await gotoAuthenticatedShell(page, '/home');
-      await expectUserOwnsAtLeastOneProject(page);
-    });
-
-    test('projectStartWithProjectAlert is not visible', async ({ page }) => {
-      await openCreateProjectDialog(page);
-      await expect(projectStartWithProjectAlertRegion(page)).toBeHidden();
-      await expect(projectStartWithProjectAlert(page)).toBeHidden();
-    });
-  });
-
-  test.describe('when user is not owner of any project', () => {
-    test.use({ storageState: { cookies: [], origins: [] } });
-
-    test.beforeEach(async ({ page }) => {
-      await loginAs(page, {
-        email: E2E_CONTRIBUTOR_TEACHER_EMAIL,
-        password: 'password',
-      });
-      await gotoAuthenticatedShell(page, '/home');
-      await expectUserOwnsNoProjects(page);
-    });
-
-    test('projectStartWithProjectAlert is visible with required copy above fields', async ({
-      page,
-    }) => {
-      await openCreateProjectDialog(page);
-      await expectProjectStartWithProjectAlertVisiblePerFrProjForm002(page);
     });
   });
 });

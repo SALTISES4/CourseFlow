@@ -12,6 +12,16 @@ export async function closeProjectDisciplineSelect(page: Page): Promise<void> {
   await expect(page.getByRole('listbox')).toBeHidden();
 }
 
+/** Select one catalogue option; ProjectForm closes the listbox on change — do not Escape (closes the dialog). */
+export async function selectProjectDisciplineOption(
+  page: Page,
+  label: string,
+): Promise<void> {
+  await openProjectDisciplineSelect(page);
+  await page.getByRole('option', { name: label, exact: true }).click();
+  await expect(page.getByRole('listbox')).toBeHidden();
+}
+
 export async function projectDisciplineOptionLabels(page: Page): Promise<string[]> {
   const options = page.getByRole('listbox').getByRole('option');
   const count = await options.count();

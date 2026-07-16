@@ -5,6 +5,7 @@
 export const DISCIPLINE_CATALOGUE_AZ = [
   'Anthropology',
   'Biology',
+  'Business',
   'Chemistry',
   'Computer Science',
   'Design',

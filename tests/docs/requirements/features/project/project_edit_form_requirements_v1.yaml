@@ -4,7 +4,7 @@
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
 # Cross-reference:
 #   - tests/docs/requirements/features/shared/context_action_bar_requirements_v1.yaml (editPencilButton on project routes—FR-CAB-001 through FR-CAB-003)
-#   - tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml (shared projectForm, projectTitleField, projectDescriptionField, projectDisciplineField, projectFormCancelButton, and projectFormFieldValidationMessage; inline title validation rules and message copy in FR-PROJ-FORM-004; editProjectFormDialogTitle, editProjectFormSubmitButton, and edit-scoped validation enablement in FR-PROJ-FORM-007 owned in this file; projectDescriptionField rich-text editor contract in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012)
+#   - tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml (shared projectForm, projectTitleField, projectDescriptionField, projectDisciplineField, projectFormCancelButton, and projectFormFieldValidationMessage; inline title validation rules and message copy in FR-PROJ-FORM-004; projectStartWithProjectAlert is create-only per FR-PROJ-FORM-002 and must not appear on editProjectDialog per FR-PROJ-FORM-003; editProjectFormDialogTitle, editProjectFormSubmitButton, and edit-scoped validation enablement in FR-PROJ-FORM-007 owned in this file; projectDescriptionField rich-text editor contract in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012)
 #   - tests/docs/requirements/features/workflow/workflow_edit_form_requirements_v1.yaml (parallel edit dialog pattern for workflows—FR-WF-FORM-001)
 #   - tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-001)
 
@@ -35,6 +35,8 @@ uiObjectDefinitions:
     meaning: Canonical definition in tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml.
   editProjectFormSubmitButton:
     meaning: Primary submit action on projectForm in editProjectDialog.
+  projectStartWithProjectAlert:
+    meaning: Canonical definition in tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml; must not appear on editProjectDialog.
   projectTitle:
     meaning: Canonical definition in tests/docs/requirements/features/project/project_header_requirements_v1.yaml.
   globalMessageSnackbar:
@@ -51,6 +53,7 @@ locatorMappings:
   projectFormCancelButton: "canonical_locators.yaml -> projectFormCancelButton"
   projectFormFieldValidationMessage: "canonical_locators.yaml -> projectFormFieldValidationMessage"
   editProjectFormSubmitButton: "canonical_locators.yaml -> editProjectFormSubmitButton"
+  projectStartWithProjectAlert: "canonical_locators.yaml -> projectStartWithProjectAlert"
   projectTitle: "canonical_locators.yaml -> projectTitle"
   globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
 
@@ -78,6 +81,7 @@ requirements:
       - projectDisciplineField
       - projectFormCancelButton
       - editProjectFormSubmitButton
+      - projectStartWithProjectAlert
 
     preconditions:
       - documentPreconditions for this file hold
@@ -94,9 +98,11 @@ requirements:
       - editPencilButton actionability conforms to roleBehavior for this FR
       - given actor is owner or editor and clicks editPencilButton, system opens editProjectDialog
       - editProjectDialog presents projectForm with editProjectFormDialogTitle 'Edit project'
+      - projectStartWithProjectAlert is not visible in editProjectDialog
+      - projectForm presents projectTitleField, projectDescriptionField, and projectDisciplineField with visible labels 'Title', 'Description', and 'Discipline' and required Title marker per FR-PROJ-FORM-001 in tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml
       - projectTitleField, projectDescriptionField, and projectDisciplineField are prefilled from loaded project data
       - projectDisciplineField selectable options conform to FR-PROJ-FORM-001 per tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml
-      - editProjectFormSubmitButton with label 'Update project'
+      - projectForm presents projectFormCancelButton and editProjectFormSubmitButton with label 'Update project'
       - given editProjectDialog is open with prefilled values and no field has been changed from those values, editProjectFormSubmitButton is disabled and not clickable
       - editProjectFormSubmitButton enablement after field changes follows FR-PROJ-FORM-007
       - given user clicks projectFormCancelButton while editProjectDialog is open, cancel behavior conforms to acceptanceCriteria for this FR
@@ -118,7 +124,12 @@ requirements:
       - given editPencilButton actionability is disabled per roleBehavior for this FR, editProjectDialog does not open when actor attempts to click editPencilButton
       - given actor is owner or editor and FR-PROJ-FORM-003 preconditions hold and trigger fires, editProjectDialog is open
       - editProjectFormDialogTitle matches 'Edit project'
+      - projectStartWithProjectAlert is not visible in editProjectDialog
+      - projectTitleField is visible with label 'Title' and required Title marker per FR-PROJ-FORM-001 in tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml
+      - projectDescriptionField is visible with label 'Description'
+      - projectDisciplineField is visible with label 'Discipline'
       - editProjectFormSubmitButton is visible with label 'Update project'
+      - projectFormCancelButton is visible with label 'Cancel'
       - projectTitleField, projectDescriptionField, and projectDisciplineField show values from the project being edited after load
       - projectDisciplineField selectable options conform to FR-PROJ-FORM-001 per tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml
       - given editProjectDialog is open with prefilled values and no field has been changed from those values, editProjectFormSubmitButton is disabled and not clickable
