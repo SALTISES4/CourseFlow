@@ -9,10 +9,12 @@ from course_flow.api.deps import (
     get_authorization_service,
     get_project_service,
     get_resource_lifecycle_service,
+    get_workflow_copy_service,
     get_workflow_service,
 )
 from course_flow.api.permission_context import permission_context_out
 from course_flow.api.schemas.workflows import (
+    WorkflowCopyIn,
     WorkflowCreateIn,
     WorkflowDetailOut,
     WorkflowDetailOutResp,
@@ -28,6 +30,11 @@ from course_flow.application.services.authorization_service import (
 )
 from course_flow.application.services.resource_lifecycle_service import (
     ResourceStateConflict,
+)
+from course_flow.application.services.workflow_copy_service import (
+    WorkflowCopyDestinationNotFound,
+    WorkflowCopySourceNotFound,
+    WorkflowCopyValidationError,
 )
 from course_flow.core.models import User
 from course_flow.core.permissions import ProjectPermission, WorkflowPermission
@@ -162,6 +169,36 @@ def create_workflow(request, payload: WorkflowCreateIn):
         )
     except ValueError as exc:
         raise HttpError(422, str(exc)) from exc
+    return _workflow_detail(current_user, dto)
+
+
+@router.post(
+    "/{uuid}/copy",
+    response=WorkflowDetailOut,
+    auth=BearerAuth(),
+    operation_id="copyWorkflow",
+)
+def copy_workflow(request, uuid: UUID, payload: WorkflowCopyIn):
+    current_user = get_current_user(request)
+    try:
+        copied = get_workflow_copy_service().copy(
+            source_workflow_uuid=uuid,
+            destination_project_uuid=payload.project_uuid,
+            title=payload.title,
+            actor=current_user,
+        )
+    except WorkflowCopySourceNotFound as exc:
+        raise HttpError(404, "Workflow not found") from exc
+    except WorkflowCopyDestinationNotFound as exc:
+        raise HttpError(404, "Project not found") from exc
+    except AuthorizationDenied as exc:
+        raise HttpError(403, "Forbidden") from exc
+    except WorkflowCopyValidationError as exc:
+        raise HttpError(422, str(exc)) from exc
+
+    dto = get_workflow_service().get_by_workflow_uuid(copied.uuid)
+    if dto is None:  # Defensive: the copy transaction committed an invalid result.
+        raise HttpError(500, "Copied workflow could not be loaded")
     return _workflow_detail(current_user, dto)
 
 

@@ -148,11 +148,11 @@ export function cardArchivedChip(card: Locator): Locator {
   return cardFooterTagsRegion(card).getByText('Archived', { exact: true });
 }
 
-/** Card tile scoped by visible title (listing cards and dialog cards without data-test-id). */
+/** Card tile scoped by visible title. */
 export function cardByTitle(scope: Locator, title: string): Locator {
   return scope
-    .locator('div')
-    .filter({ has: scope.getByRole('heading', { name: title, exact: true }) });
+    .locator('[data-test-id$="-card"]')
+    .filter({ hasText: title });
 }
 export async function expectFollowsInDocumentOrder(earlier: Locator, later: Locator): Promise<void> {
   await expect

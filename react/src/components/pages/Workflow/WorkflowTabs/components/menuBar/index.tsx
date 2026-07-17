@@ -35,6 +35,7 @@ const ActionMenu = () => {
     enabled: Boolean(uuid)
   })
   const workflow = workflowDetailResp?.item
+  const workflowTypeLabel = workflow?.workflowType ?? 'workflow'
   const { resource: permissions, project: projectPermissions } =
     useWorkspacePermissions()
   const isArchived = permissions.state === 'archived'
@@ -46,7 +47,6 @@ const ActionMenu = () => {
   const {
     openEditMenu,
     openShareDialog,
-    openExportDialog,
     copyToProject,
     archiveWorkflow,
     restoreWorkflow,
@@ -85,19 +85,6 @@ const ActionMenu = () => {
     //   show: (!publicView || userId) && workflow.workflowPermissions.read,
     //   separator: true
     // },
-    // hidden
-    {
-      uuid: 'copy-to-project',
-      content: _t('Copy into current project'),
-      action: copyToProject,
-      show: !isArchived && hasPermission(permissions, WorkflowPermission.COPY)
-    },
-    {
-      uuid: 'copy-to-library',
-      content: _t('Copy to my library'),
-      action: openExportDialog,
-      show: !isArchived && hasPermission(permissions, WorkflowPermission.COPY)
-    },
     // NOTE: scoped out temporarily, see COURSEFLOW-489
     // {
     //   uuid: 'import-outcomes',
@@ -115,10 +102,16 @@ const ActionMenu = () => {
     {
       uuid: 'archive-workflow',
       action: archiveWorkflow,
-      content: _t('Archive workflow'),
+      content: _t(`Archive ${workflowTypeLabel}`),
       show:
         !isArchived && hasPermission(permissions, WorkflowPermission.ARCHIVE),
       separator: 'top'
+    },
+    {
+      uuid: 'copy-to-project',
+      content: _t(`Copy ${workflowTypeLabel}`),
+      action: copyToProject,
+      show: !isArchived && hasPermission(permissions, WorkflowPermission.COPY)
     },
     {
       uuid: 'restore-workflow',

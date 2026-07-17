@@ -14,6 +14,7 @@ import {
   addProjectTeamMembers,
   archiveProject,
   archiveWorkflow,
+  copyWorkflow,
   courseFlowApiNinjaAppHealth,
   createChannel,
   createGraphEdge,
@@ -100,6 +101,8 @@ import type {
   ArchiveProjectResponse,
   ArchiveWorkflowData,
   ArchiveWorkflowResponse,
+  CopyWorkflowData,
+  CopyWorkflowResponse,
   CourseFlowApiNinjaAppHealthData,
   CourseFlowApiNinjaAppHealthResponse,
   CreateChannelData,
@@ -714,6 +717,33 @@ export const createWorkflowMutation = (
   > = {
     mutationFn: async (fnOptions) => {
       const { data } = await createWorkflow({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Copy Workflow
+ */
+export const copyWorkflowMutation = (
+  options?: Partial<Options<CopyWorkflowData>>
+): UseMutationOptions<
+  CopyWorkflowResponse,
+  DefaultError,
+  Options<CopyWorkflowData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    CopyWorkflowResponse,
+    DefaultError,
+    Options<CopyWorkflowData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await copyWorkflow({
         ...options,
         ...fnOptions,
         throwOnError: true

@@ -2,6 +2,8 @@ from datetime import datetime
 from enum import Enum
 from uuid import UUID
 
+from pydantic import Field
+
 from course_flow.api.common.schemas import CamelSchema
 from course_flow.api.schemas.permissions import PermissionContextOut
 from course_flow.core.enum import WorkflowType
@@ -22,6 +24,13 @@ class WorkflowCreateIn(CamelSchema):
     title: str = ""
     workflow_type: WorkflowTypeIn
     description: str = ""
+
+
+class WorkflowCopyIn(CamelSchema):
+    """Copy an existing workflow into an eligible destination project."""
+
+    project_uuid: UUID
+    title: str = Field(min_length=1, max_length=200)
 
 
 class WorkflowUpdateIn(CamelSchema):

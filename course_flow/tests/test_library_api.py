@@ -166,6 +166,43 @@ def test_filter_content_type_project_returns_only_projects(client: Client, user)
 
 
 @pytest.mark.django_db
+def test_filter_can_create_workflow_returns_owned_and_editor_projects_only(
+    client: Client, user, teammate
+):
+    raw = _issue_token_for(user)
+    owned = Project.objects.create(owner=user, title="Owned", description="")
+    editor = Project.objects.create(owner=teammate, title="Editor", description="")
+    viewer = Project.objects.create(owner=teammate, title="Viewer", description="")
+    TeamUser.objects.create(
+        team=Team.objects.get(project=editor),
+        user=user,
+        role=Role.EDITOR,
+    )
+    TeamUser.objects.create(
+        team=Team.objects.get(project=viewer),
+        user=user,
+        role=Role.VIEWER,
+    )
+
+    body = _post_search(
+        client,
+        raw,
+        {
+            "filters": {
+                "contentType": "project",
+                "canCreateWorkflow": True,
+            }
+        },
+    )
+
+    assert body["meta"]["totalResults"] == 2
+    assert {item["uuid"] for item in body["items"]} == {
+        str(owned.uuid),
+        str(editor.uuid),
+    }
+
+
+@pytest.mark.django_db
 def test_filter_content_type_workflow_returns_only_workflows(client: Client, user):
     raw = _issue_token_for(user)
     project = Project.objects.create(owner=user, title="P", description="")

@@ -9,6 +9,8 @@ import type {
   ArchiveProjectResponses,
   ArchiveWorkflowData,
   ArchiveWorkflowResponses,
+  CopyWorkflowData,
+  CopyWorkflowResponses,
   CourseFlowApiNinjaAppHealthData,
   CourseFlowApiNinjaAppHealthResponses,
   CreateChannelData,
@@ -173,6 +175,8 @@ import {
   zArchiveProjectResponse,
   zArchiveWorkflowData,
   zArchiveWorkflowResponse,
+  zCopyWorkflowData,
+  zCopyWorkflowResponse,
   zCourseFlowApiNinjaAppHealthData,
   zCourseFlowApiNinjaAppHealthResponse,
   zCreateChannelData,
@@ -681,6 +685,28 @@ export const createWorkflow = <ThrowOnError extends boolean = false>(
       ...options.headers
     }
   })
+
+/**
+ * Copy Workflow
+ */
+export const copyWorkflow = <ThrowOnError extends boolean = false>(
+  options: Options<CopyWorkflowData, ThrowOnError>
+) =>
+  (options.client ?? client).post<CopyWorkflowResponses, unknown, ThrowOnError>(
+    {
+      requestValidator: async (data) =>
+        await zCopyWorkflowData.parseAsync(data),
+      responseValidator: async (data) =>
+        await zCopyWorkflowResponse.parseAsync(data),
+      security: [{ scheme: 'bearer', type: 'http' }],
+      url: '/api/workflow/{uuid}/copy',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      }
+    }
+  )
 
 /**
  * Delete Workflow Permanently

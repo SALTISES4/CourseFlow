@@ -63,12 +63,27 @@ class LibraryFiltersIn(CamelSchema):
     is_favorite: bool | None = None
     is_archived: bool | None = None
     is_template: bool | None = None
+    can_create_workflow: bool | None = Field(
+        default=None,
+        description=(
+            "Limit project results to projects where the actor is the owner or an "
+            "editor and may create workflows."
+        ),
+    )
 
     @model_validator(mode="after")
     def validate_workflow_types_scope(self):
         if self.content_type == LibraryContentTypeIn.PROJECT and self.workflow_types:
             raise ValueError(
                 "workflowTypes may only be used when contentType is workflow or omitted"
+            )
+        return self
+
+    @model_validator(mode="after")
+    def validate_create_workflow_scope(self):
+        if self.can_create_workflow and self.content_type != LibraryContentTypeIn.PROJECT:
+            raise ValueError(
+                "canCreateWorkflow may only be used when contentType is project"
             )
         return self
 
@@ -136,6 +151,7 @@ class LibraryAppliedFiltersOut(CamelSchema):
     is_favorite: bool | None = None
     is_archived: bool | None = None
     is_template: bool | None = None
+    can_create_workflow: bool | None = None
 
 
 class LibraryMetaOut(CamelSchema):

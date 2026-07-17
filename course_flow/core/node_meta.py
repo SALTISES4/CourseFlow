@@ -185,6 +185,8 @@ def copy_node_typed_meta(*, source: Node, target: Node) -> None:
         dst.time_required = src.time_required
         dst.time_units = src.time_units
         dst.represents_workflow = src.represents_workflow
+        dst.context = src.context
+        dst.classification = src.classification
         dst.save(
             update_fields=[
                 "context_classification",
@@ -192,6 +194,8 @@ def copy_node_typed_meta(*, source: Node, target: Node) -> None:
                 "time_required",
                 "time_units",
                 "represents_workflow",
+                "context",
+                "classification",
             ]
         )
         return
@@ -203,12 +207,14 @@ def copy_node_typed_meta(*, source: Node, target: Node) -> None:
         dst.time_required = src.time_required
         dst.time_units = src.time_units
         dst.represents_workflow = src.represents_workflow
+        dst.context = src.context
         dst.save(
             update_fields=[
                 "context_classification",
                 "time_required",
                 "time_units",
                 "represents_workflow",
+                "context",
             ]
         )
 

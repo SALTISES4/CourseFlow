@@ -26,6 +26,7 @@ from course_flow.application.services.authorization_service import (
     AuthorizationService,
     PermissionContext,
 )
+from course_flow.core.enum import TeamRole
 from course_flow.core.models import (
     Discipline,
     FavoriteGraph,
@@ -84,6 +85,7 @@ class LibraryService:
             is_archived=raw_filters.is_archived,
             is_favorite=raw_filters.is_favorite,
             is_template=raw_filters.is_template,
+            can_create_workflow=raw_filters.can_create_workflow,
         )
 
         accessible_projects = Project.objects.filter(
@@ -95,6 +97,15 @@ class LibraryService:
 
         elif filters.ownership == "shared":
             accessible_projects = accessible_projects.exclude(owner_id=user_id)
+
+        if filters.can_create_workflow:
+            accessible_projects = accessible_projects.filter(
+                Q(owner_id=user_id)
+                | Q(
+                    team__users__user_id=user_id,
+                    team__users__role=TeamRole.EDITOR,
+                )
+            ).distinct()
 
         project_qs = accessible_projects
         workflow_graph_qs = Graph.objects.select_related("workflow", "workflow__project").filter(

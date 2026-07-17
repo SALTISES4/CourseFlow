@@ -346,6 +346,16 @@ export const zWorkflowListOut = z.object({
 })
 
 /**
+ * WorkflowCopyIn
+ *
+ * Copy an existing workflow into an eligible destination project.
+ */
+export const zWorkflowCopyIn = z.object({
+  projectUuid: z.string().uuid(),
+  title: z.string().min(1).max(200)
+})
+
+/**
  * WorkflowDetailOutResp
  */
 export const zWorkflowDetailOutResp = z.object({
@@ -1295,7 +1305,8 @@ export const zLibraryAppliedFiltersOut = z.object({
   ownership: zLibraryOwnershipIn.nullish(),
   isFavorite: z.boolean().nullish(),
   isArchived: z.boolean().nullish(),
-  isTemplate: z.boolean().nullish()
+  isTemplate: z.boolean().nullish(),
+  canCreateWorkflow: z.boolean().nullish()
 })
 
 /**
@@ -1330,7 +1341,8 @@ export const zLibraryFiltersIn = z.object({
   ownership: zLibraryOwnershipIn.nullish(),
   isFavorite: z.boolean().nullish(),
   isArchived: z.boolean().nullish(),
-  isTemplate: z.boolean().nullish()
+  isTemplate: z.boolean().nullish(),
+  canCreateWorkflow: z.boolean().nullish()
 })
 
 /**
@@ -1588,6 +1600,19 @@ export const zCreateWorkflowData = z.object({
  * OK
  */
 export const zCreateWorkflowResponse = zWorkflowDetailOut
+
+export const zCopyWorkflowData = z.object({
+  body: zWorkflowCopyIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zCopyWorkflowResponse = zWorkflowDetailOut
 
 export const zDeleteWorkflowPermanentlyData = z.object({
   body: z.never().optional(),

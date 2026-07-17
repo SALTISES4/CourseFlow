@@ -632,6 +632,22 @@ export type WorkflowListOut = {
 }
 
 /**
+ * WorkflowCopyIn
+ *
+ * Copy an existing workflow into an eligible destination project.
+ */
+export type WorkflowCopyIn = {
+  /**
+   * Projectuuid
+   */
+  projectUuid: string
+  /**
+   * Title
+   */
+  title: string
+}
+
+/**
  * WorkflowDetailOutResp
  */
 export type WorkflowDetailOutResp = {
@@ -2469,6 +2485,10 @@ export type LibraryAppliedFiltersOut = {
    * Istemplate
    */
   isTemplate?: boolean | null
+  /**
+   * Cancreateworkflow
+   */
+  canCreateWorkflow?: boolean | null
 }
 
 /**
@@ -2636,6 +2656,12 @@ export type LibraryFiltersIn = {
    * Istemplate
    */
   isTemplate?: boolean | null
+  /**
+   * Cancreateworkflow
+   *
+   * Limit project results to projects where the actor is the owner or an editor and may create workflows.
+   */
+  canCreateWorkflow?: boolean | null
 }
 
 /**
@@ -3047,6 +3073,28 @@ export type CreateWorkflowResponses = {
 
 export type CreateWorkflowResponse =
   CreateWorkflowResponses[keyof CreateWorkflowResponses]
+
+export type CopyWorkflowData = {
+  body: WorkflowCopyIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/workflow/{uuid}/copy'
+}
+
+export type CopyWorkflowResponses = {
+  /**
+   * OK
+   */
+  200: WorkflowDetailOut
+}
+
+export type CopyWorkflowResponse =
+  CopyWorkflowResponses[keyof CopyWorkflowResponses]
 
 export type DeleteWorkflowPermanentlyData = {
   body?: never

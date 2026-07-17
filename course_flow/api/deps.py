@@ -31,6 +31,9 @@ from course_flow.application.services.thread_comment_service import (
     ThreadCommentService,
 )
 from course_flow.application.services.user_service import UserService
+from course_flow.application.services.workflow_copy_service import (
+    WorkflowCopyService,
+)
 from course_flow.application.services.workflow_service import WorkflowService
 from course_flow.infrastructure.repositories.django_channel_repository import (
     DjangoChannelRepository,
@@ -55,6 +58,7 @@ _project_service = ProjectService(DjangoProjectRepository())
 _resource_lifecycle_service = ResourceLifecycleService()
 _project_relations_service = ProjectRelationsService()
 _workflow_service = WorkflowService(DjangoWorkflowRepository())
+_workflow_copy_service = WorkflowCopyService(_authorization_service)
 _channel_service = ChannelService(DjangoChannelRepository())
 _section_service = SectionService(DjangoSectionRepository())
 _thread_comment_service = ThreadCommentService()
@@ -101,6 +105,10 @@ def get_project_relations_service() -> ProjectRelationsService:
 
 def get_workflow_service() -> WorkflowService:
     return _workflow_service
+
+
+def get_workflow_copy_service() -> WorkflowCopyService:
+    return _workflow_copy_service
 
 
 def get_channel_service() -> ChannelService:
