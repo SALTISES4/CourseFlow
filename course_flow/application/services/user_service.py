@@ -3,8 +3,9 @@ from __future__ import annotations
 import re
 from django.db.models import Q
 
+from course_flow.api.schemas.auth import UserMeta, UserSummaryOut
 from course_flow.core.enum import LanguagePreference
-from course_flow.core.models import User
+from course_flow.core.models import User, Project
 
 _CANONICAL_LANG = {
     "en": LanguagePreference.EN.value,
@@ -16,6 +17,20 @@ _CANONICAL_LANG = {
 
 class UserService:
     ALLOWED_LANGUAGE_PREFERENCES = set(_CANONICAL_LANG.keys())
+
+    def get_user_summary(self, user: User) -> UserSummaryOut:
+        owns_any_project = Project.objects.filter(owner_id=user.id).exists()
+
+        return UserSummaryOut(
+            uuid=user.uuid,
+            email=user.email,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            account_role=user.account_role,
+            meta=UserMeta(
+                owns_any_project=owns_any_project,
+            ),
+        )
 
     def get_profile_settings(self, user_id: int) -> User | None:
         return User.objects.filter(pk=user_id).first()

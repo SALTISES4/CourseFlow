@@ -11,8 +11,8 @@ import type {
   UserSummaryOut
 } from './gen/types.gen'
 
-/** Mirrors `UserSummaryOut` from the API; use `uuid` as stable identity (no numeric id in v2). */
-export type CurrentUser = UserSummaryOut
+
+
 
 export type LoginResponse = LoginOut
 export type UserLoginPayload = LoginIn
@@ -109,7 +109,7 @@ export async function logoutRequest(): Promise<LogoutOut | undefined> {
  * Resolves the current user via `GET /api/auth/me` using the shared client
  * (Bearer from `getAccessToken()` — see `configureCourseFlowClient.ts`).
  */
-export async function fetchCurrentUser(): Promise<CurrentUser> {
+export async function fetchCurrentUser(): Promise<UserSummaryOut> {
   const result = await me({})
 
   if (result.error) {
@@ -124,5 +124,5 @@ export async function fetchCurrentUser(): Promise<CurrentUser> {
     )
   }
 
-  return result.data.item
+  return result.data
 }

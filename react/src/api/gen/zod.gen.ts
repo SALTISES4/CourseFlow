@@ -1036,6 +1036,13 @@ export const zThreadCommentsBulkDeleteOut = z.object({
 })
 
 /**
+ * UserMeta
+ */
+export const zUserMeta = z.object({
+  ownsAnyProject: z.boolean()
+})
+
+/**
  * UserSummaryOut
  */
 export const zUserSummaryOut = z.object({
@@ -1043,7 +1050,8 @@ export const zUserSummaryOut = z.object({
   email: z.string(),
   firstName: z.string(),
   lastName: z.string(),
-  accountRole: zAccountRole.nullable()
+  accountRole: zAccountRole.nullable(),
+  meta: zUserMeta.nullable()
 })
 
 /**
@@ -1081,13 +1089,6 @@ export const zRegisterIn = z.object({
  */
 export const zLogoutOut = z.object({
   success: z.boolean()
-})
-
-/**
- * UserSummaryOutResp
- */
-export const zUserSummaryOutResp = z.object({
-  item: zUserSummaryOut
 })
 
 /**
@@ -2270,7 +2271,7 @@ export const zMeData = z.object({
 /**
  * OK
  */
-export const zMeResponse = zUserSummaryOutResp
+export const zMeResponse = zUserSummaryOut
 
 export const zGetMyProfileSettingsData = z.object({
   body: z.never().optional(),

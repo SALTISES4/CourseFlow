@@ -37,7 +37,7 @@ const Home = () => {
   }
 
   //  const { projects, templates } = data.dataPackage
-  const projects = data.items
+  const projects = data?.items ?? []
 
   const formattedProjects = formatLibraryObjects(projects)
 

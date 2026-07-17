@@ -2100,6 +2100,16 @@ export type LoginOut = {
 }
 
 /**
+ * UserMeta
+ */
+export type UserMeta = {
+  /**
+   * Ownsanyproject
+   */
+  ownsAnyProject: boolean
+}
+
+/**
  * UserSummaryOut
  */
 export type UserSummaryOut = {
@@ -2120,6 +2130,7 @@ export type UserSummaryOut = {
    */
   lastName: string
   accountRole: AccountRole | null
+  meta: UserMeta | null
 }
 
 /**
@@ -2174,13 +2185,6 @@ export type LogoutOut = {
    * Success
    */
   success: boolean
-}
-
-/**
- * UserSummaryOutResp
- */
-export type UserSummaryOutResp = {
-  item: UserSummaryOut
 }
 
 /**
@@ -4172,7 +4176,7 @@ export type MeResponses = {
   /**
    * OK
    */
-  200: UserSummaryOutResp
+  200: UserSummaryOut
 }
 
 export type MeResponse = MeResponses[keyof MeResponses]
