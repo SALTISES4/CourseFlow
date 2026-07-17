@@ -16,7 +16,11 @@ const defaultValues: ProjectFormValues = {
   disciplines: []
 }
 
-const ProjectCreateDialog = () => {
+type PropsType = {
+  showNoProjectsAlert: boolean
+}
+
+const ProjectCreateDialog = ({ showNoProjectsAlert = false }: PropsType) => {
   const { show, onClose } = useDialog(DialogMode.PROJECT_CREATE)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -78,7 +82,7 @@ const ProjectCreateDialog = () => {
         defaultValues={defaultValues}
         submitHandler={onSubmit}
         closeCallback={onDialogClose}
-        showNoProjectsAlert={true}
+        showNoProjectsAlert={showNoProjectsAlert}
         label={_t('Create project')}
         submitLabel={_t('Create project')}
       />
