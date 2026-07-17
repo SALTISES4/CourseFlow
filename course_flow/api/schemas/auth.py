@@ -29,10 +29,6 @@ class UserSummaryOut(CamelSchema):
     account_role: AccountRole | None
 
 
-class UserSummaryOutResp(CamelSchema):
-    item: UserSummaryOut
-
-
 class LoginOut(CamelSchema):
     access_token: str
     token_type: str

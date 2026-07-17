@@ -16,7 +16,6 @@ from course_flow.api.schemas.auth import (
     LogoutOut,
     RegisterIn,
     UserSummaryOut,
-    UserSummaryOutResp,
 )
 from course_flow.application.services.auth_service import (
     DuplicateEmailError,
@@ -90,6 +89,6 @@ def logout(request):
     return LogoutOut(success=True)
 
 
-@router.get("/me", response=UserSummaryOutResp, auth=BearerAuth(), operation_id="me")
+@router.get("/me", response=UserSummaryOut, auth=BearerAuth(), operation_id="me")
 def me(request):
-    return UserSummaryOutResp(item=_to_user_summary(get_current_user(request)))
+    return _to_user_summary(get_current_user(request))

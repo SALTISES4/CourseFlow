@@ -2177,13 +2177,6 @@ export type LogoutOut = {
 }
 
 /**
- * UserSummaryOutResp
- */
-export type UserSummaryOutResp = {
-  item: UserSummaryOut
-}
-
-/**
  * UserProfileSettingsOut
  */
 export type UserProfileSettingsOut = {
@@ -4172,7 +4165,7 @@ export type MeResponses = {
   /**
    * OK
    */
-  200: UserSummaryOutResp
+  200: UserSummaryOut
 }
 
 export type MeResponse = MeResponses[keyof MeResponses]

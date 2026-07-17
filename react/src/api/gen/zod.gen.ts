@@ -1084,13 +1084,6 @@ export const zLogoutOut = z.object({
 })
 
 /**
- * UserSummaryOutResp
- */
-export const zUserSummaryOutResp = z.object({
-  item: zUserSummaryOut
-})
-
-/**
  * UserProfileSettingsOut
  */
 export const zUserProfileSettingsOut = z.object({
@@ -2270,7 +2263,7 @@ export const zMeData = z.object({
 /**
  * OK
  */
-export const zMeResponse = zUserSummaryOutResp
+export const zMeResponse = zUserSummaryOut
 
 export const zGetMyProfileSettingsData = z.object({
   body: z.never().optional(),

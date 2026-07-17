@@ -12,7 +12,7 @@ import {
   getAccessToken,
   setAccessToken
 } from '@cf/api/authToken'
-import { UserSummaryOutResp } from '@cf/api/gen'
+import { UserSummaryOut } from '@cf/api/gen'
 import { meQueryKey } from '@cf/api/gen/@tanstack/react-query.gen'
 import { courseFlowQueryClient } from '@cf/api/queryClient'
 import { _t } from '@cf/utility/Utility.class'
@@ -48,9 +48,10 @@ export const bootstrapAuth = createAsyncThunk<
   }
   try {
     const user = await fetchCurrentUser()
-    courseFlowQueryClient.setQueryData(meQueryKey(), {
-      item: user
-    } satisfies UserSummaryOutResp)
+    courseFlowQueryClient.setQueryData(
+      meQueryKey(),
+      user satisfies UserSummaryOut
+    )
     return { user }
   } catch (e) {
     if (e instanceof AuthRequestError && e.status === 401) {
@@ -75,9 +76,10 @@ export const login = createAsyncThunk<
   try {
     const data = await loginRequest(payload)
     setAccessToken(data.accessToken)
-    courseFlowQueryClient.setQueryData(meQueryKey(), {
-      item: data.user
-    } satisfies UserSummaryOutResp)
+    courseFlowQueryClient.setQueryData(
+      meQueryKey(),
+      data.user satisfies UserSummaryOut
+    )
     return { user: data.user }
   } catch (e) {
     if (e instanceof AuthRequestError) {
@@ -97,9 +99,10 @@ export const register = createAsyncThunk<
     console.log('attempting to register with', payload)
     const data = await registerRequest(payload)
     setAccessToken(data.accessToken)
-    courseFlowQueryClient.setQueryData(meQueryKey(), {
-      item: data.user
-    } satisfies UserSummaryOutResp)
+    courseFlowQueryClient.setQueryData(
+      meQueryKey(),
+      data.user satisfies UserSummaryOut
+    )
     return { user: data.user }
   } catch (e) {
     if (e instanceof AuthRequestError) {

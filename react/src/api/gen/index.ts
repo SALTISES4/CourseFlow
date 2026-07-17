@@ -450,7 +450,6 @@ export {
   type UserProfileSettingsOutResp,
   type UserProfileSettingsPatchIn,
   type UserSummaryOut,
-  type UserSummaryOutResp,
   type WorkflowCreateIn,
   type WorkflowDetailOut,
   type WorkflowDetailOutResp,

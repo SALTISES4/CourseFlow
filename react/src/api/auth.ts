@@ -57,7 +57,7 @@ export async function loginRequest(
     throw new AuthRequestError(parseDetail(result.error), status, result.error)
   }
 
-  return result.data
+  return result.data as LoginOut
 }
 
 export async function registerRequest(
@@ -77,7 +77,7 @@ export async function registerRequest(
     throw new AuthRequestError(parseDetail(result.error), status, result.error)
   }
 
-  return result.data
+  return result.data as LoginOut
 }
 
 export async function logoutRequest(): Promise<LogoutOut> {
@@ -88,7 +88,7 @@ export async function logoutRequest(): Promise<LogoutOut> {
     throw new AuthRequestError(parseDetail(result.error), status, result.error)
   }
 
-  return result.data
+  return result.data as LogoutOut
 }
 
 /**
@@ -103,5 +103,5 @@ export async function fetchCurrentUser(): Promise<CurrentUser> {
     throw new AuthRequestError(parseDetail(result.error), status, result.error)
   }
 
-  return result.data.item
+  return result.data as UserSummaryOut
 }
