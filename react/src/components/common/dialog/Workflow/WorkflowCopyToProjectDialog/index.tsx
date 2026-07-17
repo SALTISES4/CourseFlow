@@ -21,7 +21,9 @@ export type TargetProjectQueryResp = {
 
 function WorkflowCopyToProjectDialog({ id, actionFunction }: any) {
   const { show, onClose } = useDialog(DialogMode.WORKFLOW_COPY_TO_PROJECT)
-  const [projectData, setProjectData] = useState<TargetProjectQueryResp>(null)
+  const [projectData, setProjectData] = useState<TargetProjectQueryResp | null>(
+    null
+  )
 
   const onDialogClose = (response: any) => {
     onClose()

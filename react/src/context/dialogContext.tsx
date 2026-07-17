@@ -25,9 +25,9 @@ type ActionType<T extends keyof DialogPayloadMap> = {
  * CONTEXT
  *******************************************************/
 export const DialogContext = createContext<StateType>(initialState)
-export const DialogDispatchContext = createContext<Dispatch<ActionType<any>>>(
-  () => null
-)
+export const DialogDispatchContext = createContext<
+  Dispatch<ActionType<any> | null>
+>(() => null)
 
 /**
  *

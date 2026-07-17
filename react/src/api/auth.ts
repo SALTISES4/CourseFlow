@@ -57,6 +57,13 @@ export async function loginRequest(
     throw new AuthRequestError(parseDetail(result.error), status, result.error)
   }
 
+  if (!result.data) {
+    throw new AuthRequestError(
+      'Login response did not include data',
+      result.response?.status ?? 0
+    )
+  }
+
   return result.data
 }
 
@@ -77,10 +84,17 @@ export async function registerRequest(
     throw new AuthRequestError(parseDetail(result.error), status, result.error)
   }
 
+  if (!result.data) {
+    throw new AuthRequestError(
+      'Registration response did not include data',
+      result.response?.status ?? 0
+    )
+  }
+
   return result.data
 }
 
-export async function logoutRequest(): Promise<LogoutOut> {
+export async function logoutRequest(): Promise<LogoutOut | undefined> {
   const result = await logout()
 
   if (result.error) {
@@ -101,6 +115,13 @@ export async function fetchCurrentUser(): Promise<CurrentUser> {
   if (result.error) {
     const status = result.response?.status ?? 0
     throw new AuthRequestError(parseDetail(result.error), status, result.error)
+  }
+
+  if (!result.data) {
+    throw new AuthRequestError(
+      'Current-user response did not include data',
+      result.response?.status ?? 0
+    )
   }
 
   return result.data.item

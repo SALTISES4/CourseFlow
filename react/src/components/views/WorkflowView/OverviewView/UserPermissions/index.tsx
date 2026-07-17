@@ -7,9 +7,9 @@ import type { ProjectTeamMemberOut } from '@cf/api/gen/types.gen'
 import { ProjectPermission, ProjectTeamRoleSchema } from '@cf/api/gen/types.gen'
 import { useProjectPermission } from '@cf/context/workspacePermissionsContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { useTeamProjectUuidForWorkflow } from '@cf/hooks/useTeamProjectUuidForWorkflow'
 import { WorkspaceType } from '@cf/types/enum'
+import { SnackbarOptions } from '@cf/utility/constants'
 import {
   projectTeamRoleLabel,
   projectTeamRoleMenuOptions
@@ -24,6 +24,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { EUser } from '@XMLHTTP/types/entity'
+import { enqueueSnackbar } from 'notistack'
 import { useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -45,7 +46,6 @@ function memberDisplayName(m: ProjectTeamMemberOut): string {
 }
 
 const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
-  const { onError, onSuccess } = useGenericMsgHandler()
   const { dispatch } = useDialog()
   const queryClient = useQueryClient()
   const { uuid: routeWorkflowUuid } = useParams()
@@ -90,16 +90,24 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
       return
     }
     try {
-      const resp = await updateMember.mutateAsync({
+      await updateMember.mutateAsync({
         path: {
           uuid: projectUuidForTeam,
           membership_id: membershipId
         },
         body: { role }
       })
-      onSuccess(resp)
+      enqueueSnackbar(_t("The contributor's role was successfully updated"), {
+        variant: SnackbarOptions.SUCCESS
+      })
     } catch (err) {
-      onError(err)
+      enqueueSnackbar(
+        _t(
+          "We encountered an issue and the contributor's role was not updated"
+        ),
+        { variant: SnackbarOptions.ERROR }
+      )
+      console.error('Failed to update contributor role:', err)
     }
   }
 
@@ -168,6 +176,7 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
             />
             <MenuButton
               disabled={!canManageMembers}
+              selected={user.role}
               options={[
                 ...projectTeamRoleMenuOptions.map((item) => ({
                   name: item.value,
@@ -181,7 +190,7 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
                 },
                 {
                   name: 'remove',
-                  label: _t('Remove user'),
+                  label: _t('Remove contributor'),
                   onClick: onUserRemove(user.id, memberDisplayName(user))
                 }
               ]}

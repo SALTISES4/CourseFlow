@@ -44,13 +44,15 @@ function getTabContent(
   }
 
   switch (tab) {
-    case 'edit':
+    case 'edit': {
+      const { uuid, objectType } = edit
+      if (!uuid || !objectType) {
+        return null
+      }
       return (
-        <EditTab
-          uuid={edit.uuid}
-          type={edit.objectType as unknown as EditableType}
-        />
+        <EditTab uuid={uuid} type={objectType as unknown as EditableType} />
       )
+    }
     case 'add':
       return <AddTab />
     case 'comments':
@@ -146,7 +148,7 @@ const WorkspaceSidebar = () => {
 
   const tabs: {
     disabled?: boolean
-    value: SidebarState['tab']
+    value: Exclude<SidebarState['tab'], null>
     icon: ReactNode
   }[] = [
     {
@@ -158,10 +160,15 @@ const WorkspaceSidebar = () => {
       value: 'add',
       icon: <AddCircleIcon />
     },
-    objectTypesWithComments.includes(sidebar.edit.objectType) && {
-      value: 'comments',
-      icon: <ChatIcon />
-    },
+    ...(sidebar.edit.objectType &&
+    objectTypesWithComments.includes(sidebar.edit.objectType)
+      ? [
+          {
+            value: 'comments' as const,
+            icon: <ChatIcon />
+          }
+        ]
+      : []),
     {
       value: 'outcomes',
       icon: <EmojiEventsOutlinedIcon />
@@ -210,7 +217,7 @@ const WorkspaceSidebar = () => {
       <SidebarTabsWrap
         exclusive
         orientation="vertical"
-        value={sidebar.tab}
+        value={sidebar.tab ?? false}
         onChange={(_, tab) => onTabClick(tab)}
       >
         {visibleTabs}

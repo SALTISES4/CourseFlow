@@ -55,7 +55,7 @@ const OverviewTab = ({
           <SC.InfoBlock>
             <SC.InfoBlockTitle>{_t('Disciplines')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
-              {disciplines.length
+              {disciplines?.length
                 ? disciplines.map((d) => d.title).join(', ')
                 : _t('No disciplines found.')}
             </SC.InfoBlockContent>
@@ -101,7 +101,12 @@ const OverviewTab = ({
               onClick={() =>
                 visibilityMutation.mutate({
                   path: { uuid: uuid ?? '' },
-                  body: { isPublished: !isPublished }
+                  body: {
+                    isPublished: !isPublished,
+                    disciplines: (disciplines ?? []).map(
+                      (discipline) => discipline.id
+                    )
+                  }
                 })
               }
             >
@@ -111,7 +116,7 @@ const OverviewTab = ({
         </Stack>
       </SC.InfoBlock>
 
-      <TagsSection data={tags} />
+      <TagsSection data={tags ?? []} />
     </OuterContentWrap>
   )
 }

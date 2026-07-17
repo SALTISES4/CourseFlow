@@ -14,7 +14,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
-import { MouseEvent, MutableRefObject, useCallback, useState } from 'react'
+import { MouseEvent, RefObject, useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import InsertMenu from '../InsertMenu'
@@ -22,7 +22,7 @@ import InsertMenu from '../InsertMenu'
 type PropsType = {
   nodeId: string
   graphUuid: string
-  nodeRef: MutableRefObject<HTMLDivElement>
+  nodeRef: RefObject<HTMLDivElement>
 }
 
 type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
@@ -94,7 +94,7 @@ const HoverMenu = ({ nodeId, graphUuid, nodeRef }: PropsType) => {
   )
 
   const onInsertCancel = useCallback(
-    () => setState({ anchor: null, duplicate: null }),
+    () => setState({ anchor: null, duplicate: undefined }),
     []
   )
 

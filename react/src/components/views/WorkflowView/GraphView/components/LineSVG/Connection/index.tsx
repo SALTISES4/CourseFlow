@@ -95,7 +95,11 @@ const Connection = ({
 
         // this is so crappy
         const onMouseMove = (e: MouseEvent) => {
-          const svgBCR = svgRef.current.getBoundingClientRect()
+          const svg = svgRef.current
+          if (!svg) {
+            return
+          }
+          const svgBCR = svg.getBoundingClientRect()
           const moveArgs = {
             ...args,
             [editing]: {

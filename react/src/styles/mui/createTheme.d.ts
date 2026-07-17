@@ -14,9 +14,9 @@ declare module '@mui/material/styles' {
       template?: string
     }
 
-    workflow?: {
-      highlighted?: string
-      selected?: string
+    workflow: {
+      highlighted: string
+      selected: string
     }
 
     template?: {

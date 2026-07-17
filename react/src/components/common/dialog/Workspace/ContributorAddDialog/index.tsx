@@ -5,8 +5,8 @@ import {
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { ProjectTeamRoleSchema } from '@cf/api/gen/types.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { WorkspaceType } from '@cf/types/enum'
+import { SnackbarOptions } from '@cf/utility/constants'
 import { projectTeamRoleMenuOptions } from '@cf/utility/permissions'
 import { _t } from '@cf/utility/Utility.class'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
@@ -24,6 +24,7 @@ import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import TextField from '@mui/material/TextField'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { enqueueSnackbar } from 'notistack'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
@@ -47,7 +48,6 @@ const ContributorAddDialog = ({
   refetch: () => void
 }) => {
   const { show, onClose } = useDialog(DialogMode.CONTRIBUTOR_ADD)
-  const { onError, onSuccess } = useGenericMsgHandler()
   const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
   const [debouncedFilter, setDebouncedFilter] = useState('')
@@ -108,13 +108,22 @@ const ContributorAddDialog = ({
           role
         }
       })
-      onSuccess({ message: _t('Success!') })
+      enqueueSnackbar(
+        _t('The contributor was successfully added to your project'),
+        { variant: SnackbarOptions.SUCCESS }
+      )
       refetch()
       onClose()
     } catch (err) {
-      onError(err)
+      enqueueSnackbar(
+        _t(
+          'We encountered an issue and the contributor could not be added to your project'
+        ),
+        { variant: SnackbarOptions.ERROR }
+      )
+      console.error('Failed to add contributor:', err)
     }
-  }, [addMembers, uuid, onClose, onError, onSuccess, refetch, role, userUuids])
+  }, [addMembers, uuid, onClose, refetch, role, userUuids])
 
   const onAutocompleteChange = useCallback((value: string) => {
     setSearch(value)

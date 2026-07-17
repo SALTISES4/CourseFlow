@@ -23,6 +23,7 @@ import {
   libraryProjectCardByTitle,
   libraryWorkflowCardByTitle,
   templatesToggle,
+  triggerLibrarySearchAndWait,
   waitForLibraryResultsLoaded,
   workflowTypeChipLabel,
 } from './library.locators';
@@ -33,7 +34,7 @@ import {
  * My library: FR-CARD-001–006 (no templatesToggle per FR-LIB-003).
  * Template chip (FR-CARD-001/002): listing surfaces with templatesToggle — e.g. Explore (FR-EXP-005).
  * Create workflow dialog step 3: tests/e2e/workflow/workflow-create-stepped-form-fr-create-stepper-001-006.spec.ts
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (teacher@courseflow.com).
  */
 
 test.describe('My library — card content (FR-CARD-001–006)', () => {
@@ -164,8 +165,11 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
         await gotoExplore(page);
         await expect(page).toHaveURL(/\/explore\/?$/);
         await waitForLibraryResultsLoaded(page);
-        await templatesToggle(page).click();
-        await waitForLibraryResultsLoaded(page);
+        await triggerLibrarySearchAndWait(
+          page,
+          () => templatesToggle(page).click(),
+          { filters: { isTemplate: true } },
+        );
 
         const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE);
         if ((await card.count()) === 0) {
@@ -244,8 +248,11 @@ test.describe('FR-CARD-002: cardTemplateChip on template workflowCard', () => {
     await gotoExplore(page);
     await expect(page).toHaveURL(/\/explore\/?$/);
     await waitForLibraryResultsLoaded(page);
-    await templatesToggle(page).click();
-    await waitForLibraryResultsLoaded(page);
+    await triggerLibrarySearchAndWait(
+      page,
+      () => templatesToggle(page).click(),
+      { filters: { isTemplate: true } },
+    );
   });
 
   for (const title of E2E_FIXTURE_TEMPLATE_WORKFLOW_TITLES) {

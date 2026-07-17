@@ -12,7 +12,7 @@ import {
 /**
  * Calibration slice — FR-NOTIF-001 through FR-NOTIF-003.
  * Requirements: tests/docs/requirements/features/user/notifications_settings_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (teacher@courseflow.com).
  */
 
 test.describe('Notifications settings — calibration (FR-NOTIF-001-003)', () => {

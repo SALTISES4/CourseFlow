@@ -38,7 +38,7 @@ export const Outcome = ({
   return (
     <StyledOutcomes.OutcomeGroup sx={{ mt: '0.5em !important' }}>
       <StyledOutcomes.OutcomeGroupItem>
-        <OutcomeBlock graphUuid={graphUuid} {...outcome} />
+        <OutcomeBlock {...outcome} graphUuid={graphUuid} />
       </StyledOutcomes.OutcomeGroupItem>
     </StyledOutcomes.OutcomeGroup>
   )
@@ -166,7 +166,7 @@ export const OutcomeChildren = ({
     <StyledOutcomes.OutcomeGroup>
       {childOutcomes.map((outcome) => (
         <StyledOutcomes.OutcomeGroupItem key={outcome.uuid}>
-          <OutcomeBlock graphUuid={graphUuid} {...outcome} />
+          <OutcomeBlock {...outcome} graphUuid={graphUuid} />
         </StyledOutcomes.OutcomeGroupItem>
       ))}
     </StyledOutcomes.OutcomeGroup>

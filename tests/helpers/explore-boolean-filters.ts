@@ -6,7 +6,9 @@ import {
 } from '../shared/locators/cards';
 import { libraryCards } from '../shared/locators/library';
 
-/** FR-EXP-005 — every visible listing card is favourited (yellow star per FR-CARD-005). */
+/**
+* FR-EXP-005 — every visible listing card is favourited (yellow star per FR-CARD-005).
+* */
 export async function expectExploreResultsContainOnlyFavouritedCards(page: Page): Promise<void> {
   const cards = libraryCards(page);
   const count = await cards.count();

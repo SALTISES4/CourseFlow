@@ -3,11 +3,14 @@ import { expect, type Page } from '@playwright/test';
 import { cardOwnerText, cardTitleText } from '../shared/locators/cards';
 import {
   keywordSearchField,
+  expectLibraryCardTitles,
   libraryCards,
+  libraryCardTitles,
   libraryResultsProjectCards,
   libraryResultsWorkflowCards,
   ownershipFilterResetButton,
   selectFilterOption,
+  triggerLibrarySearchAndWait,
   workflowTypeFilter,
 } from '../shared/locators/library';
 import {
@@ -144,15 +147,19 @@ export async function expectOwnershipFilterOwnedNarrowsProjectWorkflowsResults(
   page: Page,
 ): Promise<void> {
   const ownershipFilter = projectWorkflowsOwnershipFilter(page);
-  const baselineCount = await libraryCards(page).count();
+  const baselineTitles = await libraryCardTitles(page).allInnerTexts();
+  const baselineCount = baselineTitles.length;
   expect(baselineCount).toBeGreaterThan(0);
 
-  await selectFilterOption(page, ownershipFilter, 'Owned');
+  const filteredResponse = await triggerLibrarySearchAndWait(
+    page,
+    () => selectFilterOption(page, ownershipFilter, 'Owned'),
+    { filters: { ownership: 'owned' } },
+  );
   await expect(ownershipFilter).toHaveText('Owned', { exact: true });
   await expect(ownershipFilterResetButton(page, ownershipFilter)).toBeVisible();
-  await waitForProjectWorkflowsLoaded(page);
 
-  const ownedCount = await libraryCards(page).count();
+  const ownedCount = filteredResponse.items.length;
   expect(ownedCount).toBeLessThanOrEqual(baselineCount);
   expect(ownedCount).toBeGreaterThan(0);
 
@@ -167,18 +174,22 @@ export async function expectFavouritesToggleNarrowsProjectWorkflowsResults(
   page: Page,
 ): Promise<boolean> {
   const favouritesToggle = projectWorkflowsFavouritesToggle(page);
-  const baselineCount = await libraryCards(page).count();
+  const baselineTitles = await libraryCardTitles(page).allInnerTexts();
+  const baselineCount = baselineTitles.length;
   expect(baselineCount).toBeGreaterThan(0);
 
-  await favouritesToggle.click();
+  const filteredResponse = await triggerLibrarySearchAndWait(
+    page,
+    () => favouritesToggle.click(),
+    { filters: { isFavorite: true } },
+  );
   await expect(favouritesToggle).toHaveClass(/MuiButton-contained/);
-  await waitForProjectWorkflowsLoaded(page);
 
-  const favouritedOnlyCount = await libraryCards(page).count();
+  const favouritedOnlyCount = filteredResponse.items.length;
   if (favouritedOnlyCount === 0) {
     await favouritesToggle.click();
     await expect(favouritesToggle).not.toHaveClass(/MuiButton-contained/);
-    await waitForProjectWorkflowsLoaded(page);
+    await expectLibraryCardTitles(page, baselineTitles);
     return false;
   }
 
@@ -187,7 +198,7 @@ export async function expectFavouritesToggleNarrowsProjectWorkflowsResults(
 
   await favouritesToggle.click();
   await expect(favouritesToggle).not.toHaveClass(/MuiButton-contained/);
-  await waitForProjectWorkflowsLoaded(page);
+  await expectLibraryCardTitles(page, baselineTitles);
 
   const restoredCount = await libraryCards(page).count();
   expect(restoredCount).toBeGreaterThanOrEqual(favouritedOnlyCount);
@@ -202,11 +213,16 @@ export async function expectKeywordSearchNarrowsProjectWorkflowsResults(
   const baselineCount = await libraryCards(page).count();
   expect(baselineCount).toBeGreaterThan(0);
 
-  await keywordSearchField(page).fill(keyword);
-  await keywordSearchField(page).press('Enter');
-  await waitForProjectWorkflowsLoaded(page);
+  const filteredResponse = await triggerLibrarySearchAndWait(
+    page,
+    async () => {
+      await keywordSearchField(page).fill(keyword);
+      await keywordSearchField(page).press('Enter');
+    },
+    { filters: { keyword } },
+  );
 
-  const narrowedCount = await libraryCards(page).count();
+  const narrowedCount = filteredResponse.items.length;
   expect(narrowedCount).toBeGreaterThan(0);
   expect(narrowedCount).toBeLessThanOrEqual(baselineCount);
 

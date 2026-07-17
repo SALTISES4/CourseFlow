@@ -1,4 +1,6 @@
+import { LibraryContentTypeIn, LibraryOwnershipIn } from '@cf/api/gen'
 import { createProjectMutation } from '@cf/api/gen/@tanstack/react-query.gen'
+import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/Utility.class'
@@ -20,12 +22,26 @@ const ProjectCreateDialog = () => {
   const { show, onClose } = useDialog(DialogMode.PROJECT_CREATE)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const { data: ownedProjects, isLoading: ownedProjectsLoading } =
+    useLibrarySearch({
+      pagination: {
+        page: 0,
+        resultsPerPage: 1
+      },
+      filters: {
+        contentType: LibraryContentTypeIn.PROJECT,
+        ownership: LibraryOwnershipIn.OWNED
+      }
+    })
 
   const createProject = useMutation({
     ...createProjectMutation(),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ['getMyProjects']
+      })
+      await queryClient.invalidateQueries({
+        queryKey: ['library-search']
       })
     }
   })
@@ -78,7 +94,9 @@ const ProjectCreateDialog = () => {
         defaultValues={defaultValues}
         submitHandler={onSubmit}
         closeCallback={onDialogClose}
-        showNoProjectsAlert={true}
+        showNoProjectsAlert={
+          !ownedProjectsLoading && ownedProjects?.meta.totalResults === 0
+        }
         label={_t('Create project')}
         submitLabel={_t('Create project')}
       />

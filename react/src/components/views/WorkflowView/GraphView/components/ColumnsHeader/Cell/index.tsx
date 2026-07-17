@@ -41,7 +41,7 @@ const ColumnCell = ({ index, columnId, parentId, onReorder }: CellProps) => {
     WorkflowPermission.NODE_CATEGORY_MANAGEMENT
   )
 
-  const [closestEdge, setClosestEdge] = useState<Edge>(null)
+  const [closestEdge, setClosestEdge] = useState<Edge | null>(null)
 
   useEffect(() => {
     const el = ref.current

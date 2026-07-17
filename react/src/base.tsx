@@ -10,7 +10,7 @@ import { ReactNode } from 'react'
 import NetworkActivityProvider from './components/common/NetworkActivityProvider'
 
 type PropsType = {
-  showNotifications?: boolean
+  showNotifications: boolean
   children: ReactNode
 }
 

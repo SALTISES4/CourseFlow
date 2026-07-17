@@ -36,6 +36,7 @@ import {
   keywordSearchClearButton,
   keywordSearchField,
   libraryCards,
+  libraryCardTitles,
   libraryWorkflowCardByTitle,
   exploreEmptyState,
   exploreErrorState,
@@ -46,6 +47,8 @@ import {
   selectFilterOption,
   templatesToggle,
   typeFilter,
+  triggerLibrarySearchAndWait,
+  expectLibraryCardTitles,
   waitForLibraryResultsLoaded,
   workflowTypeFilter,
   firstLibraryCardTitle,
@@ -59,7 +62,7 @@ import {
 /**
  * Calibration slice — FR-EXP-001 through FR-EXP-006.
  * Requirements: tests/docs/requirements/features/library/explore_page_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (teacher@courseflow.com).
  */
 
 test.describe('Explore — calibration (FR-EXP-001-006)', () => {
@@ -92,9 +95,14 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
     }
 
     const impossibleKeyword = `__no_explore_match_${Date.now()}__`;
-    await keywordSearchField(page).fill(impossibleKeyword);
-    await keywordSearchField(page).press('Enter');
-    await waitForLibraryResultsLoaded(page);
+    await triggerLibrarySearchAndWait(
+      page,
+      async () => {
+        await keywordSearchField(page).fill(impossibleKeyword);
+        await keywordSearchField(page).press('Enter');
+      },
+      { filters: { keyword: impossibleKeyword } },
+    );
 
     await expect(exploreEmptyState(page)).toBeVisible();
     await expect(libraryCards(page)).toHaveCount(0);
@@ -174,10 +182,17 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
     });
 
     test.skip('resultsRegion reflects discipline-constrained result set', async ({ page }) => {
-      await openDisciplineFilterPopover(page);
-      await disciplineFilterCheckboxOption(page, DISCIPLINE_CATALOGUE_AZ[0]!).click();
-      await closeDisciplineFilterPopover(page);
-      await waitForLibraryResultsLoaded(page);
+      await triggerLibrarySearchAndWait(
+        page,
+        async () => {
+          await openDisciplineFilterPopover(page);
+          await disciplineFilterCheckboxOption(page, DISCIPLINE_CATALOGUE_AZ[0]!).click();
+          await closeDisciplineFilterPopover(page);
+        },
+        (request) =>
+          Array.isArray(request.filters?.disciplineIds) &&
+          request.filters.disciplineIds.length === 1,
+      );
 
       await expect(disciplineFilterSelectionIndicator(page)).toHaveText('1');
       await expect(libraryCards(page).first()).toBeVisible();
@@ -187,10 +202,18 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
       page,
     }) => {
       await selectFilterOption(page, typeFilter(page), 'Projects');
-      await openDisciplineFilterPopover(page);
-      await disciplineFilterCheckboxOption(page, DISCIPLINE_CATALOGUE_AZ[0]!).click();
-      await closeDisciplineFilterPopover(page);
-      await waitForLibraryResultsLoaded(page);
+      await triggerLibrarySearchAndWait(
+        page,
+        async () => {
+          await openDisciplineFilterPopover(page);
+          await disciplineFilterCheckboxOption(page, DISCIPLINE_CATALOGUE_AZ[0]!).click();
+          await closeDisciplineFilterPopover(page);
+        },
+        (request) =>
+          request.filters?.contentType === 'project' &&
+          Array.isArray(request.filters.disciplineIds) &&
+          request.filters.disciplineIds.length === 1,
+      );
 
       await expect(typeFilter(page)).toHaveText('Projects');
       await expect(disciplineFilterSelectionIndicator(page)).toHaveText('1');
@@ -199,30 +222,43 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
     test.skip('None clears discipline constraint and restores unconstrained resultsRegion', async ({
       page,
     }) => {
-      const baselineCount = await libraryCards(page).count();
+      const baselineTitles = await libraryCardTitles(page).allInnerTexts();
 
-      await openDisciplineFilterPopover(page);
-      await disciplineFilterCheckboxOption(page, DISCIPLINE_CATALOGUE_AZ[0]!).click();
-      await closeDisciplineFilterPopover(page);
-      await waitForLibraryResultsLoaded(page);
+      await triggerLibrarySearchAndWait(
+        page,
+        async () => {
+          await openDisciplineFilterPopover(page);
+          await disciplineFilterCheckboxOption(page, DISCIPLINE_CATALOGUE_AZ[0]!).click();
+          await closeDisciplineFilterPopover(page);
+        },
+        (request) =>
+          Array.isArray(request.filters?.disciplineIds) &&
+          request.filters.disciplineIds.length === 1,
+      );
 
       await openDisciplineFilterPopover(page);
       await disciplineFilterNoneOption(page).click();
       await closeDisciplineFilterPopover(page);
-      await waitForLibraryResultsLoaded(page);
 
       await expect(disciplineFilterSelectionIndicator(page)).toHaveCount(0);
-      await expect(libraryCards(page)).toHaveCount(baselineCount);
+      await expectLibraryCardTitles(page, baselineTitles);
     });
 
     test.skip('changing discipline selection resets listing to first results page', async ({
       page,
     }) => {
       // Needs explore fixture with enough published results to paginate (11+).
-      await openDisciplineFilterPopover(page);
-      await disciplineFilterCheckboxOption(page, DISCIPLINE_CATALOGUE_AZ[0]!).click();
-      await closeDisciplineFilterPopover(page);
-      await waitForLibraryResultsLoaded(page);
+      await triggerLibrarySearchAndWait(
+        page,
+        async () => {
+          await openDisciplineFilterPopover(page);
+          await disciplineFilterCheckboxOption(page, DISCIPLINE_CATALOGUE_AZ[0]!).click();
+          await closeDisciplineFilterPopover(page);
+        },
+        (request) =>
+          Array.isArray(request.filters?.disciplineIds) &&
+          request.filters.disciplineIds.length === 1,
+      );
 
       await expect(libraryPagination(page)).toBeVisible();
     });
@@ -232,20 +268,26 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
     test('typeFilter commits Projects and resultsRegion shows only project cards', async ({
       page,
     }) => {
-      await selectFilterOption(page, typeFilter(page), 'Projects');
+      await triggerLibrarySearchAndWait(
+        page,
+        () => selectFilterOption(page, typeFilter(page), 'Projects'),
+        { filters: { contentType: 'project' } },
+      );
       await expect(typeFilter(page)).toHaveText('Projects');
       await expect(workflowTypeFilter(page)).toHaveCount(0);
-      await waitForLibraryResultsLoaded(page);
       await expectExploreResultsContainOnlyProjectCards(page);
     });
 
     test('typeFilter commits Workflows and resultsRegion shows only workflow cards', async ({
       page,
     }) => {
-      await selectFilterOption(page, typeFilter(page), 'Workflows');
+      await triggerLibrarySearchAndWait(
+        page,
+        () => selectFilterOption(page, typeFilter(page), 'Workflows'),
+        { filters: { contentType: 'workflow' } },
+      );
       await expect(typeFilter(page)).toHaveText('Workflows');
       await expect(workflowTypeFilter(page)).toBeVisible();
-      await waitForLibraryResultsLoaded(page);
       await expectExploreResultsContainOnlyWorkflowCards(page);
     });
 
@@ -291,13 +333,17 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
 
   test.describe('FR-EXP-005: templates and favourites toggles', () => {
     test('favouritesToggle restricts resultsRegion to favourited cards only', async ({ page }) => {
-      const baselineCount = await libraryCards(page).count();
+      const baselineTitles = await libraryCardTitles(page).allInnerTexts();
+      const baselineCount = baselineTitles.length;
 
-      await favouritesToggle(page).click();
+      const filteredResponse = await triggerLibrarySearchAndWait(
+        page,
+        () => favouritesToggle(page).click(),
+        { filters: { isFavorite: true } },
+      );
       await expect(favouritesToggle(page)).toHaveClass(/MuiButton-contained/);
-      await waitForLibraryResultsLoaded(page);
 
-      const favouritedOnlyCount = await libraryCards(page).count();
+      const favouritedOnlyCount = filteredResponse.items.length;
       if (favouritedOnlyCount === 0) {
         test.skip(
           true,
@@ -310,20 +356,24 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
 
       await favouritesToggle(page).click();
       await expect(favouritesToggle(page)).not.toHaveClass(/MuiButton-contained/);
-      await waitForLibraryResultsLoaded(page);
+      await expectLibraryCardTitles(page, baselineTitles);
 
       const restoredCount = await libraryCards(page).count();
       expect(restoredCount).toBeGreaterThanOrEqual(favouritedOnlyCount);
     });
 
     test('templatesToggle restricts resultsRegion to template cards only', async ({ page }) => {
-      const baselineCount = await libraryCards(page).count();
+      const baselineTitles = await libraryCardTitles(page).allInnerTexts();
+      const baselineCount = baselineTitles.length;
 
-      await templatesToggle(page).click();
+      const filteredResponse = await triggerLibrarySearchAndWait(
+        page,
+        () => templatesToggle(page).click(),
+        { filters: { isTemplate: true } },
+      );
       await expect(templatesToggle(page)).toHaveClass(/MuiButton-contained/);
-      await waitForLibraryResultsLoaded(page);
 
-      const templateOnlyCount = await libraryCards(page).count();
+      const templateOnlyCount = filteredResponse.items.length;
       if (templateOnlyCount === 0) {
         test.skip(
           true,
@@ -343,7 +393,7 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
 
       await templatesToggle(page).click();
       await expect(templatesToggle(page)).not.toHaveClass(/MuiButton-contained/);
-      await waitForLibraryResultsLoaded(page);
+      await expectLibraryCardTitles(page, baselineTitles);
 
       const restoredCount = await libraryCards(page).count();
       expect(restoredCount).toBeGreaterThanOrEqual(templateOnlyCount);
@@ -361,9 +411,14 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
       test.skip(true, 'First card has no title text for keyword search.');
     }
 
-    await keywordSearchField(page).fill(keyword);
-    await keywordSearchField(page).press('Enter');
-    await waitForLibraryResultsLoaded(page);
+    await triggerLibrarySearchAndWait(
+      page,
+      async () => {
+        await keywordSearchField(page).fill(keyword);
+        await keywordSearchField(page).press('Enter');
+      },
+      { filters: { keyword } },
+    );
 
     await expect(keywordSearchClearButton(page)).toBeVisible();
     await keywordSearchClearButton(page).click();

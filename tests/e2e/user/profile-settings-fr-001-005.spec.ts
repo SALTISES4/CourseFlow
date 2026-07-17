@@ -29,7 +29,7 @@ import {
 /**
  * Calibration slice — FR-PROFILE-001 through FR-PROFILE-005.
  * Requirements: tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (teacher@courseflow.com).
  */
 
 test.describe('Profile settings — calibration (FR-PROFILE-001-005)', () => {

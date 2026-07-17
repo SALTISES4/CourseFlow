@@ -45,8 +45,8 @@ const CreateWizardDialog = () => {
   const formRef = useRef<HTMLFormElement>(null)
   const [state, setState] = useState<StateType>(initialState)
   const [projectUuid, setProjectUuid] = useState<string>()
-  const [templates, setTemplateData] = useState<TemplateType[]>(null)
-  const [isFormReady, setIsFormReady] = useState<boolean>()
+  const [templates, setTemplateData] = useState<TemplateType[]>([])
+  const [isFormReady, setIsFormReady] = useState(false)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -199,7 +199,7 @@ const CreateWizardDialog = () => {
    * probably cleaner than useImperativeDeclaration
    */
   function handleChildSubmit() {
-    formRef.current.dispatchEvent(
+    formRef.current?.dispatchEvent(
       new Event('submit', { cancelable: true, bubbles: true })
     )
   }
@@ -212,6 +212,10 @@ const CreateWizardDialog = () => {
    */
   const memoizedSteps = useMemo(() => {
     {
+      if (!state.workflowType) {
+        return null
+      }
+
       switch (state.step) {
         case 0: {
           return (
@@ -237,7 +241,7 @@ const CreateWizardDialog = () => {
                 formRef={formRef}
                 submitHandler={onSubmit}
                 closeCallback={onCloseHandler}
-                label={state.title}
+                label={state.title ?? ctaTitle}
                 workflowType={state.workflowType}
                 setIsFormReady={setIsFormReady}
               />

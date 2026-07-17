@@ -29,7 +29,7 @@ const SectionCellEmpty = ({
   })
 
   // only highlighting the border when we're not highligting the full cell
-  const edgeIndicator = highlight !== 'cell' && highlight
+  const edgeIndicator = highlight === 'cell' ? undefined : highlight
 
   // only showing background if there are no active edges (border)
   // or we're supposed to do a cell highlight (from the row)
@@ -37,14 +37,13 @@ const SectionCellEmpty = ({
     !dnd.closestEdge && (dnd.draggedOver || highlight === 'cell')
 
   // only showing border when there's the edge or we highlight it (from the row)
-  const lineIndicator = edgeIndicator || (dnd.closestEdge && !emptyRow)
+  const lineIndicator =
+    edgeIndicator ?? (!emptyRow ? (dnd.closestEdge ?? undefined) : undefined)
 
   return (
     <Box style={{ height: '100%' }}>
       {backgroundIndicator && <DropIndicator color={alpha(borderColor, 0.2)} />}
-      {lineIndicator && (
-        <DropIndicator edge={edgeIndicator || dnd.closestEdge} />
-      )}
+      {lineIndicator && <DropIndicator edge={lineIndicator} />}
     </Box>
   )
 }

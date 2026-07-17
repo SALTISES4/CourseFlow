@@ -18,7 +18,7 @@ import {
 /**
  * Calibration slice — FR-PROJ-HEADER-001 through FR-PROJ-HEADER-002.
  * Requirements: tests/docs/requirements/features/project/project_header_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (teacher@courseflow.com).
  */
 
 test.describe('Project header — calibration (FR-PROJ-HEADER-001-002)', () => {

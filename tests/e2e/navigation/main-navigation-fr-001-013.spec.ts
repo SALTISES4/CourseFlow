@@ -28,7 +28,7 @@ import {
 /**
  * Calibration slice — FR-NAV-001 through FR-NAV-013.
  * Requirements: tests/docs/requirements/features/navigation/main_navigation_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (teacher@courseflow.com).
  */
 
 test.describe('Main navigation — calibration (FR-NAV-001-013)', () => {

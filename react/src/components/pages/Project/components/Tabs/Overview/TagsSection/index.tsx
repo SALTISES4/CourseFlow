@@ -32,6 +32,9 @@ const Tags = ({ data }: PropsType) => {
             })
           } else {
             const target = draft.find((t) => t.uuid === uuid)
+            if (!target) {
+              return
+            }
             if (target.title !== value) {
               target.title = value
             }

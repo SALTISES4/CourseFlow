@@ -35,6 +35,10 @@ const DraggableItem = ({
 
   useEffect(() => {
     const el = dragRef.current
+    if (!el) {
+      return
+    }
+
     return draggable({
       element: el,
       getInitialData: () => ({

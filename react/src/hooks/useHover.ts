@@ -1,8 +1,8 @@
-import { MutableRefObject, useEffect, useRef, useState } from 'react'
+import { RefObject, useEffect, useRef, useState } from 'react'
 
 function useHover(
-  ref?: MutableRefObject<HTMLElement>
-): [MutableRefObject<HTMLElement>, boolean] {
+  ref?: RefObject<HTMLElement>
+): [RefObject<HTMLElement>, boolean] {
   const [isHovered, setIsHovered] = useState(false)
   const internalRef = useRef<HTMLElement>(null)
 

@@ -23,7 +23,9 @@ type PropsType = {
   options: SortOption[]
 } & SortableProps
 
-type StateType = SortOption
+type StateType = Omit<SortOption, 'value'> & {
+  value: LibrarySortValueIn | null
+}
 
 function toggleSortDirection(
   dir: LibrarySortDirectionIn | null
@@ -63,14 +65,15 @@ const SortableFilterButton = ({
    * handles selecting an option
    */
   function onOptionClick(option: SortOption) {
+    const direction = toggleSortDirection(enabledEl.direction ?? null)
     const updatedEl = produce(enabledEl, (draft) => {
       draft.value = option.value
       draft.label = option.label
-      draft.direction = toggleSortDirection(draft.direction)
+      draft.direction = direction
     })
 
     setEnabledEl(updatedEl)
-    onChange(updatedEl.value, updatedEl.direction)
+    onChange(option.value, direction)
   }
 
   /*******************************************************

@@ -250,7 +250,10 @@ class LibraryHelper {
   } | null => {
     const activeSort = sortOptions.find((option) => option.enabled)
     return activeSort
-      ? { value: activeSort.value, direction: activeSort.direction }
+      ? {
+          value: activeSort.value,
+          direction: activeSort.direction ?? LibrarySortDirectionIn.DESC
+        }
       : null
   }
 

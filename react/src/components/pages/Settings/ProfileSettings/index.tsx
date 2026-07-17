@@ -114,10 +114,15 @@ const ProfileSettingsPage = () => {
 
       onSuccess({ message: _t('User details updated!') })
     } catch (err) {
-      const errFields = Object.keys(err) as FormField[]
+      if (typeof err !== 'object' || err === null) {
+        return
+      }
+
+      const errorRecord = err as Record<string, unknown>
+      const errFields = Object.keys(errorRecord) as FormField[]
       errFields.forEach((field: FormField) => {
         setError(field, {
-          message: err[field]
+          message: String(errorRecord[field])
         })
       })
     }

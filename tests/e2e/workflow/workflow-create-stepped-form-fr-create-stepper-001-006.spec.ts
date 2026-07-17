@@ -49,7 +49,7 @@ import { workflowNodes } from './workflow-graph.locators';
  * Calibration slice — FR-WF-CREATE-STEPPER-001 through FR-WF-CREATE-STEPPER-006.
  * Requirements: tests/docs/requirements/features/workflow/workflow_create_stepped_form_requirements_v1.yaml
  * Card content in dialog: tests/docs/requirements/features/global/card_content_requirements_v1.yaml (FR-CARD-002)
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (teacher@courseflow.com).
  */
 
 type CreateWorkflowEntry = {
@@ -209,7 +209,7 @@ test.describe('Create workflow stepped form — calibration (FR-WF-CREATE-STEPPE
   });
 
   test.describe('FR-WF-CREATE-STEPPER-002: no eligible destination projects', () => {
-    // Default chromium storage state is admin@courseflow.com, who owns the E2E fixture projects.
+    // Default chromium storage state is teacher@courseflow.com, who owns the E2E fixture projects.
     // FR-WF-CREATE-STEPPER-002 needs an authenticated user with no owner or editor role on any
     // project, plus createWorkflowNoEligibleProjectsDialog in CreateWizardDialog.
     test.skip('shows no-eligible-projects warning, disables Next step, and blocks advance to step 2', async ({

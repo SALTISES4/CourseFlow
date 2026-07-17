@@ -22,7 +22,7 @@ import IconButton from '@mui/material/IconButton'
 import { produce } from 'immer'
 import {
   MouseEvent,
-  MutableRefObject,
+  RefObject,
   memo,
   useCallback,
   useEffect,
@@ -312,7 +312,7 @@ const Section = (props: SectionPropsType) => {
 const Background = ({
   sectionRef
 }: {
-  sectionRef: MutableRefObject<HTMLDivElement>
+  sectionRef: RefObject<HTMLDivElement>
 }) => {
   const { height = 0 } = useResizeObserver({
     ref: sectionRef,
@@ -321,7 +321,7 @@ const Background = ({
 
   const section = sectionRef.current
   const sectionTop = section?.getBoundingClientRect().top ?? 0
-  const wrapTop = section?.parentElement.getBoundingClientRect().top ?? 0
+  const wrapTop = section?.parentElement?.getBoundingClientRect().top ?? 0
   const top: number = sectionTop - wrapTop
 
   if (height === 0) {

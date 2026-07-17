@@ -7,18 +7,14 @@ import { dragEndThunk } from '@cf/features/graph/state/thunks/svglink.thunk'
 import useHover from '@cf/hooks/useHover'
 import { AppDispatch } from '@cf/redux/store'
 import { Position } from '@xyflow/react'
-import {
-  MutableRefObject,
-  MouseEvent as ReactMouseEvent,
-  useCallback
-} from 'react'
+import { RefObject, MouseEvent as ReactMouseEvent, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import * as Styled from './styles'
 
 type PropsType = {
   nodeUuid: string
-  nodeRef: MutableRefObject<HTMLDivElement>
+  nodeRef: RefObject<HTMLDivElement>
   diameter?: number
 }
 
@@ -43,7 +39,10 @@ const Handles = ({ nodeUuid, nodeRef, diameter = 10 }: PropsType) => {
       const target = e.currentTarget
       const edge = target.dataset.edge as Position
       const bcr = target.getBoundingClientRect()
-      const svg = document.querySelector('#line-svg')
+      const svg = document.querySelector<SVGSVGElement>('#line-svg')
+      if (!svg) {
+        return
+      }
       const svgBCR = svg.getBoundingClientRect()
 
       dispatch(

@@ -51,7 +51,7 @@ const Tag = ({
     setState(
       produce((draft) => {
         draft.focused = true
-        inputRef?.current.focus()
+        inputRef.current?.focus()
       })
     )
   }, [disabled])
@@ -106,7 +106,7 @@ const Tag = ({
       }
 
       if (e.key === 'Escape') {
-        inputRef?.current.blur()
+        inputRef.current?.blur()
         setState({
           label: '',
           focused: false
@@ -128,8 +128,8 @@ const Tag = ({
     <ClickAwayListener onClickAway={onClickAway}>
       <Styled.Tag
         focused={state.focused}
-        disabled={disabled}
-        create={create}
+        disabled={Boolean(disabled)}
+        create={Boolean(create)}
         onClick={onWrapClick}
       >
         <Styled.TagIcon>
@@ -142,7 +142,7 @@ const Tag = ({
           onFocus={onInputFocus}
           onChange={onInputChange}
           onKeyDown={onInputKeyDown}
-          placeholder={create ? _t('Add new tag') : null}
+          placeholder={create ? _t('Add new tag') : undefined}
         />
         {!create && !disabled && (
           <Styled.DeleteButton tabIndex={-1} onClick={onDeleteClick}>

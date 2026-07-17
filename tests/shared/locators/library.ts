@@ -8,6 +8,7 @@ export * from './cards';
 
 export const KEYWORD_SEARCH_PLACEHOLDER = 'Search in projects...';
 export const LIBRARY_EMPTY_MESSAGE = 'No results found';
+export const LIBRARY_LISTING_RESULTS_PER_PAGE = 10;
 /** FIGMA-EXPLORE — exploreEmptyState copy per FR-EXP-001 */
 export const EXPLORE_EMPTY_MESSAGE = 'No results found';
 /** FIGMA-EXPLORE-ERROR — exploreErrorState copy per FR-EXP-001 */
@@ -286,7 +287,9 @@ export function libraryPagination(page: Page): Locator {
 
 /** canonical: paginationPageNumberButton — clickable numeric page item within pagination */
 export function paginationPageNumberButton(page: Page, pageNumber: number): Locator {
-  return libraryPagination(page).getByRole('button', { name: String(pageNumber), exact: true });
+  return libraryPagination(page).getByRole('button', {
+    name: new RegExp(`^(?:page|Go to page) ${pageNumber}$`, 'i'),
+  });
 }
 
 /** canonical: paginationPreviousNextButton — previous page control */
@@ -313,6 +316,16 @@ export function firstLibraryCardTitle(page: Page): Locator {
   return libraryCards(page).first().locator('header').locator('> *').first();
 }
 
+export function libraryCardTitles(page: Page): Locator {
+  return libraryCards(page).locator('header').getByRole('heading');
+}
+
+export async function expectLibraryCardTitles(page: Page, expectedTitles: string[]): Promise<void> {
+  await expect
+    .poll(() => libraryCardTitles(page).allInnerTexts(), { timeout: 15_000 })
+    .toEqual(expectedTitles);
+}
+
 export async function waitForLibraryResultsLoaded(page: Page): Promise<void> {
   await expect(libraryLoadingSkeletons(page)).toHaveCount(0, { timeout: 15_000 });
   await expect(
@@ -322,6 +335,102 @@ export async function waitForLibraryResultsLoaded(page: Page): Promise<void> {
       .or(libraryErrorState(page))
       .or(exploreErrorState(page)),
   ).toBeVisible({ timeout: 15_000 });
+}
+
+type LibrarySearchResponseBody = {
+  items: Array<{ title: string }>;
+};
+
+export type LibrarySearchRequestBody = {
+  filters?: Record<string, unknown> | null;
+  pagination?: Record<string, unknown> | null;
+  sort?: Record<string, unknown> | null;
+};
+
+type LibrarySearchRequestMatcher =
+  | Record<string, unknown>
+  | ((requestBody: LibrarySearchRequestBody) => boolean);
+
+function matchesRequestSubset(actual: unknown, expected: unknown): boolean {
+  if (expected === null) {
+    return actual === null || actual === undefined;
+  }
+  if (Array.isArray(expected)) {
+    return (
+      Array.isArray(actual) &&
+      actual.length === expected.length &&
+      expected.every((value, index) => matchesRequestSubset(actual[index], value))
+    );
+  }
+  if (typeof expected === 'object') {
+    if (typeof actual !== 'object' || actual === null) {
+      return false;
+    }
+    return Object.entries(expected as Record<string, unknown>).every(([name, value]) =>
+      matchesRequestSubset((actual as Record<string, unknown>)[name], value),
+    );
+  }
+  return actual === expected;
+}
+
+/**
+ * Run an action that triggers a library search and wait for that specific response to be rendered.
+ * Filter refetches retain the previous query data, so existing cards do not establish completion.
+ * Listing searches use 10 results per page; this excludes the sidebar favourites search (5 per page).
+ */
+export async function triggerLibrarySearchAndWait(
+  page: Page,
+  trigger: () => Promise<unknown>,
+  expectedRequest: LibrarySearchRequestMatcher,
+): Promise<LibrarySearchResponseBody> {
+  const responsePromise = page.waitForResponse(
+    (response) => {
+      if (
+        !response.url().includes('/api/library/search') ||
+        response.request().method() !== 'POST'
+      ) {
+        return false;
+      }
+
+      const requestBody = response.request().postDataJSON() as LibrarySearchRequestBody;
+      if (requestBody.pagination?.resultsPerPage !== LIBRARY_LISTING_RESULTS_PER_PAGE) {
+        return false;
+      }
+      return typeof expectedRequest === 'function'
+        ? expectedRequest(requestBody)
+        : matchesRequestSubset(requestBody, expectedRequest);
+    },
+    { timeout: 15_000 },
+  );
+
+  await trigger();
+
+  const response = await responsePromise;
+  expect(
+    response.ok(),
+    `Library search failed with HTTP ${response.status()} for request ${
+      typeof expectedRequest === 'function' ? '[custom matcher]' : JSON.stringify(expectedRequest)
+    }`,
+  ).toBeTruthy();
+
+  const body = (await response.json()) as LibrarySearchResponseBody;
+  expect(Array.isArray(body.items), 'Library search response must contain an items array').toBe(true);
+  expect(
+    body.items.every((item) => typeof item?.title === 'string'),
+    'Every library search item must contain a title',
+  ).toBe(true);
+  await expect(libraryCards(page)).toHaveCount(body.items.length, { timeout: 15_000 });
+
+  if (body.items.length === 0) {
+    await expect(libraryEmptyState(page)).toBeVisible({ timeout: 15_000 });
+  } else {
+    await expectLibraryCardTitles(
+      page,
+      body.items.map((item) => item.title),
+    );
+  }
+
+  return body;
 }
 
 /** Sort menu item — canonical sortControl dropdown option. */

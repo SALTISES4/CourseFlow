@@ -11,7 +11,7 @@ import {
   projectContributorRow,
   projectOwnerRoleControl,
   projectPermissionsPanelContributorEmail,
-  projectTeamMemberApiRoute,
+  projectTeamApiRoute,
 } from '../e2e/project/project.locators';
 import { fetchProjectTeam, type ProjectTeamApiItem } from './add-contributors-dialog';
 
@@ -97,6 +97,10 @@ export async function selectContributorRemoveAction(
   await openContributorRoleDropdown(page, contributorEmail);
   await contributorRoleMenuItem(page, CONTRIBUTOR_ROLE_DROPDOWN_REMOVE_ACTION).click();
   await expect(page.getByRole('menu')).toHaveCount(0);
+
+  const confirmationDialog = page.getByRole('dialog', { name: 'Remove user?', exact: true });
+  await expect(confirmationDialog).toBeVisible();
+  await confirmationDialog.getByRole('button', { name: 'Remove', exact: true }).click();
 }
 
 export async function expectContributorRoleButtonShows(
@@ -129,7 +133,9 @@ export async function installProjectTeamMemberRouteMock(
   projectUuid: string,
   handler: (route: Route) => Promise<void> | void,
 ): Promise<void> {
-  await page.route(projectTeamMemberApiRoute(projectUuid), handler);
+  // Match both `/team/{membershipId}` mutations and the `/team` refresh that
+  // follows a successful mutation.
+  await page.route(projectTeamApiRoute(projectUuid), handler);
 }
 
 export function buildUpdatedProjectTeamMember(

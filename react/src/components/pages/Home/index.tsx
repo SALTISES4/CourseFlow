@@ -1,3 +1,8 @@
+import {
+  LibraryContentTypeIn,
+  LibrarySortDirectionIn,
+  LibrarySortValueIn
+} from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { CookieTypes } from '@cf/context/cookieContext'
 import { CFRoutes } from '@cf/router/appRoutes'
@@ -15,11 +20,19 @@ const Home = () => {
   const { data, isLoading } = useLibrarySearch({
     pagination: {
       page: 0,
-      resultsPerPage: 10
+      resultsPerPage: 4
+    },
+    sort: {
+      value: LibrarySortValueIn.DATE_MODIFIED,
+      direction: LibrarySortDirectionIn.DESC
+    },
+    filters: {
+      contentType: LibraryContentTypeIn.PROJECT,
+      isArchived: false
     }
   })
 
-  if (isLoading) {
+  if (isLoading || !data) {
     return <Loader />
   }
 
@@ -29,7 +42,7 @@ const Home = () => {
   const formattedProjects = formatLibraryObjects(projects)
 
   // const formattedTemplates = formatLibraryObjects(templates)
-  const formattedTemplates = []
+  const formattedTemplates: ReturnType<typeof formatLibraryObjects> = []
 
   /*******************************************************
    * RENDER

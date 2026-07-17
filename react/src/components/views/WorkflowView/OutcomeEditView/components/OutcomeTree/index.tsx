@@ -1,4 +1,7 @@
-import type { GraphUuid, OutcomeEntity } from '@cf/features/graph/state/model/types'
+import type {
+  GraphUuid,
+  OutcomeEntity
+} from '@cf/features/graph/state/model/types'
 import { selectOutcomeChildrenById } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { RootState } from '@cf/redux/store'
 import { useSelector } from 'react-redux'
@@ -25,7 +28,7 @@ export const OutcomeGroup = ({
           key={outcome.uuid}
           padded={outcome.parentUuid === null}
         >
-          <Outcome graphUuid={graphUuid} {...outcome} greenHover />
+          <Outcome {...outcome} graphUuid={graphUuid} greenHover />
         </Styled.OutcomeGroupItem>
       ))}
     </Styled.OutcomeGroup>

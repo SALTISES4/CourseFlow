@@ -5,7 +5,7 @@ import {
 import { RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
 import {
-  MutableRefObject,
+  RefObject,
   memo,
   useLayoutEffect,
   useMemo,
@@ -118,7 +118,7 @@ const BottomSVG = ({
   connections,
   selectedEdgeUuid
 }: {
-  svgRef: MutableRefObject<SVGSVGElement>
+  svgRef: RefObject<SVGSVGElement>
   connections: ConnectionType[]
   selectedEdgeUuid: string | null
 }) => {
@@ -154,7 +154,7 @@ const TopSVG = memo(
     connection
   }: {
     nodesBCR: Record<string, NodeBCR>
-    connection: ConnectionType | null
+    connection: ConnectionType | undefined
   }) => {
     const ref = useRef<SVGSVGElement>(null)
     return (

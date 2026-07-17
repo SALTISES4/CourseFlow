@@ -26,7 +26,7 @@ import {
  * Calibration slice — FR-TOP-001 through FR-TOP-005 (FR-TOP-004/006/008 deferred).
  * Notifications dropdown and notification settings are out of scope this phase.
  * Requirements: tests/docs/requirements/features/navigation/top_navigation_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (teacher@courseflow.com).
  */
 
 test.describe('Top navigation — calibration (FR-TOP-001-005)', () => {

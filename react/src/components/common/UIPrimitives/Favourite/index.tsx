@@ -44,7 +44,9 @@ const Favorite = ({ id, uuid, isFavorite }: PropsType) => {
     },
     onError: (error) => {
       console.error('Error updating toggle:', error)
-      enqueueSnackbar(_t('We were not able to update favourite status'), { variant: 'error' })
+      enqueueSnackbar(_t('We were not able to update favourite status'), {
+        variant: 'error'
+      })
     }
   })
 
@@ -52,6 +54,9 @@ const Favorite = ({ id, uuid, isFavorite }: PropsType) => {
     (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation()
       e.preventDefault()
+      if (!targetUuid) {
+        return
+      }
       toggleFavorite.mutateAsync({
         body: { uuid: targetUuid }
       })

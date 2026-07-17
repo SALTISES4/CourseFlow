@@ -25,12 +25,12 @@ const ContentType = ({
   return (
     <FilterButton
       placeholder={filterGroup.label}
-      options={options}
+      options={options ?? []}
       icon={<CategoryIcon />}
       onChange={(value) => {
         setSearchFilterState(
           produce((draft) => {
-            const current = draft.filterGroups.contentTypeFilter.options
+            const current = draft.filterGroups.contentTypeFilter.options ?? []
 
             draft.filterGroups.contentTypeFilter.options =
               LibraryHelper.updateFilterOptions(current, value)

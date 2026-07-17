@@ -33,7 +33,7 @@ import {
 /**
  * Calibration slice — FR-PROJ-FORM-003, FR-PROJ-FORM-006, FR-PROJ-FORM-007 (partial).
  * Requirements: tests/docs/requirements/features/project/project_edit_form_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (teacher@courseflow.com).
  * Note: edit entry is project ActionMenu (edit-project-button), not contextActionBar pencil.
  */
 

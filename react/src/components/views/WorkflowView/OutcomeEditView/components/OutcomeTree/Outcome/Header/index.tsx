@@ -24,7 +24,7 @@ import QueueIcon from '@mui/icons-material/Queue'
 import RemoveIcon from '@mui/icons-material/Remove'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
-import { MouseEvent, MutableRefObject, useCallback } from 'react'
+import { MouseEvent, RefObject, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import * as Styled from '../../styles'
@@ -37,7 +37,7 @@ type PropsType = {
   level: number
   title: string
   tags: number[]
-  dragRef: MutableRefObject<HTMLDivElement>
+  dragRef: RefObject<HTMLDivElement>
   selected: boolean
   highlighted: boolean
   collapsed: boolean

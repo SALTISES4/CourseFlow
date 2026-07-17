@@ -11,9 +11,11 @@ import {
   disciplineFilterOptionLabels,
   disciplineFilterSearchField,
   disciplineFilterSelectionIndicator,
+  expectLibraryCardTitles,
   libraryCards,
+  libraryCardTitles,
   openDisciplineFilterPopover,
-  waitForLibraryResultsLoaded,
+  triggerLibrarySearchAndWait,
 } from '../shared/locators/library';
 
 /** FR-EXP-003 — checklist matches fixed discipline catalogue A–Z. */
@@ -100,13 +102,21 @@ export async function expectDisciplineFilterOrResultsInRegion(
   disciplineA: string,
   disciplineB: string,
 ): Promise<void> {
-  const baselineCount = await libraryCards(page).count();
+  const baselineTitles = await libraryCardTitles(page).allInnerTexts();
+  const baselineCount = baselineTitles.length;
 
-  await openDisciplineFilterPopover(page);
-  await disciplineFilterCheckboxOption(page, disciplineA).click();
-  await disciplineFilterCheckboxOption(page, disciplineB).click();
-  await closeDisciplineFilterPopover(page);
-  await waitForLibraryResultsLoaded(page);
+  await triggerLibrarySearchAndWait(
+    page,
+    async () => {
+      await openDisciplineFilterPopover(page);
+      await disciplineFilterCheckboxOption(page, disciplineA).click();
+      await disciplineFilterCheckboxOption(page, disciplineB).click();
+      await closeDisciplineFilterPopover(page);
+    },
+    (request) =>
+      Array.isArray(request.filters?.disciplineIds) &&
+      request.filters.disciplineIds.length === 2,
+  );
 
   await expect(disciplineFilterSelectionIndicator(page)).toHaveText('2');
 
@@ -143,6 +153,7 @@ export async function expectDisciplineFilterSearchNarrowsChecklist(page: Page): 
 /** FR-EXP-003 — All/None and disciplineFilterSelectionIndicator on closed trigger. */
 export async function expectDisciplineFilterSelectionIndicatorBehaviour(page: Page): Promise<void> {
   await expect(disciplineFilterSelectionIndicator(page)).toHaveCount(0);
+  const baselineTitles = await libraryCardTitles(page).allInnerTexts();
 
   await openDisciplineFilterPopover(page);
   const selectableCount = await disciplineFilterCheckboxOptions(page).count();
@@ -151,9 +162,16 @@ export async function expectDisciplineFilterSelectionIndicatorBehaviour(page: Pa
     return;
   }
 
-  await disciplineFilterAllOption(page).click();
-  await closeDisciplineFilterPopover(page);
-  await waitForLibraryResultsLoaded(page);
+  await triggerLibrarySearchAndWait(
+    page,
+    async () => {
+      await disciplineFilterAllOption(page).click();
+      await closeDisciplineFilterPopover(page);
+    },
+    (request) =>
+      Array.isArray(request.filters?.disciplineIds) &&
+      request.filters.disciplineIds.length === selectableCount,
+  );
 
   await expect(disciplineFilterSelectionIndicator(page)).toBeVisible();
   await expect(disciplineFilterSelectionIndicator(page)).toHaveText(String(selectableCount));
@@ -161,7 +179,7 @@ export async function expectDisciplineFilterSelectionIndicatorBehaviour(page: Pa
   await openDisciplineFilterPopover(page);
   await disciplineFilterNoneOption(page).click();
   await closeDisciplineFilterPopover(page);
-  await waitForLibraryResultsLoaded(page);
 
   await expect(disciplineFilterSelectionIndicator(page)).toHaveCount(0);
+  await expectLibraryCardTitles(page, baselineTitles);
 }

@@ -12,7 +12,7 @@ import {
 import type { AppDispatch, RootState } from '@cf/redux/store'
 import { SectionRowPropsType } from '@cfViews/WorkflowView/GraphView/components/Section/Row/type'
 import { produce } from 'immer'
-import { MutableRefObject, useCallback, useEffect, useState } from 'react'
+import { RefObject, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { isSidebarCustomNode, isSidebarNode } from '../../../types'
@@ -25,7 +25,7 @@ type StateType = {
 }
 
 type PropsType = SectionRowPropsType & {
-  rowRef: MutableRefObject<HTMLDivElement>
+  rowRef: RefObject<HTMLDivElement>
   enabled: boolean
 }
 

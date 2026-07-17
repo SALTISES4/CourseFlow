@@ -92,6 +92,7 @@ const SectionCellNode = ({
   )
 
   const edgeIndicator = highlight !== 'cell' && highlight
+  const lineIndicator = dnd.closestEdge || edgeIndicator
 
   if (!node) {
     return null
@@ -157,9 +158,7 @@ const SectionCellNode = ({
         )}
       </StyledNode.CellInner>
 
-      {(dnd.closestEdge || edgeIndicator) && (
-        <DropIndicator edge={edgeIndicator || dnd.closestEdge} />
-      )}
+      {lineIndicator && <DropIndicator edge={lineIndicator} />}
 
       {dnd.dragging &&
         dnd.previewTarget &&

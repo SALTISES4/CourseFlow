@@ -82,6 +82,9 @@ const GraphView = ({ graphUuid }: { graphUuid: string }) => {
 
   useEffect(() => {
     const el = sectionsWrapperRef.current
+    if (!el) {
+      return
+    }
     return combine(
       // because the user can technically drag elements outside the drop container
       // we use a global monitor to reset the sections/parts into non-condensed state

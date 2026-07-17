@@ -6,7 +6,7 @@ import { projectOverflowButton, archiveProjectMenuItem, waitForProjectOverviewLo
 /**
  * Calibration slice — FR-PROJ-ARCH-001 through FR-PROJ-ARCH-002 (deferred).
  * Requirements: tests/docs/requirements/features/project/project_archive_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (teacher@courseflow.com).
  */
 
 test.describe('Project archive — calibration (FR-PROJ-ARCH-001-002 deferred)', () => {

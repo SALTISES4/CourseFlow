@@ -32,6 +32,7 @@ import {
   libraryResultsWorkflowCards,
   selectFilterOption,
   typeFilter,
+  triggerLibrarySearchAndWait,
   waitForLibraryResultsLoaded,
   workflowTypeFilter,
   firstLibraryCardTitle,
@@ -40,7 +41,7 @@ import {
 /**
  * Calibration slice — FR-LIB-001 through FR-LIB-004; FR-LIB-006 deferred (archived seed).
  * Requirements: tests/docs/requirements/features/library/library_page_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (teacher@courseflow.com).
  */
 
 test.describe('My library — calibration (FR-LIB-001-004, FR-LIB-006 deferred)', () => {
@@ -108,9 +109,12 @@ test.describe('My library — calibration (FR-LIB-001-004, FR-LIB-006 deferred)'
     test('typeFilter commits Projects and resultsRegion shows only project cards', async ({
       page,
     }) => {
-      await selectFilterOption(page, typeFilter(page), 'Projects');
+      await triggerLibrarySearchAndWait(
+        page,
+        () => selectFilterOption(page, typeFilter(page), 'Projects'),
+        { filters: { contentType: 'project' } },
+      );
       await expect(typeFilter(page)).toHaveText('Projects');
-      await waitForLibraryResultsLoaded(page);
       await expectMyLibraryResultsContainOnlyProjectCards(page);
 
       if ((await libraryCards(page).count()) === 0) {
@@ -121,9 +125,12 @@ test.describe('My library — calibration (FR-LIB-001-004, FR-LIB-006 deferred)'
     test('typeFilter commits Workflows and resultsRegion shows only workflow cards', async ({
       page,
     }) => {
-      await selectFilterOption(page, typeFilter(page), 'Workflows');
+      await triggerLibrarySearchAndWait(
+        page,
+        () => selectFilterOption(page, typeFilter(page), 'Workflows'),
+        { filters: { contentType: 'workflow' } },
+      );
       await expect(typeFilter(page)).toHaveText('Workflows');
-      await waitForLibraryResultsLoaded(page);
       await expectMyLibraryResultsContainOnlyWorkflowCards(page);
 
       if ((await libraryCards(page).count()) === 0) {

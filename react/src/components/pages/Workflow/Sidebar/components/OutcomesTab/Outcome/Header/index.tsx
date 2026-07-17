@@ -2,13 +2,13 @@ import { _t } from '@cf/utility/Utility.class'
 import * as Styled from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
-import { MouseEvent, MutableRefObject } from 'react'
+import { MouseEvent, RefObject } from 'react'
 
 type PropsType = {
   uuid: string
   level: number
   title: string
-  dragRef: MutableRefObject<HTMLDivElement>
+  dragRef: RefObject<HTMLDivElement>
   highlighted: boolean
   collapsed: boolean
   setCollapsed: (value: boolean) => void

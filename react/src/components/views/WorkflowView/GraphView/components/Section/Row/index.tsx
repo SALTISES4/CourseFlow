@@ -36,9 +36,9 @@ const SectionRow = (props: SectionRowPropsType) => {
         ref={rowRef}
         style={{
           minHeight: 120,
-          backgroundColor:
-            draggingCustomNode &&
-            alpha(defaultColumnSettings['new-column'].colour, 0.2)
+          backgroundColor: draggingCustomNode
+            ? alpha(defaultColumnSettings['new-column'].colour, 0.2)
+            : undefined
         }}
       >
         <SectionRowEmpty>
@@ -50,7 +50,7 @@ const SectionRow = (props: SectionRowPropsType) => {
               coordsX={index}
               coordsY={0}
               columnId={columnId}
-              highlight={dnd.dragId === columnId ? 'cell' : null}
+              highlight={dnd.dragId === columnId ? 'cell' : undefined}
               borderColor={columnColors[columnId]}
               onReorder={onNodeDrop}
               emptyRow
@@ -67,9 +67,9 @@ const SectionRow = (props: SectionRowPropsType) => {
     <StyledWorkflow.CellRow
       ref={rowRef}
       style={{
-        backgroundColor:
-          dnd.highlightRow &&
-          alpha(defaultColumnSettings['new-column'].colour, 0.2)
+        backgroundColor: dnd.highlightRow
+          ? alpha(defaultColumnSettings['new-column'].colour, 0.2)
+          : undefined
       }}
     >
       {columnIds.map((columnId, index) => {
@@ -85,7 +85,11 @@ const SectionRow = (props: SectionRowPropsType) => {
             graphUuid={graphUuid}
             columnId={columnId}
             borderColor={columnColors[columnId]}
-            highlight={dnd.dragId === columnId ? dnd.closestEdge : null}
+            highlight={
+              dnd.dragId === columnId
+                ? (dnd.closestEdge ?? undefined)
+                : undefined
+            }
             onReorder={onNodeDrop}
             onClick={onNodeClick}
           />
@@ -97,7 +101,7 @@ const SectionRow = (props: SectionRowPropsType) => {
             coordsX={index}
             coordsY={rowIndex}
             columnId={columnId}
-            highlight={dnd.dragId === columnId ? 'cell' : null}
+            highlight={dnd.dragId === columnId ? 'cell' : undefined}
             borderColor={columnColors[columnId]}
             onReorder={onNodeDrop}
           />

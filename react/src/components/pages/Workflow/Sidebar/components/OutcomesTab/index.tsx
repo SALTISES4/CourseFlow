@@ -27,7 +27,7 @@ const OutcomeTab = () => {
   const navigate = useNavigate()
 
   const goToEditOutcomes = useCallback(() => {
-    navigate(generatePath(CFRoutes.WORKFLOW_OUTCOME_EDIT, { uuid }))
+    navigate(generatePath(CFRoutes.WORKFLOW_OUTCOME_EDIT, { uuid: uuid ?? '' }))
   }, [navigate, uuid])
 
   if (!outcomeGroups.length) {

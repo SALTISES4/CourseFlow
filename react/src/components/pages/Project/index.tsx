@@ -24,7 +24,7 @@ const ProjectDetails = () => {
   const location = useLocation()
 
   const { data, error, isLoading, isError, refetch } = useQuery({
-    ...getProjectOptions({ path: { uuid } }),
+    ...getProjectOptions({ path: { uuid: uuid ?? '' } }),
     enabled: Boolean(uuid)
   })
   const lastResourceUuid = useRef(uuid)

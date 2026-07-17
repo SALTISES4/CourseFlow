@@ -26,7 +26,7 @@ import {
 /**
  * Calibration slice — FR-PWD-001 through FR-PWD-005.
  * Requirements: tests/docs/requirements/features/auth/password_reset_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (teacher@courseflow.com).
  */
 
 test.describe('Password reset — calibration (FR-PWD-001–005)', () => {

@@ -5,7 +5,7 @@ import { WorkflowViewType } from '@cfPages/Workflow/types'
 import { ConfigType } from './types'
 
 type PermissionMatrixType = Record<
-  SidebarState['tab'],
+  Exclude<SidebarState['tab'], null>,
   {
     [index in WorkflowType]?: WorkflowViewType[]
   }
@@ -69,7 +69,7 @@ export function isTabVisible(
 ): boolean {
   const { workflowType, viewType } = config
 
-  if (!workflowType || !viewType) {
+  if (!tab || !workflowType || !viewType) {
     return false
   }
 

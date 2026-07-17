@@ -8,12 +8,12 @@ import { Link, Skeleton, Typography } from '@mui/material'
 import { Link as LinkRouter } from 'react-router-dom'
 
 export type ResultsProps = {
-  data: LibrarySearchOut
-  error: Error
+  data?: LibrarySearchOut
+  error: Error | null
   isError: boolean
   isLoading: boolean
   override?: {
-    uuid: string
+    uuid?: string
     onCardSelect: (uuid: string) => void
   }
 }

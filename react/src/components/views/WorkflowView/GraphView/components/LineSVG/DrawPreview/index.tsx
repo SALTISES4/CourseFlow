@@ -51,7 +51,11 @@ function findNearestRect(
 
   if (potentialTargets.size) {
     // grab first child from the map iterator
-    const [nodeId, rect] = potentialTargets.entries().next().value
+    const firstTarget = potentialTargets.entries().next().value
+    if (!firstTarget) {
+      return null
+    }
+    const [nodeId, rect] = firstTarget
 
     // early exit if we're checking the self as the nearest node
     if (nodeId === coords.anchorNodeUuid) {
@@ -160,7 +164,7 @@ const DrawPreview = ({ nodesBCR }: PropsType) => {
   const pathArgs = {
     sourceX: source.x,
     sourceY: source.y,
-    sourcePosition: source.edge,
+    sourcePosition: source.edge ?? undefined,
     targetX: target.x,
     targetY: target.y,
     targetPosition: target.edge ?? undefined

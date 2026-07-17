@@ -36,7 +36,9 @@ function getTypeChip(workflow: LibraryItemOut): WorkflowCardChipType {
   }
 }
 
-function getTemplateChip(workflow: LibraryItemOut): WorkflowCardChipType {
+function getTemplateChip(
+  workflow: LibraryItemOut
+): WorkflowCardChipType | null {
   const isTemplate = workflow.isTemplate
   if (isTemplate) {
     return {
@@ -47,7 +49,9 @@ function getTemplateChip(workflow: LibraryItemOut): WorkflowCardChipType {
   return null
 }
 
-function getWorkflowCountChip(workflow: LibraryItemOut): WorkflowCardChipType {
+function getWorkflowCountChip(
+  workflow: LibraryItemOut
+): WorkflowCardChipType | null {
   // if (
   //   workflow.contentType === LibraryContentTypeOut.PROJECT &&
   //   workflow.workflowCount !== null &&

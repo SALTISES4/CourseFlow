@@ -16,6 +16,19 @@ export type ContributorEntry = {
   password: string;
 };
 
+export type PrimaryUserEntry = {
+  email: string;
+  password: string;
+  account_role: string;
+};
+
+export type ProjectEntry = {
+  uuid: string;
+  title: string;
+  modified_on: string;
+  is_archived: boolean;
+};
+
 export type OutcomeEntry = {
   uuid: string;
   title: string;
@@ -41,9 +54,12 @@ export type TemplateWorkflowEntry = {
 
 export type WorkflowManifest = {
   fixture_version: number;
+  primary_user: PrimaryUserEntry;
   owner_email: string;
   project_uuid: string;
   project_title: string;
+  recent_projects: ProjectEntry[];
+  archived_home_project: ProjectEntry;
   template_project_uuid?: string;
   template_project_title?: string;
   template_workflows?: TemplateWorkflowEntry[];
@@ -96,6 +112,32 @@ function validateWorkflowManifest(parsed: unknown, manifestPath: string): Workfl
 
   const record = parsed as Record<string, unknown>;
   const workflows = record.workflows;
+  const primaryUser = record.primary_user as Record<string, unknown> | undefined;
+  const recentProjects = record.recent_projects;
+  const archivedHomeProject = record.archived_home_project as Record<string, unknown> | undefined;
+
+  if (
+    !primaryUser ||
+    typeof primaryUser.email !== 'string' ||
+    typeof primaryUser.password !== 'string' ||
+    primaryUser.account_role !== 'teacher'
+  ) {
+    throw new Error(
+      `E2E workflow manifest at ${manifestPath} must include primary_user for the teacher actor.`,
+    );
+  }
+
+  if (!Array.isArray(recentProjects) || recentProjects.length < 5) {
+    throw new Error(
+      `E2E workflow manifest at ${manifestPath} must include at least five recent_projects.`,
+    );
+  }
+
+  if (!archivedHomeProject || archivedHomeProject.is_archived !== true) {
+    throw new Error(
+      `E2E workflow manifest at ${manifestPath} must include archived_home_project.`,
+    );
+  }
 
   if (!Array.isArray(workflows) || workflows.length === 0) {
     throw new Error(`E2E workflow manifest at ${manifestPath} must include workflows[0].`);
@@ -200,6 +242,16 @@ export function getProjectPath(manifest?: WorkflowManifest): string {
 
 export function getProjectWorkflowsPath(manifest?: WorkflowManifest): string {
   return `${getProjectPath(manifest)}/workflows`;
+}
+
+export function getRecentHomeProjects(manifest: WorkflowManifest): ProjectEntry[] {
+  if (manifest.recent_projects.length < 5) {
+    throw new Error(
+      `E2E workflow manifest requires at least five recent_projects for FR-HOME-003. ` +
+        `Found ${manifest.recent_projects.length}.`,
+    );
+  }
+  return manifest.recent_projects;
 }
 
 export function contributorByRole(

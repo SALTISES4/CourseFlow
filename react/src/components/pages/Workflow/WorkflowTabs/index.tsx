@@ -59,7 +59,9 @@ const WorkflowTabs = () => {
 
   const sectionIdsOrderedSelector = useMemo(
     () =>
-      selectSectionUuidsOrderedForGraph(workflowDetailResp?.item?.graphUuid),
+      selectSectionUuidsOrderedForGraph(
+        workflowDetailResp?.item?.graphUuid ?? ''
+      ),
     [workflowDetailResp?.item?.graphUuid]
   )
   const sectionIdsOrdered = useSelector(sectionIdsOrderedSelector)

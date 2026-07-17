@@ -3,7 +3,7 @@ import type {
   NodeDropPayload,
   NodeInsertMode
 } from '@cf/features/graph/state/resolveNodeDropRow'
-import { MutableRefObject } from 'react'
+import { RefObject } from 'react'
 
 import { CellClickCallbackFn, CellReorderCallbackFn } from '../../../types'
 
@@ -37,7 +37,7 @@ export interface SectionCellNodeType extends SectionCellShared {
 }
 
 interface InternalShared {
-  wrapRef: MutableRefObject<HTMLDivElement>
+  wrapRef: RefObject<HTMLDivElement>
   onDrop: (
     data: NodeDropPayload & {
       type: SectionCellType.NODE | SectionCellType.PHANTOM

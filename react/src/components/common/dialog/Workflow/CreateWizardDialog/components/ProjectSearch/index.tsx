@@ -38,7 +38,7 @@ const ProjectSearch = ({ selected, onProjectSelect }: PropsType) => {
       setSearchArgs={updateSearchArgsHandler}
       override={{
         onCardSelect: onProjectSelect,
-        uuid: selected
+        uuid: selected ?? ''
       }}
     />
   )

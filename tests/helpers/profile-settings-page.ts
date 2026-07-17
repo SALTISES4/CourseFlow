@@ -1,5 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+import { authenticatedApiRequest } from './api';
+
 import {
   PROFILE_FIELD_VALIDATION_MESSAGES,
   PROFILE_SETTINGS_FORBIDDEN_LABEL_CASING,
@@ -35,8 +37,9 @@ export async function gotoProfileSettingsPage(page: Page): Promise<void> {
 }
 
 export async function fetchMyProfileSettings(page: Page): Promise<ProfileSettingsApiItem> {
-  const response = await page.request.get('/api/user/me/profile-settings');
-  expect(response.ok()).toBeTruthy();
+  const path = '/api/user/me/profile-settings';
+  const response = await authenticatedApiRequest(page, 'GET', path);
+  expect(response.ok(), `${path} returned HTTP ${response.status()}`).toBeTruthy();
   const body = (await response.json()) as { item: ProfileSettingsApiItem };
   return body.item;
 }

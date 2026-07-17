@@ -54,14 +54,7 @@ const MenuToggleButton = (props: MenuItemType) => {
     return null
   }
 
-  const buttonProps = {
-    ...props,
-    content: null,
-    action: null,
-    onClick: props.action
-  }
-
-  if ('iconButton' in props) {
+  if (props.iconButton) {
     const { icon, ...iconButtonProps } = props.iconButton
     return (
       <IconButton
@@ -85,7 +78,12 @@ const MenuToggleButton = (props: MenuItemType) => {
       <Button
         size="small"
         startIcon={props.showIconInList && props.icon}
-        {...buttonProps}
+        id={props.id}
+        data-test-id={props['data-test-id']}
+        aria-controls={props['aria-controls']}
+        aria-haspopup={props['aria-haspopup']}
+        aria-expanded={props['aria-expanded']}
+        onClick={props.action}
       >
         {props.content}
       </Button>
@@ -95,22 +93,15 @@ const MenuToggleButton = (props: MenuItemType) => {
   return props.content
 }
 
-export const ListMenuItem = ({
-  id,
-  uuid,
-  title,
-  content,
-  action,
-  show,
-  separator,
-  showIconInList,
-  icon
-}: MenuItemType) => {
-  if (!show) {
+export const ListMenuItem = (props: MenuItemType) => {
+  if (!props.show) {
     return null
   }
 
-  const contentChooser = (content: string | ReactElement) => {
+  const { id, uuid, title, action, separator, showIconInList, icon } = props
+  const content = props.content
+
+  const contentChooser = (content?: string | ReactElement) => {
     if (typeof content === 'string') {
       return (
         <>
@@ -206,15 +197,16 @@ const MenuWithOverflow = ({
 
   const menuEls = menuItems.map((item, index) => {
     if (size && index < size) {
-      const props = item
-
-      if ('iconButton' in props) {
-        props.iconButton = {
-          ...props.iconButton,
-          color: buttonColor,
-          size: buttonSize
-        }
-      }
+      const props = item.iconButton
+        ? {
+            ...item,
+            iconButton: {
+              ...item.iconButton,
+              color: buttonColor,
+              size: buttonSize
+            }
+          }
+        : item
 
       return (
         <MenuToggleButton

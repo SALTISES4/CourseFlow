@@ -102,7 +102,7 @@ const WorkflowForm = ({
   closeCallback: () => void
   label: string
   defaultValues?: WorkflowFormType
-  workflowType?: WorkflowTypeIn
+  workflowType: WorkflowTypeIn
   setIsFormReady: (isReady: boolean) => void
   formRef: RefObject<HTMLFormElement>
 }) => {

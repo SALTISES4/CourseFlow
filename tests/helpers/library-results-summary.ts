@@ -12,6 +12,7 @@ import {
   paginationPageNumberButton,
   RESULTS_SUMMARY_REGEX,
   resultsSummary,
+  triggerLibrarySearchAndWait,
 } from '../shared/locators/library';
 
 /**
@@ -117,8 +118,11 @@ export function describeLibraryResultsSummaryTests(config: LibraryPaginationSurf
 
     test('resultsSummary is hidden when resultsRegion is empty', async ({ page }) => {
       await installPaginatedLibrarySearchMock(page, { totalResults: 0 });
-      await gotoListing(page);
-      await waitForLoaded(page);
+      await triggerLibrarySearchAndWait(
+        page,
+        () => gotoListing(page),
+        (request) => (request.pagination?.page ?? 0) === 0,
+      );
 
       await expect(libraryEmptyState(page)).toBeVisible();
       await expectResultsSummaryHiddenPerFrLib001(page);
@@ -129,8 +133,11 @@ export function describeLibraryResultsSummaryTests(config: LibraryPaginationSurf
 
       test.beforeEach(async ({ page }) => {
         await installPaginatedLibrarySearchMock(page, { totalResults });
-        await gotoListing(page);
-        await waitForLoaded(page);
+        await triggerLibrarySearchAndWait(
+          page,
+          () => gotoListing(page),
+          (request) => (request.pagination?.page ?? 0) === 0,
+        );
       });
 
       test('resultsSummary shows first-page range on load', async ({ page }) => {
@@ -138,8 +145,11 @@ export function describeLibraryResultsSummaryTests(config: LibraryPaginationSurf
       });
 
       test('resultsSummary updates when user selects page 2', async ({ page }) => {
-        await paginationPageNumberButton(page, 2).click();
-        await waitForLoaded(page);
+        await triggerLibrarySearchAndWait(
+          page,
+          () => paginationPageNumberButton(page, 2).click(),
+          { pagination: { page: 1 } },
+        );
         await expectResultsSummaryText(page, formatResultsSummaryText(1, totalResults));
       });
 

@@ -28,7 +28,7 @@ const WorkflowTypeFilter = ({
     (values: SearchFilterOption[]) => {
       setSearchFilterState(
         produce((draft) => {
-          const current = draft.filterGroups.workflowTypeFilter.options
+          const current = draft.filterGroups.workflowTypeFilter.options ?? []
 
           draft.filterGroups.workflowTypeFilter.options =
             LibraryHelper.updateFilterOptions(current, values)
@@ -46,7 +46,10 @@ const WorkflowTypeFilter = ({
   return (
     <FilterMultiselect
       placeholder={filterGroup.label}
-      options={options}
+      options={(options ?? []).filter(
+        (option): option is SearchFilterOption & { value: string | number } =>
+          option.value !== null
+      )}
       showSearch={false}
       onChange={onChange}
     />

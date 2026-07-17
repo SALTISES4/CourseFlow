@@ -54,6 +54,9 @@ const SectionCell = (props: SectionCellProps) => {
   const onOption = useCallback(
     (insertModeOption: Exclude<NodeInsertMode, 'manual'>) => {
       const data = state.dropData
+      if (!data) {
+        return
+      }
       onReorder({
         ...data,
         edge:

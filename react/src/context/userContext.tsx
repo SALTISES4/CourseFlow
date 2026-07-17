@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux'
 
 type UserContextType = {
   uuid: string
-  user: EUser
+  user: EUser | null
 }
 
 export const UserContext = createContext<UserContextType>({

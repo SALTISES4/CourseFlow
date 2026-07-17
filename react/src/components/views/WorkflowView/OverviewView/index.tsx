@@ -31,7 +31,7 @@ const OverviewView = () => {
   }
 
   // @todo disciplines is missing from workflow data type
-  const disciplines = []
+  const disciplines: { title: string }[] = []
   const description = workflow?.description ?? ''
   const createdOn = workflow?.dateCreated
 

@@ -13,6 +13,10 @@ export function useTeamProjectUuidForWorkflow(
     queryKey: ['teamProjectUuidForWorkflow', workflowUuid],
     enabled: Boolean(workflowUuid),
     queryFn: async (): Promise<string | null> => {
+      if (!workflowUuid) {
+        return null
+      }
+
       const { data: projectList } = await listProjects({ throwOnError: true })
       const projects = projectList?.items ?? []
       for (const project of projects) {

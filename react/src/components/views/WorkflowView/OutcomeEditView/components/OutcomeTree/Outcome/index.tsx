@@ -255,21 +255,23 @@ const Outcome = ({
         onToggleClick={onToggleClick}
       />
 
-      <DropIndicator
-        lineGap="8px"
-        lineType="no-terminal"
-        instruction={{
-          operation: state.operation,
-          axis: 'vertical',
-          blocked: false
-        }}
-      />
+      {state.operation && (
+        <DropIndicator
+          lineGap="8px"
+          lineType="no-terminal"
+          instruction={{
+            operation: state.operation,
+            axis: 'vertical',
+            blocked: false
+          }}
+        />
+      )}
 
       {!state.collapsed && childOutcomes.length > 0 && (
         <Styled.OutcomeGroup>
           {childOutcomes.map((child) => (
             <Styled.OutcomeGroupItem key={child.uuid}>
-              <Outcome graphUuid={graphUuid} {...child} greenHover />
+              <Outcome {...child} graphUuid={graphUuid} greenHover />
             </Styled.OutcomeGroupItem>
           ))}
         </Styled.OutcomeGroup>

@@ -40,7 +40,7 @@ function useCellEmptyDnd({
   useEffect(() => {
     const el = wrapRef.current
     if (!el || !enabled) {
-      return null
+      return
     }
 
     return dropTargetForElements({

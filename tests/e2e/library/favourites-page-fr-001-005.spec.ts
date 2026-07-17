@@ -35,6 +35,7 @@ import {
   selectFilterOption,
   templatesToggle,
   typeFilter,
+  triggerLibrarySearchAndWait,
   waitForLibraryResultsLoaded,
   workflowTypeFilter,
   firstLibraryCardTitle,
@@ -43,7 +44,7 @@ import {
 /**
  * Calibration slice — FR-FAV-001 through FR-FAV-005.
  * Requirements: tests/docs/requirements/features/library/favourites_page_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (teacher@courseflow.com).
  */
 
 test.describe('Favourites — calibration (FR-FAV-001-005)', () => {
@@ -131,9 +132,12 @@ test.describe('Favourites — calibration (FR-FAV-001-005)', () => {
     test('typeFilter commits Projects and resultsRegion shows only project cards', async ({
       page,
     }) => {
-      await selectFilterOption(page, typeFilter(page), 'Projects');
+      await triggerLibrarySearchAndWait(
+        page,
+        () => selectFilterOption(page, typeFilter(page), 'Projects'),
+        { filters: { contentType: 'project' } },
+      );
       await expect(typeFilter(page)).toHaveText('Projects');
-      await waitForLibraryResultsLoaded(page);
       await expectFavouritesResultsContainOnlyProjectCards(page);
 
       if ((await libraryCards(page).count()) === 0) {
@@ -144,9 +148,12 @@ test.describe('Favourites — calibration (FR-FAV-001-005)', () => {
     test('typeFilter commits Workflows and resultsRegion shows only workflow cards', async ({
       page,
     }) => {
-      await selectFilterOption(page, typeFilter(page), 'Workflows');
+      await triggerLibrarySearchAndWait(
+        page,
+        () => selectFilterOption(page, typeFilter(page), 'Workflows'),
+        { filters: { contentType: 'workflow' } },
+      );
       await expect(typeFilter(page)).toHaveText('Workflows');
-      await waitForLibraryResultsLoaded(page);
       await expectFavouritesResultsContainOnlyWorkflowCards(page);
 
       if ((await libraryCards(page).count()) === 0) {
