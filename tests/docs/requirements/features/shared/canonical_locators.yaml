@@ -609,7 +609,7 @@ locatorMappings:
     strategy: "{notificationsMenuTrigger} badge showing unread notification count"
     confidence: inferred
   ownershipFilter:
-    strategy: "{favouritesFilterToolbar} single-select filter showing placeholder 'Ownership' or active label Owned or Shared"
+    strategy: "{favouritesFilterToolbar} single-select filter showing placeholder 'Ownership' or active label Owned or Shared with me"
     confidence: inferred
   ownershipFilterResetButton:
     strategy: "{ownershipFilter} button[aria-label='close'] or icon-only clear control adjacent to active ownership label"

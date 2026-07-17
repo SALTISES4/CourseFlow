@@ -99,7 +99,7 @@ test.describe('My library — calibration (FR-LIB-001-004, FR-LIB-006 deferred)'
   });
 
   test.describe('FR-LIB-003: filter results', () => {
-    test('ownershipFilter committed option replaces Ownership and shows ownershipFilterResetButton', async ({
+    test('Ownership filter - options and behaviour', async ({
       page,
     }) => {
       await expectOwnershipFilterCommittedStatePerFrLib003(page);

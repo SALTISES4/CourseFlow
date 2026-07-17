@@ -1,7 +1,6 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
 import {
-  OWNERSHIP_MENU_OPTION_SHARED,
   OWNERSHIP_OPTION_OWNED,
   OWNERSHIP_OPTION_SHARED,
   OWNERSHIP_PLACEHOLDER,
@@ -44,7 +43,7 @@ export async function expectOwnershipFilterCommittedStatePerFrLib003(
   await expect(filter).toHaveText(OWNERSHIP_PLACEHOLDER, { exact: true });
   await expect(reset).toBeHidden();
 
-  await pickOwnershipOption(page, OWNERSHIP_MENU_OPTION_SHARED);
+  await pickOwnershipOption(page, OWNERSHIP_OPTION_SHARED);
   await expect(filter).toHaveText(OWNERSHIP_OPTION_SHARED, { exact: true });
   await expect(filter).not.toHaveText(OWNERSHIP_PLACEHOLDER);
   await expect(reset).toBeVisible();

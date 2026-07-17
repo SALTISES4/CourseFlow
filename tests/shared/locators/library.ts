@@ -24,10 +24,8 @@ export const WORKFLOW_TYPE_FILTER_OPTIONS_FR_LIB_003 = ['Activity', 'Course', 'P
 export const TYPE_FILTER_PLACEHOLDER = 'Type';
 export const OWNERSHIP_PLACEHOLDER = 'Ownership';
 export const OWNERSHIP_OPTION_OWNED = 'Owned';
-/** FR-LIB-003 committed label per requirements (menu row may still read "Shared with me" in app). */
-export const OWNERSHIP_OPTION_SHARED = 'Shared';
-/** App menu copy for Shared ownership option until UI matches requirements label exactly. */
-export const OWNERSHIP_MENU_OPTION_SHARED = 'Shared with me';
+/** FR-LIB-003 — ownershipFilter option and committed trigger label. */
+export const OWNERSHIP_OPTION_SHARED = 'Shared with me';
 
 /** FR-LIB-001 — resultsSummary copy pattern (range per "current range" acceptance criteria). */
 export const RESULTS_SUMMARY_REGEX = /^Showing (?:(\d+)-(\d+)|(\d+)) of (\d+) results$/;
