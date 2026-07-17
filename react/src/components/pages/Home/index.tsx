@@ -24,12 +24,12 @@ const Home = () => {
   }
 
   //  const { projects, templates } = data.dataPackage
-  const projects = data.items
+  const projects = data?.items ?? []
 
   const formattedProjects = formatLibraryObjects(projects)
 
   // const formattedTemplates = formatLibraryObjects(templates)
-  const formattedTemplates = []
+  const formattedTemplates: ReturnType<typeof formatLibraryObjects> = []
 
   /*******************************************************
    * RENDER
