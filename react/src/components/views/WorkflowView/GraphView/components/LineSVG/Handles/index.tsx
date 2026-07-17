@@ -7,7 +7,7 @@ import { dragEndThunk } from '@cf/features/graph/state/thunks/svglink.thunk'
 import useHover from '@cf/hooks/useHover'
 import { AppDispatch } from '@cf/redux/store'
 import { Position } from '@xyflow/react'
-import { RefObject, MouseEvent as ReactMouseEvent, useCallback } from 'react'
+import { MouseEvent as ReactMouseEvent, RefObject, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import * as Styled from './styles'

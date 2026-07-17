@@ -1,6 +1,7 @@
-import { SliceNamespace } from '../../../../redux/types/enum'
 import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit'
 import { Position } from '@xyflow/react'
+
+import { SliceNamespace } from '../../../../redux/types/enum'
 
 export const svglinkDragEnd = createAction<{
   uuid: string | null

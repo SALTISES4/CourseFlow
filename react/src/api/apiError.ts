@@ -19,7 +19,9 @@ export function isArchivedApiError(error: unknown): boolean {
     return false
   }
   const detail =
-    typeof error.body === 'object' && error.body !== null && 'detail' in error.body
+    typeof error.body === 'object' &&
+    error.body !== null &&
+    'detail' in error.body
       ? String(error.body.detail)
       : String(error.body ?? '')
   return detail.toLowerCase().includes('archived')

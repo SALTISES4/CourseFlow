@@ -119,7 +119,9 @@ const authSlice = createSlice({
     clearAuthError(state) {
       state.error = null
     },
-    /** Dev / future logout wiring — not exposed in UI for this milestone. */
+    /**
+     * Dev / future logout wiring — not exposed in UI for this milestone.
+     * */
     clearSession(state) {
       clearAccessToken()
       state.status = 'unauthenticated'

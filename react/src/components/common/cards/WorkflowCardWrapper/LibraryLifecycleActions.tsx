@@ -91,7 +91,9 @@ const LibraryLifecycleActions = ({
         await restoreWorkflow.mutateAsync({ path: { uuid } })
       }
       await refreshLibrary()
-      onSuccess({ message: _t(`Your ${isProject ? 'project' : 'workflow'} was restored`) })
+      onSuccess({
+        message: _t(`Your ${isProject ? 'project' : 'workflow'} was restored`)
+      })
     } catch (error) {
       onError(error)
     }
@@ -112,7 +114,9 @@ const LibraryLifecycleActions = ({
           await deleteWorkflow.mutateAsync({ path: { uuid } })
         }
         onSuccess({
-          message: _t(`Your ${isProject ? 'project' : 'workflow'} was permanently deleted`)
+          message: _t(
+            `Your ${isProject ? 'project' : 'workflow'} was permanently deleted`
+          )
         })
       }
       setConfirmation(null)
@@ -145,7 +149,9 @@ const LibraryLifecycleActions = ({
             variant="outlined"
             onClick={restore}
             disabled={busy}
-            data-test-id={isProject ? 'project-card-restore' : 'workflow-card-restore'}
+            data-test-id={
+              isProject ? 'project-card-restore' : 'workflow-card-restore'
+            }
           >
             {_t(isProject ? 'Restore project' : 'Restore')}
           </Button>

@@ -11,9 +11,6 @@ import type {
   UserSummaryOut
 } from './gen/types.gen'
 
-
-
-
 export type LoginResponse = LoginOut
 export type UserLoginPayload = LoginIn
 export type UserRegisterPayload = RegisterIn

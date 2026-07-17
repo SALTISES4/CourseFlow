@@ -5,15 +5,15 @@ import {
   edgesReducer,
   graphReducer,
   nodesReducer,
+  outcomesReducer,
   sectionsReducer,
   tagsReducer,
-  outcomesReducer,
   workflowReducer
 } from './slices/canonical'
 import { graphLoadReducer } from './slices/graphLoad.slice'
 import { graphUiReducer } from './slices/graphUi.slice'
-import { outcomeUiReducer } from './slices/outcomeUi.slice'
 import { optimisticOpsReducer } from './slices/optimisticOps.slice'
+import { outcomeUiReducer } from './slices/outcomeUi.slice'
 
 export const graphCanonicalReducer = combineReducers({
   graph: graphReducer,
