@@ -2100,6 +2100,16 @@ export type LoginOut = {
 }
 
 /**
+ * UserMeta
+ */
+export type UserMeta = {
+  /**
+   * Ownsanyproject
+   */
+  ownsAnyProject: boolean
+}
+
+/**
  * UserSummaryOut
  */
 export type UserSummaryOut = {
@@ -2120,6 +2130,7 @@ export type UserSummaryOut = {
    */
   lastName: string
   accountRole: AccountRole | null
+  meta: UserMeta | null
 }
 
 /**

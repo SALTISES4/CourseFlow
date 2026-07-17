@@ -21,12 +21,16 @@ class RegisterIn(CamelSchema):
     label: str = ""
 
 
+class UserMeta(CamelSchema):
+    owns_any_project: bool
+
 class UserSummaryOut(CamelSchema):
     uuid: UUID
     email: str
     first_name: str
     last_name: str
     account_role: AccountRole | None
+    meta: UserMeta | None
 
 
 class LoginOut(CamelSchema):

@@ -9,7 +9,7 @@ from course_flow.api.auth import (
     get_current_token,
     get_current_user,
 )
-from course_flow.api.deps import get_auth_service
+from course_flow.api.deps import get_auth_service, get_user_service
 from course_flow.api.schemas.auth import (
     LoginIn,
     LoginOut,
@@ -22,24 +22,16 @@ from course_flow.application.services.auth_service import (
     InvalidCredentialsError,
     RegistrationValidationError,
 )
-from course_flow.core.models import Authtoken, User
+from course_flow.core.models import Authtoken
 
 router = Router(tags=["auth"], by_alias=True)
-
-
-def _to_user_summary(user: User) -> UserSummaryOut:
-    return UserSummaryOut(
-        uuid=user.uuid,
-        email=user.email,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        account_role=user.account_role,
-    )
 
 
 @router.post("/login", response=LoginOut, operation_id="login")
 def login(request, payload: LoginIn):
     svc = get_auth_service()
+    user_service = get_user_service()
+
     try:
         user, issued = svc.login(
             email=payload.email,
@@ -52,13 +44,14 @@ def login(request, payload: LoginIn):
         access_token=issued.access_token,
         token_type="Bearer",
         expires_at=issued.expires_at,
-        user=_to_user_summary(user),
+        user=user_service.get_user_summary(user),
     )
 
 
 @router.post("/register", response=LoginOut, operation_id="register")
 def register(request, payload: RegisterIn):
     svc = get_auth_service()
+    user_service = get_user_service()
     try:
         user, issued = svc.register(
             email=payload.email,
@@ -76,7 +69,7 @@ def register(request, payload: RegisterIn):
         access_token=issued.access_token,
         token_type="Bearer",
         expires_at=issued.expires_at,
-        user=_to_user_summary(user),
+        user=user_service.get_user_summary(user),
     )
 
 
@@ -91,4 +84,5 @@ def logout(request):
 
 @router.get("/me", response=UserSummaryOut, auth=BearerAuth(), operation_id="me")
 def me(request):
-    return _to_user_summary(get_current_user(request))
+    user_service = get_user_service()
+    return user_service.get_user_summary(get_current_user(request))

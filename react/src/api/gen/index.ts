@@ -441,6 +441,7 @@ export {
   type UserListItemOut,
   type UserListMetaOut,
   type UserListOut,
+  type UserMeta,
   type UserNotificationSettingsOut,
   type UserNotificationSettingsOutResp,
   type UserNotificationSettingsPatchIn,

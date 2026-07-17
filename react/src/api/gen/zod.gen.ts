@@ -1036,6 +1036,13 @@ export const zThreadCommentsBulkDeleteOut = z.object({
 })
 
 /**
+ * UserMeta
+ */
+export const zUserMeta = z.object({
+  ownsAnyProject: z.boolean()
+})
+
+/**
  * UserSummaryOut
  */
 export const zUserSummaryOut = z.object({
@@ -1043,7 +1050,8 @@ export const zUserSummaryOut = z.object({
   email: z.string(),
   firstName: z.string(),
   lastName: z.string(),
-  accountRole: zAccountRole.nullable()
+  accountRole: zAccountRole.nullable(),
+  meta: zUserMeta.nullable()
 })
 
 /**
