@@ -101,5 +101,26 @@
         { "uuid": "<generated-at-seed-time>", "title": "E2E Outcome 1" }
       ]
     }
-  ]
+  ],
+  "navigation_linked_workflows": {
+    "activity": {
+      "workflow_uuid": "<generated-at-seed-time>",
+      "workflow_title": "E2E Activity Workflow",
+      "workflow_type": "activity",
+      "workflow_path": "/workflow/<workflow-uuid>/graph"
+    },
+    "course": {
+      "workflow_uuid": "<generated-at-seed-time>",
+      "workflow_title": "E2E Course Workflow",
+      "workflow_type": "course",
+      "workflow_path": "/workflow/<workflow-uuid>/graph",
+      "linked_child_workflow_uuid": "<generated-at-seed-time>"
+    },
+    "program": {
+      "workflow_uuid": "<generated-at-seed-time>",
+      "workflow_title": "E2E Program Workflow",
+      "workflow_type": "program",
+      "workflow_path": "/workflow/<workflow-uuid>/graph"
+    }
+  }
 }

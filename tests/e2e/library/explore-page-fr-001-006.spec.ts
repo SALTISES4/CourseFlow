@@ -312,13 +312,13 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
       await expectExploreResultsContainOnlyWorkflowCards(page);
     });
 
-    test('typeFilterResetButton is visible when type scope is committed and reset restores Unset', async ({
+    test('Type filter - options and behaviour', async ({
       page,
     }) => {
       await expectTypeFilterResetPerFrLib003(page);
     });
 
-    test('workflowTypeFilter popover is multiselect with Activity, Course, and Program options', async ({
+    test('Workflow type filter popover is multiselect with Activity, Course, and Program options', async ({
       page,
     }) => {
       await expect(workflowTypeFilter(page)).toBeVisible();

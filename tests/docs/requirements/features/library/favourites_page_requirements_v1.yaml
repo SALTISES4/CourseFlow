@@ -222,7 +222,7 @@ requirements:
       - user changes ownershipFilter, typeFilter, or workflowTypeFilter, or uses a filter reset control
 
     mainFlow:
-      - ownershipFilter on favouritesFilterToolbar applied to favourited projectCard and workflowCard instances within favouritesPage base scope per FR-FAV-001; 'Owned' means the user is an owner on the object; 'Shared' means the user is an editor, a viewer, or a commenter on the object but is not an owner; favourited published-only objects (no contributor role) match neither option and appear only when ownershipFilter is unset
+      - ownershipFilter on favouritesFilterToolbar applied to favourited projectCard and workflowCard instances within favouritesPage base scope per FR-FAV-001; 'Owned' means the user is an owner on the object; 'Shared with me' means the user is an editor, a viewer, or a commenter on the object but is not an owner; favourited published-only objects (no contributor role) match neither option and appear only when ownershipFilter is unset
       - typeFilter and workflowTypeFilter behaviour conform to library_page_requirements_v1.yaml FR-LIB-003 on favouritesFilterToolbar
       - on first land on favouritesPage, typeFilter is committed to 'Projects' per FR-FAV-001
       - when templatesToggle is active per FR-FAV-004, ownershipFilter, typeFilter, and workflowTypeFilter constraints are subtractive with that filter
@@ -240,7 +240,7 @@ requirements:
       - given ownershipFilter has an active option, ownershipFilterResetButton is visible and clears ownership selection
       - given ownershipFilter is unset, resultsRegion may include favourited projectCard and workflowCard instances regardless of contributor role
       - given ownershipFilter is committed to 'Owned', resultsRegion includes only favourited projectCard and workflowCard instances on which the user is an owner
-      - given ownershipFilter is committed to 'Shared', resultsRegion includes only favourited projectCard and workflowCard instances on which the user is an editor, a viewer, or a commenter but is not an owner
+      - given ownershipFilter is committed to 'Shared with me', resultsRegion includes only favourited projectCard and workflowCard instances on which the user is an editor, a viewer, or a commenter but is not an owner
 
     openQuestions: []
 

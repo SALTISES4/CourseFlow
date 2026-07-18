@@ -129,8 +129,8 @@ test.describe("Favourites — calibration (FR-FAV-001-005)", () => {
     });
   });
 
-  test.describe("FR-FAV-003: filter results", () => {
-    test("ownershipFilter committed option replaces Ownership and shows ownershipFilterResetButton", async ({
+  test.describe('FR-FAV-003: filter results', () => {
+    test('Ownership filter - options and behaviour', async ({
       page,
     }) => {
       await expectOwnershipFilterCommittedStatePerFrLib003(page);

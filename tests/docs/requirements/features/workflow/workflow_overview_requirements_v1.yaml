@@ -30,11 +30,11 @@ uiObjectDefinitions:
   workflowMetadataFieldCode:
     meaning: Code metadata field on workflowOverviewView.
   workflowMetadataSwitchCalculateTimeAutomatically:
-    meaning: Switch control labeled 'Calculate time automatically' on workflowOverviewView.
+    meaning: Switch control labeled 'Auto-calculate' for Time on workflowOverviewView.
   workflowMetadataFieldTime:
     meaning: Time duration metadata field on workflowOverviewView.
   workflowMetadataSwitchCalculatePonderationAutomatically:
-    meaning: Program-only switch control labeled 'Calculate ponderation automatically' on workflowOverviewView.
+    meaning: Program-only switch control labeled 'Auto-calculate' for Ponderation on workflowOverviewView.
   workflowMetadataFieldIndividualTime:
     meaning: Individual duration field in the Ponderation section on workflowOverviewView.
   workflowMetadataFieldPracticalTime:
@@ -42,11 +42,11 @@ uiObjectDefinitions:
   workflowMetadataFieldTheoryTime:
     meaning: Theory duration field in the Ponderation section on workflowOverviewView.
   workflowMetadataSwitchCalculateCreditsAutomatically:
-    meaning: Program-only switch control labeled 'Calculate credits automatically' on workflowOverviewView.
+    meaning: Program-only switch control labeled 'Auto-calculate' for Credits on workflowOverviewView.
   workflowMetadataFieldCredits:
     meaning: Credits metadata field on workflowOverviewView.
   workflowMetadataSwitchCalculateClassificationAutomatically:
-    meaning: Program-only switch control labeled 'Calculate classification automatically' on workflowOverviewView.
+    meaning: Program-only switch control labeled 'Auto-calculate' for classification on workflowOverviewView.
   workflowMetadataFieldGeneralTime:
     meaning: General time duration field on program workflowOverviewView.
   workflowMetadataFieldSpecificTime:

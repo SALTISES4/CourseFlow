@@ -19,7 +19,7 @@ uiObjectDefinitions:
   sortResetButton:
     meaning: Clear control on sortControl that resets active sort.
   ownershipFilter:
-    meaning: Single-select ownership filter with placeholder 'Ownership' and options 'Owned' and 'Shared' on 'My library', 'Favourites', and project 'Workflows' filter toolbars.
+    meaning: Single-select ownership filter with placeholder 'Ownership' and options 'Owned' and 'Shared with me' on 'My library', 'Favourites', and project 'Workflows' filter toolbars.
   ownershipFilterResetButton:
     meaning: Clear (X) control on ownershipFilter that resets the active ownership selection.
   typeFilter:
@@ -290,7 +290,7 @@ requirements:
     mainFlow:
       - filters and keyword search combine on the same result set; user may narrow keyword results with filters and narrow filtered results with keyword search
       - templatesToggle behaviour on 'Explore' is per FR-EXP-005; on 'Favourites' is per FR-FAV-004
-      - 'Owned' on ownershipFilter restricts resultsRegion to projectCard and workflowCard instances on which the user is an owner within libraryPage base query scope per FR-LIB-001; 'Shared' restricts to instances on which the user is an editor, a viewer, or a commenter but is not an owner; when ownershipFilter is unset, resultsRegion includes both owned and shared instances in that base scope
+      - 'Owned' on ownershipFilter restricts resultsRegion to projectCard and workflowCard instances on which the user is an owner within libraryPage base query scope per FR-LIB-001; 'Shared with me' restricts to instances on which the user is an editor, a viewer, or a commenter but is not an owner; when ownershipFilter is unset, resultsRegion includes both owned and shared instances in that base scope
       - typeFilter offers commitments 'Projects' and 'Workflows' only, plus Unset (no commitment, placeholder 'Type'); there is no selectable 'All types' row; when user selects 'Projects' or 'Workflows', exactly one commitment is active; when reset to Unset, no 'Projects' or 'Workflows' commitment is active and results include both projects and workflows in scope when other filters allow (first land defaults to committed 'Projects' per FR-LIB-001, not Unset)
       - workflowTypeFilter is multi-select with exactly three options ('Activity', 'Course', and 'Program'); selection is additive (OR semantics), so selecting multiple options includes results matching any selected workflow type; workflowTypeFilter is visible only when typeFilter includes 'Workflows' in scope (typeFilter committed to 'Workflows', or typeFilter Unset); when workflowTypeFilter has no workflow-type selections (initial state or after reset via None or manual clear), no workflow type is selected and all workflow types in scope are included; user resets by manually unselecting all selected options or using 'None'; user selects all three options with 'All'; when one or more workflow types are selected, workflowTypeFilterSelectionIndicator is visible with the selected-count value; when none are selected, the indicator is hidden
       - when a workflow type option has no matching results in the current query context, that option's checkbox is read-only and cannot be clicked
@@ -311,8 +311,8 @@ requirements:
       - given typeFilter has an active option, typeFilterResetButton is visible
       - given ownershipFilter is unset (initial state or after reset), resultsRegion includes both owned and shared projectCard and workflowCard instances in libraryPage base query scope per FR-LIB-001
       - given ownershipFilter is committed to 'Owned', resultsRegion includes only projectCard and workflowCard instances on which the user is an owner
-      - given ownershipFilter is committed to 'Shared', resultsRegion includes only projectCard and workflowCard instances on which the user is an editor, a viewer, or a commenter but is not an owner
-      - given ownershipFilter, at most one of 'Owned' or 'Shared' is active as a committed single-select state, and ownershipFilterResetButton is visible when an ownership option is active
+      - given ownershipFilter is committed to 'Shared with me', resultsRegion includes only projectCard and workflowCard instances on which the user is an editor, a viewer, or a commenter but is not an owner
+      - given ownershipFilter, at most one of 'Owned' or 'Shared with me' is active as a committed single-select state, and ownershipFilterResetButton is visible when an ownership option is active
       - given ownershipFilter has an active option, the filter label is replaced by the active option label (instead of 'Ownership')
       - given workflowTypeFilter is visible, it offers exactly three options ('Activity', 'Course', and 'Program')
       - given workflowTypeFilter is visible and the user selects more than one workflow-type option, results include workflows matching any of the selected types (OR semantics per FR-LIB-003 and backend contract)

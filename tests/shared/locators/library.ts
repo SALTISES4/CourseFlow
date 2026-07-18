@@ -29,7 +29,10 @@ export const WORKFLOW_TYPE_FILTER_OPTIONS_FR_LIB_003 = [
 export const TYPE_FILTER_PLACEHOLDER = "Type";
 export const OWNERSHIP_PLACEHOLDER = "Ownership";
 export const OWNERSHIP_OPTION_OWNED = "Owned";
-export const OWNERSHIP_OPTION_SHARED = "Shared";
+
+/** FR-LIB-003 — ownershipFilter option and committed trigger label. */
+export const OWNERSHIP_OPTION_SHARED = 'Shared with me';
+
 
 /** FR-LIB-001 — resultsSummary copy pattern (range per "current range" acceptance criteria). */
 export const RESULTS_SUMMARY_REGEX =

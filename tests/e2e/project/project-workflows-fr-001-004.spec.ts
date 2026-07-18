@@ -93,7 +93,7 @@ test.describe('Project workflows — calibration (FR-PROJ-WF-001-004)', () => {
   });
 
   test.describe('FR-PROJ-WF-003: workflow type filter', () => {
-    test('workflowTypeFilter popover is multiselect with Activity, Course, and Program options', async ({
+    test('Workflow type filter popover is multiselect with Activity, Course, and Program options', async ({
       page,
     }) => {
       await expectWorkflowTypeFilterPopoverShell(page);
@@ -107,7 +107,7 @@ test.describe('Project workflows — calibration (FR-PROJ-WF-001-004)', () => {
   });
 
   test.describe('FR-PROJ-WF-003: filter results', () => {
-    test('ownershipFilter committed option replaces Ownership and shows ownershipFilterResetButton', async ({
+    test('Ownership filter - options and behaviour', async ({
       page,
     }) => {
       await expectOwnershipFilterCommittedStatePerFrLib003(page, {
