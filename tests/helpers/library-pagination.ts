@@ -61,6 +61,8 @@ export async function installPaginatedLibrarySearchMock(
         label: 'activity',
         title: `${titlePrefix} ${n}`,
         description: '',
+        ownerName: 'E2E Pagination Owner',
+        workflowCount: null,
         dateCreated: '2024-01-01T00:00:00.000Z',
         modifiedOn: '2024-01-01T00:00:00.000Z',
         isArchived: false,
@@ -170,20 +172,18 @@ export async function expectPaginationFirstLastPerFrLib001(
  * Same behavior on My library, Explore, Favourites, and Project Workflows.
  */
 export function describeLibraryPaginationTests(config: LibraryPaginationSurfaceConfig): void {
-  const { suiteLabel, frRef, gotoListing, waitForLoaded, cards } = config;
+  const { suiteLabel, frRef, gotoListing, cards } = config;
 
   test.describe(`${suiteLabel} — pagination (${frRef})`, () => {
     test('pagination is hidden when at most 10 matching results on page 1', async ({ page }) => {
-      await gotoListing(page);
-      await waitForLoaded(page);
-
-      const cardCount = await cards(page).count();
-      if (cardCount > LIBRARY_RESULTS_PER_PAGE) {
-        test.skip(
-          true,
-          `Seeded listing shows ${cardCount} cards on page 1 — use mocked pagination tests for visible-pagination behavior.`,
-        );
-      }
+      await installPaginatedLibrarySearchMock(page, {
+        totalResults: LIBRARY_RESULTS_PER_PAGE,
+      });
+      await triggerLibrarySearchAndWait(
+        page,
+        () => gotoListing(page),
+        (request) => (request.pagination?.page ?? 0) === 0,
+      );
 
       await expectPaginationHiddenPerFrLib001(page);
     });

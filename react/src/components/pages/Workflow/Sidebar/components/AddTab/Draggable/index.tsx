@@ -32,6 +32,12 @@ const DraggableItem = ({
 }: PropsType) => {
   const dispatch = useDispatch()
   const dragRef = useRef<HTMLDivElement>(null)
+  const testId =
+    type === DraggableType.SIDEBAR_NODE
+      ? 'workflow-add-tab-node-category-item'
+      : type === DraggableType.SIDEBAR_NODE_CUSTOM
+        ? 'workflow-add-tab-custom-node-category-item'
+        : 'workflow-add-tab-draggable-item'
 
   useEffect(() => {
     const el = dragRef.current
@@ -58,6 +64,8 @@ const DraggableItem = ({
       highlight={highlight}
       dashed={dashed}
       sx={sx}
+      data-test-id={testId}
+      data-draggable-uuid={uuid}
     >
       <Styled.DraggableDragWrap>
         <Styled.DraggableDragHandle />

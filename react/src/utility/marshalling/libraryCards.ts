@@ -52,18 +52,18 @@ function getTemplateChip(
 function getWorkflowCountChip(
   workflow: LibraryItemOut
 ): WorkflowCardChipType | null {
-  // if (
-  //   workflow.contentType === LibraryContentTypeOut.PROJECT &&
-  //   workflow.workflowCount !== null &&
-  //   workflow.workflowCount > 0
-  // ) {
-  //   return {
-  //     type: ChipOptions.DEFAULT,
-  //     label: `${workflow.workflowCount} ${_t(
-  //       `workflow` + (workflow.workflowCount > 1 ? 's' : '')
-  //     )}`
-  //   }
-  // }
+  if (
+    workflow.contentType === LibraryContentTypeOut.PROJECT &&
+    workflow.workflowCount != null &&
+    workflow.workflowCount > 0
+  ) {
+    return {
+      type: ChipOptions.DEFAULT,
+      label: `${workflow.workflowCount} ${_t(
+        `workflow` + (workflow.workflowCount > 1 ? 's' : '')
+      )}`
+    }
+  }
   return null
 }
 
@@ -94,7 +94,7 @@ export function formatLibraryObject(
   WorkflowCardWrapperPropsType,
   | 'uuid'
   | 'title'
-  | 'description'
+  | 'ownerName'
   | 'chips'
   | 'type'
   | 'isFavorite'
@@ -107,7 +107,7 @@ export function formatLibraryObject(
   const {
     uuid,
     title,
-    description,
+    ownerName,
     isFavorite,
     isArchived,
     permissions,
@@ -122,7 +122,7 @@ export function formatLibraryObject(
   return {
     uuid,
     title,
-    description,
+    ownerName,
     isFavorite,
     isArchived,
     permissions,

@@ -5,6 +5,8 @@ import {
   workflowMetadataSwitchCalculateTimeAutomatically,
   workflowOverviewView,
 } from './workflow-overview.locators';
+import { setWorkflowOverviewSwitch } from './workflow-overview.helpers';
+import { workflowGraphTab, workflowOverviewTab } from './workflow.locators';
 
 /**
  * Workflow Overview time auto-calculation — FR-WF-OV-003.
@@ -17,26 +19,34 @@ test.describe('Workflow overview — time auto-calculation (FR-WF-OV-003)', () =
     await expect(workflowOverviewView(page)).toBeVisible({ timeout: 15_000 });
   });
 
-  test('FR-WF-OV-003: activity workflow time switch and field deferred until OverviewView wiring', async () => {
-    test.skip(
-      true,
-      'OverviewView lacks workflowMetadataSwitchCalculateTimeAutomatically and workflowMetadataFieldTime for activity workflows.',
-    );
-  });
-
-  test('FR-WF-OV-003: auto-calculate ON makes Time field read-only deferred', async ({
+  test('FR-WF-OV-003: activity workflow exposes an editable Time field when auto-calculate is OFF', async ({
     page,
   }) => {
-    const hasSwitch = (await workflowMetadataSwitchCalculateTimeAutomatically(page).count()) > 0;
-    const hasTime = (await workflowMetadataFieldTime(page).count()) > 0;
-    if (!hasSwitch || !hasTime) {
-      test.skip(
-        true,
-        'OverviewView lacks time metadata controls; cannot assert auto-calculate read-only behavior.',
-      );
-    }
+    const automaticSwitch = workflowMetadataSwitchCalculateTimeAutomatically(page);
+    await setWorkflowOverviewSwitch(page, automaticSwitch, false);
 
-    await workflowMetadataSwitchCalculateTimeAutomatically(page).check();
-    await expect(workflowMetadataFieldTime(page)).toBeDisabled();
+    await expect(automaticSwitch).toBeEnabled();
+    await expect(workflowMetadataFieldTime(page)).toBeEnabled();
+  });
+
+  test('FR-WF-OV-003: auto-calculate ON makes Time read-only and the switch persists', async ({
+    page,
+    workflow,
+  }) => {
+    const automaticSwitch = workflowMetadataSwitchCalculateTimeAutomatically(page);
+    try {
+      await setWorkflowOverviewSwitch(page, automaticSwitch, true);
+      await expect(workflowMetadataFieldTime(page)).toBeDisabled();
+
+      await workflowGraphTab(page).click();
+      await expect(page).toHaveURL(new RegExp(`${workflow.path}/?$`));
+      await workflowOverviewTab(page).click();
+      await expect(workflowOverviewView(page)).toBeVisible();
+      await expect(workflowMetadataSwitchCalculateTimeAutomatically(page)).toBeChecked();
+      await expect(workflowMetadataFieldTime(page)).toBeDisabled();
+    } finally {
+      const restoredSwitch = workflowMetadataSwitchCalculateTimeAutomatically(page);
+      await setWorkflowOverviewSwitch(page, restoredSwitch, false);
+    }
   });
 });

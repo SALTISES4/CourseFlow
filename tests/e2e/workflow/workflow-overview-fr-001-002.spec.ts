@@ -6,8 +6,18 @@ import {
   workflowMetadataFieldCode,
   workflowMetadataFieldCreatedOn,
   workflowMetadataFieldDescription,
+  workflowMetadataFieldCredits,
+  workflowMetadataFieldGeneralTime,
+  workflowMetadataFieldIndividualTime,
+  workflowMetadataFieldPracticalTime,
+  workflowMetadataFieldSpecificTime,
+  workflowMetadataFieldTheoryTime,
   workflowMetadataFieldTime,
   workflowMetadataPermissionsPanel,
+  workflowMetadataSection,
+  workflowMetadataSwitchCalculateClassificationAutomatically,
+  workflowMetadataSwitchCalculateCreditsAutomatically,
+  workflowMetadataSwitchCalculatePonderationAutomatically,
   workflowMetadataSwitchCalculateTimeAutomatically,
   workflowOverviewView,
 } from './workflow-overview.locators';
@@ -33,13 +43,21 @@ test.describe('Workflow overview — view shell (FR-WF-OV-001)', () => {
     await expect(workflowMetadataFieldCreatedOn(page)).toBeVisible();
   });
 
-  test('FR-WF-OV-001: activity workflow does not render course/program-only metadata fields', async ({
-    page,
-  }) => {
+  test('FR-WF-OV-001: activity workflow renders its required fields only', async ({ page }) => {
+    await expect(workflowMetadataSection(page)).toBeVisible();
+    await expect(workflowMetadataSwitchCalculateTimeAutomatically(page)).toBeVisible();
+    await expect(workflowMetadataFieldTime(page)).toBeVisible();
+    await expect(workflowMetadataPermissionsPanel(page)).toBeVisible();
     await expect(workflowMetadataFieldCode(page)).toHaveCount(0);
-    await expect(workflowMetadataSwitchCalculateTimeAutomatically(page)).toHaveCount(0);
-    await expect(workflowMetadataFieldTime(page)).toHaveCount(0);
-    await expect(workflowMetadataPermissionsPanel(page)).toHaveCount(0);
+    await expect(workflowMetadataSwitchCalculatePonderationAutomatically(page)).toHaveCount(0);
+    await expect(workflowMetadataFieldTheoryTime(page)).toHaveCount(0);
+    await expect(workflowMetadataFieldPracticalTime(page)).toHaveCount(0);
+    await expect(workflowMetadataFieldIndividualTime(page)).toHaveCount(0);
+    await expect(workflowMetadataFieldCredits(page)).toHaveCount(0);
+    await expect(workflowMetadataSwitchCalculateCreditsAutomatically(page)).toHaveCount(0);
+    await expect(workflowMetadataSwitchCalculateClassificationAutomatically(page)).toHaveCount(0);
+    await expect(workflowMetadataFieldGeneralTime(page)).toHaveCount(0);
+    await expect(workflowMetadataFieldSpecificTime(page)).toHaveCount(0);
   });
 
   test('FR-WF-OV-001: Overview route does not render workflowRightSidebar', async ({ page }) => {
@@ -59,11 +77,22 @@ test.describe('Workflow overview — view shell (FR-WF-OV-001)', () => {
     await expect(workflowMetadataFieldCreatedOn(page)).toBeVisible();
   });
 
-  test('FR-WF-OV-001: activity time switch and permissions panel deferred', async () => {
-    test.skip(
-      true,
-      'OverviewView lacks Calculate time automatically, Time field, and workflowMetadataPermissionsPanel wiring.',
-    );
+  test('FR-WF-OV-001: course workflow renders course fields without program-only switches', async ({
+    page,
+    workflow,
+  }) => {
+    const course = workflow.workflowByType('course');
+    await page.goto(workflowOverviewPath(course.workflow_path));
+
+    await expect(workflowMetadataFieldCode(page)).toBeVisible();
+    await expect(workflowMetadataSwitchCalculateTimeAutomatically(page)).toBeVisible();
+    await expect(workflowMetadataFieldTheoryTime(page)).toBeVisible();
+    await expect(workflowMetadataFieldPracticalTime(page)).toBeVisible();
+    await expect(workflowMetadataFieldIndividualTime(page)).toBeVisible();
+    await expect(workflowMetadataFieldCredits(page)).toBeVisible();
+    await expect(workflowMetadataSwitchCalculatePonderationAutomatically(page)).toHaveCount(0);
+    await expect(workflowMetadataSwitchCalculateCreditsAutomatically(page)).toHaveCount(0);
+    await expect(workflowMetadataSwitchCalculateClassificationAutomatically(page)).toHaveCount(0);
   });
 });
 
@@ -84,16 +113,11 @@ test.describe('Workflow overview — description metadata (FR-WF-OV-002)', () =>
   test('FR-WF-OV-002: workflowMetadataFieldDescription is read-only when rendered', async ({
     page,
   }) => {
-    const hasDescription = (await workflowMetadataFieldDescription(page).count()) > 0;
-    if (!hasDescription) {
-      test.skip(
-        true,
-        'OverviewView hides Description block when workflow description is empty; FR expects label with "-".',
-      );
-    }
-
     await expect(workflowMetadataFieldDescription(page)).toBeVisible();
-    const descriptionInput = workflowOverviewView(page).getByRole('textbox', { name: 'Description' });
+    await expect(workflowMetadataFieldDescription(page)).not.toHaveText(/^Description$/);
+    const descriptionInput = workflowOverviewView(page).getByRole('textbox', {
+      name: 'Description',
+    });
     await expect(descriptionInput).toHaveCount(0);
   });
 });

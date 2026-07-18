@@ -29,7 +29,7 @@ def ensure_e2e_owner() -> User:
     return _ensure_demo_user(
         email=DEV_SEED_TEACHER_EMAIL,
         first_name="testteacher",
-        last_name="",
+        last_name="Teacher",
         password=DEV_SEED_DEMO_PASSWORD,
         account_role=AccountRole.TEACHER,
     )
@@ -44,21 +44,21 @@ def ensure_e2e_contributors(project: Project, owner: User) -> list[dict]:
     editor = _ensure_demo_user(
         email=E2E_FIXTURE_EDITOR_EMAIL,
         first_name="testeditor",
-        last_name="",
+        last_name="Editor",
         password=DEV_SEED_DEMO_PASSWORD,
         account_role=AccountRole.TEACHER,
     )
     commenter = _ensure_demo_user(
         email=E2E_FIXTURE_COMMENTER_EMAIL,
         first_name="testcommenter",
-        last_name="",
+        last_name="Commenter",
         password=DEV_SEED_DEMO_PASSWORD,
         account_role=AccountRole.TEACHER,
     )
     student = _ensure_demo_user(
         email=DEV_SEED_STUDENT_EMAIL,
         first_name="teststudent",
-        last_name="",
+        last_name="Student",
         password=DEV_SEED_DEMO_PASSWORD,
         account_role=AccountRole.STUDENT,
     )

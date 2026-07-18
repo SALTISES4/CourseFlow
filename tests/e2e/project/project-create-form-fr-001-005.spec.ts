@@ -163,11 +163,28 @@ test.describe('Create project form — calibration (FR-PROJ-FORM-001-005)', () =
         title: uniqueTitle,
         description,
         isPublished: false,
+        isArchived: false,
         isTemplate: false,
         isFavorite: false,
         ownerId: 1,
         dateCreated: '2026-01-01T00:00:00Z',
         modifiedOn: '2026-01-01T00:00:00Z',
+        disciplines: [{ id: 1, title: disciplineLabels[0]! }],
+        workflows: [],
+        permissions: {
+          accountRole: 'teacher',
+          resourceRole: 'owner',
+          state: 'active',
+          actions: [
+            'view',
+            'edit_project',
+            'manage_members',
+            'create_workflow',
+            'archive_project',
+            'publish_project',
+          ],
+          adminOverride: false,
+        },
       };
 
       await page.route(PROJECT_CREATE_API_ROUTE, (route) => {

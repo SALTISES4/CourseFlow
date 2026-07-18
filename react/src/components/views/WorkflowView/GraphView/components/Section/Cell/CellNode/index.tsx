@@ -109,6 +109,7 @@ const SectionCellNode = ({
     <>
       <StyledNode.CellInner
         id={`node-${nodeId}`}
+        data-test-id="workflow-node"
         selected={selected}
         highlighted={highlighted}
         dropHighlight={dnd.dropHighlight}
@@ -119,6 +120,7 @@ const SectionCellNode = ({
             nodeId={nodeId}
             graphUuid={node.graphUuid}
             nodeRef={wrapRef}
+            threadUuid={node.threadUuid}
           />
         )}
 

@@ -61,6 +61,13 @@ class LibraryFiltersIn(CamelSchema):
     workflow_types: list[WorkflowType] = Field(default_factory=list)
     ownership: LibraryOwnershipIn | None = None
     is_favorite: bool | None = None
+    include_published_favorites: bool | None = Field(
+        default=None,
+        description=(
+            "Include the actor's favourited published resources when the actor "
+            "has no contributor role. Requires isFavorite=true."
+        ),
+    )
     is_archived: bool | None = None
     is_template: bool | None = None
     can_create_workflow: bool | None = Field(
@@ -84,6 +91,14 @@ class LibraryFiltersIn(CamelSchema):
         if self.can_create_workflow and self.content_type != LibraryContentTypeIn.PROJECT:
             raise ValueError(
                 "canCreateWorkflow may only be used when contentType is project"
+            )
+        return self
+
+    @model_validator(mode="after")
+    def validate_published_favorites_scope(self):
+        if self.include_published_favorites and self.is_favorite is not True:
+            raise ValueError(
+                "includePublishedFavorites may only be used when isFavorite is true"
             )
         return self
 
@@ -121,6 +136,8 @@ class LibraryItemOut(CamelSchema):
     label: str
     title: str
     description: str
+    owner_name: str | None
+    workflow_count: int | None
     date_created: datetime
     modified_on: datetime
     is_archived: bool
@@ -149,6 +166,7 @@ class LibraryAppliedFiltersOut(CamelSchema):
     workflow_types: list[WorkflowType] = Field(default_factory=list)
     ownership: LibraryOwnershipIn | None = None
     is_favorite: bool | None = None
+    include_published_favorites: bool | None = None
     is_archived: bool | None = None
     is_template: bool | None = None
     can_create_workflow: bool | None = None

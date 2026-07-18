@@ -276,6 +276,25 @@ export const zProjectUpdateIn = z.object({
 })
 
 /**
+ * WorkflowOverviewMetadataOut
+ */
+export const zWorkflowOverviewMetadataOut = z.object({
+  code: z.string().optional().default(''),
+  calculateTimeAutomatically: z.boolean().optional().default(false),
+  time: z.number().nullish(),
+  timeUnits: z.number().int().nullish(),
+  calculatePonderationAutomatically: z.boolean().optional().default(false),
+  theoryTime: z.number().nullish(),
+  practicalTime: z.number().nullish(),
+  individualTime: z.number().nullish(),
+  calculateCreditsAutomatically: z.boolean().optional().default(false),
+  credits: z.number().int().nullish(),
+  calculateClassificationAutomatically: z.boolean().optional().default(false),
+  generalTime: z.number().nullish(),
+  specificTime: z.number().nullish()
+})
+
+/**
  * WorkflowDetailOut
  */
 export const zWorkflowDetailOut = z.object({
@@ -283,6 +302,7 @@ export const zWorkflowDetailOut = z.object({
   graphUuid: z.string().uuid(),
   title: z.string(),
   description: z.string(),
+  overviewMetadata: zWorkflowOverviewMetadataOut,
   workflowType: zWorkflowType,
   authorId: z.number().int().nullable(),
   projectUuid: z.string().uuid().nullable(),
@@ -363,12 +383,32 @@ export const zWorkflowDetailOutResp = z.object({
 })
 
 /**
+ * WorkflowOverviewMetadataIn
+ */
+export const zWorkflowOverviewMetadataIn = z.object({
+  code: z.string().max(255).nullish(),
+  calculateTimeAutomatically: z.boolean().nullish(),
+  time: z.number().gte(0).nullish(),
+  timeUnits: z.number().int().gte(1).nullish(),
+  calculatePonderationAutomatically: z.boolean().nullish(),
+  theoryTime: z.number().gte(0).nullish(),
+  practicalTime: z.number().gte(0).nullish(),
+  individualTime: z.number().gte(0).nullish(),
+  calculateCreditsAutomatically: z.boolean().nullish(),
+  credits: z.number().int().gte(0).nullish(),
+  calculateClassificationAutomatically: z.boolean().nullish(),
+  generalTime: z.number().gte(0).nullish(),
+  specificTime: z.number().gte(0).nullish()
+})
+
+/**
  * WorkflowUpdateIn
  */
 export const zWorkflowUpdateIn = z.object({
   title: z.string().nullish(),
   projectUuid: z.string().uuid().nullish(),
-  description: z.string().nullish()
+  description: z.string().nullish(),
+  overviewMetadata: zWorkflowOverviewMetadataIn.nullish()
 })
 
 /**
@@ -1278,6 +1318,8 @@ export const zLibraryItemOut = z.object({
   label: z.string(),
   title: z.string(),
   description: z.string(),
+  ownerName: z.string().nullable(),
+  workflowCount: z.number().int().nullable(),
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime(),
   isArchived: z.boolean(),
@@ -1304,6 +1346,7 @@ export const zLibraryAppliedFiltersOut = z.object({
   workflowTypes: z.array(zWorkflowType).optional(),
   ownership: zLibraryOwnershipIn.nullish(),
   isFavorite: z.boolean().nullish(),
+  includePublishedFavorites: z.boolean().nullish(),
   isArchived: z.boolean().nullish(),
   isTemplate: z.boolean().nullish(),
   canCreateWorkflow: z.boolean().nullish()
@@ -1340,6 +1383,7 @@ export const zLibraryFiltersIn = z.object({
   workflowTypes: z.array(zWorkflowType).optional(),
   ownership: zLibraryOwnershipIn.nullish(),
   isFavorite: z.boolean().nullish(),
+  includePublishedFavorites: z.boolean().nullish(),
   isArchived: z.boolean().nullish(),
   isTemplate: z.boolean().nullish(),
   canCreateWorkflow: z.boolean().nullish()

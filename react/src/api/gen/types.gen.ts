@@ -505,6 +505,7 @@ export type WorkflowDetailOut = {
    * Description
    */
   description: string
+  overviewMetadata: WorkflowOverviewMetadataOut
   workflowType: WorkflowType
   /**
    * Authorid
@@ -532,6 +533,64 @@ export type WorkflowDetailOut = {
   modifiedOn: string
   permissions: PermissionContextOut
   projectPermissions: PermissionContextOut | null
+}
+
+/**
+ * WorkflowOverviewMetadataOut
+ */
+export type WorkflowOverviewMetadataOut = {
+  /**
+   * Code
+   */
+  code?: string
+  /**
+   * Calculatetimeautomatically
+   */
+  calculateTimeAutomatically?: boolean
+  /**
+   * Time
+   */
+  time?: number | null
+  /**
+   * Timeunits
+   */
+  timeUnits?: number | null
+  /**
+   * Calculateponderationautomatically
+   */
+  calculatePonderationAutomatically?: boolean
+  /**
+   * Theorytime
+   */
+  theoryTime?: number | null
+  /**
+   * Practicaltime
+   */
+  practicalTime?: number | null
+  /**
+   * Individualtime
+   */
+  individualTime?: number | null
+  /**
+   * Calculatecreditsautomatically
+   */
+  calculateCreditsAutomatically?: boolean
+  /**
+   * Credits
+   */
+  credits?: number | null
+  /**
+   * Calculateclassificationautomatically
+   */
+  calculateClassificationAutomatically?: boolean
+  /**
+   * Generaltime
+   */
+  generalTime?: number | null
+  /**
+   * Specifictime
+   */
+  specificTime?: number | null
 }
 
 /**
@@ -655,6 +714,64 @@ export type WorkflowDetailOutResp = {
 }
 
 /**
+ * WorkflowOverviewMetadataIn
+ */
+export type WorkflowOverviewMetadataIn = {
+  /**
+   * Code
+   */
+  code?: string | null
+  /**
+   * Calculatetimeautomatically
+   */
+  calculateTimeAutomatically?: boolean | null
+  /**
+   * Time
+   */
+  time?: number | null
+  /**
+   * Timeunits
+   */
+  timeUnits?: number | null
+  /**
+   * Calculateponderationautomatically
+   */
+  calculatePonderationAutomatically?: boolean | null
+  /**
+   * Theorytime
+   */
+  theoryTime?: number | null
+  /**
+   * Practicaltime
+   */
+  practicalTime?: number | null
+  /**
+   * Individualtime
+   */
+  individualTime?: number | null
+  /**
+   * Calculatecreditsautomatically
+   */
+  calculateCreditsAutomatically?: boolean | null
+  /**
+   * Credits
+   */
+  credits?: number | null
+  /**
+   * Calculateclassificationautomatically
+   */
+  calculateClassificationAutomatically?: boolean | null
+  /**
+   * Generaltime
+   */
+  generalTime?: number | null
+  /**
+   * Specifictime
+   */
+  specificTime?: number | null
+}
+
+/**
  * WorkflowUpdateIn
  */
 export type WorkflowUpdateIn = {
@@ -670,6 +787,7 @@ export type WorkflowUpdateIn = {
    * Description
    */
   description?: string | null
+  overviewMetadata?: WorkflowOverviewMetadataIn | null
 }
 
 /**
@@ -2478,6 +2596,10 @@ export type LibraryAppliedFiltersOut = {
    */
   isFavorite?: boolean | null
   /**
+   * Includepublishedfavorites
+   */
+  includePublishedFavorites?: boolean | null
+  /**
    * Isarchived
    */
   isArchived?: boolean | null
@@ -2546,6 +2668,14 @@ export type LibraryItemOut = {
    * Description
    */
   description: string
+  /**
+   * Ownername
+   */
+  ownerName: string | null
+  /**
+   * Workflowcount
+   */
+  workflowCount: number | null
   /**
    * Datecreated
    */
@@ -2648,6 +2778,12 @@ export type LibraryFiltersIn = {
    * Isfavorite
    */
   isFavorite?: boolean | null
+  /**
+   * Includepublishedfavorites
+   *
+   * Include the actor's favourited published resources when the actor has no contributor role. Requires isFavorite=true.
+   */
+  includePublishedFavorites?: boolean | null
   /**
    * Isarchived
    */

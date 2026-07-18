@@ -78,14 +78,17 @@ const CreateWizardDialog = () => {
 
   const steps = [
     {
+      label: 'Select project',
       title: 'Select project',
       canSubmit: projectUuid
     },
     {
+      label: `Select ${state.workflowType} type`,
       title: `Select ${state.workflowType} type`,
       canSubmit: state.resourceType
     },
     {
+      label: `Create ${state.workflowType}`,
       title:
         state.resourceType === CreateResourceOptions.TEMPLATE
           ? `Create ${state.workflowType} from a template`
@@ -370,8 +373,8 @@ const CreateWizardDialog = () => {
       <DialogContent dividers>
         <Stepper activeStep={state.step}>
           {steps.map((step, idx) => (
-            <Step key={step.title} completed={state.step > idx}>
-              <StepLabel>{step.title}</StepLabel>
+            <Step key={step.label} completed={state.step > idx}>
+              <StepLabel>{step.label}</StepLabel>
             </Step>
           ))}
         </Stepper>

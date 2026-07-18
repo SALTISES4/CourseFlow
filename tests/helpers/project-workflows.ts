@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 
-import { cardOwnerText, cardTitleText } from '../shared/locators/cards';
+import { cardTitleText } from '../shared/locators/cards';
 import {
   keywordSearchField,
   expectLibraryCardTitles,
@@ -69,13 +69,17 @@ type ProjectWorkflowSearchResponse = {
 
 function isProjectWorkflowLibrarySearchResponse(response: {
   url: () => string;
-  request: () => { method: () => string };
+  request: () => { method: () => string; postDataJSON: () => unknown };
   status: () => number;
 }): boolean {
+  const requestBody = response.request().postDataJSON() as {
+    pagination?: { resultsPerPage?: number };
+  };
   return (
     response.url().includes('/api/library/search') &&
     response.request().method() === 'POST' &&
-    response.status() === 200
+    response.status() === 200 &&
+    requestBody.pagination?.resultsPerPage === 10
   );
 }
 
@@ -163,9 +167,8 @@ export async function expectOwnershipFilterOwnedNarrowsProjectWorkflowsResults(
   expect(ownedCount).toBeLessThanOrEqual(baselineCount);
   expect(ownedCount).toBeGreaterThan(0);
 
-  const cards = libraryCards(page);
-  for (let i = 0; i < ownedCount; i++) {
-    await expect(cardOwnerText(cards.nth(i))).toBeVisible();
+  for (const item of filteredResponse.items) {
+    expect(item.permissions?.resourceRole).toBe('owner');
   }
 }
 

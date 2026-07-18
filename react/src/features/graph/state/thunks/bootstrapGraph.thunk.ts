@@ -14,6 +14,7 @@ import {
   workflowActions
 } from '../slices/canonical'
 import { graphLoadActions } from '../slices/graphLoad.slice'
+import { threadCommentCountsActions } from '../slices/threadCommentCounts.slice'
 
 type GraphBootstrapState = { graph: GraphState }
 type GraphThunk<ReturnType = void> = ThunkAction<
@@ -83,6 +84,9 @@ export const bootstrapWorkflowGraph = (
         dispatch(nodesActions.upsertMany(bundle.nodes))
         dispatch(edgesActions.upsertMany(bundle.edges))
         dispatch(outcomesActions.upsertMany(bundle.outcomes))
+        dispatch(
+          threadCommentCountsActions.upsertMany(bundle.threadCommentCounts)
+        )
 
         dispatch(setSucceeded(graphUuid, 'graph'))
         dispatch(setSucceeded(graphUuid, 'sections'))

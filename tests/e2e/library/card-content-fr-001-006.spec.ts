@@ -20,6 +20,7 @@ import {
   E2E_FIXTURE_WORKFLOW_DESCRIPTION,
   E2E_FIXTURE_WORKFLOW_TITLE,
   expectFollowsInDocumentOrder,
+  keywordSearchField,
   libraryProjectCardByTitle,
   libraryWorkflowCardByTitle,
   templatesToggle,
@@ -52,6 +53,19 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
     test('seeded project card shows mapped content and layout regions', async ({
       page,
     }) => {
+      const searchBody = await triggerLibrarySearchAndWait(
+        page,
+        async () => {
+          await keywordSearchField(page).fill(manifest.project_title);
+          await keywordSearchField(page).press('Enter');
+        },
+        { filters: { keyword: manifest.project_title } },
+      );
+      const projectItem = searchBody.items.find(
+        (item) => item.uuid === manifest.project_uuid && item.contentType === 'project',
+      );
+      expect(projectItem).toBeDefined();
+
       const card = libraryProjectCardByTitle(page, manifest.project_title);
       if ((await card.count()) === 0) {
         test.skip(true, 'E2E fixture project card not visible on /library.');
@@ -72,10 +86,11 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
       await expect(cardChipWithLabel(card, 'Template')).toHaveCount(0);
       await expect(cardFavouriteToggle(card)).toBeVisible();
 
-      // E2E fixture project includes one workflow — FR-CARD-001 renders count chip only when count > 0.
+      // FR-CARD-001 maps the current API count; other E2E flows may add workflows after seeding.
+      expect(projectItem?.workflowCount).toBeGreaterThan(0);
       await expect(cardWorkflowCountChip(card)).toBeVisible();
       await expect(cardWorkflowCountChip(card)).toHaveText(
-        cardWorkflowCountChipLabel(manifest.workflows.length),
+        cardWorkflowCountChipLabel(projectItem!.workflowCount!),
       );
       await expectFollowsInDocumentOrder(
         cardChipWithLabel(card, 'Project'),
@@ -153,11 +168,21 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
       });
 
       test('project card shows grey star when API isFavorite is false', async ({ page }) => {
-        const card = libraryProjectCardByTitle(page, manifest.project_title);
-        if ((await card.count()) === 0) {
-          test.skip(true, 'E2E fixture project card not visible on /library.');
-        }
+        const recentProject = manifest.recent_projects[0]!;
+        const searchBody = await triggerLibrarySearchAndWait(
+          page,
+          async () => {
+            await keywordSearchField(page).fill(recentProject.title);
+            await keywordSearchField(page).press('Enter');
+          },
+          { filters: { keyword: recentProject.title } },
+        );
+        const projectItem = searchBody.items.find(
+          (item) => item.uuid === recentProject.uuid && item.contentType === 'project',
+        );
+        expect(projectItem?.isFavorite).toBe(false);
 
+        const card = libraryProjectCardByTitle(page, recentProject.title);
         await expectCardFavouriteToggleShowsNotFavourited(card);
       });
 
@@ -189,9 +214,7 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
         test.skip(true, 'E2E fixture project card not visible on /library.');
       }
 
-      const urlBefore = page.url();
-      await cardFavouriteToggle(card).click();
-      await expect(page).toHaveURL(urlBefore);
+      await expectCardFavouriteToggleRoundTrip(page, card);
     });
 
     test('workflow card favourite toggle does not change route', async ({ page }) => {
@@ -200,9 +223,7 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
         test.skip(true, 'E2E fixture workflow card not visible on /library.');
       }
 
-      const urlBefore = page.url();
-      await cardFavouriteToggle(card).click();
-      await expect(page).toHaveURL(urlBefore);
+      await expectCardFavouriteToggleRoundTrip(page, card);
     });
 
     test('project card favourite toggle add and remove show success snackbars', async ({ page }) => {

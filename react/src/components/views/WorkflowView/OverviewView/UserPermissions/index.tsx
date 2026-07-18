@@ -35,6 +35,8 @@ type PropsType = {
   workspaceId: string
   workspaceType: WorkspaceType
   author: EUser
+  readOnly?: boolean
+  projectUuid?: string | null
 }
 
 function memberDisplayName(m: ProjectTeamMemberOut): string {
@@ -45,22 +47,31 @@ function memberDisplayName(m: ProjectTeamMemberOut): string {
   return name.length ? name : m.userEmail
 }
 
-const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
+const UserPermissions = ({
+  workspaceId,
+  workspaceType,
+  author,
+  readOnly = false,
+  projectUuid
+}: PropsType) => {
   const { dispatch } = useDialog()
   const queryClient = useQueryClient()
   const { uuid: routeWorkflowUuid } = useParams()
-  const canManageMembers = useProjectPermission(
+  const hasManageMembersPermission = useProjectPermission(
     ProjectPermission.MANAGE_MEMBERS
   )
+  const canManageMembers = !readOnly && hasManageMembersPermission
 
   const { data: workflowTeamProjectUuid } = useTeamProjectUuidForWorkflow(
-    workspaceType === WorkspaceType.WORKFLOW ? routeWorkflowUuid : undefined
+    workspaceType === WorkspaceType.WORKFLOW && !projectUuid
+      ? routeWorkflowUuid
+      : undefined
   )
 
   const projectUuidForTeam =
     workspaceType === WorkspaceType.PROJECT
       ? workspaceId
-      : (workflowTeamProjectUuid ?? null)
+      : (projectUuid ?? workflowTeamProjectUuid ?? null)
 
   const { data: teamData, isLoading } = useQuery({
     ...listProjectTeamOptions({
@@ -174,31 +185,37 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
               primary={memberDisplayName(user)}
               secondary={user.userEmail}
             />
-            <MenuButton
-              disabled={!canManageMembers}
-              selected={user.role}
-              options={[
-                ...projectTeamRoleMenuOptions.map((item) => ({
-                  name: item.value,
-                  label:
-                    item.label +
-                    (user.role === item.value ? ' ' + '(current)' : ''),
-                  disabled: user.role === item.value
-                })),
-                {
-                  name: 'mui-divider'
-                },
-                {
-                  name: 'remove',
-                  label: _t('Remove contributor'),
-                  onClick: onUserRemove(user.id, memberDisplayName(user))
+            {readOnly ? (
+              <Button variant="outlined" disabled>
+                {projectTeamRoleLabel(user.role)}
+              </Button>
+            ) : (
+              <MenuButton
+                disabled={!canManageMembers}
+                selected={user.role}
+                options={[
+                  ...projectTeamRoleMenuOptions.map((item) => ({
+                    name: item.value,
+                    label:
+                      item.label +
+                      (user.role === item.value ? ' ' + '(current)' : ''),
+                    disabled: user.role === item.value
+                  })),
+                  {
+                    name: 'mui-divider'
+                  },
+                  {
+                    name: 'remove',
+                    label: _t('Remove contributor'),
+                    onClick: onUserRemove(user.id, memberDisplayName(user))
+                  }
+                ]}
+                onChange={(role) =>
+                  onChangeHandler(role as ProjectTeamRoleSchema, user.id)
                 }
-              ]}
-              onChange={(role) =>
-                onChangeHandler(role as ProjectTeamRoleSchema, user.id)
-              }
-              placeholder={projectTeamRoleLabel(user.role)}
-            />
+                placeholder={projectTeamRoleLabel(user.role)}
+              />
+            )}
           </SC.PermissionThumbnail>
         ))}
 

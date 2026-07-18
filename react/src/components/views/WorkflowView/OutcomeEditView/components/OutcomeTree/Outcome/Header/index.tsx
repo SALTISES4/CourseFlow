@@ -2,6 +2,7 @@ import { WorkflowPermission } from '@cf/api/gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { GraphUuid } from '@cf/features/graph/state/model/types'
 import { selectOutcomeById } from '@cf/features/graph/state/selectors/outcomes.selectors'
+import { selectThreadCommentCount } from '@cf/features/graph/state/selectors/threadCommentCounts.selectors'
 import {
   createOutcome,
   deleteOutcome,
@@ -143,6 +144,9 @@ const HoverMenu = ({
   const sibling = useSelector((state: RootState) =>
     selectOutcomeById(state, uuid)
   )
+  const commentCount = useSelector((state: RootState) =>
+    selectThreadCommentCount(state, sibling?.threadUuid)
+  )
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {
@@ -224,6 +228,7 @@ const HoverMenu = ({
         canComment && {
           label: _t('Comments'),
           icon: <CommentOutlinedIcon />,
+          showCommentsPresenceIndicator: commentCount > 0,
           onClick: onActionClick('comments')
         },
         canManageOutcomes && {

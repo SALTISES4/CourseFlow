@@ -78,6 +78,7 @@ def _workflow_detail(current_user: User, dto: WorkflowDTO) -> WorkflowDetailOut:
         graph_uuid=dto.graph_uuid,
         title=dto.title,
         description=dto.description,
+        overview_metadata=dto.overview_metadata,
         workflow_type=dto.workflow_type,
         author_id=dto.author_id,
         project_uuid=dto.project_uuid,
@@ -215,9 +216,9 @@ def get_workflow(request, uuid: UUID):
     if dto is None:
         raise HttpError(404, "Workflow not found")
     permissions = _workflow_permissions(current_user, dto)
-    if (
-        dto.is_archived or dto.project_is_archived
-    ) and not permissions.allows(WorkflowPermission.VIEW):
+    if (dto.is_archived or dto.project_is_archived) and not permissions.allows(
+        WorkflowPermission.VIEW
+    ):
         raise HttpError(403, "Workflow archived")
     _require_workflow_permission(current_user, dto, WorkflowPermission.VIEW)
     return WorkflowDetailOutResp(item=_workflow_detail(current_user, dto))

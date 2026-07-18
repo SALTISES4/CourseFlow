@@ -22,14 +22,14 @@ const ExplorePage = () => {
    * HOOKS
    *******************************************************/
   const config: LibraryFilterConfig = {
+    errorMessage:
+      'We encountered an issue and were not able to load the content.',
     filterGroups: {
-      ownershipFilter: true,
       disciplineFilter: true,
       contentTypeFilter: true,
       workflowTypeFilter: true,
       keywordFilter: true,
       templateFilter: true,
-      archiveFilter: true,
       favoritesFilter: true
     }
   }

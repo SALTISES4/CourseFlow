@@ -106,12 +106,13 @@ export async function expectCardFavouriteToggleRoundTrip(page: Page, card: Locat
 
   await toggle.click();
   await expect(page).toHaveURL(urlBefore);
-  await expect(globalMessageSnackbar(page)).toBeVisible({ timeout: 15_000 });
-  if (firstMessage === CARD_FAVOURITE_SNACKBAR_ADDED) {
-    await expect(globalMessageSnackbar(page)).toHaveText(CARD_FAVOURITE_SNACKBAR_REMOVED);
-  } else {
-    await expect(globalMessageSnackbar(page)).toHaveText(CARD_FAVOURITE_SNACKBAR_ADDED);
-  }
+  const secondMessage =
+    firstMessage === CARD_FAVOURITE_SNACKBAR_ADDED
+      ? CARD_FAVOURITE_SNACKBAR_REMOVED
+      : CARD_FAVOURITE_SNACKBAR_ADDED;
+  await expect(
+    globalMessageSnackbar(page).filter({ hasText: secondMessage }),
+  ).toHaveText(secondMessage, { timeout: 15_000 });
 }
 
 /** canonical: cardTypeChip | cardTemplateChip — chip by visible label inside cardFooterTagsRegion */

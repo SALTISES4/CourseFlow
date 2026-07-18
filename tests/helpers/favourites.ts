@@ -1,15 +1,14 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from "@playwright/test";
 
 import {
   cardFavouriteToggle,
-  cardOwnerText,
   cardTitleText,
   CARD_FAVOURITE_SNACKBAR_ADDED,
   CARD_FAVOURITE_SNACKBAR_REMOVED,
   libraryProjectCardByTitle,
   libraryWorkflowCardByTitle,
-} from '../shared/locators/cards';
-import { globalMessageSnackbar } from '../shared/locators/global';
+} from "../shared/locators/cards";
+import { globalMessageSnackbar } from "../shared/locators/global";
 import {
   archiveToggle,
   disciplineFilter,
@@ -25,15 +24,16 @@ import {
   sortControl,
   templatesToggle,
   typeFilter,
+  typeFilterResetButton,
   triggerLibrarySearchAndWait,
   waitForLibraryResultsLoaded,
-} from '../shared/locators/library';
+} from "../shared/locators/library";
 import {
   expectExploreResultsContainOnlyProjectCards,
   expectExploreResultsContainOnlyWorkflowCards,
-} from './explore';
-import { expectExploreResultsContainOnlyTemplateCards } from './explore-boolean-filters';
-import { gotoExplore } from './navigation';
+} from "./explore";
+import { expectExploreResultsContainOnlyTemplateCards } from "./explore-boolean-filters";
+import { gotoExplore } from "./navigation";
 
 export {
   expectExploreResultsContainOnlyProjectCards as expectFavouritesResultsContainOnlyProjectCards,
@@ -45,7 +45,7 @@ export {
   expectWorkflowTypeFilterHiddenWhenTypeIsProjects,
   expectWorkflowTypeFilterVisibleWhenTypeIsUnset,
   expectWorkflowTypeFilterVisibleWhenTypeIsWorkflows,
-} from './library-type-filter';
+} from "./library-type-filter";
 
 /**
  * FR-FAV-001 — favouritesFilterToolbar exposes sort, ownership, type, and templates only.
@@ -54,7 +54,9 @@ export {
  * Keyword search is covered separately under FR-FAV-005. workflowTypeFilter appears only when
  * typeFilter scope includes workflows (FR-FAV-003 / FR-LIB-003).
  */
-export async function expectFavouritesFilterToolbarPerFrFav001(page: Page): Promise<void> {
+export async function expectFavouritesFilterToolbarPerFrFav001(
+  page: Page,
+): Promise<void> {
   await expect(libraryFilterToolbar(page)).toBeVisible();
 
   // Controls that belong on other listing pages, not Favourites.
@@ -70,15 +72,17 @@ export async function expectFavouritesFilterToolbarPerFrFav001(page: Page): Prom
 }
 
 /** FR-FAV-001 — when default Projects scope is empty, open Workflows for favourited workflow seed rows. */
-export async function ensureFavouritesResultsHaveCards(page: Page): Promise<boolean> {
+export async function ensureFavouritesResultsHaveCards(
+  page: Page,
+): Promise<boolean> {
   if ((await libraryCards(page).count()) > 0) {
     return true;
   }
 
   await triggerLibrarySearchAndWait(
     page,
-    () => selectFilterOption(page, typeFilter(page), 'Workflows'),
-    { filters: { contentType: 'workflow' } },
+    () => selectFilterOption(page, typeFilter(page), "Workflows"),
+    { filters: { contentType: "workflow" } },
   );
   return (await libraryCards(page).count()) > 0;
 }
@@ -87,10 +91,14 @@ type FavouritesLibrarySearchResponse = {
   items: Array<{ isFavorite: boolean }>;
 };
 
-function isFavouritesLibrarySearchResponse(response: { url: () => string; request: () => { method: () => string }; status: () => number }): boolean {
+function isFavouritesLibrarySearchResponse(response: {
+  url: () => string;
+  request: () => { method: () => string };
+  status: () => number;
+}): boolean {
   return (
-    response.url().includes('/api/library/search') &&
-    response.request().method() === 'POST' &&
+    response.url().includes("/api/library/search") &&
+    response.request().method() === "POST" &&
     response.status() === 200
   );
 }
@@ -100,15 +108,27 @@ function isFavouritesLibrarySearchResponse(response: { url: () => string; reques
  * Asserts locked isFavorite filter on the request and isFavorite: true on every item in the response.
  * Star colour vs isFavorite is covered in card-content FR-CARD-005.
  */
-export async function expectFavouritesListingItemsAreFavourited(page: Page): Promise<void> {
-  const searchResponse = page.waitForResponse(isFavouritesLibrarySearchResponse);
+export async function expectFavouritesListingItemsAreFavourited(
+  page: Page,
+): Promise<void> {
+  const searchResponse = page.waitForResponse(
+    isFavouritesLibrarySearchResponse,
+  );
   await page.reload();
   await expect(page).toHaveURL(/\/favourites\/?$/);
   await waitForLibraryResultsLoaded(page);
 
   const response = await searchResponse;
-  const requestBody = response.request().postDataJSON() as { filters?: { isFavorite?: boolean } };
+  const requestBody = response.request().postDataJSON() as {
+    filters?: {
+      contentType?: string;
+      isFavorite?: boolean;
+      includePublishedFavorites?: boolean;
+    };
+  };
   expect(requestBody.filters?.isFavorite).toBe(true);
+  expect(requestBody.filters?.includePublishedFavorites).toBe(true);
+  expect(requestBody.filters?.contentType).toBe("project");
 
   const body = (await response.json()) as FavouritesLibrarySearchResponse;
   for (const item of body.items) {
@@ -117,32 +137,39 @@ export async function expectFavouritesListingItemsAreFavourited(page: Page): Pro
 }
 
 /** FR-FAV-003 — ownershipFilter Owned narrows results and every visible card is owned by the user. */
-export async function expectOwnershipFilterOwnedNarrowsFavouritesResults(page: Page): Promise<void> {
+export async function expectOwnershipFilterOwnedNarrowsFavouritesResults(
+  page: Page,
+): Promise<void> {
   const baselineTitles = await libraryCardTitles(page).allInnerTexts();
   const baselineCount = baselineTitles.length;
   expect(baselineCount).toBeGreaterThan(0);
 
   const filteredResponse = await triggerLibrarySearchAndWait(
     page,
-    () => selectFilterOption(page, ownershipFilter(page), 'Owned'),
-    { filters: { ownership: 'owned' } },
+    () => selectFilterOption(page, ownershipFilter(page), "Owned"),
+    { filters: { ownership: "owned" } },
   );
-  await expect(ownershipFilter(page)).toHaveText('Owned', { exact: true });
+  await expect(ownershipFilter(page)).toHaveText("Owned", { exact: true });
   await expect(ownershipFilterResetButton(page)).toBeVisible();
 
   const ownedCount = filteredResponse.items.length;
   expect(ownedCount).toBeLessThanOrEqual(baselineCount);
   expect(ownedCount).toBeGreaterThan(0);
 
-  const cards = libraryCards(page);
-  for (let i = 0; i < ownedCount; i++) {
-    await expect(cardOwnerText(cards.nth(i))).toBeVisible();
+  for (const item of filteredResponse.items) {
+    expect(item.permissions?.resourceRole).toBe("owner");
   }
 }
 
 /** FR-FAV-004 — templatesToggle restricts resultsRegion to template favourited cards. */
-export async function expectTemplatesToggleNarrowsFavouritesResults(page: Page): Promise<void> {
-  await expectWorkflowTypeFilterVisibleWhenTypeIsUnset(page);
+export async function expectTemplatesToggleNarrowsFavouritesResults(
+  page: Page,
+): Promise<void> {
+  await triggerLibrarySearchAndWait(
+    page,
+    () => typeFilterResetButton(page).click(),
+    { filters: { contentType: null } },
+  );
 
   const baselineTitles = await libraryCardTitles(page).allInnerTexts();
   const baselineCount = baselineTitles.length;
@@ -177,7 +204,7 @@ export async function expectKeywordSearchNarrowsFavouritesResults(
     page,
     async () => {
       await keywordSearchField(page).fill(keyword);
-      await keywordSearchField(page).press('Enter');
+      await keywordSearchField(page).press("Enter");
     },
     { filters: { keyword } },
   );
@@ -205,12 +232,17 @@ export async function expectUnfavouritingRemovesCardFromFavouritesListing(
   const countBefore = await libraryCards(page).count();
 
   await cardFavouriteToggle(card).click();
-  await expect(globalMessageSnackbar(page)).toHaveText(CARD_FAVOURITE_SNACKBAR_REMOVED, {
-    timeout: 15_000,
-  });
+  await expect(globalMessageSnackbar(page)).toHaveText(
+    CARD_FAVOURITE_SNACKBAR_REMOVED,
+    {
+      timeout: 15_000,
+    },
+  );
 
   await expect(
-    libraryCards(page).filter({ has: page.getByRole('heading', { name: title, exact: true }) }),
+    libraryCards(page).filter({
+      has: page.getByRole("heading", { name: title, exact: true }),
+    }),
   ).toHaveCount(0);
 
   if (countBefore === 1) {
@@ -221,21 +253,27 @@ export async function expectUnfavouritingRemovesCardFromFavouritesListing(
 }
 
 /** Restore favourite after FR-FAV-001 unfavourite test — re-favourites via published Explore listing. */
-export async function restoreFavouritedCardByTitle(page: Page, title: string): Promise<void> {
+export async function restoreFavouritedCardByTitle(
+  page: Page,
+  title: string,
+): Promise<void> {
   await gotoExplore(page);
   await expect(page).toHaveURL(/\/explore\/?$/);
   await waitForLibraryResultsLoaded(page);
-  await triggerLibrarySearchAndWait(
-    page,
-    () => templatesToggle(page).click(),
-    { filters: { isTemplate: true } },
-  );
+  await triggerLibrarySearchAndWait(page, () => templatesToggle(page).click(), {
+    filters: { isTemplate: true },
+  });
 
-  const card = libraryWorkflowCardByTitle(page, title).or(libraryProjectCardByTitle(page, title));
+  const card = libraryWorkflowCardByTitle(page, title).or(
+    libraryProjectCardByTitle(page, title),
+  );
   await expect(card).toBeVisible({ timeout: 15_000 });
 
   await cardFavouriteToggle(card).click();
-  await expect(globalMessageSnackbar(page)).toHaveText(CARD_FAVOURITE_SNACKBAR_ADDED, {
-    timeout: 15_000,
-  });
+  await expect(globalMessageSnackbar(page)).toHaveText(
+    CARD_FAVOURITE_SNACKBAR_ADDED,
+    {
+      timeout: 15_000,
+    },
+  );
 }

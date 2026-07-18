@@ -292,6 +292,7 @@ const Section = (props: SectionPropsType) => {
             graphUuid={props.boardId}
             sectionId={props.sectionId}
             show={isHovered}
+            threadUuid={section.threadUuid}
           />
         </StyledSection.SectionHeader>
         {!props.condensed && sectionGrid}

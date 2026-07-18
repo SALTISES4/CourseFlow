@@ -9,6 +9,7 @@ export type MenuItem = {
   label: string
   icon: ReactNode
   onClick: (e: MouseEvent<HTMLButtonElement>) => void
+  showCommentsPresenceIndicator?: boolean
 }
 
 type PropsType = {
@@ -36,7 +37,12 @@ const HoverMenu = ({
       item ? (
         <Tooltip key={index} placement="top" arrow title={item.label}>
           <IconButton color="secondary" size="small" onClick={item.onClick}>
-            {item.icon}
+            <Styled.IconWrap>
+              {item.icon}
+              {item.showCommentsPresenceIndicator && (
+                <Styled.CommentsPresenceIndicator data-test-id="workflow-comments-presence-indicator" />
+              )}
+            </Styled.IconWrap>
           </IconButton>
         </Tooltip>
       ) : null

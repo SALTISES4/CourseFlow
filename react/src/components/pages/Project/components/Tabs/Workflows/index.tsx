@@ -1,4 +1,4 @@
-import { LibrarySearchIn } from '@cf/api/gen'
+import { LibraryContentTypeIn, LibrarySearchIn } from '@cf/api/gen'
 import LibrarySearchView, {
   LibraryFilterConfig
 } from '@cfViews/LibrarySearchView'
@@ -14,10 +14,13 @@ const TabWorkflows = ({ uuid }: PropsType) => {
    * HOOKS
    *******************************************************/
   const config: LibraryFilterConfig = {
+    initialContentType: LibraryContentTypeIn.WORKFLOW,
     filterGroups: {
-      disciplineFilter: true,
-      contentTypeFilter: true,
-      templateFilter: true
+      ownershipFilter: true,
+      workflowTypeFilter: true,
+      keywordFilter: true,
+      favoritesFilter: true,
+      archiveFilter: true
     }
   }
 

@@ -16,11 +16,13 @@ from course_flow.core.models import (
     Channel,
     Edge,
     FavoriteGraph,
+    FavoriteProject,
     Graph,
     Node,
     Project,
     Section,
     Thread,
+    User,
     Workflow,
 )
 from course_flow.dev_seed.constants import DEV_SEED_DEMO_PASSWORD
@@ -40,10 +42,13 @@ from course_flow.e2e_seed.constants import (
     E2E_CHANNEL_TITLES,
     E2E_FIXTURE_ARCHIVED_HOME_PROJECT_TITLE,
     E2E_FIXTURE_COURSE_WORKFLOW_TITLE,
+    E2E_FIXTURE_EDITOR_EMAIL,
     E2E_FIXTURE_GRAPH_SEED,
     E2E_FIXTURE_HOME_PROJECT_TITLES,
     E2E_FIXTURE_PROGRAM_WORKFLOW_TITLE,
     E2E_FIXTURE_PROJECT_TITLE,
+    E2E_FIXTURE_RESTRICTED_PROJECT_TITLE,
+    E2E_FIXTURE_RESTRICTED_WORKFLOW_TITLE,
     E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE,
     E2E_FIXTURE_TEMPLATE_COURSE_TITLE,
     E2E_FIXTURE_TEMPLATE_PROGRAM_TITLE,
@@ -229,6 +234,7 @@ def _seed_home_projects(*, owner, fake, rng: SeededRNG) -> tuple[list[dict], dic
     archived_project.is_archived = True
     archived_project.save(update_fields=["is_archived"])
     ensure_team(archived_project, owner)
+    ensure_e2e_contributors(archived_project, owner)
     Project.objects.filter(pk=archived_project.pk).update(
         modified_on=newest_at + timedelta(minutes=1),
     )
@@ -262,6 +268,34 @@ def generate_e2e_fixtures(
         )
         ensure_team(project, owner)
         contributors = ensure_e2e_contributors(project, owner)
+
+        restricted_owner = User.objects.get(email=E2E_FIXTURE_EDITOR_EMAIL)
+        restricted_project = create_project(
+            restricted_owner,
+            fake=fake,
+            rng=rng,
+            title=E2E_FIXTURE_RESTRICTED_PROJECT_TITLE,
+            description=(
+                "Private project used to verify non-contributor workflow access denial."
+            ),
+        )
+        ensure_team(restricted_project, restricted_owner)
+        (
+            _restricted_workflow,
+            _restricted_sections,
+            _restricted_channels,
+            restricted_workflow_manifest,
+        ) = _seed_minimal_workflow(
+            owner=restricted_owner,
+            project=restricted_project,
+            fake=fake,
+            rng=rng,
+            workflow_type=WorkflowType.ACTIVITY,
+            title=E2E_FIXTURE_RESTRICTED_WORKFLOW_TITLE,
+            description="Private workflow inaccessible to the primary E2E teacher.",
+            section_title="E2E Restricted Section",
+            channel_title="E2E Restricted Channel",
+        )
 
         graph = Graph.objects.create()
         workflow = build_workflow_with_graph(
@@ -318,6 +352,7 @@ def generate_e2e_fixtures(
         workflow_manifest["outcomes"] = [
             {"uuid": str(outcome.uuid), "title": outcome.title} for outcome in outcomes
         ]
+        FavoriteGraph.objects.get_or_create(user=owner, graph=graph)
 
         course_workflow, course_workflow_manifest = (
             _seed_course_workflow_linked_to_activity(
@@ -356,6 +391,7 @@ def generate_e2e_fixtures(
         template_project.is_published = True
         template_project.save(update_fields=["is_template", "is_published"])
         ensure_team(template_project, owner)
+        FavoriteProject.objects.get_or_create(user=owner, project=template_project)
 
         template_workflows = [
             _seed_template_workflow(
@@ -397,7 +433,7 @@ def generate_e2e_fixtures(
         )
 
         manifest = {
-            "fixture_version": 3,
+            "fixture_version": 4,
             "primary_user": {
                 "email": owner.email,
                 "password": DEV_SEED_DEMO_PASSWORD,
@@ -412,6 +448,11 @@ def generate_e2e_fixtures(
             "template_project_title": template_project.title,
             "template_workflows": template_workflows,
             "contributors": contributors,
+            "restricted_workflow": {
+                "project_uuid": str(restricted_project.uuid),
+                "project_title": restricted_project.title,
+                **restricted_workflow_manifest,
+            },
             "workflows": [
                 workflow_manifest,
                 course_workflow_manifest,

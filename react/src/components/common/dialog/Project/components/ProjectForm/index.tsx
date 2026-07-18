@@ -22,9 +22,9 @@ import { z } from 'zod'
 const projectSchema = z.object({
   title: z
     .string()
-    .min(1, { message: _t('Project title is required') })
+    .min(1, { message: _t('Project title cannot be empty') })
     .max(200, {
-      message: _t('Project title can be up to 200 characters long')
+      message: _t('Project title cannot be longer than 200 characters')
     }),
   description: z.string().nullish(),
   disciplines: z.array(z.number())
@@ -56,11 +56,19 @@ const ProjectForm = ({
     handleSubmit,
     control,
     formState: { errors, isDirty },
-    reset
+    reset,
+    watch
   } = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
-    defaultValues
+    defaultValues,
+    mode: 'onChange'
   })
+  const titleValue = watch('title')
+  const titleError =
+    errors.title?.message ??
+    (isDirty && titleValue.length === 0
+      ? _t('Project title cannot be empty')
+      : undefined)
 
   function onDialogClose() {
     reset()
@@ -90,15 +98,15 @@ const ProjectForm = ({
           />
         )}
         <StyledBox>
-          <FormControl fullWidth error={!!errors.title}>
+          <FormControl fullWidth error={!!titleError}>
             <TextField
               label={_t('Title')}
               placeholder={_t('Project title')}
               variant="standard"
               required
               {...register('title')}
-              error={!!errors.title}
-              helperText={errors.title?.message}
+              error={!!titleError}
+              helperText={titleError}
             />
           </FormControl>
 
@@ -187,7 +195,7 @@ const ProjectForm = ({
           type="submit"
           variant="contained"
           color="primary"
-          disabled={!isDirty || !!Object.keys(errors).length}
+          disabled={!isDirty || !!titleError || !!Object.keys(errors).length}
         >
           {submitLabel ?? _t('Edit project')}
         </Button>

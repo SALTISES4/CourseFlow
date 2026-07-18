@@ -10,6 +10,7 @@ import { SnackbarOptions } from '@cf/utility/constants'
 import { projectTeamRoleMenuOptions } from '@cf/utility/permissions'
 import { _t } from '@cf/utility/Utility.class'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
+import ClearIcon from '@mui/icons-material/Clear'
 import SearchIcon from '@mui/icons-material/Search'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
@@ -19,6 +20,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormLabel from '@mui/material/FormLabel'
+import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
@@ -150,6 +152,7 @@ const ContributorAddDialog = ({
               render={({ field }) => (
                 <Autocomplete
                   multiple
+                  inputValue={search}
                   options={userOptions}
                   getOptionLabel={(user) => user.name}
                   onChange={(_, selectedUsers) =>
@@ -162,7 +165,7 @@ const ContributorAddDialog = ({
                     <TextField
                       {...params}
                       variant="outlined"
-                      label={_t('Courseflow Users')}
+                      label={_t('CourseFlow users')}
                       InputProps={{
                         ...params.InputProps,
                         startAdornment: (
@@ -171,6 +174,20 @@ const ContributorAddDialog = ({
                               <SearchIcon />
                             </InputAdornment>
                             {params.InputProps.startAdornment}
+                          </>
+                        ),
+                        endAdornment: (
+                          <>
+                            {search && (
+                              <IconButton
+                                size="small"
+                                aria-label={_t('Clear')}
+                                onClick={() => setSearch('')}
+                              >
+                                <ClearIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                            {params.InputProps.endAdornment}
                           </>
                         )
                       }}

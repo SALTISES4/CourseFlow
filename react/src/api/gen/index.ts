@@ -462,6 +462,8 @@ export {
   type WorkflowListItemOut,
   type WorkflowListMetaOut,
   type WorkflowListOut,
+  type WorkflowOverviewMetadataIn,
+  type WorkflowOverviewMetadataOut,
   WorkflowPermission,
   type WorkflowRelatedOut,
   WorkflowType,

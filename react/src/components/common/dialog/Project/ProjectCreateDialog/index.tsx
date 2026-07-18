@@ -54,7 +54,9 @@ const ProjectCreateDialog = ({ showNoProjectsAlert = false }: PropsType) => {
     const path = generatePath(CFRoutes.PROJECT, { uuid })
     onDialogClose()
     navigate(path)
-    enqueueSnackbar(_t('Project created'), { variant: 'success' })
+    enqueueSnackbar(_t('Your project has been successfully created'), {
+      variant: 'success'
+    })
   }
 
   function onError(error) {

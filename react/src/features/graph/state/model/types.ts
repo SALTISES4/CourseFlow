@@ -7,6 +7,11 @@ export type GraphUuid = string
 /** Node, section, channel, unit, thread, outcome: public UUID string from the API. */
 export type ResourceUuid = string
 
+export type ThreadCommentCount = {
+  threadUuid: ResourceUuid
+  commentCount: number
+}
+
 /** Edge row identity from the API (integer primary key as string — edges have no UUID). */
 export type EdgeKey = string
 

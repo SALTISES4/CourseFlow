@@ -1,9 +1,17 @@
 import { test, expect } from '../../fixtures';
+import { authenticatedApiRequest } from '../../helpers/api';
 import { skipUnlessPristineWorkflow } from '../../helpers/workflow-pristine';
-import { dragNodeCategoryOntoNode, workflowNodeCount } from './add-tab.helpers';
+import {
+  dragNodeCategoryOntoNode,
+  workflowNodeCount,
+  workflowNodeUuids,
+} from './add-tab.helpers';
 import {
   workflowAddTabInsertModeColumnButton,
   workflowAddTabInsertModeManualButton,
+  workflowManualPlacementDialog,
+  workflowManualPlacementDialogColumnButton,
+  workflowManualPlacementDialogRowButton,
 } from './workflow-add-tab.locators';
 import { workflowEditNodeForm } from './workflow-graph.locators';
 import {
@@ -31,20 +39,36 @@ test.describe('Add tab — column drop placement (FR-WF-ADD-005)', () => {
     page,
   }) => {
     const beforeCount = await workflowNodeCount(page);
+    const beforeNodeUuids = await workflowNodeUuids(page);
     const nodeUuid = await firstWorkflowNodeUuid(page);
+    let createdNodeUuid: string | undefined;
 
-    await dragNodeCategoryOntoNode(page, E2E_CHANNEL_A, nodeUuid);
+    try {
+      await dragNodeCategoryOntoNode(page, E2E_CHANNEL_A, nodeUuid);
 
-    const afterCount = await workflowNodeCount(page);
-    if (afterCount <= beforeCount) {
-      test.skip(
-        true,
-        'Atlaskit pragmatic-drag-and-drop column placement not automatable in Playwright yet; manual QA path only.',
+      await expect
+        .poll(async () => workflowNodeCount(page), { timeout: 15_000 })
+        .toBe(beforeCount + 1);
+
+      const afterNodeUuids = await workflowNodeUuids(page);
+      const createdNodeUuids = afterNodeUuids.filter(
+        (uuid) => !beforeNodeUuids.includes(uuid),
       );
-    }
+      expect(createdNodeUuids).toHaveLength(1);
+      [createdNodeUuid] = createdNodeUuids;
 
-    await expect(workflowRightSidebarEditTab(page)).toHaveAttribute('aria-pressed', 'true');
-    await expect(workflowEditNodeForm(page)).toBeVisible();
+      await expect(workflowRightSidebarEditTab(page)).toHaveAttribute('aria-pressed', 'true');
+      await expect(workflowEditNodeForm(page)).toBeVisible();
+    } finally {
+      if (createdNodeUuid) {
+        const response = await authenticatedApiRequest(
+          page,
+          'DELETE',
+          `/api/node/${createdNodeUuid}`,
+        );
+        expect(response.ok()).toBeTruthy();
+      }
+    }
   });
 });
 
@@ -56,40 +80,49 @@ test.describe('Add tab — manual insert mode (FR-WF-ADD-006)', () => {
     await workflowAddTabInsertModeManualButton(page).click();
   });
 
-  test('FR-WF-ADD-006: manual drop opens workflowManualPlacementDialog or skips when DnD unavailable', async ({
+  test('FR-WF-ADD-006: manual drop defers creation until row placement is chosen', async ({
     page,
   }) => {
     const beforeCount = await workflowNodeCount(page);
+    const beforeNodeUuids = await workflowNodeUuids(page);
     const nodeUuid = await firstWorkflowNodeUuid(page);
+    let createdNodeUuid: string | undefined;
 
-    await dragNodeCategoryOntoNode(page, E2E_CHANNEL_A, nodeUuid);
+    try {
+      await dragNodeCategoryOntoNode(page, E2E_CHANNEL_A, nodeUuid);
 
-    const manualDialog = page.getByRole('menu').filter({
-      has: page.getByRole('menuitem', { name: 'Insert row', exact: true }),
-    });
-    const afterCount = await workflowNodeCount(page);
-
-    if (afterCount <= beforeCount && (await manualDialog.count()) === 0) {
-      test.skip(
-        true,
-        'Atlaskit pragmatic-drag-and-drop manual placement not automatable in Playwright yet; manual QA path only.',
-      );
-    }
-
-    if ((await manualDialog.count()) > 0) {
+      const manualDialog = workflowManualPlacementDialog(page);
       await expect(manualDialog).toBeVisible();
-      await expect(
-        page.getByRole('menuitem', { name: 'Keep in same column', exact: true }),
-      ).toBeVisible();
-      await page.getByRole('menuitem', { name: 'Insert row', exact: true }).click();
+      await expect(manualDialog.getByRole('menuitem')).toHaveCount(2);
+      await expect(workflowManualPlacementDialogRowButton(page)).toHaveText('Insert row');
+      await expect(workflowManualPlacementDialogColumnButton(page)).toHaveText(
+        'Keep in same column',
+      );
+      await expect.poll(async () => workflowNodeCount(page)).toBe(beforeCount);
+
+      await workflowManualPlacementDialogRowButton(page).click();
       await expect
-        .poll(async () => workflowNodeCount(page), { timeout: 10_000 })
-        .toBeGreaterThan(beforeCount);
+        .poll(async () => workflowNodeCount(page), { timeout: 15_000 })
+        .toBe(beforeCount + 1);
+
+      const afterNodeUuids = await workflowNodeUuids(page);
+      const createdNodeUuids = afterNodeUuids.filter(
+        (uuid) => !beforeNodeUuids.includes(uuid),
+      );
+      expect(createdNodeUuids).toHaveLength(1);
+      [createdNodeUuid] = createdNodeUuids;
+
       await expect(workflowRightSidebarEditTab(page)).toHaveAttribute('aria-pressed', 'true');
       await expect(workflowEditNodeForm(page)).toBeVisible();
-      return;
+    } finally {
+      if (createdNodeUuid) {
+        const response = await authenticatedApiRequest(
+          page,
+          'DELETE',
+          `/api/node/${createdNodeUuid}`,
+        );
+        expect(response.ok()).toBeTruthy();
+      }
     }
-
-    test.skip(true, 'Manual insert mode drop did not open workflowManualPlacementDialog.');
   });
 });

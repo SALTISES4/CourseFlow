@@ -27,3 +27,19 @@ export const Wrap = styled(Box, {
     fontSize: '1em'
   }
 }))
+
+export const IconWrap = styled(Box)({
+  display: 'inline-flex',
+  position: 'relative'
+})
+
+export const CommentsPresenceIndicator = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  top: -1,
+  right: -2,
+  width: 6,
+  height: 6,
+  borderRadius: '50%',
+  backgroundColor: theme.palette.success.main,
+  boxShadow: `0 0 0 1px ${theme.palette.common.white}`
+}))

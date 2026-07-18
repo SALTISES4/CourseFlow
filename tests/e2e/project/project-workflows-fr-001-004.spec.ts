@@ -117,27 +117,22 @@ test.describe('Project workflows — calibration (FR-PROJ-WF-001-004)', () => {
     });
 
     test('ownershipFilter Owned narrows results to owned workflow cards', async ({ page }) => {
-      test.skip((await projectWorkflowCards(page).count()) === 0, 'No workflow cards in seeded project.');
-
+      await expect(projectWorkflowCards(page)).not.toHaveCount(0);
       await expectOwnershipFilterOwnedNarrowsProjectWorkflowsResults(page);
     });
 
     test('favouritesToggle restricts resultsRegion to favourited workflow cards', async ({
       page,
     }) => {
-      test.skip((await projectWorkflowCards(page).count()) === 0, 'No workflow cards in seeded project.');
-
+      await expect(projectWorkflowCards(page)).not.toHaveCount(0);
       const narrowed = await expectFavouritesToggleNarrowsProjectWorkflowsResults(page);
-      if (!narrowed) {
-        test.skip(true, 'No favourited workflows in current project seed.');
-      }
+      expect(narrowed).toBe(true);
     });
 
     test('selecting one workflow type narrows workflow results to that cardTypeChip', async ({
       page,
     }) => {
-      test.skip((await projectWorkflowCards(page).count()) === 0, 'No workflow cards in seeded project.');
-
+      await expect(projectWorkflowCards(page)).not.toHaveCount(0);
       await expectWorkflowTypeFilterSingleSelectionNarrowsWorkflowOnlyResults(
         page,
         WORKFLOW_TYPE_FILTER_OPTIONS_FR_LIB_003[0]!,
@@ -148,13 +143,10 @@ test.describe('Project workflows — calibration (FR-PROJ-WF-001-004)', () => {
   test('FR-PROJ-WF-004: keyword search narrows results and clear control resets field', async ({
     page,
   }) => {
-    test.skip((await projectWorkflowCards(page).count()) === 0, 'No workflow cards to filter.');
-
+    await expect(projectWorkflowCards(page)).not.toHaveCount(0);
     const title = (await firstLibraryCardTitle(page).innerText()).trim();
     const keyword = title.slice(0, Math.min(8, title.length));
-    if (!keyword) {
-      test.skip(true, 'First workflow card has no title text for keyword search.');
-    }
+    expect(keyword).not.toBe('');
 
     await expectKeywordSearchNarrowsProjectWorkflowsResults(page, keyword);
 

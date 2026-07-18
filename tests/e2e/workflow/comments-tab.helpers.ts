@@ -1,4 +1,4 @@
-import { expect, test, type Locator, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 import {
   commentsButtonInSectionHeader,
   commentsTabInSidebar,
@@ -88,14 +88,11 @@ export async function openChannelCommentsViaHover(page: Page, channelUuid: strin
   ).toHaveCount(0);
 }
 
-/** Skip when graph bootstrap lacks threadUuid for the selected host. */
 export async function requireCommentsComposer(page: Page) {
   const unavailable = page.getByText('Comments are not available for this item yet.', {
     exact: true,
   });
-  if ((await unavailable.count()) > 0) {
-    test.skip(true, 'Host threadUuid missing from graph bootstrap; composer unavailable.');
-  }
+  await expect(unavailable).toHaveCount(0);
   await expect(workflowCommentsComposerField(page)).toBeVisible();
 }
 
@@ -156,5 +153,7 @@ export async function composeComment(page: Page, body: string) {
 export async function deleteOwnComment(page: Page, body: string) {
   await workflowCommentsTabListItemDeleteLink(page, body).click();
   await expect(workflowCommentsTabListItemBody(page, body)).toHaveCount(0, { timeout: 15_000 });
-  await expect(page.getByText('Success!').last()).toBeVisible({ timeout: 15_000 });
+  await expect(
+    page.getByText('Your comment has been successfully deleted').last(),
+  ).toBeVisible({ timeout: 15_000 });
 }

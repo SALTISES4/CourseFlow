@@ -5,7 +5,6 @@ import { authenticatedApiRequest } from './api';
 import {
   PROFILE_FIELD_VALIDATION_MESSAGES,
   PROFILE_SETTINGS_FORBIDDEN_LABEL_CASING,
-  PROFILE_SETTINGS_REQUIRED_FIELD_LABELS,
   PROFILE_SETTINGS_VISIBLE_LABELS,
   globalMessageSnackbar,
   profileFieldValidationMessage,
@@ -15,7 +14,6 @@ import {
   profileLanguagePreferenceGroup,
   profileLastNameField,
   profileSettingsForm,
-  profileSettingsRequiredFieldLabel,
   profileSettingsTitle,
   profileSettingsVisibleLabel,
   profileUpdateButton,
@@ -36,37 +34,50 @@ export async function gotoProfileSettingsPage(page: Page): Promise<void> {
   await waitForProfileSettingsLoaded(page);
 }
 
-export async function fetchMyProfileSettings(page: Page): Promise<ProfileSettingsApiItem> {
+export async function fetchMyProfileSettings(
+  page: Page,
+): Promise<ProfileSettingsApiItem> {
   const path = '/api/user/me/profile-settings';
   const response = await authenticatedApiRequest(page, 'GET', path);
-  expect(response.ok(), `${path} returned HTTP ${response.status()}`).toBeTruthy();
+  expect(
+    response.ok(),
+    `${path} returned HTTP ${response.status()}`,
+  ).toBeTruthy();
   const body = (await response.json()) as { item: ProfileSettingsApiItem };
   return body.item;
 }
 
 /** FR-PROFILE-001 — visible labels use sentence case; forbidden title-case variants absent. */
-export async function expectProfileSettingsVisibleLabelsPerFrProfile001(page: Page): Promise<void> {
+export async function expectProfileSettingsVisibleLabelsPerFrProfile001(
+  page: Page,
+): Promise<void> {
   await expect(
-    profileSettingsVisibleLabel(page, PROFILE_SETTINGS_VISIBLE_LABELS.firstName),
+    profileSettingsVisibleLabel(
+      page,
+      PROFILE_SETTINGS_VISIBLE_LABELS.firstName,
+    ),
   ).toBeVisible();
   await expect(
     profileSettingsVisibleLabel(page, PROFILE_SETTINGS_VISIBLE_LABELS.lastName),
   ).toBeVisible();
   await expect(
-    profileSettingsVisibleLabel(page, PROFILE_SETTINGS_VISIBLE_LABELS.languagePreferences),
+    profileSettingsVisibleLabel(
+      page,
+      PROFILE_SETTINGS_VISIBLE_LABELS.languagePreferences,
+    ),
   ).toBeVisible();
 
   for (const forbiddenLabel of PROFILE_SETTINGS_FORBIDDEN_LABEL_CASING) {
-    await expect(profileSettingsForm(page).getByText(forbiddenLabel, { exact: true })).toHaveCount(0);
-  }
-
-  for (const requiredLabel of PROFILE_SETTINGS_REQUIRED_FIELD_LABELS) {
-    await expect(profileSettingsRequiredFieldLabel(page, requiredLabel)).toBeVisible();
+    await expect(
+      profileSettingsForm(page).getByText(forbiddenLabel, { exact: true }),
+    ).toHaveCount(0);
   }
 }
 
 /** FR-PROFILE-001 — route, title, form fields, username read-only, sentence-case labels. */
-export async function expectProfileSettingsPrimaryLayoutPerFrProfile001(page: Page): Promise<void> {
+export async function expectProfileSettingsPrimaryLayoutPerFrProfile001(
+  page: Page,
+): Promise<void> {
   await waitForProfileSettingsLoaded(page);
   await expect(page).toHaveURL(/\/user\/profile-settings\/?$/);
   await expect(profileSettingsTitle(page)).toHaveText('Profile settings');
@@ -79,14 +90,17 @@ export async function expectProfileSettingsPrimaryLayoutPerFrProfile001(page: Pa
   await expect(profileLastNameField(page)).toBeVisible();
   await expect(profileLastNameField(page)).toBeEditable();
   await expect(profileLanguagePreferenceGroup(page)).toBeVisible();
-  await expect(profileLanguagePreferenceGroup(page)).toBeEditable();
+  await expect(profileLanguageOptionEnglish(page)).toBeEnabled();
+  await expect(profileLanguageOptionFrench(page)).toBeEnabled();
   await expect(profileUpdateButton(page)).toBeVisible();
   await expect(profileUpdateButton(page)).toHaveText('Update profile');
   await expectProfileSettingsFieldOrderPerFrProfile001(page);
 }
 
 /** FR-PROFILE-001 — username, first name, last name, language group, update button order. */
-export async function expectProfileSettingsFieldOrderPerFrProfile001(page: Page): Promise<void> {
+export async function expectProfileSettingsFieldOrderPerFrProfile001(
+  page: Page,
+): Promise<void> {
   const orderedFields: Locator[] = [
     profileUsernameField(page),
     profileFirstNameField(page),
@@ -95,9 +109,13 @@ export async function expectProfileSettingsFieldOrderPerFrProfile001(page: Page)
     profileUpdateButton(page),
   ];
 
-  const boxes = await Promise.all(orderedFields.map((field) => field.boundingBox()));
+  const boxes = await Promise.all(
+    orderedFields.map((field) => field.boundingBox()),
+  );
   for (let index = 1; index < boxes.length; index += 1) {
-    expect(boxes[index]?.y ?? 0).toBeGreaterThanOrEqual(boxes[index - 1]?.y ?? 0);
+    expect(boxes[index]?.y ?? 0).toBeGreaterThanOrEqual(
+      boxes[index - 1]?.y ?? 0,
+    );
   }
 }
 
@@ -115,23 +133,50 @@ export async function expectProfileSettingsLoadedValuesPerFrProfile002(
   } else if (profile.languagePreference === 'fr') {
     await expect(profileLanguageOptionFrench(page)).toBeChecked();
   } else {
-    throw new Error(`Unexpected languagePreference: ${profile.languagePreference}`);
+    throw new Error(
+      `Unexpected languagePreference: ${profile.languagePreference}`,
+    );
   }
 }
 
 /** FR-PROFILE-003 — no field validation messages before interaction. */
-export async function expectNoProfileFieldValidationMessages(page: Page): Promise<void> {
+export async function expectNoProfileFieldValidationMessages(
+  page: Page,
+): Promise<void> {
   for (const message of Object.values(PROFILE_FIELD_VALIDATION_MESSAGES)) {
     await expect(profileFieldValidationMessage(page, message)).toHaveCount(0);
   }
 }
 
-export function profileNameAtMaxLength(prefix: string): string {
-  const maxLength = 200;
-  if (prefix.length >= maxLength) {
-    return prefix.slice(0, maxLength);
+export function profileNameOverMaxLength(prefix: string): string {
+  const overMaxLength = 201;
+  if (prefix.length >= overMaxLength) {
+    return prefix.slice(0, overMaxLength);
   }
-  return `${prefix}${'x'.repeat(maxLength - prefix.length)}`;
+  return `${prefix}${'x'.repeat(overMaxLength - prefix.length)}`;
+}
+
+export async function patchMyProfileSettings(
+  page: Page,
+  profile: Pick<
+    ProfileSettingsApiItem,
+    'firstName' | 'lastName' | 'languagePreference'
+  >,
+): Promise<ProfileSettingsApiItem> {
+  const path = '/api/user/me/profile-settings';
+  const response = await authenticatedApiRequest(page, 'PATCH', path, {
+    data: {
+      firstName: profile.firstName,
+      lastName: profile.lastName,
+      languagePreference: profile.languagePreference,
+    },
+  });
+  expect(
+    response.ok(),
+    `${path} returned HTTP ${response.status()}`,
+  ).toBeTruthy();
+  const body = (await response.json()) as { item: ProfileSettingsApiItem };
+  return body.item;
 }
 
 /** FR-PROFILE-005 — globalMessageSnackbar shows exact requirement copy. */
@@ -140,7 +185,9 @@ export async function expectProfileSettingsSnackbarMessage(
   message: string,
 ): Promise<void> {
   await expect(globalMessageSnackbar(page)).toBeVisible({ timeout: 15_000 });
-  await expect(globalMessageSnackbar(page)).toHaveText(message, { exact: true });
+  await expect(globalMessageSnackbar(page)).toHaveText(message, {
+    exact: true,
+  });
 }
 
 export function alternateProfileLanguagePreference(

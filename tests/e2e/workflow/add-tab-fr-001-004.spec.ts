@@ -1,6 +1,11 @@
 import { test, expect } from '../../fixtures';
+import { authenticatedApiRequest } from '../../helpers/api';
 import { skipUnlessPristineWorkflow } from '../../helpers/workflow-pristine';
-import { dragNodeCategoryOntoSection, workflowNodeCount } from './add-tab.helpers';
+import {
+  dragNodeCategoryOntoSection,
+  workflowNodeCount,
+  workflowNodeUuids,
+} from './add-tab.helpers';
 import {
   workflowAddTabCustomNodeCategoryItem,
   workflowAddTabInsertModeColumnButton,
@@ -94,19 +99,35 @@ test.describe('Add tab — row drop placement (FR-WF-ADD-004)', () => {
     workflow,
   }) => {
     const beforeCount = await workflowNodeCount(page);
+    const beforeNodeUuids = await workflowNodeUuids(page);
     const sectionUuid = workflow.blankSection().uuid;
+    let createdNodeUuid: string | undefined;
 
-    await dragNodeCategoryOntoSection(page, E2E_CHANNEL_A, sectionUuid);
+    try {
+      await dragNodeCategoryOntoSection(page, E2E_CHANNEL_A, sectionUuid);
 
-    const afterCount = await workflowNodeCount(page);
-    if (afterCount <= beforeCount) {
-      test.skip(
-        true,
-        'Atlaskit pragmatic-drag-and-drop row placement not automatable in Playwright yet; manual QA path only.',
+      await expect
+        .poll(async () => workflowNodeCount(page), { timeout: 15_000 })
+        .toBe(beforeCount + 1);
+
+      const afterNodeUuids = await workflowNodeUuids(page);
+      const createdNodeUuids = afterNodeUuids.filter(
+        (uuid) => !beforeNodeUuids.includes(uuid),
       );
-    }
+      expect(createdNodeUuids).toHaveLength(1);
+      [createdNodeUuid] = createdNodeUuids;
 
-    await expect(workflowRightSidebarEditTab(page)).toHaveAttribute('aria-pressed', 'true');
-    await expect(workflowEditNodeForm(page)).toBeVisible();
+      await expect(workflowRightSidebarEditTab(page)).toHaveAttribute('aria-pressed', 'true');
+      await expect(workflowEditNodeForm(page)).toBeVisible();
+    } finally {
+      if (createdNodeUuid) {
+        const response = await authenticatedApiRequest(
+          page,
+          'DELETE',
+          `/api/node/${createdNodeUuid}`,
+        );
+        expect(response.ok()).toBeTruthy();
+      }
+    }
   });
 });

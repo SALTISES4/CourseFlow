@@ -94,6 +94,16 @@ export function accountMenuTrigger(page: Page): Locator {
   return page.locator('[data-test-id="account-menu-button"]');
 }
 
+/** canonical: addMenuDropdown */
+export function addMenuDropdown(page: Page): Locator {
+  return page.getByRole('menu').filter({ has: addMenuItemProject(page) });
+}
+
+/** canonical: accountMenuDropdown */
+export function accountMenuDropdown(page: Page): Locator {
+  return page.getByRole('menu').filter({ has: accountMenuItemProfile(page) });
+}
+
 /** canonical: notificationsMenuTrigger — deferred FR-TOP-004/006/008; absent in current phase */
 export function notificationsMenuTrigger(page: Page): Locator {
   return topNavigationBar(page).locator('[aria-controls="notifications-menu"]');

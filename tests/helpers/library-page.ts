@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 
-import { cardOwnerText, cardTitleText } from '../shared/locators/cards';
+import { cardTitleText } from '../shared/locators/cards';
 import {
   archiveToggle,
   disciplineFilter,
@@ -99,6 +99,10 @@ export function collectMyLibraryMembershipScopeUuids(manifest: WorkflowManifest)
     uuids.add(manifest.template_project_uuid);
   }
 
+  for (const project of manifest.recent_projects) {
+    uuids.add(project.uuid);
+  }
+
   for (const templateWorkflow of manifest.template_workflows ?? []) {
     uuids.add(templateWorkflow.workflow_uuid);
   }
@@ -144,7 +148,7 @@ export async function ensureMyLibraryResultsHaveCards(page: Page): Promise<boole
   return (await libraryCards(page).count()) > 0;
 }
 
-/** FR-LIB-003 — ownershipFilter Owned narrows results and every visible card shows owner attribution. */
+/** FR-LIB-003 — ownershipFilter Owned narrows results to owner-role API rows. */
 export async function expectOwnershipFilterOwnedNarrowsMyLibraryResults(page: Page): Promise<void> {
   const baselineTitles = await libraryCardTitles(page).allInnerTexts();
   const baselineCount = baselineTitles.length;
@@ -162,9 +166,8 @@ export async function expectOwnershipFilterOwnedNarrowsMyLibraryResults(page: Pa
   expect(ownedCount).toBeLessThanOrEqual(baselineCount);
   expect(ownedCount).toBeGreaterThan(0);
 
-  const cards = libraryCards(page);
-  for (let i = 0; i < ownedCount; i++) {
-    await expect(cardOwnerText(cards.nth(i))).toBeVisible();
+  for (const item of filteredResponse.items) {
+    expect(item.permissions?.resourceRole).toBe('owner');
   }
 }
 

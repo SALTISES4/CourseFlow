@@ -1,0 +1,20 @@
+import { type Locator, type Page } from '@playwright/test';
+
+/** Canonical workspace-access uiObjects from canonical_locators.yaml. */
+export function workflowAccessDeniedView(page: Page): Locator {
+  return page.locator('[data-test-id="workflow-access-denied-view"]');
+}
+
+export function workflowAccessDeniedTitle(page: Page): Locator {
+  return workflowAccessDeniedView(page).getByRole('heading', {
+    name: 'no workflow access',
+    exact: true,
+  });
+}
+
+export function workflowAccessDeniedSubtitle(page: Page): Locator {
+  return workflowAccessDeniedView(page).getByText(
+    'this workflow is private. you need permission from the owner to view or edit its contents.',
+    { exact: true },
+  );
+}

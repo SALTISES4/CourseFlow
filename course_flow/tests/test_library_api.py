@@ -125,8 +125,12 @@ def test_search_no_filters_returns_project_and_workflow_items(client: Client, us
     workflow_item = next(item for item in body["items"] if item["contentType"] == "workflow")
     assert project_item["uuid"] == str(project.uuid)
     assert project_item["label"] == "project"
+    assert project_item["ownerName"] == user.email
+    assert project_item["workflowCount"] == 1
     assert workflow_item["uuid"] == str(graph.workflow.uuid)
     assert workflow_item["label"] == WorkflowType.COURSE
+    assert workflow_item["ownerName"] == user.email
+    assert workflow_item["workflowCount"] is None
     assert workflow_item["projectUuid"] == str(project.uuid)
     assert workflow_item["projectIsArchived"] is False
     assert project_item["projectUuid"] is None
@@ -138,6 +142,8 @@ def test_search_no_filters_returns_project_and_workflow_items(client: Client, us
         "label",
         "title",
         "description",
+        "ownerName",
+        "workflowCount",
         "dateCreated",
         "modifiedOn",
         "isArchived",
@@ -152,6 +158,29 @@ def test_search_no_filters_returns_project_and_workflow_items(client: Client, us
         assert "graphUuid" not in item
         assert "workflowUuid" not in item
         assert "objectType" not in item
+
+
+@pytest.mark.django_db
+def test_search_default_sort_is_most_recently_modified(client: Client, user):
+    raw = _issue_token_for(user)
+    modified_later = Project.objects.create(
+        owner=user, title="Created first", description=""
+    )
+    modified_earlier = Project.objects.create(
+        owner=user, title="Created second", description=""
+    )
+    now = timezone.now()
+    Project.objects.filter(pk=modified_later.pk).update(modified_on=now)
+    Project.objects.filter(pk=modified_earlier.pk).update(
+        modified_on=now - timedelta(days=1)
+    )
+
+    body = _post_search(client, raw, {})
+
+    assert [item["title"] for item in body["items"]] == [
+        "Created first",
+        "Created second",
+    ]
 
 
 @pytest.mark.django_db
@@ -285,11 +314,153 @@ def test_filter_is_favorite_true_returns_only_favorited_rows(client: Client, use
 
 
 @pytest.mark.django_db
+def test_include_published_favorites_expands_only_the_favorites_base_scope(
+    client: Client, user, teammate
+):
+    raw = _issue_token_for(user)
+
+    published_only = Project.objects.create(
+        owner=teammate,
+        title="Published favorite",
+        description="",
+        is_published=True,
+    )
+    published_only_graph = _graph_with_workflow(
+        teammate,
+        project=published_only,
+        workflow_title="Published workflow favorite",
+    )
+
+    shared = Project.objects.create(
+        owner=teammate,
+        title="Shared favorite",
+        description="",
+        is_published=True,
+    )
+    TeamUser.objects.create(
+        team=Team.objects.get(project=shared),
+        user=user,
+        role=Role.VIEWER,
+    )
+    owned_workflow_graph = _graph_with_workflow(
+        user,
+        project=shared,
+        workflow_title="Owned workflow favorite",
+    )
+    shared_workflow_graph = _graph_with_workflow(
+        teammate,
+        project=shared,
+        workflow_title="Shared workflow favorite",
+    )
+
+    private = Project.objects.create(
+        owner=teammate,
+        title="Private favorite",
+        description="",
+    )
+    private_graph = _graph_with_workflow(
+        teammate,
+        project=private,
+        workflow_title="Private workflow favorite",
+    )
+
+    for project in (published_only, shared, private):
+        FavoriteProject.objects.create(user=user, project=project)
+    for graph in (
+        published_only_graph,
+        owned_workflow_graph,
+        shared_workflow_graph,
+        private_graph,
+    ):
+        FavoriteGraph.objects.create(user=user, graph=graph)
+
+    my_library_body = _post_search(
+        client,
+        raw,
+        {"filters": {"isFavorite": True}},
+    )
+    assert {item["title"] for item in my_library_body["items"]} == {
+        "Shared favorite",
+        "Owned workflow favorite",
+        "Shared workflow favorite",
+    }
+
+    favourites_body = _post_search(
+        client,
+        raw,
+        {
+            "filters": {
+                "isFavorite": True,
+                "includePublishedFavorites": True,
+            }
+        },
+    )
+    assert {item["title"] for item in favourites_body["items"]} == {
+        "Published favorite",
+        "Published workflow favorite",
+        "Shared favorite",
+        "Owned workflow favorite",
+        "Shared workflow favorite",
+    }
+    public_items = {
+        item["title"]: item for item in favourites_body["items"]
+        if item["title"].startswith("Published")
+    }
+    assert {item["permissions"]["resourceRole"] for item in public_items.values()} == {
+        "public"
+    }
+    assert favourites_body["meta"]["appliedFilters"]["includePublishedFavorites"] is True
+
+    owned_body = _post_search(
+        client,
+        raw,
+        {
+            "filters": {
+                "isFavorite": True,
+                "includePublishedFavorites": True,
+                "ownership": "owned",
+            }
+        },
+    )
+    assert {item["title"] for item in owned_body["items"]} == {
+        "Owned workflow favorite"
+    }
+
+    shared_body = _post_search(
+        client,
+        raw,
+        {
+            "filters": {
+                "isFavorite": True,
+                "includePublishedFavorites": True,
+                "ownership": "shared",
+            }
+        },
+    )
+    assert {item["title"] for item in shared_body["items"]} == {
+        "Shared favorite",
+        "Shared workflow favorite",
+    }
+
+
+@pytest.mark.django_db
+def test_include_published_favorites_requires_favorite_filter(client: Client, user):
+    raw = _issue_token_for(user)
+    _post_search(
+        client,
+        raw,
+        {"filters": {"includePublishedFavorites": True}},
+        status_code=422,
+    )
+
+
+@pytest.mark.django_db
 def test_response_meta_includes_applied_filters_and_allowed_disciplines(client: Client, user):
     raw = _issue_token_for(user)
     d1 = Discipline.objects.create(label="Biology", translation_plural="Biologies")
     d2 = Discipline.objects.create(label="Astronomy", translation_plural="Astronomies")
     project = Project.objects.create(owner=user, title="Project", description="", is_template=True)
+    ProjectDiscipline.objects.create(project=project, discipline=d1)
     _graph_with_workflow(user, project=project, workflow_title="Workflow", workflow_type=WorkflowType.COURSE)
 
     body = _post_search(
@@ -316,9 +487,10 @@ def test_response_meta_includes_applied_filters_and_allowed_disciplines(client: 
     assert meta["appliedFilters"]["isTemplate"] is True
 
     allowed_disciplines = meta["allowed"]["disciplines"]
-    assert [d["label"] for d in allowed_disciplines] == ["Astronomy", "Biology"]
-    assert {d["id"] for d in allowed_disciplines} == {d1.id, d2.id}
-    assert {d["translationPlural"] for d in allowed_disciplines} == {"Astronomies", "Biologies"}
+    assert [d["label"] for d in allowed_disciplines] == ["Biology"]
+    assert {d["id"] for d in allowed_disciplines} == {d1.id}
+    assert {d["translationPlural"] for d in allowed_disciplines} == {"Biologies"}
+    assert d2.id not in {d["id"] for d in allowed_disciplines}
 
 
 @pytest.mark.django_db

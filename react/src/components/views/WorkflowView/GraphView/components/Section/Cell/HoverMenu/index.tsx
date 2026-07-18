@@ -1,6 +1,7 @@
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { NodeInsertMode } from '@cf/features/graph/state/resolveNodeDropRow'
+import { selectThreadCommentCount } from '@cf/features/graph/state/selectors/threadCommentCounts.selectors'
 import {
   deleteNode,
   insertNodeBelow
@@ -23,6 +24,7 @@ type PropsType = {
   nodeId: string
   graphUuid: string
   nodeRef: RefObject<HTMLDivElement>
+  threadUuid: string | null
 }
 
 type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
@@ -32,7 +34,7 @@ type StateType = {
   duplicate?: boolean
 }
 
-const HoverMenu = ({ nodeId, graphUuid, nodeRef }: PropsType) => {
+const HoverMenu = ({ nodeId, graphUuid, nodeRef, threadUuid }: PropsType) => {
   const dispatch = useDispatch<AppDispatch>()
   const [state, setState] = useState<StateType>({
     anchor: null,
@@ -44,6 +46,9 @@ const HoverMenu = ({ nodeId, graphUuid, nodeRef }: PropsType) => {
   )
   const canEdit = useResourcePermission(WorkflowPermission.NODE_MANAGEMENT)
   const canComment = useResourcePermission(WorkflowPermission.COMMENT)
+  const commentCount = useSelector((state: RootState) =>
+    selectThreadCommentCount(state, threadUuid)
+  )
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {
@@ -136,6 +141,7 @@ const HoverMenu = ({ nodeId, graphUuid, nodeRef }: PropsType) => {
           canComment && {
             label: 'Comments',
             icon: <CommentOutlinedIcon />,
+            showCommentsPresenceIndicator: commentCount > 0,
             onClick: onActionClick('comments')
           }
         ].filter(Boolean)}

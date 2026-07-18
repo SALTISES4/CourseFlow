@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any
 from uuid import UUID
 
 from course_flow.core.enum import WorkflowType
@@ -44,6 +45,7 @@ class WorkflowDTO:
     workflow_type: WorkflowType
     title: str
     description: str
+    overview_metadata: dict[str, Any]
     date_created: datetime
     modified_on: datetime
 

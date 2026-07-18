@@ -18,6 +18,7 @@ const InsertMenu = ({
 }) => (
   <Menu
     id="node-insert-menu"
+    data-test-id="workflow-manual-placement-dialog"
     aria-labelledby="insert-menu-button"
     anchorEl={anchorEl}
     open={Boolean(anchorEl)}
@@ -32,13 +33,21 @@ const InsertMenu = ({
       horizontal: 'center'
     }}
   >
-    <MenuItem dense onClick={() => onOption('row')}>
+    <MenuItem
+      dense
+      data-test-id="workflow-manual-placement-row-button"
+      onClick={() => onOption('row')}
+    >
       <ListItemIcon>
         <TableRowsOutlinedIcon color="primary" />
       </ListItemIcon>
       <ListItemText>{_t('Insert row')}</ListItemText>
     </MenuItem>
-    <MenuItem dense onClick={() => onOption('column')}>
+    <MenuItem
+      dense
+      data-test-id="workflow-manual-placement-column-button"
+      onClick={() => onOption('column')}
+    >
       <ListItemIcon>
         <ViewSectionOutlinedIcon color="primary" />
       </ListItemIcon>

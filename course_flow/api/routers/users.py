@@ -1,6 +1,6 @@
+from django.http import JsonResponse
 from ninja import Query, Router
 from ninja.errors import HttpError
-from django.http import JsonResponse
 
 from course_flow.api.auth import BearerAuth, get_current_user
 from course_flow.api.deps import get_user_service
@@ -101,8 +101,11 @@ def patch_my_profile_password(request, payload: UserProfilePasswordPatchIn):
         raise HttpError(400, "Missing new password")
     try:
         user = get_user_service().reset_password(user_id=current_user.id, **patch)
-    except ValueError as exc:
-        raise HttpError(400, str(exc))
+    except ValidationError as exc:
+        return JsonResponse(
+            exc.errors,
+            status=400,
+        )
     if user is None:
         raise HttpError(404, "User not found")
 

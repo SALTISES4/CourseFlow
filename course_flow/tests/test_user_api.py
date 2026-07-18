@@ -107,6 +107,96 @@ def test_patch_profile_settings_rejects_email_mutation(client: Client, user):
 
 
 @pytest.mark.django_db
+def test_patch_profile_settings_rejects_names_over_200_characters(
+    client: Client, user
+):
+    raw_token = _issue_token_for(user)
+    response = client.patch(
+        "/api/user/me/profile-settings",
+        data={"firstName": "x" * 201, "lastName": "y" * 201},
+        content_type="application/json",
+        **_auth_header(raw_token),
+    )
+    assert response.status_code == 400
+    assert response.json() == {
+        "firstName": "First name is limited to 200 characters",
+        "lastName": "Last name is limited to 200 characters",
+    }
+    user.refresh_from_db()
+    assert user.first_name == "Owner"
+    assert user.last_name == "User"
+
+
+@pytest.mark.django_db
+def test_patch_profile_password_rejects_incorrect_current_password(
+    client: Client, user
+):
+    raw_token = _issue_token_for(user)
+    response = client.patch(
+        "/api/user/me/password-reset",
+        data={
+            "password": "incorrect-password",
+            "newPassword": "Valid-New-Password-123!",
+        },
+        content_type="application/json",
+        **_auth_header(raw_token),
+    )
+    assert response.status_code == 400
+    assert response.json() == {"password": "Current password is incorrect"}
+    user.refresh_from_db()
+    assert user.check_password("password123")
+
+
+@pytest.mark.django_db
+def test_patch_profile_password_rejects_weak_or_reused_password(client: Client, user):
+    raw_token = _issue_token_for(user)
+    weak_response = client.patch(
+        "/api/user/me/password-reset",
+        data={"password": "password123", "newPassword": "too-short"},
+        content_type="application/json",
+        **_auth_header(raw_token),
+    )
+    assert weak_response.status_code == 400
+    assert weak_response.json() == {
+        "newPassword": (
+            "Your password must contain at least 12 characters and include a mix "
+            "of numbers, letters and symbols"
+        )
+    }
+
+    reused_response = client.patch(
+        "/api/user/me/password-reset",
+        data={"password": "password123", "newPassword": "password123"},
+        content_type="application/json",
+        **_auth_header(raw_token),
+    )
+    assert reused_response.status_code == 400
+    assert reused_response.json() == {
+        "newPassword": "New password must be different from your current password"
+    }
+    user.refresh_from_db()
+    assert user.check_password("password123")
+
+
+@pytest.mark.django_db
+def test_patch_profile_password_updates_password(client: Client, user):
+    raw_token = _issue_token_for(user)
+    response = client.patch(
+        "/api/user/me/password-reset",
+        data={
+            "password": "password123",
+            "newPassword": "Valid-New-Password-123!",
+        },
+        content_type="application/json",
+        **_auth_header(raw_token),
+    )
+    assert response.status_code == 200
+    assert response.json()["uuid"] == str(user.uuid)
+    user.refresh_from_db()
+    assert user.check_password("Valid-New-Password-123!")
+
+
+@pytest.mark.django_db
 def test_profile_settings_unauthorized_rejected(client: Client):
     response = client.get("/api/user/me/profile-settings")
     assert response.status_code == 401

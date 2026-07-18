@@ -6,7 +6,7 @@ from enum import Enum
 from typing import Any
 from uuid import UUID
 
-from django.db.models import Q, QuerySet
+from django.db.models import Count, Q, QuerySet
 
 from course_flow.api.schemas.library import (
     LibraryAllowedFiltersOut,
@@ -70,7 +70,7 @@ class LibraryService:
 
         page = max(int((pagination.page if pagination else 0) or 0), 0)
         results_per_page = max(int((pagination.results_per_page if pagination else 10) or 10), 1)
-        sort_value = (sort.value if sort else LibrarySortValueIn.DATE_CREATED).upper()
+        sort_value = (sort.value if sort else LibrarySortValueIn.DATE_MODIFIED).upper()
         sort_direction = (sort.direction if sort else LibrarySortDirectionIn.DESC).upper()
 
         keyword = self._normalize_keyword(raw_filters.keyword)
@@ -84,33 +84,70 @@ class LibraryService:
             ownership=raw_filters.ownership,
             is_archived=raw_filters.is_archived,
             is_favorite=raw_filters.is_favorite,
+            include_published_favorites=raw_filters.include_published_favorites,
             is_template=raw_filters.is_template,
             can_create_workflow=raw_filters.can_create_workflow,
         )
 
-        accessible_projects = Project.objects.filter(
+        contributor_projects = Project.objects.filter(
             Q(owner_id=user_id) | Q(team__users__user_id=user_id)
         ).distinct()
 
+        project_qs = contributor_projects
+        workflow_graph_qs = Graph.objects.select_related(
+            "workflow",
+            "workflow__author",
+            "workflow__project",
+            "workflow__project__owner",
+        ).filter(
+            workflow__project_id__in=contributor_projects.values("id"),
+        )
+
+        if filters.include_published_favorites:
+            project_qs = Project.objects.filter(
+                Q(id__in=contributor_projects.values("id"))
+                | Q(is_published=True, favorite_links__user_id=user_id)
+            ).distinct()
+            workflow_graph_qs = Graph.objects.select_related(
+                "workflow",
+                "workflow__author",
+                "workflow__project",
+                "workflow__project__owner",
+            ).filter(
+                Q(workflow__project_id__in=contributor_projects.values("id"))
+                | Q(
+                    workflow__project__is_published=True,
+                    favorite_links__user_id=user_id,
+                )
+            ).distinct()
+
         if filters.ownership == "owned":
-            accessible_projects = accessible_projects.filter(owner_id=user_id)
+            project_qs = project_qs.filter(owner_id=user_id)
+            workflow_graph_qs = workflow_graph_qs.filter(
+                Q(workflow__author_id=user_id)
+                | Q(workflow__project__owner_id=user_id)
+            )
 
         elif filters.ownership == "shared":
-            accessible_projects = accessible_projects.exclude(owner_id=user_id)
+            project_qs = project_qs.filter(
+                team__users__user_id=user_id,
+            ).exclude(owner_id=user_id).distinct()
+            workflow_graph_qs = workflow_graph_qs.filter(
+                workflow__project__team__users__user_id=user_id,
+            ).exclude(
+                workflow__author_id=user_id,
+            ).exclude(
+                workflow__project__owner_id=user_id,
+            ).distinct()
 
         if filters.can_create_workflow:
-            accessible_projects = accessible_projects.filter(
+            project_qs = project_qs.filter(
                 Q(owner_id=user_id)
                 | Q(
                     team__users__user_id=user_id,
                     team__users__role=TeamRole.EDITOR,
                 )
             ).distinct()
-
-        project_qs = accessible_projects
-        workflow_graph_qs = Graph.objects.select_related("workflow", "workflow__project").filter(
-            workflow__project_id__in=accessible_projects.values("id"),
-        )
 
         #########################################################
         # CONTENT TYPE
@@ -130,23 +167,9 @@ class LibraryService:
         if filters.project_uuid is not None:
             # Scope means "library items under this project": workflows only, not the project row itself.
             project_qs = project_qs.none()
-            scoped_project = accessible_projects.filter(
-                uuid=filters.project_uuid
-            ).only("id").first()
-            if scoped_project is None:
-                workflow_graph_qs = workflow_graph_qs.none()
-            else:
-                workflow_graph_qs = workflow_graph_qs.filter(
-                    workflow__project_id=scoped_project.id
-                )
-
-        if filters.discipline_ids:
-            project_qs = project_qs.filter(
-                disciplines__id__in=filters.discipline_ids
-            ).distinct()
             workflow_graph_qs = workflow_graph_qs.filter(
-                workflow__project__disciplines__id__in=filters.discipline_ids
-            ).distinct()
+                workflow__project__uuid=filters.project_uuid
+            )
 
         # Boolean filters are "only when true":
         # False/None means the filter is not applied.
@@ -181,6 +204,31 @@ class LibraryService:
                 workflow__is_archived=False,
                 workflow__project__is_archived=False,
             )
+
+        # Availability excludes the discipline constraint itself so selecting one
+        # discipline does not incorrectly disable other OR-selectable options.
+        allowed_discipline_ids = {
+            discipline_id
+            for discipline_id in (
+                *project_qs.values_list("disciplines__id", flat=True),
+                *workflow_graph_qs.values_list(
+                    "workflow__project__disciplines__id", flat=True
+                ),
+            )
+            if discipline_id is not None
+        }
+
+        if filters.discipline_ids:
+            project_qs = project_qs.filter(
+                disciplines__id__in=filters.discipline_ids
+            ).distinct()
+            workflow_graph_qs = workflow_graph_qs.filter(
+                workflow__project__disciplines__id__in=filters.discipline_ids
+            ).distinct()
+
+        project_qs = project_qs.select_related("owner").annotate(
+            library_workflow_count=Count("workflows", distinct=True)
+        )
 
         project_favorite_uuids = self._favorite_project_uuids(
             user_id=user_id, project_qs=project_qs
@@ -224,7 +272,7 @@ class LibraryService:
                 "results_per_page": results_per_page,
                 "applied_filters": filters.model_dump(mode="json"),
                 "allowed": LibraryAllowedFiltersOut(
-                    disciplines=self._discipline_options()
+                    disciplines=self._discipline_options(allowed_discipline_ids)
                 ).model_dump(mode="json"),
             },
         }
@@ -338,6 +386,8 @@ class LibraryService:
                     label="project",
                     title=project.title,
                     description=project.description,
+                    owner_name=self._owner_name(project.owner),
+                    workflow_count=getattr(project, "library_workflow_count", 0),
                     date_created=project.date_created,
                     modified_on=project.modified_on,
                     is_archived=project.is_archived,
@@ -372,6 +422,8 @@ class LibraryService:
                     uuid=workflow.uuid,
                     title=workflow.title,
                     description=workflow.description,
+                    owner_name=self._owner_name(workflow.author or proj.owner),
+                    workflow_count=None,
                     date_created=graph.date_created,
                     modified_on=graph.modified_on,
                     is_archived=workflow.is_archived or proj.is_archived,
@@ -389,6 +441,13 @@ class LibraryService:
             )
         return rows
 
+    @staticmethod
+    def _owner_name(owner: User | None) -> str | None:
+        if owner is None:
+            return None
+        full_name = owner.get_full_name().strip()
+        return full_name or owner.email
+
     def _permission_payload(self, context: PermissionContext) -> dict[str, Any]:
         return {
             "account_role": context.account_role,
@@ -398,14 +457,18 @@ class LibraryService:
             "admin_override": context.admin_override,
         }
 
-    def _discipline_options(self) -> list[dict[str, Any]]:
+    def _discipline_options(
+        self, allowed_discipline_ids: set[int]
+    ) -> list[dict[str, Any]]:
         return [
             LibraryDisciplineOptionOut(
                 id=discipline.id,
                 label=discipline.label,
                 translation_plural=discipline.translation_plural,
             )
-            for discipline in Discipline.objects.all().order_by("label", "id")
+            for discipline in Discipline.objects.filter(
+                id__in=allowed_discipline_ids
+            ).order_by("label", "id")
         ]
 
     def _sort_items(

@@ -1,14 +1,13 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from "@playwright/test";
 
 import {
-  OWNERSHIP_MENU_OPTION_SHARED,
   OWNERSHIP_OPTION_OWNED,
   OWNERSHIP_OPTION_SHARED,
   OWNERSHIP_PLACEHOLDER,
   ownershipFilter,
   ownershipFilterResetButton,
   selectFilterOption,
-} from '../shared/locators/library';
+} from "../shared/locators/library";
 
 export type LibraryOwnershipFilterContext = {
   ownershipFilter: Locator;
@@ -26,10 +25,13 @@ export async function expectOwnershipFilterCommittedStatePerFrLib003(
   context: Partial<LibraryOwnershipFilterContext> = {},
 ): Promise<void> {
   const filter = context.ownershipFilter ?? ownershipFilter(page);
-  const reset = context.ownershipFilterResetButton ?? ownershipFilterResetButton(page, filter);
+  const reset =
+    context.ownershipFilterResetButton ??
+    ownershipFilterResetButton(page, filter);
   const pickOwnershipOption =
     context.selectOwnershipOption ??
-    ((p: Page, optionLabel: string) => selectFilterOption(p, filter, optionLabel));
+    ((p: Page, optionLabel: string) =>
+      selectFilterOption(p, filter, optionLabel));
 
   await expect(filter).toBeVisible();
   await expect(filter).toHaveText(OWNERSHIP_PLACEHOLDER, { exact: true });
@@ -44,7 +46,7 @@ export async function expectOwnershipFilterCommittedStatePerFrLib003(
   await expect(filter).toHaveText(OWNERSHIP_PLACEHOLDER, { exact: true });
   await expect(reset).toBeHidden();
 
-  await pickOwnershipOption(page, OWNERSHIP_MENU_OPTION_SHARED);
+  await pickOwnershipOption(page, OWNERSHIP_OPTION_SHARED);
   await expect(filter).toHaveText(OWNERSHIP_OPTION_SHARED, { exact: true });
   await expect(filter).not.toHaveText(OWNERSHIP_PLACEHOLDER);
   await expect(reset).toBeVisible();

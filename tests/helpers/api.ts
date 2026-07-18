@@ -17,7 +17,7 @@ type AuthenticatedApiRequestOptions = {
  */
 export async function authenticatedApiRequest(
   page: Page,
-  method: 'GET' | 'POST',
+  method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
   path: string,
   options: AuthenticatedApiRequestOptions = {},
 ): Promise<APIResponse> {
@@ -27,7 +27,9 @@ export async function authenticatedApiRequest(
   );
 
   if (!accessToken) {
-    throw new Error(`Cannot call ${method} ${path}: the page has no CourseFlow access token`);
+    throw new Error(
+      `Cannot call ${method} ${path}: the page has no CourseFlow access token`,
+    );
   }
 
   return page.request.fetch(`${getTestApiBaseUrl()}${path}`, {

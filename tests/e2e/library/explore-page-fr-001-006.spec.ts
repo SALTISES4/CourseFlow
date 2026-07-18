@@ -7,6 +7,7 @@ import {
   expectDisciplineFilterReadOnlyZeroResultRow,
   expectDisciplineFilterSearchNarrowsChecklist,
   expectDisciplineFilterSelectionIndicatorBehaviour,
+  installExploreDisciplineSearchMock,
 } from '../../helpers/explore-discipline';
 import { DISCIPLINE_CATALOGUE_AZ } from '../../helpers/discipline-catalogue';
 import {
@@ -44,6 +45,7 @@ import {
   libraryEmptyState,
   libraryLoadingSkeletons,
   libraryPagination,
+  paginationPageNumberButton,
   selectFilterOption,
   templatesToggle,
   typeFilter,
@@ -90,10 +92,6 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
   test('FR-EXP-001: zero matching keyword search shows exploreEmptyState in resultsRegion', async ({
     page,
   }) => {
-    if ((await libraryCards(page).count()) === 0) {
-      test.skip(true, 'Explore has no baseline cards — cannot exercise zero-match keyword search.');
-    }
-
     const impossibleKeyword = `__no_explore_match_${Date.now()}__`;
     await triggerLibrarySearchAndWait(
       page,
@@ -145,6 +143,15 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
   });
 
   test.describe('FR-EXP-003: discipline filter', () => {
+    test.beforeEach(async ({ page }) => {
+      await installExploreDisciplineSearchMock(page);
+      await triggerLibrarySearchAndWait(
+        page,
+        () => page.reload(),
+        (request) => (request.pagination?.page ?? 0) === 0,
+      );
+    });
+
     test('popover exposes disciplineFilterSearchField, All, and None', async ({ page }) => {
       await expectDisciplineFilterPopoverShell(page);
     });
@@ -163,17 +170,17 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
       await expectDisciplineFilterSelectionIndicatorBehaviour(page);
     });
 
-    test.skip('All selects only visible disciplines after search narrowing', async ({ page }) => {
+    test('All selects only visible disciplines after search narrowing', async ({ page }) => {
       await expectDisciplineFilterAllSelectsOnlyVisibleRows(page);
     });
 
-    test.skip('read-only discipline row with zero matching results cannot be selected', async ({
+    test('read-only discipline row with zero matching results cannot be selected', async ({
       page,
     }) => {
       await expectDisciplineFilterReadOnlyZeroResultRow(page);
     });
 
-    test.skip('selecting two disciplines OR-matches results in resultsRegion', async ({ page }) => {
+    test('selecting two disciplines OR-matches results in resultsRegion', async ({ page }) => {
       await expectDisciplineFilterOrResultsInRegion(
         page,
         DISCIPLINE_CATALOGUE_AZ[0]!,
@@ -181,7 +188,7 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
       );
     });
 
-    test.skip('resultsRegion reflects discipline-constrained result set', async ({ page }) => {
+    test('resultsRegion reflects discipline-constrained result set', async ({ page }) => {
       await triggerLibrarySearchAndWait(
         page,
         async () => {
@@ -198,7 +205,7 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
       await expect(libraryCards(page).first()).toBeVisible();
     });
 
-    test.skip('discipline filter combines subtractively with other active toolbar filters', async ({
+    test('discipline filter combines subtractively with other active toolbar filters', async ({
       page,
     }) => {
       await selectFilterOption(page, typeFilter(page), 'Projects');
@@ -219,7 +226,7 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
       await expect(disciplineFilterSelectionIndicator(page)).toHaveText('1');
     });
 
-    test.skip('None clears discipline constraint and restores unconstrained resultsRegion', async ({
+    test('None clears discipline constraint and restores unconstrained resultsRegion', async ({
       page,
     }) => {
       const baselineTitles = await libraryCardTitles(page).allInnerTexts();
@@ -244,10 +251,19 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
       await expectLibraryCardTitles(page, baselineTitles);
     });
 
-    test.skip('changing discipline selection resets listing to first results page', async ({
+    test('changing discipline selection resets listing to first results page', async ({
       page,
     }) => {
-      // Needs explore fixture with enough published results to paginate (11+).
+      await triggerLibrarySearchAndWait(
+        page,
+        () => paginationPageNumberButton(page, 2).click(),
+        { pagination: { page: 1 } },
+      );
+      await expect(paginationPageNumberButton(page, 2)).toHaveAttribute(
+        'aria-current',
+        'true',
+      );
+
       await triggerLibrarySearchAndWait(
         page,
         async () => {
@@ -256,11 +272,16 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
           await closeDisciplineFilterPopover(page);
         },
         (request) =>
+          request.pagination?.page === 0 &&
           Array.isArray(request.filters?.disciplineIds) &&
           request.filters.disciplineIds.length === 1,
       );
 
       await expect(libraryPagination(page)).toBeVisible();
+      await expect(paginationPageNumberButton(page, 1)).toHaveAttribute(
+        'aria-current',
+        'true',
+      );
     });
   });
 
@@ -344,12 +365,10 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
       await expect(favouritesToggle(page)).toHaveClass(/MuiButton-contained/);
 
       const favouritedOnlyCount = filteredResponse.items.length;
-      if (favouritedOnlyCount === 0) {
-        test.skip(
-          true,
-          'No favourited published cards on Explore after favouritesToggle — re-run e2e seed.',
-        );
-      }
+      expect(
+        favouritedOnlyCount,
+        'E2E seed must include a favourited published Explore card.',
+      ).toBeGreaterThan(0);
 
       expect(favouritedOnlyCount).toBeLessThanOrEqual(baselineCount);
       await expectExploreResultsContainOnlyFavouritedCards(page);
@@ -374,12 +393,10 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
       await expect(templatesToggle(page)).toHaveClass(/MuiButton-contained/);
 
       const templateOnlyCount = filteredResponse.items.length;
-      if (templateOnlyCount === 0) {
-        test.skip(
-          true,
-          'No published template cards on Explore after templatesToggle — re-run e2e seed.',
-        );
-      }
+      expect(
+        templateOnlyCount,
+        'E2E seed must include a published template Explore card.',
+      ).toBeGreaterThan(0);
 
       expect(templateOnlyCount).toBeLessThanOrEqual(baselineCount);
       await expectExploreResultsContainOnlyTemplateCards(page);
@@ -401,15 +418,14 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
   });
 
   test('FR-EXP-006: keyword search field supports clear control after Enter', async ({ page }) => {
-    if ((await libraryCards(page).count()) === 0) {
-      test.skip(true, 'No explore cards available to exercise keyword search.');
-    }
+    expect(
+      await libraryCards(page).count(),
+      'E2E seed must include an Explore card for keyword search.',
+    ).toBeGreaterThan(0);
 
     const title = (await firstLibraryCardTitle(page).innerText()).trim();
     const keyword = title.slice(0, Math.min(8, title.length));
-    if (!keyword) {
-      test.skip(true, 'First card has no title text for keyword search.');
-    }
+    expect(keyword, 'First Explore card must have title text.').not.toBe('');
 
     await triggerLibrarySearchAndWait(
       page,

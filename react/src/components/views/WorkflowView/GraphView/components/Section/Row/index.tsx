@@ -12,6 +12,7 @@ import useRowDnd from './useRowDnd'
 import * as StyledWorkflow from '../../../styles'
 import SectionCell from '../Cell'
 import DropIndicator from '../Cell/DropIndicator'
+import InsertMenu from '../Cell/InsertMenu'
 import { SectionCellType } from '../Cell/types'
 import * as StyledSection from '../styles'
 
@@ -34,6 +35,8 @@ const SectionRow = (props: SectionRowPropsType) => {
     return (
       <StyledWorkflow.CellRow
         ref={rowRef}
+        data-test-id="workflow-section-row"
+        data-row-index={rowIndex}
         style={{
           minHeight: 120,
           backgroundColor: draggingCustomNode
@@ -57,6 +60,11 @@ const SectionRow = (props: SectionRowPropsType) => {
             />
           ))}
         </SectionRowEmpty>
+        <InsertMenu
+          anchorEl={dnd.pendingDrop ? rowRef.current : null}
+          onOption={dnd.chooseManualPlacement}
+          onClose={dnd.cancelManualPlacement}
+        />
       </StyledWorkflow.CellRow>
     )
   }
@@ -66,6 +74,8 @@ const SectionRow = (props: SectionRowPropsType) => {
   return (
     <StyledWorkflow.CellRow
       ref={rowRef}
+      data-test-id="workflow-section-row"
+      data-row-index={rowIndex}
       style={{
         backgroundColor: dnd.highlightRow
           ? alpha(defaultColumnSettings['new-column'].colour, 0.2)
@@ -110,6 +120,11 @@ const SectionRow = (props: SectionRowPropsType) => {
       {dnd.highlightEdge && (
         <DropIndicator edge={dnd.highlightEdge} offset={-3} />
       )}
+      <InsertMenu
+        anchorEl={dnd.pendingDrop ? rowRef.current : null}
+        onOption={dnd.chooseManualPlacement}
+        onClose={dnd.cancelManualPlacement}
+      />
     </StyledWorkflow.CellRow>
   )
 }

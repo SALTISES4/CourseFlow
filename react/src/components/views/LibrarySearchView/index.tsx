@@ -1,4 +1,8 @@
-import { LibrarySearchIn } from '@cf/api/gen'
+import {
+  LibraryContentTypeIn,
+  LibrarySearchIn,
+  LibrarySearchOut
+} from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { _t } from '@cf/utility/Utility.class'
 import type { FilterMultiselectOption } from '@cfComponents/filters/FilterMultiselect'
@@ -10,6 +14,7 @@ import LibraryHelper, {
 } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -27,7 +32,19 @@ import Results, { type ResultsProps } from './Results'
 export type LibraryFilterConfig = {
   pagination?: boolean
   sortOptions?: boolean
+  errorMessage?: string
+  initialContentType?: LibraryContentTypeIn
   filterGroups?: Partial<Record<keyof SearchOptions['filterGroups'], boolean>>
+}
+
+const formatResultsSummary = (data: LibrarySearchOut): string => {
+  const { currentPage, resultsPerPage, totalResults } = data.meta
+  const rangeStart = currentPage * resultsPerPage + 1
+  const rangeEnd = Math.min(totalResults, rangeStart + data.items.length - 1)
+  const range =
+    rangeStart === rangeEnd ? String(rangeStart) : `${rangeStart}-${rangeEnd}`
+
+  return `Showing ${range} of ${totalResults} results`
 }
 
 /*******************************************************
@@ -60,8 +77,14 @@ const LibrarySearchView = ({
     }
   }
 
-  // final list of filters, non-overridden object merge
-  const filters = Object.assign(configDefaults, config)
+  const filters: LibraryFilterConfig = {
+    ...configDefaults,
+    ...config,
+    filterGroups: {
+      ...configDefaults.filterGroups,
+      ...config.filterGroups
+    }
+  }
   const filterGroups = filters.filterGroups ?? {}
 
   const defaultOptionsSearchOptions = LibraryHelper.defaultOptionsSearchOptions
@@ -70,7 +93,24 @@ const LibrarySearchView = ({
    *******************************************************/
   // these are the UI filters, they represent the state of the UI grouping, separated into different sections
   const [searchFilterState, setSearchFilterState] = useState<SearchOptions>(
-    defaultOptionsSearchOptions
+    () =>
+      produce(defaultOptionsSearchOptions, (draft) => {
+        if (!filters.initialContentType) {
+          return
+        }
+
+        const initialOption =
+          draft.filterGroups.contentTypeFilter.options?.find(
+            (option) => option.value === filters.initialContentType
+          )
+        if (!initialOption) {
+          return
+        }
+
+        const current = draft.filterGroups.contentTypeFilter.options ?? []
+        draft.filterGroups.contentTypeFilter.options =
+          LibraryHelper.updateFilterOptions(current, initialOption)
+      })
   )
   /*******************************************************
    * QUERY HOOKS
@@ -93,14 +133,19 @@ const LibrarySearchView = ({
     setSearchArgs(args)
   }, [searchFilterState, defaultOptionsSearchOptions, setSearchArgs])
 
-  const disciplineOptions: FilterMultiselectOption[] = useMemo(
-    () =>
-      data?.meta?.allowed?.disciplines?.map((option) => ({
+  const disciplineOptions: FilterMultiselectOption[] = useMemo(() => {
+    const allowedDisciplineIds = new Set(
+      data?.meta?.allowed?.disciplines?.map((option) => option.id) ?? []
+    )
+
+    return [...COURSEFLOW_APP.globalContextData.disciplines]
+      .sort((a, b) => a.title.localeCompare(b.title))
+      .map((option) => ({
         value: option.id,
-        label: option.label
-      })) ?? [],
-    [data?.meta?.allowed?.disciplines]
-  )
+        label: option.title,
+        disabled: Boolean(data) && !allowedDisciplineIds.has(option.id)
+      }))
+  }, [data])
 
   return (
     <OuterContentWrap>
@@ -166,12 +211,17 @@ const LibrarySearchView = ({
         </Toolbar>
       )}
 
+      {!isLoading && !isError && data?.items.length ? (
+        <Typography sx={{ mb: 2 }}>{formatResultsSummary(data)}</Typography>
+      ) : null}
+
       <GridWrap data-test-id="library-results">
         <Results
           data={data}
           error={error}
           isError={isError}
           isLoading={isLoading}
+          errorMessage={filters.errorMessage}
           override={override}
         />
       </GridWrap>

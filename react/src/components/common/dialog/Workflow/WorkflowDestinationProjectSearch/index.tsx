@@ -91,6 +91,8 @@ const WorkflowDestinationProjectSearch = ({
       label: 'project',
       title: project.title,
       description: project.description,
+      ownerName: null,
+      workflowCount: null,
       dateCreated: project.dateCreated,
       modifiedOn: project.modifiedOn,
       isArchived: project.isArchived,

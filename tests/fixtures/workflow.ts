@@ -2,12 +2,15 @@ import { test as baseTest } from '@playwright/test';
 import {
   contributorByRole,
   getPrimaryWorkflow,
+  getWorkflowByType,
   loadWorkflowManifest,
   orderedSections,
   type ContributorEntry,
   type OutcomeEntry,
   type SectionEntry,
   type WorkflowManifest,
+  type WorkflowEntry,
+  type WorkflowFixtureType,
 } from '../helpers/manifest';
 
 export type { OutcomeEntry };
@@ -25,6 +28,7 @@ export type WorkflowHandle = {
   blankSection: () => SectionEntry;
   firstSection: () => SectionEntry;
   contributorByRole: (role: string) => ContributorEntry;
+  workflowByType: (workflowType: WorkflowFixtureType) => WorkflowEntry;
 };
 
 function buildWorkflowHandle(manifest: WorkflowManifest): WorkflowHandle {
@@ -88,6 +92,9 @@ function buildWorkflowHandle(manifest: WorkflowManifest): WorkflowHandle {
     },
     contributorByRole(role: string) {
       return contributorByRole(manifest, role);
+    },
+    workflowByType(workflowType: WorkflowFixtureType) {
+      return getWorkflowByType(manifest, workflowType);
     },
   };
 }

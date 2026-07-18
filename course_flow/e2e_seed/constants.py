@@ -11,6 +11,13 @@ E2E_FIXTURE_WORKFLOW_TITLE = "E2E Activity Workflow"
 E2E_FIXTURE_COURSE_WORKFLOW_TITLE = "E2E Course Workflow"
 E2E_FIXTURE_PROGRAM_WORKFLOW_TITLE = "E2E Program Workflow"
 
+# Private workflow owned by another fixture actor. The primary teacher is not a
+# contributor, providing a deterministic FR-WS-ACCESS-002 hard-load target.
+E2E_FIXTURE_RESTRICTED_PROJECT_TITLE = (
+    f"{E2E_FIXTURE_PROJECT_TITLE_PREFIX} Restricted Workflow"
+)
+E2E_FIXTURE_RESTRICTED_WORKFLOW_TITLE = "E2E Restricted Workflow"
+
 # Template project + workflow templates for cardTemplateChip e2e (FR-CARD-001/002).
 E2E_FIXTURE_TEMPLATE_PROJECT_TITLE = (
     f"{E2E_FIXTURE_PROJECT_TITLE_PREFIX} Workflow Templates"

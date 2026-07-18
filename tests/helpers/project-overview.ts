@@ -234,11 +234,27 @@ export function buildProjectDetailApiResponse(
   return {
     item: {
       isTemplate: false,
+      isArchived: false,
       isFavorite: false,
       ownerId: 1,
       dateCreated: '2026-01-01T00:00:00Z',
       modifiedOn: '2026-01-01T00:00:00Z',
+      disciplines: [],
       workflows: [],
+      permissions: {
+        accountRole: 'teacher',
+        resourceRole: 'owner',
+        state: 'active',
+        actions: [
+          'view',
+          'edit_project',
+          'manage_members',
+          'create_workflow',
+          'archive_project',
+          'publish_project',
+        ],
+        adminOverride: false,
+      },
       ...item,
     },
   };

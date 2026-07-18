@@ -1,6 +1,9 @@
 import { expect, type Page } from '@playwright/test';
 
-import { DISCIPLINE_CATALOGUE_AZ } from './discipline-catalogue';
+import {
+  DISCIPLINE_CATALOGUE_AZ,
+  DISCIPLINE_CATALOGUE_OPTIONS,
+} from './discipline-catalogue';
 import {
   closeDisciplineFilterPopover,
   disciplineFilter,
@@ -16,7 +19,156 @@ import {
   libraryCardTitles,
   openDisciplineFilterPopover,
   triggerLibrarySearchAndWait,
+  type LibrarySearchRequestBody,
 } from '../shared/locators/library';
+
+type MockExploreItem = {
+  uuid: string;
+  contentType: 'project' | 'workflow';
+  label: 'project' | 'activity' | 'course' | 'program';
+  title: string;
+  description: string;
+  ownerName: string;
+  workflowCount: number | null;
+  dateCreated: string;
+  modifiedOn: string;
+  isArchived: false;
+  isTemplate: boolean;
+  isFavorite: boolean;
+  permissions: {
+    accountRole: null;
+    resourceRole: null;
+    state: 'active';
+    actions: string[];
+    adminOverride: false;
+  };
+  disciplineIds: number[];
+};
+
+const mockItem = (
+  sequence: number,
+  disciplineId: number,
+  contentType: MockExploreItem['contentType'],
+  label: MockExploreItem['label'],
+): MockExploreItem => ({
+  uuid: `20000000-0000-4000-8000-${String(sequence).padStart(12, '0')}`,
+  contentType,
+  label,
+  title: `E2E Discipline Result ${sequence}`,
+  description: `Deterministic ${label} result`,
+  ownerName: 'E2E Discipline Owner',
+  workflowCount: contentType === 'project' ? 1 : null,
+  dateCreated: `2024-01-${String((sequence % 28) + 1).padStart(2, '0')}T00:00:00.000Z`,
+  modifiedOn: `2024-02-${String((sequence % 28) + 1).padStart(2, '0')}T00:00:00.000Z`,
+  isArchived: false,
+  isTemplate: sequence % 3 === 0,
+  isFavorite: sequence % 2 === 0,
+  permissions: {
+    accountRole: null,
+    resourceRole: null,
+    state: 'active',
+    actions: [],
+    adminOverride: false,
+  },
+  disciplineIds: [disciplineId],
+});
+
+const ANTHROPOLOGY_ID = 10;
+const BIOLOGY_ID = 3;
+const SCIENCE_DISCIPLINE_IDS = [4, 5, 17] as const;
+
+const MOCK_EXPLORE_ITEMS: MockExploreItem[] = [
+  ...Array.from({ length: 11 }, (_, index) =>
+    mockItem(
+      index + 1,
+      ANTHROPOLOGY_ID,
+      index < 6 ? 'project' : 'workflow',
+      index < 6 ? 'project' : 'activity',
+    ),
+  ),
+  mockItem(12, BIOLOGY_ID, 'project', 'project'),
+  mockItem(13, BIOLOGY_ID, 'workflow', 'course'),
+  mockItem(14, SCIENCE_DISCIPLINE_IDS[0], 'project', 'project'),
+  mockItem(15, SCIENCE_DISCIPLINE_IDS[1], 'workflow', 'program'),
+  mockItem(16, SCIENCE_DISCIPLINE_IDS[2], 'workflow', 'activity'),
+];
+
+function withoutMockOnlyFields(item: MockExploreItem): Omit<MockExploreItem, 'disciplineIds'> {
+  const { disciplineIds: _disciplineIds, ...responseItem } = item;
+  return responseItem;
+}
+
+/** Deterministic FR-EXP-003 search fixture with pagination, OR filters, and disabled disciplines. */
+export async function installExploreDisciplineSearchMock(page: Page): Promise<void> {
+  await page.route('**/api/library/search', async (route) => {
+    const request = route.request().postDataJSON() as LibrarySearchRequestBody;
+    const filters = request.filters ?? {};
+    const contentType = filters.contentType;
+    const workflowTypes = Array.isArray(filters.workflowTypes) ? filters.workflowTypes : [];
+    const keyword = typeof filters.keyword === 'string' ? filters.keyword.toLowerCase() : null;
+    const selectedDisciplineIds = Array.isArray(filters.disciplineIds)
+      ? filters.disciplineIds.filter((value): value is number => typeof value === 'number')
+      : [];
+
+    let contextItems = MOCK_EXPLORE_ITEMS.filter((item) => {
+      if (contentType && item.contentType !== contentType) return false;
+      if (workflowTypes.length && !workflowTypes.includes(item.label)) return false;
+      if (filters.isFavorite === true && !item.isFavorite) return false;
+      if (filters.isTemplate === true && !item.isTemplate) return false;
+      if (
+        keyword &&
+        !item.title.toLowerCase().includes(keyword) &&
+        !item.description.toLowerCase().includes(keyword)
+      ) {
+        return false;
+      }
+      return true;
+    });
+
+    const allowedDisciplineIds = new Set(
+      contextItems.flatMap((item) => item.disciplineIds),
+    );
+
+    if (selectedDisciplineIds.length) {
+      contextItems = contextItems.filter((item) =>
+        item.disciplineIds.some((id) => selectedDisciplineIds.includes(id)),
+      );
+    }
+
+    const pageIndex = Number(request.pagination?.page ?? 0);
+    const resultsPerPage = Number(request.pagination?.resultsPerPage ?? 10);
+    const totalResults = contextItems.length;
+    const pageCount = totalResults ? Math.ceil(totalResults / resultsPerPage) : 0;
+    const start = pageIndex * resultsPerPage;
+    const items = contextItems
+      .slice(start, start + resultsPerPage)
+      .map(withoutMockOnlyFields);
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        items,
+        meta: {
+          totalResults,
+          pageCount,
+          currentPage: pageIndex,
+          resultsPerPage,
+          appliedFilters: filters,
+          allowed: {
+            disciplines: DISCIPLINE_CATALOGUE_OPTIONS.filter((option) =>
+              allowedDisciplineIds.has(option.id),
+            ).map((option) => ({
+              id: option.id,
+              label: option.label,
+              translationPlural: `${option.label}s`,
+            })),
+          },
+        },
+      }),
+    });
+  });
+}
 
 /** FR-EXP-003 — checklist matches fixed discipline catalogue A–Z. */
 export async function expectDisciplineFilterCatalogue(page: Page): Promise<void> {
@@ -49,17 +201,34 @@ export async function expectDisciplineFilterAllSelectsOnlyVisibleRows(page: Page
     .poll(async () => (await disciplineFilterOptionLabels(page)).length, { timeout: 5_000 })
     .toBeGreaterThan(0);
 
-  const visibleLabels = await disciplineFilterOptionLabels(page);
-  await disciplineFilterAllOption(page).click();
-  await closeDisciplineFilterPopover(page);
+  const visibleOptions = disciplineFilterCheckboxOptions(page);
+  const selectableVisibleLabels: string[] = [];
+  for (let i = 0; i < (await visibleOptions.count()); i++) {
+    const option = visibleOptions.nth(i);
+    if (!(await option.isDisabled())) {
+      selectableVisibleLabels.push((await option.innerText()).trim());
+    }
+  }
+  await triggerLibrarySearchAndWait(
+    page,
+    async () => {
+      await disciplineFilterAllOption(page).click();
+      await closeDisciplineFilterPopover(page);
+    },
+    (request) =>
+      Array.isArray(request.filters?.disciplineIds) &&
+      request.filters.disciplineIds.length === selectableVisibleLabels.length,
+  );
 
-  await expect(disciplineFilterSelectionIndicator(page)).toHaveText(String(visibleLabels.length));
+  await expect(disciplineFilterSelectionIndicator(page)).toHaveText(
+    String(selectableVisibleLabels.length),
+  );
 
   await openDisciplineFilterPopover(page);
   for (const label of DISCIPLINE_CATALOGUE_AZ) {
     const option = disciplineFilterCheckboxOption(page, label);
     const checkbox = option.getByRole('checkbox');
-    if (visibleLabels.includes(label)) {
+    if (selectableVisibleLabels.includes(label)) {
       await expect(checkbox).toBeChecked();
     } else {
       await expect(checkbox).not.toBeChecked();
@@ -90,7 +259,8 @@ export async function expectDisciplineFilterReadOnlyZeroResultRow(page: Page): P
   }
 
   const option = disciplineFilterCheckboxOption(page, readOnlyLabel);
-  await option.click();
+  await expect(option).toBeDisabled();
+  await option.click({ force: true });
   await expect(option.getByRole('checkbox')).not.toBeChecked();
 
   await closeDisciplineFilterPopover(page);
@@ -156,7 +326,13 @@ export async function expectDisciplineFilterSelectionIndicatorBehaviour(page: Pa
   const baselineTitles = await libraryCardTitles(page).allInnerTexts();
 
   await openDisciplineFilterPopover(page);
-  const selectableCount = await disciplineFilterCheckboxOptions(page).count();
+  const options = disciplineFilterCheckboxOptions(page);
+  let selectableCount = 0;
+  for (let i = 0; i < (await options.count()); i++) {
+    if (!(await options.nth(i).isDisabled())) {
+      selectableCount += 1;
+    }
+  }
   if (selectableCount === 0) {
     await closeDisciplineFilterPopover(page);
     return;

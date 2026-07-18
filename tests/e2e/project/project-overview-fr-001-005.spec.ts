@@ -508,7 +508,8 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
 
         await expect(publishProjectConfirmationModal(page)).toBeVisible();
         await expect(publishProjectConfirmationModalConfirmButton(page)).toBeEnabled();
-        await expectUnpublishedPublishControlsPerFrProjOv003(page);
+        const project = await fetchProjectDetail(page, manifest.project_uuid);
+        expect(project.isPublished).toBe(false);
         await expectProjectPublishSnackbarMessage(
           page,
           PROJECT_PUBLISH_SNACKBAR_MESSAGES.failure,
@@ -653,8 +654,6 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
   test('FR-PROJ-OV-005: tags section shows add-new-tag input when tags block is rendered', async ({
     page,
   }) => {
-    test.skip((await projectTagsSection(page).count()) === 0, 'Tags block not rendered — tags missing from project API mapping.');
-
     await expect(projectTagsSection(page)).toBeVisible();
     await expect(addNewTagInput(page)).toBeVisible();
     await expect(addNewTagInput(page)).toHaveAttribute('placeholder', 'Add new tag');

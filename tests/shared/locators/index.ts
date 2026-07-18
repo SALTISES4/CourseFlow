@@ -8,6 +8,7 @@
 
 export * from './global';
 export * from './navigation';
+export * from './workspace-access';
 export * from './library';
 export * from './workflow';
 

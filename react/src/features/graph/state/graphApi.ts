@@ -75,6 +75,7 @@ import type {
   ReorderSectionsInput,
   SectionEntity,
   TagEntity,
+  ThreadCommentCount,
   UnlinkNodeOutcomeInput,
   UpdateEdgeInput,
   UpdateOutcomeInput,
@@ -132,6 +133,7 @@ export type GraphResourceBundle = {
   nodes: NodeEntity[]
   edges: EdgeEntity[]
   outcomes: OutcomeEntity[]
+  threadCommentCounts: ThreadCommentCount[]
 }
 
 function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
@@ -204,7 +206,16 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
     threadUuid: outcome.threadUuid ?? null
   }))
 
-  return { graph, workflow, sections, channels, nodes, edges, outcomes }
+  return {
+    graph,
+    workflow,
+    sections,
+    channels,
+    nodes,
+    edges,
+    outcomes,
+    threadCommentCounts: view.threadCommentCounts ?? []
+  }
 }
 
 export const fetchWorkflowGraphBundle = async (

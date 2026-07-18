@@ -29,16 +29,23 @@ const useGenericQueryMsgHandler = () => {
   }
 
   function onError(error: unknown) {
-    const msg =
-      error instanceof Error
-        ? error.message
-        : typeof error === 'string' ||
-            (typeof error === 'object' && error !== null)
-          ? error
-          : 'An error occurred!'
-    enqueueSnackbar(<PrettyPrintJSON error={msg} />, {
-      variant: SnackbarOptions.ERROR
-    })
+    let msg: string | object = 'An error occurred!'
+
+    if (error instanceof Error || typeof error === 'string') {
+      msg = error instanceof Error ? error.message : error
+    } else if (typeof error === 'object' && error !== null) {
+      msg =
+        'message' in error && typeof error.message === 'string'
+          ? error.message
+          : error
+    }
+
+    enqueueSnackbar(
+      typeof msg === 'string' ? msg : <PrettyPrintJSON error={msg} />,
+      {
+        variant: SnackbarOptions.ERROR
+      }
+    )
 
     // this won't work because we're getting back errors from the serializer
     // but it's a start

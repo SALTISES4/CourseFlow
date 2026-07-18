@@ -18,9 +18,7 @@ const E2E_OUTCOME_TITLE = 'E2E Outcome 1';
 
 test.describe('Comments tab — workflowOutcome host (FR-WF-COMMENTS-004)', () => {
   test.beforeEach(async ({ page, workflow }) => {
-    if (workflow.outcomes.length === 0) {
-      test.skip(true, 'E2E fixture has no outcomes; run just django-seed-e2e-tests.');
-    }
+    workflow.firstOutcome();
     await gotoOutcomesView(page, workflow.path);
     await expect(workflowOutcomeHeader(page, E2E_OUTCOME_TITLE)).toBeVisible({
       timeout: 15_000,

@@ -9,7 +9,13 @@ import pytest
 from django.contrib.auth import get_user_model
 
 from course_flow.core.enum import AccountRole
-from course_flow.core.models import Project, Section, TeamUser
+from course_flow.core.models import (
+    FavoriteGraph,
+    FavoriteProject,
+    Project,
+    Section,
+    TeamUser,
+)
 from course_flow.dev_seed.constants import (
     DEV_SEED_ADMIN_EMAIL,
     DEV_SEED_PROJECT_TITLE_PREFIX,
@@ -25,6 +31,7 @@ from course_flow.e2e_seed.constants import (
     E2E_FIXTURE_HOME_PROJECT_TITLES,
     E2E_FIXTURE_PROJECT_TITLE,
     E2E_FIXTURE_PROJECT_TITLE_PREFIX,
+    E2E_FIXTURE_RESTRICTED_PROJECT_TITLE,
     E2E_OUTCOME_TITLE,
     E2E_SECTION_TITLES,
 )
@@ -64,6 +71,8 @@ def test_e2e_fixture_primary_user_is_teacher_owner_without_admin_membership():
     assert manifest["primary_user"]["email"] == DEV_SEED_TEACHER_EMAIL
     assert manifest["primary_user"]["account_role"] == AccountRole.TEACHER.value
     assert project.owner.email == DEV_SEED_TEACHER_EMAIL
+    assert project.owner.first_name == "testteacher"
+    assert project.owner.last_name == "Teacher"
     assert not TeamUser.objects.filter(
         team__project=project,
         user__email=DEV_SEED_ADMIN_EMAIL,
@@ -79,6 +88,27 @@ def test_e2e_fixture_manifest_includes_contributors():
         "commenter": E2E_FIXTURE_COMMENTER_EMAIL,
         "viewer": DEV_SEED_STUDENT_EMAIL,
     }
+
+
+@pytest.mark.django_db
+def test_e2e_fixture_favourites_cover_default_project_and_workflow_scopes():
+    manifest = generate_e2e_fixtures()
+    template_project = Project.objects.get(uuid=manifest["template_project_uuid"])
+    primary_project = Project.objects.get(uuid=manifest["project_uuid"])
+
+    assert FavoriteGraph.objects.filter(
+        user__email=DEV_SEED_TEACHER_EMAIL,
+        graph__workflow__project=primary_project,
+    ).count() == 1
+
+    assert FavoriteProject.objects.filter(
+        user__email=DEV_SEED_TEACHER_EMAIL,
+        project=template_project,
+    ).exists()
+    assert FavoriteGraph.objects.filter(
+        user__email=DEV_SEED_TEACHER_EMAIL,
+        graph__workflow__project=template_project,
+    ).count() == 3
 
 
 @pytest.mark.django_db
@@ -104,6 +134,12 @@ def test_e2e_fixture_home_projects_cover_cap_order_and_archive_exclusion():
     archived_project = manifest["archived_home_project"]
     assert archived_project["title"] == E2E_FIXTURE_ARCHIVED_HOME_PROJECT_TITLE
     assert archived_project["is_archived"] is True
+    assert Project.objects.get(uuid=archived_project["uuid"]).owner.email == DEV_SEED_TEACHER_EMAIL
+    assert set(
+        TeamUser.objects.filter(
+            team__project__uuid=archived_project["uuid"],
+        ).values_list("role", flat=True)
+    ) == {"editor", "commenter", "viewer"}
 
 
 @pytest.mark.django_db
@@ -115,6 +151,22 @@ def test_e2e_fixture_manifest_includes_workflow_path_and_sections():
     assert workflow["workflow_path"] == f"/workflow/{workflow_uuid}/graph"
     assert len(workflow["sections"]) == len(E2E_SECTION_TITLES)
     assert all(section["uuid"] for section in workflow["sections"])
+
+
+@pytest.mark.django_db
+def test_e2e_fixture_includes_private_workflow_outside_primary_teacher_scope():
+    manifest = generate_e2e_fixtures()
+    restricted = manifest["restricted_workflow"]
+    project = Project.objects.get(uuid=restricted["project_uuid"])
+
+    assert project.title == E2E_FIXTURE_RESTRICTED_PROJECT_TITLE
+    assert project.is_published is False
+    assert project.owner.email == E2E_FIXTURE_EDITOR_EMAIL
+    assert not TeamUser.objects.filter(
+        team__project=project,
+        user__email=DEV_SEED_TEACHER_EMAIL,
+    ).exists()
+    assert restricted["workflow_path"].startswith("/workflow/")
 
 
 @pytest.mark.django_db
@@ -178,5 +230,5 @@ def test_clear_then_seed_e2e_fixtures_replaces_existing_fixture_project():
         Project.objects.filter(
             title__startswith=E2E_FIXTURE_PROJECT_TITLE_PREFIX
         ).count()
-        == 2 + len(E2E_FIXTURE_HOME_PROJECT_TITLES) + 1
+        == 3 + len(E2E_FIXTURE_HOME_PROJECT_TITLES) + 1
     )

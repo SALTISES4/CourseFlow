@@ -3,7 +3,7 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious'
 import Box from '@mui/material/Box'
 import Pagination from '@mui/material/Pagination'
 import PaginationItem from '@mui/material/PaginationItem'
-import { ChangeEvent, useCallback, useState } from 'react'
+import { ChangeEvent, useCallback } from 'react'
 
 type PropsType = {
   current: number
@@ -12,12 +12,9 @@ type PropsType = {
 }
 
 const CFPagination = ({ current, pages, onChange }: PropsType) => {
-  const [page, setPage] = useState(current)
-
   const onPageChange = useCallback(
     (_: ChangeEvent<unknown>, value: number) => {
-      setPage(value)
-      onChange && onChange(value - 1)
+      onChange?.(value - 1)
     },
     [onChange]
   )
@@ -38,7 +35,7 @@ const CFPagination = ({ current, pages, onChange }: PropsType) => {
         count={pages}
         showFirstButton={pages > 7}
         showLastButton={pages > 7}
-        page={page}
+        page={current}
         onChange={onPageChange}
         renderItem={(item) => (
           <PaginationItem

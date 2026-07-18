@@ -170,6 +170,7 @@ class WorkflowCopyService:
                     "task_classification",
                     "time_required",
                     "time_units",
+                    "calculate_time",
                     "represents_workflow",
                     "context",
                     "classification",
@@ -182,7 +183,17 @@ class WorkflowCopyService:
             self._copy_model_fields(
                 source_course,
                 destination_course,
-                ("classification", "code"),
+                (
+                    "classification",
+                    "code",
+                    "calculate_time",
+                    "time_required",
+                    "time_units",
+                    "ponderation_theory",
+                    "ponderation_practice",
+                    "ponderation_individual",
+                    "credits",
+                ),
             )
 
         source_program = getattr(source, "programmeta", None)
@@ -196,6 +207,13 @@ class WorkflowCopyService:
                     "calculate_credits",
                     "calculate_ponderation",
                     "calculate_classification",
+                    "code",
+                    "time_required",
+                    "time_units",
+                    "ponderation_theory",
+                    "ponderation_practice",
+                    "ponderation_individual",
+                    "credits",
                     "classification_general_time",
                     "classification_specific_time",
                 ),

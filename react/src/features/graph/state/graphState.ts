@@ -14,6 +14,7 @@ import { graphLoadReducer } from './slices/graphLoad.slice'
 import { graphUiReducer } from './slices/graphUi.slice'
 import { optimisticOpsReducer } from './slices/optimisticOps.slice'
 import { outcomeUiReducer } from './slices/outcomeUi.slice'
+import { threadCommentCountsReducer } from './slices/threadCommentCounts.slice'
 
 export const graphCanonicalReducer = combineReducers({
   graph: graphReducer,
@@ -31,7 +32,8 @@ export const graphStateReducer = combineReducers({
   graphLoad: graphLoadReducer,
   graphUi: graphUiReducer,
   outcomeUi: outcomeUiReducer,
-  optimisticOps: optimisticOpsReducer
+  optimisticOps: optimisticOpsReducer,
+  threadCommentCounts: threadCommentCountsReducer
 })
 
 export type GraphState = ReturnType<typeof graphStateReducer>

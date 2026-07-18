@@ -1,7 +1,7 @@
 # Normalized requirements: global top navigation (application shell)
 # Source: application code (no separate Google Doc for this run)
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Cross-reference: tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml (workflow-route access preconditions for FR-TOP-005); tests/docs/requirements/features/project/project_header_requirements_v1.yaml (projectTitle); tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-002 (denied workflow access — workflow-context top bar chrome including returnLinksRegion not rendered); tests/docs/requirements/features/user/notifications_settings_requirements_v1.yaml (notifications settings page per accountMenuItemNotificationsSettings in FR-TOP-003); tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml (createProjectDialog per FR-TOP-002); tests/docs/requirements/features/workflow/workflow_create_stepped_form_requirements_v1.yaml (createWorkflowDialog per FR-TOP-002); tests/docs/requirements/features/auth/password_reset_requirements_v1.yaml (passwordResetPage per FR-TOP-003)
+# Cross-reference: tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml (workflow-route access preconditions for FR-TOP-005); tests/docs/requirements/features/project/project_header_requirements_v1.yaml (projectTitle); tests/docs/requirements/features/global/workspace_access_requirements_v1.yaml FR-WS-ACCESS-002 (denied workflow access — workflow-context top bar chrome including returnLinksRegion not rendered); tests/docs/requirements/features/user/notifications_settings_requirements_v1.yaml (notifications settings page per accountMenuItemNotificationsSettings in FR-TOP-003); tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml (createProjectDialog per FR-TOP-002); tests/docs/requirements/features/workflow/workflow_create_stepped_form_requirements_v1.yaml (createWorkflowDialog per FR-TOP-002); tests/docs/requirements/features/auth/password_reset_requirements_v1.yaml (passwordResetPage per FR-TOP-003)
 # Deferred (not in current test-generation scope): tests/docs/requirements/features/deferred/top_navigation_notifications_dropdown_requirements_v1.yaml (FR-TOP-004, FR-TOP-006, FR-TOP-008)
 
 documentPreconditions:
@@ -92,7 +92,7 @@ requirements:
     mainFlow:
       - topNavigationBar is visible spanning the top of the main application shell
       - given current route matches '/workflow/{id}/*' and tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml documentPreconditions for workflow routes hold, returnLinksRegion is visible in topNavigationBar with backToProjectLink per FR-TOP-005
-      - given current route matches '/workflow/{id}/*' and workflow workspace access preconditions do not hold, returnLinksRegion is not visible in topNavigationBar per tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-002
+      - given current route matches '/workflow/{id}/*' and workflow workspace access preconditions do not hold, returnLinksRegion is not visible in topNavigationBar per tests/docs/requirements/features/global/workspace_access_requirements_v1.yaml FR-WS-ACCESS-002
       - given current route does not match '/workflow/{id}/*', returnLinksRegion is not visible in topNavigationBar
       - addMenuTrigger and accountMenuTrigger are visible in a horizontal cluster at the trailing end of topNavigationBar
 
@@ -102,7 +102,7 @@ requirements:
       - topNavigationBar is visible
       - addMenuTrigger is visible
       - accountMenuTrigger is visible
-      - given current route matches '/workflow/{id}/*' and workflow workspace access preconditions do not hold, assert per tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-002
+      - given current route matches '/workflow/{id}/*' and workflow workspace access preconditions do not hold, assert per tests/docs/requirements/features/global/workspace_access_requirements_v1.yaml FR-WS-ACCESS-002
 
     openQuestions: []
 
@@ -186,7 +186,7 @@ requirements:
       - given user clicks accountMenuItemProfile, application navigates to route pattern '/user/profile-settings'
       - given user clicks accountMenuItemPassword, application navigates to route pattern '/user/password-reset'
       - given user clicks accountMenuItemNotificationsSettings, application navigates to route pattern '/user/notifications-settings'
-      - given user clicks accountMenuItemSignOut, application navigates to '/logout' and user session ends
+      - given user clicks accountMenuItemSignOut, application posts to '/api/auth/logout', clears the local access token, navigates to '/login', and the user session ends
 
     roleBehavior: {}
 
@@ -200,7 +200,7 @@ requirements:
       - given user clicks accountMenuItemProfile, current route matches '/user/profile-settings'
       - given user clicks accountMenuItemPassword, current route matches '/user/password-reset'
       - given user clicks accountMenuItemNotificationsSettings, current route matches '/user/notifications-settings'
-      - given user clicks accountMenuItemSignOut, current route matches '/logout' and user session ends
+      - given user clicks accountMenuItemSignOut, the logout request succeeds, current route matches '/login', the local access token is absent, and a subsequent authenticated-route request remains on '/login'
 
     openQuestions: []
 
@@ -236,7 +236,7 @@ requirements:
     acceptanceCriteria:
       - backToProjectLink is visible in returnLinksRegion with label including 'Return to' and parent project projectTitle
       - given user clicks backToProjectLink, current route matches '/project/{id}/workflows' for the parent project
-      - given workflow workspace access preconditions do not hold on a workflow route, assert per tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-002
+      - given workflow workspace access preconditions do not hold on a workflow route, assert per tests/docs/requirements/features/global/workspace_access_requirements_v1.yaml FR-WS-ACCESS-002
 
     openQuestions: []
 
