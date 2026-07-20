@@ -12,7 +12,6 @@ const LibraryPage = () => {
    * HOOKS
    *******************************************************/
   const config: LibraryFilterConfig = {
-    initialContentType: LibraryContentTypeIn.PROJECT,
     filterGroups: {
       ownershipFilter: true,
       contentTypeFilter: true,
