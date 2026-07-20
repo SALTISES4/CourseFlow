@@ -6,7 +6,6 @@ import {
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { _t } from '@cf/utility/Utility.class'
 import type { FilterMultiselectOption } from '@cfComponents/filters/FilterMultiselect'
-import { SearchFilterOption } from '@cfComponents/filters/types'
 import Pagination from '@cfComponents/UIPrimitives/Pagination'
 import { GridWrap, OuterContentWrap } from '@cfMUI/helper'
 import LibraryHelper, {
@@ -103,6 +102,7 @@ const LibrarySearchView = ({
           draft.filterGroups.contentTypeFilter.options?.find(
             (option) => option.value === filters.initialContentType
           )
+
         if (!initialOption) {
           return
         }

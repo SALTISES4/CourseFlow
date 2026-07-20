@@ -89,11 +89,6 @@ class LibraryHelper {
         label: _t('Type'),
         options: [
           {
-            label: _t('All'),
-            value: null,
-            enabled: true
-          },
-          {
             label: _t('Projects'),
             value: LibraryContentTypeIn.PROJECT
           },
