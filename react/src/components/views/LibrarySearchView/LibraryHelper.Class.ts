@@ -62,11 +62,6 @@ class LibraryHelper {
         label: _t('Ownership'),
         options: [
           {
-            value: null,
-            label: _t('All'),
-            enabled: true
-          },
-          {
             value: LibraryOwnershipIn.OWNED,
             label: _t('Owned')
           },
