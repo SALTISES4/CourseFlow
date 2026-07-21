@@ -138,11 +138,12 @@ export const insertNodeBelow = (
 
 export const placeNode = (
   input: PlaceNodeInput
-): GraphMutationThunk<Promise<void>> => {
+): GraphMutationThunk<Promise<ResourceUuid | void>> => {
   return async (dispatch) => {
     try {
       const delta = await placeNodeCommand(input)
       applyGraphDelta(dispatch, delta)
+      return delta.changes.nodes.created[0]?.uuid
     } catch (error) {
       dispatch(markGraphFailed(input.graphUuid))
       throw error

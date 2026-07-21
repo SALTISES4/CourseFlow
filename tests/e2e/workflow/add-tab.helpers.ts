@@ -1,29 +1,24 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { workflowSectionContainer } from '../../shared/locators/workflow';
+import { workflowSectionRow } from '../../shared/locators/workflow';
 import { sectionNodes } from './edit-section.locators';
 import { workflowAddTabInsertModeRowButton, workflowAddTabNodeCategoryItem } from './workflow-add-tab.locators';
 import { workflowRightSidebarAddTab } from '../../shared/locators/workflow';
-import { workflowChannelHeaders, workflowNode, workflowNodeContent, workflowNodes } from './workflow-graph.locators';
+import { workflowChannelHeaders, workflowNode, workflowNodes } from './workflow-graph.locators';
 
-/** Drag a node category from Add tab onto a section container (Row insert mode). */
+/** Drag a node category from Add tab onto a registered section row drop target. */
 export async function dragNodeCategoryOntoSection(
   page: Page,
   categoryLabel: string,
   sectionUuid: string,
+  rowIndex: number | 'empty' = 0,
+  edge: 'top' | 'bottom' = 'bottom',
 ): Promise<void> {
   const source = workflowAddTabNodeCategoryItem(page, categoryLabel);
-  const target = workflowSectionContainer(page, sectionUuid);
+  const target = workflowSectionRow(page, sectionUuid, rowIndex);
 
   await source.scrollIntoViewIfNeeded();
   await target.scrollIntoViewIfNeeded();
-
-  try {
-    await source.dragTo(target, { force: true, targetPosition: { x: 20, y: 20 } });
-    return;
-  } catch {
-    // Fall back to manual pointer path for pragmatic-drag-and-drop.
-  }
 
   const sourceBox = await source.boundingBox();
   const targetBox = await target.boundingBox();
@@ -31,12 +26,13 @@ export async function dragNodeCategoryOntoSection(
     throw new Error('Drag source or drop target not visible.');
   }
 
-  await page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2);
-  await page.mouse.down();
-  await page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + targetBox.height / 2, {
-    steps: 20,
+  await source.dragTo(target, {
+    force: true,
+    targetPosition: {
+      x: targetBox.width / 2,
+      y: edge === 'top' ? targetBox.height / 4 : (targetBox.height * 3) / 4,
+    },
   });
-  await page.mouse.up();
 }
 
 /** Drag a node category from Add tab onto an existing workflowNode (Column/Manual insert modes). */
@@ -44,36 +40,47 @@ export async function dragNodeCategoryOntoNode(
   page: Page,
   categoryLabel: string,
   nodeUuid: string,
+  edge: 'top' | 'bottom' = 'bottom',
 ): Promise<void> {
   const source = workflowAddTabNodeCategoryItem(page, categoryLabel);
-  const target = workflowNodeContent(page, nodeUuid);
+  const targetNode = workflowNode(page, nodeUuid);
+  const targetRow = targetNode.locator(
+    'xpath=ancestor::*[@data-test-id="workflow-section-row"]',
+  );
 
   await source.scrollIntoViewIfNeeded();
-  await target.scrollIntoViewIfNeeded();
-
-  try {
-    await source.dragTo(target, { force: true, targetPosition: { x: 10, y: 10 } });
-    return;
-  } catch {
-    // Fall back to manual pointer path for pragmatic-drag-and-drop.
-  }
+  await targetNode.scrollIntoViewIfNeeded();
 
   const sourceBox = await source.boundingBox();
-  const targetBox = await target.boundingBox();
-  if (!sourceBox || !targetBox) {
+  const targetNodeBox = await targetNode.boundingBox();
+  const targetRowBox = await targetRow.boundingBox();
+  if (!sourceBox || !targetNodeBox || !targetRowBox) {
     throw new Error('Drag source or drop target not visible.');
   }
 
-  await page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2);
-  await page.mouse.down();
-  await page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + targetBox.height / 4, {
-    steps: 20,
+  await source.dragTo(targetRow, {
+    force: true,
+    targetPosition: {
+      x: targetNodeBox.x - targetRowBox.x + targetNodeBox.width / 2,
+      y:
+        targetNodeBox.y -
+        targetRowBox.y +
+        (edge === 'top' ? targetNodeBox.height / 4 : (targetNodeBox.height * 3) / 4),
+    },
   });
-  await page.mouse.up();
 }
 
 export async function workflowNodeCount(page: Page): Promise<number> {
   return workflowNodes(page).count();
+}
+
+export async function workflowNodeUuids(page: Page): Promise<string[]> {
+  return workflowNodes(page).evaluateAll((nodes) =>
+    nodes
+      .map((node) => node.id)
+      .filter((id) => id.startsWith('node-'))
+      .map((id) => id.slice('node-'.length)),
+  );
 }
 
 export async function lastNodeUuidInSection(page: Page, sectionUuid: string): Promise<string> {

@@ -1,40 +1,66 @@
-import { selectGraphByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
+import { getApiErrorStatus, isArchivedApiError } from '@cf/api/apiError'
+import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import { WorkspacePermissionsProvider } from '@cf/context/workspacePermissionsContext'
 import {
-  canRenderChannels,
-  canRenderEdges,
-  canRenderNodes,
   canRenderShell,
   selectWorkflowLoadState
 } from '@cf/features/graph/state/selectors/readiness.selectors'
 import { useGraphBootstrap } from '@cf/features/graph/state/useGraphBootstrap'
+import { useWorkspaceAccessGuard } from '@cf/hooks/useWorkspaceAccessGuard'
 import { RootState } from '@cf/redux/store'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
+import WorkspaceAccessDenied from '@cfPages/MsgViews/WorkspaceAccessDenied'
 import WorkflowTabs from '@cfPages/Workflow/WorkflowTabs'
 import { WorkflowSidebarContextProvider } from '@cfSidebar/hooks/useSidebar/context'
+import { useQuery } from '@tanstack/react-query'
+import { useCallback, useRef } from 'react'
 import { useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 const Workflow = () => {
   const { uuid } = useParams<{ uuid: string }>()
+  const location = useLocation()
   const workflowUuid = uuid ?? null
+  const {
+    data: workflowResponse,
+    error: workflowError,
+    isError: workflowIsError,
+    isPending: workflowIsPending,
+    refetch
+  } = useQuery({
+    ...getWorkflowOptions({ path: { uuid: workflowUuid ?? '' } }),
+    enabled: Boolean(workflowUuid)
+  })
+  const lastResourceUuid = useRef(workflowUuid)
+  const lastSuccessfulResponse = useRef<typeof workflowResponse>()
+  if (lastResourceUuid.current !== workflowUuid) {
+    lastResourceUuid.current = workflowUuid
+    lastSuccessfulResponse.current = undefined
+  }
+  if (workflowResponse) {
+    lastSuccessfulResponse.current = workflowResponse
+  }
+  const resolvedWorkflowResponse =
+    workflowResponse ?? lastSuccessfulResponse.current
+  const revalidate = useCallback(async () => {
+    const result = await refetch()
+    return result.error ?? null
+  }, [refetch])
+  const { privateAccessRevoked } = useWorkspaceAccessGuard({
+    workspace: 'workflow',
+    resourceUuid: workflowUuid ?? undefined,
+    resourceRole: resolvedWorkflowResponse?.item.permissions.resourceRole,
+    hasSuccessfulLoad: Boolean(lastSuccessfulResponse.current),
+    directError: workflowError,
+    routePathname: location.pathname,
+    revalidate
+  })
 
-  useGraphBootstrap(workflowUuid)
+  useGraphBootstrap(resolvedWorkflowResponse ? workflowUuid : null)
 
   const shellReady = useSelector((state: RootState) =>
     workflowUuid ? canRenderShell(workflowUuid)(state) : false
-  )
-  const channelsReady = useSelector((state: RootState) =>
-    workflowUuid ? canRenderChannels(workflowUuid)(state) : false
-  )
-  const nodesReady = useSelector((state: RootState) =>
-    workflowUuid ? canRenderNodes(workflowUuid)(state) : false
-  )
-  const edgesReady = useSelector((state: RootState) =>
-    workflowUuid ? canRenderEdges(workflowUuid)(state) : false
-  )
-  const graphMeta = useSelector((state: RootState) =>
-    workflowUuid ? selectGraphByUuid(workflowUuid)(state) : null
   )
   const loadState = useSelector((state: RootState) =>
     workflowUuid ? selectWorkflowLoadState(workflowUuid)(state) : undefined
@@ -42,6 +68,26 @@ const Workflow = () => {
 
   if (!workflowUuid) {
     return <ErrorView />
+  }
+
+  if (privateAccessRevoked) {
+    return <WorkspaceAccessDenied workspace="workflow" />
+  }
+
+  if (workflowIsError && !resolvedWorkflowResponse) {
+    if (getApiErrorStatus(workflowError) === 403) {
+      return (
+        <WorkspaceAccessDenied
+          workspace="workflow"
+          archived={isArchivedApiError(workflowError)}
+        />
+      )
+    }
+    return <ErrorView />
+  }
+
+  if (workflowIsPending || !resolvedWorkflowResponse) {
+    return <Loader />
   }
 
   if (!shellReady && loadState?.graph !== 'failed') {
@@ -53,9 +99,14 @@ const Workflow = () => {
   }
 
   return (
-    <WorkflowSidebarContextProvider>
-      <WorkflowTabs />
-    </WorkflowSidebarContextProvider>
+    <WorkspacePermissionsProvider
+      resource={resolvedWorkflowResponse.item.permissions}
+      project={resolvedWorkflowResponse.item.projectPermissions}
+    >
+      <WorkflowSidebarContextProvider>
+        <WorkflowTabs />
+      </WorkflowSidebarContextProvider>
+    </WorkspacePermissionsProvider>
   )
 }
 

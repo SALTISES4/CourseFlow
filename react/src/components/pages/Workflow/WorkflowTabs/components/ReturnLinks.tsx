@@ -49,7 +49,7 @@ const ReturnLinks = () => {
       return <></>
     }
 
-    const path = generatePath(CFRoutes.PROJECT, {
+    const path = generatePath(CFRoutes.PROJECT_WORKFLOW, {
       uuid: project.uuid
     })
 
@@ -130,6 +130,10 @@ const ReturnLinks = () => {
         </Box>
       </Link>
     )
+  }
+
+  if (!workflowUuid || !project) {
+    return null
   }
 
   return (

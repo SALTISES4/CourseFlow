@@ -37,9 +37,27 @@ export function workflowAddTabNodeCategoriesGroup(page: Page): Locator {
 
 /** canonical: workflowAddTabNodeCategoryItem — draggable row for a channel title */
 export function workflowAddTabNodeCategoryItem(page: Page, label: string): Locator {
-  return workflowRightSidebarContentPanel(page).getByText(label, { exact: true });
+  return workflowRightSidebarContentPanel(page)
+    .locator('[data-test-id="workflow-add-tab-node-category-item"]')
+    .filter({ has: page.getByText(label, { exact: true }) });
 }
 
 export function workflowAddTabCustomNodeCategoryItem(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByText('Custom node category', { exact: true });
+  return workflowRightSidebarContentPanel(page).locator(
+    '[data-test-id="workflow-add-tab-custom-node-category-item"]',
+  );
+}
+
+export function workflowManualPlacementDialog(page: Page): Locator {
+  return page
+    .locator('[data-test-id="workflow-manual-placement-dialog"]')
+    .getByRole('menu');
+}
+
+export function workflowManualPlacementDialogRowButton(page: Page): Locator {
+  return page.locator('[data-test-id="workflow-manual-placement-row-button"]');
+}
+
+export function workflowManualPlacementDialogColumnButton(page: Page): Locator {
+  return page.locator('[data-test-id="workflow-manual-placement-column-button"]');
 }

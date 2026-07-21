@@ -1,5 +1,7 @@
 import { expect, type Page, type Route } from '@playwright/test';
 
+import { authenticatedApiRequest } from './api';
+
 import {
   PROJECT_OVERVIEW_EMPTY_METADATA_VALUE,
   PROJECT_OVERVIEW_FORBIDDEN_METADATA_LABELS,
@@ -35,8 +37,9 @@ export async function fetchProjectDetail(
   page: Page,
   projectUuid: string,
 ): Promise<ProjectDetailApiItem> {
-  const response = await page.request.get(`/api/project/${projectUuid}`);
-  expect(response.ok()).toBeTruthy();
+  const path = `/api/project/${projectUuid}`;
+  const response = await authenticatedApiRequest(page, 'GET', path);
+  expect(response.ok(), `${path} returned HTTP ${response.status()}`).toBeTruthy();
   const body = (await response.json()) as { item: ProjectDetailApiItem };
   return body.item;
 }
@@ -231,11 +234,27 @@ export function buildProjectDetailApiResponse(
   return {
     item: {
       isTemplate: false,
+      isArchived: false,
       isFavorite: false,
       ownerId: 1,
       dateCreated: '2026-01-01T00:00:00Z',
       modifiedOn: '2026-01-01T00:00:00Z',
+      disciplines: [],
       workflows: [],
+      permissions: {
+        accountRole: 'teacher',
+        resourceRole: 'owner',
+        state: 'active',
+        actions: [
+          'view',
+          'edit_project',
+          'manage_members',
+          'create_workflow',
+          'archive_project',
+          'publish_project',
+        ],
+        adminOverride: false,
+      },
       ...item,
     },
   };

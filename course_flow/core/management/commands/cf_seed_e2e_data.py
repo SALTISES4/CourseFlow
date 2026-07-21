@@ -5,9 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
-from course_flow.dev_seed.project_builder import DevSeedAdminMissingError
 from course_flow.e2e_seed.clear import clear_e2e_fixtures
 from course_flow.e2e_seed.orchestrator import (
     clear_then_seed_e2e_fixtures,
@@ -61,13 +60,10 @@ class Command(BaseCommand):
                 self.stdout.write(json.dumps(summary, default=str))
             return
 
-        try:
-            if clear_and_seed:
-                result = clear_then_seed_e2e_fixtures(manifest_path=manifest_path)
-            else:
-                result = generate_e2e_fixtures(manifest_path=manifest_path)
-        except DevSeedAdminMissingError as exc:
-            raise CommandError(str(exc)) from exc
+        if clear_and_seed:
+            result = clear_then_seed_e2e_fixtures(manifest_path=manifest_path)
+        else:
+            result = generate_e2e_fixtures(manifest_path=manifest_path)
 
         payload = json.dumps(result, indent=2 if not options["json"] else None)
         self.stdout.write(payload)

@@ -4,13 +4,15 @@
 
 This document defines the **authorization model** used by CourseFlow.
 
-The system uses a **role-based permission model** combined with **resource state**.
+The system combines one **account role**, one contextual **resource role**, and
+the **resource state**.
 
-Permissions depend on three dimensions:
+Permissions depend on four dimensions:
 
 1. **Resource type**
 2. **Resource status**
-3. **User role relative to the resource**
+3. **Account role**
+4. **User role relative to the resource**
 
 The permission matrix determines whether a user may perform a given **action** on a given **resource state**.
 
@@ -31,9 +33,9 @@ The system currently defines permission matrices for:
 
 Represents a container for graphs and collaborators.
 
-### Graph
+### Workflow
 
-Represents an instructional graph authored within a project.
+Represents an instructional workflow and its backing graph authored within a project.
 
 Each resource type has **its own permission matrix**.
 
@@ -43,16 +45,10 @@ Each resource type has **its own permission matrix**.
 
 Permissions vary depending on the lifecycle status of the resource.
 
-Typical project states include:
+Project and workflow states are:
 
-- **Draft**
-- **Published**
-- **Archived**
-
-Typical graph states include:
-
-- **Draft**
-- **Published**
+- **Private**
+- **Public**
 - **Archived**
 
 These states determine whether editing or publishing operations are allowed.
@@ -61,9 +57,23 @@ These states determine whether editing or publishing operations are allowed.
 
 # Roles
 
-Users interact with resources under a role.
+Every non-superuser has exactly one account role, stored as one canonical Django
+`auth.Group` membership:
 
-Roles differ depending on whether the resource is a **project** or a **graph**.
+| Account role | Meaning |
+|-----|------|
+| Admin | Global authorization override |
+| Teacher | Normal account; resource access still requires ownership, membership, or public visibility |
+| Student | Normal account; default at registration; resource access still requires ownership, membership, or public visibility |
+
+Multiple or missing canonical account-role groups are invalid and authorization
+fails closed. Django superusers resolve to Admin. Teacher and Student do not grant
+access to arbitrary projects or workflows.
+
+Users then interact with each resource under a separate contextual role.
+
+The contextual role is resolved from ownership, project TeamUser membership, or
+public project visibility.
 
 ## Project Roles
 
@@ -75,9 +85,10 @@ Typical project roles include:
 | Editor | Can modify project content |
 | Commenter | Can comment but not edit |
 | Viewer | Read-only access |
-| Anonymous | Public / unauthenticated user |
+| Public | Authenticated non-contributor accessing a public project |
 
-Additional organizational roles may include:
+Organization-level roles are deferred and are not part of the current evaluator.
+Possible future roles include:
 
 | Role | Meaning |
 |-----|------|
@@ -87,9 +98,10 @@ Additional organizational roles may include:
 
 ---
 
-## Graph Roles
+## Workflow Roles
 
-Graph permissions are usually derived from **project membership** but may have additional rules depending on graph ownership.
+Workflow permissions inherit **project membership**. The workflow author and project
+owner resolve to owner; other contributors inherit their project TeamUser role.
 
 ---
 
@@ -126,16 +138,18 @@ Typical project-level actions include:
 | Archive project | Move project to archived state |
 | Manage collaborators | Add/remove members |
 
-Typical graph-level actions include:
+Typical workflow-level actions include:
 
 | Action | Description |
 |------|------|
-| View graph | Open graph |
-| Edit graph | Modify graph structure |
-| Create graph | Create new graph |
-| Delete graph | Remove graph |
-| Publish graph | Publish graph |
-| Duplicate graph | Clone graph |
+| View workflow | Open the workflow workspace |
+| Edit attributes | Modify workflow metadata |
+| Archive workflow | Move a workflow to archived state |
+| Restore workflow | Restore an individually archived workflow |
+| Delete permanently | Irrecoverably remove an archived workflow |
+| Node/part/category/link/outcome management | Modify workflow graph content |
+| Comment | Add a workflow comment |
+| Delete own comment | Delete only a comment authored by the current user |
 
 ---
 
@@ -154,19 +168,19 @@ Columns represent roles under different **resource states**.
 
 Example conceptual structure:
 
-| Action | Draft Owner | Draft Editor | Draft Viewer | Published Owner | Published Viewer |
+| Action | Private Owner | Private Editor | Private Viewer | Public Owner | Public Viewer |
 |------|------|------|------|------|------|
 | View | X | X | X | X | X |
 | Edit | X | X | | X | |
-| Delete | X | | | X | |
-| Publish | X | | | | |
+| Archive | X | | | X | |
+| Publish/unpublish | X | X | | X | |
 
 This means:
 
 - owners can perform all actions
 - editors can modify drafts
 - viewers can only read
-- publishing is restricted
+- project publishing is available to owners and editors
 
 ---
 
@@ -178,11 +192,11 @@ Permission enforcement occurs in multiple layers.
 
 Primary enforcement layer.
 
-Typical enforcement points include:
+Enforcement points include:
 
-- Django view permissions
-- service layer mutation guards
-- websocket connection authorization
+- Django Ninja controllers for reads and ordinary mutations
+- application services for graph and lifecycle mutations
+- contextual capability generation on API responses
 
 Backend must be treated as **authoritative**.
 
@@ -202,27 +216,52 @@ Frontend checks are **not authoritative**.
 
 Backend must always enforce permissions.
 
+Project, workflow, graph-view, and library item responses expose the evaluated
+context as:
+
+```json
+{
+  "accountRole": "student",
+  "resourceRole": "editor",
+  "state": "private",
+  "actions": ["comment", "edit_attributes", "view"],
+  "adminOverride": false
+}
+```
+
+The frontend must consume `actions`; it must not reconstruct the matrix from
+`accountRole` or `resourceRole`.
+
 ---
 
-# Relationship Between Project and Graph Permissions
+# Relationship Between Project and Workflow Permissions
 
-Graph permissions usually inherit from **project membership**.
+Workflow permissions inherit from **project membership**.
 
-Typical rule:
+Resolution rule:
 ```
-GraphPermission = ProjectRole + GraphState
+WorkflowPermission = ProjectRole + WorkflowState
 ```
 
 
 Examples:
 
-- project owners can edit all graphs
-- project editors can edit graphs
-- viewers cannot modify graphs
+- project owners can edit all workflows
+- project editors can edit workflows
+- viewers cannot modify workflows
 
 However:
 
-Publishing rules may be stricter.
+Project publication is inherited by child workflows; workflows do not have an
+independent published flag.
+
+Archived resources are not browsable through normal workspace endpoints. The
+owner receives only restore and permanent-delete capabilities in archived list
+contexts. Editors, commenters, viewers, and public users receive no archived
+actions.
+
+Comment deletion has no moderation override: owners, editors, and commenters may
+delete only comments they authored.
 
 ---
 
@@ -232,7 +271,8 @@ When adding new actions:
 
 1. Add the action to the permission matrix.
 2. Implement backend authorization logic.
-3. Mirror logic in frontend capability checks.
+3. Expose the action through the backend permission context and consume that
+   capability in the frontend.
 
 Avoid:
 
@@ -246,13 +286,13 @@ Create explicit permission helpers.
 
 Example pattern:
 ```
-can_edit_graph(user, graph)
-can_publish_project(user, project)
-can_delete_graph(user, graph)
+permissions_for(user, resource)
+require(user, action, resource)
 ```
 
 
-These helpers should encode the matrix logic.
+The contextual evaluator returns the complete allowed action set. Do not create a
+new function for every action.
 
 ---
 
@@ -266,11 +306,11 @@ Always verify:
 2. resource lifecycle state
 3. user role relative to the resource
 
-Never assume:
+Do not assume:
 
-- editors can publish
-- viewers can duplicate
-- anonymous users can view unpublished resources
+- account role alone grants resource access
+- public users can copy or export workflows
+- public users can view private or archived resources
 
 The permission matrix is the **single authoritative model** for allowed operations.
 
@@ -278,14 +318,7 @@ The permission matrix is the **single authoritative model** for allowed operatio
 
 # Future Improvements
 
-The spreadsheet permission matrix should eventually be:
-
-- converted into machine-readable configuration
-- validated by automated tests
-- used to generate permission helper functions
-
-This would allow:
-
-- automated permission validation
-- elimination of duplicated rules
-- improved consistency between backend and frontend
+The current executable matrices live in `course_flow/core/permissions.py` and
+are exercised by authorization service and endpoint tests. The YAML files in
+this directory are the human-readable policy mirror. Changes must update both
+surfaces in the same change.

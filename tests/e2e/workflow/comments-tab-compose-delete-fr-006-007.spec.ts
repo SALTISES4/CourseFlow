@@ -3,6 +3,7 @@ import {
   workflowCommentsComposerField,
   workflowCommentsTabComposerSubmitButton,
   workflowCommentsTabListItemBody,
+  workflowCommentsTabListItemHeaderForBody,
   workflowCommentsTabListItemDeleteLink,
   workflowRightSidebarCommentsTabContent,
 } from '../../shared/locators/workflow';
@@ -42,6 +43,9 @@ test.describe('Comments tab — compose and delete (FR-WF-COMMENTS-006, FR-WF-CO
     await expect(workflowCommentsTabListItemBody(page, body)).toBeVisible({ timeout: 15_000 });
     await expect(workflowCommentsComposerField(page)).toHaveValue('');
     await expect(workflowCommentsTabComposerSubmitButton(page)).toBeDisabled();
+
+    await workflowCommentsTabListItemDeleteLink(page, body).click();
+    await expect(workflowCommentsTabListItemBody(page, body)).toHaveCount(0);
   });
 
   test('FR-WF-COMMENTS-007: delete own comment removes list item and shows snackbar', async ({
@@ -56,27 +60,43 @@ test.describe('Comments tab — compose and delete (FR-WF-COMMENTS-006, FR-WF-CO
     await workflowCommentsTabListItemDeleteLink(page, body).click();
 
     await expect(workflowCommentsTabListItemBody(page, body)).toHaveCount(0, { timeout: 15_000 });
-    await expect(page.getByText('Success!').last()).toBeVisible({ timeout: 15_000 });
+    await expect(
+      page.getByText('Your comment has been successfully deleted').last(),
+    ).toBeVisible({ timeout: 15_000 });
   });
 
-  test('FR-WF-COMMENTS-006: composer labels match FR copy deferred', async () => {
-    test.skip(
-      true,
-      "Product uses label 'Comment' for field and submit; FR-WF-COMMENTS-006 requires 'Add a comment' and 'Add comment'.",
+  test('FR-WF-COMMENTS-006: composer labels match FR copy', async ({ page }) => {
+    await expect(workflowCommentsComposerField(page)).toHaveAccessibleName(
+      'Add a comment',
+    );
+    await expect(workflowCommentsTabComposerSubmitButton(page)).toHaveText(
+      'Add comment',
     );
   });
 
-  test('FR-WF-COMMENTS-006: author header uses profile name deferred', async () => {
-    test.skip(
-      true,
-      "Product shows 'Me • {date}' for own comments; FR requires '{firstName} {lastName} • just now'.",
+  test('FR-WF-COMMENTS-006: author header uses profile name and relative time', async ({
+    page,
+  }) => {
+    const body = `E2E author header ${Date.now()}`;
+    await workflowCommentsComposerField(page).fill(body);
+    await workflowCommentsTabComposerSubmitButton(page).click();
+
+    await expect(workflowCommentsTabListItemHeaderForBody(page, body)).toHaveText(
+      'testteacher Teacher • just now',
     );
+    await workflowCommentsTabListItemDeleteLink(page, body).click();
+    await expect(workflowCommentsTabListItemBody(page, body)).toHaveCount(0);
   });
 
-  test('FR-WF-COMMENTS-007: delete snackbar copy deferred', async () => {
-    test.skip(
-      true,
-      "Product shows generic 'Success!' snackbar; FR requires 'Your comment has been successfully deleted'.",
-    );
+  test('FR-WF-COMMENTS-007: delete snackbar uses FR copy', async ({ page }) => {
+    const body = `E2E delete copy ${Date.now()}`;
+    await workflowCommentsComposerField(page).fill(body);
+    await workflowCommentsTabComposerSubmitButton(page).click();
+    await expect(workflowCommentsTabListItemBody(page, body)).toBeVisible();
+
+    await workflowCommentsTabListItemDeleteLink(page, body).click();
+    await expect(
+      page.getByText('Your comment has been successfully deleted').last(),
+    ).toBeVisible({ timeout: 15_000 });
   });
 });

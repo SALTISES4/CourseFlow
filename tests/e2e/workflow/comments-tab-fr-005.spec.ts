@@ -72,10 +72,6 @@ test.describe('Comments tab — host matches Edit tab (FR-WF-COMMENTS-005)', () 
     page,
     workflow,
   }) => {
-    if (workflow.outcomes.length === 0) {
-      test.skip(true, 'E2E fixture has no outcomes; run just django-seed-e2e-tests.');
-    }
-
     await gotoOutcomesView(page, workflow.path);
     const outcome = workflow.firstOutcome();
 

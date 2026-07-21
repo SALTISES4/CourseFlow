@@ -9,7 +9,7 @@ import { FileRejection } from 'react-dropzone'
 import { FileInfo, FileName, FileWrap } from './styles'
 
 type PropsType = {
-  uuid: string
+  id: number
   file: File | FileRejection
   onFileRemove?: (index: number) => void
   onFileUploaded?: (name: string) => void
@@ -45,7 +45,7 @@ const FilePreview = ({ id, file, onFileRemove, onFileUploaded }: PropsType) => {
         setProgress(Math.min(progress + randomInt(15), 100))
       }, 300)
     } else {
-      onFileUploaded && onFileUploaded(file.name)
+      onFileUploaded?.(file.name)
     }
   }, [progress, hasErrors, onFileUploaded, file])
 

@@ -1,4 +1,5 @@
 from ninja import Router
+from ninja.errors import HttpError
 
 from course_flow.api.auth import BearerAuth, get_current_user
 from course_flow.api.deps import get_library_service
@@ -39,7 +40,12 @@ def library_item_favorite_toggle(request, payload: LibraryFavoriteIn):
     user = get_current_user(request)
     svc = get_library_service()
 
-    return svc.toggle_favorite(
-        user_id=user.id,
-        uuid=payload.uuid
-    )
+    try:
+        return svc.toggle_favorite(
+            user_id=user.id,
+            uuid=payload.uuid,
+        )
+    except PermissionError as exc:
+        raise HttpError(403, "Forbidden") from exc
+    except ValueError as exc:
+        raise HttpError(404, "Library item not found") from exc

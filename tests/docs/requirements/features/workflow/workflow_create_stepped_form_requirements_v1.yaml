@@ -422,6 +422,7 @@ requirements:
       - when user returns to step 3 template mode from step 2, previously selected workflowCard and submit enablement are preserved
       - cancel per FR-WF-CREATE-STEPPER-001; step 3 previous-step behavior per acceptanceCriteria in this FR
       - on submit, selected workflowCard template is copied into the selected project as a new workflow; workflowTitle on the new workflow matches cardTitleText of the selected template workflowCard source; workflowView includes template-derived workflowSectionContainer, workflowChannelsHeaderRow, workflowNode, and workflowEdge content from the template source; workflowOverviewView metadata matches template source per tests/docs/requirements/features/workflow/workflow_overview_requirements_v1.yaml FR-WF-OV-009 when user opens Overview
+      - template-based creation uses the same atomic copy behavior and content-fidelity rules as tests/docs/requirements/features/workflow/workflow_copy_requirements_v1.yaml FR-WF-COPY-003; because a template source belongs to a template project distinct from the selected destination project, the cross-project rules apply (project-scoped tags and linkedWorkflow associations are not copied, outcome structure and node assignments are copied, and comments are not copied)
       - submit success and failure outcomes parallel FR-WF-CREATE-STEPPER-005
 
     roleBehavior: {}

@@ -4,11 +4,12 @@ import {
   updateProjectTeamMemberMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import type { ProjectTeamMemberOut } from '@cf/api/gen/types.gen'
-import { ProjectTeamRoleSchema } from '@cf/api/gen/types.gen'
+import { ProjectPermission, ProjectTeamRoleSchema } from '@cf/api/gen/types.gen'
+import { useProjectPermission } from '@cf/context/workspacePermissionsContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { useTeamProjectUuidForWorkflow } from '@cf/hooks/useTeamProjectUuidForWorkflow'
 import { WorkspaceType } from '@cf/types/enum'
+import { SnackbarOptions } from '@cf/utility/constants'
 import {
   projectTeamRoleLabel,
   projectTeamRoleMenuOptions
@@ -23,6 +24,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { EUser } from '@XMLHTTP/types/entity'
+import { enqueueSnackbar } from 'notistack'
 import { useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -33,6 +35,8 @@ type PropsType = {
   workspaceId: string
   workspaceType: WorkspaceType
   author: EUser
+  readOnly?: boolean
+  projectUuid?: string | null
 }
 
 function memberDisplayName(m: ProjectTeamMemberOut): string {
@@ -43,20 +47,31 @@ function memberDisplayName(m: ProjectTeamMemberOut): string {
   return name.length ? name : m.userEmail
 }
 
-const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
-  const { onError, onSuccess } = useGenericMsgHandler()
+const UserPermissions = ({
+  workspaceId,
+  workspaceType,
+  author,
+  readOnly = false,
+  projectUuid
+}: PropsType) => {
   const { dispatch } = useDialog()
   const queryClient = useQueryClient()
   const { uuid: routeWorkflowUuid } = useParams()
+  const hasManageMembersPermission = useProjectPermission(
+    ProjectPermission.MANAGE_MEMBERS
+  )
+  const canManageMembers = !readOnly && hasManageMembersPermission
 
   const { data: workflowTeamProjectUuid } = useTeamProjectUuidForWorkflow(
-    workspaceType === WorkspaceType.WORKFLOW ? routeWorkflowUuid : undefined
+    workspaceType === WorkspaceType.WORKFLOW && !projectUuid
+      ? routeWorkflowUuid
+      : undefined
   )
 
   const projectUuidForTeam =
     workspaceType === WorkspaceType.PROJECT
       ? workspaceId
-      : (workflowTeamProjectUuid ?? null)
+      : (projectUuid ?? workflowTeamProjectUuid ?? null)
 
   const { data: teamData, isLoading } = useQuery({
     ...listProjectTeamOptions({
@@ -82,20 +97,28 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
     role: ProjectTeamRoleSchema,
     membershipId: number
   ) {
-    if (!projectUuidForTeam) {
+    if (!projectUuidForTeam || !canManageMembers) {
       return
     }
     try {
-      const resp = await updateMember.mutateAsync({
+      await updateMember.mutateAsync({
         path: {
           uuid: projectUuidForTeam,
           membership_id: membershipId
         },
         body: { role }
       })
-      onSuccess(resp)
+      enqueueSnackbar(_t("The contributor's role was successfully updated"), {
+        variant: SnackbarOptions.SUCCESS
+      })
     } catch (err) {
-      onError(err)
+      enqueueSnackbar(
+        _t(
+          "We encountered an issue and the contributor's role was not updated"
+        ),
+        { variant: SnackbarOptions.ERROR }
+      )
+      console.error('Failed to update contributor role:', err)
     }
   }
 
@@ -162,42 +185,50 @@ const UserPermissions = ({ workspaceId, workspaceType, author }: PropsType) => {
               primary={memberDisplayName(user)}
               secondary={user.userEmail}
             />
-            <MenuButton
-              // TODO: this needs to be a check on call to see if current user can edit
-              disabled={false}
-              options={[
-                ...projectTeamRoleMenuOptions.map((item) => ({
-                  name: item.value,
-                  label:
-                    item.label +
-                    (user.role === item.value ? ' ' + '(current)' : ''),
-                  disabled: user.role === item.value
-                })),
-                {
-                  name: 'mui-divider'
-                },
-                {
-                  name: 'remove',
-                  label: _t('Remove user'),
-                  onClick: onUserRemove(user.id, memberDisplayName(user))
+            {readOnly ? (
+              <Button variant="outlined" disabled>
+                {projectTeamRoleLabel(user.role)}
+              </Button>
+            ) : (
+              <MenuButton
+                disabled={!canManageMembers}
+                selected={user.role}
+                options={[
+                  ...projectTeamRoleMenuOptions.map((item) => ({
+                    name: item.value,
+                    label:
+                      item.label +
+                      (user.role === item.value ? ' ' + '(current)' : ''),
+                    disabled: user.role === item.value
+                  })),
+                  {
+                    name: 'mui-divider'
+                  },
+                  {
+                    name: 'remove',
+                    label: _t('Remove contributor'),
+                    onClick: onUserRemove(user.id, memberDisplayName(user))
+                  }
+                ]}
+                onChange={(role) =>
+                  onChangeHandler(role as ProjectTeamRoleSchema, user.id)
                 }
-              ]}
-              onChange={(role) =>
-                onChangeHandler(role as ProjectTeamRoleSchema, user.id)
-              }
-              placeholder={projectTeamRoleLabel(user.role)}
-            />
+                placeholder={projectTeamRoleLabel(user.role)}
+              />
+            )}
           </SC.PermissionThumbnail>
         ))}
 
-        <SC.PermissionThumbnail addNew as={Button} onClick={onUserAdd}>
-          <ListItemAvatar>
-            <Avatar>
-              <PersonAddAlt1Icon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={_t('Add CourseFlow user')} />
-        </SC.PermissionThumbnail>
+        {canManageMembers && (
+          <SC.PermissionThumbnail addNew as={Button} onClick={onUserAdd}>
+            <ListItemAvatar>
+              <Avatar>
+                <PersonAddAlt1Icon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary={_t('Add CourseFlow user')} />
+          </SC.PermissionThumbnail>
+        )}
       </SC.PermissionGrid>
     </SC.InfoBlockContent>
   )

@@ -25,12 +25,12 @@ const Ownership = ({
   return (
     <FilterButton
       placeholder={filterGroup.label}
-      options={options}
+      options={options ?? []}
       icon={<FilterIcon />}
       onChange={(value) => {
         setSearchFilterState(
           produce((draft) => {
-            const current = draft.filterGroups.ownershipFilter.options
+            const current = draft.filterGroups.ownershipFilter.options ?? []
 
             draft.filterGroups.ownershipFilter.options =
               LibraryHelper.updateFilterOptions(current, value)

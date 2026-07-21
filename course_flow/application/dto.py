@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any
 from uuid import UUID
 
 from course_flow.core.enum import WorkflowType
@@ -12,6 +13,7 @@ class ProjectDTO:
     title: str
     description: str
     is_published: bool
+    is_archived: bool
     is_template: bool
     owner_id: int
     date_created: datetime
@@ -36,9 +38,14 @@ class WorkflowDTO:
     author_id: int | None
     project_id: int | None
     project_uuid: UUID | None
+    project_owner_id: int | None
+    project_is_published: bool
+    project_is_archived: bool
+    is_archived: bool
     workflow_type: WorkflowType
     title: str
     description: str
+    overview_metadata: dict[str, Any]
     date_created: datetime
     modified_on: datetime
 

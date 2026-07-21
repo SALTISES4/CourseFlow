@@ -44,7 +44,7 @@ const Header = () => {
         >
           {workflowTitle({
             title: workflow?.title ?? '',
-            code: null,
+            code: '',
             deleted: false
           })}
 

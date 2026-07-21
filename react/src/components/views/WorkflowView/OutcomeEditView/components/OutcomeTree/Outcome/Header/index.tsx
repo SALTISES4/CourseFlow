@@ -1,5 +1,8 @@
+import { WorkflowPermission } from '@cf/api/gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { GraphUuid } from '@cf/features/graph/state/model/types'
 import { selectOutcomeById } from '@cf/features/graph/state/selectors/outcomes.selectors'
+import { selectThreadCommentCount } from '@cf/features/graph/state/selectors/threadCommentCounts.selectors'
 import {
   createOutcome,
   deleteOutcome,
@@ -22,7 +25,7 @@ import QueueIcon from '@mui/icons-material/Queue'
 import RemoveIcon from '@mui/icons-material/Remove'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
-import { MouseEvent, MutableRefObject, useCallback } from 'react'
+import { MouseEvent, RefObject, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import * as Styled from '../../styles'
@@ -35,7 +38,7 @@ type PropsType = {
   level: number
   title: string
   tags: number[]
-  dragRef: MutableRefObject<HTMLDivElement>
+  dragRef: RefObject<HTMLDivElement>
   selected: boolean
   highlighted: boolean
   collapsed: boolean
@@ -134,8 +137,15 @@ const HoverMenu = ({
   setCollapsed: PropsType['setCollapsed']
 }) => {
   const dispatch = useDispatch<AppDispatch>()
+  const canManageOutcomes = useResourcePermission(
+    WorkflowPermission.OUTCOME_MANAGEMENT
+  )
+  const canComment = useResourcePermission(WorkflowPermission.COMMENT)
   const sibling = useSelector((state: RootState) =>
     selectOutcomeById(state, uuid)
+  )
+  const commentCount = useSelector((state: RootState) =>
+    selectThreadCommentCount(state, sibling?.threadUuid)
   )
 
   const onActionClick = useCallback(
@@ -193,39 +203,40 @@ const HoverMenu = ({
         }
       }
     },
-    [dispatch, graphUuid, level, setCollapsed, sibling, uuid]
+    [dispatch, graphUuid, setCollapsed, sibling, uuid]
   )
 
   return (
     <NodeHoverMenu
       show={show}
       items={[
-        {
+        canManageOutcomes && {
           label: _t('Insert sibling'),
           icon: <AddCircleOutlineIcon />,
           onClick: onActionClick('insert-sibling')
         },
-        {
+        canManageOutcomes && {
           label: _t('Insert child'),
           icon: <QueueIcon />,
           onClick: onActionClick('insert-child')
         },
-        {
+        canManageOutcomes && {
           label: _t('Duplicate'),
           icon: <ContentCopyIcon />,
           onClick: onActionClick('duplicate')
         },
-        {
+        canComment && {
           label: _t('Comments'),
           icon: <CommentOutlinedIcon />,
+          showCommentsPresenceIndicator: commentCount > 0,
           onClick: onActionClick('comments')
         },
-        {
+        canManageOutcomes && {
           label: _t('Delete'),
           icon: <DeleteOutlinedIcon />,
           onClick: onActionClick('delete')
         }
-      ]}
+      ].filter(Boolean)}
     />
   )
 }

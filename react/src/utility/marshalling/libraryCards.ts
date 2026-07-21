@@ -36,7 +36,9 @@ function getTypeChip(workflow: LibraryItemOut): WorkflowCardChipType {
   }
 }
 
-function getTemplateChip(workflow: LibraryItemOut): WorkflowCardChipType {
+function getTemplateChip(
+  workflow: LibraryItemOut
+): WorkflowCardChipType | null {
   const isTemplate = workflow.isTemplate
   if (isTemplate) {
     return {
@@ -47,19 +49,21 @@ function getTemplateChip(workflow: LibraryItemOut): WorkflowCardChipType {
   return null
 }
 
-function getWorkflowCountChip(workflow: LibraryItemOut): WorkflowCardChipType {
-  // if (
-  //   workflow.contentType === LibraryContentTypeOut.PROJECT &&
-  //   workflow.workflowCount !== null &&
-  //   workflow.workflowCount > 0
-  // ) {
-  //   return {
-  //     type: ChipOptions.DEFAULT,
-  //     label: `${workflow.workflowCount} ${_t(
-  //       `workflow` + (workflow.workflowCount > 1 ? 's' : '')
-  //     )}`
-  //   }
-  // }
+function getWorkflowCountChip(
+  workflow: LibraryItemOut
+): WorkflowCardChipType | null {
+  if (
+    workflow.contentType === LibraryContentTypeOut.PROJECT &&
+    workflow.workflowCount != null &&
+    workflow.workflowCount > 0
+  ) {
+    return {
+      type: ChipOptions.DEFAULT,
+      label: `${workflow.workflowCount} ${_t(
+        `workflow` + (workflow.workflowCount > 1 ? 's' : '')
+      )}`
+    }
+  }
   return null
 }
 
@@ -90,13 +94,26 @@ export function formatLibraryObject(
   WorkflowCardWrapperPropsType,
   | 'uuid'
   | 'title'
-  | 'description'
+  | 'ownerName'
   | 'chips'
   | 'type'
   | 'isFavorite'
   | 'isLinked'
+  | 'isArchived'
+  | 'permissions'
+  | 'projectUuid'
+  | 'projectIsArchived'
 > {
-  const { uuid, title, description, isFavorite } = libraryObject
+  const {
+    uuid,
+    title,
+    ownerName,
+    isFavorite,
+    isArchived,
+    permissions,
+    projectUuid,
+    projectIsArchived
+  } = libraryObject
 
   const typeChip = getTypeChip(libraryObject)
   const templateChip = getTemplateChip(libraryObject)
@@ -105,8 +122,12 @@ export function formatLibraryObject(
   return {
     uuid,
     title,
-    description,
+    ownerName,
     isFavorite,
+    isArchived,
+    permissions,
+    projectUuid,
+    projectIsArchived,
     // TODO: figure out where this comes from
     // isLinked: libraryObject.isLinked,
     isLinked: false,

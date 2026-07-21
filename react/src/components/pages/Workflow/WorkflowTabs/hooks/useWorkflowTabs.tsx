@@ -66,7 +66,7 @@ const useWorkflowTabs = (
         label={item.label}
         value={item.type}
         onClick={() => {
-          const path = generatePath(item.route, { uuid })
+          const path = generatePath(item.route, { uuid: uuid ?? '' })
           navigate(path)
         }}
       />

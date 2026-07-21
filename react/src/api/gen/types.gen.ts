@@ -15,6 +15,51 @@ export type HealthResponse = {
 }
 
 /**
+ * AccountRole
+ *
+ * Canonical Django ``auth.Group`` names for account-level roles.
+ */
+export enum AccountRole {
+  ADMIN = 'admin',
+  TEACHER = 'teacher',
+  STUDENT = 'student'
+}
+
+/**
+ * DisciplineOption
+ */
+export type DisciplineOption = {
+  /**
+   * Id
+   */
+  id: number
+  /**
+   * Title
+   */
+  title: string
+}
+
+/**
+ * PermissionContextOut
+ */
+export type PermissionContextOut = {
+  accountRole: AccountRole | null
+  resourceRole: ResourceRole | null
+  /**
+   * State
+   */
+  state: string
+  /**
+   * Actions
+   */
+  actions: Array<ProjectPermission | WorkflowPermission>
+  /**
+   * Adminoverride
+   */
+  adminOverride: boolean
+}
+
+/**
  * ProjectDetailOut
  *
  * Single project resource with minimal child workflow list metadata.
@@ -37,6 +82,10 @@ export type ProjectDetailOut = {
    */
   isPublished: boolean
   /**
+   * Isarchived
+   */
+  isArchived: boolean
+  /**
    * Istemplate
    */
   isTemplate: boolean
@@ -57,9 +106,28 @@ export type ProjectDetailOut = {
    */
   modifiedOn: string
   /**
+   * Disciplines
+   */
+  disciplines?: Array<DisciplineOption>
+  /**
    * Workflows
    */
   workflows?: Array<ProjectWorkflowListItemOut>
+  permissions: PermissionContextOut
+}
+
+/**
+ * ProjectPermission
+ */
+export enum ProjectPermission {
+  VIEW = 'view',
+  EDIT_PROJECT = 'edit_project',
+  MANAGE_MEMBERS = 'manage_members',
+  CREATE_WORKFLOW = 'create_workflow',
+  ARCHIVE_PROJECT = 'archive_project',
+  RESTORE_PROJECT = 'restore_project',
+  DELETE_PROJECT = 'delete_project',
+  PUBLISH_PROJECT = 'publish_project'
 }
 
 /**
@@ -80,9 +148,48 @@ export type ProjectWorkflowListItemOut = {
   description: string
   workflowType: WorkflowType
   /**
+   * Isarchived
+   */
+  isArchived: boolean
+  /**
    * Isfavorite
    */
   isFavorite: boolean
+  permissions: PermissionContextOut
+}
+
+/**
+ * ResourceRole
+ */
+export enum ResourceRole {
+  OWNER = 'owner',
+  EDITOR = 'editor',
+  COMMENTER = 'commenter',
+  VIEWER = 'viewer',
+  PUBLIC = 'public'
+}
+
+/**
+ * WorkflowPermission
+ */
+export enum WorkflowPermission {
+  VIEW = 'view',
+  EDIT_ATTRIBUTES = 'edit_attributes',
+  ARCHIVE = 'archive',
+  RESTORE = 'restore',
+  DELETE_PERMANENTLY = 'delete_permanently',
+  EXPORT = 'export',
+  COPY = 'copy',
+  IMPORT_NODES = 'import_nodes',
+  IMPORT_OUTCOMES = 'import_outcomes',
+  NODE_MANAGEMENT = 'node_management',
+  PART_MANAGEMENT = 'part_management',
+  NODE_CATEGORY_MANAGEMENT = 'node_category_management',
+  NODE_LINK_MANAGEMENT = 'node_link_management',
+  OUTCOME_MANAGEMENT = 'outcome_management',
+  COMMENT = 'comment',
+  DELETE_OWN_COMMENT = 'delete_own_comment',
+  ASSIGN_OUTCOMES = 'assign_outcomes'
 }
 
 /**
@@ -108,7 +215,7 @@ export type ProjectCreateIn = {
   /**
    * Description
    */
-  description?: string
+  description?: string | null
   /**
    * Ispublished
    */
@@ -117,6 +224,10 @@ export type ProjectCreateIn = {
    * Istemplate
    */
   isTemplate?: boolean
+  /**
+   * Disciplines
+   */
+  disciplines: Array<number>
 }
 
 /**
@@ -142,6 +253,10 @@ export type ProjectListItemOut = {
    */
   isPublished: boolean
   /**
+   * Isarchived
+   */
+  isArchived: boolean
+  /**
    * Istemplate
    */
   isTemplate: boolean
@@ -149,6 +264,7 @@ export type ProjectListItemOut = {
    * Modifiedon
    */
   modifiedOn: string
+  permissions: PermissionContextOut
 }
 
 /**
@@ -195,6 +311,10 @@ export type ProjectGraphViewOut = {
    */
   isPublished: boolean
   /**
+   * Isarchived
+   */
+  isArchived: boolean
+  /**
    * Istemplate
    */
   isTemplate: boolean
@@ -214,6 +334,7 @@ export type ProjectGraphViewOut = {
    * Graphuuids
    */
   graphUuids: Array<string>
+  permissions: PermissionContextOut
 }
 
 /**
@@ -358,6 +479,10 @@ export type ProjectUpdateIn = {
    * Istemplate
    */
   isTemplate?: boolean | null
+  /**
+   * Disciplines
+   */
+  disciplines: Array<number>
 }
 
 /**
@@ -380,6 +505,7 @@ export type WorkflowDetailOut = {
    * Description
    */
   description: string
+  overviewMetadata: WorkflowOverviewMetadataOut
   workflowType: WorkflowType
   /**
    * Authorid
@@ -389,6 +515,10 @@ export type WorkflowDetailOut = {
    * Projectuuid
    */
   projectUuid: string | null
+  /**
+   * Isarchived
+   */
+  isArchived: boolean
   /**
    * Revisionid
    */
@@ -401,6 +531,66 @@ export type WorkflowDetailOut = {
    * Modifiedon
    */
   modifiedOn: string
+  permissions: PermissionContextOut
+  projectPermissions: PermissionContextOut | null
+}
+
+/**
+ * WorkflowOverviewMetadataOut
+ */
+export type WorkflowOverviewMetadataOut = {
+  /**
+   * Code
+   */
+  code?: string
+  /**
+   * Calculatetimeautomatically
+   */
+  calculateTimeAutomatically?: boolean
+  /**
+   * Time
+   */
+  time?: number | null
+  /**
+   * Timeunits
+   */
+  timeUnits?: number | null
+  /**
+   * Calculateponderationautomatically
+   */
+  calculatePonderationAutomatically?: boolean
+  /**
+   * Theorytime
+   */
+  theoryTime?: number | null
+  /**
+   * Practicaltime
+   */
+  practicalTime?: number | null
+  /**
+   * Individualtime
+   */
+  individualTime?: number | null
+  /**
+   * Calculatecreditsautomatically
+   */
+  calculateCreditsAutomatically?: boolean
+  /**
+   * Credits
+   */
+  credits?: number | null
+  /**
+   * Calculateclassificationautomatically
+   */
+  calculateClassificationAutomatically?: boolean
+  /**
+   * Generaltime
+   */
+  generalTime?: number | null
+  /**
+   * Specifictime
+   */
+  specificTime?: number | null
 }
 
 /**
@@ -464,6 +654,10 @@ export type WorkflowListItemOut = {
    */
   workflowType: string
   /**
+   * Isarchived
+   */
+  isArchived: boolean
+  /**
    * Revisionid
    */
   revisionId: number
@@ -471,6 +665,8 @@ export type WorkflowListItemOut = {
    * Modifiedon
    */
   modifiedOn: string
+  permissions: PermissionContextOut
+  projectPermissions: PermissionContextOut | null
 }
 
 /**
@@ -495,10 +691,84 @@ export type WorkflowListOut = {
 }
 
 /**
+ * WorkflowCopyIn
+ *
+ * Copy an existing workflow into an eligible destination project.
+ */
+export type WorkflowCopyIn = {
+  /**
+   * Projectuuid
+   */
+  projectUuid: string
+  /**
+   * Title
+   */
+  title: string
+}
+
+/**
  * WorkflowDetailOutResp
  */
 export type WorkflowDetailOutResp = {
   item: WorkflowDetailOut
+}
+
+/**
+ * WorkflowOverviewMetadataIn
+ */
+export type WorkflowOverviewMetadataIn = {
+  /**
+   * Code
+   */
+  code?: string | null
+  /**
+   * Calculatetimeautomatically
+   */
+  calculateTimeAutomatically?: boolean | null
+  /**
+   * Time
+   */
+  time?: number | null
+  /**
+   * Timeunits
+   */
+  timeUnits?: number | null
+  /**
+   * Calculateponderationautomatically
+   */
+  calculatePonderationAutomatically?: boolean | null
+  /**
+   * Theorytime
+   */
+  theoryTime?: number | null
+  /**
+   * Practicaltime
+   */
+  practicalTime?: number | null
+  /**
+   * Individualtime
+   */
+  individualTime?: number | null
+  /**
+   * Calculatecreditsautomatically
+   */
+  calculateCreditsAutomatically?: boolean | null
+  /**
+   * Credits
+   */
+  credits?: number | null
+  /**
+   * Calculateclassificationautomatically
+   */
+  calculateClassificationAutomatically?: boolean | null
+  /**
+   * Generaltime
+   */
+  generalTime?: number | null
+  /**
+   * Specifictime
+   */
+  specificTime?: number | null
 }
 
 /**
@@ -517,6 +787,21 @@ export type WorkflowUpdateIn = {
    * Description
    */
   description?: string | null
+  overviewMetadata?: WorkflowOverviewMetadataIn | null
+}
+
+/**
+ * WorkflowRelatedOut
+ */
+export type WorkflowRelatedOut = {
+  /**
+   * Contains
+   */
+  contains: Array<WorkflowListItemOut>
+  /**
+   * Appearsin
+   */
+  appearsIn: Array<WorkflowListItemOut>
 }
 
 /**
@@ -668,6 +953,8 @@ export type GraphViewOut = {
    * Threadcommentcounts
    */
   threadCommentCounts?: Array<ThreadCommentCountOut>
+  permissions: PermissionContextOut
+  projectPermissions: PermissionContextOut | null
 }
 
 /**
@@ -847,6 +1134,10 @@ export type GraphDetailOut = {
    */
   workflowProjectId: number | null
   /**
+   * Isarchived
+   */
+  isArchived: boolean
+  /**
    * Revisionid
    */
   revisionId: number
@@ -858,6 +1149,7 @@ export type GraphDetailOut = {
    * Modifiedon
    */
   modifiedOn: string
+  permissions: PermissionContextOut
 }
 
 /**
@@ -1909,7 +2201,7 @@ export type CommentCreateIn = {
 /**
  * ThreadCommentsBulkDeleteOut
  *
- * Response for DELETE /thread/{uuid}/comments (delete all).
+ * Response for deleting all comments authored by the current actor.
  */
 export type ThreadCommentsBulkDeleteOut = {
   /**
@@ -1942,6 +2234,16 @@ export type LoginOut = {
 }
 
 /**
+ * UserMeta
+ */
+export type UserMeta = {
+  /**
+   * Ownsanyproject
+   */
+  ownsAnyProject: boolean
+}
+
+/**
  * UserSummaryOut
  */
 export type UserSummaryOut = {
@@ -1961,6 +2263,8 @@ export type UserSummaryOut = {
    * Lastname
    */
   lastName: string
+  accountRole: AccountRole | null
+  meta: UserMeta | null
 }
 
 /**
@@ -2015,13 +2319,6 @@ export type LogoutOut = {
    * Success
    */
   success: boolean
-}
-
-/**
- * UserSummaryOutResp
- */
-export type UserSummaryOutResp = {
-  item: UserSummaryOut
 }
 
 /**
@@ -2299,6 +2596,10 @@ export type LibraryAppliedFiltersOut = {
    */
   isFavorite?: boolean | null
   /**
+   * Includepublishedfavorites
+   */
+  includePublishedFavorites?: boolean | null
+  /**
    * Isarchived
    */
   isArchived?: boolean | null
@@ -2306,6 +2607,10 @@ export type LibraryAppliedFiltersOut = {
    * Istemplate
    */
   isTemplate?: boolean | null
+  /**
+   * Cancreateworkflow
+   */
+  canCreateWorkflow?: boolean | null
 }
 
 /**
@@ -2364,6 +2669,14 @@ export type LibraryItemOut = {
    */
   description: string
   /**
+   * Ownername
+   */
+  ownerName: string | null
+  /**
+   * Workflowcount
+   */
+  workflowCount: number | null
+  /**
    * Datecreated
    */
   dateCreated: string
@@ -2383,6 +2696,15 @@ export type LibraryItemOut = {
    * Isfavorite
    */
   isFavorite: boolean
+  /**
+   * Projectuuid
+   */
+  projectUuid?: string | null
+  /**
+   * Projectisarchived
+   */
+  projectIsArchived?: boolean | null
+  permissions: PermissionContextOut
 }
 
 /**
@@ -2457,6 +2779,12 @@ export type LibraryFiltersIn = {
    */
   isFavorite?: boolean | null
   /**
+   * Includepublishedfavorites
+   *
+   * Include the actor's favourited published resources when the actor has no contributor role. Requires isFavorite=true.
+   */
+  includePublishedFavorites?: boolean | null
+  /**
    * Isarchived
    */
   isArchived?: boolean | null
@@ -2464,6 +2792,12 @@ export type LibraryFiltersIn = {
    * Istemplate
    */
   isTemplate?: boolean | null
+  /**
+   * Cancreateworkflow
+   *
+   * Limit project results to projects where the actor is the owner or an editor and may create workflows.
+   */
+  canCreateWorkflow?: boolean | null
 }
 
 /**
@@ -2539,7 +2873,7 @@ export type LibraryFavoriteIn = {
   /**
    * Uuid
    */
-  uuid?: string | null
+  uuid: string
 }
 
 export type CourseFlowApiNinjaAppHealthData = {
@@ -2798,6 +3132,50 @@ export type UpdateProjectResponses = {
 export type UpdateProjectResponse =
   UpdateProjectResponses[keyof UpdateProjectResponses]
 
+export type ArchiveProjectData = {
+  body?: never
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/project/{uuid}/archive'
+}
+
+export type ArchiveProjectResponses = {
+  /**
+   * OK
+   */
+  200: SuccessOut
+}
+
+export type ArchiveProjectResponse =
+  ArchiveProjectResponses[keyof ArchiveProjectResponses]
+
+export type RestoreProjectData = {
+  body?: never
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/project/{uuid}/restore'
+}
+
+export type RestoreProjectResponses = {
+  /**
+   * OK
+   */
+  200: SuccessOut
+}
+
+export type RestoreProjectResponse =
+  RestoreProjectResponses[keyof RestoreProjectResponses]
+
 export type ListWorkflowsData = {
   body?: never
   path?: never
@@ -2831,6 +3209,50 @@ export type CreateWorkflowResponses = {
 
 export type CreateWorkflowResponse =
   CreateWorkflowResponses[keyof CreateWorkflowResponses]
+
+export type CopyWorkflowData = {
+  body: WorkflowCopyIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/workflow/{uuid}/copy'
+}
+
+export type CopyWorkflowResponses = {
+  /**
+   * OK
+   */
+  200: WorkflowDetailOut
+}
+
+export type CopyWorkflowResponse =
+  CopyWorkflowResponses[keyof CopyWorkflowResponses]
+
+export type DeleteWorkflowPermanentlyData = {
+  body?: never
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/workflow/{uuid}'
+}
+
+export type DeleteWorkflowPermanentlyResponses = {
+  /**
+   * OK
+   */
+  200: SuccessOut
+}
+
+export type DeleteWorkflowPermanentlyResponse =
+  DeleteWorkflowPermanentlyResponses[keyof DeleteWorkflowPermanentlyResponses]
 
 export type GetWorkflowData = {
   body?: never
@@ -2875,6 +3297,72 @@ export type UpdateWorkflowResponses = {
 
 export type UpdateWorkflowResponse =
   UpdateWorkflowResponses[keyof UpdateWorkflowResponses]
+
+export type ArchiveWorkflowData = {
+  body?: never
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/workflow/{uuid}/archive'
+}
+
+export type ArchiveWorkflowResponses = {
+  /**
+   * OK
+   */
+  200: SuccessOut
+}
+
+export type ArchiveWorkflowResponse =
+  ArchiveWorkflowResponses[keyof ArchiveWorkflowResponses]
+
+export type RestoreWorkflowData = {
+  body?: never
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/workflow/{uuid}/restore'
+}
+
+export type RestoreWorkflowResponses = {
+  /**
+   * OK
+   */
+  200: SuccessOut
+}
+
+export type RestoreWorkflowResponse =
+  RestoreWorkflowResponses[keyof RestoreWorkflowResponses]
+
+export type GetRelatedWorkflowsData = {
+  body?: never
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/workflow/{uuid}/related'
+}
+
+export type GetRelatedWorkflowsResponses = {
+  /**
+   * OK
+   */
+  200: WorkflowRelatedOut
+}
+
+export type GetRelatedWorkflowsResponse =
+  GetRelatedWorkflowsResponses[keyof GetRelatedWorkflowsResponses]
 
 export type GetGraphViewData = {
   body?: never
@@ -3872,7 +4360,7 @@ export type MeResponses = {
   /**
    * OK
    */
-  200: UserSummaryOutResp
+  200: UserSummaryOut
 }
 
 export type MeResponse = MeResponses[keyof MeResponses]

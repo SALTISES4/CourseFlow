@@ -18,13 +18,10 @@ export const PROFILE_SETTINGS_FORBIDDEN_LABEL_CASING = [
   'Last Name',
   'Language Preferences',
 ] as const;
-export const PROFILE_SETTINGS_REQUIRED_FIELD_LABELS = [
-  PROFILE_SETTINGS_VISIBLE_LABELS.firstName,
-  PROFILE_SETTINGS_VISIBLE_LABELS.lastName,
-] as const;
 export const PROFILE_SETTINGS_SNACKBAR_MESSAGES = {
   success: 'Your profile settings have been updated',
-  failure: 'We encountered an issue and your profile settings have not been updated',
+  failure:
+    'We encountered an issue and your profile settings have not been updated',
 } as const;
 export const PROFILE_FIELD_VALIDATION_MESSAGES = {
   firstNameRequired: 'First name is required',
@@ -34,6 +31,13 @@ export const PROFILE_FIELD_VALIDATION_MESSAGES = {
 } as const;
 export const PROFILE_SETTINGS_API_ROUTE = '**/api/user/me/profile-settings';
 export const NOTIFICATIONS_SETTINGS_TITLE = 'Notification settings';
+export const NOTIFICATIONS_SETTINGS_API_ROUTE =
+  '**/api/user/me/notification-settings';
+export const NOTIFICATIONS_SETTINGS_SNACKBAR_MESSAGES = {
+  success: 'Your notification settings have been updated',
+  failure:
+    'We encountered an issue and your notification settings were not updated',
+} as const;
 export const PASSWORD_RESET_TITLE = 'Password reset';
 export const PASSWORD_NEW_PASSWORD_GUIDELINES =
   'Your password must contain at least 12 characters and include a mix of numbers, letters and symbols';
@@ -50,30 +54,39 @@ export const PASSWORD_RESET_SNACKBAR_MESSAGES = {
   failure: 'We encountered an issue and your password was not reset',
 } as const;
 export const PASSWORD_RESET_API_ROUTE = '**/api/user/me/password-reset';
-export const PRODUCT_UPDATES_TOGGLE_LABEL = 'I want to receive product updates emails';
+export const PRODUCT_UPDATES_TOGGLE_LABEL =
+  'I want to receive product updates emails';
 
 export function profileSettingsTitle(page: Page): Locator {
-  return page.getByRole('heading', { name: PROFILE_SETTINGS_TITLE, exact: true });
+  return page.getByRole('heading', {
+    name: PROFILE_SETTINGS_TITLE,
+    exact: true,
+  });
 }
 
 export function profileSettingsForm(page: Page): Locator {
-  return page.locator('form').filter({ has: page.getByRole('button', { name: 'Update profile' }) });
+  return page
+    .locator('form')
+    .filter({ has: page.getByRole('button', { name: 'Update profile' }) });
 }
 
 export function profileUsernameField(page: Page): Locator {
-  return profileSettingsForm(page).getByLabel(PROFILE_SETTINGS_VISIBLE_LABELS.emailUsername, {
+  return profileSettingsForm(page).getByRole('textbox', {
+    name: PROFILE_SETTINGS_VISIBLE_LABELS.emailUsername,
     exact: true,
   });
 }
 
 export function profileFirstNameField(page: Page): Locator {
-  return profileSettingsForm(page).getByLabel(PROFILE_SETTINGS_VISIBLE_LABELS.firstName, {
+  return profileSettingsForm(page).getByRole('textbox', {
+    name: PROFILE_SETTINGS_VISIBLE_LABELS.firstName,
     exact: true,
   });
 }
 
 export function profileLastNameField(page: Page): Locator {
-  return profileSettingsForm(page).getByLabel(PROFILE_SETTINGS_VISIBLE_LABELS.lastName, {
+  return profileSettingsForm(page).getByRole('textbox', {
+    name: PROFILE_SETTINGS_VISIBLE_LABELS.lastName,
     exact: true,
   });
 }
@@ -86,19 +99,13 @@ export function profileLanguagePreferenceGroup(page: Page): Locator {
 }
 
 /** Visible label or legend text on profileSettingsForm (not accessibility-name inference). */
-export function profileSettingsVisibleLabel(page: Page, label: string): Locator {
-  return profileSettingsForm(page).locator('label, legend').filter({ hasText: label });
-}
-
-/** FR-PROFILE-001 / FR-PROFILE-003 — required fields show sentence-case label with mandatory asterisk. */
-export function profileSettingsRequiredFieldLabel(page: Page, label: string): Locator {
-  return profileSettingsForm(page).locator('label, legend').filter({
-    hasText: new RegExp(`^${escapeRegExp(label)} \\*$`),
-  });
-}
-
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+export function profileSettingsVisibleLabel(
+  page: Page,
+  label: string,
+): Locator {
+  return profileSettingsForm(page)
+    .locator('label, legend')
+    .filter({ hasText: label });
 }
 
 export function profileLanguageOptionEnglish(page: Page): Locator {
@@ -113,7 +120,10 @@ export function profileUpdateButton(page: Page): Locator {
   return page.getByRole('button', { name: 'Update profile', exact: true });
 }
 
-export function profileFieldValidationMessage(page: Page, message: string): Locator {
+export function profileFieldValidationMessage(
+  page: Page,
+  message: string,
+): Locator {
   return profileSettingsForm(page).getByText(message, { exact: true });
 }
 
@@ -122,21 +132,21 @@ export function passwordResetTitle(page: Page): Locator {
 }
 
 export function passwordResetForm(page: Page): Locator {
-  return page
-    .locator('form')
-    .filter({ has: page.getByRole('button', { name: 'Reset password', exact: true }) });
+  return page.locator('form').filter({
+    has: page.getByRole('button', { name: 'Reset password', exact: true }),
+  });
 }
 
 export function currentPasswordField(page: Page): Locator {
-  return page.getByLabel('Current password', { exact: true });
+  return page.getByLabel(/^Current password/);
 }
 
 export function newPasswordField(page: Page): Locator {
-  return page.getByLabel('New password', { exact: true });
+  return page.getByLabel(/^New password/);
 }
 
 export function confirmNewPasswordField(page: Page): Locator {
-  return page.getByLabel('Confirm new password', { exact: true });
+  return page.getByLabel(/^Confirm new password/);
 }
 
 export function passwordNewPasswordGuidelines(page: Page): Locator {
@@ -147,16 +157,24 @@ export function passwordResetSubmitButton(page: Page): Locator {
   return page.getByRole('button', { name: 'Reset password', exact: true });
 }
 
-export function passwordResetFieldValidationMessage(page: Page, message: string): Locator {
+export function passwordResetFieldValidationMessage(
+  page: Page,
+  message: string,
+): Locator {
   return passwordResetForm(page).getByText(message, { exact: true });
 }
 
 export function notificationsSettingsTitle(page: Page): Locator {
-  return page.getByRole('heading', { name: NOTIFICATIONS_SETTINGS_TITLE, exact: true });
+  return page.getByRole('heading', {
+    name: NOTIFICATIONS_SETTINGS_TITLE,
+    exact: true,
+  });
 }
 
 export function notificationsSettingsForm(page: Page): Locator {
-  return page.locator('form').filter({ has: page.getByRole('checkbox', { name: PRODUCT_UPDATES_TOGGLE_LABEL }) });
+  return page.locator('form').filter({
+    has: page.getByRole('checkbox', { name: PRODUCT_UPDATES_TOGGLE_LABEL }),
+  });
 }
 
 export function productUpdatesToggle(page: Page): Locator {
@@ -165,19 +183,29 @@ export function productUpdatesToggle(page: Page): Locator {
 
 export { globalMessageSnackbar } from '../../shared/locators/global';
 
-export async function waitForPasswordResetPageLoaded(page: Page): Promise<void> {
-  await expect(page.locator('.load-screen')).toHaveCount(0, { timeout: 15_000 });
+export async function waitForPasswordResetPageLoaded(
+  page: Page,
+): Promise<void> {
+  await expect(page.locator('.load-screen')).toHaveCount(0, {
+    timeout: 15_000,
+  });
   await expect(passwordResetTitle(page)).toBeVisible({ timeout: 15_000 });
   await expect(passwordResetForm(page)).toBeVisible();
 }
 
 export async function waitForProfileSettingsLoaded(page: Page): Promise<void> {
-  await expect(page.locator('.load-screen')).toHaveCount(0, { timeout: 15_000 });
+  await expect(page.locator('.load-screen')).toHaveCount(0, {
+    timeout: 15_000,
+  });
   await expect(profileSettingsTitle(page)).toBeVisible({ timeout: 15_000 });
   await expect(profileSettingsForm(page)).toBeVisible();
 }
 
-export async function waitForNotificationsSettingsLoaded(page: Page): Promise<void> {
-  await expect(notificationsSettingsTitle(page)).toBeVisible({ timeout: 15_000 });
+export async function waitForNotificationsSettingsLoaded(
+  page: Page,
+): Promise<void> {
+  await expect(notificationsSettingsTitle(page)).toBeVisible({
+    timeout: 15_000,
+  });
   await expect(productUpdatesToggle(page)).toBeVisible();
 }

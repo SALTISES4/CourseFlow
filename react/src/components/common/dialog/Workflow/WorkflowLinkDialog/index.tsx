@@ -32,7 +32,7 @@ import { useDispatch, useSelector } from 'react-redux'
 type StateType = {
   selected: string | null
   workflowData: LibraryItemOut[] | null
-  filteredWorkflows: LibraryItemOut[]
+  filteredWorkflows: LibraryItemOut[] | null
   loading: boolean
   loadError: boolean
 }
@@ -64,7 +64,7 @@ function NodeLinkWorkflowDialog() {
   const { selected, workflowData, filteredWorkflows, loading, loadError } =
     state
   const filteredResults = formatLibraryObjects(
-    filteredWorkflows ?? workflowData
+    filteredWorkflows ?? workflowData ?? []
   )
 
   const onDialogClose = useCallback(() => {

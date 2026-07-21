@@ -1,9 +1,11 @@
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { WorkflowPermission } from '@cf/api/gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { GraphUuid } from '@cf/features/graph/state/model/types'
 import { moveOutcome } from '@cf/features/graph/state/thunks/outcomeMutations.thunks'
+import type { AppDispatch } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import { ReactNode, useEffect, useRef, useState } from 'react'
-import type { AppDispatch } from '@cf/redux/store'
 import { useDispatch } from 'react-redux'
 
 import * as Styled from '../styles'
@@ -22,6 +24,9 @@ const GroupDropzone = ({
   hasChildren: boolean
 }) => {
   const dispatch = useDispatch<AppDispatch>()
+  const canManageOutcomes = useResourcePermission(
+    WorkflowPermission.OUTCOME_MANAGEMENT
+  )
   const dropRef = useRef<HTMLDivElement>(null)
   const [draggingOver, setDraggingOver] = useState(false)
 
@@ -29,7 +34,7 @@ const GroupDropzone = ({
 
   useEffect(() => {
     const el = dropRef.current
-    if (!el || uuid === null) {
+    if (!el || uuid === null || !canManageOutcomes) {
       return
     }
 
@@ -57,7 +62,7 @@ const GroupDropzone = ({
         setDraggingOver(false)
       }
     })
-  }, [dispatch, graphUuid, hasChildren, level, uuid])
+  }, [canManageOutcomes, dispatch, graphUuid, hasChildren, level, uuid])
 
   return (
     <Styled.GroupDropzone ref={dropRef} highlight={highlight}>

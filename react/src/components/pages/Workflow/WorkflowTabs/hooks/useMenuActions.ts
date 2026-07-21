@@ -1,10 +1,19 @@
 import { WorkflowType } from '@cf/api/gen'
+import { deleteWorkflowPermanentlyMutation } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
+import { useMutation } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 
 export const useMenuActions = () => {
   const { dispatch: dispatchDialog } = useDialog()
+  const navigate = useNavigate()
+  const { onError, onSuccess } = useGenericMsgHandler()
+  const deleteWorkflow = useMutation({
+    ...deleteWorkflowPermanentlyMutation()
+  })
 
   /*******************************************************
    * MENU HANDLERS
@@ -45,16 +54,24 @@ export const useMenuActions = () => {
    * TO PROCESS
    *******************************************************/
 
-  function deleteWorkflowHard(projectId: string, workflowId: string) {
+  async function deleteWorkflowHard(workflowId: string) {
+    if (!workflowId) {
+      return
+    }
     if (
       window.confirm(
         _t('Are you sure you want to permanently delete this workflow?')
       )
     ) {
-      console.log('TODO: delete workflow', { projectId, workflowId })
-      // deleteSelfQueryLegacy(workflowId, CfObjectType.WORKFLOW, false, () => {
-      //   window.location.href = 'path to wherever you go after deletion'
-      // })
+      try {
+        const response = await deleteWorkflow.mutateAsync({
+          path: { uuid: workflowId }
+        })
+        onSuccess(response)
+        navigate('/library')
+      } catch (error) {
+        onError(error)
+      }
     }
   }
 

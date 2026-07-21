@@ -13,7 +13,6 @@ from course_flow.core.models import (
     Channel,
     Comment,
     Graph,
-    Node,
     Section,
     Thread,
 )
@@ -89,7 +88,12 @@ def test_graph_view_top_level_shape_and_flat_collections(client: Client, user):
         "edges",
         "outcomes",
         "threadCommentCounts",
+        "permissions",
+        "projectPermissions",
     }
+    assert body["permissions"]["resourceRole"] == "owner"
+    assert "view" in body["permissions"]["actions"]
+    assert body["projectPermissions"] is None
     assert isinstance(body["channels"], list)
     assert isinstance(body["sections"], list)
     assert isinstance(body["nodes"], list)
@@ -231,7 +235,7 @@ def test_graph_view_program_course_node_typed_meta_shape(client: Client, user):
 
 
 @pytest.mark.django_db
-def test_graph_view_allows_non_owner_with_placeholder_permissions(
+def test_graph_view_denies_non_contributor(
     client: Client, user, other_user
 ):
     raw_owner = _issue_token_for(user)
@@ -242,4 +246,4 @@ def test_graph_view_allows_non_owner_with_placeholder_permissions(
         f"/api/graph/{workflow_uuid}/view",
         **_auth_header(raw_other),
     )
-    assert response.status_code == 200
+    assert response.status_code == 403

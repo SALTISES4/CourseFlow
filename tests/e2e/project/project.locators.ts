@@ -56,8 +56,12 @@ export const PROJECT_EDIT_SNACKBAR_MESSAGES = {
   failure: 'We encountered an issue and your project was not updated',
 } as const;
 export const PROJECT_CREATE_API_ROUTE = '**/api/project';
-/** E2E seed contributor — editor on fixture project, not project owner (FR-PROJ-FORM-002). */
-export const E2E_CONTRIBUTOR_TEACHER_EMAIL = 'teacher@courseflow.com';
+/** Primary E2E actor — teacher account and owner of fixture projects. */
+export const E2E_PRIMARY_TEACHER_EMAIL = 'teacher@courseflow.com';
+/** Non-admin editor contributor on the primary fixture project. */
+export const E2E_CONTRIBUTOR_EDITOR_EMAIL = 'editor@courseflow.com';
+/** Non-admin commenter contributor on the primary fixture project. */
+export const E2E_CONTRIBUTOR_COMMENTER_EMAIL = 'commenter@courseflow.com';
 
 export const PROJECT_OVERVIEW_METADATA_LABELS = {
   description: 'Description',
@@ -153,10 +157,7 @@ export function projectMetadataFieldDisciplines(page: Page): Locator {
 
 /** Metadata info block containing a label and its displayed value. */
 export function projectMetadataBlock(page: Page, label: string): Locator {
-  return projectOverviewView(page)
-    .locator('div')
-    .filter({ has: page.getByText(label, { exact: true }) })
-    .first();
+  return projectOverviewView(page).getByText(label, { exact: true }).locator('..');
 }
 
 export function projectMetadataFieldCreatedOn(page: Page): Locator {
@@ -278,6 +279,36 @@ export function projectOverflowButton(page: Page): Locator {
 
 export function archiveProjectMenuItem(page: Page): Locator {
   return page.getByRole('menuitem', { name: 'Archive project', exact: true });
+}
+
+export const PROJECT_ARCHIVE_CONFIRMATION_MODAL_COPY = {
+  title: 'Archive project',
+  body: 'Once your project is archived, it cannot be opened from the workspace. You can restore it from your archived library items.',
+  cancelButton: 'Cancel',
+  confirmButton: 'Archive project',
+} as const;
+
+export function archiveProjectConfirmationModal(page: Page): Locator {
+  return page.getByRole('dialog').filter({
+    has: page.getByRole('heading', {
+      name: PROJECT_ARCHIVE_CONFIRMATION_MODAL_COPY.title,
+      exact: true,
+    }),
+  });
+}
+
+export function archiveProjectConfirmationModalCancelButton(page: Page): Locator {
+  return archiveProjectConfirmationModal(page).getByRole('button', {
+    name: PROJECT_ARCHIVE_CONFIRMATION_MODAL_COPY.cancelButton,
+    exact: true,
+  });
+}
+
+export function archiveProjectConfirmationModalConfirmButton(page: Page): Locator {
+  return archiveProjectConfirmationModal(page).getByRole('button', {
+    name: PROJECT_ARCHIVE_CONFIRMATION_MODAL_COPY.confirmButton,
+    exact: true,
+  });
 }
 
 export function publishProjectButton(page: Page): Locator {

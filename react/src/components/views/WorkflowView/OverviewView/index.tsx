@@ -1,21 +1,33 @@
-import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import {
+  getWorkflowOptions,
+  getWorkflowQueryKey,
+  updateWorkflowMutation
+} from '@cf/api/gen/@tanstack/react-query.gen'
+import type { WorkflowOverviewMetadataIn } from '@cf/api/gen/types.gen'
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { WorkspaceType } from '@cf/types/enum'
+import { SnackbarOptions } from '@cf/utility/constants'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { OuterContentWrap } from '@cfMUI/helper'
 import LinkIcon from '@mui/icons-material/Link'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { EUser } from '@XMLHTTP/types/entity'
+import { enqueueSnackbar } from 'notistack'
 import { useParams } from 'react-router-dom'
 
+import MetadataFields from './MetadataFields'
 import * as SC from './styles'
 import UserPermissions from './UserPermissions'
 
 const OverviewView = () => {
   const { uuid } = useParams()
   const workflowUuid = uuid ?? ''
+  const queryClient = useQueryClient()
+  const canEdit = useResourcePermission(WorkflowPermission.EDIT_ATTRIBUTES)
   const { data: workflowResp } = useQuery({
     ...getWorkflowOptions({ path: { uuid: workflowUuid } }),
     enabled: Boolean(workflowUuid)
@@ -31,16 +43,47 @@ const OverviewView = () => {
   }
 
   // @todo disciplines is missing from workflow data type
-  const disciplines = []
+  const disciplines: { title: string }[] = []
   const description = workflow?.description ?? ''
   const createdOn = workflow?.dateCreated
+  const updateMetadata = useMutation(updateWorkflowMutation())
+  const workflowQueryKey = getWorkflowQueryKey({
+    path: { uuid: workflowUuid }
+  })
+
+  const saveMetadata = async (updates: WorkflowOverviewMetadataIn) => {
+    try {
+      const response = await updateMetadata.mutateAsync({
+        path: { uuid: workflowUuid },
+        body: { overviewMetadata: updates }
+      })
+      queryClient.setQueryData(workflowQueryKey, response)
+    } catch (error) {
+      await queryClient.invalidateQueries({ queryKey: workflowQueryKey })
+      enqueueSnackbar(_t('Workflow metadata could not be saved'), {
+        variant: SnackbarOptions.ERROR
+      })
+      console.error('Failed to update workflow overview metadata:', error)
+    }
+  }
 
   return (
     <OuterContentWrap sx={{ pt: 4 }} data-test-id="workflow-overview-view">
-      {description && (
+      <SC.InfoBlock sx={{ mb: 3 }}>
+        <SC.InfoBlockTitle>{_t('Description')}</SC.InfoBlockTitle>
+        <SC.InfoBlockContent>{description || _t('-')}</SC.InfoBlockContent>
+      </SC.InfoBlock>
+
+      {workflow && (
         <SC.InfoBlock sx={{ mb: 3 }}>
-          <SC.InfoBlockTitle>{_t('Description')}</SC.InfoBlockTitle>
-          <SC.InfoBlockContent>{description}</SC.InfoBlockContent>
+          <SC.InfoBlockTitle sx={{ mb: 2 }}>{_t('Metadata')}</SC.InfoBlockTitle>
+          <MetadataFields
+            workflowType={workflow.workflowType}
+            metadata={workflow.overviewMetadata}
+            canEdit={canEdit}
+            isSaving={updateMetadata.isPending}
+            onSave={saveMetadata}
+          />
         </SC.InfoBlock>
       )}
 
@@ -50,7 +93,7 @@ const OverviewView = () => {
             <SC.InfoBlockTitle>{_t('Disciplines')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
               {disciplines.length
-                ? disciplines?.join(', ')
+                ? disciplines.map((d) => d.title).join(', ')
                 : _t('No disciplines found.')}
             </SC.InfoBlockContent>
           </SC.InfoBlock>
@@ -65,21 +108,15 @@ const OverviewView = () => {
         </Grid>
       </Grid>
 
-      <SC.InfoBlock sx={{ mt: 3 }}>
-        {
-          // no permissions on the workflow in v1
-          /* eslint-disable-next-line no-constant-binary-expression */
-          false && (
-            <>
-              <SC.InfoBlockTitle>{_t('Permissions')}</SC.InfoBlockTitle>
-              <UserPermissions
-                workspaceId={workflowUuid}
-                author={workflowAuthor}
-                workspaceType={WorkspaceType.WORKFLOW}
-              />
-            </>
-          )
-        }
+      <SC.InfoBlock sx={{ mt: 3 }} data-test-id="workflow-permissions-panel">
+        <SC.InfoBlockTitle>{_t('Permissions')}</SC.InfoBlockTitle>
+        <UserPermissions
+          workspaceId={workflowUuid}
+          author={workflowAuthor}
+          workspaceType={WorkspaceType.WORKFLOW}
+          projectUuid={workflow?.projectUuid}
+          readOnly
+        />
 
         <Stack
           direction="row"

@@ -6,10 +6,21 @@
  * - `auth`: Bearer token from `authToken` (single source with `getAuthFetchHeaders`)
  */
 import { getApiBaseUrl } from './apiBaseUrl'
+import { CourseFlowApiError } from './apiError'
 import { getAccessToken } from './authToken'
 import { client } from './gen/client.gen'
+import { requestWorkspaceAccessRecheck } from './workspaceAccessEvents'
 
 client.setConfig({
   baseUrl: getApiBaseUrl(),
   auth: () => getAccessToken() ?? undefined
+})
+
+client.interceptors.error.use((error, response, request) => {
+  if (response?.status === 403) {
+    requestWorkspaceAccessRecheck(request)
+  }
+  return error instanceof CourseFlowApiError
+    ? error
+    : new CourseFlowApiError(response?.status, error)
 })

@@ -10,11 +10,11 @@ import {
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
+import { isOutcomeLink } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { svglinkAllowDND } from '@cf/features/graph/state/slices/svglink.slice'
 import { linkNodeOutcome } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import type { AppDispatch } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
-import { isOutcomeLink } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { produce } from 'immer'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
@@ -39,7 +39,10 @@ type PropsType = Pick<
   | 'coordsY'
   | 'onDrop'
   | 'graphUuid'
->
+> & {
+  nodeManagementEnabled: boolean
+  outcomeAssignmentEnabled: boolean
+}
 
 function useCellNodeDnd({
   wrapRef,
@@ -49,7 +52,9 @@ function useCellNodeDnd({
   coordsSection,
   coordsX,
   coordsY,
-  onDrop
+  onDrop,
+  nodeManagementEnabled,
+  outcomeAssignmentEnabled
 }: PropsType) {
   const dispatch = useDispatch<AppDispatch>()
   const [state, setState] = useState<SateType>({
@@ -77,11 +82,11 @@ function useCellNodeDnd({
 
   useEffect(() => {
     const el = wrapRef.current
-    if (!el) {
+    if (!el || (!nodeManagementEnabled && !outcomeAssignmentEnabled)) {
       return
     }
 
-    return combine(
+    const registrations = [
       dropTargetForElements({
         element: el,
         getData: ({ input, element }) => {
@@ -116,7 +121,8 @@ function useCellNodeDnd({
           }
         },
         canDrop: ({ source }) =>
-          isOutcomeLink(source.data) || isGridCell(source.data),
+          (outcomeAssignmentEnabled && isOutcomeLink(source.data)) ||
+          (nodeManagementEnabled && isGridCell(source.data)),
         onDrop: ({ source, self }) => {
           const dropped = source.data
           if (isOutcomeLink(dropped)) {
@@ -146,38 +152,45 @@ function useCellNodeDnd({
 
           toggleState({ dropHighlight: false, closestEdge: null })
         }
-      }),
-      draggable({
-        element: el,
-        onGenerateDragPreview: ({ nativeSetDragImage }) => {
-          setCustomNativeDragPreview({
-            getOffset: pointerOutsideOfPreview({
-              x: '16px',
-              y: '10px'
-            }),
-            render({ container }) {
-              toggleState({ dragging: true, previewTarget: container })
-              // cleanup, docs?
-              // return () => {
-              //   return toggleState({ dragging: false, preview: null })
-              // }
-            },
-            nativeSetDragImage
-          })
-        },
-        getInitialData: (): CellDataType => ({
-          uuid: nodeId,
-          coords: {
-            section: coordsSection,
-            x: coordsX,
-            y: coordsY
-          },
-          type: DraggableType.CELL
-        }),
-        onDragStart: () => toggleState({ dragging: true }),
-        onDrop: () => toggleState({ dragging: false, previewTarget: null })
       })
-    )
+    ]
+
+    if (nodeManagementEnabled) {
+      registrations.push(
+        draggable({
+          element: el,
+          onGenerateDragPreview: ({ nativeSetDragImage }) => {
+            setCustomNativeDragPreview({
+              getOffset: pointerOutsideOfPreview({
+                x: '16px',
+                y: '10px'
+              }),
+              render({ container }) {
+                toggleState({ dragging: true, previewTarget: container })
+                // cleanup, docs?
+                // return () => {
+                //   return toggleState({ dragging: false, preview: null })
+                // }
+              },
+              nativeSetDragImage
+            })
+          },
+          getInitialData: (): CellDataType => ({
+            uuid: nodeId,
+            coords: {
+              section: coordsSection,
+              x: coordsX,
+              y: coordsY
+            },
+            type: DraggableType.CELL
+          }),
+          onDragStart: () => toggleState({ dragging: true }),
+          onDrop: () => toggleState({ dragging: false, previewTarget: null })
+        })
+      )
+    }
+
+    return combine(...registrations)
   }, [
     columnId,
     coordsSection,
@@ -186,7 +199,9 @@ function useCellNodeDnd({
     dispatch,
     graphUuid,
     nodeId,
+    nodeManagementEnabled,
     onDrop,
+    outcomeAssignmentEnabled,
     toggleState,
     wrapRef
   ])

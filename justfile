@@ -206,7 +206,7 @@ django-seed:
 [group: 'Django']
 django-wait-db:
   bash -lc 'for i in {1..60}; do \
-    uv run python -c "import psycopg; psycopg.connect(\"host=127.0.0.1 port=5433 dbname=courseflow user=courseflow password=courseflow\").close()" \
+    uv run python -c "import psycopg; psycopg.connect(\"host=127.0.0.1 port=5432 dbname=courseflow user=courseflow password=change-me\").close()" \
       && exit 0; \
     sleep 2; \
   done; echo "DB not ready"; exit 1'
@@ -318,6 +318,7 @@ typecheck:
 #########################################################
 # APPLE SCRIPTS
 #########################################################
+
 # launch iterm
 [group: 'Applescripts']
 iterm:
@@ -332,10 +333,11 @@ browsers:
 #  WORKFLOWS
 #########################################################
 
-# ----------------------------
+
+#########################################################
 # Initial project setup
 # You've just cloned the repo, what do you do next?
-# ----------------------------
+#########################################################
 
 # Initial project setup
 [group: 'Workflows']

@@ -1,8 +1,51 @@
 {
-  "fixture_version": 2,
-  "owner_email": "admin@courseflow.com",
+  "fixture_version": 3,
+  "primary_user": {
+    "email": "teacher@courseflow.com",
+    "password": "password",
+    "account_role": "teacher"
+  },
+  "owner_email": "teacher@courseflow.com",
   "project_uuid": "<generated-at-seed-time>",
   "project_title": "E2E FIXTURE - Edit Section",
+  "recent_projects": [
+    {
+      "uuid": "<generated-at-seed-time>",
+      "title": "E2E FIXTURE - Recent Project 1",
+      "modified_on": "<generated-at-seed-time>",
+      "is_archived": false
+    },
+    {
+      "uuid": "<generated-at-seed-time>",
+      "title": "E2E FIXTURE - Recent Project 2",
+      "modified_on": "<generated-at-seed-time>",
+      "is_archived": false
+    },
+    {
+      "uuid": "<generated-at-seed-time>",
+      "title": "E2E FIXTURE - Recent Project 3",
+      "modified_on": "<generated-at-seed-time>",
+      "is_archived": false
+    },
+    {
+      "uuid": "<generated-at-seed-time>",
+      "title": "E2E FIXTURE - Recent Project 4",
+      "modified_on": "<generated-at-seed-time>",
+      "is_archived": false
+    },
+    {
+      "uuid": "<generated-at-seed-time>",
+      "title": "E2E FIXTURE - Recent Project 5",
+      "modified_on": "<generated-at-seed-time>",
+      "is_archived": false
+    }
+  ],
+  "archived_home_project": {
+    "uuid": "<generated-at-seed-time>",
+    "title": "E2E FIXTURE - Archived Recent Project",
+    "modified_on": "<generated-at-seed-time>",
+    "is_archived": true
+  },
   "template_project_uuid": "<generated-at-seed-time>",
   "template_project_title": "E2E FIXTURE - Workflow Templates",
   "template_workflows": [
@@ -24,8 +67,13 @@
   ],
   "contributors": [
     {
-      "email": "teacher@courseflow.com",
+      "email": "editor@courseflow.com",
       "role": "editor",
+      "password": "password"
+    },
+    {
+      "email": "commenter@courseflow.com",
+      "role": "commenter",
       "password": "password"
     },
     {

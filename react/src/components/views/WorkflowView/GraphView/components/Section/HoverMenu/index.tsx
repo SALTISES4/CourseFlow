@@ -1,7 +1,10 @@
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
+import { selectThreadCommentCount } from '@cf/features/graph/state/selectors/threadCommentCounts.selectors'
 import { insertSectionBelow } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import type { AppDispatch } from '@cf/redux/store'
+import type { AppDispatch, RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
@@ -9,19 +12,25 @@ import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import { MouseEvent, useCallback } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 type PropsType = {
   graphUuid: string
   sectionId: string
   show: boolean
+  threadUuid: string | null
 }
 
 type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
 
-const HoverMenu = ({ graphUuid, sectionId, show }: PropsType) => {
+const HoverMenu = ({ graphUuid, sectionId, show, threadUuid }: PropsType) => {
   const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
+  const canEdit = useResourcePermission(WorkflowPermission.PART_MANAGEMENT)
+  const canComment = useResourcePermission(WorkflowPermission.COMMENT)
+  const commentCount = useSelector((state: RootState) =>
+    selectThreadCommentCount(state, threadUuid)
+  )
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {
@@ -76,27 +85,28 @@ const HoverMenu = ({ graphUuid, sectionId, show }: PropsType) => {
       data-test-id="workflow-section-hover-menu"
       show={show}
       items={[
-        {
+        canEdit && {
           label: 'Insert section below',
           icon: <AddCircleOutlineIcon />,
           onClick: onActionClick('insert')
         },
-        {
+        canEdit && {
           label: 'Duplicate section below',
           icon: <ContentCopyIcon />,
           onClick: onActionClick('duplicate')
         },
-        {
+        canEdit && {
           label: 'Delete section',
           icon: <DeleteOutlinedIcon />,
           onClick: onActionClick('delete')
         },
-        {
+        canComment && {
           label: 'Comments',
           icon: <CommentOutlinedIcon />,
+          showCommentsPresenceIndicator: commentCount > 0,
           onClick: onActionClick('comments')
         }
-      ]}
+      ].filter(Boolean)}
     />
   )
 }

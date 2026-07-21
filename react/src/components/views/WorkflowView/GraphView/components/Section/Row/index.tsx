@@ -1,3 +1,5 @@
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { RootState } from '@cf/redux/store'
 import { defaultColumnSettings } from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
@@ -10,14 +12,22 @@ import useRowDnd from './useRowDnd'
 import * as StyledWorkflow from '../../../styles'
 import SectionCell from '../Cell'
 import DropIndicator from '../Cell/DropIndicator'
+import InsertMenu from '../Cell/InsertMenu'
 import { SectionCellType } from '../Cell/types'
 import * as StyledSection from '../styles'
 
 const SectionRow = (props: SectionRowPropsType) => {
   const rowRef = useRef<HTMLDivElement>(null)
-  const dnd = useRowDnd({ ...props, rowRef })
-  const { sectionId, rowIndex, columnIds, columnColors, onNodeDrop, graphUuid } =
-    props
+  const canAddNodes = useResourcePermission(WorkflowPermission.NODE_MANAGEMENT)
+  const dnd = useRowDnd({ ...props, rowRef, enabled: canAddNodes })
+  const {
+    sectionId,
+    rowIndex,
+    columnIds,
+    columnColors,
+    onNodeDrop,
+    graphUuid
+  } = props
 
   const draggingCustomNode = dnd.dragId === '-1'
 
@@ -25,11 +35,13 @@ const SectionRow = (props: SectionRowPropsType) => {
     return (
       <StyledWorkflow.CellRow
         ref={rowRef}
+        data-test-id="workflow-section-row"
+        data-row-index={rowIndex}
         style={{
           minHeight: 120,
-          backgroundColor:
-            draggingCustomNode &&
-            alpha(defaultColumnSettings['new-column'].colour, 0.2)
+          backgroundColor: draggingCustomNode
+            ? alpha(defaultColumnSettings['new-column'].colour, 0.2)
+            : undefined
         }}
       >
         <SectionRowEmpty>
@@ -41,13 +53,18 @@ const SectionRow = (props: SectionRowPropsType) => {
               coordsX={index}
               coordsY={0}
               columnId={columnId}
-              highlight={dnd.dragId === columnId ? 'cell' : null}
+              highlight={dnd.dragId === columnId ? 'cell' : undefined}
               borderColor={columnColors[columnId]}
               onReorder={onNodeDrop}
               emptyRow
             />
           ))}
         </SectionRowEmpty>
+        <InsertMenu
+          anchorEl={dnd.pendingDrop ? rowRef.current : null}
+          onOption={dnd.chooseManualPlacement}
+          onClose={dnd.cancelManualPlacement}
+        />
       </StyledWorkflow.CellRow>
     )
   }
@@ -57,10 +74,12 @@ const SectionRow = (props: SectionRowPropsType) => {
   return (
     <StyledWorkflow.CellRow
       ref={rowRef}
+      data-test-id="workflow-section-row"
+      data-row-index={rowIndex}
       style={{
-        backgroundColor:
-          dnd.highlightRow &&
-          alpha(defaultColumnSettings['new-column'].colour, 0.2)
+        backgroundColor: dnd.highlightRow
+          ? alpha(defaultColumnSettings['new-column'].colour, 0.2)
+          : undefined
       }}
     >
       {columnIds.map((columnId, index) => {
@@ -76,7 +95,11 @@ const SectionRow = (props: SectionRowPropsType) => {
             graphUuid={graphUuid}
             columnId={columnId}
             borderColor={columnColors[columnId]}
-            highlight={dnd.dragId === columnId ? dnd.closestEdge : null}
+            highlight={
+              dnd.dragId === columnId
+                ? (dnd.closestEdge ?? undefined)
+                : undefined
+            }
             onReorder={onNodeDrop}
             onClick={onNodeClick}
           />
@@ -88,7 +111,7 @@ const SectionRow = (props: SectionRowPropsType) => {
             coordsX={index}
             coordsY={rowIndex}
             columnId={columnId}
-            highlight={dnd.dragId === columnId ? 'cell' : null}
+            highlight={dnd.dragId === columnId ? 'cell' : undefined}
             borderColor={columnColors[columnId]}
             onReorder={onNodeDrop}
           />
@@ -97,6 +120,11 @@ const SectionRow = (props: SectionRowPropsType) => {
       {dnd.highlightEdge && (
         <DropIndicator edge={dnd.highlightEdge} offset={-3} />
       )}
+      <InsertMenu
+        anchorEl={dnd.pendingDrop ? rowRef.current : null}
+        onOption={dnd.chooseManualPlacement}
+        onClose={dnd.cancelManualPlacement}
+      />
     </StyledWorkflow.CellRow>
   )
 }

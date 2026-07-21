@@ -1,4 +1,5 @@
 import { logoutRequest } from '@cf/api/auth'
+import { clearAccessToken } from '@cf/api/authToken'
 import { WorkflowTypeIn } from '@cf/api/gen'
 import { listMyNotificationsOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
@@ -36,7 +37,8 @@ const TopBar = () => {
 
   const handleLogout = useCallback(() => {
     logoutRequest().then(() => {
-      window.location.pathname = '/'
+      clearAccessToken()
+      window.location.pathname = '/login'
     })
   }, [])
 

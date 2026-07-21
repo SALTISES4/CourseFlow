@@ -101,7 +101,7 @@ cp .env.example .env
 Minimum `tests/.env`:
 
 ```bash
-TEST_USERNAME=admin@courseflow.com
+TEST_USERNAME=teacher@courseflow.com
 TEST_PASSWORD=password
 ```
 
@@ -113,10 +113,11 @@ Optional override:
 
 | Variable | Required for | Notes |
 | -------- | ------------ | ----- |
-| `TEST_USERNAME` | All authenticated specs | Must exist in `courseflow_e2e` (see `just django-create-superuser-e2e`) |
-| `TEST_PASSWORD` | All authenticated specs | Default `password` after E2E superuser recipe |
+| `TEST_USERNAME` | All authenticated specs | Primary actor is `teacher@courseflow.com`, created by `just django-seed-e2e-tests` |
+| `TEST_PASSWORD` | All authenticated specs | Default fixture password is `password` |
 | `PLAYWRIGHT_WORKFLOW_PATH` | Workflow E2E (optional override) | Loaded from manifest by default (`just e2e-prepare`) |
 | `PLAYWRIGHT_BASE_URL` | Optional | Default `http://localhost:3000/` in `playwright.config.ts` |
+| `PLAYWRIGHT_API_BASE_URL` | Optional | Django API origin for direct authenticated API helpers; defaults to `http://127.0.0.1:8000` |
 
 Root `.env` (`POSTGRES_DB=courseflow`) can stay unchanged for normal dev work.
 
@@ -235,7 +236,10 @@ yarn exec playwright test --headed e2e/smoke/authenticated-home.spec.ts
 | Field | Value |
 | ----- | ----- |
 | Project | `E2E FIXTURE - Edit Section` |
-| Owner | `admin@courseflow.com` |
+| Owner | `teacher@courseflow.com` |
+| Recent projects | Five ordered, non-archived projects for FR-HOME-003 |
+| Contributors | `editor@courseflow.com`, `commenter@courseflow.com`, `student@courseflow.com` |
+| Admin override actor | `admin@courseflow.com`; intentionally not on fixture teams |
 | Workflow | One activity graph |
 | Sections | `E2E Section 1`, blank title (position 1), `E2E Section 3` |
 | Manifest | `tests/.playwright-fixtures/workflow.json` |
@@ -294,13 +298,13 @@ Run `yarn test-setup` first. Common causes:
 - Missing `tests/.env` with `TEST_USERNAME` / `TEST_PASSWORD`
 - Django not running on `:8000`
 - Django pointed at `courseflow` instead of `courseflow_e2e` — use `just django-run-e2e`
-- Superuser missing in E2E DB — run `just django-create-superuser-e2e` or `just rebuild-e2e-db`
+- Primary teacher fixture missing — run `just django-seed-e2e-tests` or `just rebuild-e2e-db`
 
 ### Auth setup fails
 
 - Confirm Vite on `:3000` and Django on `:8000`
 - Confirm Django uses `courseflow_e2e` (`just django-run-e2e`)
-- Credentials: `admin@courseflow.com` / `password` after `just django-create-superuser-e2e`
+- Credentials: `teacher@courseflow.com` / `password` after `just django-seed-e2e-tests`
 
 ### Workflow specs skip immediately
 

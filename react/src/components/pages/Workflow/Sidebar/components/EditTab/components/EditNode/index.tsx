@@ -134,7 +134,7 @@ const EditNodeForm = ({
       contextType: node.contextClassification ?? '',
       taskType: node.taskClassification ?? '',
       timeRequired: node.timeRequired ?? undefined,
-      timeUnits: node.timeUnits ?? null,
+      timeUnits: node.timeUnits ?? undefined,
       tags: node.tagIds ?? [],
       specificEducation: false
     }
@@ -154,8 +154,8 @@ const EditNodeForm = ({
         },
         contextType: node.contextClassification ?? '',
         taskType: node.taskClassification ?? '',
-        timeRequired: node.timeRequired ?? null,
-        timeUnits: node.timeUnits ?? null,
+        timeRequired: node.timeRequired ?? undefined,
+        timeUnits: node.timeUnits ?? undefined,
         tags: node.tagIds ?? [],
         specificEducation: false
       })
@@ -179,7 +179,7 @@ const EditNodeForm = ({
         const timeUnits = !data.timeUnits ? null : Number(data.timeUnits)
 
         const meta: Parameters<typeof changeNodeMeta>[0]['meta'] = {
-          tagIds: data.tags.map((id) => Number(id))
+          tagIds: (data.tags ?? []).map((id) => Number(id))
         }
 
         if (!isLinked) {
@@ -399,8 +399,8 @@ const EditNodeForm = ({
                     size="small"
                     options={optionsData.tags}
                     getOptionLabel={(tag) => tag.label}
-                    value={optionsData.tags.filter((tag) =>
-                      field.value.includes(tag.uuid)
+                    value={optionsData.tags.filter(
+                      (tag) => field.value?.includes(tag.uuid) ?? false
                     )}
                     onChange={(_, selectedOptions) =>
                       field.onChange(

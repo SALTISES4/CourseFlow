@@ -7,6 +7,7 @@ from uuid import UUID
 from pydantic import Field, field_validator, model_validator
 
 from course_flow.api.common.schemas import CamelSchema
+from course_flow.api.schemas.permissions import PermissionContextOut
 from course_flow.core.enum import WorkflowType
 
 
@@ -60,14 +61,44 @@ class LibraryFiltersIn(CamelSchema):
     workflow_types: list[WorkflowType] = Field(default_factory=list)
     ownership: LibraryOwnershipIn | None = None
     is_favorite: bool | None = None
+    include_published_favorites: bool | None = Field(
+        default=None,
+        description=(
+            "Include the actor's favourited published resources when the actor "
+            "has no contributor role. Requires isFavorite=true."
+        ),
+    )
     is_archived: bool | None = None
     is_template: bool | None = None
+    can_create_workflow: bool | None = Field(
+        default=None,
+        description=(
+            "Limit project results to projects where the actor is the owner or an "
+            "editor and may create workflows."
+        ),
+    )
 
     @model_validator(mode="after")
     def validate_workflow_types_scope(self):
         if self.content_type == LibraryContentTypeIn.PROJECT and self.workflow_types:
             raise ValueError(
                 "workflowTypes may only be used when contentType is workflow or omitted"
+            )
+        return self
+
+    @model_validator(mode="after")
+    def validate_create_workflow_scope(self):
+        if self.can_create_workflow and self.content_type != LibraryContentTypeIn.PROJECT:
+            raise ValueError(
+                "canCreateWorkflow may only be used when contentType is project"
+            )
+        return self
+
+    @model_validator(mode="after")
+    def validate_published_favorites_scope(self):
+        if self.include_published_favorites and self.is_favorite is not True:
+            raise ValueError(
+                "includePublishedFavorites may only be used when isFavorite is true"
             )
         return self
 
@@ -88,7 +119,7 @@ class LibrarySearchIn(CamelSchema):
 
 
 class LibraryFavoriteIn(CamelSchema):
-    uuid: UUID | None = None
+    uuid: UUID
 
 
 # TODO: this is temporary, should actually be LibraryItemOut
@@ -105,11 +136,16 @@ class LibraryItemOut(CamelSchema):
     label: str
     title: str
     description: str
+    owner_name: str | None
+    workflow_count: int | None
     date_created: datetime
     modified_on: datetime
     is_archived: bool
     is_template: bool
     is_favorite: bool
+    project_uuid: UUID | None = None
+    project_is_archived: bool | None = None
+    permissions: PermissionContextOut
 
 
 class LibraryDisciplineOptionOut(CamelSchema):
@@ -130,8 +166,10 @@ class LibraryAppliedFiltersOut(CamelSchema):
     workflow_types: list[WorkflowType] = Field(default_factory=list)
     ownership: LibraryOwnershipIn | None = None
     is_favorite: bool | None = None
+    include_published_favorites: bool | None = None
     is_archived: bool | None = None
     is_template: bool | None = None
+    can_create_workflow: bool | None = None
 
 
 class LibraryMetaOut(CamelSchema):

@@ -1,5 +1,6 @@
-import { SliceNamespace } from '../../../redux/types/enum'
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+
+import { SliceNamespace } from '../../../redux/types/enum'
 
 export type ViewsettingsState = {
   expandedSections: boolean

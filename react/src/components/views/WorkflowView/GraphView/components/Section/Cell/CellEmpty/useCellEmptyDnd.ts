@@ -15,7 +15,7 @@ import { SectionCellEmptyTypeInternal, SectionCellType } from '../types'
 type PropsType = Pick<
   SectionCellEmptyTypeInternal,
   'wrapRef' | 'columnId' | 'coordsSection' | 'coordsY' | 'emptyRow' | 'onDrop'
->
+> & { enabled: boolean }
 
 function useCellEmptyDnd({
   wrapRef,
@@ -23,7 +23,8 @@ function useCellEmptyDnd({
   coordsSection,
   coordsY,
   emptyRow,
-  onDrop
+  onDrop,
+  enabled
 }: PropsType) {
   const isRowInsert = useSelector(
     (state: RootState) => state.graph.graphUi.nodeInsertMode === 'row'
@@ -38,8 +39,8 @@ function useCellEmptyDnd({
 
   useEffect(() => {
     const el = wrapRef.current
-    if (!el) {
-      return null
+    if (!el || !enabled) {
+      return
     }
 
     return dropTargetForElements({
@@ -118,7 +119,16 @@ function useCellEmptyDnd({
         })
       }
     })
-  }, [wrapRef, columnId, coordsSection, coordsY, emptyRow, isRowInsert, onDrop])
+  }, [
+    wrapRef,
+    columnId,
+    coordsSection,
+    coordsY,
+    emptyRow,
+    isRowInsert,
+    onDrop,
+    enabled
+  ])
 
   return state
 }

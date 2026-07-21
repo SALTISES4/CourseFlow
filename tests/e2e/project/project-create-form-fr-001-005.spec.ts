@@ -24,7 +24,7 @@ import { expectProjectOverviewShowsSubmittedFormValues } from '../../helpers/pro
 import {
   createProjectDialog,
   createProjectFormSubmitButton,
-  E2E_CONTRIBUTOR_TEACHER_EMAIL,
+  E2E_CONTRIBUTOR_STUDENT_EMAIL,
   openCreateProjectDialog,
   PROJECT_CREATE_API_ROUTE,
   projectDescriptionField,
@@ -38,7 +38,7 @@ import {
 /**
  * Calibration slice — FR-PROJ-FORM-001 through FR-PROJ-FORM-005.
  * Requirements: tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com) unless noted.
+ * Auth: chromium project storage state (teacher@courseflow.com) unless noted.
  */
 
 test.describe('Create project form — calibration (FR-PROJ-FORM-001-005)', () => {
@@ -95,7 +95,7 @@ test.describe('Create project form — calibration (FR-PROJ-FORM-001-005)', () =
 
       test.beforeEach(async ({ page }) => {
         await loginAs(page, {
-          email: E2E_CONTRIBUTOR_TEACHER_EMAIL,
+          email: E2E_CONTRIBUTOR_STUDENT_EMAIL,
           password: 'password',
         });
         await gotoAuthenticatedShell(page, '/home');
@@ -163,11 +163,28 @@ test.describe('Create project form — calibration (FR-PROJ-FORM-001-005)', () =
         title: uniqueTitle,
         description,
         isPublished: false,
+        isArchived: false,
         isTemplate: false,
         isFavorite: false,
         ownerId: 1,
         dateCreated: '2026-01-01T00:00:00Z',
         modifiedOn: '2026-01-01T00:00:00Z',
+        disciplines: [{ id: 1, title: disciplineLabels[0]! }],
+        workflows: [],
+        permissions: {
+          accountRole: 'teacher',
+          resourceRole: 'owner',
+          state: 'active',
+          actions: [
+            'view',
+            'edit_project',
+            'manage_members',
+            'create_workflow',
+            'archive_project',
+            'publish_project',
+          ],
+          adminOverride: false,
+        },
       };
 
       await page.route(PROJECT_CREATE_API_ROUTE, (route) => {

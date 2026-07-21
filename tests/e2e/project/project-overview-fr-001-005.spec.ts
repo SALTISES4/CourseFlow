@@ -57,11 +57,12 @@ import {
   addContributorsUserSelectorClearButton,
   addNewTagInput,
   contributorRoleDropdown,
+  E2E_CONTRIBUTOR_EDITOR_EMAIL,
   E2E_CONTRIBUTOR_STUDENT_EMAIL,
-  E2E_CONTRIBUTOR_TEACHER_EMAIL,
   projectMetadataAddContributorsButton,
   projectMetadataFieldCreatedOn,
   projectPermissionsPanelContributorEmail,
+  projectTitle,
   projectTagsSection,
   publishProjectConfirmationModal,
   publishProjectConfirmationModalCancelButton,
@@ -76,7 +77,7 @@ import {
 /**
  * Calibration slice — FR-PROJ-OV-001 through FR-PROJ-OV-005.
  * Requirements: tests/docs/requirements/features/project/project_overview_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com) unless noted.
+ * Auth: chromium project storage state (teacher@courseflow.com) unless noted.
  */
 
 test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
@@ -85,6 +86,13 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
 
   test.beforeEach(async ({ page }) => {
     await gotoAuthenticatedShell(page, projectPath);
+    const loginButton = page.getByRole('button', { name: /^Login$/i });
+    await expect(projectTitle(page).or(loginButton)).toBeVisible({ timeout: 15_000 });
+    if (await loginButton.isVisible()) {
+      // Explicit-role describes start with empty storage and log in from their
+      // nested hook. Parent hooks run first, so leave authentication to them.
+      return;
+    }
     await waitForProjectOverviewLoaded(page);
   });
 
@@ -282,9 +290,9 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
         });
       });
 
-      await selectContributorRemoveAction(page, E2E_CONTRIBUTOR_TEACHER_EMAIL);
+      await selectContributorRemoveAction(page, E2E_CONTRIBUTOR_EDITOR_EMAIL);
 
-      await expectContributorRowVisible(page, E2E_CONTRIBUTOR_TEACHER_EMAIL);
+      await expectContributorRowVisible(page, E2E_CONTRIBUTOR_EDITOR_EMAIL);
       await expectContributorRemoveSnackbarMessage(
         page,
         CONTRIBUTOR_REMOVE_SNACKBAR_MESSAGES.failure,
@@ -305,7 +313,7 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
     });
 
     test('viewer sees contributor role dropdown as read-only', async ({ page }) => {
-      await expect(contributorRoleDropdown(page, E2E_CONTRIBUTOR_TEACHER_EMAIL)).toBeDisabled();
+      await expect(contributorRoleDropdown(page, E2E_CONTRIBUTOR_EDITOR_EMAIL)).toBeDisabled();
     });
   });
 
@@ -500,7 +508,8 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
 
         await expect(publishProjectConfirmationModal(page)).toBeVisible();
         await expect(publishProjectConfirmationModalConfirmButton(page)).toBeEnabled();
-        await expectUnpublishedPublishControlsPerFrProjOv003(page);
+        const project = await fetchProjectDetail(page, manifest.project_uuid);
+        expect(project.isPublished).toBe(false);
         await expectProjectPublishSnackbarMessage(
           page,
           PROJECT_PUBLISH_SNACKBAR_MESSAGES.failure,
@@ -645,8 +654,6 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
   test('FR-PROJ-OV-005: tags section shows add-new-tag input when tags block is rendered', async ({
     page,
   }) => {
-    test.skip((await projectTagsSection(page).count()) === 0, 'Tags block not rendered — tags missing from project API mapping.');
-
     await expect(projectTagsSection(page)).toBeVisible();
     await expect(addNewTagInput(page)).toBeVisible();
     await expect(addNewTagInput(page)).toHaveAttribute('placeholder', 'Add new tag');

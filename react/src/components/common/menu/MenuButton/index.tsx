@@ -10,6 +10,7 @@ type MenuButtonOption = {
   label?: string
   onClick?: () => void
   selected?: boolean
+  disabled?: boolean
 }
 
 type PropsType = {
@@ -44,12 +45,17 @@ const MenuButton = ({
   }
 
   const onOptionClick = (option: MenuButtonOption) => {
-    if (option.name !== value?.name) {
+    if (option.disabled) {
+      return
+    }
+    if (option.name !== (selected ?? value?.name)) {
       // if option click has a custom callback action, we don't set the value
       if (option.onClick) {
         option.onClick()
       } else {
-        setValue(option)
+        if (!selected) {
+          setValue(option)
+        }
         onChange(option.name)
       }
     }
@@ -65,7 +71,7 @@ const MenuButton = ({
         onClick={onButtonClick}
         menuActive={!!menuAnchor}
       >
-        {value ? value.label : placeholder}
+        {(selectedOption ?? value)?.label ?? placeholder}
       </StyledButton>
 
       {!disabled && (
@@ -88,15 +94,14 @@ const MenuButton = ({
               return <Divider key={option.name} component="li" />
             }
 
-            const isSelected = value
-              ? 'name' in value && option.name === value.name
-              : false
+            const isSelected = option.name === (selected ?? value?.name)
 
             return (
               <MenuItem
                 key={option.name}
                 onClick={() => onOptionClick(option)}
                 selected={isSelected}
+                disabled={option.disabled}
               >
                 {option.label}
               </MenuItem>

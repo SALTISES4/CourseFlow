@@ -1,10 +1,12 @@
 import {
   createGraphEdge,
+  createGraphOutcome,
   deleteChannel,
   deleteEdge,
-  updateEdge,
   deleteNode,
+  deleteOutcome as deleteOutcomeSdk,
   deleteSection,
+  duplicateOutcome,
   getGraphView,
   insertGraphChannelBelow,
   insertGraphNodeBelow,
@@ -12,21 +14,21 @@ import {
   linkNodeOutcome as linkNodeOutcomeSdk,
   linkNodeWorkflow as linkNodeWorkflowSdk,
   moveGraphNode,
+  moveOutcome as moveOutcomeSdk,
   patchNode,
   patchNodeMeta,
+  patchOutcome,
   placeGraphNode,
   reorderGraphChannels,
   reorderGraphSections,
   unlinkNodeOutcome as unlinkNodeOutcomeSdk,
-  updateSection,
   updateChannel,
-  createGraphOutcome,
-  patchOutcome,
-  deleteOutcome as deleteOutcomeSdk,
-  duplicateOutcome,
-  moveOutcome as moveOutcomeSdk
+  updateEdge,
+  updateSection
 } from '@cf/api/gen/sdk.gen'
 import type {
+  ChannelOut,
+  ChannelOutResp,
   GraphChannelMutationOut,
   GraphEdgeMutationOut,
   GraphMetaOut,
@@ -37,22 +39,22 @@ import type {
   GraphTagStubOut,
   GraphViewOut,
   SectionOut,
-  SectionOutResp,
-  ChannelOut,
-  ChannelOutResp
+  SectionOutResp
 } from '@cf/api/gen/types.gen'
 
 import type {
+  ChangeChannelMetaInput,
   ChangeNodeMetaInput,
   ChangeSectionMetaInput,
-  ChangeChannelMetaInput,
   ChannelEntity,
   CreateEdgeInput,
+  CreateOutcomeInput,
   DeleteChannelInput,
   DeleteEdgeInput,
-  UpdateEdgeInput,
   DeleteNodeInput,
+  DeleteOutcomeInput,
   DeleteSectionInput,
+  DuplicateOutcomeInput,
   EdgeEntity,
   GraphEntity,
   GraphMutationEnvelope,
@@ -60,15 +62,11 @@ import type {
   InsertChannelBelowInput,
   InsertNodeBelowInput,
   InsertSectionBelowInput,
-  CreateOutcomeInput,
-  DeleteOutcomeInput,
-  DuplicateOutcomeInput,
   LinkNodeOutcomeInput,
-  MoveOutcomeInput,
-  UpdateOutcomeInput,
   LinkNodeWorkflowInput,
   MoveNodeGridInput,
   MoveNodeInput,
+  MoveOutcomeInput,
   NodeEntity,
   OutcomeEntity,
   PlaceNodeInput,
@@ -77,7 +75,10 @@ import type {
   ReorderSectionsInput,
   SectionEntity,
   TagEntity,
+  ThreadCommentCount,
   UnlinkNodeOutcomeInput,
+  UpdateEdgeInput,
+  UpdateOutcomeInput,
   WorkflowEntity
 } from './model/types'
 
@@ -132,6 +133,7 @@ export type GraphResourceBundle = {
   nodes: NodeEntity[]
   edges: EdgeEntity[]
   outcomes: OutcomeEntity[]
+  threadCommentCounts: ThreadCommentCount[]
 }
 
 function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
@@ -204,7 +206,16 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
     threadUuid: outcome.threadUuid ?? null
   }))
 
-  return { graph, workflow, sections, channels, nodes, edges, outcomes }
+  return {
+    graph,
+    workflow,
+    sections,
+    channels,
+    nodes,
+    edges,
+    outcomes,
+    threadCommentCounts: view.threadCommentCounts ?? []
+  }
 }
 
 export const fetchWorkflowGraphBundle = async (

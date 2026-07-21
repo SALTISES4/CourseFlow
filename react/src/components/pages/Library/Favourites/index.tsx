@@ -1,4 +1,4 @@
-import { LibrarySearchIn } from '@cf/api/gen'
+import { LibraryContentTypeIn, LibrarySearchIn } from '@cf/api/gen'
 import LibrarySearchView, {
   LibraryFilterConfig
 } from '@cfViews/LibrarySearchView'
@@ -13,7 +13,12 @@ const LibraryPage = () => {
    * HOOKS
    *******************************************************/
   const config: LibraryFilterConfig = {
+    initialContentType: LibraryContentTypeIn.PROJECT,
     filterGroups: {
+      ownershipFilter: true,
+      contentTypeFilter: true,
+      workflowTypeFilter: true,
+      keywordFilter: true,
       templateFilter: true
     }
   }
@@ -21,7 +26,12 @@ const LibraryPage = () => {
   const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
 
   const updateSearchArgsHandler = useCallback((args: LibrarySearchIn) => {
-    setSearchArgs(LibraryHelper.applyLockedFilters(args, { isFavorite: true }))
+    setSearchArgs(
+      LibraryHelper.applyLockedFilters(args, {
+        isFavorite: true,
+        includePublishedFavorites: true
+      })
+    )
   }, [])
 
   /*******************************************************

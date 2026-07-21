@@ -56,3 +56,6 @@ course_flow_legacy/collected_static_files
 /.cursorprompt
 /course_flow_legacy/
 /course_flow_legacy.zip
+
+tests/allure-report
+tests/allure-results

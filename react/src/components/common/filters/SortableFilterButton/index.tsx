@@ -1,11 +1,12 @@
 import { LibrarySortDirectionIn, LibrarySortValueIn } from '@cf/api/gen'
-import useMount from '@cf/hooks/useMount'
 import { _t } from '@cf/utility/Utility.class'
 import { SortOption } from '@cfComponents/filters/types'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
+import CloseIcon from '@mui/icons-material/Close'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import { produce } from 'immer'
+import IconButton from '@mui/material/IconButton'
 import { MouseEvent, ReactNode, useState } from 'react'
 
 import { StyledMenu, StyledMenuItem } from './styles'
@@ -15,6 +16,7 @@ type SortableProps = {
     value: LibrarySortValueIn,
     direction: LibrarySortDirectionIn
   ) => void
+  onReset: () => void
 }
 
 type PropsType = {
@@ -22,8 +24,6 @@ type PropsType = {
   placeholder?: string
   options: SortOption[]
 } & SortableProps
-
-type StateType = SortOption
 
 function toggleSortDirection(
   dir: LibrarySortDirectionIn | null
@@ -38,18 +38,10 @@ const SortableFilterButton = ({
   icon,
   placeholder = _t('Sort'),
   options,
-  onChange
+  onChange,
+  onReset
 }: PropsType) => {
   const enabledOption = options.find((o) => o.enabled)
-
-  useMount()
-
-  const [enabledEl, setEnabledEl] = useState<StateType>({
-    label: placeholder,
-    value: enabledOption?.value ?? null,
-    direction: LibrarySortDirectionIn.DESC
-  })
-
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null)
 
   /**
@@ -63,14 +55,12 @@ const SortableFilterButton = ({
    * handles selecting an option
    */
   function onOptionClick(option: SortOption) {
-    const updatedEl = produce(enabledEl, (draft) => {
-      draft.value = option.value
-      draft.label = option.label
-      draft.direction = toggleSortDirection(draft.direction)
-    })
-
-    setEnabledEl(updatedEl)
-    onChange(updatedEl.value, updatedEl.direction)
+    const direction =
+      enabledOption?.value === option.value
+        ? toggleSortDirection(enabledOption.direction ?? null)
+        : LibrarySortDirectionIn.ASC
+    onChange(option.value, direction)
+    setMenuAnchor(null)
   }
 
   /*******************************************************
@@ -78,13 +68,20 @@ const SortableFilterButton = ({
    *******************************************************/
   return (
     <>
-      <Button
-        variant={menuAnchor ? 'contained' : 'outlined'}
-        startIcon={icon}
-        onClick={onButtonClick}
-      >
-        {enabledEl?.label ?? placeholder}
-      </Button>
+      <Box display="inline-flex" alignItems="center">
+        <Button
+          variant={menuAnchor ? 'contained' : 'outlined'}
+          startIcon={icon}
+          onClick={onButtonClick}
+        >
+          {enabledOption?.label ?? placeholder}
+        </Button>
+        {enabledOption && (
+          <IconButton aria-label="close" size="small" onClick={onReset}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        )}
+      </Box>
 
       <StyledMenu
         anchorEl={menuAnchor}
@@ -105,15 +102,15 @@ const SortableFilterButton = ({
           <StyledMenuItem
             key={option.value}
             onClick={() => onOptionClick(option)}
-            selected={option.value === enabledEl.value}
+            selected={option.value === enabledOption?.value}
           >
             {option.label}
-            {option.value === enabledEl.value && (
+            {option.value === enabledOption?.value && (
               <>
-                {enabledEl.direction === LibrarySortDirectionIn.ASC && (
+                {enabledOption.direction === LibrarySortDirectionIn.ASC && (
                   <ArrowUpwardIcon fontSize="small" />
                 )}
-                {enabledEl.direction === LibrarySortDirectionIn.DESC && (
+                {enabledOption.direction === LibrarySortDirectionIn.DESC && (
                   <ArrowDownwardIcon fontSize="small" />
                 )}
               </>

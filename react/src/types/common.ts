@@ -1,11 +1,8 @@
+import { ProjectDetailOut } from '@cf/api/gen'
+import type { PermissionContextOut } from '@cf/api/gen'
 import { TTag } from '@cf/redux/types/type'
 import { EUser } from '@XMLHTTP/types/entity'
 import { MouseEvent as ReactMouseEvent } from 'react'
-
-export type Discipline = {
-  uuid: string
-  title: string
-}
 
 export type FieldChoice = {
   type: number | string
@@ -28,15 +25,8 @@ export type EventUnion =
   | ReactMouseEvent<Element>
   | MouseEvent
 
-// TODO: verify we still need this, why not just use the project type from the API/codegen
-export type ProjectDetailsType = {
-  uuid: string
-  title: string
-  description: string
-  isFavorite: boolean
-  isDeleted: boolean
-  created: Date | string
+// TODO: move these to project detail out?
+export type ProjectDetailsType = ProjectDetailOut & {
   author: EUser
-  disciplines?: string[]
   tags?: TTag[]
 }

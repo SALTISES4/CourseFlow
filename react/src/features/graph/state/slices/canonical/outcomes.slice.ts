@@ -6,9 +6,11 @@ import {
 
 import type { GraphUuid, OutcomeEntity, ResourceUuid } from '../../model/types'
 
-export const outcomesAdapter = createEntityAdapter<OutcomeEntity, ResourceUuid>({
-  selectId: (o) => o.uuid
-})
+export const outcomesAdapter = createEntityAdapter<OutcomeEntity, ResourceUuid>(
+  {
+    selectId: (o) => o.uuid
+  }
+)
 
 export type OutcomesState = ReturnType<typeof outcomesAdapter.getInitialState>
 

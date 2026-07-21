@@ -81,8 +81,8 @@ workflow.firstSection()
 
 **Backend (Phase 2):**
 
-- `course_flow/e2e_seed/team.py` — `teacher@courseflow.com` (editor), `student@courseflow.com` (viewer)
-- Manifest `fixture_version: 2` with `contributors[]`
+- `course_flow/e2e_seed/team.py` — `teacher@courseflow.com` (owner), dedicated editor/commenter accounts, and `student@courseflow.com` (viewer)
+- Manifest `fixture_version: 3` with `primary_user`, `contributors[]`, and FR-HOME-003 recent-project fixtures
 
 **Exit criterion:** Phase 2 specs pass in UI Mode after `just e2e-prepare`. Commenter role variants deferred.
 

@@ -1,7 +1,10 @@
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
+import { selectThreadCommentCount } from '@cf/features/graph/state/selectors/threadCommentCounts.selectors'
 import { insertChannelBelow } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import type { AppDispatch } from '@cf/redux/store'
+import type { AppDispatch, RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
@@ -10,19 +13,27 @@ import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import { MouseEvent, useCallback } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 type PropsType = {
   nodeId: string
   graphUuid: string
   show: boolean
+  threadUuid: string | null
 }
 
 type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
 
-const HoverMenu = ({ nodeId, graphUuid, show }: PropsType) => {
+const HoverMenu = ({ nodeId, graphUuid, show, threadUuid }: PropsType) => {
   const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
+  const canEdit = useResourcePermission(
+    WorkflowPermission.NODE_CATEGORY_MANAGEMENT
+  )
+  const canComment = useResourcePermission(WorkflowPermission.COMMENT)
+  const commentCount = useSelector((state: RootState) =>
+    selectThreadCommentCount(state, threadUuid)
+  )
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {
@@ -74,27 +85,28 @@ const HoverMenu = ({ nodeId, graphUuid, show }: PropsType) => {
     <NodeHoverMenu
       show={show}
       items={[
-        {
+        canEdit && {
           label: _t('Insert right'),
           icon: <AddCircleOutlineIcon />,
           onClick: onActionClick('insert')
         },
-        {
+        canEdit && {
           label: _t('Duplicate'),
           icon: <ContentCopyIcon />,
           onClick: onActionClick('duplicate')
         },
-        {
+        canEdit && {
           label: _t('Delete'),
           icon: <DeleteOutlinedIcon />,
           onClick: onActionClick('delete')
         },
-        {
+        canComment && {
           label: _t('Comments'),
           icon: <CommentOutlinedIcon />,
+          showCommentsPresenceIndicator: commentCount > 0,
           onClick: onActionClick('comments')
         }
-      ]}
+      ].filter(Boolean)}
     />
   )
 }

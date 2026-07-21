@@ -6,12 +6,14 @@ import {
   expectWelcomeCtaOpensCreateWorkflowStepOne,
   skipUnlessWelcomePanelVisible,
 } from '../../helpers/home';
+import { getRecentHomeProjects, loadWorkflowManifest } from '../../helpers/manifest';
 import { gotoCourseFlowHome } from '../../helpers/navigation';
 import { templatesToggle, waitForLibraryResultsLoaded } from '../library/library.locators';
 import {
   homeErrorState,
   homeRecentProjectsCards,
   homeRecentProjectsProjectCards,
+  homeRecentProjectsSection,
   homeRecentProjectsTitle,
   homeRecentProjectsWorkflowCards,
   homeTemplatesCards,
@@ -28,15 +30,17 @@ import {
   homeWelcomeHeading,
   homeWelcomeProgramButton,
 } from './home.locators';
-import { cardChipWithLabel } from '../../shared/locators/cards';
+import { cardChipWithLabel, cardTitleText } from '../../shared/locators/cards';
 
 /**
  * Calibration slice — FR-HOME-001 through FR-HOME-004 (happy-path dashboard).
  * Requirements: tests/docs/requirements/features/home/homepage_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: default chromium storage state (teacher@courseflow.com), owner of the E2E projects.
  */
 
 test.describe('Home dashboard — calibration (FR-HOME-001-004)', () => {
+  const manifest = loadWorkflowManifest();
+
   test.beforeEach(async ({ page }) => {
     await gotoCourseFlowHome(page);
     await expect(homeErrorState(page)).toBeHidden({ timeout: 15_000 });
@@ -129,11 +133,6 @@ test.describe('Home dashboard — calibration (FR-HOME-001-004)', () => {
     page,
   }) => {
     const recentTitle = homeRecentProjectsTitle(page);
-    if ((await recentTitle.count()) === 0) {
-      await expect(recentTitle).toBeHidden();
-      return;
-    }
-
     await expect(recentTitle).toBeVisible();
     await expect(recentTitle).toHaveText('Recent projects');
     await expect(homeViewAllProjectsLink(page)).toBeVisible();
@@ -146,14 +145,22 @@ test.describe('Home dashboard — calibration (FR-HOME-001-004)', () => {
     // FR-HOME-003 — homeRecentProjectsSection includes only projectCard instances.
     await expect(workflowCards).toHaveCount(0);
 
-    const projectCardCount = await projectCards.count();
-    expect(projectCardCount).toBeGreaterThanOrEqual(1);
-    expect(projectCardCount).toBeLessThanOrEqual(4);
-    await expect(sectionCards).toHaveCount(projectCardCount);
+    const expectedRecentProjects = getRecentHomeProjects(manifest).slice(0, 4);
+    await expect(projectCards).toHaveCount(4);
+    await expect(sectionCards).toHaveCount(4);
 
-    for (let i = 0; i < projectCardCount; i++) {
-      await expect(projectCards.nth(i)).toBeVisible();
+    for (let i = 0; i < expectedRecentProjects.length; i++) {
+      const card = projectCards.nth(i);
+      await expect(card).toBeVisible();
+      await expect(cardTitleText(card)).toHaveText(expectedRecentProjects[i]!.title);
     }
+
+    await expect(
+      homeRecentProjectsSection(page).getByRole('heading', {
+        name: manifest.archived_home_project.title,
+        exact: true,
+      }),
+    ).toHaveCount(0);
   });
 
   test.describe('FR-HOME-004: templates section', () => {

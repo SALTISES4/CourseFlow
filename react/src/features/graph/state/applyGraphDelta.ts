@@ -123,6 +123,8 @@ export const applyGraphDelta = (
   }
 
   if (envelope.changes.outcomes.deleted.length) {
-    dispatch(outcomesActions.removeManyByUuid(envelope.changes.outcomes.deleted))
+    dispatch(
+      outcomesActions.removeManyByUuid(envelope.changes.outcomes.deleted)
+    )
   }
 }

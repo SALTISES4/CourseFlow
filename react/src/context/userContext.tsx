@@ -1,3 +1,4 @@
+import { UserMeta } from '@cf/api/gen'
 import { mapCurrentUserToEUser } from '@cf/context/mapCurrentUserToEUser'
 import {
   selectAuthStatus,
@@ -10,12 +11,14 @@ import { useSelector } from 'react-redux'
 
 type UserContextType = {
   uuid: string
-  user: EUser
+  user: EUser | null
+  meta: UserMeta | null
 }
 
 export const UserContext = createContext<UserContextType>({
   uuid: '',
-  user: null
+  user: null,
+  meta: { ownsAnyProject: false }
 })
 
 interface UserProviderProps {
@@ -44,7 +47,8 @@ const UserProvider = ({ children }: UserProviderProps) => {
     <UserContext.Provider
       value={{
         uuid: eUser.uuid,
-        user: eUser
+        user: eUser,
+        meta: user.meta
       }}
     >
       {children}

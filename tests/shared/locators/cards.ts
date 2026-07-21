@@ -134,6 +134,35 @@ export async function expectCardFavouriteRemovedSnackbar(page: Page): Promise<vo
   ).toBeVisible({ timeout: 15_000 });
 }
 
+/**
+ * FR-CARD-005 — add/remove round-trip restores initial favourite state.
+ * Asserts route unchanged on each click and success snackbar copy for add and remove.
+ */
+export async function expectCardFavouriteToggleRoundTrip(page: Page, card: Locator): Promise<void> {
+  const toggle = cardFavouriteToggle(card);
+  await expect(toggle).toBeVisible();
+
+  const urlBefore = page.url();
+
+  await toggle.click();
+  await expect(page).toHaveURL(urlBefore);
+  await expect(globalMessageSnackbar(page)).toBeVisible({ timeout: 15_000 });
+  await expect(globalMessageSnackbar(page)).toHaveText(
+    new RegExp(`^(${CARD_FAVOURITE_SNACKBAR_ADDED}|${CARD_FAVOURITE_SNACKBAR_REMOVED})$`),
+  );
+  const firstMessage = await globalMessageSnackbar(page).textContent();
+
+  await toggle.click();
+  await expect(page).toHaveURL(urlBefore);
+  const secondMessage =
+    firstMessage === CARD_FAVOURITE_SNACKBAR_ADDED
+      ? CARD_FAVOURITE_SNACKBAR_REMOVED
+      : CARD_FAVOURITE_SNACKBAR_ADDED;
+  await expect(
+    globalMessageSnackbar(page).filter({ hasText: secondMessage }),
+  ).toHaveText(secondMessage, { timeout: 15_000 });
+}
+
 /** canonical: cardTypeChip | cardTemplateChip — chip by visible label inside cardFooterTagsRegion */
 export function cardChipWithLabel(card: Locator, label: string): Locator {
   return cardFooterTagsRegion(card).getByText(label, { exact: true });
@@ -168,11 +197,11 @@ export function cardArchivedChip(card: Locator): Locator {
   return cardFooterTagsRegion(card).getByText('Archived', { exact: true });
 }
 
-/** Card tile scoped by visible title (listing cards and dialog cards without data-test-id). */
+/** Card tile scoped by visible title. */
 export function cardByTitle(scope: Locator, title: string): Locator {
   return scope
-    .locator('div')
-    .filter({ has: scope.getByRole('heading', { name: title, exact: true }) });
+    .locator('[data-test-id$="-card"]')
+    .filter({ hasText: title });
 }
 export async function expectFollowsInDocumentOrder(earlier: Locator, later: Locator): Promise<void> {
   await expect

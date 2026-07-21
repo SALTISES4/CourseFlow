@@ -77,7 +77,9 @@ const ProjectTabs = ({ project }: { project: ProjectDetailsType }) => {
     const match = tabsObject.find((tab) =>
       matchPath({ path: tab.path, end: true }, location.pathname)
     )
-    setActiveTab(match.relativePath)
+    if (match) {
+      setActiveTab(match.relativePath)
+    }
   }, [tabsObject, location.pathname])
 
   return (

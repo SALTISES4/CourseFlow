@@ -38,7 +38,7 @@ const LinkedWorkflowMirrorFields = ({
       variant="outlined"
       size="small"
       value={title}
-      slotProps={{ input: { readOnly: true } }}
+      InputProps={{ readOnly: true }}
     />
     <TextField
       label={_t('Description')}
@@ -47,7 +47,7 @@ const LinkedWorkflowMirrorFields = ({
       multiline
       maxRows={5}
       value={description}
-      slotProps={{ input: { readOnly: true } }}
+      InputProps={{ readOnly: true }}
     />
     {showTime && (
       <TextField
@@ -56,7 +56,7 @@ const LinkedWorkflowMirrorFields = ({
         size="small"
         value=""
         placeholder="—"
-        slotProps={{ input: { readOnly: true } }}
+        InputProps={{ readOnly: true }}
       />
     )}
     {showProgramFields && (
@@ -67,7 +67,7 @@ const LinkedWorkflowMirrorFields = ({
           size="small"
           value=""
           placeholder="—"
-          slotProps={{ input: { readOnly: true } }}
+          InputProps={{ readOnly: true }}
         />
         <TextField
           label={_t('Hrs. theory')}
@@ -75,7 +75,7 @@ const LinkedWorkflowMirrorFields = ({
           size="small"
           value=""
           placeholder="—"
-          slotProps={{ input: { readOnly: true } }}
+          InputProps={{ readOnly: true }}
         />
         <TextField
           label={_t('Hrs. practice')}
@@ -83,7 +83,7 @@ const LinkedWorkflowMirrorFields = ({
           size="small"
           value=""
           placeholder="—"
-          slotProps={{ input: { readOnly: true } }}
+          InputProps={{ readOnly: true }}
         />
         <TextField
           label={_t('Hrs. individual')}
@@ -91,7 +91,7 @@ const LinkedWorkflowMirrorFields = ({
           size="small"
           value=""
           placeholder="—"
-          slotProps={{ input: { readOnly: true } }}
+          InputProps={{ readOnly: true }}
         />
       </>
     )}

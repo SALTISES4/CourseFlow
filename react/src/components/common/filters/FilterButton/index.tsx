@@ -1,11 +1,9 @@
-import {
-  FilterOption,
-  SearchFilterOption,
-  SortOption
-} from '@cfComponents/filters/types'
+import { SearchFilterOption } from '@cfComponents/filters/types'
+import CloseIcon from '@mui/icons-material/Close'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import { produce } from 'immer'
-import { MouseEventHandler, ReactNode, useEffect, useState } from 'react'
+import IconButton from '@mui/material/IconButton'
+import { MouseEventHandler, ReactNode, useState } from 'react'
 
 import { StyledMenu, StyledMenuItem } from './styles'
 
@@ -19,44 +17,51 @@ type PropsType = {
   options: SearchFilterOption[]
 } & NonSortableProps
 
-type StateType = SearchFilterOption
-
 const FilterButton = ({
   icon,
   placeholder = 'Filter',
   options,
   onChange
 }: PropsType) => {
-  const enabled = options.find((o) => o.enabled)
-  const [el, setEl] = useState<StateType>({
-    label: placeholder,
-    value: enabled?.value ?? null
-  })
+  const selectedOption = options.find(
+    (option) => option.enabled && option.value !== null
+  )
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null)
 
   const onButtonClick: MouseEventHandler<HTMLButtonElement> = (event) => {
     setMenuAnchor(event.currentTarget)
   }
 
-  useEffect(() => {
-    //    Utility.logger('rendering')
-  }, [onChange, enabled, el])
-
   const onOptionClick = (option: SearchFilterOption) => {
-    setEl(option)
     onChange(option)
+    setMenuAnchor(null)
+  }
+
+  const onReset = () => {
+    const resetOption = options.find((option) => option.value === null) ?? {
+      label: placeholder,
+      value: null
+    }
+    onChange(resetOption)
     setMenuAnchor(null)
   }
 
   return (
     <>
-      <Button
-        variant={menuAnchor ? 'contained' : 'outlined'}
-        startIcon={icon}
-        onClick={onButtonClick}
-      >
-        {el ? el.label : placeholder}
-      </Button>
+      <Box display="inline-flex" alignItems="center">
+        <Button
+          variant={menuAnchor ? 'contained' : 'outlined'}
+          startIcon={icon}
+          onClick={onButtonClick}
+        >
+          {selectedOption?.label ?? placeholder}
+        </Button>
+        {selectedOption && (
+          <IconButton aria-label="close" size="small" onClick={onReset}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        )}
+      </Box>
 
       <StyledMenu
         anchorEl={menuAnchor}
@@ -77,7 +82,7 @@ const FilterButton = ({
           <StyledMenuItem
             key={option.value}
             onClick={() => onOptionClick(option)}
-            selected={option.value === el.value}
+            selected={option.value === (selectedOption?.value ?? null)}
           >
             {option.label}
           </StyledMenuItem>

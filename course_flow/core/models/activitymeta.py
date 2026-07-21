@@ -6,6 +6,7 @@ from course_flow.core.models.workflow import Workflow
 
 
 class Activitymeta(NodeActivityMetaFields):
+    calculate_time = models.BooleanField(default=False)
     workflow = models.OneToOneField(
         Workflow,
         on_delete=models.CASCADE,

@@ -1,6 +1,9 @@
+import { LibraryContentTypeIn, LibraryOwnershipIn } from '@cf/api/gen'
 import { createProjectMutation } from '@cf/api/gen/@tanstack/react-query.gen'
+import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
+import { _t } from '@cf/utility/Utility.class'
 import ProjectForm, {
   ProjectFormValues
 } from '@cfComponents/dialog/Project/components/ProjectForm'
@@ -9,35 +12,40 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
 import { generatePath, useNavigate } from 'react-router-dom'
 
-const defaultValues = {
+const defaultValues: ProjectFormValues = {
   title: '',
   description: '',
   disciplines: []
 }
-/**
- *
- * @param showNoProjectsAlert
- * @param formFields
- * @constructor
- */
-const ProjectCreateDialog = () => {
-  /*******************************************************
-   * HOOKS
-   *******************************************************/
+
+type PropsType = {
+  showNoProjectsAlert: boolean
+}
+
+const ProjectCreateDialog = ({ showNoProjectsAlert = false }: PropsType) => {
   const { show, onClose } = useDialog(DialogMode.PROJECT_CREATE)
-
   const navigate = useNavigate()
-
-  /*******************************************************
-   * QUERY HOOK
-   *******************************************************/
   const queryClient = useQueryClient()
+  const { data: ownedProjects, isLoading: ownedProjectsLoading } =
+    useLibrarySearch({
+      pagination: {
+        page: 0,
+        resultsPerPage: 1
+      },
+      filters: {
+        contentType: LibraryContentTypeIn.PROJECT,
+        ownership: LibraryOwnershipIn.OWNED
+      }
+    })
 
   const createProject = useMutation({
     ...createProjectMutation(),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ['getMyProjects']
+      })
+      await queryClient.invalidateQueries({
+        queryKey: ['library-search']
       })
     }
   })
@@ -46,29 +54,26 @@ const ProjectCreateDialog = () => {
     const path = generatePath(CFRoutes.PROJECT, { uuid })
     onDialogClose()
     navigate(path)
-    enqueueSnackbar('created project success', {
+    enqueueSnackbar(_t('Your project has been successfully created'), {
       variant: 'success'
     })
   }
 
   function onError(error) {
-    enqueueSnackbar('created project error', {
-      variant: 'error'
-    })
+    enqueueSnackbar(
+      _t('We encountered an issue and your project was not created'),
+      { variant: 'error' }
+    )
     // this won't work because we're getting back errors from the serializer
     // but it's a start
     console.error('Error creating project:', error)
     // setErrors(error.name)
   }
 
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
   const onSubmit = async (data: ProjectFormValues) => {
     try {
       const response = await createProject.mutateAsync({
-        ...data,
-        disciplines: data.disciplines.map((item) => Number(item))
+        body: data
       })
 
       onSuccess(String(response.uuid))
@@ -95,9 +100,9 @@ const ProjectCreateDialog = () => {
         defaultValues={defaultValues}
         submitHandler={onSubmit}
         closeCallback={onDialogClose}
-        showNoProjectsAlert={true}
-        label={'Create project'}
-        submitLabel={'Create project'}
+        showNoProjectsAlert={showNoProjectsAlert}
+        label={_t('Create project')}
+        submitLabel={_t('Create project')}
       />
     </SC.StyledDialog>
   )

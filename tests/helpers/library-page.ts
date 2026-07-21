@@ -1,12 +1,14 @@
 import { expect, type Page } from '@playwright/test';
 
-import { cardOwnerText, cardTitleText } from '../shared/locators/cards';
+import { cardTitleText } from '../shared/locators/cards';
 import {
   archiveToggle,
   disciplineFilter,
   favouritesToggle,
+  expectLibraryCardTitles,
   keywordSearchField,
   libraryCards,
+  libraryCardTitles,
   libraryFilterToolbar,
   ownershipFilter,
   ownershipFilterResetButton,
@@ -14,6 +16,7 @@ import {
   sortControl,
   templatesToggle,
   typeFilter,
+  triggerLibrarySearchAndWait,
   waitForLibraryResultsLoaded,
 } from '../shared/locators/library';
 import {
@@ -96,6 +99,10 @@ export function collectMyLibraryMembershipScopeUuids(manifest: WorkflowManifest)
     uuids.add(manifest.template_project_uuid);
   }
 
+  for (const project of manifest.recent_projects) {
+    uuids.add(project.uuid);
+  }
+
   for (const templateWorkflow of manifest.template_workflows ?? []) {
     uuids.add(templateWorkflow.workflow_uuid);
   }
@@ -133,48 +140,58 @@ export async function ensureMyLibraryResultsHaveCards(page: Page): Promise<boole
     return true;
   }
 
-  await selectFilterOption(page, typeFilter(page), 'Workflows');
-  await waitForLibraryResultsLoaded(page);
+  await triggerLibrarySearchAndWait(
+    page,
+    () => selectFilterOption(page, typeFilter(page), 'Workflows'),
+    { filters: { contentType: 'workflow' } },
+  );
   return (await libraryCards(page).count()) > 0;
 }
 
-/** FR-LIB-003 — ownershipFilter Owned narrows results and every visible card shows owner attribution. */
+/** FR-LIB-003 — ownershipFilter Owned narrows results to owner-role API rows. */
 export async function expectOwnershipFilterOwnedNarrowsMyLibraryResults(page: Page): Promise<void> {
-  const baselineCount = await libraryCards(page).count();
+  const baselineTitles = await libraryCardTitles(page).allInnerTexts();
+  const baselineCount = baselineTitles.length;
   expect(baselineCount).toBeGreaterThan(0);
 
-  await selectFilterOption(page, ownershipFilter(page), 'Owned');
+  const filteredResponse = await triggerLibrarySearchAndWait(
+    page,
+    () => selectFilterOption(page, ownershipFilter(page), 'Owned'),
+    { filters: { ownership: 'owned' } },
+  );
   await expect(ownershipFilter(page)).toHaveText('Owned', { exact: true });
   await expect(ownershipFilterResetButton(page)).toBeVisible();
-  await waitForLibraryResultsLoaded(page);
 
-  const ownedCount = await libraryCards(page).count();
+  const ownedCount = filteredResponse.items.length;
   expect(ownedCount).toBeLessThanOrEqual(baselineCount);
   expect(ownedCount).toBeGreaterThan(0);
 
-  const cards = libraryCards(page);
-  for (let i = 0; i < ownedCount; i++) {
-    await expect(cardOwnerText(cards.nth(i))).toBeVisible();
+  for (const item of filteredResponse.items) {
+    expect(item.permissions?.resourceRole).toBe('owner');
   }
 }
 
 /** FR-LIB-003 — favouritesToggle restricts resultsRegion to favourited in-scope cards. */
 export async function expectFavouritesToggleNarrowsMyLibraryResults(page: Page): Promise<void> {
-  const baselineCount = await libraryCards(page).count();
+  const baselineTitles = await libraryCardTitles(page).allInnerTexts();
+  const baselineCount = baselineTitles.length;
   expect(baselineCount).toBeGreaterThan(0);
 
-  await favouritesToggle(page).click();
+  const filteredResponse = await triggerLibrarySearchAndWait(
+    page,
+    () => favouritesToggle(page).click(),
+    { filters: { isFavorite: true } },
+  );
   await expect(favouritesToggle(page)).toHaveClass(/MuiButton-contained/);
-  await waitForLibraryResultsLoaded(page);
 
-  const favouritedOnlyCount = await libraryCards(page).count();
+  const favouritedOnlyCount = filteredResponse.items.length;
   expect(favouritedOnlyCount).toBeGreaterThan(0);
   expect(favouritedOnlyCount).toBeLessThanOrEqual(baselineCount);
   await expectExploreResultsContainOnlyFavouritedCards(page);
 
   await favouritesToggle(page).click();
   await expect(favouritesToggle(page)).not.toHaveClass(/MuiButton-contained/);
-  await waitForLibraryResultsLoaded(page);
+  await expectLibraryCardTitles(page, baselineTitles);
 
   const restoredCount = await libraryCards(page).count();
   expect(restoredCount).toBeGreaterThanOrEqual(favouritedOnlyCount);
@@ -188,11 +205,16 @@ export async function expectKeywordSearchNarrowsMyLibraryResults(
   const baselineCount = await libraryCards(page).count();
   expect(baselineCount).toBeGreaterThan(0);
 
-  await keywordSearchField(page).fill(keyword);
-  await keywordSearchField(page).press('Enter');
-  await waitForLibraryResultsLoaded(page);
+  const filteredResponse = await triggerLibrarySearchAndWait(
+    page,
+    async () => {
+      await keywordSearchField(page).fill(keyword);
+      await keywordSearchField(page).press('Enter');
+    },
+    { filters: { keyword } },
+  );
 
-  const narrowedCount = await libraryCards(page).count();
+  const narrowedCount = filteredResponse.items.length;
   expect(narrowedCount).toBeGreaterThan(0);
   expect(narrowedCount).toBeLessThanOrEqual(baselineCount);
 

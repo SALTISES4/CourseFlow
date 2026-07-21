@@ -1,5 +1,7 @@
 import { WorkflowType } from '@cf/api/gen'
 import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import { ResourceRole } from '@cf/api/gen/types.gen'
+import { useWorkspacePermissions } from '@cf/context/workspacePermissionsContext'
 import { selectSectionUuidsOrderedForGraph } from '@cf/features/graph/state/selectors/canonical.selectors'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -32,13 +34,14 @@ import { Routes, useParams } from 'react-router-dom'
  * and then the tabs that allow the user to select a "type" of workflow view.
  */
 
-// TODO(graph-state): Plumb `publicView` and `isStrategy` from canonical workflow meta or workflow detail API when available (legacy `workspace.workflow` is not mounted on RootState). Defaults match signed-in editor behavior.
-const workflowChromePublicView = false
 const workflowChromeIsStrategy = false
 
 const WorkflowTabs = () => {
   const { uuid } = useParams()
   const workflowViewType = useWorkflowViewTypeFromRoute()
+  const { resource: permissions } = useWorkspacePermissions()
+  const workflowChromePublicView =
+    permissions.resourceRole === ResourceRole.PUBLIC
 
   const {
     data: workflowDetailResp,
@@ -56,7 +59,9 @@ const WorkflowTabs = () => {
 
   const sectionIdsOrderedSelector = useMemo(
     () =>
-      selectSectionUuidsOrderedForGraph(workflowDetailResp?.item?.graphUuid),
+      selectSectionUuidsOrderedForGraph(
+        workflowDetailResp?.item?.graphUuid ?? ''
+      ),
     [workflowDetailResp?.item?.graphUuid]
   )
   const sectionIdsOrdered = useSelector(sectionIdsOrderedSelector)

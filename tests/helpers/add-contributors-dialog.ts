@@ -1,5 +1,7 @@
 import { expect, type Page, type Route } from '@playwright/test';
 
+import { authenticatedApiRequest } from './api';
+
 import {
   ADD_CONTRIBUTORS_ASSIGNABLE_ROLES,
   ADD_CONTRIBUTORS_DIALOG_COPY,
@@ -67,8 +69,9 @@ export async function fetchProjectTeam(
   page: Page,
   projectUuid: string,
 ): Promise<ProjectTeamApiItem[]> {
-  const response = await page.request.get(`/api/project/${projectUuid}/team`);
-  expect(response.ok()).toBeTruthy();
+  const path = `/api/project/${projectUuid}/team`;
+  const response = await authenticatedApiRequest(page, 'GET', path);
+  expect(response.ok(), `${path} returned HTTP ${response.status()}`).toBeTruthy();
   const body = (await response.json()) as { items: ProjectTeamApiItem[] };
   return body.items;
 }

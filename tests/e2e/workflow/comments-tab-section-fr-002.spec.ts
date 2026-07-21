@@ -6,10 +6,8 @@ import {
   sectionHeader,
   sectionHoverMenu,
 } from './edit-section.locators';
-import {
-  workflowCommentsComposerField,
-  workflowCommentsTabContent,
-} from '../../shared/locators/workflow';
+import { workflowCommentsTabContent } from '../../shared/locators/workflow';
+import { requireCommentsComposer } from './comments-tab.helpers';
 
 /**
  * Section comments entry paths — FR-WF-COMMENTS-002.
@@ -61,14 +59,6 @@ test.describe('Comments tab — section host (FR-WF-COMMENTS-002)', () => {
       page.getByText('Select an item to view or add comments.', { exact: true }),
     ).toHaveCount(0);
 
-    const hasComposer = (await workflowCommentsComposerField(page).count()) > 0;
-    const unavailable = page.getByText('Comments are not available for this item yet.', {
-      exact: true,
-    });
-    if (hasComposer) {
-      await expect(workflowCommentsComposerField(page)).toBeVisible();
-      return;
-    }
-    await expect(unavailable).toBeVisible();
+    await requireCommentsComposer(page);
   });
 });

@@ -8,6 +8,7 @@ import {
 import {
   addMenuItemActivity,
   addMenuItemCourse,
+  addMenuDropdown,
   addMenuItemProgram,
   addMenuItemProject,
   addMenuTrigger,
@@ -35,6 +36,7 @@ export async function openAddMenuDropdown(page: Page): Promise<void> {
 /** FR-TOP-002 — add menu lists Project, Program, Course, and Activity rows. */
 export async function expectAddMenuCreateRowsVisiblePerFrTop002(page: Page): Promise<void> {
   await openAddMenuDropdown(page);
+  await expect(addMenuDropdown(page)).toBeVisible();
   await expect(addMenuItemProject(page)).toBeVisible();
   await expect(addMenuItemProgram(page)).toBeVisible();
   await expect(addMenuItemCourse(page)).toBeVisible();

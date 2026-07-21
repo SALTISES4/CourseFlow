@@ -1,4 +1,4 @@
-import {} from '@cf/api/gen/@tanstack/react-query.gen'
+import { CourseFlowApiError } from '@cf/api/apiError'
 import { patchMyProfilePasswordMutation } from '@cf/api/gen/@tanstack/react-query.gen'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { _t } from '@cf/utility/Utility.class'
@@ -30,7 +30,11 @@ const StyledFormBox = styled(Box)({
   }
 })
 
-const projectSchema = z
+const passwordGuidelines = _t(
+  'Your password must contain at least 12 characters and include a mix of numbers, letters and symbols'
+)
+
+const passwordSchema = z
   .object({
     oldPass: z
       .string()
@@ -39,6 +43,7 @@ const projectSchema = z
 
     newPass: z
       .string()
+      .min(1, { message: _t('New password is required') })
       .refine(
         (password) =>
           password.length >= 12 &&
@@ -46,20 +51,37 @@ const projectSchema = z
           /\d/.test(password) &&
           /[^a-zA-Z0-9]/.test(password),
         {
-          message: _t(
-            'Your password must contain at least 12 characters and include a mix of numbers, letters and symbols.'
-          )
+          message: passwordGuidelines
         }
       ),
 
-    newPassConfirm: z.string()
+    newPassConfirm: z
+      .string()
+      .min(1, { message: _t('Confirm new password is required') })
   })
-  .refine((data) => data.newPass === data.newPassConfirm, {
-    path: ['newPassConfirm'],
-    message: _t('Passwords do not match.')
+  .superRefine((data, context) => {
+    if (data.oldPass && data.newPass && data.oldPass === data.newPass) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['newPass'],
+        message: _t('New password must be different from your current password')
+      })
+    }
+
+    if (
+      data.newPass &&
+      data.newPassConfirm &&
+      data.newPass !== data.newPassConfirm
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['newPassConfirm'],
+        message: _t('Passwords do not match')
+      })
+    }
   })
 
-type FormValues = z.infer<typeof projectSchema>
+type FormValues = z.infer<typeof passwordSchema>
 
 const PasswordResetPage = () => {
   const patchMyProfilePassword = useMutation({
@@ -72,10 +94,11 @@ const PasswordResetPage = () => {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isDirty }
+    setError,
+    formState: { errors, isDirty, isValid }
   } = useForm<FormValues>({
-    // mode: 'onChange', // NOTE: we could also do it a bit faster?
-    resolver: zodResolver(projectSchema),
+    mode: 'onChange',
+    resolver: zodResolver(passwordSchema),
     defaultValues: {
       oldPass: '',
       newPass: '',
@@ -91,10 +114,29 @@ const PasswordResetPage = () => {
           newPassword: formData.newPass
         }
       })
-      onSuccess({ message: _t('Password updated!') })
+      onSuccess({ message: _t('Your password has been successfully reset') })
       reset()
     } catch (err) {
-      onError(err)
+      const errorBody = err instanceof CourseFlowApiError ? err.body : err
+      if (typeof errorBody === 'object' && errorBody !== null) {
+        if ('password' in errorBody) {
+          setError('oldPass', {
+            type: 'server',
+            message: String(errorBody.password)
+          })
+          return
+        }
+        if ('newPassword' in errorBody) {
+          setError('newPass', {
+            type: 'server',
+            message: String(errorBody.newPassword)
+          })
+          return
+        }
+      }
+      onError({
+        message: _t('We encountered an issue and your password was not reset')
+      })
     }
   }
 
@@ -123,16 +165,13 @@ const PasswordResetPage = () => {
           <Box sx={{ mb: 4 }}>
             <FormControl>
               <TextField
-                {...register('newPass')}
+                {...register('newPass', { deps: ['newPassConfirm'] })}
                 type="password"
                 required
                 label={_t('New password')}
                 error={!!errors.newPass}
                 helperText={
-                  (errors && errors.newPass?.message) ??
-                  _t(
-                    'Your password must contain at least 12 characters and include a mix of numbers, letters and symbols.'
-                  )
+                  (errors && errors.newPass?.message) ?? passwordGuidelines
                 }
                 variant="standard"
               />
@@ -157,7 +196,9 @@ const PasswordResetPage = () => {
             <Button
               variant="contained"
               type="submit"
-              disabled={!isDirty || !!Object.keys(errors).length}
+              disabled={
+                !isDirty || !isValid || patchMyProfilePassword.isPending
+              }
             >
               {_t('Reset password')}
             </Button>

@@ -7,7 +7,7 @@ Domain entities live in sibling modules; this module holds only relational glue.
 from django.conf import settings
 from django.db import models
 
-from course_flow.core.enum import Role
+from course_flow.core.enum import TeamRole
 from course_flow.core.models.discipline import Discipline
 from course_flow.core.models.graph import Graph
 from course_flow.core.models.horizontaloutcome import Horizontaloutcome
@@ -17,7 +17,7 @@ from course_flow.core.models.project import Project
 from course_flow.core.models.tag import Tag
 from course_flow.core.models.team import Team
 
-ROLE_CHOICES = [(e.value, e.name.title()) for e in Role]
+ROLE_CHOICES = [(e.value, e.name.title()) for e in TeamRole]
 
 
 class ProjectDiscipline(models.Model):
@@ -56,7 +56,11 @@ class TeamUser(models.Model):
             models.UniqueConstraint(
                 fields=["user", "team"],
                 name="cf_team_user_unique",
-            )
+            ),
+            models.CheckConstraint(
+                condition=models.Q(role__in=[role.value for role in TeamRole]),
+                name="cf_team_user_role_valid",
+            ),
         ]
 
 

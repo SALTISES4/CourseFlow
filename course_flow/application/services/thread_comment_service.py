@@ -4,6 +4,9 @@ from typing import Literal
 from uuid import UUID
 
 from course_flow.application.dto import CommentAuthorDTO, CommentDTO
+from course_flow.application.services.authorization_service import (
+    AuthorizationService,
+)
 from course_flow.core.models import (
     Channel,
     Comment,
@@ -12,14 +15,18 @@ from course_flow.core.models import (
     Outcome,
     Section,
     Thread,
+    User,
 )
+from course_flow.core.permissions import WorkflowPermission
 
 
 class ThreadCommentService:
     """
-    Lazy-load comments for a thread; authorization matches workflow authorship
-    on the owning graph (same mental model as ``GET /graphs/{uuid}/view``).
+    Lazy-load comments for a thread using the owning workflow's permission context.
     """
+
+    def __init__(self) -> None:
+        self._authorization = AuthorizationService()
 
     def _graph_for_thread(self, thread: Thread) -> Graph | None:
         s = (
@@ -60,12 +67,15 @@ class ThreadCommentService:
         return None
 
     def _get_authorized_thread(
-        self, thread_uuid: UUID, requester_user_id: int
+        self,
+        thread_uuid: UUID,
+        requester_user_id: int,
+        action: WorkflowPermission,
     ) -> Thread | None:
         """Return the thread if it exists, is in a graph context, and requester may access it.
 
         Returns ``None`` if the thread does not exist or has no graph context.
-        Raises ``PermissionError`` if the workflow author is another user.
+        Raises ``PermissionError`` if the requested action is not allowed.
         """
         try:
             thread = Thread.objects.get(uuid=thread_uuid)
@@ -76,8 +86,15 @@ class ThreadCommentService:
         if graph is None:
             return None
 
-        graph = Graph.objects.select_related("workflow").get(pk=graph.pk)
-        if graph.workflow.author_id != requester_user_id:
+        graph = Graph.objects.select_related("workflow__project").get(pk=graph.pk)
+        try:
+            user = User.objects.get(pk=requester_user_id)
+        except User.DoesNotExist as exc:
+            raise PermissionError from exc
+        if not self._authorization.permissions_for_workflow(
+            user=user,
+            workflow=graph,
+        ).allows(action):
             raise PermissionError
 
         return thread
@@ -91,10 +108,14 @@ class ThreadCommentService:
         Returns ``None`` if the thread does not exist or is not attached to any graph
         context we can authorize (treated as not found).
 
-        Raises ``PermissionError`` if the thread is in a graph owned by another user.
+        Raises ``PermissionError`` if the requested workflow action is not allowed.
         """
         try:
-            thread = self._get_authorized_thread(thread_uuid, requester_user_id)
+            thread = self._get_authorized_thread(
+                thread_uuid,
+                requester_user_id,
+                WorkflowPermission.VIEW,
+            )
         except PermissionError:
             raise
         if thread is None:
@@ -117,14 +138,18 @@ class ThreadCommentService:
 
         Returns ``None`` if the thread cannot be resolved or authorized like list.
         Raises ``ValueError`` if ``body`` is empty after strip.
-        Raises ``PermissionError`` if the graph is owned by another user.
+        Raises ``PermissionError`` if the requested workflow action is not allowed.
         """
         text = body.strip()
         if not text:
             raise ValueError("Comment body must be non-empty")
 
         try:
-            thread = self._get_authorized_thread(thread_uuid, requester_user_id)
+            thread = self._get_authorized_thread(
+                thread_uuid,
+                requester_user_id,
+                WorkflowPermission.COMMENT,
+            )
         except PermissionError:
             raise
         if thread is None:
@@ -144,36 +169,55 @@ class ThreadCommentService:
         comment_uuid: UUID,
         requester_user_id: int,
     ) -> Literal["deleted", "not_found", "comment_not_found", "wrong_thread"]:
-        """Delete a single comment. Raises ``PermissionError`` if not graph owner."""
+        """Delete a comment authored by the current actor."""
         try:
-            thread = self._get_authorized_thread(thread_uuid, requester_user_id)
+            thread = self._get_authorized_thread(
+                thread_uuid,
+                requester_user_id,
+                WorkflowPermission.VIEW,
+            )
         except PermissionError:
             raise
         if thread is None:
             return "not_found"
 
-        qs = Comment.objects.filter(uuid=comment_uuid, thread_id=thread.id)
-        deleted, _ = qs.delete()
-        if deleted:
-            return "deleted"
-        if Comment.objects.filter(uuid=comment_uuid).exists():
+        comment = Comment.objects.filter(
+            uuid=comment_uuid,
+            thread_id=thread.id,
+        ).first()
+        if comment is None and Comment.objects.filter(uuid=comment_uuid).exists():
             return "wrong_thread"
-        return "comment_not_found"
+        if comment is None:
+            return "comment_not_found"
+
+        if comment.author_id != requester_user_id:
+            raise PermissionError
+        self._get_authorized_thread(
+            thread_uuid,
+            requester_user_id,
+            WorkflowPermission.DELETE_OWN_COMMENT,
+        )
+        comment.delete()
+        return "deleted"
 
     def delete_all_comments(
         self, thread_uuid: UUID, requester_user_id: int
     ) -> int | None:
-        """Delete all comments on the thread. Returns deleted row count, or ``None`` if thread not found.
-
-        Raises ``PermissionError`` if not graph owner.
-        """
+        """Delete all comments authored by the actor on one thread."""
         try:
-            thread = self._get_authorized_thread(thread_uuid, requester_user_id)
+            thread = self._get_authorized_thread(
+                thread_uuid,
+                requester_user_id,
+                WorkflowPermission.DELETE_OWN_COMMENT,
+            )
         except PermissionError:
             raise
         if thread is None:
             return None
-        count, _ = Comment.objects.filter(thread_id=thread.id).delete()
+        count, _ = Comment.objects.filter(
+            thread_id=thread.id,
+            author_id=requester_user_id,
+        ).delete()
         return count
 
     def _to_dto(self, c: Comment, thread_uuid: UUID) -> CommentDTO:

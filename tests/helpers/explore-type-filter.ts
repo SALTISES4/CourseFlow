@@ -10,7 +10,7 @@ import {
   selectFilterOption,
   typeFilter,
   typeFilterResetButton,
-  waitForLibraryResultsLoaded,
+  triggerLibrarySearchAndWait,
   workflowTypeFilter,
   workflowTypeFilterAllOption,
   workflowTypeFilterCheckboxOption,
@@ -98,14 +98,18 @@ export async function expectExploreWorkflowCardsMatchSelectedWorkflowTypes(
 export async function expectWorkflowTypeFilterSingleSelectionNarrowsWorkflowOnlyResults(
   page: Page,
   workflowTypeLabel: (typeof WORKFLOW_TYPE_FILTER_OPTIONS_FR_LIB_003)[number],
-  waitForLoaded: (page: Page) => Promise<void> = waitForLibraryResultsLoaded,
 ): Promise<void> {
   await expect(workflowTypeFilter(page)).toBeVisible();
 
-  await openWorkflowTypeFilterPopover(page);
-  await workflowTypeFilterCheckboxOption(page, workflowTypeLabel).click();
-  await closeWorkflowTypeFilterPopover(page);
-  await waitForLoaded(page);
+  await triggerLibrarySearchAndWait(
+    page,
+    async () => {
+      await openWorkflowTypeFilterPopover(page);
+      await workflowTypeFilterCheckboxOption(page, workflowTypeLabel).click();
+      await closeWorkflowTypeFilterPopover(page);
+    },
+    { filters: { workflowTypes: [workflowTypeLabel.toLowerCase()] } },
+  );
 
   await expect(workflowTypeFilterSelectionIndicator(page)).toHaveText('1');
   await expectExploreWorkflowCardsMatchSelectedWorkflowTypes(page, [workflowTypeLabel]);
@@ -120,7 +124,6 @@ export async function expectWorkflowTypeFilterSingleSelectionNarrowsResults(
   await expectWorkflowTypeFilterSingleSelectionNarrowsWorkflowOnlyResults(
     page,
     workflowTypeLabel,
-    waitForLibraryResultsLoaded,
   );
 }
 
@@ -132,11 +135,20 @@ export async function expectWorkflowTypeFilterOrResultsInRegion(
 ): Promise<void> {
   await selectFilterOption(page, typeFilter(page), 'Workflows');
 
-  await openWorkflowTypeFilterPopover(page);
-  await workflowTypeFilterCheckboxOption(page, workflowTypeA).click();
-  await workflowTypeFilterCheckboxOption(page, workflowTypeB).click();
-  await closeWorkflowTypeFilterPopover(page);
-  await waitForLibraryResultsLoaded(page);
+  await triggerLibrarySearchAndWait(
+    page,
+    async () => {
+      await openWorkflowTypeFilterPopover(page);
+      await workflowTypeFilterCheckboxOption(page, workflowTypeA).click();
+      await workflowTypeFilterCheckboxOption(page, workflowTypeB).click();
+      await closeWorkflowTypeFilterPopover(page);
+    },
+    {
+      filters: {
+        workflowTypes: [workflowTypeA.toLowerCase(), workflowTypeB.toLowerCase()],
+      },
+    },
+  );
 
   await expect(workflowTypeFilterSelectionIndicator(page)).toHaveText('2');
   await expectExploreWorkflowCardsMatchSelectedWorkflowTypes(page, [workflowTypeA, workflowTypeB]);

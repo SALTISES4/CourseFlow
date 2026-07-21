@@ -1,6 +1,5 @@
 import {
   AuthRequestError,
-  type CurrentUser,
   type UserLoginPayload,
   type UserRegisterPayload,
   fetchCurrentUser,
@@ -12,7 +11,7 @@ import {
   getAccessToken,
   setAccessToken
 } from '@cf/api/authToken'
-import { UserSummaryOutResp } from '@cf/api/gen'
+import { UserSummaryOut } from '@cf/api/gen'
 import { meQueryKey } from '@cf/api/gen/@tanstack/react-query.gen'
 import { courseFlowQueryClient } from '@cf/api/queryClient'
 import { _t } from '@cf/utility/Utility.class'
@@ -22,7 +21,7 @@ export type AuthStatus = 'unknown' | 'authenticated' | 'unauthenticated'
 
 export interface AuthState {
   status: AuthStatus
-  user: CurrentUser | null
+  user: UserSummaryOut | null
   isBootstrapping: boolean
   loginPending: boolean
   error: string | null
@@ -37,7 +36,7 @@ const initialState: AuthState = {
 }
 
 export const bootstrapAuth = createAsyncThunk<
-  { user: CurrentUser | null },
+  { user: UserSummaryOut | null },
   void,
   { rejectValue: string }
 >('auth/bootstrap', async (_, { rejectWithValue }) => {
@@ -48,9 +47,10 @@ export const bootstrapAuth = createAsyncThunk<
   }
   try {
     const user = await fetchCurrentUser()
-    courseFlowQueryClient.setQueryData(meQueryKey(), {
-      item: user
-    } satisfies UserSummaryOutResp)
+    courseFlowQueryClient.setQueryData(
+      meQueryKey(),
+      user satisfies UserSummaryOut
+    )
     return { user }
   } catch (e) {
     if (e instanceof AuthRequestError && e.status === 401) {
@@ -68,16 +68,17 @@ export const bootstrapAuth = createAsyncThunk<
 })
 
 export const login = createAsyncThunk<
-  { user: CurrentUser },
+  { user: UserSummaryOut },
   UserLoginPayload,
   { rejectValue: string }
 >('auth/login', async (payload, { rejectWithValue }) => {
   try {
     const data = await loginRequest(payload)
     setAccessToken(data.accessToken)
-    courseFlowQueryClient.setQueryData(meQueryKey(), {
-      item: data.user
-    } satisfies UserSummaryOutResp)
+    courseFlowQueryClient.setQueryData(
+      meQueryKey(),
+      data.user satisfies UserSummaryOut
+    )
     return { user: data.user }
   } catch (e) {
     if (e instanceof AuthRequestError) {
@@ -89,7 +90,7 @@ export const login = createAsyncThunk<
 })
 
 export const register = createAsyncThunk<
-  { user: CurrentUser },
+  { user: UserSummaryOut },
   UserRegisterPayload,
   { rejectValue: string }
 >('auth/register', async (payload, { rejectWithValue }) => {
@@ -97,9 +98,10 @@ export const register = createAsyncThunk<
     console.log('attempting to register with', payload)
     const data = await registerRequest(payload)
     setAccessToken(data.accessToken)
-    courseFlowQueryClient.setQueryData(meQueryKey(), {
-      item: data.user
-    } satisfies UserSummaryOutResp)
+    courseFlowQueryClient.setQueryData(
+      meQueryKey(),
+      data.user satisfies UserSummaryOut
+    )
     return { user: data.user }
   } catch (e) {
     if (e instanceof AuthRequestError) {
@@ -117,7 +119,9 @@ const authSlice = createSlice({
     clearAuthError(state) {
       state.error = null
     },
-    /** Dev / future logout wiring — not exposed in UI for this milestone. */
+    /**
+     * Dev / future logout wiring — not exposed in UI for this milestone.
+     * */
     clearSession(state) {
       clearAccessToken()
       state.status = 'unauthenticated'

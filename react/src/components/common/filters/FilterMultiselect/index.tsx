@@ -1,12 +1,10 @@
 import { _t } from '@cf/utility/Utility.class'
 import { SearchFilterOption } from '@cfComponents/filters/types'
 import FilterIcon from '@mui/icons-material/FilterAlt'
-import { debounce } from '@mui/material'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
-import Fuse from 'fuse.js'
 import { produce } from 'immer'
 import {
   ChangeEvent,
@@ -14,7 +12,7 @@ import {
   ReactNode,
   useCallback,
   useEffect,
-  useMemo,
+  useRef,
   useState
 } from 'react'
 
@@ -64,25 +62,7 @@ const FilterMultiselect = ({
   const [search, setSearch] = useState('')
   const [filteredOptions, setFilteredOptions] = useState(options)
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null)
-
-  const debouncedFilter = useMemo(() => {
-    return debounce((term: string) => {
-      if (!term.trim().length) {
-        setFilteredOptions(options)
-        return
-      }
-
-      const fuse = new Fuse(options, {
-        keys: ['label']
-      })
-
-      const filtered: typeof options = fuse
-        .search(term)
-        .map((result) => result.item)
-
-      setFilteredOptions(filtered)
-    }, 500)
-  }, [options])
+  const onChangeRef = useRef(onChange)
 
   const onButtonClick: MouseEventHandler<HTMLButtonElement> = useCallback(
     (event) => {
@@ -127,19 +107,42 @@ const FilterMultiselect = ({
   }, [value])
 
   const onSelectAll = useCallback(() => {
-    const filtered = filteredOptions.filter((o) => !o.disabled)
-    if (value.length !== filtered.length) {
-      setValue(filteredOptions.filter((o) => !o.disabled))
+    const visibleValues = new Set(filteredOptions.map((option) => option.value))
+    const selectableVisibleOptions = filteredOptions.filter(
+      (option) => !option.disabled
+    )
+    const allSelectableVisibleOptionsAreSelected =
+      selectableVisibleOptions.length > 0 &&
+      selectableVisibleOptions.every((option) =>
+        value.some((selectedOption) => selectedOption.value === option.value)
+      )
+
+    if (!allSelectableVisibleOptionsAreSelected) {
+      setValue([
+        ...value.filter((option) => !visibleValues.has(option.value)),
+        ...selectableVisibleOptions
+      ])
     }
   }, [value, filteredOptions])
 
   useEffect(() => {
-    onChange(value)
-  }, [onChange, value])
+    onChangeRef.current = onChange
+  }, [onChange])
 
   useEffect(() => {
-    debouncedFilter(search)
-  }, [search, debouncedFilter])
+    onChangeRef.current(value)
+  }, [value])
+
+  useEffect(() => {
+    const normalizedSearch = search.trim().toLocaleLowerCase()
+    setFilteredOptions(
+      normalizedSearch
+        ? options.filter((option) =>
+            option.label.toLocaleLowerCase().includes(normalizedSearch)
+          )
+        : options
+    )
+  }, [search, options])
 
   return (
     <>

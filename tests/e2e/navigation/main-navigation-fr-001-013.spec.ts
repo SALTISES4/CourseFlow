@@ -28,7 +28,7 @@ import {
 /**
  * Calibration slice — FR-NAV-001 through FR-NAV-013.
  * Requirements: tests/docs/requirements/features/navigation/main_navigation_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (teacher@courseflow.com).
  */
 
 test.describe('Main navigation — calibration (FR-NAV-001-013)', () => {
@@ -162,22 +162,12 @@ test.describe('Main navigation — calibration (FR-NAV-001-013)', () => {
   });
 });
 
-<<<<<<< HEAD
 test.describe('Main navigation — workflow context (FR-NAV-012–013)', () => {
   test.describe('when workflow has no related links', () => {
     test('FR-NAV-012: activity workflow hides Contains', async ({ page }) => {
       const linked = getNavigationLinkedWorkflows();
       await gotoAuthenticatedShell(page, linked.activity.workflow_path);
       await waitForMainNavigationReady(page);
-=======
-test.describe('Main navigation — workflow context (FR-NAV-012-013)', () => {
-  test('FR-NAV-012/013: E2E activity workflow hides Contains and Appears in when no links', async ({
-    page,
-  }) => {
-    const { loadWorkflowManifest, getPrimaryWorkflow } = await import('../../helpers/manifest');
-    const manifest = loadWorkflowManifest();
-    const workflow = getPrimaryWorkflow(manifest);
->>>>>>> 7fc551f774323450cf4b3d2c7affcd0b996e3169
 
       await expectWorkflowContextSectionHidden(page, 'contains');
     });

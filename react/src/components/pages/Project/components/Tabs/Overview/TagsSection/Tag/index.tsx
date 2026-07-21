@@ -45,13 +45,16 @@ const Tag = ({
   const inputRef = useRef<HTMLInputElement>(null)
 
   const onWrapClick = useCallback(() => {
+    if (disabled) {
+      return
+    }
     setState(
       produce((draft) => {
         draft.focused = true
-        inputRef?.current.focus()
+        inputRef.current?.focus()
       })
     )
-  }, [])
+  }, [disabled])
 
   const onInputChange: ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
@@ -77,7 +80,7 @@ const Tag = ({
       return
     }
 
-    onChange(uuid, state.label, create)
+    onChange(uuid, state.label, Boolean(create))
 
     setState(
       produce((draft) => {
@@ -94,7 +97,7 @@ const Tag = ({
       }
 
       if (e.key === 'Enter') {
-        onChange(uuid, state.label, create)
+        onChange(uuid, state.label, Boolean(create))
         setState(
           produce((draft) => {
             draft.label = ''
@@ -103,7 +106,7 @@ const Tag = ({
       }
 
       if (e.key === 'Escape') {
-        inputRef?.current.blur()
+        inputRef.current?.blur()
         setState({
           label: '',
           focused: false
@@ -116,7 +119,7 @@ const Tag = ({
   const onDeleteClick = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation()
-      onDelete(uuid)
+      onDelete?.(uuid)
     },
     [onDelete, uuid]
   )
@@ -125,8 +128,8 @@ const Tag = ({
     <ClickAwayListener onClickAway={onClickAway}>
       <Styled.Tag
         focused={state.focused}
-        disabled={disabled}
-        create={create}
+        disabled={Boolean(disabled)}
+        create={Boolean(create)}
         onClick={onWrapClick}
       >
         <Styled.TagIcon>
@@ -139,9 +142,9 @@ const Tag = ({
           onFocus={onInputFocus}
           onChange={onInputChange}
           onKeyDown={onInputKeyDown}
-          placeholder={create ? _t('Add new tag') : null}
+          placeholder={create ? _t('Add new tag') : undefined}
         />
-        {!create && (
+        {!create && !disabled && (
           <Styled.DeleteButton tabIndex={-1} onClick={onDeleteClick}>
             <CloseIcon />
           </Styled.DeleteButton>

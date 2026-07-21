@@ -31,7 +31,7 @@ class CommentCreateIn(CamelSchema):
 
 
 class ThreadCommentsBulkDeleteOut(CamelSchema):
-    """Response for DELETE /thread/{uuid}/comments (delete all)."""
+    """Response for deleting all comments authored by the current actor."""
 
     success: bool = True
     deleted_count: int

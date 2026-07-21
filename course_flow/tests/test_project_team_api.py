@@ -9,7 +9,14 @@ from django.utils import timezone
 
 from course_flow.core.auth import generate_raw_token, hash_token
 from course_flow.core.enum import Role
-from course_flow.core.models import Authtoken, Project, Team, TeamUser
+from course_flow.core.models import (
+    Authtoken,
+    Graph,
+    Project,
+    Team,
+    TeamUser,
+    Workflow,
+)
 
 
 @pytest.fixture
@@ -185,6 +192,13 @@ def test_delete_project_team_member_works(client: Client, owner, member):
         user=member,
         role=Role.VIEWER,
     )
+    workflow = Workflow.objects.create(
+        graph=Graph.objects.create(),
+        project=project,
+        author=member,
+        title="Member workflow",
+        workflow_type="course",
+    )
 
     deleted = client.delete(
         f"/api/project/{project_uuid}/team/{m.id}", **_auth_header(raw)
@@ -192,6 +206,8 @@ def test_delete_project_team_member_works(client: Client, owner, member):
     assert deleted.status_code == 200
     assert deleted.json() == {"success": True}
     assert not TeamUser.objects.filter(pk=m.id).exists()
+    workflow.refresh_from_db()
+    assert workflow.author_id == owner.id
 
 
 @pytest.mark.django_db

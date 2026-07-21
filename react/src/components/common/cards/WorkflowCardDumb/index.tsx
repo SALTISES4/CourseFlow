@@ -63,7 +63,7 @@ const WorkflowCardDumb = ({
   'data-test-id': dataTestId
 }: PropsType) => (
   <CardWrap
-    onClick={!isDisabledLink ? onClick : null}
+    onClick={!isDisabledLink ? onClick : undefined}
     className={isSelected ? 'selected' : ''}
     data-test-id={dataTestId}
   >

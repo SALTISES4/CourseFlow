@@ -33,7 +33,7 @@ import {
 /**
  * Calibration slice — FR-PROJ-FORM-003, FR-PROJ-FORM-006, FR-PROJ-FORM-007 (partial).
  * Requirements: tests/docs/requirements/features/project/project_edit_form_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (teacher@courseflow.com).
  * Note: edit entry is project ActionMenu (edit-project-button), not contextActionBar pencil.
  */
 
@@ -149,12 +149,28 @@ test.describe('Edit project form — calibration (FR-PROJ-FORM-003-007)', () => 
         title: updatedTitle,
         description: updatedDescription,
         isPublished: false,
+        isArchived: false,
         isTemplate: false,
         isFavorite: false,
         ownerId: 1,
         dateCreated: '2026-01-01T00:00:00Z',
         modifiedOn: '2026-01-01T00:00:00Z',
+        disciplines: [{ id: 1, title: disciplineLabels[0]! }],
         workflows: [],
+        permissions: {
+          accountRole: 'teacher',
+          resourceRole: 'owner',
+          state: 'active',
+          actions: [
+            'view',
+            'edit_project',
+            'manage_members',
+            'create_workflow',
+            'archive_project',
+            'publish_project',
+          ],
+          adminOverride: false,
+        },
       };
 
       await openEditProjectDialog(page);

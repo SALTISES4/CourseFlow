@@ -10,7 +10,6 @@ from uuid import UUID
 from django.db import transaction
 from django.db.models import F, Q
 
-from course_flow.api.permissions import can_view_graph
 from course_flow.application.graph_mutation_delta import (
     GraphMutationDeltaBuilder,
 )
@@ -22,6 +21,9 @@ from course_flow.application.node_grid import (
     apply_insert_reflow,
     apply_move_reflow,
     resolve_target_row,
+)
+from course_flow.application.services.authorization_service import (
+    AuthorizationService,
 )
 from course_flow.core.hierarchy import child_node_type_value_for_workflow
 from course_flow.core.models import (
@@ -36,6 +38,7 @@ from course_flow.core.models import (
     Workflow,
 )
 from course_flow.core.models.thread import Thread
+from course_flow.core.permissions import WorkflowPermission
 
 MutationError = Literal["not_found", "forbidden", "bad_request"]
 
@@ -267,21 +270,41 @@ def _bump_revision(wf: Graph) -> None:
 
 
 class GraphMutationService:
+    def __init__(self) -> None:
+        self._authorization = AuthorizationService()
+
+    def _has_permission(
+        self,
+        *,
+        graph: Graph,
+        user_id: int,
+        action: WorkflowPermission,
+    ) -> bool:
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return False
+        return self._authorization.permissions_for_workflow(
+            user=user,
+            workflow=graph,
+        ).allows(action)
+
     def _lock_graph(
         self,
         graph_uuid: UUID,
         user_id: int,
+        action: WorkflowPermission,
     ) -> tuple[Graph | None, MutationError | None]:
         try:
             wf = (
                 Graph.objects.select_for_update(of=("self",))
-                .select_related("workflow")
+                .select_related("workflow__project")
                 .get(uuid=graph_uuid)
             )
         except Graph.DoesNotExist:
             return None, "not_found"
 
-        if wf.workflow.author_id != user_id:
+        if not self._has_permission(graph=wf, user_id=user_id, action=action):
             return None, "forbidden"
 
         return wf, None
@@ -311,13 +334,17 @@ class GraphMutationService:
         try:
             wf_locked = (
                 Graph.objects.select_for_update(of=("self",))
-                .select_related("workflow")
+                .select_related("workflow__project")
                 .get(pk=wf.pk)
             )
         except Graph.DoesNotExist:
             return None, "not_found"
 
-        if wf_locked.workflow.author_id != user_id:
+        if not self._has_permission(
+            graph=wf_locked,
+            user_id=user_id,
+            action=WorkflowPermission.NODE_MANAGEMENT,
+        ):
             return None, "forbidden"
         try:
             node = (
@@ -382,13 +409,17 @@ class GraphMutationService:
         try:
             wf_locked = (
                 Graph.objects.select_for_update(of=("self",))
-                .select_related("workflow")
+                .select_related("workflow__project")
                 .get(pk=channel.graph_id)
             )
         except Graph.DoesNotExist:
             return None, "not_found"
 
-        if wf_locked.workflow.author_id != user_id:
+        if not self._has_permission(
+            graph=wf_locked,
+            user_id=user_id,
+            action=WorkflowPermission.NODE_CATEGORY_MANAGEMENT,
+        ):
             return None, "forbidden"
 
         if channel.graph_id != wf_locked.id:
@@ -443,13 +474,17 @@ class GraphMutationService:
         try:
             wf_locked = (
                 Graph.objects.select_for_update(of=("self",))
-                .select_related("workflow")
+                .select_related("workflow__project")
                 .get(pk=section.graph_id)
             )
         except Graph.DoesNotExist:
             return None, "not_found"
 
-        if wf_locked.workflow.author_id != user_id:
+        if not self._has_permission(
+            graph=wf_locked,
+            user_id=user_id,
+            action=WorkflowPermission.PART_MANAGEMENT,
+        ):
             return None, "forbidden"
 
         if section.graph_id != wf_locked.id:
@@ -496,7 +531,11 @@ class GraphMutationService:
         channel_uuid: UUID | None = None,
         duplicate: bool = False,
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_graph(graph_uuid, user_id)
+        wf, err = self._lock_graph(
+            graph_uuid,
+            user_id,
+            WorkflowPermission.NODE_CATEGORY_MANAGEMENT,
+        )
         if err:
             return None, err
 
@@ -565,7 +604,11 @@ class GraphMutationService:
         user_id: int,
         channel_uuids: list[UUID],
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_graph(graph_uuid, user_id)
+        wf, err = self._lock_graph(
+            graph_uuid,
+            user_id,
+            WorkflowPermission.NODE_CATEGORY_MANAGEMENT,
+        )
         if err:
             return None, err
 
@@ -606,7 +649,11 @@ class GraphMutationService:
         section_uuid: UUID,
         duplicate: bool = False,
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_graph(graph_uuid, user_id)
+        wf, err = self._lock_graph(
+            graph_uuid,
+            user_id,
+            WorkflowPermission.PART_MANAGEMENT,
+        )
         if err:
             return None, err
 
@@ -662,7 +709,11 @@ class GraphMutationService:
         user_id: int,
         section_uuids: list[UUID],
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_graph(graph_uuid, user_id)
+        wf, err = self._lock_graph(
+            graph_uuid,
+            user_id,
+            WorkflowPermission.PART_MANAGEMENT,
+        )
         if err:
             return None, err
 
@@ -711,7 +762,11 @@ class GraphMutationService:
         if not source_port or not target_port:
             return None, "bad_request"
 
-        wf, err = self._lock_graph(graph_uuid, user_id)
+        wf, err = self._lock_graph(
+            graph_uuid,
+            user_id,
+            WorkflowPermission.NODE_LINK_MANAGEMENT,
+        )
 
         if err:
             return None, err
@@ -787,13 +842,17 @@ class GraphMutationService:
         try:
             wf_locked = (
                 Graph.objects.select_for_update(of=("self",))
-                .select_related("workflow")
+                .select_related("workflow__project")
                 .get(pk=wf_s.pk)
             )
         except Graph.DoesNotExist:
             return None, "not_found"
 
-        if wf_locked.workflow.author_id != user_id:
+        if not self._has_permission(
+            graph=wf_locked,
+            user_id=user_id,
+            action=WorkflowPermission.NODE_LINK_MANAGEMENT,
+        ):
             return None, "forbidden"
 
         try:
@@ -864,13 +923,17 @@ class GraphMutationService:
         try:
             wf_locked = (
                 Graph.objects.select_for_update(of=("self",))
-                .select_related("workflow")
+                .select_related("workflow__project")
                 .get(pk=wf_s.pk)
             )
         except Graph.DoesNotExist:
             return None, "not_found"
 
-        if wf_locked.workflow.author_id != user_id:
+        if not self._has_permission(
+            graph=wf_locked,
+            user_id=user_id,
+            action=WorkflowPermission.NODE_LINK_MANAGEMENT,
+        ):
             return None, "forbidden"
 
         try:
@@ -929,7 +992,11 @@ class GraphMutationService:
         section_row: int,
         workflow_uuid: UUID | None,
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_graph(graph_uuid, user_id)
+        wf, err = self._lock_graph(
+            graph_uuid,
+            user_id,
+            WorkflowPermission.NODE_MANAGEMENT,
+        )
         if err:
             return None, err
 
@@ -995,12 +1062,16 @@ class GraphMutationService:
         try:
             wf_locked = (
                 Graph.objects.select_for_update(of=("self",))
-                .select_related("workflow")
+                .select_related("workflow__project")
                 .get(pk=wf.pk)
             )
         except Graph.DoesNotExist:
             return None, "not_found"
-        if wf_locked.workflow.author_id != user_id:
+        if not self._has_permission(
+            graph=wf_locked,
+            user_id=user_id,
+            action=WorkflowPermission.NODE_MANAGEMENT,
+        ):
             return None, "forbidden"
         try:
             n = Node.objects.select_related(
@@ -1114,12 +1185,16 @@ class GraphMutationService:
         try:
             wf_locked = (
                 Graph.objects.select_for_update(of=("self",))
-                .select_related("workflow")
+                .select_related("workflow__project")
                 .get(pk=wf.pk)
             )
         except Graph.DoesNotExist:
             return None, "not_found"
-        if wf_locked.workflow.author_id != user_id:
+        if not self._has_permission(
+            graph=wf_locked,
+            user_id=user_id,
+            action=WorkflowPermission.NODE_MANAGEMENT,
+        ):
             return None, "forbidden"
 
         n = self._reload_node(n.pk)
@@ -1229,7 +1304,11 @@ class GraphMutationService:
         duplicate: bool = False,
         edge: DropEdge | None = None,
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_graph(graph_uuid, user_id)
+        wf, err = self._lock_graph(
+            graph_uuid,
+            user_id,
+            WorkflowPermission.NODE_MANAGEMENT,
+        )
         if err:
             return None, err
         try:
@@ -1307,7 +1386,11 @@ class GraphMutationService:
         mode: InsertMode,
         edge: DropEdge | None = None,
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_graph(graph_uuid, user_id)
+        wf, err = self._lock_graph(
+            graph_uuid,
+            user_id,
+            WorkflowPermission.NODE_MANAGEMENT,
+        )
         if err:
             return None, err
         try:
@@ -1378,7 +1461,11 @@ class GraphMutationService:
         if wf is None:
             return None, "bad_request"
 
-        wf_locked, err = self._lock_graph(wf.uuid, user_id)
+        wf_locked, err = self._lock_graph(
+            wf.uuid,
+            user_id,
+            WorkflowPermission.NODE_MANAGEMENT,
+        )
         if err:
             return None, err
 
@@ -1459,7 +1546,11 @@ class GraphMutationService:
         if wf is None:
             return None, "bad_request"
 
-        wf_locked, err = self._lock_graph(wf.uuid, user_id)
+        wf_locked, err = self._lock_graph(
+            wf.uuid,
+            user_id,
+            WorkflowPermission.NODE_LINK_MANAGEMENT,
+        )
         if err:
             return None, err
 
@@ -1476,8 +1567,11 @@ class GraphMutationService:
             except Workflow.DoesNotExist:
                 return None, "not_found"
             target_graph = target_workflow.graph
-            current_user = User.objects.get(pk=user_id)
-            if not can_view_graph(current_user=current_user, graph=target_graph):
+            if not self._has_permission(
+                graph=target_graph,
+                user_id=user_id,
+                action=WorkflowPermission.VIEW,
+            ):
                 return None, "forbidden"
             node.linked_workflow = target_workflow
 
@@ -1520,7 +1614,11 @@ class GraphMutationService:
         if wf is None:
             return None, None, None, "bad_request"
 
-        wf_locked, err = self._lock_graph(wf.uuid, user_id)
+        wf_locked, err = self._lock_graph(
+            wf.uuid,
+            user_id,
+            WorkflowPermission.ASSIGN_OUTCOMES,
+        )
         if err:
             return None, None, None, err
 
@@ -1617,7 +1715,11 @@ class GraphMutationService:
         code: str = "",
         tag_ids: list[int] | None = None,
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_graph(graph_uuid, user_id)
+        wf, err = self._lock_graph(
+            graph_uuid,
+            user_id,
+            WorkflowPermission.OUTCOME_MANAGEMENT,
+        )
         if err:
             return None, err
 
@@ -1688,7 +1790,11 @@ class GraphMutationService:
         except Outcome.DoesNotExist:
             return None, "not_found"
 
-        wf, err = self._lock_graph(outcome.graph.uuid, user_id)
+        wf, err = self._lock_graph(
+            outcome.graph.uuid,
+            user_id,
+            WorkflowPermission.OUTCOME_MANAGEMENT,
+        )
         if err:
             return None, err
 
@@ -1743,7 +1849,11 @@ class GraphMutationService:
         except Outcome.DoesNotExist:
             return None, "not_found"
 
-        wf, err = self._lock_graph(outcome.graph.uuid, user_id)
+        wf, err = self._lock_graph(
+            outcome.graph.uuid,
+            user_id,
+            WorkflowPermission.OUTCOME_MANAGEMENT,
+        )
         if err:
             return None, err
 
@@ -1785,7 +1895,11 @@ class GraphMutationService:
         except Outcome.DoesNotExist:
             return None, "not_found"
 
-        wf, err = self._lock_graph(source.graph.uuid, user_id)
+        wf, err = self._lock_graph(
+            source.graph.uuid,
+            user_id,
+            WorkflowPermission.OUTCOME_MANAGEMENT,
+        )
         if err:
             return None, err
 
@@ -1857,7 +1971,11 @@ class GraphMutationService:
         except Outcome.DoesNotExist:
             return None, "not_found"
 
-        wf, err = self._lock_graph(moving.graph.uuid, user_id)
+        wf, err = self._lock_graph(
+            moving.graph.uuid,
+            user_id,
+            WorkflowPermission.OUTCOME_MANAGEMENT,
+        )
         if err:
             return None, err
 

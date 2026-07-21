@@ -1,16 +1,6 @@
 import { SnackbarOptions } from '@cf/utility/constants'
 import { enqueueSnackbar } from 'notistack'
 
-// message type has changed
-interface ResponseWithMessage {
-  message?: string
-}
-
-// message type has changed
-interface ErrorWithMessage {
-  message?: string
-}
-
 const PrettyPrintJSON = ({ error }: { error: string | object }) => {
   return (
     <>
@@ -23,11 +13,14 @@ const PrettyPrintJSON = ({ error }: { error: string | object }) => {
 }
 
 const useGenericQueryMsgHandler = () => {
-  function onSuccess<TResp extends ResponseWithMessage>(
-    resp: TResp,
-    callback?: () => void
-  ) {
-    const msg = resp.message ?? 'Success!'
+  function onSuccess(resp: unknown, callback?: () => void) {
+    const msg =
+      typeof resp === 'object' &&
+      resp !== null &&
+      'message' in resp &&
+      typeof resp.message === 'string'
+        ? resp.message
+        : 'Success!'
 
     enqueueSnackbar(msg, {
       variant: SnackbarOptions.SUCCESS
@@ -35,20 +28,28 @@ const useGenericQueryMsgHandler = () => {
     callback?.()
   }
 
-  function onError<TError extends ErrorWithMessage>(
-    error: TError,
-    callback?: () => void
-  ) {
-    const msg = error ?? 'An error occurred!'
-    enqueueSnackbar(<PrettyPrintJSON error={msg} />, {
-      variant: SnackbarOptions.ERROR
-    })
+  function onError(error: unknown) {
+    let msg: string | object = 'An error occurred!'
+
+    if (error instanceof Error || typeof error === 'string') {
+      msg = error instanceof Error ? error.message : error
+    } else if (typeof error === 'object' && error !== null) {
+      msg =
+        'message' in error && typeof error.message === 'string'
+          ? error.message
+          : error
+    }
+
+    enqueueSnackbar(
+      typeof msg === 'string' ? msg : <PrettyPrintJSON error={msg} />,
+      {
+        variant: SnackbarOptions.ERROR
+      }
+    )
 
     // this won't work because we're getting back errors from the serializer
     // but it's a start
     console.error('error from useGenericQueryMsgHandler:onError ', error)
-    // setErrors(error.name)
-    callback?.()
   }
 
   return {

@@ -23,6 +23,17 @@ export function workflowSectionContainer(page: Page, sectionUuid: string): Locat
   return page.locator(`[data-section-id="${sectionUuid}"]`);
 }
 
+/** canonical: workflowSectionRow — registered full-width row drop target. */
+export function workflowSectionRow(
+  page: Page,
+  sectionUuid: string,
+  rowIndex: number | 'empty',
+): Locator {
+  return workflowSectionContainer(page, sectionUuid).locator(
+    `[data-test-id="workflow-section-row"][data-row-index="${rowIndex}"]`,
+  );
+}
+
 /** canonical: workflowSectionHeader */
 export function workflowSectionHeader(page: Page, sectionUuid: string): Locator {
   return workflowSectionContainer(page, sectionUuid).locator('> header');
@@ -97,7 +108,9 @@ export function workflowSectionHeaderCollapseButton(page: Page, sectionUuid: str
 
 /** Nodes rendered inside a workflowSectionContainer. */
 export function workflowSectionNodes(page: Page, sectionUuid: string): Locator {
-  return workflowSectionContainer(page, sectionUuid).locator('[id^="node-"]');
+  return workflowSectionContainer(page, sectionUuid).locator(
+    '[data-test-id="workflow-node"]',
+  );
 }
 
 /** canonical: workflowSectionContainerSelectedBorder — selected wrapper chrome */
@@ -240,16 +253,31 @@ export function workflowCommentsTabContent(page: Page): Locator {
 }
 
 export function workflowCommentsComposerField(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByLabel(/^Comment$/i);
+  return workflowRightSidebarContentPanel(page).getByLabel('Add a comment', {
+    exact: true,
+  });
 }
 
-/** Product label is 'Comment'; FR-WF-COMMENTS-006 canonical label is 'Add comment'. */
 export function workflowCommentsTabComposerSubmitButton(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByRole('button', { name: /^Comment$/i });
+  return workflowRightSidebarContentPanel(page).getByRole('button', {
+    name: 'Add comment',
+    exact: true,
+  });
 }
 
 export function workflowCommentsTabListItemBody(page: Page, body: string): Locator {
-  return workflowRightSidebarContentPanel(page).getByText(body, { exact: true });
+  return workflowRightSidebarContentPanel(page)
+    .locator('[data-test-id="workflow-comments-list-item-body"]')
+    .filter({ hasText: body });
+}
+
+export function workflowCommentsTabListItemHeaderForBody(
+  page: Page,
+  body: string,
+): Locator {
+  return workflowCommentsTabListItemBody(page, body)
+    .locator('..')
+    .locator('[data-test-id="workflow-comments-list-item-header"]');
 }
 
 export function workflowCommentsTabListItemDeleteLink(page: Page, body: string): Locator {
@@ -259,5 +287,13 @@ export function workflowCommentsTabListItemDeleteLink(page: Page, body: string):
 }
 
 export function workflowCommentsTabListItemHeaders(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByText(/ • /);
+  return workflowRightSidebarContentPanel(page).locator(
+    '[data-test-id="workflow-comments-list-item-header"]',
+  );
+}
+
+export function workflowCommentsPresenceIndicator(commentsButton: Locator): Locator {
+  return commentsButton.locator(
+    '[data-test-id="workflow-comments-presence-indicator"]',
+  );
 }

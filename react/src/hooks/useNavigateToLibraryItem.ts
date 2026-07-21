@@ -9,8 +9,8 @@ const useNavigateToLibraryItem = () => {
   return (uuid: string, type: LibraryContentTypeOut) => {
     const basePath =
       type === LibraryContentTypeOut.PROJECT
-        ? CFRoutes.PROJECT
-        : CFRoutes.WORKFLOW
+        ? CFRoutes.PROJECT_WORKFLOW
+        : CFRoutes.WORKFLOW_GRAPH
 
     const path = generatePath(basePath, {
       uuid

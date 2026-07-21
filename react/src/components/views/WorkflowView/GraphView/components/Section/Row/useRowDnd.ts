@@ -4,15 +4,20 @@ import {
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import type { GridInsertMode } from '@cf/features/graph/state/model/types'
+import type {
+  GridDropEdge,
+  GridInsertMode
+} from '@cf/features/graph/state/model/types'
 import {
   insertChannelBelow,
   placeNode
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
+import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import type { AppDispatch, RootState } from '@cf/redux/store'
+import { CfObjectType } from '@cf/types/enum'
 import { SectionRowPropsType } from '@cfViews/WorkflowView/GraphView/components/Section/Row/type'
 import { produce } from 'immer'
-import { MutableRefObject, useCallback, useEffect, useState } from 'react'
+import { RefObject, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { isSidebarCustomNode, isSidebarNode } from '../../../types'
@@ -22,10 +27,19 @@ type StateType = {
   highlightRow: boolean
   dragId: string | null
   closestEdge: Edge | null
+  pendingDrop: PendingSidebarDrop | null
+}
+
+type PendingSidebarDrop = {
+  channelId: string
+  custom: boolean
+  row: number
+  edge?: GridDropEdge
 }
 
 type PropsType = SectionRowPropsType & {
-  rowRef: MutableRefObject<HTMLDivElement>
+  rowRef: RefObject<HTMLDivElement>
+  enabled: boolean
 }
 
 function useRowDnd(props: PropsType) {
@@ -33,12 +47,13 @@ function useRowDnd(props: PropsType) {
   const insertMode = useSelector(
     (state: RootState) => state.graph.graphUi.nodeInsertMode
   )
-  const { graphUuid, sectionId, rowIndex, rowRef, columnIds } = props
+  const { graphUuid, sectionId, rowIndex, rowRef, columnIds, enabled } = props
   const [state, setState] = useState<StateType>({
     highlightRow: false,
     highlightEdge: null,
     dragId: null,
-    closestEdge: null
+    closestEdge: null,
+    pendingDrop: null
   })
 
   const resetState = useCallback(() => {
@@ -46,11 +61,72 @@ function useRowDnd(props: PropsType) {
       highlightRow: false,
       highlightEdge: null,
       dragId: null,
-      closestEdge: null
+      closestEdge: null,
+      pendingDrop: null
     })
   }, [])
 
+  const finalizeSidebarDrop = useCallback(
+    async (drop: PendingSidebarDrop, mode: GridInsertMode) => {
+      let channelId = drop.channelId
+
+      try {
+        if (drop.custom) {
+          const createdChannelUuid = await dispatch(
+            insertChannelBelow({ graphUuid, channelUuid: null })
+          )
+          if (!createdChannelUuid) {
+            return
+          }
+          channelId = createdChannelUuid
+        }
+
+        const rowHint =
+          rowIndex === 'empty'
+            ? 0
+            : drop.edge === 'top'
+              ? drop.row
+              : drop.row + 1
+        const createdNodeUuid = await dispatch(
+          placeNode({
+            graphUuid,
+            sectionUuid: sectionId,
+            channelUuid: channelId,
+            rowHint,
+            mode,
+            edge: drop.edge
+          })
+        )
+
+        if (createdNodeUuid) {
+          dispatch(
+            sidebarEdit({
+              uuid: createdNodeUuid,
+              parentId: graphUuid,
+              objectType: CfObjectType.NODE
+            })
+          )
+        }
+      } finally {
+        resetState()
+      }
+    },
+    [dispatch, graphUuid, resetState, rowIndex, sectionId]
+  )
+
+  const chooseManualPlacement = useCallback(
+    (mode: GridInsertMode) => {
+      if (state.pendingDrop) {
+        void finalizeSidebarDrop(state.pendingDrop, mode)
+      }
+    },
+    [finalizeSidebarDrop, state.pendingDrop]
+  )
+
   useEffect(() => {
+    if (!rowRef.current || !enabled) {
+      return
+    }
     return dropTargetForElements({
       element: rowRef.current,
       getData: ({ element, input }) => {
@@ -116,42 +192,35 @@ function useRowDnd(props: PropsType) {
       onDrop: async ({ source, self }) => {
         const isCustom = isSidebarCustomNode(source.data)
         const row = self.data.row as number
-        let channelId = source.data.uuid as string
         let closestEdge = extractClosestEdge(self.data)
 
         if (isCustom) {
           closestEdge = insertMode === 'column' ? 'top' : state.highlightEdge
-          const createdChannelUuid = await dispatch(
-            insertChannelBelow({ graphUuid, channelUuid: null })
-          ).unwrap()
-          if (createdChannelUuid) {
-            channelId = createdChannelUuid
-          }
         }
 
-        // TODO: handle manual insert mode
+        const edge =
+          closestEdge === 'top' || closestEdge === 'bottom'
+            ? closestEdge
+            : undefined
+        const drop: PendingSidebarDrop = {
+          channelId: source.data.uuid as string,
+          custom: isCustom,
+          row,
+          edge
+        }
+
         if (insertMode === 'manual') {
-          console.log('TODO: Implement manual insert mode')
-          return resetState()
+          setState({
+            highlightRow: false,
+            highlightEdge: null,
+            dragId: null,
+            closestEdge: null,
+            pendingDrop: drop
+          })
+          return
         }
 
-        const rowHint =
-          rowIndex === 'empty' ? 0 : closestEdge === 'top' ? row : row + 1
-        dispatch(
-          placeNode({
-            graphUuid,
-            sectionUuid: sectionId,
-            channelUuid: channelId,
-            rowHint,
-            mode: insertMode as GridInsertMode,
-            edge:
-              closestEdge === 'top' || closestEdge === 'bottom'
-                ? closestEdge
-                : undefined
-          })
-        )
-
-        resetState()
+        await finalizeSidebarDrop(drop, insertMode as GridInsertMode)
       }
     })
   }, [
@@ -163,10 +232,16 @@ function useRowDnd(props: PropsType) {
     rowRef,
     sectionId,
     state.highlightEdge,
-    columnIds
+    finalizeSidebarDrop,
+    columnIds,
+    enabled
   ])
 
-  return state
+  return {
+    ...state,
+    chooseManualPlacement,
+    cancelManualPlacement: resetState
+  }
 }
 
 export default useRowDnd

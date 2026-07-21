@@ -17,11 +17,11 @@ export const ColumnWrap = styled(Box, {
 
 export const Inner = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'border'
-})<{ border: string }>(({ theme, border }) => ({
+})<{ border?: string }>(({ theme, border }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(1),
-  border
+  ...(border ? { border } : {})
 }))
 
 export const Border = styled(Box, {

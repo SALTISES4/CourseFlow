@@ -44,6 +44,7 @@ test.describe('Comments tab — node host compose/delete (FR-WF-COMMENTS-006, FR
     const body = `E2E node comment ${Date.now()}`;
     await composeComment(page, body);
     await expect(workflowCommentsComposerField(page)).toHaveValue('');
+    await deleteOwnComment(page, body);
   });
 
   test('FR-WF-COMMENTS-007: node host delete own comment', async ({ page }) => {
@@ -66,6 +67,7 @@ test.describe('Comments tab — channel host compose/delete (FR-WF-COMMENTS-006,
   test('FR-WF-COMMENTS-006: channel host compose adds list item', async ({ page }) => {
     const body = `E2E channel comment ${Date.now()}`;
     await composeComment(page, body);
+    await deleteOwnComment(page, body);
   });
 
   test('FR-WF-COMMENTS-007: channel host delete own comment', async ({ page }) => {
@@ -79,9 +81,7 @@ test.describe('Comments tab — outcome host compose/delete (FR-WF-COMMENTS-006,
   test.describe.configure({ mode: 'serial' });
 
   test.beforeEach(async ({ page, workflow }) => {
-    if (workflow.outcomes.length === 0) {
-      test.skip(true, 'E2E fixture has no outcomes; run just django-seed-e2e-tests.');
-    }
+    workflow.firstOutcome();
     await gotoOutcomesView(page, workflow.path);
     await openOutcomeCommentsViaHover(page, E2E_OUTCOME_TITLE);
     await requireCommentsComposer(page);
@@ -90,6 +90,7 @@ test.describe('Comments tab — outcome host compose/delete (FR-WF-COMMENTS-006,
   test('FR-WF-COMMENTS-006: outcome host compose adds list item', async ({ page }) => {
     const body = `E2E outcome comment ${Date.now()}`;
     await composeComment(page, body);
+    await deleteOwnComment(page, body);
   });
 
   test('FR-WF-COMMENTS-007: outcome host delete own comment', async ({ page }) => {

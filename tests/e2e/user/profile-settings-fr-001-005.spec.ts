@@ -8,14 +8,15 @@ import {
   expectProfileSettingsSnackbarMessage,
   fetchMyProfileSettings,
   gotoProfileSettingsPage,
+  patchMyProfileSettings,
   profileLanguageOptionForPreference,
-  profileNameAtMaxLength,
+  profileNameOverMaxLength,
+  type ProfileSettingsApiItem,
 } from '../../helpers/profile-settings-page';
 import {
   PROFILE_FIELD_VALIDATION_MESSAGES,
   PROFILE_SETTINGS_API_ROUTE,
   PROFILE_SETTINGS_SNACKBAR_MESSAGES,
-  globalMessageSnackbar,
   profileFieldValidationMessage,
   profileFirstNameField,
   profileLanguageOptionEnglish,
@@ -29,28 +30,41 @@ import {
 /**
  * Calibration slice — FR-PROFILE-001 through FR-PROFILE-005.
  * Requirements: tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml
- * Auth: chromium project storage state (admin@courseflow.com).
+ * Auth: chromium project storage state (teacher@courseflow.com).
  */
 
 test.describe('Profile settings — calibration (FR-PROFILE-001-005)', () => {
   test.describe.configure({ mode: 'serial' });
+  let profileBeforeTest: ProfileSettingsApiItem | undefined;
 
   test.beforeEach(async ({ page }) => {
+    profileBeforeTest = undefined;
     await gotoProfileSettingsPage(page);
+    profileBeforeTest = await fetchMyProfileSettings(page);
   });
 
-  test('FR-PROFILE-001: visible labels use sentence case with required-field markers', async ({
-    page,
-  }) => {
+  test.afterEach(async ({ page }) => {
+    await page.unroute(PROFILE_SETTINGS_API_ROUTE);
+    if (!profileBeforeTest) {
+      return;
+    }
+    await patchMyProfileSettings(page, profileBeforeTest);
+  });
+
+  test('FR-PROFILE-001: visible labels use sentence case', async ({ page }) => {
     await expectProfileSettingsVisibleLabelsPerFrProfile001(page);
   });
 
-  test('FR-PROFILE-001: route renders primary form elements', async ({ page }) => {
+  test('FR-PROFILE-001: route renders primary form elements', async ({
+    page,
+  }) => {
     await expect(page).toHaveURL(/\/user\/profile-settings\/?$/);
     await expectProfileSettingsPrimaryLayoutPerFrProfile001(page);
   });
 
-  test('FR-PROFILE-002: form loads with profile values from API', async ({ page }) => {
+  test('FR-PROFILE-002: form loads with profile values from API', async ({
+    page,
+  }) => {
     const profile = await fetchMyProfileSettings(page);
     await expectProfileSettingsLoadedValuesPerFrProfile002(page, profile);
     await expect(profileUsernameField(page)).toBeDisabled();
@@ -59,11 +73,19 @@ test.describe('Profile settings — calibration (FR-PROFILE-001-005)', () => {
     await expect(profileLanguagePreferenceGroup(page)).toBeVisible();
   });
 
-  test('FR-PROFILE-004: language preference offers English and French only', async ({ page }) => {
+  test('FR-PROFILE-004: language preference offers English and French only', async ({
+    page,
+  }) => {
     await expect(profileLanguageOptionEnglish(page)).toBeVisible();
     await expect(profileLanguageOptionFrench(page)).toBeVisible();
-    await expect(profileLanguageOptionEnglish(page)).toHaveAttribute('value', 'en');
-    await expect(profileLanguageOptionFrench(page)).toHaveAttribute('value', 'fr');
+    await expect(profileLanguageOptionEnglish(page)).toHaveAttribute(
+      'value',
+      'en',
+    );
+    await expect(profileLanguageOptionFrench(page)).toHaveAttribute(
+      'value',
+      'fr',
+    );
     await expect(page.getByRole('radio')).toHaveCount(2);
   });
 
@@ -72,51 +94,53 @@ test.describe('Profile settings — calibration (FR-PROFILE-001-005)', () => {
       await expectNoProfileFieldValidationMessages(page);
     });
 
-    test('first name required message after cleared submit', async ({ page }) => {
-      const baselineFirst = `E2EFirst${Date.now()}`;
-      const baselineLast = `E2ELast${Date.now()}`;
-
-      await profileFirstNameField(page).fill(baselineFirst);
-      await profileLastNameField(page).fill(baselineLast);
-      await profileUpdateButton(page).click();
-      await expect(globalMessageSnackbar(page)).toBeVisible({ timeout: 15_000 });
-
+    test('first name required message after cleared submit', async ({
+      page,
+    }) => {
+      await profileLastNameField(page).fill('Valid last name');
       await profileFirstNameField(page).fill('');
       await profileUpdateButton(page).click();
       await expect(
-        profileFieldValidationMessage(page, PROFILE_FIELD_VALIDATION_MESSAGES.firstNameRequired),
+        profileFieldValidationMessage(
+          page,
+          PROFILE_FIELD_VALIDATION_MESSAGES.firstNameRequired,
+        ),
       ).toBeVisible();
     });
 
-    test('last name required message after cleared submit', async ({ page }) => {
-      const baselineFirst = `E2EFirst${Date.now()}`;
-      const baselineLast = `E2ELast${Date.now()}`;
-
-      await profileFirstNameField(page).fill(baselineFirst);
-      await profileLastNameField(page).fill(baselineLast);
-      await profileUpdateButton(page).click();
-      await expect(globalMessageSnackbar(page)).toBeVisible({ timeout: 15_000 });
-
+    test('last name required message after cleared submit', async ({
+      page,
+    }) => {
+      await profileFirstNameField(page).fill('Valid first name');
       await profileLastNameField(page).fill('');
       await profileUpdateButton(page).click();
       await expect(
-        profileFieldValidationMessage(page, PROFILE_FIELD_VALIDATION_MESSAGES.lastNameRequired),
+        profileFieldValidationMessage(
+          page,
+          PROFILE_FIELD_VALIDATION_MESSAGES.lastNameRequired,
+        ),
       ).toBeVisible();
     });
 
-    test('first name limited to 200 characters', async ({ page }) => {
-      await profileFirstNameField(page).fill(profileNameAtMaxLength('E2E'));
+    test('first name rejects values over 200 characters', async ({ page }) => {
+      await profileFirstNameField(page).fill(profileNameOverMaxLength('E2E'));
       await profileUpdateButton(page).click();
       await expect(
-        profileFieldValidationMessage(page, PROFILE_FIELD_VALIDATION_MESSAGES.firstNameMaxLength),
+        profileFieldValidationMessage(
+          page,
+          PROFILE_FIELD_VALIDATION_MESSAGES.firstNameMaxLength,
+        ),
       ).toBeVisible();
     });
 
-    test('last name limited to 200 characters', async ({ page }) => {
-      await profileLastNameField(page).fill(profileNameAtMaxLength('E2E'));
+    test('last name rejects values over 200 characters', async ({ page }) => {
+      await profileLastNameField(page).fill(profileNameOverMaxLength('E2E'));
       await profileUpdateButton(page).click();
       await expect(
-        profileFieldValidationMessage(page, PROFILE_FIELD_VALIDATION_MESSAGES.lastNameMaxLength),
+        profileFieldValidationMessage(
+          page,
+          PROFILE_FIELD_VALIDATION_MESSAGES.lastNameMaxLength,
+        ),
       ).toBeVisible();
     });
   });
@@ -144,10 +168,17 @@ test.describe('Profile settings — calibration (FR-PROFILE-001-005)', () => {
       await expect(profileLastNameField(page)).toHaveValue(updatedLast);
     });
 
-    test('language preference saves and persists after successful submit', async ({ page }) => {
+    test('language preference saves and persists after successful submit', async ({
+      page,
+    }) => {
       const profile = await fetchMyProfileSettings(page);
-      const targetLanguage = alternateProfileLanguagePreference(profile.languagePreference);
-      const targetLanguageOption = profileLanguageOptionForPreference(page, targetLanguage);
+      const targetLanguage = alternateProfileLanguagePreference(
+        profile.languagePreference,
+      );
+      const targetLanguageOption = profileLanguageOptionForPreference(
+        page,
+        targetLanguage,
+      );
 
       await targetLanguageOption.click();
       await expect(profileUpdateButton(page)).toBeEnabled();
@@ -161,13 +192,23 @@ test.describe('Profile settings — calibration (FR-PROFILE-001-005)', () => {
 
       const savedProfile = await fetchMyProfileSettings(page);
       expect(savedProfile.languagePreference).toBe(targetLanguage);
-      await expectProfileSettingsLoadedValuesPerFrProfile002(page, savedProfile);
+      await expectProfileSettingsLoadedValuesPerFrProfile002(
+        page,
+        savedProfile,
+      );
     });
 
-    test('server failure shows snackbar and retains field values', async ({ page }) => {
+    test('server failure shows snackbar and retains field values', async ({
+      page,
+    }) => {
       const profile = await fetchMyProfileSettings(page);
-      const targetLanguage = alternateProfileLanguagePreference(profile.languagePreference);
-      const targetLanguageOption = profileLanguageOptionForPreference(page, targetLanguage);
+      const targetLanguage = alternateProfileLanguagePreference(
+        profile.languagePreference,
+      );
+      const targetLanguageOption = profileLanguageOptionForPreference(
+        page,
+        targetLanguage,
+      );
       const updatedFirst = `E2E Fail ${Date.now()}`.slice(0, 200);
       const updatedLast = `User Fail ${Date.now()}`.slice(0, 200);
 
@@ -180,7 +221,9 @@ test.describe('Profile settings — calibration (FR-PROFILE-001-005)', () => {
         void route.fulfill({
           status: 500,
           contentType: 'application/json',
-          body: JSON.stringify({ detail: 'E2E simulated profile settings failure' }),
+          body: JSON.stringify({
+            detail: 'E2E simulated profile settings failure',
+          }),
         });
       });
 

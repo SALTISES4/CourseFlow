@@ -5,6 +5,12 @@ import { client } from './client.gen'
 import type {
   AddProjectTeamMembersData,
   AddProjectTeamMembersResponses,
+  ArchiveProjectData,
+  ArchiveProjectResponses,
+  ArchiveWorkflowData,
+  ArchiveWorkflowResponses,
+  CopyWorkflowData,
+  CopyWorkflowResponses,
   CourseFlowApiNinjaAppHealthData,
   CourseFlowApiNinjaAppHealthResponses,
   CreateChannelData,
@@ -45,6 +51,8 @@ import type {
   DeleteSectionResponses,
   DeleteThreadCommentData,
   DeleteThreadCommentResponses,
+  DeleteWorkflowPermanentlyData,
+  DeleteWorkflowPermanentlyResponses,
   DuplicateOutcomeData,
   DuplicateOutcomeResponses,
   DuplicateProjectPlaceholderData,
@@ -67,6 +75,8 @@ import type {
   GetProjectGraphData,
   GetProjectGraphResponses,
   GetProjectResponses,
+  GetRelatedWorkflowsData,
+  GetRelatedWorkflowsResponses,
   GetSectionData,
   GetSectionResponses,
   GetWorkflowData,
@@ -137,6 +147,10 @@ import type {
   ReorderGraphChannelsResponses,
   ReorderGraphSectionsData,
   ReorderGraphSectionsResponses,
+  RestoreProjectData,
+  RestoreProjectResponses,
+  RestoreWorkflowData,
+  RestoreWorkflowResponses,
   SearchLibraryData,
   SearchLibraryResponses,
   UnlinkNodeOutcomeData,
@@ -157,6 +171,12 @@ import type {
 import {
   zAddProjectTeamMembersData,
   zAddProjectTeamMembersResponse,
+  zArchiveProjectData,
+  zArchiveProjectResponse,
+  zArchiveWorkflowData,
+  zArchiveWorkflowResponse,
+  zCopyWorkflowData,
+  zCopyWorkflowResponse,
   zCourseFlowApiNinjaAppHealthData,
   zCourseFlowApiNinjaAppHealthResponse,
   zCreateChannelData,
@@ -197,6 +217,8 @@ import {
   zDeleteSectionResponse,
   zDeleteThreadCommentData,
   zDeleteThreadCommentResponse,
+  zDeleteWorkflowPermanentlyData,
+  zDeleteWorkflowPermanentlyResponse,
   zDuplicateOutcomeData,
   zDuplicateOutcomeResponse,
   zDuplicateProjectPlaceholderData,
@@ -219,6 +241,8 @@ import {
   zGetProjectGraphData,
   zGetProjectGraphResponse,
   zGetProjectResponse,
+  zGetRelatedWorkflowsData,
+  zGetRelatedWorkflowsResponse,
   zGetSectionData,
   zGetSectionResponse,
   zGetWorkflowData,
@@ -289,6 +313,10 @@ import {
   zReorderGraphChannelsResponse,
   zReorderGraphSectionsData,
   zReorderGraphSectionsResponse,
+  zRestoreProjectData,
+  zRestoreProjectResponse,
+  zRestoreWorkflowData,
+  zRestoreWorkflowResponse,
   zSearchLibraryData,
   zSearchLibraryResponse,
   zUnlinkNodeOutcomeData,
@@ -576,6 +604,46 @@ export const updateProject = <ThrowOnError extends boolean = false>(
   })
 
 /**
+ * Archive Project
+ */
+export const archiveProject = <ThrowOnError extends boolean = false>(
+  options: Options<ArchiveProjectData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    ArchiveProjectResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zArchiveProjectData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zArchiveProjectResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/project/{uuid}/archive',
+    ...options
+  })
+
+/**
+ * Restore Project
+ */
+export const restoreProject = <ThrowOnError extends boolean = false>(
+  options: Options<RestoreProjectData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    RestoreProjectResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zRestoreProjectData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zRestoreProjectResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/project/{uuid}/restore',
+    ...options
+  })
+
+/**
  * List Workflows
  */
 export const listWorkflows = <ThrowOnError extends boolean = false>(
@@ -619,6 +687,48 @@ export const createWorkflow = <ThrowOnError extends boolean = false>(
   })
 
 /**
+ * Copy Workflow
+ */
+export const copyWorkflow = <ThrowOnError extends boolean = false>(
+  options: Options<CopyWorkflowData, ThrowOnError>
+) =>
+  (options.client ?? client).post<CopyWorkflowResponses, unknown, ThrowOnError>(
+    {
+      requestValidator: async (data) =>
+        await zCopyWorkflowData.parseAsync(data),
+      responseValidator: async (data) =>
+        await zCopyWorkflowResponse.parseAsync(data),
+      security: [{ scheme: 'bearer', type: 'http' }],
+      url: '/api/workflow/{uuid}/copy',
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      }
+    }
+  )
+
+/**
+ * Delete Workflow Permanently
+ */
+export const deleteWorkflowPermanently = <ThrowOnError extends boolean = false>(
+  options: Options<DeleteWorkflowPermanentlyData, ThrowOnError>
+) =>
+  (options.client ?? client).delete<
+    DeleteWorkflowPermanentlyResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zDeleteWorkflowPermanentlyData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zDeleteWorkflowPermanentlyResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workflow/{uuid}',
+    ...options
+  })
+
+/**
  * Get Workflow
  */
 export const getWorkflow = <ThrowOnError extends boolean = false>(
@@ -655,6 +765,66 @@ export const updateWorkflow = <ThrowOnError extends boolean = false>(
       'Content-Type': 'application/json',
       ...options.headers
     }
+  })
+
+/**
+ * Archive Workflow
+ */
+export const archiveWorkflow = <ThrowOnError extends boolean = false>(
+  options: Options<ArchiveWorkflowData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    ArchiveWorkflowResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zArchiveWorkflowData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zArchiveWorkflowResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workflow/{uuid}/archive',
+    ...options
+  })
+
+/**
+ * Restore Workflow
+ */
+export const restoreWorkflow = <ThrowOnError extends boolean = false>(
+  options: Options<RestoreWorkflowData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    RestoreWorkflowResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zRestoreWorkflowData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zRestoreWorkflowResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workflow/{uuid}/restore',
+    ...options
+  })
+
+/**
+ * Get Related Workflows
+ */
+export const getRelatedWorkflows = <ThrowOnError extends boolean = false>(
+  options: Options<GetRelatedWorkflowsData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    GetRelatedWorkflowsResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zGetRelatedWorkflowsData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zGetRelatedWorkflowsResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workflow/{uuid}/related',
+    ...options
   })
 
 /**

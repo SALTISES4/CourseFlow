@@ -10,7 +10,7 @@ from course_flow.api.deps import (
     get_workflow_service,
 )
 from course_flow.api.graph_common import graph_mutation_http
-from course_flow.api.permissions import can_view_graph
+from course_flow.api.permissions import has_workflow_permission
 from course_flow.api.schemas.graph_mutation import (
     GraphMutationEnvelopeOut,
     GraphReorderSectionsIn,
@@ -26,6 +26,7 @@ from course_flow.api.schemas.sections import (
     SectionPatchIn,
 )
 from course_flow.application.dto import SectionDTO
+from course_flow.core.permissions import WorkflowPermission
 
 graph_collection_router = Router(tags=["sections"], by_alias=True)
 resource_router = Router(tags=["sections"], by_alias=True)
@@ -43,13 +44,21 @@ def _section_out(dto: SectionDTO) -> SectionOut:
     )
 
 
-def _ensure_graph_owner(uuid: UUID, current_user) -> None:
+def _ensure_graph_permission(
+    uuid: UUID,
+    current_user,
+    action: WorkflowPermission,
+) -> None:
     dto = get_workflow_service().get_by_graph_uuid(uuid)
 
     if dto is None:
         raise HttpError(404, "Graph not found")
 
-    if not can_view_graph(current_user=current_user, graph=dto):
+    if not has_workflow_permission(
+        current_user=current_user,
+        workflow=dto,
+        action=action,
+    ):
         raise HttpError(403, "Forbidden")
 
 
@@ -61,7 +70,7 @@ def _ensure_graph_owner(uuid: UUID, current_user) -> None:
 )
 def list_graph_sections(request, uuid: UUID):
     current_user = get_current_user(request)
-    _ensure_graph_owner(uuid, current_user)
+    _ensure_graph_permission(uuid, current_user, WorkflowPermission.VIEW)
 
     rows = get_section_service().list_for_graph_uuid(uuid)
     items = [_section_out(r) for r in rows]
@@ -79,7 +88,11 @@ def create_graph_section(
     request, uuid: UUID, payload: GraphSectionCreateIn
 ):
     current_user = get_current_user(request)
-    _ensure_graph_owner(uuid, current_user)
+    _ensure_graph_permission(
+        uuid,
+        current_user,
+        WorkflowPermission.PART_MANAGEMENT,
+    )
 
     dto = get_section_service().create(
         graph_uuid=uuid,
@@ -104,7 +117,11 @@ def insert_graph_section_below(
     request, uuid: UUID, payload: GraphSectionInsertBelowIn
 ):
     current_user = get_current_user(request)
-    _ensure_graph_owner(uuid, current_user)
+    _ensure_graph_permission(
+        uuid,
+        current_user,
+        WorkflowPermission.PART_MANAGEMENT,
+    )
     svc = get_graph_mutation_service()
     out, err = svc.insert_section_below(
         graph_uuid=uuid,
@@ -123,7 +140,11 @@ def insert_graph_section_below(
 )
 def reorder_graph_sections(request, uuid: UUID, payload: GraphReorderSectionsIn):
     current_user = get_current_user(request)
-    _ensure_graph_owner(uuid, current_user)
+    _ensure_graph_permission(
+        uuid,
+        current_user,
+        WorkflowPermission.PART_MANAGEMENT,
+    )
     svc = get_graph_mutation_service()
     out, err = svc.reorder_sections(
         graph_uuid=uuid,
@@ -141,7 +162,11 @@ def reorder_graph_sections(request, uuid: UUID, payload: GraphReorderSectionsIn)
 )
 def create_section(request, payload: SectionCreateIn):
     current_user = get_current_user(request)
-    _ensure_graph_owner(payload.uuid, current_user)
+    _ensure_graph_permission(
+        payload.graph_uuid,
+        current_user,
+        WorkflowPermission.PART_MANAGEMENT,
+    )
 
     dto = get_section_service().create(
         graph_uuid=payload.graph_uuid,
@@ -174,7 +199,11 @@ def get_section(request, uuid: UUID):
     if wf is None:
         raise HttpError(404, "Graph not found")
 
-    if not can_view_graph(current_user=current_user, graph=wf):
+    if not has_workflow_permission(
+        current_user=current_user,
+        workflow=wf,
+        action=WorkflowPermission.VIEW,
+    ):
         raise HttpError(403, "Forbidden")
 
     return SectionOutResp(item=_section_out(dto))
@@ -194,7 +223,11 @@ def update_section(request, uuid: UUID, payload: SectionPatchIn):
     if wf is None:
         raise HttpError(404, "Graph not found")
 
-    if not can_view_graph(current_user=current_user, graph=wf):
+    if not has_workflow_permission(
+        current_user=current_user,
+        workflow=wf,
+        action=WorkflowPermission.PART_MANAGEMENT,
+    ):
         raise HttpError(403, "Forbidden")
 
     updates = payload.model_dump(exclude_unset=True)
@@ -223,7 +256,11 @@ def delete_section(request, uuid: UUID):
     if wf is None:
         raise HttpError(404, "Graph not found")
 
-    if not can_view_graph(current_user=current_user, graph=wf):
+    if not has_workflow_permission(
+        current_user=current_user,
+        workflow=wf,
+        action=WorkflowPermission.PART_MANAGEMENT,
+    ):
         raise HttpError(403, "Forbidden")
 
     svc = get_graph_mutation_service()

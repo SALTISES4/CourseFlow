@@ -10,7 +10,7 @@ import { ReactNode } from 'react'
 import NetworkActivityProvider from './components/common/NetworkActivityProvider'
 
 type PropsType = {
-  showNotifications?: boolean
+  showNotifications: boolean
   children: ReactNode
 }
 
@@ -32,7 +32,7 @@ const NotificationsAlert = ({ show }: { show: boolean }) => {
   )
 }
 
-const Base = ({ showNotifications, children }: PropsType) => {
+const Base = ({ showNotifications = false, children }: PropsType) => {
   return (
     <UserProvider>
       <div className="main-wrapper">
@@ -43,9 +43,7 @@ const Base = ({ showNotifications, children }: PropsType) => {
           <GlobalDialogs />
           <NotificationsAlert show={showNotifications} />
 
-          {/*
-            still being used as a portal in comparison view
-          */}
+          {/* still being used as a portal in comparison view */}
           <div className="titlebar"></div>
 
           <div className="right-panel-wrapper">

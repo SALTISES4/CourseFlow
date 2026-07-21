@@ -16,6 +16,19 @@ export type ContributorEntry = {
   password: string;
 };
 
+export type PrimaryUserEntry = {
+  email: string;
+  password: string;
+  account_role: string;
+};
+
+export type ProjectEntry = {
+  uuid: string;
+  title: string;
+  modified_on: string;
+  is_archived: boolean;
+};
+
 export type OutcomeEntry = {
   uuid: string;
   title: string;
@@ -23,6 +36,7 @@ export type OutcomeEntry = {
 
 export type WorkflowEntry = {
   graph_uuid: string;
+  workflow_uuid: string;
   workflow_type: string;
   workflow_path: string;
   sections: SectionEntry[];
@@ -33,6 +47,8 @@ export type WorkflowEntry = {
   outcome_count?: number;
 };
 
+export type WorkflowFixtureType = 'activity' | 'course' | 'program';
+
 export type TemplateWorkflowEntry = {
   workflow_uuid: string;
   workflow_title: string;
@@ -41,13 +57,20 @@ export type TemplateWorkflowEntry = {
 
 export type WorkflowManifest = {
   fixture_version: number;
+  primary_user: PrimaryUserEntry;
   owner_email: string;
   project_uuid: string;
   project_title: string;
+  recent_projects: ProjectEntry[];
+  archived_home_project: ProjectEntry;
   template_project_uuid?: string;
   template_project_title?: string;
   template_workflows?: TemplateWorkflowEntry[];
   contributors?: ContributorEntry[];
+  restricted_workflow?: WorkflowEntry & {
+    project_uuid: string;
+    project_title: string;
+  };
   workflows: WorkflowEntry[];
   navigation_linked_workflows?: {
     activity: NavigationLinkedWorkflowEntry;
@@ -96,6 +119,45 @@ function validateWorkflowManifest(parsed: unknown, manifestPath: string): Workfl
 
   const record = parsed as Record<string, unknown>;
   const workflows = record.workflows;
+  const primaryUser = record.primary_user as Record<string, unknown> | undefined;
+  const recentProjects = record.recent_projects;
+  const archivedHomeProject = record.archived_home_project as Record<string, unknown> | undefined;
+  const restrictedWorkflow = record.restricted_workflow as Record<string, unknown> | undefined;
+
+  if (
+    !primaryUser ||
+    typeof primaryUser.email !== 'string' ||
+    typeof primaryUser.password !== 'string' ||
+    primaryUser.account_role !== 'teacher'
+  ) {
+    throw new Error(
+      `E2E workflow manifest at ${manifestPath} must include primary_user for the teacher actor.`,
+    );
+  }
+
+  if (!Array.isArray(recentProjects) || recentProjects.length < 5) {
+    throw new Error(
+      `E2E workflow manifest at ${manifestPath} must include at least five recent_projects.`,
+    );
+  }
+
+  if (!archivedHomeProject || archivedHomeProject.is_archived !== true) {
+    throw new Error(
+      `E2E workflow manifest at ${manifestPath} must include archived_home_project.`,
+    );
+  }
+
+  if (
+    !restrictedWorkflow ||
+    typeof restrictedWorkflow.project_uuid !== 'string' ||
+    typeof restrictedWorkflow.project_title !== 'string' ||
+    typeof restrictedWorkflow.workflow_path !== 'string' ||
+    !restrictedWorkflow.workflow_path.startsWith('/workflow/')
+  ) {
+    throw new Error(
+      `E2E workflow manifest at ${manifestPath} must include restricted_workflow for access-denied coverage.`,
+    );
+  }
 
   if (!Array.isArray(workflows) || workflows.length === 0) {
     throw new Error(`E2E workflow manifest at ${manifestPath} must include workflows[0].`);
@@ -135,6 +197,30 @@ export function assertManifestReady(): void {
 
 export function getPrimaryWorkflow(manifest: WorkflowManifest): WorkflowEntry {
   return manifest.workflows[0]!;
+}
+
+export function getWorkflowByType(
+  manifest: WorkflowManifest,
+  workflowType: WorkflowFixtureType,
+): WorkflowEntry {
+  const match = manifest.workflows.find((entry) => entry.workflow_type === workflowType);
+  if (!match) {
+    throw new Error(
+      `E2E workflow manifest has no workflow for type ${JSON.stringify(workflowType)}.`,
+    );
+  }
+  return match;
+}
+
+export function getRestrictedWorkflow(
+  manifest: WorkflowManifest,
+): NonNullable<WorkflowManifest['restricted_workflow']> {
+  if (!manifest.restricted_workflow) {
+    throw new Error(
+      `E2E workflow manifest must include restricted_workflow. ${MANIFEST_MISSING_HINT}`,
+    );
+  }
+  return manifest.restricted_workflow;
 }
 
 export type TemplateWorkflowFixture = TemplateWorkflowEntry & {
@@ -200,6 +286,16 @@ export function getProjectPath(manifest?: WorkflowManifest): string {
 
 export function getProjectWorkflowsPath(manifest?: WorkflowManifest): string {
   return `${getProjectPath(manifest)}/workflows`;
+}
+
+export function getRecentHomeProjects(manifest: WorkflowManifest): ProjectEntry[] {
+  if (manifest.recent_projects.length < 5) {
+    throw new Error(
+      `E2E workflow manifest requires at least five recent_projects for FR-HOME-003. ` +
+        `Found ${manifest.recent_projects.length}.`,
+    );
+  }
+  return manifest.recent_projects;
 }
 
 export function contributorByRole(

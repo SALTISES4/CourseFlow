@@ -46,16 +46,12 @@ class LibraryHelper {
     sortOptions: {
       options: [
         {
-          value: LibrarySortValueIn.DATE_MODIFIED,
-          label: _t('Recent')
-        },
-        {
           value: LibrarySortValueIn.A_Z,
           label: _t('A - Z')
         },
         {
           value: LibrarySortValueIn.DATE_CREATED,
-          label: _t('Creation date')
+          label: _t('Date created')
         }
       ]
     },
@@ -76,7 +72,7 @@ class LibraryHelper {
           },
           {
             value: LibraryOwnershipIn.SHARED,
-            label: _t('Shared with me')
+            label: _t('Shared')
           }
         ]
       },
@@ -113,16 +109,16 @@ class LibraryHelper {
         label: _t('Workflow Type'),
         options: [
           {
-            label: _t('Programs'),
-            value: WorkflowType.PROGRAM
+            label: _t('Activity'),
+            value: WorkflowType.ACTIVITY
           },
           {
-            label: _t('Courses'),
+            label: _t('Course'),
             value: WorkflowType.COURSE
           },
           {
-            label: _t('Activities'),
-            value: WorkflowType.ACTIVITY
+            label: _t('Program'),
+            value: WorkflowType.PROGRAM
           }
         ]
       },
@@ -250,7 +246,10 @@ class LibraryHelper {
   } | null => {
     const activeSort = sortOptions.find((option) => option.enabled)
     return activeSort
-      ? { value: activeSort.value, direction: activeSort.direction }
+      ? {
+          value: activeSort.value,
+          direction: activeSort.direction ?? LibrarySortDirectionIn.DESC
+        }
       : null
   }
 

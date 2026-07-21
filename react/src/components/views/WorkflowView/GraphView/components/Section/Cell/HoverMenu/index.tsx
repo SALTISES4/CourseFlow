@@ -1,4 +1,7 @@
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { NodeInsertMode } from '@cf/features/graph/state/resolveNodeDropRow'
+import { selectThreadCommentCount } from '@cf/features/graph/state/selectors/threadCommentCounts.selectors'
 import {
   deleteNode,
   insertNodeBelow
@@ -12,7 +15,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
-import { MouseEvent, MutableRefObject, useCallback, useState } from 'react'
+import { MouseEvent, RefObject, useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import InsertMenu from '../InsertMenu'
@@ -20,7 +23,8 @@ import InsertMenu from '../InsertMenu'
 type PropsType = {
   nodeId: string
   graphUuid: string
-  nodeRef: MutableRefObject<HTMLDivElement>
+  nodeRef: RefObject<HTMLDivElement>
+  threadUuid: string | null
 }
 
 type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
@@ -30,7 +34,7 @@ type StateType = {
   duplicate?: boolean
 }
 
-const HoverMenu = ({ nodeId, graphUuid, nodeRef }: PropsType) => {
+const HoverMenu = ({ nodeId, graphUuid, nodeRef, threadUuid }: PropsType) => {
   const dispatch = useDispatch<AppDispatch>()
   const [state, setState] = useState<StateType>({
     anchor: null,
@@ -39,6 +43,11 @@ const HoverMenu = ({ nodeId, graphUuid, nodeRef }: PropsType) => {
   const [, hovering] = useHover(nodeRef)
   const insertMode = useSelector(
     (state: RootState) => state.graph.graphUi.nodeInsertMode
+  )
+  const canEdit = useResourcePermission(WorkflowPermission.NODE_MANAGEMENT)
+  const canComment = useResourcePermission(WorkflowPermission.COMMENT)
+  const commentCount = useSelector((state: RootState) =>
+    selectThreadCommentCount(state, threadUuid)
   )
 
   const onActionClick = useCallback(
@@ -90,7 +99,7 @@ const HoverMenu = ({ nodeId, graphUuid, nodeRef }: PropsType) => {
   )
 
   const onInsertCancel = useCallback(
-    () => setState({ anchor: null, duplicate: null }),
+    () => setState({ anchor: null, duplicate: undefined }),
     []
   )
 
@@ -114,27 +123,28 @@ const HoverMenu = ({ nodeId, graphUuid, nodeRef }: PropsType) => {
       <NodeHoverMenu
         show={hovering}
         items={[
-          {
+          canEdit && {
             label: 'Insert node below',
             icon: <AddCircleOutlineIcon />,
             onClick: onActionClick('insert')
           },
-          {
+          canEdit && {
             label: 'Duplicate node below',
             icon: <ContentCopyIcon />,
             onClick: onActionClick('duplicate')
           },
-          {
+          canEdit && {
             label: 'Delete node',
             icon: <DeleteOutlinedIcon />,
             onClick: onActionClick('delete')
           },
-          {
+          canComment && {
             label: 'Comments',
             icon: <CommentOutlinedIcon />,
+            showCommentsPresenceIndicator: commentCount > 0,
             onClick: onActionClick('comments')
           }
-        ]}
+        ].filter(Boolean)}
       />
       <InsertMenu
         anchorEl={state.anchor}

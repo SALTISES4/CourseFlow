@@ -1,4 +1,4 @@
-import { listWorkflowsOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import { getRelatedWorkflowsOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { _t } from '@cf/utility/Utility.class'
 import * as MainSidebar from '@cfComponents/globalNav/MainSidebar/styles'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -24,24 +24,9 @@ import { Link, useParams } from 'react-router-dom'
 const RelatedWorkflowList = () => {
   const { uuid } = useParams()
 
-  const childQuery = useQuery({
-    ...listWorkflowsOptions({
-      query: {
-        projectUuid: uuid,
-        page: 1
-      }
-    }),
-    enabled: true
-  })
-
-  const parentQuery = useQuery({
-    ...listWorkflowsOptions({
-      query: {
-        projectUuid: uuid,
-        page: 1
-      }
-    }),
-    enabled: true
+  const relatedQuery = useQuery({
+    ...getRelatedWorkflowsOptions({ path: { uuid: uuid ?? '' } }),
+    enabled: Boolean(uuid)
   })
 
   if (!uuid) {
@@ -52,19 +37,13 @@ const RelatedWorkflowList = () => {
    * RENDER COMPONENTS
    *******************************************************/
   const ParentWorkflows = () => {
-    if (parentQuery.isLoading) {
+    if (relatedQuery.isLoading) {
       return <Loader />
     }
 
-    if (!parentQuery.data || !parentQuery.data.items.length) {
+    if (!relatedQuery.data?.appearsIn.length) {
       return <></>
     }
-
-    const parentWorkflows = Array.from(
-      new Map(
-        parentQuery.data.items.map((workflow) => [workflow.uuid, workflow])
-      ).values()
-    )
 
     return (
       <>
@@ -74,13 +53,15 @@ const RelatedWorkflowList = () => {
             {_t('Appears in')}
           </MainSidebar.SectionLabel>
           <List data-test-id="panel-other-worflows">
-            {parentWorkflows.map((workflow) => {
+            {relatedQuery.data.appearsIn.map((workflow) => {
               const url = workflowUrl(workflow)
               return (
                 <ListItem disablePadding dense key={workflow.uuid}>
                   <ListItemButton
                     component={Link}
                     to={url}
+                    target="_blank"
+                    rel="noreferrer"
                     selected={location.pathname === url}
                   >
                     <ListItemText primary={workflow.title} />
@@ -95,11 +76,11 @@ const RelatedWorkflowList = () => {
   }
 
   const ChildWorkflows = () => {
-    if (childQuery.isLoading) {
+    if (relatedQuery.isLoading) {
       return <Loader />
     }
 
-    if (!childQuery.data || childQuery.data.items.length) {
+    if (!relatedQuery.data?.contains.length) {
       return <></>
     }
 
@@ -111,13 +92,15 @@ const RelatedWorkflowList = () => {
             {_t('Contains')}
           </MainSidebar.SectionLabel>
           <List>
-            {childQuery.data.items.map((workflow) => {
+            {relatedQuery.data.contains.map((workflow) => {
               const url = workflowUrl(workflow)
               return (
                 <ListItem disablePadding dense key={workflow.uuid}>
                   <ListItemButton
                     component={Link}
                     to={url}
+                    target="_blank"
+                    rel="noreferrer"
                     data-test-id="panel-other-worflows"
                     selected={location.pathname === url}
                   >

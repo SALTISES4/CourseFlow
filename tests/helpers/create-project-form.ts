@@ -1,5 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 
+import { authenticatedApiRequest } from './api';
+
 import {
   PROJECT_CREATE_FORM_REQUIRED_FIELD_LABELS,
   PROJECT_CREATE_FORM_VISIBLE_LABELS,
@@ -27,7 +29,7 @@ type LibrarySearchResponse = {
 
 /** Count owned projects for the current session via library search API. */
 export async function countOwnedProjects(page: Page): Promise<number> {
-  const response = await page.request.post('/api/library/search', {
+  const response = await authenticatedApiRequest(page, 'POST', '/api/library/search', {
     data: {
       filters: {
         contentType: 'project',
@@ -36,7 +38,7 @@ export async function countOwnedProjects(page: Page): Promise<number> {
       pagination: { page: 0, resultsPerPage: 1 },
     },
   });
-  expect(response.ok()).toBeTruthy();
+  expect(response.ok(), `Library search returned HTTP ${response.status()}`).toBeTruthy();
   const body = (await response.json()) as LibrarySearchResponse;
   return body.meta.totalResults;
 }

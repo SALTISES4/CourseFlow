@@ -9,6 +9,8 @@ import {
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box'
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { selectSectionByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { GraphBoard } from '@cf/features/graph/state/selectors/graphBoard.selectors'
 import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
@@ -20,7 +22,7 @@ import IconButton from '@mui/material/IconButton'
 import { produce } from 'immer'
 import {
   MouseEvent,
-  MutableRefObject,
+  RefObject,
   memo,
   useCallback,
   useEffect,
@@ -64,6 +66,7 @@ type SectionStateType = {
 
 const Section = (props: SectionPropsType) => {
   const dispatch = useDispatch()
+  const canEditParts = useResourcePermission(WorkflowPermission.PART_MANAGEMENT)
   const [state, setState] = useState<SectionStateType>({
     closestEdge: null,
     draggedOver: false,
@@ -99,6 +102,9 @@ const Section = (props: SectionPropsType) => {
   useEffect(() => {
     const outerEl = sectionWrapperRef.current
     const el = dragHandleRef.current
+    if (!outerEl || !el || !canEditParts) {
+      return
+    }
     return combine(
       draggable({
         element: el,
@@ -188,7 +194,7 @@ const Section = (props: SectionPropsType) => {
         }
       })
     )
-  }, [resetState, props])
+  }, [canEditParts, resetState, props])
 
   const onSectionWrapperClick = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
@@ -286,6 +292,7 @@ const Section = (props: SectionPropsType) => {
             graphUuid={props.boardId}
             sectionId={props.sectionId}
             show={isHovered}
+            threadUuid={section.threadUuid}
           />
         </StyledSection.SectionHeader>
         {!props.condensed && sectionGrid}
@@ -306,7 +313,7 @@ const Section = (props: SectionPropsType) => {
 const Background = ({
   sectionRef
 }: {
-  sectionRef: MutableRefObject<HTMLDivElement>
+  sectionRef: RefObject<HTMLDivElement>
 }) => {
   const { height = 0 } = useResizeObserver({
     ref: sectionRef,
@@ -315,7 +322,7 @@ const Background = ({
 
   const section = sectionRef.current
   const sectionTop = section?.getBoundingClientRect().top ?? 0
-  const wrapTop = section?.parentElement.getBoundingClientRect().top ?? 0
+  const wrapTop = section?.parentElement?.getBoundingClientRect().top ?? 0
   const top: number = sectionTop - wrapTop
 
   if (height === 0) {

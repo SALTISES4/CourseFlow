@@ -56,7 +56,7 @@ const WorkflowLegend = () => {
         text={
           choices.strategyClassificationChoices.find(
             (obj) => obj.type === value
-          )?.name
+          )?.name ?? ''
         }
       />
     ))
@@ -92,7 +92,9 @@ const WorkflowLegend = () => {
       <LegendLine
         key={index}
         icon={Constants.contextKeys[value]}
-        text={choices.contextChoices.find((obj) => obj.type === value)?.name}
+        text={
+          choices.contextChoices.find((obj) => obj.type === value)?.name ?? ''
+        }
       />
     ))
 
@@ -127,7 +129,7 @@ const WorkflowLegend = () => {
       <LegendLine
         key={index}
         icon={Constants.taskKeys[value]}
-        text={choices.taskChoices.find((obj) => obj.type === value)?.name}
+        text={choices.taskChoices.find((obj) => obj.type === value)?.name ?? ''}
       />
     ))
 

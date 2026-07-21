@@ -1,3 +1,11 @@
+import {
+  type PermissionContextOut,
+  WorkflowPermission
+} from '@cf/api/gen/types.gen'
+import {
+  hasPermission,
+  useWorkspacePermissions
+} from '@cf/context/workspacePermissionsContext'
 import { SidebarState } from '@cf/features/sidebar/state/sidebar.slice'
 import {
   sidebarChangeTab,
@@ -36,13 +44,15 @@ function getTabContent(
   }
 
   switch (tab) {
-    case 'edit':
+    case 'edit': {
+      const { uuid, objectType } = edit
+      if (!uuid || !objectType) {
+        return null
+      }
       return (
-        <EditTab
-          uuid={edit.uuid}
-          type={edit.objectType as unknown as EditableType}
-        />
+        <EditTab uuid={uuid} type={objectType as unknown as EditableType} />
       )
+    }
     case 'add':
       return <AddTab />
     case 'comments':
@@ -53,6 +63,39 @@ function getTabContent(
       return <RelatedTab />
     default:
       return <>{tab} tab not implemented yet</>
+  }
+}
+
+function canUseTab(
+  tab: SidebarState['tab'],
+  editType: SidebarState['edit']['objectType'],
+  permissions: PermissionContextOut
+): boolean {
+  switch (tab) {
+    case 'add':
+      return hasPermission(permissions, WorkflowPermission.NODE_MANAGEMENT)
+    case 'comments':
+      return hasPermission(permissions, WorkflowPermission.COMMENT)
+    case 'outcomes':
+      return hasPermission(permissions, WorkflowPermission.ASSIGN_OUTCOMES)
+    case 'related':
+      return hasPermission(permissions, WorkflowPermission.VIEW)
+    case 'edit':
+      if (editType === CfObjectType.OUTCOME) {
+        return hasPermission(permissions, WorkflowPermission.OUTCOME_MANAGEMENT)
+      }
+      if (editType === CfObjectType.COLUMN) {
+        return hasPermission(
+          permissions,
+          WorkflowPermission.NODE_CATEGORY_MANAGEMENT
+        )
+      }
+      if (editType === CfObjectType.SECTION) {
+        return hasPermission(permissions, WorkflowPermission.PART_MANAGEMENT)
+      }
+      return hasPermission(permissions, WorkflowPermission.NODE_MANAGEMENT)
+    default:
+      return false
   }
 }
 
@@ -68,6 +111,7 @@ const WorkspaceSidebar = () => {
   const [sidebarConfig] = useWorkflowSidebar()
   const location = useLocation()
   const dispatch = useDispatch()
+  const { resource: permissions } = useWorkspacePermissions()
 
   const sidebar = useSelector((state: RootState) => state.sidebar)
 
@@ -94,11 +138,17 @@ const WorkspaceSidebar = () => {
     dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
   }, [dispatch, location.pathname])
 
-  const tabContent = getTabContent(sidebar.tab, sidebar.edit)
+  const tabContent = canUseTab(
+    sidebar.tab,
+    sidebar.edit.objectType,
+    permissions
+  )
+    ? getTabContent(sidebar.tab, sidebar.edit)
+    : null
 
   const tabs: {
     disabled?: boolean
-    value: SidebarState['tab']
+    value: Exclude<SidebarState['tab'], null>
     icon: ReactNode
   }[] = [
     {
@@ -110,10 +160,15 @@ const WorkspaceSidebar = () => {
       value: 'add',
       icon: <AddCircleIcon />
     },
-    objectTypesWithComments.includes(sidebar.edit.objectType) && {
-      value: 'comments',
-      icon: <ChatIcon />
-    },
+    ...(sidebar.edit.objectType &&
+    objectTypesWithComments.includes(sidebar.edit.objectType)
+      ? [
+          {
+            value: 'comments' as const,
+            icon: <ChatIcon />
+          }
+        ]
+      : []),
     {
       value: 'outcomes',
       icon: <EmojiEventsOutlinedIcon />
@@ -129,7 +184,11 @@ const WorkspaceSidebar = () => {
   // need both workflow type and view type in order to determine whether tabs show
   if (sidebarConfig.workflowType && sidebarConfig.viewType) {
     tabs.map((tab) => {
-      if (tab && isTabVisible(tab.value, sidebarConfig)) {
+      if (
+        tab &&
+        isTabVisible(tab.value, sidebarConfig) &&
+        canUseTab(tab.value, sidebar.edit.objectType, permissions)
+      ) {
         visibleTabs.push(
           <ToggleButton
             key={tab.value}
@@ -151,11 +210,14 @@ const WorkspaceSidebar = () => {
   }
 
   return (
-    <SidebarWrap collapsed={sidebar.collapsed} data-test-id="workflow-right-sidebar">
+    <SidebarWrap
+      collapsed={sidebar.collapsed}
+      data-test-id="workflow-right-sidebar"
+    >
       <SidebarTabsWrap
         exclusive
         orientation="vertical"
-        value={sidebar.tab}
+        value={sidebar.tab ?? false}
         onChange={(_, tab) => onTabClick(tab)}
       >
         {visibleTabs}

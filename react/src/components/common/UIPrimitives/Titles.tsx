@@ -14,10 +14,7 @@ export const TitleText = ({
   text: string | null
   defaultText: string
 }) => {
-  let finalText = text
-  if ((text == null || text == '') && defaultText != null) {
-    finalText = defaultText
-  }
+  const finalText = text || defaultText
   return (
     <div
       className="title-text"

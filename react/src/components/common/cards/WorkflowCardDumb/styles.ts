@@ -13,7 +13,17 @@ export const CardWrap = styled(Box)(({ theme }) => ({
   transition: 'background-color 0.3s ease',
   '&:hover': {
     cursor: 'pointer',
-    borderColor: theme.palette.workflow.selected
+    borderColor: theme.palette.workflow.selected,
+    '& .library-lifecycle-actions': {
+      opacity: 1
+    }
+  },
+  '&:focus-within .library-lifecycle-actions': {
+    opacity: 1
+  },
+  '& .library-lifecycle-actions': {
+    opacity: 0,
+    transition: 'opacity 0.2s ease'
   },
   '&.selected': {
     borderColor: theme.palette.primary.main
@@ -38,14 +48,10 @@ export const CardFooterTags = styled('div')(({ theme }) => ({
 
 export const CardFooterActions = styled('div')(({ theme }) => ({
   position: 'relative',
+  display: 'flex',
+  alignItems: 'center',
   marginLeft: 'auto',
-  paddingLeft: theme.spacing(2),
-  '& button': {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)'
-  }
+  paddingLeft: theme.spacing(2)
 }))
 
 export const CardFooterInfo = styled('div')(({ theme }) => ({

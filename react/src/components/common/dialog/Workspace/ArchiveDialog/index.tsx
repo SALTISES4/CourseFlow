@@ -1,12 +1,20 @@
+import {
+  archiveProjectMutation,
+  archiveWorkflowMutation,
+  listProjectsQueryKey,
+  listWorkflowsQueryKey
+} from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { WorkspaceType } from '@cf/types/enum'
+import strings from '@cf/utility/strings'
 import { StyledDialog } from '@cfComponents/dialog/styles'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 const ArchiveDialog = ({
   objectType,
@@ -15,46 +23,45 @@ const ArchiveDialog = ({
 }: {
   uuid: string
   objectType: WorkspaceType
-  callback?: () => void
+  callback?: () => void | Promise<unknown>
 }) => {
-  // TODO: reimplement
-  return null
-
-  /*******************************************************
-   * HOOKS
-   *******************************************************/
-  const { type, show, onClose } = useDialog(DialogMode.ARCHIVE)
-
-  // @todo replace
-  const [mutate] = useArchiveMutation()
-
+  const { show, onClose } = useDialog(DialogMode.ARCHIVE)
   const { onError, onSuccess } = useGenericMsgHandler()
+  const queryClient = useQueryClient()
 
-  async function onSuccessHandler() {
-    callback && callback
-    onClose()
-  }
-  async function onSubmit() {
+  const archiveWorkflow = useMutation({
+    ...archiveWorkflowMutation(),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: listWorkflowsQueryKey() })
+  })
+  const archiveProject = useMutation({
+    ...archiveProjectMutation(),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: listProjectsQueryKey() })
+  })
+
+  const onSubmit = async () => {
+    if (!uuid) {
+      return
+    }
     try {
-      const resp = await mutate({
-        uuid: String(uuid),
-        payload: {
-          objectType: objectType
-        }
-      }).unwrap()
-      onSuccess(resp)
-      callback && callback
-    } catch (err) {
-      onError(err)
+      if (objectType === WorkspaceType.WORKFLOW) {
+        await archiveWorkflow.mutateAsync({ path: { uuid } })
+        onSuccess({ message: strings.workflowArchiveSuccess })
+      } else {
+        await archiveProject.mutateAsync({ path: { uuid } })
+        onSuccess({ message: strings.projectArchiveSuccess })
+      }
+      onClose()
+      await callback?.()
+    } catch (error) {
+      onError(error)
     }
   }
 
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  if (!type) {
-    return <></>
-  }
+  const objectLabel =
+    objectType === WorkspaceType.WORKFLOW ? 'workflow' : 'project'
+  const busy = archiveWorkflow.isPending || archiveProject.isPending
 
   return (
     <StyledDialog
@@ -65,21 +72,20 @@ const ArchiveDialog = ({
       aria-labelledby={`archive-${objectType}-modal`}
     >
       <DialogTitle id={`archive-${objectType}-modal`}>
-        Archive {objectType}
+        Archive {objectLabel}
       </DialogTitle>
       <DialogContent dividers>
         <Typography gutterBottom>
-          Once your {objectType} is archived, it won’t be visible from your
-          library. You will have to navigate to your archived project to access
-          it. From there, you will be able to restore your project if needed.
+          Once your {objectLabel} is archived, it cannot be opened from the
+          workspace. You can restore it from your archived library items.
         </Typography>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onClose}>
           Cancel
         </Button>
-        <Button variant="contained" onClick={onSubmit}>
-          Archive {objectType}
+        <Button variant="contained" onClick={onSubmit} disabled={busy || !uuid}>
+          Archive {objectLabel}
         </Button>
       </DialogActions>
     </StyledDialog>

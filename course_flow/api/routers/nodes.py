@@ -14,7 +14,7 @@ from course_flow.api.deps import (
     get_workflow_service,
 )
 from course_flow.api.graph_common import graph_mutation_http
-from course_flow.api.permissions import can_view_graph
+from course_flow.api.permissions import has_workflow_permission
 from course_flow.api.schemas.graph_mutation import (
     GraphMutationEnvelopeOut,
     GraphNodeCreateIn,
@@ -31,6 +31,7 @@ from course_flow.application.services.graph_mutation_service import (
     graph_from_node,
 )
 from course_flow.core.models import Node
+from course_flow.core.permissions import WorkflowPermission
 
 # Mounted at /graph — collection list/create under parent context.
 graph_collection_router = Router(tags=["nodes"], by_alias=True)
@@ -66,12 +67,43 @@ def _node_graph_out(n: Node) -> NodeGraphOut:
     )
 
 
-def _ensure_graph_owner(uuid: UUID, current_user) -> None:
+def _ensure_graph_permission(
+    uuid: UUID,
+    current_user,
+    action: WorkflowPermission,
+) -> None:
     svc = get_workflow_service()
     dto = svc.get_by_graph_uuid(uuid)
     if dto is None:
         raise HttpError(404, "Graph not found")
-    if not can_view_graph(current_user=current_user, graph=dto):
+    if not has_workflow_permission(
+        current_user=current_user,
+        workflow=dto,
+        action=action,
+    ):
+        raise HttpError(403, "Forbidden")
+
+
+def _ensure_node_permission(
+    uuid: UUID,
+    current_user,
+    action: WorkflowPermission,
+) -> None:
+    try:
+        node = Node.objects.select_related(
+            "section__graph",
+            "channel__graph",
+        ).get(uuid=uuid)
+    except Node.DoesNotExist as exc:
+        raise HttpError(404, "Not found") from exc
+    graph = graph_from_node(node)
+    if graph is None:
+        raise HttpError(404, "Not found")
+    if not has_workflow_permission(
+        current_user=current_user,
+        workflow=graph,
+        action=action,
+    ):
         raise HttpError(403, "Forbidden")
 
 
@@ -83,7 +115,7 @@ def _ensure_graph_owner(uuid: UUID, current_user) -> None:
 )
 def list_graph_nodes(request, uuid: UUID):
     current_user = get_current_user(request)
-    _ensure_graph_owner(uuid, current_user)
+    _ensure_graph_permission(uuid, current_user, WorkflowPermission.VIEW)
     view = get_graph_view_service().get_by_graph_uuid(uuid)
     if view is None:
         raise HttpError(404, "Graph not found")
@@ -98,6 +130,11 @@ def list_graph_nodes(request, uuid: UUID):
 )
 def create_graph_node(request, uuid: UUID, payload: GraphNodeCreateIn):
     current_user = get_current_user(request)
+    _ensure_graph_permission(
+        uuid,
+        current_user,
+        WorkflowPermission.NODE_MANAGEMENT,
+    )
     svc = get_graph_mutation_service()
     out, err = svc.create_node(
         graph_uuid=uuid,
@@ -118,6 +155,11 @@ def create_graph_node(request, uuid: UUID, payload: GraphNodeCreateIn):
 )
 def insert_graph_node_below(request, uuid: UUID, payload: GraphNodeInsertBelowIn):
     current_user = get_current_user(request)
+    _ensure_graph_permission(
+        uuid,
+        current_user,
+        WorkflowPermission.NODE_MANAGEMENT,
+    )
     svc = get_graph_mutation_service()
     edge = payload.edge if payload.edge in ("top", "bottom") else None
     mode = payload.mode if payload.mode in ("row", "column") else "row"
@@ -140,6 +182,11 @@ def insert_graph_node_below(request, uuid: UUID, payload: GraphNodeInsertBelowIn
 )
 def place_graph_node(request, uuid: UUID, payload: GraphNodePlaceIn):
     current_user = get_current_user(request)
+    _ensure_graph_permission(
+        uuid,
+        current_user,
+        WorkflowPermission.NODE_MANAGEMENT,
+    )
     svc = get_graph_mutation_service()
     edge = payload.edge if payload.edge in ("top", "bottom") else None
     mode = payload.mode if payload.mode in ("row", "column") else "row"
@@ -171,7 +218,11 @@ def get_node(request, uuid: UUID):
     wf = graph_from_node(n)
     if wf is None:
         raise HttpError(404, "Not found")
-    if not can_view_graph(current_user=current_user, graph=wf):
+    if not has_workflow_permission(
+        current_user=current_user,
+        workflow=wf,
+        action=WorkflowPermission.VIEW,
+    ):
         raise HttpError(403, "Forbidden")
     return _node_graph_out(n)
 
@@ -184,6 +235,11 @@ def get_node(request, uuid: UUID):
 )
 def patch_node(request, uuid: UUID, payload: GraphNodePatchIn):
     current_user = get_current_user(request)
+    _ensure_node_permission(
+        uuid,
+        current_user,
+        WorkflowPermission.NODE_MANAGEMENT,
+    )
     patch = payload.model_dump(exclude_unset=True)
     svc = get_graph_mutation_service()
     out, err = svc.update_node(
@@ -202,6 +258,11 @@ def patch_node(request, uuid: UUID, payload: GraphNodePatchIn):
 )
 def link_node_outcome(request, uuid: UUID, payload: GraphNodeLinkOutcomeIn):
     current_user = get_current_user(request)
+    _ensure_node_permission(
+        uuid,
+        current_user,
+        WorkflowPermission.ASSIGN_OUTCOMES,
+    )
     svc = get_graph_mutation_service()
     out, err = svc.link_node_outcome(
         user_id=current_user.id,
@@ -219,6 +280,11 @@ def link_node_outcome(request, uuid: UUID, payload: GraphNodeLinkOutcomeIn):
 )
 def unlink_node_outcome(request, uuid: UUID, payload: GraphNodeLinkOutcomeIn):
     current_user = get_current_user(request)
+    _ensure_node_permission(
+        uuid,
+        current_user,
+        WorkflowPermission.ASSIGN_OUTCOMES,
+    )
     svc = get_graph_mutation_service()
     out, err = svc.unlink_node_outcome(
         user_id=current_user.id,
@@ -236,6 +302,11 @@ def unlink_node_outcome(request, uuid: UUID, payload: GraphNodeLinkOutcomeIn):
 )
 def patch_node_meta(request, uuid: UUID, payload: GraphNodeMetaPatchIn):
     current_user = get_current_user(request)
+    _ensure_node_permission(
+        uuid,
+        current_user,
+        WorkflowPermission.NODE_MANAGEMENT,
+    )
     patch = payload.model_dump(exclude_unset=True)
     svc = get_graph_mutation_service()
     out, err = svc.update_node_meta(
@@ -254,6 +325,11 @@ def patch_node_meta(request, uuid: UUID, payload: GraphNodeMetaPatchIn):
 )
 def link_node_workflow(request, uuid: UUID, payload: GraphNodeLinkWorkflowIn):
     current_user = get_current_user(request)
+    _ensure_node_permission(
+        uuid,
+        current_user,
+        WorkflowPermission.NODE_LINK_MANAGEMENT,
+    )
     svc = get_graph_mutation_service()
     out, err = svc.link_node_workflow(
         user_id=current_user.id,
@@ -271,6 +347,11 @@ def link_node_workflow(request, uuid: UUID, payload: GraphNodeLinkWorkflowIn):
 )
 def move_graph_node(request, uuid: UUID, payload: GraphNodeMoveIn):
     current_user = get_current_user(request)
+    _ensure_node_permission(
+        uuid,
+        current_user,
+        WorkflowPermission.NODE_MANAGEMENT,
+    )
     svc = get_graph_mutation_service()
     edge = payload.edge if payload.edge in ("top", "bottom") else None
     mode = payload.mode if payload.mode in ("row", "column") else "row"
@@ -294,6 +375,11 @@ def move_graph_node(request, uuid: UUID, payload: GraphNodeMoveIn):
 )
 def delete_node(request, uuid: UUID):
     current_user = get_current_user(request)
+    _ensure_node_permission(
+        uuid,
+        current_user,
+        WorkflowPermission.NODE_MANAGEMENT,
+    )
     svc = get_graph_mutation_service()
     payload, err = svc.delete_node(
         user_id=current_user.id,

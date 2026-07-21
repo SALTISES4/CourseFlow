@@ -1,9 +1,10 @@
-import { SliceNamespace } from '../../../../redux/types/enum'
 import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit'
 import { Position } from '@xyflow/react'
 
+import { SliceNamespace } from '../../../../redux/types/enum'
+
 export const svglinkDragEnd = createAction<{
-  uuid: string
+  uuid: string | null
   from: SVGLinkState['snap']['from']
   to: SVGLinkState['snap']['to']
 }>('svglink/svglinkDragEnd')
@@ -72,8 +73,8 @@ const svglinkSlice = createSlice({
       const toEdge = state.dragging.to?.edge ?? null
 
       const snap: SVGLinkState['snap'] = {
-        from: { nodeUuid: fromId, edge: fromEdge },
-        to: { nodeUuid: toId, edge: toEdge }
+        from: fromId && fromEdge ? { nodeUuid: fromId, edge: fromEdge } : null,
+        to: toId && toEdge ? { nodeUuid: toId, edge: toEdge } : null
       }
 
       state.snap = snap

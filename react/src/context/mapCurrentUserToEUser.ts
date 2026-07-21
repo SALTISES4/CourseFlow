@@ -1,8 +1,10 @@
-import type { CurrentUser } from '@cf/api/auth'
+import { UserSummaryOut } from '@cf/api/gen'
 import type { EUser } from '@XMLHTTP/types/entity'
 
-/** Maps v2 API user summary into legacy EUser shape for existing consumers. */
-export function mapCurrentUserToEUser(u: CurrentUser): EUser {
+/**
+ * Maps v2 API user summary into legacy EUser shape for existing consumers.
+ * */
+export function mapCurrentUserToEUser(u: UserSummaryOut): EUser {
   const firstName = u.firstName ?? ''
   const lastName = u.lastName ?? ''
   return {

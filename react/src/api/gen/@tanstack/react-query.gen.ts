@@ -12,6 +12,9 @@ import { client } from '../client.gen'
 import {
   type Options,
   addProjectTeamMembers,
+  archiveProject,
+  archiveWorkflow,
+  copyWorkflow,
   courseFlowApiNinjaAppHealth,
   createChannel,
   createGraphEdge,
@@ -32,6 +35,7 @@ import {
   deleteProjectTeamMember,
   deleteSection,
   deleteThreadComment,
+  deleteWorkflowPermanently,
   duplicateOutcome,
   duplicateProjectPlaceholder,
   getChannel,
@@ -43,6 +47,7 @@ import {
   getNode,
   getProject,
   getProjectGraph,
+  getRelatedWorkflows,
   getSection,
   getWorkflow,
   insertGraphChannelBelow,
@@ -78,6 +83,8 @@ import {
   register,
   reorderGraphChannels,
   reorderGraphSections,
+  restoreProject,
+  restoreWorkflow,
   searchLibrary,
   unlinkNodeOutcome,
   updateChannel,
@@ -90,6 +97,12 @@ import {
 import type {
   AddProjectTeamMembersData,
   AddProjectTeamMembersResponse,
+  ArchiveProjectData,
+  ArchiveProjectResponse,
+  ArchiveWorkflowData,
+  ArchiveWorkflowResponse,
+  CopyWorkflowData,
+  CopyWorkflowResponse,
   CourseFlowApiNinjaAppHealthData,
   CourseFlowApiNinjaAppHealthResponse,
   CreateChannelData,
@@ -130,6 +143,8 @@ import type {
   DeleteSectionResponse,
   DeleteThreadCommentData,
   DeleteThreadCommentResponse,
+  DeleteWorkflowPermanentlyData,
+  DeleteWorkflowPermanentlyResponse,
   DuplicateOutcomeData,
   DuplicateOutcomeResponse,
   DuplicateProjectPlaceholderData,
@@ -152,6 +167,8 @@ import type {
   GetProjectGraphData,
   GetProjectGraphResponse,
   GetProjectResponse,
+  GetRelatedWorkflowsData,
+  GetRelatedWorkflowsResponse,
   GetSectionData,
   GetSectionResponse,
   GetWorkflowData,
@@ -222,6 +239,10 @@ import type {
   ReorderGraphChannelsResponse,
   ReorderGraphSectionsData,
   ReorderGraphSectionsResponse,
+  RestoreProjectData,
+  RestoreProjectResponse,
+  RestoreWorkflowData,
+  RestoreWorkflowResponse,
   SearchLibraryData,
   SearchLibraryResponse,
   UnlinkNodeOutcomeData,
@@ -600,6 +621,60 @@ export const updateProjectMutation = (
   return mutationOptions
 }
 
+/**
+ * Archive Project
+ */
+export const archiveProjectMutation = (
+  options?: Partial<Options<ArchiveProjectData>>
+): UseMutationOptions<
+  ArchiveProjectResponse,
+  DefaultError,
+  Options<ArchiveProjectData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    ArchiveProjectResponse,
+    DefaultError,
+    Options<ArchiveProjectData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await archiveProject({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Restore Project
+ */
+export const restoreProjectMutation = (
+  options?: Partial<Options<RestoreProjectData>>
+): UseMutationOptions<
+  RestoreProjectResponse,
+  DefaultError,
+  Options<RestoreProjectData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    RestoreProjectResponse,
+    DefaultError,
+    Options<RestoreProjectData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await restoreProject({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
 export const listWorkflowsQueryKey = (options?: Options<ListWorkflowsData>) =>
   createQueryKey('listWorkflows', options)
 
@@ -642,6 +717,60 @@ export const createWorkflowMutation = (
   > = {
     mutationFn: async (fnOptions) => {
       const { data } = await createWorkflow({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Copy Workflow
+ */
+export const copyWorkflowMutation = (
+  options?: Partial<Options<CopyWorkflowData>>
+): UseMutationOptions<
+  CopyWorkflowResponse,
+  DefaultError,
+  Options<CopyWorkflowData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    CopyWorkflowResponse,
+    DefaultError,
+    Options<CopyWorkflowData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await copyWorkflow({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Delete Workflow Permanently
+ */
+export const deleteWorkflowPermanentlyMutation = (
+  options?: Partial<Options<DeleteWorkflowPermanentlyData>>
+): UseMutationOptions<
+  DeleteWorkflowPermanentlyResponse,
+  DefaultError,
+  Options<DeleteWorkflowPermanentlyData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    DeleteWorkflowPermanentlyResponse,
+    DefaultError,
+    Options<DeleteWorkflowPermanentlyData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await deleteWorkflowPermanently({
         ...options,
         ...fnOptions,
         throwOnError: true
@@ -703,6 +832,88 @@ export const updateWorkflowMutation = (
   }
   return mutationOptions
 }
+
+/**
+ * Archive Workflow
+ */
+export const archiveWorkflowMutation = (
+  options?: Partial<Options<ArchiveWorkflowData>>
+): UseMutationOptions<
+  ArchiveWorkflowResponse,
+  DefaultError,
+  Options<ArchiveWorkflowData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    ArchiveWorkflowResponse,
+    DefaultError,
+    Options<ArchiveWorkflowData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await archiveWorkflow({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Restore Workflow
+ */
+export const restoreWorkflowMutation = (
+  options?: Partial<Options<RestoreWorkflowData>>
+): UseMutationOptions<
+  RestoreWorkflowResponse,
+  DefaultError,
+  Options<RestoreWorkflowData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    RestoreWorkflowResponse,
+    DefaultError,
+    Options<RestoreWorkflowData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await restoreWorkflow({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+export const getRelatedWorkflowsQueryKey = (
+  options: Options<GetRelatedWorkflowsData>
+) => createQueryKey('getRelatedWorkflows', options)
+
+/**
+ * Get Related Workflows
+ */
+export const getRelatedWorkflowsOptions = (
+  options: Options<GetRelatedWorkflowsData>
+) =>
+  queryOptions<
+    GetRelatedWorkflowsResponse,
+    DefaultError,
+    GetRelatedWorkflowsResponse,
+    ReturnType<typeof getRelatedWorkflowsQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getRelatedWorkflows({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true
+      })
+      return data
+    },
+    queryKey: getRelatedWorkflowsQueryKey(options)
+  })
 
 export const getGraphViewQueryKey = (options: Options<GetGraphViewData>) =>
   createQueryKey('getGraphView', options)

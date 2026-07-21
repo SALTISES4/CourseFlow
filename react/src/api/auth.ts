@@ -11,9 +11,6 @@ import type {
   UserSummaryOut
 } from './gen/types.gen'
 
-/** Mirrors `UserSummaryOut` from the API; use `uuid` as stable identity (no numeric id in v2). */
-export type CurrentUser = UserSummaryOut
-
 export type LoginResponse = LoginOut
 export type UserLoginPayload = LoginIn
 export type UserRegisterPayload = RegisterIn
@@ -57,6 +54,13 @@ export async function loginRequest(
     throw new AuthRequestError(parseDetail(result.error), status, result.error)
   }
 
+  if (!result.data) {
+    throw new AuthRequestError(
+      'Login response did not include data',
+      result.response?.status ?? 0
+    )
+  }
+
   return result.data
 }
 
@@ -77,10 +81,17 @@ export async function registerRequest(
     throw new AuthRequestError(parseDetail(result.error), status, result.error)
   }
 
+  if (!result.data) {
+    throw new AuthRequestError(
+      'Registration response did not include data',
+      result.response?.status ?? 0
+    )
+  }
+
   return result.data
 }
 
-export async function logoutRequest(): Promise<LogoutOut> {
+export async function logoutRequest(): Promise<LogoutOut | undefined> {
   const result = await logout()
 
   if (result.error) {
@@ -95,7 +106,7 @@ export async function logoutRequest(): Promise<LogoutOut> {
  * Resolves the current user via `GET /api/auth/me` using the shared client
  * (Bearer from `getAccessToken()` — see `configureCourseFlowClient.ts`).
  */
-export async function fetchCurrentUser(): Promise<CurrentUser> {
+export async function fetchCurrentUser(): Promise<UserSummaryOut> {
   const result = await me({})
 
   if (result.error) {
@@ -103,5 +114,12 @@ export async function fetchCurrentUser(): Promise<CurrentUser> {
     throw new AuthRequestError(parseDetail(result.error), status, result.error)
   }
 
-  return result.data.item
+  if (!result.data) {
+    throw new AuthRequestError(
+      'Current-user response did not include data',
+      result.response?.status ?? 0
+    )
+  }
+
+  return result.data
 }

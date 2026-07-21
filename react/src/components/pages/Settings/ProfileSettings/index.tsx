@@ -1,3 +1,4 @@
+import { CourseFlowApiError } from '@cf/api/apiError'
 import {
   getMyProfileSettingsOptions,
   getMyProfileSettingsQueryKey,
@@ -40,18 +41,18 @@ const StyledFormBox = styled(Box)({
   }
 })
 
-const projectSchema = z.object({
+const profileSchema = z.object({
   email: z.string(),
 
   firstName: z
     .string()
     .min(1, { message: _t('First name is required') })
-    .max(200),
+    .max(200, { message: _t('First name is limited to 200 characters') }),
 
   lastName: z
     .string()
     .min(1, { message: _t('Last name is required') })
-    .max(200),
+    .max(200, { message: _t('Last name is limited to 200 characters') }),
 
   languagePreference: z
     .string()
@@ -59,7 +60,7 @@ const projectSchema = z.object({
     .max(200)
 })
 
-type FormValues = z.infer<typeof projectSchema>
+type FormValues = z.infer<typeof profileSchema>
 type FormField = keyof FormValues
 
 const ProfileSettingsPage = () => {
@@ -77,7 +78,7 @@ const ProfileSettingsPage = () => {
     }
   })
 
-  const { onSuccess } = useGenericMsgHandler()
+  const { onError, onSuccess } = useGenericMsgHandler()
 
   const {
     register,
@@ -87,7 +88,7 @@ const ProfileSettingsPage = () => {
     setError,
     formState: { errors, isDirty }
   } = useForm<FormValues>({
-    resolver: zodResolver(projectSchema),
+    resolver: zodResolver(profileSchema),
     defaultValues: {}
   })
 
@@ -112,14 +113,36 @@ const ProfileSettingsPage = () => {
         }
       })
 
-      onSuccess({ message: _t('User details updated!') })
+      onSuccess({ message: _t('Your profile settings have been updated') })
     } catch (err) {
-      const errFields = Object.keys(err) as FormField[]
-      errFields.forEach((field: FormField) => {
-        setError(field, {
-          message: err[field]
+      const errorBody = err instanceof CourseFlowApiError ? err.body : err
+      let hasFieldError = false
+
+      if (typeof errorBody === 'object' && errorBody !== null) {
+        const errorRecord = errorBody as Record<string, unknown>
+        const formFields: FormField[] = [
+          'firstName',
+          'lastName',
+          'languagePreference'
+        ]
+        formFields.forEach((field) => {
+          if (!(field in errorRecord)) {
+            return
+          }
+          hasFieldError = true
+          setError(field, {
+            message: String(errorRecord[field])
+          })
         })
-      })
+      }
+
+      if (!hasFieldError) {
+        onError({
+          message: _t(
+            'We encountered an issue and your profile settings have not been updated'
+          )
+        })
+      }
     }
   }
 
@@ -134,7 +157,7 @@ const ProfileSettingsPage = () => {
       </StyledTitleBox>
 
       <StyledFormBox>
-        <form onSubmit={handleSubmit(onFormSubmit)}>
+        <form noValidate onSubmit={handleSubmit(onFormSubmit)}>
           <Box sx={{ mb: 4 }}>
             <FormControl>
               <TextField
@@ -212,7 +235,11 @@ const ProfileSettingsPage = () => {
             <Button
               variant="contained"
               type="submit"
-              disabled={!isDirty || !!Object.keys(errors).length}
+              disabled={
+                !isDirty ||
+                !!Object.keys(errors).length ||
+                patchProfileSettings.isPending
+              }
             >
               {_t('Update profile')}
             </Button>

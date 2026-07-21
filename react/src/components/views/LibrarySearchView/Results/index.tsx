@@ -4,16 +4,17 @@ import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
 import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
-import { Link, Skeleton, Typography } from '@mui/material'
+import { Alert, Link, Skeleton, Typography } from '@mui/material'
 import { Link as LinkRouter } from 'react-router-dom'
 
 export type ResultsProps = {
-  data: LibrarySearchOut
-  error: Error
+  data?: LibrarySearchOut
+  error: Error | null
   isError: boolean
   isLoading: boolean
+  errorMessage?: string
   override?: {
-    uuid: string
+    uuid?: string
     onCardSelect: (uuid: string) => void
   }
 }
@@ -23,6 +24,7 @@ const Results = ({
   error,
   isLoading,
   isError,
+  errorMessage,
   override
 }: ResultsProps) => {
   if (isLoading) {
@@ -36,6 +38,16 @@ const Results = ({
     ))
   }
 
+  if (isError) {
+    return errorMessage ? (
+      <Alert severity="warning" sx={{ gridColumn: '1 / -1' }}>
+        {errorMessage}
+      </Alert>
+    ) : (
+      <ErrorView message={`An error occurred: ${getErrorMessage(error)}`} />
+    )
+  }
+
   if (!data) {
     return (
       <ErrorView
@@ -43,12 +55,6 @@ const Results = ({
       />
     )
   }
-  if (isError) {
-    return (
-      <ErrorView message={`An error occurred: ${getErrorMessage(error)}`} />
-    )
-  }
-
   const cards = formatLibraryObjects(data.items)
 
   return (

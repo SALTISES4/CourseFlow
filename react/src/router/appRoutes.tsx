@@ -51,7 +51,7 @@ export const CFRouter = createBrowserRouter([
       {
         path: CFRoutes.FAVORITES,
         element: (
-          <Base>
+          <Base showNotifications={false}>
             <Favorites />
           </Base>
         )
@@ -59,7 +59,7 @@ export const CFRouter = createBrowserRouter([
       {
         path: CFRoutes.LIBRARY,
         element: (
-          <Base>
+          <Base showNotifications={false}>
             <MyLibrary />
           </Base>
         )
@@ -67,7 +67,7 @@ export const CFRouter = createBrowserRouter([
       {
         path: CFRoutes.EXPLORE,
         element: (
-          <Base>
+          <Base showNotifications={false}>
             <Explore />
           </Base>
         )
@@ -75,7 +75,7 @@ export const CFRouter = createBrowserRouter([
       {
         path: CFRoutes.NOTIFICATIONS,
         element: (
-          <Base>
+          <Base showNotifications={false}>
             <NotificationsPage />
           </Base>
         )
@@ -83,7 +83,7 @@ export const CFRouter = createBrowserRouter([
       {
         path: CFRoutes.NOTIFICATIONS_SETTINGS,
         element: (
-          <Base>
+          <Base showNotifications={false}>
             <NotificationsSettingsPage />
           </Base>
         )
@@ -91,7 +91,7 @@ export const CFRouter = createBrowserRouter([
       {
         path: CFRoutes.PROFILE_SETTINGS,
         element: (
-          <Base>
+          <Base showNotifications={false}>
             <ProfileSettingsPage />
           </Base>
         )
@@ -99,7 +99,7 @@ export const CFRouter = createBrowserRouter([
       {
         path: CFRoutes.PASSWORD_RESET,
         element: (
-          <Base>
+          <Base showNotifications={false}>
             <PasswordResetPage />
           </Base>
         )
@@ -107,7 +107,7 @@ export const CFRouter = createBrowserRouter([
       {
         path: `${CFRoutes.PROJECT}/*`,
         element: (
-          <Base>
+          <Base showNotifications={false}>
             <Project />
           </Base>
         )
@@ -115,7 +115,7 @@ export const CFRouter = createBrowserRouter([
       {
         path: `${CFRoutes.WORKFLOW}/*`,
         element: (
-          <Base>
+          <Base showNotifications={false}>
             {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
             <WorkflowPage initialView={WorkflowViewType.OVERVIEW} />
           </Base>

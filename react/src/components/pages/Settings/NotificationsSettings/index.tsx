@@ -5,6 +5,7 @@ import {
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import strings from '@cf/utility/strings'
+import { _t } from '@cf/utility/Utility.class'
 import { OuterContentWrap } from '@cfMUI/helper'
 import Box from '@mui/material/Box'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -43,7 +44,7 @@ const NotificationsSettingsPage = () => {
 
   const { onError, onSuccess } = useGenericMsgHandler()
 
-  const { control, handleSubmit, reset, setValue } = useForm({
+  const { control, getValues, reset, setValue } = useForm({
     defaultValues: {
       notifications: false
     }
@@ -56,19 +57,28 @@ const NotificationsSettingsPage = () => {
   }, [data, reset])
 
   const onSwitchChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    setValue('notifications', event.target.checked)
-    await handleSubmit(async (formData) => {
-      try {
-        await patchNotificationSettings.mutateAsync({
-          body: {
-            notificationsActive: formData.notifications
-          }
-        })
-        onSuccess({})
-      } catch (err) {
-        onError(err)
-      }
-    })()
+    const previousValue = getValues('notifications')
+    const nextValue = event.target.checked
+    setValue('notifications', nextValue)
+
+    try {
+      const response = await patchNotificationSettings.mutateAsync({
+        body: {
+          notificationsActive: nextValue
+        }
+      })
+      reset({ notifications: response.item.notificationsActive })
+      onSuccess({
+        message: _t('Your notification settings have been updated')
+      })
+    } catch {
+      setValue('notifications', previousValue)
+      onError({
+        message: _t(
+          'We encountered an issue and your notification settings were not updated'
+        )
+      })
+    }
   }
 
   return (
@@ -89,6 +99,7 @@ const NotificationsSettingsPage = () => {
                     {...field}
                     onChange={onSwitchChange}
                     checked={field.value}
+                    disabled={patchNotificationSettings.isPending}
                   />
                 }
                 label={strings.productUpdatesAgree}

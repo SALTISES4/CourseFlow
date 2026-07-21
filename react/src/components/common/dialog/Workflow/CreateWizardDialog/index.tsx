@@ -1,11 +1,11 @@
 import { WorkflowTypeIn } from '@cf/api/gen'
 import {
+  copyWorkflowMutation,
   createWorkflowMutation,
   listWorkflowsQueryKey
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
-import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import WorkflowForm from '@cfComponents/dialog/Workflow/componnets/WorkflowForm'
 import ProjectSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/ProjectSearch'
@@ -33,7 +33,7 @@ type StateType = {
   resourceType: CreateResourceOptions
   workflowType?: WorkflowTypeIn
   title?: string
-  template?: string
+  template?: { uuid: string; title: string }
 }
 
 const initialState: StateType = {
@@ -45,8 +45,7 @@ const CreateWizardDialog = () => {
   const formRef = useRef<HTMLFormElement>(null)
   const [state, setState] = useState<StateType>(initialState)
   const [projectUuid, setProjectUuid] = useState<string>()
-  const [templates, setTemplateData] = useState<TemplateType[]>(null)
-  const [isFormReady, setIsFormReady] = useState<boolean>()
+  const [isFormReady, setIsFormReady] = useState(false)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -56,6 +55,17 @@ const CreateWizardDialog = () => {
       await queryClient.invalidateQueries({
         queryKey: listWorkflowsQueryKey()
       })
+    }
+  })
+  const copyWorkflow = useMutation({
+    ...copyWorkflowMutation(),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: listWorkflowsQueryKey()
+        }),
+        queryClient.invalidateQueries({ queryKey: ['library-search'] })
+      ])
     }
   })
 
@@ -68,15 +78,21 @@ const CreateWizardDialog = () => {
 
   const steps = [
     {
+      label: 'Select project',
       title: 'Select project',
       canSubmit: projectUuid
     },
     {
+      label: `Select ${state.workflowType} type`,
       title: `Select ${state.workflowType} type`,
       canSubmit: state.resourceType
     },
     {
-      title: `Create ${state.workflowType}`,
+      label: `Create ${state.workflowType}`,
+      title:
+        state.resourceType === CreateResourceOptions.TEMPLATE
+          ? `Create ${state.workflowType} from a template`
+          : `Create blank ${state.workflowType}`,
       canSubmit: ((): boolean => {
         if (state.resourceType === CreateResourceOptions.TEMPLATE) {
           return !!state.template
@@ -117,7 +133,7 @@ const CreateWizardDialog = () => {
     )
   }
 
-  function onProjectSelect(uuid: string) {
+  function onProjectSelect(uuid?: string) {
     setProjectUuid(uuid)
   }
 
@@ -129,10 +145,10 @@ const CreateWizardDialog = () => {
     )
   }
 
-  function onTemplateSelect(uuid: string) {
+  function onTemplateSelect(template?: { uuid: string; title: string }) {
     setState(
       produce((draft) => {
-        draft.template = uuid
+        draft.template = template
       })
     )
   }
@@ -142,6 +158,8 @@ const CreateWizardDialog = () => {
 
   const resetState = useCallback(() => {
     setState(initialState)
+    setProjectUuid(undefined)
+    setIsFormReady(false)
   }, [])
 
   const onCloseHandler = useCallback(() => {
@@ -150,22 +168,29 @@ const CreateWizardDialog = () => {
 
   const onSuccess = useCallback(
     (uuid: string) => {
-      const path = generatePath(CFRoutes.WORKFLOW, { uuid })
+      const path = generatePath(CFRoutes.WORKFLOW_GRAPH, { uuid })
       onDialogClose()
       navigate(path)
-      enqueueSnackbar('Workflow created', {
-        variant: 'success'
-      })
+      enqueueSnackbar(
+        `Your ${state.workflowType} has been successfully created`,
+        {
+          variant: 'success'
+        }
+      )
     },
-    [navigate, onDialogClose]
+    [navigate, onDialogClose, state.workflowType]
   )
 
-  const onError = useCallback((error: unknown) => {
-    enqueueSnackbar('Failed to create workflow', {
-      variant: 'error'
-    })
-    console.error('Error creating workflow:', error)
-  }, [])
+  const onError = useCallback(
+    (error: unknown) => {
+      enqueueSnackbar(
+        `We encountered an issue and your ${state.workflowType} was not created`,
+        { variant: 'error' }
+      )
+      console.error('Error creating workflow:', error)
+    },
+    [state.workflowType]
+  )
 
   const onSubmit = useCallback(
     async (data: WorkflowFormType) => {
@@ -191,6 +216,25 @@ const CreateWizardDialog = () => {
     [createWorkflow, onError, onSuccess, projectUuid, state.workflowType]
   )
 
+  const onTemplateSubmit = useCallback(async () => {
+    if (!state.template || !projectUuid) {
+      return
+    }
+
+    try {
+      const response = await copyWorkflow.mutateAsync({
+        path: { uuid: state.template.uuid },
+        body: {
+          projectUuid,
+          title: state.template.title
+        }
+      })
+      onSuccess(response.uuid)
+    } catch (err) {
+      onError(err)
+    }
+  }, [copyWorkflow, onError, onSuccess, projectUuid, state.template])
+
   /**
    * Bit of a hack, we want the form to be selfcontained, but we want to submit it conditionally from outside
    * open to a better design pattern here, but do not want to pull form hook into the parent
@@ -199,7 +243,7 @@ const CreateWizardDialog = () => {
    * probably cleaner than useImperativeDeclaration
    */
   function handleChildSubmit() {
-    formRef.current.dispatchEvent(
+    formRef.current?.dispatchEvent(
       new Event('submit', { cancelable: true, bubbles: true })
     )
   }
@@ -212,6 +256,10 @@ const CreateWizardDialog = () => {
    */
   const memoizedSteps = useMemo(() => {
     {
+      if (!state.workflowType) {
+        return null
+      }
+
       switch (state.step) {
         case 0: {
           return (
@@ -237,7 +285,7 @@ const CreateWizardDialog = () => {
                 formRef={formRef}
                 submitHandler={onSubmit}
                 closeCallback={onCloseHandler}
-                label={state.title}
+                label={state.title ?? ctaTitle}
                 workflowType={state.workflowType}
                 setIsFormReady={setIsFormReady}
               />
@@ -247,7 +295,8 @@ const CreateWizardDialog = () => {
           if (state.resourceType === CreateResourceOptions.TEMPLATE) {
             return (
               <TemplateSearch
-                selected={projectUuid}
+                selected={state.template?.uuid}
+                workflowType={state.workflowType}
                 onTemplateSelect={onTemplateSelect}
               />
             )
@@ -266,7 +315,9 @@ const CreateWizardDialog = () => {
     state.resourceType,
     state.workflowType,
     state.title,
-    projectUuid
+    state.template,
+    projectUuid,
+    ctaTitle
   ])
 
   const ButtonActions = () => {
@@ -287,9 +338,17 @@ const CreateWizardDialog = () => {
         <Button
           variant="contained"
           onClick={
-            state.step !== steps.length - 1 ? goToNextStep : handleChildSubmit
+            state.step !== steps.length - 1
+              ? goToNextStep
+              : state.resourceType === CreateResourceOptions.TEMPLATE
+                ? onTemplateSubmit
+                : handleChildSubmit
           }
-          disabled={!steps[state.step].canSubmit || createWorkflow.isPending}
+          disabled={
+            !steps[state.step].canSubmit ||
+            createWorkflow.isPending ||
+            copyWorkflow.isPending
+          }
         >
           {state.step !== steps.length - 1 ? 'Next step' : ctaTitle}
         </Button>
@@ -314,8 +373,8 @@ const CreateWizardDialog = () => {
       <DialogContent dividers>
         <Stepper activeStep={state.step}>
           {steps.map((step, idx) => (
-            <Step key={step.title} completed={state.step > idx}>
-              <StepLabel>{step.title}</StepLabel>
+            <Step key={step.label} completed={state.step > idx}>
+              <StepLabel>{step.label}</StepLabel>
             </Step>
           ))}
         </Stepper>

@@ -14,7 +14,7 @@ export const DUPLICATE_CHANNEL_HOVER_NAME = 'Duplicate';
 export const DELETE_CHANNEL_HOVER_NAME = 'Delete';
 
 export function workflowNodes(page: Page): Locator {
-  return page.locator('[id^="node-"]');
+  return page.locator('[data-test-id="workflow-node"]');
 }
 
 /** canonical: workflowNode — DOM id `node-{workflowNodeId}` */

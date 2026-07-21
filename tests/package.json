@@ -11,15 +11,22 @@
   "devDependencies": {
     "@playwright/test": "^1.59.1",
     "@types/node": "^25.5.2",
+    "allure-playwright": "^3.10.2",
     "dotenv": "^17.4.2"
   },
   "scripts": {
     "test": "playwright test",
     "test-setup": "playwright test --project=setup",
     "test-ui": "playwright test --ui",
+    "test-ui:last-failed": "playwright test --ui --last-failed",
     "test-debug": "playwright test --debug",
     "test-report": "playwright show-report",
-    "test-list": "playwright test --list"
+    "test:e2e:failed": "playwright test --last-failed",
+    "test-list": "playwright test --list",
+    "allure:clean": "rm -rf allure-results allure-report",
+    "allure:test": "rm -rf allure-results allure-report && playwright test",
+    "allure:generate": "rm -rf allure-report && allure generate allure-results --output allure-report",
+    "allure:open": "allure open allure-report"
   },
   "volta": {
     "node": "24.14.1",
@@ -37,6 +44,7 @@
     "url": "https://github.com/SALTISES4/CourseFlow/issues"
   },
   "dependencies": {
-    "@playwright/cli": "^0.1.6"
+    "@playwright/cli": "^0.1.6",
+    "allure": "^3.14.3"
   }
 }

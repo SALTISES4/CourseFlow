@@ -36,7 +36,7 @@ export function useCommentThreadContext(): CommentThreadContext {
   const isCommentHost =
     Boolean(entityUuid) &&
     Boolean(objectType) &&
-    COMMENT_HOST_OBJECT_TYPES.has(objectType)
+    Boolean(objectType && COMMENT_HOST_OBJECT_TYPES.has(objectType))
 
   const nodeSelector = useMemo(
     () => (entityUuid ? selectNodeByUuid(entityUuid) : () => null),

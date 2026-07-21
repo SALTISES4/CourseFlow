@@ -46,6 +46,17 @@ const Sort = ({
           })
         )
       }}
+      onReset={() => {
+        setSearchFilterState(
+          produce((draft) => {
+            draft.sortOptions.options.forEach((option) => {
+              option.enabled = false
+              option.direction = undefined
+            })
+            draft.pagination.page = 0
+          })
+        )
+      }}
     />
   )
 }

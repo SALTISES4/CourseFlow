@@ -1,50 +1,69 @@
-version: 1
+version: 2
 
 resource: project
 
 states:
-  - active
+  - private
+  - public
   - archived
-  - declined
-  - open
-  - closed
-  - dead
 
 roles:
   - owner
   - editor
   - commenter
   - viewer
-  - anonymous
+  - public
 
 actions:
 
   view:
-    active:
+    private:
       owner: true
       editor: true
       commenter: true
       viewer: true
-      anonymous: false
-    open:
+      public: false
+    public:
       owner: true
       editor: true
       commenter: true
       viewer: true
-      anonymous: true
+      public: true
+    archived:
+      owner: false
+      editor: false
+      commenter: false
+      viewer: false
+      public: false
 
   edit_project:
-    active:
+    private:
+      owner: true
+      editor: true
+    public:
       owner: true
       editor: true
 
   manage_members:
-    active:
+    private:
+      owner: true
+      editor: true
+    public:
+      owner: true
+      editor: true
+
+  create_workflow:
+    private:
+      owner: true
+      editor: true
+    public:
       owner: true
       editor: true
 
   archive_project:
-    active:
+    private:
+      owner: true
+    public:
       owner: true
 
   restore_project:
@@ -56,9 +75,9 @@ actions:
       owner: true
 
   publish_project:
-    active:
+    private:
       owner: true
-
-  decline_project:
-    active:
+      editor: true
+    public:
       owner: true
+      editor: true

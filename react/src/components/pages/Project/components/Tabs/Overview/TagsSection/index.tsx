@@ -1,3 +1,5 @@
+import { ProjectPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { TTag } from '@cf/redux/types/type'
 import { _t } from '@cf/utility/Utility.class'
 import * as SC from '@cfViews/WorkflowView/OverviewView/styles'
@@ -13,6 +15,7 @@ type PropsType = {
 
 const Tags = ({ data }: PropsType) => {
   const [state, setState] = useState<TTag[]>(data)
+  const canEdit = useResourcePermission(ProjectPermission.EDIT_PROJECT)
 
   const onChange = useCallback(
     (uuid: string, value: string, createNew: boolean) => {
@@ -29,6 +32,9 @@ const Tags = ({ data }: PropsType) => {
             })
           } else {
             const target = draft.find((t) => t.uuid === uuid)
+            if (!target) {
+              return
+            }
             if (target.title !== value) {
               target.title = value
             }
@@ -60,14 +66,17 @@ const Tags = ({ data }: PropsType) => {
               <Tag
                 uuid={tag.uuid}
                 label={tag.title}
+                disabled={!canEdit}
                 onChange={onChange}
                 onDelete={onTagDelete}
               />
             </Grid>
           ))}
-          <Grid item xs={4}>
-            <Tag uuid={String(state.length + 1)} onChange={onChange} create />
-          </Grid>
+          {canEdit && (
+            <Grid item xs={4}>
+              <Tag uuid={String(state.length + 1)} onChange={onChange} create />
+            </Grid>
+          )}
         </Grid>
       </SC.InfoBlockContent>
     </SC.InfoBlock>

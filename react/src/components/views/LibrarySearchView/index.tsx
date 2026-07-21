@@ -1,6 +1,11 @@
-import { LibrarySearchIn } from '@cf/api/gen'
+import {
+  LibraryContentTypeIn,
+  LibrarySearchIn,
+  LibrarySearchOut
+} from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { _t } from '@cf/utility/Utility.class'
+import type { FilterMultiselectOption } from '@cfComponents/filters/FilterMultiselect'
 import { SearchFilterOption } from '@cfComponents/filters/types'
 import Pagination from '@cfComponents/UIPrimitives/Pagination'
 import { GridWrap, OuterContentWrap } from '@cfMUI/helper'
@@ -9,6 +14,7 @@ import LibraryHelper, {
 } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -26,7 +32,19 @@ import Results, { type ResultsProps } from './Results'
 export type LibraryFilterConfig = {
   pagination?: boolean
   sortOptions?: boolean
+  errorMessage?: string
+  initialContentType?: LibraryContentTypeIn
   filterGroups?: Partial<Record<keyof SearchOptions['filterGroups'], boolean>>
+}
+
+const formatResultsSummary = (data: LibrarySearchOut): string => {
+  const { currentPage, resultsPerPage, totalResults } = data.meta
+  const rangeStart = currentPage * resultsPerPage + 1
+  const rangeEnd = Math.min(totalResults, rangeStart + data.items.length - 1)
+  const range =
+    rangeStart === rangeEnd ? String(rangeStart) : `${rangeStart}-${rangeEnd}`
+
+  return `Showing ${range} of ${totalResults} results`
 }
 
 /*******************************************************
@@ -59,8 +77,15 @@ const LibrarySearchView = ({
     }
   }
 
-  // final list of filters, non-overridden object merge
-  const filters = Object.assign(configDefaults, config)
+  const filters: LibraryFilterConfig = {
+    ...configDefaults,
+    ...config,
+    filterGroups: {
+      ...configDefaults.filterGroups,
+      ...config.filterGroups
+    }
+  }
+  const filterGroups = filters.filterGroups ?? {}
 
   const defaultOptionsSearchOptions = LibraryHelper.defaultOptionsSearchOptions
   /*******************************************************
@@ -68,7 +93,24 @@ const LibrarySearchView = ({
    *******************************************************/
   // these are the UI filters, they represent the state of the UI grouping, separated into different sections
   const [searchFilterState, setSearchFilterState] = useState<SearchOptions>(
-    defaultOptionsSearchOptions
+    () =>
+      produce(defaultOptionsSearchOptions, (draft) => {
+        if (!filters.initialContentType) {
+          return
+        }
+
+        const initialOption =
+          draft.filterGroups.contentTypeFilter.options?.find(
+            (option) => option.value === filters.initialContentType
+          )
+        if (!initialOption) {
+          return
+        }
+
+        const current = draft.filterGroups.contentTypeFilter.options ?? []
+        draft.filterGroups.contentTypeFilter.options =
+          LibraryHelper.updateFilterOptions(current, initialOption)
+      })
   )
   /*******************************************************
    * QUERY HOOKS
@@ -91,14 +133,19 @@ const LibrarySearchView = ({
     setSearchArgs(args)
   }, [searchFilterState, defaultOptionsSearchOptions, setSearchArgs])
 
-  const disciplineOptions: SearchFilterOption[] = useMemo(
-    () =>
-      data?.meta?.allowed?.disciplines?.map((option) => ({
+  const disciplineOptions: FilterMultiselectOption[] = useMemo(() => {
+    const allowedDisciplineIds = new Set(
+      data?.meta?.allowed?.disciplines?.map((option) => option.id) ?? []
+    )
+
+    return [...COURSEFLOW_APP.globalContextData.disciplines]
+      .sort((a, b) => a.title.localeCompare(b.title))
+      .map((option) => ({
         value: option.id,
-        label: option.label
-      })) ?? [],
-    [data?.meta?.allowed?.disciplines]
-  )
+        label: option.title,
+        disabled: Boolean(data) && !allowedDisciplineIds.has(option.id)
+      }))
+  }, [data])
 
   return (
     <OuterContentWrap>
@@ -116,27 +163,27 @@ const LibrarySearchView = ({
           >
             <Stack direction="row" spacing={2}>
               <SortFilter
-                show={filters.sortOptions}
+                show={Boolean(filters.sortOptions)}
                 options={searchFilterState.sortOptions.options}
                 setSearchFilterState={setSearchFilterState}
               />
               <DisciplineFilter
-                show={filters.filterGroups.disciplineFilter}
+                show={Boolean(filterGroups.disciplineFilter)}
                 options={disciplineOptions}
                 setSearchFilterState={setSearchFilterState}
               />
               <OwnershipFilter
-                show={filters.filterGroups.ownershipFilter}
+                show={Boolean(filterGroups.ownershipFilter)}
                 filterGroup={searchFilterState.filterGroups.ownershipFilter}
                 setSearchFilterState={setSearchFilterState}
               />
               <ContentTypeFilter
-                show={filters.filterGroups.contentTypeFilter}
+                show={Boolean(filterGroups.contentTypeFilter)}
                 filterGroup={searchFilterState.filterGroups.contentTypeFilter}
                 setSearchFilterState={setSearchFilterState}
               />
               <WorkflowTypeFilter
-                show={filters.filterGroups.workflowTypeFilter}
+                show={Boolean(filterGroups.workflowTypeFilter)}
                 searchArgs={searchArgs}
                 filterGroup={searchFilterState.filterGroups.workflowTypeFilter}
                 setSearchFilterState={setSearchFilterState}
@@ -144,17 +191,17 @@ const LibrarySearchView = ({
 
               {/* NOTE: we could merge these into one generic, benefits debatable */}
               <ToggleFavorite
-                show={filters.filterGroups.favoritesFilter}
+                show={Boolean(filterGroups.favoritesFilter)}
                 filterGroup={searchFilterState.filterGroups.favoritesFilter}
                 setSearchFilterState={setSearchFilterState}
               />
               <ToggleTemplate
-                show={filters.filterGroups.templateFilter}
+                show={Boolean(filterGroups.templateFilter)}
                 filterGroup={searchFilterState.filterGroups.templateFilter}
                 setSearchFilterState={setSearchFilterState}
               />
               <ToggleArchive
-                show={filters.filterGroups.archiveFilter}
+                show={Boolean(filterGroups.archiveFilter)}
                 filterGroup={searchFilterState.filterGroups.archiveFilter}
                 setSearchFilterState={setSearchFilterState}
               />
@@ -164,12 +211,17 @@ const LibrarySearchView = ({
         </Toolbar>
       )}
 
+      {!isLoading && !isError && data?.items.length ? (
+        <Typography sx={{ mb: 2 }}>{formatResultsSummary(data)}</Typography>
+      ) : null}
+
       <GridWrap data-test-id="library-results">
         <Results
           data={data}
           error={error}
           isError={isError}
           isLoading={isLoading}
+          errorMessage={filters.errorMessage}
           override={override}
         />
       </GridWrap>

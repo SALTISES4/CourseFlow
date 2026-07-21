@@ -3,8 +3,8 @@ import {
   listProjectTeamQueryKey
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { WorkspaceType } from '@cf/types/enum'
+import { SnackbarOptions } from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
 import { StyledDialog } from '@cfComponents/dialog/styles'
 import Button from '@mui/material/Button'
@@ -13,6 +13,7 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { enqueueSnackbar } from 'notistack'
 
 // @todo is this used?
 const ContributorRemoveDialog = ({
@@ -25,7 +26,6 @@ const ContributorRemoveDialog = ({
   const { show, onClose, payload } = useDialog<DialogMode.CONTRIBUTOR_REMOVE>(
     DialogMode.CONTRIBUTOR_REMOVE
   )
-  const { onError, onSuccess } = useGenericMsgHandler()
   const queryClient = useQueryClient()
 
   const deleteMember = useMutation({
@@ -48,10 +48,19 @@ const ContributorRemoveDialog = ({
           membership_id: payload.membershipId
         }
       })
-      onSuccess({ message: _t('Success!') })
+      enqueueSnackbar(
+        _t('The contributor was successfully removed from your project'),
+        { variant: SnackbarOptions.SUCCESS }
+      )
       onClose()
     } catch (err) {
-      onError(err)
+      enqueueSnackbar(
+        _t(
+          'We encountered an issue and the contributor was not removed from your project'
+        ),
+        { variant: SnackbarOptions.ERROR }
+      )
+      console.error('Failed to remove contributor:', err)
     }
   }
 

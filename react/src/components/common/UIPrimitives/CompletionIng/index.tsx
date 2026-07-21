@@ -8,8 +8,8 @@
 const CompletionImg = ({
   completionStatus,
   outcomesType
-}): JSX.Element | any[] => {
-  const contents = []
+}): JSX.Element | JSX.Element[] => {
+  const contents: JSX.Element[] = []
 
   if (outcomesType === 0 || completionStatus & 1) {
     return (
