@@ -60,8 +60,7 @@ const ActionMenu = () => {
       content: _t('Archive project'),
       show:
         !isArchived &&
-        hasPermission(permissions, ProjectPermission.ARCHIVE_PROJECT),
-      separator: 'top'
+        hasPermission(permissions, ProjectPermission.ARCHIVE_PROJECT)
     },
     {
       uuid: 'unarchive-project',
