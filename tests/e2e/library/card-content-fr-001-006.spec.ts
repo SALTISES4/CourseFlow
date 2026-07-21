@@ -6,7 +6,10 @@ import {
   cardChipWithLabel,
   cardDescriptionText,
   cardFavouriteToggle,
-  expectCardFavouriteToggleRoundTrip,
+  ensureCardFavourited,
+  ensureCardNotFavourited,
+  expectCardFavouriteAddedSnackbar,
+  expectCardFavouriteRemovedSnackbar,
   expectCardFavouriteToggleShowsFavourited,
   expectCardFavouriteToggleShowsNotFavourited,
   cardFooterRegion,
@@ -15,7 +18,6 @@ import {
   cardTitleText,
   cardWorkflowCountChip,
   cardWorkflowCountChipLabel,
-  E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE,
   E2E_FIXTURE_TEMPLATE_WORKFLOW_TITLES,
   E2E_FIXTURE_WORKFLOW_DESCRIPTION,
   E2E_FIXTURE_WORKFLOW_TITLE,
@@ -47,10 +49,8 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
     await waitForLibraryResultsLoaded(page);
   });
 
-  test.describe('FR-CARD-001: projectCard content', () => {
-    test('seeded project card shows mapped content and layout regions', async ({
-      page,
-    }) => {
+  test.describe('FR-CARD-001: card content', () => {
+    test('project cards show mapped content and layout regions', async ({ page }) => {
       const card = libraryProjectCardByTitle(page, manifest.project_title);
       if ((await card.count()) === 0) {
         test.skip(true, 'E2E fixture project card not visible on /library.');
@@ -81,12 +81,9 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
         cardFavouriteToggle(card),
       );
     });
-  });
 
-  test.describe('FR-CARD-002: workflowCard content', () => {
-    const workflowTypeLabel = workflowTypeChipLabel(workflow.workflow_type);
-
-    test('seeded workflow card shows mapped content and layout regions', async ({ page }) => {
+    test('workflow cards show mapped content and layout regions', async ({ page }) => {
+      const workflowTypeLabel = workflowTypeChipLabel(workflow.workflow_type);
       const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
       if ((await card.count()) === 0) {
         test.skip(true, 'E2E fixture workflow card not visible on /library.');
@@ -115,7 +112,7 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
   });
 
   test.describe('FR-CARD-003: projectCard click destination', () => {
-    test('clicking project card body navigates to project workflows view', async ({ page }) => {
+    test('clicking project card navigates to project Workflows view', async ({ page }) => {
       const card = libraryProjectCardByTitle(page, manifest.project_title);
       if ((await card.count()) === 0) {
         test.skip(true, 'E2E fixture project card not visible on /library.');
@@ -127,7 +124,7 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
   });
 
   test.describe('FR-CARD-004: workflowCard click destination', () => {
-    test('clicking workflow card body navigates to workflow graph view', async ({ page }) => {
+    test('clicking workflow card navigates to workflow graph view', async ({ page }) => {
       const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
       if ((await card.count()) === 0) {
         test.skip(true, 'E2E fixture workflow card not visible on /library.');
@@ -160,21 +157,23 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
         await expectCardFavouriteToggleShowsNotFavourited(card);
       });
 
-      test('workflow card shows yellow star when API isFavorite is true', async ({ page }) => {
-        await gotoExplore(page);
-        await expect(page).toHaveURL(/\/explore\/?$/);
-        await waitForLibraryResultsLoaded(page);
-        await templatesToggle(page).click();
-        await waitForLibraryResultsLoaded(page);
-
-        const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE);
+      test('workflow card shows yellow star when favourited', async ({ page }) => {
+        const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
         if ((await card.count()) === 0) {
-          test.skip(
-            true,
-            `Favourited template workflow "${E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE}" not visible on Explore — re-run e2e seed.`,
-          );
+          test.skip(true, 'E2E fixture workflow card not visible on /library.');
         }
 
+        await ensureCardFavourited(page, card);
+        await expectCardFavouriteToggleShowsFavourited(card);
+      });
+
+      test('project card shows yellow star when favourited', async ({ page }) => {
+        const card = libraryProjectCardByTitle(page, manifest.project_title);
+        if ((await card.count()) === 0) {
+          test.skip(true, 'E2E fixture project card not visible on /library.');
+        }
+
+        await ensureCardFavourited(page, card);
         await expectCardFavouriteToggleShowsFavourited(card);
       });
     });
@@ -201,22 +200,48 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
       await expect(page).toHaveURL(urlBefore);
     });
 
-    test('project card favourite toggle add and remove show success snackbars', async ({ page }) => {
+    test('project card favourite toggle shows Added to your favourites', async ({ page }) => {
       const card = libraryProjectCardByTitle(page, manifest.project_title);
       if ((await card.count()) === 0) {
         test.skip(true, 'E2E fixture project card not visible on /library.');
       }
 
-      await expectCardFavouriteToggleRoundTrip(page, card);
+      await ensureCardNotFavourited(page, card);
+      await cardFavouriteToggle(card).click();
+      await expectCardFavouriteAddedSnackbar(page);
     });
 
-    test('workflow card favourite toggle add and remove show success snackbars', async ({ page }) => {
+    test('project card favourite toggle shows Removed from your favourites', async ({ page }) => {
+      const card = libraryProjectCardByTitle(page, manifest.project_title);
+      if ((await card.count()) === 0) {
+        test.skip(true, 'E2E fixture project card not visible on /library.');
+      }
+
+      await ensureCardFavourited(page, card);
+      await cardFavouriteToggle(card).click();
+      await expectCardFavouriteRemovedSnackbar(page);
+    });
+
+    test('workflow card favourite toggle shows Added to your favourites', async ({ page }) => {
       const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
       if ((await card.count()) === 0) {
         test.skip(true, 'E2E fixture workflow card not visible on /library.');
       }
 
-      await expectCardFavouriteToggleRoundTrip(page, card);
+      await ensureCardNotFavourited(page, card);
+      await cardFavouriteToggle(card).click();
+      await expectCardFavouriteAddedSnackbar(page);
+    });
+
+    test('workflow card favourite toggle shows Removed from your favourites', async ({ page }) => {
+      const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
+      if ((await card.count()) === 0) {
+        test.skip(true, 'E2E fixture workflow card not visible on /library.');
+      }
+
+      await ensureCardFavourited(page, card);
+      await cardFavouriteToggle(card).click();
+      await expectCardFavouriteRemovedSnackbar(page);
     });
   });
 

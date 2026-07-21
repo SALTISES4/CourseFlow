@@ -87,31 +87,51 @@ export async function expectCardFavouriteToggleShowsNotFavourited(card: Locator)
 }
 
 /**
- * FR-CARD-005 — add/remove round-trip restores initial favourite state.
- * Asserts route unchanged on each click and success snackbar copy for add and remove.
+ * Favourites the card if it is not already favourited.
+ * Snackbar copy for add/remove is asserted in dedicated FR-CARD-005 tests.
  */
-export async function expectCardFavouriteToggleRoundTrip(page: Page, card: Locator): Promise<void> {
+export async function ensureCardFavourited(page: Page, card: Locator): Promise<void> {
   const toggle = cardFavouriteToggle(card);
   await expect(toggle).toBeVisible();
-
-  const urlBefore = page.url();
-
-  await toggle.click();
-  await expect(page).toHaveURL(urlBefore);
-  await expect(globalMessageSnackbar(page)).toBeVisible({ timeout: 15_000 });
-  await expect(globalMessageSnackbar(page)).toHaveText(
-    new RegExp(`^(${CARD_FAVOURITE_SNACKBAR_ADDED}|${CARD_FAVOURITE_SNACKBAR_REMOVED})$`),
-  );
-  const firstMessage = await globalMessageSnackbar(page).textContent();
-
-  await toggle.click();
-  await expect(page).toHaveURL(urlBefore);
-  await expect(globalMessageSnackbar(page)).toBeVisible({ timeout: 15_000 });
-  if (firstMessage === CARD_FAVOURITE_SNACKBAR_ADDED) {
-    await expect(globalMessageSnackbar(page)).toHaveText(CARD_FAVOURITE_SNACKBAR_REMOVED);
-  } else {
-    await expect(globalMessageSnackbar(page)).toHaveText(CARD_FAVOURITE_SNACKBAR_ADDED);
+  const color = await toggle.evaluate((el) => getComputedStyle(el).color);
+  if (CARD_FAVOURITE_ACTIVE_COLOR_PATTERN.test(color)) {
+    return;
   }
+  await toggle.click();
+  await expect(
+    globalMessageSnackbar(page).filter({ hasText: CARD_FAVOURITE_SNACKBAR_ADDED }),
+  ).toBeVisible({ timeout: 15_000 });
+}
+
+/**
+ * Unfavourites the card if it is currently favourited.
+ * Snackbar copy for add/remove is asserted in dedicated FR-CARD-005 tests.
+ */
+export async function ensureCardNotFavourited(page: Page, card: Locator): Promise<void> {
+  const toggle = cardFavouriteToggle(card);
+  await expect(toggle).toBeVisible();
+  const color = await toggle.evaluate((el) => getComputedStyle(el).color);
+  if (CARD_FAVOURITE_INACTIVE_COLOR_PATTERN.test(color)) {
+    return;
+  }
+  await toggle.click();
+  await expect(
+    globalMessageSnackbar(page).filter({ hasText: CARD_FAVOURITE_SNACKBAR_REMOVED }),
+  ).toBeVisible({ timeout: 15_000 });
+}
+
+/** FR-CARD-005 — success snackbar after favouriting. */
+export async function expectCardFavouriteAddedSnackbar(page: Page): Promise<void> {
+  await expect(
+    globalMessageSnackbar(page).filter({ hasText: CARD_FAVOURITE_SNACKBAR_ADDED }),
+  ).toBeVisible({ timeout: 15_000 });
+}
+
+/** FR-CARD-005 — success snackbar after unfavouriting. */
+export async function expectCardFavouriteRemovedSnackbar(page: Page): Promise<void> {
+  await expect(
+    globalMessageSnackbar(page).filter({ hasText: CARD_FAVOURITE_SNACKBAR_REMOVED }),
+  ).toBeVisible({ timeout: 15_000 });
 }
 
 /** canonical: cardTypeChip | cardTemplateChip — chip by visible label inside cardFooterTagsRegion */
