@@ -1,17 +1,11 @@
-import { LibraryContentTypeIn, LibrarySearchIn } from '@cf/api/gen'
+import { LibrarySearchIn } from '@cf/api/gen'
 import LibrarySearchView, {
   LibraryFilterConfig
 } from '@cfViews/LibrarySearchView'
 import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import { useCallback, useState } from 'react'
 
-/*******************************************************
- * @LibraryRenderer
- *******************************************************/
-const LibraryPage = () => {
-  /*******************************************************
-   * HOOKS
-   *******************************************************/
+const FavoritesPage = () => {
   const config: LibraryFilterConfig = {
     filterGroups: {
       ownershipFilter: true,
@@ -33,9 +27,6 @@ const LibraryPage = () => {
     )
   }, [])
 
-  /*******************************************************
-   * RENDER
-   *******************************************************/
   return (
     <LibrarySearchView
       config={config}
@@ -45,4 +36,4 @@ const LibraryPage = () => {
   )
 }
 
-export default LibraryPage
+export default FavoritesPage
