@@ -14,7 +14,6 @@ const TabWorkflows = ({ uuid }: PropsType) => {
    * HOOKS
    *******************************************************/
   const config: LibraryFilterConfig = {
-    initialContentType: LibraryContentTypeIn.WORKFLOW,
     filterGroups: {
       ownershipFilter: true,
       workflowTypeFilter: true,

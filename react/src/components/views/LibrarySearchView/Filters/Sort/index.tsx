@@ -46,7 +46,9 @@ const Sort = ({
           })
         )
       }}
-      onReset={() => {
+      onReset={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
         setSearchFilterState(
           produce((draft) => {
             draft.sortOptions.options.forEach((option) => {

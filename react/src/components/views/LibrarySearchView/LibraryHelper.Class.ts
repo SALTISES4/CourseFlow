@@ -62,11 +62,6 @@ class LibraryHelper {
         label: _t('Ownership'),
         options: [
           {
-            value: null,
-            label: _t('All'),
-            enabled: true
-          },
-          {
             value: LibraryOwnershipIn.OWNED,
             label: _t('Owned')
           },
@@ -88,11 +83,6 @@ class LibraryHelper {
         name: 'contentType',
         label: _t('Type'),
         options: [
-          {
-            label: _t('All'),
-            value: null,
-            enabled: true
-          },
           {
             label: _t('Projects'),
             value: LibraryContentTypeIn.PROJECT

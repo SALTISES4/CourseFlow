@@ -7,7 +7,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
-import { MouseEvent, ReactNode, useState } from 'react'
+import { MouseEvent, MouseEventHandler, ReactNode, useState } from 'react'
 
 import { StyledMenu, StyledMenuItem } from './styles'
 
@@ -16,7 +16,7 @@ type SortableProps = {
     value: LibrarySortValueIn,
     direction: LibrarySortDirectionIn
   ) => void
-  onReset: () => void
+  onReset: MouseEventHandler<HTMLButtonElement>
 }
 
 type PropsType = {
@@ -75,12 +75,18 @@ const SortableFilterButton = ({
           onClick={onButtonClick}
         >
           {enabledOption?.label ?? placeholder}
+          {enabledOption && (
+            <IconButton
+              color="primary"
+              aria-label="close"
+              size="small"
+              onClick={onReset}
+              style={{ margin: '-3px -8px -3px 8px' }}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          )}
         </Button>
-        {enabledOption && (
-          <IconButton aria-label="close" size="small" onClick={onReset}>
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        )}
       </Box>
 
       <StyledMenu

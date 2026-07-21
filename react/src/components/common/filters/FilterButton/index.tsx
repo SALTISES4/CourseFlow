@@ -37,7 +37,10 @@ const FilterButton = ({
     setMenuAnchor(null)
   }
 
-  const onReset = () => {
+  const onReset: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
     const resetOption = options.find((option) => option.value === null) ?? {
       label: placeholder,
       value: null
@@ -55,12 +58,18 @@ const FilterButton = ({
           onClick={onButtonClick}
         >
           {selectedOption?.label ?? placeholder}
+          {selectedOption && (
+            <IconButton
+              color="primary"
+              aria-label="close"
+              size="small"
+              onClick={onReset}
+              style={{ margin: '-3px -8px -3px 8px' }}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          )}
         </Button>
-        {selectedOption && (
-          <IconButton aria-label="close" size="small" onClick={onReset}>
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        )}
       </Box>
 
       <StyledMenu
