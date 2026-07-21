@@ -86,7 +86,11 @@ CardTitle.defaultProps = {
   variant: 'h6'
 }
 
-export const CardCaption = styled(Typography)({})
+export const CardCaption = styled(Typography)(({ theme }) => ({
+  fontSize: '12px',
+  opacity: 0.6,
+  color: theme.palette.common.black
+}))
 
 export const CardChip = styled(Chip)(({ theme }) => ({
   '&.project': {
