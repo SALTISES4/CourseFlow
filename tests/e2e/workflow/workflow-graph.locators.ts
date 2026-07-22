@@ -136,18 +136,80 @@ export function workflowEditNodeFormTitleField(page: Page): Locator {
   return workflowRightSidebarContentPanel(page).getByLabel(/^Title$/i);
 }
 
+/** canonical: workflowEditNodeFormActivityContextSelect | workflowEditNodeFormCourseContextSelect */
 export function workflowEditNodeFormContextField(page: Page): Locator {
   return workflowRightSidebarContentPanel(page).getByLabel(/^Context$/i);
 }
 
+/** canonical: workflowEditNodeFormDescriptionField — labeled 'Description' region */
 export function workflowEditNodeFormDescriptionField(page: Page): Locator {
   return workflowRightSidebarContentPanel(page).getByLabel(/^Description$/i);
 }
 
+/**
+ * Plain textarea Description control (forbidden by FR-WF-EN-012 when
+ * workflowRichTextDescriptionEditor is required). Matches MUI multiline fields
+ * labeled via <label for> as well as aria-label.
+ */
+export function workflowEditNodeFormDescriptionPlainTextarea(page: Page): Locator {
+  const panel = workflowRightSidebarContentPanel(page);
+  return panel
+    .getByRole('textbox', { name: /^Description$/i })
+    .or(panel.locator('textarea[aria-label="Description"]'));
+}
+
+/** canonical: workflowRichTextDescriptionEditor — contenteditable region */
+export function workflowRichTextDescriptionEditor(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).locator('[contenteditable="true"]');
+}
+
+/** canonical: workflowRichTextDescriptionEditorToolbar */
+export function workflowRichTextDescriptionEditorToolbar(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByRole('toolbar');
+}
+
+export function workflowRichTextDescriptionEditorBoldButton(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByRole('button', { name: /^Bold$/i });
+}
+
+export function workflowRichTextDescriptionEditorItalicButton(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByRole('button', { name: /^Italic$/i });
+}
+
+export function workflowRichTextDescriptionEditorUnderlineButton(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByRole('button', { name: /^Underline$/i });
+}
+
+export function workflowRichTextDescriptionEditorSuperscriptButton(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByRole('button', { name: /^Superscript$/i });
+}
+
+export function workflowRichTextDescriptionEditorSubscriptButton(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByRole('button', { name: /^Subscript$/i });
+}
+
+export function workflowRichTextDescriptionEditorBulletListButton(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByRole('button', {
+    name: /^(Bulleted list|Bullet list)$/i,
+  });
+}
+
+export function workflowRichTextDescriptionEditorNumberedListButton(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByRole('button', {
+    name: /^(Numbered list|Ordered list)$/i,
+  });
+}
+
+export function workflowRichTextDescriptionEditorLinkButton(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByRole('button', { name: /^Link$/i });
+}
+
+/** canonical: workflowEditNodeFormTaskTypeSelect */
 export function workflowEditNodeFormTaskTypeField(page: Page): Locator {
   return workflowRightSidebarContentPanel(page).getByLabel(/^Type of task$/i);
 }
 
+/** Non-FR split controls (legacy product); assert absent for FR-WF-EN-002 Time field. */
 export function workflowEditNodeFormTimeAmountField(page: Page): Locator {
   return workflowRightSidebarContentPanel(page).getByLabel(/^Amount$/i);
 }
@@ -156,8 +218,57 @@ export function workflowEditNodeFormTimeUnitField(page: Page): Locator {
   return workflowRightSidebarContentPanel(page).getByLabel(/^Unit type$/i);
 }
 
+/** canonical: workflowEditNodeFormTimeField — single duration field labeled 'Time' */
+export function workflowEditNodeFormTimeField(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByLabel(/^Time$/i);
+}
+
+/** canonical: workflowEditNodeFormTagsAutocomplete */
 export function workflowEditNodeFormTagsField(page: Page): Locator {
   return workflowRightSidebarContentPanel(page).getByLabel(/^Tags$/i);
+}
+
+/** canonical: workflowEditNodeFormCreditsField */
+export function workflowEditNodeFormCreditsField(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByLabel(/^Credits$/i);
+}
+
+/** canonical: workflowEditNodeFormPonderationGroup */
+export function workflowEditNodeFormPonderationGroup(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByText('Ponderation', { exact: true });
+}
+
+/** canonical: workflowEditNodeFormPonderationTheoryField */
+export function workflowEditNodeFormPonderationTheoryField(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByLabel(/^Hrs\. theory$/i);
+}
+
+/** canonical: workflowEditNodeFormPonderationPracticeField */
+export function workflowEditNodeFormPonderationPracticeField(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByLabel(/^Hrs\. practice$/i);
+}
+
+/** canonical: workflowEditNodeFormPonderationIndividualField */
+export function workflowEditNodeFormPonderationIndividualField(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByLabel(/^Hrs\. individual$/i);
+}
+
+/** canonical: workflowEditNodeFormSpecificEducationSwitch */
+export function workflowEditNodeFormSpecificEducationSwitch(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).getByLabel(/^Specific education$/i);
+}
+
+/** canonical: workflowEditNodeFormLinkWorkflowButton — label varies by parent type + link state */
+export function workflowEditNodeFormLinkWorkflowButton(
+  page: Page,
+  name:
+    | 'Link an activity'
+    | 'Link a course'
+    | 'Remove linked activity'
+    | 'Remove linked course'
+    | 'Link workflow',
+): Locator {
+  return workflowRightSidebarContentPanel(page).getByRole('button', { name, exact: true });
 }
 
 export function workflowEditNodeFormDuplicateButton(page: Page): Locator {

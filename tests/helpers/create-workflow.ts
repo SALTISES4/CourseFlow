@@ -1,13 +1,31 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 import {
   createWorkflowCancelButton,
   createWorkflowDialog,
+  createWorkflowDialogNextStep,
+  createWorkflowDialogProjectCardByTitle,
   createWorkflowDialogProjectCards,
+  createWorkflowDialogTitle,
   createWorkflowStepper,
+  createWorkflowSubmitButton,
   workflowProjectSearchEmptyState,
+  workflowTitleField,
 } from '../e2e/home/home.locators';
-import { workflowChannelsHeaderRow } from '../shared/locators/workflow';
+import {
+  addMenuItemActivity,
+  addMenuItemCourse,
+  addMenuItemProgram,
+  addMenuTrigger,
+} from '../shared/locators/navigation';
+import {
+  workflowAddTabCustomNodeCategoryItem,
+  workflowAddTabNodeCategoriesGroup,
+  workflowAddTabNodeCategoryItems,
+} from '../e2e/workflow/workflow-add-tab.locators';
+import { workflowChannelsHeaderRow, workflowRightSidebarAddTab } from '../shared/locators/workflow';
+import { globalMessageSnackbar } from '../shared/locators/global';
+import { gotoAuthenticatedShell } from './navigation';
 
 export type CreateWorkflowStepperLabels = {
   step2: string;
@@ -117,4 +135,81 @@ export async function expectDefaultWorkflowChannelsInHeaderRow(
     ).toHaveCount(1);
   }
   await expect(headers).toHaveCount(titles.length);
+}
+
+const OPEN_CREATE_WORKFLOW_MENU_ITEM: Record<
+  'activity' | 'course' | 'program',
+  (page: Page) => ReturnType<typeof addMenuItemActivity>
+> = {
+  activity: addMenuItemActivity,
+  course: addMenuItemCourse,
+  program: addMenuItemProgram,
+};
+
+/**
+ * FR-WF-CREATE-STEPPER-005 — blank-create a workflow from Home and land on its graph route.
+ * Clears Duration before submit (form default is numeric 0; schema expects a string).
+ */
+export async function createBlankWorkflowFromHome(
+  page: Page,
+  options: {
+    workflowType: 'activity' | 'course' | 'program';
+    projectTitle: string;
+    title: string;
+  },
+): Promise<void> {
+  const { workflowType, projectTitle, title } = options;
+  const titles = createWorkflowDialogTitles(workflowType);
+
+  await gotoAuthenticatedShell(page, '/home');
+  await addMenuTrigger(page).click();
+  await OPEN_CREATE_WORKFLOW_MENU_ITEM[workflowType](page).click();
+  await expect(createWorkflowDialog(page)).toBeVisible();
+  await waitForCreateWorkflowProjectSearchLoaded(page);
+
+  const projectCard = createWorkflowDialogProjectCardByTitle(page, projectTitle);
+  if ((await projectCard.count()) === 0) {
+    test.skip(true, 'E2E fixture project card not visible in create-workflow step 1.');
+  }
+  await projectCard.click();
+  await createWorkflowDialogNextStep(page).click();
+  await expect(createWorkflowDialogTitle(page)).toHaveText(titles.step2DialogTitle);
+  await createWorkflowDialogNextStep(page).click();
+  await expect(createWorkflowDialogTitle(page)).toHaveText(titles.step3BlankDialogTitle);
+
+  await workflowTitleField(page).fill(title);
+  await createWorkflowDialog(page).getByLabel('Duration', { exact: true }).fill('');
+  await createWorkflowSubmitButton(page, workflowType).click();
+
+  await expect(createWorkflowDialog(page)).toBeHidden({ timeout: 15_000 });
+  await expect(page).toHaveURL(/\/workflow\/[0-9a-f-]+\/graph\/?$/);
+  await expect(globalMessageSnackbar(page)).toHaveText(
+    createWorkflowBlankSuccessSnackbarText(workflowType),
+  );
+}
+
+/**
+ * FR-WF-ADD-003 — Add tab lists default node categories for a newly created workflow type,
+ * plus workflowAddTabCustomNodeCategoryItem.
+ */
+export async function expectDefaultAddTabNodeCategories(
+  page: Page,
+  workflowType: 'activity' | 'course' | 'program',
+): Promise<void> {
+  await workflowRightSidebarAddTab(page).click();
+  await expect(workflowAddTabNodeCategoriesGroup(page)).toBeVisible({ timeout: 15_000 });
+
+  const expectedTitles = DEFAULT_WORKFLOW_CHANNEL_TITLES_BY_TYPE[workflowType];
+  const items = workflowAddTabNodeCategoryItems(page);
+  await expect(items).toHaveCount(expectedTitles.length);
+
+  for (let index = 0; index < expectedTitles.length; index += 1) {
+    await expect(items.nth(index)).toContainText(expectedTitles[index]!);
+  }
+
+  await expect(workflowAddTabCustomNodeCategoryItem(page)).toBeVisible();
+  await expect(workflowAddTabCustomNodeCategoryItem(page)).toContainText('Custom node category');
+
+  // Same defaults must appear on the canvas header (FR-WF-ADD-003 / FR-CHAN-002 alignment).
+  await expectDefaultWorkflowChannelsInHeaderRow(page, workflowType);
 }

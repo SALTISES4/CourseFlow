@@ -14,6 +14,18 @@ export function workflowAddTabInsertModeGroup(page: Page): Locator {
   return workflowRightSidebarContentPanel(page).getByText('Insert mode', { exact: true });
 }
 
+/** canonical: workflowAddTabInsertModeHelpIcon — info icon beside Insert mode label */
+export function workflowAddTabInsertModeHelpIcon(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page)
+    .locator('.MuiTypography-root')
+    .filter({ has: page.getByText('Insert mode', { exact: true }) })
+    .locator('svg');
+}
+
+/** FR-WF-ADD-002 mainFlow / AC — insert-mode help tooltip copy */
+export const WORKFLOW_ADD_TAB_INSERT_MODE_HELP_TOOLTIP_COPY =
+  'Row mode forces nodes into a vertical sequence. Column mode allows multiple nodes side-by-side. Manual mode prompts you to choose a layout style for every new node.';
+
 export function workflowAddTabInsertModeToggleGroup(page: Page): Locator {
   return workflowRightSidebarContentPanel(page).getByRole('group', { name: 'Insert mode' });
 }
@@ -33,6 +45,13 @@ export function workflowAddTabInsertModeColumnButton(page: Page): Locator {
 /** canonical: workflowAddTabNodeCategoriesGroup */
 export function workflowAddTabNodeCategoriesGroup(page: Page): Locator {
   return workflowRightSidebarContentPanel(page).getByText('Node categories', { exact: true });
+}
+
+/** All channel-backed node category rows (excludes custom-category dashed row). */
+export function workflowAddTabNodeCategoryItems(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page).locator(
+    '[data-test-id="workflow-add-tab-node-category-item"]',
+  );
 }
 
 /** canonical: workflowAddTabNodeCategoryItem — draggable row for a channel title */
