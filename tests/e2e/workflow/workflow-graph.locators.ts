@@ -22,8 +22,85 @@ export function workflowNode(page: Page, nodeUuid: string): Locator {
   return page.locator(`#node-${nodeUuid}`);
 }
 
+/**
+ * canonical: workflowNodeTitle — primary title at the top of workflowNodeContent.
+ * Product maps MUI Typography body2 to a paragraph.
+ */
+export function workflowNodeTitle(page: Page, nodeUuid: string): Locator {
+  return workflowNode(page, nodeUuid).getByRole('paragraph').first();
+}
+
+/**
+ * canonical: workflowNodeContent — body region below workflowNodeBorder (title + meta).
+ * Click target for FR-WF-EN-001 selection. Last-resort structure until a content test id exists.
+ */
 export function workflowNodeContent(page: Page, nodeUuid: string): Locator {
-  return workflowNode(page, nodeUuid).getByText(new RegExp(`#${nodeUuid}`));
+  return workflowNode(page, nodeUuid)
+    .locator('div')
+    .filter({ has: workflowNodeTitle(page, nodeUuid) })
+    .first();
+}
+
+/**
+ * canonical: workflowNodeBorder — channel-colored top stripe.
+ * Product sets inline backgroundColor on the stripe.
+ */
+export function workflowNodeBorder(page: Page, nodeUuid: string): Locator {
+  return workflowNode(page, nodeUuid).locator('[style*="background"]').first();
+}
+
+/**
+ * canonical: workflowNodeLinkedWorkflowIndicator —
+ * 'Linked activity' (course parent) / 'Linked course' (program parent).
+ */
+export function workflowNodeLinkedWorkflowIndicator(page: Page, nodeUuid: string): Locator {
+  return workflowNode(page, nodeUuid).getByRole('link', {
+    name: /^(Linked activity|Linked course|Linked workflow)$/,
+  });
+}
+
+/**
+ * canonical: workflowNodeMeta — footer tag region when any context/task/time tag is present.
+ * Located as the non-link svg tag row under content (absent when no tags would render).
+ */
+export function workflowNodeMeta(page: Page, nodeUuid: string): Locator {
+  // Prefer the outermost tag footer (parent before IconWrap child in tree order).
+  return workflowNodeContent(page, nodeUuid)
+    .locator('div')
+    .filter({ has: page.locator('span svg') })
+    .filter({ hasNot: page.getByRole('link') })
+    .first();
+}
+
+/** canonical: workflowNodeMetaContextTag / workflowNodeMetaTaskTag — icon-only tags (no nested text span). */
+export function workflowNodeMetaIconTags(page: Page, nodeUuid: string): Locator {
+  return workflowNodeMeta(page, nodeUuid)
+    .locator('span')
+    .filter({ has: page.locator('svg') })
+    .filter({ hasNot: page.locator('span') });
+}
+
+export function workflowNodeMetaContextTag(page: Page, nodeUuid: string): Locator {
+  return workflowNodeMetaIconTags(page, nodeUuid).nth(0);
+}
+
+export function workflowNodeMetaTaskTag(page: Page, nodeUuid: string): Locator {
+  return workflowNodeMetaIconTags(page, nodeUuid).nth(1);
+}
+
+/**
+ * canonical: workflowNodeMetaTimeTag — duration tag (timer icon; may include duration text).
+ */
+export function workflowNodeMetaTimeTag(page: Page, nodeUuid: string): Locator {
+  return workflowNodeMeta(page, nodeUuid)
+    .locator('span')
+    .filter({ has: page.locator('svg') })
+    .filter({ has: page.locator('span') });
+}
+
+/** canonical: workflowChannelHeaderColorIndicator — top color stripe on the channel header. */
+export function workflowChannelHeaderColorIndicator(page: Page, channelUuid: string): Locator {
+  return workflowChannelHeader(page, channelUuid).locator('div').nth(1);
 }
 
 export function workflowNodeHoverCommentsItem(page: Page, nodeUuid: string): Locator {
@@ -40,10 +117,6 @@ export function workflowNodeHoverDuplicateItem(page: Page, nodeUuid: string): Lo
 
 export function workflowNodeHoverDeleteItem(page: Page, nodeUuid: string): Locator {
   return workflowNode(page, nodeUuid).getByRole('button', { name: DELETE_NODE_HOVER_NAME });
-}
-
-export function workflowNodeBorder(page: Page, nodeUuid: string): Locator {
-  return workflowNode(page, nodeUuid).locator('> div').nth(1);
 }
 
 export async function workflowNodeHasSelectedBorder(page: Page, nodeUuid: string): Promise<boolean> {
@@ -277,6 +350,109 @@ export function workflowEditNodeFormDuplicateButton(page: Page): Locator {
 
 export function workflowEditNodeFormDeleteButton(page: Page): Locator {
   return workflowRightSidebarContentPanel(page).getByRole('button', { name: 'Delete', exact: true });
+}
+
+/** FR-WF-EN-008/009 — dialog title copy by parent workflow type */
+export const WORKFLOW_LINK_DIALOG_TITLE = {
+  course: 'Link an activity',
+  program: 'Link a course',
+} as const;
+
+/** FR-WF-EN-009 — confirm button copy by parent workflow type */
+export const WORKFLOW_LINK_DIALOG_LINK_BUTTON = {
+  course: 'Link activity',
+  program: 'Link course',
+} as const;
+
+/** FR-WF-EN-009 — empty eligible-set copy */
+export const WORKFLOW_LINK_DIALOG_NO_ELIGIBLE = {
+  course: {
+    title: 'No activity found',
+    subtitle:
+      'There are currently no activities in this project. Before you can link an activity to a node here, you must first add or create the activity within the project.',
+  },
+  program: {
+    title: 'No course found',
+    subtitle:
+      'There are currently no courses in this project. Before you can link a course to a node here, you must first add or create the course within the project.',
+  },
+} as const;
+
+export const WORKFLOW_LINK_DIALOG_SEARCH_NO_MATCHES = 'There are no exact matches.';
+
+/**
+ * canonical: workflowLinkWorkflowDialog — scoped by FR title
+ * ('Link an activity' | 'Link a course').
+ */
+export function workflowLinkWorkflowDialog(
+  page: Page,
+  parentType: 'course' | 'program',
+): Locator {
+  const title = WORKFLOW_LINK_DIALOG_TITLE[parentType];
+  return page.getByRole('dialog').filter({
+    has: page.getByRole('heading', { name: title, exact: true }),
+  });
+}
+
+/** canonical: workflowLinkWorkflowDialogTitle */
+export function workflowLinkWorkflowDialogTitle(
+  page: Page,
+  parentType: 'course' | 'program',
+): Locator {
+  return workflowLinkWorkflowDialog(page, parentType).getByRole('heading', {
+    name: WORKFLOW_LINK_DIALOG_TITLE[parentType],
+    exact: true,
+  });
+}
+
+/** canonical: workflowLinkWorkflowDialogSearchField */
+export function workflowLinkWorkflowDialogSearchField(
+  page: Page,
+  parentType: 'course' | 'program',
+): Locator {
+  return workflowLinkWorkflowDialog(page, parentType).getByLabel(/^Search$/i);
+}
+
+/** canonical: workflowLinkWorkflowDialogSearchResults — workflowCard rows in the dialog */
+export function workflowLinkWorkflowDialogSearchResults(
+  page: Page,
+  parentType: 'course' | 'program',
+): Locator {
+  return workflowLinkWorkflowDialog(page, parentType).locator('[data-test-id="workflow-card"]');
+}
+
+/** canonical: workflowLinkWorkflowDialogCancelButton */
+export function workflowLinkWorkflowDialogCancelButton(
+  page: Page,
+  parentType: 'course' | 'program',
+): Locator {
+  return workflowLinkWorkflowDialog(page, parentType).getByRole('button', {
+    name: 'Cancel',
+    exact: true,
+  });
+}
+
+/** canonical: workflowLinkWorkflowDialogLinkButton */
+export function workflowLinkWorkflowDialogLinkButton(
+  page: Page,
+  parentType: 'course' | 'program',
+): Locator {
+  return workflowLinkWorkflowDialog(page, parentType).getByRole('button', {
+    name: WORKFLOW_LINK_DIALOG_LINK_BUTTON[parentType],
+    exact: true,
+  });
+}
+
+/** canonical: workflowLinkWorkflowDialogEmptyState — search-no-match or no-eligible copy */
+export function workflowLinkWorkflowDialogEmptyState(
+  page: Page,
+  parentType: 'course' | 'program',
+): Locator {
+  const dialog = workflowLinkWorkflowDialog(page, parentType);
+  const noEligible = WORKFLOW_LINK_DIALOG_NO_ELIGIBLE[parentType];
+  return dialog
+    .getByText(WORKFLOW_LINK_DIALOG_SEARCH_NO_MATCHES, { exact: true })
+    .or(dialog.getByText(noEligible.title, { exact: true }));
 }
 
 /** canonical: workflowEditChannelFormTitleField */

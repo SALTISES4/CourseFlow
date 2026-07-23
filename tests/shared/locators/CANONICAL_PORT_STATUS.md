@@ -41,11 +41,11 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 - `tests/e2e/workflow/comments-tab-node-fr-001.spec.ts` — FR-WF-COMMENTS-001
 - `tests/e2e/workflow/comments-tab-channel-fr-003.spec.ts` — FR-WF-COMMENTS-003
 - `tests/e2e/workflow/comments-presence-fr-008.spec.ts` — FR-WF-COMMENTS-008 (deferred)
-- `tests/e2e/workflow/edit-node-fr-001-007.spec.ts` — FR-WF-EN-001–007 (activity/course/program field sets)
+- `tests/e2e/workflow/edit-node-fr-001-007.spec.ts` — FR-WF-EN-001–011 (+ FR-WF-EN-012 description; link dialog, tags catalog, commenter/viewer)
 - `tests/e2e/workflow/edit-channel-fr-001.spec.ts` — FR-CHAN-001
 - `tests/e2e/workflow/comments-tab-outcome-fr-004.spec.ts` — FR-WF-COMMENTS-004
 - `tests/e2e/workflow/workflow-overview-fr-003.spec.ts` — FR-WF-OV-003 (deferred)
-- `tests/e2e/workflow/node-visual-fr-001-005.spec.ts` — FR-WF-NODE-001–005 (partial)
+- `tests/e2e/workflow/node-visual-fr-001-005.spec.ts` — FR-WF-NODE-001–005 (001: title/border/meta icons/duration/linked indicator; 003 deferred)
 - `tests/e2e/workflow/edit-channel-fr-002-007.spec.ts` — FR-CHAN-002/003/007
 - `tests/e2e/workflow/edit-outcome-fr-004.spec.ts` — FR-WF-EO-004
 - `tests/e2e/workflow/add-tab-fr-001-006.spec.ts` — FR-WF-ADD-001–006 (004–006 pristine)

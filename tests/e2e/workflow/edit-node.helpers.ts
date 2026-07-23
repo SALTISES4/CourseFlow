@@ -6,6 +6,7 @@ import {
   workflowRightSidebarAddTab,
   workflowSectionContainers,
 } from '../../shared/locators/workflow';
+import { addNewTagInput, projectTagItemByLabel } from '../project/project.locators';
 import {
   dragNodeCategoryOntoSection,
   workflowNodeCount,
@@ -14,10 +15,24 @@ import { firstWorkflowNodeUuid } from './comments-tab.helpers';
 import { workflowAddTabInsertModeRowButton } from './workflow-add-tab.locators';
 import {
   workflowEditNodeForm,
+  workflowEditNodeFormContextField,
+  workflowEditNodeFormCreditsField,
+  workflowEditNodeFormDeleteButton,
   workflowEditNodeFormDescriptionPlainTextarea,
+  workflowEditNodeFormDuplicateButton,
+  workflowEditNodeFormLinkWorkflowButton,
+  workflowEditNodeFormPonderationIndividualField,
+  workflowEditNodeFormPonderationPracticeField,
+  workflowEditNodeFormPonderationTheoryField,
+  workflowEditNodeFormSpecificEducationSwitch,
+  workflowEditNodeFormTagsField,
+  workflowEditNodeFormTaskTypeField,
   workflowEditNodeFormTimeAmountField,
   workflowEditNodeFormTimeField,
   workflowEditNodeFormTimeUnitField,
+  workflowEditNodeFormTitleField,
+  workflowLinkWorkflowDialog,
+  workflowNode,
   workflowNodeContent,
   workflowRichTextDescriptionEditor,
   workflowRichTextDescriptionEditorBoldButton,
@@ -195,4 +210,148 @@ export async function expectEditableWorkflowEditNodeFormRichTextDescription(
   await expect(workflowRichTextDescriptionEditorBulletListButton(page)).toBeVisible();
   await expect(workflowRichTextDescriptionEditorNumberedListButton(page)).toBeVisible();
   await expect(workflowRichTextDescriptionEditorLinkButton(page)).toBeVisible();
+}
+
+/** Seeded activity title used as the course node's linked child (when restored). */
+export function seededLinkedActivityUuid(workflow: WorkflowHandle): string {
+  return (
+    workflow.manifest.navigation_linked_workflows?.course.linked_child_workflow_uuid ??
+    workflow.workflowByType('activity').workflow_uuid
+  );
+}
+
+/**
+ * Unlink the first course node, open workflowEditNodeForm, and open
+ * workflowLinkWorkflowDialog via 'Link an activity' (FR-WF-EN-008).
+ * Caller must restore the link in finally when needed.
+ */
+export async function openCourseLinkWorkflowDialog(
+  page: Page,
+  workflow: WorkflowHandle,
+): Promise<string> {
+  const course = workflow.workflowByType('course');
+  await page.goto(course.workflow_path);
+  const nodeUuid = await firstWorkflowNodeUuid(page);
+  await linkNodeWorkflowViaApi(page, nodeUuid, null);
+  await page.reload();
+  await openFirstNodeEditForm(page);
+  await workflowEditNodeFormLinkWorkflowButton(page, 'Link an activity').click();
+  await expect(workflowLinkWorkflowDialog(page, 'course')).toBeVisible({ timeout: 15_000 });
+  return nodeUuid;
+}
+
+/**
+ * Ensure program node is unlinked, open workflowEditNodeForm, and open
+ * workflowLinkWorkflowDialog via 'Link a course' (FR-WF-EN-008).
+ */
+export async function openProgramLinkWorkflowDialog(
+  page: Page,
+  workflow: WorkflowHandle,
+): Promise<string> {
+  const nodeUuid = await ensureProgramNodeAndOpenEditForm(page, workflow);
+  await linkNodeWorkflowViaApi(page, nodeUuid, null);
+  await page.reload();
+  await expect(workflowNode(page, nodeUuid)).toBeVisible({ timeout: 15_000 });
+  await workflowNodeContent(page, nodeUuid).click();
+  await expect(workflowEditNodeForm(page)).toBeVisible();
+  await workflowEditNodeFormLinkWorkflowButton(page, 'Link a course').click();
+  await expect(workflowLinkWorkflowDialog(page, 'program')).toBeVisible({ timeout: 15_000 });
+  return nodeUuid;
+}
+
+/**
+ * FR-WF-EN-001 / FR-WF-EN-012 / FR-WF-DUP-001 / FR-WF-DEL-001 —
+ * commenter/viewer read-only edit-node presentation for the given parent type.
+ * Asserts every rendered metadata control is non-editable and action buttons
+ * Duplicate/Delete are disabled.
+ */
+export async function expectReadOnlyWorkflowEditNodeForm(
+  page: Page,
+  parentType: 'activity' | 'course' | 'program',
+): Promise<void> {
+  await expect(workflowEditNodeForm(page)).toBeVisible();
+  await expect(workflowEditNodeFormTitleField(page)).not.toBeEditable();
+  await expect(workflowRichTextDescriptionEditor(page)).toHaveAttribute(
+    'contenteditable',
+    'false',
+  );
+  const toolbar = workflowRichTextDescriptionEditorToolbar(page);
+  if ((await toolbar.count()) > 0) {
+    await expect(workflowRichTextDescriptionEditorBoldButton(page)).toBeDisabled();
+  }
+  await expect(workflowEditNodeFormTimeField(page)).not.toBeEditable();
+  await expect(workflowEditNodeFormTagsField(page)).toBeDisabled();
+
+  if (parentType === 'activity') {
+    await expect(workflowEditNodeFormContextField(page)).toBeDisabled();
+    await expect(workflowEditNodeFormTaskTypeField(page)).toBeDisabled();
+  }
+
+  if (parentType === 'course') {
+    await expect(workflowEditNodeFormContextField(page)).toBeDisabled();
+    await expect(workflowEditNodeFormTaskTypeField(page)).toHaveCount(0);
+  }
+
+  if (parentType === 'program') {
+    await expect(workflowEditNodeFormContextField(page)).toHaveCount(0);
+    await expect(workflowEditNodeFormTaskTypeField(page)).toHaveCount(0);
+    await expect(workflowEditNodeFormCreditsField(page)).not.toBeEditable();
+    await expect(workflowEditNodeFormPonderationTheoryField(page)).not.toBeEditable();
+    await expect(workflowEditNodeFormPonderationPracticeField(page)).not.toBeEditable();
+    await expect(workflowEditNodeFormPonderationIndividualField(page)).not.toBeEditable();
+    await expect(workflowEditNodeFormSpecificEducationSwitch(page)).toBeDisabled();
+  }
+
+  await expect(workflowEditNodeFormDuplicateButton(page)).toBeVisible();
+  await expect(workflowEditNodeFormDuplicateButton(page)).toBeDisabled();
+  await expect(workflowEditNodeFormDeleteButton(page)).toBeVisible();
+  await expect(workflowEditNodeFormDeleteButton(page)).toBeDisabled();
+}
+
+/** Create a project-level tag via projectTagsSection (FR-PROJ-OV-005). */
+export async function createProjectOverviewTag(page: Page, label: string): Promise<void> {
+  const input = addNewTagInput(page);
+  await expect(input).toBeVisible({ timeout: 15_000 });
+  await input.fill(label);
+  await input.press('Enter');
+  await expect(projectTagItemByLabel(page, label)).toBeVisible({ timeout: 15_000 });
+}
+
+/**
+ * Open workflowEditNodeFormTagsAutocomplete and assert listbox options are
+ * exactly the given project catalog labels (order-insensitive).
+ */
+export async function expectEditNodeTagsAutocompleteOptions(
+  page: Page,
+  expectedLabels: readonly string[],
+): Promise<void> {
+  const field = workflowEditNodeFormTagsField(page);
+  await expect(field).toBeVisible();
+  await field.click();
+  const listbox = page.getByRole('listbox');
+  await expect(listbox).toBeVisible();
+  const options = listbox.getByRole('option');
+  await expect(options).toHaveCount(expectedLabels.length);
+  for (const label of expectedLabels) {
+    await expect(listbox.getByRole('option', { name: label, exact: true })).toBeVisible();
+  }
+  await page.keyboard.press('Escape');
+  await expect(listbox).toBeHidden();
+}
+
+/** Select a tag option on workflowEditNodeFormTagsAutocomplete. */
+export async function selectEditNodeTag(page: Page, label: string): Promise<void> {
+  const field = workflowEditNodeFormTagsField(page);
+  await field.click();
+  const listbox = page.getByRole('listbox');
+  await expect(listbox).toBeVisible();
+  await listbox.getByRole('option', { name: label, exact: true }).click();
+  await expect(field.getByRole('button', { name: label, exact: true })).toBeVisible();
+}
+
+/** Assert a selected tag chip remains on the Tags field after reload. */
+export async function expectEditNodeTagSelected(page: Page, label: string): Promise<void> {
+  await expect(
+    workflowEditNodeFormTagsField(page).getByRole('button', { name: label, exact: true }),
+  ).toBeVisible();
 }
