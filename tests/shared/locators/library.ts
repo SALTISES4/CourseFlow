@@ -89,7 +89,7 @@ export function ownershipFilterResetButton(
 /** canonical: typeFilter / contentTypeFilter */
 export function typeFilter(page: Page): Locator {
   return libraryFilterToolbar(page).getByRole("button", {
-    name: /^(Type|All|Projects|Workflows)$/,
+    name: /^(Type|Projects|Workflows)/,
   });
 }
 

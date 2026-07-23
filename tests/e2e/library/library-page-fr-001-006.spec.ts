@@ -67,7 +67,7 @@ test.describe('My library — listing and filtering (FR-LIB-001-004)', () => {
 
   test('FR-LIB-001: /library renders filter toolbar and results region', async ({ page }) => {
     await expectLibraryFilterToolbarPerFrLib001(page);
-    await expect(typeFilter(page)).toHaveText('Projects');
+    await expect(typeFilter(page)).toHaveText("Projects");
     await expect(workflowTypeFilter(page)).toHaveCount(0);
     await expect(libraryErrorState(page)).toBeHidden();
 
