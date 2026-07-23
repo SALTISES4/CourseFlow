@@ -196,9 +196,7 @@ const UserPermissions = ({
                 options={[
                   ...projectTeamRoleMenuOptions.map((item) => ({
                     name: item.value,
-                    label:
-                      item.label +
-                      (user.role === item.value ? ' ' + '(current)' : ''),
+                    label: item.label,
                     disabled: user.role === item.value
                   })),
                   {

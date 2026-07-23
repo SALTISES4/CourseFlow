@@ -7,7 +7,6 @@ import { _t } from '@cf/utility/Utility.class'
 import * as SC from '@cfSidebar/styles'
 import { DraggableType } from '@cfViews/WorkflowView/GraphView/types'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import { useTheme } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
@@ -16,14 +15,12 @@ import { MouseEvent, useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
-import data, { getChannelData } from './data'
+import { getChannelData } from './data'
 import DraggableItem from './Draggable'
 import * as Styled from './styles'
 
 const AddTab = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const theme = useTheme()
-  const { title, subtitle, groups } = data
   const { uuid: workflowUuid } = useParams<{ uuid: string }>()
 
   const { data: workflowDetailResp } = useQuery({
@@ -54,30 +51,21 @@ const AddTab = () => {
     [dispatch]
   )
 
-  // TODO: fetch from strategies
-  // but where do the reusable blocks come from?
-  // state.strategy
-  // state.saltiseStrategy
-  // console.log({ strategies })
-
   return (
     <SC.SidebarInnerWrap>
       <SC.SidebarContent>
         <SC.SidebarTitle as="h3" variant="h6">
-          {title}
+          {_t('Add to workflow')}
         </SC.SidebarTitle>
-        {subtitle && (
-          <Typography variant="body2" sx={{ mb: 3 }}>
-            {subtitle}
-          </Typography>
-        )}
-        <SC.GroupWrap>
+        <SC.GroupWrap separator={false}>
           <Styled.InsertModeTitle variant="body2">
             {_t('Insert mode')}
             <Tooltip
               arrow
               placement="top"
-              title={_t('Insert mode text goes here')}
+              title={_t(
+                'Row mode forces nodes into a vertical sequence. Column mode allows multiple nodes side-by-side. Manual mode prompts you to choose a layout style for every new node.'
+              )}
             >
               <InfoOutlinedIcon
                 sx={{
@@ -130,31 +118,6 @@ const AddTab = () => {
             </ul>
           </SC.GroupWrap>
         )}
-        {groups?.map((group, idx) => (
-          <SC.GroupWrap key={idx}>
-            <Typography component="h6" variant="body2">
-              {group.title}
-            </Typography>
-            {group.blocks && (
-              <ul>
-                {group.blocks.map((block) => (
-                  <DraggableItem
-                    key={block.uuid}
-                    component="li"
-                    uuid={block.uuid}
-                    label={block.label}
-                    type={group.type}
-                    typeColor={
-                      group.type === DraggableType.SIDEBAR_REUSABLE
-                        ? theme.palette.workspaceBlocks.reusableBlocks
-                        : theme.palette.workspaceBlocks.strategies
-                    }
-                  />
-                ))}
-              </ul>
-            )}
-          </SC.GroupWrap>
-        ))}
       </SC.SidebarContent>
     </SC.SidebarInnerWrap>
   )
