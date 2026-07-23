@@ -90,7 +90,10 @@ const OverviewTab = ({
             <SC.InfoBlockTitle>{_t('Disciplines')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
               {disciplines?.length
-                ? disciplines.map((d) => d.title).join(', ')
+                ? [...disciplines]
+                    .sort((a, b) => a.title.localeCompare(b.title))
+                    .map((d) => d.title)
+                    .join(', ')
                 : _t('-')}
             </SC.InfoBlockContent>
           </SC.InfoBlock>

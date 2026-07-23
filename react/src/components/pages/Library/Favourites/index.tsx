@@ -1,4 +1,4 @@
-import { LibrarySearchIn } from '@cf/api/gen'
+import { LibraryContentTypeIn, LibrarySearchIn } from '@cf/api/gen'
 import LibrarySearchView, {
   LibraryFilterConfig
 } from '@cfViews/LibrarySearchView'
@@ -7,6 +7,7 @@ import { useCallback, useState } from 'react'
 
 const FavoritesPage = () => {
   const config: LibraryFilterConfig = {
+    initialContentType: LibraryContentTypeIn.PROJECT,
     filterGroups: {
       ownershipFilter: true,
       contentTypeFilter: true,

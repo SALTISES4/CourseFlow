@@ -31,7 +31,7 @@ export const OWNERSHIP_PLACEHOLDER = "Ownership";
 export const OWNERSHIP_OPTION_OWNED = "Owned";
 
 /** FR-LIB-003 — ownershipFilter option and committed trigger label. */
-export const OWNERSHIP_OPTION_SHARED = 'Shared with me';
+export const OWNERSHIP_OPTION_SHARED = 'Shared';
 
 
 /** FR-LIB-001 — resultsSummary copy pattern (range per "current range" acceptance criteria). */
@@ -72,7 +72,7 @@ export function sortResetButton(
 /** canonical: ownershipFilter */
 export function ownershipFilter(page: Page): Locator {
   return libraryFilterToolbar(page).getByRole("button", {
-    name: /^(Ownership|All|Owned|Shared( with me)?)$/,
+    name: /^(Ownership|Owned|Shared?)/,
   });
 }
 
@@ -89,7 +89,7 @@ export function ownershipFilterResetButton(
 /** canonical: typeFilter / contentTypeFilter */
 export function typeFilter(page: Page): Locator {
   return libraryFilterToolbar(page).getByRole("button", {
-    name: /^(Type|All|Projects|Workflows)$/,
+    name: /^(Type|Projects|Workflows)/,
   });
 }
 
