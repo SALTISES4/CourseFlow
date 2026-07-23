@@ -77,7 +77,9 @@ const AddTab = () => {
             <Tooltip
               arrow
               placement="top"
-              title={_t('Insert mode text goes here')}
+              title={_t(
+                'Row mode forces nodes into a vertical sequence. Column mode allows multiple nodes side-by-side. Manual mode prompts you to choose a layout style for every new node.'
+              )}
             >
               <InfoOutlinedIcon
                 sx={{
