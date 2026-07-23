@@ -74,10 +74,12 @@ export const SidebarTabsWrap = styled(ToggleButtonGroup)(({ theme }) => ({
   }
 }))
 
-export const GroupWrap = styled(Box)(({ theme }) => ({
+export const GroupWrap = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'noSeparator'
+})<{ separator?: boolean }>(({ theme, separator = true }) => ({
   marginTop: theme.spacing(3),
-  paddingTop: theme.spacing(1),
-  borderTop: `1px solid ${theme.palette.divider}`,
+  paddingTop: separator ? theme.spacing(1) : '',
+  borderTop: separator ? `1px solid ${theme.palette.divider}` : '',
   '& h6': {
     fontWeight: 600
   },
