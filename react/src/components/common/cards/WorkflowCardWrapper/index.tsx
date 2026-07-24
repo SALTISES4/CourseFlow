@@ -92,7 +92,7 @@ const WorkflowCardWrapper = ({
       onClick={onClick ? onClick : () => navigateToItem(uuid, type)}
       chips={[
         ...chips,
-        isArchived && { type: ChipOptions.DEFAULT, label: _t('Archived') },
+        isArchived && { type: ChipOptions.ARCHIVED, label: _t('Archived') },
         isLinked && <InUseChip key="in-use" />
       ]}
     />
