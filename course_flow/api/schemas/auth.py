@@ -25,6 +25,7 @@ class UserMeta(CamelSchema):
     owns_any_project: bool
 
 class UserSummaryOut(CamelSchema):
+    id: int
     uuid: UUID
     email: str
     first_name: str

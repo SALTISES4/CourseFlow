@@ -23,6 +23,7 @@ class UserService:
         owns_any_project = Project.objects.filter(owner_id=user.id).exists()
 
         return UserSummaryOut(
+            id=user.id,
             uuid=user.uuid,
             email=user.email,
             first_name=user.first_name,
@@ -33,9 +34,6 @@ class UserService:
             ),
         )
 
-    def get_profile_settings(self, user_id: int) -> User | None:
-        return User.objects.filter(pk=user_id).first()
-
     def update_profile_settings(
         self,
         *,
@@ -44,7 +42,7 @@ class UserService:
         last_name: str | None = None,
         language_preference: str | None = None,
     ) -> User | None:
-        user = User.objects.filter(pk=user_id).first()
+        user = self.get_user_by_id(user_id)
         if user is None:
             return None
 
@@ -88,7 +86,7 @@ class UserService:
         password: str | None = None,
         new_password: str | None = None,
     ) -> User | None:
-        user = User.objects.filter(pk=user_id).first()
+        user = self.get_user_by_id(user_id)
         if user is None:
             return None
 
@@ -128,12 +126,12 @@ class UserService:
         return user
 
     def get_notification_settings(self, user_id: int) -> User | None:
-        return User.objects.filter(pk=user_id).first()
+        return self.get_user_by_id(user_id)
 
     def update_notification_settings(
         self, *, user_id: int, notifications_active: bool | None = None
     ) -> User | None:
-        user = User.objects.filter(pk=user_id).first()
+        user = self.get_user_by_id(user_id)
         if user is None:
             return None
         if notifications_active is not None:
@@ -157,6 +155,9 @@ class UserService:
                     | Q(email__icontains=term)
                 )
         return list(qs.order_by("first_name", "last_name", "id"))
+
+    def get_user_by_id(self, user_id: int) -> User | None:
+        return User.objects.filter(pk=user_id).first()
 
 class ValidationError(Exception):
     def __init__(self, errors: dict[str, str]):

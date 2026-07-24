@@ -60,7 +60,7 @@ def _profile_out(user: User) -> UserProfileSettingsOut:
 )
 def get_my_profile_settings(request):
     current_user = get_current_user(request)
-    user = get_user_service().get_profile_settings(current_user.id)
+    user = get_user_service().get_user_by_id(current_user.id)
     if user is None:
         raise HttpError(404, "User not found")
     return UserProfileSettingsOutResp(item=_profile_out(user))

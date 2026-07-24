@@ -93,10 +93,7 @@ export type ProjectDetailOut = {
    * Isfavorite
    */
   isFavorite: boolean
-  /**
-   * Ownerid
-   */
-  ownerId: number
+  owner: UserSummaryOut
   /**
    * Datecreated
    */
@@ -167,6 +164,44 @@ export enum ResourceRole {
   COMMENTER = 'commenter',
   VIEWER = 'viewer',
   PUBLIC = 'public'
+}
+
+/**
+ * UserMeta
+ */
+export type UserMeta = {
+  /**
+   * Ownsanyproject
+   */
+  ownsAnyProject: boolean
+}
+
+/**
+ * UserSummaryOut
+ */
+export type UserSummaryOut = {
+  /**
+   * Id
+   */
+  id: number
+  /**
+   * Uuid
+   */
+  uuid: string
+  /**
+   * Email
+   */
+  email: string
+  /**
+   * Firstname
+   */
+  firstName: string
+  /**
+   * Lastname
+   */
+  lastName: string
+  accountRole: AccountRole | null
+  meta: UserMeta | null
 }
 
 /**
@@ -2231,40 +2266,6 @@ export type LoginOut = {
    */
   expiresAt: string
   user: UserSummaryOut
-}
-
-/**
- * UserMeta
- */
-export type UserMeta = {
-  /**
-   * Ownsanyproject
-   */
-  ownsAnyProject: boolean
-}
-
-/**
- * UserSummaryOut
- */
-export type UserSummaryOut = {
-  /**
-   * Uuid
-   */
-  uuid: string
-  /**
-   * Email
-   */
-  email: string
-  /**
-   * Firstname
-   */
-  firstName: string
-  /**
-   * Lastname
-   */
-  lastName: string
-  accountRole: AccountRole | null
-  meta: UserMeta | null
 }
 
 /**
