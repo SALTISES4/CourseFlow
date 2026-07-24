@@ -4,9 +4,7 @@ import EditColumn from './components/EditColumn'
 import EditNode from './components/EditNode'
 import EditNodelink from './components/EditNodelink'
 import EditOutcome from './components/EditOutcome'
-import EditPart from './components/EditPart'
 import EditSection from './components/EditSection'
-import EditTerm from './components/EditTerm'
 import { EditableType } from './types'
 
 const EditTab = ({ uuid, type }: { uuid: string; type: EditableType }) => {
@@ -15,10 +13,6 @@ const EditTab = ({ uuid, type }: { uuid: string; type: EditableType }) => {
   }
 
   switch (type) {
-    case EditableType.TERM:
-      return <EditTerm key={uuid} />
-    case EditableType.PART:
-      return <EditPart key={uuid} />
     case EditableType.SECTION:
       return <EditSection key={uuid} sectionId={uuid} />
     case EditableType.OUTCOME:
