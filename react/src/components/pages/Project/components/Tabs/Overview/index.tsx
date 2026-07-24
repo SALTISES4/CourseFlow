@@ -139,7 +139,7 @@ const OverviewTab = ({
                   }
                 }}
               >
-                {_t(isPublished ? 'Unpublish' : 'Publish')}
+                {_t(isPublished ? 'Unpublish project' : 'Publish project')}
               </Button>
             )
           }
