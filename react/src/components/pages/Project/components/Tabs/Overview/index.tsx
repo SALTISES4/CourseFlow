@@ -2,9 +2,8 @@ import {
   getProjectQueryKey,
   updateProjectMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
-import { ProjectPermission } from '@cf/api/gen/types.gen'
+import { ProjectDetailOut, ProjectPermission } from '@cf/api/gen/types.gen'
 import { hasPermission } from '@cf/context/workspacePermissionsContext'
-import { ProjectDetailsType } from '@cf/types/common'
 import { WorkspaceType } from '@cf/types/enum'
 import { SnackbarOptions } from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
@@ -29,11 +28,10 @@ import TagsSection from './TagsSection'
 const OverviewTab = ({
   description,
   disciplines,
-  tags,
-  author,
+  owner,
   isPublished,
   permissions
-}: ProjectDetailsType) => {
+}: ProjectDetailOut) => {
   const { uuid } = useParams()
   const queryClient = useQueryClient()
   const [showPublishConfirmation, setShowPublishConfirmation] = useState(false)
@@ -105,7 +103,7 @@ const OverviewTab = ({
 
         <UserPermissions
           workspaceId={uuid ?? ''}
-          author={author}
+          owner={owner}
           workspaceType={WorkspaceType.PROJECT}
         />
 
@@ -142,7 +140,8 @@ const OverviewTab = ({
         </Stack>
       </SC.InfoBlock>
 
-      <TagsSection data={tags ?? []} />
+      {/* TODO: embed tags into the ProjectDetailOut */}
+      <TagsSection data={[]} />
 
       <StyledDialog
         open={showPublishConfirmation}

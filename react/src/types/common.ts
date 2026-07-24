@@ -25,8 +25,3 @@ export type EventUnion =
   | ReactMouseEvent<Element>
   | MouseEvent
 
-// TODO: move these to project detail out?
-export type ProjectDetailsType = ProjectDetailOut & {
-  author: EUser
-  tags?: TTag[]
-}

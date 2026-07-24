@@ -1,5 +1,5 @@
+import { ProjectDetailOut } from '@cf/api/gen'
 import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
-import { ProjectDetailsType } from '@cf/types/common'
 import { _t } from '@cf/utility/Utility.class'
 import { OuterContentWrap } from '@cfMUI/helper'
 import Box from '@mui/material/Box'
@@ -18,7 +18,7 @@ import {
 import TabOverview from './Overview'
 import TabWorkflows from './Workflows'
 
-const ProjectTabs = ({ project }: { project: ProjectDetailsType }) => {
+const ProjectTabs = ({ project }: { project: ProjectDetailOut }) => {
   const location = useLocation()
   const [activeTab, setActiveTab] = useState<RelativeRoutes>(
     RelativeRoutes.INDEX

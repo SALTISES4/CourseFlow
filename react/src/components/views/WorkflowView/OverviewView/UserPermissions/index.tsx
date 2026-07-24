@@ -3,7 +3,10 @@ import {
   listProjectTeamQueryKey,
   updateProjectTeamMemberMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
-import type { ProjectTeamMemberOut } from '@cf/api/gen/types.gen'
+import type {
+  ProjectTeamMemberOut,
+  UserSummaryOut
+} from '@cf/api/gen/types.gen'
 import { ProjectPermission, ProjectTeamRoleSchema } from '@cf/api/gen/types.gen'
 import { useProjectPermission } from '@cf/context/workspacePermissionsContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
@@ -23,7 +26,6 @@ import Button from '@mui/material/Button'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { EUser } from '@XMLHTTP/types/entity'
 import { enqueueSnackbar } from 'notistack'
 import { useCallback } from 'react'
 import { useParams } from 'react-router-dom'
@@ -34,7 +36,7 @@ type PropsType = {
   /** Project UUID (v2 API) when listing/updating project team members. */
   workspaceId: string
   workspaceType: WorkspaceType
-  author: EUser
+  owner: UserSummaryOut
   readOnly?: boolean
   projectUuid?: string | null
 }
@@ -50,7 +52,7 @@ function memberDisplayName(m: ProjectTeamMemberOut): string {
 const UserPermissions = ({
   workspaceId,
   workspaceType,
-  author,
+  owner,
   readOnly = false,
   projectUuid
 }: PropsType) => {
@@ -142,27 +144,24 @@ const UserPermissions = ({
     return <></>
   }
 
-  const members = teamData?.items ?? []
+  const members =
+    teamData?.items.filter((u) => u.userEmail !== owner.email) ?? []
 
   return (
     <SC.InfoBlockContent>
       <SC.PermissionGrid>
-        {author && (
+        {owner && (
           <SC.PermissionThumbnail>
             <ListItemAvatar>
-              <Avatar alt={author.name}>
+              <Avatar alt={owner.firstName}>
                 {ThemeHelper.getInitials(
-                  author.name.trim().length > 2
-                    ? author.name.trim()
-                    : author.username
+                  `${owner.firstName} ${owner.lastName}`
                 ).toUpperCase()}
               </Avatar>
             </ListItemAvatar>
             <ListItemText
-              primary={
-                author.name.trim().length ? author.name : author.username
-              }
-              secondary={author.email}
+              primary={`${owner.firstName} ${owner.lastName}`}
+              secondary={owner.email}
             />
             <Button variant="outlined" disabled>
               {_t('Owner')}

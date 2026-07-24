@@ -1,9 +1,7 @@
 import { getApiErrorStatus, isArchivedApiError } from '@cf/api/apiError'
-import { ProjectDetailOut } from '@cf/api/gen'
 import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { WorkspacePermissionsProvider } from '@cf/context/workspacePermissionsContext'
 import { useWorkspaceAccessGuard } from '@cf/hooks/useWorkspaceAccessGuard'
-import { ProjectDetailsType } from '@cf/types/common'
 import { getErrorMessage } from '@cf/utility/errorWrapper'
 import { _t } from '@cf/utility/Utility.class'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
@@ -27,20 +25,25 @@ const ProjectDetails = () => {
     ...getProjectOptions({ path: { uuid: uuid ?? '' } }),
     enabled: Boolean(uuid)
   })
+
   const lastResourceUuid = useRef(uuid)
   const lastSuccessfulResponse = useRef<typeof data>()
+
   if (lastResourceUuid.current !== uuid) {
     lastResourceUuid.current = uuid
     lastSuccessfulResponse.current = undefined
   }
+
   if (data) {
     lastSuccessfulResponse.current = data
   }
+
   const projectResponse = data ?? lastSuccessfulResponse.current
   const revalidate = useCallback(async () => {
     const result = await refetch()
     return result.error ?? null
   }, [refetch])
+
   const { privateAccessRevoked } = useWorkspaceAccessGuard({
     workspace: 'project',
     resourceUuid: uuid,
@@ -77,12 +80,10 @@ const ProjectDetails = () => {
     return <Loader />
   }
 
-  const project: ProjectDetailsType = mapProjectV2ToProjectDetails(
-    projectResponse.item
-  )
+  const project = projectResponse.item
 
   if (!project) {
-    return <ErrorView message={`Project does not exist`} />
+    return <ErrorView message={_t(`Project does not exist`)} />
   }
 
   return (
@@ -96,16 +97,3 @@ const ProjectDetails = () => {
 }
 
 export default ProjectDetails
-
-function mapProjectV2ToProjectDetails(p: ProjectDetailOut): ProjectDetailsType {
-  return {
-    ...p,
-    author: {
-      uuid: '',
-      username: '',
-      firstName: '',
-      lastName: '',
-      name: ''
-    }
-  }
-}
