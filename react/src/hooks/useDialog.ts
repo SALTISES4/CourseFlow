@@ -11,6 +11,7 @@ export enum DialogMode {
   PROJECT_EDIT = 'project_edit',
   PROJECT_EXPORT = 'project_export',
   PROJECT_DELETE = 'project_delete',
+  PROJECT_PUBLISH = 'project_publish',
 
   // WORKFLOW
   IMPORT_OUTCOMES = 'import_outcomes',
@@ -49,7 +50,7 @@ export type DialogPayloadMap = {
   }
 
   /*******************************************************
-   * we shouldn't need to  list out all the ones for undefined
+   * we shouldn't need to list out all the ones for undefined
    * but i couldn't get the typing correct for now
    *******************************************************/
   [DialogMode.TARGET_PROJECT]: undefined
@@ -57,6 +58,7 @@ export type DialogPayloadMap = {
   [DialogMode.PROJECT_EDIT]: undefined
   [DialogMode.PROJECT_EXPORT]: undefined
   [DialogMode.PROJECT_DELETE]: undefined
+  [DialogMode.PROJECT_PUBLISH]: undefined
   [DialogMode.IMPORT_OUTCOMES]: undefined
   [DialogMode.IMPORT_NODES]: undefined
   [DialogMode.WORKFLOW_DELETE]: undefined

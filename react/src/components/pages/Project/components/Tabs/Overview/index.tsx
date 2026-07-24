@@ -4,6 +4,7 @@ import {
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { ProjectDetailOut, ProjectPermission } from '@cf/api/gen/types.gen'
 import { hasPermission } from '@cf/context/workspacePermissionsContext'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { WorkspaceType } from '@cf/types/enum'
 import { SnackbarOptions } from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
@@ -22,7 +23,6 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
-import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import TagsSection from './TagsSection'
@@ -36,7 +36,7 @@ const OverviewTab = ({
 }: ProjectDetailOut) => {
   const { uuid } = useParams()
   const queryClient = useQueryClient()
-  const [showPublishConfirmation, setShowPublishConfirmation] = useState(false)
+  const { dispatch, show, onClose } = useDialog(DialogMode.PROJECT_PUBLISH)
   const canPublish = hasPermission(
     permissions,
     ProjectPermission.PUBLISH_PROJECT
@@ -54,9 +54,11 @@ const OverviewTab = ({
         }
       })
       queryClient.setQueryData(projectQueryKey, response)
+
       if (nextPublished) {
-        setShowPublishConfirmation(false)
+        onClose()
       }
+
       enqueueSnackbar(
         _t(
           nextPublished
@@ -133,7 +135,7 @@ const OverviewTab = ({
                   if (isPublished) {
                     void updateVisibility(false)
                   } else {
-                    setShowPublishConfirmation(true)
+                    dispatch(DialogMode.PROJECT_PUBLISH)
                   }
                 }}
               >
@@ -147,16 +149,7 @@ const OverviewTab = ({
       {/* TODO: embed tags into the ProjectDetailOut */}
       <TagsSection data={[]} />
 
-      <StyledDialog
-        open={showPublishConfirmation}
-        onClose={() => {
-          if (!visibilityMutation.isPending) {
-            setShowPublishConfirmation(false)
-          }
-        }}
-        fullWidth
-        maxWidth="sm"
-      >
+      <StyledDialog open={!!show} onClose={onClose} fullWidth maxWidth="sm">
         <DialogTitle>{_t('Publish project')}</DialogTitle>
         <DialogContent dividers>
           <Typography>
@@ -170,7 +163,7 @@ const OverviewTab = ({
             variant="contained"
             color="secondary"
             disabled={visibilityMutation.isPending}
-            onClick={() => setShowPublishConfirmation(false)}
+            onClick={onClose}
           >
             {_t('Cancel')}
           </Button>
