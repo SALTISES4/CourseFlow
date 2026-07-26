@@ -17,7 +17,7 @@ import {
 /**
  * Delete section — hover path and dialog (FR-SEC-006).
  * Requirements: workflow_delete_section_requirements_v1.yaml
- * Sidebar cancel branch: edit-section-fr-001-006.spec.ts; confirm via sidebar: edit-section-fr-phase2.spec.ts
+ * Sidebar cancel/confirm: edit-section-fr-001-012.spec.ts
  */
 
 async function hoverSectionHeader(page: import('@playwright/test').Page, sectionUuid: string) {

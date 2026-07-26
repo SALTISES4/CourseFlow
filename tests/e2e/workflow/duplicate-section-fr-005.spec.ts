@@ -11,7 +11,7 @@ import {
 /**
  * Duplicate section — hover path (FR-SEC-005).
  * Requirements: workflow_duplicate_section_requirements_v1.yaml
- * Sidebar duplicate: edit-section-fr-phase2.spec.ts
+ * Sidebar duplicate: edit-section-fr-001-012.spec.ts
  */
 
 async function hoverSectionHeader(page: import('@playwright/test').Page, sectionUuid: string) {

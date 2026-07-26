@@ -218,9 +218,9 @@ Run from `./tests/`:
 ### Run one file or one test
 
 ```bash
-yarn test e2e/workflow/edit-section-fr-001-006.spec.ts
+yarn test e2e/workflow/edit-section-fr-001-012.spec.ts
 yarn test-ui e2e/smoke/authenticated-home.spec.ts
-yarn test-debug e2e/workflow/edit-section-fr-001-006.spec.ts -g "FR-SEC-001"
+yarn test-debug e2e/workflow/edit-section-fr-001-012.spec.ts -g "FR-SEC-001"
 ```
 
 ### Headed run (browser visible, no UI shell)
@@ -260,7 +260,7 @@ test('example', async ({ page, workflow }) => {
 
 ## Calibration slice (Edit Section)
 
-Active specs in `e2e/workflow/edit-section-fr-001-006.spec.ts`:
+Active specs in `e2e/workflow/edit-section-fr-001-012.spec.ts`:
 
 - FR-SEC-001 — section header opens Edit section form
 - FR-SEC-003 — title auto-save persists after reload

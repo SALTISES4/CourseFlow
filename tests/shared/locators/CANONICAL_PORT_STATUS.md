@@ -28,7 +28,7 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 - `tests/e2e/project/project-overview-fr-001-005.spec.ts` — `projectMetadataFieldCreatedOn`, `projectMetadataDisciplinesBlock`, `publishProjectButton`
 - `tests/e2e/project/project-archive-fr-001-002.spec.ts` — `archiveProjectMenuItem`
 
-- `tests/e2e/workflow/edit-section-fr-007-012.spec.ts` — FR-SEC-007, FR-SEC-010, FR-SEC-011
+- `tests/e2e/workflow/edit-section-fr-001-012.spec.ts` — FR-SEC-001–012 (parent `edit-section-fr-001-012`)
 - `tests/e2e/workflow/delete-section-fr-006.spec.ts` — FR-SEC-006 hover path
 - `tests/e2e/workflow/duplicate-section-fr-005.spec.ts` — FR-SEC-005 hover path
 - `tests/e2e/workflow/workflow-header-fr-001-002.spec.ts` — FR-WF-HEADER-001/002
@@ -64,8 +64,8 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 ## Workflow E2E fixture hygiene
 
 - `tests/helpers/workflow-pristine.ts` — `skipUnlessPristineWorkflow()` guards display/mutation specs when shared workflow DB state is polluted
-- `edit-section-fr-001-006` FR-SEC-003 title mutation uses `E2E Section 3` (preserves `E2E Section 1` for FR-SEC-002)
-- `edit-section-fr-phase2` serial mutations track `expectedSectionCount` across insert/duplicate/delete
+- `edit-section-fr-001-012` FR-SEC-003 title mutation uses `E2E Section 3` (preserves `E2E Section 1` for FR-SEC-002)
+- `edit-section-fr-001-012` serial mutations track `expectedSectionCount` across insert/duplicate/delete
 - FR-SEC-003 viewer readOnly test skipped until workflow EditSection enforces project team roles
 
 ## Not yet ported (YAML entries remain semantic-only)
@@ -74,15 +74,15 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 - Workflow graph/node/outcome bulk (`workflowNode*`, `workflowOutcome*`, …) — partial via `workflow.ts`
 - Explore page discipline filter buttons — `explore-page-fr-001-006.spec.ts` still uses inline role/label selectors
 - User profile validation copy — `profile-settings-fr-001-005.spec.ts`
-- Legacy `feature-name.spec.ts` — skipped calibration file; inline selectors retained
+- Legacy `feature-name.spec.ts` — skipped calibration file; superseded by `edit-section-fr-001-012` (delete when ready)
 
 ## Validation status
 
 | Method | Status |
 | --- | --- |
-| Playwright report (localhost:9323) | 81 passed / 4 failed before slice 3 (all `edit-section-fr-phase2`) |
+| Playwright report (localhost:9323) | 81 passed / 4 failed before slice 3 (historical `edit-section-fr-phase2`) |
 | `yarn test` full suite (after slice 3) | **92 passed / 39 skipped / 3 failed** (edit-section parallel pollution; reseed before run) |
 | Slice 4 workflow specs (after reseed) | **13 passed / 1 skipped** — node-hover, channel-insert-border, outcome-dup-del, delete-node |
-| `edit-section-fr-007-012.spec.ts` | **7 passed / 2 skipped** (commenter + viewer role gaps) |
+| `edit-section-fr-001-012.spec.ts` | FR-SEC-001–012 under parent `edit-section-fr-001-012` |
 
 Re-validate with `just rebuild-e2e-db` then `cd tests && yarn test` when the E2E stack is running.
