@@ -8,8 +8,10 @@ import { ReactNode, useCallback, useState } from 'react'
 
 type PropsType = {
   severity?: AlertProps['severity'] | 'update'
+  icon?: ReactNode
   title?: ReactNode
   subtitle?: ReactNode
+  cta?: ReactNode
   persistent?: boolean
   hideIfCookie?: string
   onClose?: () => void
@@ -33,8 +35,10 @@ const StyledSubtitle = styled(Typography)({})
  */
 const CFAlert = ({
   severity = 'info',
+  icon = null,
   title,
   subtitle,
+  cta,
   persistent,
   onClose,
   hideIfCookie,
@@ -65,9 +69,10 @@ const CFAlert = ({
   return (
     <Alert
       severity={isUpdateAnnouncement ? 'info' : severity}
-      icon={isUpdateAnnouncement ? <CampaignIcon /> : null}
+      icon={isUpdateAnnouncement ? <CampaignIcon /> : icon}
       sx={sx}
       onClose={persistent ? undefined : handleClose}
+      slots={{ closeButton: cta ? () => cta : undefined }}
     >
       {title && <StyledTitle>{title}</StyledTitle>}
       {subtitle && <StyledSubtitle variant="body2">{subtitle}</StyledSubtitle>}

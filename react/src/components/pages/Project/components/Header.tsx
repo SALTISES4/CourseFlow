@@ -1,4 +1,4 @@
-import { ProjectDetailsType } from '@cf/types/common'
+import { ProjectDetailOut } from '@cf/api/gen'
 import { _t } from '@cf/utility/Utility.class'
 import { ChipOptions } from '@cfComponents/cards/WorkflowCardDumb'
 import { CardChip } from '@cfComponents/cards/WorkflowCardDumb/styles'
@@ -8,7 +8,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
-const ProjectHeader = ({ project }: { project: ProjectDetailsType }) => (
+const ProjectHeader = ({ project }: { project: ProjectDetailOut }) => (
   <OuterContentWrap sx={{ pb: 0 }}>
     <Stack
       direction="row"

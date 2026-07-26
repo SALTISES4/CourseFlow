@@ -12,11 +12,11 @@ from course_flow.api.deps import (
     get_project_service,
     get_resource_lifecycle_service,
     get_workflow_service,
+    get_user_service,
 )
 from course_flow.api.permission_context import permission_context_out
 from course_flow.api.schemas.project_graph_view import ProjectGraphViewOut
 from course_flow.api.schemas.project_subresources import (
-    DisciplineListItemOut,
     ProjectTeamListMetaOut,
     ProjectTeamListOut,
     ProjectTeamMemberAddIn,
@@ -149,6 +149,10 @@ def _project_detail_out(current_user: User, dto: ProjectDTO) -> ProjectDetailOut
         for d in Discipline.objects.filter(projects__id=dto.id)
     ]
 
+    user_service = get_user_service()
+    owner = user_service.get_user_by_id(dto.owner_id)
+    assert owner is not None
+
     return ProjectDetailOut(
         uuid=dto.uuid,
         title=dto.title,
@@ -157,12 +161,12 @@ def _project_detail_out(current_user: User, dto: ProjectDTO) -> ProjectDetailOut
         is_template=dto.is_template,
         is_favorite=is_favorite,
         is_archived=is_archived,
-        owner_id=dto.owner_id,
+        owner=user_service.get_user_summary(owner),
         date_created=dto.date_created,
         modified_on=dto.modified_on,
         workflows=workflows,
         permissions=permission_context_out(_project_permissions(current_user, dto)),
-        disciplines=disciplines
+        disciplines=disciplines,
     )
 
 

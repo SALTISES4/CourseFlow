@@ -1,7 +1,3 @@
-import { ProjectDetailOut } from '@cf/api/gen'
-import type { PermissionContextOut } from '@cf/api/gen'
-import { TTag } from '@cf/redux/types/type'
-import { EUser } from '@XMLHTTP/types/entity'
 import { MouseEvent as ReactMouseEvent } from 'react'
 
 export type FieldChoice = {
@@ -24,9 +20,3 @@ export type EventUnion =
   | ReactMouseEvent<HTMLDivElement>
   | ReactMouseEvent<Element>
   | MouseEvent
-
-// TODO: move these to project detail out?
-export type ProjectDetailsType = ProjectDetailOut & {
-  author: EUser
-  tags?: TTag[]
-}

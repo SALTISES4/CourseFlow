@@ -50,6 +50,26 @@ export const zResourceRole = z.enum([
 ])
 
 /**
+ * UserMeta
+ */
+export const zUserMeta = z.object({
+  ownsAnyProject: z.boolean()
+})
+
+/**
+ * UserSummaryOut
+ */
+export const zUserSummaryOut = z.object({
+  id: z.number().int(),
+  uuid: z.string().uuid(),
+  email: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  accountRole: zAccountRole.nullable(),
+  meta: zUserMeta.nullable()
+})
+
+/**
  * WorkflowPermission
  */
 export const zWorkflowPermission = z.enum([
@@ -116,7 +136,7 @@ export const zProjectDetailOut = z.object({
   isArchived: z.boolean(),
   isTemplate: z.boolean(),
   isFavorite: z.boolean(),
-  ownerId: z.number().int(),
+  owner: zUserSummaryOut,
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime(),
   disciplines: z.array(zDisciplineOption).optional().default([]),
@@ -1083,25 +1103,6 @@ export const zCommentCreateIn = z.object({
 export const zThreadCommentsBulkDeleteOut = z.object({
   success: z.boolean().optional().default(true),
   deletedCount: z.number().int()
-})
-
-/**
- * UserMeta
- */
-export const zUserMeta = z.object({
-  ownsAnyProject: z.boolean()
-})
-
-/**
- * UserSummaryOut
- */
-export const zUserSummaryOut = z.object({
-  uuid: z.string().uuid(),
-  email: z.string(),
-  firstName: z.string(),
-  lastName: z.string(),
-  accountRole: zAccountRole.nullable(),
-  meta: zUserMeta.nullable()
 })
 
 /**

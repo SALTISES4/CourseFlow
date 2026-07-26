@@ -116,6 +116,12 @@ export const CardChip = styled(Chip)(({ theme }) => ({
     backgroundColor: 'transparent',
     color: theme.palette.courseflow?.template ?? '',
     border: '1px solid currentColor'
+  },
+  '&.archived': {
+    color: theme.palette.text.disabled
+  },
+  '&.default': {
+    backgroundColor: '#ECEFF1'
   }
 }))
 

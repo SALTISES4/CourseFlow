@@ -18,7 +18,8 @@ export enum ChipOptions {
   COURSE = 'course',
   ACTIVITY = 'activity',
   TEMPLATE = 'template',
-  DEFAULT = 'default'
+  DEFAULT = 'default',
+  ARCHIVED = 'archived'
 }
 
 export type WorkflowCardChipType = {

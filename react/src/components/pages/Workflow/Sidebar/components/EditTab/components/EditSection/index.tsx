@@ -12,12 +12,9 @@ import * as SC from '@cfSidebar/styles'
 import { debounce } from '@mui/material'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
-import { produce } from 'immer'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-
-import SaveAsTemplate from '../SaveAsTemplate'
 
 type SectionFormType = {
   title: string
@@ -47,9 +44,6 @@ const EditSection = ({ sectionId }: { sectionId: string }) => {
 const EditSectionForm = ({ section }: { section: SectionEntity }) => {
   const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
-  const [state, setState] = useState({
-    template: false
-  })
 
   const {
     register,
@@ -95,26 +89,6 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
     }
   }, [watchedFields, isDirty, getValues, debouncedDispatch])
 
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  const toggleTemplateForm = useCallback(() => {
-    setState(
-      produce((draft) => {
-        draft.template = !draft.template
-      })
-    )
-  }, [])
-
-  // @todo not connected to backend
-  const onSaveTemplateClick = useCallback(
-    (label: string) => {
-      console.log('saving template with label:', label)
-      toggleTemplateForm()
-    },
-    [toggleTemplateForm]
-  )
-
   const onDuplicate = useCallback(() => {
     dispatch(
       insertSectionBelow({
@@ -132,17 +106,7 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
     })
   }, [dialogDispatch, section.graphUuid, section.uuid])
 
-  return state.template ? (
-    <SaveAsTemplate
-      title={_t('Save as personal section template')}
-      placeholder={_t('Section label')}
-      alert={_t(
-        'The personal template name will not overwrite the node group title. Once saved, you’ll be able to add your personal template to any course. You can find and adjust your personal template within your Library.'
-      )}
-      onSave={onSaveTemplateClick}
-      onCancel={toggleTemplateForm}
-    />
-  ) : (
+  return (
     <SC.SidebarInnerWrap data-test-id="workflow-edit-section-form">
       <SC.SidebarContent>
         <SC.SidebarTitle as="h3" variant="h6">
@@ -158,13 +122,6 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
         />
       </SC.SidebarContent>
       <SC.SidebarActions>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={toggleTemplateForm}
-        >
-          {_t('Save as personal template')}
-        </Button>
         <Button variant="contained" color="secondary" onClick={onDuplicate}>
           {_t('Duplicate')}
         </Button>

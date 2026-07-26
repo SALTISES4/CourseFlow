@@ -139,10 +139,7 @@ const SectionCellNode = ({
 
         <StyledNode.Border style={{ backgroundColor: borderColor }} />
         <StyledNode.Content onClick={onNodeClicked}>
-          <StyledNode.Title variant="body2">
-            {displayTitle} <br />
-            <small>{`#${nodeId}, row: ${node.sectionRow ?? '?'}`}</small>
-          </StyledNode.Title>
+          <StyledNode.Title variant="body2">{displayTitle}</StyledNode.Title>
           <Meta
             workflow={node.linkedWorkflowUuid ?? null}
             parentWorkflowType={graph?.workflowType}
