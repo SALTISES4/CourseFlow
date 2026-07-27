@@ -60,9 +60,10 @@ const WorkflowEditDialog = () => {
     formState: { errors, isDirty }
   } = useForm<WorkflowFormType>({
     resolver: zodResolver(workflowSchema),
+    mode: 'onChange',
     defaultValues: {
-      title: '',
-      description: ''
+      title: workflow?.title ?? '',
+      description: workflow?.description ?? ''
     }
   })
 
@@ -141,7 +142,7 @@ const WorkflowEditDialog = () => {
               name="title"
               variant="standard"
               required
-              label={_t(`Title`)}
+              label={_t('Title')}
               error={!!errors.title}
               fullWidth
               helperText={errors.title?.message}
@@ -168,7 +169,7 @@ const WorkflowEditDialog = () => {
           <Button
             type="submit"
             variant="contained"
-            disabled={!isDirty || !workflow}
+            disabled={!isDirty || !workflow || !!Object.keys(errors).length}
           >
             {_t(`Update ${workflowTypeLabel.toLowerCase()}`)}
           </Button>
