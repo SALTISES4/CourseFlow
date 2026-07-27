@@ -1,4 +1,3 @@
-import { WorkflowType } from '@cf/api/gen'
 import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { ResourceRole } from '@cf/api/gen/types.gen'
 import { useWorkspacePermissions } from '@cf/context/workspacePermissionsContext'

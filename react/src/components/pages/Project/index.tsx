@@ -26,6 +26,7 @@ const ProjectDetails = () => {
     enabled: Boolean(uuid)
   })
 
+  // NOTE: can potentially be avoided via useQuery placeholderData: keepPreviousData?
   const lastResourceUuid = useRef(uuid)
   const lastSuccessfulResponse = useRef<typeof data>()
 

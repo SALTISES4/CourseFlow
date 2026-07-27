@@ -5,9 +5,11 @@ import {
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import type { WorkflowOverviewMetadataIn } from '@cf/api/gen/types.gen'
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import ErrorView from '@cf/components/pages/MsgViews/ErrorView'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { WorkspaceType } from '@cf/types/enum'
 import { SnackbarOptions } from '@cf/utility/constants'
+import { getErrorMessage } from '@cf/utility/errorWrapper'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { OuterContentWrap } from '@cfMUI/helper'
 import LinkIcon from '@mui/icons-material/Link'
@@ -15,7 +17,6 @@ import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { EUser } from '@XMLHTTP/types/entity'
 import { enqueueSnackbar } from 'notistack'
 import { useParams } from 'react-router-dom'
 
@@ -27,29 +28,34 @@ const OverviewView = () => {
   const { uuid } = useParams()
   const workflowUuid = uuid ?? ''
   const queryClient = useQueryClient()
+  const updateMetadata = useMutation(updateWorkflowMutation())
   const canEdit = useResourcePermission(WorkflowPermission.EDIT_ATTRIBUTES)
-  const { data: workflowResp } = useQuery({
+  const {
+    data: workflowResp,
+    error,
+    isError
+  } = useQuery({
     ...getWorkflowOptions({ path: { uuid: workflowUuid } }),
     enabled: Boolean(workflowUuid)
   })
+
+  if (isError) {
+    return (
+      <ErrorView message={`An error occurred: ${getErrorMessage(error)}`} />
+    )
+  }
+
   const workflow = workflowResp?.item
-  const workflowAuthor: EUser = {
-    uuid: String(workflow?.authorId ?? ''),
-    username: '',
-    firstName: '',
-    lastName: '',
-    name: '',
-    email: ''
+
+  if (!workflow) {
+    return <ErrorView message={_t(`Workflow does not exist`)} />
   }
 
   // @todo disciplines is missing from workflow data type
   const disciplines: { title: string }[] = []
   const description = workflow?.description ?? ''
   const createdOn = workflow?.dateCreated
-  const updateMetadata = useMutation(updateWorkflowMutation())
-  const workflowQueryKey = getWorkflowQueryKey({
-    path: { uuid: workflowUuid }
-  })
+  const workflowQueryKey = getWorkflowQueryKey({ path: { uuid: workflowUuid } })
 
   const saveMetadata = async (updates: WorkflowOverviewMetadataIn) => {
     try {
@@ -112,7 +118,7 @@ const OverviewView = () => {
         <SC.InfoBlockTitle>{_t('Permissions')}</SC.InfoBlockTitle>
         <UserPermissions
           workspaceId={workflowUuid}
-          author={workflowAuthor}
+          owner={workflow.owner}
           workspaceType={WorkspaceType.WORKFLOW}
           projectUuid={workflow?.projectUuid}
           readOnly
