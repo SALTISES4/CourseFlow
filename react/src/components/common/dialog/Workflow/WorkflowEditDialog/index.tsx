@@ -85,10 +85,21 @@ const WorkflowEditDialog = () => {
       queryClient.invalidateQueries({
         queryKey: listWorkflowsQueryKey()
       })
-      onSuccess({ message: 'Success' })
+
+      onSuccess({
+        message: _t(
+          `Your ${workflowTypeLabel.toLowerCase()} has been successfully updated`
+        )
+      })
+
       onClose()
     },
-    onError: (err) => onError(err)
+    onError: (err) =>
+      onError(
+        _t(
+          `We encountered an issue and your ${workflowTypeLabel.toLowerCase()} was not updated`
+        )
+      )
   })
 
   const onSubmit = useCallback(
