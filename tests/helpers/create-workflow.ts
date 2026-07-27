@@ -1,5 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
-
+import { expect, type Page } from '@playwright/test';
 import {
   createWorkflowCancelButton,
   createWorkflowDialog,
@@ -9,7 +8,16 @@ import {
   createWorkflowDialogTitle,
   createWorkflowStepper,
   createWorkflowSubmitButton,
+  WORKFLOW_BLANK_FORM_FORBIDDEN_METADATA_LABELS,
+  WORKFLOW_BLANK_FORM_VISIBLE_LABELS,
+  workflowBlankDescriptionVisibleLabel,
+  workflowBlankForm,
+  workflowBlankFormVisibleLabel,
+  workflowCreationModeBlankOptionBlock,
+  workflowCreationModeTemplateOptionBlock,
+  workflowDescriptionField,
   workflowProjectSearchEmptyState,
+  workflowProjectSearchField,
   workflowTitleField,
 } from '../e2e/home/home.locators';
 import {
@@ -70,6 +78,76 @@ export async function waitForCreateWorkflowProjectSearchLoaded(page: Page): Prom
   await expect(
     createWorkflowDialogProjectCards(page).first().or(workflowProjectSearchEmptyState(page)),
   ).toBeVisible({ timeout: 15_000 });
+}
+
+/**
+ * Select a destination project on step 1, searching by title when it is outside the
+ * unfiltered 4-card window (FR-WF-CREATE-STEPPER-003).
+ */
+export async function selectCreateWorkflowDestinationProject(
+  page: Page,
+  projectTitle: string,
+): Promise<void> {
+  let projectCard = createWorkflowDialogProjectCardByTitle(page, projectTitle);
+  if ((await projectCard.count()) === 0) {
+    await workflowProjectSearchField(page).fill(projectTitle);
+    await workflowProjectSearchField(page).press('Enter');
+    projectCard = createWorkflowDialogProjectCardByTitle(page, projectTitle);
+    await expect(projectCard).toBeVisible({ timeout: 15_000 });
+  }
+  await projectCard.click();
+  await expect(projectCard).toHaveClass(/selected/);
+}
+
+/** FR-WF-CREATE-STEPPER-004 — blank option selected (primary border) vs template. */
+export async function expectCreateWorkflowCreationModeSelected(
+  page: Page,
+  workflowType: 'activity' | 'course' | 'program',
+  mode: 'blank' | 'template',
+): Promise<void> {
+  const blank = workflowCreationModeBlankOptionBlock(page, workflowType);
+  const template = workflowCreationModeTemplateOptionBlock(page);
+  await expect(blank).toBeVisible();
+  await expect(template).toBeVisible();
+
+  const blankBorder = await blank.evaluate((el) => getComputedStyle(el).borderColor);
+  const templateBorder = await template.evaluate((el) => getComputedStyle(el).borderColor);
+
+  if (mode === 'blank') {
+    expect(blankBorder, 'blank creation mode should use selected (primary) border').not.toBe(
+      templateBorder,
+    );
+  } else {
+    expect(templateBorder, 'template creation mode should use selected (primary) border').not.toBe(
+      blankBorder,
+    );
+  }
+}
+
+/**
+ * FR-WF-CREATE-STEPPER-005 — blank form chrome: Title label, type-scoped description label,
+ * and no type-varying metadata fields.
+ */
+export async function expectBlankWorkflowFormLayoutPerFrCreateStepper005(
+  page: Page,
+  workflowType: 'activity' | 'course' | 'program',
+): Promise<void> {
+  await expect(workflowBlankForm(page)).toBeVisible();
+  await expect(
+    workflowBlankFormVisibleLabel(page, WORKFLOW_BLANK_FORM_VISIBLE_LABELS.title),
+  ).toBeVisible();
+  await expect(workflowTitleField(page)).toBeVisible();
+  await expect(
+    workflowBlankFormVisibleLabel(page, workflowBlankDescriptionVisibleLabel(workflowType)),
+  ).toBeVisible();
+  await expect(workflowDescriptionField(page, workflowType)).toBeVisible();
+
+  for (const label of WORKFLOW_BLANK_FORM_FORBIDDEN_METADATA_LABELS) {
+    await expect(
+      workflowBlankForm(page).getByText(label, { exact: true }),
+      `FR-WF-CREATE-STEPPER-005: blank form must not show metadata field ${JSON.stringify(label)}`,
+    ).toHaveCount(0);
+  }
 }
 
 /** FR-WF-CREATE-STEPPER-001 — Cancel closes dialog, no workflow route, returns to pre-dialog URL. */
@@ -169,16 +247,24 @@ export async function createBlankWorkflowFromHome(
 
   const projectCard = createWorkflowDialogProjectCardByTitle(page, projectTitle);
   if ((await projectCard.count()) === 0) {
-    test.skip(true, 'E2E fixture project card not visible in create-workflow step 1.');
+    await workflowProjectSearchField(page).fill(projectTitle);
+    await workflowProjectSearchField(page).press('Enter');
+    await expect(createWorkflowDialogProjectCardByTitle(page, projectTitle)).toBeVisible({
+      timeout: 15_000,
+    });
   }
-  await projectCard.click();
+  await createWorkflowDialogProjectCardByTitle(page, projectTitle).click();
   await createWorkflowDialogNextStep(page).click();
   await expect(createWorkflowDialogTitle(page)).toHaveText(titles.step2DialogTitle);
   await createWorkflowDialogNextStep(page).click();
   await expect(createWorkflowDialogTitle(page)).toHaveText(titles.step3BlankDialogTitle);
 
   await workflowTitleField(page).fill(title);
-  await createWorkflowDialog(page).getByLabel('Duration', { exact: true }).fill('');
+  // Product still renders Duration on blank create; clear numeric default so submit validates.
+  const duration = createWorkflowDialog(page).getByLabel('Duration', { exact: true });
+  if ((await duration.count()) > 0) {
+    await duration.fill('');
+  }
   await createWorkflowSubmitButton(page, workflowType).click();
 
   await expect(createWorkflowDialog(page)).toBeHidden({ timeout: 15_000 });

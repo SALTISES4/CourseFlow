@@ -1,15 +1,15 @@
-import { test, expect } from '../../fixtures';
-import { commentsTabInSidebar } from './edit-section.locators';
+import { test, expect } from '../../../fixtures';
+import { commentsTabInSidebar } from '../edit-section.locators';
 import {
   channelUuidByTitle,
   openChannelCommentsViaHover,
   requireCommentsComposer,
-} from './comments-tab.helpers';
+} from '../comments-tab.helpers';
 import {
   workflowEditChannelForm,
   workflowChannelHeader,
-} from './workflow-graph.locators';
-import { workflowRightSidebarCommentsTabContent } from '../../shared/locators/workflow';
+} from '../workflow-graph.locators';
+import { workflowRightSidebarCommentsTabContent } from '../../../shared/locators/workflow';
 
 /**
  * Channel comments entry paths — FR-WF-COMMENTS-003.

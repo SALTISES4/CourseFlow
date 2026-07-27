@@ -1,18 +1,18 @@
-import { test, expect } from '../../fixtures';
+import { test, expect } from '../../../fixtures';
 import {
   commentsTabInSidebar,
   editSectionForm,
   sectionHeader,
   titleFieldInEditSectionForm,
-} from './edit-section.locators';
-import { openSectionCommentsViaHover, openNodeCommentsViaHover, openChannelCommentsViaHover, openOutcomeCommentsViaHover, firstWorkflowNodeUuid, channelUuidByTitle, gotoOutcomesView } from './comments-tab.helpers';
-import { workflowEditNodeForm, workflowEditChannelForm } from './workflow-graph.locators';
+} from '../edit-section.locators';
+import { openSectionCommentsViaHover, openNodeCommentsViaHover, openChannelCommentsViaHover, openOutcomeCommentsViaHover, firstWorkflowNodeUuid, channelUuidByTitle, gotoOutcomesView } from '../comments-tab.helpers';
+import { workflowEditNodeForm, workflowEditChannelForm } from '../workflow-graph.locators';
 import {
   workflowEditOutcomeForm,
   workflowEditOutcomeFormTitleField,
   workflowOutcomeHeader,
-} from './workflow-outcome.locators';
-import { workflowRightSidebarEditTab } from '../../shared/locators/workflow';
+} from '../workflow-outcome.locators';
+import { workflowRightSidebarEditTab } from '../../../shared/locators/workflow';
 
 /**
  * Comments host identity — FR-WF-COMMENTS-005.

@@ -1,5 +1,10 @@
 import { test, expect } from '../../fixtures';
 import { workflowOverviewPath, workflowOutcomesPath } from '../../helpers/workflow-navigation';
+import {
+  CARD_FAVOURITE_SNACKBAR_ADDED,
+  CARD_FAVOURITE_SNACKBAR_REMOVED,
+} from '../../shared/locators/cards';
+import { globalMessageSnackbar } from '../../shared/locators/global';
 import { sectionContainers } from './edit-section.locators';
 import {
   workflowGraphTab,
@@ -11,7 +16,7 @@ import {
 } from './workflow.locators';
 
 /**
- * Workflow header — FR-WF-HEADER-001, FR-WF-HEADER-002 (partial).
+ * Workflow header — FR-WF-HEADER-001, FR-WF-HEADER-002.
  * Requirements: workflow_header_requirements_v1.yaml
  */
 
@@ -56,6 +61,8 @@ test.describe('Workflow header — navigation (FR-WF-HEADER-001)', () => {
 });
 
 test.describe('Workflow header — favourite (FR-WF-HEADER-002)', () => {
+  test.describe.configure({ mode: 'serial' });
+
   test.beforeEach(async ({ page, workflow }) => {
     await page.goto(workflow.path);
   });
@@ -64,5 +71,33 @@ test.describe('Workflow header — favourite (FR-WF-HEADER-002)', () => {
     page,
   }) => {
     await expect(workflowHeaderFavouriteToggle(page)).toBeVisible();
+  });
+
+  test('FR-WF-HEADER-002: favourite toggle add/remove round-trip shows snackbar feedback', async ({
+    page,
+  }) => {
+    const toggle = workflowHeaderFavouriteToggle(page);
+    await expect(toggle).toBeVisible();
+
+    const urlBefore = page.url();
+
+    await toggle.click();
+    await expect(page).toHaveURL(urlBefore);
+    await expect(globalMessageSnackbar(page)).toBeVisible({ timeout: 15_000 });
+    await expect(globalMessageSnackbar(page)).toHaveText(
+      new RegExp(`^(${CARD_FAVOURITE_SNACKBAR_ADDED}|${CARD_FAVOURITE_SNACKBAR_REMOVED})$`),
+    );
+    const firstMessage = await globalMessageSnackbar(page).textContent();
+
+    await toggle.click();
+    await expect(page).toHaveURL(urlBefore);
+    const secondMessage =
+      firstMessage === CARD_FAVOURITE_SNACKBAR_ADDED
+        ? CARD_FAVOURITE_SNACKBAR_REMOVED
+        : CARD_FAVOURITE_SNACKBAR_ADDED;
+    await expect(globalMessageSnackbar(page).filter({ hasText: secondMessage })).toHaveText(
+      secondMessage,
+      { timeout: 15_000 },
+    );
   });
 });

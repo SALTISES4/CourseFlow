@@ -5,7 +5,7 @@
 # Cross-reference:
 #   - tests/docs/requirements/features/shared/context_action_bar_requirements_v1.yaml (editPencilButton on workflow routes—FR-CAB-004)
 #   - tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-002)
-#   - tests/docs/requirements/features/workflow/workflow_create_stepped_form_requirements_v1.yaml (shared workflowTitleField and workflowDescriptionField; edit-scoped title validation in FR-WF-FORM-002 owned in this file; workflowDescriptionField rich-text editor contract in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012)
+#   - tests/docs/requirements/features/workflow/workflow_create_stepped_form_requirements_v1.yaml (shared workflowTitleField and workflowDescriptionField; shared title max-length and required validation with FR-WF-CREATE-STEPPER-005; edit-scoped enablement and messages owned in FR-WF-FORM-002; workflowDescriptionField rich-text editor contract in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012)
 #   - tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml (workflowTitle update path—FR-WF-FORM-003)
 #   - tests/docs/requirements/features/project/project_edit_form_requirements_v1.yaml (parallel edit dialog pattern for projects—FR-PROJ-FORM-003, FR-PROJ-FORM-006, FR-PROJ-FORM-007; edit-scoped title validation in FR-WF-FORM-002 owned in this file)
 
@@ -29,7 +29,7 @@ uiObjectDefinitions:
   workflowDescriptionField:
     meaning: Canonical definition in workflow_create_stepped_form_requirements_v1.yaml.
   workflowFormFieldValidationMessage:
-    meaning: Inline helper or error text shown on workflowTitleField when edit validation fails.
+    meaning: Inline helper or error text shown on workflowTitleField when title validation fails (empty after trim or longer than 200 characters).
   editWorkflowFormCancelButton:
     meaning: Cancel action on editWorkflowDialog.
   editWorkflowFormSubmitButton:
@@ -157,16 +157,20 @@ requirements:
 
     mainFlow:
       - workflowTitleField is required and must be non-empty after trim
+      - workflowTitleField value is at most 200 characters
       - workflowDescriptionField is optional; empty or cleared description is valid on submit
       - when workflowTitleField is empty after trim, workflowFormFieldValidationMessage is visible on workflowTitleField with copy exactly 'Title is required'
-      - editWorkflowFormSubmitButton stays disabled and not clickable until workflowTitleField satisfies the rule above and at least one field has changed from loaded values per FR-WF-FORM-001
+      - when workflowTitleField value length exceeds 200 characters, workflowFormFieldValidationMessage is visible on workflowTitleField with copy exactly 'Title cannot be longer than 200 characters'
+      - editWorkflowFormSubmitButton stays disabled and not clickable until workflowTitleField is non-empty after trim and at most 200 characters and at least one field has changed from loaded values per FR-WF-FORM-001
       - editWorkflowDialog remains open while workflowFormFieldValidationMessage is visible for workflowTitleField
 
     roleBehavior: {}
 
     acceptanceCriteria:
       - given workflowTitleField is empty after trim, workflowFormFieldValidationMessage is visible with copy exactly 'Title is required'
-      - given owner or editor has changed at least one field from loaded values and workflowTitleField is non-empty after trim, editWorkflowFormSubmitButton is enabled and clickable (including when workflowDescriptionField is empty)
+      - given workflowTitleField value length exceeds 200 characters, workflowFormFieldValidationMessage is visible with copy exactly 'Title cannot be longer than 200 characters'
+      - given workflowTitleField is non-empty after trim and at most 200 characters, workflowTitleField does not show workflowFormFieldValidationMessage for empty or length rules
+      - given owner or editor has changed at least one field from loaded values and workflowTitleField is non-empty after trim and at most 200 characters, editWorkflowFormSubmitButton is enabled and clickable (including when workflowDescriptionField is empty)
       - given workflowFormFieldValidationMessage is visible for workflowTitleField, editWorkflowDialog remains open
 
     openQuestions: []

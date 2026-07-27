@@ -43,7 +43,9 @@ uiObjectDefinitions:
   workflowBlankForm:
     meaning: Blank-workflow metadata form used in createWorkflowDialog.
   workflowTitleField:
-    meaning: Text input for workflow title; required; label 'Title'.
+    meaning: Text input for workflow title; required; label 'Title'; at most 200 characters; inline validation per FR-WF-CREATE-STEPPER-005 (create blank) and FR-WF-FORM-002 (edit).
+  workflowFormFieldValidationMessage:
+    meaning: Inline helper or error text shown on workflowTitleField when title validation fails (create blank or edit).
   workflowDescriptionField:
     meaning: Description field region on workflowBlankForm and workflowEditForm; optional; visible label matches workflow type (e.g. 'Activity description'); contains workflowRichTextDescriptionEditor per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012.
   workflowTemplateSearchView:
@@ -88,6 +90,7 @@ locatorMappings:
   workflowCreationModeTemplateOption: "canonical_locators.yaml -> workflowCreationModeTemplateOption"
   workflowBlankForm: "canonical_locators.yaml -> workflowBlankForm"
   workflowTitleField: "canonical_locators.yaml -> workflowTitleField"
+  workflowFormFieldValidationMessage: "canonical_locators.yaml -> workflowFormFieldValidationMessage"
   workflowDescriptionField: "canonical_locators.yaml -> workflowDescriptionField"
   workflowTemplateSearchView: "canonical_locators.yaml -> workflowTemplateSearchView"
   workflowTemplateSearchField: "canonical_locators.yaml -> workflowTemplateSearchField"
@@ -332,6 +335,7 @@ requirements:
       - workflowBlankForm
       - workflowTitleField
       - workflowDescriptionField
+      - workflowFormFieldValidationMessage
       - createWorkflowCancelButton
       - createWorkflowPreviousStepButton
       - createWorkflowSubmitButton
@@ -352,9 +356,13 @@ requirements:
       - createWorkflowDialogTitle follows pattern 'Create blank {workflowType}'
       - workflowBlankForm is rendered
       - workflowBlankForm metadata fields do not differ by workflow type
-      - workflowTitleField is required
+      - workflowTitleField is required and must be non-empty after trim
+      - workflowTitleField value is at most 200 characters
       - workflowDescriptionField is optional
-      - createWorkflowSubmitButton is disabled until workflowTitleField has a non-empty value
+      - when workflowTitleField is empty after trim, workflowFormFieldValidationMessage is visible on workflowTitleField with copy exactly 'Title is required'
+      - when workflowTitleField value length exceeds 200 characters, workflowFormFieldValidationMessage is visible on workflowTitleField with copy exactly 'Title cannot be longer than 200 characters'
+      - createWorkflowSubmitButton is disabled until workflowTitleField is non-empty after trim and at most 200 characters
+      - createWorkflowDialog remains open while workflowFormFieldValidationMessage is visible for workflowTitleField
       - when user returns to step 3 blank mode after navigating back from step 2, previously entered workflowBlankForm values and createWorkflowSubmitButton enablement state are preserved
       - when user clicks createWorkflowPreviousStepButton, system returns to step 2 with the previously selected destination project preserved
       - when user clicks createWorkflowCancelButton, system closes createWorkflowDialog without creating a workflow and returns user to the page/route that was open before createWorkflowDialog was triggered
@@ -364,8 +372,10 @@ requirements:
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given blank mode on step 3 and workflowTitleField is empty, createWorkflowSubmitButton is disabled
-      - given blank mode on step 3 and workflowTitleField has a non-empty value, createWorkflowSubmitButton is enabled
+      - given blank mode on step 3 and workflowTitleField is empty after trim, workflowFormFieldValidationMessage is visible with copy exactly 'Title is required' and createWorkflowSubmitButton is disabled
+      - given blank mode on step 3 and workflowTitleField value length exceeds 200 characters, workflowFormFieldValidationMessage is visible with copy exactly 'Title cannot be longer than 200 characters' and createWorkflowSubmitButton is disabled
+      - given blank mode on step 3 and workflowTitleField is non-empty after trim and at most 200 characters, workflowTitleField does not show workflowFormFieldValidationMessage for empty or length rules and createWorkflowSubmitButton is enabled
+      - given workflowFormFieldValidationMessage is visible for workflowTitleField, createWorkflowDialog remains open
       - given user clicks createWorkflowPreviousStepButton on step 3 blank mode, dialog returns to step 2 and keeps previously selected destination project
       - given user returns to step 3 blank mode from step 2, previously entered workflowBlankForm values are preserved
       - given user clicks createWorkflowCancelButton on step 3 blank mode, createWorkflowDialog closes, no workflow is created, and current route matches the route active before dialog open

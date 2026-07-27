@@ -1,4 +1,4 @@
-import { test, expect } from '../../fixtures';
+import { test, expect } from '../../../fixtures';
 import {
   channelUuidByTitle,
   composeComment,
@@ -9,12 +9,12 @@ import {
   openNodeCommentsViaHover,
   openOutcomeCommentsViaHover,
   requireCommentsComposer,
-} from './comments-tab.helpers';
+} from '../comments-tab.helpers';
 import {
   workflowCommentsComposerField,
   workflowCommentsTabComposerSubmitButton,
   workflowRightSidebarCommentsTabContent,
-} from '../../shared/locators/workflow';
+} from '../../../shared/locators/workflow';
 
 /**
  * Comments compose and delete — FR-WF-COMMENTS-006, FR-WF-COMMENTS-007 (node, channel, outcome).

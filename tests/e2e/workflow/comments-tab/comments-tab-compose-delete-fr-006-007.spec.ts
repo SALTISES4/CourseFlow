@@ -1,4 +1,4 @@
-import { test, expect } from '../../fixtures';
+import { test, expect } from '../../../fixtures';
 import {
   workflowCommentsComposerField,
   workflowCommentsTabComposerSubmitButton,
@@ -6,8 +6,8 @@ import {
   workflowCommentsTabListItemHeaderForBody,
   workflowCommentsTabListItemDeleteLink,
   workflowRightSidebarCommentsTabContent,
-} from '../../shared/locators/workflow';
-import { openSectionCommentsViaHover, requireSectionCommentsComposer } from './comments-tab.helpers';
+} from '../../../shared/locators/workflow';
+import { openSectionCommentsViaHover, requireSectionCommentsComposer } from '../comments-tab.helpers';
 
 /**
  * Comments compose and delete — FR-WF-COMMENTS-006, FR-WF-COMMENTS-007 (section host, partial).

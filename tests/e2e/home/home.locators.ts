@@ -158,9 +158,24 @@ export function createWorkflowDialogFromTemplateOption(page: Page): Locator {
   return workflowCreationModeTemplateOption(page);
 }
 
+/** canonical: createWorkflowNoEligibleProjectsDialog (step 1) */
+export function createWorkflowNoEligibleProjectsDialog(page: Page): Locator {
+  return createWorkflowDialog(page).locator('[data-test-id="no-eligible-projects"]');
+}
+
+export const CREATE_WORKFLOW_NO_ELIGIBLE_PROJECTS_COPY = {
+  title: 'You are not an owner or editor of any projects',
+  body: 'All workflows, whether they are programs, courses, or activities, exist within projects. You must always start by creating a project before proceeding to create any type of workflow. Currently you are not the owner and have not been added as an editor of any project.',
+} as const;
+
 /** canonical: workflowCreationModeTemplateOption (step 2) */
 export function workflowCreationModeTemplateOption(page: Page): Locator {
   return createWorkflowDialog(page).getByText('From a template', { exact: true });
+}
+
+/** TypeSelect option surface (TypeBlock) wrapping workflowCreationModeTemplateOption. */
+export function workflowCreationModeTemplateOptionBlock(page: Page): Locator {
+  return workflowCreationModeTemplateOption(page).locator('xpath=ancestor::*[@tabindex="0"][1]');
 }
 
 /** canonical: workflowCreationModeBlankOption (step 2) */
@@ -169,6 +184,16 @@ export function workflowCreationModeBlankOption(
   workflowType: 'activity' | 'course' | 'program',
 ): Locator {
   return createWorkflowDialog(page).getByText(`Blank ${workflowType}`, { exact: true });
+}
+
+/** TypeSelect option surface (TypeBlock) wrapping workflowCreationModeBlankOption. */
+export function workflowCreationModeBlankOptionBlock(
+  page: Page,
+  workflowType: 'activity' | 'course' | 'program',
+): Locator {
+  return workflowCreationModeBlankOption(page, workflowType).locator(
+    'xpath=ancestor::*[@tabindex="0"][1]',
+  );
 }
 
 /** canonical: workflowProjectSearchView (step 1) */
@@ -191,22 +216,69 @@ export function createWorkflowDialogProjectCards(page: Page): Locator {
   return createWorkflowDialog(page).locator('[data-test-id="project-card"]');
 }
 
+/** FR shared field labels on workflowBlankForm (create stepped form requirements). */
+export const WORKFLOW_BLANK_FORM_VISIBLE_LABELS = {
+  title: 'Title',
+} as const;
+
+/** Product-only / type-varying metadata labels that FR forbids on blank create (do not differ by type). */
+export const WORKFLOW_BLANK_FORM_FORBIDDEN_METADATA_LABELS = [
+  'Duration',
+  'Unit type',
+  'Course number',
+  'Ponderation',
+  'Theory (hrs)',
+  'Practice (hrs)',
+  'Individual work (hrs)',
+  'General education (hrs)',
+  'Specific education (hrs)',
+] as const;
+
+export function workflowBlankDescriptionVisibleLabel(
+  workflowType: 'activity' | 'course' | 'program',
+): string {
+  const typeLabel = workflowType.charAt(0).toUpperCase() + workflowType.slice(1);
+  return `${typeLabel} description`;
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** Visible label text on workflowBlankForm (not accessibility-name inference). */
+export function workflowBlankFormVisibleLabel(page: Page, label: string): Locator {
+  return workflowBlankForm(page).locator('label').filter({
+    hasText: new RegExp(`^${escapeRegExp(label)}([\\s\\u2009]*\\*)?$`),
+  });
+}
+
 /** canonical: workflowTitleField (blank mode step 3) */
 export function workflowTitleField(page: Page): Locator {
   return createWorkflowDialog(page).locator('input[name="title"]');
 }
+
+/** canonical: workflowFormFieldValidationMessage (blank create step 3) */
+export function workflowFormFieldValidationMessage(page: Page, message: string): Locator {
+  return createWorkflowDialog(page).getByText(message, { exact: true });
+}
+
+export const WORKFLOW_CREATE_TITLE_REQUIRED_MESSAGE = 'Title is required';
+export const WORKFLOW_CREATE_TITLE_MAX_LENGTH_MESSAGE =
+  'Title cannot be longer than 200 characters';
 
 /** canonical: workflowBlankForm (blank mode step 3) */
 export function workflowBlankForm(page: Page): Locator {
   return createWorkflowDialog(page).locator('form');
 }
 
-/** canonical: workflowDescriptionField (blank mode step 3) */
+/** canonical: workflowDescriptionField (blank mode step 3) — FR label e.g. 'Activity description'. */
 export function workflowDescriptionField(
   page: Page,
   workflowType: 'activity' | 'course' | 'program',
 ): Locator {
-  return createWorkflowDialog(page).getByLabel(`${workflowType} description`, { exact: true });
+  return createWorkflowDialog(page).getByLabel(workflowBlankDescriptionVisibleLabel(workflowType), {
+    exact: true,
+  });
 }
 
 /** canonical: createWorkflowSubmitButton — label pattern 'Create {workflowType}' */
