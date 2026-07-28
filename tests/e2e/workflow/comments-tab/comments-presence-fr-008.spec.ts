@@ -1,9 +1,9 @@
-import { test, expect } from '../../fixtures';
-import { authenticatedApiRequest } from '../../helpers/api';
+import { test, expect } from '../../../fixtures';
+import { authenticatedApiRequest } from '../../../helpers/api';
 import {
   commentsButtonInSectionHeader,
   sectionHeader,
-} from './edit-section.locators';
+} from '../edit-section.locators';
 import {
   channelUuidByTitle,
   composeComment,
@@ -19,14 +19,14 @@ import {
   openOutcomeCommentsViaHover,
   openSectionCommentsViaHover,
   requireCommentsComposer,
-} from './comments-tab.helpers';
+} from '../comments-tab.helpers';
 import {
   workflowChannelHoverCommentsItem,
   workflowNode,
   workflowNodeHoverCommentsItem,
-} from './workflow-graph.locators';
-import { workflowOutcomeHoverCommentsItem } from './workflow-outcome.locators';
-import { workflowCommentsPresenceIndicator } from '../../shared/locators/workflow';
+} from '../workflow-graph.locators';
+import { workflowOutcomeHoverCommentsItem } from '../workflow-outcome.locators';
+import { workflowCommentsPresenceIndicator } from '../../../shared/locators/workflow';
 
 /**
  * Comments presence indicator — FR-WF-COMMENTS-008.
@@ -68,7 +68,7 @@ async function clearOwnNodeComments(
   expect(deleteResponse.ok()).toBeTruthy();
 }
 
-test.describe('Comments presence indicator (FR-WF-COMMENTS-008)', () => {
+test.describe('Comments tab — presence indicator (FR-WF-COMMENTS-008)', () => {
   test('FR-WF-COMMENTS-008: node indicator follows stored count and remains after viewing', async ({
     page,
     workflow,

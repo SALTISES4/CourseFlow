@@ -1,12 +1,12 @@
-import { test, expect } from '../../fixtures';
-import { commentsTabInSidebar } from './edit-section.locators';
+import { test, expect } from '../../../fixtures';
+import { commentsTabInSidebar } from '../edit-section.locators';
 import {
   gotoOutcomesView,
   openOutcomeCommentsViaHover,
   requireCommentsComposer,
-} from './comments-tab.helpers';
-import { workflowOutcomeHeader } from './workflow-outcome.locators';
-import { workflowRightSidebarCommentsTabContent } from '../../shared/locators/workflow';
+} from '../comments-tab.helpers';
+import { workflowOutcomeHeader } from '../workflow-outcome.locators';
+import { workflowRightSidebarCommentsTabContent } from '../../../shared/locators/workflow';
 
 /**
  * Outcome comments entry paths — FR-WF-COMMENTS-004.

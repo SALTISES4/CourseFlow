@@ -1,15 +1,15 @@
-import { test, expect } from '../../fixtures';
-import { commentsTabInSidebar } from './edit-section.locators';
+import { test, expect } from '../../../fixtures';
+import { commentsTabInSidebar } from '../edit-section.locators';
 import {
   firstWorkflowNodeUuid,
   openNodeCommentsViaHover,
   requireCommentsComposer,
-} from './comments-tab.helpers';
+} from '../comments-tab.helpers';
 import {
   workflowEditNodeForm,
   workflowNodeContent,
-} from './workflow-graph.locators';
-import { workflowRightSidebarCommentsTabContent } from '../../shared/locators/workflow';
+} from '../workflow-graph.locators';
+import { workflowRightSidebarCommentsTabContent } from '../../../shared/locators/workflow';
 
 /**
  * Node comments entry paths — FR-WF-COMMENTS-001.

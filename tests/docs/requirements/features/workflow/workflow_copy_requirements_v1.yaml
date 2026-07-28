@@ -4,7 +4,7 @@
 # Cross-reference:
 #   - tests/docs/requirements/features/shared/context_action_bar_requirements_v1.yaml (FR-CAB-004, FR-CAB-005)
 #   - tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml (workflowTitle on copied workflow—FR-WF-COPY-003)
-#   - tests/docs/requirements/features/workflow/workflow_edit_form_requirements_v1.yaml (workflowTitleField required rule—FR-WF-FORM-002; copied title becomes workflowTitle—FR-WF-COPY-003)
+#   - tests/docs/requirements/features/workflow/workflow_edit_form_requirements_v1.yaml (workflowTitleField title validation—FR-WF-FORM-002; copied title becomes workflowTitle—FR-WF-COPY-003)
 #   - tests/docs/requirements/features/workflow/workflow_create_stepped_form_requirements_v1.yaml (destination project eligibility—FR-WF-CREATE-STEPPER-003)
 #   - tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml (node link preservation vs break on copy—FR-WF-COPY-003; link eligibility—FR-WF-EN-010)
 #   - tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml (cross-project copy link break matches archive link break on node data—FR-WF-ARCH-003)
@@ -416,8 +416,7 @@ requirements:
       - actor edits copyWorkflowTitleField
 
     mainFlow:
-      - copyWorkflowTitleField follows the same required non-empty after trim rule as workflowTitleField in FR-WF-FORM-002
-      - copyWorkflowTitleField value is at most 200 characters
+      - copyWorkflowTitleField follows the same title validation rules as workflowTitleField in FR-WF-FORM-002 (required non-empty after trim; at most 200 characters; same validation message copy)
       - when copyWorkflowTitleField is empty after trim, copyWorkflowFormFieldValidationMessage is visible on copyWorkflowTitleField with copy exactly 'Title is required'
       - when copyWorkflowTitleField value length exceeds 200 characters, copyWorkflowFormFieldValidationMessage is visible on copyWorkflowTitleField with copy exactly 'Title cannot be longer than 200 characters'
       - copyWorkflowDialogSubmitButton stays disabled and not clickable until copyWorkflowTitleField is non-empty after trim and at most 200 characters

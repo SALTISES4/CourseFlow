@@ -1,13 +1,13 @@
-import { test, expect } from '../../fixtures';
+import { test, expect } from '../../../fixtures';
 import {
   commentsButtonInSectionHeader,
   commentsTabInSidebar,
   editSectionForm,
   sectionHeader,
   sectionHoverMenu,
-} from './edit-section.locators';
-import { workflowCommentsTabContent } from '../../shared/locators/workflow';
-import { requireCommentsComposer } from './comments-tab.helpers';
+} from '../edit-section.locators';
+import { workflowCommentsTabContent } from '../../../shared/locators/workflow';
+import { requireCommentsComposer } from '../comments-tab.helpers';
 
 /**
  * Section comments entry paths — FR-WF-COMMENTS-002.

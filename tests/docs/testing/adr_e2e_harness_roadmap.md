@@ -47,7 +47,7 @@ Phases 1–3 are required before broad AI generation from requirement YAML. Phas
 | 1.1 | `globalSetup` — fail fast if manifest missing | Done |
 | 1.2 | `tests/helpers/manifest.ts` — load/validate `workflow.json` | Done |
 | 1.3 | `tests/fixtures/workflow.ts` — `test.extend({ workflow })` | Done |
-| 1.4 | Migrate `edit-section-fr-001-006.spec.ts` to fixtures | Done |
+| 1.4 | Migrate `edit-section-fr-001-012.spec.ts` to fixtures | Done |
 | 1.5 | `just e2e-prepare` — idempotent E2E DB + seed + manifest | Done |
 | 1.6 | Document E2E stack (`django-run-e2e` + `frontend-dev`) in runbook | Done |
 
@@ -69,15 +69,15 @@ workflow.firstSection()
 
 ## Phase 2 — Complete edit-section fixture contract
 
-**Goal:** Deferred FRs in `edit-section-fr-001-006.spec.ts` become generatable and green.
+**Goal:** Deferred FRs in `edit-section-fr-001-012.spec.ts` become generatable and green.
 
 | FR | Fixture / harness need | Spec status |
 |----|------------------------|-------------|
-| FR-SEC-002 | `workflow.blankSection()` + section numbering assertions | `edit-section-fr-phase2.spec.ts` |
-| FR-SEC-004 / 005 | Known section order; count before/after insert/duplicate | `edit-section-fr-phase2.spec.ts` |
-| FR-SEC-006 confirm delete | Delete last titled section (`E2E Section 3`) | `edit-section-fr-phase2.spec.ts` |
+| FR-SEC-002 | `workflow.blankSection()` + section numbering assertions | `edit-section-fr-001-012.spec.ts` |
+| FR-SEC-004 / 005 | Known section order; count before/after insert/duplicate | `edit-section-fr-001-012.spec.ts` |
+| FR-SEC-006 confirm delete | Delete last titled section (`E2E Section 3`) | `edit-section-fr-001-012.spec.ts` |
 | FR-SEC-003 viewer/commenter | `manifest.contributors` — teacher editor, student viewer | viewer spec in phase2 |
-| FR-SEC-001 branch | Sidebar already open — same graph fixture | `edit-section-fr-phase2.spec.ts` |
+| FR-SEC-001 branch | Sidebar already open — same graph fixture | `edit-section-fr-001-012.spec.ts` |
 
 **Backend (Phase 2):**
 

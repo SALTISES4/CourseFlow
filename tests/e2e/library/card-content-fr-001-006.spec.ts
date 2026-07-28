@@ -1,5 +1,10 @@
-import { test, expect } from '@playwright/test';
-import { getPrimaryWorkflow, getProjectWorkflowsPath, loadWorkflowManifest } from '../../helpers/manifest';
+import { test, expect, type Page } from '@playwright/test';
+import {
+  getPrimaryWorkflow,
+  getProjectWorkflowsPath,
+  getWorkflowByType,
+  loadWorkflowManifest,
+} from '../../helpers/manifest';
 import { gotoExplore, gotoLibrary } from '../../helpers/navigation';
 import {
   archiveToggle,
@@ -26,8 +31,10 @@ import {
   keywordSearchField,
   libraryProjectCardByTitle,
   libraryWorkflowCardByTitle,
+  selectFilterOption,
   templatesToggle,
   triggerLibrarySearchAndWait,
+  typeFilter,
   waitForLibraryResultsLoaded,
   workflowTypeChipLabel,
 } from './library.locators';
@@ -41,9 +48,36 @@ import {
  * Auth: chromium project storage state (teacher@courseflow.com).
  */
 
+/**
+ * My library first-lands on typeFilter 'Projects' (FR-LIB-001).
+ * Commit Workflows and optionally keyword-narrow so a workflowCard is visible.
+ */
+async function showLibraryWorkflowCards(
+  page: Page,
+  workflowTitle: string = E2E_FIXTURE_WORKFLOW_TITLE,
+) {
+  await triggerLibrarySearchAndWait(
+    page,
+    () => selectFilterOption(page, typeFilter(page), 'Workflows'),
+    { filters: { contentType: 'workflow' } },
+  );
+  await expect(typeFilter(page)).toHaveText('Workflows');
+  return triggerLibrarySearchAndWait(
+    page,
+    async () => {
+      await keywordSearchField(page).fill(workflowTitle);
+      await keywordSearchField(page).press('Enter');
+    },
+    { filters: { contentType: 'workflow', keyword: workflowTitle } },
+  );
+}
+
 test.describe('My library — card content (FR-CARD-001–006)', () => {
   const manifest = loadWorkflowManifest();
   const workflow = getPrimaryWorkflow(manifest);
+  const courseWorkflow = getWorkflowByType(manifest, 'course');
+  const courseWorkflowTitle =
+    manifest.navigation_linked_workflows?.course.workflow_title ?? 'E2E Course Workflow';
   const projectWorkflowsPath = getProjectWorkflowsPath(manifest);
 
   test.beforeEach(async ({ page }) => {
@@ -102,6 +136,8 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
     });
 
     test('workflow cards show mapped content and layout regions', async ({ page }) => {
+      await showLibraryWorkflowCards(page);
+
       const workflowTypeLabel = workflowTypeChipLabel(workflow.workflow_type);
       const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
       if ((await card.count()) === 0) {
@@ -144,6 +180,8 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
 
   test.describe('FR-CARD-004: workflowCard click destination', () => {
     test('clicking workflow card navigates to workflow graph view', async ({ page }) => {
+      await showLibraryWorkflowCards(page);
+
       const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
       if ((await card.count()) === 0) {
         test.skip(true, 'E2E fixture workflow card not visible on /library.');
@@ -159,9 +197,17 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
 
     test.describe('favourite star reflects API isFavorite', () => {
       test('workflow card shows grey star when API isFavorite is false', async ({ page }) => {
-        const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
+        // Seed favourites the primary activity workflow; course is not favourited.
+        const searchBody = await showLibraryWorkflowCards(page, courseWorkflowTitle);
+        const workflowItem = searchBody.items.find(
+          (item) =>
+            item.uuid === courseWorkflow.workflow_uuid && item.contentType === 'workflow',
+        );
+        expect(workflowItem?.isFavorite).toBe(false);
+
+        const card = libraryWorkflowCardByTitle(page, courseWorkflowTitle);
         if ((await card.count()) === 0) {
-          test.skip(true, 'E2E fixture workflow card not visible on /library.');
+          test.skip(true, 'E2E fixture course workflow card not visible on /library.');
         }
 
         await expectCardFavouriteToggleShowsNotFavourited(card);
@@ -187,6 +233,8 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
       });
 
       test('workflow card shows yellow star when favourited', async ({ page }) => {
+        await showLibraryWorkflowCards(page);
+
         const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
         if ((await card.count()) === 0) {
           test.skip(true, 'E2E fixture workflow card not visible on /library.');
@@ -217,6 +265,8 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
     });
 
     test('workflow card favourite toggle does not change route', async ({ page }) => {
+      await showLibraryWorkflowCards(page);
+
       const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
       if ((await card.count()) === 0) {
         test.skip(true, 'E2E fixture workflow card not visible on /library.');
@@ -248,6 +298,8 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
     });
 
     test('workflow card favourite toggle shows Added to your favourites', async ({ page }) => {
+      await showLibraryWorkflowCards(page);
+
       const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
       if ((await card.count()) === 0) {
         test.skip(true, 'E2E fixture workflow card not visible on /library.');
@@ -259,6 +311,8 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
     });
 
     test('workflow card favourite toggle shows Removed from your favourites', async ({ page }) => {
+      await showLibraryWorkflowCards(page);
+
       const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
       if ((await card.count()) === 0) {
         test.skip(true, 'E2E fixture workflow card not visible on /library.');

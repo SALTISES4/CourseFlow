@@ -219,6 +219,11 @@ export function addNewTagInput(page: Page): Locator {
   return page.getByPlaceholder('Add new tag');
 }
 
+/** canonical: projectTagItem — existing tag row identified by its label value */
+export function projectTagItemByLabel(page: Page, label: string): Locator {
+  return page.getByDisplayValue(label, { exact: true });
+}
+
 /** canonical: projectWorkflowsView — main content region on /project/{id}/workflows */
 export function projectWorkflowsView(page: Page): Locator {
   return page.locator('[data-test-id="project-workflows-view"]');

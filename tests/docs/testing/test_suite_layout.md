@@ -98,7 +98,7 @@ See `adr_ai_test_generation.md` and `locator_contract_policy.md` § Locator file
 | `*.setup.ts` | Setup project steps (e.g. authenticate). |
 | `*.locators.ts` | Locator factories and stable selector constants for one feature or domain. |
 
-Use **domain-prefixed** spec names when helpful (`edit-section-fr-001-006.spec.ts`) for audit trails; otherwise prefer short names plus `describe` blocks for FR IDs.
+Use **domain-prefixed** spec names when helpful (`edit-section-fr-001-012.spec.ts`) for audit trails; otherwise prefer short names plus `describe` blocks for FR IDs.
 
 ## URLs and `baseURL`
 

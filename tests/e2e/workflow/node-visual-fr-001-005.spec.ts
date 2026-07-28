@@ -4,8 +4,16 @@ import {
   hoverWorkflowNode,
   secondWorkflowNodeUuid,
 } from './comments-tab.helpers';
+import { linkNodeWorkflowViaApi, seededLinkedActivityUuid } from './edit-node.helpers';
+import {
+  fetchNodeViaApi,
+  patchNodeMetaViaApi,
+  workflowChannelHeaderColorIndicatorBackgroundColor,
+  workflowNodeBorderBackgroundColor,
+} from './node-visual.helpers';
 import {
   workflowEditNodeForm,
+  workflowEditNodeFormTitleField,
   workflowNode,
   workflowNodeBorder,
   workflowNodeContent,
@@ -14,29 +22,224 @@ import {
   workflowNodeHoverDeleteItem,
   workflowNodeHoverDuplicateItem,
   workflowNodeHoverInsertBelowItem,
+  workflowNodeLinkedWorkflowIndicator,
+  workflowNodeMeta,
+  workflowNodeMetaContextTag,
+  workflowNodeMetaIconTags,
+  workflowNodeMetaTaskTag,
+  workflowNodeMetaTimeTag,
+  workflowNodeTitle,
 } from './workflow-graph.locators';
 
 /**
  * Workflow node visual — FR-WF-NODE-001 through FR-WF-NODE-005 (partial).
  * Requirements: workflow_node_visual_requirements_v1.yaml
+ * Design evidence: FIGMA-WF-NODE-WORKFLOW-VIEW, FIGMA-WF-NODE-LINKED-WORKFLOW-LINK
  */
 
 test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
-  test.beforeEach(async ({ page, workflow }) => {
+  test('FR-WF-NODE-001: workflowNode shows title, content, and channel-colored border', async ({
+    page,
+    workflow,
+  }) => {
     await page.goto(workflow.path);
+    const nodeUuid = await firstWorkflowNodeUuid(page);
+    const node = await fetchNodeViaApi(page, nodeUuid);
+    if (!node.channelUuid) {
+      throw new Error(`Expected channelUuid on node ${nodeUuid}`);
+    }
+
+    await expect(workflowNode(page, nodeUuid)).toBeVisible();
+    await expect(workflowNodeContent(page, nodeUuid)).toBeVisible();
+    await expect(workflowNodeTitle(page, nodeUuid)).toBeVisible();
+    await expect(workflowNodeBorder(page, nodeUuid)).toBeVisible();
+
+    const borderHeight = await workflowNodeBorder(page, nodeUuid).evaluate(
+      (el) => el.getBoundingClientRect().height,
+    );
+    expect(borderHeight).toBeGreaterThan(0);
+
+    // FR-CHAN-003 — border fill matches the node's channel colour stripe.
+    const nodeColor = await workflowNodeBorderBackgroundColor(page, nodeUuid);
+    const channelColor = await workflowChannelHeaderColorIndicatorBackgroundColor(
+      page,
+      node.channelUuid,
+    );
+    expect(nodeColor).toBe(channelColor);
+
+    // Sidebar-only fields are not shown on the canvas node.
+    await expect(workflowNodeContent(page, nodeUuid).getByText(/^Description$/i)).toHaveCount(0);
+    await expect(workflowNodeContent(page, nodeUuid).getByText(/^Tags$/i)).toHaveCount(0);
+    await expect(workflowNodeContent(page, nodeUuid).getByText(/^Credits$/i)).toHaveCount(0);
+    await expect(workflowNodeContent(page, nodeUuid).getByText(/^Ponderation$/i)).toHaveCount(0);
+    await expect(
+      workflowNodeContent(page, nodeUuid).getByText(/^Specific education$/i),
+    ).toHaveCount(0);
+
+    // Debug uuid/row chrome is not part of FR-WF-NODE-001.
+    await expect(workflowNode(page, nodeUuid).getByText(new RegExp(`#${nodeUuid}`))).toHaveCount(0);
   });
 
-  test('FR-WF-NODE-001: workflowNode renders color band, title, and debug row label', async ({
+  test('FR-WF-NODE-001: workflowNodeTitle matches edit-form title including Untitled node fallback', async ({
     page,
+    workflow,
   }) => {
+    await page.goto(workflow.path);
     const nodeUuid = await firstWorkflowNodeUuid(page);
-    const node = workflowNode(page, nodeUuid);
+    const uniqueTitle = `E2E Node Title ${Date.now()}`;
 
-    await expect(node).toBeVisible();
-    await expect(workflowNodeContent(page, nodeUuid)).toBeVisible();
-    await expect(node.getByText(new RegExp(`#${nodeUuid}`))).toBeVisible();
-    const borderHeight = await workflowNodeBorder(page, nodeUuid).evaluate((el) => el.getBoundingClientRect().height);
-    expect(borderHeight).toBeGreaterThan(0);
+    try {
+      await patchNodeMetaViaApi(page, nodeUuid, { title: uniqueTitle });
+      await page.reload();
+      await expect(workflowNodeTitle(page, nodeUuid)).toHaveText(uniqueTitle);
+
+      await workflowNodeContent(page, nodeUuid).click();
+      await expect(workflowEditNodeForm(page)).toBeVisible();
+      await expect(workflowEditNodeFormTitleField(page)).toHaveValue(uniqueTitle);
+
+      await patchNodeMetaViaApi(page, nodeUuid, { title: '' });
+      await page.reload();
+      await expect(workflowNodeTitle(page, nodeUuid)).toHaveText('Untitled node');
+    } finally {
+      await patchNodeMetaViaApi(page, nodeUuid, { title: '' });
+    }
+  });
+
+  test('FR-WF-NODE-001: activity meta shows context/task icons and duration time tag when set', async ({
+    page,
+    workflow,
+  }) => {
+    await page.goto(workflow.path);
+    const nodeUuid = await firstWorkflowNodeUuid(page);
+
+    try {
+      // Solo (1) + Gather Information (1); duration 2 with unit index 1 (non-zero unit required).
+      await patchNodeMetaViaApi(page, nodeUuid, {
+        contextClassification: 1,
+        taskClassification: 1,
+        timeRequired: 2,
+        timeUnits: 1,
+      });
+      await page.reload();
+
+      await expect(workflowNodeMeta(page, nodeUuid)).toBeVisible();
+      await expect(workflowNodeMetaIconTags(page, nodeUuid)).toHaveCount(2);
+      await expect(workflowNodeMetaContextTag(page, nodeUuid)).toBeVisible();
+      await expect(workflowNodeMetaTaskTag(page, nodeUuid)).toBeVisible();
+      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toBeVisible();
+      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toContainText(/\d/);
+
+      // Context/task left-aligned; time right-aligned within workflowNodeMeta.
+      const contextBox = await workflowNodeMetaContextTag(page, nodeUuid).boundingBox();
+      const timeBox = await workflowNodeMetaTimeTag(page, nodeUuid).boundingBox();
+      expect(contextBox).toBeTruthy();
+      expect(timeBox).toBeTruthy();
+      expect(contextBox!.x).toBeLessThan(timeBox!.x);
+    } finally {
+      await patchNodeMetaViaApi(page, nodeUuid, {
+        contextClassification: 0,
+        taskClassification: 0,
+        timeRequired: 0,
+        timeUnits: 0,
+      });
+    }
+  });
+
+  test('FR-WF-NODE-001: workflowNodeMeta is absent when context, task, and time are unset', async ({
+    page,
+    workflow,
+  }) => {
+    await page.goto(workflow.path);
+    const nodeUuid = await firstWorkflowNodeUuid(page);
+
+    await patchNodeMetaViaApi(page, nodeUuid, {
+      contextClassification: 0,
+      taskClassification: 0,
+      timeRequired: 0,
+      timeUnits: 0,
+    });
+    await page.reload();
+
+    await expect(workflowNodeMeta(page, nodeUuid)).toHaveCount(0);
+    await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toHaveCount(0);
+    await expect(workflowNodeLinkedWorkflowIndicator(page, nodeUuid)).toHaveCount(0);
+  });
+
+  test('FR-WF-NODE-001: linked course node shows Linked activity indicator between title and meta', async ({
+    page,
+    workflow,
+  }) => {
+    const course = workflow.workflowByType('course');
+    const activityUuid = seededLinkedActivityUuid(workflow);
+
+    await page.goto(course.workflow_path);
+    const nodeUuid = await firstWorkflowNodeUuid(page);
+
+    try {
+      await linkNodeWorkflowViaApi(page, nodeUuid, activityUuid);
+      await patchNodeMetaViaApi(page, nodeUuid, {
+        contextClassification: 101,
+        taskClassification: 0,
+        timeRequired: 3,
+        timeUnits: 1,
+      });
+      await page.reload();
+
+      const link = workflowNodeLinkedWorkflowIndicator(page, nodeUuid);
+      await expect(link).toBeVisible();
+      await expect(link).toHaveText('Linked activity');
+
+      const titleBox = await workflowNodeTitle(page, nodeUuid).boundingBox();
+      const linkBox = await link.boundingBox();
+      const metaBox = await workflowNodeMeta(page, nodeUuid).boundingBox();
+      expect(titleBox).toBeTruthy();
+      expect(linkBox).toBeTruthy();
+      expect(metaBox).toBeTruthy();
+      expect(titleBox!.y).toBeLessThan(linkBox!.y);
+      expect(linkBox!.y).toBeLessThanOrEqual(metaBox!.y + 2);
+
+      // Course parent: context icon may show; task tag does not apply.
+      await expect(workflowNodeMetaIconTags(page, nodeUuid)).toHaveCount(1);
+      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toBeVisible();
+    } finally {
+      await patchNodeMetaViaApi(page, nodeUuid, {
+        contextClassification: 0,
+        timeRequired: 0,
+        timeUnits: 0,
+      });
+      await linkNodeWorkflowViaApi(page, nodeUuid, activityUuid);
+    }
+  });
+
+  test('FR-WF-NODE-001: linked program node shows Linked course and no context/task tags', async ({
+    page,
+    workflow,
+  }) => {
+    const program = workflow.workflowByType('program');
+    const courseUuid =
+      workflow.manifest.navigation_linked_workflows?.course.workflow_uuid ??
+      workflow.workflowByType('course').workflow_uuid;
+
+    await page.goto(program.workflow_path);
+    const nodeUuid = await firstWorkflowNodeUuid(page);
+
+    try {
+      await linkNodeWorkflowViaApi(page, nodeUuid, courseUuid);
+      await patchNodeMetaViaApi(page, nodeUuid, {
+        timeRequired: 4,
+        timeUnits: 1,
+      });
+      await page.reload();
+
+      const link = workflowNodeLinkedWorkflowIndicator(page, nodeUuid);
+      await expect(link).toBeVisible();
+      await expect(link).toHaveText('Linked course');
+      await expect(workflowNodeMetaIconTags(page, nodeUuid)).toHaveCount(0);
+      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toBeVisible();
+    } finally {
+      await patchNodeMetaViaApi(page, nodeUuid, { timeRequired: 0, timeUnits: 0 });
+      await linkNodeWorkflowViaApi(page, nodeUuid, null);
+    }
   });
 });
 
