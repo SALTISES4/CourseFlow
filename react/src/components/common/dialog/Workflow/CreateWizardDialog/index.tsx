@@ -4,12 +4,12 @@ import {
   createWorkflowMutation,
   listWorkflowsQueryKey
 } from '@cf/api/gen/@tanstack/react-query.gen'
+import WorkflowForm, {
+  WorkflowFormType
+} from '@cf/components/common/dialog/Workflow/components/WorkflowForm'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
-import WorkflowForm, {
-  WorkflowFormType
-} from '@cfComponents/dialog/Workflow/componnets/WorkflowForm'
 import ProjectSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/ProjectSearch'
 import TemplateSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TemplateSearch'
 import TypeSelect from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TypeSelect'

@@ -5,14 +5,14 @@ import {
   listWorkflowsQueryKey,
   updateWorkflowMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
+import {
+  WorkflowFormType,
+  workflowSchema
+} from '@cf/components/common/dialog/Workflow/components/WorkflowForm'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
-import {
-  WorkflowFormType,
-  workflowSchema
-} from '@cfComponents/dialog/Workflow/componnets/WorkflowForm'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
