@@ -7,14 +7,13 @@ import {
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
-import WorkflowForm from '@cfComponents/dialog/Workflow/componnets/WorkflowForm'
+import WorkflowForm, {
+  WorkflowFormType
+} from '@cfComponents/dialog/Workflow/componnets/WorkflowForm'
 import ProjectSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/ProjectSearch'
 import TemplateSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TemplateSearch'
 import TypeSelect from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TypeSelect'
-import {
-  CreateResourceOptions,
-  WorkflowFormType
-} from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
+import { CreateResourceOptions } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -365,9 +364,7 @@ const CreateWizardDialog = () => {
       fullWidth
       maxWidth="lg"
       onClose={onCloseHandler}
-      TransitionProps={{
-        onExited: resetState
-      }}
+      TransitionProps={{ onExited: resetState }}
     >
       <DialogTitle>{steps[state.step].title}</DialogTitle>
       <DialogContent dividers>
