@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 
-import { cardTitleText } from '../shared/locators/cards';
+import { cardTitleText, ensureCardFavourited } from '../shared/locators/cards';
 import {
   keywordSearchField,
   expectLibraryCardTitles,
@@ -175,8 +175,13 @@ export async function expectOwnershipFilterOwnedNarrowsProjectWorkflowsResults(
 /** FR-PROJ-WF-003 — favouritesToggle restricts resultsRegion to favourited workflow cards in project scope. */
 export async function expectFavouritesToggleNarrowsProjectWorkflowsResults(
   page: Page,
-): Promise<boolean> {
+): Promise<void> {
   const favouritesToggle = projectWorkflowsFavouritesToggle(page);
+  const cards = libraryCards(page);
+  await expect(cards.first()).toBeVisible();
+  // Favourite state is mutable across e2e specs — ensure at least one in-project card is favourited.
+  await ensureCardFavourited(page, cards.first());
+
   const baselineTitles = await libraryCardTitles(page).allInnerTexts();
   const baselineCount = baselineTitles.length;
   expect(baselineCount).toBeGreaterThan(0);
@@ -189,13 +194,7 @@ export async function expectFavouritesToggleNarrowsProjectWorkflowsResults(
   await expect(favouritesToggle).toHaveClass(/MuiButton-contained/);
 
   const favouritedOnlyCount = filteredResponse.items.length;
-  if (favouritedOnlyCount === 0) {
-    await favouritesToggle.click();
-    await expect(favouritesToggle).not.toHaveClass(/MuiButton-contained/);
-    await expectLibraryCardTitles(page, baselineTitles);
-    return false;
-  }
-
+  expect(favouritedOnlyCount).toBeGreaterThan(0);
   expect(favouritedOnlyCount).toBeLessThanOrEqual(baselineCount);
   await expectExploreResultsContainOnlyFavouritedCards(page);
 
@@ -205,7 +204,6 @@ export async function expectFavouritesToggleNarrowsProjectWorkflowsResults(
 
   const restoredCount = await libraryCards(page).count();
   expect(restoredCount).toBeGreaterThanOrEqual(favouritedOnlyCount);
-  return true;
 }
 
 /** FR-PROJ-WF-004 — keyword search narrows resultsRegion to matching workflow card titles. */

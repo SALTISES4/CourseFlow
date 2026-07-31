@@ -96,7 +96,7 @@ locatorMappings:
     strategy: "{cardFooterRegion} favourite control"
     confidence: inferred
   cardFooterRegion:
-    strategy: "{projectCard|workflowCard} footer element containing cardFooterTagsRegion and cardFavouriteToggle"
+    strategy: "{projectCard|workflowCard} footer element containing cardFooterTagsRegion and, when not archived, cardFavouriteToggle"
     confidence: inferred
   cardFooterTagsRegion:
     strategy: "{cardFooterRegion} chip group excluding cardFavouriteToggle"
@@ -242,8 +242,11 @@ locatorMappings:
   deleteWorkflowPermanentlyModal:
     strategy: "dialog after Delete permanently on archived workflowCard; evidence FIGMA-LIB-MODAL-DELETE-WORKFLOW"
     confidence: inferred
+  deleteWorkflowPermanentlyModalCancelButton:
+    strategy: "{deleteWorkflowPermanentlyModal} button with label 'Cancel'"
+    confidence: inferred
   deleteWorkflowPermanentlyModalConfirmButton:
-    strategy: "{deleteWorkflowPermanentlyModal} primary confirm button (label per FIGMA-LIB-MODAL-DELETE-WORKFLOW)"
+    strategy: "{deleteWorkflowPermanentlyModal} button with label 'Delete workflow'"
     confidence: inferred
   disciplineFilter:
     strategy: "{exploreFilterToolbar} multiselect with placeholder 'Discipline'"
@@ -847,6 +850,9 @@ locatorMappings:
     confidence: inferred
   restoreParentProjectModal:
     strategy: "dialog after Restore on archived workflowCard; evidence FIGMA-LIB-RESTORE-WORKFLOW"
+    confidence: inferred
+  restoreParentProjectModalCancelButton:
+    strategy: "{restoreParentProjectModal} button with label 'Cancel'"
     confidence: inferred
   restoreParentProjectModalRestoreProjectButton:
     strategy: "{restoreParentProjectModal} button with label 'Restore project'"

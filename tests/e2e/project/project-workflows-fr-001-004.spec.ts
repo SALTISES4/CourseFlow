@@ -125,8 +125,7 @@ test.describe('Project workflows — calibration (FR-PROJ-WF-001-004)', () => {
       page,
     }) => {
       await expect(projectWorkflowCards(page)).not.toHaveCount(0);
-      const narrowed = await expectFavouritesToggleNarrowsProjectWorkflowsResults(page);
-      expect(narrowed).toBe(true);
+      await expectFavouritesToggleNarrowsProjectWorkflowsResults(page);
     });
 
     test('selecting one workflow type narrows workflow results to that cardTypeChip', async ({

@@ -313,11 +313,21 @@ test.describe('My library — archived lifecycle (FR-LIB-006)', () => {
         has: page.getByText('Permanently delete project', { exact: true }),
       });
       await expect(dialog).toBeVisible();
+      await expect(dialog.getByRole('heading', { name: 'Permanently delete project', exact: true })).toBeVisible();
+      await expect(
+        dialog.getByText('This project will be permanently deleted and cannot be recovered.', {
+          exact: true,
+        }),
+      ).toBeVisible();
+      await expect(dialog.getByRole('button', { name: 'Cancel', exact: true })).toBeVisible();
+      await expect(dialog.getByRole('button', { name: 'Delete project', exact: true })).toBeVisible();
+
       await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
       await expect(dialog).toHaveCount(0);
       await expect(card).toBeVisible();
 
       await projectCardDeletePermanentlyButton(card).click();
+      await expect(dialog).toBeVisible();
       await triggerLifecycleMutationAndWaitForRefresh(
         page,
         'DELETE',
@@ -357,7 +367,7 @@ test.describe('My library — archived lifecycle (FR-LIB-006)', () => {
     }
   });
 
-  test('restoring an archived workflow under an archived parent restores the parent', async ({
+  test('restoreParentProjectModal supports cancel and confirm when parent is archived', async ({
     page,
   }) => {
     const fixture = await createArchivedProjectFixture(page, 'restore parent', {
@@ -374,7 +384,26 @@ test.describe('My library — archived lifecycle (FR-LIB-006)', () => {
         has: page.getByText('Restore parent project', { exact: true }),
       });
       await expect(dialog).toBeVisible();
+      await expect(
+        dialog.getByRole('heading', { name: 'Restore parent project', exact: true }),
+      ).toBeVisible();
+      await expect(
+        dialog.getByText(
+          'This workflow belongs to an archived project. Restore the project and all of its workflows?',
+          { exact: true },
+        ),
+      ).toBeVisible();
+      await expect(dialog.getByRole('button', { name: 'Cancel', exact: true })).toBeVisible();
+      await expect(
+        dialog.getByRole('button', { name: 'Restore project', exact: true }),
+      ).toBeVisible();
 
+      await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+      await expect(dialog).toHaveCount(0);
+      await expect(card).toBeVisible();
+
+      await workflowCardRestoreButton(card).click();
+      await expect(dialog).toBeVisible();
       await triggerLifecycleMutationAndWaitForRefresh(
         page,
         'POST',
@@ -392,7 +421,7 @@ test.describe('My library — archived lifecycle (FR-LIB-006)', () => {
     }
   });
 
-  test('owner permanently deletes an archived workflow even when its parent is archived', async ({
+  test('workflow permanent-delete confirmation supports cancel and confirm', async ({
     page,
   }) => {
     const fixture = await createArchivedProjectFixture(page, 'delete workflow', {
@@ -409,7 +438,25 @@ test.describe('My library — archived lifecycle (FR-LIB-006)', () => {
         has: page.getByText('Permanently delete workflow', { exact: true }),
       });
       await expect(dialog).toBeVisible();
+      await expect(
+        dialog.getByRole('heading', { name: 'Permanently delete workflow', exact: true }),
+      ).toBeVisible();
+      await expect(
+        dialog.getByText('This workflow will be permanently deleted and cannot be recovered.', {
+          exact: true,
+        }),
+      ).toBeVisible();
+      await expect(dialog.getByRole('button', { name: 'Cancel', exact: true })).toBeVisible();
+      await expect(
+        dialog.getByRole('button', { name: 'Delete workflow', exact: true }),
+      ).toBeVisible();
 
+      await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+      await expect(dialog).toHaveCount(0);
+      await expect(card).toBeVisible();
+
+      await workflowCardDeletePermanentlyButton(card).click();
+      await expect(dialog).toBeVisible();
       await triggerLifecycleMutationAndWaitForRefresh(
         page,
         'DELETE',

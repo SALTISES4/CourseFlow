@@ -129,38 +129,86 @@ test.describe('Home dashboard — calibration (FR-HOME-001-004)', () => {
     });
   });
 
-  test('FR-HOME-003: recent projects section shows 1–4 project cards only (no workflow cards)', async ({
-    page,
-  }) => {
-    const recentTitle = homeRecentProjectsTitle(page);
-    await expect(recentTitle).toBeVisible();
-    await expect(recentTitle).toHaveText('Recent projects');
-    await expect(homeViewAllProjectsLink(page)).toBeVisible();
-    await expect(homeViewAllProjectsLink(page)).toHaveAttribute('href', /\/library\/?$/);
+  test.describe('FR-HOME-003: recent projects section', () => {
+    test('shows title and View all projects link that routes to /library', async ({ page }) => {
+      const recentTitle = homeRecentProjectsTitle(page);
+      await expect(recentTitle).toBeVisible();
+      await expect(recentTitle).toHaveText('Recent projects');
 
-    const projectCards = homeRecentProjectsProjectCards(page);
-    const workflowCards = homeRecentProjectsWorkflowCards(page);
-    const sectionCards = homeRecentProjectsCards(page);
+      const link = homeViewAllProjectsLink(page);
+      await expect(link).toBeVisible();
+      await expect(link).toHaveText('View all projects');
+      await expect(link).toHaveAttribute('href', /\/library\/?$/);
 
-    // FR-HOME-003 — homeRecentProjectsSection includes only projectCard instances.
-    await expect(workflowCards).toHaveCount(0);
+      await link.click();
+      await expect(page).toHaveURL(/\/library\/?$/);
+      await waitForLibraryResultsLoaded(page);
+    });
 
-    const expectedRecentProjects = getRecentHomeProjects(manifest).slice(0, 4);
-    await expect(projectCards).toHaveCount(4);
-    await expect(sectionCards).toHaveCount(4);
+    test('shows 1–4 project cards only (no workflow cards)', async ({ page }) => {
+      const projectCards = homeRecentProjectsProjectCards(page);
+      const workflowCards = homeRecentProjectsWorkflowCards(page);
+      const sectionCards = homeRecentProjectsCards(page);
 
-    for (let i = 0; i < expectedRecentProjects.length; i++) {
-      const card = projectCards.nth(i);
-      await expect(card).toBeVisible();
-      await expect(cardTitleText(card)).toHaveText(expectedRecentProjects[i]!.title);
-    }
+      // FR-HOME-003 — homeRecentProjectsSection includes only projectCard instances.
+      await expect(workflowCards).toHaveCount(0);
 
-    await expect(
-      homeRecentProjectsSection(page).getByRole('heading', {
-        name: manifest.archived_home_project.title,
-        exact: true,
-      }),
-    ).toHaveCount(0);
+      const expectedRecentProjects = getRecentHomeProjects(manifest).slice(0, 4);
+      await expect(projectCards).toHaveCount(4);
+      await expect(sectionCards).toHaveCount(4);
+
+      for (let i = 0; i < expectedRecentProjects.length; i++) {
+        const card = projectCards.nth(i);
+        await expect(card).toBeVisible();
+        await expect(cardTitleText(card)).toHaveText(expectedRecentProjects[i]!.title);
+      }
+
+      await expect(
+        homeRecentProjectsSection(page).getByRole('heading', {
+          name: manifest.archived_home_project.title,
+          exact: true,
+        }),
+      ).toHaveCount(0);
+    });
+
+    test('hides recent projects section when library has no non-archived projects', async ({
+      page,
+    }) => {
+      await page.route('**/api/library/search', async (route) => {
+        const body = route.request().postDataJSON() as {
+          pagination?: { page?: number; resultsPerPage?: number };
+        };
+        const pageIndex = body.pagination?.page ?? 0;
+        const resultsPerPage = body.pagination?.resultsPerPage ?? 4;
+
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            items: [],
+            meta: {
+              totalResults: 0,
+              pageCount: 0,
+              currentPage: pageIndex,
+              resultsPerPage,
+              appliedFilters: {},
+              allowed: { disciplines: [] },
+            },
+          }),
+        });
+      });
+
+      await page.reload();
+      await expect(homeErrorState(page)).toBeHidden({ timeout: 15_000 });
+      await expect(homeTemplatesSectionTitle(page)).toBeVisible({ timeout: 15_000 });
+
+      await expect(homeRecentProjectsSection(page)).toHaveCount(0);
+      await expect(homeRecentProjectsTitle(page)).toHaveCount(0);
+      await expect(page.getByRole('link', { name: 'View all projects', exact: true })).toHaveCount(
+        0,
+      );
+      await expect(homeTemplatesSectionTitle(page)).toHaveText('Get started with templates');
+    });
   });
 
   test.describe('FR-HOME-004: templates section', () => {
@@ -176,25 +224,22 @@ test.describe('Home dashboard — calibration (FR-HOME-001-004)', () => {
       }
     });
 
-    test('homeViewAllTemplatesLink is visible and routes to Explore', async ({ page }) => {
-      const link = homeViewAllTemplatesLink(page);
-      await expect(link).toBeVisible();
-      await expect(link).toHaveAttribute('href', /\/explore\/?$/);
-    });
-
-    test('homeViewAllTemplatesLink navigates to Explore with templatesToggle active', async ({
+    test('homeViewAllTemplatesLink is visible and navigates to Explore with templatesToggle active', async ({
       page,
     }) => {
-      await expect(homeViewAllTemplatesLink(page)).toBeVisible();
-      await homeViewAllTemplatesLink(page).click();
+      const link = homeViewAllTemplatesLink(page);
+      await expect(link).toBeVisible();
+      await expect(link).toHaveText('View all templates');
+      await expect(link).toHaveAttribute('href', /\/explore\/?$/);
 
+      await link.click();
       await expect(page).toHaveURL(/\/explore\/?$/);
       await waitForLibraryResultsLoaded(page);
       await expect(templatesToggle(page)).toBeVisible();
       await expect(templatesToggle(page)).toHaveClass(/MuiButton-contained/);
     });
 
-    test('homeTemplatesSection shows 1–4 workflow template cards only (no project cards)', async ({
+    test('homeTemplatesSection shows 1–4 workflow template cards', async ({
       page,
     }) => {
       const workflowCards = homeTemplatesWorkflowCards(page);

@@ -1,4 +1,8 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
+import {
+  cleanupLibraryLifecycleFixture,
+  createArchivedWorkflowFixture,
+} from '../../helpers/library-lifecycle';
 import {
   getPrimaryWorkflow,
   getProjectWorkflowsPath,
@@ -8,6 +12,7 @@ import {
 import { gotoExplore, gotoLibrary } from '../../helpers/navigation';
 import {
   archiveToggle,
+  cardArchivedChip,
   cardChipWithLabel,
   cardDescriptionText,
   cardFavouriteToggle,
@@ -29,13 +34,18 @@ import {
   E2E_FIXTURE_WORKFLOW_TITLE,
   expectFollowsInDocumentOrder,
   keywordSearchField,
+  libraryCardByTitle,
   libraryProjectCardByTitle,
   libraryWorkflowCardByTitle,
+  projectCardDeletePermanentlyButton,
+  projectCardRestoreButton,
   selectFilterOption,
   templatesToggle,
   triggerLibrarySearchAndWait,
   typeFilter,
   waitForLibraryResultsLoaded,
+  workflowCardDeletePermanentlyButton,
+  workflowCardRestoreButton,
   workflowTypeChipLabel,
 } from './library.locators';
 
@@ -70,6 +80,37 @@ async function showLibraryWorkflowCards(
     },
     { filters: { contentType: 'workflow', keyword: workflowTitle } },
   );
+}
+
+async function showArchivedProjects(page: Page): Promise<void> {
+  await triggerLibrarySearchAndWait(page, () => archiveToggle(page).click(), {
+    filters: { contentType: 'project', isArchived: true },
+  });
+}
+
+async function showArchivedWorkflows(page: Page): Promise<void> {
+  await triggerLibrarySearchAndWait(
+    page,
+    () => selectFilterOption(page, typeFilter(page), 'Workflows'),
+    { filters: { contentType: 'workflow' } },
+  );
+  await triggerLibrarySearchAndWait(page, () => archiveToggle(page).click(), {
+    filters: { contentType: 'workflow', isArchived: true },
+  });
+}
+
+/** FR-CARD-006 / FR-LIB-006 — Owner lifecycle actions are opacity-hidden until card hover. */
+async function expectOwnerLifecycleActionsRevealedOnHover(
+  card: Locator,
+  restoreButton: Locator,
+  deleteButton: Locator,
+): Promise<void> {
+  const actions = card.locator('.library-lifecycle-actions');
+  await expect(actions).toHaveCSS('opacity', '0');
+  await card.hover();
+  await expect(actions).toHaveCSS('opacity', '1');
+  await expect(restoreButton).toBeVisible();
+  await expect(deleteButton).toBeVisible();
 }
 
 test.describe('My library — card content (FR-CARD-001–006)', () => {
@@ -325,20 +366,49 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
   });
 
   test.describe('FR-CARD-006: archived projectCard and workflowCard', () => {
-    // When e2e seed includes archived rows and archiveToggle is on: assert cardArchivedChip,
-    // card-body click does not navigate (FR-CARD-003/004), and cardFavouriteToggle is non-interactive.
-    test('archived cards show Archived chip and card body does not browse workspace', async ({ page }) => {
-      if ((await archiveToggle(page).count()) === 0) {
-        test.skip(
-          true,
-          'archiveToggle not wired on /library — enable archiveFilter in MyLibrary config and add archived e2e seed.',
-        );
-      }
+    test('archived projectCard shows Archived chip, no favourite, Owner hover restore/delete, and card body does not browse', async ({
+      page,
+    }) => {
+      await showArchivedProjects(page);
 
-      test.skip(
-        true,
-        'FR-CARD-006 needs archived project/workflow rows in e2e seed (see FR-LIB-006).',
+      const card = libraryCardByTitle(page, manifest.archived_home_project.title);
+      await expect(card).toBeVisible();
+      await expect(card).toHaveAttribute('data-test-id', 'project-card');
+      await expect(cardArchivedChip(card)).toBeVisible();
+      await expect(cardFavouriteToggle(card)).toHaveCount(0);
+      await expectOwnerLifecycleActionsRevealedOnHover(
+        card,
+        projectCardRestoreButton(card),
+        projectCardDeletePermanentlyButton(card),
       );
+
+      await cardTitleText(card).click();
+      await expect(page).toHaveURL(/\/library\/?$/);
+    });
+
+    test('archived workflowCard shows Archived chip, no favourite, Owner hover restore/delete, and card body does not browse', async ({
+      page,
+    }) => {
+      const fixture = await createArchivedWorkflowFixture(page, 'fr-card-006');
+
+      try {
+        await showArchivedWorkflows(page);
+        const card = libraryCardByTitle(page, fixture.workflowTitle!);
+        await expect(card).toBeVisible();
+        await expect(card).toHaveAttribute('data-test-id', 'workflow-card');
+        await expect(cardArchivedChip(card)).toBeVisible();
+        await expect(cardFavouriteToggle(card)).toHaveCount(0);
+        await expectOwnerLifecycleActionsRevealedOnHover(
+          card,
+          workflowCardRestoreButton(card),
+          workflowCardDeletePermanentlyButton(card),
+        );
+
+        await cardTitleText(card).click();
+        await expect(page).toHaveURL(/\/library\/?$/);
+      } finally {
+        await cleanupLibraryLifecycleFixture(page, fixture);
+      }
     });
   });
 });

@@ -251,8 +251,9 @@ export function projectWorkflowsTemplatesToggle(page: Page): Locator {
 }
 
 export function projectWorkflowsOwnershipFilter(page: Page): Locator {
+  // Active state includes nested close control in the accessible name ("Owned close").
   return projectWorkflowsFilterToolbar(page).getByRole('button', {
-    name: /^(Ownership|All|Owned|Shared( with me)?)$/,
+    name: /^(Ownership|All|Owned|Shared( with me)?)/,
   });
 }
 

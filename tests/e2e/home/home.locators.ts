@@ -73,8 +73,12 @@ export function homeRecentProjectsCards(page: Page): Locator {
   return homeRecentProjectsSection(page).locator('[data-test-id$="-card"]');
 }
 
+/** canonical: homeViewAllProjectsLink */
 export function homeViewAllProjectsLink(page: Page): Locator {
-  return page.getByRole('link', { name: HOME_VIEW_ALL_PROJECTS, exact: true });
+  return homeRecentProjectsSection(page).getByRole('link', {
+    name: HOME_VIEW_ALL_PROJECTS,
+    exact: true,
+  });
 }
 
 /** canonical: homeViewAllTemplatesLink */
