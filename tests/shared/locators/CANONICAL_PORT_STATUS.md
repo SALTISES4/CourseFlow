@@ -35,10 +35,9 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 - `tests/e2e/workflow/comments-tab/` — FR-WF-COMMENTS-001–008 (`comments-tab-*.spec.ts`, `comments-presence-fr-008.spec.ts`; helpers remain `comments-tab.helpers.ts`)
 - `tests/e2e/workflow/right-sidebar-fr-001-004.spec.ts` — FR-WF-RS-001–004 (partial)
 - `tests/e2e/workflow/workflow-overview.locators.ts` — workflowOverviewView, workflowMetadata* (partial)
-- `tests/e2e/workflow/workflow-overview-fr-001-002.spec.ts` — FR-WF-OV-001/002 (activity, partial)
+- `tests/e2e/workflow/workflow-overview-fr-001-007.spec.ts` — FR-WF-OV-001–007 (parent `workflow-overview-fr-001-007`)
 - `tests/e2e/workflow/edit-node-fr-001-007.spec.ts` — FR-WF-EN-001–011 (+ FR-WF-EN-012 description; link dialog, tags catalog, commenter/viewer)
 - `tests/e2e/workflow/edit-channel-fr-001-009.spec.ts` — FR-CHAN-001–007, FR-CHAN-009 (004–006 / 009 serial, pristine)
-- `tests/e2e/workflow/workflow-overview-fr-003.spec.ts` — FR-WF-OV-003 (deferred)
 - `tests/e2e/workflow/node-visual-fr-001-005.spec.ts` — FR-WF-NODE-001–005 (001: title/border/meta icons/duration/linked indicator; 003 deferred)
 - `tests/e2e/workflow/edit-outcome-fr-004.spec.ts` — FR-WF-EO-004
 - `tests/e2e/workflow/add-tab-fr-001-006.spec.ts` — FR-WF-ADD-001–006 (004–006 pristine)
@@ -47,7 +46,6 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 - `tests/e2e/workflow/duplicate-node-fr-001.spec.ts` — FR-WF-DUP-001 (serial, pristine)
 - `tests/e2e/workflow/node-hover-fr-002-005.spec.ts` — FR-WF-NODE-005, FR-WF-DUP-002/003 (serial, section 3)
 - `tests/e2e/workflow/outcome-duplicate-delete-fr-009-014.spec.ts` — FR-WF-EO-009–013 (serial)
-- `tests/e2e/workflow/workflow-overview-fr-004-007.spec.ts` — FR-WF-OV-004–007 (deferred)
 - `tests/e2e/workflow/workflow-graph.locators.ts` — workflowNode*, workflowChannel*, edit form headings
 - `tests/e2e/workflow/workflow.locators.ts` — workflow header/tab shell uiObjects
 

@@ -53,7 +53,7 @@ uiObjectDefinitions:
   projectCardDeletePermanentlyButton:
     meaning: Delete permanently action on an archived projectCard.
   deleteProjectPermanentlyModal:
-    meaning: Confirmation modal for permanently deleting an archived project.
+    meaning: Confirmation modal for permanently deleting an archived project; title 'Permanently delete project'; body 'This project will be permanently deleted and cannot be recovered.'; actions deleteProjectPermanentlyModalCancelButton ('Cancel') and deleteProjectPermanentlyModalDeleteProjectButton ('Delete project').
   deleteProjectPermanentlyModalDeleteProjectButton:
     meaning: Primary confirm control in deleteProjectPermanentlyModal labeled 'Delete project'
   deleteProjectPermanentlyModalCancelButton:
@@ -61,15 +61,19 @@ uiObjectDefinitions:
   workflowCardRestoreButton:
     meaning: Restore action on an archived workflowCard.
   restoreParentProjectModal:
-    meaning: Modal explaining that restoring a workflow requires restoring its parent project.
+    meaning: Modal explaining that restoring a workflow requires restoring its parent project; title 'Restore parent project'; body 'This workflow belongs to an archived project. Restore the project and all of its workflows?'; actions restoreParentProjectModalCancelButton ('Cancel') and restoreParentProjectModalRestoreProjectButton ('Restore project').
   restoreParentProjectModalRestoreProjectButton:
     meaning: Primary control in restoreParentProjectModal labeled 'Restore project'
+  restoreParentProjectModalCancelButton:
+    meaning: Secondary control in restoreParentProjectModal labeled 'Cancel'
   workflowCardDeletePermanentlyButton:
     meaning: Delete permanently action on an archived workflowCard.
   deleteWorkflowPermanentlyModal:
-    meaning: Confirmation modal for permanently deleting an archived workflow.
+    meaning: Confirmation modal for permanently deleting an archived workflow; title 'Permanently delete workflow'; body 'This workflow will be permanently deleted and cannot be recovered.'; actions deleteWorkflowPermanentlyModalCancelButton ('Cancel') and deleteWorkflowPermanentlyModalConfirmButton ('Delete workflow').
   deleteWorkflowPermanentlyModalConfirmButton:
-    meaning: Confirm action on deleteWorkflowPermanentlyModal.
+    meaning: Primary confirm control in deleteWorkflowPermanentlyModal labeled 'Delete workflow'
+  deleteWorkflowPermanentlyModalCancelButton:
+    meaning: Secondary control in deleteWorkflowPermanentlyModal labeled 'Cancel'
   pagination:
     meaning: Pagination control below resultsRegion on listing pages.
   paginationPageNumberButton:
@@ -113,9 +117,11 @@ locatorMappings:
   workflowCardRestoreButton: "canonical_locators.yaml -> workflowCardRestoreButton"
   restoreParentProjectModal: "canonical_locators.yaml -> restoreParentProjectModal"
   restoreParentProjectModalRestoreProjectButton: "canonical_locators.yaml -> restoreParentProjectModalRestoreProjectButton"
+  restoreParentProjectModalCancelButton: "canonical_locators.yaml -> restoreParentProjectModalCancelButton"
   workflowCardDeletePermanentlyButton: "canonical_locators.yaml -> workflowCardDeletePermanentlyButton"
   deleteWorkflowPermanentlyModal: "canonical_locators.yaml -> deleteWorkflowPermanentlyModal"
   deleteWorkflowPermanentlyModalConfirmButton: "canonical_locators.yaml -> deleteWorkflowPermanentlyModalConfirmButton"
+  deleteWorkflowPermanentlyModalCancelButton: "canonical_locators.yaml -> deleteWorkflowPermanentlyModalCancelButton"
   pagination: "canonical_locators.yaml -> pagination"
   paginationPageNumberButton: "canonical_locators.yaml -> paginationPageNumberButton"
   paginationPreviousNextButton: "canonical_locators.yaml -> paginationPreviousNextButton"
@@ -409,9 +415,11 @@ requirements:
       - workflowCardRestoreButton
       - restoreParentProjectModal
       - restoreParentProjectModalRestoreProjectButton
+      - restoreParentProjectModalCancelButton
       - workflowCardDeletePermanentlyButton
       - deleteWorkflowPermanentlyModal
       - deleteWorkflowPermanentlyModalConfirmButton
+      - deleteWorkflowPermanentlyModalCancelButton
 
     preconditions:
       - libraryPage is rendered
@@ -422,23 +430,26 @@ requirements:
     trigger:
       - user hovers an archived projectCard or workflowCard in resultsRegion, and clicks 'Restore' or 'Delete permanently'
       - user clicks deleteProjectPermanentlyModalCancelButton or deleteProjectPermanentlyModalDeleteProjectButton ('Delete project') while deleteProjectPermanentlyModal is open
-      - user clicks deleteWorkflowPermanentlyModalConfirmButton while deleteWorkflowPermanentlyModal is open
+      - user clicks deleteWorkflowPermanentlyModalCancelButton or deleteWorkflowPermanentlyModalConfirmButton ('Delete workflow') while deleteWorkflowPermanentlyModal is open
+      - user clicks restoreParentProjectModalCancelButton or restoreParentProjectModalRestoreProjectButton ('Restore project') while restoreParentProjectModal is open
 
     mainFlow:
       - workflow restore entry points — a workflow may be restored from exactly two UI surfaces: 'My library' (this FR) and project 'Workflows' view per tests/docs/requirements/features/project/project_workflows_view_requirements_v1.yaml FR-PROJ-WF-006; no other route, dialog, or workspace action offers workflow restore
       - when an Owner hovers an archived projectCard or workflowCard, system reveals 'Restore' and 'Delete permanently' buttons
-      - projectCard and workflowCard that represent archived objects follow card_content_requirements_v1.yaml FR-CARD-006 for card-body click, archived visual presentation, and cardFavouriteToggle (non-favourited, not interactive); only Owner receives the hover-revealed 'Restore' and 'Delete permanently' actions on 'My library' (Editor, Viewer, and Commenter do not)
+      - projectCard and workflowCard that represent archived objects follow card_content_requirements_v1.yaml FR-CARD-006 for card-body click, archived visual presentation, and absence of cardFavouriteToggle; only Owner receives the hover-revealed 'Restore' and 'Delete permanently' actions on 'My library' (Editor, Viewer, and Commenter do not)
       - archived projects and workflows cannot be accessed or browsed by clicking on the cards
       - Editor, Viewer, and Commenter can only view the card, the 'Restore' and 'Delete permanently' buttons are not available to them
       - when Owner clicks projectCardRestoreProjectButton, system restores the project and all its child workflows; afterward the project and those workflows are available again in 'My library' under normal listing rules, with the same project contributors and project metadata as when the project was archived; linkedWorkflow associations within the restored project are reinstated as they were at project archival per FR-PROJ-ARCH-003
-      - when Owner clicks projectCardDeletePermanentlyButton, system shows deleteProjectPermanentlyModal; permanent deletion proceeds only if the user clicks deleteProjectPermanentlyModalDeleteProjectButton; only an archived project may be permanently deleted
+      - when Owner clicks projectCardDeletePermanentlyButton, system shows deleteProjectPermanentlyModal with title 'Permanently delete project', body 'This project will be permanently deleted and cannot be recovered.', deleteProjectPermanentlyModalCancelButton ('Cancel'), and deleteProjectPermanentlyModalDeleteProjectButton ('Delete project'); permanent deletion proceeds only if the user clicks deleteProjectPermanentlyModalDeleteProjectButton; only an archived project may be permanently deleted
       - permanent delete project — archive-time side effects ('Favourites' removal, 'Explore' removal when the project was published at archive, unpublish per FR-PROJ-OV-003) already applied at archive per FR-PROJ-ARCH-003
       - permanent delete project outcomes — after successful deleteProjectPermanentlyModal confirm, the project and all its child workflows are irrecoverable with no restore path; archived projectCard and archived workflowCards for workflows in that project no longer appear in 'My library' resultsRegion when archiveToggle is on (archived projects are not listed in non-archived library queries per FR-LIB-003); direct navigation to any route matching '/project/{id}/*' for that project or '/workflow/{id}/*' for child workflows that belonged to that project is not available
       - when user clicks deleteProjectPermanentlyModalCancelButton in deleteProjectPermanentlyModal, system closes deleteProjectPermanentlyModal and returns the user to the same prior place without permanent deletion
       - on an archived workflowCard, Owner may use workflowCardRestoreButton or workflowCardDeletePermanentlyButton
-      - parent project status — a workflow belonging to an archived parent project cannot be restored independently; when Owner clicks workflowCardRestoreButton on an archived workflow whose parent project is also archived, system shows restoreParentProjectModal (FIGMA-LIB-RESTORE-WORKFLOW) and does not restore the workflow alone; when the user clicks restoreParentProjectModalRestoreProjectButton ('Restore project'), system restores the parent project and all its child workflows together with the same post-restore availability and metadata rules as a direct project restore, including reinstatement of in-project linkedWorkflow associations per FR-PROJ-ARCH-003 when the parent project had been archived
+      - parent project status — a workflow belonging to an archived parent project cannot be restored independently; when Owner clicks workflowCardRestoreButton on an archived workflow whose parent project is also archived, system shows restoreParentProjectModal (FIGMA-LIB-RESTORE-WORKFLOW) with title 'Restore parent project', body 'This workflow belongs to an archived project. Restore the project and all of its workflows?', restoreParentProjectModalCancelButton ('Cancel'), and restoreParentProjectModalRestoreProjectButton ('Restore project'), and does not restore the workflow alone; when the user clicks restoreParentProjectModalRestoreProjectButton ('Restore project'), system restores the parent project and all its child workflows together with the same post-restore availability and metadata rules as a direct project restore, including reinstatement of in-project linkedWorkflow associations per FR-PROJ-ARCH-003 when the parent project had been archived
+      - when user clicks restoreParentProjectModalCancelButton in restoreParentProjectModal, system closes restoreParentProjectModal and returns the user to the same prior place without restoring the parent project or workflow
       - when Owner clicks workflowCardRestoreButton on an archived workflow whose parent project is not archived (active), system restores that workflow directly without restoreParentProjectModal
-      - when Owner clicks workflowCardDeletePermanentlyButton, system shows deleteWorkflowPermanentlyModal; permanent deletion of the workflow proceeds only after the user confirms via deleteWorkflowPermanentlyModalConfirmButton; this path is allowed even when the parent project is still archived; only an archived workflow may be permanently deleted
+      - when Owner clicks workflowCardDeletePermanentlyButton, system shows deleteWorkflowPermanentlyModal with title 'Permanently delete workflow', body 'This workflow will be permanently deleted and cannot be recovered.', deleteWorkflowPermanentlyModalCancelButton ('Cancel'), and deleteWorkflowPermanentlyModalConfirmButton ('Delete workflow'); permanent deletion of the workflow proceeds only after the user confirms via deleteWorkflowPermanentlyModalConfirmButton; this path is allowed even when the parent project is still archived; only an archived workflow may be permanently deleted
+      - when user clicks deleteWorkflowPermanentlyModalCancelButton in deleteWorkflowPermanentlyModal, system closes deleteWorkflowPermanentlyModal and returns the user to the same prior place without permanent deletion
       - permanent delete workflow — archive-time side effects (linkedWorkflow break on parent nodes when individually archived per tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml FR-WF-ARCH-003, favourite removal, Explore removal when applicable) already applied at archive; permanent delete does not re-apply link break, favourite removal, or Explore removal
       - permanent delete workflow outcomes — after successful deleteWorkflowPermanentlyModal confirm, the workflow is irrecoverable with no restore path; the archived workflowCard for that workflow no longer appears in 'My library' resultsRegion when archiveToggle is on or in any other listing query; when the parent project is not archived, the workflowCard no longer appears in projectWorkflowsView resultsRegion when archiveToggle is on per tests/docs/requirements/features/project/project_workflows_view_requirements_v1.yaml FR-PROJ-WF-003; direct navigation to any route matching '/workflow/{id}/*' for that workflow id is not available
       - when typeFilter includes workflows, archived workflowCards follow the same browse restriction pattern as archived projects
@@ -468,18 +479,20 @@ requirements:
         workflowCardDeletePermanentlyButton: notAvailable
 
     acceptanceCriteria:
-      - given projectCard or workflowCard represents an archived object, card-body click and cardFavouriteToggle behavior conform to card_content_requirements_v1.yaml FR-CARD-006
+      - given projectCard or workflowCard represents an archived object, card-body click and absence of cardFavouriteToggle conform to card_content_requirements_v1.yaml FR-CARD-006
       - given an archived project as Owner, when user hovers projectCard, projectCardRestoreProjectButton ('Restore project') and projectCardDeletePermanentlyButton ('Delete permanently') are visible
       - given an archived project as Owner, after successful restore via projectCardRestoreProjectButton, the project and its child workflows appear again in the library when filters and search would list them, with unchanged project contributors and metadata relative to the archived state
       - given course workflow C and activity workflow A in project P, node N on C linked to A, owner archived P and later restores P via projectCardRestoreProjectButton, when owner reopens C on the Workflow sub-view and selects N, N still links to A and workflowNodeLinkedWorkflowIndicator is rendered per FR-PROJ-ARCH-003 and FR-WF-NODE-001
-      - given an archived project as Owner, when user clicks projectCardDeletePermanentlyButton, deleteProjectPermanentlyModal is shown and permanent removal occurs only after deleteProjectPermanentlyModalDeleteProjectButton ('Delete project') is clicked
+      - given an archived project as Owner, when user clicks projectCardDeletePermanentlyButton, deleteProjectPermanentlyModal is shown with title 'Permanently delete project', body 'This project will be permanently deleted and cannot be recovered.', Cancel and Delete project controls, and permanent removal occurs only after deleteProjectPermanentlyModalDeleteProjectButton ('Delete project') is clicked
       - given archived project P and owner confirms deleteProjectPermanentlyModal, P and all child workflows are irrecoverable, archived projectCard for P no longer appears in 'My library' resultsRegion when archiveToggle is on, and routes matching '/project/{id}/*' for P are not available
       - given deleteProjectPermanentlyModal is open, when user clicks deleteProjectPermanentlyModalCancelButton ('Cancel'), modal closes and user is returned to the same prior place without permanent deletion
       - given an archived project as Editor, Viewer, or Commenter, projectCardRestoreProjectButton and projectCardDeletePermanentlyButton are not visible
       - given an archived workflow as Owner, when user hovers workflowCard, workflowCardRestoreButton ('Restore') and workflowCardDeletePermanentlyButton ('Delete permanently') are visible
-      - given archived workflow W whose parent project P is also archived, when Owner clicks workflowCardRestoreButton, restoreParentProjectModal is shown and W is not restored until Owner clicks restoreParentProjectModalRestoreProjectButton ('Restore project'), which restores P and all child workflows including W
+      - given archived workflow W whose parent project P is also archived, when Owner clicks workflowCardRestoreButton, restoreParentProjectModal is shown with title 'Restore parent project', body 'This workflow belongs to an archived project. Restore the project and all of its workflows?', Cancel and Restore project controls, and W is not restored until Owner clicks restoreParentProjectModalRestoreProjectButton ('Restore project'), which restores P and all child workflows including W
+      - given restoreParentProjectModal is open, when user clicks restoreParentProjectModalCancelButton ('Cancel'), modal closes and user is returned to the same prior place without restore
       - given archived workflow W in active (non-archived) parent project P, when Owner clicks workflowCardRestoreButton, W is restored directly without restoreParentProjectModal
-      - given an archived workflow as Owner, when user clicks workflowCardDeletePermanentlyButton, deleteWorkflowPermanentlyModal is shown and permanent removal follows only after deleteWorkflowPermanentlyModalConfirmButton is clicked
+      - given an archived workflow as Owner, when user clicks workflowCardDeletePermanentlyButton, deleteWorkflowPermanentlyModal is shown with title 'Permanently delete workflow', body 'This workflow will be permanently deleted and cannot be recovered.', Cancel and Delete workflow controls, and permanent removal follows only after deleteWorkflowPermanentlyModalConfirmButton ('Delete workflow') is clicked
+      - given deleteWorkflowPermanentlyModal is open, when user clicks deleteWorkflowPermanentlyModalCancelButton ('Cancel'), modal closes and user is returned to the same prior place without permanent deletion
       - given archived workflow W and owner confirms deleteWorkflowPermanentlyModal, W is irrecoverable with no restore path, archived workflowCard for W no longer appears in 'My library' resultsRegion when archiveToggle is on, and routes matching '/workflow/{id}/*' for W are not available
       - given archived workflow W in non-archived parent project P and owner permanently deletes W, when owner opens '/project/{id}/workflows' for P with archiveToggle on, workflowCard for W is not in projectWorkflowsView resultsRegion
       - given an archived workflow whose parent project is also archived, Owner may still complete permanent workflow deletion via deleteWorkflowPermanentlyModal after confirmation

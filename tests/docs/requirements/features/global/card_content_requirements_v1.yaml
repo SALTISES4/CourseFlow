@@ -32,7 +32,7 @@ uiObjectDefinitions:
   cardHeaderRegion:
     meaning: Top region of projectCard or workflowCard containing cardTitleText and, when owner data exists, cardOwnerText rendered directly below cardTitleText in the description slot per FIGMA-CARD-DESIGNS.
   cardFooterRegion:
-    meaning: Bottom region of projectCard or workflowCard containing cardFooterTagsRegion and cardFavouriteToggle on one horizontal band.
+    meaning: Bottom region of projectCard or workflowCard containing cardFooterTagsRegion and, when the object is not archived, cardFavouriteToggle on one horizontal band; when archived, cardFavouriteToggle is absent per FR-CARD-006 and Owner lifecycle actions may occupy that trailing slot on surfaces that offer them.
   cardFooterTagsRegion:
     meaning: Chip group within cardFooterRegion holding cardTypeChip and optional cardTemplateChip, cardWorkflowCountChip (projectCard only), or cardArchivedChip (archived cards per FR-CARD-006); excludes cardOwnerText and cardFavouriteToggle.
   cardTypeChip:
@@ -44,7 +44,15 @@ uiObjectDefinitions:
   cardArchivedChip:
     meaning: Archived chip labeled 'Archived' on projectCard or workflowCard that represents an archived project or archived workflow.
   cardFavouriteToggle:
-    meaning: Favourite control on projectCard or workflowCard; shows yellow star when favourited and grey star when not favourited; interactive per FR-CARD-005 when the object is not archived. On projectCard or workflowCard that represents an archived object, cardFavouriteToggle shows grey star and does not accept interaction per FR-CARD-006.
+    meaning: Favourite control on projectCard or workflowCard; shows yellow star when favourited and grey star when not favourited; interactive per FR-CARD-005 when the object is not archived. On projectCard or workflowCard that represents an archived object, cardFavouriteToggle is not rendered per FR-CARD-006.
+  projectCardRestoreProjectButton:
+    meaning: Owner-only control labeled 'Restore project' on an archived projectCard; revealed on card hover on 'My library' per FR-CARD-006 and FR-LIB-006.
+  projectCardDeletePermanentlyButton:
+    meaning: Owner-only control labeled 'Delete permanently' on an archived projectCard; revealed on card hover on 'My library' per FR-CARD-006 and FR-LIB-006.
+  workflowCardRestoreButton:
+    meaning: Owner-only control labeled 'Restore' on an archived workflowCard; revealed on card hover on 'My library' per FR-CARD-006 and FR-LIB-006 (project Workflows view restore per FR-PROJ-WF-006).
+  workflowCardDeletePermanentlyButton:
+    meaning: Owner-only control labeled 'Delete permanently' on an archived workflowCard; revealed on card hover on 'My library' per FR-CARD-006 and FR-LIB-006.
   cardLinkedInUseChip:
     meaning: Warning chip labeled 'Already in use' on workflowCard only inside workflowLinkWorkflowDialogSearchResults per workflow_edit_node_requirements_v1.yaml FR-WF-EN-008 and FR-WF-EN-009; indicates the candidate course or activity is already linked to another node in the same workflow per FR-CARD-007.
   globalMessageSnackbar:
@@ -63,6 +71,10 @@ locatorMappings:
   cardWorkflowCountChip: "canonical_locators.yaml -> cardWorkflowCountChip"
   cardArchivedChip: "canonical_locators.yaml -> cardArchivedChip"
   cardFavouriteToggle: "canonical_locators.yaml -> cardFavouriteToggle"
+  projectCardRestoreProjectButton: "canonical_locators.yaml -> projectCardRestoreProjectButton"
+  projectCardDeletePermanentlyButton: "canonical_locators.yaml -> projectCardDeletePermanentlyButton"
+  workflowCardRestoreButton: "canonical_locators.yaml -> workflowCardRestoreButton"
+  workflowCardDeletePermanentlyButton: "canonical_locators.yaml -> workflowCardDeletePermanentlyButton"
   cardLinkedInUseChip: "canonical_locators.yaml -> cardLinkedInUseChip"
   globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
 
@@ -312,6 +324,10 @@ requirements:
       - cardWorkflowCountChip
       - cardArchivedChip
       - cardFavouriteToggle
+      - projectCardRestoreProjectButton
+      - projectCardDeletePermanentlyButton
+      - workflowCardRestoreButton
+      - workflowCardDeletePermanentlyButton
 
     preconditions:
       - projectCard or workflowCard is visible
@@ -319,18 +335,40 @@ requirements:
 
     trigger:
       - user clicks projectCard or workflowCard that represents an archived object
+      - or Owner hovers an archived projectCard or workflowCard on a surface that offers Owner lifecycle actions (My library per FR-LIB-006; project Workflows view restore for workflows per FR-PROJ-WF-006)
 
     mainFlow:
-      - when user clicks projectCard that represents an archived project, system does not perform navigation defined in FR-CARD-003 (the card is not a navigation affordance except surface-specific Owner restore actions on 'My library' per library_page_requirements_v1.yaml FR-LIB-006)
-      - when user clicks workflowCard that represents an archived workflow, system does not perform navigation defined in FR-CARD-004 (same exception for Owner restore actions on 'My library' per FR-LIB-006 or project 'Workflows' view per project_workflows_view_requirements_v1.yaml FR-PROJ-WF-006)
-      - when projectCard represents an archived project, projectCard renders cardTitleText, cardOwnerText, cardTypeChip, cardTemplateChip when applicable, cardWorkflowCountChip when applicable per FR-CARD-001 where data exists, and cardArchivedChip with label 'Archived' inside cardFooterTagsRegion; cardFavouriteToggle follows this FR, not FR-CARD-001
-      - when workflowCard represents an archived workflow, workflowCard renders cardTitleText, cardOwnerText, cardTypeChip, and cardTemplateChip when applicable per FR-CARD-002 where data exists, and cardArchivedChip with label 'Archived' inside cardFooterTagsRegion; cardFavouriteToggle follows this FR, not FR-CARD-002
-      - on projectCard or workflowCard that represents an archived object, cardFavouriteToggle shows grey star and does not accept interaction
+      - when user clicks projectCard that represents an archived project, system does not perform navigation defined in FR-CARD-003 (the card is not a navigation affordance except surface-specific Owner restore and delete-permanently actions on 'My library' per library_page_requirements_v1.yaml FR-LIB-006)
+      - when user clicks workflowCard that represents an archived workflow, system does not perform navigation defined in FR-CARD-004 (same exception for Owner restore and delete-permanently actions on 'My library' per FR-LIB-006 or project 'Workflows' view restore per project_workflows_view_requirements_v1.yaml FR-PROJ-WF-006)
+      - when projectCard represents an archived project, projectCard renders cardTitleText, cardOwnerText, cardTypeChip, cardTemplateChip when applicable, cardWorkflowCountChip when applicable per FR-CARD-001 where data exists, and cardArchivedChip with label 'Archived' inside cardFooterTagsRegion; cardFavouriteToggle is not rendered (this FR, not FR-CARD-001)
+      - when workflowCard represents an archived workflow, workflowCard renders cardTitleText, cardOwnerText, cardTypeChip, and cardTemplateChip when applicable per FR-CARD-002 where data exists, and cardArchivedChip with label 'Archived' inside cardFooterTagsRegion; cardFavouriteToggle is not rendered (this FR, not FR-CARD-002)
+      - on projectCard or workflowCard that represents an archived object, cardFavouriteToggle is not present
+      - Owner lifecycle affordances on 'My library' — when Owner hovers an archived projectCard, system reveals projectCardRestoreProjectButton ('Restore project') and projectCardDeletePermanentlyButton ('Delete permanently'); when Owner hovers an archived workflowCard, system reveals workflowCardRestoreButton ('Restore') and workflowCardDeletePermanentlyButton ('Delete permanently'); Editor, Viewer, and Commenter do not receive these controls; restore and permanent-delete outcomes follow FR-LIB-006 (and FR-PROJ-WF-006 for workflow restore on project Workflows view)
       - cardArchivedChip is rendered inside cardFooterTagsRegion on archived projectCard or workflowCard per FIGMA-LIB-FILTER-ARCHIVED-ROWS
       - projectCard or workflowCard that represents an archived object uses subdued archived styling on the card and thumbnail and does not present an active navigation affordance to open that archived workspace
-      - mid-session archive — when a project or workflow becomes archived while an actor is already in its workspace, eviction on the actor's next in-app action is specified in tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-005 (access-denied presentation per FR-WS-ACCESS-001 or FR-WS-ACCESS-002); this FR covers card-click navigation only
+      - mid-session archive — when a project or workflow becomes archived while an actor is already in its workspace, eviction on the actor's next in-app action is specified in tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-005 (access-denied presentation per FR-WS-ACCESS-001 or FR-WS-ACCESS-002); this FR covers archived card presentation, card-click non-navigation, and Owner hover lifecycle affordance visibility on listing surfaces
 
-    roleBehavior: {}
+    roleBehavior:
+      Owner:
+        projectCardRestoreProjectButton: availableOnHoverWhenArchivedOnMyLibrary
+        projectCardDeletePermanentlyButton: availableOnHoverWhenArchivedOnMyLibrary
+        workflowCardRestoreButton: availableOnHoverWhenArchivedOnMyLibrary
+        workflowCardDeletePermanentlyButton: availableOnHoverWhenArchivedOnMyLibrary
+      Editor:
+        projectCardRestoreProjectButton: notAvailable
+        projectCardDeletePermanentlyButton: notAvailable
+        workflowCardRestoreButton: notAvailable
+        workflowCardDeletePermanentlyButton: notAvailable
+      Viewer:
+        projectCardRestoreProjectButton: notAvailable
+        projectCardDeletePermanentlyButton: notAvailable
+        workflowCardRestoreButton: notAvailable
+        workflowCardDeletePermanentlyButton: notAvailable
+      Commenter:
+        projectCardRestoreProjectButton: notAvailable
+        projectCardDeletePermanentlyButton: notAvailable
+        workflowCardRestoreButton: notAvailable
+        workflowCardDeletePermanentlyButton: notAvailable
 
     acceptanceCriteria:
       - given projectCard represents an archived project, clicking the card does not perform navigation defined in FR-CARD-003
@@ -339,8 +377,10 @@ requirements:
       - given projectCard represents an archived project, cardArchivedChip is visible with label 'Archived' inside cardFooterTagsRegion
       - given workflowCard represents an archived workflow, visible cardTitleText, cardOwnerText, cardTypeChip, and cardTemplateChip conform to FR-CARD-002 where applicable
       - given workflowCard represents an archived workflow, cardArchivedChip is visible with label 'Archived' inside cardFooterTagsRegion
-      - given projectCard or workflowCard represents an archived object, cardFavouriteToggle shows grey star
-      - given projectCard or workflowCard represents an archived object, clicking cardFavouriteToggle does not change favourite state
+      - given projectCard or workflowCard represents an archived object, cardFavouriteToggle is not visible
+      - given an archived projectCard on 'My library' as Owner, when user hovers the card, projectCardRestoreProjectButton ('Restore project') and projectCardDeletePermanentlyButton ('Delete permanently') are visible
+      - given an archived workflowCard on 'My library' as Owner, when user hovers the card, workflowCardRestoreButton ('Restore') and workflowCardDeletePermanentlyButton ('Delete permanently') are visible
+      - given an archived projectCard or workflowCard on 'My library' as Editor, Viewer, or Commenter, hover does not reveal Restore or Delete permanently controls
       - given projectCard or workflowCard represents an archived object, the card and thumbnail use subdued archived styling and are not presented as an active link to the archived object workspace
 
     openQuestions: []
