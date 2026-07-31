@@ -1,18 +1,18 @@
 """
-Deterministic graph shape (layout + edges) for dev seed data.
+Deterministic graph shape (layout + edges) for E2E fixture data.
 
 Layout: section-local 2D grids — one node per (section, channel, section_row),
 compact row indices, structured channel spread. Edges: weighted out-degrees,
 same-section majority, forward bias, bounded cross-links.
 
-Structural randomness uses only ``SeededRNG`` (no Faker).
+Structural randomness uses only ``SeededRNG``.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from course_flow.dev_seed.rng import SeededRNG
+from course_flow.e2e_seed.rng import SeededRNG
 
 
 @dataclass(frozen=True)

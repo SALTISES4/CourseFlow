@@ -8,7 +8,6 @@ from pathlib import Path
 
 from django.db import transaction
 from django.utils import timezone
-from faker import Faker
 
 from course_flow.core.enum import AccountRole, WorkflowType
 from course_flow.core.hierarchy import child_node_type_value_for_workflow
@@ -25,18 +24,6 @@ from course_flow.core.models import (
     User,
     Workflow,
 )
-from course_flow.dev_seed.constants import DEV_SEED_DEMO_PASSWORD
-from course_flow.dev_seed.graph_shape import GraphShapeParams
-from course_flow.dev_seed.graph_view import (
-    build_nodes_from_layout,
-    build_outcomes,
-    build_sections_and_channels,
-    build_workflow_with_graph,
-    generate_graph_shape,
-    persist_edges_from_pairs,
-)
-from course_flow.dev_seed.project_builder import create_project, ensure_team
-from course_flow.dev_seed.rng import SeededRNG
 from course_flow.e2e_seed.clear import clear_e2e_fixtures
 from course_flow.e2e_seed.constants import (
     E2E_CHANNEL_TITLES,
@@ -45,6 +32,7 @@ from course_flow.e2e_seed.constants import (
     E2E_FIXTURE_EDITOR_EMAIL,
     E2E_FIXTURE_GRAPH_SEED,
     E2E_FIXTURE_HOME_PROJECT_TITLES,
+    E2E_FIXTURE_PASSWORD,
     E2E_FIXTURE_PROGRAM_WORKFLOW_TITLE,
     E2E_FIXTURE_PROJECT_TITLE,
     E2E_FIXTURE_RESTRICTED_PROJECT_TITLE,
@@ -57,6 +45,17 @@ from course_flow.e2e_seed.constants import (
     E2E_OUTCOME_TITLE,
     E2E_SECTION_TITLES,
 )
+from course_flow.e2e_seed.graph_shape import GraphShapeParams
+from course_flow.e2e_seed.graph_view import (
+    build_nodes_from_layout,
+    build_outcomes,
+    build_sections_and_channels,
+    build_workflow_with_graph,
+    generate_graph_shape,
+    persist_edges_from_pairs,
+)
+from course_flow.e2e_seed.project_builder import create_project, ensure_team
+from course_flow.e2e_seed.rng import SeededRNG
 from course_flow.e2e_seed.team import ensure_e2e_contributors, ensure_e2e_owner
 
 
@@ -76,8 +75,6 @@ def _seed_template_workflow(
     *,
     owner,
     template_project,
-    fake,
-    rng: SeededRNG,
     workflow_type: WorkflowType,
     title: str,
     section_title: str,
@@ -88,18 +85,12 @@ def _seed_template_workflow(
         template_graph,
         author=owner,
         project=template_project,
-        fake=fake,
-        rng=rng,
         workflow_type=workflow_type,
         title=title,
         description=f"{workflow_type.value} template workflow for cardTemplateChip E2E tests.",
     )
     build_sections_and_channels(
         template_graph,
-        fake=fake,
-        rng=rng,
-        section_count=1,
-        channel_count=1,
         section_titles=[section_title],
         channel_titles=[channel_title],
     )
@@ -127,8 +118,6 @@ def _seed_minimal_workflow(
     *,
     owner,
     project,
-    fake,
-    rng: SeededRNG,
     workflow_type: WorkflowType,
     title: str,
     description: str,
@@ -140,18 +129,12 @@ def _seed_minimal_workflow(
         graph,
         author=owner,
         project=project,
-        fake=fake,
-        rng=rng,
         workflow_type=workflow_type,
         title=title,
         description=description,
     )
     sections, channels = build_sections_and_channels(
         graph,
-        fake=fake,
-        rng=rng,
-        section_count=1,
-        channel_count=1,
         section_titles=[section_title],
         channel_titles=[channel_title],
     )
@@ -168,14 +151,10 @@ def _seed_course_workflow_linked_to_activity(
     owner,
     project,
     activity_workflow,
-    fake,
-    rng: SeededRNG,
 ) -> tuple[Workflow, dict]:
     course_workflow, sections, channels, course_manifest = _seed_minimal_workflow(
         owner=owner,
         project=project,
-        fake=fake,
-        rng=rng,
         workflow_type=WorkflowType.COURSE,
         title=E2E_FIXTURE_COURSE_WORKFLOW_TITLE,
         description="Course workflow for main navigation Contains/Appears in E2E tests.",
@@ -204,7 +183,7 @@ def _project_manifest(project) -> dict:
     }
 
 
-def _seed_home_projects(*, owner, fake, rng: SeededRNG) -> tuple[list[dict], dict]:
+def _seed_home_projects(*, owner) -> tuple[list[dict], dict]:
     """Seed FR-HOME-003 projects with a stable newest-first ordering."""
     # Keep these projects newer than ordinary fixture mutations during a test run.
     newest_at = timezone.now() + timedelta(days=1)
@@ -212,8 +191,6 @@ def _seed_home_projects(*, owner, fake, rng: SeededRNG) -> tuple[list[dict], dic
     for index, title in enumerate(E2E_FIXTURE_HOME_PROJECT_TITLES):
         project = create_project(
             owner,
-            fake=fake,
-            rng=rng,
             title=title,
             description=f"Deterministic recent project {index + 1} for FR-HOME-003.",
         )
@@ -226,8 +203,6 @@ def _seed_home_projects(*, owner, fake, rng: SeededRNG) -> tuple[list[dict], dic
 
     archived_project = create_project(
         owner,
-        fake=fake,
-        rng=rng,
         title=E2E_FIXTURE_ARCHIVED_HOME_PROJECT_TITLE,
         description="Archived project excluded from Recent projects per FR-HOME-003.",
     )
@@ -250,19 +225,15 @@ def generate_e2e_fixtures(
     """
     Create deterministic E2E fixtures owned by the primary teacher account.
 
-    Reuses graph persistence helpers from ``dev_seed`` but supplies fixed
-    project/section/channel copy instead of Faker prose.
+    Uses fixed project, workflow, section, and channel contracts so the same
+    fixture set can support local development and browser tests.
     """
     owner = ensure_e2e_owner()
     rng = SeededRNG.from_seed(E2E_FIXTURE_GRAPH_SEED)
-    fake = Faker()
-    fake.seed_instance(E2E_FIXTURE_GRAPH_SEED)
 
     with transaction.atomic():
         project = create_project(
             owner,
-            fake=fake,
-            rng=rng,
             title=E2E_FIXTURE_PROJECT_TITLE,
             description="Deterministic Playwright E2E fixture project.",
         )
@@ -272,8 +243,6 @@ def generate_e2e_fixtures(
         restricted_owner = User.objects.get(email=E2E_FIXTURE_EDITOR_EMAIL)
         restricted_project = create_project(
             restricted_owner,
-            fake=fake,
-            rng=rng,
             title=E2E_FIXTURE_RESTRICTED_PROJECT_TITLE,
             description=(
                 "Private project used to verify non-contributor workflow access denial."
@@ -288,8 +257,6 @@ def generate_e2e_fixtures(
         ) = _seed_minimal_workflow(
             owner=restricted_owner,
             project=restricted_project,
-            fake=fake,
-            rng=rng,
             workflow_type=WorkflowType.ACTIVITY,
             title=E2E_FIXTURE_RESTRICTED_WORKFLOW_TITLE,
             description="Private workflow inaccessible to the primary E2E teacher.",
@@ -302,8 +269,6 @@ def generate_e2e_fixtures(
             graph,
             author=owner,
             project=project,
-            fake=fake,
-            rng=rng,
             workflow_type=WorkflowType.ACTIVITY,
             title=E2E_FIXTURE_WORKFLOW_TITLE,
             description="Activity workflow for section editing E2E tests.",
@@ -318,18 +283,12 @@ def generate_e2e_fixtures(
         layout, edge_pairs = generate_graph_shape(rng, shape)
         sections, channels = build_sections_and_channels(
             graph,
-            fake=fake,
-            rng=rng,
-            section_count=len(E2E_SECTION_TITLES),
-            channel_count=len(E2E_CHANNEL_TITLES),
             section_titles=list(E2E_SECTION_TITLES),
             channel_titles=list(E2E_CHANNEL_TITLES),
         )
         nodes = build_nodes_from_layout(graph, sections, channels, layout)
         persist_edges_from_pairs(nodes, edge_pairs)
-        outcomes = build_outcomes(
-            graph, nodes, rng=rng, outcome_count=shape.outcome_count
-        )
+        outcomes = build_outcomes(graph, nodes, outcome_count=shape.outcome_count)
         if outcomes:
             root = outcomes[0]
             root.title = E2E_OUTCOME_TITLE
@@ -359,8 +318,6 @@ def generate_e2e_fixtures(
                 owner=owner,
                 project=project,
                 activity_workflow=workflow,
-                fake=fake,
-                rng=rng,
             )
         )
         (
@@ -371,8 +328,6 @@ def generate_e2e_fixtures(
         ) = _seed_minimal_workflow(
             owner=owner,
             project=project,
-            fake=fake,
-            rng=rng,
             workflow_type=WorkflowType.PROGRAM,
             title=E2E_FIXTURE_PROGRAM_WORKFLOW_TITLE,
             description="Program workflow for main navigation negative-path E2E tests.",
@@ -382,8 +337,6 @@ def generate_e2e_fixtures(
 
         template_project = create_project(
             owner,
-            fake=fake,
-            rng=rng,
             title=E2E_FIXTURE_TEMPLATE_PROJECT_TITLE,
             description="Deterministic Playwright E2E template project.",
         )
@@ -397,8 +350,6 @@ def generate_e2e_fixtures(
             _seed_template_workflow(
                 owner=owner,
                 template_project=template_project,
-                fake=fake,
-                rng=rng,
                 workflow_type=WorkflowType.ACTIVITY,
                 title=E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE,
                 section_title="E2E Activity Template Section",
@@ -407,8 +358,6 @@ def generate_e2e_fixtures(
             _seed_template_workflow(
                 owner=owner,
                 template_project=template_project,
-                fake=fake,
-                rng=rng,
                 workflow_type=WorkflowType.COURSE,
                 title=E2E_FIXTURE_TEMPLATE_COURSE_TITLE,
                 section_title="E2E Course Template Section",
@@ -417,8 +366,6 @@ def generate_e2e_fixtures(
             _seed_template_workflow(
                 owner=owner,
                 template_project=template_project,
-                fake=fake,
-                rng=rng,
                 workflow_type=WorkflowType.PROGRAM,
                 title=E2E_FIXTURE_TEMPLATE_PROGRAM_TITLE,
                 section_title="E2E Program Template Section",
@@ -426,17 +373,13 @@ def generate_e2e_fixtures(
             ),
         ]
 
-        recent_projects, archived_home_project = _seed_home_projects(
-            owner=owner,
-            fake=fake,
-            rng=rng,
-        )
+        recent_projects, archived_home_project = _seed_home_projects(owner=owner)
 
         manifest = {
             "fixture_version": 4,
             "primary_user": {
                 "email": owner.email,
-                "password": DEV_SEED_DEMO_PASSWORD,
+                "password": E2E_FIXTURE_PASSWORD,
                 "account_role": AccountRole.TEACHER.value,
             },
             "owner_email": owner.email,

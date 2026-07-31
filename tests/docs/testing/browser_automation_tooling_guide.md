@@ -60,13 +60,13 @@ Before using Playwright MCP or `playwright-cli` for requirement-driven generatio
 
 Minimum local stack:
 
-1. **E2E database** — `just rebuild-e2e-db` or `just django-seed-e2e-tests` (`courseflow_e2e`)
-2. **Django on E2E DB** — `just django-run-e2e` (`:8000`)
+1. **Deterministic fixtures** — `just e2e-prepare` on the local database
+2. **Django** — `just django-run` (`:8000`)
 3. **React app** — Vite dev server (`:3000`)
 4. **Auth storage state** — `cd tests && yarn test-setup` → `tests/playwright/.auth/user.json`
 5. **Fixture manifest** (workflow/project routes) — `just e2e-prepare` → `tests/.playwright-fixtures/workflow.json`
 
-Do not use the dev database (`courseflow`) or `just django-seed` when validating selectors for E2E specs.
+Re-run `just e2e-prepare` before validation if prior browser tests or development work may have mutated fixture rows.
 
 ## Role in the generation workflow
 
@@ -169,7 +169,7 @@ At minimum, generation should confirm:
 
 1. Read the normalized or approved functional requirement and `tests/docs/requirements/mapping_fr_ui.md`.
 2. Extract actors, route, `uiObjects`, preconditions, trigger, `mainFlow`, and acceptance criteria.
-3. Prepare the E2E environment (database, API, app, auth, manifest).
+3. Prepare the E2E environment (local fixtures, API, app, auth, manifest).
 4. Review Figma/design evidence as intent only.
 5. Use Playwright MCP (or `playwright-cli` for narrow checks) to inspect the implemented UI.
 6. Validate candidate selectors and flow steps against the live DOM; respect `locatorMappings` confidence.

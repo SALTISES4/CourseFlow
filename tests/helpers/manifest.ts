@@ -92,7 +92,7 @@ export function resolveManifestPath(): string {
 }
 
 const MANIFEST_MISSING_HINT =
-  'Run from repo root: just e2e-prepare (or just rebuild-e2e-db for a full E2E database reset).';
+  'Run from repo root: just e2e-prepare.';
 
 function readManifestFile(): WorkflowManifest {
   const manifestPath = resolveManifestPath();

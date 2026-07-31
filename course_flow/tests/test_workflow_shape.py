@@ -5,16 +5,15 @@ from __future__ import annotations
 import pytest
 from django.db.models import Count
 
-from course_flow.core.models import Edge, Node, Project
-from course_flow.dev_seed.constants import DEV_SEED_PROJECT_TITLE_PREFIX
-from course_flow.dev_seed.graph_shape import (
+from course_flow.core.models import Edge, Graph, Node
+from course_flow.e2e_seed.graph_shape import (
     GraphShapeParams,
     generate_edge_pairs,
     generate_graph_layout,
     iter_layout_node_meta,
 )
-from course_flow.dev_seed.orchestrator import SeedConfig, generate_dev_seed
-from course_flow.dev_seed.rng import SeededRNG
+from course_flow.e2e_seed.orchestrator import generate_e2e_fixtures
+from course_flow.e2e_seed.rng import SeededRNG
 
 
 def test_pure_layout_and_edges_deterministic():
@@ -75,10 +74,8 @@ def test_edge_invariants_pure():
 
 @pytest.mark.django_db
 def test_db_nodes_one_per_cell_and_compact_rows():
-    cfg = SeedConfig(seed=2020, section_count=3, channel_count=3)
-    generate_dev_seed(cfg)
-    p = Project.objects.get(title__startswith=DEV_SEED_PROJECT_TITLE_PREFIX)
-    g = p.workflows.select_related("graph").first().graph
+    manifest = generate_e2e_fixtures()
+    g = Graph.objects.get(uuid=manifest["workflows"][0]["graph_uuid"])
     for sec in g.sections.all():
         dups = (
             Node.objects.filter(section=sec)
@@ -97,9 +94,8 @@ def test_db_nodes_one_per_cell_and_compact_rows():
 
 @pytest.mark.django_db
 def test_db_edge_out_degrees_and_no_self_loop():
-    generate_dev_seed(SeedConfig(seed=77, section_count=3, channel_count=3))
-    p = Project.objects.get(title__startswith=DEV_SEED_PROJECT_TITLE_PREFIX)
-    g = p.workflows.select_related("graph").first().graph
+    manifest = generate_e2e_fixtures()
+    g = Graph.objects.get(uuid=manifest["workflows"][0]["graph_uuid"])
     edges = Edge.objects.filter(source_node__section__graph=g)
     assert edges.exists()
     for e in edges:

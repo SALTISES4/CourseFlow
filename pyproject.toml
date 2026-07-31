@@ -25,14 +25,11 @@ dependencies = [
   "django-cors-headers>=4.6",
   "django>=5.0,<6.1",
   "django-ninja>=1.3.0",
-  "faker>=24.0",
   "psycopg[binary]>=3.2",
   "python-dotenv>=1.0",
 ]
 
 [project.scripts]
-cf-seed-dev-data = "course_flow.cli:main"
-cf-seed-dev-notifications = "course_flow.cli:seed_notifications_main"
 cf-seed-e2e-data = "course_flow.cli:seed_e2e_main"
 
 [build-system]

@@ -49,7 +49,7 @@ This folder defines the testing side of that split.
 
 ### 9. Playwright execution runbook
 - File: [../runbooks/playwright_execution_guide.md](../runbooks/playwright_execution_guide.md)
-- Purpose: how to install dependencies, configure env, run headless/UI/debug modes, prepare the E2E database, and troubleshoot local browser test execution.
+- Purpose: how to install dependencies, configure env, run headless/UI/debug modes, prepare deterministic fixtures, and troubleshoot local browser test execution.
 
 ## Relationship to requirement docs
 

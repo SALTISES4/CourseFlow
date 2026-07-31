@@ -1,4 +1,4 @@
-"""Generate or clear deterministic Playwright E2E fixture data."""
+"""Generate or clear deterministic local-development and E2E fixture data."""
 
 from __future__ import annotations
 
@@ -16,8 +16,8 @@ from course_flow.e2e_seed.orchestrator import (
 
 class Command(BaseCommand):
     help = (
-        "Create deterministic E2E FIXTURE projects for Playwright browser tests, "
-        "or clear fixture-owned project trees."
+        "Create deterministic E2E FIXTURE projects for local development and "
+        "Playwright browser tests, or clear fixture-owned project trees."
     )
 
     def add_arguments(self, parser) -> None:
@@ -29,7 +29,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--clear-and-seed",
             action="store_true",
-            help="Clear E2E fixtures, then generate the canonical fixture project.",
+            help="Clear E2E fixtures, then generate the canonical fixture set.",
         )
         parser.add_argument(
             "--json",

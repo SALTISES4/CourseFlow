@@ -1,9 +1,9 @@
-"""Naming and content contracts for Playwright E2E fixtures.
-
-Distinct from ``course_flow.dev_seed`` (Faker-driven synthetic dev data).
-"""
+"""Naming, actor, and content contracts for Playwright E2E fixtures."""
 
 E2E_FIXTURE_PROJECT_TITLE_PREFIX = "E2E FIXTURE -"
+E2E_FIXTURE_PASSWORD = "password"
+E2E_FIXTURE_TEACHER_EMAIL = "teacher@courseflow.com"
+E2E_FIXTURE_STUDENT_EMAIL = "student@courseflow.com"
 
 # Primary workflow graph used by edit-section calibration and related specs.
 E2E_FIXTURE_PROJECT_TITLE = f"{E2E_FIXTURE_PROJECT_TITLE_PREFIX} Edit Section"

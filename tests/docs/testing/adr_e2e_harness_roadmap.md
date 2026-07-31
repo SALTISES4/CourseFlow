@@ -2,11 +2,13 @@
 
 ## Status
 
-Accepted — Phase 2 in progress
+Accepted — local seed/database simplification adopted
 
 ## Date
 
 2026-06-23
+
+Amended 2026-07-31 to remove the local split-database and dev-seed mechanisms.
 
 ## Context
 
@@ -16,7 +18,7 @@ Infrastructure already in place:
 
 - Requirement YAML specs and `canonical_locators.yaml`
 - Test-generation policy (`tests/docs/testing/`)
-- Separate logical database `courseflow_e2e` on the single Postgres compose service
+- One local development database shared by UI development and Playwright
 - Deterministic E2E fixtures (`course_flow/e2e_seed/`) and manifest (`tests/.playwright-fixtures/workflow.json`)
 - Auth setup project (storage state)
 - Calibration specs for edit-section (partial FR coverage)
@@ -26,7 +28,7 @@ Gaps blocking FR-driven generation at scale:
 - Playwright does not load the fixture manifest automatically
 - Specs still depend on manual `PLAYWRIGHT_WORKFLOW_PATH` in `tests/.env`
 - `test.extend` workflow fixture not implemented
-- No single `just` recipe to prepare the E2E database + manifest
+- No single `just` recipe to prepare deterministic fixtures + manifest
 - Deferred edit-section FRs need fixture helpers (blank section, roles)
 - Legacy specs (`ai-guided.spec.ts`) use pre-rebuild selectors
 
@@ -48,8 +50,8 @@ Phases 1–3 are required before broad AI generation from requirement YAML. Phas
 | 1.2 | `tests/helpers/manifest.ts` — load/validate `workflow.json` | Done |
 | 1.3 | `tests/fixtures/workflow.ts` — `test.extend({ workflow })` | Done |
 | 1.4 | Migrate `edit-section-fr-001-012.spec.ts` to fixtures | Done |
-| 1.5 | `just e2e-prepare` — idempotent E2E DB + seed + manifest | Done |
-| 1.6 | Document E2E stack (`django-run-e2e` + `frontend-dev`) in runbook | Done |
+| 1.5 | `just e2e-prepare` — idempotent migrate + seed + manifest | Done |
+| 1.6 | Document E2E stack (`django-run` + `frontend-dev`) in runbook | Done |
 
 **Fixture API (contract):**
 
@@ -97,7 +99,7 @@ Per feature slice:
 1. Pick FR IDs from `*_requirements_v1.yaml`
 2. Verify fixture contract — extend `e2e_seed` if preconditions missing
 3. Map `canonical_locators.yaml` → colocated `*.locators.ts`
-4. Live DOM validation on `courseflow_e2e` (Playwright MCP per `browser_automation_tooling_guide.md`, or Playwright UI Mode)
+4. Live DOM validation on the seeded local application (Playwright MCP per `browser_automation_tooling_guide.md`, or Playwright UI Mode)
 5. Generate spec via `tests/docs/prompts/test_spec_generation.md`
 6. Review against `generated_test_review_checklist.md`
 7. Run `yarn test-ui -g "FR-…"`
@@ -129,7 +131,7 @@ Do not generate specs for domains without a documented fixture contract.
 
 ## Phase 5 — CI
 
-1. CircleCI: Postgres → `e2e-prepare` → Django (`POSTGRES_DB=courseflow_e2e`) + Vite
+1. CircleCI: temporary Docker Postgres database → migrate + seed → Django + Vite
 2. `yarn test` headless
 3. Publish Playwright HTML report
 
@@ -139,14 +141,12 @@ Do not generate specs for domains without a documented fixture contract.
 
 | Term | Database | Command |
 |------|----------|---------|
-| Python env | `.venv` (single, shared) | `just create-venv` (once), `uv sync` — **not** per-database |
-| Dev seed | `courseflow` | `just django-seed` |
-| E2E fixtures | `courseflow_e2e` | `just django-seed-e2e-tests` |
-| Rebuild dev | volume wipe | `just rebuild-dev-db` |
-| Rebuild E2E | `courseflow_e2e` only | `just rebuild-e2e-db` |
-| Prepare E2E (idempotent) | `courseflow_e2e` | `just e2e-prepare` |
+| Python env | `.venv` (single, shared) | `just create-venv` (once), `uv sync` |
+| E2E fixtures | local `courseflow` | `just django-seed-e2e-tests` |
+| Rebuild local DB | volume wipe | `just rebuild-dev-db` |
+| Prepare E2E (idempotent) | local `courseflow` | `just e2e-prepare` |
 
-Switch runtime database via `POSTGRES_DB` on each `just` recipe (`django-run` vs `django-run-e2e`). Do not recreate `.venv` when changing databases.
+There is no local database-switching mechanism. CI/CD should provide test isolation with a temporary Docker database owned by the job; those mechanics remain future work.
 
 ## Related documents
 
@@ -160,3 +160,4 @@ Switch runtime database via `POSTGRES_DB` on each `just` recipe (`django-run` vs
 - Specs import `test` from `tests/fixtures/`, not `@playwright/test` directly (when using workflow fixture)
 - `PLAYWRIGHT_WORKFLOW_PATH` in `tests/.env` becomes optional override only
 - AI agents must check fixture contract before generating workflow-domain tests
+- Local E2E runs can mutate development fixture rows; rerun `just e2e-prepare` to restore them

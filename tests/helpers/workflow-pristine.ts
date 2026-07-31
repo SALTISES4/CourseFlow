@@ -3,7 +3,7 @@ import { sectionContainers, sectionHeader } from '../e2e/workflow/edit-section.l
 import { workflowOutcomeHeader } from '../e2e/workflow/workflow-outcome.locators';
 import type { WorkflowHandle } from '../fixtures/workflow';
 
-const REBUILD_HINT = 'Run from repo root: just rebuild-e2e-db';
+const REBUILD_HINT = 'Run from repo root: just e2e-prepare';
 
 /** Seeded root outcome title — course_flow/e2e_seed/constants.py */
 export const E2E_SEED_OUTCOME_TITLE = 'E2E Outcome 1';

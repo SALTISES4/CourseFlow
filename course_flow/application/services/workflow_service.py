@@ -55,7 +55,9 @@ class WorkflowService:
     def list_related(
         self, workflow_uuid: UUID
     ) -> tuple[list[WorkflowDTO], list[WorkflowDTO]]:
-        """Return workflows contained by, and workflows containing, this workflow."""
+        """
+        Return workflows contained by, and workflows containing, this workflow.
+        """
         return self._repository.list_related(workflow_uuid)
 
     def update(self, graph_uuid: UUID, updates: dict[str, Any]) -> WorkflowDTO | None:

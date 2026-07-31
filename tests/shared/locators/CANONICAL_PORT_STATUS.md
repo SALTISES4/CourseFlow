@@ -75,4 +75,4 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 | Slice 4 workflow specs (after reseed) | **13 passed / 1 skipped** — node-hover, channel-insert-border, outcome-dup-del, delete-node |
 | `edit-section-fr-001-012.spec.ts` | FR-SEC-001–012 under parent `edit-section-fr-001-012` |
 
-Re-validate with `just rebuild-e2e-db` then `cd tests && yarn test` when the E2E stack is running.
+Re-validate with `just e2e-prepare` then `cd tests && yarn test` when the E2E stack is running.

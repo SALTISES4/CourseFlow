@@ -64,14 +64,14 @@ This mapping step is a translation aid only. It does not replace live DOM verifi
 
 ## 4. Live DOM validation
 
-Before finalizing test code, validate the flow against the implemented app on `courseflow_e2e`.
+Before finalizing test code, validate the flow against the implemented app with the deterministic fixtures loaded.
 
 ### Environment prerequisites
 
 Prepare the same stack committed specs use. See `tests/docs/runbooks/playwright_execution_guide.md`.
 
-1. E2E database seeded (`just django-seed-e2e-tests` or `just rebuild-e2e-db`)
-2. Django running against `courseflow_e2e` (`just django-run-e2e`)
+1. Local database seeded (`just e2e-prepare`)
+2. Django running on the configured local database (`just django-run`)
 3. React app on `:3000`
 4. Auth storage state (`cd tests && yarn test-setup`)
 5. Fixture manifest when routes depend on seeded UUIDs (`just e2e-prepare`)

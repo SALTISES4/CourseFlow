@@ -1,4 +1,4 @@
-"""Deterministic pseudo-random helpers (structure + Faker both keyed by seed)."""
+"""Deterministic pseudo-random helpers for E2E fixture structure."""
 
 from __future__ import annotations
 

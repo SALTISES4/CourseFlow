@@ -19,7 +19,7 @@ Playwright drives a **real browser** against the **real application**:
 Playwright (Chromium)
   → Vite dev server (:3000) — React app
     → Django API (:8000) — auth, serializers, persistence
-      → Postgres (Docker :5432) — logical database courseflow_e2e
+      → Postgres (Docker :5432) — local development database
 ```
 
 There are no Python mocks, fake API ports, or in-process test doubles for product behavior. The manifest file (`tests/.playwright-fixtures/workflow.json`) only records UUIDs created during real seeding so specs know which routes to open.
@@ -28,12 +28,11 @@ There are no Python mocks, fake API ports, or in-process test doubles for produc
 
 | Term | Command | Database | Purpose |
 | ---- | ------- | -------- | ------- |
-| **Dev seed** | `just django-seed` | `courseflow` | Faker-driven synthetic data for local UI work (`DEV SEED -` prefix) |
-| **E2E fixtures** | `just django-seed-e2e-tests` | `courseflow_e2e` | Deterministic contract data for Playwright (`E2E FIXTURE -` prefix) |
-| **Rebuild dev DB** | `just rebuild-dev-db` | Wipes volume → `courseflow` | Fresh dev migrate + superuser + dev seed |
-| **Rebuild E2E DB** | `just rebuild-e2e-db` | Resets `courseflow_e2e` only | Migrate + superuser + E2E fixtures + manifest |
+| **E2E fixtures** | `just django-seed-e2e-tests` | `courseflow` | Deterministic content for local development and Playwright (`E2E FIXTURE -` prefix) |
+| **Prepare E2E** | `just e2e-prepare` | `courseflow` | Migrate + replace E2E fixtures + write manifest |
+| **Rebuild dev DB** | `just rebuild-dev-db` | Wipes volume → `courseflow` | Full local reset, then migrate + superuser + E2E fixtures |
 
-Do **not** use `just django-seed` or `just dev` to prepare Playwright workflow tests.
+The deterministic E2E fixture set is the only local seed path. `just e2e-prepare` is the normal fixture-preparation command.
 
 ### Python environment (shared with dev)
 
@@ -42,27 +41,26 @@ Playwright E2E does **not** use a separate Python virtual environment.
 | Do | Do not |
 | -- | ------ |
 | Keep one `.venv` at the repo root for dev, E2E seeding, and `pytest` | Create a second venv (e.g. `dev_venv`) for E2E |
-| Run `just django-run-e2e` to point Django at `courseflow_e2e` | Delete or recreate `.venv` when switching to E2E work |
+| Run `just django-run` for local development and E2E | Delete or recreate `.venv` when switching work |
 | Run `uv sync` after dependency changes | Change root `.env` `POSTGRES_DB` back and forth for every task |
 
-E2E `just` recipes set `POSTGRES_DB=courseflow_e2e` on the **process** (`django-run-e2e`, `django-migrate-e2e`, `django-seed-e2e-tests`, …). Root `.env` can stay on `POSTGRES_DB=courseflow` for normal UI development.
+All local workflows read the same database configuration from the root `.env`.
 
-**PyCharm / IDE:** Configure the interpreter once against `.venv`. Use terminal recipes or a run configuration with `POSTGRES_DB=courseflow_e2e` for E2E — not a second interpreter path.
+**PyCharm / IDE:** Configure the interpreter once against `.venv` and use the normal Django run configuration.
 
-### Dev database vs E2E database
+### Local database model
 
-One Postgres container (`docker compose`), **two logical databases** on the same instance:
+Local development and Playwright use one Postgres database:
 
 | Database | Used by | Django command |
 | -------- | ------- | -------------- |
-| `courseflow` | Local UI development | `just django-run` (reads root `.env`) |
-| `courseflow_e2e` | Playwright / automated browser tests | `just django-run-e2e` |
+| `courseflow` | Local UI development and Playwright | `just django-run` |
 
-- Dev and E2E data can coexist on one running Postgres container.
-- `just rebuild-e2e-db` drops and recreates **only** `courseflow_e2e`.
-- `just rebuild-dev-db` wipes the Docker volume and destroys **both** databases.
+- `just e2e-prepare` replaces only projects owned by the deterministic E2E fixture prefix; it does not reset unrelated local rows.
+- Browser specs can mutate shared local fixture data. Re-run `just e2e-prepare` to restore it.
+- `just rebuild-dev-db` wipes the local volume and is the only full local database reset.
 
-`courseflow_e2e` is created on first volume init (`scripts/postgres/init/`) or via `just postgres-ensure-e2e-db` on an existing volume.
+CI/CD should eventually run browser tests against a temporary Docker database created for the job. That isolation mechanism is not wired yet.
 
 ## Package layout
 
@@ -121,7 +119,7 @@ Optional override:
 
 Root `.env` (`POSTGRES_DB=courseflow`) can stay unchanged for normal dev work.
 
-### 3. Prepare the E2E database and fixtures
+### 3. Prepare fixtures
 
 From **repo root**:
 
@@ -129,13 +127,7 @@ From **repo root**:
 just e2e-prepare
 ```
 
-This ensures `courseflow_e2e` exists, runs migrations, creates the admin superuser (if needed), seeds E2E fixtures, and writes `tests/.playwright-fixtures/workflow.json`.
-
-For a full reset of the E2E database only (drops `courseflow_e2e`, leaves dev data intact):
-
-```bash
-just rebuild-e2e-db
-```
+This runs migrations on the local database, replaces the deterministic E2E fixture projects, and writes `tests/.playwright-fixtures/workflow.json`.
 
 `PLAYWRIGHT_WORKFLOW_PATH` in `tests/.env` is **optional** — Playwright `globalSetup` and the `workflow` fixture read the manifest automatically. Set it only to override the manifest path.
 
@@ -161,7 +153,7 @@ Expect specs under `e2e/smoke/` and `e2e/workflow/`.
 
 ## Run E2E locally
 
-`just dev` starts Django against **`courseflow`** (dev data). For Playwright, run the E2E stack instead.
+`just dev` and Playwright use the same local database. Prepare fixtures first, then run the normal application stack.
 
 **Terminal 1 — Postgres** (if not already up):
 
@@ -169,10 +161,10 @@ Expect specs under `e2e/smoke/` and `e2e/workflow/`.
 just docker-up
 ```
 
-**Terminal 2 — Django against `courseflow_e2e`:**
+**Terminal 2 — Django:**
 
 ```bash
-just django-run-e2e
+just django-run
 ```
 
 **Terminal 3 — Vite frontend:**
@@ -231,7 +223,7 @@ yarn exec playwright test --headed e2e/smoke/authenticated-home.spec.ts
 
 ## E2E fixture contract
 
-`just e2e-prepare` seeds via `cf-seed-e2e-data` on `courseflow_e2e`:
+`just e2e-prepare` seeds via `cf-seed-e2e-data` on the configured local database:
 
 | Field | Value |
 | ----- | ----- |
@@ -239,7 +231,6 @@ yarn exec playwright test --headed e2e/smoke/authenticated-home.spec.ts
 | Owner | `teacher@courseflow.com` |
 | Recent projects | Five ordered, non-archived projects for FR-HOME-003 |
 | Contributors | `editor@courseflow.com`, `commenter@courseflow.com`, `student@courseflow.com` |
-| Admin override actor | `admin@courseflow.com`; intentionally not on fixture teams |
 | Workflow | One activity graph |
 | Sections | `E2E Section 1`, blank title (position 1), `E2E Section 3` |
 | Manifest | `tests/.playwright-fixtures/workflow.json` |
@@ -266,18 +257,17 @@ Active specs in `e2e/workflow/edit-section-fr-001-012.spec.ts`:
 - FR-SEC-003 — title auto-save persists after reload
 - FR-SEC-006 — delete modal Cancel preserves section count
 
-Requires `PLAYWRIGHT_WORKFLOW_PATH`, Django on `courseflow_e2e`, and an owner/editor session from auth setup.
+Requires `PLAYWRIGHT_WORKFLOW_PATH`, Django on `:8000`, and an owner/editor session from auth setup.
 
-## CI sketch (not wired yet)
+## CI goal (not wired yet)
 
-Same Postgres container, E2E database only:
+CI/CD should own isolation instead of introducing another local database mode:
 
-1. `docker compose up -d postgres`
-2. `just postgres-ensure-e2e-db`
-3. `just rebuild-e2e-db`
-4. Start Django with `POSTGRES_DB=courseflow_e2e`
-5. Start Vite or serve built frontend
-6. Playwright `globalSetup` → auth setup → specs
+1. Start a temporary Postgres database in Docker for the job
+2. Run migrations and `cf-seed-e2e-data` against that database
+3. Start Django and Vite (or serve the built frontend)
+4. Run Playwright `globalSetup` → auth setup → specs
+5. Destroy the temporary database with the job
 
 CircleCI currently runs Django unit tests only; browser E2E is local-first until this pipeline exists.
 
@@ -297,40 +287,30 @@ Run `yarn test-setup` first. Common causes:
 
 - Missing `tests/.env` with `TEST_USERNAME` / `TEST_PASSWORD`
 - Django not running on `:8000`
-- Django pointed at `courseflow` instead of `courseflow_e2e` — use `just django-run-e2e`
-- Primary teacher fixture missing — run `just django-seed-e2e-tests` or `just rebuild-e2e-db`
+- Primary teacher fixture missing — run `just e2e-prepare`
 
 ### Auth setup fails
 
 - Confirm Vite on `:3000` and Django on `:8000`
-- Confirm Django uses `courseflow_e2e` (`just django-run-e2e`)
 - Credentials: `teacher@courseflow.com` / `password` after `just django-seed-e2e-tests`
 
 ### Workflow specs skip immediately
 
-1. Run `just rebuild-e2e-db` or `just django-seed-e2e-tests`
+1. Run `just e2e-prepare`
 2. Set `PLAYWRIGHT_WORKFLOW_PATH` from `tests/.playwright-fixtures/workflow.json`
-3. Confirm Django is on `courseflow_e2e` and the graph has sections in the browser
+3. Confirm Django is on `:8000` and the graph has sections in the browser
 
-### Tests mutate the wrong data / see unexpected projects
+### Tests see mutated fixture data or unexpected projects
 
-Django is likely connected to `courseflow` (dev). Stop it and start `just django-run-e2e`.
+Local development and Playwright intentionally share the configured database. Run `just e2e-prepare` to restore deterministic fixture projects before rerunning the suite.
 
 ### PyCharm / IDE interpreter broke after recreating `.venv`
 
-Do not delete or recreate `.venv` when switching between dev and E2E. Use one interpreter at `.venv` and switch databases via `just django-run` vs `just django-run-e2e`. If `.venv` was removed, run `just create-venv && just uv-sync`, then re-select `.venv` in the IDE SDK settings.
+Do not delete or recreate `.venv` when switching between dev and E2E work. Use one interpreter at `.venv`. If `.venv` was removed, run `just create-venv && just uv-sync`, then re-select `.venv` in the IDE SDK settings.
 
 ### Tests fail on navigation / timeout
 
 Confirm `baseURL` in `playwright.config.ts` matches Vite (`http://localhost:3000/` by default). Specs use path-only navigation.
-
-### `courseflow_e2e` does not exist
-
-```bash
-just postgres-ensure-e2e-db
-```
-
-On a brand-new volume, the init script creates it automatically when Postgres first starts.
 
 ## Related documents
 

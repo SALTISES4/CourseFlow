@@ -1,4 +1,4 @@
-"""Deterministic Playwright E2E fixtures (distinct from dev seed)."""
+"""Deterministic fixtures for local development and Playwright E2E tests."""
 
 from course_flow.e2e_seed.constants import E2E_FIXTURE_PROJECT_TITLE_PREFIX
 from course_flow.e2e_seed.orchestrator import (
