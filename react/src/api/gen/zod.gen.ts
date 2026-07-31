@@ -324,7 +324,7 @@ export const zWorkflowDetailOut = z.object({
   description: z.string(),
   overviewMetadata: zWorkflowOverviewMetadataOut,
   workflowType: zWorkflowType,
-  authorId: z.number().int().nullable(),
+  owner: zUserSummaryOut,
   projectUuid: z.string().uuid().nullable(),
   isArchived: z.boolean(),
   revisionId: z.number().int(),

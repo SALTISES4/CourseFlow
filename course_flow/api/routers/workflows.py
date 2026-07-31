@@ -11,6 +11,7 @@ from course_flow.api.deps import (
     get_resource_lifecycle_service,
     get_workflow_copy_service,
     get_workflow_service,
+    get_user_service,
 )
 from course_flow.api.permission_context import permission_context_out
 from course_flow.api.schemas.workflows import (
@@ -73,6 +74,11 @@ def _require_workflow_permission(
 
 
 def _workflow_detail(current_user: User, dto: WorkflowDTO) -> WorkflowDetailOut:
+    user_service = get_user_service()
+    assert dto.author_id is not None
+    owner = user_service.get_user_by_id(dto.author_id)
+    assert owner is not None
+
     return WorkflowDetailOut(
         uuid=dto.workflow_uuid,
         graph_uuid=dto.graph_uuid,
@@ -80,7 +86,7 @@ def _workflow_detail(current_user: User, dto: WorkflowDTO) -> WorkflowDetailOut:
         description=dto.description,
         overview_metadata=dto.overview_metadata,
         workflow_type=dto.workflow_type,
-        author_id=dto.author_id,
+        owner=user_service.get_user_summary(owner),
         project_uuid=dto.project_uuid,
         is_archived=dto.is_archived,
         revision_id=dto.revision_id,

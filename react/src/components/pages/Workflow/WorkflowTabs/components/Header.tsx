@@ -20,9 +20,8 @@ const Header = () => {
     ...getWorkflowOptions({ path: { uuid: workflowUuid } }),
     enabled: Boolean(workflowUuid)
   })
-  const workflow = workflowResp?.item
 
-  const typeText = _t(workflow?.workflowType ?? 'workflow')
+  const workflow = workflowResp?.item
 
   return (
     <OuterContentWrap sx={{ pb: 0 }}>
@@ -47,12 +46,6 @@ const Header = () => {
             code: '',
             deleted: false
           })}
-
-          <CardChip
-            // TODO: use dynamic classname
-            className={ChipOptions.ACTIVITY as string}
-            label={typeText}
-          />
         </Typography>
 
         <Favourite id={workflowUuid} isFavorite={false} />

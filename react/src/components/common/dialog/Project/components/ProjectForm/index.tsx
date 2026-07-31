@@ -56,19 +56,12 @@ const ProjectForm = ({
     handleSubmit,
     control,
     formState: { errors, isDirty },
-    reset,
-    watch
+    reset
   } = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
     defaultValues,
     mode: 'onChange'
   })
-  const titleValue = watch('title')
-  const titleError =
-    errors.title?.message ??
-    (isDirty && titleValue.length === 0
-      ? _t('Project title cannot be empty')
-      : undefined)
 
   function onDialogClose() {
     reset()
@@ -98,15 +91,15 @@ const ProjectForm = ({
           />
         )}
         <StyledBox>
-          <FormControl fullWidth error={!!titleError}>
+          <FormControl fullWidth error={!!errors.title}>
             <TextField
               label={_t('Title')}
               placeholder={_t('Project title')}
               variant="standard"
               required
               {...register('title')}
-              error={!!titleError}
-              helperText={titleError}
+              error={!!errors.title}
+              helperText={errors.title?.message}
             />
           </FormControl>
 
@@ -195,7 +188,7 @@ const ProjectForm = ({
           type="submit"
           variant="contained"
           color="primary"
-          disabled={!isDirty || !!titleError || !!Object.keys(errors).length}
+          disabled={!isDirty || !!Object.keys(errors).length}
         >
           {submitLabel ?? _t('Edit project')}
         </Button>

@@ -1,12 +1,9 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import Field
-
 from course_flow.api.common.schemas import CamelSchema
 from course_flow.api.schemas.auth import UserSummaryOut
 from course_flow.api.schemas.permissions import PermissionContextOut
-from course_flow.api.schemas.project_subresources import DisciplineListItemOut
 from course_flow.core.enum import WorkflowType
 
 

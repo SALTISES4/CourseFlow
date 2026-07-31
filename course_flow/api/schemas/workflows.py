@@ -5,6 +5,7 @@ from uuid import UUID
 from pydantic import Field
 
 from course_flow.api.common.schemas import CamelSchema
+from course_flow.api.schemas.auth import UserSummaryOut
 from course_flow.api.schemas.permissions import PermissionContextOut
 from course_flow.core.enum import WorkflowType
 
@@ -107,7 +108,7 @@ class WorkflowDetailOut(CamelSchema):
     description: str
     overview_metadata: WorkflowOverviewMetadataOut
     workflow_type: WorkflowType
-    author_id: int | None
+    owner: UserSummaryOut
     project_uuid: UUID | None
     is_archived: bool
     revision_id: int

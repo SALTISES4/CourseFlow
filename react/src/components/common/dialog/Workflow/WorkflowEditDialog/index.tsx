@@ -5,11 +5,14 @@ import {
   listWorkflowsQueryKey,
   updateWorkflowMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
+import {
+  WorkflowFormType,
+  workflowSchema
+} from '@cf/components/common/dialog/Workflow/components/WorkflowForm'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
-import { WorkflowFormType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -20,7 +23,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
-import { z } from 'zod'
 
 const WorkflowLabels: Record<WorkflowType, string> = {
   [WorkflowType.PROGRAM]: _t('Program'),
@@ -28,12 +30,6 @@ const WorkflowLabels: Record<WorkflowType, string> = {
   [WorkflowType.COURSE]: _t('Course'),
   [WorkflowType.TASK]: _t('Task')
 }
-
-// Define the Zod schema for validation
-const workflowSchema = z.object({
-  title: z.string().min(1, { message: _t('Title is required') }),
-  description: z.string().min(1, { message: _t('Description is required') })
-})
 
 const WorkflowEditDialog = () => {
   const { uuid } = useParams()
@@ -60,9 +56,10 @@ const WorkflowEditDialog = () => {
     formState: { errors, isDirty }
   } = useForm<WorkflowFormType>({
     resolver: zodResolver(workflowSchema),
+    mode: 'onChange',
     defaultValues: {
-      title: '',
-      description: ''
+      title: workflow?.title ?? '',
+      description: workflow?.description ?? ''
     }
   })
 
@@ -85,10 +82,21 @@ const WorkflowEditDialog = () => {
       queryClient.invalidateQueries({
         queryKey: listWorkflowsQueryKey()
       })
-      onSuccess({ message: 'Success' })
+
+      onSuccess({
+        message: _t(
+          `Your ${workflowTypeLabel.toLowerCase()} has been successfully updated`
+        )
+      })
+
       onClose()
     },
-    onError: (err) => onError(err)
+    onError: (err) =>
+      onError(
+        _t(
+          `We encountered an issue and your ${workflowTypeLabel.toLowerCase()} was not updated`
+        )
+      )
   })
 
   const onSubmit = useCallback(
@@ -113,10 +121,7 @@ const WorkflowEditDialog = () => {
       open={show}
       fullWidth
       maxWidth="sm"
-      onClose={() => {
-        onClose()
-        resetState()
-      }}
+      onClose={onClose}
       TransitionProps={{ onExited: resetState }}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -130,7 +135,7 @@ const WorkflowEditDialog = () => {
               name="title"
               variant="standard"
               required
-              label={_t(`Title`)}
+              label={_t('Title')}
               error={!!errors.title}
               fullWidth
               helperText={errors.title?.message}
@@ -157,7 +162,7 @@ const WorkflowEditDialog = () => {
           <Button
             type="submit"
             variant="contained"
-            disabled={!isDirty || !workflow}
+            disabled={!isDirty || !workflow || !!Object.keys(errors).length}
           >
             {_t(`Update ${workflowTypeLabel.toLowerCase()}`)}
           </Button>

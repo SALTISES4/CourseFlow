@@ -542,10 +542,7 @@ export type WorkflowDetailOut = {
   description: string
   overviewMetadata: WorkflowOverviewMetadataOut
   workflowType: WorkflowType
-  /**
-   * Authorid
-   */
-  authorId: number | null
+  owner: UserSummaryOut
   /**
    * Projectuuid
    */

@@ -147,6 +147,14 @@ export const _t = (str: string) => {
   return str
 }
 
+export const capitalize = (text: string) => {
+  if (!text) {
+    return ''
+  }
+
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
 export const getNextLargestNumber = (haystack: number[]): number => {
   const largest = haystack.reduce((acc, curr) => {
     return acc > curr ? acc : curr
