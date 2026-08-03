@@ -14,8 +14,6 @@ import {
   SortOption
 } from '@cfComponents/filters/types'
 
-type FilterGroups = { [key: string]: SearchFilterGroup }
-
 export type SearchOptions = {
   pagination: {
     page: number
@@ -186,7 +184,7 @@ class LibraryHelper {
    *
    **/
   public static processFilterGroups = (
-    filterGroups: FilterGroups
+    filterGroups: SearchOptions['filterGroups']
   ): LibraryFiltersIn => {
     const relationship = filterGroups.ownershipFilter?.options?.find(
       (option) => option.enabled

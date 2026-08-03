@@ -22,6 +22,7 @@ const ToggleArchive = ({
     <FilterToggle
       label={filterGroup.label}
       icon={<ArchiveOutlinedIcon />}
+      checked={!!filterGroup.value}
       onChange={(checked) =>
         setSearchFilterState(
           produce((draft) => {

@@ -23,6 +23,7 @@ const ToggleFavorite = ({
       label={filterGroup.label}
       icon={<StarIcon />}
       className="filter-favorite"
+      checked={!!filterGroup.value}
       onChange={(checked) =>
         setSearchFilterState(
           produce((draft) => {
