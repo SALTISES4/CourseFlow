@@ -23,6 +23,7 @@ const ToggleTemplate = ({
       label={filterGroup.label}
       icon={<SpaceDashboardOutlinedIcon />}
       color="template"
+      checked={!!filterGroup.value}
       onChange={(checked) =>
         setSearchFilterState(
           produce((draft) => {

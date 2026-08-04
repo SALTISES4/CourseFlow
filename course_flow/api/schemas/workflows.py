@@ -111,6 +111,7 @@ class WorkflowDetailOut(CamelSchema):
     owner: UserSummaryOut
     project_uuid: UUID | None
     is_archived: bool
+    is_favorite: bool
     revision_id: int
     date_created: datetime
     modified_on: datetime

@@ -1,8 +1,8 @@
 import { ProjectDetailOut } from '@cf/api/gen'
+import Favorite from '@cf/components/common/UIPrimitives/Favorite'
 import { _t } from '@cf/utility/Utility.class'
 import { ChipOptions } from '@cfComponents/cards/WorkflowCardDumb'
 import { CardChip } from '@cfComponents/cards/WorkflowCardDumb/styles'
-import Favourite from '@cfComponents/UIPrimitives/Favourite'
 import { OuterContentWrap } from '@cfMUI/helper'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
@@ -35,7 +35,7 @@ const ProjectHeader = ({ project }: { project: ProjectDetailOut }) => (
       </Typography>
 
       <Box>
-        <Favourite uuid={project.uuid} isFavorite={project.isFavorite} />
+        <Favorite uuid={project.uuid} isFavorite={project.isFavorite} />
       </Box>
     </Stack>
   </OuterContentWrap>

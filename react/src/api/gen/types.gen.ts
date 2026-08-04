@@ -552,6 +552,10 @@ export type WorkflowDetailOut = {
    */
   isArchived: boolean
   /**
+   * Isfavorite
+   */
+  isFavorite: boolean
+  /**
    * Revisionid
    */
   revisionId: number

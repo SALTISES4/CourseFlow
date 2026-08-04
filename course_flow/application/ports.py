@@ -66,6 +66,7 @@ class ChannelRepositoryPort(Protocol):
         title: str,
         position: int,
         thread_uuid: UUID | None = None,
+        colour: str | None = None,
     ) -> ChannelDTO | None: ...
 
     def get_by_uuid(self, uuid: UUID) -> ChannelDTO | None: ...

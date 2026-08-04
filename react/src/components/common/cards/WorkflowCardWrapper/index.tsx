@@ -1,11 +1,11 @@
 import { LibraryContentTypeOut, type PermissionContextOut } from '@cf/api/gen'
+import Favorite from '@cf/components/common/UIPrimitives/Favorite'
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
 import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardDumb, {
   ChipOptions,
   PropsType as WorkflowCardDumbPropsType
 } from '@cfComponents/cards/WorkflowCardDumb'
-import Favorite from '@cfComponents/UIPrimitives/Favourite'
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
 import Tooltip from '@mui/material/Tooltip'
 

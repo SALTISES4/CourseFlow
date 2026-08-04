@@ -327,6 +327,7 @@ export const zWorkflowDetailOut = z.object({
   owner: zUserSummaryOut,
   projectUuid: z.string().uuid().nullable(),
   isArchived: z.boolean(),
+  isFavorite: z.boolean(),
   revisionId: z.number().int(),
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime(),
