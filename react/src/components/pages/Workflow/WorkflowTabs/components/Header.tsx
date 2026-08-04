@@ -48,7 +48,10 @@ const Header = () => {
           })}
         </Typography>
 
-        <Favourite id={workflowUuid} isFavorite={false} />
+        <Favourite
+          id={workflowUuid}
+          isFavorite={workflow?.isFavorite ?? false}
+        />
       </Stack>
     </OuterContentWrap>
   )

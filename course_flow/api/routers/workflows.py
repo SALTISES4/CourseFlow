@@ -37,7 +37,11 @@ from course_flow.application.services.workflow_copy_service import (
     WorkflowCopySourceNotFound,
     WorkflowCopyValidationError,
 )
-from course_flow.core.models import User
+from course_flow.core.models import (
+    User,
+    Graph,
+    FavoriteGraph
+)
 from course_flow.core.permissions import ProjectPermission, WorkflowPermission
 
 router = Router(tags=["workflows"], by_alias=True)
@@ -79,6 +83,16 @@ def _workflow_detail(current_user: User, dto: WorkflowDTO) -> WorkflowDetailOut:
     owner = user_service.get_user_by_id(dto.author_id)
     assert owner is not None
 
+    graph = Graph.objects.filter(uuid=dto.graph_uuid).first()
+
+    is_favorite = (
+        graph is not None
+        and FavoriteGraph.objects.filter(
+            user_id=current_user.id,
+            graph_id=graph.id,
+        ).exists()
+    )
+
     return WorkflowDetailOut(
         uuid=dto.workflow_uuid,
         graph_uuid=dto.graph_uuid,
@@ -89,6 +103,7 @@ def _workflow_detail(current_user: User, dto: WorkflowDTO) -> WorkflowDetailOut:
         owner=user_service.get_user_summary(owner),
         project_uuid=dto.project_uuid,
         is_archived=dto.is_archived,
+        is_favorite=is_favorite,
         revision_id=dto.revision_id,
         date_created=dto.date_created,
         modified_on=dto.modified_on,
