@@ -64,15 +64,20 @@ import {
   workflowRichTextDescriptionEditorToolbar,
 } from './workflow-graph.locators';
 
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  seedAssets: ['workflow.navigation_course', 'workflow.navigation_program'],
+  seedDependencies: ['project.primary', 'actor.commenter', 'actor.viewer'],
+  actorAsset: 'actor.teacher',
+  seedAccess: 'disposable-copy',
+});
+
 /**
  * Edit node — FR-WF-EN-001 through FR-WF-EN-011 (Description rich text: FR-WF-EN-012).
  * Requirements: workflow_edit_node_requirements_v1.yaml
  */
 
 test.describe('edit-node-fr-001-007', () => {
-  // Course/program cases mutate shared seeded link state; keep workers ordered.
-  test.describe.configure({ mode: 'serial' });
-
   test.describe('Open workflowEditNodeForm (FR-WF-EN-001)', () => {
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);

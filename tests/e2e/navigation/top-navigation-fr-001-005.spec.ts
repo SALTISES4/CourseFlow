@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures';
 import {
   expectAccountMenuInScopeRowsPerFrTop003,
   expectNotificationsNotInTopNavigationPerCurrentPhase,
@@ -34,6 +34,15 @@ import {
   topNavigationBar,
   waitForMainNavigationReady,
 } from './navigation.locators';
+
+test.use({
+  seedDependencies: [
+    'actor.teacher',
+    'project.primary',
+    'workflow.standard_activity',
+    'workflow.restricted_activity',
+  ],
+});
 
 /**
  * Calibration slice — FR-TOP-001 through FR-TOP-005 (FR-TOP-004/006/008 deferred).

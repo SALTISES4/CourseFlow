@@ -5,7 +5,6 @@ import {
   expectDefaultAddTabNodeCategories,
 } from '../../helpers/create-workflow';
 import { loadWorkflowManifest } from '../../helpers/manifest';
-import { skipUnlessPristineWorkflow } from '../../helpers/workflow-pristine';
 import { firstWorkflowNodeUuid } from './comments-tab.helpers';
 import {
   dragNodeCategoryOntoNode,
@@ -35,6 +34,13 @@ import {
   workflowRightSidebarContentPanel,
   workflowRightSidebarEditTab,
 } from '../../shared/locators/workflow';
+
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  seedDependencies: ['project.primary', 'project.recent_collection'],
+  actorAsset: 'actor.teacher',
+  seedAccess: 'disposable-copy',
+});
 
 /**
  * Add tab — FR-WF-ADD-001 through FR-WF-ADD-006.
@@ -162,7 +168,6 @@ test.describe('add-tab-fr-001-006', () => {
   test.describe('Add tab — row drop placement (FR-WF-ADD-004)', () => {
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
-      await skipUnlessPristineWorkflow(page, workflow);
       await workflowRightSidebarAddTab(page).click();
       await workflowAddTabInsertModeRowButton(page).click();
     });
@@ -208,7 +213,6 @@ test.describe('add-tab-fr-001-006', () => {
   test.describe('Add tab — column drop placement (FR-WF-ADD-005)', () => {
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
-      await skipUnlessPristineWorkflow(page, workflow);
       await workflowRightSidebarAddTab(page).click();
       await workflowAddTabInsertModeColumnButton(page).click();
     });
@@ -253,7 +257,6 @@ test.describe('add-tab-fr-001-006', () => {
   test.describe('Add tab — manual insert mode (FR-WF-ADD-006)', () => {
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
-      await skipUnlessPristineWorkflow(page, workflow);
       await workflowRightSidebarAddTab(page).click();
       await workflowAddTabInsertModeManualButton(page).click();
     });

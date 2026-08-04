@@ -8,6 +8,8 @@ import {
 import { workflowOutcomeHeader } from '../workflow-outcome.locators';
 import { workflowRightSidebarCommentsTabContent } from '../../../shared/locators/workflow';
 
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'read-only' });
+
 /**
  * Outcome comments entry paths — FR-WF-COMMENTS-004.
  * Requirements: workflow_comments_tab_requirements_v1.yaml

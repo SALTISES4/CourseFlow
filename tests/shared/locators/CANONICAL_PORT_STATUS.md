@@ -37,24 +37,24 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 - `tests/e2e/workflow/workflow-overview.locators.ts` — workflowOverviewView, workflowMetadata* (partial)
 - `tests/e2e/workflow/workflow-overview-fr-001-007.spec.ts` — FR-WF-OV-001–007 (parent `workflow-overview-fr-001-007`)
 - `tests/e2e/workflow/edit-node-fr-001-007.spec.ts` — FR-WF-EN-001–011 (+ FR-WF-EN-012 description; link dialog, tags catalog, commenter/viewer)
-- `tests/e2e/workflow/edit-channel-fr-001-009.spec.ts` — FR-CHAN-001–007, FR-CHAN-009 (004–006 / 009 serial, pristine)
+- `tests/e2e/workflow/edit-channel-fr-001-009.spec.ts` — FR-CHAN-001–007, FR-CHAN-009 (per-test disposable workflow)
 - `tests/e2e/workflow/node-visual-fr-001-005.spec.ts` — FR-WF-NODE-001–005 (001: title/border/meta icons/duration/linked indicator; 003 deferred)
 - `tests/e2e/workflow/edit-outcome-fr-004.spec.ts` — FR-WF-EO-004
-- `tests/e2e/workflow/add-tab-fr-001-006.spec.ts` — FR-WF-ADD-001–006 (004–006 pristine)
+- `tests/e2e/workflow/add-tab-fr-001-006.spec.ts` — FR-WF-ADD-001–006 (per-test disposable workflow)
 - `tests/e2e/workflow/edit-outcome-fr-005-006.spec.ts` — FR-WF-EO-005/006
-- `tests/e2e/workflow/delete-node-fr-001.spec.ts` — FR-WF-DEL-001 (serial, pristine)
-- `tests/e2e/workflow/duplicate-node-fr-001.spec.ts` — FR-WF-DUP-001 (serial, pristine)
-- `tests/e2e/workflow/node-hover-fr-002-005.spec.ts` — FR-WF-NODE-005, FR-WF-DUP-002/003 (serial, section 3)
-- `tests/e2e/workflow/outcome-duplicate-delete-fr-009-014.spec.ts` — FR-WF-EO-009–013 (serial)
+- `tests/e2e/workflow/delete-node-fr-001.spec.ts` — FR-WF-DEL-001 (per-test disposable workflow)
+- `tests/e2e/workflow/duplicate-node-fr-001.spec.ts` — FR-WF-DUP-001 (per-test disposable workflow)
+- `tests/e2e/workflow/node-hover-fr-002-005.spec.ts` — FR-WF-NODE-005, FR-WF-DUP-002/003 (per-test disposable workflow)
+- `tests/e2e/workflow/outcome-duplicate-delete-fr-009-014.spec.ts` — FR-WF-EO-009–013 (per-test disposable workflow)
 - `tests/e2e/workflow/workflow-graph.locators.ts` — workflowNode*, workflowChannel*, edit form headings
 - `tests/e2e/workflow/workflow.locators.ts` — workflow header/tab shell uiObjects
 
 ## Workflow E2E fixture hygiene
 
-- `tests/helpers/workflow-pristine.ts` — `skipUnlessPristineWorkflow()` guards display/mutation specs when shared workflow DB state is polluted
-- `edit-section-fr-001-012` FR-SEC-003 title mutation uses `E2E Section 3` (preserves `E2E Section 1` for FR-SEC-002)
-- `edit-section-fr-001-012` serial mutations track `expectedSectionCount` across insert/duplicate/delete
-- FR-SEC-003 viewer readOnly test skipped until workflow EditSection enforces project team roles
+- Canonical seed workflows are immutable sources selected by stable asset ID.
+- Mutating tests receive and delete a production-path workflow copy per test.
+- Read-only tests fail teardown when the selected graph revision changes.
+- FR-SEC-003 viewer readOnly remains a product `fixme` until EditSection enforces project team roles.
 
 ## Not yet ported (YAML entries remain semantic-only)
 

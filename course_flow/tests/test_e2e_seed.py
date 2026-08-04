@@ -15,11 +15,13 @@ from course_flow.core.models import (
     Section,
     TeamUser,
 )
+from course_flow.e2e_seed.catalog import seed_assets_by_id
 from course_flow.e2e_seed.clear import clear_e2e_fixtures
 from course_flow.e2e_seed.constants import (
     E2E_FIXTURE_ARCHIVED_HOME_PROJECT_TITLE,
     E2E_FIXTURE_COMMENTER_EMAIL,
     E2E_FIXTURE_EDITOR_EMAIL,
+    E2E_FIXTURE_FAVOURITE_PROJECT_TITLES,
     E2E_FIXTURE_HOME_PROJECT_TITLES,
     E2E_FIXTURE_PROJECT_TITLE,
     E2E_FIXTURE_PROJECT_TITLE_PREFIX,
@@ -49,11 +51,11 @@ def test_e2e_fixture_project_has_fixed_section_titles():
 
     sections = list(
         Section.objects.filter(
-            graph__uuid=manifest["workflows"][0]["graph_uuid"]
+            graph__uuid=manifest["assets"]["workflow.standard_activity"]["graph_uuid"]
         ).order_by("position")
     )
     assert [section.title for section in sections] == list(E2E_SECTION_TITLES)
-    assert manifest["workflows"][0]["sections"][1]["title"] == ""
+    assert manifest["assets"]["workflow.standard_activity"]["sections"][1]["title"] == ""
 
 
 @pytest.mark.django_db
@@ -99,6 +101,12 @@ def test_e2e_fixture_favourites_cover_default_project_and_workflow_scopes():
         user__email=E2E_FIXTURE_TEACHER_EMAIL,
         graph__workflow__project=template_project,
     ).count() == 3
+    favourite_projects = manifest["assets"]["project.favourite_collection"]["items"]
+    assert len(favourite_projects) == 5
+    assert FavoriteProject.objects.filter(
+        user__email=E2E_FIXTURE_TEACHER_EMAIL,
+        project__uuid__in=[project["uuid"] for project in favourite_projects],
+    ).count() == 5
 
 
 @pytest.mark.django_db
@@ -138,7 +146,8 @@ def test_e2e_fixture_home_projects_cover_cap_order_and_archive_exclusion():
 @pytest.mark.django_db
 def test_e2e_fixture_manifest_includes_workflow_path_and_sections():
     manifest = generate_e2e_fixtures()
-    workflow = manifest["workflows"][0]
+    assert set(manifest["assets"]) == set(seed_assets_by_id())
+    workflow = manifest["assets"]["workflow.standard_activity"]
     workflow_uuid = workflow["workflow_uuid"]
 
     assert workflow["workflow_path"] == f"/workflow/{workflow_uuid}/graph"
@@ -165,7 +174,7 @@ def test_e2e_fixture_includes_private_workflow_outside_primary_teacher_scope():
 @pytest.mark.django_db
 def test_e2e_fixture_manifest_includes_outcomes():
     manifest = generate_e2e_fixtures()
-    workflow = manifest["workflows"][0]
+    workflow = manifest["assets"]["workflow.standard_activity"]
 
     assert workflow.get("outcome_count", 0) >= 1
     outcomes = workflow.get("outcomes") or []
@@ -181,7 +190,20 @@ def test_e2e_fixture_manifest_written_to_path(tmp_path: Path):
 
     payload = json.loads(manifest_path.read_text(encoding="utf-8"))
     assert payload["project_title"] == E2E_FIXTURE_PROJECT_TITLE
-    assert payload["workflows"][0]["workflow_path"].startswith("/workflow/")
+    assert payload["assets"]["workflow.standard_activity"]["workflow_path"].startswith(
+        "/workflow/"
+    )
+
+
+def test_seed_asset_catalog_matches_runtime_manifest_contract():
+    catalog_ids = set(seed_assets_by_id())
+    assert {
+        "actor.teacher",
+        "project.primary",
+        "workflow.standard_activity",
+        "workflow.navigation_course",
+        "workflow.navigation_program",
+    }.issubset(catalog_ids)
 
 
 @pytest.mark.django_db
@@ -195,5 +217,8 @@ def test_clear_then_seed_e2e_fixtures_replaces_existing_fixture_project():
         Project.objects.filter(
             title__startswith=E2E_FIXTURE_PROJECT_TITLE_PREFIX
         ).count()
-        == 3 + len(E2E_FIXTURE_HOME_PROJECT_TITLES) + 1
+        == 3
+        + len(E2E_FIXTURE_HOME_PROJECT_TITLES)
+        + len(E2E_FIXTURE_FAVOURITE_PROJECT_TITLES)
+        + 1
     )

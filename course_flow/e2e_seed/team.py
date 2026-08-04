@@ -21,6 +21,11 @@ def _contributor_manifest(*, email: str, role: Role) -> dict:
     return {
         "email": email,
         "role": role.value,
+        "account_role": (
+            AccountRole.STUDENT.value
+            if role == Role.VIEWER
+            else AccountRole.TEACHER.value
+        ),
         "password": E2E_FIXTURE_PASSWORD,
     }
 

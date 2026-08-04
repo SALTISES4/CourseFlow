@@ -1,5 +1,4 @@
 import { test, expect } from '../../fixtures';
-import { skipUnlessPristineWorkflow } from '../../helpers/workflow-pristine';
 import {
   assertNodeIsBelowSourceInSameColumn,
   findNodeBelowSourceInSection,
@@ -14,17 +13,16 @@ import {
   workflowNodeHoverInsertBelowItem,
 } from './workflow-graph.locators';
 
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
+
 /**
  * Node hover actions — FR-WF-DUP-002, FR-WF-DUP-003, FR-WF-NODE-005.
  * Requirements: workflow_duplicate_node_requirements_v1.yaml, workflow_node_visual_requirements_v1.yaml
  */
 
 test.describe('Node hover — insert and duplicate (FR-WF-NODE-005, FR-WF-DUP-002, FR-WF-DUP-003)', () => {
-  test.describe.configure({ mode: 'serial' });
-
   test.beforeEach(async ({ page, workflow }) => {
     await page.goto(workflow.path);
-    await skipUnlessPristineWorkflow(page, workflow);
     await setRowInsertMode(page);
   });
 

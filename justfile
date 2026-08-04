@@ -21,6 +21,7 @@ compose_cmd := "docker compose"
 dev_profile := "dev"
 
 frontend_dir := "react"
+testing_dir := "tests"
 
 # Dedicated websocket/app log files (outside docker stderr)
 py_log_file := "logs/python.log"
@@ -69,9 +70,9 @@ commamd-confirm:
 export-xml:
     repomix --include "./course_flow,./tests,./react,./docs,./cursor,./circleci"  -o ./assets/repomix.xml --ignore ./assets/
 
-# ----------------------------
+#########################################################
 # VCS
-# ----------------------------
+#########################################################
 [group: 'VCS']
 checkout-dev:
   git checkout develop
@@ -99,9 +100,9 @@ init-env-frontend:
   if [ ! -f .env ]; then \
     cp .env.default .env \
   fi
-# ----------------------------
+#########################################################
 # Docker
-# ----------------------------
+#########################################################
 
 [group: 'docker aliases']
 docker-build:
@@ -131,9 +132,9 @@ docker-restart:
 docker-reset:
   {{ compose_cmd }} down -v
 
-# ----------------------------
-# Django
-# ----------------------------
+##########################################################
+# DJANGO
+#########################################################
 
 [group: 'Django']
 django-migrate:
@@ -167,10 +168,9 @@ django-wait-db:
     sleep 2; \
   done; echo "DB not ready"; exit 1'
 
-# ----------------------------
+#########################################################
 # Backend
-# ----------------------------
-
+#########################################################
 # Create .venv once for all workflows (dev, E2E, pytest). IDE interpreters
 # (e.g. PyCharm) are bound to this path.
 # Recreates only when .venv/bin/python is missing (e.g. stale symlink to removed /usr/local/bin/python3).
@@ -231,10 +231,15 @@ frontend-openapi-codegen:
 [group: 'Testing:setup']
 django-seed-e2e-tests:
   uv run cf-seed-e2e-data --clear-and-seed --manifest-path tests/.playwright-fixtures/workflow.json
+  uv run cf-check-e2e-assets
 
 [group: 'Testing:setup']
 django-clear-e2e-tests:
   uv run cf-seed-e2e-data --clear
+
+[group: 'Testing:setup']
+e2e-assets-check:
+  uv run cf-check-e2e-assets --check
 
 
 #########################################################
@@ -258,6 +263,10 @@ test-unit:
 typecheck:
   uv run pyright
 
+
+[group: 'Testing:run']
+typecheck:
+  cd {{ testing_dir }}
 
 #########################################################
 # APPLE SCRIPTS

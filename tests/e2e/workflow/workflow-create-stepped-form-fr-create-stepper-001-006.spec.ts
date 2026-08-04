@@ -1,4 +1,4 @@
-import { test, expect, type Locator, type Page } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '../../fixtures';
 import {
   CREATE_WORKFLOW_NO_ELIGIBLE_PROJECTS_COPY,
   createWorkflowCancelButton,
@@ -53,6 +53,17 @@ import { globalMessageSnackbar } from '../../shared/locators/global';
 import { workflowSectionContainers, workflowTitle } from '../../shared/locators/workflow';
 import { cardByTitle, cardChipWithLabel, cardTitleText } from '../../shared/locators/cards';
 import { workflowNodes } from './workflow-graph.locators';
+
+test.use({
+  seedDependencies: [
+    'actor.teacher',
+    'project.recent_collection',
+    'project.templates',
+    'workflow.template_activity',
+    'workflow.template_course',
+    'workflow.template_program',
+  ],
+});
 
 /**
  * Create workflow stepped form — FR-WF-CREATE-STEPPER-001 through FR-WF-CREATE-STEPPER-006.
@@ -254,20 +265,17 @@ test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006',
         });
 
         test.describe('FR-WF-CREATE-STEPPER-003: step 1 select destination project', () => {
-        test('shows project search view with at most four projectCard items', async ({ page }) => {
-          await openCreateWorkflowDialogStep1(page, entry);
+          test('shows project search view with at most four projectCard items', async ({ page }) => {
+            await openCreateWorkflowDialogStep1(page, entry);
 
-          await expect(workflowProjectSearchField(page)).toBeVisible();
-          await expect(workflowProjectSearchView(page)).toBeVisible();
+            await expect(workflowProjectSearchField(page)).toBeVisible();
+            await expect(workflowProjectSearchView(page)).toBeVisible();
 
-          const projectCards = createWorkflowDialogProjectCards(page);
-          const count = await projectCards.count();
-          if (count === 0) {
-            test.skip(true, 'No eligible project cards in create-workflow step 1.');
-          }
-          expect(count).toBeGreaterThanOrEqual(1);
-          expect(count).toBeLessThanOrEqual(4);
-        });
+            const projectCards = createWorkflowDialogProjectCards(page);
+            const count = await projectCards.count();
+            expect(count).toBeGreaterThanOrEqual(1);
+            expect(count).toBeLessThanOrEqual(4);
+          });
 
         test('Next step stays disabled until a projectCard is selected', async ({ page }) => {
           await openCreateWorkflowDialogStep1(page, entry);
@@ -584,5 +592,5 @@ test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006',
   }
 
   // FR-WF-CREATE-STEPPER-005 failure snackbar needs a deterministic API-failure harness.
-  test.skip('shows failure snackbar when blank create submit fails', async () => {});
+  test.fixme('shows failure snackbar when blank create submit fails', async () => {});
 });

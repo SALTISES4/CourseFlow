@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures';
 import {
   expectRelatedWorkflowLinkOpensInNewTab,
   expectRelatedWorkflowLinksSortedAz,
@@ -24,6 +24,16 @@ import {
   viewAllLink,
   waitForMainNavigationReady,
 } from './navigation.locators';
+
+test.use({
+  seedDependencies: [
+    'actor.teacher',
+    'project.favourite_collection',
+    'workflow.standard_activity',
+    'workflow.navigation_course',
+    'workflow.navigation_program',
+  ],
+});
 
 /**
  * Calibration slice — FR-NAV-001 through FR-NAV-013.
@@ -86,10 +96,6 @@ test.describe('Main navigation — calibration (FR-NAV-001-013)', () => {
       page,
     }) => {
       const favouriteCount = await favouritedItemLinks(page).count();
-      if (favouriteCount === 0) {
-        test.skip(true, 'No favourited projects in admin library for sidebar favourites tests.');
-      }
-
       await expect(favouritesSectionLabel(page)).toBeVisible();
       expect(favouriteCount).toBeGreaterThanOrEqual(1);
       expect(favouriteCount).toBeLessThanOrEqual(5);
@@ -101,23 +107,14 @@ test.describe('Main navigation — calibration (FR-NAV-001-013)', () => {
 
     test('FR-NAV-007: View all navigates to /favourites when shown', async ({ page }) => {
       const viewAll = viewAllLink(page);
-      if ((await viewAll.count()) === 0) {
-        test.skip(
-          true,
-          'viewAllLink not shown — needs 5+ favourited projects (implementation threshold; FR-NAV-006 specifies 6+).',
-        );
-      }
-
+      await expect(viewAll).toBeVisible();
       await viewAll.click();
       await expect(page).toHaveURL(/\/favourites\/?$/);
     });
 
     test('FR-NAV-008: favourited item navigates to parent project route', async ({ page }) => {
       const favourite = favouritedItemLinks(page).first();
-      if ((await favourite.count()) === 0) {
-        test.skip(true, 'No favourited projects available.');
-      }
-
+      await expect(favourite).toBeVisible();
       await favourite.click();
       await expect(page).toHaveURL(/\/project\/[0-9a-f-]+\/?$/);
     });

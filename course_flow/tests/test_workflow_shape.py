@@ -75,7 +75,7 @@ def test_edge_invariants_pure():
 @pytest.mark.django_db
 def test_db_nodes_one_per_cell_and_compact_rows():
     manifest = generate_e2e_fixtures()
-    g = Graph.objects.get(uuid=manifest["workflows"][0]["graph_uuid"])
+    g = Graph.objects.get(uuid=manifest["assets"]["workflow.standard_activity"]["graph_uuid"])
     for sec in g.sections.all():
         dups = (
             Node.objects.filter(section=sec)
@@ -95,7 +95,7 @@ def test_db_nodes_one_per_cell_and_compact_rows():
 @pytest.mark.django_db
 def test_db_edge_out_degrees_and_no_self_loop():
     manifest = generate_e2e_fixtures()
-    g = Graph.objects.get(uuid=manifest["workflows"][0]["graph_uuid"])
+    g = Graph.objects.get(uuid=manifest["assets"]["workflow.standard_activity"]["graph_uuid"])
     edges = Edge.objects.filter(source_node__section__graph=g)
     assert edges.exists()
     for e in edges:

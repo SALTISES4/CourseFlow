@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from '../../fixtures';
 import { authenticatedApiRequest } from '../../helpers/api';
 import { loginAs } from '../../helpers/auth';
 import { describeLibraryPaginationTests } from '../../helpers/library-pagination';
@@ -51,6 +51,25 @@ import {
   workflowTypeFilter,
   firstLibraryCardTitle,
 } from './library.locators';
+
+test.use({
+  seedDependencies: [
+    'actor.teacher',
+    'actor.editor',
+    'actor.commenter',
+    'actor.viewer',
+    'project.primary',
+    'project.recent_collection',
+    'project.archived_home',
+    'project.templates',
+    'workflow.standard_activity',
+    'workflow.navigation_course',
+    'workflow.navigation_program',
+    'workflow.template_activity',
+    'workflow.template_course',
+    'workflow.template_program',
+  ],
+});
 
 /**
  * FR-LIB-001 through FR-LIB-004 and FR-LIB-006.

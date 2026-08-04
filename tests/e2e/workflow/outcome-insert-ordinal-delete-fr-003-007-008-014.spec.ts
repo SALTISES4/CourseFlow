@@ -2,12 +2,11 @@ import { test, expect, type Page } from '../../fixtures';
 import {
   gotoOutcomesView,
   hoverWorkflowOutcomeHeader,
+  hoverWorkflowOutcomeHeaderLocator,
 } from './comments-tab.helpers';
 import { workflowOutcomeHeaderCount } from './add-tab.helpers';
-import { E2E_SEED_OUTCOME_TITLE, ensureSeedOutcomeTitle, skipUnlessPristineOutcome } from '../../helpers/workflow-pristine';
 import {
   ensureOutcomeTitleByOrdinalPrefix,
-  expandWorkflowOutcomeByOrdinalPrefix,
   revealOutcomeByOrdinalPath,
   workflowEditOutcomeForm,
   workflowEditOutcomeFormCodeField,
@@ -24,53 +23,44 @@ import {
   waitForOutcomeCreateResponse,
 } from './workflow-outcome.locators';
 
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
+
 /**
  * Outcome insert, ordinals, depth cap, and subtree delete — FR-WF-EO-003, EO-007, EO-008, EO-014.
  * Requirements: workflow_edit_outcome_requirements_v1.yaml, workflow_delete_outcome_requirements_v1.yaml
- *
- * Serial spec: run before outcome-duplicate-delete-fr-009-014 in full batches.
- *
  * Product gaps:
  * - FR-WF-EO-008: Insert child is still rendered at FR depth 3 (not hidden per FR).
  */
 
 const E2E_CHILD_TITLE = 'E2E Outcome Child';
+const E2E_GRANDCHILD_TITLE = 'E2E Outcome Grandchild';
+const E2E_SEED_OUTCOME_TITLE = 'E2E Outcome 1';
 
-async function ensureInsertSpecTreeState(page: Page) {
-  await ensureSeedOutcomeTitle(page, E2E_SEED_OUTCOME_TITLE);
-
-  const rootToggle = workflowOutcomeExpandToggle(page, E2E_SEED_OUTCOME_TITLE);
-  if ((await rootToggle.count()) > 0) {
-    await expandWorkflowOutcomeByOrdinalPrefix(page, '1', '1.1');
-  }
-
-  if ((await workflowOutcomeHeaderWithOrdinalPrefix(page, '1.1').count()) === 0) {
-    return;
-  }
-
-  await revealOutcomeByOrdinalPath(page, '1.1');
-  await ensureOutcomeTitleByOrdinalPrefix(page, '1.1', E2E_CHILD_TITLE);
-
-  if ((await workflowOutcomeHeaderWithOrdinalPrefix(page, '1.1.1').count()) > 0) {
-    await revealOutcomeByOrdinalPath(page, '1.1.1');
-  }
+async function createChildOutcome(
+  page: Page,
+  parentTitle: string,
+  childOrdinal: string,
+  childTitle: string,
+): Promise<void> {
+  const parentHeader = workflowOutcomeHeader(page, parentTitle);
+  await hoverWorkflowOutcomeHeader(page, parentTitle);
+  await Promise.all([
+    waitForOutcomeCreateResponse(page),
+    workflowOutcomeHoverInsertChildForHeader(page, parentHeader).click(),
+  ]);
+  await revealOutcomeByOrdinalPath(page, childOrdinal);
+  await ensureOutcomeTitleByOrdinalPrefix(page, childOrdinal, childTitle);
 }
 
 test.describe('Outcome — insert, ordinals, depth, subtree delete (FR-WF-EO-003/007/008/014)', () => {
-  test.describe.configure({ mode: 'serial' });
-
   test.beforeEach(async ({ page, workflow }) => {
     await gotoOutcomesView(page, workflow.path);
-    await ensureSeedOutcomeTitle(page, E2E_SEED_OUTCOME_TITLE);
-    await ensureInsertSpecTreeState(page);
+    await expect(workflowOutcomeHeader(page, workflow.firstOutcome().title)).toBeVisible();
   });
 
   test('FR-WF-EO-003: Insert sibling adds untitled workflowOutcome after source', async ({
     page,
-    workflow,
   }) => {
-    await skipUnlessPristineOutcome(page, workflow, E2E_SEED_OUTCOME_TITLE);
-
     const beforeCount = await workflowOutcomeHeaderCount(page);
     const siblingHeader = workflowOutcomeHeaderOrdinalOnly(page, '2');
 
@@ -117,7 +107,7 @@ test.describe('Outcome — insert, ordinals, depth, subtree delete (FR-WF-EO-003
 
     await expect
       .poll(async () => workflowOutcomeHeaderCount(page), { timeout: 10_000 })
-      .toBe(2);
+      .toBe(beforeCount + 1);
     await expect
       .poll(async () => workflowOutcomeExpandToggle(page, E2E_SEED_OUTCOME_TITLE).count(), {
         timeout: 10_000,
@@ -151,13 +141,14 @@ test.describe('Outcome — insert, ordinals, depth, subtree delete (FR-WF-EO-003
   });
 
   test('FR-WF-EO-007: level-2 header uses dotted ordinal prefix', async ({ page }) => {
-    await ensureOutcomeTitleByOrdinalPrefix(page, '1.1', E2E_CHILD_TITLE);
+    await createChildOutcome(page, E2E_SEED_OUTCOME_TITLE, '1.1', E2E_CHILD_TITLE);
     await expect(page.getByText(/^1\.1\.\s+E2E Outcome Child$/)).toBeVisible();
   });
 
   test('FR-WF-EO-003: Insert child under level-2 outcome creates FR depth-3 node', async ({
     page,
   }) => {
+    await createChildOutcome(page, E2E_SEED_OUTCOME_TITLE, '1.1', E2E_CHILD_TITLE);
     const beforeCount = await workflowOutcomeHeaderCount(page);
     await revealOutcomeByOrdinalPath(page, '1.1');
     const childHeader = workflowOutcomeHeader(page, E2E_CHILD_TITLE);
@@ -178,6 +169,8 @@ test.describe('Outcome — insert, ordinals, depth, subtree delete (FR-WF-EO-003
   test('FR-WF-EO-008: FR depth 3 does not gain depth-4 workflowOutcome from insert child', async ({
     page,
   }) => {
+    await createChildOutcome(page, E2E_SEED_OUTCOME_TITLE, '1.1', E2E_CHILD_TITLE);
+    await createChildOutcome(page, E2E_CHILD_TITLE, '1.1.1', E2E_GRANDCHILD_TITLE);
     const beforeCount = await workflowOutcomeHeaderCount(page);
     await revealOutcomeByOrdinalPath(page, '1.1.1');
     const depth3Header = workflowOutcomeHeaderWithOrdinalPrefix(page, '1.1.1');
@@ -194,6 +187,8 @@ test.describe('Outcome — insert, ordinals, depth, subtree delete (FR-WF-EO-003
   });
 
   test('FR-WF-EO-014: deleting level-2 workflowOutcome removes its subtree', async ({ page }) => {
+    await createChildOutcome(page, E2E_SEED_OUTCOME_TITLE, '1.1', E2E_CHILD_TITLE);
+    await createChildOutcome(page, E2E_CHILD_TITLE, '1.1.1', E2E_GRANDCHILD_TITLE);
     const beforeCount = await workflowOutcomeHeaderCount(page);
 
     await revealOutcomeByOrdinalPath(page, '1.1');

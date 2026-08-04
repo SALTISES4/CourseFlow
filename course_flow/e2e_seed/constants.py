@@ -38,6 +38,10 @@ E2E_FIXTURE_HOME_PROJECT_TITLES: tuple[str, ...] = tuple(
     f"{E2E_FIXTURE_PROJECT_TITLE_PREFIX} Recent Project {index}"
     for index in range(1, 6)
 )
+E2E_FIXTURE_FAVOURITE_PROJECT_TITLES: tuple[str, ...] = tuple(
+    f"{E2E_FIXTURE_PROJECT_TITLE_PREFIX} Favourite Project {index}"
+    for index in range(1, 6)
+)
 E2E_FIXTURE_ARCHIVED_HOME_PROJECT_TITLE = (
     f"{E2E_FIXTURE_PROJECT_TITLE_PREFIX} Archived Recent Project"
 )

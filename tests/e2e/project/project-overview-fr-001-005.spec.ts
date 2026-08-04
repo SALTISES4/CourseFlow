@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures';
 import { loginAs } from '../../helpers/auth';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import { getProjectPath, loadWorkflowManifest } from '../../helpers/manifest';
@@ -73,6 +73,16 @@ import {
   unpublishProjectButton,
   waitForProjectOverviewLoaded,
 } from './project.locators';
+
+test.use({
+  seedDependencies: [
+    'actor.teacher',
+    'actor.editor',
+    'actor.commenter',
+    'actor.viewer',
+    'project.primary',
+  ],
+});
 
 /**
  * Calibration slice — FR-PROJ-OV-001 through FR-PROJ-OV-005.

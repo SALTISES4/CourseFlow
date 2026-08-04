@@ -1,6 +1,5 @@
 import { test, expect, type Page } from '../../fixtures';
 import { authenticatedApiRequest } from '../../helpers/api';
-import { skipUnlessPristineWorkflow } from '../../helpers/workflow-pristine';
 import { commentsTabInSidebar } from './edit-section.locators';
 import { workflowChannelCount } from './add-tab.helpers';
 import {
@@ -38,6 +37,8 @@ import {
   workflowRightSidebarContentPanel,
   workflowRightSidebarEditTab,
 } from '../../shared/locators/workflow';
+
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
 
 /**
  * Edit channel — FR-CHAN-001–007 and FR-CHAN-009.
@@ -89,6 +90,27 @@ async function nodeUuidsInChannel(page: Page, workflowUuid: string, channelUuid:
   return graph.nodes
     .filter((node) => node.channelUuid === channelUuid)
     .map((node) => node.uuid);
+}
+
+async function insertChannelRight(page: Page, sourceUuid: string): Promise<string> {
+  const beforeCount = await workflowChannelCount(page);
+  await hoverWorkflowChannelHeader(page, sourceUuid);
+  await workflowChannelHoverInsertRightItem(page, sourceUuid).click();
+  await expect
+    .poll(async () => workflowChannelCount(page), { timeout: 10_000 })
+    .toBe(beforeCount + 1);
+
+  const headers = workflowChannelHeaders(page);
+  for (let index = 0; index < (await headers.count()) - 1; index += 1) {
+    if ((await headers.nth(index).getAttribute('data-column-id')) !== sourceUuid) {
+      continue;
+    }
+    const insertedUuid = await headers.nth(index + 1).getAttribute('data-column-id');
+    if (insertedUuid) {
+      return insertedUuid;
+    }
+  }
+  throw new Error(`No inserted workflow channel found to the right of ${sourceUuid}.`);
 }
 
 test.describe('Edit channel — FR-CHAN-001–007, FR-CHAN-009', () => {
@@ -243,66 +265,28 @@ test.describe('Edit channel — FR-CHAN-001–007, FR-CHAN-009', () => {
   });
 
   test.describe('FR-CHAN-004: insert right', () => {
-    test.describe.configure({ mode: 'serial' });
-
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
-      await skipUnlessPristineWorkflow(page, workflow);
     });
 
     test('hover Insert right creates new column at K+1', async ({ page }) => {
       const channelC = await channelUuidByTitle(page, E2E_CHANNEL_C);
-      const beforeCount = await workflowChannelCount(page);
       const sidebarOpenBefore = await workflowEditChannelForm(page).isVisible();
-
-      await hoverWorkflowChannelHeader(page, channelC);
-      await workflowChannelHoverInsertRightItem(page, channelC).click();
-
-      await expect
-        .poll(async () => workflowChannelCount(page), { timeout: 10_000 })
-        .toBe(beforeCount + 1);
-
-      const headers = workflowChannelHeaders(page);
-      let channelCIndex = -1;
-      for (let i = 0; i < (await headers.count()); i += 1) {
-        const uuid = await headers.nth(i).getAttribute('data-column-id');
-        if (uuid === channelC) {
-          channelCIndex = i;
-          break;
-        }
-      }
-      expect(channelCIndex).toBeGreaterThanOrEqual(0);
-
-      const insertedHeader = headers.nth(channelCIndex + 1);
-      const insertedUuid = await insertedHeader.getAttribute('data-column-id');
-      expect(insertedUuid).toBeTruthy();
+      const insertedUuid = await insertChannelRight(page, channelC);
       expect(insertedUuid).not.toBe(channelC);
 
       expect(await workflowEditChannelForm(page).isVisible()).toBe(sidebarOpenBefore);
 
-      await insertedHeader.click();
+      await workflowChannelHeader(page, insertedUuid).click();
       await expect(workflowEditChannelForm(page)).toBeVisible();
       await expect(workflowRightSidebarContentPanel(page)).toBeVisible();
       // Product stores blank title until user edits; FR-CHAN-004 expects 'Custom node category'.
       await expect(workflowEditChannelFormTitleField(page)).toHaveValue('');
     });
 
-    test('cleanup removes disposable inserted column', async ({ page }) => {
+    test('inserted column can be deleted without affecting another test', async ({ page }) => {
       const channelC = await channelUuidByTitle(page, E2E_CHANNEL_C);
-      const headers = workflowChannelHeaders(page);
-      let channelCIndex = -1;
-      for (let i = 0; i < (await headers.count()); i += 1) {
-        const uuid = await headers.nth(i).getAttribute('data-column-id');
-        if (uuid === channelC) {
-          channelCIndex = i;
-          break;
-        }
-      }
-      const insertedUuid = await headers.nth(channelCIndex + 1).getAttribute('data-column-id');
-      if (!insertedUuid) {
-        test.skip(true, 'Insert-right column from prior test not found.');
-      }
-
+      const insertedUuid = await insertChannelRight(page, channelC);
       const beforeCount = await workflowChannelCount(page);
 
       await hoverWorkflowChannelHeader(page, insertedUuid);
@@ -317,11 +301,8 @@ test.describe('Edit channel — FR-CHAN-001–007, FR-CHAN-009', () => {
   });
 
   test.describe('FR-CHAN-005: duplicate', () => {
-    test.describe.configure({ mode: 'serial' });
-
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
-      await skipUnlessPristineWorkflow(page, workflow);
     });
 
     test('hover duplicate creates workflowChannel with (copy) title immediately to the right', async ({
@@ -341,11 +322,8 @@ test.describe('Edit channel — FR-CHAN-001–007, FR-CHAN-009', () => {
   });
 
   test.describe('FR-CHAN-006: delete', () => {
-    test.describe.configure({ mode: 'serial' });
-
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
-      await skipUnlessPristineWorkflow(page, workflow);
     });
 
     test('cancel keeps disposable duplicate channel in workflowChannelsHeaderRow', async ({
@@ -377,6 +355,11 @@ test.describe('Edit channel — FR-CHAN-001–007, FR-CHAN-009', () => {
     test('confirm removes disposable duplicate channel from workflowChannelsHeaderRow', async ({
       page,
     }) => {
+      const sourceUuid = await channelUuidByTitle(page, E2E_CHANNEL_B);
+      await hoverWorkflowChannelHeader(page, sourceUuid);
+      await workflowChannelHoverDuplicateItem(page, sourceUuid).click();
+      await expect(workflowChannelHeaderByTitle(page, E2E_CHANNEL_B_COPY)).toBeVisible();
+
       const copyUuid = await channelUuidByTitle(page, E2E_CHANNEL_B_COPY);
       const beforeCount = await workflowChannelCount(page);
 
@@ -413,11 +396,8 @@ test.describe('Edit channel — FR-CHAN-001–007, FR-CHAN-009', () => {
   });
 
   test.describe('FR-CHAN-009: selected border', () => {
-    test.describe.configure({ mode: 'serial' });
-
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
-      await skipUnlessPristineWorkflow(page, workflow);
     });
 
     test('workflowChannelHeaderSelectedBorder on bound channel only', async ({ page }) => {

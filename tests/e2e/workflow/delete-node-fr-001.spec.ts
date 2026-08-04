@@ -1,5 +1,4 @@
 import { test, expect } from '../../fixtures';
-import { skipUnlessPristineWorkflow } from '../../helpers/workflow-pristine';
 import {
   firstNodeUuidInSection,
   lastNodeUuidInSection,
@@ -16,17 +15,16 @@ import {
 } from '../../shared/locators/workflow';
 import { workflowAddTabInsertModeRowButton } from './workflow-add-tab.locators';
 
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
+
 /**
  * Delete node — FR-WF-DEL-001 (sidebar deferred), FR-WF-DEL-002 (hover menu).
  * Requirements: workflow_delete_node_requirements_v1.yaml
  */
 
 test.describe('Delete node — hover menu (FR-WF-DEL-002)', () => {
-  test.describe.configure({ mode: 'serial' });
-
   test.beforeEach(async ({ page, workflow }) => {
     await page.goto(workflow.path);
-    await skipUnlessPristineWorkflow(page, workflow);
   });
 
   test('FR-WF-DEL-002: hover delete removes disposable workflowNode immediately', async ({
@@ -56,10 +54,8 @@ test.describe('Delete node — hover menu (FR-WF-DEL-002)', () => {
     await expect(workflowNode(page, disposableUuid)).toHaveCount(0);
   });
 
-  test('FR-WF-DEL-001: workflowEditNodeFormDeleteButton sidebar path deferred until EditNode wires onClick', async () => {
-    test.skip(
-      true,
-      'EditNode sidebar Delete button has no onClick handler; hover path covered above.',
-    );
-  });
+  test.fixme(
+    'FR-WF-DEL-001: workflowEditNodeFormDeleteButton sidebar path deferred until EditNode wires onClick',
+    async () => {},
+  );
 });

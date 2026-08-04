@@ -57,7 +57,10 @@ Local development and Playwright use one Postgres database:
 | `courseflow` | Local UI development and Playwright | `just django-run` |
 
 - `just e2e-prepare` replaces only projects owned by the deterministic E2E fixture prefix; it does not reset unrelated local rows.
-- Browser specs can mutate shared local fixture data. Re-run `just e2e-prepare` to restore it.
+- Canonical workflow fixtures are immutable. Mutating workflow specs receive disposable
+  copies and clean them up through the API.
+- `just e2e-prepare` replaces the complete fixture-owned project set when developers
+  intentionally want to restore the local content baseline.
 - `just rebuild-dev-db` wipes the local volume and is the only full local database reset.
 
 CI/CD should eventually run browser tests against a temporary Docker database created for the job. That isolation mechanism is not wired yet.
@@ -73,7 +76,7 @@ tests/
   .env                      # TEST_USERNAME, PLAYWRIGHT_WORKFLOW_PATH (gitignored)
   setup/auth.setup.ts       # one-time login → storage state
   e2e/                      # runnable *.spec.ts files
-  .playwright-fixtures/     # workflow.json manifest (gitignored; see .example)
+  .playwright-fixtures/     # generated workflow.json manifest (gitignored)
   playwright/.auth/         # generated session file (gitignored)
 ```
 
@@ -128,6 +131,10 @@ just e2e-prepare
 ```
 
 This runs migrations on the local database, replaces the deterministic E2E fixture projects, and writes `tests/.playwright-fixtures/workflow.json`.
+
+It also regenerates `tests/docs/testing/e2e-seed-asset-dependencies.csv`. The committed
+asset catalog is `course_flow/e2e_seed/assets.json`; the CSV is a generated spreadsheet
+view and must not be edited directly.
 
 `PLAYWRIGHT_WORKFLOW_PATH` in `tests/.env` is **optional** — Playwright `globalSetup` and the `workflow` fixture read the manifest automatically. Set it only to override the manifest path.
 

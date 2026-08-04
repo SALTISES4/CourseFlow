@@ -1,11 +1,7 @@
 import { test, expect } from '../../fixtures';
 import { gotoOutcomesView, hoverWorkflowOutcomeHeader } from './comments-tab.helpers';
 import {
-  E2E_SEED_OUTCOME_TITLE,
-} from '../../helpers/workflow-pristine';
-import {
   workflowEditOutcomeForm,
-  workflowEditOutcomeFormTitleField,
   workflowOutcomeHeader,
   workflowOutcomeHeaderOrdinalOnly,
   workflowOutcomeHoverDeleteItem,
@@ -15,16 +11,25 @@ import {
 import { workflowRightSidebarContentPanel } from '../../shared/locators/workflow';
 import { workflowOutcomeHeaderCount } from './add-tab.helpers';
 
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
+
 /**
  * Outcome empty state and first create — FR-WF-EO-001, FR-WF-EO-002.
  * Requirements: workflow_edit_outcome_requirements_v1.yaml
- *
- * Serial spec deletes the seeded outcome then restores its title at the end.
  */
 
-test.describe('Outcome — empty state and first create (FR-WF-EO-001, FR-WF-EO-002)', () => {
-  test.describe.configure({ mode: 'serial' });
+async function removeSeededOutcome(
+  page: import('@playwright/test').Page,
+  title: string,
+): Promise<void> {
+  const seededHeader = workflowOutcomeHeader(page, title);
+  await expect(seededHeader).toBeVisible();
+  await hoverWorkflowOutcomeHeader(page, title);
+  await workflowOutcomeHoverDeleteItem(page, title).click();
+  await expect(seededHeader).toHaveCount(0);
+}
 
+test.describe('Outcome — empty state and first create (FR-WF-EO-001, FR-WF-EO-002)', () => {
   test.beforeEach(async ({ page, workflow }) => {
     await gotoOutcomesView(page, workflow.path);
   });
@@ -33,13 +38,7 @@ test.describe('Outcome — empty state and first create (FR-WF-EO-001, FR-WF-EO-
     page,
     workflow,
   }) => {
-    const seededHeader = workflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE);
-    if ((await seededHeader.count()) > 0) {
-      await hoverWorkflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE);
-      await workflowOutcomeHoverDeleteItem(page, E2E_SEED_OUTCOME_TITLE).click();
-    } else if ((await workflowOutcomeViewEmptyStateAlert(page).count()) === 0) {
-      test.skip(true, 'Neither seeded outcome nor empty state; reseed E2E workflow.');
-    }
+    await removeSeededOutcome(page, workflow.firstOutcome().title);
 
     await expect(workflowOutcomeViewEmptyStateAlert(page)).toBeVisible();
     await expect(
@@ -53,7 +52,9 @@ test.describe('Outcome — empty state and first create (FR-WF-EO-001, FR-WF-EO-
 
   test('FR-WF-EO-002: Add outcome creates root-level untitled workflowOutcome', async ({
     page,
+    workflow,
   }) => {
+    await removeSeededOutcome(page, workflow.firstOutcome().title);
     await expect(workflowOutcomeViewAddOutcomeButton(page)).toBeVisible();
 
     await workflowOutcomeViewAddOutcomeButton(page).click();
@@ -65,13 +66,4 @@ test.describe('Outcome — empty state and first create (FR-WF-EO-001, FR-WF-EO-
     await expect(workflowRightSidebarContentPanel(page)).toBeHidden();
   });
 
-  test('FR-WF-EO-002: restore seeded outcome title for downstream specs', async ({ page }) => {
-    await workflowOutcomeHeaderOrdinalOnly(page, '1').click();
-    await expect(workflowEditOutcomeForm(page)).toBeVisible();
-
-    await workflowEditOutcomeFormTitleField(page).fill(E2E_SEED_OUTCOME_TITLE);
-    await page.waitForTimeout(500);
-
-    await expect(workflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE)).toBeVisible();
-  });
 });

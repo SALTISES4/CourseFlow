@@ -14,6 +14,8 @@ import {
 } from '../workflow-outcome.locators';
 import { workflowRightSidebarEditTab } from '../../../shared/locators/workflow';
 
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'read-only' });
+
 /**
  * Comments host identity — FR-WF-COMMENTS-005.
  * Requirements: workflow_comments_tab_requirements_v1.yaml

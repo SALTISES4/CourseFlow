@@ -16,6 +16,12 @@ import {
   workflowRightSidebarCommentsTabContent,
 } from '../../../shared/locators/workflow';
 
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  actorAsset: 'actor.teacher',
+  seedAccess: 'disposable-copy',
+});
+
 /**
  * Comments compose and delete — FR-WF-COMMENTS-006, FR-WF-COMMENTS-007 (node, channel, outcome).
  * Requirements: workflow_comments_tab_requirements_v1.yaml
@@ -25,8 +31,6 @@ const E2E_CHANNEL_A = 'E2E Channel A';
 const E2E_OUTCOME_TITLE = 'E2E Outcome 1';
 
 test.describe('Comments tab — node host compose/delete (FR-WF-COMMENTS-006, FR-WF-COMMENTS-007)', () => {
-  test.describe.configure({ mode: 'serial' });
-
   test.beforeEach(async ({ page, workflow }) => {
     await page.goto(workflow.path);
     const nodeUuid = await firstWorkflowNodeUuid(page);
@@ -55,8 +59,6 @@ test.describe('Comments tab — node host compose/delete (FR-WF-COMMENTS-006, FR
 });
 
 test.describe('Comments tab — channel host compose/delete (FR-WF-COMMENTS-006, FR-WF-COMMENTS-007)', () => {
-  test.describe.configure({ mode: 'serial' });
-
   test.beforeEach(async ({ page, workflow }) => {
     await page.goto(workflow.path);
     const channelUuid = await channelUuidByTitle(page, E2E_CHANNEL_A);
@@ -78,8 +80,6 @@ test.describe('Comments tab — channel host compose/delete (FR-WF-COMMENTS-006,
 });
 
 test.describe('Comments tab — outcome host compose/delete (FR-WF-COMMENTS-006, FR-WF-COMMENTS-007)', () => {
-  test.describe.configure({ mode: 'serial' });
-
   test.beforeEach(async ({ page, workflow }) => {
     workflow.firstOutcome();
     await gotoOutcomesView(page, workflow.path);

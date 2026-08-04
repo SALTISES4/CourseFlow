@@ -24,12 +24,14 @@ from course_flow.core.models import (
     User,
     Workflow,
 )
+from course_flow.e2e_seed.catalog import require_seed_asset
 from course_flow.e2e_seed.clear import clear_e2e_fixtures
 from course_flow.e2e_seed.constants import (
     E2E_CHANNEL_TITLES,
     E2E_FIXTURE_ARCHIVED_HOME_PROJECT_TITLE,
     E2E_FIXTURE_COURSE_WORKFLOW_TITLE,
     E2E_FIXTURE_EDITOR_EMAIL,
+    E2E_FIXTURE_FAVOURITE_PROJECT_TITLES,
     E2E_FIXTURE_GRAPH_SEED,
     E2E_FIXTURE_HOME_PROJECT_TITLES,
     E2E_FIXTURE_PASSWORD,
@@ -73,6 +75,7 @@ def _section_manifest(sections) -> list[dict]:
 
 def _seed_template_workflow(
     *,
+    asset_id: str,
     owner,
     template_project,
     workflow_type: WorkflowType,
@@ -80,6 +83,7 @@ def _seed_template_workflow(
     section_title: str,
     channel_title: str,
 ) -> dict:
+    require_seed_asset(asset_id, kind="workflow")
     template_graph = Graph.objects.create()
     template_workflow = build_workflow_with_graph(
         template_graph,
@@ -89,33 +93,48 @@ def _seed_template_workflow(
         title=title,
         description=f"{workflow_type.value} template workflow for cardTemplateChip E2E tests.",
     )
-    build_sections_and_channels(
+    sections, channels = build_sections_and_channels(
         template_graph,
         section_titles=[section_title],
         channel_titles=[channel_title],
     )
     FavoriteGraph.objects.get_or_create(user=owner, graph=template_graph)
     return {
+        "asset_id": asset_id,
+        "graph_uuid": str(template_graph.uuid),
         "workflow_uuid": str(template_workflow.uuid),
         "workflow_title": template_workflow.title,
         "workflow_type": template_workflow.workflow_type,
+        "workflow_path": f"/workflow/{template_workflow.uuid}/graph",
+        "project_uuid": str(template_project.uuid),
+        "sections": _section_manifest(sections),
+        "outcomes": [],
+        "node_count": 0,
+        "edge_count": 0,
+        "channel_count": len(channels),
+        "outcome_count": 0,
     }
 
 
-def _workflow_manifest(*, graph: Graph, workflow, sections) -> dict:
+def _workflow_manifest(*, asset_id: str, graph: Graph, workflow, sections) -> dict:
+    require_seed_asset(asset_id, kind="workflow")
     graph_uuid = str(graph.uuid)
     workflow_uuid = str(workflow.uuid)
     return {
+        "asset_id": asset_id,
         "graph_uuid": graph_uuid,
         "workflow_uuid": workflow_uuid,
+        "workflow_title": workflow.title,
         "workflow_type": workflow.workflow_type,
         "workflow_path": f"/workflow/{workflow_uuid}/graph",
+        "project_uuid": str(workflow.project.uuid) if workflow.project else None,
         "sections": _section_manifest(sections),
     }
 
 
 def _seed_minimal_workflow(
     *,
+    asset_id: str,
     owner,
     project,
     workflow_type: WorkflowType,
@@ -142,7 +161,12 @@ def _seed_minimal_workflow(
         workflow,
         sections,
         channels,
-        _workflow_manifest(graph=graph, workflow=workflow, sections=sections),
+        _workflow_manifest(
+            asset_id=asset_id,
+            graph=graph,
+            workflow=workflow,
+            sections=sections,
+        ),
     )
 
 
@@ -153,6 +177,7 @@ def _seed_course_workflow_linked_to_activity(
     activity_workflow,
 ) -> tuple[Workflow, dict]:
     course_workflow, sections, channels, course_manifest = _seed_minimal_workflow(
+        asset_id="workflow.navigation_course",
         owner=owner,
         project=project,
         workflow_type=WorkflowType.COURSE,
@@ -174,13 +199,18 @@ def _seed_course_workflow_linked_to_activity(
     return course_workflow, course_manifest
 
 
-def _project_manifest(project) -> dict:
-    return {
+def _project_manifest(project, *, asset_id: str | None = None) -> dict:
+    if asset_id is not None:
+        require_seed_asset(asset_id, kind="project")
+    payload = {
         "uuid": str(project.uuid),
         "title": project.title,
         "modified_on": project.modified_on.isoformat(),
         "is_archived": project.is_archived,
     }
+    if asset_id is not None:
+        payload["asset_id"] = asset_id
+    return payload
 
 
 def _seed_home_projects(*, owner) -> tuple[list[dict], dict]:
@@ -215,7 +245,25 @@ def _seed_home_projects(*, owner) -> tuple[list[dict], dict]:
     )
     archived_project.refresh_from_db()
 
-    return recent_projects, _project_manifest(archived_project)
+    return recent_projects, _project_manifest(
+        archived_project,
+        asset_id="project.archived_home",
+    )
+
+
+def _seed_favourite_projects(*, owner) -> list[dict]:
+    """Seed five distinct sidebar favourites without changing recency fixtures."""
+    projects = []
+    for index, title in enumerate(E2E_FIXTURE_FAVOURITE_PROJECT_TITLES, start=1):
+        project = create_project(
+            owner,
+            title=title,
+            description=f"Deterministic sidebar favourite {index} for FR-NAV-005-008.",
+        )
+        ensure_team(project, owner)
+        FavoriteProject.objects.get_or_create(user=owner, project=project)
+        projects.append(_project_manifest(project))
+    return projects
 
 
 def generate_e2e_fixtures(
@@ -255,6 +303,7 @@ def generate_e2e_fixtures(
             _restricted_channels,
             restricted_workflow_manifest,
         ) = _seed_minimal_workflow(
+            asset_id="workflow.restricted_activity",
             owner=restricted_owner,
             project=restricted_project,
             workflow_type=WorkflowType.ACTIVITY,
@@ -300,6 +349,7 @@ def generate_e2e_fixtures(
         ).count()
 
         workflow_manifest = _workflow_manifest(
+            asset_id="workflow.standard_activity",
             graph=graph,
             workflow=workflow,
             sections=sections,
@@ -326,6 +376,7 @@ def generate_e2e_fixtures(
             _program_channels,
             program_workflow_manifest,
         ) = _seed_minimal_workflow(
+            asset_id="workflow.navigation_program",
             owner=owner,
             project=project,
             workflow_type=WorkflowType.PROGRAM,
@@ -348,6 +399,7 @@ def generate_e2e_fixtures(
 
         template_workflows = [
             _seed_template_workflow(
+                asset_id="workflow.template_activity",
                 owner=owner,
                 template_project=template_project,
                 workflow_type=WorkflowType.ACTIVITY,
@@ -356,6 +408,7 @@ def generate_e2e_fixtures(
                 channel_title="E2E Activity Template Channel",
             ),
             _seed_template_workflow(
+                asset_id="workflow.template_course",
                 owner=owner,
                 template_project=template_project,
                 workflow_type=WorkflowType.COURSE,
@@ -364,6 +417,7 @@ def generate_e2e_fixtures(
                 channel_title="E2E Course Template Channel",
             ),
             _seed_template_workflow(
+                asset_id="workflow.template_program",
                 owner=owner,
                 template_project=template_project,
                 workflow_type=WorkflowType.PROGRAM,
@@ -373,10 +427,89 @@ def generate_e2e_fixtures(
             ),
         ]
 
+        favourite_projects = _seed_favourite_projects(owner=owner)
         recent_projects, archived_home_project = _seed_home_projects(owner=owner)
 
+        primary_project_manifest = _project_manifest(
+            project,
+            asset_id="project.primary",
+        )
+        restricted_project_manifest = _project_manifest(
+            restricted_project,
+            asset_id="project.restricted",
+        )
+        template_project_manifest = _project_manifest(
+            template_project,
+            asset_id="project.templates",
+        )
+        actor_assets = {
+            "actor.teacher": {
+                "asset_id": "actor.teacher",
+                "kind": "actor",
+                "email": owner.email,
+                "password": E2E_FIXTURE_PASSWORD,
+                "account_role": AccountRole.TEACHER.value,
+            },
+            **{
+                f"actor.{contributor['role']}": {
+                    "asset_id": f"actor.{contributor['role']}",
+                    "kind": "actor",
+                    **contributor,
+                }
+                for contributor in contributors
+            },
+        }
+        runtime_assets = {
+            **actor_assets,
+            "project.primary": {"kind": "project", **primary_project_manifest},
+            "project.restricted": {
+                "kind": "project",
+                **restricted_project_manifest,
+            },
+            "project.templates": {
+                "kind": "project",
+                **template_project_manifest,
+            },
+            "project.recent_collection": {
+                "asset_id": "project.recent_collection",
+                "kind": "project-collection",
+                "items": recent_projects,
+            },
+            "project.favourite_collection": {
+                "asset_id": "project.favourite_collection",
+                "kind": "project-collection",
+                "items": favourite_projects,
+            },
+            "project.archived_home": {
+                "kind": "project",
+                **archived_home_project,
+            },
+            "workflow.standard_activity": {
+                "kind": "workflow",
+                **workflow_manifest,
+            },
+            "workflow.navigation_course": {
+                "kind": "workflow",
+                **course_workflow_manifest,
+            },
+            "workflow.navigation_program": {
+                "kind": "workflow",
+                **program_workflow_manifest,
+            },
+            "workflow.restricted_activity": {
+                "kind": "workflow",
+                **restricted_workflow_manifest,
+            },
+            **{
+                template["asset_id"]: {"kind": "workflow", **template}
+                for template in template_workflows
+            },
+        }
+
         manifest = {
-            "fixture_version": 4,
+            "fixture_version": 5,
+            "asset_catalog_version": 1,
+            "assets": runtime_assets,
             "primary_user": {
                 "email": owner.email,
                 "password": E2E_FIXTURE_PASSWORD,

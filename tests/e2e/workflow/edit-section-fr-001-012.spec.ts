@@ -1,6 +1,5 @@
 import { test, expect } from '../../fixtures';
 import { loginAs } from '../../helpers/auth';
-import { skipUnlessPristineWorkflow } from '../../helpers/workflow-pristine';
 import { openFirstNodeEditForm } from './edit-node.helpers';
 import {
   beginSectionDragToward,
@@ -40,6 +39,13 @@ import {
   EDIT_SECTION_HEADING,
 } from './edit-section.locators';
 import { workflowEditNodeForm } from './workflow-graph.locators';
+
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  seedDependencies: ['project.primary', 'actor.commenter', 'actor.viewer'],
+  actorAsset: 'actor.teacher',
+  seedAccess: 'disposable-copy',
+});
 
 /**
  * Edit section — FR-SEC-001 through FR-SEC-012.
@@ -103,7 +109,6 @@ test.describe('edit-section-fr-001-012', () => {
       page,
       workflow,
     }) => {
-      await skipUnlessPristineWorkflow(page, workflow);
 
       const first = workflow.firstSection();
       const blank = workflow.blankSection();
@@ -139,7 +144,6 @@ test.describe('edit-section-fr-001-012', () => {
   test.describe('Section numbering and display (FR-SEC-002)', () => {
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
-      await skipUnlessPristineWorkflow(page, workflow);
     });
 
     test('FR-SEC-002: blank-title section shows workflowSectionNumberLabel only', async ({
@@ -198,7 +202,6 @@ test.describe('edit-section-fr-001-012', () => {
       page,
       workflow,
     }) => {
-      await skipUnlessPristineWorkflow(page, workflow);
 
       const section = workflow.sectionByTitle('E2E Section 3');
       const sectionUuid = section.uuid;
@@ -232,7 +235,7 @@ test.describe('edit-section-fr-001-012', () => {
   test.describe('Viewer read-only title (FR-SEC-003)', () => {
     test.use({ storageState: { cookies: [], origins: [] } });
 
-    test.skip(
+    test.fixme(
       true,
       'FR-SEC-003 viewer readOnly: workflow EditSection does not enforce project team role permissions yet (v1).',
     );
@@ -253,29 +256,19 @@ test.describe('edit-section-fr-001-012', () => {
   });
 
   test.describe('Mutations — insert, duplicate, delete (FR-SEC-004, FR-SEC-005, FR-SEC-006)', () => {
-    test.describe.configure({ mode: 'serial' });
-
-    let expectedSectionCount: number | null = null;
-
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
       await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
-
-      if (expectedSectionCount === null) {
-        await skipUnlessPristineWorkflow(page, workflow);
-        expectedSectionCount = await sectionContainers(page).count();
-      }
     });
 
     test('FR-SEC-004: insert section below increases count', async ({ page, workflow }) => {
       const target = workflow.firstSection();
-      const before = expectedSectionCount!;
+      const before = await sectionContainers(page).count();
 
       await sectionHeader(page, target.uuid).hover();
       await insertBelowButtonInSectionHeader(page, target.uuid).click();
 
-      expectedSectionCount = before + 1;
-      await expect(sectionContainers(page)).toHaveCount(expectedSectionCount, { timeout: 15_000 });
+      await expect(sectionContainers(page)).toHaveCount(before + 1, { timeout: 15_000 });
     });
 
     test('FR-SEC-005: duplicate from sidebar adds section with (copy) title', async ({
@@ -283,14 +276,13 @@ test.describe('edit-section-fr-001-012', () => {
       workflow,
     }) => {
       const source = workflow.firstSection();
-      const before = expectedSectionCount!;
+      const before = await sectionContainers(page).count();
 
       await sectionHeader(page, source.uuid).click();
       await expect(editSectionForm(page)).toBeVisible();
       await duplicateButtonInSidebar(page).click();
 
-      expectedSectionCount = before + 1;
-      await expect(sectionContainers(page)).toHaveCount(expectedSectionCount, { timeout: 15_000 });
+      await expect(sectionContainers(page)).toHaveCount(before + 1, { timeout: 15_000 });
       await expect(sectionContainers(page).filter({ hasText: 'E2E Section 1 (copy)' })).toHaveCount(
         1,
       );
@@ -300,7 +292,7 @@ test.describe('edit-section-fr-001-012', () => {
       page,
       workflow,
     }) => {
-      const before = expectedSectionCount!;
+      const before = await sectionContainers(page).count();
       const sectionUuid = workflow.firstSection().uuid;
 
       await sectionHeader(page, sectionUuid).click();
@@ -317,7 +309,7 @@ test.describe('edit-section-fr-001-012', () => {
 
     test('FR-SEC-006: confirm delete removes target section', async ({ page, workflow }) => {
       const disposable = workflow.sectionByTitle('E2E Section 3');
-      const before = expectedSectionCount!;
+      const before = await sectionContainers(page).count();
 
       await sectionHeader(page, disposable.uuid).click();
       await deleteButtonInSidebar(page).click();
@@ -325,8 +317,7 @@ test.describe('edit-section-fr-001-012', () => {
       await deleteSectionConfirmButton(page).click();
 
       await expect(deleteSectionDialog(page)).toBeHidden({ timeout: 15_000 });
-      expectedSectionCount = before - 1;
-      await expect(sectionContainers(page)).toHaveCount(expectedSectionCount, { timeout: 15_000 });
+      await expect(sectionContainers(page)).toHaveCount(before - 1, { timeout: 15_000 });
       await expect(page.locator(`[data-section-id="${disposable.uuid}"]`)).toHaveCount(0);
     });
   });
@@ -367,8 +358,23 @@ test.describe('edit-section-fr-001-012', () => {
   });
 
   test.describe('Hover menu commenter (FR-SEC-007)', () => {
-    test('FR-SEC-007: commenter sees disabled insert, duplicate, and delete hover items', async () => {
-      test.skip(true, 'E2E manifest has no commenter contributor yet.');
+    test.use({ storageState: { cookies: [], origins: [] } });
+
+    test('FR-SEC-007: commenter sees disabled insert, duplicate, and delete hover items', async ({
+      page,
+      workflow,
+    }) => {
+      const commenter = workflow.contributorByRole('commenter');
+      await loginAs(page, { email: commenter.email, password: commenter.password });
+      await page.goto(workflow.path);
+
+      const sectionUuid = workflow.firstSection().uuid;
+      await hoverSectionHeader(page, sectionUuid);
+
+      await expect(insertBelowButtonInSectionHeader(page, sectionUuid)).toBeDisabled();
+      await expect(duplicateBelowButtonInSectionHeader(page, sectionUuid)).toBeDisabled();
+      await expect(deleteButtonInSectionHeader(page, sectionUuid)).toBeDisabled();
+      await expect(commentsButtonInSectionHeader(page, sectionUuid)).toBeEnabled();
     });
   });
 
@@ -379,7 +385,7 @@ test.describe('edit-section-fr-001-012', () => {
       page,
       workflow,
     }) => {
-      test.skip(true, 'Section HoverMenu does not enforce project team roles yet (v1).');
+      test.fixme(true, 'Section HoverMenu does not enforce project team roles yet (v1).');
 
       const viewer = workflow.contributorByRole('viewer');
       await loginAs(page, { email: viewer.email, password: viewer.password });
@@ -472,11 +478,8 @@ test.describe('edit-section-fr-001-012', () => {
   });
 
   test.describe('Vertical section reorder (FR-SEC-009)', () => {
-    test.describe.configure({ mode: 'serial' });
-
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
-      await skipUnlessPristineWorkflow(page, workflow);
     });
 
     test('FR-SEC-009: drag section below another updates order and renumbers', async ({
@@ -578,13 +581,13 @@ test.describe('edit-section-fr-001-012', () => {
   });
 
   test.describe('Deferred FR-SEC-008, FR-SEC-012', () => {
-    test.skip(
-      true,
-      'FR-SEC-008 edge integrity: requires cross-section edge fixture assertions.',
+    test.fixme(
+      'FR-SEC-008: edge integrity across section mutation',
+      async () => {},
     );
-    test.skip(
-      true,
-      'FR-SEC-012 bulk expand/collapse: useMenuActions expandAll/collapseAll not wired; menu uses switch toggles.',
+    test.fixme(
+      'FR-SEC-012: bulk expand and collapse',
+      async () => {},
     );
   });
 });

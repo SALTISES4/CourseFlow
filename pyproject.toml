@@ -31,6 +31,7 @@ dependencies = [
 
 [project.scripts]
 cf-seed-e2e-data = "course_flow.cli:seed_e2e_main"
+cf-check-e2e-assets = "course_flow.e2e_seed.catalog:main"
 
 [build-system]
 requires = ["hatchling"]

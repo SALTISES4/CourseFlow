@@ -31,6 +31,8 @@ import {
   workflowNodeTitle,
 } from './workflow-graph.locators';
 
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
+
 /**
  * Workflow node visual — FR-WF-NODE-001 through FR-WF-NODE-005 (partial).
  * Requirements: workflow_node_visual_requirements_v1.yaml
@@ -263,12 +265,10 @@ test.describe('Workflow node — selected border (FR-WF-NODE-002)', () => {
 });
 
 test.describe('Workflow node — outcome highlight (FR-WF-NODE-003)', () => {
-  test('FR-WF-NODE-003: workflowNodeOutcomeHighlightBorder deferred until outcome assign fixture', async () => {
-    test.skip(
-      true,
-      'Outcome highlight requires FR-WF-AO-005 assignment path and highlighted node in E2E fixture.',
-    );
-  });
+  test.fixme(
+    'FR-WF-NODE-003: workflowNodeOutcomeHighlightBorder deferred until outcome assign fixture',
+    async () => {},
+  );
 });
 
 test.describe('Workflow node — hover menu visibility (FR-WF-NODE-004)', () => {

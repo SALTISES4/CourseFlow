@@ -1,7 +1,6 @@
 import { test, expect, type Page } from '../../fixtures';
 import { loginAs } from '../../helpers/auth';
 import { authenticatedApiRequest } from '../../helpers/api';
-import { skipUnlessPristineWorkflow } from '../../helpers/workflow-pristine';
 import {
   expectSectionNumberLabelsMatchOrder,
   sectionOrderUuids,
@@ -25,12 +24,19 @@ import {
 import { composeComment, openSectionCommentsViaHover } from './comments-tab.helpers';
 import { workflowNodeLinkedWorkflowIndicator } from './workflow-graph.locators';
 
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  seedAssets: ['workflow.navigation_course'],
+  seedDependencies: ['project.primary', 'actor.commenter', 'actor.viewer'],
+  actorAsset: 'actor.teacher',
+  seedAccess: 'disposable-copy',
+});
+
 /**
  * Duplicate section — FR-SEC-005 (hover and sidebar).
  * Requirements: workflow_duplicate_section_requirements_v1.yaml
  *
- * Each mutating activity-workflow case restores section count via delete so later
- * cases can still meet skipUnlessPristineWorkflow on a shared E2E DB.
+ * Mutating cases run against disposable workflow copies supplied by the fixture.
  */
 
 type GraphViewPayload = {
@@ -128,7 +134,6 @@ test.describe('Duplicate section — FR-SEC-005', () => {
   test.describe('Hover path — placement, titles, sidebar unchanged', () => {
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
-      await skipUnlessPristineWorkflow(page, workflow);
     });
 
     test('places new section immediately below source, renumbers, appends " (copy)", leaves sidebar unbound', async ({
@@ -243,7 +248,6 @@ test.describe('Duplicate section — FR-SEC-005', () => {
   test.describe('Content fidelity — nodes, edges, outcomes', () => {
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
-      await skipUnlessPristineWorkflow(page, workflow);
     });
 
     test('mirrors nodes (channel/row), intra-section edges, outcomes; leaves cross-section edges unchanged', async ({
@@ -396,7 +400,6 @@ test.describe('Duplicate section — FR-SEC-005', () => {
   test.describe('Sidebar path', () => {
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
-      await skipUnlessPristineWorkflow(page, workflow);
     });
 
     test('duplicate from sidebar keeps form bound to source and places copy immediately below', async ({
