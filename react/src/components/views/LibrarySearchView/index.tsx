@@ -1,7 +1,7 @@
 import {
   LibraryContentTypeIn,
-  LibrarySearchIn,
-  LibrarySearchOut
+  LibraryFiltersIn,
+  LibrarySearchIn
 } from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { _t } from '@cf/utility/Utility.class'
@@ -36,32 +36,22 @@ export type LibraryFilterConfig = {
   filterGroups?: Partial<Record<keyof SearchOptions['filterGroups'], boolean>>
 }
 
-const formatResultsSummary = (data: LibrarySearchOut): string => {
-  const { currentPage, resultsPerPage, totalResults } = data.meta
-  const rangeStart = currentPage * resultsPerPage + 1
-  const rangeEnd = Math.min(totalResults, rangeStart + data.items.length - 1)
-  const range =
-    rangeStart === rangeEnd ? String(rangeStart) : `${rangeStart}-${rangeEnd}`
-
-  return `Showing ${range} of ${totalResults} results`
-}
-
 /*******************************************************
  * see:  https://docs.google.com/document/d/1LgSedmw-U6mDF8S48I3gMbaohfliZetki6AJAeIKKLw/edit?tab=t.0#heading=h.seafxrns9x1f
  *******************************************************/
 type PropsType = {
-  searchArgs: LibrarySearchIn
-  setSearchArgs: (args: LibrarySearchIn) => void
   config: LibraryFilterConfig
+  lockedFilters?: Partial<LibraryFiltersIn>
   override?: ResultsProps['override']
 }
 
 const LibrarySearchView = ({
-  searchArgs,
-  setSearchArgs,
   config,
+  lockedFilters = {},
   override
 }: PropsType) => {
+  const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
+
   // all base filters on by default (opt-out)
   // all filter groups off by default (opt-in)
   const configDefaults: LibraryFilterConfig = {
@@ -84,16 +74,22 @@ const LibrarySearchView = ({
       ...config.filterGroups
     }
   }
+
   const filterGroups = filters.filterGroups ?? {}
 
-  const defaultOptionsSearchOptions = LibraryHelper.defaultOptionsSearchOptions
   /*******************************************************
    * HOOKS
    *******************************************************/
   // these are the UI filters, they represent the state of the UI grouping, separated into different sections
   const [searchFilterState, setSearchFilterState] = useState<SearchOptions>(
-    () =>
-      produce(defaultOptionsSearchOptions, (draft) => {
+    () => {
+      const defaults =
+        LibraryHelper.translateLockedFiltersToInitialSearchOptions(
+          lockedFilters,
+          LibraryHelper.defaultOptionsSearchOptions
+        )
+
+      return produce(defaults, (draft) => {
         if (!filters.initialContentType) {
           return
         }
@@ -111,6 +107,7 @@ const LibrarySearchView = ({
         draft.filterGroups.contentTypeFilter.options =
           LibraryHelper.updateFilterOptions(current, initialOption)
       })
+    }
   )
   /*******************************************************
    * QUERY HOOKS
@@ -118,10 +115,6 @@ const LibrarySearchView = ({
   const { data, isLoading, isError, error } = useLibrarySearch(searchArgs)
 
   useEffect(() => {
-    if (!defaultOptionsSearchOptions) {
-      return
-    }
-
     const args = LibraryHelper.reduceStateToSearchArgs(searchFilterState)
 
     /*******************************************************
@@ -131,7 +124,7 @@ const LibrarySearchView = ({
      *    this grouping should not leak into the final API arguments calls
      *******************************************************/
     setSearchArgs(args)
-  }, [searchFilterState, defaultOptionsSearchOptions, setSearchArgs])
+  }, [searchFilterState, setSearchArgs])
 
   const disciplineOptions: FilterMultiselectOption[] = useMemo(() => {
     const allowedDisciplineIds = new Set(
@@ -149,70 +142,70 @@ const LibrarySearchView = ({
 
   return (
     <OuterContentWrap>
-      {defaultOptionsSearchOptions && (
-        <Toolbar
-          disableGutters
-          sx={{ mt: 4, mb: 4 }}
-          data-test-id="library-filter-toolbar"
+      <Toolbar
+        disableGutters
+        sx={{ mt: 4, mb: 4 }}
+        data-test-id="library-filter-toolbar"
+      >
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="space-between"
+          style={{ width: '100%' }}
         >
-          <Stack
-            direction="row"
-            spacing={2}
-            justifyContent="space-between"
-            style={{ width: '100%' }}
-          >
-            <Stack direction="row" spacing={2}>
-              <SortFilter
-                show={Boolean(filters.sortOptions)}
-                options={searchFilterState.sortOptions.options}
-                setSearchFilterState={setSearchFilterState}
-              />
-              <DisciplineFilter
-                show={Boolean(filterGroups.disciplineFilter)}
-                options={disciplineOptions}
-                setSearchFilterState={setSearchFilterState}
-              />
-              <OwnershipFilter
-                show={Boolean(filterGroups.ownershipFilter)}
-                filterGroup={searchFilterState.filterGroups.ownershipFilter}
-                setSearchFilterState={setSearchFilterState}
-              />
-              <ContentTypeFilter
-                show={Boolean(filterGroups.contentTypeFilter)}
-                filterGroup={searchFilterState.filterGroups.contentTypeFilter}
-                setSearchFilterState={setSearchFilterState}
-              />
-              <WorkflowTypeFilter
-                show={Boolean(filterGroups.workflowTypeFilter)}
-                searchArgs={searchArgs}
-                filterGroup={searchFilterState.filterGroups.workflowTypeFilter}
-                setSearchFilterState={setSearchFilterState}
-              />
+          <Stack direction="row" spacing={2}>
+            <SortFilter
+              show={Boolean(filters.sortOptions)}
+              options={searchFilterState.sortOptions.options}
+              setSearchFilterState={setSearchFilterState}
+            />
+            <DisciplineFilter
+              show={Boolean(filterGroups.disciplineFilter)}
+              options={disciplineOptions}
+              setSearchFilterState={setSearchFilterState}
+            />
+            <OwnershipFilter
+              show={Boolean(filterGroups.ownershipFilter)}
+              filterGroup={searchFilterState.filterGroups.ownershipFilter}
+              setSearchFilterState={setSearchFilterState}
+            />
+            <ContentTypeFilter
+              show={Boolean(filterGroups.contentTypeFilter)}
+              filterGroup={searchFilterState.filterGroups.contentTypeFilter}
+              setSearchFilterState={setSearchFilterState}
+            />
+            <WorkflowTypeFilter
+              show={Boolean(filterGroups.workflowTypeFilter)}
+              searchArgs={searchArgs}
+              filterGroup={searchFilterState.filterGroups.workflowTypeFilter}
+              setSearchFilterState={setSearchFilterState}
+            />
 
-              {/* NOTE: we could merge these into one generic, benefits debatable */}
-              <ToggleFavorite
-                show={Boolean(filterGroups.favoritesFilter)}
-                filterGroup={searchFilterState.filterGroups.favoritesFilter}
-                setSearchFilterState={setSearchFilterState}
-              />
-              <ToggleTemplate
-                show={Boolean(filterGroups.templateFilter)}
-                filterGroup={searchFilterState.filterGroups.templateFilter}
-                setSearchFilterState={setSearchFilterState}
-              />
-              <ToggleArchive
-                show={Boolean(filterGroups.archiveFilter)}
-                filterGroup={searchFilterState.filterGroups.archiveFilter}
-                setSearchFilterState={setSearchFilterState}
-              />
-            </Stack>
-            <SearchFilter setSearchFilterState={setSearchFilterState} />
+            {/* NOTE: we could merge these into one generic, benefits debatable */}
+            <ToggleFavorite
+              show={Boolean(filterGroups.favoritesFilter)}
+              filterGroup={searchFilterState.filterGroups.favoritesFilter}
+              setSearchFilterState={setSearchFilterState}
+            />
+            <ToggleTemplate
+              show={Boolean(filterGroups.templateFilter)}
+              filterGroup={searchFilterState.filterGroups.templateFilter}
+              setSearchFilterState={setSearchFilterState}
+            />
+            <ToggleArchive
+              show={Boolean(filterGroups.archiveFilter)}
+              filterGroup={searchFilterState.filterGroups.archiveFilter}
+              setSearchFilterState={setSearchFilterState}
+            />
           </Stack>
-        </Toolbar>
-      )}
+          <SearchFilter setSearchFilterState={setSearchFilterState} />
+        </Stack>
+      </Toolbar>
 
       {!isLoading && !isError && data?.items.length ? (
-        <Typography sx={{ mb: 2 }}>{formatResultsSummary(data)}</Typography>
+        <Typography sx={{ mb: 2 }}>
+          {LibraryHelper.formatResultsSummary(data)}
+        </Typography>
       ) : null}
 
       <GridWrap data-test-id="library-results">

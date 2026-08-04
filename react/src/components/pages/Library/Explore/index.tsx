@@ -1,9 +1,7 @@
-import { LibraryFiltersIn, LibrarySearchIn } from '@cf/api/gen'
-import LibraryHelper from '@cf/components/views/LibrarySearchView/LibraryHelper.Class'
+import { LibraryFiltersIn } from '@cf/api/gen'
 import LibrarySearchView, {
   LibraryFilterConfig
 } from '@cfViews/LibrarySearchView'
-import { useCallback, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 /*
@@ -46,28 +44,15 @@ const ExplorePage = () => {
     }
   }
 
-  const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
-
-  const updateSearchArgsHandler = useCallback(
-    (args: LibrarySearchIn) => {
-      console.log('locking isTemplateFilter?', isTemplateFilter)
-      setSearchArgs(
-        LibraryHelper.applyLockedFilters(args, {
-          isTemplate: isTemplateFilter
-        })
-      )
-    },
-    [isTemplateFilter]
-  )
-
   /*******************************************************
    * RENDER
    *******************************************************/
   return (
     <LibrarySearchView
       config={config}
-      searchArgs={searchArgs}
-      setSearchArgs={updateSearchArgsHandler}
+      lockedFilters={{
+        isTemplate: isTemplateFilter
+      }}
     />
   )
 }
