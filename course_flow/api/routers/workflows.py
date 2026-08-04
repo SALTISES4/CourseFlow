@@ -186,7 +186,7 @@ def create_workflow(request, payload: WorkflowCreateIn):
                 require_create_permission=payload.project_uuid is not None,
             ),
             title=payload.title,
-            workflow_type=payload.workflow_type.value,
+            workflow_type=payload.workflow_type,
             description=payload.description,
         )
     except ValueError as exc:
