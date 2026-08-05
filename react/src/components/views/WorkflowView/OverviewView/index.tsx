@@ -80,19 +80,6 @@ const OverviewView = () => {
         <SC.InfoBlockContent>{description || _t('-')}</SC.InfoBlockContent>
       </SC.InfoBlock>
 
-      {workflow && (
-        <SC.InfoBlock sx={{ mb: 3 }}>
-          <SC.InfoBlockTitle sx={{ mb: 2 }}>{_t('Metadata')}</SC.InfoBlockTitle>
-          <MetadataFields
-            workflowType={workflow.workflowType}
-            metadata={workflow.overviewMetadata}
-            canEdit={canEdit}
-            isSaving={updateMetadata.isPending}
-            onSave={saveMetadata}
-          />
-        </SC.InfoBlock>
-      )}
-
       <Grid container columnSpacing={3}>
         <Grid item xs={6}>
           <SC.InfoBlock>
@@ -140,6 +127,18 @@ const OverviewView = () => {
           </Button>
         </Stack>
       </SC.InfoBlock>
+
+      {workflow && (
+        <SC.InfoBlock sx={{ mb: 3 }}>
+          <MetadataFields
+            workflowType={workflow.workflowType}
+            metadata={workflow.overviewMetadata}
+            canEdit={canEdit}
+            isSaving={updateMetadata.isPending}
+            onSave={saveMetadata}
+          />
+        </SC.InfoBlock>
+      )}
     </OuterContentWrap>
   )
 }

@@ -10,8 +10,9 @@ import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import { ChangeEvent, useEffect, useState } from 'react'
+
+import * as SC from './styles'
 
 type MetadataKey = keyof WorkflowOverviewMetadataIn
 
@@ -61,13 +62,14 @@ const MetadataFields = ({
     label: string,
     key: MetadataKey,
     disabled = false,
-    integer = false
+    integer = false,
+    fullWidth = false
   ) => (
     <TextField
       label={_t(label)}
       type="number"
       size="small"
-      fullWidth
+      fullWidth={fullWidth}
       value={fieldValue(values[key] as number | null | undefined)}
       disabled={!canEdit || disabled || isSaving}
       inputProps={{ min: 0, step: integer ? 1 : 'any' }}
@@ -98,143 +100,179 @@ const MetadataFields = ({
     isProgram && classificationTotal !== (values.time ?? 0)
 
   return (
-    <Stack spacing={3} data-test-id="workflow-metadata-section">
-      {isCourseOrProgram && (
-        <TextField
-          label={_t('Code')}
-          size="small"
-          value={values.code ?? ''}
-          disabled={!canEdit || isSaving}
-          onChange={(event) => setValue('code', event.target.value)}
-          onBlur={() => saveField('code')}
-        />
-      )}
+    <Grid
+      container
+      direction="row"
+      wrap="wrap"
+      columnSpacing={2}
+      rowSpacing={3}
+      data-test-id="workflow-metadata-section"
+    >
+      <Grid item xs={6}>
+        <SC.InfoBlock>
+          <SC.InfoBlockTitle>{_t('Time')}</SC.InfoBlockTitle>
+          <SC.InfoBlockContent>
+            <Stack direction="row" spacing={2}>
+              {numericField('Time', 'time', timeAutomatic)}
+              <FormControlLabel
+                label={_t('Calculate time automatically')}
+                control={
+                  <Switch
+                    checked={timeAutomatic}
+                    disabled={!canEdit || isSaving}
+                    onChange={toggle('calculateTimeAutomatically')}
+                  />
+                }
+              />
+            </Stack>
+          </SC.InfoBlockContent>
+        </SC.InfoBlock>
+      </Grid>
 
-      <Stack spacing={2}>
-        <Typography component="h3" variant="subtitle1" fontWeight={600}>
-          {_t('Time')}
-        </Typography>
-        <FormControlLabel
-          label={_t('Calculate time automatically')}
-          control={
-            <Switch
-              checked={timeAutomatic}
-              disabled={!canEdit || isSaving}
-              onChange={toggle('calculateTimeAutomatically')}
-            />
-          }
-        />
-        {numericField('Time', 'time', timeAutomatic)}
-      </Stack>
-
       {isCourseOrProgram && (
-        <Stack spacing={2}>
-          <Typography component="h3" variant="subtitle1" fontWeight={600}>
-            {_t('Ponderation')}
-          </Typography>
-          {isProgram && (
-            <FormControlLabel
-              label={_t('Calculate ponderation automatically')}
-              control={
-                <Switch
-                  checked={ponderationAutomatic}
-                  disabled={!canEdit || isSaving}
-                  onChange={toggle('calculatePonderationAutomatically')}
-                />
-              }
-            />
-          )}
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={4}>
-              {numericField('Theory', 'theoryTime', ponderationAutomatic)}
-            </Grid>
-            <Grid item xs={12} md={4}>
-              {numericField('Practical', 'practicalTime', ponderationAutomatic)}
-            </Grid>
-            <Grid item xs={12} md={4}>
-              {numericField(
-                'Individual',
-                'individualTime',
-                ponderationAutomatic
-              )}
-            </Grid>
-          </Grid>
-          {hasPonderationMismatch && (
-            <Alert
-              severity="warning"
-              data-test-id="workflow-ponderation-warning"
-            >
-              {_t(
-                `Total of ponderation hours does not match ${workflowType} time.`
-              )}
-            </Alert>
-          )}
-        </Stack>
+        <Grid item xs={6}>
+          <SC.InfoBlock>
+            <SC.InfoBlockTitle>{_t('Credits')}</SC.InfoBlockTitle>
+            <SC.InfoBlockContent>
+              <Stack direction="row" spacing={2}>
+                {numericField('Credits', 'credits', creditsAutomatic, true)}
+                {isProgram && (
+                  <FormControlLabel
+                    label={_t('Calculate credits automatically')}
+                    control={
+                      <Switch
+                        checked={creditsAutomatic}
+                        disabled={!canEdit || isSaving}
+                        onChange={toggle('calculateCreditsAutomatically')}
+                      />
+                    }
+                  />
+                )}
+              </Stack>
+            </SC.InfoBlockContent>
+          </SC.InfoBlock>
+        </Grid>
       )}
 
       {isCourseOrProgram && (
-        <Stack spacing={2}>
-          <Typography component="h3" variant="subtitle1" fontWeight={600}>
-            {_t('Credits')}
-          </Typography>
-          {isProgram && (
-            <FormControlLabel
-              label={_t('Calculate credits automatically')}
-              control={
-                <Switch
-                  checked={creditsAutomatic}
-                  disabled={!canEdit || isSaving}
-                  onChange={toggle('calculateCreditsAutomatically')}
+        <Grid item xs={6}>
+          <SC.InfoBlock>
+            <SC.InfoBlockTitle>{_t('Ponderation')}</SC.InfoBlockTitle>
+            <SC.InfoBlockContent>
+              {isProgram && (
+                <FormControlLabel
+                  label={_t('Calculate ponderation automatically')}
+                  control={
+                    <Switch
+                      checked={ponderationAutomatic}
+                      disabled={!canEdit || isSaving}
+                      onChange={toggle('calculatePonderationAutomatically')}
+                    />
+                  }
                 />
-              }
-            />
-          )}
-          {numericField('Credits', 'credits', creditsAutomatic, true)}
-        </Stack>
+              )}
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={4}>
+                  {numericField('Theory', 'theoryTime', ponderationAutomatic)}
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  {numericField(
+                    'Practical',
+                    'practicalTime',
+                    ponderationAutomatic
+                  )}
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  {numericField(
+                    'Individual',
+                    'individualTime',
+                    ponderationAutomatic
+                  )}
+                </Grid>
+              </Grid>
+              {hasPonderationMismatch && (
+                <Alert
+                  severity="warning"
+                  data-test-id="workflow-ponderation-warning"
+                >
+                  {_t(
+                    `Total of ponderation hours does not match ${workflowType} time.`
+                  )}
+                </Alert>
+              )}
+            </SC.InfoBlockContent>
+          </SC.InfoBlock>
+        </Grid>
       )}
 
       {isProgram && (
-        <Stack spacing={2}>
-          <Typography component="h3" variant="subtitle1" fontWeight={600}>
-            {_t('Classification')}
-          </Typography>
-          <FormControlLabel
-            label={_t('Calculate classification automatically')}
-            control={
-              <Switch
-                checked={classificationAutomatic}
-                disabled={!canEdit || isSaving}
-                onChange={toggle('calculateClassificationAutomatically')}
+        <Grid item xs={6}>
+          <SC.InfoBlock>
+            <SC.InfoBlockTitle>{_t('Classification')}</SC.InfoBlockTitle>
+            <SC.InfoBlockContent>
+              <FormControlLabel
+                label={_t('Calculate classification automatically')}
+                control={
+                  <Switch
+                    checked={classificationAutomatic}
+                    disabled={!canEdit || isSaving}
+                    onChange={toggle('calculateClassificationAutomatically')}
+                  />
+                }
               />
-            }
-          />
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              {numericField(
-                'General time',
-                'generalTime',
-                classificationAutomatic
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  {numericField(
+                    'General time',
+                    'generalTime',
+                    classificationAutomatic,
+                    undefined,
+                    true
+                  )}
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  {numericField(
+                    'Specific time',
+                    'specificTime',
+                    classificationAutomatic,
+                    undefined,
+                    true
+                  )}
+                </Grid>
+              </Grid>
+              {hasClassificationMismatch && (
+                <Alert
+                  severity="warning"
+                  data-test-id="workflow-classification-warning"
+                >
+                  {_t(
+                    'Total of classification hours does not match program time'
+                  )}
+                </Alert>
               )}
-            </Grid>
-            <Grid item xs={12} md={6}>
-              {numericField(
-                'Specific time',
-                'specificTime',
-                classificationAutomatic
-              )}
-            </Grid>
-          </Grid>
-          {hasClassificationMismatch && (
-            <Alert
-              severity="warning"
-              data-test-id="workflow-classification-warning"
-            >
-              {_t('Total of classification hours does not match program time')}
-            </Alert>
-          )}
-        </Stack>
+            </SC.InfoBlockContent>
+          </SC.InfoBlock>
+        </Grid>
       )}
-    </Stack>
+
+      {isCourseOrProgram && (
+        <Grid item xs={6}>
+          <SC.InfoBlock>
+            <SC.InfoBlockTitle>{_t('Code')}</SC.InfoBlockTitle>
+            <SC.InfoBlockContent>
+              <TextField
+                label={_t('Code')}
+                size="small"
+                value={values.code ?? ''}
+                disabled={!canEdit || isSaving}
+                onChange={(event) => setValue('code', event.target.value)}
+                onBlur={() => saveField('code')}
+              />
+            </SC.InfoBlockContent>
+          </SC.InfoBlock>
+        </Grid>
+      )}
+    </Grid>
   )
 }
 
