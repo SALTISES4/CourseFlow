@@ -265,8 +265,8 @@ typecheck:
 
 
 [group: 'Testing:run']
-typecheck:
-  cd {{ testing_dir }}
+test-frontend:
+  cd {{ testing_dir }} && yarn test-ui
 
 #########################################################
 # APPLE SCRIPTS

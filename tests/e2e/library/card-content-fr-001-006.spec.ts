@@ -1,4 +1,5 @@
 import { test, expect, type Locator, type Page } from '../../fixtures';
+import { authenticatedApiRequest } from '../../helpers/api';
 import {
   cleanupLibraryLifecycleFixture,
   createArchivedWorkflowFixture,
@@ -93,6 +94,91 @@ async function showLibraryWorkflowCards(
   );
 }
 
+async function showLibraryProjectCard(page: Page, projectTitle: string) {
+  const searchBody = await triggerLibrarySearchAndWait(
+    page,
+    async () => {
+      await keywordSearchField(page).fill(projectTitle);
+      await keywordSearchField(page).press('Enter');
+    },
+    { filters: { contentType: 'project', keyword: projectTitle } },
+  );
+  const card = libraryProjectCardByTitle(page, projectTitle);
+  await expect(card).toBeVisible();
+  return { card, searchBody };
+}
+
+type FavouriteLibraryItem = {
+  uuid: string;
+  title: string;
+  contentType: 'project' | 'workflow';
+};
+
+async function readLibraryItemFavouriteState(
+  page: Page,
+  item: FavouriteLibraryItem,
+): Promise<boolean> {
+  const response = await authenticatedApiRequest(page, 'POST', '/api/library/search', {
+    data: {
+      pagination: { page: 0, resultsPerPage: 10 },
+      filters: {
+        keyword: item.title,
+        contentType: item.contentType,
+        isArchived: false,
+      },
+    },
+  });
+  expect(
+    response.ok(),
+    `Could not read favourite state for ${item.contentType} ${item.uuid}`,
+  ).toBeTruthy();
+
+  const body = (await response.json()) as {
+    items: Array<{ uuid: string; contentType: string; isFavorite: boolean }>;
+  };
+  const match = body.items.find(
+    (candidate) =>
+      candidate.uuid === item.uuid && candidate.contentType === item.contentType,
+  );
+  expect(
+    match,
+    `Library search did not return ${item.contentType} ${item.uuid}`,
+  ).toBeDefined();
+  return match!.isFavorite;
+}
+
+async function restoreLibraryItemFavouriteState(
+  page: Page,
+  item: FavouriteLibraryItem,
+  expectedState: boolean,
+): Promise<void> {
+  if ((await readLibraryItemFavouriteState(page, item)) === expectedState) {
+    return;
+  }
+
+  const response = await authenticatedApiRequest(page, 'POST', '/api/library/favorite', {
+    data: { uuid: item.uuid },
+  });
+  expect(
+    response.ok(),
+    `Could not restore favourite state for ${item.contentType} ${item.uuid}`,
+  ).toBeTruthy();
+  expect(await readLibraryItemFavouriteState(page, item)).toBe(expectedState);
+}
+
+async function withRestoredFavouriteState(
+  page: Page,
+  item: FavouriteLibraryItem,
+  assertion: () => Promise<void>,
+): Promise<void> {
+  const initialState = await readLibraryItemFavouriteState(page, item);
+  try {
+    await assertion();
+  } finally {
+    await restoreLibraryItemFavouriteState(page, item, initialState);
+  }
+}
+
 async function showArchivedProjects(page: Page): Promise<void> {
   await triggerLibrarySearchAndWait(page, () => archiveToggle(page).click(), {
     filters: { contentType: 'project', isArchived: true },
@@ -142,21 +228,12 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
     test('seeded project card shows mapped content and layout regions', async ({
       page,
     }) => {
-      const searchBody = await triggerLibrarySearchAndWait(
-        page,
-        async () => {
-          await keywordSearchField(page).fill(manifest.project_title);
-          await keywordSearchField(page).press('Enter');
-        },
-        { filters: { keyword: manifest.project_title } },
-      );
+      const { card, searchBody } = await showLibraryProjectCard(page, manifest.project_title);
       const projectItem = searchBody.items.find(
         (item) => item.uuid === manifest.project_uuid && item.contentType === 'project',
       );
       expect(projectItem).toBeDefined();
 
-      const card = libraryProjectCardByTitle(page, manifest.project_title);
-      await expect(card).toBeVisible();
       await expect(cardHeaderRegion(card)).toBeVisible();
       await expect(cardFooterRegion(card)).toBeVisible();
 
@@ -212,8 +289,7 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
 
   test.describe('FR-CARD-003: projectCard click destination', () => {
     test('clicking project card navigates to project Workflows view', async ({ page }) => {
-      const card = libraryProjectCardByTitle(page, manifest.project_title);
-      await expect(card).toBeVisible();
+      const { card } = await showLibraryProjectCard(page, manifest.project_title);
       await cardTitleText(card).click();
       await expect(page).toHaveURL(new RegExp(`${projectWorkflowsPath.replace(/\//g, '\\/')}/?$`));
     });
@@ -231,7 +307,18 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
   });
 
   test.describe('FR-CARD-005: card favourite toggle', () => {
-    test.describe.configure({ mode: 'serial' });
+    test.describe.configure({ mode: 'default' });
+
+    const primaryProject: FavouriteLibraryItem = {
+      uuid: manifest.project_uuid,
+      title: manifest.project_title,
+      contentType: 'project',
+    };
+    const primaryWorkflow: FavouriteLibraryItem = {
+      uuid: workflow.workflow_uuid,
+      title: E2E_FIXTURE_WORKFLOW_TITLE,
+      contentType: 'workflow',
+    };
 
     test.describe('favourite star reflects API isFavorite', () => {
       test('workflow card shows grey star when API isFavorite is false', async ({ page }) => {
@@ -250,20 +337,12 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
 
       test('project card shows grey star when API isFavorite is false', async ({ page }) => {
         const recentProject = manifest.recent_projects[0]!;
-        const searchBody = await triggerLibrarySearchAndWait(
-          page,
-          async () => {
-            await keywordSearchField(page).fill(recentProject.title);
-            await keywordSearchField(page).press('Enter');
-          },
-          { filters: { keyword: recentProject.title } },
-        );
+        const { card, searchBody } = await showLibraryProjectCard(page, recentProject.title);
         const projectItem = searchBody.items.find(
           (item) => item.uuid === recentProject.uuid && item.contentType === 'project',
         );
         expect(projectItem?.isFavorite).toBe(false);
 
-        const card = libraryProjectCardByTitle(page, recentProject.title);
         await expectCardFavouriteToggleShowsNotFavourited(card);
       });
 
@@ -272,22 +351,26 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
 
         const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
         await expect(card).toBeVisible();
-        await ensureCardFavourited(page, card);
-        await expectCardFavouriteToggleShowsFavourited(card);
+        await withRestoredFavouriteState(page, primaryWorkflow, async () => {
+          await ensureCardFavourited(page, card);
+          await expectCardFavouriteToggleShowsFavourited(card);
+        });
       });
 
       test('project card shows yellow star when favourited', async ({ page }) => {
-        const card = libraryProjectCardByTitle(page, manifest.project_title);
-        await expect(card).toBeVisible();
-        await ensureCardFavourited(page, card);
-        await expectCardFavouriteToggleShowsFavourited(card);
+        const { card } = await showLibraryProjectCard(page, manifest.project_title);
+        await withRestoredFavouriteState(page, primaryProject, async () => {
+          await ensureCardFavourited(page, card);
+          await expectCardFavouriteToggleShowsFavourited(card);
+        });
       });
     });
 
     test('project card favourite toggle does not change route', async ({ page }) => {
-      const card = libraryProjectCardByTitle(page, manifest.project_title);
-      await expect(card).toBeVisible();
-      await expectCardFavouriteToggleRoundTrip(page, card);
+      const { card } = await showLibraryProjectCard(page, manifest.project_title);
+      await withRestoredFavouriteState(page, primaryProject, async () => {
+        await expectCardFavouriteToggleRoundTrip(page, card);
+      });
     });
 
     test('workflow card favourite toggle does not change route', async ({ page }) => {
@@ -295,23 +378,27 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
 
       const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
       await expect(card).toBeVisible();
-      await expectCardFavouriteToggleRoundTrip(page, card);
+      await withRestoredFavouriteState(page, primaryWorkflow, async () => {
+        await expectCardFavouriteToggleRoundTrip(page, card);
+      });
     });
 
     test('project card favourite toggle shows Added to your favourites', async ({ page }) => {
-      const card = libraryProjectCardByTitle(page, manifest.project_title);
-      await expect(card).toBeVisible();
-      await ensureCardNotFavourited(page, card);
-      await cardFavouriteToggle(card).click();
-      await expectCardFavouriteAddedSnackbar(page);
+      const { card } = await showLibraryProjectCard(page, manifest.project_title);
+      await withRestoredFavouriteState(page, primaryProject, async () => {
+        await ensureCardNotFavourited(page, card);
+        await cardFavouriteToggle(card).click();
+        await expectCardFavouriteAddedSnackbar(page);
+      });
     });
 
     test('project card favourite toggle shows Removed from your favourites', async ({ page }) => {
-      const card = libraryProjectCardByTitle(page, manifest.project_title);
-      await expect(card).toBeVisible();
-      await ensureCardFavourited(page, card);
-      await cardFavouriteToggle(card).click();
-      await expectCardFavouriteRemovedSnackbar(page);
+      const { card } = await showLibraryProjectCard(page, manifest.project_title);
+      await withRestoredFavouriteState(page, primaryProject, async () => {
+        await ensureCardFavourited(page, card);
+        await cardFavouriteToggle(card).click();
+        await expectCardFavouriteRemovedSnackbar(page);
+      });
     });
 
     test('workflow card favourite toggle shows Added to your favourites', async ({ page }) => {
@@ -319,9 +406,11 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
 
       const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
       await expect(card).toBeVisible();
-      await ensureCardNotFavourited(page, card);
-      await cardFavouriteToggle(card).click();
-      await expectCardFavouriteAddedSnackbar(page);
+      await withRestoredFavouriteState(page, primaryWorkflow, async () => {
+        await ensureCardNotFavourited(page, card);
+        await cardFavouriteToggle(card).click();
+        await expectCardFavouriteAddedSnackbar(page);
+      });
     });
 
     test('workflow card favourite toggle shows Removed from your favourites', async ({ page }) => {
@@ -329,9 +418,11 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
 
       const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
       await expect(card).toBeVisible();
-      await ensureCardFavourited(page, card);
-      await cardFavouriteToggle(card).click();
-      await expectCardFavouriteRemovedSnackbar(page);
+      await withRestoredFavouriteState(page, primaryWorkflow, async () => {
+        await ensureCardFavourited(page, card);
+        await cardFavouriteToggle(card).click();
+        await expectCardFavouriteRemovedSnackbar(page);
+      });
     });
   });
 
