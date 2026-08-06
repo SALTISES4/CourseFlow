@@ -44,6 +44,7 @@ export function workflowEditOutcomeFormDeleteButton(page: Page): Locator {
 }
 
 export function workflowOutcomeHoverDuplicateItem(page: Page, title: string): Locator {
+  // FR-WF-EO-010 tooltip is 'Duplicate outcome below'; product label is 'Duplicate'.
   return workflowOutcomeRowForHeader(page, workflowOutcomeHeader(page, title)).getByRole('button', {
     name: 'Duplicate',
     exact: true,
@@ -90,10 +91,29 @@ export function workflowOutcomeHeaderWithOrdinalPrefix(page: Page, ordinalPath: 
 }
 
 function workflowOutcomeExpandToggleForHeader(header: Locator): Locator {
-  return header
-    .locator('xpath=ancestor::*[@role="listitem"][1]')
-    .getByRole('button')
-    .last();
+  // Title is inside OutcomeHeaderInner; expand/collapse IconButton is that row's following sibling.
+  // Prefer this over ancestor::li + button.last() — native <li> has no role attr, and .last()
+  // can resolve to a nested child outcome's hover control once children exist.
+  return header.locator('xpath=../following-sibling::button');
+}
+
+/**
+ * Drag handle for FR-WF-EO-015 — OutcomeHeader wraps the title (OutcomeHeaderInner parent).
+ * Atlaskit attaches `draggable` to this element, not the title text node.
+ */
+export function workflowOutcomeHeaderDragHandle(page: Page, title: string): Locator {
+  return workflowOutcomeHeader(page, title).first().locator('xpath=../..');
+}
+
+/** Header title text matching ordinal + title (e.g. `1.1. Child`). */
+export function workflowOutcomeHeaderTitleText(
+  page: Page,
+  ordinalPath: string,
+  title: string,
+): Locator {
+  const ordinalEscaped = ordinalPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const titleEscaped = title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return page.getByText(new RegExp(`^${ordinalEscaped}\\.\\s+${titleEscaped}$`));
 }
 
 /** Expand/collapse toggle on a workflowOutcomeHeader that has children. */
@@ -193,12 +213,14 @@ export function workflowOutcomeRowForHeader(page: Page, header: Locator): Locato
 }
 
 export function workflowOutcomeHoverDeleteForHeader(page: Page, header: Locator): Locator {
+  // FR-WF-EO-013 tooltip is 'Delete outcome'; product label is 'Delete'.
   return workflowOutcomeRowForHeader(page, header)
     .getByRole('button', { name: 'Delete', exact: true })
     .first();
 }
 
 export function workflowOutcomeHoverInsertSiblingForHeader(page: Page, header: Locator): Locator {
+  // FR-WF-EO-003 tooltip is 'Insert outcome below'; product label is 'Insert sibling'.
   return workflowOutcomeRowForHeader(page, header).getByRole('button', {
     name: 'Insert sibling',
     exact: true,
@@ -206,6 +228,7 @@ export function workflowOutcomeHoverInsertSiblingForHeader(page: Page, header: L
 }
 
 export function workflowOutcomeHoverInsertChildForHeader(page: Page, header: Locator): Locator {
+  // FR-WF-EO-003 tooltip is 'Insert child outcome'; product label is 'Insert child'.
   return workflowOutcomeRowForHeader(page, header).getByRole('button', {
     name: 'Insert child',
     exact: true,
@@ -236,6 +259,15 @@ export async function waitForOutcomeUpdateResponse(page: Page): Promise<void> {
     (resp) =>
       resp.request().method() === 'PATCH' &&
       resp.url().includes('/api/outcome/') &&
+      resp.ok(),
+  );
+}
+
+export async function waitForOutcomeMoveResponse(page: Page): Promise<void> {
+  await page.waitForResponse(
+    (resp) =>
+      resp.request().method() === 'POST' &&
+      /\/api\/outcome\/[^/]+\/move/.test(resp.url()) &&
       resp.ok(),
   );
 }

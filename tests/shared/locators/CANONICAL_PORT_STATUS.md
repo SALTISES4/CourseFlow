@@ -45,7 +45,7 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 - `tests/e2e/workflow/delete-node-fr-001.spec.ts` — FR-WF-DEL-001 (serial, pristine)
 - `tests/e2e/workflow/duplicate-node-fr-001.spec.ts` — FR-WF-DUP-001 (serial, pristine)
 - `tests/e2e/workflow/node-hover-fr-002-005.spec.ts` — FR-WF-NODE-005, FR-WF-DUP-002/003 (serial, section 3)
-- `tests/e2e/workflow/outcome-duplicate-delete-fr-009-014.spec.ts` — FR-WF-EO-009–013 (serial)
+- `tests/e2e/workflow/outcome-insert-duplicate-delete-001-014.spec.ts` — FR-WF-EO-001–014 create/insert/duplicate/delete (serial)
 - `tests/e2e/workflow/workflow-graph.locators.ts` — workflowNode*, workflowChannel*, edit form headings
 - `tests/e2e/workflow/workflow.locators.ts` — workflow header/tab shell uiObjects
 
