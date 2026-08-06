@@ -12,11 +12,11 @@ const WorkspaceAccessDenied = ({
   archived = false
 }: WorkspaceAccessDeniedProps) => {
   const title = archived
-    ? `the ${workspace} is archived`
-    : `no ${workspace} access`
+    ? `The ${workspace} is archived`
+    : `No ${workspace} access`
   const subtitle = archived
-    ? `the ${workspace} must be restored by the owner to enable viewing and editing.`
-    : `this ${workspace} is private. you need permission from the owner to view or edit its contents.`
+    ? `The ${workspace} must be restored by the owner to enable viewing and editing.`
+    : `This ${workspace} is private. you need permission from the owner to view or edit its contents.`
 
   return (
     <OuterContentWrap

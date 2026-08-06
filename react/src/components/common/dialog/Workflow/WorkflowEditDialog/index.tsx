@@ -147,7 +147,7 @@ const WorkflowEditDialog = () => {
               maxRows={3}
               name="description"
               variant="standard"
-              label={_t(`${workflowTypeLabel} description`)}
+              label={_t(`Description`)}
               error={!!errors.description}
               helperText={errors.description?.message}
               fullWidth
