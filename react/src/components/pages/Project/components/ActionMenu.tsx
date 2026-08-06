@@ -80,6 +80,10 @@ const ActionMenu = () => {
     }
   ]
 
+  if (menuItems.every((i) => !i.show)) {
+    return null
+  }
+
   return (
     <MenuWithOverflow menuItems={menuItems} size={2} buttonColor="primary" />
   )

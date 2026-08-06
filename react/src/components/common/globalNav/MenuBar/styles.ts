@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles'
 
 export const Wrapper = styled(Box)(({ theme }) => ({
   width: '100%',
+  minHeight: '40px',
   background: '#E2F5EB',
   color: theme.palette.primary.main,
   '& > .MuiBox-root': {
