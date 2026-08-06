@@ -1,5 +1,5 @@
 import { WorkflowTypeIn } from '@cf/api/gen'
-import { capitalize } from '@cf/utility/Utility.class'
+import { _t, capitalize } from '@cf/utility/Utility.class'
 import { StyledBox } from '@cfComponents/dialog/styles'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'
@@ -93,7 +93,7 @@ const WorkflowForm = ({
       {!formRef && (
         <DialogActions>
           <Button variant="contained" color="secondary" onClick={onDialogClose}>
-            Cancel
+            {_t('Cancel')}
           </Button>
           <Button type="submit" variant="contained" disabled={!isDirty}>
             {label}
