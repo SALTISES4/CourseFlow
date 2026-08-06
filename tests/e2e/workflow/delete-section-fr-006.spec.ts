@@ -1,5 +1,4 @@
 import { test, expect } from '../../fixtures';
-import { skipUnlessPristineWorkflow } from '../../helpers/workflow-pristine';
 import {
   deleteButtonInSectionHeader,
   deleteSectionCancelButton,
@@ -14,6 +13,8 @@ import {
   workflowSectionDeleteDialogTitle,
 } from '../../shared/locators/workflow';
 
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
+
 /**
  * Delete section — hover path and dialog (FR-SEC-006).
  * Requirements: workflow_delete_section_requirements_v1.yaml
@@ -26,11 +27,8 @@ async function hoverSectionHeader(page: import('@playwright/test').Page, section
 }
 
 test.describe('Delete Section — hover path (FR-SEC-006)', () => {
-  test.describe.configure({ mode: 'serial' });
-
   test.beforeEach(async ({ page, workflow }) => {
     await page.goto(workflow.path);
-    await skipUnlessPristineWorkflow(page, workflow);
   });
 
   test('FR-SEC-006: hover delete opens workflowSectionDeleteDialog with title and body copy', async ({
@@ -84,10 +82,5 @@ test.describe('Delete Section — hover path (FR-SEC-006)', () => {
     await expect(page.locator(`[data-section-id="${disposable.uuid}"]`)).toHaveCount(0);
   });
 
-  test('FR-SEC-006: last-section delete guard deferred', async () => {
-    test.skip(
-      true,
-      'Delete controls stay disabled when workflowView has exactly one workflowSectionContainer (product gap).',
-    );
-  });
+  test.fixme('FR-SEC-006: last-section delete guard deferred', async () => {});
 });

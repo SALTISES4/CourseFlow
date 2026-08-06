@@ -259,8 +259,8 @@ Do not make them part of the committed Playwright test artifact.
 
 Before MCP validation, ensure the E2E stack matches `tests/docs/runbooks/playwright_execution_guide.md`:
 
-1. `courseflow_e2e` seeded
-2. `just django-run-e2e` and React on `:3000`
+1. Deterministic fixtures loaded with `just e2e-prepare`
+2. `just django-run` and React on `:3000`
 3. `cd tests && yarn test-setup` (auth storage state)
 4. `just e2e-prepare` when specs need `tests/.playwright-fixtures/workflow.json`
 
@@ -292,7 +292,7 @@ When invoking this prompt in Cursor or JetBrains with Playwright MCP enabled, fi
 
 ```text
 Before writing locators or assertions, use Playwright MCP to validate all in-scope
-uiObjects and locatorMappings against the live app on courseflow_e2e.
+uiObjects and locatorMappings against the live seeded app.
 Promote only confirmed selectors. Do not guess unresolved mappings.
 ```
 
@@ -364,7 +364,7 @@ Output locators file path (if new or updated):
 
 E2E environment:
 
-* [ ] `courseflow_e2e` seeded and `just django-run-e2e` running
+* [ ] Deterministic fixtures seeded and `just django-run` running
 * [ ] React app on `:3000`
 * [ ] `yarn test-setup` completed
 * [ ] `just e2e-prepare` completed (if manifest routes required)

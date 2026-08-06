@@ -19,7 +19,7 @@ Use this checklist when reviewing AI-generated Playwright tests.
 ## 3. Selector legitimacy
 
 - [ ] Selectors appear grounded in real DOM behavior, not invented from design artifacts.
-- [ ] In-scope selectors were validated against the live app on `courseflow_e2e` (Playwright MCP, `playwright-cli`, or a justified prior calibration spec) before merge.
+- [ ] In-scope selectors were validated against the live app with deterministic fixtures loaded (Playwright MCP, `playwright-cli`, or a justified prior calibration spec) before merge.
 - [ ] **No forbidden patterns** from `locator_contract_policy.md` (XPath axes, MUI `Mui*` classes, `.main-block` anchors, etc.).
 - [ ] If `data-test-id` was added, React + `canonical_locators.yaml` were updated in the same change set (per § When to add `data-test-id`).
 - [ ] Shared canonical uiObjects **import or re-export** from the owning `*.locators.ts` module — not reimplemented with different selectors.

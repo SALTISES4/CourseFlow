@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import { getProjectPath, getProjectWorkflowsPath, loadWorkflowManifest } from '../../helpers/manifest';
 import {
@@ -14,6 +14,8 @@ import {
   projectWorkflowsTab,
   waitForProjectOverviewLoaded,
 } from './project.locators';
+
+test.use({ seedDependencies: ['actor.teacher', 'project.primary'] });
 
 /**
  * Calibration slice — FR-PROJ-HEADER-001 through FR-PROJ-HEADER-002.
@@ -56,17 +58,25 @@ test.describe('Project header — calibration (FR-PROJ-HEADER-001-002)', () => {
   });
 
   test.describe('FR-PROJ-HEADER-002: favourite toggle', () => {
-    test.describe.configure({ mode: 'serial' });
-
-    test('clicking favourite shows snackbar feedback', async ({ page }) => {
+    test('favourite toggle round-trip shows snackbar feedback and restores seed state', async ({
+      page,
+    }) => {
       const toggle = projectHeaderFavouriteToggle(page);
       await expect(toggle).toBeVisible();
 
       await toggle.click();
-      await expect(globalMessageSnackbar(page)).toBeVisible({ timeout: 15_000 });
-      await expect(globalMessageSnackbar(page)).toHaveText(
-        new RegExp(`^(${CARD_FAVOURITE_SNACKBAR_ADDED}|${CARD_FAVOURITE_SNACKBAR_REMOVED})$`),
-      );
+      try {
+        await expect(globalMessageSnackbar(page)).toBeVisible({ timeout: 15_000 });
+        await expect(globalMessageSnackbar(page)).toHaveText(
+          new RegExp(`^(${CARD_FAVOURITE_SNACKBAR_ADDED}|${CARD_FAVOURITE_SNACKBAR_REMOVED})$`),
+        );
+      } finally {
+        const firstMessage = await globalMessageSnackbar(page).innerText();
+        await toggle.click();
+        await expect(globalMessageSnackbar(page)).not.toHaveText(firstMessage, {
+          timeout: 15_000,
+        });
+      }
     });
   });
 });

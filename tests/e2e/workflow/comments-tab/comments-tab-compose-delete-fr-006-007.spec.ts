@@ -9,14 +9,14 @@ import {
 } from '../../../shared/locators/workflow';
 import { openSectionCommentsViaHover, requireSectionCommentsComposer } from '../comments-tab.helpers';
 
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
+
 /**
  * Comments compose and delete — FR-WF-COMMENTS-006, FR-WF-COMMENTS-007 (section host, partial).
  * Requirements: workflow_comments_tab_requirements_v1.yaml
  */
 
 test.describe('Comments tab — compose and delete (FR-WF-COMMENTS-006, FR-WF-COMMENTS-007)', () => {
-  test.describe.configure({ mode: 'serial' });
-
   test.beforeEach(async ({ page, workflow }) => {
     await page.goto(workflow.path);
     await openSectionCommentsViaHover(page, workflow.blankSection().uuid);

@@ -15,6 +15,8 @@ import {
   workflowViewTabSelector,
 } from './workflow.locators';
 
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
+
 /**
  * Workflow header — FR-WF-HEADER-001, FR-WF-HEADER-002.
  * Requirements: workflow_header_requirements_v1.yaml
@@ -61,8 +63,6 @@ test.describe('Workflow header — navigation (FR-WF-HEADER-001)', () => {
 });
 
 test.describe('Workflow header — favourite (FR-WF-HEADER-002)', () => {
-  test.describe.configure({ mode: 'serial' });
-
   test.beforeEach(async ({ page, workflow }) => {
     await page.goto(workflow.path);
   });

@@ -28,6 +28,8 @@ import {
 import { workflowOutcomeHoverCommentsItem } from '../workflow-outcome.locators';
 import { workflowCommentsPresenceIndicator } from '../../../shared/locators/workflow';
 
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
+
 /**
  * Comments presence indicator — FR-WF-COMMENTS-008.
  * Requirements: workflow_comments_tab_requirements_v1.yaml

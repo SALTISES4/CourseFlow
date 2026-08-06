@@ -22,6 +22,14 @@ import {
   workflowEditTitleField,
 } from './workflow-edit-form.locators';
 
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  seedAssets: ['workflow.navigation_course', 'workflow.navigation_program'],
+  seedDependencies: ['project.primary', 'actor.viewer'],
+  actorAsset: 'actor.teacher',
+  seedAccess: 'disposable-copy',
+});
+
 /**
  * Edit workflow form — FR-WF-FORM-001, FR-WF-FORM-002, FR-WF-FORM-003.
  * Requirements: tests/docs/requirements/features/workflow/workflow_edit_form_requirements_v1.yaml
@@ -31,7 +39,6 @@ import {
  */
 
 const WORKFLOW_TYPES = ['activity', 'course', 'program'] as const satisfies readonly WorkflowFixtureType[];
-
 test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
   for (const workflowType of WORKFLOW_TYPES) {
     test.describe(`${workflowType}`, () => {

@@ -1,0 +1,142 @@
+{
+  "catalog_version": 1,
+  "assets": [
+    {
+      "id": "actor.teacher",
+      "kind": "actor",
+      "builder": "ensure_e2e_owner",
+      "lifecycle": "seeded",
+      "purpose": "Primary non-admin owner used by ordinary development and E2E scenarios.",
+      "provides": ["account-role:teacher", "project-role:owner"]
+    },
+    {
+      "id": "actor.editor",
+      "kind": "actor",
+      "builder": "ensure_e2e_contributors",
+      "lifecycle": "permissions-only",
+      "purpose": "Editor contributor used only by permission and team-management scenarios.",
+      "provides": ["project-role:editor"]
+    },
+    {
+      "id": "actor.commenter",
+      "kind": "actor",
+      "builder": "ensure_e2e_contributors",
+      "lifecycle": "permissions-only",
+      "purpose": "Commenter contributor used only by permission and team-management scenarios.",
+      "provides": ["project-role:commenter"]
+    },
+    {
+      "id": "actor.viewer",
+      "kind": "actor",
+      "builder": "ensure_e2e_contributors",
+      "lifecycle": "permissions-only",
+      "purpose": "Viewer contributor used only by permission and team-management scenarios.",
+      "provides": ["project-role:viewer", "account-role:student"]
+    },
+    {
+      "id": "project.primary",
+      "kind": "project",
+      "builder": "generate_e2e_fixtures",
+      "lifecycle": "immutable-source",
+      "purpose": "Owner-managed project containing canonical workflow sources and contributor roles.",
+      "provides": ["owner-team", "editor", "commenter", "viewer"]
+    },
+    {
+      "id": "project.restricted",
+      "kind": "project",
+      "builder": "generate_e2e_fixtures",
+      "lifecycle": "permissions-only",
+      "purpose": "Private project outside the primary teacher's access scope.",
+      "provides": ["access-denied"]
+    },
+    {
+      "id": "project.templates",
+      "kind": "project",
+      "builder": "generate_e2e_fixtures",
+      "lifecycle": "immutable-source",
+      "purpose": "Published template project containing one canonical workflow of each type.",
+      "provides": ["published", "template-project"]
+    },
+    {
+      "id": "project.recent_collection",
+      "kind": "project-collection",
+      "builder": "_seed_home_projects",
+      "lifecycle": "immutable-source",
+      "purpose": "Five active projects with deterministic modification order for recent-project limits.",
+      "provides": ["five-active-projects", "deterministic-recency"]
+    },
+    {
+      "id": "project.favourite_collection",
+      "kind": "project-collection",
+      "builder": "_seed_favourite_projects",
+      "lifecycle": "immutable-source",
+      "purpose": "Five distinct favourited projects for sidebar list and View all coverage.",
+      "provides": ["five-favourited-projects"]
+    },
+    {
+      "id": "project.archived_home",
+      "kind": "project",
+      "builder": "_seed_home_projects",
+      "lifecycle": "lifecycle-fixture",
+      "purpose": "Archived project excluded from active and recent project surfaces.",
+      "provides": ["archived"]
+    },
+    {
+      "id": "workflow.standard_activity",
+      "kind": "workflow",
+      "builder": "generate_e2e_fixtures",
+      "lifecycle": "immutable-copy-source",
+      "purpose": "Canonical activity graph copied for every mutating workflow test.",
+      "provides": ["three-sections", "blank-title-section", "three-channels", "root-outcome", "connected-nodes"]
+    },
+    {
+      "id": "workflow.navigation_course",
+      "kind": "workflow",
+      "builder": "_seed_course_workflow_linked_to_activity",
+      "lifecycle": "immutable-copy-source",
+      "purpose": "Canonical course graph linked to the activity workflow.",
+      "provides": ["course", "linked-activity-node"]
+    },
+    {
+      "id": "workflow.navigation_program",
+      "kind": "workflow",
+      "builder": "_seed_minimal_workflow",
+      "lifecycle": "immutable-copy-source",
+      "purpose": "Canonical minimal program graph.",
+      "provides": ["program"]
+    },
+    {
+      "id": "workflow.restricted_activity",
+      "kind": "workflow",
+      "builder": "_seed_minimal_workflow",
+      "lifecycle": "permissions-only",
+      "purpose": "Activity workflow inaccessible to the primary teacher.",
+      "provides": ["activity", "access-denied"]
+    },
+    {
+      "id": "workflow.template_activity",
+      "kind": "workflow",
+      "builder": "_seed_template_workflow",
+      "lifecycle": "immutable-source",
+      "purpose": "Published activity template copied by workflow-creation scenarios.",
+      "provides": ["activity", "template"]
+    },
+    {
+      "id": "workflow.template_course",
+      "kind": "workflow",
+      "builder": "_seed_template_workflow",
+      "lifecycle": "immutable-source",
+      "purpose": "Published course template copied by workflow-creation scenarios.",
+      "provides": ["course", "template"]
+    },
+    {
+      "id": "workflow.template_program",
+      "kind": "workflow",
+      "builder": "_seed_template_workflow",
+      "lifecycle": "immutable-source",
+      "purpose": "Published program template copied by workflow-creation scenarios.",
+      "provides": ["program", "template"]
+    }
+  ],
+  "dependencies": []
+}

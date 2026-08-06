@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures';
 import { authenticatedApiRequest } from '../../helpers/api';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import { getProjectPath, loadWorkflowManifest } from '../../helpers/manifest';
@@ -11,6 +11,8 @@ import {
   projectOverflowButton,
   waitForProjectOverviewLoaded,
 } from './project.locators';
+
+test.use({ seedDependencies: ['actor.teacher', 'project.primary'] });
 
 /**
  * FR-PROJ-ARCH-001 through FR-PROJ-ARCH-002.

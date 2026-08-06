@@ -22,6 +22,8 @@ import {
   workflowRightSidebarToggleButton,
 } from '../../shared/locators/workflow';
 
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'read-only' });
+
 /**
  * Right sidebar shell — FR-WF-RS-001 through FR-WF-RS-004 (partial).
  * Requirements: workflow_right_sidebar_requirements_v1.yaml
@@ -142,12 +144,7 @@ test.describe('Right sidebar — tab strip (FR-WF-RS-002)', () => {
     await expect(tabs.nth(2)).toHaveAttribute('aria-label', 'outcomes tab');
   });
 
-  test('FR-WF-RS-002: graph view Comments tab always visible deferred', async () => {
-    test.skip(
-      true,
-      'Comments tab is hidden until eligible selection; FR-WF-RS-002 requires Edit, Add, Outcomes, Comments on graph view.',
-    );
-  });
+  test.fixme('FR-WF-RS-002: graph view Comments tab always visible deferred', async () => {});
 
   test('FR-WF-RS-002: outcomes sub-view tab strip shows Edit and Related tabs', async ({
     page,
@@ -156,10 +153,7 @@ test.describe('Right sidebar — tab strip (FR-WF-RS-002)', () => {
     await workflowOutcomesTab(page).click();
     await expect(page).toHaveURL(new RegExp(`${workflowOutcomesPath(workflow.path)}/?$`));
 
-    test.skip(
-      (await workflowRightSidebar(page).count()) === 0,
-      'E2E fixture has zero workflowOutcome entries; sidebar hidden on /outcomedit per FR-WF-RS-001.',
-    );
+    await expect(workflowRightSidebar(page)).toBeVisible();
 
     const tabs = workflowRightSidebarTabStrip(page).getByRole('button');
     await expect(tabs).toHaveCount(2);
@@ -167,12 +161,10 @@ test.describe('Right sidebar — tab strip (FR-WF-RS-002)', () => {
     await expect(tabs.nth(1)).toHaveAttribute('aria-label', 'related tab');
   });
 
-  test('FR-WF-RS-002: outcomes sub-view Comments tab instead of Related deferred', async () => {
-    test.skip(
-      true,
-      'Outcomes sub-view renders Related tab; FR-WF-RS-002 requires Edit and Comments only.',
-    );
-  });
+  test.fixme(
+    'FR-WF-RS-002: outcomes sub-view Comments tab instead of Related deferred',
+    async () => {},
+  );
 });
 
 test.describe('Right sidebar — tab actionability (FR-WF-RS-003)', () => {
@@ -192,12 +184,10 @@ test.describe('Right sidebar — tab actionability (FR-WF-RS-003)', () => {
     await expect(workflowRightSidebarCommentsTab(page)).toHaveCount(0);
   });
 
-  test('FR-WF-RS-003: Comments tab visible-but-disabled without selection deferred', async () => {
-    test.skip(
-      true,
-      'Comments tab hidden until eligible selection; FR-WF-RS-003 requires visible-but-disabled.',
-    );
-  });
+  test.fixme(
+    'FR-WF-RS-003: Comments tab visible-but-disabled without selection deferred',
+    async () => {},
+  );
 
   test('FR-WF-RS-003: section selection enables Edit and Comments tabs', async ({
     page,

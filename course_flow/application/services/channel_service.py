@@ -16,12 +16,14 @@ class ChannelService:
         title: str,
         position: int = 0,
         thread_uuid: UUID | None = None,
+        colour: str | None = None,
     ) -> ChannelDTO | None:
         return self._repository.create(
             graph_uuid=graph_uuid,
             title=title,
             position=position,
             thread_uuid=thread_uuid,
+            colour=colour,
         )
 
     def get_by_uuid(self, uuid: UUID) -> ChannelDTO | None:

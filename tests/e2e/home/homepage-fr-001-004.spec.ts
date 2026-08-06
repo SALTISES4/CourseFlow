@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures';
 import {
   clearHomeDismissCookies,
   expectHomeDashboardSectionOrder,
@@ -31,6 +31,14 @@ import {
   homeWelcomeProgramButton,
 } from './home.locators';
 import { cardChipWithLabel, cardTitleText } from '../../shared/locators/cards';
+
+test.use({
+  seedDependencies: [
+    'actor.teacher',
+    'project.recent_collection',
+    'project.archived_home',
+  ],
+});
 
 /**
  * Calibration slice — FR-HOME-001 through FR-HOME-004 (happy-path dashboard).
@@ -65,13 +73,7 @@ test.describe('Home dashboard — calibration (FR-HOME-001-004)', () => {
     await expect(homeTemplatesSectionTitle(page)).toBeVisible({ timeout: 15_000 });
 
     const welcome = homeWelcomeHeading(page);
-    if ((await welcome.count()) === 0) {
-      test.skip(
-        true,
-        'Welcome panel not rendered — implementation hides it when library has no projects.',
-      );
-    }
-
+    await expect(welcome).toBeVisible();
     await expectHomeDashboardSectionOrder(page);
   });
 
@@ -250,13 +252,6 @@ test.describe('Home dashboard — calibration (FR-HOME-001-004)', () => {
       await expect(projectCards).toHaveCount(0);
 
       const workflowCardCount = await workflowCards.count();
-      if (workflowCardCount === 0) {
-        test.skip(
-          true,
-          'Home context includes no homepage templates yet — FR-HOME-004 requires at least one.',
-        );
-      }
-
       expect(workflowCardCount).toBeGreaterThanOrEqual(1);
       expect(workflowCardCount).toBeLessThanOrEqual(4);
       await expect(sectionCards).toHaveCount(workflowCardCount);

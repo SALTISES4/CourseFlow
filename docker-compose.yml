@@ -5,13 +5,10 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      # Sibling DB created by scripts/postgres/init on first volume boot (see POSTGRES_E2E_DB).
-      POSTGRES_E2E_DB: ${POSTGRES_E2E_DB:-courseflow_e2e}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - courseflow_pgdata:/var/lib/postgresql/data
-      - ./scripts/postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 5s

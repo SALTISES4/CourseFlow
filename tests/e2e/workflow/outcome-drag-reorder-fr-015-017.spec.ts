@@ -1,10 +1,6 @@
 import { test, expect } from '../../fixtures';
 import { gotoOutcomesView } from './comments-tab.helpers';
 import {
-  E2E_SEED_OUTCOME_TITLE,
-  ensureSeedOutcomeTitle,
-} from '../../helpers/workflow-pristine';
-import {
   DRAG_TITLE_PREFIX,
   createOutcomeViaApi,
   dragOutcomeOntoHeader,
@@ -12,9 +8,14 @@ import {
   expectOutcomeHeaderAtOrdinal,
   outcomeUuidByTitle,
   reloadOutcomesView,
-  resetOutcomeTreeToSeedOnly,
 } from './outcome-drag.helpers';
 import { workflowOutcomeHeader } from './workflow-outcome.locators';
+
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  actorAsset: 'actor.teacher',
+  seedAccess: 'disposable-copy',
+});
 
 /**
  * Outcome tree drag reorder / reparent / nest — FR-WF-EO-015 through FR-WF-EO-017,
@@ -37,31 +38,12 @@ const CHILD_B = `${DRAG_TITLE_PREFIX} Child B`;
 const CHILD_FROM_B = `${DRAG_TITLE_PREFIX} Child From B`;
 const GRANDCHILD = `${DRAG_TITLE_PREFIX} Grandchild`;
 
-test.describe.configure({ mode: 'serial' });
-
 test.describe('outcome tree drag reorder ordinals (FR-WF-EO-015/016/017 + EO-007)', () => {
-  let seedUuid = '';
-
   test.beforeEach(async ({ page, workflow }) => {
     await gotoOutcomesView(page, workflow.path);
-    await ensureSeedOutcomeTitle(page, E2E_SEED_OUTCOME_TITLE);
-
-    if (!seedUuid) {
-      seedUuid = await outcomeUuidByTitle(page, workflow.path, E2E_SEED_OUTCOME_TITLE);
-    }
-
-    await resetOutcomeTreeToSeedOnly(page, workflow.path, E2E_SEED_OUTCOME_TITLE, seedUuid);
-    await reloadOutcomesView(page, workflow.path);
-    await expect(workflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE)).toBeVisible({
+    await expect(workflowOutcomeHeader(page, workflow.firstOutcome().title)).toBeVisible({
       timeout: 15_000,
     });
-  });
-
-  test.afterEach(async ({ page, workflow }) => {
-    if (!seedUuid) {
-      return;
-    }
-    await resetOutcomeTreeToSeedOnly(page, workflow.path, E2E_SEED_OUTCOME_TITLE, seedUuid);
   });
 
   test('FR-WF-EO-016/007: level-1 sibling reorder updates ordinals', async ({
@@ -69,16 +51,17 @@ test.describe('outcome tree drag reorder ordinals (FR-WF-EO-015/016/017 + EO-007
     workflow,
   }) => {
     // FR: FR-WF-EO-016 AC — drag B insert-before A → (B, A); ordinals per FR-WF-EO-007
+    const seedTitle = workflow.firstOutcome().title;
     await createOutcomeViaApi(page, workflow.graphUuid, { title: ROOT_B });
     await reloadOutcomesView(page, workflow.path);
 
-    await expectOutcomeHeaderAtOrdinal(page, '1', E2E_SEED_OUTCOME_TITLE);
+    await expectOutcomeHeaderAtOrdinal(page, '1', seedTitle);
     await expectOutcomeHeaderAtOrdinal(page, '2', ROOT_B);
 
-    await dragOutcomeOntoHeader(page, ROOT_B, E2E_SEED_OUTCOME_TITLE, 'before');
+    await dragOutcomeOntoHeader(page, ROOT_B, seedTitle, 'before');
 
     await expectOutcomeHeaderAtOrdinal(page, '1', ROOT_B);
-    await expectOutcomeHeaderAtOrdinal(page, '2', E2E_SEED_OUTCOME_TITLE);
+    await expectOutcomeHeaderAtOrdinal(page, '2', seedTitle);
   });
 
   test('FR-WF-EO-016/007: level-2 sibling reorder updates ordinals', async ({
@@ -86,6 +69,8 @@ test.describe('outcome tree drag reorder ordinals (FR-WF-EO-015/016/017 + EO-007
     workflow,
   }) => {
     // FR: FR-WF-EO-016 AC — reorder among children under same parent; ordinals recompute
+    const seedTitle = workflow.firstOutcome().title;
+    const seedUuid = await outcomeUuidByTitle(page, workflow.path, seedTitle);
     await createOutcomeViaApi(page, workflow.graphUuid, {
       title: CHILD_A,
       parentUuid: seedUuid,
@@ -96,8 +81,8 @@ test.describe('outcome tree drag reorder ordinals (FR-WF-EO-015/016/017 + EO-007
     });
     await reloadOutcomesView(page, workflow.path);
 
-    await ensureExpandedShowingChild(page, E2E_SEED_OUTCOME_TITLE, CHILD_A);
-    await ensureExpandedShowingChild(page, E2E_SEED_OUTCOME_TITLE, CHILD_B);
+    await ensureExpandedShowingChild(page, seedTitle, CHILD_A);
+    await ensureExpandedShowingChild(page, seedTitle, CHILD_B);
 
     await expectOutcomeHeaderAtOrdinal(page, '1.1', CHILD_A);
     await expectOutcomeHeaderAtOrdinal(page, '1.2', CHILD_B);
@@ -113,6 +98,8 @@ test.describe('outcome tree drag reorder ordinals (FR-WF-EO-015/016/017 + EO-007
     workflow,
   }) => {
     // FR: FR-WF-EO-016 AC — same-level reparent insert-before Ck; ordinals shift under destination
+    const seedTitle = workflow.firstOutcome().title;
+    const seedUuid = await outcomeUuidByTitle(page, workflow.path, seedTitle);
     const rootBUuid = await createOutcomeViaApi(page, workflow.graphUuid, { title: ROOT_B });
     await createOutcomeViaApi(page, workflow.graphUuid, {
       title: CHILD_A,
@@ -124,7 +111,7 @@ test.describe('outcome tree drag reorder ordinals (FR-WF-EO-015/016/017 + EO-007
     });
     await reloadOutcomesView(page, workflow.path);
 
-    await ensureExpandedShowingChild(page, E2E_SEED_OUTCOME_TITLE, CHILD_A);
+    await ensureExpandedShowingChild(page, seedTitle, CHILD_A);
     await ensureExpandedShowingChild(page, ROOT_B, CHILD_FROM_B);
 
     await expectOutcomeHeaderAtOrdinal(page, '1.1', CHILD_A);
@@ -132,7 +119,7 @@ test.describe('outcome tree drag reorder ordinals (FR-WF-EO-015/016/017 + EO-007
 
     await dragOutcomeOntoHeader(page, CHILD_FROM_B, CHILD_A, 'before');
 
-    await ensureExpandedShowingChild(page, E2E_SEED_OUTCOME_TITLE, CHILD_FROM_B);
+    await ensureExpandedShowingChild(page, seedTitle, CHILD_FROM_B);
     await expectOutcomeHeaderAtOrdinal(page, '1.1', CHILD_FROM_B);
     await expectOutcomeHeaderAtOrdinal(page, '1.2', CHILD_A);
     await expect(workflowOutcomeHeader(page, CHILD_FROM_B)).toHaveCount(1);
@@ -143,6 +130,8 @@ test.describe('outcome tree drag reorder ordinals (FR-WF-EO-015/016/017 + EO-007
     workflow,
   }) => {
     // FR: FR-WF-EO-016 AC — subtree travels; FR-WF-EO-007 recomputes descendant prefixes
+    const seedTitle = workflow.firstOutcome().title;
+    const seedUuid = await outcomeUuidByTitle(page, workflow.path, seedTitle);
     await createOutcomeViaApi(page, workflow.graphUuid, { title: ROOT_B });
     await createOutcomeViaApi(page, workflow.graphUuid, {
       title: CHILD_A,
@@ -150,16 +139,16 @@ test.describe('outcome tree drag reorder ordinals (FR-WF-EO-015/016/017 + EO-007
     });
     await reloadOutcomesView(page, workflow.path);
 
-    await ensureExpandedShowingChild(page, E2E_SEED_OUTCOME_TITLE, CHILD_A);
-    await expectOutcomeHeaderAtOrdinal(page, '1', E2E_SEED_OUTCOME_TITLE);
+    await ensureExpandedShowingChild(page, seedTitle, CHILD_A);
+    await expectOutcomeHeaderAtOrdinal(page, '1', seedTitle);
     await expectOutcomeHeaderAtOrdinal(page, '1.1', CHILD_A);
     await expectOutcomeHeaderAtOrdinal(page, '2', ROOT_B);
 
-    await dragOutcomeOntoHeader(page, E2E_SEED_OUTCOME_TITLE, ROOT_B, 'after');
+    await dragOutcomeOntoHeader(page, seedTitle, ROOT_B, 'after');
 
-    await ensureExpandedShowingChild(page, E2E_SEED_OUTCOME_TITLE, CHILD_A);
+    await ensureExpandedShowingChild(page, seedTitle, CHILD_A);
     await expectOutcomeHeaderAtOrdinal(page, '1', ROOT_B);
-    await expectOutcomeHeaderAtOrdinal(page, '2', E2E_SEED_OUTCOME_TITLE);
+    await expectOutcomeHeaderAtOrdinal(page, '2', seedTitle);
     await expectOutcomeHeaderAtOrdinal(page, '2.1', CHILD_A);
   });
 
@@ -168,6 +157,8 @@ test.describe('outcome tree drag reorder ordinals (FR-WF-EO-015/016/017 + EO-007
     workflow,
   }) => {
     // FR: FR-WF-EO-017 AC — level-2 onto level-1 combine → last child; ordinals per FR-WF-EO-007
+    const seedTitle = workflow.firstOutcome().title;
+    const seedUuid = await outcomeUuidByTitle(page, workflow.path, seedTitle);
     await createOutcomeViaApi(page, workflow.graphUuid, { title: ROOT_B });
     await createOutcomeViaApi(page, workflow.graphUuid, {
       title: CHILD_A,
@@ -179,7 +170,7 @@ test.describe('outcome tree drag reorder ordinals (FR-WF-EO-015/016/017 + EO-007
     });
     await reloadOutcomesView(page, workflow.path);
 
-    await ensureExpandedShowingChild(page, E2E_SEED_OUTCOME_TITLE, CHILD_B);
+    await ensureExpandedShowingChild(page, seedTitle, CHILD_B);
     await expectOutcomeHeaderAtOrdinal(page, '1.1', CHILD_A);
     await expectOutcomeHeaderAtOrdinal(page, '1.2', CHILD_B);
     await expectOutcomeHeaderAtOrdinal(page, '2', ROOT_B);
@@ -196,6 +187,8 @@ test.describe('outcome tree drag reorder ordinals (FR-WF-EO-015/016/017 + EO-007
     workflow,
   }) => {
     // FR: FR-WF-EO-016 AC — descendants stay under source; relative order preserved after L1 move
+    const seedTitle = workflow.firstOutcome().title;
+    const seedUuid = await outcomeUuidByTitle(page, workflow.path, seedTitle);
     await createOutcomeViaApi(page, workflow.graphUuid, { title: ROOT_B });
     await createOutcomeViaApi(page, workflow.graphUuid, { title: ROOT_C });
     const childUuid = await createOutcomeViaApi(page, workflow.graphUuid, {
@@ -208,7 +201,7 @@ test.describe('outcome tree drag reorder ordinals (FR-WF-EO-015/016/017 + EO-007
     });
     await reloadOutcomesView(page, workflow.path);
 
-    await ensureExpandedShowingChild(page, E2E_SEED_OUTCOME_TITLE, CHILD_A);
+    await ensureExpandedShowingChild(page, seedTitle, CHILD_A);
     await ensureExpandedShowingChild(page, CHILD_A, GRANDCHILD);
 
     await expectOutcomeHeaderAtOrdinal(page, '1.1', CHILD_A);
@@ -216,13 +209,13 @@ test.describe('outcome tree drag reorder ordinals (FR-WF-EO-015/016/017 + EO-007
     await expectOutcomeHeaderAtOrdinal(page, '2', ROOT_B);
     await expectOutcomeHeaderAtOrdinal(page, '3', ROOT_C);
 
-    await dragOutcomeOntoHeader(page, E2E_SEED_OUTCOME_TITLE, ROOT_C, 'after');
+    await dragOutcomeOntoHeader(page, seedTitle, ROOT_C, 'after');
 
-    await ensureExpandedShowingChild(page, E2E_SEED_OUTCOME_TITLE, CHILD_A);
+    await ensureExpandedShowingChild(page, seedTitle, CHILD_A);
     await ensureExpandedShowingChild(page, CHILD_A, GRANDCHILD);
     await expectOutcomeHeaderAtOrdinal(page, '1', ROOT_B);
     await expectOutcomeHeaderAtOrdinal(page, '2', ROOT_C);
-    await expectOutcomeHeaderAtOrdinal(page, '3', E2E_SEED_OUTCOME_TITLE);
+    await expectOutcomeHeaderAtOrdinal(page, '3', seedTitle);
     await expectOutcomeHeaderAtOrdinal(page, '3.1', CHILD_A);
     await expectOutcomeHeaderAtOrdinal(page, '3.1.1', GRANDCHILD);
   });

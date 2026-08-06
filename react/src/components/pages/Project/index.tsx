@@ -63,7 +63,7 @@ const ProjectDetails = () => {
     return <Loader />
   }
 
-  if (isError && !projectResponse) {
+  if (isError) {
     if (getApiErrorStatus(error) === 403) {
       return (
         <WorkspaceAccessDenied

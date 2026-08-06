@@ -1,9 +1,7 @@
-import { LibraryContentTypeIn, LibrarySearchIn } from '@cf/api/gen'
+import { LibraryContentTypeIn } from '@cf/api/gen'
 import LibrarySearchView, {
   LibraryFilterConfig
 } from '@cfViews/LibrarySearchView'
-import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
-import { useCallback, useState } from 'react'
 
 const FavoritesPage = () => {
   const config: LibraryFilterConfig = {
@@ -17,22 +15,13 @@ const FavoritesPage = () => {
     }
   }
 
-  const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
-
-  const updateSearchArgsHandler = useCallback((args: LibrarySearchIn) => {
-    setSearchArgs(
-      LibraryHelper.applyLockedFilters(args, {
-        isFavorite: true,
-        includePublishedFavorites: true
-      })
-    )
-  }, [])
-
   return (
     <LibrarySearchView
       config={config}
-      searchArgs={searchArgs}
-      setSearchArgs={updateSearchArgsHandler}
+      lockedFilters={{
+        isFavorite: true,
+        includePublishedFavorites: true
+      }}
     />
   )
 }

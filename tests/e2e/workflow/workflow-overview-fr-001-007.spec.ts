@@ -53,12 +53,19 @@ import {
   workflowOverviewView,
 } from './workflow-overview.locators';
 
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  seedAssets: ['workflow.navigation_course', 'workflow.navigation_program'],
+  seedDependencies: ['project.primary', 'actor.viewer'],
+  actorAsset: 'actor.teacher',
+  seedAccess: 'disposable-copy',
+});
+
 /**
  * Workflow Overview — FR-WF-OV-001 through FR-WF-OV-007.
  * Requirements: workflow_overview_requirements_v1.yaml
  *
- * Activity via `workflow` fixture; course/program via `workflow.workflowByType` /
- * `getNavigationLinkedWorkflows()` (`just e2e-prepare`).
+ * Activity, course, and program routes come from the isolated workflow manifest.
  *
  * OverviewView currently passes `author` where UserPermissions expects `owner`.
  * Tests open Overview through `openWorkflowOverview` (empty-team stub) so the
@@ -287,14 +294,14 @@ test.describe('workflow-overview-fr-001-007', () => {
         await expectActivityOverviewMetadataCompositionPerFrWfOv001(page);
       });
 
-      test('course overview renders required metadata', async ({ page }) => {
-        const linked = getNavigationLinkedWorkflows();
+      test('course overview renders required metadata', async ({ page, workflow }) => {
+        const linked = getNavigationLinkedWorkflows(workflow.manifest);
         await openWorkflowOverview(page, linked.course.workflow_path);
         await expectCourseOverviewMetadataCompositionPerFrWfOv001(page);
       });
 
-      test('program overview renders required metadata', async ({ page }) => {
-        const linked = getNavigationLinkedWorkflows();
+      test('program overview renders required metadata', async ({ page, workflow }) => {
+        const linked = getNavigationLinkedWorkflows(workflow.manifest);
         await openWorkflowOverview(page, linked.program.workflow_path);
         await expectProgramOverviewMetadataCompositionPerFrWfOv001(page);
       });
@@ -415,32 +422,35 @@ test.describe('workflow-overview-fr-001-007', () => {
     });
 
     test.describe('FR-WF-OV-004: ponderation section', () => {
-      test('course: Theory, Practical, and Individual are editable', async ({ page }) => {
-        const linked = getNavigationLinkedWorkflows();
+      test('course: Theory, Practical, and Individual are editable', async ({ page, workflow }) => {
+        const linked = getNavigationLinkedWorkflows(workflow.manifest);
         await openWorkflowOverview(page, linked.course.workflow_path);
         await expectCoursePonderationFieldsEditablePerFrWfOv004(page);
       });
 
       test('program: when Ponderation Auto-calculate is OFF, ponderation fields are editable', async ({
         page,
+        workflow,
       }) => {
-        const linked = getNavigationLinkedWorkflows();
+        const linked = getNavigationLinkedWorkflows(workflow.manifest);
         await openWorkflowOverview(page, linked.program.workflow_path);
         await expectPonderationEditableWhenAutoCalculateOffPerFrWfOv004(page);
       });
 
       test('program: when Ponderation Auto-calculate is ON, ponderation fields are read-only', async ({
         page,
+        workflow,
       }) => {
-        const linked = getNavigationLinkedWorkflows();
+        const linked = getNavigationLinkedWorkflows(workflow.manifest);
         await openWorkflowOverview(page, linked.program.workflow_path);
         await expectPonderationReadOnlyWhenAutoCalculateOnPerFrWfOv004(page);
       });
 
       test('program: toggling Ponderation Auto-calculate updates field editability immediately', async ({
         page,
+        workflow,
       }) => {
-        const linked = getNavigationLinkedWorkflows();
+        const linked = getNavigationLinkedWorkflows(workflow.manifest);
         await openWorkflowOverview(page, linked.program.workflow_path);
 
         await expectPonderationEditableWhenAutoCalculateOffPerFrWfOv004(page);
@@ -463,7 +473,7 @@ test.describe('workflow-overview-fr-001-007', () => {
           const viewer = workflow.contributorByRole('viewer');
           await loginAs(page, { email: viewer.email, password: viewer.password });
 
-          const linked = getNavigationLinkedWorkflows();
+          const linked = getNavigationLinkedWorkflows(workflow.manifest);
           await openWorkflowOverview(page, linked.program.workflow_path);
 
           await expect(workflowMetadataSwitchCalculatePonderationAutomatically(page)).toBeVisible();
@@ -479,28 +489,29 @@ test.describe('workflow-overview-fr-001-007', () => {
     });
 
     test.describe('FR-WF-OV-005: credits', () => {
-      test('course: Credits is editable', async ({ page }) => {
-        const linked = getNavigationLinkedWorkflows();
+      test('course: Credits is editable', async ({ page, workflow }) => {
+        const linked = getNavigationLinkedWorkflows(workflow.manifest);
         await openWorkflowOverview(page, linked.course.workflow_path);
         await expectCourseCreditsEditablePerFrWfOv005(page);
       });
 
-      test('program: when Credits Auto-calculate is OFF, Credits is editable', async ({ page }) => {
-        const linked = getNavigationLinkedWorkflows();
+      test('program: when Credits Auto-calculate is OFF, Credits is editable', async ({ page, workflow }) => {
+        const linked = getNavigationLinkedWorkflows(workflow.manifest);
         await openWorkflowOverview(page, linked.program.workflow_path);
         await expectCreditsEditableWhenAutoCalculateOffPerFrWfOv005(page);
       });
 
-      test('program: when Credits Auto-calculate is ON, Credits is read-only', async ({ page }) => {
-        const linked = getNavigationLinkedWorkflows();
+      test('program: when Credits Auto-calculate is ON, Credits is read-only', async ({ page, workflow }) => {
+        const linked = getNavigationLinkedWorkflows(workflow.manifest);
         await openWorkflowOverview(page, linked.program.workflow_path);
         await expectCreditsReadOnlyWhenAutoCalculateOnPerFrWfOv005(page);
       });
 
       test('program: toggling Credits Auto-calculate updates Credits editability immediately', async ({
         page,
+        workflow,
       }) => {
-        const linked = getNavigationLinkedWorkflows();
+        const linked = getNavigationLinkedWorkflows(workflow.manifest);
         await openWorkflowOverview(page, linked.program.workflow_path);
 
         await expectCreditsEditableWhenAutoCalculateOffPerFrWfOv005(page);
@@ -518,7 +529,7 @@ test.describe('workflow-overview-fr-001-007', () => {
           const viewer = workflow.contributorByRole('viewer');
           await loginAs(page, { email: viewer.email, password: viewer.password });
 
-          const linked = getNavigationLinkedWorkflows();
+          const linked = getNavigationLinkedWorkflows(workflow.manifest);
           await openWorkflowOverview(page, linked.program.workflow_path);
 
           await expect(workflowMetadataSwitchCalculateCreditsAutomatically(page)).toBeVisible();
@@ -532,24 +543,27 @@ test.describe('workflow-overview-fr-001-007', () => {
     test.describe('FR-WF-OV-006: classification', () => {
       test('program: when Classification Auto-calculate is OFF, General and Specific are editable', async ({
         page,
+        workflow,
       }) => {
-        const linked = getNavigationLinkedWorkflows();
+        const linked = getNavigationLinkedWorkflows(workflow.manifest);
         await openWorkflowOverview(page, linked.program.workflow_path);
         await expectClassificationEditableWhenAutoCalculateOffPerFrWfOv006(page);
       });
 
       test('program: when Classification Auto-calculate is ON, General and Specific are read-only', async ({
         page,
+        workflow,
       }) => {
-        const linked = getNavigationLinkedWorkflows();
+        const linked = getNavigationLinkedWorkflows(workflow.manifest);
         await openWorkflowOverview(page, linked.program.workflow_path);
         await expectClassificationReadOnlyWhenAutoCalculateOnPerFrWfOv006(page);
       });
 
       test('program: toggling Classification Auto-calculate updates field editability immediately', async ({
         page,
+        workflow,
       }) => {
-        const linked = getNavigationLinkedWorkflows();
+        const linked = getNavigationLinkedWorkflows(workflow.manifest);
         await openWorkflowOverview(page, linked.program.workflow_path);
 
         await expectClassificationEditableWhenAutoCalculateOffPerFrWfOv006(page);
@@ -573,7 +587,7 @@ test.describe('workflow-overview-fr-001-007', () => {
           const viewer = workflow.contributorByRole('viewer');
           await loginAs(page, { email: viewer.email, password: viewer.password });
 
-          const linked = getNavigationLinkedWorkflows();
+          const linked = getNavigationLinkedWorkflows(workflow.manifest);
           await openWorkflowOverview(page, linked.program.workflow_path);
 
           await expect(
@@ -606,12 +620,10 @@ test.describe('workflow-overview-fr-001-007', () => {
         await expect(panel.getByRole('button', { name: /remove contributor/i })).toHaveCount(0);
       });
 
-      test('permissions panel listed users and roles match the parent project', async () => {
-        test.skip(
-          true,
-          'Blocked: OverviewView passes author instead of owner; contributor/owner rows cannot render without crashing',
-        );
-      });
+      test.fixme(
+        'permissions panel listed users and roles match the parent project',
+        async () => {},
+      );
     });
   });
 });

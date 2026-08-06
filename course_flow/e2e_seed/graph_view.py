@@ -1,4 +1,4 @@
-"""Persist graph graph: sections, channels, nodes, edges, light metadata."""
+"""Persist deterministic E2E workflow graph fixtures."""
 
 from __future__ import annotations
 
@@ -6,7 +6,6 @@ from course_flow.core.enum import WorkflowType
 from course_flow.core.hierarchy import child_node_type_value_for_workflow
 from course_flow.core.models import (
     Channel,
-    Comment,
     Edge,
     Graph,
     Node,
@@ -17,14 +16,13 @@ from course_flow.core.models import (
     User,
     Workflow,
 )
-from course_flow.dev_seed.constants import DEV_SEED_TAG_LABEL_PREFIX
-from course_flow.dev_seed.graph_shape import (
+from course_flow.e2e_seed.graph_shape import (
     GraphLayoutPlan,
     GraphShapeParams,
     generate_edge_pairs,
     generate_graph_layout,
 )
-from course_flow.dev_seed.rng import SeededRNG
+from course_flow.e2e_seed.rng import SeededRNG
 
 
 def _thread() -> Thread:
@@ -36,42 +34,29 @@ def build_workflow_with_graph(
     *,
     author: User,
     project: Project | None,
-    fake,
-    rng: SeededRNG,
-    workflow_type: WorkflowType | None = None,
-    title: str | None = None,
-    description: str | None = None,
+    workflow_type: WorkflowType,
+    title: str,
+    description: str,
 ) -> Workflow:
-    root_type = workflow_type or rng.choice(
-        [WorkflowType.PROGRAM, WorkflowType.COURSE],
-    )
     return Workflow.objects.create(
         graph=graph,
         author=author,
         project=project,
-        title=title if title is not None else fake.sentence(nb_words=4).rstrip("."),
-        description=description if description is not None else fake.text(max_nb_chars=200),
-        workflow_type=root_type,
+        title=title,
+        description=description,
+        workflow_type=workflow_type,
     )
 
 
 def build_sections_and_channels(
     graph: Graph,
     *,
-    fake,
-    rng: SeededRNG,
-    section_count: int,
-    channel_count: int,
-    section_titles: list[str] | None = None,
-    channel_titles: list[str] | None = None,
+    section_titles: list[str],
+    channel_titles: list[str],
 ) -> tuple[list[Section], list[Channel]]:
     sections: list[Section] = []
-    for i in range(section_count):
+    for i, title in enumerate(section_titles):
         th = _thread()
-        if section_titles is not None:
-            title = section_titles[i] if i < len(section_titles) else ""
-        else:
-            title = fake.sentence(nb_words=3).rstrip(".")
         sections.append(
             Section.objects.create(
                 graph=graph,
@@ -82,12 +67,8 @@ def build_sections_and_channels(
         )
 
     channels: list[Channel] = []
-    for j in range(channel_count):
+    for j, title in enumerate(channel_titles):
         th = _thread()
-        if channel_titles is not None:
-            title = channel_titles[j] if j < len(channel_titles) else f"Channel {j + 1}"
-        else:
-            title = fake.word().title() + " lane"
         channels.append(
             Channel.objects.create(
                 graph=graph,
@@ -149,7 +130,6 @@ def build_outcomes(
     graph: Graph,
     nodes: list[Node],
     *,
-    rng: SeededRNG,
     outcome_count: int,
 ) -> list[Outcome]:
     if outcome_count <= 0 or not nodes:
@@ -186,56 +166,3 @@ def generate_graph_shape(
         max_cross_section_edges=shape.max_cross_section_edges,
     )
     return layout, pairs
-
-
-def add_light_comments(
-    *,
-    owner,
-    sections: list[Section],
-    rng: SeededRNG,
-) -> int:
-    if not sections:
-        return 0
-    n = min(2, len(sections))
-    picked = rng.sample(sections, n) if len(sections) > n else sections
-    count = 0
-    for sec in picked:
-        if sec.thread_id is None:
-            continue
-        Comment.objects.create(
-            thread=sec.thread,
-            author=owner,
-            body="Dev seed comment for thread testing.",
-        )
-        count += 1
-    return count
-
-
-def attach_node_tags(
-    nodes: list[Node],
-    tags: list,
-    *,
-    rng: SeededRNG,
-) -> None:
-    if not tags or not nodes:
-        return
-    k = min(3, len(tags))
-    for n in nodes:
-        if rng.random() < 0.4:
-            for t in rng.sample(tags, min(k, len(tags))):
-                n.tags.add(t)
-
-
-def make_project_tags(project, fake, rng: SeededRNG, count: int):
-    from course_flow.core.models import Tag
-
-    tags = []
-    for i in range(count):
-        tags.append(
-            Tag.objects.create(
-                project=project,
-                label=f"{DEV_SEED_TAG_LABEL_PREFIX}{fake.word()}-{i}",
-                translation_plural="",
-            )
-        )
-    return tags

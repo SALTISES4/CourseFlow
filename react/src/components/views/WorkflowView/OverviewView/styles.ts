@@ -9,7 +9,8 @@ export const InfoBlock = styled(Box)({})
 export const InfoBlockTitle = styled(Typography)(({ theme }) => ({
   paddingBottom: theme.spacing(1),
   borderBottom: `1px solid ${theme.palette.divider}`,
-  fontWeight: 600
+  fontWeight: 600,
+  fontSize: 20
 }))
 
 export const InfoBlockContent = styled(Box)(({ theme }) => ({

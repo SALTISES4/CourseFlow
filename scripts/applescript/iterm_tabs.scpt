@@ -4,9 +4,7 @@ on run argv
     tell application "iTerm"
         activate
 
-        if (count of windows) = 0 then
-            create window with default profile
-        end if
+        create window with default profile
 
         tell current window
             tell current session

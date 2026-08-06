@@ -26,24 +26,20 @@ cp .env.example .env
 Variables:
 
 - **Compose**: `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_PORT`
-- **E2E database** (same Postgres container): `POSTGRES_E2E_DB` (default `courseflow_e2e`); created on first volume init or via `just postgres-ensure-e2e-db`
-- **Django (host → container)**: `POSTGRES_HOST` (default `127.0.0.1`); database name/user/password/port align with the target logical database (`courseflow` for dev, `courseflow_e2e` for Playwright — see `just django-run-e2e`)
+- **Django (host → container)**: `POSTGRES_HOST` (default `127.0.0.1`); database name/user/password/port align with the local `courseflow` database
 - **Optional**: `DJANGO_SECRET_KEY`, `DJANGO_DEBUG`, `DJANGO_ALLOWED_HOSTS`
 
 `course_flow/settings.py` loads `.env` from the repository root via `python-dotenv`.
 
-## Dev vs E2E databases (one venv, two logical DBs)
+## Local database and test fixtures
 
-Local UI development and Playwright E2E use **one Python virtual environment** (`.venv` at the repo root). Do **not** create separate venvs or delete/recreate `.venv` when switching contexts — IDE interpreters (PyCharm, VS Code) are configured against that path.
+Local UI development and Playwright E2E use **one Python virtual environment** (`.venv` at the repo root) and **one local development database** (`courseflow`). Do **not** create a second local database mode for browser tests.
 
-| Context | Logical database | Typical Django command |
-| --- | --- | --- |
-| UI development | `courseflow` | `just django-run` (reads `POSTGRES_DB` from root `.env`) |
-| Playwright E2E | `courseflow_e2e` | `just django-run-e2e` (sets `POSTGRES_DB` for that process only) |
+`just e2e-prepare` migrates the local database, replaces only the deterministic `E2E FIXTURE -` project trees, and writes the Playwright manifest. The same fixtures are the supported local-development content set. `just rebuild-dev-db` remains the explicit full-volume reset.
 
-Both databases live on the **same** Postgres Docker service. E2E recipes (`just django-migrate-e2e`, `just django-seed-e2e-tests`, `just e2e-prepare`) pass `POSTGRES_DB=courseflow_e2e` on the command line; root `.env` can keep `POSTGRES_DB=courseflow` for everyday dev.
+Future CI/CD browser-test isolation should use a temporary database in Docker for the job. That CI mechanism is intentionally not part of the local environment model yet.
 
-**PyCharm:** Point the project SDK at `.venv` once. For E2E work, run `just django-run-e2e` in a terminal or add `POSTGRES_DB=courseflow_e2e` to a run configuration — do not point the IDE at a second venv.
+**PyCharm:** Point the project SDK at `.venv` once and run Django with `just django-run` for both development and local browser tests.
 
 See [playwright_execution_guide.md](../../tests/docs/runbooks/playwright_execution_guide.md) for the full E2E stack.
 

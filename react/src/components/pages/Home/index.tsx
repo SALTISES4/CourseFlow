@@ -12,6 +12,7 @@ import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { GridWrap, OuterContentWrap } from '@cfMUI/helper'
+import { exploreTemplateFilters } from '@cfPages/Library/Explore'
 
 import Section from './components/Section'
 import Welcome from './components/Welcome'
@@ -72,7 +73,12 @@ const Home = () => {
         header={{
           title: projects.length
             ? _t('Explore templates')
-            : _t('Get started with templates')
+            : _t('Get started with templates'),
+          seeAll: {
+            text: _t('View all templates'),
+            href: CFRoutes.EXPLORE,
+            state: exploreTemplateFilters
+          }
         }}
         sx={{ marginTop: projects.length ? 0 : 4 }}
       >

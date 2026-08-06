@@ -9,6 +9,8 @@ import {
 import { workflowCommentsTabContent } from '../../../shared/locators/workflow';
 import { requireCommentsComposer } from '../comments-tab.helpers';
 
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'read-only' });
+
 /**
  * Section comments entry paths — FR-WF-COMMENTS-002.
  * Requirements: workflow_comments_tab_requirements_v1.yaml

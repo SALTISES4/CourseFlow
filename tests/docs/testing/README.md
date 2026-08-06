@@ -45,11 +45,11 @@ This folder defines the testing side of that split.
 
 ### 8. E2E harness roadmap
 - File: [adr_e2e_harness_roadmap.md](adr_e2e_harness_roadmap.md)
-- Purpose: phased plan for Playwright fixtures, manifest, FR-driven generation, and CI.
+- Purpose: accepted architecture for seed assets, manifest IDs, disposable workflows, and CI ownership.
 
 ### 9. Playwright execution runbook
 - File: [../runbooks/playwright_execution_guide.md](../runbooks/playwright_execution_guide.md)
-- Purpose: how to install dependencies, configure env, run headless/UI/debug modes, prepare the E2E database, and troubleshoot local browser test execution.
+- Purpose: how to install dependencies, configure env, run headless/UI/debug modes, prepare deterministic fixtures, and troubleshoot local browser test execution.
 
 ## Relationship to requirement docs
 

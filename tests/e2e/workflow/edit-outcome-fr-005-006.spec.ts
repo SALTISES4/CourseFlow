@@ -11,6 +11,8 @@ import {
   workflowOutcomeHeader,
 } from './workflow-outcome.locators';
 
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
+
 /**
  * Edit outcome fields and auto-save — FR-WF-EO-005, FR-WF-EO-006.
  * Requirements: workflow_edit_outcome_requirements_v1.yaml
@@ -19,12 +21,8 @@ import {
 const E2E_OUTCOME_TITLE = 'E2E Outcome 1';
 
 test.describe('Edit outcome — fields and auto-save (FR-WF-EO-005, FR-WF-EO-006)', () => {
-  test.describe.configure({ mode: 'serial' });
-
   test.beforeEach(async ({ page, workflow }) => {
-    if (workflow.outcomes.length === 0) {
-      test.skip(true, 'E2E fixture has no outcomes; run just django-seed-e2e-tests.');
-    }
+    expect(workflow.outcomes.length).toBeGreaterThan(0);
     await gotoOutcomesView(page, workflow.path);
     await workflowOutcomeHeader(page, E2E_OUTCOME_TITLE).click();
     await expect(workflowEditOutcomeForm(page)).toBeVisible();

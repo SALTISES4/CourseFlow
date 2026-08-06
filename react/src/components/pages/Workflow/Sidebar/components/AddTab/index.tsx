@@ -15,7 +15,6 @@ import { MouseEvent, useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
-import { getChannelData } from './data'
 import DraggableItem from './Draggable'
 import * as Styled from './styles'
 
@@ -36,7 +35,6 @@ const AddTab = () => {
     [graphUuid]
   )
   const channels = useSelector(channelsSelector)
-  const nodeCategories = graphUuid ? getChannelData(channels) : []
 
   const insertMode = useSelector(
     (state: RootState) => state.graph.graphUi.nodeInsertMode
@@ -92,20 +90,20 @@ const AddTab = () => {
             </ToggleButton>
           </Styled.InsertButtonGroup>
         </SC.GroupWrap>
-        {nodeCategories.length > 0 && (
+        {channels.length > 0 && (
           <SC.GroupWrap>
             <Typography component="h6" variant="body2">
               {_t('Node categories')}
             </Typography>
             <ul>
-              {nodeCategories.map((column) => (
+              {channels.map((column) => (
                 <DraggableItem
                   key={column.uuid}
                   component="li"
                   uuid={column.uuid}
                   label={column.title}
                   type={DraggableType.SIDEBAR_NODE}
-                  typeColor={column.color}
+                  typeColor={column.colour}
                 />
               ))}
               <DraggableItem

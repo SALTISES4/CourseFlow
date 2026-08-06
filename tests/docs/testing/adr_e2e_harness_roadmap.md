@@ -1,162 +1,118 @@
-# ADR: E2E harness roadmap (Playwright + fixtures + FR-driven generation)
+# ADR: E2E harness, seed assets, and test isolation
 
 ## Status
 
-Accepted — Phase 2 in progress
+Accepted
 
 ## Date
 
 2026-06-23
 
+Amended 2026-07-31 to adopt one local database, one seed path, stable asset IDs,
+and disposable workflow isolation.
+
 ## Context
 
-CourseFlow browser E2E tests must be generated from functional requirements under `tests/docs/requirements/`, executed locally in Playwright UI Mode, and eventually run in CI. The stack is a **real** browser against Vite, Django, and Postgres — not mocks.
+CourseFlow browser tests exercise a real browser, Vite, Django, and Postgres. Local
+development and Playwright intentionally use the same `courseflow` database. CI/CD
+will eventually provide a temporary Docker database owned by the job.
 
-Infrastructure already in place:
-
-- Requirement YAML specs and `canonical_locators.yaml`
-- Test-generation policy (`tests/docs/testing/`)
-- Separate logical database `courseflow_e2e` on the single Postgres compose service
-- Deterministic E2E fixtures (`course_flow/e2e_seed/`) and manifest (`tests/.playwright-fixtures/workflow.json`)
-- Auth setup project (storage state)
-- Calibration specs for edit-section (partial FR coverage)
-
-Gaps blocking FR-driven generation at scale:
-
-- Playwright does not load the fixture manifest automatically
-- Specs still depend on manual `PLAYWRIGHT_WORKFLOW_PATH` in `tests/.env`
-- `test.extend` workflow fixture not implemented
-- No single `just` recipe to prepare the E2E database + manifest
-- Deferred edit-section FRs need fixture helpers (blank section, roles)
-- Legacy specs (`ai-guided.spec.ts`) use pre-rebuild selectors
+The earlier harness exposed seeded rows through positional manifest fields and let
+multiple specs mutate the same workflow. `serial` groups protected only one describe
+block, while other files could still mutate the workflow concurrently. Guards then
+converted polluted prerequisites into skipped tests. Fixture purpose and consumers
+were distributed across seed code, requirement documents, and specs.
 
 ## Decision
 
-Implement the harness in **five phases**. Each phase has an exit criterion before expanding scope.
+### One seed path
 
-Phases 1–3 are required before broad AI generation from requirement YAML. Phases 4–5 scale domains and CI.
+`course_flow/e2e_seed/` is the only local content generator. `just e2e-prepare`
+migrates the local database, replaces only `E2E FIXTURE -` project trees, writes the
+runtime manifest, and refreshes the asset dependency CSV.
 
----
+There is no local test database, database switch, dev seed, or grouped reseed
+workflow.
 
-## Phase 1 — Runnable harness (manifest + fixtures)
+### Stable asset catalog
 
-**Goal:** After `just e2e-prepare`, `yarn test-ui` runs without manual env copying.
+`course_flow/e2e_seed/assets.json` is the committed authority for stable asset IDs,
+purpose, lifecycle, builder ownership, and capabilities. Examples:
 
-| # | Work item | Status |
-|---|-----------|--------|
-| 1.1 | `globalSetup` — fail fast if manifest missing | Done |
-| 1.2 | `tests/helpers/manifest.ts` — load/validate `workflow.json` | Done |
-| 1.3 | `tests/fixtures/workflow.ts` — `test.extend({ workflow })` | Done |
-| 1.4 | Migrate `edit-section-fr-001-012.spec.ts` to fixtures | Done |
-| 1.5 | `just e2e-prepare` — idempotent E2E DB + seed + manifest | Done |
-| 1.6 | Document E2E stack (`django-run-e2e` + `frontend-dev`) in runbook | Done |
+- `actor.teacher`
+- `project.primary`
+- `workflow.standard_activity`
+- `workflow.navigation_course`
+- `workflow.restricted_activity`
 
-**Fixture API (contract):**
+The runtime manifest records the UUIDs and routes produced for those IDs. Tests must
+resolve seeded content by stable ID, never by array position.
 
-```typescript
-workflow.path              // /workflow/{uuid}/graph
-workflow.graphUuid
-workflow.sections          // ordered SectionEntry[]
-workflow.sectionByPosition(n)
-workflow.sectionByTitle(title)
-workflow.blankSection()    // title === ""
-workflow.firstSection()
+`tests/docs/testing/e2e-seed-asset-dependencies.csv` is generated from the catalog
+and Playwright declarations. It is the spreadsheet-friendly bird's-eye view of asset
+consumers, requirement IDs, actors, and access modes. Edit the catalog or spec
+declaration and regenerate the CSV; do not hand-edit the CSV.
+
+`just e2e-assets-check` fails when the generated view is stale or a spec declares an
+unknown asset.
+
+### Immutable canonical workflows
+
+Seeded workflow assets are canonical sources. Tests that only navigate or assert may
+declare `seedAccess: 'read-only'`; fixture teardown verifies that the graph revision
+did not change.
+
+Tests that edit workflow content declare `seedAccess: 'disposable-copy'`. Before the
+test, the fixture copies the requested canonical workflow through the production copy
+API and rebuilds its handle from the copied Graph View payload. Teardown archives and
+permanently deletes the copy with the primary actor's captured token.
+
+Cleanup controls database hygiene only. Correctness does not depend on cleanup because
+the next test receives a different copy.
+
+```ts
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  actorAsset: 'actor.teacher',
+  seedAccess: 'disposable-copy',
+});
 ```
 
-**Exit criterion:** `yarn test-ui` → setup + FR-SEC-001/003/006 pass after `just e2e-prepare` with no `PLAYWRIGHT_WORKFLOW_PATH` in `tests/.env`.
+Tests needing additional workflow types declare `seedAssets`. Non-workflow specs use
+`seedDependencies` to make their content dependencies visible in the generated CSV.
 
----
+### Independent tests
 
-## Phase 2 — Complete edit-section fixture contract
+One test may contain a complete destructive lifecycle. Separate tests must not depend
+on state created by previous tests, cleanup tests, file order, or retries. Required
+fixture corruption is a failure, not a skip. `test.skip` or `test.fixme` is reserved
+for explicitly deferred product behaviour.
 
-**Goal:** Deferred FRs in `edit-section-fr-001-012.spec.ts` become generatable and green.
-
-| FR | Fixture / harness need | Spec status |
-|----|------------------------|-------------|
-| FR-SEC-002 | `workflow.blankSection()` + section numbering assertions | `edit-section-fr-001-012.spec.ts` |
-| FR-SEC-004 / 005 | Known section order; count before/after insert/duplicate | `edit-section-fr-001-012.spec.ts` |
-| FR-SEC-006 confirm delete | Delete last titled section (`E2E Section 3`) | `edit-section-fr-001-012.spec.ts` |
-| FR-SEC-003 viewer/commenter | `manifest.contributors` — teacher editor, student viewer | viewer spec in phase2 |
-| FR-SEC-001 branch | Sidebar already open — same graph fixture | `edit-section-fr-001-012.spec.ts` |
-
-**Backend (Phase 2):**
-
-- `course_flow/e2e_seed/team.py` — `teacher@courseflow.com` (owner), dedicated editor/commenter accounts, and `student@courseflow.com` (viewer)
-- Manifest `fixture_version: 3` with `primary_user`, `contributors[]`, and FR-HOME-003 recent-project fixtures
-
-**Exit criterion:** Phase 2 specs pass in UI Mode after `just e2e-prepare`. Commenter role variants deferred.
-
----
-
-## Phase 3 — FR → spec generation loop
-
-**Goal:** Repeatable process for any requirement file.
-
-Per feature slice:
-
-1. Pick FR IDs from `*_requirements_v1.yaml`
-2. Verify fixture contract — extend `e2e_seed` if preconditions missing
-3. Map `canonical_locators.yaml` → colocated `*.locators.ts`
-4. Live DOM validation on `courseflow_e2e` (Playwright MCP per `browser_automation_tooling_guide.md`, or Playwright UI Mode)
-5. Generate spec via `tests/docs/prompts/test_spec_generation.md`
-6. Review against `generated_test_review_checklist.md`
-7. Run `yarn test-ui -g "FR-…"`
-
-**Housekeeping:**
-
-- Remove or quarantine `tests/e2e/workflow/ai-guided.spec.ts` (legacy selectors)
-- Keep one reference spec per domain as template
-
-**Exit criterion:** One new FR generated from YAML, reviewed, green in UI Mode, merged — no manual UUID steps.
-
----
-
-## Phase 4 — Scale to more domains
-
-| Order | Domain | Prerequisite |
-|-------|--------|--------------|
-| 1 | Edit section (complete) | Current workflow fixture |
-| 2 | Delete section (hover menu) | Same fixture |
-| 3 | Login / home smoke | Auth only |
-| 4 | Library / project create | New E2E fixture project |
-| 5 | Workflow node / channel | Richer graph fixture |
-
-Each domain requires: E2E fixture extension, colocated locators, `feature-fr-XXX-YYY.spec.ts`.
-
-Do not generate specs for domains without a documented fixture contract.
-
----
-
-## Phase 5 — CI
-
-1. CircleCI: Postgres → `e2e-prepare` → Django (`POSTGRES_DB=courseflow_e2e`) + Vite
-2. `yarn test` headless
-3. Publish Playwright HTML report
-
----
-
-## Vocabulary (do not conflate)
-
-| Term | Database | Command |
-|------|----------|---------|
-| Python env | `.venv` (single, shared) | `just create-venv` (once), `uv sync` — **not** per-database |
-| Dev seed | `courseflow` | `just django-seed` |
-| E2E fixtures | `courseflow_e2e` | `just django-seed-e2e-tests` |
-| Rebuild dev | volume wipe | `just rebuild-dev-db` |
-| Rebuild E2E | `courseflow_e2e` only | `just rebuild-e2e-db` |
-| Prepare E2E (idempotent) | `courseflow_e2e` | `just e2e-prepare` |
-
-Switch runtime database via `POSTGRES_DB` on each `just` recipe (`django-run` vs `django-run-e2e`). Do not recreate `.venv` when changing databases.
-
-## Related documents
-
-- [playwright_execution_guide.md](../runbooks/playwright_execution_guide.md) — local runbook
-- [adr_test_generation.md](adr_test_generation.md) — generation policy
-- [ai_test_generation_workflow.md](ai_test_generation_workflow.md) — FR → test workflow
-- [test_suite_layout.md](test_suite_layout.md) — folder layout
+Alternate users are reserved for permission and team-management requirements. User
+allocation is not a content-isolation mechanism.
 
 ## Consequences
 
-- Specs import `test` from `tests/fixtures/`, not `@playwright/test` directly (when using workflow fixture)
-- `PLAYWRIGHT_WORKFLOW_PATH` in `tests/.env` becomes optional override only
-- AI agents must check fixture contract before generating workflow-domain tests
+- Workflow specs import the extended `test` from `tests/fixtures/`.
+- Mutating workflow specs can run in parallel without sharing their mutation target.
+- Disposable copies can appear briefly in the fixture project during a run.
+- Same-project copies preserve project-scoped tags and workflow links.
+- Tests must declare assets when they depend on seeded content.
+- Seed additions require a catalog entry and a manifest contract assertion.
+- CI database provisioning remains separate from test-data isolation.
+
+## Commands
+
+| Purpose | Command |
+| --- | --- |
+| Prepare local fixtures and manifest | `just e2e-prepare` |
+| Regenerate dependency CSV | `uv run cf-check-e2e-assets` |
+| Verify catalog and CSV | `just e2e-assets-check` |
+| Rebuild the complete local database | `just rebuild-dev-db` |
+
+## Related documents
+
+- [playwright_execution_guide.md](../runbooks/playwright_execution_guide.md)
+- [playwright_authoring_standard.md](playwright_authoring_standard.md)
+- [ai_test_generation_workflow.md](ai_test_generation_workflow.md)
+- [test_suite_layout.md](test_suite_layout.md)

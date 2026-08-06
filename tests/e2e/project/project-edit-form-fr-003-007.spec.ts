@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures';
 import { DISCIPLINE_CATALOGUE_AZ } from '../../helpers/discipline-catalogue';
 import {
   expectEditProjectFormPrimaryLayoutPerFrProjForm003,
@@ -29,6 +29,8 @@ import {
   projectTitleField,
   waitForProjectOverviewLoaded,
 } from './project.locators';
+
+test.use({ seedDependencies: ['actor.teacher', 'project.primary'] });
 
 /**
  * Calibration slice — FR-PROJ-FORM-003, FR-PROJ-FORM-006, FR-PROJ-FORM-007 (partial).

@@ -1,9 +1,7 @@
-import { LibraryContentTypeIn, LibrarySearchIn } from '@cf/api/gen'
+import { LibraryContentTypeIn } from '@cf/api/gen'
 import LibrarySearchView, {
   LibraryFilterConfig
 } from '@cfViews/LibrarySearchView'
-import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
-import { useCallback, useState } from 'react'
 
 type PropsType = {
   uuid: string
@@ -24,17 +22,6 @@ const TabWorkflows = ({ uuid }: PropsType) => {
     }
   }
 
-  const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
-
-  const updateSearchArgsHandler = useCallback(
-    (args: LibrarySearchIn) => {
-      setSearchArgs(
-        LibraryHelper.applyLockedFilters(args, { projectUuid: uuid })
-      )
-    },
-    [uuid]
-  )
-
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -42,8 +29,7 @@ const TabWorkflows = ({ uuid }: PropsType) => {
     <div data-test-id="project-workflows-view">
       <LibrarySearchView
         config={config}
-        searchArgs={searchArgs}
-        setSearchArgs={updateSearchArgsHandler}
+        lockedFilters={{ projectUuid: uuid }}
       />
     </div>
   )

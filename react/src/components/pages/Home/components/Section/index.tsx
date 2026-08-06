@@ -28,6 +28,7 @@ type PropsType = {
     seeAll?: {
       text: string
       href: string
+      state?: any
     }
   }
   children: ReactNode
@@ -40,7 +41,11 @@ const Section = ({ sx, header, children }: PropsType) => (
       <SectionHeader>
         <Typography variant="h5">{_t(header.title)}</Typography>
         {header.seeAll && (
-          <Link component={RouterLink} to={header.seeAll.href}>
+          <Link
+            component={RouterLink}
+            to={header.seeAll.href ?? ''}
+            state={header.seeAll.state}
+          >
             {_t(header.seeAll.text || 'See all')}
           </Link>
         )}

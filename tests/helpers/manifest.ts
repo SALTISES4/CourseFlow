@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-/** Written by `just django-seed-e2e-tests` (see workflow.json.example). */
+/** Written by `just django-seed-e2e-tests`; stable IDs are defined in assets.json. */
 export const WORKFLOW_MANIFEST_RELATIVE = '.playwright-fixtures/workflow.json';
 
 export type SectionEntry = {
@@ -22,7 +22,33 @@ export type PrimaryUserEntry = {
   account_role: string;
 };
 
+export type ActorAssetId =
+  | 'actor.teacher'
+  | 'actor.editor'
+  | 'actor.commenter'
+  | 'actor.viewer';
+
+export type ProjectAssetId =
+  | 'project.primary'
+  | 'project.restricted'
+  | 'project.templates'
+  | 'project.recent_collection'
+  | 'project.favourite_collection'
+  | 'project.archived_home';
+
+export type WorkflowAssetId =
+  | 'workflow.standard_activity'
+  | 'workflow.navigation_course'
+  | 'workflow.navigation_program'
+  | 'workflow.restricted_activity'
+  | 'workflow.template_activity'
+  | 'workflow.template_course'
+  | 'workflow.template_program';
+
+export type SeedAssetId = ActorAssetId | ProjectAssetId | WorkflowAssetId;
+
 export type ProjectEntry = {
+  asset_id?: ProjectAssetId;
   uuid: string;
   title: string;
   modified_on: string;
@@ -35,10 +61,13 @@ export type OutcomeEntry = {
 };
 
 export type WorkflowEntry = {
+  asset_id: WorkflowAssetId;
   graph_uuid: string;
   workflow_uuid: string;
+  workflow_title: string;
   workflow_type: string;
   workflow_path: string;
+  project_uuid?: string | null;
   sections: SectionEntry[];
   outcomes?: OutcomeEntry[];
   node_count?: number;
@@ -50,13 +79,45 @@ export type WorkflowEntry = {
 export type WorkflowFixtureType = 'activity' | 'course' | 'program';
 
 export type TemplateWorkflowEntry = {
+  asset_id: WorkflowAssetId;
   workflow_uuid: string;
   workflow_title: string;
   workflow_type: string;
+  workflow_path?: string;
+  project_uuid?: string;
 };
+
+export type ActorAssetEntry = PrimaryUserEntry & {
+  asset_id: ActorAssetId;
+  kind: 'actor';
+  role?: string;
+};
+
+export type ProjectAssetEntry = ProjectEntry & {
+  asset_id: ProjectAssetId;
+  kind: 'project';
+};
+
+export type ProjectCollectionAssetEntry = {
+  asset_id: 'project.recent_collection' | 'project.favourite_collection';
+  kind: 'project-collection';
+  items: ProjectEntry[];
+};
+
+export type WorkflowAssetEntry = WorkflowEntry & {
+  kind: 'workflow';
+};
+
+export type RuntimeSeedAsset =
+  | ActorAssetEntry
+  | ProjectAssetEntry
+  | ProjectCollectionAssetEntry
+  | WorkflowAssetEntry;
 
 export type WorkflowManifest = {
   fixture_version: number;
+  asset_catalog_version: number;
+  assets: Record<SeedAssetId, RuntimeSeedAsset>;
   primary_user: PrimaryUserEntry;
   owner_email: string;
   project_uuid: string;
@@ -92,7 +153,7 @@ export function resolveManifestPath(): string {
 }
 
 const MANIFEST_MISSING_HINT =
-  'Run from repo root: just e2e-prepare (or just rebuild-e2e-db for a full E2E database reset).';
+  'Run from repo root: just e2e-prepare.';
 
 function readManifestFile(): WorkflowManifest {
   const manifestPath = resolveManifestPath();
@@ -118,7 +179,7 @@ function validateWorkflowManifest(parsed: unknown, manifestPath: string): Workfl
   }
 
   const record = parsed as Record<string, unknown>;
-  const workflows = record.workflows;
+  const assets = record.assets as Record<string, unknown> | undefined;
   const primaryUser = record.primary_user as Record<string, unknown> | undefined;
   const recentProjects = record.recent_projects;
   const archivedHomeProject = record.archived_home_project as Record<string, unknown> | undefined;
@@ -159,19 +220,33 @@ function validateWorkflowManifest(parsed: unknown, manifestPath: string): Workfl
     );
   }
 
-  if (!Array.isArray(workflows) || workflows.length === 0) {
-    throw new Error(`E2E workflow manifest at ${manifestPath} must include workflows[0].`);
+  if (!assets || typeof assets !== 'object') {
+    throw new Error(`E2E workflow manifest at ${manifestPath} must include stable assets.`);
   }
 
-  const workflow = workflows[0] as Record<string, unknown>;
+  for (const assetId of [
+    'actor.teacher',
+    'project.primary',
+    'workflow.standard_activity',
+  ]) {
+    if (!assets[assetId]) {
+      throw new Error(
+        `E2E workflow manifest at ${manifestPath} is missing required asset ${assetId}.`,
+      );
+    }
+  }
+
+  const workflow = assets['workflow.standard_activity'] as Record<string, unknown>;
   if (typeof workflow.workflow_path !== 'string' || !workflow.workflow_path.startsWith('/workflow/')) {
     throw new Error(
-      `E2E workflow manifest at ${manifestPath} has an invalid workflows[0].workflow_path.`,
+      `E2E workflow manifest at ${manifestPath} has an invalid workflow.standard_activity workflow_path.`,
     );
   }
 
   if (!Array.isArray(workflow.sections) || workflow.sections.length === 0) {
-    throw new Error(`E2E workflow manifest at ${manifestPath} must include workflows[0].sections.`);
+    throw new Error(
+      `E2E workflow manifest at ${manifestPath} must include workflow.standard_activity sections.`,
+    );
   }
 
   for (const section of workflow.sections) {
@@ -196,20 +271,52 @@ export function assertManifestReady(): void {
 }
 
 export function getPrimaryWorkflow(manifest: WorkflowManifest): WorkflowEntry {
-  return manifest.workflows[0]!;
+  return getWorkflowAsset(manifest, 'workflow.standard_activity');
+}
+
+export function getSeedAsset<T extends RuntimeSeedAsset = RuntimeSeedAsset>(
+  manifest: WorkflowManifest,
+  assetId: SeedAssetId,
+): T {
+  const asset = manifest.assets[assetId];
+  if (!asset) {
+    throw new Error(`E2E workflow manifest has no asset ${JSON.stringify(assetId)}.`);
+  }
+  return asset as T;
+}
+
+export function getWorkflowAsset(
+  manifest: WorkflowManifest,
+  assetId: WorkflowAssetId,
+): WorkflowAssetEntry {
+  const asset = getSeedAsset(manifest, assetId);
+  if (asset.kind !== 'workflow') {
+    throw new Error(`E2E asset ${assetId} is ${asset.kind}, not a workflow.`);
+  }
+  return asset;
+}
+
+export function getActorAsset(
+  manifest: WorkflowManifest,
+  assetId: ActorAssetId,
+): ActorAssetEntry {
+  const asset = getSeedAsset(manifest, assetId);
+  if (asset.kind !== 'actor') {
+    throw new Error(`E2E asset ${assetId} is ${asset.kind}, not an actor.`);
+  }
+  return asset;
 }
 
 export function getWorkflowByType(
   manifest: WorkflowManifest,
   workflowType: WorkflowFixtureType,
 ): WorkflowEntry {
-  const match = manifest.workflows.find((entry) => entry.workflow_type === workflowType);
-  if (!match) {
-    throw new Error(
-      `E2E workflow manifest has no workflow for type ${JSON.stringify(workflowType)}.`,
-    );
-  }
-  return match;
+  const assetIdByType: Record<WorkflowFixtureType, WorkflowAssetId> = {
+    activity: 'workflow.standard_activity',
+    course: 'workflow.navigation_course',
+    program: 'workflow.navigation_program',
+  };
+  return getWorkflowAsset(manifest, assetIdByType[workflowType]);
 }
 
 export function getRestrictedWorkflow(
@@ -240,6 +347,7 @@ export function listTemplateWorkflowFixtures(manifest: WorkflowManifest): Templa
   }
 
   return template_workflows.map((entry) => ({
+    asset_id: entry.asset_id,
     project_uuid: template_project_uuid,
     project_title: template_project_title,
     workflow_uuid: entry.workflow_uuid,

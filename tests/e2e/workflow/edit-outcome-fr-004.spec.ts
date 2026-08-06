@@ -10,6 +10,8 @@ import {
   workflowRightSidebarEditTab,
 } from '../../shared/locators/workflow';
 
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'read-only' });
+
 /**
  * Open edit outcome form — FR-WF-EO-004.
  * Requirements: workflow_edit_outcome_requirements_v1.yaml
@@ -19,9 +21,7 @@ const E2E_OUTCOME_TITLE = 'E2E Outcome 1';
 
 test.describe('Edit outcome — open workflowEditOutcomeForm (FR-WF-EO-004)', () => {
   test.beforeEach(async ({ page, workflow }) => {
-    if (workflow.outcomes.length === 0) {
-      test.skip(true, 'E2E fixture has no outcomes; run just django-seed-e2e-tests.');
-    }
+    expect(workflow.outcomes.length).toBeGreaterThan(0);
     await gotoOutcomesView(page, workflow.path);
     await expect(workflowOutcomeHeader(page, E2E_OUTCOME_TITLE)).toBeVisible({
       timeout: 15_000,

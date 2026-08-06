@@ -87,7 +87,7 @@ Follow `ai_test_generation_workflow.md`:
 1. Requirement ingestion
 2. Decomposition
 3. UI vocabulary mapping (`mapping_fr_ui.md`, `canonical_locators.yaml`)
-4. Live DOM validation (Playwright MCP / CLI on `courseflow_e2e`)
+4. Live DOM validation (Playwright MCP / CLI on the seeded local app)
 5. Write `*.locators.ts` then `*.spec.ts`
 6. Execute and refine
 7. Human review (`generated_test_review_checklist.md`)

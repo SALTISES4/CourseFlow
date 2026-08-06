@@ -168,6 +168,19 @@ Hard-coded route IDs or data IDs may be acceptable in:
 
 They should not be assumed acceptable for long-lived regression tests unless the environment contract explicitly supports them.
 
+Seeded dependencies must use stable IDs from `course_flow/e2e_seed/assets.json` and be
+declared through the extended Playwright options:
+
+- `seedAsset` selects the primary workflow asset.
+- `seedAssets` selects additional workflow assets required by the spec.
+- `seedDependencies` records non-workflow content used by the spec.
+- `actorAsset` records the permission actor.
+- `seedAccess` is `read-only` or `disposable-copy`.
+
+Mutating workflow tests must use `disposable-copy`. Tests must not depend on mutation
+or cleanup performed by an earlier test. Missing required seeded content is a setup
+failure, not a reason to skip.
+
 ### Environment assumptions
 
 Every generated test should make its assumptions obvious:

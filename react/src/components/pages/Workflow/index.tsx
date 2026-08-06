@@ -24,9 +24,9 @@ const Workflow = () => {
   const workflowUuid = uuid ?? null
   const {
     data: workflowResponse,
-    error: workflowError,
-    isError: workflowIsError,
-    isPending: workflowIsPending,
+    error,
+    isError,
+    isPending,
     refetch
   } = useQuery({
     ...getWorkflowOptions({ path: { uuid: workflowUuid ?? '' } }),
@@ -52,7 +52,7 @@ const Workflow = () => {
     resourceUuid: workflowUuid ?? undefined,
     resourceRole: resolvedWorkflowResponse?.item.permissions.resourceRole,
     hasSuccessfulLoad: Boolean(lastSuccessfulResponse.current),
-    directError: workflowError,
+    directError: error,
     routePathname: location.pathname,
     revalidate
   })
@@ -74,19 +74,19 @@ const Workflow = () => {
     return <WorkspaceAccessDenied workspace="workflow" />
   }
 
-  if (workflowIsError && !resolvedWorkflowResponse) {
-    if (getApiErrorStatus(workflowError) === 403) {
+  if (isError && !resolvedWorkflowResponse) {
+    if (getApiErrorStatus(error) === 403) {
       return (
         <WorkspaceAccessDenied
           workspace="workflow"
-          archived={isArchivedApiError(workflowError)}
+          archived={isArchivedApiError(error)}
         />
       )
     }
     return <ErrorView />
   }
 
-  if (workflowIsPending || !resolvedWorkflowResponse) {
+  if (isPending || !resolvedWorkflowResponse) {
     return <Loader />
   }
 

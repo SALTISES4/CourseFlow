@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures';
 import { describeLibraryPaginationTests } from '../../helpers/library-pagination';
 import { describeLibraryResultsSummaryTests } from '../../helpers/library-results-summary';
 import { expectSortControlPerFrLib002 } from '../../helpers/library-sort';
@@ -38,6 +38,16 @@ import {
   projectWorkflowsView,
   selectProjectWorkflowSortOption,
 } from './project.locators';
+
+test.use({
+  seedDependencies: [
+    'actor.teacher',
+    'project.primary',
+    'workflow.standard_activity',
+    'workflow.navigation_course',
+    'workflow.navigation_program',
+  ],
+});
 
 /**
  * Calibration slice — FR-PROJ-WF-001 through FR-PROJ-WF-004.

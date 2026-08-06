@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from '../../fixtures';
 
 import { loginAs } from '../../helpers/auth';
 import { fetchWorkflowDetail } from '../../helpers/edit-workflow-form';
@@ -31,6 +31,10 @@ import {
   expectCopyWorkflowSingleDialogShell,
   workflowOverflowButton,
 } from './workflow-copy.locators';
+
+test.use({
+  seedDependencies: ['actor.teacher', 'project.primary', 'workflow.standard_activity'],
+});
 
 /**
  * FR-WF-COPY-001 through FR-WF-COPY-007.

@@ -1,9 +1,9 @@
-"""Naming and content contracts for Playwright E2E fixtures.
-
-Distinct from ``course_flow.dev_seed`` (Faker-driven synthetic dev data).
-"""
+"""Naming, actor, and content contracts for Playwright E2E fixtures."""
 
 E2E_FIXTURE_PROJECT_TITLE_PREFIX = "E2E FIXTURE -"
+E2E_FIXTURE_PASSWORD = "password"
+E2E_FIXTURE_TEACHER_EMAIL = "teacher@courseflow.com"
+E2E_FIXTURE_STUDENT_EMAIL = "student@courseflow.com"
 
 # Primary workflow graph used by edit-section calibration and related specs.
 E2E_FIXTURE_PROJECT_TITLE = f"{E2E_FIXTURE_PROJECT_TITLE_PREFIX} Edit Section"
@@ -36,6 +36,10 @@ E2E_FIXTURE_COMMENTER_EMAIL = "commenter@courseflow.com"
 # FR-HOME-003's four-card cap rather than merely render four available cards.
 E2E_FIXTURE_HOME_PROJECT_TITLES: tuple[str, ...] = tuple(
     f"{E2E_FIXTURE_PROJECT_TITLE_PREFIX} Recent Project {index}"
+    for index in range(1, 6)
+)
+E2E_FIXTURE_FAVOURITE_PROJECT_TITLES: tuple[str, ...] = tuple(
+    f"{E2E_FIXTURE_PROJECT_TITLE_PREFIX} Favourite Project {index}"
     for index in range(1, 6)
 )
 E2E_FIXTURE_ARCHIVED_HOME_PROJECT_TITLE = (

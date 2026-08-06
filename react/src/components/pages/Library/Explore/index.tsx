@@ -1,8 +1,8 @@
-import { LibrarySearchIn } from '@cf/api/gen'
+import { LibraryFiltersIn } from '@cf/api/gen'
 import LibrarySearchView, {
   LibraryFilterConfig
 } from '@cfViews/LibrarySearchView'
-import { useCallback, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 /*
  * @todo
@@ -17,7 +17,17 @@ import { useCallback, useState } from 'react'
  *     - sort (relevance)
  * */
 
+// set isTemplate filter true when navigating over from the
+// Homepage -> Templates section -> See All link
+// handled through location state (no query params, separate route, etc)
+export const exploreTemplateFilters: Partial<LibraryFiltersIn> = {
+  isTemplate: true
+}
+
 const ExplorePage = () => {
+  const location = useLocation()
+  const isTemplateFilter = location.state?.isTemplate ?? null
+
   /*******************************************************
    * HOOKS
    *******************************************************/
@@ -34,20 +44,15 @@ const ExplorePage = () => {
     }
   }
 
-  const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
-
-  const updateSearchArgsHandler = useCallback((args: LibrarySearchIn) => {
-    setSearchArgs(args)
-  }, [])
-
   /*******************************************************
    * RENDER
    *******************************************************/
   return (
     <LibrarySearchView
       config={config}
-      searchArgs={searchArgs}
-      setSearchArgs={updateSearchArgsHandler}
+      lockedFilters={{
+        isTemplate: isTemplateFilter
+      }}
     />
   )
 }

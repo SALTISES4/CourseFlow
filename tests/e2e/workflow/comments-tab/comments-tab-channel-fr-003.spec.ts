@@ -11,6 +11,8 @@ import {
 } from '../workflow-graph.locators';
 import { workflowRightSidebarCommentsTabContent } from '../../../shared/locators/workflow';
 
+test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'read-only' });
+
 /**
  * Channel comments entry paths — FR-WF-COMMENTS-003.
  * Requirements: workflow_comments_tab_requirements_v1.yaml

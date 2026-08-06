@@ -3,6 +3,7 @@ import {
   LibraryFiltersIn,
   LibraryOwnershipIn,
   LibrarySearchIn,
+  LibrarySearchOut,
   LibrarySortDirectionIn,
   LibrarySortValueIn,
   WorkflowType
@@ -13,8 +14,7 @@ import {
   SearchFilterOption,
   SortOption
 } from '@cfComponents/filters/types'
-
-type FilterGroups = { [key: string]: SearchFilterGroup }
+import { produce } from 'immer'
 
 export type SearchOptions = {
   pagination: {
@@ -186,7 +186,7 @@ class LibraryHelper {
    *
    **/
   public static processFilterGroups = (
-    filterGroups: FilterGroups
+    filterGroups: SearchOptions['filterGroups']
   ): LibraryFiltersIn => {
     const relationship = filterGroups.ownershipFilter?.options?.find(
       (option) => option.enabled
@@ -289,6 +289,27 @@ class LibraryHelper {
       ...base,
       filters: mergedFilters
     }
+  }
+
+  public static translateLockedFiltersToInitialSearchOptions(
+    locked: Partial<LibraryFiltersIn>,
+    searchOptions: SearchOptions
+  ) {
+    return produce(searchOptions, (draft) => {
+      draft.filterGroups.favoritesFilter.value = locked.isFavorite ?? false
+      draft.filterGroups.templateFilter.value = locked.isTemplate ?? false
+      draft.filterGroups.archiveFilter.value = locked.isArchived ?? false
+    })
+  }
+
+  public static formatResultsSummary(data: LibrarySearchOut) {
+    const { currentPage, resultsPerPage, totalResults } = data.meta
+    const rangeStart = currentPage * resultsPerPage + 1
+    const rangeEnd = Math.min(totalResults, rangeStart + data.items.length - 1)
+    const range =
+      rangeStart === rangeEnd ? String(rangeStart) : `${rangeStart}-${rangeEnd}`
+
+    return `Showing ${range} of ${totalResults} results`
   }
 }
 

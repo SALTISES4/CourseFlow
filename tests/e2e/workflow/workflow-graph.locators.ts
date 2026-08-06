@@ -37,7 +37,7 @@ export function workflowNodeTitle(page: Page, nodeUuid: string): Locator {
 export function workflowNodeContent(page: Page, nodeUuid: string): Locator {
   return workflowNode(page, nodeUuid)
     .locator('div')
-    .filter({ has: workflowNodeTitle(page, nodeUuid) })
+    .filter({ has: page.getByRole('paragraph') })
     .first();
 }
 
@@ -219,21 +219,29 @@ export function workflowEditNodeFormDescriptionField(page: Page): Locator {
   return workflowRightSidebarContentPanel(page).getByLabel(/^Description$/i);
 }
 
+/** canonical: workflowEditNodeFormDescriptionLabel */
+export function workflowEditNodeFormDescriptionLabel(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page)
+    .locator('label')
+    .filter({ hasText: /^Description$/ });
+}
+
 /**
- * Plain textarea Description control (forbidden by FR-WF-EN-012 when
- * workflowRichTextDescriptionEditor is required). Matches MUI multiline fields
- * labeled via <label for> as well as aria-label.
+ * Plain input/textarea Description control (forbidden by FR-WF-EN-012 when
+ * workflowRichTextDescriptionEditor is required). Contenteditable rich-text
+ * regions also have textbox semantics, so restrict this locator to native form
+ * controls.
  */
 export function workflowEditNodeFormDescriptionPlainTextarea(page: Page): Locator {
   const panel = workflowRightSidebarContentPanel(page);
   return panel
     .getByRole('textbox', { name: /^Description$/i })
-    .or(panel.locator('textarea[aria-label="Description"]'));
+    .and(panel.locator('input, textarea'));
 }
 
 /** canonical: workflowRichTextDescriptionEditor — contenteditable region */
 export function workflowRichTextDescriptionEditor(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).locator('[contenteditable="true"]');
+  return workflowRightSidebarContentPanel(page).locator('[contenteditable]');
 }
 
 /** canonical: workflowRichTextDescriptionEditorToolbar */
