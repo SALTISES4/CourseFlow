@@ -11,7 +11,19 @@ export type LoginCredentials = {
 /** Performs UI login and waits for the Bearer token and post-login navigation. */
 export async function loginAs(page: Page, credentials: LoginCredentials): Promise<void> {
   await page.goto('/login');
-  await page.locator('input[name="email"]').fill(credentials.email);
+  const emailField = page.locator('input[name="email"]');
+
+  // Authenticated users are redirected away from /login. Support explicit
+  // account switching by clearing the current Bearer token and trying again.
+  if (!(await emailField.isVisible())) {
+    await page.evaluate(
+      (storageKey) => window.localStorage.removeItem(storageKey),
+      ACCESS_TOKEN_STORAGE_KEY,
+    );
+    await page.goto('/login');
+  }
+
+  await emailField.fill(credentials.email);
   await page.locator('input[name="password"]').fill(credentials.password);
   await page.getByRole('button', { name: /^Login$/i }).click();
   await expect

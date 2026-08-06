@@ -40,6 +40,7 @@ import {
   workflowEditNodeFormContextField,
   workflowEditNodeFormCreditsField,
   workflowEditNodeFormDeleteButton,
+  workflowEditNodeFormDescriptionLabel,
   workflowEditNodeFormDuplicateButton,
   workflowEditNodeFormLinkWorkflowButton,
   workflowEditNodeFormPonderationGroup,
@@ -60,6 +61,7 @@ import {
   workflowLinkWorkflowDialogTitle,
   workflowNode,
   workflowNodeContent,
+  workflowNodeTitle,
   workflowRichTextDescriptionEditor,
   workflowRichTextDescriptionEditorToolbar,
 } from './workflow-graph.locators';
@@ -123,9 +125,7 @@ test.describe('edit-node-fr-001-007', () => {
       page,
     }) => {
       await expect(workflowEditNodeFormTitleField(page)).toBeVisible();
-      await expect(
-        workflowRightSidebarContentPanel(page).getByText('Description', { exact: true }),
-      ).toBeVisible();
+      await expect(workflowEditNodeFormDescriptionLabel(page)).toBeVisible();
       await expectEditableWorkflowEditNodeFormRichTextDescription(page);
       await expect(workflowEditNodeFormContextField(page)).toBeVisible();
       await expect(workflowEditNodeFormTaskTypeField(page)).toBeVisible();
@@ -180,9 +180,7 @@ test.describe('edit-node-fr-001-007', () => {
         await openFirstNodeEditForm(page);
 
         await expect(workflowEditNodeFormTitleField(page)).toBeVisible();
-        await expect(
-          workflowRightSidebarContentPanel(page).getByText('Description', { exact: true }),
-        ).toBeVisible();
+        await expect(workflowEditNodeFormDescriptionLabel(page)).toBeVisible();
         await expectEditableWorkflowEditNodeFormRichTextDescription(page);
         await expect(workflowEditNodeFormContextField(page)).toBeVisible();
         await expectWorkflowEditNodeFormTimeField(page);
@@ -287,9 +285,7 @@ test.describe('edit-node-fr-001-007', () => {
       await ensureProgramNodeAndOpenEditForm(page, workflow);
 
       await expect(workflowEditNodeFormTitleField(page)).toBeVisible();
-      await expect(
-        workflowRightSidebarContentPanel(page).getByText('Description', { exact: true }),
-      ).toBeVisible();
+      await expect(workflowEditNodeFormDescriptionLabel(page)).toBeVisible();
       await expectEditableWorkflowEditNodeFormRichTextDescription(page);
       await expectWorkflowEditNodeFormTimeField(page);
       await expect(workflowEditNodeFormCreditsField(page)).toBeVisible();
@@ -324,7 +320,7 @@ test.describe('edit-node-fr-001-007', () => {
       await linkNodeWorkflowViaApi(page, nodeUuid, course.workflow_uuid);
       await page.reload();
       await expect(workflowNode(page, nodeUuid)).toBeVisible({ timeout: 15_000 });
-      await workflowNodeContent(page, nodeUuid).click();
+      await workflowNodeTitle(page, nodeUuid).click();
       await expect(workflowEditNodeForm(page)).toBeVisible();
 
       try {
@@ -749,7 +745,7 @@ test.describe('edit-node-fr-001-007', () => {
       await linkNodeWorkflowViaApi(page, nodeUuid, course.workflow_uuid);
       await page.reload();
       await expect(workflowNode(page, nodeUuid)).toBeVisible({ timeout: 15_000 });
-      await workflowNodeContent(page, nodeUuid).click();
+      await workflowNodeTitle(page, nodeUuid).click();
       await expect(workflowEditNodeForm(page)).toBeVisible();
 
       try {
