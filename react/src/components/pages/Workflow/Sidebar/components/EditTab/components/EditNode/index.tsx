@@ -20,6 +20,7 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import Grid from '@mui/material/Grid'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
@@ -387,56 +388,6 @@ const EditNodeForm = ({
               </FormControl>
             </Stack>
           )}
-
-          {showTagsField && (
-            <Controller
-              name="tags"
-              control={control}
-              render={({ field }) => (
-                <Autocomplete
-                  multiple
-                  size="small"
-                  options={optionsData.tags}
-                  getOptionLabel={(tag) => tag.label}
-                  value={optionsData.tags.filter(
-                    (tag) => field.value?.includes(tag.uuid) ?? false
-                  )}
-                  onChange={(_, selectedOptions) =>
-                    field.onChange(selectedOptions.map((option) => option.uuid))
-                  }
-                  isOptionEqualToValue={(option, value) =>
-                    option.uuid === value.uuid
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      label={_t('Tags')}
-                    />
-                  )}
-                />
-              )}
-            />
-          )}
-
-          {showSpecificEducationSwitch && (
-            <FormControlLabel
-              label={_t('Specific education')}
-              control={
-                <Controller
-                  name="specificEducation"
-                  control={control}
-                  render={({ field }) => (
-                    <Switch
-                      checked={Boolean(field.value)}
-                      onChange={field.onChange}
-                      size="small"
-                    />
-                  )}
-                />
-              }
-            />
-          )}
         </Stack>
 
         {showProgramPonderation && (
@@ -449,26 +400,86 @@ const EditNodeForm = ({
             >
               {_t('Ponderation')}
             </Typography>
-            <Stack direction="row" gap={2} sx={{ mb: 2 }}>
-              <TextField
-                label={_t('Hrs. theory')}
-                variant="outlined"
-                size="small"
-                {...register('ponderation.theory')}
-              />
-              <TextField
-                label={_t('Hrs. practice')}
-                variant="outlined"
-                size="small"
-                {...register('ponderation.practice')}
-              />
+            <Grid container rowSpacing={2} columnSpacing={1} sx={{ mb: 3 }}>
+              <Grid item xs={6}>
+                <TextField
+                  label={_t('Hrs. theory')}
+                  variant="outlined"
+                  size="small"
+                  {...register('ponderation.theory')}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label={_t('Hrs. practice')}
+                  variant="outlined"
+                  size="small"
+                  {...register('ponderation.practice')}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label={_t('Hrs. individual')}
+                  variant="outlined"
+                  size="small"
+                  {...register('ponderation.individual')}
+                />
+              </Grid>
+            </Grid>
+
+            <Stack direction="column" gap={3}>
+              {showSpecificEducationSwitch && (
+                <FormControlLabel
+                  label={_t('Specific education')}
+                  control={
+                    <Controller
+                      name="specificEducation"
+                      control={control}
+                      render={({ field }) => (
+                        <Switch
+                          checked={Boolean(field.value)}
+                          onChange={field.onChange}
+                          size="small"
+                        />
+                      )}
+                    />
+                  }
+                />
+              )}
+
+              {showTagsField && (
+                <Controller
+                  name="tags"
+                  control={control}
+                  render={({ field }) => (
+                    <Autocomplete
+                      multiple
+                      size="small"
+                      options={optionsData.tags}
+                      getOptionLabel={(tag) => tag.label}
+                      value={optionsData.tags.filter(
+                        (tag) => field.value?.includes(tag.uuid) ?? false
+                      )}
+                      onChange={(_, selectedOptions) =>
+                        field.onChange(
+                          selectedOptions.map((option) => option.uuid)
+                        )
+                      }
+                      isOptionEqualToValue={(option, value) =>
+                        option.uuid === value.uuid
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          variant="outlined"
+                          label={_t('Tags')}
+                        />
+                      )}
+                    />
+                  )}
+                />
+              )}
             </Stack>
-            <TextField
-              label={_t('Hrs. individual')}
-              variant="outlined"
-              size="small"
-              {...register('ponderation.individual')}
-            />
           </>
         )}
       </SC.SidebarContent>
