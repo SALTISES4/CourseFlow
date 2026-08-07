@@ -220,11 +220,6 @@ export function createWorkflowDialogProjectCards(page: Page): Locator {
   return createWorkflowDialog(page).locator('[data-test-id="project-card"]');
 }
 
-/** FR shared field labels on workflowBlankForm (create stepped form requirements). */
-export const WORKFLOW_BLANK_FORM_VISIBLE_LABELS = {
-  title: 'Title',
-} as const;
-
 /** Product-only / type-varying metadata labels that FR forbids on blank create (do not differ by type). */
 export const WORKFLOW_BLANK_FORM_FORBIDDEN_METADATA_LABELS = [
   'Duration',
@@ -243,6 +238,13 @@ export function workflowBlankDescriptionVisibleLabel(
 ): string {
   const typeLabel = workflowType.charAt(0).toUpperCase() + workflowType.slice(1);
   return `${typeLabel} description`;
+}
+
+export function workflowBlankTitleVisibleLabel(
+  workflowType: 'activity' | 'course' | 'program',
+): string {
+  const typeLabel = workflowType.charAt(0).toUpperCase() + workflowType.slice(1);
+  return `${typeLabel} title`;
 }
 
 function escapeRegExp(value: string): string {

@@ -15,7 +15,7 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import TextField from '@mui/material/TextField'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -55,13 +55,24 @@ const ProjectForm = ({
     register,
     handleSubmit,
     control,
-    formState: { errors, isDirty },
-    reset
+    formState: { errors, isDirty, isValid },
+    reset,
+    trigger,
+    clearErrors
   } = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
     defaultValues,
     mode: 'onChange'
   })
+
+  useEffect(() => {
+    if (isDirty) {
+      void trigger('title')
+      return
+    }
+
+    clearErrors('title')
+  }, [clearErrors, isDirty, trigger])
 
   function onDialogClose() {
     reset()
@@ -188,7 +199,7 @@ const ProjectForm = ({
           type="submit"
           variant="contained"
           color="primary"
-          disabled={!isDirty || !!Object.keys(errors).length}
+          disabled={!isDirty || !isValid}
         >
           {submitLabel ?? _t('Edit project')}
         </Button>

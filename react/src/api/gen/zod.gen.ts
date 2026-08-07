@@ -152,7 +152,7 @@ export const zProjectCreateIn = z.object({
   description: z.string().nullish(),
   isPublished: z.boolean().optional().default(false),
   isTemplate: z.boolean().optional().default(false),
-  disciplines: z.array(z.number().int())
+  disciplines: z.array(z.number().int()).optional()
 })
 
 /**
@@ -292,7 +292,7 @@ export const zProjectUpdateIn = z.object({
   description: z.string().nullish(),
   isPublished: z.boolean().nullish(),
   isTemplate: z.boolean().nullish(),
-  disciplines: z.array(z.number().int())
+  disciplines: z.array(z.number().int()).optional()
 })
 
 /**

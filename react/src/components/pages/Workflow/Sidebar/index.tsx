@@ -91,7 +91,7 @@ function canUseTab(
         )
       }
       if (editType === CfObjectType.SECTION) {
-        return hasPermission(permissions, WorkflowPermission.PART_MANAGEMENT)
+        return hasPermission(permissions, WorkflowPermission.VIEW)
       }
       return hasPermission(permissions, WorkflowPermission.NODE_MANAGEMENT)
     default:

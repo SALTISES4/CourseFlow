@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures';
 import { loginAs } from '../../helpers/auth';
 import {
   expectCreateProjectFormPrimaryLayoutPerFrProjForm001,
@@ -20,7 +20,10 @@ import {
   projectDisciplineOptionLabels,
   selectProjectDisciplineOption,
 } from '../../helpers/project-discipline';
-import { expectProjectOverviewShowsSubmittedFormValues } from '../../helpers/project-overview';
+import {
+  expectProjectOverviewShowsSubmittedFormValues,
+  fetchProjectDetail,
+} from '../../helpers/project-overview';
 import {
   createProjectDialog,
   createProjectFormSubmitButton,
@@ -153,84 +156,44 @@ test.describe('Create project form — calibration (FR-PROJ-FORM-001-005)', () =
   test.describe('FR-PROJ-FORM-005: save feedback', () => {
     test('successful create shows title, description, and disciplines on overview', async ({
       page,
+      projectCleanup,
     }) => {
       const uniqueTitle = `E2E Project ${Date.now()}`;
       const description = 'E2E create overview description';
       const disciplineLabels = [DISCIPLINE_CATALOGUE_AZ[0]!];
-      const createdUuid = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
-      const projectDetail = {
-        uuid: createdUuid,
-        title: uniqueTitle,
-        description,
-        isPublished: false,
-        isArchived: false,
-        isTemplate: false,
-        isFavorite: false,
-        ownerId: 1,
-        dateCreated: '2026-01-01T00:00:00Z',
-        modifiedOn: '2026-01-01T00:00:00Z',
-        disciplines: [{ id: 1, title: disciplineLabels[0]! }],
-        workflows: [],
-        permissions: {
-          accountRole: 'teacher',
-          resourceRole: 'owner',
-          state: 'active',
-          actions: [
-            'view',
-            'edit_project',
-            'manage_members',
-            'create_workflow',
-            'archive_project',
-            'publish_project',
-          ],
-          adminOverride: false,
-        },
-      };
-
-      await page.route(PROJECT_CREATE_API_ROUTE, (route) => {
-        if (route.request().method() !== 'POST') {
-          void route.continue();
-          return;
-        }
-
-        void route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(projectDetail),
-        });
-      });
-
-      await page.route(`**/api/project/${createdUuid}`, (route) => {
-        if (route.request().method() !== 'GET') {
-          void route.continue();
-          return;
-        }
-
-        void route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ item: projectDetail }),
-        });
-      });
 
       await openCreateProjectDialog(page);
       await projectTitleField(page).fill(uniqueTitle);
       await projectDescriptionField(page).fill(description);
       await selectProjectDisciplineOption(page, disciplineLabels[0]!);
+
+      const createResponsePromise = page.waitForResponse((response) => {
+        const url = new URL(response.url());
+        return response.request().method() === 'POST' && url.pathname === '/api/project';
+      });
       await createProjectFormSubmitButton(page).click();
+      const createResponse = await createResponsePromise;
+      const createResponseBody = await createResponse.text();
+      expect(
+        createResponse.ok(),
+        `POST /api/project returned HTTP ${createResponse.status()}: ${createResponseBody}`,
+      ).toBeTruthy();
+      const created = JSON.parse(createResponseBody) as { uuid: string };
+      projectCleanup(created.uuid);
 
       await expect(createProjectDialog(page)).toBeHidden();
-      await expect(page).toHaveURL(new RegExp(`/project/${createdUuid}/?$`));
+      await expect(page).toHaveURL(new RegExp(`/project/${created.uuid}/?$`));
       await waitForProjectOverviewLoaded(page);
       await expectProjectOverviewShowsSubmittedFormValues(page, {
         title: uniqueTitle,
         description,
         disciplineLabels,
       });
-      await expectCreateProjectSnackbarMessage(
-        page,
-        PROJECT_CREATE_SNACKBAR_MESSAGES.success,
-      );
+      await expectCreateProjectSnackbarMessage(page, PROJECT_CREATE_SNACKBAR_MESSAGES.success);
+
+      const persisted = await fetchProjectDetail(page, created.uuid);
+      expect(persisted.title).toBe(uniqueTitle);
+      expect(persisted.description).toBe(description);
     });
 
     test('failed create keeps dialog open, retains values, and shows failure snackbar', async ({
@@ -248,7 +211,9 @@ test.describe('Create project form — calibration (FR-PROJ-FORM-001-005)', () =
         void route.fulfill({
           status: 500,
           contentType: 'application/json',
-          body: JSON.stringify({ detail: 'E2E simulated create project failure' }),
+          body: JSON.stringify({
+            detail: 'E2E simulated create project failure',
+          }),
         });
       });
 
@@ -261,10 +226,7 @@ test.describe('Create project form — calibration (FR-PROJ-FORM-001-005)', () =
       await expect(projectTitleField(page)).toHaveValue(uniqueTitle);
       await expect(projectDescriptionField(page)).toHaveValue(description);
       await expect(createProjectFormSubmitButton(page)).toBeEnabled();
-      await expectCreateProjectSnackbarMessage(
-        page,
-        PROJECT_CREATE_SNACKBAR_MESSAGES.failure,
-      );
+      await expectCreateProjectSnackbarMessage(page, PROJECT_CREATE_SNACKBAR_MESSAGES.failure);
     });
   });
 });

@@ -1,4 +1,6 @@
 import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import { selectAuthUser } from '@cf/features/auth/state/auth.slice'
+import { saveNodeInsertModePreference } from '@cf/features/graph/state/nodeInsertModePreference'
 import type { NodeInsertMode } from '@cf/features/graph/state/resolveNodeDropRow'
 import { selectChannelsOrderedByGraphUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { graphUiActions } from '@cf/features/graph/state/slices/graphUi.slice'
@@ -21,6 +23,7 @@ import * as Styled from './styles'
 const AddTab = () => {
   const dispatch = useDispatch<AppDispatch>()
   const { uuid: workflowUuid } = useParams<{ uuid: string }>()
+  const userUuid = useSelector(selectAuthUser)?.uuid
 
   const { data: workflowDetailResp } = useQuery({
     ...getWorkflowOptions({
@@ -44,9 +47,12 @@ const AddTab = () => {
     (e: MouseEvent, val: NodeInsertMode | null) => {
       if (val) {
         dispatch(graphUiActions.setNodeInsertMode(val))
+        if (userUuid && workflowUuid) {
+          saveNodeInsertModePreference(userUuid, workflowUuid, val)
+        }
       }
     },
-    [dispatch]
+    [dispatch, userUuid, workflowUuid]
   )
 
   return (

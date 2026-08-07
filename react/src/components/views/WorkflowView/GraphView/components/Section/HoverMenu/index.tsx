@@ -83,22 +83,25 @@ const HoverMenu = ({ graphUuid, sectionId, show, threadUuid }: PropsType) => {
       sx={{ top: '0.7em', right: '4em' }}
       classNames="hover-menu"
       data-test-id="workflow-section-hover-menu"
-      show={show}
+      show={show && (canEdit || canComment)}
       items={[
-        canEdit && {
+        {
           label: 'Insert section below',
           icon: <AddCircleOutlineIcon />,
-          onClick: onActionClick('insert')
+          onClick: onActionClick('insert'),
+          disabled: !canEdit
         },
-        canEdit && {
+        {
           label: 'Duplicate section below',
           icon: <ContentCopyIcon />,
-          onClick: onActionClick('duplicate')
+          onClick: onActionClick('duplicate'),
+          disabled: !canEdit
         },
-        canEdit && {
+        {
           label: 'Delete section',
           icon: <DeleteOutlinedIcon />,
-          onClick: onActionClick('delete')
+          onClick: onActionClick('delete'),
+          disabled: !canEdit
         },
         canComment && {
           label: 'Comments',

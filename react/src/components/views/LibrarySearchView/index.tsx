@@ -15,7 +15,7 @@ import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import ContentTypeFilter from './Filters/ContentType'
 import DisciplineFilter from './Filters/Discipline'
@@ -50,8 +50,6 @@ const LibrarySearchView = ({
   lockedFilters = {},
   override
 }: PropsType) => {
-  const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
-
   // all base filters on by default (opt-out)
   // all filter groups off by default (opt-in)
   const configDefaults: LibraryFilterConfig = {
@@ -109,22 +107,20 @@ const LibrarySearchView = ({
       })
     }
   )
+
+  const searchArgs = useMemo(
+    () =>
+      LibraryHelper.applyLockedFilters(
+        LibraryHelper.reduceStateToSearchArgs(searchFilterState),
+        lockedFilters
+      ),
+    [lockedFilters, searchFilterState]
+  )
+
   /*******************************************************
    * QUERY HOOKS
    *******************************************************/
   const { data, isLoading, isError, error } = useLibrarySearch(searchArgs)
-
-  useEffect(() => {
-    const args = LibraryHelper.reduceStateToSearchArgs(searchFilterState)
-
-    /*******************************************************
-     *    These are the formatted search args, reduced to only active filters, and formatted in a flat list for the API call
-     *    update to UI state, triggers an update to the search Args state, which in turn triggers useQuery
-     *    there is room for optimization / refactoring but do not recombine these states: UI filters are arbitrarily broken up and a presented in different ways
-     *    this grouping should not leak into the final API arguments calls
-     *******************************************************/
-    setSearchArgs(args)
-  }, [searchFilterState, setSearchArgs])
 
   const disciplineOptions: FilterMultiselectOption[] = useMemo(() => {
     const allowedDisciplineIds = new Set(

@@ -12,22 +12,15 @@ import type { WorkflowFixtureType } from '../../helpers/manifest';
  */
 
 export const WORKFLOW_EDIT_TITLE_REQUIRED_MESSAGE = 'Title is required';
-export const WORKFLOW_EDIT_TITLE_MAX_LENGTH_MESSAGE =
-  'Title cannot be longer than 200 characters';
+export const WORKFLOW_EDIT_TITLE_MAX_LENGTH_MESSAGE = 'Title cannot be longer than 200 characters';
 
 export const WORKFLOW_UPDATE_API_ROUTE = '**/api/workflow/*';
 
-/** Visible field labels — shared with create blank form (workflow_create_stepped_form_requirements_v1.yaml). */
+/** Visible field labels specific to the edit form. Create uses type-scoped labels. */
 export const WORKFLOW_EDIT_FORM_VISIBLE_LABELS = {
   title: 'Title',
+  description: 'Description',
 } as const;
-
-export function workflowEditDescriptionVisibleLabel(
-  workflowType: WorkflowFixtureType,
-): string {
-  const typeLabel = workflowType.charAt(0).toUpperCase() + workflowType.slice(1);
-  return `${typeLabel} description`;
-}
 
 export function workflowEditSnackbarMessages(workflowType: WorkflowFixtureType) {
   return {
@@ -48,7 +41,9 @@ export function editPencilButton(page: Page): Locator {
 /** canonical: editWorkflowDialog */
 export function editWorkflowDialog(page: Page): Locator {
   return page.getByRole('dialog').filter({
-    has: page.getByRole('heading', { name: /^Edit (activity|course|program)$/ }),
+    has: page.getByRole('heading', {
+      name: /^Edit (activity|course|program)$/,
+    }),
   });
 }
 
@@ -71,9 +66,11 @@ export function workflowEditForm(page: Page): Locator {
 /** Visible label text on workflowEditForm (not accessibility-name inference). */
 export function workflowEditFormVisibleLabel(page: Page, label: string): Locator {
   // MUI required markers use U+2009 thin space before '*', not a regular space.
-  return workflowEditForm(page).locator('label').filter({
-    hasText: new RegExp(`^${escapeRegExp(label)}([\\s\\u2009]*\\*)?$`),
-  });
+  return workflowEditForm(page)
+    .locator('label')
+    .filter({
+      hasText: new RegExp(`^${escapeRegExp(label)}([\\s\\u2009]*\\*)?$`),
+    });
 }
 
 /** FR — required Title shows MUI mandatory asterisk. */
@@ -91,28 +88,25 @@ export function workflowEditTitleField(page: Page): Locator {
 
 /**
  * canonical: workflowDescriptionField (edit dialog)
- * Product label uses capitalized type (`Activity description`); match case-insensitively.
+ * Edit uses the type-neutral `Description` label; blank create uses a type-scoped label.
  */
-export function workflowEditDescriptionField(
-  page: Page,
-  workflowType: WorkflowFixtureType,
-): Locator {
-  return editWorkflowDialog(page).getByLabel(
-    new RegExp(`^${workflowType} description$`, 'i'),
-  );
+export function workflowEditDescriptionField(page: Page): Locator {
+  return editWorkflowDialog(page).getByLabel(WORKFLOW_EDIT_FORM_VISIBLE_LABELS.description, {
+    exact: true,
+  });
 }
 
 /** canonical: workflowFormFieldValidationMessage */
-export function workflowEditFormFieldValidationMessage(
-  page: Page,
-  message: string,
-): Locator {
+export function workflowEditFormFieldValidationMessage(page: Page, message: string): Locator {
   return editWorkflowDialog(page).getByText(message, { exact: true });
 }
 
 /** canonical: editWorkflowFormCancelButton */
 export function editWorkflowFormCancelButton(page: Page): Locator {
-  return editWorkflowDialog(page).getByRole('button', { name: 'Cancel', exact: true });
+  return editWorkflowDialog(page).getByRole('button', {
+    name: 'Cancel',
+    exact: true,
+  });
 }
 
 /** canonical: editWorkflowFormSubmitButton */

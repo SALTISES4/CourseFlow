@@ -457,14 +457,10 @@ export const ADD_CONTRIBUTORS_SNACKBAR_MESSAGES = {
   failure: 'We encountered an issue and the contributor could not be added to your project',
 } as const;
 export const E2E_ADD_CONTRIBUTOR_CANDIDATE = {
-  uuid: 'e2e00000-0000-4000-8000-000000000099',
-  email: 'newcontributor@courseflow.com',
-  firstName: 'New',
-  lastName: 'Contributor',
-  displayName: 'New Contributor',
-  searchTerm: 'new',
+  email: 'commenter@courseflow.com',
+  displayName: 'testcommenter Commenter',
+  searchTerm: 'commenter@courseflow.com',
 } as const;
-export const LIST_USERS_API_ROUTE = '**/api/user**';
 export function projectTeamApiRoute(projectUuid: string): string {
   return `**/api/project/${projectUuid}/team**`;
 }

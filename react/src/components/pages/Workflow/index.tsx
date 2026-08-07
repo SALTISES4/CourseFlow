@@ -1,27 +1,32 @@
 import { getApiErrorStatus, isArchivedApiError } from '@cf/api/apiError'
 import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { WorkspacePermissionsProvider } from '@cf/context/workspacePermissionsContext'
+import { selectAuthUser } from '@cf/features/auth/state/auth.slice'
+import { loadNodeInsertModePreference } from '@cf/features/graph/state/nodeInsertModePreference'
 import {
   canRenderShell,
   selectWorkflowLoadState
 } from '@cf/features/graph/state/selectors/readiness.selectors'
+import { graphUiActions } from '@cf/features/graph/state/slices/graphUi.slice'
 import { useGraphBootstrap } from '@cf/features/graph/state/useGraphBootstrap'
 import { useWorkspaceAccessGuard } from '@cf/hooks/useWorkspaceAccessGuard'
-import { RootState } from '@cf/redux/store'
+import { AppDispatch, RootState } from '@cf/redux/store'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
 import WorkspaceAccessDenied from '@cfPages/MsgViews/WorkspaceAccessDenied'
 import WorkflowTabs from '@cfPages/Workflow/WorkflowTabs'
 import { WorkflowSidebarContextProvider } from '@cfSidebar/hooks/useSidebar/context'
 import { useQuery } from '@tanstack/react-query'
-import { useCallback, useRef } from 'react'
-import { useSelector } from 'react-redux'
+import { useCallback, useLayoutEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useParams } from 'react-router-dom'
 
 const Workflow = () => {
   const { uuid } = useParams<{ uuid: string }>()
   const location = useLocation()
   const workflowUuid = uuid ?? null
+  const dispatch = useDispatch<AppDispatch>()
+  const userUuid = useSelector(selectAuthUser)?.uuid
   const {
     data: workflowResponse,
     error,
@@ -56,6 +61,18 @@ const Workflow = () => {
     routePathname: location.pathname,
     revalidate
   })
+
+  useLayoutEffect(() => {
+    if (!userUuid || !workflowUuid) {
+      return
+    }
+
+    dispatch(
+      graphUiActions.setNodeInsertMode(
+        loadNodeInsertModePreference(userUuid, workflowUuid)
+      )
+    )
+  }, [dispatch, userUuid, workflowUuid])
 
   useGraphBootstrap(resolvedWorkflowResponse ? workflowUuid : null)
 

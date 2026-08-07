@@ -262,7 +262,7 @@ export type ProjectCreateIn = {
   /**
    * Disciplines
    */
-  disciplines: Array<number>
+  disciplines?: Array<number>
 }
 
 /**
@@ -517,7 +517,7 @@ export type ProjectUpdateIn = {
   /**
    * Disciplines
    */
-  disciplines: Array<number>
+  disciplines?: Array<number>
 }
 
 /**

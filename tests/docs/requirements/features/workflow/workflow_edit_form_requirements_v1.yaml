@@ -5,7 +5,7 @@
 # Cross-reference:
 #   - tests/docs/requirements/features/shared/context_action_bar_requirements_v1.yaml (editPencilButton on workflow routes—FR-CAB-004)
 #   - tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-002)
-#   - tests/docs/requirements/features/workflow/workflow_create_stepped_form_requirements_v1.yaml (shared workflowTitleField and workflowDescriptionField; shared title max-length and required validation with FR-WF-CREATE-STEPPER-005; edit-scoped enablement and messages owned in FR-WF-FORM-002; workflowDescriptionField rich-text editor contract in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012)
+#   - tests/docs/requirements/features/workflow/workflow_create_stepped_form_requirements_v1.yaml (shared workflowTitleField and workflowDescriptionField semantics, but not visible labels: blank create uses '[Workflow type] title' and '[Workflow type] description', while edit uses 'Title' and 'Description'; shared title max-length and required validation with FR-WF-CREATE-STEPPER-005; edit-scoped enablement and messages owned in FR-WF-FORM-002; workflowDescriptionField rich-text editor contract in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012)
 #   - tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml (workflowTitle update path—FR-WF-FORM-003)
 #   - tests/docs/requirements/features/project/project_edit_form_requirements_v1.yaml (parallel edit dialog pattern for projects—FR-PROJ-FORM-003, FR-PROJ-FORM-006, FR-PROJ-FORM-007; edit-scoped title validation in FR-WF-FORM-002 owned in this file)
 
@@ -25,9 +25,9 @@ uiObjectDefinitions:
   editWorkflowFormDialogTitle:
     meaning: Accessible title on editWorkflowDialog using the 'Edit [workflow type]' pattern.
   workflowTitleField:
-    meaning: Canonical definition in workflow_create_stepped_form_requirements_v1.yaml.
+    meaning: Text input for the workflow title in workflowEditForm; visible label is exactly 'Title'; required; at most 200 characters.
   workflowDescriptionField:
-    meaning: Canonical definition in workflow_create_stepped_form_requirements_v1.yaml.
+    meaning: Optional description field in workflowEditForm; visible label is exactly 'Description'.
   workflowFormFieldValidationMessage:
     meaning: Inline helper or error text shown on workflowTitleField when title validation fails (empty after trim or longer than 200 characters).
   editWorkflowFormCancelButton:
@@ -92,6 +92,7 @@ requirements:
       - editPencilButton actionability conforms to roleBehavior for this FR
       - given actor is owner or editor and clicks editPencilButton, system opens editWorkflowDialog
       - editWorkflowDialog presents workflowEditForm with editWorkflowFormDialogTitle matching the 'Edit [workflow type]' template after lowercase substitution for that workflow's type label
+      - workflowTitleField has visible label exactly 'Title' and workflowDescriptionField has visible label exactly 'Description'; neither edit-form field label is prefixed by workflow type
       - workflowTitleField and workflowDescriptionField are prefilled from loaded workflow data
       - editWorkflowFormSubmitButton shows label matching the 'Update [workflow type]' template after the same lowercase substitution for that workflow's type label
       - given editWorkflowDialog is open with prefilled values and no field has been changed from those values, editWorkflowFormSubmitButton is disabled and not clickable
@@ -117,6 +118,7 @@ requirements:
       - given actor is owner or editor and FR-WF-FORM-001 preconditions hold and trigger fires, editWorkflowDialog is open
       - editWorkflowFormDialogTitle matches the 'Edit [workflow type]' pattern with lowercase type substitution for the workflow instance
       - editWorkflowFormSubmitButton is visible with label matching the 'Update [workflow type]' template after the same lowercase substitution for that workflow's type label
+      - workflowTitleField has visible label exactly 'Title' and workflowDescriptionField has visible label exactly 'Description'
       - workflowTitleField and workflowDescriptionField show values from the workflow being edited after load
       - editWorkflowFormCancelButton and editWorkflowFormSubmitButton are visible
       - given editWorkflowDialog is open with prefilled values and no field has been changed from those values, editWorkflowFormSubmitButton is disabled and not clickable

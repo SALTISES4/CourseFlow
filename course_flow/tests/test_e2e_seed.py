@@ -9,6 +9,7 @@ import pytest
 
 from course_flow.core.enum import AccountRole
 from course_flow.core.models import (
+    Discipline,
     FavoriteGraph,
     FavoriteProject,
     Project,
@@ -31,6 +32,7 @@ from course_flow.e2e_seed.constants import (
     E2E_OUTCOME_TITLE,
     E2E_SECTION_TITLES,
 )
+from course_flow.e2e_seed.disciplines import E2E_DISCIPLINE_CATALOGUE
 from course_flow.e2e_seed.orchestrator import (
     clear_then_seed_e2e_fixtures,
     generate_e2e_fixtures,
@@ -69,6 +71,35 @@ def test_e2e_fixture_primary_user_is_teacher_owner():
     assert project.owner.email == E2E_FIXTURE_TEACHER_EMAIL
     assert project.owner.first_name == "testteacher"
     assert project.owner.last_name == "Teacher"
+
+
+@pytest.mark.django_db
+def test_e2e_fixture_disciplines_match_frontend_fixed_id_catalogue():
+    generate_e2e_fixtures()
+
+    frontend_context_path = (
+        Path(__file__).resolve().parents[2]
+        / "react"
+        / "src"
+        / "data"
+        / "globalContextData.mock.json"
+    )
+    frontend_catalogue = json.loads(frontend_context_path.read_text(encoding="utf-8"))[
+        "disciplines"
+    ]
+    expected_catalogue = [
+        {"id": discipline_id, "title": label}
+        for discipline_id, label in E2E_DISCIPLINE_CATALOGUE
+    ]
+
+    assert frontend_catalogue == expected_catalogue
+    assert list(
+        Discipline.objects.filter(
+            id__in=[discipline["id"] for discipline in frontend_catalogue]
+        )
+        .order_by("id")
+        .values_list("id", "label")
+    ) == sorted(E2E_DISCIPLINE_CATALOGUE)
 
 
 @pytest.mark.django_db

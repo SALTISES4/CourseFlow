@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from decimal import Decimal
 
 import pytest
 from django.contrib.auth import get_user_model
@@ -16,6 +17,7 @@ from course_flow.core.models import (
     Node,
     Outcome,
     Section,
+    Tag,
     Thread,
 )
 from course_flow.tests.node_helpers import create_grid_node
@@ -742,6 +744,129 @@ def test_duplicate_section_below_copies_title(client: Client, user):
     created = body["changes"]["sections"]["created"][0]
     assert created["title"] == "Week 1 (copy)"
     assert created["position"] == 1
+
+
+@pytest.mark.django_db
+def test_duplicate_section_below_copies_internal_graph_content(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    linked_graph_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    graph = section.graph
+    other_section = Section.objects.create(graph=graph, title="Other", position=1)
+    linked_workflow = Graph.objects.select_related("workflow").get(
+        uuid=linked_graph_uuid
+    ).workflow
+
+    source_a = create_grid_node(
+        section=section,
+        channel=channel,
+        workflow=workflow,
+        linked_workflow=linked_workflow,
+        section_row=0,
+        title="Source A",
+        description="Source description",
+    )
+    source_b = create_grid_node(
+        section=section,
+        channel=channel,
+        workflow=workflow,
+        section_row=1,
+        title="Source B",
+    )
+    outside = create_grid_node(
+        section=other_section,
+        channel=channel,
+        workflow=workflow,
+        section_row=0,
+        title="Outside",
+    )
+
+    source_a.activitymeta.context_classification = 3
+    source_a.activitymeta.task_classification = 4
+    source_a.activitymeta.time_required = Decimal("2.50")
+    source_a.activitymeta.time_units = 2
+    source_a.activitymeta.represents_workflow = True
+    source_a.activitymeta.context = "Seminar"
+    source_a.activitymeta.classification = "Formative"
+    source_a.activitymeta.save()
+
+    tag = Tag.objects.create(label="Pedagogy")
+    outcome = Outcome.objects.create(graph=graph, order=0, title="Outcome")
+    source_a.tags.add(tag)
+    source_a.outcomes.add(outcome)
+
+    internal_edge = Edge.objects.create(
+        source_node=source_a,
+        target_node=source_b,
+        title="Internal",
+        text_position=25,
+        line_type="dashed",
+        source_port="out",
+        target_port="in",
+    )
+    cross_edge = Edge.objects.create(
+        source_node=source_a,
+        target_node=outside,
+        title="Cross",
+        line_type="solid",
+        source_port="out",
+        target_port="in",
+    )
+
+    response = client.post(
+        f"/api/graph/{wf_uuid}/sections/insert-below",
+        data={"sectionUuid": str(section.uuid), "duplicate": True},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+
+    assert response.status_code == 200, response.content
+    body = response.json()
+    created_section_payload = body["changes"]["sections"]["created"][0]
+    duplicate = Section.objects.get(uuid=created_section_payload["uuid"])
+    assert duplicate.thread_id != section.thread_id
+
+    created_nodes = body["changes"]["nodes"]["created"]
+    assert len(created_nodes) == 2
+    copied_a = Node.objects.select_related(
+        "activitymeta", "linked_workflow", "thread"
+    ).get(section=duplicate, title="Source A")
+    copied_b = Node.objects.get(section=duplicate, title="Source B")
+
+    assert copied_a.uuid != source_a.uuid
+    assert copied_a.channel_id == source_a.channel_id
+    assert copied_a.workflow_id == source_a.workflow_id
+    assert copied_a.section_row == source_a.section_row
+    assert copied_a.description == source_a.description
+    assert copied_a.linked_workflow_id == source_a.linked_workflow_id
+    assert copied_a.thread_id != source_a.thread_id
+    assert copied_a.activitymeta.context_classification == 3
+    assert copied_a.activitymeta.task_classification == 4
+    assert copied_a.activitymeta.time_required == source_a.activitymeta.time_required
+    assert copied_a.activitymeta.time_units == 2
+    assert copied_a.activitymeta.represents_workflow is True
+    assert copied_a.activitymeta.context == "Seminar"
+    assert copied_a.activitymeta.classification == "Formative"
+    assert list(copied_a.tags.values_list("id", flat=True)) == [tag.id]
+    assert list(copied_a.outcomes.values_list("id", flat=True)) == [outcome.id]
+
+    created_edges = body["changes"]["edges"]["created"]
+    assert len(created_edges) == 1
+    copied_edge = Edge.objects.get(pk=created_edges[0]["id"])
+    assert copied_edge.source_node_id == copied_a.id
+    assert copied_edge.target_node_id == copied_b.id
+    assert copied_edge.title == internal_edge.title
+    assert copied_edge.text_position == internal_edge.text_position
+    assert copied_edge.line_type == internal_edge.line_type
+    assert copied_edge.source_port == internal_edge.source_port
+    assert copied_edge.target_port == internal_edge.target_port
+
+    assert Edge.objects.filter(pk=cross_edge.pk).exists()
+    assert not Edge.objects.filter(
+        source_node__section=duplicate,
+        target_node=outside,
+    ).exists()
 
 
 @pytest.mark.django_db

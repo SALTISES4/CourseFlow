@@ -4,20 +4,16 @@ import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import { getProjectPath, loadWorkflowManifest } from '../../helpers/manifest';
 import {
   ADD_CONTRIBUTORS_SNACKBAR_MESSAGES,
-  buildAddedProjectTeamMember,
   expectAddContributorSnackbarMessage,
   expectAddContributorsDialogOpensPerFrProjOv002,
   expectAddContributorsDialogChromePerFrProjOv004,
   fetchProjectTeam,
   installAddProjectTeamMembersRouteMock,
-  installListUsersRouteMock,
   openAddContributorsDialog,
   selectAddContributorCandidatePerFrProjOv004,
   E2E_ADD_CONTRIBUTOR_CANDIDATE,
 } from '../../helpers/add-contributors-dialog';
 import {
-  buildProjectTeamWithoutMember,
-  buildUpdatedProjectTeamMember,
   CONTRIBUTOR_ROLE_UPDATE_SNACKBAR_MESSAGES,
   CONTRIBUTOR_REMOVE_SNACKBAR_MESSAGES,
   expectContributorRemoveSnackbarMessage,
@@ -33,7 +29,6 @@ import {
   projectTeamRoleToDropdownLabel,
 } from '../../helpers/project-contributor-role';
 import {
-  buildProjectDetailApiResponse,
   expectProjectOverviewDescriptionPerFrProjOv001,
   expectProjectOverviewDisciplinesPerFrProjOv001,
   expectProjectOverviewMetadataLabelsPerFrProjOv001,
@@ -42,7 +37,6 @@ import {
   expectPublishedUnpublishControlsPerFrProjOv003,
   expectUnpublishedPublishControlsPerFrProjOv003,
   fetchProjectDetail,
-  installProjectDetailRouteMock,
   installProjectUpdateRouteMock,
   openPublishProjectConfirmationModal,
   PROJECT_PUBLISH_SNACKBAR_MESSAGES,
@@ -97,7 +91,9 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
   test.beforeEach(async ({ page }) => {
     await gotoAuthenticatedShell(page, projectPath);
     const loginButton = page.getByRole('button', { name: /^Login$/i });
-    await expect(projectTitle(page).or(loginButton)).toBeVisible({ timeout: 15_000 });
+    await expect(projectTitle(page).or(loginButton)).toBeVisible({
+      timeout: 15_000,
+    });
     if (await loginButton.isVisible()) {
       // Explicit-role describes start with empty storage and log in from their
       // nested hook. Parent hooks run first, so leave authentication to them.
@@ -106,55 +102,56 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
     await waitForProjectOverviewLoaded(page);
   });
 
-  test('FR-PROJ-OV-001: overview view renders required metadata', async ({
-    page,
-  }) => {
+  test('FR-PROJ-OV-001: overview view renders required metadata', async ({ page }) => {
     await expectProjectOverviewMetadataLabelsPerFrProjOv001(page);
     await expect(projectMetadataFieldCreatedOn(page)).toHaveCount(0);
   });
 
-  test('FR-PROJ-OV-001: description block reflects project API value', async ({
-    page,
-  }) => {
+  test('FR-PROJ-OV-001: description block reflects project API value', async ({ page }) => {
     const project = await fetchProjectDetail(page, manifest.project_uuid);
     await expectProjectOverviewDescriptionPerFrProjOv001(page, project);
   });
 
-  test('FR-PROJ-OV-001: disciplines block shows A-Z comma-separated values', async ({
-    page,
-  }) => {
+  test('FR-PROJ-OV-001: disciplines block shows A-Z comma-separated values', async ({ page }) => {
     await expectProjectOverviewDisciplinesPerFrProjOv001(page);
   });
 
-  test('FR-PROJ-OV-002: Add CourseFlow user button opens add contributor dialog', async ({ page }) => {
+  test('FR-PROJ-OV-002: Add CourseFlow user button opens add contributor dialog', async ({
+    page,
+  }) => {
     await expect(projectMetadataAddContributorsButton(page)).toBeVisible();
     await projectMetadataAddContributorsButton(page).click();
     await expectAddContributorsDialogOpensPerFrProjOv002(page);
   });
 
-  test('FR-PROJ-OV-002: Sharing action menu icon opens add contributor dialog', async ({ page }) => {
+  test('FR-PROJ-OV-002: Sharing action menu icon opens add contributor dialog', async ({
+    page,
+  }) => {
     await expect(shareProjectButton(page)).toBeVisible();
     await shareProjectButton(page).click();
     await expectAddContributorsDialogOpensPerFrProjOv002(page);
   });
 
   test.describe('FR-PROJ-OV-002: contributor role dropdown', () => {
-    test.describe.configure({ mode: 'serial' });
+    test.use({
+      projectAccess: 'disposable',
+      projectContributors: {
+        'actor.editor': 'editor',
+        'actor.viewer': 'viewer',
+      },
+    });
 
-    const teamMemberRoute = `**/api/project/${manifest.project_uuid}/team/**`;
-
-    test.beforeEach(async ({ page }) => {
-      await page.unroute(teamMemberRoute);
+    test.beforeEach(async ({ page, project }) => {
+      await gotoAuthenticatedShell(page, project.path);
+      await waitForProjectOverviewLoaded(page);
     });
 
     test('owner role control is read-only and cannot open a role menu', async ({ page }) => {
       await expectProjectOwnerRoleReadOnlyPerFrProjOv002(page);
     });
 
-    test('shows role options', async ({
-      page,
-    }) => {
-      const existingTeam = await fetchProjectTeam(page, manifest.project_uuid);
+    test('shows role options', async ({ page, project }) => {
+      const existingTeam = await fetchProjectTeam(page, project.uuid);
       const studentMember = existingTeam.find(
         (member) => member.userEmail === E2E_CONTRIBUTOR_STUDENT_EMAIL,
       );
@@ -169,45 +166,14 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
 
     test('successful role update changes displayed role and shows success snackbar', async ({
       page,
+      project,
     }) => {
-      const existingTeam = await fetchProjectTeam(page, manifest.project_uuid);
+      const existingTeam = await fetchProjectTeam(page, project.uuid);
       const studentMember = existingTeam.find(
         (member) => member.userEmail === E2E_CONTRIBUTOR_STUDENT_EMAIL,
       );
       expect(studentMember).toBeDefined();
       expect(studentMember?.role).toBe('viewer');
-
-      const updatedStudent = buildUpdatedProjectTeamMember(studentMember!, 'commenter');
-      const updatedTeam = existingTeam.map((member) =>
-        member.id === studentMember!.id ? updatedStudent : member,
-      );
-      let serveUpdatedTeam = false;
-
-      await installProjectTeamMemberRouteMock(page, manifest.project_uuid, (route) => {
-        if (route.request().method() === 'PATCH') {
-          serveUpdatedTeam = true;
-          void route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(updatedStudent),
-          });
-          return;
-        }
-
-        if (route.request().method() === 'GET' && serveUpdatedTeam) {
-          void route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              items: updatedTeam,
-              meta: { total: updatedTeam.length },
-            }),
-          });
-          return;
-        }
-
-        void route.continue();
-      });
 
       await selectContributorRoleOption(page, E2E_CONTRIBUTOR_STUDENT_EMAIL, 'Commenter');
       await expectContributorRoleButtonShows(page, E2E_CONTRIBUTOR_STUDENT_EMAIL, 'Commenter');
@@ -215,10 +181,18 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
         page,
         CONTRIBUTOR_ROLE_UPDATE_SNACKBAR_MESSAGES.success,
       );
+
+      const persistedTeam = await fetchProjectTeam(page, project.uuid);
+      expect(persistedTeam.find((member) => member.id === studentMember!.id)?.role).toBe(
+        'commenter',
+      );
     });
 
-    test('failed role update keeps displayed role and shows failure snackbar', async ({ page }) => {
-      await installProjectTeamMemberRouteMock(page, manifest.project_uuid, (route) => {
+    test('failed role update keeps displayed role and shows failure snackbar', async ({
+      page,
+      project,
+    }) => {
+      await installProjectTeamMemberRouteMock(page, project.uuid, (route) => {
         if (route.request().method() !== 'PATCH') {
           void route.continue();
           return;
@@ -227,7 +201,9 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
         void route.fulfill({
           status: 500,
           contentType: 'application/json',
-          body: JSON.stringify({ detail: 'E2E simulated contributor role update failure' }),
+          body: JSON.stringify({
+            detail: 'E2E simulated contributor role update failure',
+          }),
         });
       });
 
@@ -241,41 +217,13 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
 
     test('successful remove deletes contributor row and shows success snackbar', async ({
       page,
+      project,
     }) => {
-      const existingTeam = await fetchProjectTeam(page, manifest.project_uuid);
+      const existingTeam = await fetchProjectTeam(page, project.uuid);
       const studentMember = existingTeam.find(
         (member) => member.userEmail === E2E_CONTRIBUTOR_STUDENT_EMAIL,
       );
       expect(studentMember).toBeDefined();
-
-      const updatedTeam = buildProjectTeamWithoutMember(existingTeam, studentMember!.id);
-      let serveUpdatedTeam = false;
-
-      await installProjectTeamMemberRouteMock(page, manifest.project_uuid, (route) => {
-        if (route.request().method() === 'DELETE') {
-          serveUpdatedTeam = true;
-          void route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ success: true }),
-          });
-          return;
-        }
-
-        if (route.request().method() === 'GET' && serveUpdatedTeam) {
-          void route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              items: updatedTeam,
-              meta: { total: updatedTeam.length },
-            }),
-          });
-          return;
-        }
-
-        void route.continue();
-      });
 
       await selectContributorRemoveAction(page, E2E_CONTRIBUTOR_STUDENT_EMAIL);
 
@@ -284,10 +232,16 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
         page,
         CONTRIBUTOR_REMOVE_SNACKBAR_MESSAGES.success,
       );
+
+      const persistedTeam = await fetchProjectTeam(page, project.uuid);
+      expect(persistedTeam.some((member) => member.id === studentMember!.id)).toBe(false);
     });
 
-    test('failed remove keeps contributor row and shows failure snackbar', async ({ page }) => {
-      await installProjectTeamMemberRouteMock(page, manifest.project_uuid, (route) => {
+    test('failed remove keeps contributor row and shows failure snackbar', async ({
+      page,
+      project,
+    }) => {
+      await installProjectTeamMemberRouteMock(page, project.uuid, (route) => {
         if (route.request().method() !== 'DELETE') {
           void route.continue();
           return;
@@ -296,7 +250,9 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
         void route.fulfill({
           status: 500,
           contentType: 'application/json',
-          body: JSON.stringify({ detail: 'E2E simulated contributor remove failure' }),
+          body: JSON.stringify({
+            detail: 'E2E simulated contributor remove failure',
+          }),
         });
       });
 
@@ -328,14 +284,11 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
   });
 
   test.describe('FR-PROJ-OV-004: addContributorsDialog interaction and outcomes', () => {
-    test.describe.configure({ mode: 'serial' });
+    test.use({ projectAccess: 'disposable' });
 
-    const listUsersRoute = '**/api/user**';
-    const teamRoute = `**/api/project/${manifest.project_uuid}/team**`;
-
-    test.beforeEach(async ({ page }) => {
-      await page.unroute(listUsersRoute);
-      await page.unroute(teamRoute);
+    test.beforeEach(async ({ page, project }) => {
+      await gotoAuthenticatedShell(page, project.path);
+      await waitForProjectOverviewLoaded(page);
     });
 
     test('dialog shows title, selectors, cancel label, and disabled submit', async ({ page }) => {
@@ -344,12 +297,14 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
     });
 
     test('typing in user selector shows narrowed matching CourseFlow users', async ({ page }) => {
-      await installListUsersRouteMock(page, [E2E_ADD_CONTRIBUTOR_CANDIDATE]);
       await openAddContributorsDialog(page);
       await addContributorsUserSelector(page).click();
       await addContributorsUserSelector(page).fill(E2E_ADD_CONTRIBUTOR_CANDIDATE.searchTerm);
       await expect(
-        page.getByRole('option', { name: E2E_ADD_CONTRIBUTOR_CANDIDATE.displayName, exact: true }),
+        page.getByRole('option', {
+          name: E2E_ADD_CONTRIBUTOR_CANDIDATE.displayName,
+          exact: true,
+        }),
       ).toBeVisible({ timeout: 10_000 });
     });
 
@@ -367,24 +322,22 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
       await expect(addContributorsRoleSelector(page).getByRole('radio')).toHaveCount(3);
     });
 
-    test('cancel closes dialog without applying contributor changes', async ({ page }) => {
-      const teamBefore = await fetchProjectTeam(page, manifest.project_uuid);
+    test('cancel closes dialog without applying contributor changes', async ({ page, project }) => {
+      const teamBefore = await fetchProjectTeam(page, project.uuid);
 
-      await installListUsersRouteMock(page, [E2E_ADD_CONTRIBUTOR_CANDIDATE]);
       await openAddContributorsDialog(page);
       await selectAddContributorCandidatePerFrProjOv004(page, 'Viewer');
       await addContributorsCancelButton(page).click();
 
       await expect(addContributorsDialog(page)).toBeHidden();
-      const teamAfter = await fetchProjectTeam(page, manifest.project_uuid);
+      const teamAfter = await fetchProjectTeam(page, project.uuid);
       expect(teamAfter).toEqual(teamBefore);
     });
 
-    test('failed add keeps dialog open and shows failure snackbar', async ({ page }) => {
-      const teamBefore = await fetchProjectTeam(page, manifest.project_uuid);
+    test('failed add keeps dialog open and shows failure snackbar', async ({ page, project }) => {
+      const teamBefore = await fetchProjectTeam(page, project.uuid);
 
-      await installListUsersRouteMock(page, [E2E_ADD_CONTRIBUTOR_CANDIDATE]);
-      await installAddProjectTeamMembersRouteMock(page, manifest.project_uuid, (route) => {
+      await installAddProjectTeamMembersRouteMock(page, project.uuid, (route) => {
         if (route.request().method() !== 'POST') {
           void route.continue();
           return;
@@ -393,7 +346,9 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
         void route.fulfill({
           status: 500,
           contentType: 'application/json',
-          body: JSON.stringify({ detail: 'E2E simulated contributor add failure' }),
+          body: JSON.stringify({
+            detail: 'E2E simulated contributor add failure',
+          }),
         });
       });
 
@@ -403,56 +358,15 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
 
       await expect(addContributorsDialog(page)).toBeVisible();
       await expect(addContributorsSubmitButton(page)).toBeEnabled();
-      const teamAfter = await fetchProjectTeam(page, manifest.project_uuid);
+      const teamAfter = await fetchProjectTeam(page, project.uuid);
       expect(teamAfter).toEqual(teamBefore);
-      await expectAddContributorSnackbarMessage(
-        page,
-        ADD_CONTRIBUTORS_SNACKBAR_MESSAGES.failure,
-      );
+      await expectAddContributorSnackbarMessage(page, ADD_CONTRIBUTORS_SNACKBAR_MESSAGES.failure);
     });
 
     test('successful add closes dialog, updates contributors panel, and shows success snackbar', async ({
       page,
+      project,
     }) => {
-      const existingTeam = await fetchProjectTeam(page, manifest.project_uuid);
-      const addedMember = buildAddedProjectTeamMember(
-        existingTeam,
-        E2E_ADD_CONTRIBUTOR_CANDIDATE,
-        'commenter',
-      );
-      const updatedTeam = [...existingTeam, addedMember];
-      let serveUpdatedTeam = false;
-
-      await installListUsersRouteMock(page, [E2E_ADD_CONTRIBUTOR_CANDIDATE]);
-      await installAddProjectTeamMembersRouteMock(page, manifest.project_uuid, (route) => {
-        if (route.request().method() === 'POST') {
-          serveUpdatedTeam = true;
-          void route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              items: updatedTeam,
-              meta: { total: updatedTeam.length },
-            }),
-          });
-          return;
-        }
-
-        if (route.request().method() === 'GET' && serveUpdatedTeam) {
-          void route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-              items: updatedTeam,
-              meta: { total: updatedTeam.length },
-            }),
-          });
-          return;
-        }
-
-        void route.continue();
-      });
-
       await openAddContributorsDialog(page);
       await selectAddContributorCandidatePerFrProjOv004(page, 'Commenter');
       await addContributorsSubmitButton(page).click();
@@ -461,26 +375,28 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
       await expect(
         projectPermissionsPanelContributorEmail(page, E2E_ADD_CONTRIBUTOR_CANDIDATE.email),
       ).toBeVisible({ timeout: 15_000 });
-      await expectAddContributorSnackbarMessage(
-        page,
-        ADD_CONTRIBUTORS_SNACKBAR_MESSAGES.success,
+      await expectAddContributorSnackbarMessage(page, ADD_CONTRIBUTORS_SNACKBAR_MESSAGES.success);
+
+      const persistedTeam = await fetchProjectTeam(page, project.uuid);
+      const persistedMember = persistedTeam.find(
+        (member) => member.userEmail === E2E_ADD_CONTRIBUTOR_CANDIDATE.email,
       );
+      expect(persistedMember?.role).toBe('commenter');
     });
   });
 
   test.describe('FR-PROJ-OV-003: publish and unpublish controls', () => {
-    test.describe.configure({ mode: 'serial' });
+    test.use({ projectAccess: 'disposable' });
 
-    const projectUpdateRoute = `**/api/project/${manifest.project_uuid}`;
-
-    test.beforeEach(async ({ page }) => {
-      await page.unroute(projectUpdateRoute);
+    test.beforeEach(async ({ page, project }) => {
+      await gotoAuthenticatedShell(page, project.path);
+      await waitForProjectOverviewLoaded(page);
     });
 
     test.describe('from unpublished project state', () => {
-      test('shows private visibility message and publish control', async ({ page }) => {
-        const project = await fetchProjectDetail(page, manifest.project_uuid);
-        expect(project.isPublished).toBe(false);
+      test('shows private visibility message and publish control', async ({ page, project }) => {
+        const detail = await fetchProjectDetail(page, project.uuid);
+        expect(detail.isPublished).toBe(false);
         await expectUnpublishedPublishControlsPerFrProjOv003(page);
       });
 
@@ -499,8 +415,11 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
         await expectUnpublishedPublishControlsPerFrProjOv003(page);
       });
 
-      test('failed publish keeps modal open and shows failure snackbar', async ({ page }) => {
-        await installProjectUpdateRouteMock(page, manifest.project_uuid, (route) => {
+      test('failed publish keeps modal open and shows failure snackbar', async ({
+        page,
+        project,
+      }) => {
+        await installProjectUpdateRouteMock(page, project.uuid, (route) => {
           if (route.request().method() !== 'PATCH') {
             void route.continue();
             return;
@@ -518,59 +437,33 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
 
         await expect(publishProjectConfirmationModal(page)).toBeVisible();
         await expect(publishProjectConfirmationModalConfirmButton(page)).toBeEnabled();
-        const project = await fetchProjectDetail(page, manifest.project_uuid);
-        expect(project.isPublished).toBe(false);
-        await expectProjectPublishSnackbarMessage(
-          page,
-          PROJECT_PUBLISH_SNACKBAR_MESSAGES.failure,
-        );
+        const detail = await fetchProjectDetail(page, project.uuid);
+        expect(detail.isPublished).toBe(false);
+        await expectProjectPublishSnackbarMessage(page, PROJECT_PUBLISH_SNACKBAR_MESSAGES.failure);
       });
 
       test('successful publish closes modal, shows success snackbar, and switches to published controls', async ({
         page,
+        project,
       }) => {
-        const project = await fetchProjectDetail(page, manifest.project_uuid);
-
-        await installProjectUpdateRouteMock(page, manifest.project_uuid, (route) => {
-          if (route.request().method() !== 'PATCH') {
-            void route.continue();
-            return;
-          }
-
-          void route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(
-              buildProjectDetailApiResponse({
-                ...project,
-                isPublished: true,
-              }),
-            ),
-          });
-        });
-
         await openPublishProjectConfirmationModal(page);
         await publishProjectConfirmationModalConfirmButton(page).click();
 
-        await expect(publishProjectConfirmationModal(page)).toBeHidden({ timeout: 15_000 });
+        await expect(publishProjectConfirmationModal(page)).toBeHidden({
+          timeout: 15_000,
+        });
         await expectPublishedUnpublishControlsPerFrProjOv003(page);
-        await expectProjectPublishSnackbarMessage(
-          page,
-          PROJECT_PUBLISH_SNACKBAR_MESSAGES.success,
-        );
+        await expectProjectPublishSnackbarMessage(page, PROJECT_PUBLISH_SNACKBAR_MESSAGES.success);
+
+        const persisted = await fetchProjectDetail(page, project.uuid);
+        expect(persisted.isPublished).toBe(true);
       });
     });
 
     test.describe('from published project state', () => {
-      test.beforeEach(async ({ page }) => {
-        const project = await fetchProjectDetail(page, manifest.project_uuid);
+      test.use({ projectInitialPublished: true });
 
-        await installProjectDetailRouteMock(page, manifest.project_uuid, {
-          ...project,
-          isPublished: true,
-        });
-        await page.reload();
-        await waitForProjectOverviewLoaded(page);
+      test.beforeEach(async ({ page }) => {
         await expectPublishedUnpublishControlsPerFrProjOv003(page);
       });
 
@@ -582,8 +475,9 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
 
       test('failed unpublish keeps project published and shows failure snackbar', async ({
         page,
+        project,
       }) => {
-        await installProjectUpdateRouteMock(page, manifest.project_uuid, (route) => {
+        await installProjectUpdateRouteMock(page, project.uuid, (route) => {
           if (route.request().method() !== 'PATCH') {
             void route.continue();
             return;
@@ -608,27 +502,8 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
 
       test('successful unpublish shows success snackbar and returns to private visibility controls', async ({
         page,
+        project,
       }) => {
-        const project = await fetchProjectDetail(page, manifest.project_uuid);
-
-        await installProjectUpdateRouteMock(page, manifest.project_uuid, (route) => {
-          if (route.request().method() !== 'PATCH') {
-            void route.continue();
-            return;
-          }
-
-          void route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(
-              buildProjectDetailApiResponse({
-                ...project,
-                isPublished: false,
-              }),
-            ),
-          });
-        });
-
         await expect(unpublishProjectButton(page)).toBeVisible();
         await unpublishProjectButton(page).click();
 
@@ -637,6 +512,9 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
           page,
           PROJECT_UNPUBLISH_SNACKBAR_MESSAGES.success,
         );
+
+        const persisted = await fetchProjectDetail(page, project.uuid);
+        expect(persisted.isPublished).toBe(false);
       });
     });
   });
@@ -653,13 +531,14 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
       await waitForProjectOverviewLoaded(page);
     });
 
-    test('viewer sees visibility message but not publish or unpublish controls', async ({ page }) => {
+    test('viewer sees visibility message but not publish or unpublish controls', async ({
+      page,
+    }) => {
       await expect(projectVisibilityStateMessage(page)).toBeVisible();
       await expect(publishProjectButton(page)).toHaveCount(0);
       await expect(unpublishProjectButton(page)).toHaveCount(0);
     });
   });
-
 
   test('FR-PROJ-OV-005: tags section shows add-new-tag input when tags block is rendered', async ({
     page,

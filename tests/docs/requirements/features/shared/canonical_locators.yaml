@@ -1011,7 +1011,7 @@ locatorMappings:
     strategy: null
     confidence: unresolved
   workflowDescriptionField:
-    strategy: "{workflowBlankForm} or {workflowEditForm} description field region containing workflowRichTextDescriptionEditor"
+    strategy: "{workflowBlankForm} description field labelled '[Workflow type] description', or {workflowEditForm} description field labelled 'Description'; region contains workflowRichTextDescriptionEditor"
     confidence: inferred
   workflowEdge:
     strategy: "{workflowView} SVG g[data-nodelink-id='{workflowEdgeId}']"
@@ -1569,7 +1569,7 @@ locatorMappings:
     strategy: "{workflowHeader} heading text for current workflow title"
     confidence: inferred
   workflowTitleField:
-    strategy: "{workflowBlankForm} input[name=\"title\"]"
+    strategy: "{workflowBlankForm} or {workflowEditForm} input[name=\"title\"]; visible label is '[Workflow type] title' on blank create and 'Title' on edit"
     confidence: inferred
   workflowTypeFilter:
     strategy: "{exploreFilterToolbar} multiselect filter for workflow program types; present only when typeFilter is committed to 'Workflows' or is Unset (no committed 'Projects' or 'Workflows') (same rule as 'My library' FR-LIB-003)"

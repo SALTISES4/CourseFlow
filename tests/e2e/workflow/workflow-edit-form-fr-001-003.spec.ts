@@ -35,10 +35,14 @@ test.use({
  * Requirements: tests/docs/requirements/features/workflow/workflow_edit_form_requirements_v1.yaml
  * Auth: chromium workflow storage state (teacher@courseflow.com) unless noted.
  * Note: edit entry is workflow ActionMenu (edit-project-button), not a dedicated CAB pencil id.
- * Type-scoped copy (Edit/Update/[snackbar]) is asserted for each fixture workflow type.
+ * Type-scoped dialog/action/snackbar copy and type-neutral field labels are asserted for each fixture type.
  */
 
-const WORKFLOW_TYPES = ['activity', 'course', 'program'] as const satisfies readonly WorkflowFixtureType[];
+const WORKFLOW_TYPES = [
+  'activity',
+  'course',
+  'program',
+] as const satisfies readonly WorkflowFixtureType[];
 test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
   for (const workflowType of WORKFLOW_TYPES) {
     test.describe(`${workflowType}`, () => {
@@ -48,7 +52,7 @@ test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
         await expect(workflowTitle(page)).toBeVisible({ timeout: 15_000 });
       });
 
-      test('FR-WF-FORM-001: edit dialog layout, type labels, and prefilled fields', async ({
+      test('FR-WF-FORM-001: edit dialog layout, field labels, and prefilled fields', async ({
         page,
         workflow,
       }) => {
@@ -72,9 +76,7 @@ test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
 
         await openEditWorkflowDialog(page, workflowType);
         await workflowEditTitleField(page).fill(`${original.title} mutated`);
-        await workflowEditDescriptionField(page, workflowType).fill(
-          'E2E cancel should discard this description',
-        );
+        await workflowEditDescriptionField(page).fill('E2E cancel should discard this description');
 
         await editWorkflowFormCancelButton(page).click();
         await expect(editWorkflowDialog(page)).toBeHidden();
@@ -83,18 +85,14 @@ test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
 
         await openEditWorkflowDialog(page, workflowType);
         await expect(workflowEditTitleField(page)).toHaveValue(original.title);
-        await expect(workflowEditDescriptionField(page, workflowType)).toHaveValue(
-          original.description ?? '',
-        );
+        await expect(workflowEditDescriptionField(page)).toHaveValue(original.description ?? '');
       });
 
-      test('FR-WF-FORM-001: submit stays disabled until any field is changed', async ({
-        page,
-      }) => {
+      test('FR-WF-FORM-001: submit stays disabled until any field is changed', async ({ page }) => {
         await openEditWorkflowDialog(page, workflowType);
         await expect(editWorkflowFormSubmitButton(page, workflowType)).toBeDisabled();
 
-        await workflowEditDescriptionField(page, workflowType).fill('E2E dirty via description');
+        await workflowEditDescriptionField(page).fill('E2E dirty via description');
         await expect(editWorkflowFormSubmitButton(page, workflowType)).toBeEnabled();
         await editWorkflowFormCancelButton(page).click();
 
@@ -120,7 +118,9 @@ test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
         // Surface inline validation if the product still allows submit when empty.
         // (HTML5 `required` may block submit before RHF shows FR copy — assert FR copy anyway.)
         if (await editWorkflowFormSubmitButton(page, workflowType).isEnabled()) {
-          await editWorkflowFormSubmitButton(page, workflowType).click({ force: true });
+          await editWorkflowFormSubmitButton(page, workflowType).click({
+            force: true,
+          });
         }
 
         await expect(
@@ -149,16 +149,13 @@ test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
         await expect(editWorkflowFormSubmitButton(page, workflowType)).toBeEnabled();
       });
 
-      test('FR-WF-FORM-002: description field is optional', async ({
-        page,
-        workflow,
-      }) => {
+      test('FR-WF-FORM-002: description field is optional', async ({ page, workflow }) => {
         const entry = workflow.workflowByType(workflowType);
         const original = await fetchWorkflowDetail(page, entry.workflow_uuid);
 
         await openEditWorkflowDialog(page, workflowType);
         await workflowEditTitleField(page).fill(`${original.title} with cleared description`);
-        await workflowEditDescriptionField(page, workflowType).fill('');
+        await workflowEditDescriptionField(page).fill('');
 
         await expect(editWorkflowFormSubmitButton(page, workflowType)).toBeEnabled();
       });
@@ -173,73 +170,9 @@ test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
         const updatedDescription = `E2E edit ${workflowType} description`;
         const snackbar = workflowEditSnackbarMessages(workflowType);
 
-        const updatedDetail = {
-          uuid: workflowUuid,
-          graphUuid: entry.graph_uuid,
-          title: updatedTitle,
-          description: updatedDescription,
-          overviewMetadata: {
-            code: '',
-            calculateTimeAutomatically: false,
-            time: null,
-            timeUnits: null,
-            calculatePonderationAutomatically: false,
-            theoryTime: null,
-            practicalTime: null,
-            individualTime: null,
-            calculateCreditsAutomatically: false,
-            credits: null,
-            calculateClassificationAutomatically: false,
-            generalTime: null,
-            specificTime: null,
-          },
-          workflowType,
-          authorId: null,
-          projectUuid: workflow.manifest.project_uuid,
-          isArchived: false,
-          revisionId: 1,
-          dateCreated: '2026-01-01T00:00:00Z',
-          modifiedOn: '2026-01-01T00:00:00Z',
-          permissions: {
-            accountRole: 'teacher',
-            resourceRole: 'owner',
-            state: 'active',
-            actions: ['view', 'edit_attributes', 'archive', 'copy'],
-            adminOverride: false,
-          },
-          projectPermissions: {
-            accountRole: 'teacher',
-            resourceRole: 'owner',
-            state: 'active',
-            actions: ['view', 'edit_project', 'manage_members'],
-            adminOverride: false,
-          },
-        };
-
         await openEditWorkflowDialog(page, workflowType);
         await workflowEditTitleField(page).fill(updatedTitle);
-        await workflowEditDescriptionField(page, workflowType).fill(updatedDescription);
-
-        await page.route(`**/api/workflow/${workflowUuid}`, (route) => {
-          const method = route.request().method();
-          if (method === 'PATCH') {
-            void route.fulfill({
-              status: 200,
-              contentType: 'application/json',
-              body: JSON.stringify({ item: updatedDetail }),
-            });
-            return;
-          }
-          if (method === 'GET') {
-            void route.fulfill({
-              status: 200,
-              contentType: 'application/json',
-              body: JSON.stringify({ item: updatedDetail }),
-            });
-            return;
-          }
-          void route.continue();
-        });
+        await workflowEditDescriptionField(page).fill(updatedDescription);
 
         const routeBeforeSubmit = page.url();
         await editWorkflowFormSubmitButton(page, workflowType).click();
@@ -248,6 +181,10 @@ test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
         await expect(page).toHaveURL(routeBeforeSubmit);
         await expect(workflowTitle(page)).toContainText(updatedTitle);
         await expectEditWorkflowSnackbarMessage(page, snackbar.success);
+
+        const persisted = await fetchWorkflowDetail(page, workflowUuid);
+        expect(persisted.title).toBe(updatedTitle);
+        expect(persisted.description).toBe(updatedDescription);
       });
 
       test('FR-WF-FORM-003: failed edit keeps dialog open, retains values, and shows failure snackbar', async ({
@@ -266,20 +203,20 @@ test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
           void route.fulfill({
             status: 500,
             contentType: 'application/json',
-            body: JSON.stringify({ detail: 'E2E simulated update workflow failure' }),
+            body: JSON.stringify({
+              detail: 'E2E simulated update workflow failure',
+            }),
           });
         });
 
         await openEditWorkflowDialog(page, workflowType);
         await workflowEditTitleField(page).fill(updatedTitle);
-        await workflowEditDescriptionField(page, workflowType).fill(updatedDescription);
+        await workflowEditDescriptionField(page).fill(updatedDescription);
         await editWorkflowFormSubmitButton(page, workflowType).click();
 
         await expect(editWorkflowDialog(page)).toBeVisible();
         await expect(workflowEditTitleField(page)).toHaveValue(updatedTitle);
-        await expect(workflowEditDescriptionField(page, workflowType)).toHaveValue(
-          updatedDescription,
-        );
+        await expect(workflowEditDescriptionField(page)).toHaveValue(updatedDescription);
         await expect(editWorkflowFormSubmitButton(page, workflowType)).toBeEnabled();
         await expectEditWorkflowSnackbarMessage(page, snackbar.failure);
       });

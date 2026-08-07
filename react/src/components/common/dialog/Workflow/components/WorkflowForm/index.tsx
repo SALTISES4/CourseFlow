@@ -10,7 +10,10 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 export const workflowSchema = z.object({
-  title: z.string().min(1, { message: 'Title is required' }),
+  title: z
+    .string()
+    .min(1, { message: 'Title is required' })
+    .max(200, { message: 'Title cannot be longer than 200 characters' }),
   description: z.string().nullish()
 })
 

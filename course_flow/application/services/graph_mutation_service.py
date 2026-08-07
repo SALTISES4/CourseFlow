@@ -692,6 +692,13 @@ class GraphMutationService:
         new_sec = Section.objects.select_related("graph", "thread").get(pk=new_sec.pk)
         builder.add_section_created(_section_payload(new_sec))
 
+        if duplicate:
+            self._duplicate_section_content(
+                builder,
+                source=anchor,
+                target=new_sec,
+            )
+
         _bump_revision(wf)
         env = builder.build_envelope(
             graph_uuid=wf.uuid,
@@ -700,6 +707,66 @@ class GraphMutationService:
             trigger_entity_id=str(new_sec.uuid),
         )
         return env, None
+
+    def _duplicate_section_content(
+        self,
+        builder: GraphMutationDeltaBuilder,
+        *,
+        source: Section,
+        target: Section,
+    ) -> None:
+        from course_flow.core.node_meta import copy_node_typed_meta
+
+        source_nodes = list(
+            Node.objects.filter(section_id=source.id)
+            .select_related(
+                "section",
+                "channel",
+                "workflow",
+                "linked_workflow",
+                "activitymeta",
+                "coursemeta",
+                "taskmeta",
+            )
+            .prefetch_related("outcomes", "tags")
+            .order_by("section_row", "channel__position", "id")
+        )
+        node_map: dict[int, Node] = {}
+
+        for source_node in source_nodes:
+            copied_node = Node.objects.create(
+                section=target,
+                channel=source_node.channel,
+                workflow=source_node.workflow,
+                linked_workflow=source_node.linked_workflow,
+                section_row=source_node.section_row,
+                node_type=source_node.node_type,
+                title=source_node.title,
+                description=source_node.description,
+            )
+            copy_node_typed_meta(source=source_node, target=copied_node)
+            copied_node.tags.set(source_node.tags.all())
+            copied_node.outcomes.set(source_node.outcomes.all())
+            copied_node = self._reload_node(copied_node.pk)
+            node_map[source_node.id] = copied_node
+            builder.add_node_created(_node_payload(copied_node))
+
+        source_node_ids = set(node_map)
+        internal_edges = Edge.objects.filter(
+            source_node_id__in=source_node_ids,
+            target_node_id__in=source_node_ids,
+        ).order_by("id")
+        for source_edge in internal_edges:
+            copied_edge = Edge.objects.create(
+                source_node=node_map[source_edge.source_node_id],
+                target_node=node_map[source_edge.target_node_id],
+                title=source_edge.title,
+                text_position=source_edge.text_position,
+                line_type=source_edge.line_type,
+                source_port=source_edge.source_port,
+                target_port=source_edge.target_port,
+            )
+            builder.add_edge_created(_edge_payload(copied_edge))
 
     @transaction.atomic
     def reorder_sections(

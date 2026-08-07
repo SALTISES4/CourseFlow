@@ -9,7 +9,8 @@ Accepted
 2026-06-23
 
 Amended 2026-07-31 to adopt one local database, one seed path, stable asset IDs,
-and disposable workflow isolation.
+and disposable workflow isolation. Amended 2026-08-07 to add disposable project
+and account isolation for successful mutation tests.
 
 ## Context
 
@@ -81,6 +82,23 @@ test.use({
 Tests needing additional workflow types declare `seedAssets`. Non-workflow specs use
 `seedDependencies` to make their content dependencies visible in the generated CSV.
 
+### Disposable projects and accounts
+
+Successful project mutations use the `project` fixture with
+`projectAccess: 'disposable'`. The fixture creates a project through the production
+API, optionally configures its initial publication state and seeded contributors,
+then archives and deletes it through the production API during teardown. A test that
+creates a project through the UI registers its returned UUID with `projectCleanup`.
+
+Successful identity mutations use `disposableUser`. The fixture registers a uniquely
+namespaced account through the production API and deletes it during teardown with the
+guarded `cf_delete_e2e_user` command. That command refuses every email outside
+`e2e-disposable-*@courseflow.test`.
+
+Success-path tests must not fulfill mutation routes with fabricated responses. Route
+fulfillment remains valid for explicit server-failure behavior and deterministic read
+datasets whose response shape is itself the test precondition.
+
 ### Independent tests
 
 One test may contain a complete destructive lifecycle. Separate tests must not depend
@@ -97,6 +115,7 @@ allocation is not a content-isolation mechanism.
 - Mutating workflow specs can run in parallel without sharing their mutation target.
 - Disposable copies can appear briefly in the fixture project during a run.
 - Same-project copies preserve project-scoped tags and workflow links.
+- Successful project and identity mutations operate on per-test disposable resources.
 - Tests must declare assets when they depend on seeded content.
 - Seed additions require a catalog entry and a manifest contract assertion.
 - CI database provisioning remains separate from test-data isolation.

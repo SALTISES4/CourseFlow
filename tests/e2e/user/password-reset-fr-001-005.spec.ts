@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures';
+import { loginAs } from '../../helpers/auth';
 import { requireTestCredentials } from '../../helpers/env';
 import {
   clearFieldAfterInteraction,
@@ -47,9 +48,7 @@ test.describe('Password reset — calibration (FR-PWD-001–005)', () => {
   });
 
   test.describe('FR-PWD-003: field validation', () => {
-    test('required messages after fields are cleared following interaction', async ({
-      page,
-    }) => {
+    test('required messages after fields are cleared following interaction', async ({ page }) => {
       await currentPasswordField(page).fill('temp');
       await clearFieldAfterInteraction(page, 'current');
       await expect(
@@ -62,10 +61,7 @@ test.describe('Password reset — calibration (FR-PWD-001–005)', () => {
       await newPasswordField(page).fill('temp');
       await clearFieldAfterInteraction(page, 'new');
       await expect(
-        passwordResetFieldValidationMessage(
-          page,
-          PASSWORD_RESET_VALIDATION_MESSAGES.newRequired,
-        ),
+        passwordResetFieldValidationMessage(page, PASSWORD_RESET_VALIDATION_MESSAGES.newRequired),
       ).toBeVisible();
 
       await confirmNewPasswordField(page).fill('temp');
@@ -78,21 +74,13 @@ test.describe('Password reset — calibration (FR-PWD-001–005)', () => {
       ).toBeVisible();
     });
 
-    test('new password guidelines message when value is too weak', async ({
-      page,
-    }) => {
+    test('new password guidelines message when value is too weak', async ({ page }) => {
       await newPasswordField(page).fill('short');
       await newPasswordField(page).blur();
       await expect(
-        passwordResetFieldValidationMessage(
-          page,
-          PASSWORD_NEW_PASSWORD_GUIDELINES,
-        ),
+        passwordResetFieldValidationMessage(page, PASSWORD_NEW_PASSWORD_GUIDELINES),
       ).toBeVisible();
-      await expect(newPasswordField(page)).toHaveAttribute(
-        'aria-invalid',
-        'true',
-      );
+      await expect(newPasswordField(page)).toHaveAttribute('aria-invalid', 'true');
       await expect(passwordResetSubmitButton(page)).toBeDisabled();
     });
 
@@ -102,10 +90,7 @@ test.describe('Password reset — calibration (FR-PWD-001–005)', () => {
       await newPasswordField(page).fill(current);
       await newPasswordField(page).blur();
       await expect(
-        passwordResetFieldValidationMessage(
-          page,
-          PASSWORD_RESET_VALIDATION_MESSAGES.newMustDiffer,
-        ),
+        passwordResetFieldValidationMessage(page, PASSWORD_RESET_VALIDATION_MESSAGES.newMustDiffer),
       ).toBeVisible();
       await expect(passwordResetSubmitButton(page)).toBeDisabled();
     });
@@ -132,9 +117,7 @@ test.describe('Password reset — calibration (FR-PWD-001–005)', () => {
       ).toHaveCount(0);
     });
 
-    test('mismatch reappears when new password changes after confirm matched', async ({
-      page,
-    }) => {
+    test('mismatch reappears when new password changes after confirm matched', async ({ page }) => {
       const newPassword = sampleValidNewPassword();
       await newPasswordField(page).fill(newPassword);
       await confirmNewPasswordField(page).fill(newPassword);
@@ -178,9 +161,7 @@ test.describe('Password reset — calibration (FR-PWD-001–005)', () => {
           PASSWORD_RESET_VALIDATION_MESSAGES.currentIncorrect,
         ),
       ).toBeVisible({ timeout: 15_000 });
-      await expect(currentPasswordField(page)).toHaveValue(
-        'definitely-wrong-current-password',
-      );
+      await expect(currentPasswordField(page)).toHaveValue('definitely-wrong-current-password');
       await expect(newPasswordField(page)).toHaveValue(newPassword);
       await expect(confirmNewPasswordField(page)).toHaveValue(newPassword);
 
@@ -193,9 +174,7 @@ test.describe('Password reset — calibration (FR-PWD-001–005)', () => {
       ).toHaveCount(0);
     });
 
-    test('non-field server failure shows snackbar and retains field values', async ({
-      page,
-    }) => {
+    test('non-field server failure shows snackbar and retains field values', async ({ page }) => {
       const { password: currentPassword } = requireTestCredentials();
       const newPassword = sampleValidNewPassword();
 
@@ -236,35 +215,41 @@ test.describe('Password reset — calibration (FR-PWD-001–005)', () => {
 
   test('FR-PWD-005: successful submit clears form, shows snackbar, and keeps user on page', async ({
     page,
+    disposableUser,
   }) => {
-    const { password: currentPassword } = requireTestCredentials();
-    const newPassword = sampleValidNewPassword();
-
-    await page.route(PASSWORD_RESET_API_ROUTE, (route) => {
-      if (route.request().method() !== 'PATCH') {
-        void route.continue();
-        return;
-      }
-
-      void route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ uuid: '00000000-0000-4000-8000-000000000001' }),
-      });
+    await loginAs(page, {
+      email: disposableUser.email,
+      password: disposableUser.password,
     });
+    await gotoPasswordResetPage(page);
+
+    const currentPassword = disposableUser.password;
+    const newPassword = sampleValidNewPassword();
 
     await fillPasswordResetForm(page, {
       currentPassword,
       newPassword,
       confirmNewPassword: newPassword,
     });
+
+    const resetResponsePromise = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'PATCH' &&
+        new URL(response.url()).pathname === '/api/user/me/password-reset',
+    );
     await passwordResetSubmitButton(page).click();
+    const resetResponse = await resetResponsePromise;
+    expect(
+      resetResponse.ok(),
+      `PATCH /api/user/me/password-reset returned HTTP ${resetResponse.status()}`,
+    ).toBeTruthy();
+    const resetBody = (await resetResponse.json()) as { uuid: string };
+    expect(resetBody.uuid).toBe(disposableUser.uuid);
 
     await expect(globalMessageSnackbar(page)).toBeVisible({ timeout: 15_000 });
-    await expect(globalMessageSnackbar(page)).toHaveText(
-      PASSWORD_RESET_SNACKBAR_MESSAGES.success,
-      { exact: true },
-    );
+    await expect(globalMessageSnackbar(page)).toHaveText(PASSWORD_RESET_SNACKBAR_MESSAGES.success, {
+      exact: true,
+    });
     await expect(currentPasswordField(page)).toHaveValue('');
     await expect(newPasswordField(page)).toHaveValue('');
     await expect(confirmNewPasswordField(page)).toHaveValue('');

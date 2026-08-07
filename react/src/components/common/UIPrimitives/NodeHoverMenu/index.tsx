@@ -9,6 +9,7 @@ export type MenuItem = {
   label: string
   icon: ReactNode
   onClick: (e: MouseEvent<HTMLButtonElement>) => void
+  disabled?: boolean
   showCommentsPresenceIndicator?: boolean
 }
 
@@ -36,7 +37,12 @@ const HoverMenu = ({
     {items.map((item, index) =>
       item ? (
         <Tooltip key={index} placement="top" arrow title={item.label}>
-          <IconButton color="secondary" size="small" onClick={item.onClick}>
+          <IconButton
+            color="secondary"
+            size="small"
+            onClick={item.onClick}
+            disabled={item.disabled}
+          >
             <Styled.IconWrap>
               {item.icon}
               {item.showCommentsPresenceIndicator && (

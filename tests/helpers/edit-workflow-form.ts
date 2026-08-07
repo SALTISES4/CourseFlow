@@ -9,7 +9,6 @@ import {
   globalMessageSnackbar,
   WORKFLOW_EDIT_FORM_VISIBLE_LABELS,
   workflowEditDescriptionField,
-  workflowEditDescriptionVisibleLabel,
   workflowEditForm,
   workflowEditFormRequiredFieldLabel,
   workflowEditFormVisibleLabel,
@@ -39,7 +38,7 @@ export async function fetchWorkflowDetail(
 }
 
 /**
- * FR-WF-FORM-001 — edit dialog chrome, type-scoped titles, prefills, submit disabled.
+ * FR-WF-FORM-001 — edit dialog chrome, field labels, prefills, submit disabled.
  */
 export async function expectEditWorkflowFormPrimaryLayoutPerFrWfForm001(
   page: Page,
@@ -48,9 +47,7 @@ export async function expectEditWorkflowFormPrimaryLayoutPerFrWfForm001(
 ): Promise<void> {
   const workflow = await fetchWorkflowDetail(page, workflowUuid);
 
-  await expect(editWorkflowFormDialogTitle(page, workflowType)).toHaveText(
-    `Edit ${workflowType}`,
-  );
+  await expect(editWorkflowFormDialogTitle(page, workflowType)).toHaveText(`Edit ${workflowType}`);
   await expect(workflowEditForm(page)).toBeVisible();
   await expect(
     workflowEditFormVisibleLabel(page, WORKFLOW_EDIT_FORM_VISIBLE_LABELS.title),
@@ -59,18 +56,16 @@ export async function expectEditWorkflowFormPrimaryLayoutPerFrWfForm001(
     workflowEditFormRequiredFieldLabel(page, WORKFLOW_EDIT_FORM_VISIBLE_LABELS.title),
   ).toBeVisible();
   await expect(
-    workflowEditFormVisibleLabel(page, workflowEditDescriptionVisibleLabel(workflowType)),
+    workflowEditFormVisibleLabel(page, WORKFLOW_EDIT_FORM_VISIBLE_LABELS.description),
   ).toBeVisible();
   await expect(workflowEditTitleField(page)).toBeVisible();
-  await expect(workflowEditDescriptionField(page, workflowType)).toBeVisible();
+  await expect(workflowEditDescriptionField(page)).toBeVisible();
   await expect(editWorkflowFormCancelButton(page)).toHaveText('Cancel');
   await expect(editWorkflowFormSubmitButton(page, workflowType)).toHaveText(
     `Update ${workflowType}`,
   );
   await expect(workflowEditTitleField(page)).toHaveValue(workflow.title);
-  await expect(workflowEditDescriptionField(page, workflowType)).toHaveValue(
-    workflow.description ?? '',
-  );
+  await expect(workflowEditDescriptionField(page)).toHaveValue(workflow.description ?? '');
   await expect(editWorkflowFormSubmitButton(page, workflowType)).toBeDisabled();
 }
 
@@ -80,7 +75,9 @@ export async function expectEditWorkflowSnackbarMessage(
   message: string,
 ): Promise<void> {
   await expect(globalMessageSnackbar(page)).toBeVisible({ timeout: 15_000 });
-  await expect(globalMessageSnackbar(page)).toHaveText(message, { exact: true });
+  await expect(globalMessageSnackbar(page)).toHaveText(message, {
+    exact: true,
+  });
 }
 
 export { workflowEditSnackbarMessages };

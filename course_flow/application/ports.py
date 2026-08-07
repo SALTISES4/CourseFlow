@@ -15,7 +15,7 @@ class ProjectRepositoryPort(Protocol):
         *,
         owner_id: int,
         title: str,
-        description: str,
+        description: str | None,
         is_published: bool,
         is_template: bool,
         disciplines: list[int],

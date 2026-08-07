@@ -175,6 +175,9 @@ export async function prepareExpandedMainNavigation(page: Page): Promise<void> {
 
 export async function waitForMainNavigationReady(page: Page): Promise<void> {
   await expect(homeNavItem(page)).toBeVisible({ timeout: 15_000 });
+  await expect(mainNavigation(page).locator('.load-screen')).toHaveCount(0, {
+    timeout: 15_000,
+  });
 }
 
 export async function ensureMainNavigationExpanded(page: Page): Promise<void> {

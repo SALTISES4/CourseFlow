@@ -90,6 +90,23 @@ test.describe('add-tab-fr-001-006', () => {
       await expect(workflowAddTabInsertModeRowButton(page)).toHaveAttribute('aria-pressed', 'true');
     });
 
+    test('FR-WF-ADD-002: selected insert mode is retained after reload', async ({
+      page,
+    }) => {
+      await workflowAddTabInsertModeManualButton(page).click();
+      await expect(workflowAddTabInsertModeManualButton(page)).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      );
+
+      await page.reload();
+      await workflowRightSidebarAddTab(page).click();
+      await expect(workflowAddTabInsertModeManualButton(page)).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      );
+    });
+
     test('FR-WF-ADD-002: Insert mode help icon tooltip shows required copy on hover', async ({
       page,
     }) => {
@@ -108,15 +125,17 @@ test.describe('add-tab-fr-001-006', () => {
 
     test('FR-WF-ADD-002: newly created blank workflow defaults insert mode to Row', async ({
       page,
+      workflowCleanup,
     }) => {
       const manifest = loadWorkflowManifest();
       const projectTitle = manifest.recent_projects[0]!.title;
 
-      await createBlankWorkflowFromHome(page, {
+      const createdWorkflowUuid = await createBlankWorkflowFromHome(page, {
         workflowType: 'activity',
         projectTitle,
         title: `E2E insert-mode default ${Date.now()}`,
       });
+      workflowCleanup(createdWorkflowUuid);
 
       await workflowRightSidebarAddTab(page).click();
       await expect(workflowAddTabTitle(page)).toBeVisible();
@@ -150,15 +169,17 @@ test.describe('add-tab-fr-001-006', () => {
     for (const workflowType of BLANK_CREATE_WORKFLOW_TYPES) {
       test(`FR-WF-ADD-003: newly created blank ${workflowType} lists default node categories`, async ({
         page,
+        workflowCleanup,
       }) => {
         const manifest = loadWorkflowManifest();
         const projectTitle = manifest.recent_projects[0]!.title;
 
-        await createBlankWorkflowFromHome(page, {
+        const createdWorkflowUuid = await createBlankWorkflowFromHome(page, {
           workflowType,
           projectTitle,
           title: `E2E add-tab defaults ${workflowType} ${Date.now()}`,
         });
+        workflowCleanup(createdWorkflowUuid);
 
         await expectDefaultAddTabNodeCategories(page, workflowType);
       });

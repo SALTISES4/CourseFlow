@@ -43,11 +43,11 @@ uiObjectDefinitions:
   workflowBlankForm:
     meaning: Blank-workflow metadata form used in createWorkflowDialog.
   workflowTitleField:
-    meaning: Text input for workflow title; required; label 'Title'; at most 200 characters; inline validation per FR-WF-CREATE-STEPPER-005 (create blank) and FR-WF-FORM-002 (edit).
+    meaning: Text input for workflow title; required; at most 200 characters; visible label is '[Workflow type] title' in workflowBlankForm and 'Title' in workflowEditForm; inline validation per FR-WF-CREATE-STEPPER-005 (create blank) and FR-WF-FORM-002 (edit).
   workflowFormFieldValidationMessage:
     meaning: Inline helper or error text shown on workflowTitleField when title validation fails (create blank or edit).
   workflowDescriptionField:
-    meaning: Description field region on workflowBlankForm and workflowEditForm; optional; visible label matches workflow type (e.g. 'Activity description'); contains workflowRichTextDescriptionEditor per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012.
+    meaning: Optional description field region on workflowBlankForm and workflowEditForm; visible label is '[Workflow type] description' in workflowBlankForm and 'Description' in workflowEditForm; contains workflowRichTextDescriptionEditor per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-012.
   workflowTemplateSearchView:
     meaning: Template selection surface shown on step 3 when template mode is selected.
   workflowTemplateSearchField:
@@ -355,7 +355,7 @@ requirements:
     mainFlow:
       - createWorkflowDialogTitle follows pattern 'Create blank {workflowType}'
       - workflowBlankForm is rendered
-      - workflowBlankForm metadata fields do not differ by workflow type
+      - workflowBlankForm exposes the same title and description field set for every workflow type; visible labels follow '[Workflow type] title' and '[Workflow type] description' with the type capitalized
       - workflowTitleField is required and must be non-empty after trim
       - workflowTitleField value is at most 200 characters
       - workflowDescriptionField is optional
@@ -372,6 +372,7 @@ requirements:
     roleBehavior: {}
 
     acceptanceCriteria:
+      - given blank mode on step 3, workflowTitleField and workflowDescriptionField visible labels match '[Workflow type] title' and '[Workflow type] description' with the selected type capitalized
       - given blank mode on step 3 and workflowTitleField is empty after trim, workflowFormFieldValidationMessage is visible with copy exactly 'Title is required' and createWorkflowSubmitButton is disabled
       - given blank mode on step 3 and workflowTitleField value length exceeds 200 characters, workflowFormFieldValidationMessage is visible with copy exactly 'Title cannot be longer than 200 characters' and createWorkflowSubmitButton is disabled
       - given blank mode on step 3 and workflowTitleField is non-empty after trim and at most 200 characters, workflowTitleField does not show workflowFormFieldValidationMessage for empty or length rules and createWorkflowSubmitButton is enabled

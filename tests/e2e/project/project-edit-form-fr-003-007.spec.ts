@@ -9,9 +9,7 @@ import {
 } from '../../helpers/edit-project-form';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import { getProjectPath, loadWorkflowManifest } from '../../helpers/manifest';
-import {
-  selectProjectDisciplineOption,
-} from '../../helpers/project-discipline';
+import { selectProjectDisciplineOption } from '../../helpers/project-discipline';
 import {
   expectProjectOverviewShowsSubmittedFormValues,
   fetchProjectDetail,
@@ -89,25 +87,17 @@ test.describe('Edit project form — calibration (FR-PROJ-FORM-003-007)', () => 
     await expect(createProjectDialog(page)).toBeHidden();
     await expect(projectTitle(page)).toHaveText(originalTitle);
     expect(
-      await projectMetadataBlockDisplayedValue(
-        page,
-        PROJECT_OVERVIEW_METADATA_LABELS.description,
-      ),
+      await projectMetadataBlockDisplayedValue(page, PROJECT_OVERVIEW_METADATA_LABELS.description),
     ).toBe(originalOverviewDescription);
     expect(
-      await projectMetadataBlockDisplayedValue(
-        page,
-        PROJECT_OVERVIEW_METADATA_LABELS.disciplines,
-      ),
+      await projectMetadataBlockDisplayedValue(page, PROJECT_OVERVIEW_METADATA_LABELS.disciplines),
     ).toBe(originalOverviewDisciplines);
 
     await openEditProjectDialog(page);
     await expect(projectTitleField(page)).toHaveValue(originalTitle);
     await expect(projectDescriptionField(page)).toHaveValue(originalDescription);
     expect(
-      [...(await projectDisciplineFieldSelectedLabels(page))].sort((a, b) =>
-        a.localeCompare(b),
-      ),
+      [...(await projectDisciplineFieldSelectedLabels(page))].sort((a, b) => a.localeCompare(b)),
     ).toEqual([...originalDisciplines].sort((a, b) => a.localeCompare(b)));
   });
 
@@ -138,71 +128,38 @@ test.describe('Edit project form — calibration (FR-PROJ-FORM-003-007)', () => 
   });
 
   test.describe('FR-PROJ-FORM-006: save feedback', () => {
+    test.use({ projectAccess: 'disposable' });
+
     test('successful edit shows title, description, and disciplines on overview', async ({
       page,
+      project,
     }) => {
-      const updatedTitle = `${manifest.project_title} updated ${Date.now()}`;
+      await gotoAuthenticatedShell(page, project.path);
+      await waitForProjectOverviewLoaded(page);
+
+      const updatedTitle = `${project.title} updated`;
       const updatedDescription = 'E2E edit overview description';
       const disciplineLabels = [DISCIPLINE_CATALOGUE_AZ[0]!];
-      const projectUuid = manifest.project_uuid;
-
-      const updatedDetail = {
-        uuid: projectUuid,
-        title: updatedTitle,
-        description: updatedDescription,
-        isPublished: false,
-        isArchived: false,
-        isTemplate: false,
-        isFavorite: false,
-        ownerId: 1,
-        dateCreated: '2026-01-01T00:00:00Z',
-        modifiedOn: '2026-01-01T00:00:00Z',
-        disciplines: [{ id: 1, title: disciplineLabels[0]! }],
-        workflows: [],
-        permissions: {
-          accountRole: 'teacher',
-          resourceRole: 'owner',
-          state: 'active',
-          actions: [
-            'view',
-            'edit_project',
-            'manage_members',
-            'create_workflow',
-            'archive_project',
-            'publish_project',
-          ],
-          adminOverride: false,
-        },
-      };
 
       await openEditProjectDialog(page);
       await projectTitleField(page).fill(updatedTitle);
       await projectDescriptionField(page).fill(updatedDescription);
       await selectProjectDisciplineOption(page, disciplineLabels[0]!);
 
-      await page.route(`**/api/project/${projectUuid}`, (route) => {
-        const method = route.request().method();
-        if (method === 'PATCH') {
-          void route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ item: updatedDetail }),
-          });
-          return;
-        }
-        if (method === 'GET') {
-          void route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ item: updatedDetail }),
-          });
-          return;
-        }
-        void route.continue();
-      });
-
       const routeBeforeSubmit = page.url();
+      const updateResponsePromise = page.waitForResponse(
+        (response) =>
+          response.request().method() === 'PATCH' &&
+          new URL(response.url()).pathname === `/api/project/${project.uuid}`,
+      );
       await editProjectFormSubmitButton(page).click();
+      const updateResponse = await updateResponsePromise;
+      const updateResponseBody = await updateResponse.text();
+      expect(
+        updateResponse.ok(),
+        `PATCH /api/project/${project.uuid} returned HTTP ${updateResponse.status()}: ` +
+          updateResponseBody,
+      ).toBeTruthy();
 
       await expect(createProjectDialog(page)).toBeHidden();
       await expect(page).toHaveURL(routeBeforeSubmit);
@@ -212,10 +169,11 @@ test.describe('Edit project form — calibration (FR-PROJ-FORM-003-007)', () => 
         description: updatedDescription,
         disciplineLabels,
       });
-      await expectEditProjectSnackbarMessage(
-        page,
-        PROJECT_EDIT_SNACKBAR_MESSAGES.success,
-      );
+      await expectEditProjectSnackbarMessage(page, PROJECT_EDIT_SNACKBAR_MESSAGES.success);
+
+      const persisted = await fetchProjectDetail(page, project.uuid);
+      expect(persisted.title).toBe(updatedTitle);
+      expect(persisted.description).toBe(updatedDescription);
     });
 
     test('failed edit keeps dialog open, retains values, and shows failure snackbar', async ({
@@ -233,7 +191,9 @@ test.describe('Edit project form — calibration (FR-PROJ-FORM-003-007)', () => 
         void route.fulfill({
           status: 500,
           contentType: 'application/json',
-          body: JSON.stringify({ detail: 'E2E simulated update project failure' }),
+          body: JSON.stringify({
+            detail: 'E2E simulated update project failure',
+          }),
         });
       });
 
@@ -246,10 +206,7 @@ test.describe('Edit project form — calibration (FR-PROJ-FORM-003-007)', () => 
       await expect(projectTitleField(page)).toHaveValue(updatedTitle);
       await expect(projectDescriptionField(page)).toHaveValue(updatedDescription);
       await expect(editProjectFormSubmitButton(page)).toBeEnabled();
-      await expectEditProjectSnackbarMessage(
-        page,
-        PROJECT_EDIT_SNACKBAR_MESSAGES.failure,
-      );
+      await expectEditProjectSnackbarMessage(page, PROJECT_EDIT_SNACKBAR_MESSAGES.failure);
     });
   });
 });

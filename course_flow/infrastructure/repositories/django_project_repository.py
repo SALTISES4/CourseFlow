@@ -28,20 +28,21 @@ class DjangoProjectRepository:
         *,
         owner_id: int,
         title: str,
-        description: str,
+        description: str | None,
         is_published: bool,
         is_template: bool,
         disciplines: list[int],
     ) -> ProjectDTO:
+        discipline_objects = self._resolve_disciplines(disciplines)
         p = Project.objects.create(
             owner_id=owner_id,
             title=title,
-            description=description,
+            description=description or "",
             is_published=is_published,
-            is_template=is_template
+            is_template=is_template,
         )
 
-        p.disciplines.set(disciplines)
+        p.disciplines.set(discipline_objects)
         return _to_dto(p)
 
     def get_by_uuid(self, uuid: UUID) -> ProjectDTO | None:
@@ -81,6 +82,8 @@ class DjangoProjectRepository:
         }
         for key, value in changes.items():
             if key in allowed:
+                if key == "description" and value is None:
+                    value = ""
                 setattr(p, key, value)
         p.save()
         if discipline_ids is not None:

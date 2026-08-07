@@ -15,18 +15,10 @@ import {
   addContributorsUserSelectorClearButton,
   E2E_ADD_CONTRIBUTOR_CANDIDATE,
   globalMessageSnackbar,
-  LIST_USERS_API_ROUTE,
   projectMetadataAddContributorsButton,
   projectPermissionsPanelContributorEmail,
   projectTeamApiRoute,
 } from '../e2e/project/project.locators';
-
-export type UserListApiItem = {
-  uuid: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-};
 
 export type ProjectTeamApiItem = {
   id: number;
@@ -60,7 +52,10 @@ export async function expectAddContributorsDialogChromePerFrProjOv004(page: Page
 
   for (const role of ADD_CONTRIBUTORS_ASSIGNABLE_ROLES) {
     await expect(
-      addContributorsRoleSelector(page).getByRole('radio', { name: role, exact: true }),
+      addContributorsRoleSelector(page).getByRole('radio', {
+        name: role,
+        exact: true,
+      }),
     ).toBeVisible();
   }
 }
@@ -74,39 +69,6 @@ export async function fetchProjectTeam(
   expect(response.ok(), `${path} returned HTTP ${response.status()}`).toBeTruthy();
   const body = (await response.json()) as { items: ProjectTeamApiItem[] };
   return body.items;
-}
-
-export async function installListUsersRouteMock(
-  page: Page,
-  items: UserListApiItem[],
-): Promise<void> {
-  await page.route(LIST_USERS_API_ROUTE, (route) => {
-    if (route.request().method() !== 'GET') {
-      void route.continue();
-      return;
-    }
-
-    const url = new URL(route.request().url());
-    const filter = url.searchParams.get('filter')?.trim() ?? '';
-    if (!filter) {
-      void route.continue();
-      return;
-    }
-
-    const narrowed = items.filter((user) => {
-      const haystack = [user.firstName, user.lastName, user.email].join(' ').toLowerCase();
-      return haystack.includes(filter.toLowerCase());
-    });
-
-    void route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        items: narrowed,
-        meta: { total: narrowed.length },
-      }),
-    });
-  });
 }
 
 export async function installAddProjectTeamMembersRouteMock(
@@ -152,26 +114,9 @@ export async function expectAddContributorSnackbarMessage(
   message: string,
 ): Promise<void> {
   await expect(globalMessageSnackbar(page)).toBeVisible({ timeout: 15_000 });
-  await expect(globalMessageSnackbar(page)).toHaveText(message, { exact: true });
-}
-
-export function buildAddedProjectTeamMember(
-  existingMembers: ProjectTeamApiItem[],
-  candidate: typeof E2E_ADD_CONTRIBUTOR_CANDIDATE,
-  role: string,
-): ProjectTeamApiItem {
-  const nextId =
-    existingMembers.reduce((maxId, member) => Math.max(maxId, member.id), 0) + 1;
-
-  return {
-    id: nextId,
-    projectTeamUuid: existingMembers[0]?.projectTeamUuid ?? 'e2e-project-team-uuid',
-    userUuid: candidate.uuid,
-    userEmail: candidate.email,
-    userFirstName: candidate.firstName,
-    userLastName: candidate.lastName,
-    role,
-  };
+  await expect(globalMessageSnackbar(page)).toHaveText(message, {
+    exact: true,
+  });
 }
 
 export {

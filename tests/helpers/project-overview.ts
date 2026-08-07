@@ -109,9 +109,7 @@ function parseCommaSeparatedDisciplines(value: string): string[] {
 }
 
 /** FR-PROJ-OV-001 — project overview route and metadata block labels. */
-export async function expectProjectOverviewMetadataLabelsPerFrProjOv001(
-  page: Page,
-): Promise<void> {
+export async function expectProjectOverviewMetadataLabelsPerFrProjOv001(page: Page): Promise<void> {
   await expect(page).toHaveURL(/\/project\/[0-9a-f-]+\/?$/);
   await expect(projectOverviewView(page)).toBeVisible();
   await expect(projectMetadataFieldDescription(page)).toBeVisible();
@@ -171,7 +169,9 @@ export async function expectProjectPublishSnackbarMessage(
   message: string,
 ): Promise<void> {
   await expect(globalMessageSnackbar(page)).toBeVisible({ timeout: 15_000 });
-  await expect(globalMessageSnackbar(page)).toHaveText(message, { exact: true });
+  await expect(globalMessageSnackbar(page)).toHaveText(message, {
+    exact: true,
+  });
 }
 
 export async function expectProjectUnpublishSnackbarMessage(
@@ -213,10 +213,9 @@ export async function expectPublishProjectConfirmationModalPerFrProjOv003(
     }),
   ).toBeVisible();
   await expect(
-    publishProjectConfirmationModal(page).getByText(
-      PROJECT_PUBLISH_CONFIRMATION_MODAL_COPY.body,
-      { exact: true },
-    ),
+    publishProjectConfirmationModal(page).getByText(PROJECT_PUBLISH_CONFIRMATION_MODAL_COPY.body, {
+      exact: true,
+    }),
   ).toBeVisible();
   await expect(publishProjectConfirmationModalCancelButton(page)).toBeVisible();
   await expect(publishProjectConfirmationModalConfirmButton(page)).toBeVisible();
@@ -228,64 +227,12 @@ export async function openPublishProjectConfirmationModal(page: Page): Promise<v
   await expectPublishProjectConfirmationModalPerFrProjOv003(page);
 }
 
-export function buildProjectDetailApiResponse(
-  item: ProjectDetailApiItem,
-): { item: ProjectDetailApiItem & Record<string, unknown> } {
-  return {
-    item: {
-      isTemplate: false,
-      isArchived: false,
-      isFavorite: false,
-      ownerId: 1,
-      dateCreated: '2026-01-01T00:00:00Z',
-      modifiedOn: '2026-01-01T00:00:00Z',
-      disciplines: [],
-      workflows: [],
-      permissions: {
-        accountRole: 'teacher',
-        resourceRole: 'owner',
-        state: 'active',
-        actions: [
-          'view',
-          'edit_project',
-          'manage_members',
-          'create_workflow',
-          'archive_project',
-          'publish_project',
-        ],
-        adminOverride: false,
-      },
-      ...item,
-    },
-  };
-}
-
 export async function installProjectUpdateRouteMock(
   page: Page,
   projectUuid: string,
   handler: (route: Route) => Promise<void> | void,
 ): Promise<void> {
   await page.route(`**/api/project/${projectUuid}`, handler);
-}
-
-/** FR-PROJ-OV-003 — mock GET /api/project/{uuid} for initial-load published/unpublished state. */
-export async function installProjectDetailRouteMock(
-  page: Page,
-  projectUuid: string,
-  project: ProjectDetailApiItem,
-): Promise<void> {
-  await installProjectUpdateRouteMock(page, projectUuid, (route) => {
-    if (route.request().method() !== 'GET') {
-      void route.continue();
-      return;
-    }
-
-    void route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(buildProjectDetailApiResponse(project)),
-    });
-  });
 }
 
 export {

@@ -1,6 +1,8 @@
 from datetime import datetime
 from uuid import UUID
 
+from pydantic import Field
+
 from course_flow.api.common.schemas import CamelSchema
 from course_flow.api.schemas.auth import UserSummaryOut
 from course_flow.api.schemas.permissions import PermissionContextOut
@@ -17,7 +19,7 @@ class ProjectCreateIn(CamelSchema):
     description: str | None = None
     is_published: bool = False
     is_template: bool = False
-    disciplines: list[int]
+    disciplines: list[int] = Field(default_factory=list)
 
 
 class ProjectUpdateIn(CamelSchema):
@@ -25,7 +27,7 @@ class ProjectUpdateIn(CamelSchema):
     description: str | None = None
     is_published: bool | None = None
     is_template: bool | None = None
-    disciplines: list[int]
+    disciplines: list[int] = Field(default_factory=list)
 
 
 class ProjectListItemOut(CamelSchema):

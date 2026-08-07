@@ -263,6 +263,7 @@ type SeedOptions = {
 type WorkflowFixtures = {
   workflow: WorkflowHandle;
   actor: ActorAssetEntry;
+  workflowCleanup: (workflowUuid: string) => void;
 };
 
 export const test = baseTest.extend<SeedOptions & WorkflowFixtures>({
@@ -274,6 +275,20 @@ export const test = baseTest.extend<SeedOptions & WorkflowFixtures>({
 
   actor: async ({ actorAsset }, use) => {
     await use(getActorAsset(loadWorkflowManifest(), actorAsset));
+  },
+
+  workflowCleanup: async ({ request }, use) => {
+    const accessToken = readPrimaryActorAccessToken();
+    const workflowUuids: string[] = [];
+    await use((workflowUuid) => {
+      if (!workflowUuids.includes(workflowUuid)) {
+        workflowUuids.push(workflowUuid);
+      }
+    });
+
+    for (const workflowUuid of [...workflowUuids].reverse()) {
+      await cleanupWorkflowCopy(request, accessToken, workflowUuid);
+    }
   },
 
   workflow: async ({ request, seedAsset, seedAssets, seedAccess }, use, testInfo) => {

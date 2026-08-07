@@ -47,6 +47,7 @@ from course_flow.e2e_seed.constants import (
     E2E_OUTCOME_TITLE,
     E2E_SECTION_TITLES,
 )
+from course_flow.e2e_seed.disciplines import ensure_e2e_disciplines
 from course_flow.e2e_seed.graph_shape import GraphShapeParams
 from course_flow.e2e_seed.graph_view import (
     build_nodes_from_layout,
@@ -280,6 +281,7 @@ def generate_e2e_fixtures(
     rng = SeededRNG.from_seed(E2E_FIXTURE_GRAPH_SEED)
 
     with transaction.atomic():
+        ensure_e2e_disciplines()
         project = create_project(
             owner,
             title=E2E_FIXTURE_PROJECT_TITLE,

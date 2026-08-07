@@ -146,7 +146,7 @@ def test_project_create_and_update_persist_disciplines(client: Client, user):
     )
     assert created.status_code == 200, created.content
     assert created.json()["disciplines"] == [
-        {"id": first.id, "label": "Biology", "translationPlural": "Biologies"}
+        {"id": first.id, "title": "Biology"}
     ]
 
     project_uuid = created.json()["uuid"]
@@ -158,8 +158,27 @@ def test_project_create_and_update_persist_disciplines(client: Client, user):
     )
     assert updated.status_code == 200, updated.content
     assert updated.json()["item"]["disciplines"] == [
-        {"id": second.id, "label": "History", "translationPlural": "Histories"}
+        {"id": second.id, "title": "History"}
     ]
+
+
+@pytest.mark.django_db
+def test_project_create_rejects_unknown_discipline_without_creating_project(
+    client: Client, user
+):
+    raw = _issue_token_for(user)
+    initial_project_count = Project.objects.count()
+
+    response = client.post(
+        "/api/project",
+        data={"title": "Invalid discipline", "disciplines": [999_999]},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+
+    assert response.status_code == 422, response.content
+    assert response.json()["detail"] == "Unknown discipline"
+    assert Project.objects.count() == initial_project_count
 
 
 @pytest.mark.django_db

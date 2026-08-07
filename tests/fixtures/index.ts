@@ -1,6 +1,7 @@
 /**
- * Extended Playwright test entry point.
- * Import `test` and `expect` from here in workflow E2E specs that need the manifest fixture.
+ * Extended Playwright test entry point for disposable users, projects, and workflows.
  */
-export { test, type SeedAccess, type WorkflowHandle } from './workflow';
+export { test, type DisposableUser } from './user';
+export { type ProjectContributorSeed, type ProjectHandle } from './project';
+export { type SeedAccess, type WorkflowHandle } from './workflow';
 export { expect, type Locator, type Page } from '@playwright/test';

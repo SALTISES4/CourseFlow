@@ -72,10 +72,14 @@ test.describe('Project header — calibration (FR-PROJ-HEADER-001-002)', () => {
         );
       } finally {
         const firstMessage = await globalMessageSnackbar(page).innerText();
+        const secondMessage =
+          firstMessage === CARD_FAVOURITE_SNACKBAR_ADDED
+            ? CARD_FAVOURITE_SNACKBAR_REMOVED
+            : CARD_FAVOURITE_SNACKBAR_ADDED;
         await toggle.click();
-        await expect(globalMessageSnackbar(page)).not.toHaveText(firstMessage, {
-          timeout: 15_000,
-        });
+        await expect(
+          globalMessageSnackbar(page).filter({ hasText: secondMessage }),
+        ).toHaveText(secondMessage, { timeout: 15_000 });
       }
     });
   });

@@ -11,8 +11,8 @@ from course_flow.api.deps import (
     get_project_relations_service,
     get_project_service,
     get_resource_lifecycle_service,
-    get_workflow_service,
     get_user_service,
+    get_workflow_service,
 )
 from course_flow.api.permission_context import permission_context_out
 from course_flow.api.schemas.project_graph_view import ProjectGraphViewOut
@@ -179,17 +179,7 @@ def _project_detail_out(current_user: User, dto: ProjectDTO) -> ProjectDetailOut
 def create_project(request, payload: ProjectCreateIn):
     current_user = get_current_user(request)
 
-    # verify discipline actually exist in the db, otherwise reject
-    # TODO: maybe more extensive validation here?
-    discipline_objs = Discipline.objects.filter(id__in=payload.disciplines)
-    if discipline_objs.count() != len(payload.disciplines):
-        raise ValueError("invalid discipline IDs")
-
     svc = get_project_service()
-
-
-
-
     try:
         dto = svc.create(
             owner_id=current_user.id,
@@ -197,25 +187,8 @@ def create_project(request, payload: ProjectCreateIn):
             description=payload.description,
             is_published=payload.is_published,
             is_template=payload.is_template,
-            disciplines=payload.disciplines
+            disciplines=payload.disciplines,
         )
-
-    # permissions edit, look at the project detail out helper
-
-    # return ProjectDetailOut(
-    #     uuid=dto.uuid,
-    #     title=dto.title,
-    #     description=dto.description,
-    #     is_published=dto.is_published,
-    #     is_template=dto.is_template,
-    #     is_favorite=False,
-    #     is_archived=False,
-    #     owner_id=dto.owner_id,
-    #     date_created=dto.date_created,
-    #     modified_on=dto.modified_on,
-    #     disciplines=[] # TODO: dto.disciplines
-    # )
-
     except ValueError as exc:
         raise HttpError(422, str(exc)) from exc
     return _project_detail_out(current_user, dto)

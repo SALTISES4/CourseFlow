@@ -13,7 +13,6 @@ import {
   projectPermissionsPanelContributorEmail,
   projectTeamApiRoute,
 } from '../e2e/project/project.locators';
-import { fetchProjectTeam, type ProjectTeamApiItem } from './add-contributors-dialog';
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -98,7 +97,10 @@ export async function selectContributorRemoveAction(
   await contributorRoleMenuItem(page, CONTRIBUTOR_ROLE_DROPDOWN_REMOVE_ACTION).click();
   await expect(page.getByRole('menu')).toHaveCount(0);
 
-  const confirmationDialog = page.getByRole('dialog', { name: 'Remove user?', exact: true });
+  const confirmationDialog = page.getByRole('dialog', {
+    name: 'Remove user?',
+    exact: true,
+  });
   await expect(confirmationDialog).toBeVisible();
   await confirmationDialog.getByRole('button', { name: 'Remove', exact: true }).click();
 }
@@ -118,7 +120,9 @@ export async function expectContributorRoleUpdateSnackbarMessage(
   message: string,
 ): Promise<void> {
   await expect(globalMessageSnackbar(page)).toBeVisible({ timeout: 15_000 });
-  await expect(globalMessageSnackbar(page)).toHaveText(message, { exact: true });
+  await expect(globalMessageSnackbar(page)).toHaveText(message, {
+    exact: true,
+  });
 }
 
 export async function expectContributorRemoveSnackbarMessage(
@@ -136,23 +140,6 @@ export async function installProjectTeamMemberRouteMock(
   // Match both `/team/{membershipId}` mutations and the `/team` refresh that
   // follows a successful mutation.
   await page.route(projectTeamApiRoute(projectUuid), handler);
-}
-
-export function buildUpdatedProjectTeamMember(
-  member: ProjectTeamApiItem,
-  role: string,
-): ProjectTeamApiItem {
-  return {
-    ...member,
-    role,
-  };
-}
-
-export function buildProjectTeamWithoutMember(
-  members: ProjectTeamApiItem[],
-  membershipId: number,
-): ProjectTeamApiItem[] {
-  return members.filter((member) => member.id !== membershipId);
 }
 
 export async function expectContributorRowHidden(

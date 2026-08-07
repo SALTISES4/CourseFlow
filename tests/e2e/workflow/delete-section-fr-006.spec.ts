@@ -29,6 +29,9 @@ async function hoverSectionHeader(page: import('@playwright/test').Page, section
 test.describe('Delete Section — hover path (FR-SEC-006)', () => {
   test.beforeEach(async ({ page, workflow }) => {
     await page.goto(workflow.path);
+    await expect(sectionContainers(page)).toHaveCount(workflow.sections.length, {
+      timeout: 15_000,
+    });
   });
 
   test('FR-SEC-006: hover delete opens workflowSectionDeleteDialog with title and body copy', async ({

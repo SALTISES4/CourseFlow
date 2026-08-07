@@ -9,10 +9,10 @@ import {
   createWorkflowStepper,
   createWorkflowSubmitButton,
   WORKFLOW_BLANK_FORM_FORBIDDEN_METADATA_LABELS,
-  WORKFLOW_BLANK_FORM_VISIBLE_LABELS,
   workflowBlankDescriptionVisibleLabel,
   workflowBlankForm,
   workflowBlankFormVisibleLabel,
+  workflowBlankTitleVisibleLabel,
   workflowCreationModeBlankOptionBlock,
   workflowCreationModeTemplateOptionBlock,
   workflowDescriptionField,
@@ -125,7 +125,7 @@ export async function expectCreateWorkflowCreationModeSelected(
 }
 
 /**
- * FR-WF-CREATE-STEPPER-005 — blank form chrome: Title label, type-scoped description label,
+ * FR-WF-CREATE-STEPPER-005 — blank form chrome: type-scoped title and description labels,
  * and no type-varying metadata fields.
  */
 export async function expectBlankWorkflowFormLayoutPerFrCreateStepper005(
@@ -134,7 +134,7 @@ export async function expectBlankWorkflowFormLayoutPerFrCreateStepper005(
 ): Promise<void> {
   await expect(workflowBlankForm(page)).toBeVisible();
   await expect(
-    workflowBlankFormVisibleLabel(page, WORKFLOW_BLANK_FORM_VISIBLE_LABELS.title),
+    workflowBlankFormVisibleLabel(page, workflowBlankTitleVisibleLabel(workflowType)),
   ).toBeVisible();
   await expect(workflowTitleField(page)).toBeVisible();
   await expect(
@@ -202,15 +202,15 @@ export async function expectDefaultWorkflowChannelsInHeaderRow(
 
   if (workflowType === 'program') {
     await expect(
-      headers.filter({ has: page.getByText('Custom node category', { exact: true }) }),
+      headers.filter({
+        has: page.getByText('Custom node category', { exact: true }),
+      }),
     ).toHaveCount(3);
     return;
   }
 
   for (const title of titles) {
-    await expect(
-      headers.filter({ has: page.getByText(title, { exact: true }) }),
-    ).toHaveCount(1);
+    await expect(headers.filter({ has: page.getByText(title, { exact: true }) })).toHaveCount(1);
   }
   await expect(headers).toHaveCount(titles.length);
 }
@@ -235,7 +235,7 @@ export async function createBlankWorkflowFromHome(
     projectTitle: string;
     title: string;
   },
-): Promise<void> {
+): Promise<string> {
   const { workflowType, projectTitle, title } = options;
   const titles = createWorkflowDialogTitles(workflowType);
 
@@ -261,7 +261,9 @@ export async function createBlankWorkflowFromHome(
 
   await workflowTitleField(page).fill(title);
   // Product still renders Duration on blank create; clear numeric default so submit validates.
-  const duration = createWorkflowDialog(page).getByLabel('Duration', { exact: true });
+  const duration = createWorkflowDialog(page).getByLabel('Duration', {
+    exact: true,
+  });
   if ((await duration.count()) > 0) {
     await duration.fill('');
   }
@@ -272,6 +274,14 @@ export async function createBlankWorkflowFromHome(
   await expect(globalMessageSnackbar(page)).toHaveText(
     createWorkflowBlankSuccessSnackbarText(workflowType),
   );
+
+  const workflowUuid = new URL(page.url()).pathname.match(
+    /^\/workflow\/([0-9a-f-]+)\/graph\/?$/,
+  )?.[1];
+  if (!workflowUuid) {
+    throw new Error(`Could not read created workflow UUID from ${page.url()}`);
+  }
+  return workflowUuid;
 }
 
 /**
@@ -283,7 +293,9 @@ export async function expectDefaultAddTabNodeCategories(
   workflowType: 'activity' | 'course' | 'program',
 ): Promise<void> {
   await workflowRightSidebarAddTab(page).click();
-  await expect(workflowAddTabNodeCategoriesGroup(page)).toBeVisible({ timeout: 15_000 });
+  await expect(workflowAddTabNodeCategoriesGroup(page)).toBeVisible({
+    timeout: 15_000,
+  });
 
   const expectedTitles = DEFAULT_WORKFLOW_CHANNEL_TITLES_BY_TYPE[workflowType];
   const items = workflowAddTabNodeCategoryItems(page);

@@ -95,8 +95,8 @@ test.describe('Main navigation — calibration (FR-NAV-001-013)', () => {
     test('FR-NAV-005/006: favourites section lists up to five favourited projects', async ({
       page,
     }) => {
-      const favouriteCount = await favouritedItemLinks(page).count();
       await expect(favouritesSectionLabel(page)).toBeVisible();
+      const favouriteCount = await favouritedItemLinks(page).count();
       expect(favouriteCount).toBeGreaterThanOrEqual(1);
       expect(favouriteCount).toBeLessThanOrEqual(5);
 

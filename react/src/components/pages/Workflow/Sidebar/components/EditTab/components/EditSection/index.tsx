@@ -1,3 +1,5 @@
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { SectionEntity } from '@cf/features/graph/state/model/types'
 import { selectSectionByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
 import {
@@ -44,6 +46,7 @@ const EditSection = ({ sectionId }: { sectionId: string }) => {
 const EditSectionForm = ({ section }: { section: SectionEntity }) => {
   const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
+  const canEdit = useResourcePermission(WorkflowPermission.PART_MANAGEMENT)
 
   const {
     register,
@@ -69,6 +72,9 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
   const debouncedDispatch = useMemo(
     () =>
       debounce((data: SectionFormType) => {
+        if (!canEdit) {
+          return
+        }
         void dispatch(
           changeSectionMeta({
             graphUuid: section.graphUuid,
@@ -79,17 +85,20 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
 
         reset({}, { keepValues: true })
       }, 300),
-    [dispatch, reset, section.graphUuid, section.uuid]
+    [canEdit, dispatch, reset, section.graphUuid, section.uuid]
   )
 
   useEffect(() => {
     const formValues = getValues()
-    if (isDirty) {
+    if (isDirty && canEdit) {
       debouncedDispatch(formValues)
     }
-  }, [watchedFields, isDirty, getValues, debouncedDispatch])
+  }, [watchedFields, isDirty, canEdit, getValues, debouncedDispatch])
 
   const onDuplicate = useCallback(() => {
+    if (!canEdit) {
+      return
+    }
     dispatch(
       insertSectionBelow({
         graphUuid: section.graphUuid,
@@ -97,14 +106,17 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
         duplicate: true
       })
     )
-  }, [dispatch, section.graphUuid, section.uuid])
+  }, [canEdit, dispatch, section.graphUuid, section.uuid])
 
   const onDelete = useCallback(() => {
+    if (!canEdit) {
+      return
+    }
     dialogDispatch(DialogMode.GRAPH_DELETE_SECTION, {
       sectionId: section.uuid,
       graphUuid: section.graphUuid
     })
-  }, [dialogDispatch, section.graphUuid, section.uuid])
+  }, [canEdit, dialogDispatch, section.graphUuid, section.uuid])
 
   return (
     <SC.SidebarInnerWrap data-test-id="workflow-edit-section-form">
@@ -117,15 +129,26 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
           variant="outlined"
           size="small"
           {...register('title')}
+          InputProps={{ readOnly: !canEdit }}
           error={!!errors.title}
           helperText={errors.title?.message}
         />
       </SC.SidebarContent>
       <SC.SidebarActions>
-        <Button variant="contained" color="secondary" onClick={onDuplicate}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={onDuplicate}
+          disabled={!canEdit}
+        >
           {_t('Duplicate')}
         </Button>
-        <Button variant="contained" color="secondary" onClick={onDelete}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={onDelete}
+          disabled={!canEdit}
+        >
           {_t('Delete')}
         </Button>
       </SC.SidebarActions>

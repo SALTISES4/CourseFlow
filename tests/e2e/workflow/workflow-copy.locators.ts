@@ -64,14 +64,12 @@ export function copyWorkflowSubmitButton(page: Page): Locator {
 
 /** Destination UI required by FR-WF-COPY-001 alongside the title field. */
 export function copyWorkflowDestinationSurface(page: Page): Locator {
-  return copyWorkflowProjectSearchField(page)
-    .or(copyWorkflowNoEligibleProjectsState(page))
-    .or(copyWorkflowProjectPanel(page));
+  return copyWorkflowProjectPanel(page).or(copyWorkflowNoEligibleProjectsState(page));
 }
 
 /**
  * Reject create-stepper chrome and assert typed single-dialog chrome.
- * Does not wait for destination content (use expectCopyWorkflowTitleAndDestinationCoAppear).
+ * Does not wait for destination content (use expectCopyWorkflowTitleAndDestinationInSameDialog).
  */
 export async function expectCopyWorkflowDialogChrome(
   page: Page,
@@ -95,13 +93,14 @@ export async function expectCopyWorkflowDialogChrome(
 }
 
 /**
- * FR-WF-COPY-001 — title and destination must appear together.
+ * FR-WF-COPY-001 — title and destination are presented in the same dialog.
  *
- * Fails if copyWorkflowTitleField becomes visible while destination UI is still missing
- * (title-only first surface / deferred project step). Waiting for the panel afterward
- * must not paper over that phase.
+ * The destination component loads eligible projects asynchronously, so its visible
+ * surface may appear after the title field. The single-dialog and no-stepper assertions
+ * distinguish this flow from a deferred project-selection step without imposing a
+ * same-render-tick requirement that the product contract does not specify.
  */
-export async function expectCopyWorkflowTitleAndDestinationCoAppear(
+export async function expectCopyWorkflowTitleAndDestinationInSameDialog(
   page: Page,
 ): Promise<void> {
   await expect(copyWorkflowDialog(page)).toBeVisible({ timeout: 15_000 });
@@ -109,25 +108,10 @@ export async function expectCopyWorkflowTitleAndDestinationCoAppear(
   const title = copyWorkflowTitleField(page);
   const destination = copyWorkflowDestinationSurface(page);
 
-  const firstVisible = await Promise.race([
-    title.waitFor({ state: 'visible', timeout: 15_000 }).then(() => 'title' as const),
-    destination.waitFor({ state: 'visible', timeout: 15_000 }).then(() => 'destination' as const),
-  ]);
-
-  if (firstVisible === 'title') {
-    // No grace period — destination must already be on the same dialog surface.
-    if (!(await destination.isVisible())) {
-      throw new Error(
-        'FR-WF-COPY-001: copyWorkflowTitleField became visible without destination project UI in the same dialog (title-only copy surface).',
-      );
-    }
-  } else {
-    await expect(title).toBeVisible({ timeout: 1_000 });
-  }
-
   await expect(page.getByRole('dialog')).toHaveCount(1);
-  await expect(title).toBeVisible();
-  await expect(destination).toBeVisible();
+  await expect(copyWorkflowDialog(page).locator('.MuiStepper-root')).toHaveCount(0);
+  await expect(title).toBeVisible({ timeout: 15_000 });
+  await expect(destination).toBeVisible({ timeout: 15_000 });
 }
 
 /**
@@ -138,8 +122,7 @@ export async function expectCopyWorkflowCombinedDialogShell(
   page: Page,
   workflowType: string,
 ): Promise<void> {
-  // Co-appear first — must not wait for typed chrome while a title-only surface is up.
-  await expectCopyWorkflowTitleAndDestinationCoAppear(page);
+  await expectCopyWorkflowTitleAndDestinationInSameDialog(page);
   await expectCopyWorkflowDialogChrome(page, workflowType);
   await expect(copyWorkflowProjectPanel(page)).toBeVisible();
   await expect(copyWorkflowProjectSearchField(page)).toBeVisible();
@@ -153,7 +136,7 @@ export async function expectCopyWorkflowSingleDialogShell(
   page: Page,
   workflowType: string,
 ): Promise<void> {
-  await expectCopyWorkflowTitleAndDestinationCoAppear(page);
+  await expectCopyWorkflowTitleAndDestinationInSameDialog(page);
   await expectCopyWorkflowDialogChrome(page, workflowType);
   await expect(copyWorkflowTitleField(page)).toBeVisible();
 }

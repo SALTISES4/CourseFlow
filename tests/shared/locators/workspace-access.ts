@@ -7,14 +7,14 @@ export function workflowAccessDeniedView(page: Page): Locator {
 
 export function workflowAccessDeniedTitle(page: Page): Locator {
   return workflowAccessDeniedView(page).getByRole('heading', {
-    name: 'no workflow access',
+    name: 'No workflow access',
     exact: true,
   });
 }
 
 export function workflowAccessDeniedSubtitle(page: Page): Locator {
   return workflowAccessDeniedView(page).getByText(
-    'this workflow is private. you need permission from the owner to view or edit its contents.',
+    'This workflow is private. you need permission from the owner to view or edit its contents.',
     { exact: true },
   );
 }

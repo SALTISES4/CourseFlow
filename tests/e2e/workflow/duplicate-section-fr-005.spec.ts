@@ -134,6 +134,9 @@ test.describe('Duplicate section — FR-SEC-005', () => {
   test.describe('Hover path — placement, titles, sidebar unchanged', () => {
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
+      await expect(sectionContainers(page)).toHaveCount(workflow.sections.length, {
+        timeout: 15_000,
+      });
     });
 
     test('places new section immediately below source, renumbers, appends " (copy)", leaves sidebar unbound', async ({
@@ -248,6 +251,9 @@ test.describe('Duplicate section — FR-SEC-005', () => {
   test.describe('Content fidelity — nodes, edges, outcomes', () => {
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
+      await expect(sectionContainers(page)).toHaveCount(workflow.sections.length, {
+        timeout: 15_000,
+      });
     });
 
     test('mirrors nodes (channel/row), intra-section edges, outcomes; leaves cross-section edges unchanged', async ({
@@ -400,6 +406,9 @@ test.describe('Duplicate section — FR-SEC-005', () => {
   test.describe('Sidebar path', () => {
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
+      await expect(sectionContainers(page)).toHaveCount(workflow.sections.length, {
+        timeout: 15_000,
+      });
     });
 
     test('duplicate from sidebar keeps form bound to source and places copy immediately below', async ({
@@ -446,7 +455,9 @@ test.describe('Duplicate section — FR-SEC-005', () => {
     }) => {
       const course = workflow.workflowByType('course');
       await page.goto(course.workflow_path);
-      await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
+      await expect(sectionContainers(page)).toHaveCount(course.sections.length, {
+        timeout: 15_000,
+      });
 
       const source = course.sections[0]!;
       const graphBefore = await fetchGraphView(page, course.workflow_uuid);
@@ -506,7 +517,9 @@ test.describe('Duplicate section — FR-SEC-005', () => {
         const commenter = workflow.contributorByRole('commenter');
         await loginAs(page, { email: commenter.email, password: commenter.password });
         await page.goto(workflow.path);
-        await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
+        await expect(sectionContainers(page)).toHaveCount(workflow.sections.length, {
+          timeout: 15_000,
+        });
 
         const sectionUuid = workflow.firstSection().uuid;
         await hoverSectionHeader(page, sectionUuid);
@@ -514,7 +527,7 @@ test.describe('Duplicate section — FR-SEC-005', () => {
         await expect(duplicateBelowButtonInSectionHeader(page, sectionUuid)).toBeVisible();
         await expect(duplicateBelowButtonInSectionHeader(page, sectionUuid)).toBeDisabled();
 
-        await sectionHeader(page, sectionUuid).click();
+        await sectionHeader(page, sectionUuid).getByRole('heading').click();
         await expect(editSectionForm(page)).toBeVisible();
         await expect(duplicateButtonInSidebar(page)).toBeDisabled();
       });
@@ -530,7 +543,9 @@ test.describe('Duplicate section — FR-SEC-005', () => {
         const viewer = workflow.contributorByRole('viewer');
         await loginAs(page, { email: viewer.email, password: viewer.password });
         await page.goto(workflow.path);
-        await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
+        await expect(sectionContainers(page)).toHaveCount(workflow.sections.length, {
+          timeout: 15_000,
+        });
 
         const sectionUuid = workflow.firstSection().uuid;
         await sectionHeader(page, sectionUuid).hover();
@@ -541,9 +556,8 @@ test.describe('Duplicate section — FR-SEC-005', () => {
         );
 
         await sectionHeader(page, sectionUuid).click({ force: true });
-        if (await editSectionForm(page).isVisible()) {
-          await expect(duplicateButtonInSidebar(page)).toBeDisabled();
-        }
+        await expect(editSectionForm(page)).toBeVisible();
+        await expect(duplicateButtonInSidebar(page)).toBeDisabled();
       });
     });
   });

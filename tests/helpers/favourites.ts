@@ -15,6 +15,7 @@ import {
   favouritesToggle,
   expectLibraryCardTitles,
   keywordSearchField,
+  LIBRARY_LISTING_RESULTS_PER_PAGE,
   libraryCards,
   libraryCardTitles,
   libraryFilterToolbar,
@@ -91,15 +92,36 @@ type FavouritesLibrarySearchResponse = {
   items: Array<{ isFavorite: boolean }>;
 };
 
+type FavouritesLibrarySearchRequest = {
+  pagination?: {
+    resultsPerPage?: number;
+  };
+  filters?: {
+    contentType?: string;
+    isFavorite?: boolean;
+    includePublishedFavorites?: boolean;
+  };
+};
+
 function isFavouritesLibrarySearchResponse(response: {
   url: () => string;
-  request: () => { method: () => string };
+  request: () => { method: () => string; postDataJSON: () => unknown };
   status: () => number;
 }): boolean {
+  if (
+    !response.url().includes("/api/library/search") ||
+    response.request().method() !== "POST" ||
+    response.status() !== 200
+  ) {
+    return false;
+  }
+
+  const requestBody = response.request().postDataJSON() as
+    | FavouritesLibrarySearchRequest
+    | null;
   return (
-    response.url().includes("/api/library/search") &&
-    response.request().method() === "POST" &&
-    response.status() === 200
+    requestBody?.pagination?.resultsPerPage ===
+    LIBRARY_LISTING_RESULTS_PER_PAGE
   );
 }
 
@@ -119,13 +141,8 @@ export async function expectFavouritesListingItemsAreFavourited(
   await waitForLibraryResultsLoaded(page);
 
   const response = await searchResponse;
-  const requestBody = response.request().postDataJSON() as {
-    filters?: {
-      contentType?: string;
-      isFavorite?: boolean;
-      includePublishedFavorites?: boolean;
-    };
-  };
+  const requestBody =
+    response.request().postDataJSON() as FavouritesLibrarySearchRequest;
   expect(requestBody.filters?.isFavorite).toBe(true);
   expect(requestBody.filters?.includePublishedFavorites).toBe(true);
   expect(requestBody.filters?.contentType).toBe("project");
@@ -260,9 +277,14 @@ export async function restoreFavouritedCardByTitle(
   await gotoExplore(page);
   await expect(page).toHaveURL(/\/explore\/?$/);
   await waitForLibraryResultsLoaded(page);
-  await triggerLibrarySearchAndWait(page, () => templatesToggle(page).click(), {
-    filters: { isTemplate: true },
-  });
+  await triggerLibrarySearchAndWait(
+    page,
+    async () => {
+      await keywordSearchField(page).fill(title);
+      await keywordSearchField(page).press("Enter");
+    },
+    { filters: { keyword: title } },
+  );
 
   const card = libraryWorkflowCardByTitle(page, title).or(
     libraryProjectCardByTitle(page, title),

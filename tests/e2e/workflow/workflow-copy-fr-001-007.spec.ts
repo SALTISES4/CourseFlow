@@ -91,7 +91,7 @@ test.describe('Copy workflow — FR-WF-COPY-001–007', () => {
     await workflowOverflowButton(page).click();
     await copyWorkflowMenuItem(page, workflowType).click();
 
-    // Strict: title must not appear alone before destination UI (no deferred project step).
+    // Both controls belong to this dialog; there is no deferred project step.
     await expectCopyWorkflowCombinedDialogShell(page, workflowType);
 
     await expect(copyWorkflowTitleField(page)).toHaveValue(`${sourceTitle} (copy)`);
@@ -136,6 +136,7 @@ test.describe('Copy workflow — FR-WF-COPY-001–007', () => {
 
   test('FR-WF-COPY-003 copies graph content and navigates to the new workflow', async ({
     page,
+    workflowCleanup,
   }) => {
     const copiedTitle = `E2E copied activity ${Date.now()}`;
     await openCopyWorkflowDialog(page);
@@ -150,6 +151,7 @@ test.describe('Copy workflow — FR-WF-COPY-001–007', () => {
 
     await expect(copyWorkflowDialog(page)).toBeHidden({ timeout: 15_000 });
     await expect(page).toHaveURL(/\/workflow\/[0-9a-f-]+\/graph\/?$/);
+    workflowCleanup(workflowUuidFromGraphUrl(page.url()));
     await expect(globalMessageSnackbar(page)).toHaveText(
       `The ${workflowType} has been successfully copied`,
     );
@@ -241,7 +243,7 @@ test.describe('Copy workflow — FR-WF-COPY-001–007', () => {
 test.describe('FR-WF-COPY-003: editor becomes owner of the copied workflow', () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
-  test('editor who copies is owner of the new workflow', async ({ page }) => {
+  test('editor who copies is owner of the new workflow', async ({ page, workflowCleanup }) => {
     // Editor is a contributor on the fixture project but not author of the source workflow.
     const editor = contributorByRole(manifest, 'editor');
     await loginAs(page, { email: editor.email, password: editor.password });
@@ -254,6 +256,7 @@ test.describe('FR-WF-COPY-003: editor becomes owner of the copied workflow', () 
 
     await expect(copyWorkflowDialog(page)).toBeHidden({ timeout: 15_000 });
     await expect(page).toHaveURL(/\/workflow\/[0-9a-f-]+\/graph\/?$/);
+    workflowCleanup(workflowUuidFromGraphUrl(page.url()));
     await expect(workflowTitle(page)).toContainText(copiedTitle);
     await expectActorIsOwnerOfCopiedWorkflow(page);
   });

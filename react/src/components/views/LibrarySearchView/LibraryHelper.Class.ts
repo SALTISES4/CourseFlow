@@ -273,9 +273,12 @@ class LibraryHelper {
     locked: Partial<LibraryFiltersIn>
   ): LibrarySearchIn {
     const base = args ?? {}
+    const activeLockedFilters = Object.fromEntries(
+      Object.entries(locked).filter(([, value]) => value != null)
+    ) as Partial<LibraryFiltersIn>
     const mergedFilters: LibraryFiltersIn = {
       ...(base.filters ?? {}),
-      ...locked
+      ...activeLockedFilters
     }
 
     if (
