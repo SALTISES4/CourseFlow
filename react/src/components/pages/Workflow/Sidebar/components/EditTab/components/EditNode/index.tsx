@@ -264,238 +264,232 @@ const EditNodeForm = ({
   const showSpecificEducationSwitch = isProgramParent
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <SC.SidebarInnerWrap>
-        <SC.SidebarContent>
-          <SC.SidebarTitle as="h3" variant="h6">
-            {_t('Edit node')}
-          </SC.SidebarTitle>
+    <SC.SidebarInnerWrap as="form" onSubmit={handleSubmit(onSubmit)}>
+      <SC.SidebarContent>
+        <SC.SidebarTitle as="h3" variant="h6">
+          {_t('Edit node')}
+        </SC.SidebarTitle>
 
-          {isLinked && (
-            <LinkedWorkflowMirrorFields
-              title={mirroredTitle}
-              description={mirroredDescription}
-              parentWorkflowType={parentWorkflowType ?? 'course'}
-              showTime={isCourseParent}
-              showProgramFields={isProgramParent}
-            />
-          )}
+        {isLinked && (
+          <LinkedWorkflowMirrorFields
+            title={mirroredTitle}
+            description={mirroredDescription}
+            parentWorkflowType={parentWorkflowType ?? 'course'}
+            showTime={isCourseParent}
+            showProgramFields={isProgramParent}
+          />
+        )}
 
-          <Stack direction="column" spacing={3} sx={{ mt: isLinked ? 3 : 0 }}>
-            {showEditableTitleFields && (
-              <>
-                <TextField
-                  label={_t('Title')}
-                  variant="outlined"
-                  size="small"
-                  {...register('title', {
-                    required: _t('Title is required')
-                  })}
-                  error={!!errors.title}
-                  helperText={errors.title?.message}
-                />
-                <TextField
-                  label={_t('Description')}
-                  variant="outlined"
-                  size="small"
-                  multiline
-                  maxRows={5}
-                  {...register('description')}
-                />
-              </>
-            )}
-
-            {showContextField && (
-              <FormControl fullWidth size="small">
-                <InputLabel id="context-type-select-label">
-                  {_t('Context')}
-                </InputLabel>
-                <Controller
-                  name="contextType"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      label={_t('Context')}
-                      labelId="context-type-select-label"
-                    >
-                      {optionsData.contexts.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  )}
-                />
-              </FormControl>
-            )}
-
-            {showTaskTypeField && (
-              <FormControl fullWidth size="small">
-                <InputLabel id="task-type-select-label">
-                  {_t('Type of task')}
-                </InputLabel>
-                <Controller
-                  name="taskType"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      label={_t('Type of task')}
-                      labelId="task-type-select-label"
-                    >
-                      {optionsData.taskTypes.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  )}
-                />
-              </FormControl>
-            )}
-
-            {showEditableTimeFields && (
-              <Stack direction="row" gap={2}>
-                <TextField
-                  label={_t('Amount')}
-                  variant="outlined"
-                  size="small"
-                  {...register('timeRequired')}
-                  sx={{ flexBasis: '35%' }}
-                />
-                <FormControl sx={{ flexGrow: 1 }} size="small">
-                  <InputLabel id="unit-type-select-label">
-                    {_t('Unit type')}
-                  </InputLabel>
-                  <Controller
-                    name="timeUnits"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        label={_t('Unit type')}
-                        labelId="unit-type-select-label"
-                      >
-                        {optionsData.timeUnits.map((unit, idx) => (
-                          <MenuItem key={idx} value={idx + 1}>
-                            {unit}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
-                </FormControl>
-              </Stack>
-            )}
-
-            {showTagsField && (
-              <Controller
-                name="tags"
-                control={control}
-                render={({ field }) => (
-                  <Autocomplete
-                    multiple
-                    size="small"
-                    options={optionsData.tags}
-                    getOptionLabel={(tag) => tag.label}
-                    value={optionsData.tags.filter(
-                      (tag) => field.value?.includes(tag.uuid) ?? false
-                    )}
-                    onChange={(_, selectedOptions) =>
-                      field.onChange(
-                        selectedOptions.map((option) => option.uuid)
-                      )
-                    }
-                    isOptionEqualToValue={(option, value) =>
-                      option.uuid === value.uuid
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        variant="outlined"
-                        label={_t('Tags')}
-                      />
-                    )}
-                  />
-                )}
-              />
-            )}
-
-            {showSpecificEducationSwitch && (
-              <FormControlLabel
-                label={_t('Specific education')}
-                control={
-                  <Controller
-                    name="specificEducation"
-                    control={control}
-                    render={({ field }) => (
-                      <Switch
-                        checked={Boolean(field.value)}
-                        onChange={field.onChange}
-                        size="small"
-                      />
-                    )}
-                  />
-                }
-              />
-            )}
-          </Stack>
-
-          {showProgramPonderation && (
+        <Stack direction="column" spacing={3} sx={{ mt: isLinked ? 3 : 0 }}>
+          {showEditableTitleFields && (
             <>
-              <Divider sx={{ mt: 3 }} />
-              <Typography
-                component="h6"
-                variant="body2"
-                sx={{ mt: 1, mb: 3, fontWeight: 600 }}
-              >
-                {_t('Ponderation')}
-              </Typography>
-              <Stack direction="row" gap={2} sx={{ mb: 2 }}>
-                <TextField
-                  label={_t('Hrs. theory')}
-                  variant="outlined"
-                  size="small"
-                  {...register('ponderation.theory')}
-                />
-                <TextField
-                  label={_t('Hrs. practice')}
-                  variant="outlined"
-                  size="small"
-                  {...register('ponderation.practice')}
-                />
-              </Stack>
               <TextField
-                label={_t('Hrs. individual')}
+                label={_t('Title')}
                 variant="outlined"
                 size="small"
-                {...register('ponderation.individual')}
+                {...register('title', {
+                  required: _t('Title is required')
+                })}
+                error={!!errors.title}
+                helperText={errors.title?.message}
+              />
+              <TextField
+                label={_t('Description')}
+                variant="outlined"
+                size="small"
+                multiline
+                maxRows={5}
+                {...register('description')}
               />
             </>
           )}
-        </SC.SidebarContent>
-        <SC.SidebarActions>
-          {showLinkButton && (
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={
-                isLinked ? removeLinkedWorkflow : toggleLinkWorkflowDialog
-              }
-            >
-              {linkActionLabel}
-            </Button>
+
+          {showContextField && (
+            <FormControl fullWidth size="small">
+              <InputLabel id="context-type-select-label">
+                {_t('Context')}
+              </InputLabel>
+              <Controller
+                name="contextType"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    label={_t('Context')}
+                    labelId="context-type-select-label"
+                  >
+                    {optionsData.contexts.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+            </FormControl>
           )}
-          <Button variant="contained" color="secondary">
-            {_t('Duplicate')}
+
+          {showTaskTypeField && (
+            <FormControl fullWidth size="small">
+              <InputLabel id="task-type-select-label">
+                {_t('Type of task')}
+              </InputLabel>
+              <Controller
+                name="taskType"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    label={_t('Type of task')}
+                    labelId="task-type-select-label"
+                  >
+                    {optionsData.taskTypes.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+            </FormControl>
+          )}
+
+          {showEditableTimeFields && (
+            <Stack direction="row" gap={2}>
+              <TextField
+                label={_t('Amount')}
+                variant="outlined"
+                size="small"
+                {...register('timeRequired')}
+                sx={{ flexBasis: '35%' }}
+              />
+              <FormControl sx={{ flexGrow: 1 }} size="small">
+                <InputLabel id="unit-type-select-label">
+                  {_t('Unit type')}
+                </InputLabel>
+                <Controller
+                  name="timeUnits"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      label={_t('Unit type')}
+                      labelId="unit-type-select-label"
+                    >
+                      {optionsData.timeUnits.map((unit, idx) => (
+                        <MenuItem key={idx} value={idx + 1}>
+                          {unit}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+              </FormControl>
+            </Stack>
+          )}
+
+          {showTagsField && (
+            <Controller
+              name="tags"
+              control={control}
+              render={({ field }) => (
+                <Autocomplete
+                  multiple
+                  size="small"
+                  options={optionsData.tags}
+                  getOptionLabel={(tag) => tag.label}
+                  value={optionsData.tags.filter(
+                    (tag) => field.value?.includes(tag.uuid) ?? false
+                  )}
+                  onChange={(_, selectedOptions) =>
+                    field.onChange(selectedOptions.map((option) => option.uuid))
+                  }
+                  isOptionEqualToValue={(option, value) =>
+                    option.uuid === value.uuid
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label={_t('Tags')}
+                    />
+                  )}
+                />
+              )}
+            />
+          )}
+
+          {showSpecificEducationSwitch && (
+            <FormControlLabel
+              label={_t('Specific education')}
+              control={
+                <Controller
+                  name="specificEducation"
+                  control={control}
+                  render={({ field }) => (
+                    <Switch
+                      checked={Boolean(field.value)}
+                      onChange={field.onChange}
+                      size="small"
+                    />
+                  )}
+                />
+              }
+            />
+          )}
+        </Stack>
+
+        {showProgramPonderation && (
+          <>
+            <Divider sx={{ mt: 3 }} />
+            <Typography
+              component="h6"
+              variant="body2"
+              sx={{ mt: 1, mb: 3, fontWeight: 600 }}
+            >
+              {_t('Ponderation')}
+            </Typography>
+            <Stack direction="row" gap={2} sx={{ mb: 2 }}>
+              <TextField
+                label={_t('Hrs. theory')}
+                variant="outlined"
+                size="small"
+                {...register('ponderation.theory')}
+              />
+              <TextField
+                label={_t('Hrs. practice')}
+                variant="outlined"
+                size="small"
+                {...register('ponderation.practice')}
+              />
+            </Stack>
+            <TextField
+              label={_t('Hrs. individual')}
+              variant="outlined"
+              size="small"
+              {...register('ponderation.individual')}
+            />
+          </>
+        )}
+      </SC.SidebarContent>
+      <SC.SidebarActions>
+        {showLinkButton && (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={isLinked ? removeLinkedWorkflow : toggleLinkWorkflowDialog}
+          >
+            {linkActionLabel}
           </Button>
-          <Button variant="contained" color="secondary">
-            {_t('Delete')}
-          </Button>
-        </SC.SidebarActions>
-      </SC.SidebarInnerWrap>
-    </form>
+        )}
+        <Button variant="contained" color="secondary">
+          {_t('Duplicate')}
+        </Button>
+        <Button variant="contained" color="secondary">
+          {_t('Delete')}
+        </Button>
+      </SC.SidebarActions>
+    </SC.SidebarInnerWrap>
   )
 }
 
