@@ -85,6 +85,31 @@ def test_create_and_list_outcomes_in_graph_view(client: Client, user):
 
 
 @pytest.mark.django_db
+def test_create_outcome_rejects_a_fourth_level(client: Client, user):
+    raw = _issue_token_for(user)
+    _workflow_uuid, graph_uuid = _create_workflow(client, raw)
+    graph = Graph.objects.get(uuid=graph_uuid)
+    root = Outcome.objects.create(graph=graph, title="Root", order=0)
+    child = Outcome.objects.create(graph=graph, parent=root, title="Child", order=0)
+    grandchild = Outcome.objects.create(
+        graph=graph,
+        parent=child,
+        title="Grandchild",
+        order=0,
+    )
+
+    response = client.post(
+        f"/api/graph/{graph_uuid}/outcomes",
+        data={"parentUuid": str(grandchild.uuid), "title": "Too deep"},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+
+    assert response.status_code == 400, response.content
+    assert not Outcome.objects.filter(graph=graph, title="Too deep").exists()
+
+
+@pytest.mark.django_db
 def test_move_outcome_reparents_and_reorders(client: Client, user):
     raw = _issue_token_for(user)
     _workflow_uuid, graph_uuid = _create_workflow(client, raw)
@@ -117,17 +142,53 @@ def test_move_outcome_reparents_and_reorders(client: Client, user):
 
 
 @pytest.mark.django_db
+def test_move_outcome_rejects_a_subtree_that_would_exceed_three_levels(
+    client: Client,
+    user,
+):
+    raw = _issue_token_for(user)
+    _workflow_uuid, graph_uuid = _create_workflow(client, raw)
+    graph = Graph.objects.get(uuid=graph_uuid)
+    root = Outcome.objects.create(graph=graph, title="Root", order=0)
+    child = Outcome.objects.create(graph=graph, parent=root, title="Child", order=0)
+    moving = Outcome.objects.create(graph=graph, title="Moving", order=1)
+    Outcome.objects.create(graph=graph, parent=moving, title="Descendant", order=0)
+
+    response = client.post(
+        f"/api/outcome/{moving.uuid}/move",
+        data={"parentUuid": str(child.uuid)},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+
+    assert response.status_code == 400, response.content
+    moving.refresh_from_db()
+    assert moving.parent_id is None
+
+
+@pytest.mark.django_db
 def test_delete_outcome_cascades_children(client: Client, user):
     raw = _issue_token_for(user)
     _workflow_uuid, graph_uuid = _create_workflow(client, raw)
     g = Graph.objects.get(uuid=graph_uuid)
 
     root = Outcome.objects.create(graph=g, title="Root", order=0)
-    Outcome.objects.create(graph=g, parent=root, title="Child", order=0)
+    child = Outcome.objects.create(graph=g, parent=root, title="Child", order=0)
+    grandchild = Outcome.objects.create(
+        graph=g,
+        parent=child,
+        title="Grandchild",
+        order=0,
+    )
 
     r = client.delete(
         f"/api/outcome/{root.uuid}",
         **_auth_header(raw),
     )
     assert r.status_code == 200
+    assert set(r.json()["changes"]["outcomes"]["deleted"]) == {
+        str(root.uuid),
+        str(child.uuid),
+        str(grandchild.uuid),
+    }
     assert Outcome.objects.filter(graph=g).count() == 0

@@ -246,7 +246,7 @@ requirements:
     mainFlow:
       - system renders contextActionBar directly below topNavigationBar when current route matches '/workflow/{id}/*'
       - contextActionBar remains available when switching between workflow sub-views via workflowViewTabSelector per tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml FR-WF-HEADER-001 (same bar contract across sub-views)
-      - contextActionBar includes editPencilButton, contextActionBarOverflowTrigger, and workflowViewSettingsTrigger; detailed editPencilButton behavior is specified in workflow_edit_form_requirements_v1.yaml FR-WF-FORM-001
+      - contextActionBar includes editPencilButton, contextActionBarOverflowTrigger, and workflowViewSettingsTrigger for every actor in scope; editPencilButton remains visible for every actor, while its actionability is specified in workflow_edit_form_requirements_v1.yaml FR-WF-FORM-001
       - when active workflow sub-view is 'Workflow', contextActionBar also includes workflowJumpToTrigger; on other workflow sub-views this control is not shown
       - contextActionBar shell is shown on each workflow sub-view (inner controls may differ per FR-CAB-005 and FR-CAB-006)
 
@@ -254,6 +254,7 @@ requirements:
 
     acceptanceCriteria:
       - given FR-CAB-004 preconditions hold, contextActionBar is visible below topNavigationBar for each of the workflow sub-views in scope
+      - given FR-CAB-004 preconditions hold, editPencilButton is visible on contextActionBar for every actor in scope, with actionability conforming to workflow_edit_form_requirements_v1.yaml FR-WF-FORM-001
 
     openQuestions: []
 

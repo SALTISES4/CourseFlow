@@ -28,8 +28,6 @@ test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher',
 /**
  * Outcome insert, ordinals, depth cap, and subtree delete — FR-WF-EO-003, EO-007, EO-008, EO-014.
  * Requirements: workflow_edit_outcome_requirements_v1.yaml, workflow_delete_outcome_requirements_v1.yaml
- * Product gaps:
- * - FR-WF-EO-008: Insert child is still rendered at FR depth 3 (not hidden per FR).
  */
 
 const E2E_CHILD_TITLE = 'E2E Outcome Child';
@@ -177,10 +175,7 @@ test.describe('Outcome — insert, ordinals, depth, subtree delete (FR-WF-EO-003
     const insertChild = workflowOutcomeHoverInsertChildForHeader(page, depth3Header);
 
     await hoverWorkflowOutcomeHeaderLocator(page, depth3Header);
-    if (await insertChild.isVisible()) {
-      await insertChild.click();
-      await page.waitForTimeout(500);
-    }
+    await expect(insertChild).toHaveCount(0);
 
     expect(await workflowOutcomeHeadersAtFrDepth(page, 4).count()).toBe(0);
     expect(await workflowOutcomeHeaderCount(page)).toBe(beforeCount);

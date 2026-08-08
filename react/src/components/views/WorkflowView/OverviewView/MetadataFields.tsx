@@ -4,6 +4,7 @@ import type {
 } from '@cf/api/gen/types.gen'
 import { WorkflowType } from '@cf/api/gen/types.gen'
 import { _t } from '@cf/utility/Utility.class'
+import DurationTextField from '@cfComponents/DurationTextField'
 import Alert from '@mui/material/Alert'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Grid from '@mui/material/Grid'
@@ -78,6 +79,22 @@ const MetadataFields = ({
     />
   )
 
+  const durationField = (
+    label: string,
+    key: MetadataKey,
+    disabled = false,
+    fullWidth = false
+  ) => (
+    <DurationTextField
+      label={_t(label)}
+      value={values[key] as number | null | undefined}
+      disabled={!canEdit || disabled || isSaving}
+      fullWidth={fullWidth}
+      onValueChange={(value) => setValue(key, value)}
+      onValueCommit={(value) => void onSave({ [key]: value })}
+    />
+  )
+
   const isCourseOrProgram =
     workflowType === WorkflowType.COURSE ||
     workflowType === WorkflowType.PROGRAM
@@ -113,7 +130,7 @@ const MetadataFields = ({
           <SC.InfoBlockTitle>{_t('Time')}</SC.InfoBlockTitle>
           <SC.InfoBlockContent>
             <Stack direction="row" spacing={2}>
-              {numericField('Time', 'time', timeAutomatic)}
+              {durationField('Time', 'time', timeAutomatic)}
               <FormControlLabel
                 label={_t('Calculate time automatically')}
                 control={
@@ -173,17 +190,17 @@ const MetadataFields = ({
               )}
               <Grid container spacing={2}>
                 <Grid item xs={12} md={4}>
-                  {numericField('Theory', 'theoryTime', ponderationAutomatic)}
+                  {durationField('Theory', 'theoryTime', ponderationAutomatic)}
                 </Grid>
                 <Grid item xs={12} md={4}>
-                  {numericField(
+                  {durationField(
                     'Practical',
                     'practicalTime',
                     ponderationAutomatic
                   )}
                 </Grid>
                 <Grid item xs={12} md={4}>
-                  {numericField(
+                  {durationField(
                     'Individual',
                     'individualTime',
                     ponderationAutomatic
@@ -222,20 +239,18 @@ const MetadataFields = ({
               />
               <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
-                  {numericField(
+                  {durationField(
                     'General time',
                     'generalTime',
                     classificationAutomatic,
-                    undefined,
                     true
                   )}
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  {numericField(
+                  {durationField(
                     'Specific time',
                     'specificTime',
                     classificationAutomatic,
-                    undefined,
                     true
                   )}
                 </Grid>

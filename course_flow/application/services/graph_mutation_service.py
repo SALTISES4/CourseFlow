@@ -42,6 +42,8 @@ from course_flow.core.permissions import WorkflowPermission
 
 MutationError = Literal["not_found", "forbidden", "bad_request"]
 
+MAX_OUTCOME_LEVELS = 3
+
 
 def graph_from_node(node: Node) -> Graph | None:
     """
@@ -199,6 +201,64 @@ def _outcome_is_descendant(graph_id: int, ancestor_pk: int, candidate_pk: int) -
             .first()
         )
     return False
+
+
+def _outcome_level(graph_id: int, outcome_pk: int) -> int:
+    """Return the one-based level of an outcome in its graph hierarchy."""
+    level = 0
+    current_pk: int | None = outcome_pk
+    while current_pk is not None:
+        level += 1
+        current_pk = (
+            Outcome.objects.filter(pk=current_pk, graph_id=graph_id)
+            .values_list("parent_id", flat=True)
+            .first()
+        )
+    return level
+
+
+def _outcome_subtree_levels(graph_id: int, outcome_pk: int) -> int:
+    """Return the number of levels in an outcome subtree, including its root."""
+    parent_by_pk = dict(
+        Outcome.objects.filter(graph_id=graph_id).values_list("pk", "parent_id")
+    )
+    children_by_parent: dict[int, list[int]] = {}
+    for pk, parent_pk in parent_by_pk.items():
+        if parent_pk is not None:
+            children_by_parent.setdefault(parent_pk, []).append(pk)
+
+    def subtree_levels(pk: int) -> int:
+        children = children_by_parent.get(pk, [])
+        if not children:
+            return 1
+        return 1 + max(subtree_levels(child_pk) for child_pk in children)
+
+    return subtree_levels(outcome_pk)
+
+
+def _outcome_subtree_uuids(graph_id: int, outcome_pk: int) -> list[UUID]:
+    """Return the UUIDs removed by a cascading outcome deletion."""
+    outcomes = list(
+        Outcome.objects.filter(graph_id=graph_id).values_list(
+            "pk",
+            "parent_id",
+            "uuid",
+        )
+    )
+    children_by_parent: dict[int, list[int]] = {}
+    uuid_by_pk: dict[int, UUID] = {}
+    for pk, parent_pk, outcome_uuid in outcomes:
+        uuid_by_pk[pk] = outcome_uuid
+        if parent_pk is not None:
+            children_by_parent.setdefault(parent_pk, []).append(pk)
+
+    subtree_uuids: list[UUID] = []
+    pending = [outcome_pk]
+    while pending:
+        current_pk = pending.pop()
+        subtree_uuids.append(uuid_by_pk[current_pk])
+        pending.extend(children_by_parent.get(current_pk, []))
+    return subtree_uuids
 
 
 def _emit_outcome_updates(
@@ -1811,6 +1871,8 @@ class GraphMutationService:
                 parent = Outcome.objects.get(uuid=parent_uuid, graph_id=wf.id)
             except Outcome.DoesNotExist:
                 return None, "not_found"
+            if _outcome_level(wf.id, parent.pk) >= MAX_OUTCOME_LEVELS:
+                return None, "bad_request"
             parent_pk = parent.pk
 
         resolved_index = _resolve_outcome_insert_index(
@@ -1946,10 +2008,12 @@ class GraphMutationService:
 
         parent_pk = outcome.parent_id
         deleted_uuid = outcome.uuid
+        deleted_uuids = _outcome_subtree_uuids(wf.id, outcome.pk)
         outcome.delete()
 
         builder = GraphMutationDeltaBuilder()
-        builder.add_outcome_deleted(deleted_uuid)
+        for outcome_uuid in deleted_uuids:
+            builder.add_outcome_deleted(outcome_uuid)
         _renumber_sibling_outcomes(wf.id, parent_pk, builder)
         _bump_revision(wf)
 
@@ -2101,6 +2165,15 @@ class GraphMutationService:
             after_uuid=after_uuid,
         )
         if resolved_index is None:
+            return None, "bad_request"
+
+        parent_level = (
+            _outcome_level(wf.id, new_parent_pk) if new_parent_pk is not None else 0
+        )
+        if (
+            parent_level + _outcome_subtree_levels(wf.id, moving.pk)
+            > MAX_OUTCOME_LEVELS
+        ):
             return None, "bad_request"
 
         old_parent_pk = moving.parent_id

@@ -1,5 +1,6 @@
 import { _t } from '@cf/utility/Utility.class'
 import RichTextDescription from '@cfComponents/dialog/Workflow/components/RichTextDescription'
+import { formatHoursDuration } from '@cfComponents/DurationTextField'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -57,7 +58,7 @@ const LinkedWorkflowMirrorFields = ({
         label={_t('Time')}
         variant="outlined"
         size="small"
-        value={time ?? ''}
+        value={formatHoursDuration(time)}
         placeholder="—"
         InputProps={{ readOnly: true }}
       />
@@ -76,7 +77,7 @@ const LinkedWorkflowMirrorFields = ({
           label={_t('Hrs. theory')}
           variant="outlined"
           size="small"
-          value={ponderationTheory ?? ''}
+          value={formatHoursDuration(ponderationTheory)}
           placeholder="—"
           InputProps={{ readOnly: true }}
         />
@@ -84,7 +85,7 @@ const LinkedWorkflowMirrorFields = ({
           label={_t('Hrs. practice')}
           variant="outlined"
           size="small"
-          value={ponderationPractice ?? ''}
+          value={formatHoursDuration(ponderationPractice)}
           placeholder="—"
           InputProps={{ readOnly: true }}
         />
@@ -92,7 +93,7 @@ const LinkedWorkflowMirrorFields = ({
           label={_t('Hrs. individual')}
           variant="outlined"
           size="small"
-          value={ponderationIndividual ?? ''}
+          value={formatHoursDuration(ponderationIndividual)}
           placeholder="—"
           InputProps={{ readOnly: true }}
         />

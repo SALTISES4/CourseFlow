@@ -90,6 +90,7 @@ requirements:
 
     mainFlow:
       - editPencilButton actionability conforms to roleBehavior for this FR
+      - editPencilButton remains rendered and visible on contextActionBar for every actor in scope; when roleBehavior marks the control disabled, it is disabled and non-interactive rather than hidden
       - given actor is owner or editor and clicks editPencilButton, system opens editWorkflowDialog
       - editWorkflowDialog presents workflowEditForm with editWorkflowFormDialogTitle matching the 'Edit [workflow type]' template after lowercase substitution for that workflow's type label
       - workflowTitleField has visible label exactly 'Title' and workflowDescriptionField has visible label exactly 'Description'; neither edit-form field label is prefixed by workflow type
@@ -114,7 +115,7 @@ requirements:
 
     acceptanceCriteria:
       - given actor is owner or editor, editPencilButton is clickable and actor can open editWorkflowDialog via trigger
-      - given editPencilButton actionability is disabled per roleBehavior for this FR, editWorkflowDialog does not open when actor attempts to click editPencilButton
+      - given actor is viewer, commenter, or user, editPencilButton is visible and disabled, and editWorkflowDialog does not open via that control
       - given actor is owner or editor and FR-WF-FORM-001 preconditions hold and trigger fires, editWorkflowDialog is open
       - editWorkflowFormDialogTitle matches the 'Edit [workflow type]' pattern with lowercase type substitution for the workflow instance
       - editWorkflowFormSubmitButton is visible with label matching the 'Update [workflow type]' template after the same lowercase substitution for that workflow's type label

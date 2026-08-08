@@ -147,6 +147,7 @@ const HoverMenu = ({
   const commentCount = useSelector((state: RootState) =>
     selectThreadCommentCount(state, sibling?.threadUuid)
   )
+  const canInsertChild = level < 2
 
   const onActionClick = useCallback(
     (action: HoverMenuActions) => {
@@ -165,13 +166,15 @@ const HoverMenu = ({
             }
             break
           case 'insert-child':
-            dispatch(
-              createOutcome({
-                graphUuid,
-                parentUuid: uuid
-              })
-            )
-            setCollapsed(false)
+            if (canInsertChild) {
+              dispatch(
+                createOutcome({
+                  graphUuid,
+                  parentUuid: uuid
+                })
+              )
+              setCollapsed(false)
+            }
             break
           case 'duplicate':
             dispatch(
@@ -203,7 +206,7 @@ const HoverMenu = ({
         }
       }
     },
-    [dispatch, graphUuid, setCollapsed, sibling, uuid]
+    [canInsertChild, dispatch, graphUuid, setCollapsed, sibling, uuid]
   )
 
   return (
@@ -215,11 +218,12 @@ const HoverMenu = ({
           icon: <AddCircleOutlineIcon />,
           onClick: onActionClick('insert-sibling')
         },
-        canManageOutcomes && {
-          label: _t('Insert child'),
-          icon: <QueueIcon />,
-          onClick: onActionClick('insert-child')
-        },
+        canManageOutcomes &&
+          canInsertChild && {
+            label: _t('Insert child'),
+            icon: <QueueIcon />,
+            onClick: onActionClick('insert-child')
+          },
         canManageOutcomes && {
           label: _t('Duplicate'),
           icon: <ContentCopyIcon />,

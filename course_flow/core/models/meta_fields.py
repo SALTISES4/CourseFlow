@@ -22,6 +22,7 @@ class NodeTaskMetaFields(models.Model):
     """Mixin fields for task-layer metadata (node rows only in current product rules)."""
 
     context_classification = models.IntegerField(null=True, blank=True)
+    task_classification = models.IntegerField(null=True, blank=True)
     time_required = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
     )

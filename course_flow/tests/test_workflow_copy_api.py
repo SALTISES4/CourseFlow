@@ -343,6 +343,7 @@ def test_copy_preserves_activity_workflow_and_task_node_metadata():
         title="Task node",
     )
     task.taskmeta.context_classification = 9
+    task.taskmeta.task_classification = 10
     task.taskmeta.time_required = Decimal("1.75")
     task.taskmeta.time_units = 1
     task.taskmeta.represents_workflow = True
@@ -370,6 +371,7 @@ def test_copy_preserves_activity_workflow_and_task_node_metadata():
 
     copied_task = copied.nodes.select_related("taskmeta").get(title="Task node")
     assert copied_task.taskmeta.context_classification == 9
+    assert copied_task.taskmeta.task_classification == 10
     assert copied_task.taskmeta.time_required == task.taskmeta.time_required
     assert copied_task.taskmeta.time_units == 1
     assert copied_task.taskmeta.represents_workflow is True

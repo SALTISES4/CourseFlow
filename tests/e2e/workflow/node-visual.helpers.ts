@@ -25,6 +25,21 @@ type NodeResource = {
   timeUnits?: number | null;
 };
 
+type GraphViewForNodeSetup = {
+  graph: { uuid: string };
+  nodes: Array<{ uuid: string }>;
+  sections: Array<{ uuid: string }>;
+  channels: Array<{ uuid: string }>;
+};
+
+type GraphNodeCreateResponse = {
+  changes: {
+    nodes: {
+      created: Array<{ uuid: string }>;
+    };
+  };
+};
+
 /** PATCH /api/node/{uuid}/meta — canvas chrome depends on these persisted values. */
 export async function patchNodeMetaViaApi(
   page: Page,
@@ -41,6 +56,52 @@ export async function fetchNodeViaApi(page: Page, nodeUuid: string): Promise<Nod
   const response = await authenticatedApiRequest(page, 'GET', `/api/node/${nodeUuid}`);
   expect(response.ok()).toBeTruthy();
   return (await response.json()) as NodeResource;
+}
+
+/** Ensure a minimal copied workflow has a real node without mutating its canonical seed asset. */
+export async function ensureFirstWorkflowNodeViaApi(
+  page: Page,
+  workflowUuid: string,
+): Promise<string> {
+  const graphResponse = await authenticatedApiRequest(
+    page,
+    'GET',
+    `/api/graph/${workflowUuid}/view`,
+  );
+  expect(graphResponse.ok()).toBeTruthy();
+  const graphView = (await graphResponse.json()) as GraphViewForNodeSetup;
+  const existingNode = graphView.nodes[0];
+  if (existingNode) {
+    return existingNode.uuid;
+  }
+
+  const section = graphView.sections[0];
+  const channel = graphView.channels[0];
+  if (!section || !channel) {
+    throw new Error(
+      `Workflow ${workflowUuid} must have a section and node category before creating a node.`,
+    );
+  }
+
+  const createResponse = await authenticatedApiRequest(
+    page,
+    'POST',
+    `/api/graph/${graphView.graph.uuid}/nodes`,
+    {
+      data: {
+        sectionUuid: section.uuid,
+        channelUuid: channel.uuid,
+        sectionRow: 0,
+      },
+    },
+  );
+  expect(createResponse.ok()).toBeTruthy();
+  const created = (await createResponse.json()) as GraphNodeCreateResponse;
+  const node = created.changes.nodes.created[0];
+  if (!node) {
+    throw new Error(`Create node returned no node for workflow ${workflowUuid}.`);
+  }
+  return node.uuid;
 }
 
 export async function workflowNodeBorderBackgroundColor(

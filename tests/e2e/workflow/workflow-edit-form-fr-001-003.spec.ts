@@ -236,12 +236,8 @@ test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
       await expect(workflowTitle(page)).toBeVisible({ timeout: 15_000 });
 
       const pencil = editPencilButton(page);
-      // FR: editPencilButton is disabled for viewer (product may hide it instead).
-      await expect.soft(pencil).toBeVisible({ timeout: 5_000 });
-      await expect.soft(pencil).toBeDisabled({ timeout: 1_000 });
-      if ((await pencil.count()) > 0) {
-        await pencil.click({ force: true });
-      }
+      await expect(pencil).toBeVisible();
+      await expect(pencil).toBeDisabled();
       await expect(editWorkflowDialog(page)).toBeHidden();
     });
   });

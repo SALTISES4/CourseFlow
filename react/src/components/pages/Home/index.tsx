@@ -18,7 +18,7 @@ import Section from './components/Section'
 import Welcome from './components/Welcome'
 
 const Home = () => {
-  const { data, isLoading } = useLibrarySearch({
+  const { data: projectsData, isLoading: projectsLoading } = useLibrarySearch({
     pagination: {
       page: 0,
       resultsPerPage: 4
@@ -33,17 +33,33 @@ const Home = () => {
     }
   })
 
-  if (isLoading || !data) {
+  const { data: templatesData, isLoading: templatesLoading } = useLibrarySearch(
+    {
+      pagination: {
+        page: 0,
+        resultsPerPage: 4
+      },
+      sort: {
+        value: LibrarySortValueIn.DATE_MODIFIED,
+        direction: LibrarySortDirectionIn.DESC
+      },
+      filters: {
+        contentType: LibraryContentTypeIn.WORKFLOW,
+        isTemplate: true,
+        isArchived: false
+      }
+    }
+  )
+
+  if (projectsLoading || templatesLoading || !projectsData || !templatesData) {
     return <Loader />
   }
 
-  //  const { projects, templates } = data.dataPackage
-  const projects = data?.items ?? []
+  const projects = projectsData.items ?? []
+  const templates = templatesData.items ?? []
 
   const formattedProjects = formatLibraryObjects(projects)
-
-  // const formattedTemplates = formatLibraryObjects(templates)
-  const formattedTemplates: ReturnType<typeof formatLibraryObjects> = []
+  const formattedTemplates = formatLibraryObjects(templates)
 
   /*******************************************************
    * RENDER
@@ -91,8 +107,6 @@ const Home = () => {
           )}
           hideIfCookie={CookieTypes.HIDE_HOME_HOWTO_TEMPLATE_MESSAGE}
         />
-
-        <Alert sx={{ mb: 3 }} severity="warning" title="TODO - Backend" />
         <GridWrap>
           {formattedTemplates.map((item) => (
             <WorkflowCardWrapper key={`template-${item.uuid}`} {...item} />

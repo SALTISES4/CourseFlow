@@ -17,7 +17,10 @@ import {
   expectProgramOverviewMetadataCompositionPerFrWfOv001,
   expectTimeEditableWhenAutoCalculateOffPerFrWfOv003,
   expectTimeReadOnlyWhenAutoCalculateOnPerFrWfOv003,
+  expectWorkflowPermissionsMatchParentProjectPerFrWfOv007,
+  expectWorkflowPermissionsPanelReadOnlyPerFrWfOv007,
 } from '../../helpers/workflow-overview';
+import { getProjectPath } from '../../helpers/manifest';
 import { workflowRightSidebar } from '../../shared/locators/workflow';
 import { firstWorkflowNodeUuid } from './comments-tab.helpers';
 import { expectWorkflowEditNodeFormTimeField } from './edit-node.helpers';
@@ -67,9 +70,8 @@ test.use({
  *
  * Activity, course, and program routes come from the isolated workflow manifest.
  *
- * OverviewView currently passes `author` where UserPermissions expects `owner`.
- * Tests open Overview through `openWorkflowOverview` (empty-team stub) so the
- * shell can render; contributor/owner row assertions remain skipped.
+ * Overview and permissions assertions use the disposable workflow and its real
+ * parent-project team; no API routes are mocked in this suite.
  */
 test.describe('workflow-overview-fr-001-007', () => {
   test.describe('view shell (FR-WF-OV-001)', () => {
@@ -274,14 +276,15 @@ test.describe('workflow-overview-fr-001-007', () => {
       }
     });
 
-    test('FR-WF-OV-007: permissions panel is visible and read-only', async ({ page }) => {
+    test('FR-WF-OV-007: permissions panel is visible and read-only', async ({
+      page,
+      workflow,
+    }) => {
+      const viewer = workflow.contributorByRole('viewer');
       const panel = workflowMetadataPermissionsPanel(page);
       await expect(panel).toBeVisible();
       await expect(panel.getByText('Permissions', { exact: true })).toBeVisible();
-      await expect(panel.getByText('Add CourseFlow user', { exact: true })).toHaveCount(0);
-      await expect(panel.getByRole('button', { name: /remove contributor/i })).toHaveCount(0);
-      // Contributor/owner rows require OverviewView to pass `owner` into UserPermissions
-      // (currently passes `author`). Empty-team stub avoids the crash; row assertions stay skipped.
+      await expectWorkflowPermissionsPanelReadOnlyPerFrWfOv007(page, [viewer.email]);
     });
   });
 
@@ -605,25 +608,26 @@ test.describe('workflow-overview-fr-001-007', () => {
     });
 
     test.describe('FR-WF-OV-007: permissions panel', () => {
-      // OverviewView passes `author` where UserPermissions expects `owner`, so any non-empty
-      // team response crashes the Overview route. Empty-team stub keeps the shell alive for
-      // metadata tests but cannot populate owner/contributor rows for FR-WF-OV-007.
-      test('permissions panel is visible and read-only (chrome only; rows blocked by product bug)', async ({
+      test('permissions panel is visible and read-only', async ({
         page,
         workflow,
       }) => {
         await openWorkflowOverview(page, workflow.path);
-        const panel = workflowMetadataPermissionsPanel(page);
-        await expect(panel).toBeVisible();
-        await expect(panel.getByText('Permissions', { exact: true })).toBeVisible();
-        await expect(panel.getByText('Add CourseFlow user', { exact: true })).toHaveCount(0);
-        await expect(panel.getByRole('button', { name: /remove contributor/i })).toHaveCount(0);
+        const viewer = workflow.contributorByRole('viewer');
+        await expectWorkflowPermissionsPanelReadOnlyPerFrWfOv007(page, [viewer.email]);
       });
 
-      test.fixme(
-        'permissions panel listed users and roles match the parent project',
-        async () => {},
-      );
+      test('permissions panel listed users and roles match the parent project', async ({
+        page,
+        workflow,
+      }) => {
+        const viewer = workflow.contributorByRole('viewer');
+        await expectWorkflowPermissionsMatchParentProjectPerFrWfOv007(page, {
+          projectPath: getProjectPath(workflow.manifest),
+          workflowOverviewUrl: workflowOverviewPath(workflow.path),
+          contributorEmails: [viewer.email],
+        });
+      });
     });
   });
 });

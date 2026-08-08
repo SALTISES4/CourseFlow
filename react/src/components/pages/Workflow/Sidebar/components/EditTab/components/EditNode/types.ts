@@ -4,7 +4,7 @@ export type NodeForm = {
   contextType?: number | string
   taskType?: number | string
   timeUnits?: number
-  timeRequired?: number
+  timeRequired?: number | null
   credits?: number
   tags?: number[]
   linkedWorkflow?: LinkedWorkflowType

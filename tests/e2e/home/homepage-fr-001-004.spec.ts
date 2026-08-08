@@ -37,6 +37,10 @@ test.use({
     'actor.teacher',
     'project.recent_collection',
     'project.archived_home',
+    'project.templates',
+    'workflow.template_activity',
+    'workflow.template_course',
+    'workflow.template_program',
   ],
 });
 
@@ -241,9 +245,44 @@ test.describe('Home dashboard — calibration (FR-HOME-001-004)', () => {
       await expect(templatesToggle(page)).toHaveClass(/MuiButton-contained/);
     });
 
-    test('homeTemplatesSection shows 1–4 workflow template cards', async ({
+    test('homeTemplatesSection shows the 1–4 most recently modified workflow template cards', async ({
       page,
     }) => {
+      const templateSearchResponsePromise = page.waitForResponse((response) => {
+        if (
+          !response.url().includes('/api/library/search') ||
+          response.request().method() !== 'POST'
+        ) {
+          return false;
+        }
+
+        const requestBody = response.request().postDataJSON() as {
+          filters?: { contentType?: string; isTemplate?: boolean };
+        };
+        return (
+          requestBody.filters?.contentType === 'workflow' &&
+          requestBody.filters?.isTemplate === true
+        );
+      });
+
+      await page.reload();
+      const templateSearchResponse = await templateSearchResponsePromise;
+      expect(templateSearchResponse.ok()).toBe(true);
+
+      const requestBody = templateSearchResponse.request().postDataJSON() as {
+        pagination?: { page?: number; resultsPerPage?: number };
+        sort?: { value?: string; direction?: string };
+        filters?: { isArchived?: boolean };
+      };
+      expect(requestBody.pagination).toMatchObject({ page: 0, resultsPerPage: 4 });
+      expect(requestBody.sort).toMatchObject({ value: 'DATE_MODIFIED', direction: 'DESC' });
+      expect(requestBody.filters).toMatchObject({ isArchived: false });
+
+      const responseBody = (await templateSearchResponse.json()) as {
+        items: Array<{ title: string }>;
+      };
+      await expect(homeTemplatesSectionTitle(page)).toBeVisible({ timeout: 15_000 });
+
       const workflowCards = homeTemplatesWorkflowCards(page);
       const projectCards = homeTemplatesProjectCards(page);
       const sectionCards = homeTemplatesCards(page);
@@ -254,11 +293,13 @@ test.describe('Home dashboard — calibration (FR-HOME-001-004)', () => {
       const workflowCardCount = await workflowCards.count();
       expect(workflowCardCount).toBeGreaterThanOrEqual(1);
       expect(workflowCardCount).toBeLessThanOrEqual(4);
+      expect(workflowCardCount).toBe(responseBody.items.length);
       await expect(sectionCards).toHaveCount(workflowCardCount);
 
       for (let i = 0; i < workflowCardCount; i++) {
         const card = workflowCards.nth(i);
         await expect(card).toBeVisible();
+        await expect(cardTitleText(card)).toHaveText(responseBody.items[i]!.title);
         await expect(cardChipWithLabel(card, 'Template')).toBeVisible();
       }
     });

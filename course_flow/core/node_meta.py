@@ -21,6 +21,7 @@ _ACTIVITY_LAYER_PATCH_KEYS = frozenset(
 _TASK_LAYER_PATCH_KEYS = frozenset(
     {
         "context_classification",
+        "task_classification",
         "time_required",
         "time_units",
         "represents_workflow",
@@ -84,7 +85,7 @@ def _graph_fields_from_task_meta(meta: Taskmeta) -> dict[str, Any]:
     time_required = meta.time_required
     return {
         "context_classification": meta.context_classification,
-        "task_classification": None,
+        "task_classification": meta.task_classification,
         "time_required": float(time_required) if time_required is not None else None,
         "time_units": meta.time_units,
         "represents_workflow": bool(meta.represents_workflow),
@@ -204,6 +205,9 @@ def _apply_task_layer_patch(meta: Taskmeta, patch: dict[str, Any]) -> list[str]:
     if "context_classification" in patch:
         meta.context_classification = patch["context_classification"]
         update_fields.append("context_classification")
+    if "task_classification" in patch:
+        meta.task_classification = patch["task_classification"]
+        update_fields.append("task_classification")
     if "time_required" in patch:
         meta.time_required = patch["time_required"]
         update_fields.append("time_required")
@@ -282,6 +286,7 @@ def copy_node_typed_meta(*, source: Node, target: Node) -> None:
         dst, Taskmeta
     ):
         dst.context_classification = src.context_classification
+        dst.task_classification = src.task_classification
         dst.time_required = src.time_required
         dst.time_units = src.time_units
         dst.represents_workflow = src.represents_workflow
@@ -289,6 +294,7 @@ def copy_node_typed_meta(*, source: Node, target: Node) -> None:
         dst.save(
             update_fields=[
                 "context_classification",
+                "task_classification",
                 "time_required",
                 "time_units",
                 "represents_workflow",

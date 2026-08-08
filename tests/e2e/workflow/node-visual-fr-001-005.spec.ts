@@ -6,6 +6,7 @@ import {
 } from './comments-tab.helpers';
 import { linkNodeWorkflowViaApi, seededLinkedActivityUuid } from './edit-node.helpers';
 import {
+  ensureFirstWorkflowNodeViaApi,
   fetchNodeViaApi,
   patchNodeMetaViaApi,
   workflowChannelHeaderColorIndicatorBackgroundColor,
@@ -31,7 +32,11 @@ import {
   workflowNodeTitle,
 } from './workflow-graph.locators';
 
-test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  actorAsset: 'actor.teacher',
+  seedAccess: 'disposable-copy',
+});
 
 /**
  * Workflow node visual — FR-WF-NODE-001 through FR-WF-NODE-005 (partial).
@@ -40,6 +45,8 @@ test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher',
  */
 
 test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
+  test.use({ seedAssets: ['workflow.navigation_course', 'workflow.navigation_program'] });
+
   test('FR-WF-NODE-001: workflowNode shows title, content, and channel-colored border', async ({
     page,
     workflow,
@@ -223,7 +230,9 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
       workflow.workflowByType('course').workflow_uuid;
 
     await page.goto(program.workflow_path);
-    const nodeUuid = await firstWorkflowNodeUuid(page);
+    const nodeUuid = await ensureFirstWorkflowNodeViaApi(page, program.workflow_uuid);
+    await page.reload();
+    await expect(workflowNode(page, nodeUuid)).toBeVisible({ timeout: 15_000 });
 
     try {
       await linkNodeWorkflowViaApi(page, nodeUuid, courseUuid);

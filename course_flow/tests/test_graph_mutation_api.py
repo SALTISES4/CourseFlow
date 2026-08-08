@@ -441,6 +441,39 @@ def test_patch_node_meta_updates_fields_and_returns_envelope(client: Client, use
 
 
 @pytest.mark.django_db
+def test_patch_activity_task_node_meta_persists_task_classification(
+    client: Client, user
+):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw, workflow_type="activity")
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    node = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+
+    response = client.patch(
+        f"/api/node/{node.uuid}/meta",
+        data={
+            "contextClassification": 1,
+            "taskClassification": 2,
+            "timeRequired": 1.5,
+            "timeUnits": 1,
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+
+    assert response.status_code == 200, response.content
+    updated = response.json()["changes"]["nodes"]["updated"][0]
+    assert updated["contextClassification"] == 1
+    assert updated["taskClassification"] == 2
+
+    node.refresh_from_db()
+    assert node.taskmeta.context_classification == 1
+    assert node.taskmeta.task_classification == 2
+
+
+@pytest.mark.django_db
 def test_patch_program_course_node_meta_persists_local_fields(client: Client, user):
     raw = _issue_token_for(user)
     wf_uuid = _create_graph(client, raw, workflow_type="program")

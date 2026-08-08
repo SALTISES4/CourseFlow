@@ -305,14 +305,44 @@ test.describe('edit-section-fr-001-012', () => {
       await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
     });
 
-    test('FR-SEC-004: insert section below increases count', async ({ page, workflow }) => {
+    test('FR-SEC-004: insert adds an empty section at K+1 without rebinding the sidebar', async ({
+      page,
+      workflow,
+    }) => {
       const target = workflow.firstSection();
-      const before = await sectionContainers(page).count();
+      const sidebarSection = workflow.sectionByTitle('E2E Section 3');
+      const orderBefore = await sectionOrderUuids(page);
+      const targetIndex = orderBefore.indexOf(target.uuid);
+      expect(targetIndex).toBeGreaterThanOrEqual(0);
 
-      await sectionHeader(page, target.uuid).hover();
+      await sectionHeader(page, sidebarSection.uuid).click();
+      await expect(editSectionForm(page)).toBeVisible();
+      await expect(selectedSectionContainer(page, sidebarSection.uuid)).toBeVisible();
+      await expect(titleFieldInEditSectionForm(page)).toHaveValue(sidebarSection.title);
+
+      await hoverSectionHeader(page, target.uuid);
       await insertBelowButtonInSectionHeader(page, target.uuid).click();
 
-      await expect(sectionContainers(page)).toHaveCount(before + 1, { timeout: 15_000 });
+      await expect(sectionContainers(page)).toHaveCount(orderBefore.length + 1, {
+        timeout: 15_000,
+      });
+
+      const orderAfter = await sectionOrderUuids(page);
+      const insertedUuid = orderAfter[targetIndex + 1]!;
+      expect(orderBefore).not.toContain(insertedUuid);
+      expect(orderAfter.slice(0, targetIndex + 1)).toEqual(
+        orderBefore.slice(0, targetIndex + 1),
+      );
+      expect(orderAfter.slice(targetIndex + 2)).toEqual(orderBefore.slice(targetIndex + 1));
+      await expectSectionNumberLabelsMatchOrder(page, orderAfter);
+
+      await expect(editSectionForm(page)).toBeVisible();
+      await expect(selectedSectionContainer(page, sidebarSection.uuid)).toBeVisible();
+      await expect(selectedSectionContainer(page, insertedUuid)).toHaveCount(0);
+      await expect(titleFieldInEditSectionForm(page)).toHaveValue(sidebarSection.title);
+
+      await sectionHeader(page, insertedUuid).click();
+      await expect(titleFieldInEditSectionForm(page)).toHaveValue('');
     });
 
     test('FR-SEC-005: duplicate from sidebar adds section with (copy) title', async ({

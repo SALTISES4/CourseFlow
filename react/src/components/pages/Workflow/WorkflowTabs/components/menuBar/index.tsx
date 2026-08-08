@@ -42,6 +42,7 @@ const ActionMenu = () => {
   const { resource: permissions, project: projectPermissions } =
     useWorkspacePermissions()
   const isArchived = permissions.state === 'archived'
+  const canEdit = hasPermission(permissions, WorkflowPermission.EDIT_ATTRIBUTES)
 
   /*******************************************************
    * MODALS
@@ -62,11 +63,10 @@ const ActionMenu = () => {
       title: _t('Edit workflow'),
       action: openEditMenu,
       iconButton: {
-        icon: <EditIcon />
+        icon: <EditIcon />,
+        disabled: !canEdit
       },
-      show:
-        !isArchived &&
-        hasPermission(permissions, WorkflowPermission.EDIT_ATTRIBUTES)
+      show: !isArchived
     },
     {
       uuid: 'share',

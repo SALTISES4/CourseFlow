@@ -208,8 +208,10 @@ export async function expandWorkflowOutcomeChildren(
   }
 }
 
-export function workflowOutcomeRowForHeader(page: Page, header: Locator): Locator {
-  return page.locator('div').filter({ has: header });
+export function workflowOutcomeRowForHeader(_page: Page, header: Locator): Locator {
+  // OutcomeHeaderInner owns both the title and that header's hover actions.
+  // Broader containers also contain descendant outcomes and sidebar actions.
+  return header.locator('..');
 }
 
 export function workflowOutcomeHoverDeleteForHeader(page: Page, header: Locator): Locator {

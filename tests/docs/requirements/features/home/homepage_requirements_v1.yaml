@@ -216,13 +216,14 @@ requirements:
 
     preconditions:
       - homePage is rendered
-      - home context includes at least one hardcoded homepage template for homeTemplatesSection (at most four shown)
+      - home context includes at least one database-backed template for homeTemplatesSection (at most four shown)
 
     trigger:
       - home context query succeeds per FR-HOME-001
 
     mainFlow:
-      - homepage templates in homeTemplatesSection are a fixed hardcoded product-curated set for now
+      - homeTemplatesSection displays the four most recently modified templates from the database
+      - a future phase will specify that these templates are curated (will have a promoted flag), but this has not yet been implemented
       - homeTemplatesSection is rendered on homePage
       - homeTemplatesSectionTitle is 'Explore templates' when homeRecentProjectsSection is visible (at least one projectCard on homePage)
       - homeTemplatesSectionTitle is 'Get started with templates' when homeRecentProjectsSection is not visible
@@ -231,7 +232,7 @@ requirements:
       - when dismissal cookie for homeTemplatesInfoAlert is not set, homeTemplatesInfoAlert is visible
       - when user clicks homeTemplatesInfoAlertCloseButton, system sets dismissal cookie and hides homeTemplatesInfoAlert
       - when dismissal cookie is set, homeTemplatesInfoAlert is not shown on subsequent visits to homePage
-      - homeTemplatesSection renders workflowCard instances for hardcoded homepage templates from home context, with at most four workflowCard instances visible
+      - homeTemplatesSection renders workflowCard instances for database-backed templates from home context, with at most four workflowCard instances visible
       - workflowCard presentation and card interactions in homeTemplatesSection conform to card_content_requirements_v1.yaml
 
     roleBehavior: {}
@@ -244,8 +245,8 @@ requirements:
       - given dismissal cookie for homeTemplatesInfoAlert is not set, homeTemplatesInfoAlert is present with title 'How to use templates'
       - given user clicks homeTemplatesInfoAlertCloseButton, homeTemplatesInfoAlert is hidden and dismissal cookie is set
       - given dismissal cookie is set, homeTemplatesInfoAlert is not visible
-      - given home context includes more than four hardcoded homepage templates, homeTemplatesSection shows at most 4 workflowCard instances
-      - given home context includes between one and four hardcoded homepage templates, workflowCard instance count in homeTemplatesSection matches that count
+      - given home context includes more than four database-backed templates, homeTemplatesSection shows the four most recently modified workflowCard instances
+      - given home context includes between one and four database-backed templates, workflowCard instance count in homeTemplatesSection matches that count
       - workflowCard instances in homeTemplatesSection conform to card_content_requirements_v1.yaml
 
     openQuestions: []

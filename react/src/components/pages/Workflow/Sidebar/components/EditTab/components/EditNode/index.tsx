@@ -19,6 +19,7 @@ import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import type { AppDispatch } from '@cf/redux/store'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import RichTextDescription from '@cfComponents/dialog/Workflow/components/RichTextDescription'
+import DurationTextField from '@cfComponents/DurationTextField'
 import * as SC from '@cfSidebar/styles'
 import { debounce } from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -424,13 +425,17 @@ const EditNodeForm = ({
             )}
 
             {showEditableTimeFields && (
-              <TextField
-                label={_t('Time')}
-                variant="outlined"
-                size="small"
-                type="number"
-                {...register('timeRequired')}
-                InputProps={{ readOnly: !canEdit }}
+              <Controller
+                name="timeRequired"
+                control={control}
+                render={({ field }) => (
+                  <DurationTextField
+                    label={_t('Time')}
+                    value={field.value}
+                    readOnly={!canEdit}
+                    onValueChange={field.onChange}
+                  />
+                )}
               />
             )}
 
