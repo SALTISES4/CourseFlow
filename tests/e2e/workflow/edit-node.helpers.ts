@@ -2,15 +2,9 @@ import { expect, type Locator, type Page } from '@playwright/test';
 
 import { authenticatedApiRequest } from '../../helpers/api';
 import type { WorkflowHandle } from '../../fixtures';
-import {
-  workflowRightSidebarAddTab,
-  workflowSectionContainers,
-} from '../../shared/locators/workflow';
+import { workflowRightSidebarAddTab, workflowSectionContainers } from '../../shared/locators/workflow';
 import { addNewTagInput, projectTagItemByLabel } from '../project/project.locators';
-import {
-  dragNodeCategoryOntoSection,
-  workflowNodeCount,
-} from './add-tab.helpers';
+import { dragNodeCategoryOntoSection, workflowNodeCount } from './add-tab.helpers';
 import { firstWorkflowNodeUuid } from './comments-tab.helpers';
 import { workflowAddTabInsertModeRowButton } from './workflow-add-tab.locators';
 import {
@@ -65,17 +59,10 @@ export async function openFirstNodeEditForm(page: Page): Promise<string> {
 }
 
 /** Link (or clear) a node's linked workflow via API. */
-export async function linkNodeWorkflowViaApi(
-  page: Page,
-  nodeUuid: string,
-  workflowUuid: string | null,
-): Promise<void> {
-  const response = await authenticatedApiRequest(
-    page,
-    'POST',
-    `/api/node/${nodeUuid}/link-workflow`,
-    { data: { workflowUuid } },
-  );
+export async function linkNodeWorkflowViaApi(page: Page, nodeUuid: string, workflowUuid: string | null): Promise<void> {
+  const response = await authenticatedApiRequest(page, 'POST', `/api/node/${nodeUuid}/link-workflow`, {
+    data: { workflowUuid },
+  });
   expect(response.ok()).toBeTruthy();
 }
 
@@ -83,28 +70,23 @@ export async function linkNodeWorkflowViaApi(
  * Drop a node onto the first empty section row using the given Add-tab category label,
  * then leave workflowEditNodeForm open. Returns the created node uuid.
  */
-export async function dropNodeCategoryAndOpenEditForm(
-  page: Page,
-  categoryLabel: string,
-): Promise<string> {
+export async function dropNodeCategoryAndOpenEditForm(page: Page, categoryLabel: string): Promise<string> {
   const sectionUuid = await firstWorkflowSectionUuid(page);
   const beforeCount = await workflowNodeCount(page);
-  const beforeNodeUuids = await page.locator('[id^="node-"]').evaluateAll((nodes) =>
-    nodes.map((node) => node.id.slice('node-'.length)),
-  );
+  const beforeNodeUuids = await page
+    .locator('[id^="node-"]')
+    .evaluateAll((nodes) => nodes.map((node) => node.id.slice('node-'.length)));
 
   await workflowRightSidebarAddTab(page).click();
   await workflowAddTabInsertModeRowButton(page).click();
   await dragNodeCategoryOntoSection(page, categoryLabel, sectionUuid, 'empty');
 
-  await expect
-    .poll(async () => workflowNodeCount(page), { timeout: 15_000 })
-    .toBe(beforeCount + 1);
+  await expect.poll(async () => workflowNodeCount(page), { timeout: 15_000 }).toBe(beforeCount + 1);
   await expect(workflowEditNodeForm(page)).toBeVisible({ timeout: 15_000 });
 
-  const afterNodeUuids = await page.locator('[id^="node-"]').evaluateAll((nodes) =>
-    nodes.map((node) => node.id.slice('node-'.length)),
-  );
+  const afterNodeUuids = await page
+    .locator('[id^="node-"]')
+    .evaluateAll((nodes) => nodes.map((node) => node.id.slice('node-'.length)));
   const created = afterNodeUuids.find((uuid) => !beforeNodeUuids.includes(uuid));
   if (!created) {
     throw new Error('Expected a newly created workflowNode after Add-tab drop.');
@@ -116,20 +98,10 @@ export async function dropNodeCategoryAndOpenEditForm(
 export const E2E_NAV_PROGRAM_CHANNEL_TITLE = 'E2E Nav Program Channel';
 
 /** FR-WF-EN-002 uiObjectDefinitions — workflowEditNodeFormActivityContextSelect */
-export const ACTIVITY_CONTEXT_OPTIONS = [
-  'None',
-  'Individual Work',
-  'Work in Groups',
-  'Whole Class',
-] as const;
+export const ACTIVITY_CONTEXT_OPTIONS = ['None', 'Individual Work', 'Work in Groups', 'Whole Class'] as const;
 
 /** FR-WF-EN-003 uiObjectDefinitions — workflowEditNodeFormCourseContextSelect */
-export const COURSE_CONTEXT_OPTIONS = [
-  'None',
-  'Formative',
-  'Summative',
-  'Comprehensive',
-] as const;
+export const COURSE_CONTEXT_OPTIONS = ['None', 'Formative', 'Summative', 'Comprehensive'] as const;
 
 /** FR-WF-EN-002 uiObjectDefinitions — workflowEditNodeFormTaskTypeSelect */
 export const ACTIVITY_TASK_TYPE_OPTIONS = [
@@ -172,12 +144,12 @@ export async function expectSelectOptionsExactly(
   await expect(listbox).toBeHidden();
 }
 
-export async function ensureProgramNodeAndOpenEditForm(
-  page: Page,
-  workflow: WorkflowHandle,
-): Promise<string> {
+export async function ensureProgramNodeAndOpenEditForm(page: Page, workflow: WorkflowHandle): Promise<string> {
   const program = workflow.workflowByType('program');
   await page.goto(program.workflow_path);
+  await expect(workflowSectionContainers(page).first()).toBeVisible({
+    timeout: 15_000,
+  });
 
   if ((await workflowNodeCount(page)) === 0) {
     return dropNodeCategoryAndOpenEditForm(page, E2E_NAV_PROGRAM_CHANNEL_TITLE);
@@ -196,15 +168,10 @@ export async function expectWorkflowEditNodeFormTimeField(page: Page): Promise<v
  * FR-WF-EN-012 — Description hosts workflowRichTextDescriptionEditor with the
  * required formatting toolbar (not a plain textarea/input).
  */
-export async function expectEditableWorkflowEditNodeFormRichTextDescription(
-  page: Page,
-): Promise<void> {
+export async function expectEditableWorkflowEditNodeFormRichTextDescription(page: Page): Promise<void> {
   await expect(workflowEditNodeFormDescriptionPlainTextarea(page)).toHaveCount(0);
   await expect(workflowRichTextDescriptionEditor(page)).toBeVisible();
-  await expect(workflowRichTextDescriptionEditor(page)).toHaveAttribute(
-    'contenteditable',
-    'true',
-  );
+  await expect(workflowRichTextDescriptionEditor(page)).toHaveAttribute('contenteditable', 'true');
   await expect(workflowRichTextDescriptionEditorToolbar(page)).toBeVisible();
   await expect(workflowRichTextDescriptionEditorBoldButton(page)).toBeVisible();
   await expect(workflowRichTextDescriptionEditorItalicButton(page)).toBeVisible();
@@ -229,10 +196,7 @@ export function seededLinkedActivityUuid(workflow: WorkflowHandle): string {
  * workflowLinkWorkflowDialog via 'Link an activity' (FR-WF-EN-008).
  * Caller must restore the link in finally when needed.
  */
-export async function openCourseLinkWorkflowDialog(
-  page: Page,
-  workflow: WorkflowHandle,
-): Promise<string> {
+export async function openCourseLinkWorkflowDialog(page: Page, workflow: WorkflowHandle): Promise<string> {
   const course = workflow.workflowByType('course');
   await page.goto(course.workflow_path);
   const nodeUuid = await firstWorkflowNodeUuid(page);
@@ -240,7 +204,9 @@ export async function openCourseLinkWorkflowDialog(
   await page.reload();
   await openFirstNodeEditForm(page);
   await workflowEditNodeFormLinkWorkflowButton(page, 'Link an activity').click();
-  await expect(workflowLinkWorkflowDialog(page, 'course')).toBeVisible({ timeout: 15_000 });
+  await expect(workflowLinkWorkflowDialog(page, 'course')).toBeVisible({
+    timeout: 15_000,
+  });
   return nodeUuid;
 }
 
@@ -248,10 +214,7 @@ export async function openCourseLinkWorkflowDialog(
  * Ensure program node is unlinked, open workflowEditNodeForm, and open
  * workflowLinkWorkflowDialog via 'Link a course' (FR-WF-EN-008).
  */
-export async function openProgramLinkWorkflowDialog(
-  page: Page,
-  workflow: WorkflowHandle,
-): Promise<string> {
+export async function openProgramLinkWorkflowDialog(page: Page, workflow: WorkflowHandle): Promise<string> {
   const nodeUuid = await ensureProgramNodeAndOpenEditForm(page, workflow);
   await linkNodeWorkflowViaApi(page, nodeUuid, null);
   await page.reload();
@@ -259,7 +222,9 @@ export async function openProgramLinkWorkflowDialog(
   await workflowNodeTitle(page, nodeUuid).click();
   await expect(workflowEditNodeForm(page)).toBeVisible();
   await workflowEditNodeFormLinkWorkflowButton(page, 'Link a course').click();
-  await expect(workflowLinkWorkflowDialog(page, 'program')).toBeVisible({ timeout: 15_000 });
+  await expect(workflowLinkWorkflowDialog(page, 'program')).toBeVisible({
+    timeout: 15_000,
+  });
   return nodeUuid;
 }
 
@@ -275,10 +240,7 @@ export async function expectReadOnlyWorkflowEditNodeForm(
 ): Promise<void> {
   await expect(workflowEditNodeForm(page)).toBeVisible();
   await expect(workflowEditNodeFormTitleField(page)).not.toBeEditable();
-  await expect(workflowRichTextDescriptionEditor(page)).toHaveAttribute(
-    'contenteditable',
-    'false',
-  );
+  await expect(workflowRichTextDescriptionEditor(page)).toHaveAttribute('contenteditable', 'false');
   const toolbar = workflowRichTextDescriptionEditorToolbar(page);
   if ((await toolbar.count()) > 0) {
     await expect(workflowRichTextDescriptionEditorBoldButton(page)).toBeDisabled();
@@ -318,7 +280,9 @@ export async function createProjectOverviewTag(page: Page, label: string): Promi
   await expect(input).toBeVisible({ timeout: 15_000 });
   await input.fill(label);
   await input.press('Enter');
-  await expect(projectTagItemByLabel(page, label)).toBeVisible({ timeout: 15_000 });
+  await expect(projectTagItemByLabel(page, label)).toBeVisible({
+    timeout: 15_000,
+  });
 }
 
 /**
@@ -356,6 +320,9 @@ export async function selectEditNodeTag(page: Page, label: string): Promise<void
 /** Assert a selected tag chip remains on the Tags field after reload. */
 export async function expectEditNodeTagSelected(page: Page, label: string): Promise<void> {
   await expect(
-    workflowEditNodeFormTagsField(page).getByRole('button', { name: label, exact: true }),
+    workflowEditNodeFormTagsField(page).getByRole('button', {
+      name: label,
+      exact: true,
+    }),
   ).toBeVisible();
 }

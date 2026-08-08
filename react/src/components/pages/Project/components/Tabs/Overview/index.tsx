@@ -32,7 +32,8 @@ const OverviewTab = ({
   disciplines,
   owner,
   isPublished,
-  permissions
+  permissions,
+  tags
 }: ProjectDetailOut) => {
   const { uuid } = useParams()
   const queryClient = useQueryClient()
@@ -146,8 +147,7 @@ const OverviewTab = ({
         />
       </SC.InfoBlock>
 
-      {/* TODO: embed tags into the ProjectDetailOut */}
-      <TagsSection data={[]} />
+      <TagsSection projectUuid={uuid ?? ''} data={tags ?? []} />
 
       <StyledDialog open={!!show} onClose={onClose} fullWidth maxWidth="sm">
         <DialogTitle>{_t('Publish project')}</DialogTitle>

@@ -7,6 +7,7 @@ import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { NodeDropPayload } from '@cf/features/graph/state/resolveNodeDropRow'
 import { selectGraphBoard } from '@cf/features/graph/state/selectors/graphBoard.selectors'
+import { graphUiActions } from '@cf/features/graph/state/slices/graphUi.slice'
 import {
   moveNodeGrid,
   reorderChannels,
@@ -42,7 +43,7 @@ import {
 } from './types'
 
 type StateType = {
-  condensed: string[] | 'all'
+  collapseAllForDrag: boolean
   redrawLines: boolean
 }
 
@@ -60,6 +61,9 @@ const GraphView = ({ graphUuid }: { graphUuid: string }) => {
   const nodeInsertMode = useSelector(
     (state: RootState) => state.graph.graphUi.nodeInsertMode
   )
+  const collapsedSectionUuids = useSelector(
+    (state: RootState) => state.graph.graphUi.collapsedSectionUuids
+  )
 
   const graphBoard = useSelector((state: RootState) =>
     selectGraphBoard(state, graphUuid)
@@ -69,9 +73,17 @@ const GraphView = ({ graphUuid }: { graphUuid: string }) => {
   const sectionsWrapperRef = useRef<HTMLDivElement>(null)
 
   const [state, setState] = useState<StateType>({
-    condensed: [],
+    collapseAllForDrag: false,
     redrawLines: false // just to trigger LineSVG to redraw on layout change
   })
+
+  useEffect(() => {
+    dispatch(graphUiActions.setCollapsedSectionUuids([]))
+
+    return () => {
+      dispatch(graphUiActions.setCollapsedSectionUuids([]))
+    }
+  }, [dispatch, graphUuid])
 
   // basically retrigger repaint when any width/height change happens
   // to trigger section backgrounds to correctly recalculate their BCR
@@ -96,9 +108,10 @@ const GraphView = ({ graphUuid }: { graphUuid: string }) => {
           }
           setState(
             produce((draft) => {
-              draft.condensed = []
+              draft.collapseAllForDrag = false
             })
           )
+          dispatch(graphUiActions.setCollapsedSectionUuids([]))
         }
       }),
       dropTargetForElements({
@@ -115,13 +128,13 @@ const GraphView = ({ graphUuid }: { graphUuid: string }) => {
           }
           setState(
             produce((draft) => {
-              draft.condensed = 'all'
+              draft.collapseAllForDrag = true
             })
           )
         }
       })
     )
-  }, [canManageParts])
+  }, [canManageParts, dispatch])
 
   const triggerLineRerender = useCallback(() => {
     setTimeout(() => {
@@ -156,20 +169,29 @@ const GraphView = ({ graphUuid }: { graphUuid: string }) => {
     ]
   )
 
-  const onSectionCollapse = useCallback((sectionUuid: string) => {
+  const onSectionCollapse = useCallback(
+    (sectionUuid: string) => {
+      dispatch(graphUiActions.toggleSectionCollapsed(sectionUuid))
+    },
+    [dispatch]
+  )
+
+  const onSectionDragStart = useCallback(() => {
     setState(
       produce((draft) => {
-        if (Array.isArray(draft.condensed)) {
-          const index = draft.condensed.indexOf(sectionUuid)
-          if (index !== -1) {
-            draft.condensed.splice(index, 1)
-          } else {
-            draft.condensed.push(sectionUuid)
-          }
-        }
+        draft.collapseAllForDrag = true
       })
     )
   }, [])
+
+  const onSectionDragEnd = useCallback(() => {
+    setState(
+      produce((draft) => {
+        draft.collapseAllForDrag = false
+      })
+    )
+    dispatch(graphUiActions.setCollapsedSectionUuids([]))
+  }, [dispatch])
 
   const onSectionInsert: SectionInsertCallbackFn = useCallback(
     (insertIndex) => {
@@ -239,20 +261,30 @@ const GraphView = ({ graphUuid }: { graphUuid: string }) => {
             columnIds={graphBoard.columns.ids}
             columnColors={graphBoard.columns.colors}
             condensed={
-              state.condensed === 'all' ||
-              state.condensed.includes(section.uuid)
+              state.collapseAllForDrag ||
+              collapsedSectionUuids.includes(section.uuid)
             }
             onSectionCollapse={onSectionCollapse}
+            onSectionDragStart={onSectionDragStart}
+            onSectionDragEnd={onSectionDragEnd}
             onSectionInsert={onSectionInsert}
             onSectionReorder={onSectionReorder}
             onNodeDrop={onNodeDrop}
-            memoBuster={[state.condensed.length, state.redrawLines]}
+            memoBuster={[
+              state.collapseAllForDrag,
+              collapsedSectionUuids.length,
+              state.redrawLines
+            ]}
           />
         ))}
         <LineSVG
           graphUuid={graphUuid}
           rerender={state.redrawLines}
-          condensed={state.condensed.length}
+          condensed={
+            state.collapseAllForDrag
+              ? graphBoard.sections.length
+              : collapsedSectionUuids.length
+          }
         />
       </SectionsWrapper>
 

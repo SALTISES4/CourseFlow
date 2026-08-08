@@ -72,6 +72,11 @@ export interface NodeEntity {
   timeRequired: number | null
   timeUnits: number | null
   representsWorkflow: boolean
+  ponderationTheory: number | null
+  ponderationPractice: number | null
+  ponderationIndividual: number | null
+  credits: number | null
+  specificEducation: boolean
   tagIds: number[]
   /** Graph UUID (route id); selectors filter on this field. */
   graphUuid: GraphUuid
@@ -135,6 +140,8 @@ export interface GraphUiState {
   activePanel: 'none' | 'properties' | 'inspector' | 'comments'
   /** Grid node insert/move mode (legacy `workspace.node.insertMode`). */
   nodeInsertMode: 'manual' | 'row' | 'column'
+  /** Presentation-only section collapse state for the currently mounted graph. */
+  collapsedSectionUuids: ResourceUuid[]
   edgeDraft: {
     sourceNodeUuid: ResourceUuid | null
     sourcePort: string | null
@@ -394,6 +401,11 @@ export interface NodeMetaPatch {
   timeRequired?: number | null
   timeUnits?: number | null
   representsWorkflow?: boolean
+  ponderationTheory?: number | null
+  ponderationPractice?: number | null
+  ponderationIndividual?: number | null
+  credits?: number | null
+  specificEducation?: boolean
   tagIds?: number[]
 }
 

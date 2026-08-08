@@ -17,12 +17,15 @@ from course_flow.api.deps import (
 from course_flow.api.permission_context import permission_context_out
 from course_flow.api.schemas.project_graph_view import ProjectGraphViewOut
 from course_flow.api.schemas.project_subresources import (
+    ProjectTagCreateIn,
+    ProjectTagPatchIn,
     ProjectTeamListMetaOut,
     ProjectTeamListOut,
     ProjectTeamMemberAddIn,
     ProjectTeamMemberOut,
     ProjectTeamMemberRolePatchIn,
     ProjectTeamRoleSchema,
+    TagListItemOut,
 )
 from course_flow.api.schemas.projects import (
     DisciplineOption,
@@ -36,7 +39,11 @@ from course_flow.api.schemas.projects import (
     ProjectUpdateIn,
     ProjectWorkflowListItemOut,
 )
-from course_flow.application.dto import ProjectDTO, ProjectTeamMemberDTO
+from course_flow.application.dto import (
+    ProjectDTO,
+    ProjectTeamMemberDTO,
+    TagDTO,
+)
 from course_flow.application.services.authorization_service import (
     AuthorizationDenied,
 )
@@ -66,6 +73,14 @@ def _team_member_out(dto: ProjectTeamMemberDTO) -> ProjectTeamMemberOut:
         user_first_name=dto.user_first_name,
         user_last_name=dto.user_last_name,
         role=ProjectTeamRoleSchema(dto.role),
+    )
+
+
+def _tag_out(dto: TagDTO) -> TagListItemOut:
+    return TagListItemOut(
+        id=dto.id,
+        label=dto.label,
+        translation_plural=dto.translation_plural,
     )
 
 
@@ -140,6 +155,7 @@ def _project_detail_out(current_user: User, dto: ProjectDTO) -> ProjectDetailOut
         project_id=dto.id,
     ).exists()
     disciplines = get_project_relations_service().list_disciplines(dto.uuid) or []
+    tags = get_project_relations_service().list_tags(dto.uuid) or []
 
     # TODO: properly handle archived flag
     is_archived = False
@@ -167,7 +183,82 @@ def _project_detail_out(current_user: User, dto: ProjectDTO) -> ProjectDetailOut
         workflows=workflows,
         permissions=permission_context_out(_project_permissions(current_user, dto)),
         disciplines=disciplines,
+        tags=[_tag_out(tag) for tag in tags],
     )
+
+
+@router.get(
+    "/{uuid}/tags",
+    response=list[TagListItemOut],
+    auth=BearerAuth(),
+    operation_id="listProjectTags",
+)
+def list_project_tags(request, uuid: UUID):
+    current_user = get_current_user(request)
+    dto = get_project_service().get_by_uuid(uuid)
+    if dto is None:
+        raise HttpError(404, "Project not found")
+    _require_project_permission(current_user, dto, ProjectPermission.VIEW)
+    return [_tag_out(tag) for tag in get_project_relations_service().list_tags(uuid) or []]
+
+
+@router.post(
+    "/{uuid}/tags",
+    response=TagListItemOut,
+    auth=BearerAuth(),
+    operation_id="createProjectTag",
+)
+def create_project_tag(request, uuid: UUID, payload: ProjectTagCreateIn):
+    current_user = get_current_user(request)
+    dto = get_project_service().get_by_uuid(uuid)
+    if dto is None:
+        raise HttpError(404, "Project not found")
+    _require_project_permission(current_user, dto, ProjectPermission.EDIT_PROJECT)
+    try:
+        tag = get_project_relations_service().create_tag(uuid, payload.label)
+    except ValueError as exc:
+        raise HttpError(422, str(exc)) from exc
+    if tag is None:
+        raise HttpError(404, "Project not found")
+    return _tag_out(tag)
+
+
+@router.patch(
+    "/{uuid}/tags/{tag_id}",
+    response=TagListItemOut,
+    auth=BearerAuth(),
+    operation_id="updateProjectTag",
+)
+def update_project_tag(request, uuid: UUID, tag_id: int, payload: ProjectTagPatchIn):
+    current_user = get_current_user(request)
+    dto = get_project_service().get_by_uuid(uuid)
+    if dto is None:
+        raise HttpError(404, "Project not found")
+    _require_project_permission(current_user, dto, ProjectPermission.EDIT_PROJECT)
+    try:
+        tag = get_project_relations_service().update_tag(uuid, tag_id, payload.label)
+    except ValueError as exc:
+        raise HttpError(422, str(exc)) from exc
+    if tag is None:
+        raise HttpError(404, "Tag not found")
+    return _tag_out(tag)
+
+
+@router.delete(
+    "/{uuid}/tags/{tag_id}",
+    response=SuccessOut,
+    auth=BearerAuth(),
+    operation_id="deleteProjectTag",
+)
+def delete_project_tag(request, uuid: UUID, tag_id: int):
+    current_user = get_current_user(request)
+    dto = get_project_service().get_by_uuid(uuid)
+    if dto is None:
+        raise HttpError(404, "Project not found")
+    _require_project_permission(current_user, dto, ProjectPermission.EDIT_PROJECT)
+    if not get_project_relations_service().delete_tag(uuid, tag_id):
+        raise HttpError(404, "Tag not found")
+    return SuccessOut()
 
 
 @router.post(

@@ -2,6 +2,7 @@ import { WorkflowTypeIn } from '@cf/api/gen'
 import {
   copyWorkflowMutation,
   createWorkflowMutation,
+  getWorkflowOptions,
   listWorkflowsQueryKey
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import WorkflowForm, {
@@ -13,7 +14,10 @@ import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import ProjectSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/ProjectSearch'
 import TemplateSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TemplateSearch'
 import TypeSelect from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TypeSelect'
-import { CreateResourceOptions } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
+import {
+  CreateResourceOptions,
+  WorkflowTemplateSelection
+} from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -21,18 +25,23 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Step from '@mui/material/Step'
 import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { enqueueSnackbar } from 'notistack'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { generatePath, useNavigate } from 'react-router-dom'
+import {
+  generatePath,
+  useLocation,
+  useNavigate,
+  useParams
+} from 'react-router-dom'
 
 type StateType = {
   step: number
   resourceType: CreateResourceOptions
   workflowType?: WorkflowTypeIn
   title?: string
-  template?: { uuid: string; title: string }
+  template?: WorkflowTemplateSelection
 }
 
 const initialState: StateType = {
@@ -40,13 +49,32 @@ const initialState: StateType = {
   resourceType: CreateResourceOptions.BLANK
 }
 
+const emptyWorkflowFormValues: WorkflowFormType = {
+  title: '',
+  description: ''
+}
+
 const CreateWizardDialog = () => {
   const formRef = useRef<HTMLFormElement>(null)
   const [state, setState] = useState<StateType>(initialState)
   const [projectUuid, setProjectUuid] = useState<string>()
   const [isFormReady, setIsFormReady] = useState(false)
+  const [workflowFormValues, setWorkflowFormValues] =
+    useState<WorkflowFormType>(emptyWorkflowFormValues)
   const navigate = useNavigate()
+  const location = useLocation()
+  const { uuid: routeUuid } = useParams<{ uuid: string }>()
   const queryClient = useQueryClient()
+  const routeWorkflowUuid = location.pathname.startsWith('/workflow/')
+    ? routeUuid
+    : undefined
+  const routeWorkflow = useQuery({
+    ...getWorkflowOptions({ path: { uuid: routeWorkflowUuid ?? '' } }),
+    enabled: Boolean(routeWorkflowUuid)
+  })
+  const routeProjectUuid = location.pathname.startsWith('/project/')
+    ? routeUuid
+    : routeWorkflow.data?.item.projectUuid
 
   const createWorkflow = useMutation({
     ...createWorkflowMutation(),
@@ -144,7 +172,7 @@ const CreateWizardDialog = () => {
     )
   }
 
-  function onTemplateSelect(template?: { uuid: string; title: string }) {
+  function onTemplateSelect(template?: WorkflowTemplateSelection) {
     setState(
       produce((draft) => {
         draft.template = template
@@ -159,6 +187,7 @@ const CreateWizardDialog = () => {
     setState(initialState)
     setProjectUuid(undefined)
     setIsFormReady(false)
+    setWorkflowFormValues(emptyWorkflowFormValues)
   }, [])
 
   const onCloseHandler = useCallback(() => {
@@ -264,6 +293,7 @@ const CreateWizardDialog = () => {
           return (
             <ProjectSearch
               selected={projectUuid}
+              contextProjectUuid={projectUuid ?? routeProjectUuid}
               onProjectSelect={onProjectSelect}
             />
           )
@@ -286,7 +316,9 @@ const CreateWizardDialog = () => {
                 closeCallback={onCloseHandler}
                 label={state.title ?? ctaTitle}
                 workflowType={state.workflowType}
+                defaultValues={workflowFormValues}
                 setIsFormReady={setIsFormReady}
+                onValuesChange={setWorkflowFormValues}
               />
             )
           }
@@ -294,7 +326,7 @@ const CreateWizardDialog = () => {
           if (state.resourceType === CreateResourceOptions.TEMPLATE) {
             return (
               <TemplateSearch
-                selected={state.template?.uuid}
+                selected={state.template}
                 workflowType={state.workflowType}
                 onTemplateSelect={onTemplateSelect}
               />
@@ -316,6 +348,8 @@ const CreateWizardDialog = () => {
     state.title,
     state.template,
     projectUuid,
+    routeProjectUuid,
+    workflowFormValues,
     ctaTitle
   ])
 

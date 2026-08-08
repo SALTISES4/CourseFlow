@@ -15,6 +15,7 @@ from course_flow.core.models import (
     FavoriteGraph,
     Graph,
     Project,
+    Tag,
     Workflow,
 )
 
@@ -104,6 +105,54 @@ def test_create_workflow_accepts_project_uuid(client: Client, user):
     assert body["projectUuid"] == project_uuid
     wf = Workflow.objects.select_related("project").get(uuid=body["uuid"])
     assert wf.project_id == Project.objects.only("id").get(uuid=project_uuid).id
+
+
+@pytest.mark.django_db
+def test_project_tag_crud_is_persisted_and_embedded_in_project_detail(
+    client: Client, user
+):
+    raw = _issue_token_for(user)
+    project_uuid = _create_project(client, raw)
+
+    created = client.post(
+        f"/api/project/{project_uuid}/tags",
+        data={"label": "  Assessment  "},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert created.status_code == 200, created.content
+    tag_id = created.json()["id"]
+    assert created.json()["label"] == "Assessment"
+
+    listed = client.get(
+        f"/api/project/{project_uuid}/tags",
+        **_auth_header(raw),
+    )
+    assert listed.status_code == 200
+    assert listed.json() == [created.json()]
+
+    detail = client.get(
+        f"/api/project/{project_uuid}",
+        **_auth_header(raw),
+    )
+    assert detail.status_code == 200
+    assert detail.json()["item"]["tags"] == [created.json()]
+
+    updated = client.patch(
+        f"/api/project/{project_uuid}/tags/{tag_id}",
+        data={"label": "Evaluation"},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert updated.status_code == 200, updated.content
+    assert updated.json()["label"] == "Evaluation"
+
+    deleted = client.delete(
+        f"/api/project/{project_uuid}/tags/{tag_id}",
+        **_auth_header(raw),
+    )
+    assert deleted.status_code == 200
+    assert not Tag.objects.filter(id=tag_id).exists()
 
 
 @pytest.mark.django_db

@@ -1,125 +1,79 @@
-import { timeUnits } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
-
-const contexts = [
+const activityContexts = [
   {
     value: 0,
     label: 'None'
   },
   {
     value: 1,
-    label: 'Jigsaw'
+    label: 'Individual Work'
   },
   {
     value: 2,
-    label: 'Peer Instruction'
+    label: 'Work in Groups'
   },
   {
     value: 3,
-    label: 'Case Studies'
-  },
-  {
-    value: 4,
-    label: 'Gallery Walk'
-  },
-  {
-    value: 5,
-    label: 'Reflective Writing'
-  },
-  {
-    value: 6,
-    label: 'Two-Stage Exam'
-  },
-  {
-    value: 7,
-    label: 'Toolkit'
-  },
-  {
-    value: 8,
-    label: 'One Minute Paper'
-  },
-  {
-    value: 9,
-    label: 'Distributed Problem Solving'
-  },
-  {
-    value: 10,
-    label: 'Peer Assessment'
-  },
-  {
-    value: 11,
-    label: 'Other'
+    label: 'Whole Class'
   }
+]
+
+const courseContexts = [
+  { value: 0, label: 'None' },
+  { value: 1, label: 'Formative' },
+  { value: 2, label: 'Summative' },
+  { value: 3, label: 'Comprehensive' }
 ]
 
 const taskTypes = [
+  { value: 0, label: 'None' },
   {
     value: 1,
-    label: 'Toolkit'
+    label: 'Gather Information'
   },
   {
     value: 2,
-    label: 'One Minute Paper'
+    label: 'Discuss'
   },
   {
     value: 3,
-    label: 'Distributed Problem Solving'
+    label: 'Problem Solve'
   },
   {
     value: 4,
-    label: 'Peer Assessment'
+    label: 'Analyze'
   },
   {
     value: 5,
-    label: 'Other'
-  }
+    label: 'Assess/Review Peers'
+  },
+  { value: 6, label: 'Debate' },
+  { value: 7, label: 'Game/Roleplay' },
+  { value: 8, label: 'Create/Design' },
+  { value: 9, label: 'Revise/Improve' },
+  { value: 10, label: 'Read' },
+  { value: 11, label: 'Write' },
+  { value: 12, label: 'Present' },
+  { value: 13, label: 'Experiment/Inquiry' },
+  { value: 14, label: 'Quiz/Test' },
+  { value: 15, label: 'Instructor Resource Curation' },
+  { value: 16, label: 'Instructor Orchestration' },
+  { value: 17, label: 'Instructor Evaluation' },
+  { value: 18, label: 'Other' }
 ]
 
-const unitTypes = [
-  {
-    value: 1,
-    label: 'Credits'
-  },
-  {
-    value: 2,
-    label: 'Something else'
-  },
-  {
-    value: 3,
-    label: 'Another unit type'
-  },
-  {
-    value: 4,
-    label: 'Other'
-  }
-]
-
+// Outcome editing still consumes this legacy local option seam. Edit-node tags
+// are loaded from the parent project's persisted catalog instead.
 const tags = [
-  {
-    uuid: 1,
-    label: 'Tag 1'
-  },
-  {
-    uuid: 2,
-    label: 'Tag 2'
-  },
-  {
-    uuid: 3,
-    label: 'Tag 3'
-  },
-  {
-    uuid: 4,
-    label: 'Tag 4'
-  },
-  {
-    uuid: 5,
-    label: 'Tag 5'
-  }
+  { uuid: 1, label: 'Tag 1' },
+  { uuid: 2, label: 'Tag 2' },
+  { uuid: 3, label: 'Tag 3' },
+  { uuid: 4, label: 'Tag 4' },
+  { uuid: 5, label: 'Tag 5' }
 ]
 
 export default {
-  contexts,
+  activityContexts,
+  courseContexts,
   taskTypes,
-  tags,
-  unitTypes,
-  timeUnits: timeUnits.filter((u) => u)
+  tags
 }

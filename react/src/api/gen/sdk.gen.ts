@@ -25,6 +25,8 @@ import type {
   CreateGraphSectionResponses,
   CreateProjectData,
   CreateProjectResponses,
+  CreateProjectTagData,
+  CreateProjectTagResponses,
   CreateSectionData,
   CreateSectionResponses,
   CreateThreadCommentData,
@@ -45,6 +47,8 @@ import type {
   DeleteOutcomeResponses,
   DeleteProjectData,
   DeleteProjectResponses,
+  DeleteProjectTagData,
+  DeleteProjectTagResponses,
   DeleteProjectTeamMemberData,
   DeleteProjectTeamMemberResponses,
   DeleteSectionData,
@@ -103,6 +107,8 @@ import type {
   ListGraphSectionsResponses,
   ListMyNotificationsData,
   ListMyNotificationsResponses,
+  ListProjectTagsData,
+  ListProjectTagsResponses,
   ListProjectTeamData,
   ListProjectTeamResponses,
   ListProjectsData,
@@ -161,6 +167,8 @@ import type {
   UpdateEdgeResponses,
   UpdateProjectData,
   UpdateProjectResponses,
+  UpdateProjectTagData,
+  UpdateProjectTagResponses,
   UpdateProjectTeamMemberData,
   UpdateProjectTeamMemberResponses,
   UpdateSectionData,
@@ -191,6 +199,8 @@ import {
   zCreateGraphSectionResponse,
   zCreateProjectData,
   zCreateProjectResponse,
+  zCreateProjectTagData,
+  zCreateProjectTagResponse,
   zCreateSectionData,
   zCreateSectionResponse,
   zCreateThreadCommentData,
@@ -211,6 +221,8 @@ import {
   zDeleteOutcomeResponse,
   zDeleteProjectData,
   zDeleteProjectResponse,
+  zDeleteProjectTagData,
+  zDeleteProjectTagResponse,
   zDeleteProjectTeamMemberData,
   zDeleteProjectTeamMemberResponse,
   zDeleteSectionData,
@@ -269,6 +281,8 @@ import {
   zListGraphSectionsResponse,
   zListMyNotificationsData,
   zListMyNotificationsResponse,
+  zListProjectTagsData,
+  zListProjectTagsResponse,
   zListProjectTeamData,
   zListProjectTeamResponse,
   zListProjectsData,
@@ -327,6 +341,8 @@ import {
   zUpdateEdgeResponse,
   zUpdateProjectData,
   zUpdateProjectResponse,
+  zUpdateProjectTagData,
+  zUpdateProjectTagResponse,
   zUpdateProjectTeamMemberData,
   zUpdateProjectTeamMemberResponse,
   zUpdateSectionData,
@@ -371,6 +387,94 @@ export const courseFlowApiNinjaAppHealth = <
       await zCourseFlowApiNinjaAppHealthResponse.parseAsync(data),
     url: '/api/health',
     ...options
+  })
+
+/**
+ * List Project Tags
+ */
+export const listProjectTags = <ThrowOnError extends boolean = false>(
+  options: Options<ListProjectTagsData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    ListProjectTagsResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zListProjectTagsData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zListProjectTagsResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/project/{uuid}/tags',
+    ...options
+  })
+
+/**
+ * Create Project Tag
+ */
+export const createProjectTag = <ThrowOnError extends boolean = false>(
+  options: Options<CreateProjectTagData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    CreateProjectTagResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zCreateProjectTagData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zCreateProjectTagResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/project/{uuid}/tags',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Delete Project Tag
+ */
+export const deleteProjectTag = <ThrowOnError extends boolean = false>(
+  options: Options<DeleteProjectTagData, ThrowOnError>
+) =>
+  (options.client ?? client).delete<
+    DeleteProjectTagResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zDeleteProjectTagData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zDeleteProjectTagResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/project/{uuid}/tags/{tag_id}',
+    ...options
+  })
+
+/**
+ * Update Project Tag
+ */
+export const updateProjectTag = <ThrowOnError extends boolean = false>(
+  options: Options<UpdateProjectTagData, ThrowOnError>
+) =>
+  (options.client ?? client).patch<
+    UpdateProjectTagResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zUpdateProjectTagData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zUpdateProjectTagResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/project/{uuid}/tags/{tag_id}',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
   })
 
 /**

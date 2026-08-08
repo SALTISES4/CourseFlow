@@ -1,11 +1,22 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type JSHandle, type Locator, type Page } from '@playwright/test';
 import {
   sectionContainer,
   sectionContainers,
+  sectionCollapseButton,
   sectionHeader,
   sectionNodes,
   sectionNumberLabel,
 } from './edit-section.locators';
+
+type ActiveSectionDrag = {
+  dataTransfer: JSHandle<DataTransfer>;
+  source: Locator;
+  target: Locator;
+  clientX: number;
+  clientY: number;
+};
+
+const activeSectionDrags = new WeakMap<Page, ActiveSectionDrag>();
 
 /** Top-to-bottom workflowSectionContainer uuids currently on the canvas. */
 export async function sectionOrderUuids(page: Page): Promise<string[]> {
@@ -67,24 +78,24 @@ async function dragSectionToEdge(
   targetUuid: string,
   edge: 'top' | 'bottom',
 ): Promise<void> {
-  const source = sectionHeader(page, sourceUuid);
-  const target = sectionContainer(page, targetUuid);
-
-  await source.scrollIntoViewIfNeeded();
-  await target.scrollIntoViewIfNeeded();
-
-  const targetBox = await target.boundingBox();
-  if (!targetBox) {
-    throw new Error(`Expected section ${targetUuid} bounding box for drop.`);
+  await beginSectionDragTowardEdge(page, sourceUuid, targetUuid, edge);
+  const activeDrag = activeSectionDrags.get(page);
+  if (!activeDrag) {
+    throw new Error('Expected an active section drag before drop.');
   }
 
-  await source.dragTo(target, {
-    force: true,
-    targetPosition: {
-      x: targetBox.width / 2,
-      y: edge === 'top' ? targetBox.height / 4 : (targetBox.height * 3) / 4,
-    },
+  await activeDrag.target.dispatchEvent('drop', {
+    dataTransfer: activeDrag.dataTransfer,
+    clientX: activeDrag.clientX,
+    clientY: activeDrag.clientY,
   });
+  await activeDrag.source.dispatchEvent('dragend', {
+    dataTransfer: activeDrag.dataTransfer,
+    clientX: activeDrag.clientX,
+    clientY: activeDrag.clientY,
+  });
+  await activeDrag.dataTransfer.dispose();
+  activeSectionDrags.delete(page);
 }
 
 /** Reorder canvas sections to match `desiredOrder` (top → bottom uuids). */
@@ -117,6 +128,15 @@ export async function beginSectionDragToward(
   sourceUuid: string,
   targetUuid: string,
 ): Promise<void> {
+  await beginSectionDragTowardEdge(page, sourceUuid, targetUuid, 'bottom');
+}
+
+async function beginSectionDragTowardEdge(
+  page: Page,
+  sourceUuid: string,
+  targetUuid: string,
+  edge: 'top' | 'bottom',
+): Promise<void> {
   const source = sectionHeader(page, sourceUuid);
   const target = sectionContainer(page, targetUuid);
 
@@ -129,18 +149,48 @@ export async function beginSectionDragToward(
     throw new Error('Expected source header and target section bounding boxes.');
   }
 
-  await page.mouse.move(
-    sourceBox.x + sourceBox.width / 2,
-    sourceBox.y + sourceBox.height / 2,
+  await expect(source).toHaveAttribute('draggable', 'true');
+
+  const startX = sourceBox.x + sourceBox.width / 2;
+  const startY = sourceBox.y + sourceBox.height / 2;
+  const dataTransfer = await page.evaluateHandle(() => new DataTransfer());
+  await source.dispatchEvent('dragstart', {
+    dataTransfer,
+    clientX: startX,
+    clientY: startY,
+  });
+
+  await expect(sectionCollapseButton(page, sourceUuid)).toHaveAttribute(
+    'aria-expanded',
+    'false',
   );
-  await page.mouse.down();
-  await page.mouse.move(
-    targetBox.x + targetBox.width / 2,
-    targetBox.y + targetBox.height / 2,
-    { steps: 25 },
-  );
+
+  await target.scrollIntoViewIfNeeded();
+  const collapsedTargetBox = await target.boundingBox();
+  if (!collapsedTargetBox) {
+    throw new Error(`Expected collapsed section ${targetUuid} bounding box for drop.`);
+  }
+
+  const clientX = collapsedTargetBox.x + collapsedTargetBox.width / 2;
+  const clientY =
+    collapsedTargetBox.y +
+    (edge === 'top' ? collapsedTargetBox.height / 4 : (collapsedTargetBox.height * 3) / 4);
+
+  await target.dispatchEvent('dragenter', { dataTransfer, clientX, clientY });
+  await target.dispatchEvent('dragover', { dataTransfer, clientX, clientY });
+  activeSectionDrags.set(page, { dataTransfer, source, target, clientX, clientY });
 }
 
 export async function endSectionDrag(page: Page): Promise<void> {
-  await page.mouse.up();
+  const activeDrag = activeSectionDrags.get(page);
+  if (!activeDrag) {
+    throw new Error('Expected an active section drag before abort.');
+  }
+  await activeDrag.source.dispatchEvent('dragend', {
+    dataTransfer: activeDrag.dataTransfer,
+    clientX: activeDrag.clientX,
+    clientY: activeDrag.clientY,
+  });
+  await activeDrag.dataTransfer.dispose();
+  activeSectionDrags.delete(page);
 }

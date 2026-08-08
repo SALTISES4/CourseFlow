@@ -46,6 +46,45 @@ class ProjectRelationsService:
             for t in Tag.objects.filter(project_id=p.id).order_by("label", "id")
         ]
 
+    def create_tag(self, project_uuid: UUID, label: str) -> TagDTO | None:
+        try:
+            project = Project.objects.get(uuid=project_uuid)
+        except Project.DoesNotExist:
+            return None
+        clean_label = label.strip()
+        if not clean_label:
+            raise ValueError("tag_label_required")
+        tag = Tag.objects.create(project=project, label=clean_label)
+        return TagDTO(
+            id=tag.id,
+            label=tag.label,
+            translation_plural=tag.translation_plural,
+        )
+
+    def update_tag(
+        self, project_uuid: UUID, tag_id: int, label: str
+    ) -> TagDTO | None:
+        clean_label = label.strip()
+        if not clean_label:
+            raise ValueError("tag_label_required")
+        tag = Tag.objects.filter(project__uuid=project_uuid, id=tag_id).first()
+        if tag is None:
+            return None
+        tag.label = clean_label
+        tag.save(update_fields=["label"])
+        return TagDTO(
+            id=tag.id,
+            label=tag.label,
+            translation_plural=tag.translation_plural,
+        )
+
+    def delete_tag(self, project_uuid: UUID, tag_id: int) -> bool:
+        deleted, _ = Tag.objects.filter(
+            project__uuid=project_uuid,
+            id=tag_id,
+        ).delete()
+        return deleted > 0
+
     def _team_member_to_dto(
         self, m: TeamUser, team: Team
     ) -> ProjectTeamMemberDTO:

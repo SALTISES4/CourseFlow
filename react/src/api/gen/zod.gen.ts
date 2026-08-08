@@ -10,6 +10,38 @@ export const zHealthResponse = z.object({
 })
 
 /**
+ * TagListItemOut
+ */
+export const zTagListItemOut = z.object({
+  id: z.number().int(),
+  label: z.string(),
+  translationPlural: z.string()
+})
+
+/**
+ * ProjectTagCreateIn
+ */
+export const zProjectTagCreateIn = z.object({
+  label: z.string()
+})
+
+/**
+ * ProjectTagPatchIn
+ */
+export const zProjectTagPatchIn = z.object({
+  label: z.string()
+})
+
+/**
+ * SuccessOut
+ *
+ * Minimal typed body for simple destructive operations (e.g. delete).
+ */
+export const zSuccessOut = z.object({
+  success: z.boolean().optional().default(true)
+})
+
+/**
  * AccountRole
  *
  * Canonical Django ``auth.Group`` names for account-level roles.
@@ -140,6 +172,7 @@ export const zProjectDetailOut = z.object({
   dateCreated: z.string().datetime(),
   modifiedOn: z.string().datetime(),
   disciplines: z.array(zDisciplineOption).optional().default([]),
+  tags: z.array(zTagListItemOut).optional().default([]),
   workflows: z.array(zProjectWorkflowListItemOut).optional().default([]),
   permissions: zPermissionContextOut
 })
@@ -269,15 +302,6 @@ export const zProjectTeamMemberRolePatchIn = z.object({
 })
 
 /**
- * SuccessOut
- *
- * Minimal typed body for simple destructive operations (e.g. delete).
- */
-export const zSuccessOut = z.object({
-  success: z.boolean().optional().default(true)
-})
-
-/**
  * ProjectDetailOutResp
  */
 export const zProjectDetailOutResp = z.object({
@@ -349,7 +373,7 @@ export const zWorkflowTypeIn = z.enum(['program', 'course', 'activity'])
  */
 export const zWorkflowCreateIn = z.object({
   projectUuid: z.string().uuid().nullish(),
-  title: z.string().optional().default(''),
+  title: z.string().min(1).max(200),
   workflowType: zWorkflowTypeIn,
   description: z.string().optional().default('')
 })
@@ -499,6 +523,11 @@ export const zNodeGraphOut = z.object({
   timeRequired: z.number().nullish(),
   timeUnits: z.number().int().nullish(),
   representsWorkflow: z.boolean().optional().default(false),
+  ponderationTheory: z.number().nullish(),
+  ponderationPractice: z.number().nullish(),
+  ponderationIndividual: z.number().nullish(),
+  credits: z.number().int().nullish(),
+  specificEducation: z.boolean().optional().default(false),
   tagIds: z.array(z.number().int()).optional(),
   sectionUuid: z.string().uuid().nullish(),
   channelUuid: z.string().uuid().nullish(),
@@ -682,6 +711,11 @@ export const zGraphNodeMutationOut = z.object({
   timeRequired: z.number().nullish(),
   timeUnits: z.number().int().nullish(),
   representsWorkflow: z.boolean().optional().default(false),
+  ponderationTheory: z.number().nullish(),
+  ponderationPractice: z.number().nullish(),
+  ponderationIndividual: z.number().nullish(),
+  credits: z.number().int().nullish(),
+  specificEducation: z.boolean().optional().default(false),
   tagIds: z.array(z.number().int()).optional(),
   sectionUuid: z.string().uuid().nullish(),
   channelUuid: z.string().uuid().nullish(),
@@ -1009,6 +1043,11 @@ export const zGraphNodeMetaPatchIn = z.object({
   timeRequired: z.number().nullish(),
   timeUnits: z.number().int().nullish(),
   representsWorkflow: z.boolean().nullish(),
+  ponderationTheory: z.number().nullish(),
+  ponderationPractice: z.number().nullish(),
+  ponderationIndividual: z.number().nullish(),
+  credits: z.number().int().gte(0).nullish(),
+  specificEducation: z.boolean().nullish(),
   tagIds: z.array(z.number().int()).nullish()
 })
 
@@ -1456,6 +1495,62 @@ export const zCourseFlowApiNinjaAppHealthData = z.object({
  * OK
  */
 export const zCourseFlowApiNinjaAppHealthResponse = zHealthResponse
+
+export const zListProjectTagsData = z.object({
+  body: z.never().optional(),
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * Response
+ *
+ * OK
+ */
+export const zListProjectTagsResponse = z.array(zTagListItemOut)
+
+export const zCreateProjectTagData = z.object({
+  body: zProjectTagCreateIn,
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zCreateProjectTagResponse = zTagListItemOut
+
+export const zDeleteProjectTagData = z.object({
+  body: z.never().optional(),
+  path: z.object({
+    uuid: z.string().uuid(),
+    tag_id: z.number().int()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zDeleteProjectTagResponse = zSuccessOut
+
+export const zUpdateProjectTagData = z.object({
+  body: zProjectTagPatchIn,
+  path: z.object({
+    uuid: z.string().uuid(),
+    tag_id: z.number().int()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zUpdateProjectTagResponse = zTagListItemOut
 
 export const zListProjectsData = z.object({
   body: z.never().optional(),

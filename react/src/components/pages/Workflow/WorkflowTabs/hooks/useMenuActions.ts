@@ -2,7 +2,6 @@ import { WorkflowType } from '@cf/api/gen'
 import { deleteWorkflowPermanentlyMutation } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
@@ -75,16 +74,6 @@ export const useMenuActions = () => {
     }
   }
 
-  // TODO: verify Nodes, Outcomes(?) still need to support this, reimplement
-  function expandAll(type: CfObjectType) {
-    console.log('TODO: expand all', type)
-  }
-
-  // TODO: verify Nodes, Outcomes(?) still need to support this, reimplement
-  function collapseAll(type: CfObjectType) {
-    console.log('TODO: collapse all', type)
-  }
-
   function duplicateItem(
     parentId: string,
     workflowId: string,
@@ -103,8 +92,6 @@ export const useMenuActions = () => {
     archiveWorkflow,
     deleteWorkflowHard,
     restoreWorkflow,
-    expandAll,
-    collapseAll,
     duplicateItem
   }
 }

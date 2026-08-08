@@ -140,7 +140,12 @@ export async function expectBlankWorkflowFormLayoutPerFrCreateStepper005(
   await expect(
     workflowBlankFormVisibleLabel(page, workflowBlankDescriptionVisibleLabel(workflowType)),
   ).toBeVisible();
-  await expect(workflowDescriptionField(page, workflowType)).toBeVisible();
+  const description = workflowDescriptionField(page, workflowType);
+  await expect(description).toBeVisible();
+  await expect(description).toHaveAttribute('contenteditable', 'true');
+  await expect(
+    workflowBlankForm(page).getByRole('toolbar', { name: 'Description formatting' }),
+  ).toBeVisible();
 
   for (const label of WORKFLOW_BLANK_FORM_FORBIDDEN_METADATA_LABELS) {
     await expect(

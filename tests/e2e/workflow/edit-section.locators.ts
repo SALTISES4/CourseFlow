@@ -103,6 +103,14 @@ export function titleFieldInEditSectionForm(page: Page): Locator {
   return editSectionForm(page).getByLabel(/^Section$/i);
 }
 
+export function viewSettingsButton(page: Page): Locator {
+  return page.getByRole('button', { name: /^View settings$/i });
+}
+
+export function expandAllSectionsSwitch(page: Page): Locator {
+  return page.getByRole('checkbox', { name: /^Expand all sections$/i });
+}
+
 export function duplicateButtonInSidebar(page: Page): Locator {
   return editSectionForm(page).getByRole('button', { name: /^Duplicate$/i });
 }

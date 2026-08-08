@@ -22,6 +22,14 @@ class TagListItemOut(CamelSchema):
     translation_plural: str
 
 
+class ProjectTagCreateIn(CamelSchema):
+    label: str
+
+
+class ProjectTagPatchIn(CamelSchema):
+    label: str
+
+
 class ProjectTeamListMetaOut(CamelSchema):
     total: int
 

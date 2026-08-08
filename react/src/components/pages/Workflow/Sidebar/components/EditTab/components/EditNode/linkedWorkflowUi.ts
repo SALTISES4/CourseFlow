@@ -27,6 +27,12 @@ export function linkWorkflowActionLabel(
     }
     return _t('Remove linked workflow')
   }
+  if (parentWorkflowType === 'program') {
+    return _t('Link a course')
+  }
+  if (parentWorkflowType === 'course') {
+    return _t('Link an activity')
+  }
   return _t('Link workflow')
 }
 

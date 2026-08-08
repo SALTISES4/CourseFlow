@@ -22,6 +22,7 @@ import {
   createGraphOutcome,
   createGraphSection,
   createProject,
+  createProjectTag,
   createSection,
   createThreadComment,
   createWorkflow,
@@ -32,6 +33,7 @@ import {
   deleteOneNotification,
   deleteOutcome,
   deleteProject,
+  deleteProjectTag,
   deleteProjectTeamMember,
   deleteSection,
   deleteThreadComment,
@@ -61,6 +63,7 @@ import {
   listGraphNodes,
   listGraphSections,
   listMyNotifications,
+  listProjectTags,
   listProjectTeam,
   listProjects,
   listThreadComments,
@@ -90,6 +93,7 @@ import {
   updateChannel,
   updateEdge,
   updateProject,
+  updateProjectTag,
   updateProjectTeamMember,
   updateSection,
   updateWorkflow
@@ -117,6 +121,8 @@ import type {
   CreateGraphSectionResponse,
   CreateProjectData,
   CreateProjectResponse,
+  CreateProjectTagData,
+  CreateProjectTagResponse,
   CreateSectionData,
   CreateSectionResponse,
   CreateThreadCommentData,
@@ -137,6 +143,8 @@ import type {
   DeleteOutcomeResponse,
   DeleteProjectData,
   DeleteProjectResponse,
+  DeleteProjectTagData,
+  DeleteProjectTagResponse,
   DeleteProjectTeamMemberData,
   DeleteProjectTeamMemberResponse,
   DeleteSectionData,
@@ -195,6 +203,8 @@ import type {
   ListGraphSectionsResponse,
   ListMyNotificationsData,
   ListMyNotificationsResponse,
+  ListProjectTagsData,
+  ListProjectTagsResponse,
   ListProjectTeamData,
   ListProjectTeamResponse,
   ListProjectsData,
@@ -253,6 +263,8 @@ import type {
   UpdateEdgeResponse,
   UpdateProjectData,
   UpdateProjectResponse,
+  UpdateProjectTagData,
+  UpdateProjectTagResponse,
   UpdateProjectTeamMemberData,
   UpdateProjectTeamMemberResponse,
   UpdateSectionData,
@@ -327,6 +339,113 @@ export const courseFlowApiNinjaAppHealthOptions = (
     },
     queryKey: courseFlowApiNinjaAppHealthQueryKey(options)
   })
+
+export const listProjectTagsQueryKey = (
+  options: Options<ListProjectTagsData>
+) => createQueryKey('listProjectTags', options)
+
+/**
+ * List Project Tags
+ */
+export const listProjectTagsOptions = (options: Options<ListProjectTagsData>) =>
+  queryOptions<
+    ListProjectTagsResponse,
+    DefaultError,
+    ListProjectTagsResponse,
+    ReturnType<typeof listProjectTagsQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listProjectTags({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true
+      })
+      return data
+    },
+    queryKey: listProjectTagsQueryKey(options)
+  })
+
+/**
+ * Create Project Tag
+ */
+export const createProjectTagMutation = (
+  options?: Partial<Options<CreateProjectTagData>>
+): UseMutationOptions<
+  CreateProjectTagResponse,
+  DefaultError,
+  Options<CreateProjectTagData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    CreateProjectTagResponse,
+    DefaultError,
+    Options<CreateProjectTagData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await createProjectTag({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Delete Project Tag
+ */
+export const deleteProjectTagMutation = (
+  options?: Partial<Options<DeleteProjectTagData>>
+): UseMutationOptions<
+  DeleteProjectTagResponse,
+  DefaultError,
+  Options<DeleteProjectTagData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    DeleteProjectTagResponse,
+    DefaultError,
+    Options<DeleteProjectTagData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await deleteProjectTag({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Update Project Tag
+ */
+export const updateProjectTagMutation = (
+  options?: Partial<Options<UpdateProjectTagData>>
+): UseMutationOptions<
+  UpdateProjectTagResponse,
+  DefaultError,
+  Options<UpdateProjectTagData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    UpdateProjectTagResponse,
+    DefaultError,
+    Options<UpdateProjectTagData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await updateProjectTag({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
 
 export const listProjectsQueryKey = (options?: Options<ListProjectsData>) =>
   createQueryKey('listProjects', options)

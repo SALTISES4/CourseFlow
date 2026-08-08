@@ -8,13 +8,8 @@ from course_flow.core.hierarchy import (
     InvalidWorkflowTypeError,
     assert_allowed_root_workflow_type,
 )
+from course_flow.core.models import Channel, Graph, Section, Thread
 
-from course_flow.core.models import (
-    Section,
-    Channel,
-    Thread,
-    Graph,
-)
 
 class WorkflowService:
     def __init__(self, repository: WorkflowRepositoryPort) -> None:
@@ -29,6 +24,12 @@ class WorkflowService:
         workflow_type: WorkflowTypeIn,
         description: str = "",
     ) -> WorkflowDTO:
+        clean_title = (title or "").strip()
+        if not clean_title:
+            raise ValueError("Title is required")
+        if len(clean_title) > 200:
+            raise ValueError("Title cannot be longer than 200 characters")
+
         try:
             assert_allowed_root_workflow_type(workflow_type)
         except InvalidWorkflowTypeError as exc:
@@ -37,7 +38,7 @@ class WorkflowService:
         workflow_dtd = self._repository.create(
             author_id=author_id,
             project_id=project_id,
-            title=title,
+            title=clean_title,
             workflow_type=workflow_type.value,
             description=description,
         )

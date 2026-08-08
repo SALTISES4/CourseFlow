@@ -1,4 +1,5 @@
 import { _t } from '@cf/utility/Utility.class'
+import RichTextDescription from '@cfComponents/dialog/Workflow/components/RichTextDescription'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -10,6 +11,11 @@ type Props = {
   parentWorkflowType: string
   showTime?: boolean
   showProgramFields?: boolean
+  time?: number | null
+  credits?: number | null
+  ponderationTheory?: number | null
+  ponderationPractice?: number | null
+  ponderationIndividual?: number | null
 }
 
 /**
@@ -21,7 +27,12 @@ const LinkedWorkflowMirrorFields = ({
   description,
   parentWorkflowType,
   showTime = false,
-  showProgramFields = false
+  showProgramFields = false,
+  time,
+  credits,
+  ponderationTheory,
+  ponderationPractice,
+  ponderationIndividual
 }: Props) => (
   <Stack spacing={2}>
     <Typography variant="body2" color="text.secondary">
@@ -40,21 +51,13 @@ const LinkedWorkflowMirrorFields = ({
       value={title}
       InputProps={{ readOnly: true }}
     />
-    <TextField
-      label={_t('Description')}
-      variant="outlined"
-      size="small"
-      multiline
-      maxRows={5}
-      value={description}
-      InputProps={{ readOnly: true }}
-    />
+    <RichTextDescription value={description} readOnly />
     {showTime && (
       <TextField
         label={_t('Time')}
         variant="outlined"
         size="small"
-        value=""
+        value={time ?? ''}
         placeholder="—"
         InputProps={{ readOnly: true }}
       />
@@ -65,7 +68,7 @@ const LinkedWorkflowMirrorFields = ({
           label={_t('Credits')}
           variant="outlined"
           size="small"
-          value=""
+          value={credits ?? ''}
           placeholder="—"
           InputProps={{ readOnly: true }}
         />
@@ -73,7 +76,7 @@ const LinkedWorkflowMirrorFields = ({
           label={_t('Hrs. theory')}
           variant="outlined"
           size="small"
-          value=""
+          value={ponderationTheory ?? ''}
           placeholder="—"
           InputProps={{ readOnly: true }}
         />
@@ -81,7 +84,7 @@ const LinkedWorkflowMirrorFields = ({
           label={_t('Hrs. practice')}
           variant="outlined"
           size="small"
-          value=""
+          value={ponderationPractice ?? ''}
           placeholder="—"
           InputProps={{ readOnly: true }}
         />
@@ -89,7 +92,7 @@ const LinkedWorkflowMirrorFields = ({
           label={_t('Hrs. individual')}
           variant="outlined"
           size="small"
-          value=""
+          value={ponderationIndividual ?? ''}
           placeholder="—"
           InputProps={{ readOnly: true }}
         />

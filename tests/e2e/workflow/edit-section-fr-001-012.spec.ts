@@ -1,5 +1,6 @@
 import { test, expect } from '../../fixtures';
 import { loginAs } from '../../helpers/auth';
+import { authenticatedApiRequest } from '../../helpers/api';
 import { openFirstNodeEditForm } from './edit-node.helpers';
 import {
   beginSectionDragToward,
@@ -25,6 +26,7 @@ import {
   duplicateBelowButtonInSectionHeader,
   duplicateButtonInSidebar,
   editSectionForm,
+  expandAllSectionsSwitch,
   insertBelowButtonInSectionHeader,
   rightSidebar,
   sectionCollapseButton,
@@ -36,9 +38,30 @@ import {
   sectionNumberLabel,
   selectedSectionContainer,
   titleFieldInEditSectionForm,
+  viewSettingsButton,
   EDIT_SECTION_HEADING,
 } from './edit-section.locators';
 import { workflowEditNodeForm } from './workflow-graph.locators';
+
+type GraphViewPayload = {
+  sections: Array<{ uuid: string; position: number }>;
+  nodes: Array<{
+    uuid: string;
+    sectionUuid: string | null;
+    channelUuid: string | null;
+    sectionRow: number | null;
+  }>;
+  edges: Array<{
+    id: number;
+    sourceNodeUuid: string;
+    targetNodeUuid: string;
+    title: string;
+    textPosition: number;
+    lineType: string;
+    sourcePort: string;
+    targetPort: string;
+  }>;
+};
 
 test.use({
   seedAsset: 'workflow.standard_activity',
@@ -60,6 +83,30 @@ test.use({
 async function hoverSectionHeader(page: import('@playwright/test').Page, sectionUuid: string) {
   await sectionHeader(page, sectionUuid).hover();
   await expect(sectionHoverMenu(page, sectionUuid)).toBeVisible();
+}
+
+async function fetchGraphView(
+  page: import('@playwright/test').Page,
+  workflowUuid: string,
+): Promise<GraphViewPayload> {
+  const response = await authenticatedApiRequest(page, 'GET', `/api/graph/${workflowUuid}/view`);
+  expect(response.ok(), `graph view HTTP ${response.status()}`).toBeTruthy();
+  return (await response.json()) as GraphViewPayload;
+}
+
+function graphNodeAssignments(graph: GraphViewPayload) {
+  return graph.nodes
+    .map(({ uuid, sectionUuid, channelUuid, sectionRow }) => ({
+      uuid,
+      sectionUuid,
+      channelUuid,
+      sectionRow,
+    }))
+    .sort((left, right) => left.uuid.localeCompare(right.uuid));
+}
+
+function graphEdges(graph: GraphViewPayload) {
+  return [...graph.edges].sort((left, right) => left.id - right.id);
 }
 
 test.describe('edit-section-fr-001-012', () => {
@@ -235,11 +282,6 @@ test.describe('edit-section-fr-001-012', () => {
   test.describe('Viewer read-only title (FR-SEC-003)', () => {
     test.use({ storageState: { cookies: [], origins: [] } });
 
-    test.fixme(
-      true,
-      'FR-SEC-003 viewer readOnly: workflow EditSection does not enforce project team role permissions yet (v1).',
-    );
-
     test('FR-SEC-003: viewer cannot edit workflowEditSectionFormTitleField', async ({
       page,
       workflow,
@@ -251,7 +293,9 @@ test.describe('edit-section-fr-001-012', () => {
       const sectionUuid = workflow.firstSection().uuid;
       await sectionHeader(page, sectionUuid).click();
       await expect(editSectionForm(page)).toBeVisible();
-      await expect(titleFieldInEditSectionForm(page)).toBeDisabled();
+      await expect(titleFieldInEditSectionForm(page)).toHaveAttribute('readonly', '');
+      await expect(duplicateButtonInSidebar(page)).toBeDisabled();
+      await expect(deleteButtonInSidebar(page)).toBeDisabled();
     });
   });
 
@@ -385,8 +429,6 @@ test.describe('edit-section-fr-001-012', () => {
       page,
       workflow,
     }) => {
-      test.fixme(true, 'Section HoverMenu does not enforce project team roles yet (v1).');
-
       const viewer = workflow.contributorByRole('viewer');
       await loginAs(page, { email: viewer.email, password: viewer.password });
       await page.goto(workflow.path);
@@ -480,6 +522,7 @@ test.describe('edit-section-fr-001-012', () => {
   test.describe('Vertical section reorder (FR-SEC-009)', () => {
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
+      await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
     });
 
     test('FR-SEC-009: drag section below another updates order and renumbers', async ({
@@ -490,6 +533,7 @@ test.describe('edit-section-fr-001-012', () => {
       const blank = workflow.blankSection();
       const orderBefore = await sectionOrderUuids(page);
       const nodesInFirst = await sectionNodeUuids(page, first.uuid);
+      const graphBefore = await fetchGraphView(page, workflow.workflowUuid);
 
       expect(orderBefore[0]).toBe(first.uuid);
 
@@ -502,6 +546,19 @@ test.describe('edit-section-fr-001-012', () => {
         expect(orderAfter.indexOf(first.uuid)).toBeGreaterThan(orderAfter.indexOf(blank.uuid));
         await expectSectionNumberLabelsMatchOrder(page, orderAfter);
         expect(await sectionNodeUuids(page, first.uuid)).toEqual(nodesInFirst);
+
+        await expect
+          .poll(async () => {
+            const graph = await fetchGraphView(page, workflow.workflowUuid);
+            return [...graph.sections]
+              .sort((left, right) => left.position - right.position)
+              .map((section) => section.uuid);
+          }, { timeout: 15_000 })
+          .toEqual(orderAfter);
+
+        const graphAfter = await fetchGraphView(page, workflow.workflowUuid);
+        expect(graphNodeAssignments(graphAfter)).toEqual(graphNodeAssignments(graphBefore));
+        expect(graphEdges(graphAfter)).toEqual(graphEdges(graphBefore));
       } finally {
         await restoreSectionOrder(page, orderBefore);
         await expectSectionNumberLabelsMatchOrder(page, orderBefore);
@@ -574,20 +631,145 @@ test.describe('edit-section-fr-001-012', () => {
       const blank = workflow.blankSection();
       const orderBefore = await sectionOrderUuids(page);
 
-      await dragSectionBelow(page, first.uuid, blank.uuid);
+      await expect(sectionHeader(page, first.uuid)).not.toHaveAttribute('draggable', 'true');
+      await sectionHeader(page, first.uuid).dragTo(sectionContainer(page, blank.uuid), {
+        force: true,
+      });
 
       await expect.poll(async () => sectionOrderUuids(page)).toEqual(orderBefore);
     });
   });
 
-  test.describe('Deferred FR-SEC-008, FR-SEC-012', () => {
-    test.fixme(
-      'FR-SEC-008: edge integrity across section mutation',
-      async () => {},
-    );
-    test.fixme(
-      'FR-SEC-012: bulk expand and collapse',
-      async () => {},
-    );
+  test.describe('Edge integrity for section insert below (FR-SEC-008)', () => {
+    test('FR-SEC-008: inserting between linked sections preserves every edge', async ({
+      page,
+      workflow,
+    }) => {
+      await page.goto(workflow.path);
+      await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
+
+      const graphBefore = await fetchGraphView(page, workflow.workflowUuid);
+      const orderedSections = [...graphBefore.sections].sort(
+        (left, right) => left.position - right.position,
+      );
+      const sectionByNodeUuid = new Map(
+        graphBefore.nodes.map((node) => [node.uuid, node.sectionUuid]),
+      );
+
+      let insertAfterSectionUuid: string | undefined;
+      for (let index = 0; index < orderedSections.length - 1; index += 1) {
+        const upperUuid = orderedSections[index]!.uuid;
+        const lowerUuid = orderedSections[index + 1]!.uuid;
+        const hasCrossSectionEdge = graphBefore.edges.some((edge) => {
+          const sourceSectionUuid = sectionByNodeUuid.get(edge.sourceNodeUuid);
+          const targetSectionUuid = sectionByNodeUuid.get(edge.targetNodeUuid);
+          return (
+            (sourceSectionUuid === upperUuid && targetSectionUuid === lowerUuid) ||
+            (sourceSectionUuid === lowerUuid && targetSectionUuid === upperUuid)
+          );
+        });
+        if (hasCrossSectionEdge) {
+          insertAfterSectionUuid = upperUuid;
+          break;
+        }
+      }
+
+      expect(
+        insertAfterSectionUuid,
+        'The standard activity fixture must contain an edge across adjacent sections.',
+      ).toBeDefined();
+
+      const beforeCount = orderedSections.length;
+      await sectionHeader(page, insertAfterSectionUuid!).hover();
+      await insertBelowButtonInSectionHeader(page, insertAfterSectionUuid!).click();
+      await expect(sectionContainers(page)).toHaveCount(beforeCount + 1, { timeout: 15_000 });
+
+      await expect
+        .poll(async () => (await fetchGraphView(page, workflow.workflowUuid)).sections.length, {
+          timeout: 15_000,
+        })
+        .toBe(beforeCount + 1);
+
+      const graphAfter = await fetchGraphView(page, workflow.workflowUuid);
+      expect(graphEdges(graphAfter)).toEqual(graphEdges(graphBefore));
+    });
+  });
+
+  test.describe('Bulk expand and collapse (FR-SEC-012)', () => {
+    test.beforeEach(async ({ page, workflow }) => {
+      await page.goto(workflow.path);
+      await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
+    });
+
+    test('FR-SEC-012: bulk expand replaces manual collapse state without opening sidebar', async ({
+      page,
+      workflow,
+    }) => {
+      const firstUuid = workflow.firstSection().uuid;
+
+      await sectionCollapseButton(page, firstUuid).click();
+      await expect(sectionCollapseButton(page, firstUuid)).toHaveAttribute(
+        'aria-expanded',
+        'false',
+      );
+      await expect(editSectionForm(page)).toBeHidden();
+
+      await viewSettingsButton(page).click();
+      await expect(expandAllSectionsSwitch(page)).not.toBeChecked();
+      await expandAllSectionsSwitch(page).check();
+      await page.keyboard.press('Escape');
+
+      for (const section of workflow.sections) {
+        await expect(sectionCollapseButton(page, section.uuid)).toHaveAttribute(
+          'aria-expanded',
+          'true',
+        );
+      }
+      await expect(sectionNodes(page, firstUuid).first()).toBeVisible();
+      await expect(editSectionForm(page)).toBeHidden();
+    });
+
+    test('FR-SEC-012: bulk collapse permits one manual expand and resets on reload', async ({
+      page,
+      workflow,
+    }) => {
+      const firstUuid = workflow.firstSection().uuid;
+
+      await viewSettingsButton(page).click();
+      await expect(expandAllSectionsSwitch(page)).toBeChecked();
+      await expandAllSectionsSwitch(page).uncheck();
+      await page.keyboard.press('Escape');
+
+      for (const section of workflow.sections) {
+        await expect(sectionCollapseButton(page, section.uuid)).toHaveAttribute(
+          'aria-expanded',
+          'false',
+        );
+        await expect(sectionNodes(page, section.uuid)).toHaveCount(0);
+      }
+      await expect(editSectionForm(page)).toBeHidden();
+
+      await sectionCollapseButton(page, firstUuid).click();
+      await expect(sectionCollapseButton(page, firstUuid)).toHaveAttribute(
+        'aria-expanded',
+        'true',
+      );
+      await expect(sectionNodes(page, firstUuid).first()).toBeVisible();
+      for (const section of workflow.sections.filter(({ uuid }) => uuid !== firstUuid)) {
+        await expect(sectionCollapseButton(page, section.uuid)).toHaveAttribute(
+          'aria-expanded',
+          'false',
+        );
+      }
+
+      await page.reload();
+      await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
+      for (const section of workflow.sections) {
+        await expect(sectionCollapseButton(page, section.uuid)).toHaveAttribute(
+          'aria-expanded',
+          'true',
+        );
+      }
+    });
   });
 });

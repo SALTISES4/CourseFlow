@@ -15,6 +15,56 @@ export type HealthResponse = {
 }
 
 /**
+ * TagListItemOut
+ */
+export type TagListItemOut = {
+  /**
+   * Id
+   */
+  id: number
+  /**
+   * Label
+   */
+  label: string
+  /**
+   * Translationplural
+   */
+  translationPlural: string
+}
+
+/**
+ * ProjectTagCreateIn
+ */
+export type ProjectTagCreateIn = {
+  /**
+   * Label
+   */
+  label: string
+}
+
+/**
+ * ProjectTagPatchIn
+ */
+export type ProjectTagPatchIn = {
+  /**
+   * Label
+   */
+  label: string
+}
+
+/**
+ * SuccessOut
+ *
+ * Minimal typed body for simple destructive operations (e.g. delete).
+ */
+export type SuccessOut = {
+  /**
+   * Success
+   */
+  success?: boolean
+}
+
+/**
  * AccountRole
  *
  * Canonical Django ``auth.Group`` names for account-level roles.
@@ -106,6 +156,10 @@ export type ProjectDetailOut = {
    * Disciplines
    */
   disciplines?: Array<DisciplineOption>
+  /**
+   * Tags
+   */
+  tags?: Array<TagListItemOut>
   /**
    * Workflows
    */
@@ -476,18 +530,6 @@ export type ProjectTeamMemberRolePatchIn = {
 }
 
 /**
- * SuccessOut
- *
- * Minimal typed body for simple destructive operations (e.g. delete).
- */
-export type SuccessOut = {
-  /**
-   * Success
-   */
-  success?: boolean
-}
-
-/**
  * ProjectDetailOutResp
  */
 export type ProjectDetailOutResp = {
@@ -642,7 +684,7 @@ export type WorkflowCreateIn = {
   /**
    * Title
    */
-  title?: string
+  title: string
   workflowType: WorkflowTypeIn
   /**
    * Description
@@ -1033,6 +1075,26 @@ export type NodeGraphOut = {
    * Representsworkflow
    */
   representsWorkflow?: boolean
+  /**
+   * Ponderationtheory
+   */
+  ponderationTheory?: number | null
+  /**
+   * Ponderationpractice
+   */
+  ponderationPractice?: number | null
+  /**
+   * Ponderationindividual
+   */
+  ponderationIndividual?: number | null
+  /**
+   * Credits
+   */
+  credits?: number | null
+  /**
+   * Specificeducation
+   */
+  specificEducation?: boolean
   /**
    * Tagids
    */
@@ -1446,6 +1508,26 @@ export type GraphNodeMutationOut = {
    * Representsworkflow
    */
   representsWorkflow?: boolean
+  /**
+   * Ponderationtheory
+   */
+  ponderationTheory?: number | null
+  /**
+   * Ponderationpractice
+   */
+  ponderationPractice?: number | null
+  /**
+   * Ponderationindividual
+   */
+  ponderationIndividual?: number | null
+  /**
+   * Credits
+   */
+  credits?: number | null
+  /**
+   * Specificeducation
+   */
+  specificEducation?: boolean
   /**
    * Tagids
    */
@@ -2063,6 +2145,26 @@ export type GraphNodeMetaPatchIn = {
    * Representsworkflow
    */
   representsWorkflow?: boolean | null
+  /**
+   * Ponderationtheory
+   */
+  ponderationTheory?: number | null
+  /**
+   * Ponderationpractice
+   */
+  ponderationPractice?: number | null
+  /**
+   * Ponderationindividual
+   */
+  ponderationIndividual?: number | null
+  /**
+   * Credits
+   */
+  credits?: number | null
+  /**
+   * Specificeducation
+   */
+  specificEducation?: boolean | null
   /**
    * Tagids
    */
@@ -2894,6 +2996,104 @@ export type CourseFlowApiNinjaAppHealthResponses = {
 
 export type CourseFlowApiNinjaAppHealthResponse =
   CourseFlowApiNinjaAppHealthResponses[keyof CourseFlowApiNinjaAppHealthResponses]
+
+export type ListProjectTagsData = {
+  body?: never
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/project/{uuid}/tags'
+}
+
+export type ListProjectTagsResponses = {
+  /**
+   * Response
+   *
+   * OK
+   */
+  200: Array<TagListItemOut>
+}
+
+export type ListProjectTagsResponse =
+  ListProjectTagsResponses[keyof ListProjectTagsResponses]
+
+export type CreateProjectTagData = {
+  body: ProjectTagCreateIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/project/{uuid}/tags'
+}
+
+export type CreateProjectTagResponses = {
+  /**
+   * OK
+   */
+  200: TagListItemOut
+}
+
+export type CreateProjectTagResponse =
+  CreateProjectTagResponses[keyof CreateProjectTagResponses]
+
+export type DeleteProjectTagData = {
+  body?: never
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+    /**
+     * Tag Id
+     */
+    tag_id: number
+  }
+  query?: never
+  url: '/api/project/{uuid}/tags/{tag_id}'
+}
+
+export type DeleteProjectTagResponses = {
+  /**
+   * OK
+   */
+  200: SuccessOut
+}
+
+export type DeleteProjectTagResponse =
+  DeleteProjectTagResponses[keyof DeleteProjectTagResponses]
+
+export type UpdateProjectTagData = {
+  body: ProjectTagPatchIn
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+    /**
+     * Tag Id
+     */
+    tag_id: number
+  }
+  query?: never
+  url: '/api/project/{uuid}/tags/{tag_id}'
+}
+
+export type UpdateProjectTagResponses = {
+  /**
+   * OK
+   */
+  200: TagListItemOut
+}
+
+export type UpdateProjectTagResponse =
+  UpdateProjectTagResponses[keyof UpdateProjectTagResponses]
 
 export type ListProjectsData = {
   body?: never

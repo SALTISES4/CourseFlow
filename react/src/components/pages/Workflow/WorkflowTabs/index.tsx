@@ -94,7 +94,10 @@ const WorkflowTabs = () => {
   const ViewBar = () => (
     <Stack direction="row" spacing={2}>
       <JumpToMenu sectionIds={sectionIdsOrdered} />
-      <ExpandCollapseMenu legend={<WorkflowLegend />} />
+      <ExpandCollapseMenu
+        legend={<WorkflowLegend />}
+        sectionIds={sectionIdsOrdered}
+      />
     </Stack>
   )
 

@@ -5,6 +5,7 @@ export type NodeForm = {
   taskType?: number | string
   timeUnits?: number
   timeRequired?: number
+  credits?: number
   tags?: number[]
   linkedWorkflow?: LinkedWorkflowType
   ponderation?: PonderationType
@@ -29,8 +30,8 @@ type PonderationType = {
   theory: string
   practice: string
   individual: string
-  generalEdu: string
-  specificEdu: string
+  generalEdu?: string
+  specificEdu?: string
 }
 
 export type LinkedWorkflowType = {

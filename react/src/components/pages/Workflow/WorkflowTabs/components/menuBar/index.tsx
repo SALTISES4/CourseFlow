@@ -4,6 +4,8 @@ import {
   hasPermission,
   useWorkspacePermissions
 } from '@cf/context/workspacePermissionsContext'
+import { graphUiActions } from '@cf/features/graph/state/slices/graphUi.slice'
+import type { AppDispatch, RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import {
@@ -24,6 +26,7 @@ import { FormControlLabel, Switch } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
 import SectionTitle from './SectionTitle'
@@ -134,11 +137,19 @@ const ActionMenu = () => {
   )
 }
 
-const ExpandCollapseMenu = ({ legend }: { legend?: ReactElement }) => {
+const ExpandCollapseMenu = ({
+  legend,
+  sectionIds
+}: {
+  legend?: ReactElement
+  sectionIds: string[]
+}) => {
   const workflowViewType = useWorkflowViewTypeFromRoute()
-  const { expandAll, collapseAll } = useMenuActions()
+  const dispatch = useDispatch<AppDispatch>()
+  const collapsedSectionUuids = useSelector(
+    (state: RootState) => state.graph.graphUi.collapsedSectionUuids
+  )
   const [expanded, setExpanded] = useState({
-    [CfObjectType.SECTION]: true,
     [CfObjectType.NODE]: true,
     [CfObjectType.OUTCOME]: true
   })
@@ -148,19 +159,20 @@ const ExpandCollapseMenu = ({ legend }: { legend?: ReactElement }) => {
       const type = event.target.value as CfObjectType
       const checked = event.target.checked
 
+      if (type === CfObjectType.SECTION) {
+        dispatch(
+          graphUiActions.setCollapsedSectionUuids(checked ? [] : sectionIds)
+        )
+        return
+      }
+
       setExpanded(
         produce((draft) => {
           draft[type] = checked
-
-          if (checked) {
-            expandAll(type)
-          } else {
-            collapseAll(type)
-          }
         })
       )
     },
-    [expandAll, collapseAll]
+    [dispatch, sectionIds]
   )
 
   if (workflowViewType === WorkflowViewType.OVERVIEW) {
@@ -181,9 +193,9 @@ const ExpandCollapseMenu = ({ legend }: { legend?: ReactElement }) => {
           control={
             <Switch
               value={CfObjectType.SECTION}
-              checked={expanded[CfObjectType.SECTION]}
+              checked={collapsedSectionUuids.length === 0}
               onChange={onExpandChange}
-              inputProps={{ 'aria-label': 'controlled' }}
+              inputProps={{ 'aria-label': _t('Expand all sections') }}
             />
           }
           label={_t('Expand all sections')}

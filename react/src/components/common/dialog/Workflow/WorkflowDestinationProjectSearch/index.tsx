@@ -123,7 +123,10 @@ const WorkflowDestinationProjectSearch = ({
   }, [keyword, pinnedProject, search.data?.items])
 
   useEffect(() => {
-    if (search.isFetching) {
+    if (
+      search.isFetching ||
+      (contextProjectUuid && contextProject.isFetching)
+    ) {
       return
     }
 
@@ -137,6 +140,8 @@ const WorkflowDestinationProjectSearch = ({
     }
   }, [
     keyword,
+    contextProject.isFetching,
+    contextProjectUuid,
     onProjectSelect,
     pinnedProject,
     search.isFetching,

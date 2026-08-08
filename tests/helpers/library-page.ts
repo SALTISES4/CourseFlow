@@ -24,11 +24,7 @@ import {
   expectExploreResultsContainOnlyWorkflowCards,
 } from './explore';
 import { expectExploreResultsContainOnlyFavouritedCards } from './explore-boolean-filters';
-import {
-  loadWorkflowManifest,
-  type WorkflowEntry,
-  type WorkflowManifest,
-} from './manifest';
+import { loadWorkflowManifest } from './manifest';
 
 /**
  * FR-LIB-001 — libraryFilterToolbar exposes sort, ownership, type, favourites, and archive.
@@ -58,8 +54,19 @@ export {
 };
 
 type LibrarySearchResponse = {
-  items: Array<{ uuid: string; isFavorite?: boolean }>;
+  items: Array<{
+    uuid: string;
+    isFavorite?: boolean;
+    permissions: { resourceRole: string | null };
+  }>;
 };
+
+const MY_LIBRARY_MEMBERSHIP_ROLES = new Set([
+  'owner',
+  'editor',
+  'viewer',
+  'commenter',
+]);
 
 function isLibrarySearchResponse(response: {
   url: () => string;
@@ -73,50 +80,12 @@ function isLibrarySearchResponse(response: {
   );
 }
 
-function primaryWorkflowUuid(workflow: WorkflowEntry): string {
-  const withUuid = workflow as WorkflowEntry & { workflow_uuid?: string };
-  if (withUuid.workflow_uuid) {
-    return withUuid.workflow_uuid;
-  }
-
-  const match = workflow.workflow_path.match(/^\/workflow\/([^/]+)\//);
-  if (!match?.[1]) {
-    throw new Error(`Cannot resolve workflow UUID from path ${workflow.workflow_path}`);
-  }
-
-  return match[1];
-}
-
-/** UUIDs for projects/workflows the E2E admin owns or contributes to (manifest in-scope set). */
-export function collectMyLibraryMembershipScopeUuids(manifest: WorkflowManifest): Set<string> {
-  const uuids = new Set<string>([manifest.project_uuid]);
-
-  for (const workflow of manifest.workflows) {
-    uuids.add(primaryWorkflowUuid(workflow));
-  }
-
-  if (manifest.template_project_uuid) {
-    uuids.add(manifest.template_project_uuid);
-  }
-
-  for (const project of manifest.recent_projects) {
-    uuids.add(project.uuid);
-  }
-
-  for (const templateWorkflow of manifest.template_workflows ?? []) {
-    uuids.add(templateWorkflow.workflow_uuid);
-  }
-
-  return uuids;
-}
-
 /**
  * FR-LIB-001 — My library listing only returns items in membership scope (API contract).
  * Base scope: projects/workflows created by the user or where the user is editor, viewer, or commenter.
  */
 export async function expectMyLibraryListingItemsAreInMembershipScope(page: Page): Promise<void> {
   const manifest = loadWorkflowManifest();
-  const inScopeUuids = collectMyLibraryMembershipScopeUuids(manifest);
 
   const searchResponse = page.waitForResponse(isLibrarySearchResponse);
   await page.reload();
@@ -127,10 +96,12 @@ export async function expectMyLibraryListingItemsAreInMembershipScope(page: Page
   const body = (await response.json()) as LibrarySearchResponse;
 
   for (const item of body.items) {
+    const resourceRole = item.permissions.resourceRole;
     expect(
-      inScopeUuids.has(item.uuid),
-      `library search item ${item.uuid} is outside My library membership scope`,
+      MY_LIBRARY_MEMBERSHIP_ROLES.has(resourceRole ?? ''),
+      `library search item ${item.uuid} has non-membership resource role ${resourceRole ?? 'none'}`,
     ).toBe(true);
+    expect(item.uuid).not.toBe(manifest.restricted_workflow.project_uuid);
   }
 }
 

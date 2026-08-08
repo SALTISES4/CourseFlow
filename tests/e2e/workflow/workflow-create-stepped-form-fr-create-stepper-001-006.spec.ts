@@ -7,6 +7,7 @@ import {
   createWorkflowDialogNextStep,
   createWorkflowDialogProjectCardByTitle,
   createWorkflowDialogProjectCards,
+  createWorkflowDialogTemplateCards,
   createWorkflowDialogTitle,
   createWorkflowNoEligibleProjectsDialog,
   createWorkflowPreviousStepButton,
@@ -21,6 +22,8 @@ import {
   workflowProjectSearchEmptyState,
   workflowProjectSearchField,
   workflowProjectSearchView,
+  workflowTemplateSearchEmptyState,
+  workflowTemplateSearchField,
   workflowTitleField,
 } from '../home/home.locators';
 import {
@@ -31,6 +34,7 @@ import {
 } from '../navigation/navigation.locators';
 import { loginAs } from '../../helpers/auth';
 import {
+  createWorkflowBlankFailureSnackbarText,
   createWorkflowBlankSuccessSnackbarText,
   createWorkflowDialogTitles,
   createWorkflowStepperLabels,
@@ -42,6 +46,7 @@ import {
   selectCreateWorkflowDestinationProject,
   waitForCreateWorkflowProjectSearchLoaded,
 } from '../../helpers/create-workflow';
+import { authenticatedApiRequest } from '../../helpers/api';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import {
   contributorByRole,
@@ -154,10 +159,10 @@ async function openCreateWorkflowTemplateStep3(
 
 test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006', () => {
   const manifest = loadWorkflowManifest();
-  const destinationProjectTitle = manifest.recent_projects[0]!.title;
 
   for (const workflowType of WORKFLOW_TYPES) {
     const entry = buildCreateWorkflowEntry(workflowType);
+    let destinationProjectTitle = '';
 
     test.describe(workflowType, () => {
       test.describe('FR-WF-CREATE-STEPPER-002: no eligible destination projects', () => {
@@ -197,7 +202,10 @@ test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006',
       });
 
       test.describe('owner/editor path', () => {
-        test.beforeEach(async ({ page }) => {
+        test.use({ projectAccess: 'disposable' });
+
+        test.beforeEach(async ({ page, project }) => {
+          destinationProjectTitle = project.title;
           await gotoAuthenticatedShell(page, '/home');
         });
 
@@ -277,6 +285,45 @@ test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006',
             expect(count).toBeLessThanOrEqual(4);
           });
 
+          test('current eligible project route is pinned first and preselected', async ({
+            page,
+            project,
+          }) => {
+            await expect(addMenuTrigger(page)).toBeVisible();
+            await gotoAuthenticatedShell(page, project.path);
+            await openCreateWorkflowDialogStep1(page, entry);
+
+            const firstProjectCard = createWorkflowDialogProjectCards(page).first();
+            await expect(cardTitleText(firstProjectCard)).toHaveText(project.title);
+            await expect(firstProjectCard).toHaveClass(/selected/);
+            await expect(createWorkflowDialogNextStep(page)).toBeEnabled();
+          });
+
+          test('current eligible child-workflow project is pinned first and preselected', async ({
+            page,
+            project,
+          }) => {
+            await expect(addMenuTrigger(page)).toBeVisible();
+            const createResponse = await authenticatedApiRequest(page, 'POST', '/api/workflow', {
+              data: {
+                projectUuid: project.uuid,
+                title: `E2E context ${entry.workflowType} ${Date.now()}`,
+                workflowType: entry.workflowType,
+                description: '',
+              },
+            });
+            expect(createResponse.ok()).toBe(true);
+            const created = (await createResponse.json()) as { uuid: string };
+
+            await gotoAuthenticatedShell(page, `/workflow/${created.uuid}/graph`);
+            await openCreateWorkflowDialogStep1(page, entry);
+
+            const firstProjectCard = createWorkflowDialogProjectCards(page).first();
+            await expect(cardTitleText(firstProjectCard)).toHaveText(project.title);
+            await expect(firstProjectCard).toHaveClass(/selected/);
+            await expect(createWorkflowDialogNextStep(page)).toBeEnabled();
+          });
+
         test('Next step stays disabled until a projectCard is selected', async ({ page }) => {
           await openCreateWorkflowDialogStep1(page, entry);
 
@@ -311,8 +358,8 @@ test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006',
             (project) => project.title !== destinationProjectTitle,
           )?.title;
 
-          // Unique substring so only the destination fixture card matches.
-          const searchTerm = 'Recent Project 1';
+          // Disposable project titles are unique, so only this test's destination matches.
+          const searchTerm = destinationProjectTitle;
           await workflowProjectSearchField(page).fill(searchTerm);
           await workflowProjectSearchField(page).press('Enter');
 
@@ -524,7 +571,7 @@ test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006',
           await createWorkflowDialogNextStep(page).click();
           await expect(createWorkflowDialogTitle(page)).toHaveText(entry.step3BlankDialogTitle);
           await expect(workflowTitleField(page)).toHaveValue(title);
-          await expect(workflowDescriptionField(page, entry.workflowType)).toHaveValue(description);
+          await expect(workflowDescriptionField(page, entry.workflowType)).toHaveText(description);
           await expect(createWorkflowSubmitButton(page, entry.workflowType)).toBeEnabled();
         });
 
@@ -560,8 +607,59 @@ test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006',
           );
 
           const templateCard = cardByTitle(dialog, templateFixture.workflow_title);
+          await expect(workflowTemplateSearchField(page)).toBeVisible();
           await expect(templateCard).toBeVisible({ timeout: 15_000 });
           await expect(cardChipWithLabel(templateCard, 'Template')).toBeVisible();
+          const templateCount = await createWorkflowDialogTemplateCards(page).count();
+          expect(templateCount).toBeGreaterThanOrEqual(1);
+          expect(templateCount).toBeLessThanOrEqual(4);
+          await expect(createWorkflowSubmitButton(page, entry.workflowType)).toBeDisabled();
+        });
+
+        test('template title search shows matching cards and recovers after an empty result', async ({
+          page,
+        }) => {
+          const templateFixture = getTemplateWorkflowFixture(manifest, entry.workflowType);
+          const dialog = await openCreateWorkflowTemplateStep3(
+            page,
+            entry,
+            destinationProjectTitle,
+          );
+
+          await workflowTemplateSearchField(page).fill('zzz-no-matching-template-title');
+          await expect(workflowTemplateSearchEmptyState(page)).toBeVisible({ timeout: 15_000 });
+          await expect(createWorkflowDialogTemplateCards(page)).toHaveCount(0);
+          await expect(createWorkflowSubmitButton(page, entry.workflowType)).toBeDisabled();
+
+          await workflowTemplateSearchField(page).fill(templateFixture.workflow_title);
+          const matchingCard = cardByTitle(dialog, templateFixture.workflow_title);
+          await expect(matchingCard).toBeVisible({ timeout: 15_000 });
+          await expect(workflowTemplateSearchEmptyState(page)).toBeHidden();
+          await expect(createWorkflowDialogTemplateCards(page)).toHaveCount(1);
+        });
+
+        test('selected template remains selected after returning from step 2', async ({ page }) => {
+          const templateFixture = getTemplateWorkflowFixture(manifest, entry.workflowType);
+          let dialog = await openCreateWorkflowTemplateStep3(
+            page,
+            entry,
+            destinationProjectTitle,
+          );
+          let templateCard = cardByTitle(dialog, templateFixture.workflow_title);
+
+          await templateCard.click();
+          await expect(templateCard).toHaveClass(/selected/);
+          await expect(createWorkflowSubmitButton(page, entry.workflowType)).toBeEnabled();
+
+          await createWorkflowPreviousStepButton(page).click();
+          await expect(createWorkflowDialogTitle(page)).toHaveText(entry.step2DialogTitle);
+          await createWorkflowDialogNextStep(page).click();
+          await expect(createWorkflowDialogTitle(page)).toHaveText(entry.step3TemplateDialogTitle);
+
+          dialog = createWorkflowDialog(page);
+          templateCard = cardByTitle(dialog, templateFixture.workflow_title);
+          await expect(templateCard).toHaveClass(/selected/);
+          await expect(createWorkflowSubmitButton(page, entry.workflowType)).toBeEnabled();
         });
 
         test('selected template is copied through the workflow-copy endpoint', async ({ page }) => {
@@ -591,6 +689,61 @@ test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006',
     });
   }
 
-  // FR-WF-CREATE-STEPPER-005 failure snackbar needs a deterministic API-failure harness.
-  test.fixme('shows failure snackbar when blank create submit fails', async () => {});
+  test.describe('FR-WF-CREATE-STEPPER-005: real API failure feedback', () => {
+    test.use({ projectAccess: 'disposable' });
+
+    test('shows failure snackbar and keeps dialog open when blank create submit fails', async ({
+      page,
+      project,
+    }) => {
+      const entry = buildCreateWorkflowEntry('activity');
+      await gotoAuthenticatedShell(page, '/home');
+      await openCreateWorkflowDialogBlankStep3(page, project.title, entry);
+      await workflowTitleField(page).fill(`E2E failed activity ${Date.now()}`);
+
+      const archived = await authenticatedApiRequest(
+        page,
+        'POST',
+        `/api/project/${project.uuid}/archive`,
+      );
+      expect(archived.ok()).toBe(true);
+      const deleted = await authenticatedApiRequest(page, 'DELETE', `/api/project/${project.uuid}`);
+      expect(deleted.ok()).toBe(true);
+
+      await createWorkflowSubmitButton(page, entry.workflowType).click();
+
+      await expect(createWorkflowDialog(page)).toBeVisible();
+      await expect(globalMessageSnackbar(page)).toHaveText(
+        createWorkflowBlankFailureSnackbarText(entry.workflowType),
+      );
+    });
+
+    test('shows failure snackbar and keeps dialog open when template copy fails', async ({
+      page,
+      project,
+    }) => {
+      const entry = buildCreateWorkflowEntry('activity');
+      const templateFixture = getTemplateWorkflowFixture(manifest, entry.workflowType);
+      await gotoAuthenticatedShell(page, '/home');
+      const dialog = await openCreateWorkflowTemplateStep3(page, entry, project.title);
+      const templateCard = cardByTitle(dialog, templateFixture.workflow_title);
+      await templateCard.click();
+
+      const archived = await authenticatedApiRequest(
+        page,
+        'POST',
+        `/api/project/${project.uuid}/archive`,
+      );
+      expect(archived.ok()).toBe(true);
+      const deleted = await authenticatedApiRequest(page, 'DELETE', `/api/project/${project.uuid}`);
+      expect(deleted.ok()).toBe(true);
+
+      await createWorkflowSubmitButton(page, entry.workflowType).click();
+
+      await expect(createWorkflowDialog(page)).toBeVisible();
+      await expect(globalMessageSnackbar(page)).toHaveText(
+        createWorkflowBlankFailureSnackbarText(entry.workflowType),
+      );
+    });
+  });
 });

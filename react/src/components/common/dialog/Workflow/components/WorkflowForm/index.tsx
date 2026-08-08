@@ -1,19 +1,22 @@
 import { WorkflowTypeIn } from '@cf/api/gen'
 import { _t, capitalize } from '@cf/utility/Utility.class'
 import { StyledBox } from '@cfComponents/dialog/styles'
+import RichTextDescription from '@cfComponents/dialog/Workflow/components/RichTextDescription'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import TextField from '@mui/material/TextField'
 import { RefObject, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 
 export const workflowSchema = z.object({
   title: z
     .string()
-    .min(1, { message: 'Title is required' })
-    .max(200, { message: 'Title cannot be longer than 200 characters' }),
+    .max(200, { message: 'Title cannot be longer than 200 characters' })
+    .refine((value) => value.trim().length > 0, {
+      message: 'Title is required'
+    }),
   description: z.string().nullish()
 })
 
@@ -31,6 +34,7 @@ const WorkflowForm = ({
   label,
   workflowType,
   setIsFormReady,
+  onValuesChange,
   formRef
 }: {
   submitHandler: (data: WorkflowFormType) => void
@@ -39,17 +43,21 @@ const WorkflowForm = ({
   defaultValues?: WorkflowFormType
   workflowType: WorkflowTypeIn
   setIsFormReady: (isReady: boolean) => void
+  onValuesChange?: (values: WorkflowFormType) => void
   formRef: RefObject<HTMLFormElement>
 }) => {
   const {
     register,
+    control,
     handleSubmit,
     reset,
-    formState: { errors, isDirty }
+    formState: { errors, isValid }
   } = useForm<WorkflowFormType>({
     resolver: zodResolver(workflowSchema),
-    defaultValues
+    defaultValues,
+    mode: 'onChange'
   })
+  const values = useWatch({ control })
 
   function onDialogClose() {
     reset()
@@ -57,10 +65,15 @@ const WorkflowForm = ({
   }
 
   useEffect(() => {
-    if (isDirty !== undefined) {
-      setIsFormReady(isDirty)
-    }
-  }, [isDirty])
+    setIsFormReady(isValid)
+  }, [isValid, setIsFormReady])
+
+  useEffect(() => {
+    onValuesChange?.({
+      title: values.title ?? '',
+      description: values.description ?? ''
+    })
+  }, [onValuesChange, values.description, values.title])
 
   return (
     <form ref={formRef} onSubmit={handleSubmit(submitHandler)}>
@@ -76,16 +89,16 @@ const WorkflowForm = ({
           helperText={errors.title?.message}
         />
 
-        <TextField
-          {...register('description')}
-          multiline
-          maxRows={3}
+        <Controller
           name="description"
-          variant="standard"
-          label={`${capitalize(workflowType)} description`}
-          error={!!errors.description}
-          helperText={errors.description?.message}
-          fullWidth
+          control={control}
+          render={({ field }) => (
+            <RichTextDescription
+              label={`${capitalize(workflowType)} description`}
+              value={field.value ?? ''}
+              onChange={field.onChange}
+            />
+          )}
         />
       </StyledBox>
 
@@ -98,7 +111,7 @@ const WorkflowForm = ({
           <Button variant="contained" color="secondary" onClick={onDialogClose}>
             {_t('Cancel')}
           </Button>
-          <Button type="submit" variant="contained" disabled={!isDirty}>
+          <Button type="submit" variant="contained" disabled={!isValid}>
             {label}
           </Button>
         </DialogActions>

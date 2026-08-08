@@ -116,6 +116,47 @@ def test_project_detail_includes_workflow_list_metadata(client: Client, user):
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("title", ["", "   ", "x" * 201])
+def test_create_workflow_rejects_invalid_title(client: Client, user, title: str):
+    raw = _issue_token_for(user)
+
+    response = client.post(
+        "/api/workflow",
+        data={
+            "projectUuid": None,
+            "title": title,
+            "workflowType": "course",
+            "description": "",
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+
+    assert response.status_code == 422, response.content
+    assert not Workflow.objects.exists()
+
+
+@pytest.mark.django_db
+def test_create_workflow_trims_title(client: Client, user):
+    raw = _issue_token_for(user)
+
+    response = client.post(
+        "/api/workflow",
+        data={
+            "projectUuid": None,
+            "title": "  Valid title  ",
+            "workflowType": "course",
+            "description": "",
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+
+    assert response.status_code == 200, response.content
+    assert response.json()["title"] == "Valid title"
+
+
+@pytest.mark.django_db
 def test_create_invariants_auto_create_threads_and_workflow_meta(user):
     g = Graph.objects.create()
     workflow = Workflow.objects.create(

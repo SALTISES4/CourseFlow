@@ -17,10 +17,7 @@ import {
   type WorkflowAssetId,
   type WorkflowFixtureType,
 } from '../helpers/manifest';
-import {
-  apiRequestWithAccessToken,
-  readPrimaryActorAccessToken,
-} from '../helpers/api';
+import { apiRequestWithAccessToken, readPrimaryActorAccessToken } from '../helpers/api';
 
 export type { OutcomeEntry };
 
@@ -43,7 +40,7 @@ export type WorkflowHandle = {
   workflowByType: (workflowType: WorkflowFixtureType) => WorkflowEntry;
 };
 
-export type SeedAccess = 'read-only' | 'disposable-copy';
+export type SeedAccess = 'read-only' | 'disposable-copy' | 'disposable-project-copy';
 
 type GraphViewPayload = {
   graph: {
@@ -73,10 +70,7 @@ type WorkflowCopyResponse = {
   projectUuid: string | null;
 };
 
-function buildWorkflowHandle(
-  manifest: WorkflowManifest,
-  entry: WorkflowEntry,
-): WorkflowHandle {
+function buildWorkflowHandle(manifest: WorkflowManifest, entry: WorkflowEntry): WorkflowHandle {
   const sections = orderedSections(entry);
   const outcomes = entry.outcomes ?? [];
 
@@ -154,9 +148,7 @@ async function expectApiSuccess(
   operation: string,
 ): Promise<void> {
   if (!response.ok()) {
-    throw new Error(
-      `${operation} failed with HTTP ${response.status()}: ${await response.text()}`,
-    );
+    throw new Error(`${operation} failed with HTTP ${response.status()}: ${await response.text()}`);
   }
 }
 
@@ -165,12 +157,7 @@ async function loadGraphView(
   accessToken: string,
   workflowUuid: string,
 ): Promise<GraphViewPayload> {
-  const response = await apiRequestWithAccessToken(
-    request,
-    accessToken,
-    'GET',
-    `/api/graph/${workflowUuid}/view`,
-  );
+  const response = await apiRequestWithAccessToken(request, accessToken, 'GET', `/api/graph/${workflowUuid}/view`);
   await expectApiSuccess(response, `Load graph view for workflow ${workflowUuid}`);
   return (await response.json()) as GraphViewPayload;
 }
@@ -179,8 +166,10 @@ async function copyWorkflowAsset(
   request: APIRequestContext,
   accessToken: string,
   source: WorkflowEntry,
+  destinationProjectUuid?: string,
 ): Promise<WorkflowEntry> {
-  if (!source.project_uuid) {
+  const projectUuid = destinationProjectUuid ?? source.project_uuid;
+  if (!projectUuid) {
     throw new Error(`Workflow asset ${source.asset_id} has no destination project UUID.`);
   }
   const response = await apiRequestWithAccessToken(
@@ -190,7 +179,7 @@ async function copyWorkflowAsset(
     `/api/workflow/${source.workflow_uuid}/copy`,
     {
       data: {
-        projectUuid: source.project_uuid,
+        projectUuid,
         title: source.workflow_title,
       },
     },
@@ -222,6 +211,107 @@ async function copyWorkflowAsset(
   };
 }
 
+type ProjectCreateResponse = {
+  uuid: string;
+  title: string;
+};
+
+type UserListItem = {
+  uuid: string;
+  email: string;
+};
+
+async function createDisposableWorkflowProject(
+  request: APIRequestContext,
+  accessToken: string,
+): Promise<ProjectCreateResponse> {
+  const response = await apiRequestWithAccessToken(request, accessToken, 'POST', '/api/project', {
+    data: {
+      title: `E2E disposable workflow project ${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      description: 'Isolated project for disposable workflow copies.',
+      isPublished: false,
+      isTemplate: false,
+      disciplines: [],
+    },
+  });
+  await expectApiSuccess(response, 'Create disposable workflow project');
+  return (await response.json()) as ProjectCreateResponse;
+}
+
+async function addDisposableProjectContributor(
+  request: APIRequestContext,
+  accessToken: string,
+  projectUuid: string,
+  actor: ActorAssetEntry,
+): Promise<void> {
+  const usersResponse = await apiRequestWithAccessToken(
+    request,
+    accessToken,
+    'GET',
+    `/api/user?filter=${encodeURIComponent(actor.email)}`,
+  );
+  await expectApiSuccess(usersResponse, `Find E2E actor ${actor.email}`);
+  const users = (await usersResponse.json()) as { items: UserListItem[] };
+  const user = users.items.find((item) => item.email === actor.email);
+  if (!user || !actor.role || !['editor', 'commenter', 'viewer'].includes(actor.role)) {
+    throw new Error(`Cannot add E2E actor ${actor.email} to disposable project.`);
+  }
+  const response = await apiRequestWithAccessToken(request, accessToken, 'POST', `/api/project/${projectUuid}/team`, {
+    data: { userUuids: [user.uuid], role: actor.role },
+  });
+  await expectApiSuccess(response, `Add ${actor.email} to disposable project`);
+}
+
+async function cleanupDisposableWorkflowProject(
+  request: APIRequestContext,
+  accessToken: string,
+  projectUuid: string,
+): Promise<void> {
+  const tagsResponse = await apiRequestWithAccessToken(request, accessToken, 'GET', `/api/project/${projectUuid}/tags`);
+  if (tagsResponse.ok()) {
+    const tags = (await tagsResponse.json()) as Array<{ id: number }>;
+    for (const tag of tags) {
+      const removeTag = await apiRequestWithAccessToken(
+        request,
+        accessToken,
+        'DELETE',
+        `/api/project/${projectUuid}/tags/${tag.id}`,
+      );
+      await expectApiSuccess(removeTag, `Delete disposable project tag ${tag.id}`);
+    }
+  }
+
+  const archive = await apiRequestWithAccessToken(request, accessToken, 'POST', `/api/project/${projectUuid}/archive`);
+  if (![200, 404].includes(archive.status())) {
+    throw new Error(`Archive disposable workflow project failed: ${await archive.text()}`);
+  }
+  const remove = await apiRequestWithAccessToken(request, accessToken, 'DELETE', `/api/project/${projectUuid}`);
+  if (![200, 404].includes(remove.status())) {
+    throw new Error(`Delete disposable workflow project failed: ${await remove.text()}`);
+  }
+}
+
+async function linkFirstWorkflowNode(
+  request: APIRequestContext,
+  accessToken: string,
+  parent: WorkflowEntry,
+  child: WorkflowEntry,
+): Promise<void> {
+  const graph = await loadGraphView(request, accessToken, parent.workflow_uuid);
+  const firstNode = graph.nodes[0] as { uuid?: string } | undefined;
+  if (!firstNode?.uuid) {
+    return;
+  }
+  const response = await apiRequestWithAccessToken(
+    request,
+    accessToken,
+    'POST',
+    `/api/node/${firstNode.uuid}/link-workflow`,
+    { data: { workflowUuid: child.workflow_uuid } },
+  );
+  await expectApiSuccess(response, `Link copied ${child.workflow_type} workflow`);
+}
+
 async function cleanupWorkflowCopy(
   request: APIRequestContext,
   accessToken: string,
@@ -239,12 +329,7 @@ async function cleanupWorkflowCopy(
     );
   }
 
-  const remove = await apiRequestWithAccessToken(
-    request,
-    accessToken,
-    'DELETE',
-    `/api/workflow/${workflowUuid}`,
-  );
+  const remove = await apiRequestWithAccessToken(request, accessToken, 'DELETE', `/api/workflow/${workflowUuid}`);
   if (![200, 404].includes(remove.status())) {
     throw new Error(
       `Delete disposable workflow ${workflowUuid} failed with HTTP ${remove.status()}: ${await remove.text()}`,
@@ -293,14 +378,10 @@ export const test = baseTest.extend<SeedOptions & WorkflowFixtures>({
 
   workflow: async ({ request, seedAsset, seedAssets, seedAccess }, use, testInfo) => {
     if (!seedAsset) {
-      throw new Error(
-        `${testInfo.file} uses the workflow fixture without declaring test.use({ seedAsset: ... }).`,
-      );
+      throw new Error(`${testInfo.file} uses the workflow fixture without declaring test.use({ seedAsset: ... }).`);
     }
     if (!seedAccess) {
-      throw new Error(
-        `${testInfo.file} uses the workflow fixture without declaring test.use({ seedAccess: ... }).`,
-      );
+      throw new Error(`${testInfo.file} uses the workflow fixture without declaring test.use({ seedAccess: ... }).`);
     }
 
     const manifest = loadWorkflowManifest();
@@ -322,26 +403,45 @@ export const test = baseTest.extend<SeedOptions & WorkflowFixtures>({
 
     const assetIds = [...new Set([seedAsset, ...seedAssets])];
     const copies = new Map<WorkflowAssetId, WorkflowEntry>();
+    let disposableProject: ProjectCreateResponse | undefined;
     try {
+      if (seedAccess === 'disposable-project-copy') {
+        disposableProject = await createDisposableWorkflowProject(request, accessToken);
+        await addDisposableProjectContributor(
+          request,
+          accessToken,
+          disposableProject.uuid,
+          getActorAsset(manifest, 'actor.commenter'),
+        );
+        await addDisposableProjectContributor(
+          request,
+          accessToken,
+          disposableProject.uuid,
+          getActorAsset(manifest, 'actor.viewer'),
+        );
+      }
       for (const assetId of assetIds) {
         const asset = getWorkflowAsset(manifest, assetId);
-        copies.set(
-          assetId,
-          await copyWorkflowAsset(request, accessToken, asset),
-        );
+        copies.set(assetId, await copyWorkflowAsset(request, accessToken, asset, disposableProject?.uuid));
+      }
+
+      if (disposableProject) {
+        const activityCopy = copies.get('workflow.standard_activity');
+        const courseCopy = copies.get('workflow.navigation_course');
+        if (activityCopy && courseCopy) {
+          await linkFirstWorkflowNode(request, accessToken, courseCopy, activityCopy);
+        }
       }
 
       const isolatedManifest: WorkflowManifest = {
         ...manifest,
+        project_uuid: disposableProject?.uuid ?? manifest.project_uuid,
+        project_title: disposableProject?.title ?? manifest.project_title,
         assets: {
           ...manifest.assets,
-          ...Object.fromEntries(
-            [...copies].map(([assetId, copy]) => [assetId, { kind: 'workflow', ...copy }]),
-          ),
+          ...Object.fromEntries([...copies].map(([assetId, copy]) => [assetId, { kind: 'workflow', ...copy }])),
         } as WorkflowManifest['assets'],
-        workflows: manifest.workflows.map(
-          (entry) => copies.get(entry.asset_id) ?? entry,
-        ),
+        workflows: manifest.workflows.map((entry) => copies.get(entry.asset_id) ?? entry),
         navigation_linked_workflows: manifest.navigation_linked_workflows
           ? {
               activity: {
@@ -361,6 +461,9 @@ export const test = baseTest.extend<SeedOptions & WorkflowFixtures>({
                 workflow_path:
                   copies.get('workflow.navigation_course')?.workflow_path ??
                   manifest.navigation_linked_workflows.course.workflow_path,
+                linked_child_workflow_uuid:
+                  copies.get('workflow.standard_activity')?.workflow_uuid ??
+                  manifest.navigation_linked_workflows.course.linked_child_workflow_uuid,
               },
               program: {
                 ...manifest.navigation_linked_workflows.program,
@@ -382,6 +485,9 @@ export const test = baseTest.extend<SeedOptions & WorkflowFixtures>({
     } finally {
       for (const copy of [...copies.values()].reverse()) {
         await cleanupWorkflowCopy(request, accessToken, copy.workflow_uuid);
+      }
+      if (disposableProject) {
+        await cleanupDisposableWorkflowProject(request, accessToken, disposableProject.uuid);
       }
     }
   },

@@ -68,6 +68,11 @@ class NodeGraphOut(CamelSchema):
     time_required: float | None = None
     time_units: int | None = None
     represents_workflow: bool = False
+    ponderation_theory: float | None = None
+    ponderation_practice: float | None = None
+    ponderation_individual: float | None = None
+    credits: int | None = None
+    specific_education: bool = False
     tag_ids: list[int] = Field(default_factory=list)
     section_uuid: UUID | None = None
     channel_uuid: UUID | None = None

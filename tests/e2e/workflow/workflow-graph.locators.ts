@@ -104,19 +104,27 @@ export function workflowChannelHeaderColorIndicator(page: Page, channelUuid: str
 }
 
 export function workflowNodeHoverCommentsItem(page: Page, nodeUuid: string): Locator {
-  return workflowNode(page, nodeUuid).getByRole('button', { name: COMMENTS_HOVER_NAME });
+  return workflowNode(page, nodeUuid).getByRole('button', {
+    name: COMMENTS_HOVER_NAME,
+  });
 }
 
 export function workflowNodeHoverInsertBelowItem(page: Page, nodeUuid: string): Locator {
-  return workflowNode(page, nodeUuid).getByRole('button', { name: INSERT_NODE_BELOW_NAME });
+  return workflowNode(page, nodeUuid).getByRole('button', {
+    name: INSERT_NODE_BELOW_NAME,
+  });
 }
 
 export function workflowNodeHoverDuplicateItem(page: Page, nodeUuid: string): Locator {
-  return workflowNode(page, nodeUuid).getByRole('button', { name: DUPLICATE_NODE_BELOW_NAME });
+  return workflowNode(page, nodeUuid).getByRole('button', {
+    name: DUPLICATE_NODE_BELOW_NAME,
+  });
 }
 
 export function workflowNodeHoverDeleteItem(page: Page, nodeUuid: string): Locator {
-  return workflowNode(page, nodeUuid).getByRole('button', { name: DELETE_NODE_HOVER_NAME });
+  return workflowNode(page, nodeUuid).getByRole('button', {
+    name: DELETE_NODE_HOVER_NAME,
+  });
 }
 
 export async function workflowNodeHasSelectedBorder(page: Page, nodeUuid: string): Promise<boolean> {
@@ -174,11 +182,17 @@ export function workflowEditChannelFormColorField(page: Page): Locator {
 }
 
 export function workflowEditChannelFormDuplicateButton(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByRole('button', { name: 'Duplicate', exact: true });
+  return workflowRightSidebarContentPanel(page).getByRole('button', {
+    name: 'Duplicate',
+    exact: true,
+  });
 }
 
 export function workflowEditChannelFormDeleteButton(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByRole('button', { name: 'Delete', exact: true });
+  return workflowRightSidebarContentPanel(page).getByRole('button', {
+    name: 'Delete',
+    exact: true,
+  });
 }
 
 /** canonical: workflowChannelDeleteDialog */
@@ -187,11 +201,17 @@ export function workflowChannelDeleteDialog(page: Page): Locator {
 }
 
 export function workflowChannelDeleteDialogCancelButton(page: Page): Locator {
-  return workflowChannelDeleteDialog(page).getByRole('button', { name: 'Cancel', exact: true });
+  return workflowChannelDeleteDialog(page).getByRole('button', {
+    name: 'Cancel',
+    exact: true,
+  });
 }
 
 export function workflowChannelDeleteDialogConfirmButton(page: Page): Locator {
-  return workflowChannelDeleteDialog(page).getByRole('button', { name: 'Delete node category', exact: true });
+  return workflowChannelDeleteDialog(page).getByRole('button', {
+    name: 'Delete node category',
+    exact: true,
+  });
 }
 
 /** canonical: workflowEditNodeForm heading */
@@ -234,9 +254,7 @@ export function workflowEditNodeFormDescriptionLabel(page: Page): Locator {
  */
 export function workflowEditNodeFormDescriptionPlainTextarea(page: Page): Locator {
   const panel = workflowRightSidebarContentPanel(page);
-  return panel
-    .getByRole('textbox', { name: /^Description$/i })
-    .and(panel.locator('input, textarea'));
+  return panel.getByRole('textbox', { name: /^Description$/i }).and(panel.locator('input, textarea'));
 }
 
 /** canonical: workflowRichTextDescriptionEditor — contenteditable region */
@@ -250,23 +268,33 @@ export function workflowRichTextDescriptionEditorToolbar(page: Page): Locator {
 }
 
 export function workflowRichTextDescriptionEditorBoldButton(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByRole('button', { name: /^Bold$/i });
+  return workflowRightSidebarContentPanel(page).getByRole('button', {
+    name: /^Bold$/i,
+  });
 }
 
 export function workflowRichTextDescriptionEditorItalicButton(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByRole('button', { name: /^Italic$/i });
+  return workflowRightSidebarContentPanel(page).getByRole('button', {
+    name: /^Italic$/i,
+  });
 }
 
 export function workflowRichTextDescriptionEditorUnderlineButton(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByRole('button', { name: /^Underline$/i });
+  return workflowRightSidebarContentPanel(page).getByRole('button', {
+    name: /^Underline$/i,
+  });
 }
 
 export function workflowRichTextDescriptionEditorSuperscriptButton(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByRole('button', { name: /^Superscript$/i });
+  return workflowRightSidebarContentPanel(page).getByRole('button', {
+    name: /^Superscript$/i,
+  });
 }
 
 export function workflowRichTextDescriptionEditorSubscriptButton(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByRole('button', { name: /^Subscript$/i });
+  return workflowRightSidebarContentPanel(page).getByRole('button', {
+    name: /^Subscript$/i,
+  });
 }
 
 export function workflowRichTextDescriptionEditorBulletListButton(page: Page): Locator {
@@ -282,7 +310,9 @@ export function workflowRichTextDescriptionEditorNumberedListButton(page: Page):
 }
 
 export function workflowRichTextDescriptionEditorLinkButton(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByRole('button', { name: /^Link$/i });
+  return workflowRightSidebarContentPanel(page).getByRole('button', {
+    name: /^Link$/i,
+  });
 }
 
 /** canonical: workflowEditNodeFormTaskTypeSelect */
@@ -306,7 +336,7 @@ export function workflowEditNodeFormTimeField(page: Page): Locator {
 
 /** canonical: workflowEditNodeFormTagsAutocomplete */
 export function workflowEditNodeFormTagsField(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByLabel(/^Tags$/i);
+  return workflowRightSidebarContentPanel(page).locator('[data-test-id="workflow-edit-node-tags"]');
 }
 
 /** canonical: workflowEditNodeFormCreditsField */
@@ -316,7 +346,9 @@ export function workflowEditNodeFormCreditsField(page: Page): Locator {
 
 /** canonical: workflowEditNodeFormPonderationGroup */
 export function workflowEditNodeFormPonderationGroup(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByText('Ponderation', { exact: true });
+  return workflowRightSidebarContentPanel(page).getByText('Ponderation', {
+    exact: true,
+  });
 }
 
 /** canonical: workflowEditNodeFormPonderationTheoryField */
@@ -342,22 +374,26 @@ export function workflowEditNodeFormSpecificEducationSwitch(page: Page): Locator
 /** canonical: workflowEditNodeFormLinkWorkflowButton — label varies by parent type + link state */
 export function workflowEditNodeFormLinkWorkflowButton(
   page: Page,
-  name:
-    | 'Link an activity'
-    | 'Link a course'
-    | 'Remove linked activity'
-    | 'Remove linked course'
-    | 'Link workflow',
+  name: 'Link an activity' | 'Link a course' | 'Remove linked activity' | 'Remove linked course' | 'Link workflow',
 ): Locator {
-  return workflowRightSidebarContentPanel(page).getByRole('button', { name, exact: true });
+  return workflowRightSidebarContentPanel(page).getByRole('button', {
+    name,
+    exact: true,
+  });
 }
 
 export function workflowEditNodeFormDuplicateButton(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByRole('button', { name: 'Duplicate', exact: true });
+  return workflowRightSidebarContentPanel(page).getByRole('button', {
+    name: 'Duplicate',
+    exact: true,
+  });
 }
 
 export function workflowEditNodeFormDeleteButton(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByRole('button', { name: 'Delete', exact: true });
+  return workflowRightSidebarContentPanel(page).getByRole('button', {
+    name: 'Delete',
+    exact: true,
+  });
 }
 
 /** FR-WF-EN-008/009 — dialog title copy by parent workflow type */
@@ -392,10 +428,7 @@ export const WORKFLOW_LINK_DIALOG_SEARCH_NO_MATCHES = 'There are no exact matche
  * canonical: workflowLinkWorkflowDialog — scoped by FR title
  * ('Link an activity' | 'Link a course').
  */
-export function workflowLinkWorkflowDialog(
-  page: Page,
-  parentType: 'course' | 'program',
-): Locator {
+export function workflowLinkWorkflowDialog(page: Page, parentType: 'course' | 'program'): Locator {
   const title = WORKFLOW_LINK_DIALOG_TITLE[parentType];
   return page.getByRole('dialog').filter({
     has: page.getByRole('heading', { name: title, exact: true }),
@@ -403,10 +436,7 @@ export function workflowLinkWorkflowDialog(
 }
 
 /** canonical: workflowLinkWorkflowDialogTitle */
-export function workflowLinkWorkflowDialogTitle(
-  page: Page,
-  parentType: 'course' | 'program',
-): Locator {
+export function workflowLinkWorkflowDialogTitle(page: Page, parentType: 'course' | 'program'): Locator {
   return workflowLinkWorkflowDialog(page, parentType).getByRole('heading', {
     name: WORKFLOW_LINK_DIALOG_TITLE[parentType],
     exact: true,
@@ -414,26 +444,17 @@ export function workflowLinkWorkflowDialogTitle(
 }
 
 /** canonical: workflowLinkWorkflowDialogSearchField */
-export function workflowLinkWorkflowDialogSearchField(
-  page: Page,
-  parentType: 'course' | 'program',
-): Locator {
+export function workflowLinkWorkflowDialogSearchField(page: Page, parentType: 'course' | 'program'): Locator {
   return workflowLinkWorkflowDialog(page, parentType).getByLabel(/^Search$/i);
 }
 
 /** canonical: workflowLinkWorkflowDialogSearchResults — workflowCard rows in the dialog */
-export function workflowLinkWorkflowDialogSearchResults(
-  page: Page,
-  parentType: 'course' | 'program',
-): Locator {
+export function workflowLinkWorkflowDialogSearchResults(page: Page, parentType: 'course' | 'program'): Locator {
   return workflowLinkWorkflowDialog(page, parentType).locator('[data-test-id="workflow-card"]');
 }
 
 /** canonical: workflowLinkWorkflowDialogCancelButton */
-export function workflowLinkWorkflowDialogCancelButton(
-  page: Page,
-  parentType: 'course' | 'program',
-): Locator {
+export function workflowLinkWorkflowDialogCancelButton(page: Page, parentType: 'course' | 'program'): Locator {
   return workflowLinkWorkflowDialog(page, parentType).getByRole('button', {
     name: 'Cancel',
     exact: true,
@@ -441,10 +462,7 @@ export function workflowLinkWorkflowDialogCancelButton(
 }
 
 /** canonical: workflowLinkWorkflowDialogLinkButton */
-export function workflowLinkWorkflowDialogLinkButton(
-  page: Page,
-  parentType: 'course' | 'program',
-): Locator {
+export function workflowLinkWorkflowDialogLinkButton(page: Page, parentType: 'course' | 'program'): Locator {
   return workflowLinkWorkflowDialog(page, parentType).getByRole('button', {
     name: WORKFLOW_LINK_DIALOG_LINK_BUTTON[parentType],
     exact: true,
@@ -452,10 +470,7 @@ export function workflowLinkWorkflowDialogLinkButton(
 }
 
 /** canonical: workflowLinkWorkflowDialogEmptyState — search-no-match or no-eligible copy */
-export function workflowLinkWorkflowDialogEmptyState(
-  page: Page,
-  parentType: 'course' | 'program',
-): Locator {
+export function workflowLinkWorkflowDialogEmptyState(page: Page, parentType: 'course' | 'program'): Locator {
   const dialog = workflowLinkWorkflowDialog(page, parentType);
   const noEligible = WORKFLOW_LINK_DIALOG_NO_ELIGIBLE[parentType];
   return dialog
@@ -472,12 +487,9 @@ export function workflowChannelHeaderBackground(page: Page, channelUuid: string)
   return workflowChannelHeader(page, channelUuid).locator('> div > div').first();
 }
 
-export async function workflowChannelHasSelectedBorder(
-  page: Page,
-  channelUuid: string,
-): Promise<boolean> {
-  const shadow = await workflowChannelHeaderBackground(page, channelUuid).evaluate((el) =>
-    getComputedStyle(el).boxShadow,
+export async function workflowChannelHasSelectedBorder(page: Page, channelUuid: string): Promise<boolean> {
+  const shadow = await workflowChannelHeaderBackground(page, channelUuid).evaluate(
+    (el) => getComputedStyle(el).boxShadow,
   );
   return /2px/.test(shadow);
 }

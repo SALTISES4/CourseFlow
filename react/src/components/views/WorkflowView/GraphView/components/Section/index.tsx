@@ -52,6 +52,8 @@ export type SectionPropsType = {
   columnIds: GraphBoard['columns']['ids']
   columnColors: GraphBoard['columns']['colors']
   onSectionCollapse: (sectionId: string) => void
+  onSectionDragStart: () => void
+  onSectionDragEnd: () => void
   onNodeDrop: CellReorderCallbackFn
   onSectionReorder: SectionReorderCallbackFn
   onSectionInsert: SectionInsertCallbackFn
@@ -111,7 +113,24 @@ const Section = (props: SectionPropsType) => {
         getInitialData: () => ({
           index: props.index,
           type: DraggableType.WEEK
-        })
+        }),
+        onDragStart() {
+          setState(
+            produce((draft) => {
+              draft.dragging = true
+            })
+          )
+          props.onSectionDragStart()
+        },
+        onDrop() {
+          setState(
+            produce((draft) => {
+              draft.dragging = false
+            })
+          )
+          resetState()
+          props.onSectionDragEnd()
+        }
       }),
       dropTargetForElements({
         element: outerEl,
@@ -128,13 +147,6 @@ const Section = (props: SectionPropsType) => {
         },
         canDrop({ source }) {
           return isGridSection(source.data) || isSidebarPart(source.data)
-        },
-        onDragStart() {
-          setState(
-            produce((draft) => {
-              draft.dragging = true
-            })
-          )
         },
         onDragLeave() {
           resetState()
@@ -184,13 +196,6 @@ const Section = (props: SectionPropsType) => {
           } else {
             return
           }
-
-          setState(
-            produce((draft) => {
-              draft.dragging = false
-            })
-          )
-          resetState()
         }
       })
     )

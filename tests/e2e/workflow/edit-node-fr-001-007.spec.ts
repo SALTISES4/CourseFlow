@@ -1,19 +1,10 @@
 import { test, expect } from '../../fixtures';
 import { loginAs, loginAsTestUser } from '../../helpers/auth';
 import { getProjectPath } from '../../helpers/manifest';
-import {
-  cardChipWithLabel,
-  workflowTypeChipLabel,
-} from '../../shared/locators/cards';
-import {
-  workflowRightSidebarContentPanel,
-  workflowRightSidebarEditTab,
-} from '../../shared/locators/workflow';
+import { cardChipWithLabel, workflowTypeChipLabel } from '../../shared/locators/cards';
+import { workflowRightSidebarContentPanel, workflowRightSidebarEditTab } from '../../shared/locators/workflow';
 import { addNewTagInput } from '../project/project.locators';
-import {
-  firstWorkflowNodeUuid,
-  secondWorkflowNodeUuid,
-} from './comments-tab.helpers';
+import { firstWorkflowNodeUuid, secondWorkflowNodeUuid } from './comments-tab.helpers';
 import {
   ACTIVITY_CONTEXT_OPTIONS,
   ACTIVITY_TASK_TYPE_OPTIONS,
@@ -85,9 +76,7 @@ test.describe('edit-node-fr-001-007', () => {
       await page.goto(workflow.path);
     });
 
-    test('FR-WF-EN-001: click workflowNode expands sidebar on workflowRightSidebarEditTab', async ({
-      page,
-    }) => {
+    test('FR-WF-EN-001: click workflowNode expands sidebar on workflowRightSidebarEditTab', async ({ page }) => {
       const nodeUuid = await firstWorkflowNodeUuid(page);
 
       await expect(workflowRightSidebarContentPanel(page)).toBeHidden();
@@ -99,9 +88,7 @@ test.describe('edit-node-fr-001-007', () => {
       await expect(workflowEditNodeForm(page)).toBeVisible();
     });
 
-    test('FR-WF-EN-001: click second workflowNode rebinds workflowEditNodeForm', async ({
-      page,
-    }) => {
+    test('FR-WF-EN-001: click second workflowNode rebinds workflowEditNodeForm', async ({ page }) => {
       const firstUuid = await firstWorkflowNodeUuid(page);
       const secondUuid = await secondWorkflowNodeUuid(page);
 
@@ -139,24 +126,12 @@ test.describe('edit-node-fr-001-007', () => {
       await expect(workflowEditNodeFormLinkWorkflowButton(page, 'Link workflow')).toHaveCount(0);
     });
 
-    test('FR-WF-EN-002: activity Context and Type of task offer exact FR option sets', async ({
-      page,
-    }) => {
-      await expectSelectOptionsExactly(
-        page,
-        workflowEditNodeFormContextField(page),
-        ACTIVITY_CONTEXT_OPTIONS,
-      );
-      await expectSelectOptionsExactly(
-        page,
-        workflowEditNodeFormTaskTypeField(page),
-        ACTIVITY_TASK_TYPE_OPTIONS,
-      );
+    test('FR-WF-EN-002: activity Context and Type of task offer exact FR option sets', async ({ page }) => {
+      await expectSelectOptionsExactly(page, workflowEditNodeFormContextField(page), ACTIVITY_CONTEXT_OPTIONS);
+      await expectSelectOptionsExactly(page, workflowEditNodeFormTaskTypeField(page), ACTIVITY_TASK_TYPE_OPTIONS);
     });
 
-    test('FR-WF-EN-002: activity workflowEditNodeForm omits course/program-only controls', async ({
-      page,
-    }) => {
+    test('FR-WF-EN-002: activity workflowEditNodeForm omits course/program-only controls', async ({ page }) => {
       await expect(workflowEditNodeFormCreditsField(page)).toHaveCount(0);
       await expect(workflowEditNodeFormPonderationGroup(page)).toHaveCount(0);
       await expect(workflowEditNodeFormSpecificEducationSwitch(page)).toHaveCount(0);
@@ -210,11 +185,7 @@ test.describe('edit-node-fr-001-007', () => {
         await page.reload();
         await openFirstNodeEditForm(page);
 
-        await expectSelectOptionsExactly(
-          page,
-          workflowEditNodeFormContextField(page),
-          COURSE_CONTEXT_OPTIONS,
-        );
+        await expectSelectOptionsExactly(page, workflowEditNodeFormContextField(page), COURSE_CONTEXT_OPTIONS);
       } finally {
         await linkNodeWorkflowViaApi(page, nodeUuid, activityUuid);
       }
@@ -228,8 +199,7 @@ test.describe('edit-node-fr-001-007', () => {
     }) => {
       const course = workflow.workflowByType('course');
       const linkedTitle =
-        workflow.manifest.navigation_linked_workflows?.activity.workflow_title ??
-        'E2E Activity Workflow';
+        workflow.manifest.navigation_linked_workflows?.activity.workflow_title ?? 'E2E Activity Workflow';
 
       await page.goto(course.workflow_path);
       await openFirstNodeEditForm(page);
@@ -253,27 +223,18 @@ test.describe('edit-node-fr-001-007', () => {
       await expect(workflowEditNodeFormTagsField(page)).toBeEnabled();
       await expect(workflowEditNodeFormTaskTypeField(page)).toHaveCount(0);
 
-      await expect(
-        workflowEditNodeFormLinkWorkflowButton(page, 'Remove linked activity'),
-      ).toBeVisible();
+      await expect(workflowEditNodeFormLinkWorkflowButton(page, 'Remove linked activity')).toBeVisible();
       await expect(workflowEditNodeFormDuplicateButton(page)).toBeVisible();
       await expect(workflowEditNodeFormDeleteButton(page)).toBeVisible();
     });
 
-    test('FR-WF-EN-004: linked course Context offers exact FR option sets', async ({
-      page,
-      workflow,
-    }) => {
+    test('FR-WF-EN-004: linked course Context offers exact FR option sets', async ({ page, workflow }) => {
       const course = workflow.workflowByType('course');
       await page.goto(course.workflow_path);
       await openFirstNodeEditForm(page);
 
       await expect(workflowEditNodeFormContextField(page)).toBeEnabled();
-      await expectSelectOptionsExactly(
-        page,
-        workflowEditNodeFormContextField(page),
-        COURSE_CONTEXT_OPTIONS,
-      );
+      await expectSelectOptionsExactly(page, workflowEditNodeFormContextField(page), COURSE_CONTEXT_OPTIONS);
     });
   });
 
@@ -312,14 +273,14 @@ test.describe('edit-node-fr-001-007', () => {
       workflow,
     }) => {
       const course = workflow.workflowByType('course');
-      const linkedTitle =
-        workflow.manifest.navigation_linked_workflows?.course.workflow_title ??
-        'E2E Course Workflow';
+      const linkedTitle = workflow.manifest.navigation_linked_workflows?.course.workflow_title ?? 'E2E Course Workflow';
 
       const nodeUuid = await ensureProgramNodeAndOpenEditForm(page, workflow);
       await linkNodeWorkflowViaApi(page, nodeUuid, course.workflow_uuid);
       await page.reload();
-      await expect(workflowNode(page, nodeUuid)).toBeVisible({ timeout: 15_000 });
+      await expect(workflowNode(page, nodeUuid)).toBeVisible({
+        timeout: 15_000,
+      });
       await workflowNodeTitle(page, nodeUuid).click();
       await expect(workflowEditNodeForm(page)).toBeVisible();
 
@@ -330,35 +291,21 @@ test.describe('edit-node-fr-001-007', () => {
         await expect(titleField).toHaveAttribute('readonly', '');
 
         await expect(workflowRichTextDescriptionEditor(page)).toBeVisible();
-        await expect(workflowRichTextDescriptionEditor(page)).toHaveAttribute(
-          'contenteditable',
-          'false',
-        );
+        await expect(workflowRichTextDescriptionEditor(page)).toHaveAttribute('contenteditable', 'false');
         await expect(workflowEditNodeFormTimeField(page)).toBeVisible();
         await expect(workflowEditNodeFormTimeField(page)).toHaveAttribute('readonly', '');
         await expect(workflowEditNodeFormCreditsField(page)).toBeVisible();
         await expect(workflowEditNodeFormCreditsField(page)).toHaveAttribute('readonly', '');
-        await expect(workflowEditNodeFormPonderationTheoryField(page)).toHaveAttribute(
-          'readonly',
-          '',
-        );
-        await expect(workflowEditNodeFormPonderationPracticeField(page)).toHaveAttribute(
-          'readonly',
-          '',
-        );
-        await expect(workflowEditNodeFormPonderationIndividualField(page)).toHaveAttribute(
-          'readonly',
-          '',
-        );
+        await expect(workflowEditNodeFormPonderationTheoryField(page)).toHaveAttribute('readonly', '');
+        await expect(workflowEditNodeFormPonderationPracticeField(page)).toHaveAttribute('readonly', '');
+        await expect(workflowEditNodeFormPonderationIndividualField(page)).toHaveAttribute('readonly', '');
 
         await expect(workflowEditNodeFormTagsField(page)).toBeVisible();
         await expect(workflowEditNodeFormTagsField(page)).toBeEnabled();
         await expect(workflowEditNodeFormSpecificEducationSwitch(page)).toBeVisible();
         await expect(workflowEditNodeFormSpecificEducationSwitch(page)).toBeEnabled();
 
-        await expect(
-          workflowEditNodeFormLinkWorkflowButton(page, 'Remove linked course'),
-        ).toBeVisible();
+        await expect(workflowEditNodeFormLinkWorkflowButton(page, 'Remove linked course')).toBeVisible();
         await expect(workflowEditNodeFormDuplicateButton(page)).toBeVisible();
         await expect(workflowEditNodeFormDeleteButton(page)).toBeVisible();
       } finally {
@@ -383,14 +330,14 @@ test.describe('edit-node-fr-001-007', () => {
       await page.waitForTimeout(500);
 
       await page.reload();
-      await expect(workflowNode(page, nodeUuid)).toBeVisible({ timeout: 15_000 });
+      await expect(workflowNode(page, nodeUuid)).toBeVisible({
+        timeout: 15_000,
+      });
       await workflowNodeContent(page, nodeUuid).click();
       await expect(workflowEditNodeFormTitleField(page)).toHaveValue(uniqueTitle);
     });
 
-    test('FR-WF-EN-007: workflowEditNodeForm does not show auto-save status indicator', async ({
-      page,
-    }) => {
+    test('FR-WF-EN-007: workflowEditNodeForm does not show auto-save status indicator', async ({ page }) => {
       const nodeUuid = await firstWorkflowNodeUuid(page);
 
       await workflowNodeContent(page, nodeUuid).click();
@@ -402,14 +349,13 @@ test.describe('edit-node-fr-001-007', () => {
   });
 
   test.describe('Tags autocomplete from project catalog (FR-WF-EN-002–006, FR-PROJ-OV-005)', () => {
+    test.use({ seedAccess: 'disposable-project-copy' });
+
     /**
      * Create two project tags, open edit-node Tags, assert the option list is
      * exactly those catalog labels, select one, and verify it persists.
      */
-    async function expectEditNodeTagsMatchProjectCatalog(
-      page: Page,
-      openEditForm: () => Promise<void>,
-    ): Promise<void> {
+    async function expectEditNodeTagsMatchProjectCatalog(page: Page, openEditForm: () => Promise<void>): Promise<void> {
       const stamp = Date.now();
       const tagA = `E2E Node Tag A ${stamp}`;
       const tagB = `E2E Node Tag B ${stamp}`;
@@ -422,7 +368,8 @@ test.describe('edit-node-fr-001-007', () => {
       await selectEditNodeTag(page, tagA);
       await page.waitForTimeout(500);
 
-      await page.reload();
+      // openEditForm navigates to the workflow, which provides the reload
+      // boundary without aborting auth bootstrap via a second navigation.
       await openEditForm();
       await expectEditNodeTagSelected(page, tagA);
       await expectEditNodeTagsAutocompleteOptions(page, [tagA, tagB]);
@@ -481,10 +428,7 @@ test.describe('edit-node-fr-001-007', () => {
   });
 
   test.describe('Link workflow dialog open (FR-WF-EN-008)', () => {
-    test('FR-WF-EN-008: course Link an activity opens dialog titled Link an activity', async ({
-      page,
-      workflow,
-    }) => {
+    test('FR-WF-EN-008: course Link an activity opens dialog titled Link an activity', async ({ page, workflow }) => {
       const activityUuid = seededLinkedActivityUuid(workflow);
       let nodeUuid = '';
 
@@ -505,10 +449,7 @@ test.describe('edit-node-fr-001-007', () => {
       }
     });
 
-    test('FR-WF-EN-008: program Link a course opens dialog titled Link a course', async ({
-      page,
-      workflow,
-    }) => {
+    test('FR-WF-EN-008: program Link a course opens dialog titled Link a course', async ({ page, workflow }) => {
       await openProgramLinkWorkflowDialog(page, workflow);
 
       await expect(workflowLinkWorkflowDialogTitle(page, 'program')).toBeVisible();
@@ -524,10 +465,7 @@ test.describe('edit-node-fr-001-007', () => {
   });
 
   test.describe('Link workflow dialog behavior (FR-WF-EN-009)', () => {
-    test('FR-WF-EN-009: first workflowCard is selected and Link activity is enabled', async ({
-      page,
-      workflow,
-    }) => {
+    test('FR-WF-EN-009: first workflowCard is selected and Link activity is enabled', async ({ page, workflow }) => {
       const activityUuid = seededLinkedActivityUuid(workflow);
       let nodeUuid = '';
 
@@ -537,9 +475,7 @@ test.describe('edit-node-fr-001-007', () => {
         await expect(cards.first()).toBeVisible({ timeout: 15_000 });
         await expect(cards.first()).toHaveClass(/selected/);
         await expect(workflowLinkWorkflowDialogLinkButton(page, 'course')).toBeEnabled();
-        await expect(workflowLinkWorkflowDialogLinkButton(page, 'course')).toHaveText(
-          'Link activity',
-        );
+        await expect(workflowLinkWorkflowDialogLinkButton(page, 'course')).toHaveText('Link activity');
       } finally {
         if (nodeUuid) {
           await linkNodeWorkflowViaApi(page, nodeUuid, activityUuid);
@@ -547,10 +483,7 @@ test.describe('edit-node-fr-001-007', () => {
       }
     });
 
-    test('FR-WF-EN-009: search with zero matches shows There are no exact matches', async ({
-      page,
-      workflow,
-    }) => {
+    test('FR-WF-EN-009: search with zero matches shows There are no exact matches', async ({ page, workflow }) => {
       const activityUuid = seededLinkedActivityUuid(workflow);
       let nodeUuid = '';
 
@@ -560,9 +493,7 @@ test.describe('edit-node-fr-001-007', () => {
           timeout: 15_000,
         });
 
-        await workflowLinkWorkflowDialogSearchField(page, 'course').fill(
-          `no-match-${Date.now()}-zzzz`,
-        );
+        await workflowLinkWorkflowDialogSearchField(page, 'course').fill(`no-match-${Date.now()}-zzzz`);
         await expect(workflowLinkWorkflowDialogEmptyState(page, 'course')).toHaveText(
           WORKFLOW_LINK_DIALOG_SEARCH_NO_MATCHES,
         );
@@ -617,8 +548,7 @@ test.describe('edit-node-fr-001-007', () => {
     }) => {
       const activityUuid = seededLinkedActivityUuid(workflow);
       const linkedTitle =
-        workflow.manifest.navigation_linked_workflows?.activity.workflow_title ??
-        'E2E Activity Workflow';
+        workflow.manifest.navigation_linked_workflows?.activity.workflow_title ?? 'E2E Activity Workflow';
       let nodeUuid = '';
 
       try {
@@ -632,9 +562,7 @@ test.describe('edit-node-fr-001-007', () => {
         await workflowLinkWorkflowDialogLinkButton(page, 'course').click();
 
         await expect(workflowLinkWorkflowDialog(page, 'course')).toBeHidden();
-        await expect(
-          workflowEditNodeFormLinkWorkflowButton(page, 'Remove linked activity'),
-        ).toBeVisible();
+        await expect(workflowEditNodeFormLinkWorkflowButton(page, 'Remove linked activity')).toBeVisible();
         await expect(workflowEditNodeFormTitleField(page)).toHaveValue(linkedTitle);
         await expect(workflowEditNodeFormTitleField(page)).toHaveAttribute('readonly', '');
       } finally {
@@ -652,8 +580,7 @@ test.describe('edit-node-fr-001-007', () => {
     }) => {
       const activityUuid = seededLinkedActivityUuid(workflow);
       const activityTitle =
-        workflow.manifest.navigation_linked_workflows?.activity.workflow_title ??
-        'E2E Activity Workflow';
+        workflow.manifest.navigation_linked_workflows?.activity.workflow_title ?? 'E2E Activity Workflow';
       let nodeUuid = '';
 
       try {
@@ -681,9 +608,7 @@ test.describe('edit-node-fr-001-007', () => {
       page,
       workflow,
     }) => {
-      const courseTitle =
-        workflow.manifest.navigation_linked_workflows?.course.workflow_title ??
-        'E2E Course Workflow';
+      const courseTitle = workflow.manifest.navigation_linked_workflows?.course.workflow_title ?? 'E2E Course Workflow';
 
       await openProgramLinkWorkflowDialog(page, workflow);
       const cards = workflowLinkWorkflowDialogSearchResults(page, 'program');
@@ -710,8 +635,7 @@ test.describe('edit-node-fr-001-007', () => {
       const course = workflow.workflowByType('course');
       const activityUuid = seededLinkedActivityUuid(workflow);
       const linkedTitle =
-        workflow.manifest.navigation_linked_workflows?.activity.workflow_title ??
-        'E2E Activity Workflow';
+        workflow.manifest.navigation_linked_workflows?.activity.workflow_title ?? 'E2E Activity Workflow';
 
       await page.goto(course.workflow_path);
       const nodeUuid = await firstWorkflowNodeUuid(page);
@@ -732,19 +656,16 @@ test.describe('edit-node-fr-001-007', () => {
       await linkNodeWorkflowViaApi(page, nodeUuid, activityUuid);
     });
 
-    test('FR-WF-EN-011: Remove linked course clears link and restores editable fields', async ({
-      page,
-      workflow,
-    }) => {
+    test('FR-WF-EN-011: Remove linked course clears link and restores editable fields', async ({ page, workflow }) => {
       const course = workflow.workflowByType('course');
-      const linkedTitle =
-        workflow.manifest.navigation_linked_workflows?.course.workflow_title ??
-        'E2E Course Workflow';
+      const linkedTitle = workflow.manifest.navigation_linked_workflows?.course.workflow_title ?? 'E2E Course Workflow';
 
       const nodeUuid = await ensureProgramNodeAndOpenEditForm(page, workflow);
       await linkNodeWorkflowViaApi(page, nodeUuid, course.workflow_uuid);
       await page.reload();
-      await expect(workflowNode(page, nodeUuid)).toBeVisible({ timeout: 15_000 });
+      await expect(workflowNode(page, nodeUuid)).toBeVisible({
+        timeout: 15_000,
+      });
       await workflowNodeTitle(page, nodeUuid).click();
       await expect(workflowEditNodeForm(page)).toBeVisible();
 
@@ -767,7 +688,12 @@ test.describe('edit-node-fr-001-007', () => {
   test.describe('Commenter and viewer permissions (FR-WF-EN-001, 010, 012)', () => {
     async function loginAsRole(
       page: Page,
-      workflow: { contributorByRole: (role: string) => { email: string; password: string } },
+      workflow: {
+        contributorByRole: (role: string) => {
+          email: string;
+          password: string;
+        };
+      },
       role: 'commenter' | 'viewer',
     ): Promise<void> {
       const account = workflow.contributorByRole(role);
@@ -794,9 +720,10 @@ test.describe('edit-node-fr-001-007', () => {
       await expect(workflowLinkWorkflowDialog(page, 'program')).toHaveCount(0);
     }
 
-    async function ensureProgramNodeAsOwner(page: Page, workflow: Parameters<
-      typeof ensureProgramNodeAndOpenEditForm
-    >[1]): Promise<void> {
+    async function ensureProgramNodeAsOwner(
+      page: Page,
+      workflow: Parameters<typeof ensureProgramNodeAndOpenEditForm>[1],
+    ): Promise<void> {
       await loginAsTestUser(page);
       await ensureProgramNodeAndOpenEditForm(page, workflow);
     }

@@ -56,13 +56,15 @@ def _issue_token_for(user, *, expires_delta: timedelta = timedelta(hours=1)):
     return raw_token
 
 
-def _create_graph(client: Client, raw_token: str) -> str:
+def _create_graph(
+    client: Client, raw_token: str, *, workflow_type: str = "course"
+) -> str:
     response = client.post(
         "/api/workflow",
         data={
             "projectId": None,
             "title": "Root",
-            "workflowType": "course",
+            "workflowType": workflow_type,
             "description": "",
         },
         content_type="application/json",
@@ -439,10 +441,48 @@ def test_patch_node_meta_updates_fields_and_returns_envelope(client: Client, use
 
 
 @pytest.mark.django_db
+def test_patch_program_course_node_meta_persists_local_fields(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw, workflow_type="program")
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    node = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+
+    response = client.patch(
+        f"/api/node/{node.uuid}/meta",
+        data={
+            "timeRequired": 3.5,
+            "credits": 4,
+            "ponderationTheory": 1.5,
+            "ponderationPractice": 2,
+            "ponderationIndividual": 2.5,
+            "specificEducation": True,
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+
+    assert response.status_code == 200, response.content
+    updated = response.json()["changes"]["nodes"]["updated"][0]
+    assert updated["timeRequired"] == 3.5
+    assert updated["credits"] == 4
+    assert updated["ponderationTheory"] == 1.5
+    assert updated["ponderationPractice"] == 2
+    assert updated["ponderationIndividual"] == 2.5
+    assert updated["specificEducation"] is True
+
+    node.refresh_from_db()
+    assert node.coursemeta.time_required == Decimal("3.50")
+    assert node.coursemeta.credits == 4
+    assert node.coursemeta.specific_education is True
+
+
+@pytest.mark.django_db
 def test_link_node_workflow_and_unlink(client: Client, user):
     raw = _issue_token_for(user)
     wf_uuid = _create_graph(client, raw)
-    other_wf_uuid = _create_graph(client, raw)
+    other_wf_uuid = _create_graph(client, raw, workflow_type="activity")
     section, channel, workflow = _section_and_channel(wf_uuid)
     other_graph = Graph.objects.select_related("workflow").get(uuid=other_wf_uuid)
     other_workflow = other_graph.workflow

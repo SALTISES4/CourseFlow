@@ -236,6 +236,11 @@ function mapNodeMetaFromApi(node: {
   timeRequired?: number | null
   timeUnits?: number | null
   representsWorkflow?: boolean
+  ponderationTheory?: number | null
+  ponderationPractice?: number | null
+  ponderationIndividual?: number | null
+  credits?: number | null
+  specificEducation?: boolean
   tagIds?: number[]
 }): Pick<
   NodeEntity,
@@ -246,6 +251,11 @@ function mapNodeMetaFromApi(node: {
   | 'timeRequired'
   | 'timeUnits'
   | 'representsWorkflow'
+  | 'ponderationTheory'
+  | 'ponderationPractice'
+  | 'ponderationIndividual'
+  | 'credits'
+  | 'specificEducation'
   | 'tagIds'
 > {
   return {
@@ -256,6 +266,11 @@ function mapNodeMetaFromApi(node: {
     timeRequired: node.timeRequired ?? null,
     timeUnits: node.timeUnits ?? null,
     representsWorkflow: node.representsWorkflow ?? false,
+    ponderationTheory: node.ponderationTheory ?? null,
+    ponderationPractice: node.ponderationPractice ?? null,
+    ponderationIndividual: node.ponderationIndividual ?? null,
+    credits: node.credits ?? null,
+    specificEducation: node.specificEducation ?? false,
     tagIds: node.tagIds ?? []
   }
 }
@@ -512,6 +527,21 @@ export const changeNodeMetaCommand = async (
   }
   if (meta.representsWorkflow !== undefined) {
     body.representsWorkflow = meta.representsWorkflow
+  }
+  if (meta.ponderationTheory !== undefined) {
+    body.ponderationTheory = meta.ponderationTheory
+  }
+  if (meta.ponderationPractice !== undefined) {
+    body.ponderationPractice = meta.ponderationPractice
+  }
+  if (meta.ponderationIndividual !== undefined) {
+    body.ponderationIndividual = meta.ponderationIndividual
+  }
+  if (meta.credits !== undefined) {
+    body.credits = meta.credits
+  }
+  if (meta.specificEducation !== undefined) {
+    body.specificEducation = meta.specificEducation
   }
   if (meta.tagIds !== undefined) {
     body.tagIds = meta.tagIds

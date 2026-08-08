@@ -220,6 +220,23 @@ export function createWorkflowDialogProjectCards(page: Page): Locator {
   return createWorkflowDialog(page).locator('[data-test-id="project-card"]');
 }
 
+/** canonical: workflowTemplateSearchField (template mode step 3) */
+export function workflowTemplateSearchField(page: Page): Locator {
+  return createWorkflowDialog(page).locator('[data-test-id="workflow-template-search-field"]');
+}
+
+/** canonical: workflowTemplateSearchEmptyState (template mode step 3) */
+export function workflowTemplateSearchEmptyState(page: Page): Locator {
+  return createWorkflowDialog(page).locator('[data-test-id="workflow-template-search-empty-state"]');
+}
+
+/** workflowCard instances in createWorkflowDialog template mode step 3 */
+export function createWorkflowDialogTemplateCards(page: Page): Locator {
+  return createWorkflowDialog(page)
+    .locator('[data-test-id="workflow-template-search-results"]')
+    .locator('[data-test-id="workflow-card"]');
+}
+
 /** Product-only / type-varying metadata labels that FR forbids on blank create (do not differ by type). */
 export const WORKFLOW_BLANK_FORM_FORBIDDEN_METADATA_LABELS = [
   'Duration',

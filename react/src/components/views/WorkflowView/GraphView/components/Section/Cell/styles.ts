@@ -12,6 +12,7 @@ export const CellInner = styled(Box, {
   highlighted?: boolean
 }>(({ theme, dragging, dropHighlight, selected, highlighted }) => ({
   display: 'flex',
+  pointerEvents: 'auto',
   flexDirection: 'column',
   height: '100%',
   borderRadius: theme.shape.borderRadius,

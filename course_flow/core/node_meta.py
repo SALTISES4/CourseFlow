@@ -27,8 +27,20 @@ _TASK_LAYER_PATCH_KEYS = frozenset(
     }
 )
 
-# Coursemeta node rows use classification/code (not exposed on graph node API yet).
-_COURSE_LAYER_PATCH_KEYS = frozenset({"classification", "code"})
+# Program-graph course slots store their node-local course metadata here.
+_COURSE_LAYER_PATCH_KEYS = frozenset(
+    {
+        "classification",
+        "code",
+        "time_required",
+        "time_units",
+        "ponderation_theory",
+        "ponderation_practice",
+        "ponderation_individual",
+        "credits",
+        "specific_education",
+    }
+)
 
 
 def typed_meta_patch_keys() -> frozenset[str]:
@@ -44,6 +56,11 @@ def _empty_graph_meta_fields() -> dict[str, Any]:
         "time_required": None,
         "time_units": None,
         "represents_workflow": False,
+        "ponderation_theory": None,
+        "ponderation_practice": None,
+        "ponderation_individual": None,
+        "credits": None,
+        "specific_education": False,
     }
 
 
@@ -55,6 +72,11 @@ def _graph_fields_from_activity_meta(meta: Activitymeta) -> dict[str, Any]:
         "time_required": float(time_required) if time_required is not None else None,
         "time_units": meta.time_units,
         "represents_workflow": bool(meta.represents_workflow),
+        "ponderation_theory": None,
+        "ponderation_practice": None,
+        "ponderation_individual": None,
+        "credits": None,
+        "specific_education": False,
     }
 
 
@@ -66,6 +88,29 @@ def _graph_fields_from_task_meta(meta: Taskmeta) -> dict[str, Any]:
         "time_required": float(time_required) if time_required is not None else None,
         "time_units": meta.time_units,
         "represents_workflow": bool(meta.represents_workflow),
+        "ponderation_theory": None,
+        "ponderation_practice": None,
+        "ponderation_individual": None,
+        "credits": None,
+        "specific_education": False,
+    }
+
+
+def _graph_fields_from_course_meta(meta: Coursemeta) -> dict[str, Any]:
+    def optional_float(value: Any) -> float | None:
+        return float(value) if value is not None else None
+
+    return {
+        "context_classification": None,
+        "task_classification": None,
+        "time_required": optional_float(meta.time_required),
+        "time_units": meta.time_units,
+        "represents_workflow": False,
+        "ponderation_theory": optional_float(meta.ponderation_theory),
+        "ponderation_practice": optional_float(meta.ponderation_practice),
+        "ponderation_individual": optional_float(meta.ponderation_individual),
+        "credits": meta.credits,
+        "specific_education": bool(meta.specific_education),
     }
 
 
@@ -74,8 +119,10 @@ def read_node_meta_fields(node: Node) -> dict[str, Any]:
     node_type = NodeType(node.node_type)
 
     if node_type == NodeType.COURSE:
-        # Program-graph course slots: coursemeta has classification/code only.
-        return _empty_graph_meta_fields()
+        meta = getattr(node, "coursemeta", None)
+        if meta is None:
+            return _empty_graph_meta_fields()
+        return _graph_fields_from_course_meta(meta)
 
     if node_type == NodeType.ACTIVITY:
         meta = getattr(node, "activitymeta", None)
@@ -108,6 +155,18 @@ def patch_node_typed_meta(node: Node, patch: dict[str, Any]) -> list[str]:
         if "code" in patch and patch["code"] is not None:
             meta.code = patch["code"]
             update_fields.append("code")
+        for field in (
+            "time_required",
+            "time_units",
+            "ponderation_theory",
+            "ponderation_practice",
+            "ponderation_individual",
+            "credits",
+            "specific_education",
+        ):
+            if field in patch:
+                setattr(meta, field, patch[field])
+                update_fields.append(field)
     elif node_type == NodeType.ACTIVITY and isinstance(meta, Activitymeta):
         update_fields = _apply_activity_layer_patch(meta, patch)
     elif node_type == NodeType.TASK and isinstance(meta, Taskmeta):
@@ -174,7 +233,26 @@ def copy_node_typed_meta(*, source: Node, target: Node) -> None:
     ):
         dst.classification = src.classification
         dst.code = src.code
-        dst.save(update_fields=["classification", "code"])
+        dst.time_required = src.time_required
+        dst.time_units = src.time_units
+        dst.ponderation_theory = src.ponderation_theory
+        dst.ponderation_practice = src.ponderation_practice
+        dst.ponderation_individual = src.ponderation_individual
+        dst.credits = src.credits
+        dst.specific_education = src.specific_education
+        dst.save(
+            update_fields=[
+                "classification",
+                "code",
+                "time_required",
+                "time_units",
+                "ponderation_theory",
+                "ponderation_practice",
+                "ponderation_individual",
+                "credits",
+                "specific_education",
+            ]
+        )
         return
 
     if node_type == NodeType.ACTIVITY and isinstance(src, Activitymeta) and isinstance(

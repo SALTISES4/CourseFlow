@@ -1295,7 +1295,12 @@ class GraphMutationService:
         if "tag_ids" in patch and patch["tag_ids"] is not None:
             tag_ids = patch["tag_ids"]
             if tag_ids:
-                tags = list(Tag.objects.filter(id__in=tag_ids))
+                project_id = wf_locked.workflow.project_id
+                if project_id is None:
+                    return None, "bad_request"
+                tags = list(
+                    Tag.objects.filter(id__in=tag_ids, project_id=project_id)
+                )
                 if len(tags) != len(set(tag_ids)):
                     return None, "bad_request"
             else:
@@ -1628,9 +1633,9 @@ class GraphMutationService:
             node.linked_workflow = None
         else:
             try:
-                target_workflow = Workflow.objects.select_related("graph").get(
-                    uuid=workflow_uuid
-                )
+                target_workflow = Workflow.objects.select_related(
+                    "graph", "project"
+                ).get(uuid=workflow_uuid)
             except Workflow.DoesNotExist:
                 return None, "not_found"
             target_graph = target_workflow.graph
@@ -1640,6 +1645,16 @@ class GraphMutationService:
                 action=WorkflowPermission.VIEW,
             ):
                 return None, "forbidden"
+            if wf_locked.workflow.workflow_type not in {"program", "course"}:
+                return None, "bad_request"
+            expected_child_type = child_node_type_value_for_workflow(
+                wf_locked.workflow.workflow_type
+            )
+            if (
+                target_workflow.workflow_type != expected_child_type
+                or target_workflow.project_id != wf_locked.workflow.project_id
+            ):
+                return None, "bad_request"
             node.linked_workflow = target_workflow
 
         node.save(update_fields=["linked_workflow_id"])

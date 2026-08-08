@@ -50,7 +50,8 @@ export const SectionBackground = styled(Box)(({ theme }) => ({
   left: 0,
   width: '100%',
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: theme.palette.workspaceBlocks.background
+  backgroundColor: theme.palette.workspaceBlocks.background,
+  pointerEvents: 'none'
 }))
 
 export const SectionHeader = styled('header', {

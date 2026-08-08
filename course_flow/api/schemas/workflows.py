@@ -22,7 +22,7 @@ class WorkflowCreateIn(CamelSchema):
     """Create a root ``Workflow`` and its backing ``Graph`` row (1:1 ORM)."""
 
     project_uuid: UUID | None = None
-    title: str = ""
+    title: str = Field(min_length=1, max_length=200)
     workflow_type: WorkflowTypeIn
     description: str = ""
 

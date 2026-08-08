@@ -11,6 +11,7 @@ const initialState: GraphUiState = {
   hoveredEdgeId: null,
   activePanel: 'none',
   nodeInsertMode: DEFAULT_NODE_INSERT_MODE,
+  collapsedSectionUuids: [],
   edgeDraft: {
     sourceNodeUuid: null,
     sourcePort: null,
@@ -46,6 +47,17 @@ const graphUiSlice = createSlice({
     },
     setNodeInsertMode(state, action: PayloadAction<NodeInsertMode>) {
       state.nodeInsertMode = action.payload
+    },
+    setCollapsedSectionUuids(state, action: PayloadAction<ResourceUuid[]>) {
+      state.collapsedSectionUuids = action.payload
+    },
+    toggleSectionCollapsed(state, action: PayloadAction<ResourceUuid>) {
+      const index = state.collapsedSectionUuids.indexOf(action.payload)
+      if (index === -1) {
+        state.collapsedSectionUuids.push(action.payload)
+      } else {
+        state.collapsedSectionUuids.splice(index, 1)
+      }
     },
     setEdgeDraft(state, action: PayloadAction<GraphUiState['edgeDraft']>) {
       state.edgeDraft = action.payload
