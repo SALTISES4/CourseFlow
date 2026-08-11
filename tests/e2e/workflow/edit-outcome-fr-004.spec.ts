@@ -1,6 +1,10 @@
 import { test, expect } from '../../fixtures';
 import { gotoOutcomesView } from './comments-tab.helpers';
 import {
+  expectReadOnlyWorkflowEditOutcomeForm,
+  loginAsWorkflowContributor,
+} from './role.helpers';
+import {
   workflowEditOutcomeForm,
   workflowEditOutcomeFormTitleField,
   workflowOutcomeHeader,
@@ -10,7 +14,12 @@ import {
   workflowRightSidebarEditTab,
 } from '../../shared/locators/workflow';
 
-test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'read-only' });
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  seedDependencies: ['project.primary', 'actor.commenter', 'actor.viewer'],
+  actorAsset: 'actor.teacher',
+  seedAccess: 'read-only',
+});
 
 /**
  * Open edit outcome form — FR-WF-EO-004.
@@ -39,5 +48,37 @@ test.describe('Edit outcome — open workflowEditOutcomeForm (FR-WF-EO-004)', ()
     await expect(workflowRightSidebarEditTab(page)).toHaveAttribute('aria-pressed', 'true');
     await expect(workflowEditOutcomeForm(page)).toBeVisible();
     await expect(workflowEditOutcomeFormTitleField(page)).toBeVisible();
+  });
+
+  test.describe('Role behavior — read-only form (FR-WF-EO-004)', () => {
+    test.describe('commenter', () => {
+      test.use({ storageState: { cookies: [], origins: [] } });
+
+      test('FR-WF-EO-004: commenter opens read-only workflowEditOutcomeForm', async ({
+        page,
+        workflow,
+      }) => {
+        await loginAsWorkflowContributor(page, workflow, 'commenter');
+        await gotoOutcomesView(page, workflow.path);
+        await workflowOutcomeHeader(page, E2E_OUTCOME_TITLE).click();
+
+        await expectReadOnlyWorkflowEditOutcomeForm(page);
+      });
+    });
+
+    test.describe('viewer', () => {
+      test.use({ storageState: { cookies: [], origins: [] } });
+
+      test('FR-WF-EO-004: viewer opens read-only workflowEditOutcomeForm', async ({
+        page,
+        workflow,
+      }) => {
+        await loginAsWorkflowContributor(page, workflow, 'viewer');
+        await gotoOutcomesView(page, workflow.path);
+        await workflowOutcomeHeader(page, E2E_OUTCOME_TITLE).click();
+
+        await expectReadOnlyWorkflowEditOutcomeForm(page);
+      });
+    });
   });
 });

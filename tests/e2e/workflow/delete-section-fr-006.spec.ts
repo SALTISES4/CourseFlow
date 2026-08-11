@@ -1,4 +1,5 @@
 import { test, expect } from '../../fixtures';
+import { loginAsWorkflowContributor } from './role.helpers';
 import {
   deleteButtonInSectionHeader,
   deleteSectionCancelButton,
@@ -13,7 +14,12 @@ import {
   workflowSectionDeleteDialogTitle,
 } from '../../shared/locators/workflow';
 
-test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  seedDependencies: ['project.primary', 'actor.commenter', 'actor.viewer'],
+  actorAsset: 'actor.teacher',
+  seedAccess: 'disposable-copy',
+});
 
 /**
  * Delete section — hover path and dialog (FR-SEC-006).
@@ -86,4 +92,53 @@ test.describe('Delete Section — hover path (FR-SEC-006)', () => {
   });
 
   test.fixme('FR-SEC-006: last-section delete guard deferred', async () => {});
+});
+
+test.describe('Delete Section — role behavior (FR-SEC-006, FR-SEC-007)', () => {
+  test.beforeEach(async ({ page, workflow }) => {
+    await page.goto(workflow.path);
+    await expect(sectionContainers(page)).toHaveCount(workflow.sections.length, {
+      timeout: 15_000,
+    });
+  });
+
+  test.describe('commenter', () => {
+    test.use({ storageState: { cookies: [], origins: [] } });
+
+    test('FR-SEC-007: commenter sees disabled hover delete item', async ({ page, workflow }) => {
+      await loginAsWorkflowContributor(page, workflow, 'commenter');
+      await page.goto(workflow.path);
+      await expect(sectionContainers(page)).toHaveCount(workflow.sections.length, {
+        timeout: 15_000,
+      });
+
+      const sectionUuid = workflow.sectionByTitle('E2E Section 3').uuid;
+      const before = await sectionContainers(page).count();
+
+      await hoverSectionHeader(page, sectionUuid);
+      await expect(deleteButtonInSectionHeader(page, sectionUuid)).toBeDisabled();
+      await deleteButtonInSectionHeader(page, sectionUuid).click({ force: true });
+
+      await expect(sectionContainers(page)).toHaveCount(before);
+      await expect(deleteSectionDialog(page)).toBeHidden();
+    });
+  });
+
+  test.describe('viewer', () => {
+    test.use({ storageState: { cookies: [], origins: [] } });
+
+    test('FR-SEC-007: viewer does not see section hover delete item', async ({ page, workflow }) => {
+      await loginAsWorkflowContributor(page, workflow, 'viewer');
+      await page.goto(workflow.path);
+      await expect(sectionContainers(page)).toHaveCount(workflow.sections.length, {
+        timeout: 15_000,
+      });
+
+      const sectionUuid = workflow.sectionByTitle('E2E Section 3').uuid;
+
+      await sectionHeader(page, sectionUuid).hover();
+      await expect(sectionHoverMenu(page, sectionUuid)).toBeHidden();
+      await expect(deleteButtonInSectionHeader(page, sectionUuid)).toHaveCount(0);
+    });
+  });
 });

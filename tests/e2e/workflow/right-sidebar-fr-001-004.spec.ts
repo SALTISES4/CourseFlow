@@ -1,5 +1,6 @@
 import { test, expect } from '../../fixtures';
 import { workflowOverviewPath, workflowOutcomesPath } from '../../helpers/workflow-navigation';
+import { loginAsWorkflowContributor } from './role.helpers';
 import {
   editSectionForm,
   sectionHeader,
@@ -22,7 +23,12 @@ import {
   workflowRightSidebarToggleButton,
 } from '../../shared/locators/workflow';
 
-test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'read-only' });
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  seedDependencies: ['project.primary', 'actor.commenter', 'actor.viewer'],
+  actorAsset: 'actor.teacher',
+  seedAccess: 'read-only',
+});
 
 /**
  * Right sidebar shell — FR-WF-RS-001 through FR-WF-RS-004 (partial).
@@ -136,17 +142,18 @@ test.describe('Right sidebar — tab strip (FR-WF-RS-002)', () => {
     await expect(workflowRightSidebar(page)).toBeVisible({ timeout: 15_000 });
   });
 
-  test('FR-WF-RS-002: graph view tab strip order is Edit, Add, Outcomes', async ({ page }) => {
+  test('FR-WF-RS-002: graph view tab strip order is Edit, Add, Outcomes, Comments', async ({
+    page,
+  }) => {
     const tabs = workflowRightSidebarTabStrip(page).getByRole('button');
-    await expect(tabs).toHaveCount(3);
+    await expect(tabs).toHaveCount(4);
     await expect(tabs.nth(0)).toHaveAttribute('aria-label', 'edit tab');
     await expect(tabs.nth(1)).toHaveAttribute('aria-label', 'add tab');
     await expect(tabs.nth(2)).toHaveAttribute('aria-label', 'outcomes tab');
+    await expect(tabs.nth(3)).toHaveAttribute('aria-label', 'comments tab');
   });
 
-  test.fixme('FR-WF-RS-002: graph view Comments tab always visible deferred', async () => {});
-
-  test('FR-WF-RS-002: outcomes sub-view tab strip shows Edit and Related tabs', async ({
+  test('FR-WF-RS-002: outcomes sub-view tab strip shows Edit and Comments tabs', async ({
     page,
     workflow,
   }) => {
@@ -158,13 +165,10 @@ test.describe('Right sidebar — tab strip (FR-WF-RS-002)', () => {
     const tabs = workflowRightSidebarTabStrip(page).getByRole('button');
     await expect(tabs).toHaveCount(2);
     await expect(tabs.nth(0)).toHaveAttribute('aria-label', 'edit tab');
-    await expect(tabs.nth(1)).toHaveAttribute('aria-label', 'related tab');
+    await expect(tabs.nth(1)).toHaveAttribute('aria-label', 'comments tab');
+    await expect(workflowRightSidebarAddTab(page)).toHaveCount(0);
+    await expect(workflowRightSidebarOutcomesTab(page)).toHaveCount(0);
   });
-
-  test.fixme(
-    'FR-WF-RS-002: outcomes sub-view Comments tab instead of Related deferred',
-    async () => {},
-  );
 });
 
 test.describe('Right sidebar — tab actionability (FR-WF-RS-003)', () => {
@@ -175,19 +179,15 @@ test.describe('Right sidebar — tab actionability (FR-WF-RS-003)', () => {
     });
   });
 
-  test('FR-WF-RS-003: without selection Edit tab is disabled; Add and Outcomes are enabled for owner', async ({
+  test('FR-WF-RS-003: without selection Edit and Comments tabs are disabled; Add and Outcomes enabled for owner', async ({
     page,
   }) => {
     await expect(workflowRightSidebarEditTab(page)).toBeDisabled();
     await expect(workflowRightSidebarAddTab(page)).toBeEnabled();
     await expect(workflowRightSidebarOutcomesTab(page)).toBeEnabled();
-    await expect(workflowRightSidebarCommentsTab(page)).toHaveCount(0);
+    await expect(workflowRightSidebarCommentsTab(page)).toBeVisible();
+    await expect(workflowRightSidebarCommentsTab(page)).toBeDisabled();
   });
-
-  test.fixme(
-    'FR-WF-RS-003: Comments tab visible-but-disabled without selection deferred',
-    async () => {},
-  );
 
   test('FR-WF-RS-003: section selection enables Edit and Comments tabs', async ({
     page,
@@ -233,5 +233,50 @@ test.describe('Right sidebar — default presentation reset (FR-WF-RS-004)', () 
     await expectSidebarCollapsed(page);
     await expect(workflowRightSidebarEditTab(page)).toBeDisabled();
     await expectNoSidebarTabSelected(page);
+  });
+});
+
+test.describe('Right sidebar — role behavior (FR-WF-RS-003)', () => {
+  test.describe('commenter', () => {
+    test.use({ storageState: { cookies: [], origins: [] } });
+
+    test('FR-WF-RS-003: commenter has Add tab disabled; Comments enabled after selection', async ({
+      page,
+      workflow,
+    }) => {
+      await loginAsWorkflowContributor(page, workflow, 'commenter');
+      await page.goto(workflow.path);
+      await expect(sectionHeader(page, workflow.firstSection().uuid)).toBeVisible({
+        timeout: 15_000,
+      });
+
+      await expect(workflowRightSidebarAddTab(page)).toBeDisabled();
+      await expect(workflowRightSidebarOutcomesTab(page)).toBeEnabled();
+      await expect(workflowRightSidebarCommentsTab(page)).toBeDisabled();
+
+      await sectionHeader(page, workflow.firstSection().uuid).click();
+      await expect(workflowRightSidebarCommentsTab(page)).toBeEnabled();
+      await expect(workflowRightSidebarAddTab(page)).toBeDisabled();
+    });
+  });
+
+  test.describe('viewer', () => {
+    test.use({ storageState: { cookies: [], origins: [] } });
+
+    test('FR-WF-RS-003: viewer has Add and Comments tabs disabled', async ({ page, workflow }) => {
+      await loginAsWorkflowContributor(page, workflow, 'viewer');
+      await page.goto(workflow.path);
+      await expect(sectionHeader(page, workflow.firstSection().uuid)).toBeVisible({
+        timeout: 15_000,
+      });
+
+      await expect(workflowRightSidebarAddTab(page)).toBeDisabled();
+      await expect(workflowRightSidebarCommentsTab(page)).toBeDisabled();
+
+      await sectionHeader(page, workflow.firstSection().uuid).click();
+      await expect(workflowRightSidebarCommentsTab(page)).toBeDisabled();
+      await expect(workflowRightSidebarAddTab(page)).toBeDisabled();
+      await expect(editSectionForm(page)).toBeVisible();
+    });
   });
 });

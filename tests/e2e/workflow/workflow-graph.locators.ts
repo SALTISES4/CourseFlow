@@ -195,21 +195,29 @@ export function workflowEditChannelFormDeleteButton(page: Page): Locator {
   });
 }
 
+/** FR-CHAN-006 / DeleteNodeCategory dialog copy (react/.../DeleteNodeCategory/index.tsx). */
+export const WORKFLOW_CHANNEL_DELETE_DIALOG_COPY = {
+  title: 'You are about to delete a node category',
+  body: 'By deleting this node category, you will delete all associated nodes. Are you sure you want to proceed?',
+  cancelButton: 'Cancel',
+  confirmButton: 'Delete node category',
+} as const;
+
 /** canonical: workflowChannelDeleteDialog */
 export function workflowChannelDeleteDialog(page: Page): Locator {
-  return page.getByRole('dialog').filter({ hasText: 'You are about to delete a node category' });
+  return page.getByRole('dialog').filter({ hasText: WORKFLOW_CHANNEL_DELETE_DIALOG_COPY.title });
 }
 
 export function workflowChannelDeleteDialogCancelButton(page: Page): Locator {
   return workflowChannelDeleteDialog(page).getByRole('button', {
-    name: 'Cancel',
+    name: WORKFLOW_CHANNEL_DELETE_DIALOG_COPY.cancelButton,
     exact: true,
   });
 }
 
 export function workflowChannelDeleteDialogConfirmButton(page: Page): Locator {
   return workflowChannelDeleteDialog(page).getByRole('button', {
-    name: 'Delete node category',
+    name: WORKFLOW_CHANNEL_DELETE_DIALOG_COPY.confirmButton,
     exact: true,
   });
 }

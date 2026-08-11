@@ -34,6 +34,12 @@ import {
 import { workflowChannelsHeaderRow, workflowRightSidebarAddTab } from '../shared/locators/workflow';
 import { globalMessageSnackbar } from '../shared/locators/global';
 import { gotoAuthenticatedShell } from './navigation';
+import {
+  DEFAULT_WORKFLOW_CHANNEL_SPECS_BY_TYPE,
+  expectWorkflowAddTabNodeCategoryItemColour,
+  expectWorkflowChannelHeaderColour,
+} from '../e2e/workflow/workflow-channel-color.helpers';
+import { workflowChannelHeaderByTitle } from '../e2e/workflow/workflow-graph.locators';
 
 export type CreateWorkflowStepperLabels = {
   step2: string;
@@ -185,25 +191,22 @@ export const DEFAULT_WORKFLOW_CHANNEL_TITLES_BY_TYPE: Record<
   'activity' | 'course' | 'program',
   readonly string[]
 > = {
-  activity: [
-    'Out of class (instructor)',
-    'Out of class (students)',
-    'In class (instructor)',
-    'In class (students)',
-  ],
-  course: ['Preparation', 'Lesson', 'Artifact', 'Assessment'],
-  program: ['Custom node category', 'Custom node category', 'Custom node category'],
+  activity: DEFAULT_WORKFLOW_CHANNEL_SPECS_BY_TYPE.activity.map((spec) => spec.title),
+  course: DEFAULT_WORKFLOW_CHANNEL_SPECS_BY_TYPE.course.map((spec) => spec.title),
+  program: DEFAULT_WORKFLOW_CHANNEL_SPECS_BY_TYPE.program.map((spec) => spec.title),
 };
 
-/** FR-WF-CREATE-STEPPER-005 / FR-WF-ADD-003 — default channels in workflowChannelsHeaderRow. */
+/** FR-WF-CREATE-STEPPER-005 / FR-WF-ADD-003 / FR-CHAN-002 — default channels in workflowChannelsHeaderRow. */
 export async function expectDefaultWorkflowChannelsInHeaderRow(
   page: Page,
   workflowType: 'activity' | 'course' | 'program',
 ): Promise<void> {
   const row = workflowChannelsHeaderRow(page);
   await expect(row).toBeVisible();
-  const titles = DEFAULT_WORKFLOW_CHANNEL_TITLES_BY_TYPE[workflowType];
+  const specs = DEFAULT_WORKFLOW_CHANNEL_SPECS_BY_TYPE[workflowType];
   const headers = row.locator('[data-column-id]');
+
+  await expect(headers).toHaveCount(specs.length);
 
   if (workflowType === 'program') {
     await expect(
@@ -211,13 +214,26 @@ export async function expectDefaultWorkflowChannelsInHeaderRow(
         has: page.getByText('Custom node category', { exact: true }),
       }),
     ).toHaveCount(3);
+
+    for (let index = 0; index < specs.length; index += 1) {
+      const channelUuid = await headers.nth(index).getAttribute('data-column-id');
+      if (!channelUuid) {
+        throw new Error(`Expected data-column-id on program default channel header ${index}.`);
+      }
+      await expectWorkflowChannelHeaderColour(page, channelUuid, specs[index]!.colour);
+    }
     return;
   }
 
-  for (const title of titles) {
-    await expect(headers.filter({ has: page.getByText(title, { exact: true }) })).toHaveCount(1);
+  for (const spec of specs) {
+    const header = headers.filter({ has: page.getByText(spec.title, { exact: true }) });
+    await expect(header).toHaveCount(1);
+    const channelUuid = await header.getAttribute('data-column-id');
+    if (!channelUuid) {
+      throw new Error(`Expected data-column-id on default channel header ${spec.title}.`);
+    }
+    await expectWorkflowChannelHeaderColour(page, channelUuid, spec.colour);
   }
-  await expect(headers).toHaveCount(titles.length);
 }
 
 const OPEN_CREATE_WORKFLOW_MENU_ITEM: Record<
@@ -303,11 +319,26 @@ export async function expectDefaultAddTabNodeCategories(
   });
 
   const expectedTitles = DEFAULT_WORKFLOW_CHANNEL_TITLES_BY_TYPE[workflowType];
+  const expectedSpecs = DEFAULT_WORKFLOW_CHANNEL_SPECS_BY_TYPE[workflowType];
   const items = workflowAddTabNodeCategoryItems(page);
   await expect(items).toHaveCount(expectedTitles.length);
 
   for (let index = 0; index < expectedTitles.length; index += 1) {
-    await expect(items.nth(index)).toContainText(expectedTitles[index]!);
+    const item = items.nth(index);
+    await expect(item).toContainText(expectedTitles[index]!);
+    await expectWorkflowAddTabNodeCategoryItemColour(page, item, expectedSpecs[index]!.colour);
+
+    if (workflowType !== 'program') {
+      const channelUuid = await workflowChannelHeaderByTitle(page, expectedTitles[index]!).getAttribute(
+        'data-column-id',
+      );
+      if (!channelUuid) {
+        throw new Error(
+          `Expected canvas header for default channel ${expectedTitles[index]!} during Add-tab alignment check.`,
+        );
+      }
+      await expectWorkflowChannelHeaderColour(page, channelUuid, expectedSpecs[index]!.colour);
+    }
   }
 
   await expect(workflowAddTabCustomNodeCategoryItem(page)).toBeVisible();

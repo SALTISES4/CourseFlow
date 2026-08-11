@@ -1,4 +1,5 @@
 import { test, expect } from '../../fixtures';
+import { loginAs } from '../../helpers/auth';
 import {
   firstWorkflowNodeUuid,
   hoverWorkflowNode,
@@ -12,6 +13,12 @@ import {
   workflowChannelHeaderColorIndicatorBackgroundColor,
   workflowNodeBorderBackgroundColor,
 } from './node-visual.helpers';
+import {
+  clickAssignTabOutcomeRow,
+  E2E_SEED_OUTCOME_HEADER,
+  openWorkflowOutcomesTab,
+  workflowNodeHasOutcomeHighlightBorder,
+} from './workflow-assign-outcome.helpers';
 import {
   workflowEditNodeForm,
   workflowEditNodeFormTitleField,
@@ -274,10 +281,19 @@ test.describe('Workflow node — selected border (FR-WF-NODE-002)', () => {
 });
 
 test.describe('Workflow node — outcome highlight (FR-WF-NODE-003)', () => {
-  test.fixme(
-    'FR-WF-NODE-003: workflowNodeOutcomeHighlightBorder deferred until outcome assign fixture',
-    async () => {},
-  );
+  test.beforeEach(async ({ page, workflow }) => {
+    await page.goto(workflow.path);
+  });
+
+  test('FR-WF-NODE-003: highlighted assigned workflowNode shows workflowNodeOutcomeHighlightBorder', async ({
+    page,
+  }) => {
+    const assignedNodeUuid = await firstWorkflowNodeUuid(page);
+    await openWorkflowOutcomesTab(page);
+    await clickAssignTabOutcomeRow(page, E2E_SEED_OUTCOME_HEADER);
+
+    expect(await workflowNodeHasOutcomeHighlightBorder(page, assignedNodeUuid)).toBe(true);
+  });
 });
 
 test.describe('Workflow node — hover menu visibility (FR-WF-NODE-004)', () => {
@@ -326,5 +342,45 @@ test.describe('Workflow node — hover menu composition (FR-WF-NODE-005)', () =>
 
     await expect(workflowNodeHoverCommentsItem(page, firstUuid)).toBeVisible();
     await expect(workflowNodeHoverCommentsItem(page, secondUuid)).toHaveCount(0);
+  });
+
+  test.describe('Commenter hover menu (FR-WF-NODE-005)', () => {
+    test.use({ storageState: { cookies: [], origins: [] } });
+
+    test('FR-WF-NODE-005: commenter sees disabled insert, duplicate, and delete hover items', async ({
+      page,
+      workflow,
+    }) => {
+      const commenter = workflow.contributorByRole('commenter');
+      await loginAs(page, { email: commenter.email, password: commenter.password });
+      await page.goto(workflow.path);
+
+      const nodeUuid = await firstWorkflowNodeUuid(page);
+      await hoverWorkflowNode(page, nodeUuid);
+
+      await expect(workflowNodeHoverInsertBelowItem(page, nodeUuid)).toBeDisabled();
+      await expect(workflowNodeHoverDuplicateItem(page, nodeUuid)).toBeDisabled();
+      await expect(workflowNodeHoverDeleteItem(page, nodeUuid)).toBeDisabled();
+      await expect(workflowNodeHoverCommentsItem(page, nodeUuid)).toBeEnabled();
+    });
+  });
+
+  test.describe('Viewer hover menu (FR-WF-NODE-004/005)', () => {
+    test.use({ storageState: { cookies: [], origins: [] } });
+
+    test('FR-WF-NODE-004: viewer does not see workflowNodeHoverActionsMenu on hover', async ({
+      page,
+      workflow,
+    }) => {
+      const viewer = workflow.contributorByRole('viewer');
+      await loginAs(page, { email: viewer.email, password: viewer.password });
+      await page.goto(workflow.path);
+
+      const nodeUuid = await firstWorkflowNodeUuid(page);
+      await hoverWorkflowNode(page, nodeUuid);
+
+      await expect(workflowNodeHoverCommentsItem(page, nodeUuid)).toHaveCount(0);
+      await expect(workflowNodeHoverInsertBelowItem(page, nodeUuid)).toHaveCount(0);
+    });
   });
 });

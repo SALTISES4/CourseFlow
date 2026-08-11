@@ -5,6 +5,7 @@ import {
   expectDefaultAddTabNodeCategories,
 } from '../../helpers/create-workflow';
 import { loadWorkflowManifest } from '../../helpers/manifest';
+import { loginAsWorkflowContributor } from './role.helpers';
 import { firstWorkflowNodeUuid } from './comments-tab.helpers';
 import {
   dragNodeCategoryOntoNode,
@@ -37,7 +38,7 @@ import {
 
 test.use({
   seedAsset: 'workflow.standard_activity',
-  seedDependencies: ['project.primary', 'project.recent_collection'],
+  seedDependencies: ['project.primary', 'project.recent_collection', 'actor.commenter', 'actor.viewer'],
   actorAsset: 'actor.teacher',
   seedAccess: 'disposable-copy',
 });
@@ -326,6 +327,40 @@ test.describe('add-tab-fr-001-006', () => {
           expect(response.ok()).toBeTruthy();
         }
       }
+    });
+  });
+
+  test.describe('Add tab — role behavior (FR-WF-RS-003)', () => {
+    test.describe('commenter', () => {
+      test.use({ storageState: { cookies: [], origins: [] } });
+
+      test('FR-WF-RS-003: commenter has workflowRightSidebarAddTab disabled on graph view', async ({
+        page,
+        workflow,
+      }) => {
+        await loginAsWorkflowContributor(page, workflow, 'commenter');
+        await page.goto(workflow.path);
+
+        await expect(workflowRightSidebarAddTab(page)).toBeDisabled();
+        await workflowRightSidebarAddTab(page).click({ force: true });
+        await expect(workflowRightSidebarAddTabContent(page)).toBeHidden();
+      });
+    });
+
+    test.describe('viewer', () => {
+      test.use({ storageState: { cookies: [], origins: [] } });
+
+      test('FR-WF-RS-003: viewer has workflowRightSidebarAddTab disabled on graph view', async ({
+        page,
+        workflow,
+      }) => {
+        await loginAsWorkflowContributor(page, workflow, 'viewer');
+        await page.goto(workflow.path);
+
+        await expect(workflowRightSidebarAddTab(page)).toBeDisabled();
+        await workflowRightSidebarAddTab(page).click({ force: true });
+        await expect(workflowRightSidebarAddTabContent(page)).toBeHidden();
+      });
     });
   });
 });

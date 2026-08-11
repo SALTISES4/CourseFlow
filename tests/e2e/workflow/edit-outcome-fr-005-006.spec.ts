@@ -1,6 +1,10 @@
 import { test, expect } from '../../fixtures';
 import { gotoOutcomesView } from './comments-tab.helpers';
 import {
+  expectReadOnlyWorkflowEditOutcomeForm,
+  loginAsWorkflowContributor,
+} from './role.helpers';
+import {
   workflowEditOutcomeForm,
   workflowEditOutcomeFormCodeField,
   workflowEditOutcomeFormDeleteButton,
@@ -11,7 +15,12 @@ import {
   workflowOutcomeHeader,
 } from './workflow-outcome.locators';
 
-test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  seedDependencies: ['project.primary', 'actor.commenter', 'actor.viewer'],
+  actorAsset: 'actor.teacher',
+  seedAccess: 'disposable-copy',
+});
 
 /**
  * Edit outcome fields and auto-save — FR-WF-EO-005, FR-WF-EO-006.
@@ -52,12 +61,35 @@ test.describe('Edit outcome — fields and auto-save (FR-WF-EO-005, FR-WF-EO-006
     const uniqueTitle = `E2E Out ${Date.now()}`;
 
     await workflowEditOutcomeFormTitleField(page).fill(uniqueTitle);
-    await page.waitForTimeout(500);
-
-    await expect(workflowOutcomeHeader(page, uniqueTitle)).toBeVisible();
+    await expect(workflowOutcomeHeader(page, uniqueTitle)).toBeVisible({ timeout: 15_000 });
 
     await workflowEditOutcomeFormTitleField(page).fill(E2E_OUTCOME_TITLE);
-    await page.waitForTimeout(500);
-    await expect(workflowOutcomeHeader(page, E2E_OUTCOME_TITLE)).toBeVisible();
+    await expect(workflowOutcomeHeader(page, E2E_OUTCOME_TITLE)).toBeVisible({ timeout: 15_000 });
+  });
+
+  test.describe('Role behavior — read-only fields (FR-WF-EO-005/006)', () => {
+    test.describe('commenter', () => {
+      test.use({ storageState: { cookies: [], origins: [] } });
+
+      test('FR-WF-EO-005/006: commenter cannot edit outcome title field', async ({ page, workflow }) => {
+        await loginAsWorkflowContributor(page, workflow, 'commenter');
+        await gotoOutcomesView(page, workflow.path);
+        await workflowOutcomeHeader(page, E2E_OUTCOME_TITLE).click();
+
+        await expectReadOnlyWorkflowEditOutcomeForm(page);
+      });
+    });
+
+    test.describe('viewer', () => {
+      test.use({ storageState: { cookies: [], origins: [] } });
+
+      test('FR-WF-EO-005/006: viewer cannot edit outcome title field', async ({ page, workflow }) => {
+        await loginAsWorkflowContributor(page, workflow, 'viewer');
+        await gotoOutcomesView(page, workflow.path);
+        await workflowOutcomeHeader(page, E2E_OUTCOME_TITLE).click();
+
+        await expectReadOnlyWorkflowEditOutcomeForm(page);
+      });
+    });
   });
 });

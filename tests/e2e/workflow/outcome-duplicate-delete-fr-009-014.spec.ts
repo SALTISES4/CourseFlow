@@ -3,6 +3,7 @@ import {
   gotoOutcomesView,
   hoverWorkflowOutcomeHeader,
 } from './comments-tab.helpers';
+import { loginAsWorkflowContributor } from './role.helpers';
 import { workflowOutcomeHeaderCount } from './add-tab.helpers';
 import {
   workflowEditOutcomeForm,
@@ -15,17 +16,20 @@ import {
 } from './workflow-outcome.locators';
 import { workflowRightSidebarContentPanel } from '../../shared/locators/workflow';
 
-test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  seedDependencies: ['project.primary', 'actor.commenter', 'actor.viewer'],
+  actorAsset: 'actor.teacher',
+  seedAccess: 'disposable-copy',
+});
 
 /**
  * Outcome duplicate and delete — FR-WF-EO-009 through FR-WF-EO-014.
  * Requirements: workflow_duplicate_outcome_requirements_v1.yaml, workflow_delete_outcome_requirements_v1.yaml
- *
- * Product copy suffix is `(duplicate)`; FR-WF-EO-011 specifies `(copy)`.
  */
 
 const E2E_OUTCOME_TITLE = 'E2E Outcome 1';
-const E2E_OUTCOME_DUPLICATE = `${E2E_OUTCOME_TITLE} (duplicate)`;
+const E2E_OUTCOME_DUPLICATE = `${E2E_OUTCOME_TITLE} (copy)`;
 
 async function createSidebarDuplicate(page: import('@playwright/test').Page): Promise<void> {
   await workflowOutcomeHeader(page, E2E_OUTCOME_TITLE).click();
@@ -55,7 +59,7 @@ test.describe('Outcome — duplicate and delete (FR-WF-EO-009-014)', () => {
     await expect(workflowOutcomeHeader(page, E2E_OUTCOME_DUPLICATE)).toBeVisible();
   });
 
-  test('FR-WF-EO-011: duplicate root title uses product (duplicate) suffix', async ({ page }) => {
+  test('FR-WF-EO-011: duplicate root title appends (copy) suffix', async ({ page }) => {
     await createSidebarDuplicate(page);
     await expect(workflowOutcomeHeader(page, E2E_OUTCOME_DUPLICATE)).toBeVisible();
   });
@@ -98,7 +102,7 @@ test.describe('Outcome — duplicate and delete (FR-WF-EO-009-014)', () => {
   }) => {
     await createSidebarDuplicate(page);
     const duplicatePattern = new RegExp(
-      `${E2E_OUTCOME_TITLE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} \\(duplicate\\)`,
+      `${E2E_OUTCOME_TITLE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} \\(copy\\)`,
     );
     const duplicateHeader = page.getByText(duplicatePattern);
     await expect(duplicateHeader.first()).toBeVisible();
@@ -119,4 +123,35 @@ test.describe('Outcome — duplicate and delete (FR-WF-EO-009-014)', () => {
     await expect(workflowRightSidebarContentPanel(page)).toBeHidden();
   });
 
+  test.describe('Commenter duplicate/delete (FR-WF-EO-009/010/013)', () => {
+    test.use({ storageState: { cookies: [], origins: [] } });
+
+    test('FR-WF-EO-010/013: commenter sees disabled duplicate and delete hover items', async ({
+      page,
+      workflow,
+    }) => {
+      await loginAsWorkflowContributor(page, workflow, 'commenter');
+      await gotoOutcomesView(page, workflow.path);
+
+      await hoverWorkflowOutcomeHeader(page, E2E_OUTCOME_TITLE);
+      await expect(workflowOutcomeHoverDuplicateItem(page, E2E_OUTCOME_TITLE)).toBeDisabled();
+      await expect(workflowOutcomeHoverDeleteItem(page, E2E_OUTCOME_TITLE)).toBeDisabled();
+    });
+  });
+
+  test.describe('Viewer duplicate/delete (FR-WF-EO-009/010/013)', () => {
+    test.use({ storageState: { cookies: [], origins: [] } });
+
+    test('FR-WF-EO-010/013: viewer does not see workflowOutcomeHoverActionsMenu on hover', async ({
+      page,
+      workflow,
+    }) => {
+      await loginAsWorkflowContributor(page, workflow, 'viewer');
+      await gotoOutcomesView(page, workflow.path);
+
+      await hoverWorkflowOutcomeHeader(page, E2E_OUTCOME_TITLE);
+      await expect(workflowOutcomeHoverDuplicateItem(page, E2E_OUTCOME_TITLE)).toHaveCount(0);
+      await expect(workflowOutcomeHoverDeleteItem(page, E2E_OUTCOME_TITLE)).toHaveCount(0);
+    });
+  });
 });

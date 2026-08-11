@@ -38,7 +38,7 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 - `tests/e2e/workflow/workflow-overview-fr-001-007.spec.ts` — FR-WF-OV-001–007 (parent `workflow-overview-fr-001-007`)
 - `tests/e2e/workflow/edit-node-fr-001-007.spec.ts` — FR-WF-EN-001–011 (+ FR-WF-EN-012 description; link dialog, tags catalog, commenter/viewer)
 - `tests/e2e/workflow/edit-channel-fr-001-009.spec.ts` — FR-CHAN-001–007, FR-CHAN-009 (per-test disposable workflow)
-- `tests/e2e/workflow/node-visual-fr-001-005.spec.ts` — FR-WF-NODE-001–005 (001: title/border/meta icons/duration/linked indicator; 003 deferred)
+- `tests/e2e/workflow/node-visual-fr-001-005.spec.ts` — FR-WF-NODE-001–005 (001: title/border/meta icons/duration/linked indicator; 003 via assign-tab highlight)
 - `tests/e2e/workflow/edit-outcome-fr-004.spec.ts` — FR-WF-EO-004
 - `tests/e2e/workflow/add-tab-fr-001-006.spec.ts` — FR-WF-ADD-001–006 (per-test disposable workflow)
 - `tests/e2e/workflow/edit-outcome-fr-005-006.spec.ts` — FR-WF-EO-005/006
@@ -47,9 +47,16 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 - `tests/e2e/workflow/node-hover-fr-002-005.spec.ts` — FR-WF-NODE-005, FR-WF-DUP-002/003 (per-test disposable workflow)
 - `tests/e2e/workflow/outcome-create-empty-fr-001-002.spec.ts` — FR-WF-EO-001/002 (per-test disposable workflow)
 - `tests/e2e/workflow/outcome-insert-ordinal-delete-fr-003-007-008-014.spec.ts` — FR-WF-EO-003/007/008/014 (per-test disposable workflow)
-- `tests/e2e/workflow/outcome-duplicate-delete-fr-009-014.spec.ts` — FR-WF-EO-009–013 (per-test disposable workflow)
+- `tests/e2e/workflow/outcome-duplicate-delete-fr-009-014.spec.ts` — FR-WF-EO-009–013 (per-test disposable workflow; FR-WF-EO-011 `(copy)` suffix)
 - `tests/e2e/workflow/outcome-drag-reorder-fr-015-017.spec.ts` — FR-WF-EO-015–017 (+ EO-007 ordinals; per-test disposable workflow)
+- `tests/e2e/workflow/workflow-edge-fr-001-004.spec.ts` — FR-WF-EDGE-001–004 (per-test disposable workflow; commenter/viewer role blocks)
+- `tests/e2e/workflow/workflow-assign-outcome-fr-001-010.spec.ts` — FR-WF-AO-001–010 (per-test disposable workflow; commenter role blocks)
 - `tests/e2e/workflow/workflow-graph.locators.ts` — workflowNode*, workflowChannel*, edit form headings
+- `tests/e2e/workflow/workflow-edge.locators.ts` — workflowEdge*, workflowEditEdgeForm*, workflowNodeEdgeHandle*
+- `tests/e2e/workflow/workflow-assign-outcome.locators.ts` — workflowOutcomesAssignTab*, workflowNodeLinkedOutcomes*
+- `tests/e2e/workflow/workflow-graph.helpers.ts` — shared graph view API helpers
+- `tests/e2e/workflow/workflow-edge.helpers.ts` — edge drag/click helpers
+- `tests/e2e/workflow/workflow-assign-outcome.helpers.ts` — outcomes tab open, drag assign, highlight helpers
 - `tests/e2e/workflow/workflow.locators.ts` — workflow header/tab shell uiObjects
 
 ## Workflow E2E fixture hygiene

@@ -1,17 +1,27 @@
 import { test, expect } from '../../fixtures';
+import { loginAsTestUser } from '../../helpers/auth';
 import { gotoOutcomesView, hoverWorkflowOutcomeHeader } from './comments-tab.helpers';
+import { loginAsWorkflowContributor } from './role.helpers';
 import {
   workflowEditOutcomeForm,
   workflowOutcomeHeader,
-  workflowOutcomeHeaderOrdinalOnly,
+  workflowOutcomeHeaderTitleText,
   workflowOutcomeHoverDeleteItem,
   workflowOutcomeViewAddOutcomeButton,
   workflowOutcomeViewEmptyStateAlert,
 } from './workflow-outcome.locators';
-import { workflowRightSidebarContentPanel } from '../../shared/locators/workflow';
+import {
+  workflowRightSidebar,
+  workflowRightSidebarContentPanel,
+} from '../../shared/locators/workflow';
 import { workflowOutcomeHeaderCount } from './add-tab.helpers';
 
-test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  seedDependencies: ['project.primary', 'actor.commenter', 'actor.viewer'],
+  actorAsset: 'actor.teacher',
+  seedAccess: 'disposable-copy',
+});
 
 /**
  * Outcome empty state and first create — FR-WF-EO-001, FR-WF-EO-002.
@@ -46,7 +56,7 @@ test.describe('Outcome — empty state and first create (FR-WF-EO-001, FR-WF-EO-
     ).toBeVisible();
     await expect(workflowOutcomeViewAddOutcomeButton(page)).toBeVisible();
     await expect(workflowOutcomeViewAddOutcomeButton(page)).toBeEnabled();
-    await expect(workflowRightSidebarContentPanel(page)).toBeHidden();
+    await expect(workflowRightSidebar(page)).toHaveCount(0);
     expect(await workflowOutcomeHeaderCount(page)).toBe(0);
   });
 
@@ -60,10 +70,41 @@ test.describe('Outcome — empty state and first create (FR-WF-EO-001, FR-WF-EO-
     await workflowOutcomeViewAddOutcomeButton(page).click();
 
     await expect(workflowOutcomeViewEmptyStateAlert(page)).toHaveCount(0);
-    await expect(workflowOutcomeHeaderOrdinalOnly(page, '1')).toBeVisible();
+    await expect(workflowOutcomeHeaderTitleText(page, '1', 'Untitled outcome')).toBeVisible();
     expect(await workflowOutcomeHeaderCount(page)).toBe(1);
     await expect(workflowEditOutcomeForm(page)).toHaveCount(0);
+    await expect(workflowRightSidebar(page)).toBeVisible();
     await expect(workflowRightSidebarContentPanel(page)).toBeHidden();
   });
 
+  test.describe('Role behavior — Add outcome button (FR-WF-EO-001)', () => {
+    test.use({ storageState: { cookies: [], origins: [] } });
+
+    test.beforeEach(async ({ page, workflow }) => {
+      await loginAsTestUser(page);
+      await gotoOutcomesView(page, workflow.path);
+      await removeSeededOutcome(page, workflow.firstOutcome().title);
+      await expect(workflowOutcomeViewAddOutcomeButton(page)).toBeVisible();
+    });
+
+    test('FR-WF-EO-001: commenter sees disabled Add outcome button', async ({ page, workflow }) => {
+      await loginAsWorkflowContributor(page, workflow, 'commenter');
+      await gotoOutcomesView(page, workflow.path);
+
+      await expect(workflowOutcomeViewEmptyStateAlert(page)).toBeVisible();
+      await expect(workflowOutcomeViewAddOutcomeButton(page)).toBeDisabled();
+      await workflowOutcomeViewAddOutcomeButton(page).click({ force: true });
+      expect(await workflowOutcomeHeaderCount(page)).toBe(0);
+    });
+
+    test('FR-WF-EO-001: viewer sees disabled Add outcome button', async ({ page, workflow }) => {
+      await loginAsWorkflowContributor(page, workflow, 'viewer');
+      await gotoOutcomesView(page, workflow.path);
+
+      await expect(workflowOutcomeViewEmptyStateAlert(page)).toBeVisible();
+      await expect(workflowOutcomeViewAddOutcomeButton(page)).toBeDisabled();
+      await workflowOutcomeViewAddOutcomeButton(page).click({ force: true });
+      expect(await workflowOutcomeHeaderCount(page)).toBe(0);
+    });
+  });
 });

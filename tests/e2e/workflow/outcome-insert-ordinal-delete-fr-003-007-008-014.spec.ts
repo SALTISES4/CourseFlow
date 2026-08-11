@@ -4,6 +4,7 @@ import {
   hoverWorkflowOutcomeHeader,
   hoverWorkflowOutcomeHeaderLocator,
 } from './comments-tab.helpers';
+import { loginAsWorkflowContributor } from './role.helpers';
 import { workflowOutcomeHeaderCount } from './add-tab.helpers';
 import {
   ensureOutcomeTitleByOrdinalPrefix,
@@ -13,17 +14,23 @@ import {
   workflowEditOutcomeFormDeleteButton,
   workflowEditOutcomeFormTitleField,
   workflowOutcomeHeader,
-  workflowOutcomeHeaderOrdinalOnly,
+  workflowOutcomeHeaderTitleText,
   workflowOutcomeHeaderWithOrdinalPrefix,
   workflowOutcomeHeadersAtFrDepth,
   workflowOutcomeExpandToggle,
   workflowOutcomeHoverDeleteItem,
   workflowOutcomeHoverInsertChildForHeader,
   workflowOutcomeHoverInsertSiblingForHeader,
+  workflowOutcomeHoverInsertSiblingItem,
   waitForOutcomeCreateResponse,
 } from './workflow-outcome.locators';
 
-test.use({ seedAsset: 'workflow.standard_activity', actorAsset: 'actor.teacher', seedAccess: 'disposable-copy' });
+test.use({
+  seedAsset: 'workflow.standard_activity',
+  seedDependencies: ['project.primary', 'actor.commenter', 'actor.viewer'],
+  actorAsset: 'actor.teacher',
+  seedAccess: 'disposable-copy',
+});
 
 /**
  * Outcome insert, ordinals, depth cap, and subtree delete — FR-WF-EO-003, EO-007, EO-008, EO-014.
@@ -60,7 +67,7 @@ test.describe('Outcome — insert, ordinals, depth, subtree delete (FR-WF-EO-003
     page,
   }) => {
     const beforeCount = await workflowOutcomeHeaderCount(page);
-    const siblingHeader = workflowOutcomeHeaderOrdinalOnly(page, '2');
+    const siblingHeader = workflowOutcomeHeaderTitleText(page, '2', 'Untitled outcome');
 
     await hoverWorkflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE);
     await workflowOutcomeHoverInsertSiblingForHeader(
@@ -130,12 +137,12 @@ test.describe('Outcome — insert, ordinals, depth, subtree delete (FR-WF-EO-003
     await expect(workflowEditOutcomeForm(page)).toBeVisible();
 
     await workflowEditOutcomeFormCodeField(page).fill('E2ETST');
-    await page.waitForTimeout(500);
-    await expect(page.getByText(/1 - E2ETST - E2E Outcome 1/)).toBeVisible();
+    await expect(page.getByText(/1 - E2ETST - E2E Outcome 1/)).toBeVisible({ timeout: 15_000 });
 
     await workflowEditOutcomeFormCodeField(page).fill('');
-    await page.waitForTimeout(500);
-    await expect(workflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE)).toBeVisible();
+    await expect(workflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE)).toBeVisible({
+      timeout: 15_000,
+    });
   });
 
   test('FR-WF-EO-007: level-2 header uses dotted ordinal prefix', async ({ page }) => {
@@ -196,5 +203,41 @@ test.describe('Outcome — insert, ordinals, depth, subtree delete (FR-WF-EO-003
     await expect(workflowOutcomeHeaderWithOrdinalPrefix(page, '1.1')).toHaveCount(0);
     await expect(workflowOutcomeHeaderWithOrdinalPrefix(page, '1.1.1')).toHaveCount(0);
     await expect(workflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE)).toBeVisible();
+  });
+});
+
+test.describe('Outcome insert — role behavior (FR-WF-EO-003)', () => {
+  test.describe('commenter', () => {
+    test.use({ storageState: { cookies: [], origins: [] } });
+
+    test('FR-WF-EO-003: commenter sees disabled insert sibling hover item', async ({
+      page,
+      workflow,
+    }) => {
+      await loginAsWorkflowContributor(page, workflow, 'commenter');
+      await gotoOutcomesView(page, workflow.path);
+      const beforeCount = await workflowOutcomeHeaderCount(page);
+
+      await hoverWorkflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE);
+      await expect(workflowOutcomeHoverInsertSiblingItem(page, E2E_SEED_OUTCOME_TITLE)).toBeDisabled();
+      await workflowOutcomeHoverInsertSiblingItem(page, E2E_SEED_OUTCOME_TITLE).click({ force: true });
+
+      expect(await workflowOutcomeHeaderCount(page)).toBe(beforeCount);
+    });
+  });
+
+  test.describe('viewer', () => {
+    test.use({ storageState: { cookies: [], origins: [] } });
+
+    test('FR-WF-EO-003: viewer does not see workflowOutcomeHoverActionsMenu on hover', async ({
+      page,
+      workflow,
+    }) => {
+      await loginAsWorkflowContributor(page, workflow, 'viewer');
+      await gotoOutcomesView(page, workflow.path);
+
+      await hoverWorkflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE);
+      await expect(workflowOutcomeHoverInsertSiblingItem(page, E2E_SEED_OUTCOME_TITLE)).toHaveCount(0);
+    });
   });
 });

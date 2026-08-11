@@ -3,6 +3,10 @@ import { loginAs } from '../../helpers/auth';
 import { authenticatedApiRequest } from '../../helpers/api';
 import { openFirstNodeEditForm } from './edit-node.helpers';
 import {
+  expectReadOnlyWorkflowEditSectionForm,
+  loginAsWorkflowContributor,
+} from './role.helpers';
+import {
   beginSectionDragToward,
   dragSectionBelow,
   endSectionDrag,
@@ -279,23 +283,31 @@ test.describe('edit-section-fr-001-012', () => {
     });
   });
 
-  test.describe('Viewer read-only title (FR-SEC-003)', () => {
+  test.describe('commenter and viewer permissions (FR-SEC-001, FR-SEC-003)', () => {
     test.use({ storageState: { cookies: [], origins: [] } });
 
-    test('FR-SEC-003: viewer cannot edit workflowEditSectionFormTitleField', async ({
+    test('FR-SEC-001/003: commenter opens read-only workflowEditSectionForm from section header', async ({
       page,
       workflow,
     }) => {
-      const viewer = workflow.contributorByRole('viewer');
-      await loginAs(page, { email: viewer.email, password: viewer.password });
+      await loginAsWorkflowContributor(page, workflow, 'commenter');
       await page.goto(workflow.path);
+      await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
 
-      const sectionUuid = workflow.firstSection().uuid;
-      await sectionHeader(page, sectionUuid).click();
-      await expect(editSectionForm(page)).toBeVisible();
-      await expect(titleFieldInEditSectionForm(page)).toHaveAttribute('readonly', '');
-      await expect(duplicateButtonInSidebar(page)).toBeDisabled();
-      await expect(deleteButtonInSidebar(page)).toBeDisabled();
+      await sectionHeader(page, workflow.firstSection().uuid).click();
+      await expectReadOnlyWorkflowEditSectionForm(page);
+    });
+
+    test('FR-SEC-001/003: viewer opens read-only workflowEditSectionForm from section header', async ({
+      page,
+      workflow,
+    }) => {
+      await loginAsWorkflowContributor(page, workflow, 'viewer');
+      await page.goto(workflow.path);
+      await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
+
+      await sectionHeader(page, workflow.firstSection().uuid).click();
+      await expectReadOnlyWorkflowEditSectionForm(page);
     });
   });
 
