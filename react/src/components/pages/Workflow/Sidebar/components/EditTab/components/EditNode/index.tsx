@@ -41,6 +41,7 @@ import {
 } from './linkedWorkflowUi'
 import optionsData from './optionsData'
 import { NodeForm } from './types'
+import Wysiwyg from './Wysiwyg'
 
 const EditNode = ({ nodeId }: { nodeId: string }) => {
   const dispatch = useDispatch()
@@ -294,13 +295,12 @@ const EditNodeForm = ({
                 error={!!errors.title}
                 helperText={errors.title?.message}
               />
-              <TextField
-                label={_t('Description')}
-                variant="outlined"
-                size="small"
-                multiline
-                maxRows={5}
-                {...register('description')}
+              <Controller
+                name="description"
+                control={control}
+                render={({ field }) => (
+                  <Wysiwyg placeholder={_t('Description')} field={field} />
+                )}
               />
             </>
           )}
