@@ -121,9 +121,8 @@ const EditNodeForm = ({
     control,
     register,
     handleSubmit,
-    watch,
-    reset,
-    formState: { errors, isDirty }
+    subscribe,
+    formState: { errors }
   } = useForm<NodeForm>({
     defaultValues: {
       title: node.title,
@@ -131,7 +130,9 @@ const EditNodeForm = ({
       ponderation: {
         theory: '0',
         practice: '0',
-        individual: '0'
+        individual: '0',
+        generalEdu: '0',
+        specificEdu: '0'
       },
       contextType: node.contextClassification ?? '',
       taskType: node.taskClassification ?? '',
@@ -141,28 +142,6 @@ const EditNodeForm = ({
       specificEducation: false
     }
   })
-
-  const watchedFields = watch()
-
-  useEffect(() => {
-    if (!isDirty) {
-      reset({
-        title: node.title,
-        description: node.description,
-        ponderation: {
-          theory: '0',
-          practice: '0',
-          individual: '0'
-        },
-        contextType: node.contextClassification ?? '',
-        taskType: node.taskClassification ?? '',
-        timeRequired: node.timeRequired ?? undefined,
-        timeUnits: node.timeUnits ?? undefined,
-        tags: node.tagIds ?? [],
-        specificEducation: false
-      })
-    }
-  }, [reset, isDirty, node])
 
   const debouncedDispatch = useMemo(
     () =>
@@ -212,8 +191,6 @@ const EditNodeForm = ({
             meta
           })
         )
-
-        reset({}, { keepValues: true })
       }, 300),
     [
       dispatch,
@@ -222,16 +199,25 @@ const EditNodeForm = ({
       isCourseParent,
       isLinked,
       isProgramParent,
-      node.uuid,
-      reset
+      node.uuid
     ]
   )
 
   useEffect(() => {
-    if (isDirty) {
-      debouncedDispatch(watchedFields)
+    const subscription = subscribe({
+      formState: {
+        values: true
+      },
+      callback: ({ values }) => {
+        debouncedDispatch(values as NodeForm)
+      }
+    })
+
+    return () => {
+      subscription()
+      debouncedDispatch.clear()
     }
-  }, [watchedFields, isDirty, debouncedDispatch])
+  }, [subscribe, debouncedDispatch])
 
   const onSubmit = (data: NodeForm) => {
     Utility.logger('Form submitted with data:', data)
