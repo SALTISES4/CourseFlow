@@ -287,7 +287,7 @@ export function workflowRichTextDescriptionEditorLinkButton(page: Page): Locator
 
 /** canonical: workflowEditNodeFormTaskTypeSelect */
 export function workflowEditNodeFormTaskTypeField(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByLabel(/^Type of task$/i);
+  return workflowRightSidebarContentPanel(page).getByLabel(/^Type$/i);
 }
 
 /** Non-FR split controls (legacy product); assert absent for FR-WF-EN-002 Time field. */
