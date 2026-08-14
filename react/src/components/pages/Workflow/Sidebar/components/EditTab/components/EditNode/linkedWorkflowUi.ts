@@ -18,22 +18,14 @@ export function linkWorkflowActionLabel(
   parentWorkflowType: string | null | undefined,
   hasLinkedWorkflow: boolean
 ): string {
-  if (hasLinkedWorkflow) {
-    if (parentWorkflowType === 'program') {
-      return _t('Remove linked course')
-    }
-    if (parentWorkflowType === 'course') {
-      return _t('Remove linked activity')
-    }
-    return _t('Remove linked workflow')
+  const action = _t(hasLinkedWorkflow ? 'Remove linked' : 'Link')
+  const linkTargets = {
+    program: _t(hasLinkedWorkflow ? 'course' : 'a course'),
+    course: _t(hasLinkedWorkflow ? 'activity' : 'an activity'),
+    workflow: _t('workflow')
   }
-  if (parentWorkflowType === 'program') {
-    return _t('Link a course')
-  }
-  if (parentWorkflowType === 'course') {
-    return _t('Link an activity')
-  }
-  return _t('Link workflow')
+
+  return `${action} ${linkTargets[parentWorkflowType ?? 'workflow']}`
 }
 
 export function canLinkWorkflow(
