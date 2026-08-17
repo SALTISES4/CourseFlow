@@ -104,6 +104,7 @@ export const SidebarTitle = styled(Typography)(({ theme }) => ({
 
 export const SidebarInnerWrap = styled(Stack)(({ theme }) => ({
   gap: theme.spacing(1),
+  display: 'flex',
   flexDirection: 'column',
   overflow: 'auto',
   flexGrow: 1

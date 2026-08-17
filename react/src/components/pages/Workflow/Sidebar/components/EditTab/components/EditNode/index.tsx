@@ -1,9 +1,4 @@
-import {
-  getWorkflowOptions,
-  listProjectTagsOptions
-} from '@cf/api/gen/@tanstack/react-query.gen'
-import { WorkflowPermission } from '@cf/api/gen/types.gen'
-import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
+import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import type { NodeEntity } from '@cf/features/graph/state/model/types'
 import {
   selectGraphByUuid,
@@ -18,16 +13,14 @@ import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import type { AppDispatch } from '@cf/redux/store'
 import Utility, { _t } from '@cf/utility/Utility.class'
-import RichTextDescription from '@cfComponents/dialog/Workflow/components/RichTextDescription'
-import DurationTextField from '@cfComponents/DurationTextField'
 import * as SC from '@cfSidebar/styles'
 import { debounce } from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete'
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import Grid from '@mui/material/Grid'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
@@ -48,6 +41,7 @@ import {
 } from './linkedWorkflowUi'
 import optionsData from './optionsData'
 import { NodeForm } from './types'
+import Wysiwyg from './Wysiwyg'
 
 const EditNode = ({ nodeId }: { nodeId: string }) => {
   const dispatch = useDispatch()
@@ -85,7 +79,6 @@ const EditNode = ({ nodeId }: { nodeId: string }) => {
     <EditNodeForm
       node={node}
       graphUuid={node.graphUuid}
-      rootWorkflowUuid={graph?.workflowUuid ?? null}
       parentWorkflowType={parentWorkflowType}
       linkedWorkflowTitle={linkedWorkflowCache?.title}
     />
@@ -95,22 +88,16 @@ const EditNode = ({ nodeId }: { nodeId: string }) => {
 const EditNodeForm = ({
   node,
   graphUuid,
-  rootWorkflowUuid,
   parentWorkflowType,
   linkedWorkflowTitle
 }: {
   node: NodeEntity
   graphUuid: string
-  rootWorkflowUuid: string | null
   parentWorkflowType: string | null
   linkedWorkflowTitle?: string
 }) => {
   const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
-  const canEdit = useResourcePermission(WorkflowPermission.NODE_MANAGEMENT)
-  const canManageLinks = useResourcePermission(
-    WorkflowPermission.NODE_LINK_MANAGEMENT
-  )
 
   const isLinked = Boolean(node.linkedWorkflowUuid)
   const isCourseParent = parentWorkflowType === 'course'
@@ -125,15 +112,6 @@ const EditNodeForm = ({
     enabled: isLinked && Boolean(node.linkedWorkflowUuid)
   })
   const linkedWorkflowDetail = linkedWorkflowResp?.item
-  const { data: rootWorkflowResp } = useQuery({
-    ...getWorkflowOptions({ path: { uuid: rootWorkflowUuid ?? '' } }),
-    enabled: Boolean(rootWorkflowUuid)
-  })
-  const projectUuid = rootWorkflowResp?.item.projectUuid
-  const { data: projectTags = [] } = useQuery({
-    ...listProjectTagsOptions({ path: { uuid: projectUuid ?? '' } }),
-    enabled: Boolean(projectUuid)
-  })
 
   const mirroredTitle =
     linkedWorkflowDetail?.title ?? linkedWorkflowTitle ?? nodeTitleFallback()
@@ -143,57 +121,31 @@ const EditNodeForm = ({
     control,
     register,
     handleSubmit,
-    watch,
-    reset,
-    formState: { errors, isDirty }
+    subscribe,
+    formState: { errors }
   } = useForm<NodeForm>({
     defaultValues: {
       title: node.title,
       description: node.description,
       ponderation: {
-        theory: String(node.ponderationTheory ?? ''),
-        practice: String(node.ponderationPractice ?? ''),
-        individual: String(node.ponderationIndividual ?? '')
+        theory: '0',
+        practice: '0',
+        individual: '0',
+        generalEdu: '0',
+        specificEdu: '0'
       },
       contextType: node.contextClassification ?? '',
       taskType: node.taskClassification ?? '',
       timeRequired: node.timeRequired ?? undefined,
       timeUnits: node.timeUnits ?? undefined,
-      credits: node.credits ?? undefined,
       tags: node.tagIds ?? [],
-      specificEducation: node.specificEducation
+      specificEducation: false
     }
   })
-
-  const watchedFields = watch()
-
-  useEffect(() => {
-    if (!isDirty) {
-      reset({
-        title: node.title,
-        description: node.description,
-        ponderation: {
-          theory: String(node.ponderationTheory ?? ''),
-          practice: String(node.ponderationPractice ?? ''),
-          individual: String(node.ponderationIndividual ?? '')
-        },
-        contextType: node.contextClassification ?? '',
-        taskType: node.taskClassification ?? '',
-        timeRequired: node.timeRequired ?? undefined,
-        timeUnits: node.timeUnits ?? undefined,
-        credits: node.credits ?? undefined,
-        tags: node.tagIds ?? [],
-        specificEducation: node.specificEducation
-      })
-    }
-  }, [reset, isDirty, node])
 
   const debouncedDispatch = useMemo(
     () =>
       debounce((data: NodeForm) => {
-        if (!canEdit) {
-          return
-        }
         const contextClassification =
           data.contextType === '' || data.contextType === null
             ? null
@@ -217,31 +169,14 @@ const EditNodeForm = ({
           meta.contextClassification = contextClassification
           meta.taskClassification = taskClassification
           meta.timeRequired = Number.isNaN(timeRequired) ? null : timeRequired
-          if (isProgramParent) {
-            const optionalNumber = (value: string | number | undefined) => {
-              if (value === '' || value === undefined) {
-                return null
-              }
-              const parsed = Number(value)
-              return Number.isNaN(parsed) ? null : parsed
-            }
-            meta.credits = optionalNumber(data.credits)
-            meta.ponderationTheory = optionalNumber(data.ponderation?.theory)
-            meta.ponderationPractice = optionalNumber(
-              data.ponderation?.practice
-            )
-            meta.ponderationIndividual = optionalNumber(
-              data.ponderation?.individual
-            )
-            meta.specificEducation = Boolean(data.specificEducation)
-          }
+          meta.timeUnits = Number.isNaN(timeUnits) ? null : timeUnits
         } else if (isCourseParent || isActivityParent) {
           meta.contextClassification = contextClassification
           if (isActivityParent) {
             meta.taskClassification = taskClassification
           }
         } else if (isProgramParent) {
-          meta.specificEducation = Boolean(data.specificEducation)
+          // Node-local only when linked on program graph (tags; specific education TBD on API).
         } else {
           meta.contextClassification = contextClassification
           meta.taskClassification = taskClassification
@@ -256,29 +191,33 @@ const EditNodeForm = ({
             meta
           })
         )
-
-        reset({}, { keepValues: true })
       }, 300),
     [
       dispatch,
-      canEdit,
       graphUuid,
       isActivityParent,
       isCourseParent,
       isLinked,
       isProgramParent,
-      node.uuid,
-      reset
+      node.uuid
     ]
   )
 
   useEffect(() => {
-    if (isDirty && canEdit) {
-      debouncedDispatch(watchedFields)
-    }
-  }, [watchedFields, isDirty, canEdit, debouncedDispatch])
+    const subscription = subscribe({
+      formState: {
+        values: true
+      },
+      callback: ({ values }) => {
+        debouncedDispatch(values as NodeForm)
+      }
+    })
 
-  useEffect(() => () => debouncedDispatch.clear(), [debouncedDispatch])
+    return () => {
+      subscription()
+      debouncedDispatch.clear()
+    }
+  }, [subscribe, debouncedDispatch])
 
   const onSubmit = (data: NodeForm) => {
     Utility.logger('Form submitted with data:', data)
@@ -307,156 +246,192 @@ const EditNodeForm = ({
   const showContextField = isCourseParent || isActivityParent
   const showTaskTypeField = isActivityParent && !isLinked
   const showEditableTimeFields =
-    (isCourseParent || isActivityParent || isProgramParent) && !isLinked
+    (isCourseParent || isActivityParent) && !isLinked
   const showTagsField = isCourseParent || isActivityParent || isProgramParent
   const showProgramPonderation = isProgramParent && !isLinked
   const showSpecificEducationSwitch = isProgramParent
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <SC.SidebarInnerWrap>
-        <SC.SidebarContent>
-          <SC.SidebarTitle as="h3" variant="h6">
-            {_t('Edit node')}
-          </SC.SidebarTitle>
+    <SC.SidebarInnerWrap as="form" onSubmit={handleSubmit(onSubmit)}>
+      <SC.SidebarContent>
+        <SC.SidebarTitle as="h3" variant="h6">
+          {_t('Edit node')}
+        </SC.SidebarTitle>
 
-          {isLinked && (
-            <LinkedWorkflowMirrorFields
-              title={mirroredTitle}
-              description={mirroredDescription}
-              parentWorkflowType={parentWorkflowType ?? 'course'}
-              showTime={isCourseParent || isProgramParent}
-              showProgramFields={isProgramParent}
-              time={linkedWorkflowDetail?.overviewMetadata.time}
-              credits={linkedWorkflowDetail?.overviewMetadata.credits}
-              ponderationTheory={
-                linkedWorkflowDetail?.overviewMetadata.theoryTime
-              }
-              ponderationPractice={
-                linkedWorkflowDetail?.overviewMetadata.practicalTime
-              }
-              ponderationIndividual={
-                linkedWorkflowDetail?.overviewMetadata.individualTime
-              }
-            />
-          )}
+        {isLinked && (
+          <LinkedWorkflowMirrorFields
+            title={mirroredTitle}
+            description={mirroredDescription}
+            parentWorkflowType={parentWorkflowType ?? 'course'}
+            showTime={isCourseParent}
+            showProgramFields={isProgramParent}
+          />
+        )}
 
-          <Stack direction="column" spacing={3} sx={{ mt: isLinked ? 3 : 0 }}>
-            {showEditableTitleFields && (
-              <>
-                <TextField
-                  label={_t('Title')}
-                  variant="outlined"
-                  size="small"
-                  {...register('title', {
-                    required: _t('Title is required')
-                  })}
-                  error={!!errors.title}
-                  helperText={errors.title?.message}
-                  InputProps={{ readOnly: !canEdit }}
-                />
-                <Controller
-                  name="description"
-                  control={control}
-                  render={({ field }) => (
-                    <RichTextDescription
-                      value={field.value ?? ''}
-                      onChange={field.onChange}
-                      readOnly={!canEdit}
-                    />
-                  )}
-                />
-              </>
-            )}
-
-            {showContextField && (
-              <FormControl fullWidth size="small">
-                <InputLabel id="context-type-select-label">
-                  {_t('Context')}
-                </InputLabel>
-                <Controller
-                  name="contextType"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      label={_t('Context')}
-                      labelId="context-type-select-label"
-                      disabled={!canEdit}
-                    >
-                      {(isCourseParent
-                        ? optionsData.courseContexts
-                        : optionsData.activityContexts
-                      ).map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  )}
-                />
-              </FormControl>
-            )}
-
-            {showTaskTypeField && (
-              <FormControl fullWidth size="small">
-                <InputLabel id="task-type-select-label">
-                  {_t('Type of task')}
-                </InputLabel>
-                <Controller
-                  name="taskType"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      label={_t('Type of task')}
-                      labelId="task-type-select-label"
-                      disabled={!canEdit}
-                    >
-                      {optionsData.taskTypes.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  )}
-                />
-              </FormControl>
-            )}
-
-            {showEditableTimeFields && (
-              <Controller
-                name="timeRequired"
-                control={control}
-                render={({ field }) => (
-                  <DurationTextField
-                    label={_t('Time')}
-                    value={field.value}
-                    readOnly={!canEdit}
-                    onValueChange={field.onChange}
-                  />
-                )}
-              />
-            )}
-
-            {showProgramPonderation && (
+        <Stack direction="column" spacing={3} sx={{ mt: isLinked ? 3 : 0 }}>
+          {showEditableTitleFields && (
+            <>
               <TextField
-                label={_t('Credits')}
+                label={_t('Title')}
                 variant="outlined"
                 size="small"
-                type="number"
-                {...register('credits')}
-                InputProps={{ readOnly: !canEdit }}
+                {...register('title', {
+                  required: _t('Title is required')
+                })}
+                error={!!errors.title}
+                helperText={errors.title?.message}
               />
-            )}
+              <Controller
+                name="description"
+                control={control}
+                render={({ field }) => (
+                  <Wysiwyg placeholder={_t('Description')} field={field} />
+                )}
+              />
+            </>
+          )}
 
-            {showTagsField && (
-              <Box
-                role="group"
-                aria-label={_t('Tags')}
-                aria-disabled={!canEdit}
-                data-test-id="workflow-edit-node-tags"
-              >
+          {showContextField && (
+            <FormControl fullWidth size="small">
+              <InputLabel id="context-type-select-label">
+                {_t('Context')}
+              </InputLabel>
+              <Controller
+                name="contextType"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    label={_t('Context')}
+                    labelId="context-type-select-label"
+                  >
+                    {optionsData.contexts.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+            </FormControl>
+          )}
+
+          {showTaskTypeField && (
+            <FormControl fullWidth size="small">
+              <InputLabel id="task-type-select-label">{_t('Task')}</InputLabel>
+              <Controller
+                name="taskType"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    label={_t('Task')}
+                    labelId="task-type-select-label"
+                  >
+                    {optionsData.taskTypes.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+            </FormControl>
+          )}
+
+          {showEditableTimeFields && (
+            <Stack direction="row" gap={2}>
+              <TextField
+                label={_t('Amount')}
+                variant="outlined"
+                size="small"
+                {...register('timeRequired')}
+                sx={{ flexBasis: '35%' }}
+              />
+              <FormControl sx={{ flexGrow: 1 }} size="small">
+                <InputLabel id="unit-type-select-label">
+                  {_t('Unit type')}
+                </InputLabel>
+                <Controller
+                  name="timeUnits"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      label={_t('Unit type')}
+                      labelId="unit-type-select-label"
+                    >
+                      {optionsData.timeUnits.map((unit, idx) => (
+                        <MenuItem key={idx} value={idx + 1}>
+                          {unit}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+              </FormControl>
+            </Stack>
+          )}
+        </Stack>
+
+        {showProgramPonderation && (
+          <>
+            <Divider sx={{ mt: 3 }} />
+            <Typography
+              component="h6"
+              variant="body2"
+              sx={{ mt: 1, mb: 3, fontWeight: 600 }}
+            >
+              {_t('Ponderation')}
+            </Typography>
+            <Grid container rowSpacing={2} columnSpacing={1} sx={{ mb: 3 }}>
+              <Grid item xs={6}>
+                <TextField
+                  label={_t('Hrs. theory')}
+                  variant="outlined"
+                  size="small"
+                  {...register('ponderation.theory')}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label={_t('Hrs. practice')}
+                  variant="outlined"
+                  size="small"
+                  {...register('ponderation.practice')}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label={_t('Hrs. individual')}
+                  variant="outlined"
+                  size="small"
+                  {...register('ponderation.individual')}
+                />
+              </Grid>
+            </Grid>
+
+            <Stack direction="column" gap={3}>
+              {showSpecificEducationSwitch && (
+                <FormControlLabel
+                  label={_t('Specific education')}
+                  control={
+                    <Controller
+                      name="specificEducation"
+                      control={control}
+                      render={({ field }) => (
+                        <Switch
+                          checked={Boolean(field.value)}
+                          onChange={field.onChange}
+                          size="small"
+                        />
+                      )}
+                    />
+                  }
+                />
+              )}
+
+              {showTagsField && (
                 <Controller
                   name="tags"
                   control={control}
@@ -464,20 +439,19 @@ const EditNodeForm = ({
                     <Autocomplete
                       multiple
                       size="small"
-                      options={projectTags}
+                      options={optionsData.tags}
                       getOptionLabel={(tag) => tag.label}
-                      value={projectTags.filter(
-                        (tag) => field.value?.includes(tag.id) ?? false
+                      value={optionsData.tags.filter(
+                        (tag) => field.value?.includes(tag.uuid) ?? false
                       )}
                       onChange={(_, selectedOptions) =>
                         field.onChange(
-                          selectedOptions.map((option) => option.id)
+                          selectedOptions.map((option) => option.uuid)
                         )
                       }
                       isOptionEqualToValue={(option, value) =>
-                        option.id === value.id
+                        option.uuid === value.uuid
                       }
-                      disabled={!canEdit}
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -488,88 +462,29 @@ const EditNodeForm = ({
                     />
                   )}
                 />
-              </Box>
-            )}
-
-            {showSpecificEducationSwitch && (
-              <FormControlLabel
-                label={_t('Specific education')}
-                control={
-                  <Controller
-                    name="specificEducation"
-                    control={control}
-                    render={({ field }) => (
-                      <Switch
-                        checked={Boolean(field.value)}
-                        onChange={field.onChange}
-                        size="small"
-                        disabled={!canEdit}
-                      />
-                    )}
-                  />
-                }
-              />
-            )}
-          </Stack>
-
-          {showProgramPonderation && (
-            <>
-              <Divider sx={{ mt: 3 }} />
-              <Typography
-                component="h6"
-                variant="body2"
-                sx={{ mt: 1, mb: 3, fontWeight: 600 }}
-              >
-                {_t('Ponderation')}
-              </Typography>
-              <Stack direction="row" gap={2} sx={{ mb: 2 }}>
-                <TextField
-                  label={_t('Hrs. theory')}
-                  variant="outlined"
-                  size="small"
-                  {...register('ponderation.theory')}
-                  InputProps={{ readOnly: !canEdit }}
-                />
-                <TextField
-                  label={_t('Hrs. practice')}
-                  variant="outlined"
-                  size="small"
-                  {...register('ponderation.practice')}
-                  InputProps={{ readOnly: !canEdit }}
-                />
-              </Stack>
-              <TextField
-                label={_t('Hrs. individual')}
-                variant="outlined"
-                size="small"
-                {...register('ponderation.individual')}
-                InputProps={{ readOnly: !canEdit }}
-              />
-            </>
-          )}
-        </SC.SidebarContent>
-        <SC.SidebarActions>
-          {showLinkButton && (
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={
-                isLinked ? removeLinkedWorkflow : toggleLinkWorkflowDialog
-              }
-              disabled={!canManageLinks}
-            >
-              {linkActionLabel}
-            </Button>
-          )}
-          <Button variant="contained" color="secondary" disabled={!canEdit}>
-            {_t('Duplicate')}
+              )}
+            </Stack>
+          </>
+        )}
+      </SC.SidebarContent>
+      <SC.SidebarActions>
+        {showLinkButton && (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={isLinked ? removeLinkedWorkflow : toggleLinkWorkflowDialog}
+          >
+            {linkActionLabel}
           </Button>
-          <Button variant="contained" color="secondary" disabled={!canEdit}>
-            {_t('Delete')}
-          </Button>
-        </SC.SidebarActions>
-      </SC.SidebarInnerWrap>
-    </form>
+        )}
+        <Button variant="contained" color="secondary">
+          {_t('Duplicate')}
+        </Button>
+        <Button variant="contained" color="secondary">
+          {_t('Delete')}
+        </Button>
+      </SC.SidebarActions>
+    </SC.SidebarInnerWrap>
   )
 }
 
