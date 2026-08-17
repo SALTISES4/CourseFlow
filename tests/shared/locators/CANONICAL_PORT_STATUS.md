@@ -30,7 +30,7 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 
 - `tests/e2e/workflow/edit-section-fr-001-012.spec.ts` — FR-SEC-001–012 (parent `edit-section-fr-001-012`)
 - `tests/e2e/workflow/delete-section-fr-006.spec.ts` — FR-SEC-006 hover path
-- `tests/e2e/workflow/duplicate-section-fr-005.spec.ts` — FR-SEC-005 hover path
+- `tests/e2e/workflow/duplicate-section-fr-005.spec.ts` — FR-SEC-005 hover/sidebar/content fidelity; course and program linked-node duplicate
 - `tests/e2e/workflow/workflow-header-fr-001-002.spec.ts` — FR-WF-HEADER-001/002
 - `tests/e2e/workflow/comments-tab/` — FR-WF-COMMENTS-001–008 (`comments-tab-*.spec.ts`, `comments-presence-fr-008.spec.ts`; helpers remain `comments-tab.helpers.ts`)
 - `tests/e2e/workflow/right-sidebar-fr-001-004.spec.ts` — FR-WF-RS-001–004 (partial)
@@ -38,15 +38,12 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 - `tests/e2e/workflow/workflow-overview-fr-001-007.spec.ts` — FR-WF-OV-001–007 (parent `workflow-overview-fr-001-007`)
 - `tests/e2e/workflow/edit-node-fr-001-007.spec.ts` — FR-WF-EN-001–011 (+ FR-WF-EN-012 description; link dialog, tags catalog, commenter/viewer)
 - `tests/e2e/workflow/edit-channel-fr-001-009.spec.ts` — FR-CHAN-001–007, FR-CHAN-009 (per-test disposable workflow)
-- `tests/e2e/workflow/node-visual-fr-001-005.spec.ts` — FR-WF-NODE-001–005 (001: title/border/meta icons/duration/linked indicator; 003 via assign-tab highlight)
-- `tests/e2e/workflow/edit-outcome-fr-004.spec.ts` — FR-WF-EO-004
+- `tests/e2e/workflow/node-visual-fr-001-005.spec.ts` — FR-WF-NODE-001–005, FR-WF-DUP-002/003 (001: title/border/meta icons/duration/linked indicator; 003 via assign-tab highlight; hover insert/duplicate)
+- `tests/e2e/workflow/edit-outcome-fr-001-006.spec.ts` — FR-WF-EO-001–006 (empty state, create, open form, fields/auto-save, commenter/viewer read-only)
 - `tests/e2e/workflow/add-tab-fr-001-006.spec.ts` — FR-WF-ADD-001–006 (per-test disposable workflow)
-- `tests/e2e/workflow/edit-outcome-fr-005-006.spec.ts` — FR-WF-EO-005/006
 - `tests/e2e/workflow/delete-node-fr-001.spec.ts` — FR-WF-DEL-001 (per-test disposable workflow)
 - `tests/e2e/workflow/duplicate-node-fr-001.spec.ts` — FR-WF-DUP-001 (per-test disposable workflow)
-- `tests/e2e/workflow/node-hover-fr-002-005.spec.ts` — FR-WF-NODE-005, FR-WF-DUP-002/003 (per-test disposable workflow)
-- `tests/e2e/workflow/outcome-create-empty-fr-001-002.spec.ts` — FR-WF-EO-001/002 (per-test disposable workflow)
-- `tests/e2e/workflow/outcome-insert-ordinal-delete-fr-003-007-008-014.spec.ts` — FR-WF-EO-003/007/008/014 (per-test disposable workflow)
+- `tests/e2e/workflow/outcome-insert-ordinals-depth-fr-003-007-008-014.spec.ts` — FR-WF-EO-003/007/008/014 insert, ordinals, depth cap, subtree delete (per-test disposable workflow)
 - `tests/e2e/workflow/outcome-duplicate-delete-fr-009-014.spec.ts` — FR-WF-EO-009–013 (per-test disposable workflow; FR-WF-EO-011 `(copy)` suffix)
 - `tests/e2e/workflow/outcome-drag-reorder-fr-015-017.spec.ts` — FR-WF-EO-015–017 (+ EO-007 ordinals; per-test disposable workflow)
 - `tests/e2e/workflow/workflow-edge-fr-001-004.spec.ts` — FR-WF-EDGE-001–004 (per-test disposable workflow; commenter/viewer role blocks)
@@ -56,7 +53,7 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 - `tests/e2e/workflow/workflow-assign-outcome.locators.ts` — workflowOutcomesAssignTab*, workflowNodeLinkedOutcomes*
 - `tests/e2e/workflow/workflow-graph.helpers.ts` — shared graph view API helpers
 - `tests/e2e/workflow/workflow-edge.helpers.ts` — edge drag/click helpers
-- `tests/e2e/workflow/workflow-assign-outcome.helpers.ts` — outcomes tab open, drag assign, highlight helpers
+- `tests/e2e/workflow/workflow-assign-outcome.helpers.ts` — outcomes tab open, drag assign, drop-target border, highlight, unlink helpers
 - `tests/e2e/workflow/workflow.locators.ts` — workflow header/tab shell uiObjects
 
 ## Workflow E2E fixture hygiene

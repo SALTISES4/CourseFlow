@@ -24,6 +24,12 @@ import {
   workflowRichTextDescriptionEditorBoldButton,
   workflowRichTextDescriptionEditorToolbar,
 } from './workflow-graph.locators';
+import {
+  workflowEditEdgeForm,
+  workflowEditEdgeFormDashedLineToggle,
+  workflowEditEdgeFormDeleteButton,
+  workflowEditEdgeFormTitleField,
+} from './workflow-edge.locators';
 
 export type WorkflowContributorRole = 'commenter' | 'viewer' | 'editor';
 
@@ -56,6 +62,15 @@ export async function expectReadOnlyWorkflowEditOutcomeForm(page: Page): Promise
   await expect(workflowEditOutcomeFormDuplicateButton(page)).toBeDisabled();
   await expect(workflowEditOutcomeFormDeleteButton(page)).toBeVisible();
   await expect(workflowEditOutcomeFormDeleteButton(page)).toBeDisabled();
+}
+
+/** FR-WF-EDGE-004 — commenter, viewer, and user see read-only workflowEditEdgeForm. */
+export async function expectReadOnlyWorkflowEditEdgeForm(page: Page): Promise<void> {
+  await expect(workflowEditEdgeForm(page)).toBeVisible();
+  await expect(workflowEditEdgeFormTitleField(page)).not.toBeEditable();
+  await expect(workflowEditEdgeFormDashedLineToggle(page)).toBeDisabled();
+  await expect(workflowEditEdgeFormDeleteButton(page)).toBeVisible();
+  await expect(workflowEditEdgeFormDeleteButton(page)).toBeDisabled();
 }
 
 /** FR-CHAN-001/003 — commenter and viewer see read-only workflowEditChannelForm (FR-CHAN-005/006 sidebar buttons disabled). */

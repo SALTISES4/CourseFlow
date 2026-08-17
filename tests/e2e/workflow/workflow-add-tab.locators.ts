@@ -61,6 +61,16 @@ export function workflowAddTabNodeCategoryItem(page: Page, label: string): Locat
     .filter({ has: page.getByText(label, { exact: true }) });
 }
 
+/** Channel-backed Add-tab row linked to a workflowChannel uuid. */
+export function workflowAddTabNodeCategoryItemByChannelUuid(
+  page: Page,
+  channelUuid: string,
+): Locator {
+  return workflowRightSidebarContentPanel(page).locator(
+    `[data-test-id="workflow-add-tab-node-category-item"][data-draggable-uuid="${channelUuid}"]`,
+  );
+}
+
 export function workflowAddTabCustomNodeCategoryItem(page: Page): Locator {
   return workflowRightSidebarContentPanel(page).locator(
     '[data-test-id="workflow-add-tab-custom-node-category-item"]',

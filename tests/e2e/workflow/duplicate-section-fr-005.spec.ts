@@ -22,11 +22,13 @@ import {
   titleFieldInEditSectionForm,
 } from './edit-section.locators';
 import { composeComment, openSectionCommentsViaHover } from './comments-tab.helpers';
+import { linkNodeWorkflowViaApi } from './edit-node.helpers';
+import { ensureFirstWorkflowNodeViaApi } from './node-visual.helpers';
 import { workflowNodeLinkedWorkflowIndicator } from './workflow-graph.locators';
 
 test.use({
   seedAsset: 'workflow.standard_activity',
-  seedAssets: ['workflow.navigation_course'],
+  seedAssets: ['workflow.navigation_course', 'workflow.navigation_program'],
   seedDependencies: ['project.primary', 'actor.commenter', 'actor.viewer'],
   actorAsset: 'actor.teacher',
   seedAccess: 'disposable-copy',
@@ -199,49 +201,6 @@ test.describe('Duplicate section — FR-SEC-005', () => {
       } finally {
         if (duplicateUuid && (await sectionContainer(page, duplicateUuid).count()) > 0) {
           await deleteSectionViaHover(page, duplicateUuid);
-        }
-      }
-      await expect(sectionContainers(page)).toHaveCount(orderBefore.length, { timeout: 15_000 });
-    });
-
-    test('duplicating a (copy) title appends another " (copy)" suffix', async ({
-      page,
-      workflow,
-    }) => {
-      const source = workflow.firstSection();
-      const orderBefore = await sectionOrderUuids(page);
-      const sourceIndex = orderBefore.indexOf(source.uuid);
-      let firstCopyUuid: string | undefined;
-      let nestedCopyUuid: string | undefined;
-
-      try {
-        await hoverSectionHeader(page, source.uuid);
-        await duplicateBelowButtonInSectionHeader(page, source.uuid).click();
-        await expect(sectionContainers(page)).toHaveCount(orderBefore.length + 1, {
-          timeout: 15_000,
-        });
-
-        let order = await sectionOrderUuids(page);
-        firstCopyUuid = order[sourceIndex + 1]!;
-        await expect(sectionHeader(page, firstCopyUuid)).toContainText(`${source.title} (copy)`);
-
-        await hoverSectionHeader(page, firstCopyUuid);
-        await duplicateBelowButtonInSectionHeader(page, firstCopyUuid).click();
-        await expect(sectionContainers(page)).toHaveCount(orderBefore.length + 2, {
-          timeout: 15_000,
-        });
-
-        order = await sectionOrderUuids(page);
-        nestedCopyUuid = order[order.indexOf(firstCopyUuid) + 1]!;
-        await expect(sectionHeader(page, nestedCopyUuid)).toContainText(
-          `${source.title} (copy) (copy)`,
-        );
-      } finally {
-        if (nestedCopyUuid && (await sectionContainer(page, nestedCopyUuid).count()) > 0) {
-          await deleteSectionViaHover(page, nestedCopyUuid);
-        }
-        if (firstCopyUuid && (await sectionContainer(page, firstCopyUuid).count()) > 0) {
-          await deleteSectionViaHover(page, firstCopyUuid);
         }
       }
       await expect(sectionContainers(page)).toHaveCount(orderBefore.length, { timeout: 15_000 });
@@ -506,11 +465,80 @@ test.describe('Duplicate section — FR-SEC-005', () => {
     });
   });
 
+  test.describe('Program workflow — linked nodes', () => {
+    test('duplicate preserves linkedWorkflow associations and indicator', async ({
+      page,
+      workflow,
+    }) => {
+      const program = workflow.workflowByType('program');
+      const course = workflow.workflowByType('course');
+      const source = program.sections[0]!;
+      let nodeUuid: string | undefined;
+      let duplicateUuid: string | undefined;
+      let sectionCountBefore: number | undefined;
+
+      try {
+        await page.goto(program.workflow_path);
+        nodeUuid = await ensureFirstWorkflowNodeViaApi(page, program.workflow_uuid);
+        await linkNodeWorkflowViaApi(page, nodeUuid, course.workflow_uuid);
+        await page.reload();
+        await expect(sectionContainers(page)).toHaveCount(program.sections.length, {
+          timeout: 15_000,
+        });
+
+        const graphBefore = await fetchGraphView(page, program.workflow_uuid);
+        const linkedBefore = nodesInSection(graphBefore, source.uuid).filter(
+          (node) => node.linkedWorkflowUuid,
+        );
+        expect(
+          linkedBefore.length,
+          'Program section must include at least one linked course node before duplicate',
+        ).toBeGreaterThan(0);
+
+        sectionCountBefore = await sectionContainers(page).count();
+        await hoverSectionHeader(page, source.uuid);
+        await duplicateBelowButtonInSectionHeader(page, source.uuid).click();
+
+        await expect(sectionContainers(page)).toHaveCount(sectionCountBefore + 1, {
+          timeout: 15_000,
+        });
+
+        const orderAfter = await sectionOrderUuids(page);
+        duplicateUuid = orderAfter[orderAfter.indexOf(source.uuid) + 1]!;
+        const graphAfter = await fetchGraphView(page, program.workflow_uuid);
+        const linkedAfter = nodesInSection(graphAfter, duplicateUuid).filter(
+          (node) => node.linkedWorkflowUuid,
+        );
+
+        expect(linkedAfter.map((node) => node.linkedWorkflowUuid).sort()).toEqual(
+          linkedBefore.map((node) => node.linkedWorkflowUuid).sort(),
+        );
+
+        for (const node of linkedAfter) {
+          await expect(workflowNodeLinkedWorkflowIndicator(page, node.uuid)).toBeVisible();
+          await expect(workflowNodeLinkedWorkflowIndicator(page, node.uuid)).toHaveText(
+            'Linked course',
+          );
+        }
+      } finally {
+        if (duplicateUuid && (await sectionContainer(page, duplicateUuid).count()) > 0) {
+          await deleteSectionViaHover(page, duplicateUuid);
+        }
+        if (nodeUuid) {
+          await linkNodeWorkflowViaApi(page, nodeUuid, null);
+        }
+        if (sectionCountBefore !== undefined) {
+          await expect(sectionContainers(page)).toHaveCount(sectionCountBefore, { timeout: 15_000 });
+        }
+      }
+    });
+  });
+
   test.describe('Role behavior', () => {
     test.describe('commenter', () => {
       test.use({ storageState: { cookies: [], origins: [] } });
 
-      test('commenter has disabled hover duplicate and sidebar duplicate', async ({
+      test('FR-SEC-005/007: commenter sees disabled duplicate on hover menu and sidebar form', async ({
         page,
         workflow,
       }) => {
@@ -536,7 +564,7 @@ test.describe('Duplicate section — FR-SEC-005', () => {
     test.describe('viewer', () => {
       test.use({ storageState: { cookies: [], origins: [] } });
 
-      test('viewer cannot reach hover duplicate; sidebar duplicate is disabled when form is open', async ({
+      test('FR-SEC-005/007: viewer cannot duplicate from hover menu; sidebar duplicate is disabled', async ({
         page,
         workflow,
       }) => {

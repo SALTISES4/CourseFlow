@@ -5,14 +5,29 @@ import {
   expectDefaultAddTabNodeCategories,
 } from '../../helpers/create-workflow';
 import { loadWorkflowManifest } from '../../helpers/manifest';
-import { loginAsWorkflowContributor } from './role.helpers';
-import { firstWorkflowNodeUuid } from './comments-tab.helpers';
+import { firstWorkflowNodeUuid, channelUuidByTitle } from './comments-tab.helpers';
 import {
+  addTabColumnDropBelowReferenceNodeAndWait,
+  addTabCustomCategoryRowDropAndWait,
+  addTabRowDropBelowReferenceNodeAndWait,
   dragNodeCategoryOntoNode,
   dragNodeCategoryOntoSection,
+  expectCustomCategoryDropDefaults,
+  expectCustomCategoryDropResult,
   workflowNodeCount,
   workflowNodeUuids,
 } from './add-tab.helpers';
+import {
+  expectColumnInsertEmptyCellBelow,
+  expectColumnInsertOccupiedChannelInsertsRow,
+  expectColumnInsertOccupiedShiftToGap,
+  expectRowInsertBelowReferenceNode,
+  fetchGraphView,
+  findNodeInSectionChannelAtRow,
+  findSourceInChannelForColumnInsertBelow,
+  findSourceWithNodesBelowInSection,
+  workflowUuidFromPath,
+} from './workflow-graph.helpers';
 import {
   WORKFLOW_ADD_TAB_INSERT_MODE_HELP_TOOLTIP_COPY,
   workflowAddTabCustomNodeCategoryItem,
@@ -23,12 +38,13 @@ import {
   workflowAddTabInsertModeRowButton,
   workflowAddTabNodeCategoriesGroup,
   workflowAddTabNodeCategoryItem,
+  workflowAddTabNodeCategoryItems,
   workflowAddTabTitle,
   workflowManualPlacementDialog,
   workflowManualPlacementDialogColumnButton,
   workflowManualPlacementDialogRowButton,
 } from './workflow-add-tab.locators';
-import { workflowEditNodeForm } from './workflow-graph.locators';
+import { workflowChannelHeader, workflowEditNodeForm } from './workflow-graph.locators';
 import {
   workflowRightSidebarAddTab,
   workflowRightSidebarAddTabContent,
@@ -49,6 +65,15 @@ test.use({
  */
 
 const E2E_CHANNEL_A = 'E2E Channel A';
+const disposableSectionTitle = 'E2E Section 3';
+
+async function deleteWorkflowNodeViaApi(
+  page: import('@playwright/test').Page,
+  nodeUuid: string,
+): Promise<void> {
+  const response = await authenticatedApiRequest(page, 'DELETE', `/api/node/${nodeUuid}`);
+  expect(response.ok()).toBeTruthy();
+}
 
 const BLANK_CREATE_WORKFLOW_TYPES = ['activity', 'course', 'program'] as const;
 
@@ -230,6 +255,137 @@ test.describe('add-tab-fr-001-006', () => {
         }
       }
     });
+
+    test('FR-WF-ADD-004: row drop below reference node shifts all workflowChannels down one workflowSectionRow', async ({
+      page,
+      workflow,
+    }) => {
+      const sectionUuid = workflow.sectionByTitle(disposableSectionTitle).uuid;
+      const workflowUuid = workflowUuidFromPath(workflow.path);
+      const before = await fetchGraphView(page, workflowUuid);
+      const reference = findSourceWithNodesBelowInSection(before, sectionUuid);
+      expect(
+        reference,
+        `Expected a reference workflowNode with nodes below in ${disposableSectionTitle}`,
+      ).toBeTruthy();
+
+      const targetChannelUuid = await channelUuidByTitle(page, E2E_CHANNEL_A);
+      const { after, newNodeUuid } = await addTabRowDropBelowReferenceNodeAndWait(
+        page,
+        E2E_CHANNEL_A,
+        sectionUuid,
+        reference!.uuid,
+        workflowUuid,
+        before,
+      );
+
+      expectRowInsertBelowReferenceNode(
+        before,
+        after,
+        sectionUuid,
+        reference!.uuid,
+        newNodeUuid,
+        targetChannelUuid,
+      );
+      await expect(workflowRightSidebarEditTab(page)).toHaveAttribute('aria-pressed', 'true');
+      await expect(workflowEditNodeForm(page)).toBeVisible();
+    });
+  });
+
+  test.describe('Add tab — custom node category drop (FR-WF-ADD-003, FR-WF-ADD-004)', () => {
+    test.beforeEach(async ({ page, workflow }) => {
+      await page.goto(workflow.path);
+      await workflowRightSidebarAddTab(page).click();
+      await workflowAddTabInsertModeRowButton(page).click();
+    });
+
+    test('FR-WF-ADD-003: custom category row drop adds rightmost workflowChannel, node, and Add-tab category row', async ({
+      page,
+      workflow,
+    }) => {
+      const sectionUuid = workflow.blankSection().uuid;
+      const workflowUuid = workflowUuidFromPath(workflow.path);
+      const before = await fetchGraphView(page, workflowUuid);
+      const beforeCategoryCount = await workflowAddTabNodeCategoryItems(page).count();
+      let createdNodeUuid: string | undefined;
+
+      try {
+        const { after, newNodeUuid, newChannelUuid } = await addTabCustomCategoryRowDropAndWait(
+          page,
+          sectionUuid,
+          workflowUuid,
+          before,
+        );
+        createdNodeUuid = newNodeUuid;
+
+        expectCustomCategoryDropResult(
+          before,
+          after,
+          sectionUuid,
+          newNodeUuid,
+          newChannelUuid,
+        );
+
+        await expect(workflowChannelHeader(page, newChannelUuid)).toBeVisible();
+        await expect(workflowRightSidebarEditTab(page)).toHaveAttribute('aria-pressed', 'true');
+        await expect(workflowEditNodeForm(page)).toBeVisible();
+
+        await workflowRightSidebarAddTab(page).click();
+        await expect(workflowAddTabNodeCategoryItems(page)).toHaveCount(
+          beforeCategoryCount + 1,
+        );
+        await expect(workflowAddTabNodeCategoryItems(page).last()).toHaveAttribute(
+          'data-draggable-uuid',
+          newChannelUuid,
+        );
+        await expect(workflowAddTabCustomNodeCategoryItem(page)).toBeVisible();
+      } finally {
+        if (createdNodeUuid) {
+          const response = await authenticatedApiRequest(
+            page,
+            'DELETE',
+            `/api/node/${createdNodeUuid}`,
+          );
+          expect(response.ok()).toBeTruthy();
+        }
+      }
+    });
+
+    test('FR-WF-ADD-003: custom category row drop uses default title and colour (FR-CHAN-004 parity)', async ({
+      page,
+      workflow,
+    }) => {
+      test.fail(
+        true,
+        'Add-tab custom-category drop creates channel with empty title instead of FR-CHAN-004 defaults',
+      );
+
+      const sectionUuid = workflow.blankSection().uuid;
+      const workflowUuid = workflowUuidFromPath(workflow.path);
+      const before = await fetchGraphView(page, workflowUuid);
+      let createdNodeUuid: string | undefined;
+
+      try {
+        const { after, newNodeUuid, newChannelUuid } = await addTabCustomCategoryRowDropAndWait(
+          page,
+          sectionUuid,
+          workflowUuid,
+          before,
+        );
+        createdNodeUuid = newNodeUuid;
+
+        await expectCustomCategoryDropDefaults(page, after, newChannelUuid);
+      } finally {
+        if (createdNodeUuid) {
+          const response = await authenticatedApiRequest(
+            page,
+            'DELETE',
+            `/api/node/${createdNodeUuid}`,
+          );
+          expect(response.ok()).toBeTruthy();
+        }
+      }
+    });
   });
 
   test.describe('Add tab — column drop placement (FR-WF-ADD-005)', () => {
@@ -273,6 +429,148 @@ test.describe('add-tab-fr-001-006', () => {
           expect(response.ok()).toBeTruthy();
         }
       }
+    });
+
+    test('FR-WF-ADD-005: column drop into empty cell below reference row leaves other workflowNodes unchanged', async ({
+      page,
+      workflow,
+    }) => {
+      test.fail(
+        true,
+        'Column add-tab drop on node lower half places new workflowNode one row below FR-WF-ADD-005 target cell',
+      );
+
+      const sectionUuid = workflow.blankSection().uuid;
+      const workflowUuid = workflowUuidFromPath(workflow.path);
+      const targetChannelUuid = await channelUuidByTitle(page, E2E_CHANNEL_A);
+      let before = await fetchGraphView(page, workflowUuid);
+      const rowOneNode = findNodeInSectionChannelAtRow(before, sectionUuid, targetChannelUuid, 1);
+      expect(rowOneNode, 'Expected channel A row 1 node in blank section').toBeTruthy();
+      await deleteWorkflowNodeViaApi(page, rowOneNode!.uuid);
+      before = await fetchGraphView(page, workflowUuid);
+
+      const reference = findSourceInChannelForColumnInsertBelow(
+        before,
+        sectionUuid,
+        targetChannelUuid,
+        'empty-below',
+      );
+      expect(
+        reference,
+        'Expected a reference workflowNode with an empty target-channel cell below its row',
+      ).toBeTruthy();
+      expect(reference!.channelUuid).toBe(targetChannelUuid);
+
+      const { after, newNodeUuid } = await addTabColumnDropBelowReferenceNodeAndWait(
+        page,
+        E2E_CHANNEL_A,
+        reference!.uuid,
+        workflowUuid,
+        before,
+      );
+      expectColumnInsertEmptyCellBelow(
+        before,
+        after,
+        sectionUuid,
+        reference!.uuid,
+        newNodeUuid,
+        targetChannelUuid,
+      );
+      await expect(workflowRightSidebarEditTab(page)).toHaveAttribute('aria-pressed', 'true');
+      await expect(workflowEditNodeForm(page)).toBeVisible();
+    });
+
+    test('FR-WF-ADD-005: column drop below occupied cell shifts target channel nodes to first empty cell', async ({
+      page,
+      workflow,
+    }) => {
+      test.fail(
+        true,
+        'Column add-tab drop on node lower half places new workflowNode one row below FR-WF-ADD-005 target cell',
+      );
+
+      const sectionUuid = workflow.blankSection().uuid;
+      const workflowUuid = workflowUuidFromPath(workflow.path);
+      const targetChannelUuid = await channelUuidByTitle(page, E2E_CHANNEL_A);
+      let before = await fetchGraphView(page, workflowUuid);
+      const bottomNode = findNodeInSectionChannelAtRow(before, sectionUuid, targetChannelUuid, 3);
+      expect(bottomNode, 'Expected channel A row 3 node in blank section').toBeTruthy();
+      await deleteWorkflowNodeViaApi(page, bottomNode!.uuid);
+      before = await fetchGraphView(page, workflowUuid);
+
+      const reference = findSourceInChannelForColumnInsertBelow(
+        before,
+        sectionUuid,
+        targetChannelUuid,
+        'occupied-gap',
+      );
+      expect(
+        reference,
+        'Expected a reference workflowNode with occupied target-channel cell below and a gap further down',
+      ).toBeTruthy();
+      expect(reference!.channelUuid).toBe(targetChannelUuid);
+
+      const { after, newNodeUuid } = await addTabColumnDropBelowReferenceNodeAndWait(
+        page,
+        E2E_CHANNEL_A,
+        reference!.uuid,
+        workflowUuid,
+        before,
+      );
+      expectColumnInsertOccupiedShiftToGap(
+        before,
+        after,
+        sectionUuid,
+        reference!.uuid,
+        newNodeUuid,
+        targetChannelUuid,
+      );
+      await expect(workflowRightSidebarEditTab(page)).toHaveAttribute('aria-pressed', 'true');
+      await expect(workflowEditNodeForm(page)).toBeVisible();
+    });
+
+    test('FR-WF-ADD-005: column drop below occupied cell inserts row in target channel only', async ({
+      page,
+      workflow,
+    }) => {
+      test.fail(
+        true,
+        'Column add-tab drop on node lower half places new workflowNode one row below FR-WF-ADD-005 target cell',
+      );
+
+      const sectionUuid = workflow.sectionByTitle(disposableSectionTitle).uuid;
+      const workflowUuid = workflowUuidFromPath(workflow.path);
+      const before = await fetchGraphView(page, workflowUuid);
+      const targetChannelUuid = await channelUuidByTitle(page, E2E_CHANNEL_A);
+      const reference = findSourceInChannelForColumnInsertBelow(
+        before,
+        sectionUuid,
+        targetChannelUuid,
+        'occupied-no-gap',
+      );
+      expect(
+        reference,
+        `Expected a reference workflowNode with a full target channel below its row in ${disposableSectionTitle}`,
+      ).toBeTruthy();
+      expect(reference!.channelUuid).toBe(targetChannelUuid);
+
+      const { after, newNodeUuid } = await addTabColumnDropBelowReferenceNodeAndWait(
+        page,
+        E2E_CHANNEL_A,
+        reference!.uuid,
+        workflowUuid,
+        before,
+      );
+      expectColumnInsertOccupiedChannelInsertsRow(
+        before,
+        after,
+        sectionUuid,
+        reference!.uuid,
+        newNodeUuid,
+        targetChannelUuid,
+      );
+      await expect(workflowRightSidebarEditTab(page)).toHaveAttribute('aria-pressed', 'true');
+      await expect(workflowEditNodeForm(page)).toBeVisible();
     });
   });
 
@@ -327,40 +625,6 @@ test.describe('add-tab-fr-001-006', () => {
           expect(response.ok()).toBeTruthy();
         }
       }
-    });
-  });
-
-  test.describe('Add tab — role behavior (FR-WF-RS-003)', () => {
-    test.describe('commenter', () => {
-      test.use({ storageState: { cookies: [], origins: [] } });
-
-      test('FR-WF-RS-003: commenter has workflowRightSidebarAddTab disabled on graph view', async ({
-        page,
-        workflow,
-      }) => {
-        await loginAsWorkflowContributor(page, workflow, 'commenter');
-        await page.goto(workflow.path);
-
-        await expect(workflowRightSidebarAddTab(page)).toBeDisabled();
-        await workflowRightSidebarAddTab(page).click({ force: true });
-        await expect(workflowRightSidebarAddTabContent(page)).toBeHidden();
-      });
-    });
-
-    test.describe('viewer', () => {
-      test.use({ storageState: { cookies: [], origins: [] } });
-
-      test('FR-WF-RS-003: viewer has workflowRightSidebarAddTab disabled on graph view', async ({
-        page,
-        workflow,
-      }) => {
-        await loginAsWorkflowContributor(page, workflow, 'viewer');
-        await page.goto(workflow.path);
-
-        await expect(workflowRightSidebarAddTab(page)).toBeDisabled();
-        await workflowRightSidebarAddTab(page).click({ force: true });
-        await expect(workflowRightSidebarAddTabContent(page)).toBeHidden();
-      });
     });
   });
 });

@@ -33,7 +33,8 @@ test.use({
 });
 
 /**
- * Outcome insert, ordinals, depth cap, and subtree delete — FR-WF-EO-003, EO-007, EO-008, EO-014.
+ * Outcome hover insert, header ordinals, depth cap, and subtree delete — FR-WF-EO-003, EO-007, EO-008, EO-014.
+ * (Drag reorder lives in outcome-drag-reorder-fr-015-017.spec.ts; duplicate/delete in outcome-duplicate-delete-fr-009-014.spec.ts.)
  * Requirements: workflow_edit_outcome_requirements_v1.yaml, workflow_delete_outcome_requirements_v1.yaml
  */
 
@@ -57,7 +58,7 @@ async function createChildOutcome(
   await ensureOutcomeTitleByOrdinalPrefix(page, childOrdinal, childTitle);
 }
 
-test.describe('Outcome — insert, ordinals, depth, subtree delete (FR-WF-EO-003/007/008/014)', () => {
+test.describe('Outcome — insert, ordinals, depth cap, subtree delete (FR-WF-EO-003/007/008/014)', () => {
   test.beforeEach(async ({ page, workflow }) => {
     await gotoOutcomesView(page, workflow.path);
     await expect(workflowOutcomeHeader(page, workflow.firstOutcome().title)).toBeVisible();

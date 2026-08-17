@@ -1,4 +1,4 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 
 import { authenticatedApiRequest } from '../../helpers/api';
 import { gotoOutcomesView } from './comments-tab.helpers';
@@ -144,9 +144,145 @@ export async function reloadOutcomesView(page: Page, workflowPath: string): Prom
   await gotoOutcomesView(page, workflowPath);
 }
 
+export async function rootOutcomeTitlesInOrder(
+  page: Page,
+  workflowPath: string,
+): Promise<string[]> {
+  const outcomes = await fetchGraphOutcomes(page, workflowUuidFromPath(workflowPath));
+  return outcomes
+    .filter((outcome) => outcome.parentUuid == null)
+    .sort((left, right) => left.order - right.order)
+    .map((outcome) => outcome.title);
+}
+
+export type OutcomeTreeSnapshot = Array<{
+  title: string;
+  parentUuid: string | null;
+  order: number;
+}>;
+
+/** Stable graph snapshot for asserting drag gestures did not persist a move. */
+export async function outcomeTreeSnapshot(
+  page: Page,
+  workflowPath: string,
+): Promise<OutcomeTreeSnapshot> {
+  const outcomes = await fetchGraphOutcomes(page, workflowUuidFromPath(workflowPath));
+  return outcomes
+    .map((outcome) => ({
+      title: outcome.title,
+      parentUuid: outcome.parentUuid,
+      order: outcome.order,
+    }))
+    .sort((left, right) => left.title.localeCompare(right.title));
+}
+
+export async function expectOutcomeHeaderFrDepth(
+  page: Page,
+  title: string,
+  depth: 1 | 2 | 3,
+): Promise<void> {
+  const headerText = await workflowOutcomeHeader(page, title).first().textContent();
+  expect(headerText, `Expected header text for outcome ${JSON.stringify(title)}`).toBeTruthy();
+
+  const ordinalMatch = headerText!.match(/^([\d.]+)\.\s/);
+  expect(ordinalMatch, `Expected ordinal prefix in header ${JSON.stringify(headerText)}`).toBeTruthy();
+
+  const segmentCount = ordinalMatch![1]!.split('.').filter(Boolean).length;
+  expect(segmentCount).toBe(depth);
+}
+
+type ActiveOutcomeDrag = {
+  x: number;
+  y: number;
+};
+
+const activeOutcomeDrags = new WeakMap<Page, ActiveOutcomeDrag>();
+
+async function outcomeHeaderDragPoint(
+  page: Page,
+  title: string,
+  position: 'before' | 'after' | 'combine',
+): Promise<{ x: number; y: number }> {
+  const header = workflowOutcomeHeaderDragHandle(page, title);
+  await header.scrollIntoViewIfNeeded();
+  const box = await header.boundingBox();
+  if (!box) {
+    throw new Error(`Expected bounding box for outcome header ${JSON.stringify(title)}`);
+  }
+
+  const yRatio = position === 'before' ? 0.25 : position === 'after' ? 0.75 : 0.5;
+  return {
+    x: box.x + Math.max(box.width / 2, 8),
+    y: box.y + box.height * yRatio,
+  };
+}
+
+/**
+ * FR-WF-EO-016 workflowOutcomeTreeRowDropIndicator — line shown during an in-flight same-level reorder.
+ * Excludes expanded child lists (`ul`) that sit after the header when a row is open.
+ */
+export function workflowOutcomeRowDropIndicator(page: Page, title: string): Locator {
+  return workflowOutcomeHeaderDragHandle(page, title).locator(
+    'xpath=../following-sibling::*[1][not(local-name()="ul")]',
+  );
+}
+
+/** Hold pointer over a destination header during an outcome drag (does not release). */
+export async function beginOutcomeDragOntoHeader(
+  page: Page,
+  sourceTitle: string,
+  targetTitle: string,
+  position: 'before' | 'after' | 'combine',
+): Promise<void> {
+  const source = await outcomeHeaderDragPoint(page, sourceTitle, 'combine');
+  await page.mouse.move(source.x, source.y);
+  await page.mouse.down();
+  await page.mouse.move(source.x + 12, source.y, { steps: 4 });
+
+  const target = await outcomeHeaderDragPoint(page, targetTitle, position);
+  await page.mouse.move(target.x, target.y, { steps: 20 });
+  activeOutcomeDrags.set(page, target);
+}
+
+export async function abortOutcomeDragWithEscape(page: Page): Promise<void> {
+  const target = activeOutcomeDrags.get(page);
+  if (!target) {
+    throw new Error('Expected an active outcome drag before abort.');
+  }
+  await page.keyboard.press('Escape');
+  await page.mouse.up();
+  activeOutcomeDrags.delete(page);
+}
+
+export async function whileDraggingOutcomeOntoHeader(
+  page: Page,
+  sourceTitle: string,
+  targetTitle: string,
+  position: 'before' | 'after' | 'combine',
+  assertWhileDragging: () => Promise<void>,
+): Promise<void> {
+  await beginOutcomeDragOntoHeader(page, sourceTitle, targetTitle, position);
+  try {
+    await assertWhileDragging();
+  } finally {
+    await abortOutcomeDragWithEscape(page);
+  }
+}
+
+export async function expectNoOutcomeReorderDropZoneOnHeader(
+  page: Page,
+  targetTitle: string,
+): Promise<void> {
+  await expect
+    .poll(async () => workflowOutcomeRowDropIndicator(page, targetTitle).count(), {
+      timeout: 5_000,
+    })
+    .toBe(0);
+}
+
 /**
  * FR-WF-EO-015/016/017 — drag source OutcomeHeader onto destination header.
- * `before` / `after` map to the FR 50/50 insert zones; `combine` uses the center nest zone.
+ * `before` / `after` map to the FR 50/50 reorder zones on the header strip; `combine` nests as last child.
  */
 export async function dragOutcomeOntoHeader(
   page: Page,
@@ -154,6 +290,20 @@ export async function dragOutcomeOntoHeader(
   targetTitle: string,
   position: 'before' | 'after' | 'combine',
 ): Promise<void> {
+  await attemptDragOutcomeOntoHeader(page, sourceTitle, targetTitle, position, {
+    waitForMoveResponse: true,
+  });
+}
+
+/** Same gesture as dragOutcomeOntoHeader without expecting a persisted move (role-gating tests). */
+export async function attemptDragOutcomeOntoHeader(
+  page: Page,
+  sourceTitle: string,
+  targetTitle: string,
+  position: 'before' | 'after' | 'combine',
+  options: { waitForMoveResponse?: boolean } = {},
+): Promise<void> {
+  const { waitForMoveResponse = false } = options;
   const source = workflowOutcomeHeaderDragHandle(page, sourceTitle);
   const target = workflowOutcomeHeaderDragHandle(page, targetTitle);
 
@@ -167,16 +317,20 @@ export async function dragOutcomeOntoHeader(
 
   const yRatio = position === 'before' ? 0.25 : position === 'after' ? 0.75 : 0.5;
 
-  await Promise.all([
-    waitForOutcomeMoveResponse(page),
-    source.dragTo(target, {
-      force: true,
-      targetPosition: {
-        x: Math.max(targetBox.width / 2, 8),
-        y: targetBox.height * yRatio,
-      },
-    }),
-  ]);
+  const dragPromise = source.dragTo(target, {
+    force: true,
+    targetPosition: {
+      x: Math.max(targetBox.width / 2, 8),
+      y: targetBox.height * yRatio,
+    },
+  });
+
+  if (waitForMoveResponse) {
+    await Promise.all([waitForOutcomeMoveResponse(page), dragPromise]);
+    return;
+  }
+
+  await dragPromise;
 }
 
 export async function expectOutcomeHeaderAtOrdinal(
@@ -203,6 +357,27 @@ export async function ensureExpandedShowingChild(
   await expect(toggle).toBeVisible({ timeout: 10_000 });
   await toggle.click();
   await expect(child.first()).toBeVisible({ timeout: 10_000 });
+}
+
+/** Collapse a parent row so a known direct child is not visible (FR-WF-EO-016/017 collapsed-target flows). */
+export async function ensureCollapsedHidingChild(
+  page: Page,
+  parentTitle: string,
+  childTitle: string,
+): Promise<void> {
+  const child = workflowOutcomeHeader(page, childTitle);
+  if ((await child.count()) > 0 && !(await child.first().isVisible())) {
+    return;
+  }
+
+  if ((await child.count()) === 0 || !(await child.first().isVisible())) {
+    await ensureExpandedShowingChild(page, parentTitle, childTitle);
+  }
+
+  const toggle = workflowOutcomeExpandToggle(page, parentTitle);
+  await expect(toggle).toBeVisible({ timeout: 10_000 });
+  await toggle.click();
+  await expect(child.first()).toBeHidden({ timeout: 10_000 });
 }
 
 export { DRAG_TITLE_PREFIX };

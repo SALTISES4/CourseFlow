@@ -32,7 +32,13 @@ export function workflowEditOutcomeFormCodeField(page: Page): Locator {
 }
 
 export function workflowEditOutcomeFormTagsField(page: Page): Locator {
-  return workflowRightSidebarContentPanel(page).getByLabel(/^Tags$/i);
+  return workflowEditOutcomeFormTagsAutocomplete(page).getByRole('combobox', { name: 'Tags' });
+}
+
+export function workflowEditOutcomeFormTagsAutocomplete(page: Page): Locator {
+  return workflowRightSidebarContentPanel(page)
+    .locator('.MuiAutocomplete-root')
+    .filter({ has: page.getByRole('combobox', { name: 'Tags' }) });
 }
 
 export function workflowEditOutcomeFormDuplicateButton(page: Page): Locator {
@@ -61,6 +67,18 @@ export function workflowOutcomeHoverInsertSiblingItem(page: Page, title: string)
 
 export function workflowOutcomeHoverInsertChildItem(page: Page, title: string): Locator {
   return workflowOutcomeHoverInsertChildForHeader(page, workflowOutcomeHeader(page, title));
+}
+
+/** Tag chip on workflowOutcomeHeader for a bound level-1 outcome. */
+export function workflowOutcomeHeaderTagChip(
+  page: Page,
+  outcomeTitle: string,
+  tagLabel: string,
+): Locator {
+  return workflowOutcomeRowForHeader(page, workflowOutcomeHeader(page, outcomeTitle)).getByText(
+    tagLabel,
+    { exact: true },
+  );
 }
 
 export async function workflowOutcomeHasSelectedBorder(page: Page, title: string): Promise<boolean> {

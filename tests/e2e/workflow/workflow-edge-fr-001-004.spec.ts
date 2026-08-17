@@ -1,7 +1,7 @@
 import { test, expect } from '../../fixtures';
 import { loginAsTestUser } from '../../helpers/auth';
 import { firstWorkflowNodeUuid, secondWorkflowNodeUuid } from './comments-tab.helpers';
-import { loginAsWorkflowContributor } from './role.helpers';
+import { loginAsWorkflowContributor, expectReadOnlyWorkflowEditEdgeForm } from './role.helpers';
 import {
   clickWorkflowEdge,
   dragWorkflowEdgeFromHandleToHandle,
@@ -10,10 +10,12 @@ import {
 import {
   workflowEdge,
   workflowEditEdgeFormDeleteButton,
-  workflowEditEdgeFormDashedLineToggle,
   workflowEditEdgeFormHeading,
   workflowEditEdgeFormTitleField,
+  workflowEditEdgeFormDashedLineToggle,
   workflowNodeEdgeHandles,
+  workflowEdgeSourceReconnectHandle,
+  workflowEdgeTargetReconnectHandle,
 } from './workflow-edge.locators';
 import {
   edgeIdString,
@@ -241,10 +243,28 @@ test.describe('Workflow edge — role behavior (FR-WF-EDGE-001, FR-WF-EDGE-004)'
 
     await clickWorkflowEdge(page, edgeIdString(edge));
 
-    await expect(workflowEditEdgeFormHeading(page)).toBeVisible();
-    await expect(workflowEditEdgeFormTitleField(page)).not.toBeEditable();
-    await expect(workflowEditEdgeFormDashedLineToggle(page)).toBeDisabled();
-    await expect(workflowEditEdgeFormDeleteButton(page)).toBeDisabled();
+    await expect(workflowRightSidebarEditTab(page)).toHaveAttribute('aria-pressed', 'true');
+    await expectReadOnlyWorkflowEditEdgeForm(page);
+    await expect(workflowEdgeSourceReconnectHandle(page, edgeIdString(edge))).toHaveCount(0);
+    await expect(workflowEdgeTargetReconnectHandle(page, edgeIdString(edge))).toHaveCount(0);
+  });
+
+  test('FR-WF-EDGE-004: viewer opens read-only workflowEditEdgeForm for workflowEdge', async ({
+    page,
+    workflow,
+  }) => {
+    await loginAsWorkflowContributor(page, workflow, 'viewer');
+    await gotoWorkflowGraph(page, workflow.path);
+
+    const graph = await fetchGraphView(page, workflow.workflowUuid);
+    const edge = graph.edges[0];
+
+    await clickWorkflowEdge(page, edgeIdString(edge));
+
+    await expect(workflowRightSidebarEditTab(page)).toHaveAttribute('aria-pressed', 'true');
+    await expectReadOnlyWorkflowEditEdgeForm(page);
+    await expect(workflowEdgeSourceReconnectHandle(page, edgeIdString(edge))).toHaveCount(0);
+    await expect(workflowEdgeTargetReconnectHandle(page, edgeIdString(edge))).toHaveCount(0);
   });
 });
 

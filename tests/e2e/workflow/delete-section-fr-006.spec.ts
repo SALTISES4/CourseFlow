@@ -1,10 +1,17 @@
 import { test, expect } from '../../fixtures';
 import { loginAsWorkflowContributor } from './role.helpers';
 import {
+  expectSectionDeleteRemovedGraphContent,
+  expectSectionNumberLabelsMatchOrder,
+  sectionOrderUuids,
+} from './edit-section.helpers';
+import {
   deleteButtonInSectionHeader,
+  deleteButtonInSidebar,
   deleteSectionCancelButton,
   deleteSectionConfirmButton,
   deleteSectionDialog,
+  editSectionForm,
   sectionContainers,
   sectionHeader,
   sectionHoverMenu,
@@ -13,6 +20,7 @@ import {
   workflowSectionDeleteDialogBody,
   workflowSectionDeleteDialogTitle,
 } from '../../shared/locators/workflow';
+import { fetchGraphView } from './workflow-graph.helpers';
 
 test.use({
   seedAsset: 'workflow.standard_activity',
@@ -22,14 +30,24 @@ test.use({
 });
 
 /**
- * Delete section — hover path and dialog (FR-SEC-006).
+ * Delete section — hover path, sidebar path, and dialog (FR-SEC-006).
  * Requirements: workflow_delete_section_requirements_v1.yaml
- * Sidebar cancel/confirm: edit-section-fr-001-012.spec.ts
  */
 
 async function hoverSectionHeader(page: import('@playwright/test').Page, sectionUuid: string) {
   await sectionHeader(page, sectionUuid).hover();
   await expect(sectionHoverMenu(page, sectionUuid)).toBeVisible();
+}
+
+async function confirmDeleteSectionViaHover(
+  page: import('@playwright/test').Page,
+  sectionUuid: string,
+): Promise<void> {
+  await hoverSectionHeader(page, sectionUuid);
+  await deleteButtonInSectionHeader(page, sectionUuid).click();
+  await expect(deleteSectionDialog(page)).toBeVisible();
+  await deleteSectionConfirmButton(page).click();
+  await expect(deleteSectionDialog(page)).toBeHidden({ timeout: 15_000 });
 }
 
 test.describe('Delete Section — hover path (FR-SEC-006)', () => {
@@ -74,12 +92,15 @@ test.describe('Delete Section — hover path (FR-SEC-006)', () => {
     await expect(sectionContainers(page)).toHaveCount(before);
   });
 
-  test('FR-SEC-006: hover delete confirm removes target workflowSectionContainer', async ({
+  test('FR-SEC-006: hover delete confirm removes section and its nodes and edges', async ({
     page,
     workflow,
   }) => {
     const disposable = workflow.sectionByTitle('E2E Section 3');
-    const before = await sectionContainers(page).count();
+    const orderBefore = await sectionOrderUuids(page);
+    const before = orderBefore.length;
+    const graphBefore = await fetchGraphView(page, workflow.workflowUuid);
+    const outcomeUuid = workflow.firstOutcome().uuid;
 
     await hoverSectionHeader(page, disposable.uuid);
     await deleteButtonInSectionHeader(page, disposable.uuid).click();
@@ -89,12 +110,50 @@ test.describe('Delete Section — hover path (FR-SEC-006)', () => {
     await expect(deleteSectionDialog(page)).toBeHidden({ timeout: 15_000 });
     await expect(sectionContainers(page)).toHaveCount(before - 1, { timeout: 15_000 });
     await expect(page.locator(`[data-section-id="${disposable.uuid}"]`)).toHaveCount(0);
+
+    const remainingOrder = orderBefore.filter((uuid) => uuid !== disposable.uuid);
+    await expectSectionNumberLabelsMatchOrder(page, remainingOrder);
+    await expectSectionDeleteRemovedGraphContent(
+      page,
+      workflow.workflowUuid,
+      disposable.uuid,
+      graphBefore,
+    );
+
+    const graphAfter = await fetchGraphView(page, workflow.workflowUuid);
+    expect(
+      graphAfter.nodes.some((node) => node.outcomeUuids.includes(outcomeUuid)),
+      'Seeded workflowOutcome must remain in the outcome tree after unrelated section delete',
+    ).toBe(true);
   });
 
-  test.fixme('FR-SEC-006: last-section delete guard deferred', async () => {});
+  test('FR-SEC-006: sole remaining section cannot be deleted from hover or sidebar', async ({
+    page,
+    workflow,
+  }) => {
+    test.fail();
+
+    await confirmDeleteSectionViaHover(page, workflow.sectionByTitle('E2E Section 3').uuid);
+    await confirmDeleteSectionViaHover(page, workflow.blankSection().uuid);
+
+    await expect(sectionContainers(page)).toHaveCount(1, { timeout: 15_000 });
+    const soleSection = workflow.firstSection();
+
+    await hoverSectionHeader(page, soleSection.uuid);
+    await expect(deleteButtonInSectionHeader(page, soleSection.uuid)).toBeDisabled();
+    await deleteButtonInSectionHeader(page, soleSection.uuid).click({ force: true });
+    await expect(deleteSectionDialog(page)).toBeHidden();
+
+    await sectionHeader(page, soleSection.uuid).click();
+    await expect(editSectionForm(page)).toBeVisible();
+    await expect(deleteButtonInSidebar(page)).toBeDisabled();
+    await deleteButtonInSidebar(page).click({ force: true });
+    await expect(deleteSectionDialog(page)).toBeHidden();
+    await expect(sectionContainers(page)).toHaveCount(1);
+  });
 });
 
-test.describe('Delete Section — role behavior (FR-SEC-006, FR-SEC-007)', () => {
+test.describe('Delete Section — sidebar path (FR-SEC-006)', () => {
   test.beforeEach(async ({ page, workflow }) => {
     await page.goto(workflow.path);
     await expect(sectionContainers(page)).toHaveCount(workflow.sections.length, {
@@ -102,6 +161,28 @@ test.describe('Delete Section — role behavior (FR-SEC-006, FR-SEC-007)', () =>
     });
   });
 
+  test('FR-SEC-006: delete from sidebar opens modal; Cancel leaves section count unchanged', async ({
+    page,
+    workflow,
+  }) => {
+    const before = await sectionContainers(page).count();
+    const sectionUuid = workflow.firstSection().uuid;
+
+    await sectionHeader(page, sectionUuid).click();
+    await expect(editSectionForm(page)).toBeVisible();
+    await deleteButtonInSidebar(page).click();
+
+    await expect(deleteSectionDialog(page)).toBeVisible();
+    expect(await sectionContainers(page).count()).toBe(before);
+
+    await deleteSectionCancelButton(page).click();
+
+    await expect(deleteSectionDialog(page)).toBeHidden();
+    expect(await sectionContainers(page).count()).toBe(before);
+  });
+});
+
+test.describe('Delete Section — role behavior (FR-SEC-006, FR-SEC-007)', () => {
   test.describe('commenter', () => {
     test.use({ storageState: { cookies: [], origins: [] } });
 

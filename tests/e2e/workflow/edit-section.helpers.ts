@@ -1,12 +1,21 @@
 import { expect, type JSHandle, type Locator, type Page } from '@playwright/test';
 import {
+  editSectionForm,
   sectionContainer,
   sectionContainers,
   sectionCollapseButton,
   sectionHeader,
   sectionNodes,
   sectionNumberLabel,
+  titleFieldInEditSectionForm,
 } from './edit-section.locators';
+import {
+  edgesReferencingNodeUuids,
+  fetchGraphView,
+  nodesInSection,
+  type GraphViewPayload,
+} from './workflow-graph.helpers';
+import { workflowNode } from './workflow-graph.locators';
 
 type ActiveSectionDrag = {
   dataTransfer: JSHandle<DataTransfer>;
@@ -45,6 +54,74 @@ export async function expectSectionNumberLabelsMatchOrder(
 ): Promise<void> {
   for (let i = 0; i < orderedUuids.length; i++) {
     await expect(sectionNumberLabel(page, orderedUuids[i]!)).toHaveText(String(i + 1));
+  }
+}
+
+type SectionFixture = {
+  sectionByTitle: (title: string) => {
+    uuid: string;
+    title: string;
+    position: number;
+  };
+};
+
+/** FR-SEC-003 — editable section title auto-saves and survives reload. */
+export async function expectSectionTitleChangePersistsAfterReload(
+  page: Page,
+  workflow: SectionFixture,
+  sectionTitle = 'E2E Section 3',
+): Promise<void> {
+  const section = workflow.sectionByTitle(sectionTitle);
+  const uniqueTitle = `E2E ${Date.now()}`;
+
+  await sectionHeader(page, section.uuid).click();
+  await expect(editSectionForm(page)).toBeVisible();
+  await expect(editSectionForm(page).getByRole('button', { name: /^save$/i })).toHaveCount(0);
+
+  await titleFieldInEditSectionForm(page).fill(uniqueTitle);
+  await titleFieldInEditSectionForm(page).blur();
+
+  await expect(sectionHeader(page, section.uuid)).toContainText(uniqueTitle, {
+    timeout: 15_000,
+  });
+
+  await page.reload();
+  await expect(sectionContainers(page).first()).toBeVisible();
+  await sectionHeader(page, section.uuid).click();
+  await expect(titleFieldInEditSectionForm(page)).toHaveValue(uniqueTitle, {
+    timeout: 15_000,
+  });
+}
+
+/** FR-SEC-003 — clearing title leaves workflowSectionNumberLabel only; restores seed title after. */
+export async function expectClearingSectionTitleShowsNumberLabelOnly(
+  page: Page,
+  workflow: SectionFixture,
+  sectionTitle = 'E2E Section 3',
+): Promise<void> {
+  const section = workflow.sectionByTitle(sectionTitle);
+  const displayIndex = String(section.position + 1);
+
+  await sectionHeader(page, section.uuid).click();
+  await expect(editSectionForm(page)).toBeVisible();
+
+  const titleBeforeClear = await titleFieldInEditSectionForm(page).inputValue();
+
+  try {
+    await titleFieldInEditSectionForm(page).fill('');
+    await titleFieldInEditSectionForm(page).blur();
+
+    await expect(titleFieldInEditSectionForm(page)).toHaveValue('', { timeout: 15_000 });
+    await expect(sectionNumberLabel(page, section.uuid)).toHaveText(displayIndex);
+    if (titleBeforeClear) {
+      await expect(sectionHeader(page, section.uuid)).not.toContainText(titleBeforeClear);
+    }
+  } finally {
+    await titleFieldInEditSectionForm(page).fill(section.title);
+    await titleFieldInEditSectionForm(page).blur();
+    await expect(sectionHeader(page, section.uuid)).toContainText(section.title, {
+      timeout: 15_000,
+    });
   }
 }
 
@@ -193,4 +270,44 @@ export async function endSectionDrag(page: Page): Promise<void> {
   });
   await activeDrag.dataTransfer.dispose();
   activeSectionDrags.delete(page);
+}
+
+/** FR-SEC-006 — deleted section's workflowNodes and incident workflowEdges are removed from the graph. */
+export async function expectSectionDeleteRemovedGraphContent(
+  page: Page,
+  workflowUuid: string,
+  deletedSectionUuid: string,
+  graphBefore: GraphViewPayload,
+): Promise<void> {
+  const nodesBefore = nodesInSection(graphBefore, deletedSectionUuid);
+  const nodeUuids = nodesBefore.map((node) => node.uuid);
+  expect(
+    nodeUuids.length,
+    'Deleted section must contain workflowNodes for FR-SEC-006 graph cleanup.',
+  ).toBeGreaterThan(0);
+
+  const edgesBefore = edgesReferencingNodeUuids(graphBefore, nodeUuids);
+
+  for (const nodeUuid of nodeUuids) {
+    await expect(workflowNode(page, nodeUuid)).toHaveCount(0, { timeout: 10_000 });
+  }
+
+  await expect
+    .poll(
+      async () => {
+        const graph = await fetchGraphView(page, workflowUuid);
+        return {
+          nodesInDeletedSection: nodesInSection(graph, deletedSectionUuid).length,
+          edgesTouchingRemovedNodes: edgesReferencingNodeUuids(graph, nodeUuids).length,
+        };
+      },
+      { timeout: 15_000 },
+    )
+    .toEqual({ nodesInDeletedSection: 0, edgesTouchingRemovedNodes: 0 });
+
+  if (edgesBefore.length > 0) {
+    const edgeIdsBefore = new Set(edgesBefore.map((edge) => edge.id));
+    const graphAfter = await fetchGraphView(page, workflowUuid);
+    expect(graphAfter.edges.filter((edge) => edgeIdsBefore.has(edge.id))).toEqual([]);
+  }
 }

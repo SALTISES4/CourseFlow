@@ -333,6 +333,7 @@ test.describe('edit-node-fr-001-007', () => {
       await expect(workflowNode(page, nodeUuid)).toBeVisible({
         timeout: 15_000,
       });
+      await expect(workflowNodeTitle(page, nodeUuid)).toHaveText(uniqueTitle);
       await workflowNodeContent(page, nodeUuid).click();
       await expect(workflowEditNodeFormTitleField(page)).toHaveValue(uniqueTitle);
     });

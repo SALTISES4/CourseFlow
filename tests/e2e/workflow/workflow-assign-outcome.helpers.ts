@@ -6,6 +6,8 @@ import {
 } from '../../shared/locators/workflow';
 import { workflowNode } from './workflow-graph.locators';
 import {
+  workflowNodeLinkedOutcomeRow,
+  workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem,
   workflowNodeLinkedOutcomesBadge,
   workflowNodeLinkedOutcomesPopover,
   workflowOutcomesAssignTabOutcomeRow,
@@ -19,11 +21,18 @@ export async function openWorkflowOutcomesTab(page: Page): Promise<void> {
   await expect(workflowRightSidebarOutcomesTabContent(page)).toBeVisible();
 }
 
-export async function dragAssignTabOutcomeOntoNode(
+type DragAssignTabOutcomeOptions = {
+  /** When false, leaves the pointer held down after moving over the target node. */
+  release?: boolean;
+};
+
+export async function dragAssignTabOutcomeOverNode(
   page: Page,
   rowTitle: string | RegExp,
   targetNodeUuid: string,
+  options: DragAssignTabOutcomeOptions = {},
 ): Promise<void> {
+  const { release = true } = options;
   const row = workflowOutcomesAssignTabOutcomeRow(page, rowTitle);
   const target = workflowNode(page, targetNodeUuid);
 
@@ -43,7 +52,17 @@ export async function dragAssignTabOutcomeOntoNode(
     targetBox.y + targetBox.height / 2,
     { steps: 25 },
   );
-  await page.mouse.up();
+  if (release) {
+    await page.mouse.up();
+  }
+}
+
+export async function dragAssignTabOutcomeOntoNode(
+  page: Page,
+  rowTitle: string | RegExp,
+  targetNodeUuid: string,
+): Promise<void> {
+  await dragAssignTabOutcomeOverNode(page, rowTitle, targetNodeUuid, { release: true });
 }
 
 export async function clickAssignTabOutcomeRow(page: Page, rowTitle: string | RegExp): Promise<void> {
@@ -69,6 +88,35 @@ export async function workflowNodeHasOutcomeHighlightBorder(
     const shadow = getComputedStyle(el).boxShadow;
     return shadow !== 'none' && shadow !== '';
   });
+}
+
+/** FR-WF-AO-004 drop-target presentation — green overlay via ::before on CellInner. */
+export async function workflowNodeHasOutcomeDropTargetBorder(
+  page: Page,
+  nodeUuid: string,
+): Promise<boolean> {
+  return workflowNode(page, nodeUuid).evaluate((el) => {
+    const before = getComputedStyle(el, '::before');
+    return before.content !== 'none' && before.content !== 'normal' && before.width !== '0px';
+  });
+}
+
+export async function countWorkflowNodesWithOutcomeDropTargetBorder(page: Page): Promise<number> {
+  return page.locator('[data-test-id="workflow-node"]').evaluateAll((nodes) =>
+    nodes.filter((el) => {
+      const before = getComputedStyle(el, '::before');
+      return before.content !== 'none' && before.content !== 'normal' && before.width !== '0px';
+    }).length,
+  );
+}
+
+export async function unlinkLinkedOutcomeFromPopover(
+  page: Page,
+  outcomeTitle: string | RegExp,
+): Promise<void> {
+  const row = workflowNodeLinkedOutcomeRow(page, outcomeTitle);
+  await row.hover();
+  await workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem(page).click();
 }
 
 export async function assignTabOutcomeRowHasHighlightBorder(

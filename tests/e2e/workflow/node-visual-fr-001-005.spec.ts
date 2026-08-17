@@ -1,18 +1,33 @@
 import { test, expect } from '../../fixtures';
-import { loginAs } from '../../helpers/auth';
+import {
+  assertNodeIsBelowSourceInSameColumn,
+  findNodeBelowSourceInSection,
+  firstNodeUuidInSection,
+  setRowInsertMode,
+  workflowNodeCount,
+} from './add-tab.helpers';
 import {
   firstWorkflowNodeUuid,
   hoverWorkflowNode,
   secondWorkflowNodeUuid,
 } from './comments-tab.helpers';
-import { linkNodeWorkflowViaApi, seededLinkedActivityUuid } from './edit-node.helpers';
+import {
+  ACTIVITY_CONTEXT_OPTIONS,
+  ACTIVITY_TASK_TYPE_OPTIONS,
+  linkNodeWorkflowViaApi,
+  seededLinkedActivityUuid,
+} from './edit-node.helpers';
 import {
   ensureFirstWorkflowNodeViaApi,
+  expectActivityNodeCanvasMatchesEditNodeForm,
   fetchNodeViaApi,
+  openWorkflowEditNodeFormFromCanvas,
   patchNodeMetaViaApi,
+  waitForNodeMetaPatch,
   workflowChannelHeaderColorIndicatorBackgroundColor,
   workflowNodeBorderBackgroundColor,
 } from './node-visual.helpers';
+import { loginAsWorkflowContributor } from './role.helpers';
 import {
   clickAssignTabOutcomeRow,
   E2E_SEED_OUTCOME_HEADER,
@@ -21,6 +36,8 @@ import {
 } from './workflow-assign-outcome.helpers';
 import {
   workflowEditNodeForm,
+  workflowEditNodeFormContextField,
+  workflowEditNodeFormTaskTypeField,
   workflowEditNodeFormTitleField,
   workflowNode,
   workflowNodeBorder,
@@ -41,13 +58,14 @@ import {
 
 test.use({
   seedAsset: 'workflow.standard_activity',
+  seedDependencies: ['project.primary', 'actor.commenter', 'actor.viewer'],
   actorAsset: 'actor.teacher',
   seedAccess: 'disposable-copy',
 });
 
 /**
- * Workflow node visual — FR-WF-NODE-001 through FR-WF-NODE-005 (partial).
- * Requirements: workflow_node_visual_requirements_v1.yaml
+ * Workflow node visual — FR-WF-NODE-001 through FR-WF-NODE-005; FR-WF-DUP-002/003 hover paths.
+ * Requirements: workflow_node_visual_requirements_v1.yaml, workflow_duplicate_node_requirements_v1.yaml
  * Design evidence: FIGMA-WF-NODE-WORKFLOW-VIEW, FIGMA-WF-NODE-LINKED-WORKFLOW-LINK
  */
 
@@ -109,15 +127,104 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
       await page.reload();
       await expect(workflowNodeTitle(page, nodeUuid)).toHaveText(uniqueTitle);
 
-      await workflowNodeContent(page, nodeUuid).click();
-      await expect(workflowEditNodeForm(page)).toBeVisible();
+      await openWorkflowEditNodeFormFromCanvas(page, nodeUuid);
       await expect(workflowEditNodeFormTitleField(page)).toHaveValue(uniqueTitle);
 
       await patchNodeMetaViaApi(page, nodeUuid, { title: '' });
       await page.reload();
       await expect(workflowNodeTitle(page, nodeUuid)).toHaveText('Untitled node');
+
+      await openWorkflowEditNodeFormFromCanvas(page, nodeUuid);
+      await expect(workflowEditNodeFormTitleField(page)).toHaveValue('');
     } finally {
       await patchNodeMetaViaApi(page, nodeUuid, { title: '' });
+    }
+  });
+
+  test('FR-WF-NODE-001: canvas meta tags conform to workflowEditNodeForm field values', async ({
+    page,
+    workflow,
+  }) => {
+    await page.goto(workflow.path);
+    const nodeUuid = await firstWorkflowNodeUuid(page);
+    const contextLabel = ACTIVITY_CONTEXT_OPTIONS[1]!;
+    const taskLabel = ACTIVITY_TASK_TYPE_OPTIONS[1]!;
+    const title = `E2E Canvas Meta ${Date.now()}`;
+    const timeDisplay = '2 hours';
+
+    try {
+      await patchNodeMetaViaApi(page, nodeUuid, {
+        title,
+        contextClassification: 1,
+        taskClassification: 1,
+        timeRequired: 2,
+        timeUnits: 3,
+      });
+      await page.reload();
+
+      await expectActivityNodeCanvasMatchesEditNodeForm(page, nodeUuid, {
+        title,
+        contextLabel,
+        taskLabel,
+        timeDisplay,
+      });
+    } finally {
+      await patchNodeMetaViaApi(page, nodeUuid, {
+        title: '',
+        contextClassification: 0,
+        taskClassification: 0,
+        timeRequired: 0,
+        timeUnits: 0,
+      });
+    }
+  });
+
+  test('FR-WF-NODE-001/FR-WF-EN-007: editing workflowEditNodeForm updates workflowNode canvas chrome', async ({
+    page,
+    workflow,
+  }) => {
+    await page.goto(workflow.path);
+    const nodeUuid = await firstWorkflowNodeUuid(page);
+    const uniqueTitle = `E2E Live Canvas ${Date.now()}`;
+    const contextLabel = ACTIVITY_CONTEXT_OPTIONS[1]!;
+    const taskLabel = ACTIVITY_TASK_TYPE_OPTIONS[1]!;
+
+    try {
+      await patchNodeMetaViaApi(page, nodeUuid, {
+        title: '',
+        contextClassification: 0,
+        taskClassification: 0,
+        timeRequired: 0,
+        timeUnits: 0,
+      });
+      await page.reload();
+
+      await openWorkflowEditNodeFormFromCanvas(page, nodeUuid);
+
+      const titleSaved = waitForNodeMetaPatch(page);
+      await workflowEditNodeFormTitleField(page).fill(uniqueTitle);
+      await titleSaved;
+      await expect(workflowNodeTitle(page, nodeUuid)).toHaveText(uniqueTitle, { timeout: 15_000 });
+
+      const contextSaved = waitForNodeMetaPatch(page);
+      await workflowEditNodeFormContextField(page).click();
+      await page.getByRole('option', { name: contextLabel, exact: true }).click();
+      await contextSaved;
+      await expect(workflowNodeMetaContextTag(page, nodeUuid)).toBeVisible({ timeout: 15_000 });
+
+      const taskSaved = waitForNodeMetaPatch(page);
+      await workflowEditNodeFormTaskTypeField(page).click();
+      await page.getByRole('option', { name: taskLabel, exact: true }).click();
+      await taskSaved;
+      await expect(workflowNodeMetaTaskTag(page, nodeUuid)).toBeVisible({ timeout: 15_000 });
+    } finally {
+      await patchNodeMetaViaApi(page, nodeUuid, {
+        title: '',
+        contextClassification: 0,
+        taskClassification: 0,
+        timeRequired: 0,
+        timeUnits: 0,
+      });
     }
   });
 
@@ -285,7 +392,7 @@ test.describe('Workflow node — outcome highlight (FR-WF-NODE-003)', () => {
     await page.goto(workflow.path);
   });
 
-  test('FR-WF-NODE-003: highlighted assigned workflowNode shows workflowNodeOutcomeHighlightBorder', async ({
+  test('FR-WF-NODE-003: highlighted outcome shows border on nodes', async ({
     page,
   }) => {
     const assignedNodeUuid = await firstWorkflowNodeUuid(page);
@@ -296,52 +403,93 @@ test.describe('Workflow node — outcome highlight (FR-WF-NODE-003)', () => {
   });
 });
 
-test.describe('Workflow node — hover menu visibility (FR-WF-NODE-004)', () => {
-  test.beforeEach(async ({ page, workflow }) => {
-    await page.goto(workflow.path);
-  });
+test.describe('Workflow node — hover menu (FR-WF-NODE-004, FR-WF-NODE-005)', () => {
+  test.describe('owner and editor (FR-WF-NODE-004, FR-WF-NODE-005)', () => {
+    test.beforeEach(async ({ page, workflow }) => {
+      await page.goto(workflow.path);
+    });
 
-  test('FR-WF-NODE-004: pointer hover shows workflowNodeHoverActionsMenu on one node only', async ({
-    page,
-  }) => {
-    const firstUuid = await firstWorkflowNodeUuid(page);
-    const secondUuid = await secondWorkflowNodeUuid(page);
+    test('FR-WF-NODE-004: pointer hover shows workflowNodeHoverActionsMenu on one node only', async ({
+      page,
+    }) => {
+      const firstUuid = await firstWorkflowNodeUuid(page);
+      const secondUuid = await secondWorkflowNodeUuid(page);
 
-    await hoverWorkflowNode(page, firstUuid);
-    await expect(workflowNodeHoverCommentsItem(page, firstUuid)).toBeVisible();
-    await expect(workflowNodeHoverCommentsItem(page, secondUuid)).toHaveCount(0);
+      await hoverWorkflowNode(page, firstUuid);
+      await expect(workflowNodeHoverCommentsItem(page, firstUuid)).toBeVisible();
+      await expect(workflowNodeHoverCommentsItem(page, secondUuid)).toHaveCount(0);
 
-    await page.mouse.move(0, 0);
-    await expect(workflowNodeHoverCommentsItem(page, firstUuid)).toHaveCount(0);
-  });
-});
+      await page.mouse.move(0, 0);
+      await expect(workflowNodeHoverCommentsItem(page, firstUuid)).toHaveCount(0);
+    });
 
-test.describe('Workflow node — hover menu composition (FR-WF-NODE-005)', () => {
-  test.beforeEach(async ({ page, workflow }) => {
-    await page.goto(workflow.path);
-  });
+    test('FR-WF-NODE-005: owner sees insert, duplicate, delete, and comments hover items', async ({
+      page,
+    }) => {
+      const nodeUuid = await firstWorkflowNodeUuid(page);
 
-  test('FR-WF-NODE-005: owner sees insert, duplicate, delete, and comments hover items', async ({
-    page,
-  }) => {
-    const nodeUuid = await firstWorkflowNodeUuid(page);
+      await hoverWorkflowNode(page, nodeUuid);
 
-    await hoverWorkflowNode(page, nodeUuid);
+      await expect(workflowNodeHoverInsertBelowItem(page, nodeUuid)).toBeEnabled();
+      await expect(workflowNodeHoverDuplicateItem(page, nodeUuid)).toBeEnabled();
+      await expect(workflowNodeHoverDeleteItem(page, nodeUuid)).toBeEnabled();
+      await expect(workflowNodeHoverCommentsItem(page, nodeUuid)).toBeEnabled();
+    });
 
-    await expect(workflowNodeHoverInsertBelowItem(page, nodeUuid)).toBeEnabled();
-    await expect(workflowNodeHoverDuplicateItem(page, nodeUuid)).toBeEnabled();
-    await expect(workflowNodeHoverDeleteItem(page, nodeUuid)).toBeEnabled();
-    await expect(workflowNodeHoverCommentsItem(page, nodeUuid)).toBeEnabled();
-  });
+    test.describe('Insert and duplicate actions (FR-WF-DUP-002, FR-WF-DUP-003)', () => {
+      test.describe.configure({ mode: 'serial' });
 
-  test('FR-WF-NODE-005: at most one node hover menu visible in workflowView', async ({ page }) => {
-    const firstUuid = await firstWorkflowNodeUuid(page);
-    const secondUuid = await secondWorkflowNodeUuid(page);
+      test.beforeEach(async ({ page }) => {
+        await setRowInsertMode(page);
+      });
 
-    await hoverWorkflowNode(page, firstUuid);
+      test('FR-WF-NODE-005: Insert node below adds blank workflowNode in Row mode', async ({
+        page,
+        workflow,
+      }) => {
+        const sectionUuid = workflow.sectionByTitle('E2E Section 3').uuid;
+        const sourceUuid = await firstNodeUuidInSection(page, sectionUuid);
+        const beforeCount = await workflowNodeCount(page);
 
-    await expect(workflowNodeHoverCommentsItem(page, firstUuid)).toBeVisible();
-    await expect(workflowNodeHoverCommentsItem(page, secondUuid)).toHaveCount(0);
+        await hoverWorkflowNode(page, sourceUuid);
+        await workflowNodeHoverInsertBelowItem(page, sourceUuid).click();
+
+        await expect
+          .poll(async () => workflowNodeCount(page), { timeout: 10_000 })
+          .toBe(beforeCount + 1);
+      });
+
+      test('FR-WF-DUP-002: Duplicate node below adds workflowNode in Row mode', async ({
+        page,
+        workflow,
+      }) => {
+        const sectionUuid = workflow.sectionByTitle('E2E Section 3').uuid;
+        const sourceUuid = await firstNodeUuidInSection(page, sectionUuid);
+        const beforeCount = await workflowNodeCount(page);
+
+        await hoverWorkflowNode(page, sourceUuid);
+        await workflowNodeHoverDuplicateItem(page, sourceUuid).click();
+
+        await expect
+          .poll(async () => workflowNodeCount(page), { timeout: 10_000 })
+          .toBe(beforeCount + 1);
+        await expect(workflowNode(page, sourceUuid)).toBeVisible();
+      });
+
+      test('FR-WF-DUP-003: Row duplicate places new workflowNode below source in same workflowChannel', async ({
+        page,
+        workflow,
+      }) => {
+        const sectionUuid = workflow.sectionByTitle('E2E Section 3').uuid;
+        const sourceUuid = await firstNodeUuidInSection(page, sectionUuid);
+
+        await hoverWorkflowNode(page, sourceUuid);
+        await workflowNodeHoverDuplicateItem(page, sourceUuid).click();
+
+        const duplicateUuid = await findNodeBelowSourceInSection(page, sectionUuid, sourceUuid);
+        await assertNodeIsBelowSourceInSameColumn(page, sourceUuid, duplicateUuid);
+      });
+    });
   });
 
   test.describe('Commenter hover menu (FR-WF-NODE-005)', () => {
@@ -351,8 +499,7 @@ test.describe('Workflow node — hover menu composition (FR-WF-NODE-005)', () =>
       page,
       workflow,
     }) => {
-      const commenter = workflow.contributorByRole('commenter');
-      await loginAs(page, { email: commenter.email, password: commenter.password });
+      await loginAsWorkflowContributor(page, workflow, 'commenter');
       await page.goto(workflow.path);
 
       const nodeUuid = await firstWorkflowNodeUuid(page);
@@ -372,12 +519,11 @@ test.describe('Workflow node — hover menu composition (FR-WF-NODE-005)', () =>
       page,
       workflow,
     }) => {
-      const viewer = workflow.contributorByRole('viewer');
-      await loginAs(page, { email: viewer.email, password: viewer.password });
+      await loginAsWorkflowContributor(page, workflow, 'viewer');
       await page.goto(workflow.path);
 
       const nodeUuid = await firstWorkflowNodeUuid(page);
-      await hoverWorkflowNode(page, nodeUuid);
+      await workflowNode(page, nodeUuid).hover();
 
       await expect(workflowNodeHoverCommentsItem(page, nodeUuid)).toHaveCount(0);
       await expect(workflowNodeHoverInsertBelowItem(page, nodeUuid)).toHaveCount(0);

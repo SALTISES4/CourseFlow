@@ -1,6 +1,5 @@
 import { test, expect } from '../../fixtures';
-import { loginAs } from '../../helpers/auth';
-import { authenticatedApiRequest } from '../../helpers/api';
+import { loginAsTestUser } from '../../helpers/auth';
 import { openFirstNodeEditForm } from './edit-node.helpers';
 import {
   expectReadOnlyWorkflowEditSectionForm,
@@ -11,6 +10,8 @@ import {
   dragSectionBelow,
   endSectionDrag,
   expectSectionNumberLabelsMatchOrder,
+  expectClearingSectionTitleShowsNumberLabelOnly,
+  expectSectionTitleChangePersistsAfterReload,
   restoreSectionOrder,
   sectionNodeUuids,
   sectionOrderUuids,
@@ -24,9 +25,6 @@ import {
   commentsTabInSidebar,
   deleteButtonInSectionHeader,
   deleteButtonInSidebar,
-  deleteSectionCancelButton,
-  deleteSectionConfirmButton,
-  deleteSectionDialog,
   duplicateBelowButtonInSectionHeader,
   duplicateButtonInSidebar,
   editSectionForm,
@@ -45,31 +43,12 @@ import {
   viewSettingsButton,
   EDIT_SECTION_HEADING,
 } from './edit-section.locators';
+import { fetchGraphView, type GraphViewPayload } from './workflow-graph.helpers';
 import { workflowEditNodeForm } from './workflow-graph.locators';
-
-type GraphViewPayload = {
-  sections: Array<{ uuid: string; position: number }>;
-  nodes: Array<{
-    uuid: string;
-    sectionUuid: string | null;
-    channelUuid: string | null;
-    sectionRow: number | null;
-  }>;
-  edges: Array<{
-    id: number;
-    sourceNodeUuid: string;
-    targetNodeUuid: string;
-    title: string;
-    textPosition: number;
-    lineType: string;
-    sourcePort: string;
-    targetPort: string;
-  }>;
-};
 
 test.use({
   seedAsset: 'workflow.standard_activity',
-  seedDependencies: ['project.primary', 'actor.commenter', 'actor.viewer'],
+  seedDependencies: ['project.primary', 'actor.commenter', 'actor.editor', 'actor.viewer'],
   actorAsset: 'actor.teacher',
   seedAccess: 'disposable-copy',
 });
@@ -77,25 +56,13 @@ test.use({
 /**
  * Edit section — FR-SEC-001 through FR-SEC-012.
  * Requirements: tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml
- * (+ duplicate/delete YAMLs for FR-SEC-005/006 sidebar paths)
- * Fixture: tests/.playwright-fixtures/workflow.json (`just e2e-prepare`)
- *
- * Hover-path duplicate/delete suites remain in duplicate-section-fr-005.spec.ts and
+ * Hover-path duplicate/delete and sidebar confirm delete: duplicate-section-fr-005.spec.ts and
  * delete-section-fr-006.spec.ts.
  */
 
 async function hoverSectionHeader(page: import('@playwright/test').Page, sectionUuid: string) {
   await sectionHeader(page, sectionUuid).hover();
   await expect(sectionHoverMenu(page, sectionUuid)).toBeVisible();
-}
-
-async function fetchGraphView(
-  page: import('@playwright/test').Page,
-  workflowUuid: string,
-): Promise<GraphViewPayload> {
-  const response = await authenticatedApiRequest(page, 'GET', `/api/graph/${workflowUuid}/view`);
-  expect(response.ok(), `graph view HTTP ${response.status()}`).toBeTruthy();
-  return (await response.json()) as GraphViewPayload;
 }
 
 function graphNodeAssignments(graph: GraphViewPayload) {
@@ -218,100 +185,81 @@ test.describe('edit-section-fr-001-012', () => {
     });
   });
 
-  test.describe('Edit section title (FR-SEC-003)', () => {
-    test.beforeEach(async ({ page, workflow }) => {
-      await page.goto(workflow.path);
-      await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
-    });
+  test.describe('Edit section form (FR-SEC-001, FR-SEC-003)', () => {
+    test.describe('owner and editor (FR-SEC-001, FR-SEC-003)', () => {
+      test.use({ storageState: { cookies: [], origins: [] } });
 
-    test('FR-SEC-003: section title change persists after reload', async ({ page, workflow }) => {
-      const section = workflow.sectionByTitle('E2E Section 3');
-      const sectionUuid = section.uuid;
-      const uniqueTitle = `E2E ${Date.now()}`;
-
-      await sectionHeader(page, sectionUuid).click();
-      await expect(editSectionForm(page)).toBeVisible();
-
-      await expect(editSectionForm(page).getByRole('button', { name: /^save$/i })).toHaveCount(0);
-
-      await titleFieldInEditSectionForm(page).fill(uniqueTitle);
-      await titleFieldInEditSectionForm(page).blur();
-
-      await expect(sectionHeader(page, sectionUuid)).toContainText(uniqueTitle, {
-        timeout: 15_000,
+      test('FR-SEC-003: owner — section title change persists after reload', async ({
+        page,
+        workflow,
+      }) => {
+        await loginAsTestUser(page);
+        await page.goto(workflow.path);
+        await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
+        await expectSectionTitleChangePersistsAfterReload(page, workflow);
       });
 
-      await page.reload();
-      await expect(sectionContainers(page).first()).toBeVisible();
-      await sectionHeader(page, sectionUuid).click();
-      await expect(titleFieldInEditSectionForm(page)).toHaveValue(uniqueTitle, {
-        timeout: 15_000,
+      test('FR-SEC-003: owner — clearing title shows workflowSectionNumberLabel only', async ({
+        page,
+        workflow,
+      }) => {
+        await loginAsTestUser(page);
+        await page.goto(workflow.path);
+        await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
+        await expectClearingSectionTitleShowsNumberLabelOnly(page, workflow);
+      });
+
+      test('FR-SEC-003: editor — section title change persists after reload', async ({
+        page,
+        workflow,
+      }) => {
+        await loginAsWorkflowContributor(page, workflow, 'editor');
+        await page.goto(workflow.path);
+        await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
+        await expectSectionTitleChangePersistsAfterReload(page, workflow);
+      });
+
+      test('FR-SEC-003: editor — clearing title shows workflowSectionNumberLabel only', async ({
+        page,
+        workflow,
+      }) => {
+        await loginAsWorkflowContributor(page, workflow, 'editor');
+        await page.goto(workflow.path);
+        await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
+        await expectClearingSectionTitleShowsNumberLabelOnly(page, workflow);
       });
     });
 
-    test('FR-SEC-003: clearing title shows workflowSectionNumberLabel only', async ({
-      page,
-      workflow,
-    }) => {
+    test.describe('commenter and viewer permissions (FR-SEC-001, FR-SEC-003)', () => {
+      test.use({ storageState: { cookies: [], origins: [] } });
 
-      const section = workflow.sectionByTitle('E2E Section 3');
-      const sectionUuid = section.uuid;
-      const seedTitle = section.title;
-      const displayIndex = String(section.position + 1);
+      test('FR-SEC-001/003: commenter opens read-only workflowEditSectionForm from section header', async ({
+        page,
+        workflow,
+      }) => {
+        await loginAsWorkflowContributor(page, workflow, 'commenter');
+        await page.goto(workflow.path);
+        await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
 
-      await sectionHeader(page, sectionUuid).click();
-      await expect(editSectionForm(page)).toBeVisible();
+        await sectionHeader(page, workflow.firstSection().uuid).click();
+        await expectReadOnlyWorkflowEditSectionForm(page);
+      });
 
-      const titleBeforeClear = await titleFieldInEditSectionForm(page).inputValue();
+      test('FR-SEC-001/003: viewer opens read-only workflowEditSectionForm from section header', async ({
+        page,
+        workflow,
+      }) => {
+        await loginAsWorkflowContributor(page, workflow, 'viewer');
+        await page.goto(workflow.path);
+        await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
 
-      try {
-        await titleFieldInEditSectionForm(page).fill('');
-        await titleFieldInEditSectionForm(page).blur();
-
-        await expect(titleFieldInEditSectionForm(page)).toHaveValue('', { timeout: 15_000 });
-        await expect(sectionNumberLabel(page, sectionUuid)).toHaveText(displayIndex);
-        if (titleBeforeClear) {
-          await expect(sectionHeader(page, sectionUuid)).not.toContainText(titleBeforeClear);
-        }
-      } finally {
-        await titleFieldInEditSectionForm(page).fill(seedTitle);
-        await titleFieldInEditSectionForm(page).blur();
-        await expect(sectionHeader(page, sectionUuid)).toContainText(seedTitle, {
-          timeout: 15_000,
-        });
-      }
+        await sectionHeader(page, workflow.firstSection().uuid).click();
+        await expectReadOnlyWorkflowEditSectionForm(page);
+      });
     });
   });
 
-  test.describe('commenter and viewer permissions (FR-SEC-001, FR-SEC-003)', () => {
-    test.use({ storageState: { cookies: [], origins: [] } });
-
-    test('FR-SEC-001/003: commenter opens read-only workflowEditSectionForm from section header', async ({
-      page,
-      workflow,
-    }) => {
-      await loginAsWorkflowContributor(page, workflow, 'commenter');
-      await page.goto(workflow.path);
-      await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
-
-      await sectionHeader(page, workflow.firstSection().uuid).click();
-      await expectReadOnlyWorkflowEditSectionForm(page);
-    });
-
-    test('FR-SEC-001/003: viewer opens read-only workflowEditSectionForm from section header', async ({
-      page,
-      workflow,
-    }) => {
-      await loginAsWorkflowContributor(page, workflow, 'viewer');
-      await page.goto(workflow.path);
-      await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
-
-      await sectionHeader(page, workflow.firstSection().uuid).click();
-      await expectReadOnlyWorkflowEditSectionForm(page);
-    });
-  });
-
-  test.describe('Mutations — insert, duplicate, delete (FR-SEC-004, FR-SEC-005, FR-SEC-006)', () => {
+  test.describe('Mutations — insert (FR-SEC-004)', () => {
     test.beforeEach(async ({ page, workflow }) => {
       await page.goto(workflow.path);
       await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
@@ -356,133 +304,89 @@ test.describe('edit-section-fr-001-012', () => {
       await sectionHeader(page, insertedUuid).click();
       await expect(titleFieldInEditSectionForm(page)).toHaveValue('');
     });
-
-    test('FR-SEC-005: duplicate from sidebar adds section with (copy) title', async ({
-      page,
-      workflow,
-    }) => {
-      const source = workflow.firstSection();
-      const before = await sectionContainers(page).count();
-
-      await sectionHeader(page, source.uuid).click();
-      await expect(editSectionForm(page)).toBeVisible();
-      await duplicateButtonInSidebar(page).click();
-
-      await expect(sectionContainers(page)).toHaveCount(before + 1, { timeout: 15_000 });
-      await expect(sectionContainers(page).filter({ hasText: 'E2E Section 1 (copy)' })).toHaveCount(
-        1,
-      );
-    });
-
-    test('FR-SEC-006: delete from sidebar opens modal; Cancel leaves section count unchanged', async ({
-      page,
-      workflow,
-    }) => {
-      const before = await sectionContainers(page).count();
-      const sectionUuid = workflow.firstSection().uuid;
-
-      await sectionHeader(page, sectionUuid).click();
-      await deleteButtonInSidebar(page).click();
-
-      await expect(deleteSectionDialog(page)).toBeVisible();
-      expect(await sectionContainers(page).count()).toBe(before);
-
-      await deleteSectionCancelButton(page).click();
-
-      await expect(deleteSectionDialog(page)).toBeHidden();
-      expect(await sectionContainers(page).count()).toBe(before);
-    });
-
-    test('FR-SEC-006: confirm delete removes target section', async ({ page, workflow }) => {
-      const disposable = workflow.sectionByTitle('E2E Section 3');
-      const before = await sectionContainers(page).count();
-
-      await sectionHeader(page, disposable.uuid).click();
-      await deleteButtonInSidebar(page).click();
-      await expect(deleteSectionDialog(page)).toBeVisible();
-      await deleteSectionConfirmButton(page).click();
-
-      await expect(deleteSectionDialog(page)).toBeHidden({ timeout: 15_000 });
-      await expect(sectionContainers(page)).toHaveCount(before - 1, { timeout: 15_000 });
-      await expect(page.locator(`[data-section-id="${disposable.uuid}"]`)).toHaveCount(0);
-    });
   });
 
   test.describe('Hover menu (FR-SEC-007)', () => {
-    test.beforeEach(async ({ page, workflow }) => {
-      await page.goto(workflow.path);
-      await expect(sectionHeader(page, workflow.firstSection().uuid)).toBeVisible({
-        timeout: 15_000,
+    test.describe('Hover menu owner and editor (FR-SEC-007)', () => {
+      test.beforeEach(async ({ page, workflow }) => {
+        await page.goto(workflow.path);
+        await expect(sectionHeader(page, workflow.firstSection().uuid)).toBeVisible({
+          timeout: 15_000,
+        });
+      });
+
+      test('FR-SEC-007: owner sees hover menu with active insert, duplicate, delete, and comments items', async ({
+        page,
+        workflow,
+      }) => {
+        const sectionUuid = workflow.firstSection().uuid;
+        await hoverSectionHeader(page, sectionUuid);
+
+        await expect(insertBelowButtonInSectionHeader(page, sectionUuid)).toBeEnabled();
+        await expect(duplicateBelowButtonInSectionHeader(page, sectionUuid)).toBeEnabled();
+        await expect(deleteButtonInSectionHeader(page, sectionUuid)).toBeEnabled();
+        await expect(commentsButtonInSectionHeader(page, sectionUuid)).toBeEnabled();
+      });
+
+      test('FR-SEC-007: hover comments opens comments tab in workflowRightSidebar', async ({
+        page,
+        workflow,
+      }) => {
+        const sectionUuid = workflow.firstSection().uuid;
+
+        await hoverSectionHeader(page, sectionUuid);
+        await commentsButtonInSectionHeader(page, sectionUuid).click();
+
+        await expect(rightSidebar(page)).toBeVisible();
+        await expect(commentsTabInSidebar(page)).toHaveAttribute('aria-pressed', 'true');
       });
     });
 
-    test('FR-SEC-007: owner sees hover menu with active insert, duplicate, delete, and comments items', async ({
-      page,
-      workflow,
-    }) => {
-      const sectionUuid = workflow.firstSection().uuid;
-      await hoverSectionHeader(page, sectionUuid);
+    test.describe('Hover menu commenter (FR-SEC-007)', () => {
+      test.use({ storageState: { cookies: [], origins: [] } });
 
-      await expect(insertBelowButtonInSectionHeader(page, sectionUuid)).toBeEnabled();
-      await expect(duplicateBelowButtonInSectionHeader(page, sectionUuid)).toBeEnabled();
-      await expect(deleteButtonInSectionHeader(page, sectionUuid)).toBeEnabled();
-      await expect(commentsButtonInSectionHeader(page, sectionUuid)).toBeEnabled();
+      test('FR-SEC-007: commenter sees disabled insert, duplicate, and delete hover items', async ({
+        page,
+        workflow,
+      }) => {
+        await loginAsWorkflowContributor(page, workflow, 'commenter');
+        await page.goto(workflow.path);
+        await expect(sectionHeader(page, workflow.firstSection().uuid)).toBeVisible({
+          timeout: 15_000,
+        });
+
+        const sectionUuid = workflow.firstSection().uuid;
+        await hoverSectionHeader(page, sectionUuid);
+
+        await expect(insertBelowButtonInSectionHeader(page, sectionUuid)).toBeDisabled();
+        await expect(duplicateBelowButtonInSectionHeader(page, sectionUuid)).toBeDisabled();
+        await expect(deleteButtonInSectionHeader(page, sectionUuid)).toBeDisabled();
+        await expect(commentsButtonInSectionHeader(page, sectionUuid)).toBeEnabled();
+      });
     });
 
-    test('FR-SEC-007: hover comments opens comments tab in workflowRightSidebar', async ({
-      page,
-      workflow,
-    }) => {
-      const sectionUuid = workflow.firstSection().uuid;
+    test.describe('Hover menu viewer (FR-SEC-007)', () => {
+      test.use({ storageState: { cookies: [], origins: [] } });
 
-      await hoverSectionHeader(page, sectionUuid);
-      await commentsButtonInSectionHeader(page, sectionUuid).click();
+      test('FR-SEC-007: viewer does not see workflowSectionContainerHoverActionsMenu on hover', async ({
+        page,
+        workflow,
+      }) => {
+        await loginAsWorkflowContributor(page, workflow, 'viewer');
+        await page.goto(workflow.path);
+        await expect(sectionHeader(page, workflow.firstSection().uuid)).toBeVisible({
+          timeout: 15_000,
+        });
 
-      await expect(rightSidebar(page)).toBeVisible();
-      await expect(commentsTabInSidebar(page)).toHaveAttribute('aria-pressed', 'true');
-    });
-  });
+        const sectionUuid = workflow.firstSection().uuid;
+        await sectionHeader(page, sectionUuid).hover();
 
-  test.describe('Hover menu commenter (FR-SEC-007)', () => {
-    test.use({ storageState: { cookies: [], origins: [] } });
-
-    test('FR-SEC-007: commenter sees disabled insert, duplicate, and delete hover items', async ({
-      page,
-      workflow,
-    }) => {
-      const commenter = workflow.contributorByRole('commenter');
-      await loginAs(page, { email: commenter.email, password: commenter.password });
-      await page.goto(workflow.path);
-
-      const sectionUuid = workflow.firstSection().uuid;
-      await hoverSectionHeader(page, sectionUuid);
-
-      await expect(insertBelowButtonInSectionHeader(page, sectionUuid)).toBeDisabled();
-      await expect(duplicateBelowButtonInSectionHeader(page, sectionUuid)).toBeDisabled();
-      await expect(deleteButtonInSectionHeader(page, sectionUuid)).toBeDisabled();
-      await expect(commentsButtonInSectionHeader(page, sectionUuid)).toBeEnabled();
-    });
-  });
-
-  test.describe('Hover menu viewer (FR-SEC-007)', () => {
-    test.use({ storageState: { cookies: [], origins: [] } });
-
-    test('FR-SEC-007: viewer does not see workflowSectionContainerHoverActionsMenu on hover', async ({
-      page,
-      workflow,
-    }) => {
-      const viewer = workflow.contributorByRole('viewer');
-      await loginAs(page, { email: viewer.email, password: viewer.password });
-      await page.goto(workflow.path);
-
-      const sectionUuid = workflow.firstSection().uuid;
-      await sectionHeader(page, sectionUuid).hover();
-
-      await expect(sectionHoverMenu(page, sectionUuid)).toBeHidden();
-      await expect(page.getByRole('button', { name: INSERT_SECTION_BELOW_NAME })).toHaveCount(0);
-      await expect(page.getByRole('button', { name: DUPLICATE_SECTION_BELOW_NAME })).toHaveCount(0);
-      await expect(page.getByRole('button', { name: DELETE_SECTION_HOVER_NAME })).toHaveCount(0);
-      await expect(page.getByRole('button', { name: COMMENT_HOVER_NAME })).toHaveCount(0);
+        await expect(sectionHoverMenu(page, sectionUuid)).toBeHidden();
+        await expect(page.getByRole('button', { name: INSERT_SECTION_BELOW_NAME })).toHaveCount(0);
+        await expect(page.getByRole('button', { name: DUPLICATE_SECTION_BELOW_NAME })).toHaveCount(0);
+        await expect(page.getByRole('button', { name: DELETE_SECTION_HOVER_NAME })).toHaveCount(0);
+        await expect(page.getByRole('button', { name: COMMENT_HOVER_NAME })).toHaveCount(0);
+      });
     });
   });
 
@@ -562,12 +466,13 @@ test.describe('edit-section-fr-001-012', () => {
   });
 
   test.describe('Vertical section reorder (FR-SEC-009)', () => {
-    test.beforeEach(async ({ page, workflow }) => {
-      await page.goto(workflow.path);
-      await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
-    });
+    test.describe('owner', () => {
+      test.beforeEach(async ({ page, workflow }) => {
+        await page.goto(workflow.path);
+        await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
+      });
 
-    test('FR-SEC-009: drag section below another updates order and renumbers', async ({
+      test('FR-SEC-009: drag section below another updates order and renumbers', async ({
       page,
       workflow,
     }) => {
@@ -657,28 +562,48 @@ test.describe('edit-section-fr-001-012', () => {
           return total;
         })
         .toBeGreaterThan(0);
+      });
     });
-  });
 
-  test.describe('Vertical section reorder viewer (FR-SEC-009)', () => {
-    test.use({ storageState: { cookies: [], origins: [] } });
+    test.describe('Vertical section reorder viewer and commenters (FR-SEC-009)', () => {
+      test.use({ storageState: { cookies: [], origins: [] } });
 
-    test('FR-SEC-009: viewer cannot vertically reorder sections', async ({ page, workflow }) => {
-      const viewer = workflow.contributorByRole('viewer');
-      await loginAs(page, { email: viewer.email, password: viewer.password });
-      await page.goto(workflow.path);
-      await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
+      test('FR-SEC-009: commenter cannot vertically reorder sections', async ({
+        page,
+        workflow,
+      }) => {
+        await loginAsWorkflowContributor(page, workflow, 'commenter');
+        await page.goto(workflow.path);
+        await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
 
-      const first = workflow.firstSection();
-      const blank = workflow.blankSection();
-      const orderBefore = await sectionOrderUuids(page);
+        const first = workflow.firstSection();
+        const blank = workflow.blankSection();
+        const orderBefore = await sectionOrderUuids(page);
 
-      await expect(sectionHeader(page, first.uuid)).not.toHaveAttribute('draggable', 'true');
-      await sectionHeader(page, first.uuid).dragTo(sectionContainer(page, blank.uuid), {
-        force: true,
+        await expect(sectionHeader(page, first.uuid)).not.toHaveAttribute('draggable', 'true');
+        await sectionHeader(page, first.uuid).dragTo(sectionContainer(page, blank.uuid), {
+          force: true,
+        });
+
+        await expect.poll(async () => sectionOrderUuids(page)).toEqual(orderBefore);
       });
 
-      await expect.poll(async () => sectionOrderUuids(page)).toEqual(orderBefore);
+      test('FR-SEC-009: viewer cannot vertically reorder sections', async ({ page, workflow }) => {
+        await loginAsWorkflowContributor(page, workflow, 'viewer');
+        await page.goto(workflow.path);
+        await expect(sectionContainers(page).first()).toBeVisible({ timeout: 15_000 });
+
+        const first = workflow.firstSection();
+        const blank = workflow.blankSection();
+        const orderBefore = await sectionOrderUuids(page);
+
+        await expect(sectionHeader(page, first.uuid)).not.toHaveAttribute('draggable', 'true');
+        await sectionHeader(page, first.uuid).dragTo(sectionContainer(page, blank.uuid), {
+          force: true,
+        });
+
+        await expect.poll(async () => sectionOrderUuids(page)).toEqual(orderBefore);
+      });
     });
   });
 

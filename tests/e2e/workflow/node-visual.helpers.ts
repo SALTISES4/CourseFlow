@@ -3,7 +3,18 @@ import { expect, type Page } from '@playwright/test';
 import { authenticatedApiRequest } from '../../helpers/api';
 import {
   workflowChannelHeader,
+  workflowEditNodeForm,
+  workflowEditNodeFormContextField,
+  workflowEditNodeFormTaskTypeField,
+  workflowEditNodeFormTimeField,
+  workflowEditNodeFormTitleField,
   workflowNodeBorder,
+  workflowNodeContent,
+  workflowNodeMeta,
+  workflowNodeMetaContextTag,
+  workflowNodeMetaTaskTag,
+  workflowNodeMetaTimeTag,
+  workflowNodeTitle,
 } from './workflow-graph.locators';
 
 export type NodeMetaPatch = {
@@ -126,4 +137,46 @@ export async function workflowChannelHeaderColorIndicatorBackgroundColor(
     }
     return getComputedStyle(stripe).backgroundColor;
   });
+}
+
+export async function openWorkflowEditNodeFormFromCanvas(
+  page: Page,
+  nodeUuid: string,
+): Promise<void> {
+  await workflowNodeContent(page, nodeUuid).click();
+  await expect(workflowEditNodeForm(page)).toBeVisible();
+}
+
+export async function waitForNodeMetaPatch(page: Page): Promise<void> {
+  const response = await page.waitForResponse(
+    (candidate) =>
+      candidate.request().method() === 'PATCH' &&
+      /\/api\/node\/[^/]+\/meta\/?$/.test(new URL(candidate.url()).pathname),
+    { timeout: 15_000 },
+  );
+  expect(response.ok()).toBeTruthy();
+}
+
+/** FR-WF-NODE-001 — canvas chrome matches workflowEditNodeForm for activity nodes. */
+export async function expectActivityNodeCanvasMatchesEditNodeForm(
+  page: Page,
+  nodeUuid: string,
+  expected: {
+    title: string;
+    contextLabel: string;
+    taskLabel: string;
+    timeDisplay: string;
+  },
+): Promise<void> {
+  await expect(workflowNodeTitle(page, nodeUuid)).toHaveText(expected.title);
+  await expect(workflowNodeMeta(page, nodeUuid)).toBeVisible();
+  await expect(workflowNodeMetaContextTag(page, nodeUuid)).toBeVisible();
+  await expect(workflowNodeMetaTaskTag(page, nodeUuid)).toBeVisible();
+  await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toContainText(expected.timeDisplay);
+
+  await openWorkflowEditNodeFormFromCanvas(page, nodeUuid);
+  await expect(workflowEditNodeFormTitleField(page)).toHaveValue(expected.title);
+  await expect(workflowEditNodeFormContextField(page)).toContainText(expected.contextLabel);
+  await expect(workflowEditNodeFormTaskTypeField(page)).toContainText(expected.taskLabel);
+  await expect(workflowEditNodeFormTimeField(page)).toHaveValue(expected.timeDisplay);
 }

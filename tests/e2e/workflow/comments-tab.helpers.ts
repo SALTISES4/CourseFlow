@@ -157,3 +157,13 @@ export async function deleteOwnComment(page: Page, body: string) {
     page.getByText('Your comment has been successfully deleted').last(),
   ).toBeVisible({ timeout: 15_000 });
 }
+
+export async function expectCommentDeleteLinkVisible(page: Page, body: string): Promise<void> {
+  await expect(workflowCommentsTabListItemBody(page, body)).toBeVisible({ timeout: 15_000 });
+  await expect(workflowCommentsTabListItemDeleteLink(page, body)).toBeVisible();
+}
+
+export async function expectCommentDeleteLinkHidden(page: Page, body: string): Promise<void> {
+  await expect(workflowCommentsTabListItemBody(page, body)).toBeVisible({ timeout: 15_000 });
+  await expect(workflowCommentsTabListItemDeleteLink(page, body)).toHaveCount(0);
+}
