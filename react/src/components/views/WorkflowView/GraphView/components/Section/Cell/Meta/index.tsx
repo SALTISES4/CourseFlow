@@ -9,8 +9,6 @@ import { generatePath } from 'react-router-dom'
 import * as Styled from './styles'
 import { getIcon } from './utility'
 
-const choices = COURSEFLOW_APP.globalContextData.workflowChoices
-
 type PropsType = {
   /** Linked library workflow UUID when set on the node. */
   workflow?: string | null
@@ -18,10 +16,7 @@ type PropsType = {
   parentWorkflowType?: string | null
   contextType: number
   taskType: number
-  time?: {
-    length: number
-    unit: number
-  }
+  time?: number | null
 }
 
 function linkedIndicatorLabel(
@@ -84,10 +79,10 @@ const Meta = ({
               {taskIcon && <Styled.Tag>{taskIcon}</Styled.Tag>}
             </Styled.IconWrap>
           )}
-          {!!(time && time.length && time.unit) && (
+          {time && (
             <Styled.Tag>
               <TimerOutlinedIcon />
-              <span>{`${time.length} ${choices.timeChoices[time.unit].name}`}</span>
+              <span>{time}</span>
             </Styled.Tag>
           )}
         </Styled.Footer>

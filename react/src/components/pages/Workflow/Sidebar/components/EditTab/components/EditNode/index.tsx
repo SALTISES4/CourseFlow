@@ -1,4 +1,5 @@
 import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import TimeDurationField from '@cf/components/common/UIPrimitives/TimeDurationInput'
 import type { NodeEntity } from '@cf/features/graph/state/model/types'
 import {
   selectGraphByUuid,
@@ -137,7 +138,6 @@ const EditNodeForm = ({
       contextType: node.contextClassification ?? '',
       taskType: node.taskClassification ?? '',
       timeRequired: node.timeRequired ?? undefined,
-      timeUnits: node.timeUnits ?? undefined,
       tags: node.tagIds ?? [],
       specificEducation: false
     }
@@ -157,7 +157,6 @@ const EditNodeForm = ({
         const timeRequired = !data.timeRequired
           ? null
           : Number(data.timeRequired)
-        const timeUnits = !data.timeUnits ? null : Number(data.timeUnits)
 
         const meta: Parameters<typeof changeNodeMeta>[0]['meta'] = {
           tagIds: (data.tags ?? []).map((id) => Number(id))
@@ -169,7 +168,6 @@ const EditNodeForm = ({
           meta.contextClassification = contextClassification
           meta.taskClassification = taskClassification
           meta.timeRequired = Number.isNaN(timeRequired) ? null : timeRequired
-          meta.timeUnits = Number.isNaN(timeUnits) ? null : timeUnits
         } else if (isCourseParent || isActivityParent) {
           meta.contextClassification = contextClassification
           if (isActivityParent) {
@@ -181,7 +179,6 @@ const EditNodeForm = ({
           meta.contextClassification = contextClassification
           meta.taskClassification = taskClassification
           meta.timeRequired = Number.isNaN(timeRequired) ? null : timeRequired
-          meta.timeUnits = Number.isNaN(timeUnits) ? null : timeUnits
         }
 
         void dispatch(
@@ -340,37 +337,19 @@ const EditNodeForm = ({
           )}
 
           {showEditableTimeFields && (
-            <Stack direction="row" gap={2}>
-              <TextField
-                label={_t('Amount')}
-                variant="outlined"
-                size="small"
-                {...register('timeRequired')}
-                sx={{ flexBasis: '35%' }}
-              />
-              <FormControl sx={{ flexGrow: 1 }} size="small">
-                <InputLabel id="unit-type-select-label">
-                  {_t('Unit type')}
-                </InputLabel>
-                <Controller
-                  name="timeUnits"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      label={_t('Unit type')}
-                      labelId="unit-type-select-label"
-                    >
-                      {optionsData.timeUnits.map((unit, idx) => (
-                        <MenuItem key={idx} value={idx + 1}>
-                          {unit}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  )}
-                />
-              </FormControl>
-            </Stack>
+            <TimeDurationField
+              size="small"
+              fullWidth
+              // TODO: grab these from the API
+              // also make sure to nuke timeUnits and adjust timeRequired
+              // to a real "Duration" type instead of float
+              value={{
+                days: 0,
+                hours: 0,
+                minutes: 0
+              }}
+              onChange={(value) => console.log(value)}
+            />
           )}
         </Stack>
 

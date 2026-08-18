@@ -234,7 +234,6 @@ function mapNodeMetaFromApi(node: {
   contextClassification?: number | null
   taskClassification?: number | null
   timeRequired?: number | null
-  timeUnits?: number | null
   representsWorkflow?: boolean
   tagIds?: number[]
 }): Pick<
@@ -244,7 +243,6 @@ function mapNodeMetaFromApi(node: {
   | 'contextClassification'
   | 'taskClassification'
   | 'timeRequired'
-  | 'timeUnits'
   | 'representsWorkflow'
   | 'tagIds'
 > {
@@ -254,7 +252,6 @@ function mapNodeMetaFromApi(node: {
     contextClassification: node.contextClassification ?? null,
     taskClassification: node.taskClassification ?? null,
     timeRequired: node.timeRequired ?? null,
-    timeUnits: node.timeUnits ?? null,
     representsWorkflow: node.representsWorkflow ?? false,
     tagIds: node.tagIds ?? []
   }
@@ -506,9 +503,6 @@ export const changeNodeMetaCommand = async (
   }
   if (meta.timeRequired !== undefined) {
     body.timeRequired = meta.timeRequired
-  }
-  if (meta.timeUnits !== undefined) {
-    body.timeUnits = meta.timeUnits
   }
   if (meta.representsWorkflow !== undefined) {
     body.representsWorkflow = meta.representsWorkflow
