@@ -6,7 +6,7 @@ import {
   clickWorkflowEdge,
   dragWorkflowEdgeFromHandleToHandle,
   dragWorkflowEdgeReconnectTarget,
-} from './workflow-edge.helpers';
+} from './edge.helpers';
 import {
   workflowEdge,
   workflowEditEdgeFormDeleteButton,
@@ -16,7 +16,7 @@ import {
   workflowNodeEdgeHandles,
   workflowEdgeSourceReconnectHandle,
   workflowEdgeTargetReconnectHandle,
-} from './workflow-edge.locators';
+} from './edge.locators';
 import {
   edgeIdString,
   fetchGraphView,

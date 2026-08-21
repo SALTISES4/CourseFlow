@@ -16,6 +16,7 @@ type CreateOutcomeOptions = {
   title: string;
   parentUuid?: string | null;
   insertIndex?: number | null;
+  tagIds?: number[];
 };
 
 type GraphViewOutcomesPayload = {
@@ -48,6 +49,9 @@ export async function createOutcomeViaApi(
   }
   if (options.insertIndex !== undefined && options.insertIndex !== null) {
     data.insertIndex = options.insertIndex;
+  }
+  if (options.tagIds !== undefined) {
+    data.tagIds = options.tagIds;
   }
 
   const response = await authenticatedApiRequest(page, 'POST', `/api/graph/${graphUuid}/outcomes`, {

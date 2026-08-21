@@ -18,7 +18,6 @@ import {
   workflowOutcomeHeaderWithOrdinalPrefix,
   workflowOutcomeHeadersAtFrDepth,
   workflowOutcomeExpandToggle,
-  workflowOutcomeHoverDeleteItem,
   workflowOutcomeHoverInsertChildForHeader,
   workflowOutcomeHoverInsertSiblingForHeader,
   workflowOutcomeHoverInsertSiblingItem,
@@ -33,9 +32,9 @@ test.use({
 });
 
 /**
- * Outcome hover insert, header ordinals, depth cap, and subtree delete — FR-WF-EO-003, EO-007, EO-008, EO-014.
- * (Drag reorder lives in outcome-drag-reorder-fr-015-017.spec.ts; duplicate/delete in outcome-duplicate-delete-fr-009-014.spec.ts.)
- * Requirements: workflow_edit_outcome_requirements_v1.yaml, workflow_delete_outcome_requirements_v1.yaml
+ * Outcome hover insert, header ordinals, and depth cap — FR-WF-EO-003, EO-007, EO-008.
+ * (Drag reorder: outcome-drag-reorder-fr-015-017.spec.ts; duplicate/delete: outcome-duplicate-delete-fr-009-014.spec.ts.)
+ * Requirements: workflow_edit_outcome_requirements_v1.yaml
  */
 
 const E2E_CHILD_TITLE = 'E2E Outcome Child';
@@ -58,7 +57,7 @@ async function createChildOutcome(
   await ensureOutcomeTitleByOrdinalPrefix(page, childOrdinal, childTitle);
 }
 
-test.describe('Outcome — insert, ordinals, depth cap, subtree delete (FR-WF-EO-003/007/008/014)', () => {
+test.describe('Outcome — insert, ordinals, depth cap (FR-WF-EO-003/007/008)', () => {
   test.beforeEach(async ({ page, workflow }) => {
     await gotoOutcomesView(page, workflow.path);
     await expect(workflowOutcomeHeader(page, workflow.firstOutcome().title)).toBeVisible();
@@ -97,7 +96,7 @@ test.describe('Outcome — insert, ordinals, depth cap, subtree delete (FR-WF-EO
     await expect(workflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE)).toBeVisible();
   });
 
-  test('FR-WF-EO-003: Insert child appends last child under hovered workflowOutcome', async ({
+  test('FR-WF-EO-003: Insert child under level-1 outcome creates FR depth-2 node', async ({
     page,
   }) => {
     const beforeCount = await workflowOutcomeHeaderCount(page);
@@ -126,13 +125,6 @@ test.describe('Outcome — insert, ordinals, depth cap, subtree delete (FR-WF-EO
     await expect(workflowOutcomeHeader(page, E2E_CHILD_TITLE)).toBeVisible();
   });
 
-  test('FR-WF-EO-007: root workflowOutcomeHeaderTitle uses ordinal prefix and title', async ({
-    page,
-  }) => {
-    await expect(workflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE)).toBeVisible();
-    await expect(page.getByText(/^1\.\s+E2E Outcome 1$/)).toBeVisible();
-  });
-
   test('FR-WF-EO-007: level-1 code appears between ordinal and title', async ({ page }) => {
     await workflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE).click();
     await expect(workflowEditOutcomeForm(page)).toBeVisible();
@@ -149,6 +141,13 @@ test.describe('Outcome — insert, ordinals, depth cap, subtree delete (FR-WF-EO
   test('FR-WF-EO-007: level-2 header uses dotted ordinal prefix', async ({ page }) => {
     await createChildOutcome(page, E2E_SEED_OUTCOME_TITLE, '1.1', E2E_CHILD_TITLE);
     await expect(page.getByText(/^1\.1\.\s+E2E Outcome Child$/)).toBeVisible();
+  });
+
+  test('FR-WF-EO-007: level-3 header uses dotted ordinal prefix', async ({ page }) => {
+    await createChildOutcome(page, E2E_SEED_OUTCOME_TITLE, '1.1', E2E_CHILD_TITLE);
+    await createChildOutcome(page, E2E_CHILD_TITLE, '1.1.1', E2E_GRANDCHILD_TITLE);
+    await revealOutcomeByOrdinalPath(page, '1.1.1');
+    await expect(page.getByText(/^1\.1\.1\.\s+E2E Outcome Grandchild$/)).toBeVisible();
   });
 
   test('FR-WF-EO-003: Insert child under level-2 outcome creates FR depth-3 node', async ({
@@ -188,23 +187,6 @@ test.describe('Outcome — insert, ordinals, depth cap, subtree delete (FR-WF-EO
     expect(await workflowOutcomeHeadersAtFrDepth(page, 4).count()).toBe(0);
     expect(await workflowOutcomeHeaderCount(page)).toBe(beforeCount);
   });
-
-  test('FR-WF-EO-014: deleting level-2 workflowOutcome removes its subtree', async ({ page }) => {
-    await createChildOutcome(page, E2E_SEED_OUTCOME_TITLE, '1.1', E2E_CHILD_TITLE);
-    await createChildOutcome(page, E2E_CHILD_TITLE, '1.1.1', E2E_GRANDCHILD_TITLE);
-    const beforeCount = await workflowOutcomeHeaderCount(page);
-
-    await revealOutcomeByOrdinalPath(page, '1.1');
-    await hoverWorkflowOutcomeHeader(page, E2E_CHILD_TITLE);
-    await workflowOutcomeHoverDeleteItem(page, E2E_CHILD_TITLE).click();
-
-    await expect
-      .poll(async () => workflowOutcomeHeaderCount(page), { timeout: 10_000 })
-      .toBe(beforeCount - 2);
-    await expect(workflowOutcomeHeaderWithOrdinalPrefix(page, '1.1')).toHaveCount(0);
-    await expect(workflowOutcomeHeaderWithOrdinalPrefix(page, '1.1.1')).toHaveCount(0);
-    await expect(workflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE)).toBeVisible();
-  });
 });
 
 test.describe('Outcome insert — role behavior (FR-WF-EO-003)', () => {
@@ -237,7 +219,7 @@ test.describe('Outcome insert — role behavior (FR-WF-EO-003)', () => {
       await loginAsWorkflowContributor(page, workflow, 'viewer');
       await gotoOutcomesView(page, workflow.path);
 
-      await hoverWorkflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE);
+      await workflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE).hover();
       await expect(workflowOutcomeHoverInsertSiblingItem(page, E2E_SEED_OUTCOME_TITLE)).toHaveCount(0);
     });
   });

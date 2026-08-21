@@ -29,7 +29,7 @@ import {
   workflowEditEdgeFormDashedLineToggle,
   workflowEditEdgeFormDeleteButton,
   workflowEditEdgeFormTitleField,
-} from './workflow-edge.locators';
+} from './edge.locators';
 
 export type WorkflowContributorRole = 'commenter' | 'viewer' | 'editor';
 

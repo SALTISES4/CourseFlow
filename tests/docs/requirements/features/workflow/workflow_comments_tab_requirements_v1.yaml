@@ -136,7 +136,7 @@ requirements:
     preconditions:
       - workflowRightSidebar is visible per FR-WF-RS-001
       - for the hover-menu path, workflowView is rendered with at least one workflowNode and the user can hover that workflowNode so workflowNodeHoverActionsMenu is shown per FR-WF-NODE-005
-      - for the sidebar-tab path, sidebar.edit already designates a workflowNode (CfObjectType.NODE) before the user clicks workflowRightSidebarCommentsTab
+      - for the sidebar-tab path, sidebar.edit already designates a workflowNode (CfObjectType.NODE) and workflowRightSidebarCommentsTab is rendered per FR-WF-RS-002 and FR-WF-RS-003
 
     trigger:
       - user clicks workflowNodeHoverActionsMenuCommentsItem on a hovered workflowNode
@@ -151,20 +151,20 @@ requirements:
 
     roleBehavior:
       owner:
-        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarCommentsTab: renderedAndEnabledWhenEligibleSelectionExists
       editor:
-        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarCommentsTab: renderedAndEnabledWhenEligibleSelectionExists
       commenter:
-        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarCommentsTab: renderedAndEnabledWhenEligibleSelectionExists
       viewer:
-        workflowRightSidebarCommentsTab: disabled
+        workflowRightSidebarCommentsTab: notRenderedWhenNoEligibleSelection; disabledWhenEligibleSelectionExists
       user:
-        workflowRightSidebarCommentsTab: disabled
+        workflowRightSidebarCommentsTab: notRenderedWhenNoEligibleSelection; disabledWhenEligibleSelectionExists
 
     acceptanceCriteria:
       - given actor is owner, editor, or commenter and the user clicks workflowNodeHoverActionsMenuCommentsItem on hovered workflowNode N, workflowRightSidebar shows workflowRightSidebarCommentsTab selected and workflowRightSidebarCommentsTabContent is bound to workflowNode N
-      - given actor is owner, editor, or commenter and sidebar.edit targets workflowNode N, when the user clicks workflowRightSidebarCommentsTab, workflowRightSidebarCommentsTabContent is bound to workflowNode N
-      - given actor is viewer or user, workflowRightSidebarCommentsTab is not actionable per FR-WF-RS-003 and the actor cannot open workflowRightSidebarCommentsTabContent for a workflowNode via these paths
+      - given actor is owner, editor, or commenter and sidebar.edit targets workflowNode N with workflowRightSidebarCommentsTab rendered, when the user clicks workflowRightSidebarCommentsTab, workflowRightSidebarCommentsTabContent is bound to workflowNode N
+      - given actor is viewer or user, workflowRightSidebarCommentsTab is not rendered when no eligible host is selected and is not actionable when rendered per FR-WF-RS-003; the actor cannot open workflowRightSidebarCommentsTabContent for a workflowNode via these paths
 
     openQuestions: []
 
@@ -192,7 +192,7 @@ requirements:
     preconditions:
       - workflowRightSidebar is visible per FR-WF-RS-001
       - for the hover-menu path, workflowView shows at least one workflowSectionContainer row where workflowSectionContainerHoverActionsMenu can appear on hover
-      - for the sidebar-tab path, sidebar.edit already designates a workflowSectionContainer (WEEK) for that section
+      - for the sidebar-tab path, sidebar.edit already designates a workflowSectionContainer (WEEK) for that section and workflowRightSidebarCommentsTab is rendered per FR-WF-RS-002 and FR-WF-RS-003
 
     trigger:
       - user clicks workflowSectionContainerHoverActionsMenuCommentsItem on a hovered workflowSectionContainer
@@ -207,19 +207,19 @@ requirements:
 
     roleBehavior:
       owner:
-        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarCommentsTab: renderedAndEnabledWhenEligibleSelectionExists
       editor:
-        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarCommentsTab: renderedAndEnabledWhenEligibleSelectionExists
       commenter:
-        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarCommentsTab: renderedAndEnabledWhenEligibleSelectionExists
       viewer:
-        workflowRightSidebarCommentsTab: disabled
+        workflowRightSidebarCommentsTab: notRenderedWhenNoEligibleSelection; disabledWhenEligibleSelectionExists
       user:
-        workflowRightSidebarCommentsTab: disabled
+        workflowRightSidebarCommentsTab: notRenderedWhenNoEligibleSelection; disabledWhenEligibleSelectionExists
 
     acceptanceCriteria:
       - given actor is owner, editor, or commenter and the user clicks workflowSectionContainerHoverActionsMenuCommentsItem on a hovered section S, workflowRightSidebar shows workflowRightSidebarCommentsTab selected and workflowRightSidebarCommentsTabContent is bound to section S
-      - given actor is owner, editor, or commenter and sidebar.edit targets section S (WEEK), when the user clicks workflowRightSidebarCommentsTab, workflowRightSidebarCommentsTabContent is bound to section S
+      - given actor is owner, editor, or commenter and sidebar.edit targets section S (WEEK) with workflowRightSidebarCommentsTab rendered, when the user clicks workflowRightSidebarCommentsTab, workflowRightSidebarCommentsTabContent is bound to section S
 
     openQuestions: []
 
@@ -247,7 +247,7 @@ requirements:
     preconditions:
       - workflowRightSidebar is visible per FR-WF-RS-001
       - for the hover-menu path, workflowView shows at least one workflowChannel header where workflowChannelHoverActionsMenu can appear on hover
-      - for the sidebar-tab path, sidebar.edit already designates a workflowChannel (COLUMN)
+      - for the sidebar-tab path, sidebar.edit already designates a workflowChannel (COLUMN) and workflowRightSidebarCommentsTab is rendered per FR-WF-RS-002 and FR-WF-RS-003
 
     trigger:
       - user clicks workflowChannelHoverActionsMenuCommentsItem on a hovered workflowChannel column header
@@ -262,19 +262,19 @@ requirements:
 
     roleBehavior:
       owner:
-        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarCommentsTab: renderedAndEnabledWhenEligibleSelectionExists
       editor:
-        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarCommentsTab: renderedAndEnabledWhenEligibleSelectionExists
       commenter:
-        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarCommentsTab: renderedAndEnabledWhenEligibleSelectionExists
       viewer:
-        workflowRightSidebarCommentsTab: disabled
+        workflowRightSidebarCommentsTab: notRenderedWhenNoEligibleSelection; disabledWhenEligibleSelectionExists
       user:
-        workflowRightSidebarCommentsTab: disabled
+        workflowRightSidebarCommentsTab: notRenderedWhenNoEligibleSelection; disabledWhenEligibleSelectionExists
 
     acceptanceCriteria:
       - given actor is owner, editor, or commenter and the user clicks workflowChannelHoverActionsMenuCommentsItem on a hovered channel C, workflowRightSidebar shows workflowRightSidebarCommentsTab selected and workflowRightSidebarCommentsTabContent is bound to channel C
-      - given actor is owner, editor, or commenter and sidebar.edit targets channel C (COLUMN), when the user clicks workflowRightSidebarCommentsTab, workflowRightSidebarCommentsTabContent is bound to channel C
+      - given actor is owner, editor, or commenter and sidebar.edit targets channel C (COLUMN) with workflowRightSidebarCommentsTab rendered, when the user clicks workflowRightSidebarCommentsTab, workflowRightSidebarCommentsTabContent is bound to channel C
 
     openQuestions: []
 
@@ -302,7 +302,7 @@ requirements:
     preconditions:
       - workflowRightSidebar is visible per FR-WF-RS-001
       - for the Outcomes-view hover-menu path, user is in an Outcomes workspace view where outcome headers render workflowOutcomeHoverActionsMenu on hover
-      - for the sidebar-tab path, sidebar.edit already designates a workflowOutcome (OUTCOME)
+      - for the sidebar-tab path, sidebar.edit already designates a workflowOutcome (OUTCOME) and workflowRightSidebarCommentsTab is rendered per FR-WF-RS-002 and FR-WF-RS-003
 
     trigger:
       - user clicks workflowOutcomeHoverActionsMenuCommentsItem on a hovered outcome header in the Outcomes view
@@ -317,20 +317,20 @@ requirements:
 
     roleBehavior:
       owner:
-        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarCommentsTab: renderedAndEnabledWhenEligibleSelectionExists
       editor:
-        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarCommentsTab: renderedAndEnabledWhenEligibleSelectionExists
       commenter:
-        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarCommentsTab: renderedAndEnabledWhenEligibleSelectionExists
       viewer:
-        workflowRightSidebarCommentsTab: disabled
+        workflowRightSidebarCommentsTab: notRenderedWhenNoEligibleSelection; disabledWhenEligibleSelectionExists
       user:
-        workflowRightSidebarCommentsTab: disabled
+        workflowRightSidebarCommentsTab: notRenderedWhenNoEligibleSelection; disabledWhenEligibleSelectionExists
 
     acceptanceCriteria:
       - given actor is owner, editor, or commenter and the user clicks workflowOutcomeHoverActionsMenuCommentsItem on a hovered outcome O in the Outcomes view, workflowRightSidebar shows workflowRightSidebarCommentsTab selected and workflowRightSidebarCommentsTabContent is bound to outcome O
-      - given actor is owner, editor, or commenter and sidebar.edit targets outcome O (OUTCOME), when the user clicks workflowRightSidebarCommentsTab, workflowRightSidebarCommentsTabContent is bound to outcome O
-      - given actor is viewer or user, workflowOutcomeHoverActionsMenuCommentsItem is not rendered per FR-WF-EO-003 and the actor cannot open workflowRightSidebarCommentsTabContent for a workflowOutcome via the sidebar-tab path per FR-WF-RS-003
+      - given actor is owner, editor, or commenter and sidebar.edit targets outcome O (OUTCOME) with workflowRightSidebarCommentsTab rendered, when the user clicks workflowRightSidebarCommentsTab, workflowRightSidebarCommentsTabContent is bound to outcome O
+      - given actor is viewer or user, workflowOutcomeHoverActionsMenuCommentsItem is not rendered per FR-WF-EO-003; workflowRightSidebarCommentsTab is not rendered when no eligible host is selected and is not actionable when rendered per FR-WF-RS-003
 
     openQuestions: []
 
@@ -372,7 +372,7 @@ requirements:
     mainFlow:
       - sidebar.edit identifies workflowCommentsHostObject H shown in workflowRightSidebarCommentsTabContent (same id and CfObjectType as the thread being listed and composed)
       - when the user clicks workflowRightSidebarEditTab, workflowRightSidebarEditTabContent shows the edit surface for the same H per FR-WF-EN-001 when H is a workflowNode; when H is a workflowChannel, workflowSectionContainer, or workflowOutcome, acceptance fixtures for the matching edit form are canonical in FR-CHAN-001, FR-SEC-001, and FR-WF-EO-004 respectively — this FR pins host identity only, not edit-form field detail
-      - when H is deselected, removed from the workflow, or sub-view navigation resets sidebar presentation, workflowRightSidebarCommentsTabContent clears per FR-WF-RS-004 and FR-WF-RS-001 (not restated in this FR)
+      - when H is deselected, removed from the workflow, or sub-view navigation resets sidebar presentation, workflowRightSidebarCommentsTabContent clears and workflowRightSidebarCommentsTab is removed from workflowRightSidebarTabStrip when no eligible host remains selected per FR-WF-RS-004 and FR-WF-RS-001 (not restated in this FR)
       - viewer and user cannot reach this state for a comments-eligible host per FR-WF-RS-003
 
     roleBehavior:

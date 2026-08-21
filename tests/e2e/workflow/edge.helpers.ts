@@ -7,12 +7,33 @@ import {
   workflowEdgeSourceReconnectHandle,
   workflowEdgeTargetReconnectHandle,
   workflowNodeEdgeHandle,
-} from './workflow-edge.locators';
+} from './edge.locators';
+
+/** Midpoint of the transparent hit-stroke in screen coords (bbox center often misses the 16px path). */
+async function edgeClickPointOnScreen(
+  target: ReturnType<typeof workflowEdgeClickTarget>,
+): Promise<{ x: number; y: number }> {
+  return target.evaluate((path) => {
+    const svgPath = path as SVGPathElement;
+    const pt = svgPath.getPointAtLength(svgPath.getTotalLength() / 2);
+    const ctm = svgPath.getScreenCTM();
+    if (!ctm) {
+      throw new Error('workflowEdge click target has no screen CTM');
+    }
+    const screen = svgPath.ownerSVGElement!.createSVGPoint();
+    screen.x = pt.x;
+    screen.y = pt.y;
+    const { x, y } = screen.matrixTransform(ctm);
+    return { x, y };
+  });
+}
 
 export async function clickWorkflowEdge(page: Page, edgeId: string): Promise<void> {
   const target = workflowEdgeClickTarget(page, edgeId);
   await expect(target).toBeVisible({ timeout: 10_000 });
-  await target.click({ force: true });
+  await target.scrollIntoViewIfNeeded();
+  const { x, y } = await edgeClickPointOnScreen(target);
+  await page.mouse.click(x, y);
 }
 
 export async function dragWorkflowEdgeFromHandleToHandle(

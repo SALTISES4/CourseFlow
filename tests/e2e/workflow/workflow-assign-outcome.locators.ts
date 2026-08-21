@@ -36,6 +36,36 @@ export function workflowOutcomesAssignTabEmptyStateAlert(page: Page): Locator {
   return workflowOutcomesAssignTabPanel(page).getByRole('alert');
 }
 
+/** canonical: workflowOutcomesAssignTabTagGroup / workflowOutcomesAssignTabUntaggedGroup section */
+export function workflowOutcomesAssignTabGroupSections(page: Page): Locator {
+  const content = workflowOutcomesAssignTabPanel(page).locator('h3').locator('xpath=..');
+  return content.locator(':scope > div').filter({
+    has: page.locator(':scope > ul > li'),
+  });
+}
+
+/** canonical: workflowOutcomesAssignTabTagGroupTitle (tag label or literal Untagged in mixed case) */
+export function workflowOutcomesAssignTabGroupTitle(
+  page: Page,
+  title: string,
+): Locator {
+  return workflowOutcomesAssignTabGroupSections(page).locator('> h6').filter({ hasText: title });
+}
+
+/** Mixed tagged/untagged case — literal Untagged group heading per FR-WF-AO-002 */
+export function workflowOutcomesAssignTabUntaggedGroupTitle(page: Page): Locator {
+  return workflowOutcomesAssignTabGroupTitle(page, 'Untagged');
+}
+
+/** canonical: workflowOutcomesAssignTabOutcomeRowToggle — expand/collapse on rows with children */
+export function workflowOutcomesAssignTabOutcomeRowToggle(
+  page: Page,
+  rowTitle: string | RegExp,
+): Locator {
+  const row = workflowOutcomesAssignTabOutcomeRow(page, rowTitle);
+  return row.locator('xpath=../following-sibling::button');
+}
+
 /**
  * canonical: workflowOutcomesAssignTabOutcomeRow — row header title line (includes ordinal prefix).
  * Pass the composed workflowOutcomeHeaderTitle text or a regex matching it.

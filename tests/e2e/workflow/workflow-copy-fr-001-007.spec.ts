@@ -6,7 +6,9 @@ import {
   contributorByRole,
   getPrimaryWorkflow,
   loadWorkflowManifest,
+  type NavigationLinkedWorkflowEntry,
 } from '../../helpers/manifest';
+import { getNavigationLinkedWorkflows } from '../../helpers/main-navigation-workflow-context';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import { globalMessageSnackbar } from '../../shared/locators/global';
 import {
@@ -40,30 +42,59 @@ test.use({
  * FR-WF-COPY-001 through FR-WF-COPY-007.
  * Requirements: tests/docs/requirements/features/workflow/workflow_copy_requirements_v1.yaml
  * Copy is a single combined dialog (title + destination project), not a two-step / create
- * stepper flow. Default actor: teacher@courseflow.com. The viewer-only no-destination case
- * explicitly logs in as student@courseflow.com because that role is the behavior under test.
+ * stepper flow. Default actor: teacher@courseflow.com. FR-WF-COPY-001 is parameterized for
+ * activity, course, and program (type-specific menu/dialog/submit labels); course and program
+ * also get dedicated FR-WF-COPY-003/005 snackbar checks. Deep graph-copy behavior stays on
+ * activity. The viewer-only no-destination case explicitly logs in as student@courseflow.com.
  */
 
 const manifest = loadWorkflowManifest();
+const navigationLinkedWorkflows = getNavigationLinkedWorkflows(manifest);
 const sourceWorkflow = getPrimaryWorkflow(manifest);
-const sourceTitle = manifest.navigation_linked_workflows?.activity.workflow_title ?? '';
-const workflowType = sourceWorkflow.workflow_type;
+const activitySource: NavigationLinkedWorkflowEntry = {
+  ...navigationLinkedWorkflows.activity,
+  workflow_uuid: sourceWorkflow.workflow_uuid,
+  workflow_path: sourceWorkflow.workflow_path,
+  workflow_title: sourceWorkflow.workflow_title,
+  workflow_type: sourceWorkflow.workflow_type,
+};
+const sourceTitle = activitySource.workflow_title;
+const workflowType = activitySource.workflow_type;
 
-async function openCopyWorkflowDialog(page: Page): Promise<void> {
-  await gotoAuthenticatedShell(page, sourceWorkflow.workflow_path);
+const COPY_WORKFLOW_TYPE_KEYS = ['activity', 'course', 'program'] as const;
+type CopyWorkflowTypeKey = (typeof COPY_WORKFLOW_TYPE_KEYS)[number];
+
+function copyWorkflowSource(key: CopyWorkflowTypeKey): NavigationLinkedWorkflowEntry {
+  if (key === 'activity') {
+    return activitySource;
+  }
+  return navigationLinkedWorkflows[key];
+}
+
+async function gotoCopyWorkflowSource(
+  page: Page,
+  source: NavigationLinkedWorkflowEntry,
+): Promise<void> {
+  await gotoAuthenticatedShell(page, source.workflow_path);
   await expect(workflowOverflowButton(page)).toBeVisible({ timeout: 15_000 });
+}
+
+async function openCopyWorkflowDialog(
+  page: Page,
+  source: NavigationLinkedWorkflowEntry = activitySource,
+): Promise<void> {
+  await gotoCopyWorkflowSource(page, source);
   await workflowOverflowButton(page).click();
-  await copyWorkflowMenuItem(page, workflowType).click();
-  await expectCopyWorkflowCombinedDialogShell(page, workflowType);
+  await copyWorkflowMenuItem(page, source.workflow_type).click();
+  await expectCopyWorkflowCombinedDialogShell(page, source.workflow_type);
 }
 
 async function openCopyWorkflowDialogAsViewerWithNoEligibleProjects(page: Page): Promise<void> {
-  await gotoAuthenticatedShell(page, sourceWorkflow.workflow_path);
-  await expect(workflowOverflowButton(page)).toBeVisible({ timeout: 15_000 });
+  await gotoCopyWorkflowSource(page, activitySource);
   await workflowOverflowButton(page).click();
-  await copyWorkflowMenuItem(page, workflowType).click();
+  await copyWorkflowMenuItem(page, activitySource.workflow_type).click();
   // Same single dialog as eligible path; destination panel may be replaced by warning.
-  await expectCopyWorkflowSingleDialogShell(page, workflowType);
+  await expectCopyWorkflowSingleDialogShell(page, activitySource.workflow_type);
 }
 
 function workflowUuidFromGraphUrl(url: string): string {
@@ -75,31 +106,36 @@ function workflowUuidFromGraphUrl(url: string): string {
 }
 
 /** FR-WF-COPY-003 — actor who initiated copy is owner of the copied workflow. */
-async function expectActorIsOwnerOfCopiedWorkflow(page: Page): Promise<void> {
+async function expectActorIsOwnerOfCopiedWorkflow(
+  page: Page,
+  sourceWorkflowUuid: string = sourceWorkflow.workflow_uuid,
+): Promise<void> {
   const copiedUuid = workflowUuidFromGraphUrl(page.url());
-  expect(copiedUuid).not.toBe(sourceWorkflow.workflow_uuid);
+  expect(copiedUuid).not.toBe(sourceWorkflowUuid);
   const detail = await fetchWorkflowDetail(page, copiedUuid);
   expect(detail.permissions?.resourceRole).toBe('owner');
 }
 
 test.describe('Copy workflow — FR-WF-COPY-001–007', () => {
-  test('FR-WF-COPY-001 opens one dialog with prefilled title and destination project panel', async ({
-    page,
-  }) => {
-    await gotoAuthenticatedShell(page, sourceWorkflow.workflow_path);
-    await expect(workflowOverflowButton(page)).toBeVisible({ timeout: 15_000 });
-    await workflowOverflowButton(page).click();
-    await copyWorkflowMenuItem(page, workflowType).click();
+  for (const typeKey of COPY_WORKFLOW_TYPE_KEYS) {
+    test(`FR-WF-COPY-001 (${typeKey}): overflow, dialog title, submit label, and prefilled title`, async ({
+      page,
+    }) => {
+      const source = copyWorkflowSource(typeKey);
 
-    // Both controls belong to this dialog; there is no deferred project step.
-    await expectCopyWorkflowCombinedDialogShell(page, workflowType);
+      await gotoCopyWorkflowSource(page, source);
+      await workflowOverflowButton(page).click();
+      await expect(copyWorkflowMenuItem(page, source.workflow_type)).toBeVisible();
+      await copyWorkflowMenuItem(page, source.workflow_type).click();
 
-    await expect(copyWorkflowTitleField(page)).toHaveValue(`${sourceTitle} (copy)`);
-    await expect(copyWorkflowTitleField(page)).toBeVisible();
-    await expect(copyWorkflowProjectPanel(page)).toBeVisible();
-    await expect(copyWorkflowProjectSearchField(page)).toBeVisible();
-    await expect(page.getByRole('dialog')).toHaveCount(1);
-  });
+      await expectCopyWorkflowCombinedDialogShell(page, source.workflow_type);
+      await expect(copyWorkflowTitleField(page)).toHaveValue(`${source.workflow_title} (copy)`);
+      await expect(copyWorkflowTitleField(page)).toBeVisible();
+      await expect(copyWorkflowProjectPanel(page)).toBeVisible();
+      await expect(copyWorkflowProjectSearchField(page)).toBeVisible();
+      await expect(page.getByRole('dialog')).toHaveCount(1);
+    });
+  }
 
   test('FR-WF-COPY-002 lists at most four eligible projects, pins the current project, and handles search', async ({
     page,
@@ -238,6 +274,57 @@ test.describe('Copy workflow — FR-WF-COPY-001–007', () => {
     await expect(copyWorkflowSubmitButton(page)).toBeEnabled();
     await expect(copyWorkflowProjectPanel(page)).toBeVisible();
   });
+});
+
+test.describe('Copy workflow — type-specific success and failure snackbars', () => {
+  for (const typeKey of ['course', 'program'] as const) {
+    test(`FR-WF-COPY-003 (${typeKey}): success snackbar uses workflow type label`, async ({
+      page,
+      workflowCleanup,
+    }) => {
+      const source = copyWorkflowSource(typeKey);
+      const copiedTitle = `E2E copied ${typeKey} ${Date.now()}`;
+
+      await openCopyWorkflowDialog(page, source);
+      await copyWorkflowTitleField(page).fill(copiedTitle);
+      await expect(copyWorkflowSubmitButton(page)).toBeEnabled({ timeout: 15_000 });
+      await copyWorkflowSubmitButton(page).click();
+
+      await expect(copyWorkflowDialog(page)).toBeHidden({ timeout: 15_000 });
+      await expect(page).toHaveURL(/\/workflow\/[0-9a-f-]+\/graph\/?$/);
+      workflowCleanup(workflowUuidFromGraphUrl(page.url()));
+      await expect(globalMessageSnackbar(page)).toHaveText(
+        `The ${source.workflow_type} has been successfully copied`,
+      );
+      await expect(workflowTitle(page)).toContainText(copiedTitle);
+      await expectActorIsOwnerOfCopiedWorkflow(page, source.workflow_uuid);
+    });
+
+    test(`FR-WF-COPY-005 (${typeKey}): failure snackbar uses workflow type label`, async ({
+      page,
+    }) => {
+      const source = copyWorkflowSource(typeKey);
+
+      await page.route('**/api/workflow/*/copy', async (route) => {
+        await route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          body: JSON.stringify({ detail: 'Injected copy failure' }),
+        });
+      });
+
+      const retainedTitle = `Retained ${typeKey} failure ${Date.now()}`;
+      await openCopyWorkflowDialog(page, source);
+      await copyWorkflowTitleField(page).fill(retainedTitle);
+      await copyWorkflowSubmitButton(page).click();
+
+      await expect(globalMessageSnackbar(page)).toHaveText(
+        `We encountered an issue and your ${source.workflow_type} was not copied`,
+      );
+      await expect(copyWorkflowDialog(page)).toBeVisible();
+      await expect(copyWorkflowTitleField(page)).toHaveValue(retainedTitle);
+    });
+  }
 });
 
 test.describe('FR-WF-COPY-003: editor becomes owner of the copied workflow', () => {

@@ -42,17 +42,19 @@ Tracks TypeScript implementation of `tests/docs/requirements/features/shared/can
 - `tests/e2e/workflow/edit-outcome-fr-001-006.spec.ts` — FR-WF-EO-001–006 (empty state, create, open form, fields/auto-save, commenter/viewer read-only)
 - `tests/e2e/workflow/add-tab-fr-001-006.spec.ts` — FR-WF-ADD-001–006 (per-test disposable workflow)
 - `tests/e2e/workflow/delete-node-fr-001.spec.ts` — FR-WF-DEL-001 (per-test disposable workflow)
+- `tests/e2e/workflow/move-node-fr-001-005.spec.ts` — FR-WF-MV-003/004/005 (per-test disposable workflow)
+- `tests/e2e/workflow/move-node.helpers.ts` — node move drag helpers and edge preservation assertions
 - `tests/e2e/workflow/duplicate-node-fr-001.spec.ts` — FR-WF-DUP-001 (per-test disposable workflow)
-- `tests/e2e/workflow/outcome-insert-ordinals-depth-fr-003-007-008-014.spec.ts` — FR-WF-EO-003/007/008/014 insert, ordinals, depth cap, subtree delete (per-test disposable workflow)
-- `tests/e2e/workflow/outcome-duplicate-delete-fr-009-014.spec.ts` — FR-WF-EO-009–013 (per-test disposable workflow; FR-WF-EO-011 `(copy)` suffix)
+- `tests/e2e/workflow/outcome-insert-ordinals-depth-fr-003-007-008-014.spec.ts` — FR-WF-EO-003/007/008 insert, ordinals, depth cap (per-test disposable workflow)
+- `tests/e2e/workflow/outcome-duplicate-delete-fr-009-014.spec.ts` — FR-WF-EO-009–014 duplicate/delete tree effects (per-test disposable workflow; FR-WF-EO-011 `(copy)` suffix)
 - `tests/e2e/workflow/outcome-drag-reorder-fr-015-017.spec.ts` — FR-WF-EO-015–017 (+ EO-007 ordinals; per-test disposable workflow)
-- `tests/e2e/workflow/workflow-edge-fr-001-004.spec.ts` — FR-WF-EDGE-001–004 (per-test disposable workflow; commenter/viewer role blocks)
+- `tests/e2e/workflow/edge-fr-001-004.spec.ts` — FR-WF-EDGE-001–004 (per-test disposable workflow; commenter/viewer role blocks)
 - `tests/e2e/workflow/workflow-assign-outcome-fr-001-010.spec.ts` — FR-WF-AO-001–010 (per-test disposable workflow; commenter role blocks)
 - `tests/e2e/workflow/workflow-graph.locators.ts` — workflowNode*, workflowChannel*, edit form headings
-- `tests/e2e/workflow/workflow-edge.locators.ts` — workflowEdge*, workflowEditEdgeForm*, workflowNodeEdgeHandle*
+- `tests/e2e/workflow/edge.locators.ts` — workflowEdge*, workflowEditEdgeForm*, workflowNodeEdgeHandle*
 - `tests/e2e/workflow/workflow-assign-outcome.locators.ts` — workflowOutcomesAssignTab*, workflowNodeLinkedOutcomes*
 - `tests/e2e/workflow/workflow-graph.helpers.ts` — shared graph view API helpers
-- `tests/e2e/workflow/workflow-edge.helpers.ts` — edge drag/click helpers
+- `tests/e2e/workflow/edge.helpers.ts` — edge drag/click helpers
 - `tests/e2e/workflow/workflow-assign-outcome.helpers.ts` — outcomes tab open, drag assign, drop-target border, highlight, unlink helpers
 - `tests/e2e/workflow/workflow.locators.ts` — workflow header/tab shell uiObjects
 

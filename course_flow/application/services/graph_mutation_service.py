@@ -2059,12 +2059,22 @@ class GraphMutationService:
         builder = GraphMutationDeltaBuilder()
         id_map: dict[int, int] = {}
 
-        def clone_subtree(o: Outcome, parent_pk: int | None, order: int) -> Outcome:
+        def clone_subtree(
+            o: Outcome,
+            parent_pk: int | None,
+            order: int,
+            *,
+            is_root_duplicate: bool = False,
+        ) -> Outcome:
+            if is_root_duplicate:
+                title = f"{o.title} (copy)" if o.title else ""
+            else:
+                title = o.title
             clone = Outcome.objects.create(
                 graph_id=wf.id,
                 parent_id=parent_pk,
                 order=order,
-                title=f"{o.title} (duplicate)" if o.title else " (duplicate)",
+                title=title,
                 description=o.description,
                 code=o.code,
             )
@@ -2085,7 +2095,7 @@ class GraphMutationService:
                 s.save(update_fields=["order", "modified_on"])
                 builder.add_outcome_updated(_outcome_payload(_reload_outcome(s.pk)))
 
-        clone_subtree(source, parent_pk, insert_index)
+        clone_subtree(source, parent_pk, insert_index, is_root_duplicate=True)
         _bump_revision(wf)
 
         return (

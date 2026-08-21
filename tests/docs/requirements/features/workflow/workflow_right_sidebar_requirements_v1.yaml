@@ -152,12 +152,12 @@ requirements:
       - given workflowRightSidebar is collapsed, when user clicks a visible and enabled tab icon in workflowRightSidebarTabStrip, workflowRightSidebar expands and the clicked tab is selected
       - given workflowRightSidebar is collapsed, when user clicks a workflowNode in workflowView per FR-WF-EN-001, workflowRightSidebar expands, workflowRightSidebarEditTab is selected, and workflowRightSidebarContentPanel is visible
       - given workflowRightSidebar is collapsed on '/workflow/{id}/graph', when user clicks a workflowEdge in workflowView per FR-WF-EDGE-004, workflowRightSidebar expands, workflowRightSidebarEditTab is selected, and workflowRightSidebarContentPanel is visible
-      - given workflowRightSidebar is collapsed on '/workflow/{id}/graph' and a workflowEdge is selected per FR-WF-EDGE-004, workflowRightSidebarCommentsTab remains disabled per FR-WF-RS-003
+      - given workflowRightSidebar is collapsed on '/workflow/{id}/graph' and a workflowEdge is selected per FR-WF-EDGE-004, workflowRightSidebarCommentsTab is not rendered per FR-WF-RS-002 and FR-WF-RS-003
       - given workflowRightSidebar is collapsed on '/workflow/{id}/graph', when user clicks workflowSectionHeader for a workflowSectionContainer per FR-SEC-001, workflowRightSidebar expands, workflowRightSidebarEditTab is selected, and workflowRightSidebarContentPanel is visible
       - given workflowRightSidebar is collapsed on '/workflow/{id}/graph', when user clicks workflowChannelHeader for a workflowChannel per FR-CHAN-001, workflowRightSidebar expands, workflowRightSidebarEditTab is selected, and workflowRightSidebarContentPanel is visible
       - given workflowRightSidebar is collapsed on '/workflow/{id}/outcomes' and at least one workflowOutcome exists, when actor clicks a workflowOutcomeHeader per FR-WF-EO-004, workflowRightSidebar expands, workflowRightSidebarEditTab is selected, and workflowRightSidebarContentPanel is visible
-      - given actor is on '/workflow/{id}/graph' with workflowRightSidebar expanded and workflowRightSidebarAddTab selected, when actor selects 'Outcomes' on workflowViewTabSelector per FR-WF-HEADER-001 and the workflow has at least one workflowOutcome, then workflowRightSidebar is visible on '/workflow/{id}/outcomes', workflowRightSidebar is collapsed with no tab selected, and workflowRightSidebarTabStrip shows only Edit and Comments per FR-WF-RS-002
-      - given actor is on '/workflow/{id}/outcomes' with workflowRightSidebar expanded and workflowRightSidebarEditTab selected showing workflowEditOutcomeForm, when actor selects 'Workflow' on workflowViewTabSelector per FR-WF-HEADER-001, then workflowRightSidebar is visible on '/workflow/{id}/graph', workflowRightSidebar is collapsed with no tab selected (or per zero-node owner/editor rules in this FR), workflowRightSidebarEditTabContent is not bound to the prior workflowOutcome, and workflowRightSidebarTabStrip shows Edit, Add, Outcomes, and Comments per FR-WF-RS-002
+      - given actor is on '/workflow/{id}/graph' with workflowRightSidebar expanded and workflowRightSidebarAddTab selected, when actor selects 'Outcomes' on workflowViewTabSelector per FR-WF-HEADER-001 and the workflow has at least one workflowOutcome, then workflowRightSidebar is visible on '/workflow/{id}/outcomes', workflowRightSidebar is collapsed with no tab selected, and workflowRightSidebarTabStrip shows only Edit per FR-WF-RS-002
+      - given actor is on '/workflow/{id}/outcomes' with workflowRightSidebar expanded and workflowRightSidebarEditTab selected showing workflowEditOutcomeForm, when actor selects 'Workflow' on workflowViewTabSelector per FR-WF-HEADER-001, then workflowRightSidebar is visible on '/workflow/{id}/graph', workflowRightSidebar is collapsed with no tab selected (or per zero-node owner/editor rules in this FR), workflowRightSidebarEditTabContent is not bound to the prior workflowOutcome, and workflowRightSidebarTabStrip shows Edit, Add, and Outcomes per FR-WF-RS-002
       - given workflowRightSidebar is visible on any workflow sub-view, when actor selects 'Overview' on workflowViewTabSelector per FR-WF-HEADER-001, then workflowRightSidebar is not visible on '/workflow/{id}'
 
     openQuestions: []
@@ -191,16 +191,21 @@ requirements:
       - system computes visible sidebar tabs for current workflow type and active sub-view
 
     mainFlow:
-      - in '/workflow/{id}/graph' for activity/course/program, visible tabs are ordered exactly as: workflowRightSidebarEditTab, workflowRightSidebarAddTab, workflowRightSidebarOutcomesTab, workflowRightSidebarCommentsTab
-      - in 'Outcomes' view for activity/course/program, visible tabs are ordered exactly as: workflowRightSidebarEditTab, workflowRightSidebarCommentsTab
+      - workflowRightSidebarCommentsTab is rendered in workflowRightSidebarTabStrip only when eligible selection context exists per FR-WF-RS-003 (a workflowNode, workflowChannel, workflowSectionContainer, or workflowOutcome is selected in the active workspace view); when no eligible host is selected, workflowRightSidebarCommentsTab is not rendered
+      - in '/workflow/{id}/graph' for activity/course/program with no eligible selection, visible tabs are ordered exactly as: workflowRightSidebarEditTab, workflowRightSidebarAddTab, workflowRightSidebarOutcomesTab
+      - in '/workflow/{id}/graph' for activity/course/program with eligible selection, visible tabs are ordered exactly as: workflowRightSidebarEditTab, workflowRightSidebarAddTab, workflowRightSidebarOutcomesTab, workflowRightSidebarCommentsTab
+      - in 'Outcomes' view for activity/course/program with no workflowOutcome selected, visible tabs are ordered exactly as: workflowRightSidebarEditTab
+      - in 'Outcomes' view for activity/course/program with a workflowOutcome selected, visible tabs are ordered exactly as: workflowRightSidebarEditTab, workflowRightSidebarCommentsTab
       - in 'Outcomes' view, workflowRightSidebarAddTab and workflowRightSidebarOutcomesTab are hidden
       - workflowRightSidebarRelatedTab is out of scope for this requirement version
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given activity/course/program on '/workflow/{id}/graph', tab strip order is Edit, Add, Outcomes, Comments
-      - given activity/course/program in 'Outcomes' view, tab strip shows Edit and Comments
+      - given activity/course/program on '/workflow/{id}/graph' with no eligible selection, tab strip order is Edit, Add, Outcomes and workflowRightSidebarCommentsTab is not rendered
+      - given activity/course/program on '/workflow/{id}/graph' with eligible selection, tab strip order is Edit, Add, Outcomes, Comments
+      - given activity/course/program in 'Outcomes' view with no workflowOutcome selected, tab strip shows Edit only and workflowRightSidebarCommentsTab is not rendered
+      - given activity/course/program in 'Outcomes' view with a workflowOutcome selected, tab strip shows Edit and Comments
 
     openQuestions: []
 
@@ -244,42 +249,52 @@ requirements:
       - editable selection context exists when a workflowNode, workflowEdge, workflowSectionContainer, workflowChannel, or workflowOutcome is selected in the active workspace view
       - eligible selection context exists when a workflowNode, workflowChannel, workflowSectionContainer, or workflowOutcome is selected in the active workspace view
       - workflowRightSidebarEditTab is actionable only when editable selection context exists; otherwise the tab remains visible but disabled
-      - workflowRightSidebarCommentsTab is actionable for owner/editor/commenter only when eligible selection context exists; for viewer and user it remains visible but disabled
-      - workflowRightSidebarAddTab is actionable for owner/editor only; for commenter/viewer/user it remains visible but disabled
-      - when visible, workflowRightSidebarOutcomesTab is actionable
+      - when workflowRightSidebarEditTab is actionable for commenter, viewer, or user, workflowRightSidebarEditTabContent is read-only per the companion edit-form FR for the bound object type (workflowEditNodeForm — FR-WF-EN-001; workflowEditSectionForm — FR-SEC-001; workflowEditChannelForm — FR-CHAN-001; workflowEditOutcomeForm — FR-WF-EO-004)
+      - workflowRightSidebarCommentsTab is rendered and actionable for owner/editor/commenter only when eligible selection context exists; when no eligible host is selected, workflowRightSidebarCommentsTab is not rendered
+      - for viewer and user, workflowRightSidebarCommentsTab is not rendered when no eligible host is selected; when a workflowNode, workflowChannel, workflowSectionContainer, or workflowOutcome is selected, workflowRightSidebarCommentsTab is visible but disabled (read-only — composer not actionable per FR-WF-COMMENTS-006)
+      - workflowRightSidebarAddTab is actionable for owner/editor only; for commenter, viewer, and user it remains visible but disabled
+      - workflowRightSidebarOutcomesTab is actionable for owner and editor when visible; for commenter, viewer, and user it remains visible but disabled
       - clicking an actionable tab that tab is selected and displays matching tab content region
 
     roleBehavior:
       owner:
         workflowRightSidebarEditTab: enabledWhenEditableSelectionExists
-        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarCommentsTab: renderedAndEnabledWhenEligibleSelectionExists
         workflowRightSidebarAddTab: enabledWhenVisible
+        workflowRightSidebarOutcomesTab: enabledWhenVisible
       editor:
         workflowRightSidebarEditTab: enabledWhenEditableSelectionExists
-        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarCommentsTab: renderedAndEnabledWhenEligibleSelectionExists
         workflowRightSidebarAddTab: enabledWhenVisible
+        workflowRightSidebarOutcomesTab: enabledWhenVisible
       commenter:
-        workflowRightSidebarEditTab: enabledWhenEditableSelectionExists
-        workflowRightSidebarCommentsTab: enabledWhenEligibleSelectionExists
+        workflowRightSidebarEditTab: enabledWhenEditableSelectionExists; editTabContentReadOnly
+        workflowRightSidebarCommentsTab: renderedAndEnabledWhenEligibleSelectionExists
         workflowRightSidebarAddTab: disabled
+        workflowRightSidebarOutcomesTab: disabled
       viewer:
-        workflowRightSidebarEditTab: enabledWhenEditableSelectionExists
-        workflowRightSidebarCommentsTab: disabled
+        workflowRightSidebarEditTab: enabledWhenEditableSelectionExists; editTabContentReadOnly
+        workflowRightSidebarCommentsTab: notRenderedWhenNoEligibleSelection; disabledWhenEligibleSelectionExists
         workflowRightSidebarAddTab: disabled
+        workflowRightSidebarOutcomesTab: disabled
       user:
-        workflowRightSidebarEditTab: enabledWhenEditableSelectionExists
-        workflowRightSidebarCommentsTab: disabled
+        workflowRightSidebarEditTab: enabledWhenEditableSelectionExists; editTabContentReadOnly
+        workflowRightSidebarCommentsTab: notRenderedWhenNoEligibleSelection; disabledWhenEligibleSelectionExists
         workflowRightSidebarAddTab: disabled
+        workflowRightSidebarOutcomesTab: disabled
 
     acceptanceCriteria:
       - given no workflowNode, workflowEdge, workflowSectionContainer, workflowChannel, or workflowOutcome is selected in the active workspace view, workflowRightSidebarEditTab is visible and disabled
-      - given a workflowNode, workflowEdge, workflowSectionContainer, workflowChannel, or workflowOutcome is selected in the active workspace view, workflowRightSidebarEditTab is enabled
-      - given actor is owner/editor/commenter and no workflowNode, workflowChannel, workflowSectionContainer, or workflowOutcome is selected in the active workspace view, workflowRightSidebarCommentsTab is visible and disabled
-      - given actor is owner/editor/commenter and a workflowNode, workflowChannel, workflowSectionContainer, or workflowOutcome is selected in the active workspace view, workflowRightSidebarCommentsTab is enabled
-      - given actor is viewer or user, workflowRightSidebarCommentsTab is visible and disabled
+      - given editable selection context exists and actor is owner or editor, workflowRightSidebarEditTab is enabled
+      - given editable selection context exists and actor is commenter, viewer, or user, workflowRightSidebarEditTab is enabled and workflowRightSidebarEditTabContent is read-only per the companion edit-form FR for the bound object type
+      - given actor is owner/editor/commenter and no workflowNode, workflowChannel, workflowSectionContainer, or workflowOutcome is selected in the active workspace view, workflowRightSidebarCommentsTab is not rendered
+      - given actor is owner/editor/commenter and a workflowNode, workflowChannel, workflowSectionContainer, or workflowOutcome is selected in the active workspace view, workflowRightSidebarCommentsTab is rendered and enabled
+      - given actor is viewer or user and no workflowNode, workflowChannel, workflowSectionContainer, or workflowOutcome is selected in the active workspace view, workflowRightSidebarCommentsTab is not rendered
+      - given actor is viewer or user and a workflowNode, workflowChannel, workflowSectionContainer, or workflowOutcome is selected in the active workspace view, workflowRightSidebarCommentsTab is visible and disabled
       - given actor is owner or editor and workflowRightSidebarAddTab is visible, it is enabled
-      - given actor is commenter/viewer/user and workflowRightSidebarAddTab is visible, it is disabled
-      - when workflowRightSidebarOutcomesTab is visible, it is enabled
+      - given actor is commenter, viewer, or user and workflowRightSidebarAddTab is visible, it is disabled
+      - given actor is owner or editor and workflowRightSidebarOutcomesTab is visible, it is enabled
+      - given actor is commenter, viewer, or user and workflowRightSidebarOutcomesTab is visible, it is disabled
       - given user clicks an enabled tab, corresponding tab content is visible and that tab is selected
 
     openQuestions: []
@@ -323,8 +338,8 @@ requirements:
 
     mainFlow:
       - when the last workflowOutcome is removed on '/workflow/{id}/outcomes', workflowRightSidebar is not rendered per FR-WF-RS-001; default-presentation rules in this FR do not apply because workflowRightSidebar is not visible
-      - when the user clears the selection that was driving workflowRightSidebarEditTab or workflowRightSidebarCommentsTab content, workflowRightSidebar returns to default presentation per FR-WF-RS-001 — bound content is cleared and Edit/Comments disabled states follow FR-WF-RS-003
-      - when a workflowNode, workflowEdge, workflowSectionContainer, workflowChannel, or workflowOutcome is removed and it was the object shown in workflowRightSidebarEditTabContent or workflowRightSidebarCommentsTabContent, workflowRightSidebar returns to default presentation per FR-WF-RS-001
+      - when the user clears the selection that was driving workflowRightSidebarEditTab or workflowRightSidebarCommentsTab content, workflowRightSidebar returns to default presentation per FR-WF-RS-001 — bound content is cleared, workflowRightSidebarCommentsTab is removed from workflowRightSidebarTabStrip, and Edit tab disabled states follow FR-WF-RS-003
+      - when a workflowNode, workflowEdge, workflowSectionContainer, workflowChannel, or workflowOutcome is removed and it was the object shown in workflowRightSidebarEditTabContent or workflowRightSidebarCommentsTabContent, workflowRightSidebar returns to default presentation per FR-WF-RS-001 — bound content is cleared and workflowRightSidebarCommentsTab is removed from workflowRightSidebarTabStrip when no eligible host remains selected
       - when a workflowNode, workflowEdge, workflowSectionContainer, workflowChannel, or workflowOutcome is removed but workflowRightSidebar was not showing that object on Edit or Comments (including when workflowRightSidebarAddTab or workflowRightSidebarOutcomesTab is the selected tab, or Edit is bound to a different object), workflowRightSidebar keeps the same expanded or collapsed state and selected tab as immediately before the removal; only the canvas updates (workflowNode delete detail per FR-WF-DEL-002)
       - when owner or editor causes workflowNode count to transition from zero to at least one, workflowRightSidebar returns to default presentation per FR-WF-RS-001 unless that actor has changed presentation via workflowRightSidebarToggleButton or a tab icon since the transition
       - when owner or editor causes workflowNode count to transition from at least one to zero, workflowRightSidebar receives default presentation per FR-WF-RS-001 for zero workflowNode entries

@@ -10,10 +10,8 @@ import {
   createSidebarDuplicate,
   E2E_OUTCOME_CHILD_A_TITLE,
   E2E_OUTCOME_CHILD_B_TITLE,
-  E2E_OUTCOME_CHILD_DUPLICATE_TITLE,
   E2E_OUTCOME_CHILD_TITLE,
   E2E_OUTCOME_DUPLICATE,
-  E2E_OUTCOME_GRANDCHILD_DUPLICATE_TITLE,
   E2E_OUTCOME_GRANDCHILD_TITLE,
   E2E_OUTCOME_TITLE,
   seedThreeLevelSubtreeViaApi,
@@ -29,9 +27,9 @@ import {
   workflowOutcomeHeaderTitleText,
   workflowOutcomeHoverDeleteItem,
   workflowOutcomeHoverDuplicateItem,
+  workflowOutcomeHoverCommentsItem,
   workflowOutcomeViewEmptyStateAlert,
   revealOutcomeByOrdinalPath,
-  workflowOutcomeExpandToggleByOrdinal,
 } from './workflow-outcome.locators';
 import { workflowRightSidebarContentPanel } from '../../shared/locators/workflow';
 
@@ -71,9 +69,12 @@ test.describe('Outcome — duplicate and delete (FR-WF-EO-009-014)', () => {
     await expect(workflowOutcomeHeader(page, E2E_OUTCOME_DUPLICATE)).toBeVisible();
   });
 
-  test('FR-WF-EO-011: duplicate root title appends duplicate suffix', async ({ page }) => {
+  test('FR-WF-EO-011: duplicate root title appends (copy) suffix', async ({ page }) => {
     await createSidebarDuplicate(page);
     await expect(workflowOutcomeHeader(page, E2E_OUTCOME_DUPLICATE)).toBeVisible();
+    await workflowOutcomeHeader(page, E2E_OUTCOME_DUPLICATE).click();
+    await expect(workflowEditOutcomeForm(page)).toBeVisible();
+    await expect(workflowEditOutcomeFormTitleField(page)).toHaveValue(E2E_OUTCOME_DUPLICATE);
   });
 
   test('FR-WF-EO-010: hover Duplicate on duplicate adds another workflowOutcome sibling', async ({
@@ -114,7 +115,7 @@ test.describe('Outcome — duplicate and delete (FR-WF-EO-009-014)', () => {
   }) => {
     await createSidebarDuplicate(page);
     const duplicatePattern = new RegExp(
-      `${E2E_OUTCOME_TITLE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} \\(duplicate\\)`,
+      `${E2E_OUTCOME_TITLE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} \\(copy\\)`,
     );
     const duplicateHeader = page.getByText(duplicatePattern);
     await expect(duplicateHeader.first()).toBeVisible();
@@ -156,21 +157,15 @@ test.describe('Outcome — duplicate and delete (FR-WF-EO-009-014)', () => {
       await expect(
         workflowOutcomeHeaderTitleText(page, '1.1.1', E2E_OUTCOME_GRANDCHILD_TITLE),
       ).toBeVisible();
+      await expect(workflowOutcomeHeaderTitleText(page, '2.1', E2E_OUTCOME_CHILD_TITLE)).toHaveCount(0);
       await expect(
-        workflowOutcomeHeaderTitleText(page, '2.1', E2E_OUTCOME_CHILD_DUPLICATE_TITLE),
-      ).toHaveCount(0);
-      await expect(
-        workflowOutcomeHeaderTitleText(page, '2.1.1', E2E_OUTCOME_GRANDCHILD_DUPLICATE_TITLE),
+        workflowOutcomeHeaderTitleText(page, '2.1.1', E2E_OUTCOME_GRANDCHILD_TITLE),
       ).toHaveCount(0);
 
-      await ensureExpandedShowingChild(page, E2E_OUTCOME_DUPLICATE, E2E_OUTCOME_CHILD_DUPLICATE_TITLE);
-      await workflowOutcomeExpandToggleByOrdinal(page, '2.1').click();
       await revealOutcomeByOrdinalPath(page, '2.1.1');
+      await expect(workflowOutcomeHeaderTitleText(page, '2.1', E2E_OUTCOME_CHILD_TITLE)).toBeVisible();
       await expect(
-        workflowOutcomeHeaderTitleText(page, '2.1', E2E_OUTCOME_CHILD_DUPLICATE_TITLE),
-      ).toBeVisible();
-      await expect(
-        workflowOutcomeHeaderTitleText(page, '2.1.1', E2E_OUTCOME_GRANDCHILD_DUPLICATE_TITLE),
+        workflowOutcomeHeaderTitleText(page, '2.1.1', E2E_OUTCOME_GRANDCHILD_TITLE),
       ).toBeVisible();
     });
 
@@ -184,17 +179,17 @@ test.describe('Outcome — duplicate and delete (FR-WF-EO-009-014)', () => {
       await createSidebarDuplicate(page);
 
       await expect(workflowOutcomeExpandToggle(page, E2E_OUTCOME_DUPLICATE)).toBeVisible();
-      await expect(workflowOutcomeHeaderTitleText(page, '2.1', E2E_OUTCOME_CHILD_DUPLICATE_TITLE)).toHaveCount(0);
+      await expect(workflowOutcomeHeaderTitleText(page, '2.1', E2E_OUTCOME_CHILD_TITLE)).toHaveCount(0);
 
       await workflowOutcomeExpandToggle(page, E2E_OUTCOME_DUPLICATE).click();
-      await expect(workflowOutcomeHeaderTitleText(page, '2.1', E2E_OUTCOME_CHILD_DUPLICATE_TITLE)).toBeVisible({
+      await expect(workflowOutcomeHeaderTitleText(page, '2.1', E2E_OUTCOME_CHILD_TITLE)).toBeVisible({
         timeout: 10_000,
       });
     });
   });
 
   test.describe('Delete tree effects (FR-WF-EO-014)', () => {
-    test('FR-WF-EO-014: deleting level-1 workflowOutcome with children removes entire subtree', async ({
+    test('FR-WF-EO-014: deleting level-1 workflowOutcome removes its subtree', async ({
       page,
       workflow,
     }) => {
@@ -234,6 +229,31 @@ test.describe('Outcome — duplicate and delete (FR-WF-EO-009-014)', () => {
       ).toHaveCount(0);
     });
 
+    test('FR-WF-EO-014: deleting level-2 workflowOutcome removes its subtree', async ({
+      page,
+      workflow,
+    }) => {
+      await seedThreeLevelSubtreeViaApi(page, workflow);
+      const beforeCount = (await fetchGraphOutcomes(page, workflow.workflowUuid)).length;
+      await revealOutcomeByOrdinalPath(page, '1.1');
+
+      await hoverWorkflowOutcomeHeader(page, E2E_OUTCOME_CHILD_TITLE);
+      await workflowOutcomeHoverDeleteItem(page, E2E_OUTCOME_CHILD_TITLE).click();
+
+      await expect
+        .poll(async () => (await fetchGraphOutcomes(page, workflow.workflowUuid)).length, {
+          timeout: 10_000,
+        })
+        .toBe(beforeCount - 2);
+      await expect(workflowOutcomeHeaderTitleText(page, '1.1', E2E_OUTCOME_CHILD_TITLE)).toHaveCount(
+        0,
+      );
+      await expect(
+        workflowOutcomeHeaderTitleText(page, '1.1.1', E2E_OUTCOME_GRANDCHILD_TITLE),
+      ).toHaveCount(0);
+      await expect(workflowOutcomeHeader(page, E2E_OUTCOME_TITLE)).toBeVisible();
+    });
+
     test('FR-WF-EO-014/007: deleting level-2 sibling renumbers remaining child ordinals', async ({
       page,
       workflow,
@@ -258,8 +278,10 @@ test.describe('Outcome — duplicate and delete (FR-WF-EO-009-014)', () => {
       );
     });
   });
+});
 
-  test.describe('Commenter duplicate/delete (FR-WF-EO-009/010/013)', () => {
+test.describe('Outcome duplicate/delete — permissions (FR-WF-EO-009/010/013)', () => {
+  test.describe('commenter', () => {
     test.use({ storageState: { cookies: [], origins: [] } });
 
     test('FR-WF-EO-010/013: commenter sees disabled duplicate and delete hover items', async ({
@@ -268,14 +290,21 @@ test.describe('Outcome — duplicate and delete (FR-WF-EO-009-014)', () => {
     }) => {
       await loginAsWorkflowContributor(page, workflow, 'commenter');
       await gotoOutcomesView(page, workflow.path);
+      await expect(workflowOutcomeHeader(page, E2E_OUTCOME_TITLE)).toBeVisible();
 
-      await hoverWorkflowOutcomeHeader(page, E2E_OUTCOME_TITLE);
+      test.fail(
+        true,
+        'Commenter outcome hover menu omits duplicate/delete items; FR-WF-EO-010/013 require them disabled per FR-WF-EO-003',
+      );
+
+      await workflowOutcomeHeader(page, E2E_OUTCOME_TITLE).hover();
+      await expect(workflowOutcomeHoverCommentsItem(page, E2E_OUTCOME_TITLE)).toBeVisible();
       await expect(workflowOutcomeHoverDuplicateItem(page, E2E_OUTCOME_TITLE)).toBeDisabled();
       await expect(workflowOutcomeHoverDeleteItem(page, E2E_OUTCOME_TITLE)).toBeDisabled();
     });
   });
 
-  test.describe('Viewer duplicate/delete (FR-WF-EO-009/010/013)', () => {
+  test.describe('viewer', () => {
     test.use({ storageState: { cookies: [], origins: [] } });
 
     test('FR-WF-EO-010/013: viewer does not see workflowOutcomeHoverActionsMenu on hover', async ({
@@ -284,8 +313,9 @@ test.describe('Outcome — duplicate and delete (FR-WF-EO-009-014)', () => {
     }) => {
       await loginAsWorkflowContributor(page, workflow, 'viewer');
       await gotoOutcomesView(page, workflow.path);
+      await expect(workflowOutcomeHeader(page, E2E_OUTCOME_TITLE)).toBeVisible();
 
-      await hoverWorkflowOutcomeHeader(page, E2E_OUTCOME_TITLE);
+      await workflowOutcomeHeader(page, E2E_OUTCOME_TITLE).hover();
       await expect(workflowOutcomeHoverDuplicateItem(page, E2E_OUTCOME_TITLE)).toHaveCount(0);
       await expect(workflowOutcomeHoverDeleteItem(page, E2E_OUTCOME_TITLE)).toHaveCount(0);
     });

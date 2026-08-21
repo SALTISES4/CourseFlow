@@ -1,10 +1,10 @@
 import { expect, type Page } from '@playwright/test';
 import { hoverWorkflowNode } from './comments-tab.helpers';
-import { clickWorkflowEdge, dragWorkflowEdgeFromHandleToHandle } from './workflow-edge.helpers';
+import { clickWorkflowEdge, dragWorkflowEdgeFromHandleToHandle } from './edge.helpers';
 import {
   workflowEditEdgeFormDashedLineToggle,
   workflowEditEdgeFormTitleField,
-} from './workflow-edge.locators';
+} from './edge.locators';
 import {
   edgeIdString,
   edgeLineTypeIsSolid,

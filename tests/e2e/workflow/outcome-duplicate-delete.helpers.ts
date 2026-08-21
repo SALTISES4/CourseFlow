@@ -12,12 +12,10 @@ import {
 } from './workflow-outcome.locators';
 
 export const E2E_OUTCOME_TITLE = 'E2E Outcome 1';
-/** Product/backend suffix today — FR-WF-EO-011 specifies `(copy)`; see graph_mutation_service.duplicate_outcome. */
-export const E2E_OUTCOME_DUPLICATE = `${E2E_OUTCOME_TITLE} (duplicate)`;
+/** FR-WF-EO-011: duplicate root title is source title + literal ` (copy)`. */
+export const E2E_OUTCOME_DUPLICATE = `${E2E_OUTCOME_TITLE} (copy)`;
 export const E2E_OUTCOME_CHILD_TITLE = 'E2E Outcome Child';
 export const E2E_OUTCOME_GRANDCHILD_TITLE = 'E2E Outcome Grandchild';
-export const E2E_OUTCOME_CHILD_DUPLICATE_TITLE = `${E2E_OUTCOME_CHILD_TITLE} (duplicate)`;
-export const E2E_OUTCOME_GRANDCHILD_DUPLICATE_TITLE = `${E2E_OUTCOME_GRANDCHILD_TITLE} (duplicate)`;
 export const E2E_OUTCOME_CHILD_A_TITLE = 'E2E Outcome Child A';
 export const E2E_OUTCOME_CHILD_B_TITLE = 'E2E Outcome Child B';
 

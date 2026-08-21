@@ -62,16 +62,16 @@ export async function authenticatedApiRequest(
   path: string,
   options: AuthenticatedApiRequestOptions = {},
 ): Promise<APIResponse> {
-  const accessToken = await page.evaluate(
-    (storageKey) => window.localStorage.getItem(storageKey),
-    ACCESS_TOKEN_STORAGE_KEY,
-  );
-
-  if (!accessToken) {
-    throw new Error(
-      `Cannot call ${method} ${path}: the page has no CourseFlow access token`,
+  let accessToken: string | null = null;
+  try {
+    accessToken = await page.evaluate(
+      (storageKey) => window.localStorage.getItem(storageKey),
+      ACCESS_TOKEN_STORAGE_KEY,
     );
+  } catch {
+    // about:blank and other inaccessible documents cannot expose localStorage.
   }
+  accessToken ??= readPrimaryActorAccessToken();
 
   return page.request.fetch(`${getTestApiBaseUrl()}${path}`, {
     method,
