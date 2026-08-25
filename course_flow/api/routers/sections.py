@@ -247,7 +247,8 @@ def update_section(request, uuid: UUID, payload: SectionPatchIn):
 )
 def delete_section(request, uuid: UUID):
     current_user = get_current_user(request)
-    existing = get_section_service().get_by_uuid(uuid)
+    section_service = get_section_service()
+    existing = section_service.get_by_uuid(uuid)
 
     if existing is None:
         raise HttpError(404, "Section not found")
@@ -261,6 +262,11 @@ def delete_section(request, uuid: UUID):
         workflow=wf,
         action=WorkflowPermission.PART_MANAGEMENT,
     ):
+        raise HttpError(403, "Forbidden")
+
+    # make sure there's at least one remaining section remaining
+    sections = section_service.list_for_graph_uuid(uuid)
+    if len(sections) <= 1:
         raise HttpError(403, "Forbidden")
 
     svc = get_graph_mutation_service()

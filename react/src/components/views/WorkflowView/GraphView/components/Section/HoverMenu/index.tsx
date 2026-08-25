@@ -1,5 +1,6 @@
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
+import { selectSectionCount } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { selectThreadCommentCount } from '@cf/features/graph/state/selectors/threadCommentCounts.selectors'
 import { insertSectionBelow } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
@@ -24,6 +25,7 @@ type PropsType = {
 type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
 
 const HoverMenu = ({ graphUuid, sectionId, show, threadUuid }: PropsType) => {
+  const totalSectionCount = useSelector(selectSectionCount)
   const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
   const canEdit = useResourcePermission(WorkflowPermission.PART_MANAGEMENT)
@@ -98,7 +100,8 @@ const HoverMenu = ({ graphUuid, sectionId, show, threadUuid }: PropsType) => {
         canEdit && {
           label: 'Delete section',
           icon: <DeleteOutlinedIcon />,
-          onClick: onActionClick('delete')
+          onClick: onActionClick('delete'),
+          disabled: totalSectionCount <= 1
         },
         canComment && {
           label: 'Comments',

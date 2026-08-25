@@ -1,5 +1,8 @@
 import type { SectionEntity } from '@cf/features/graph/state/model/types'
-import { selectSectionByUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
+import {
+  selectSectionByUuid,
+  selectSectionCount
+} from '@cf/features/graph/state/selectors/canonical.selectors'
 import {
   changeSectionMeta,
   insertSectionBelow
@@ -42,6 +45,7 @@ const EditSection = ({ sectionId }: { sectionId: string }) => {
 }
 
 const EditSectionForm = ({ section }: { section: SectionEntity }) => {
+  const totalSectionCount = useSelector(selectSectionCount)
   const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
 
@@ -125,7 +129,12 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
         <Button variant="contained" color="secondary" onClick={onDuplicate}>
           {_t('Duplicate')}
         </Button>
-        <Button variant="contained" color="secondary" onClick={onDelete}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={onDelete}
+          disabled={totalSectionCount <= 1}
+        >
           {_t('Delete')}
         </Button>
       </SC.SidebarActions>

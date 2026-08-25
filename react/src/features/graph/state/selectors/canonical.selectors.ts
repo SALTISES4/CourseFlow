@@ -65,6 +65,8 @@ export const selectAllNodes = nodeSelectors.selectAll
 export const selectAllEdges = edgeSelectors.selectAll
 export const selectAllTags = tagSelectors.selectAll
 
+export const selectSectionCount = sectionSelectors.selectTotal
+
 export const selectGraphByUuid = (graphUuid: GraphUuid) =>
   createSelector([(state: StateWithGraph) => state], (state) =>
     graphSelectors.selectById(state, graphUuid)
