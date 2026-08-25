@@ -566,7 +566,7 @@ class GraphMutationService:
                 ch = Channel.objects.select_related("graph", "thread").get(pk=ch.pk)
                 builder.add_channel_updated(_channel_payload(ch))
 
-        colour = ""
+        colour = "#cfd8dc"
         if duplicate:
             source = anchor if anchor is not None else (channels[0] if channels else None)
             if source is None:
@@ -574,7 +574,7 @@ class GraphMutationService:
             else:
                 source_title = (source.title or "").strip()
                 title = f"{source_title} (copy)" if source_title else " (copy)"
-                colour = source.colour or ""
+                colour = source.colour or "#cfd8dc"
         else:
             title = ""
 
