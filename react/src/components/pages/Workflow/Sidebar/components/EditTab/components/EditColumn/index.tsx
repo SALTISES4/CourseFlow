@@ -102,8 +102,6 @@ const EditColumnForm = ({
     [channel.graphUuid, channel.uuid, dispatch]
   )
 
-  useEffect(() => () => debouncedPersistMeta.clear(), [debouncedPersistMeta])
-
   const onTitleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value
@@ -115,8 +113,12 @@ const EditColumnForm = ({
 
   const onColorChange = useCallback(
     (next: string) => {
-      setColor(next)
-      debouncedPersistMeta({ colour: next })
+      const newColor = next || '#cfd8dc'
+
+      setColor(newColor)
+      debouncedPersistMeta({ colour: newColor })
+
+      return () => debouncedPersistMeta.clear()
     },
     [debouncedPersistMeta]
   )
