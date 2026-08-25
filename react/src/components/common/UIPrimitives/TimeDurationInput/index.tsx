@@ -91,7 +91,6 @@ const TimeDurationField = ({ value, onChange, variant, size }: Props) => {
         size={size}
         onChange={onDaysChange}
       />
-      ;
       <TimeField
         label={_t('Hours')}
         format="HH:mm"
