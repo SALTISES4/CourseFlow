@@ -8,6 +8,7 @@ import {
 } from '@cf/features/graph/state/selectors/canonical.selectors'
 import {
   changeNodeMeta,
+  deleteNode,
   linkNodeWorkflow
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
@@ -237,6 +238,20 @@ const EditNodeForm = ({
     )
   }, [dispatch, graphUuid, node.uuid])
 
+  // TODO:
+  const onDuplicate = useCallback(() => {
+    alert('TODO: How should this work?')
+  }, [])
+
+  const onDelete = useCallback(() => {
+    dispatch(
+      deleteNode({
+        graphUuid,
+        nodeUuid: node.uuid
+      })
+    )
+  }, [dispatch, graphUuid, node.uuid])
+
   const linkActionLabel = linkWorkflowActionLabel(parentWorkflowType, isLinked)
 
   const showEditableTitleFields = !isLinked
@@ -456,10 +471,10 @@ const EditNodeForm = ({
             {linkActionLabel}
           </Button>
         )}
-        <Button variant="contained" color="secondary">
+        <Button variant="contained" color="secondary" onClick={onDuplicate}>
           {_t('Duplicate')}
         </Button>
-        <Button variant="contained" color="secondary">
+        <Button variant="contained" color="secondary" onClick={onDelete}>
           {_t('Delete')}
         </Button>
       </SC.SidebarActions>
