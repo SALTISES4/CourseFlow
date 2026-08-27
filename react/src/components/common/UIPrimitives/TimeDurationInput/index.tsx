@@ -16,6 +16,7 @@ type Duration = {
 }
 
 type Props = Pick<TextFieldProps, 'variant' | 'size'> & {
+  readOnly?: boolean
   value?: Duration | null
   fullWidth?: boolean
   onChange?: (value: Duration | null) => void
@@ -23,7 +24,13 @@ type Props = Pick<TextFieldProps, 'variant' | 'size'> & {
   error?: boolean
 }
 
-const TimeDurationField = ({ value, onChange, variant, size }: Props) => {
+const TimeDurationField = ({
+  value,
+  onChange,
+  variant,
+  size,
+  readOnly
+}: Props) => {
   const isDirty = useRef(false)
   const [state, setState] = useState<Duration>({
     days: value?.days ?? 0,
@@ -86,6 +93,7 @@ const TimeDurationField = ({ value, onChange, variant, size }: Props) => {
       <NumericFormat
         customInput={TextField}
         label={_t('Days')}
+        readOnly={readOnly}
         value={state.days || ''}
         variant={variant}
         size={size}
@@ -94,6 +102,7 @@ const TimeDurationField = ({ value, onChange, variant, size }: Props) => {
       <TimeField
         label={_t('Hours')}
         format="HH:mm"
+        readOnly={readOnly}
         variant={variant}
         value={timeValue}
         size={size}
