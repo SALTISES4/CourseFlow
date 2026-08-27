@@ -10,6 +10,7 @@ import { CFRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 import { useQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
@@ -28,7 +29,7 @@ const OutcomeTab = () => {
   const graphUuid = workflowDetailResp?.item?.graphUuid ?? ''
   const workflowType = workflowDetailResp?.item?.workflowType ?? 'workflow'
   const projectUuid = workflowDetailResp?.item?.projectUuid ?? ''
-  const { data: projectTags = [] } = useQuery({
+  const { data: projectTags = [], isLoading: projectTagsLoading } = useQuery({
     ...listProjectTagsOptions({ path: { uuid: projectUuid } }),
     enabled: Boolean(projectUuid)
   })
@@ -43,6 +44,16 @@ const OutcomeTab = () => {
   const goToEditOutcomes = useCallback(() => {
     navigate(generatePath(CFRoutes.WORKFLOW_OUTCOME_EDIT, { uuid: uuid ?? '' }))
   }, [navigate, uuid])
+
+  if (!graphUuid || !projectUuid || projectTagsLoading) {
+    return (
+      <Styled.SidebarInnerWrap>
+        <Styled.SidebarContent>
+          <CircularProgress size={24} />
+        </Styled.SidebarContent>
+      </Styled.SidebarInnerWrap>
+    )
+  }
 
   if (!outcomeGroups.length) {
     return (

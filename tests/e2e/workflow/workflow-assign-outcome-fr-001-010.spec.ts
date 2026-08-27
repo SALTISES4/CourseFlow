@@ -91,6 +91,10 @@ test.use({
  *   workflow_duplicate_outcome_requirements_v1.yaml (FR-WF-EO-011 assignment parity)
  */
 
+// These cases mutate the same canonical workflow fixture. Keep this file
+// sequential even when the project enables fullyParallel execution.
+test.describe.configure({ mode: 'default' });
+
 async function gotoWorkflowGraph(page: import('@playwright/test').Page, path: string): Promise<void> {
   await page.goto(path);
   await expect(page.locator('[data-test-id="workflow-node"]').first()).toBeVisible({

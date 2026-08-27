@@ -41,7 +41,13 @@ const HoverMenu = ({
     >
       {items.map((item, index) =>
         item ? (
-          <Tooltip key={index} placement="top" arrow title={item.label}>
+          <Tooltip
+            key={index}
+            placement="top"
+            arrow
+            disableInteractive
+            title={item.label}
+          >
             <IconButton
               color="secondary"
               size="small"

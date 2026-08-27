@@ -4,6 +4,7 @@ import {
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import DurationTextField from '@cf/components/common/DurationTextField'
+import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { NodeEntity } from '@cf/features/graph/state/model/types'
 import type { NodeInsertMode } from '@cf/features/graph/state/resolveNodeDropRow'
@@ -51,7 +52,6 @@ import {
 } from './linkedWorkflowUi'
 import optionsData from './optionsData'
 import type { NodeForm } from './types'
-import Wysiwyg from './Wysiwyg'
 
 const toNullableNumber = (value: unknown): number | null => {
   if (value === '' || value === null || value === undefined) {
@@ -365,7 +365,7 @@ const EditNodeForm = ({
                 name="description"
                 control={control}
                 render={({ field }) => (
-                  <Wysiwyg
+                  <WysiwygField
                     placeholder={_t('Description')}
                     field={field}
                     readOnly={!canEdit}
