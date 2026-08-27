@@ -2,7 +2,6 @@ import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
 import { formatHoursDuration } from '@cfComponents/DurationTextField'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 
 type Props = {
