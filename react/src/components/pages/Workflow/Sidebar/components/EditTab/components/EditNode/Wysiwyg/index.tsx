@@ -1,3 +1,4 @@
+import InputLabel from '@mui/material/InputLabel'
 import { ControllerRenderProps } from 'react-hook-form'
 import ReactQuill from 'react-quill'
 
@@ -6,12 +7,23 @@ import { WysiwygWrap } from './styles'
 
 import 'react-quill/dist/quill.snow.css'
 
-type PropsType = {
-  placeholder?: string
-  field: ControllerRenderProps<NodeForm, 'description'>
-}
+type PropsType =
+  | {
+      label?: string
+      placeholder?: string
+      readOnly?: boolean
+      field: ControllerRenderProps<NodeForm, 'description'>
+    }
+  | {
+      label?: string
+      placeholder?: string
+      readOnly?: boolean
+      value: string
+      onChange?: (value: string) => void
+      onBlur?: () => void
+    }
 
-const WysiwygField = ({ placeholder, field }: PropsType) => {
+const WysiwygField = (props: PropsType) => {
   const modules = {
     toolbar: [
       [
@@ -34,15 +46,26 @@ const WysiwygField = ({ placeholder, field }: PropsType) => {
     ]
   }
 
+  const isRHFWrapped = 'field' in props
+  const value = isRHFWrapped ? props.field.value || '' : props.value
+  const onChange = isRHFWrapped ? props.field.onChange : props.onChange
+  const onBlur = isRHFWrapped ? props.field.onBlur : props.onBlur
+
   return (
-    <WysiwygWrap>
+    <WysiwygWrap readOnly={props.readOnly ?? false}>
+      {props.label && (
+        <span>
+          <InputLabel shrink>{props.label}</InputLabel>
+        </span>
+      )}
       <ReactQuill
-        placeholder={placeholder}
         theme="snow"
+        placeholder={props.placeholder}
         modules={modules}
-        value={field.value || ''}
-        onChange={field.onChange}
-        onBlur={field.onBlur}
+        readOnly={props.readOnly}
+        value={value}
+        onChange={onChange}
+        onBlur={onBlur}
       />
     </WysiwygWrap>
   )
