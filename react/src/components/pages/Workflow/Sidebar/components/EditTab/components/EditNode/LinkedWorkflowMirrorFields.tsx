@@ -1,7 +1,10 @@
+import TimeDurationField from '@cf/components/common/UIPrimitives/TimeDurationInput'
 import { _t } from '@cf/utility/Utility.class'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+
+import Wysiwyg from './Wysiwyg'
 
 type Props = {
   title: string
@@ -40,23 +43,19 @@ const LinkedWorkflowMirrorFields = ({
       value={title}
       InputProps={{ readOnly: true }}
     />
-    <TextField
-      label={_t('Description')}
-      variant="outlined"
-      size="small"
-      multiline
-      maxRows={5}
-      value={description}
-      InputProps={{ readOnly: true }}
-    />
+    <Wysiwyg readOnly label={_t('Description')} value={description} />
     {showTime && (
-      <TextField
-        label={_t('Time')}
-        variant="outlined"
+      <TimeDurationField
         size="small"
-        value=""
-        placeholder="—"
-        InputProps={{ readOnly: true }}
+        fullWidth
+        readOnly
+        // TODO: grab these from the API
+        value={{
+          days: 12,
+          hours: 15,
+          minutes: 30
+        }}
+        onChange={(value) => console.log(value)}
       />
     )}
     {showProgramFields && (
