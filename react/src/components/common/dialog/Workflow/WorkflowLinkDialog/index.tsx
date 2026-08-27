@@ -1,6 +1,7 @@
 import {
   LibraryContentTypeIn,
   LibraryItemOut,
+  WorkflowType,
   searchLibrary
 } from '@cf/api/gen'
 import {
@@ -9,6 +10,7 @@ import {
 } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { linkNodeWorkflow } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import { AppDispatch } from '@cf/redux/store'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
 import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
@@ -37,8 +39,14 @@ type StateType = {
   loadError: boolean
 }
 
+const linkableWorkflowsPerType = {
+  [WorkflowType.ACTIVITY]: null,
+  [WorkflowType.COURSE]: [WorkflowType.ACTIVITY],
+  [WorkflowType.PROGRAM]: [WorkflowType.COURSE]
+}
+
 function NodeLinkWorkflowDialog() {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { payload, show, onClose } = useDialog(DialogMode.NODE_LINK_WORKFLOW)
   const nodeSelector = useMemo(
     () => (payload?.uuid ? selectNodeByUuid(payload.uuid) : () => null),
@@ -63,6 +71,7 @@ function NodeLinkWorkflowDialog() {
 
   const { selected, workflowData, filteredWorkflows, loading, loadError } =
     state
+
   const filteredResults = formatLibraryObjects(
     filteredWorkflows ?? workflowData ?? []
   )
@@ -89,31 +98,20 @@ function NodeLinkWorkflowDialog() {
   }, [])
 
   const onSubmit = useCallback(() => {
-    if (!payload?.uuid || !selected || !graphUuid) {
+    if (!payload?.uuid || !payload?.graphUuid || !selected) {
       return
     }
 
-    // const linked = workflowData?.find((w) => w.uuid === selected)
-
-    // TODO: implement
-    console.log('TODO: linkNodeWorkflow submit', {
-      uuid: payload?.uuid,
-      workflowData
-    })
-
-    // dispatch(
-    //   linkNodeWorkflow({
-    //     graphUuid,
-    //     nodeUuid: payload.uuid,
-    //     workflowUuid: selected,
-    //     linkedWorkflow: linked
-    //       ? { uuid: linked.uuid, title: linked.title }
-    //       : { uuid: selected, title: '' }
-    //   })
-    // )
+    dispatch(
+      linkNodeWorkflow({
+        graphUuid: payload.graphUuid,
+        nodeUuid: payload.uuid,
+        workflowUuid: selected
+      })
+    )
 
     onClose()
-  }, [graphUuid, payload?.uuid, selected, workflowData, onClose])
+  }, [dispatch, onClose, payload, selected])
 
   const onSearchChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -161,7 +159,12 @@ function NodeLinkWorkflowDialog() {
         const { data } = await searchLibrary({
           body: {
             pagination: { page: 0, resultsPerPage: 100 },
-            filters: { contentType: LibraryContentTypeIn.WORKFLOW }
+            filters: {
+              contentType: LibraryContentTypeIn.WORKFLOW,
+              workflowTypes: parentWorkflowType
+                ? linkableWorkflowsPerType[parentWorkflowType]
+                : null
+            }
           },
           throwOnError: true
         })
