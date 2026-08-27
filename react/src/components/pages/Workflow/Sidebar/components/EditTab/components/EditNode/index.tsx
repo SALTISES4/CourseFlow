@@ -1,5 +1,6 @@
 import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import TimeDurationField from '@cf/components/common/UIPrimitives/TimeDurationInput'
+import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
 import type { NodeEntity } from '@cf/features/graph/state/model/types'
 import {
   selectGraphByUuid,
@@ -43,7 +44,6 @@ import {
 } from './linkedWorkflowUi'
 import optionsData from './optionsData'
 import { NodeForm } from './types'
-import Wysiwyg from './Wysiwyg'
 
 const EditNode = ({ nodeId }: { nodeId: string }) => {
   const dispatch = useDispatch()
@@ -297,7 +297,7 @@ const EditNodeForm = ({
                 name="description"
                 control={control}
                 render={({ field }) => (
-                  <Wysiwyg placeholder={_t('Description')} field={field} />
+                  <WysiwygField placeholder={_t('Description')} field={field} />
                 )}
               />
             </>

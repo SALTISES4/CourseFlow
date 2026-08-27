@@ -5,6 +5,7 @@ import {
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import type { WorkflowOverviewMetadataIn } from '@cf/api/gen/types.gen'
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
 import ErrorView from '@cf/components/pages/MsgViews/ErrorView'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { WorkspaceType } from '@cf/types/enum'
@@ -77,7 +78,13 @@ const OverviewView = () => {
     <OuterContentWrap sx={{ pt: 4 }} data-test-id="workflow-overview-view">
       <SC.InfoBlock sx={{ mb: 3 }}>
         <SC.InfoBlockTitle>{_t('Description')}</SC.InfoBlockTitle>
-        <SC.InfoBlockContent>{description || _t('-')}</SC.InfoBlockContent>
+        <SC.InfoBlockContent>
+          {description ? (
+            <WysiwygField readOnly noBorder value={description} />
+          ) : (
+            _t('-')
+          )}
+        </SC.InfoBlockContent>
       </SC.InfoBlock>
 
       <Grid container columnSpacing={3}>

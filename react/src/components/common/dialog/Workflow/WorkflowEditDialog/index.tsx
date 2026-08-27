@@ -9,6 +9,7 @@ import {
   WorkflowFormType,
   workflowSchema
 } from '@cf/components/common/dialog/Workflow/components/WorkflowForm'
+import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import Utility, { _t } from '@cf/utility/Utility.class'
@@ -21,7 +22,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import TextField from '@mui/material/TextField'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 const WorkflowLabels: Record<WorkflowType, string> = {
@@ -50,6 +51,7 @@ const WorkflowEditDialog = () => {
     _t('Workflow')
 
   const {
+    control,
     register,
     handleSubmit,
     reset,
@@ -140,17 +142,16 @@ const WorkflowEditDialog = () => {
               fullWidth
               helperText={errors.title?.message}
             />
-
-            <TextField
-              {...register('description')}
-              multiline
-              maxRows={3}
+            <Controller
               name="description"
-              variant="standard"
-              label={_t(`Description`)}
-              error={!!errors.description}
-              helperText={errors.description?.message}
-              fullWidth
+              control={control}
+              render={({ field }) => (
+                <WysiwygField
+                  placeholder={_t('Description')}
+                  label={_t('Description')}
+                  field={field}
+                />
+              )}
             />
           </StyledBox>
         </DialogContent>

@@ -1,10 +1,9 @@
 import TimeDurationField from '@cf/components/common/UIPrimitives/TimeDurationInput'
+import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
 import { _t } from '@cf/utility/Utility.class'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-
-import Wysiwyg from './Wysiwyg'
 
 type Props = {
   title: string
@@ -43,7 +42,7 @@ const LinkedWorkflowMirrorFields = ({
       value={title}
       InputProps={{ readOnly: true }}
     />
-    <Wysiwyg readOnly label={_t('Description')} value={description} />
+    <WysiwygField readOnly label={_t('Description')} value={description} />
     {showTime && (
       <TimeDurationField
         size="small"

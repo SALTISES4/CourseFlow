@@ -39,6 +39,7 @@ const WorkflowForm = ({
   formRef: RefObject<HTMLFormElement>
 }) => {
   const {
+    control,
     register,
     handleSubmit,
     reset,
