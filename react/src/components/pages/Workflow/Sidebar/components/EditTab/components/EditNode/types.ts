@@ -3,10 +3,9 @@ export type NodeForm = {
   description?: string
   contextType?: number | string
   taskType?: number | string
-  timeUnits?: number
-  timeRequired?: number | null
-  credits?: number
+  timeRequired?: number
   tags?: number[]
+  credits?: number | string
   linkedWorkflow?: LinkedWorkflowType
   ponderation?: PonderationType
   /** Program-node-local (FR-WF-EN-006); persisted when API supports it. */
@@ -22,7 +21,6 @@ export type NodeForm = {
 //   ponderation?: PonderationType
 //   contextClassification?: number
 //   taskClassification?: number
-//   timeUnits?: number
 //   sets?: number[]
 // }
 
@@ -30,8 +28,8 @@ type PonderationType = {
   theory: string
   practice: string
   individual: string
-  generalEdu?: string
-  specificEdu?: string
+  generalEdu: string
+  specificEdu: string
 }
 
 export type LinkedWorkflowType = {

@@ -43,15 +43,14 @@ const OutcomeEditView = ({ graphUuid }: { graphUuid: GraphUuid }) => {
               'In this view you can add and edit outcomes for this workflow. Once added, outcomes can be attached to nodes within your workflow by navigating to the “Workflow” tab and drag and dropping your outcomes to your nodes from the Outcomes tab of the right sidebar.'
             )}
           />
-          {canManageOutcomes && (
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={onAddNewOutcome}
-            >
-              {_t('Add outcome')}
-            </Button>
-          )}
+          <Button
+            color="primary"
+            variant="contained"
+            disabled={!canManageOutcomes}
+            onClick={onAddNewOutcome}
+          >
+            {_t('Add outcome')}
+          </Button>
         </Box>
       ) : (
         <Stack spacing={3} direction="column">

@@ -14,6 +14,8 @@ import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { SnackbarProvider } from 'notistack'
 import ReactDOM from 'react-dom/client'
@@ -68,22 +70,24 @@ root.render(
     <QueryClientProvider client={courseFlowQueryClient}>
       <AuthBootstrap />
       <CookieProvider>
-        <CacheProvider value={cache}>
-          <SnackbarProvider
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-          >
-            <DialogContextProvider>
-              <ThemeProvider theme={theme}>
-                <ScopedCssBaseline sx={MainSidebarRootStyles}>
-                  <RouterProvider
-                    router={CfRouter}
-                    future={{ v7_startTransition: true }}
-                  />
-                </ScopedCssBaseline>
-              </ThemeProvider>
-            </DialogContextProvider>
-          </SnackbarProvider>
-        </CacheProvider>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <CacheProvider value={cache}>
+            <SnackbarProvider
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
+              <DialogContextProvider>
+                <ThemeProvider theme={theme}>
+                  <ScopedCssBaseline sx={MainSidebarRootStyles}>
+                    <RouterProvider
+                      router={CfRouter}
+                      future={{ v7_startTransition: true }}
+                    />
+                  </ScopedCssBaseline>
+                </ThemeProvider>
+              </DialogContextProvider>
+            </SnackbarProvider>
+          </CacheProvider>
+        </LocalizationProvider>
       </CookieProvider>
     </QueryClientProvider>
   </Provider>

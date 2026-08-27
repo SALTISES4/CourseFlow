@@ -1,4 +1,9 @@
-import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import {
+  getWorkflowOptions,
+  listProjectTagsOptions
+} from '@cf/api/gen/@tanstack/react-query.gen'
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { selectOutcomeTagGroups } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { RootState } from '@cf/redux/store'
 import { CFRoutes } from '@cf/router/appRoutes'
@@ -21,8 +26,17 @@ const OutcomeTab = () => {
     enabled: Boolean(uuid)
   })
   const graphUuid = workflowDetailResp?.item?.graphUuid ?? ''
+  const workflowType = workflowDetailResp?.item?.workflowType ?? 'workflow'
+  const projectUuid = workflowDetailResp?.item?.projectUuid ?? ''
+  const { data: projectTags = [] } = useQuery({
+    ...listProjectTagsOptions({ path: { uuid: projectUuid } }),
+    enabled: Boolean(projectUuid)
+  })
+  const canManageOutcomes = useResourcePermission(
+    WorkflowPermission.OUTCOME_MANAGEMENT
+  )
   const outcomeGroups = useSelector((state: RootState) =>
-    selectOutcomeTagGroups(state, graphUuid)
+    selectOutcomeTagGroups(state, graphUuid, projectTags)
   )
   const navigate = useNavigate()
 
@@ -41,11 +55,7 @@ const OutcomeTab = () => {
             severity="info"
             persistent
             subtitle={
-              <>
-                {_t(
-                  'Add Outcomes by navigating to the "Outcomes" tab of the current workflow to be able to attach them to nodes within this view.'
-                )}
-              </>
+              <>{`There are currently no outcomes in this ${workflowType}, navigate to the outcomes view to add outcomes.`}</>
             }
           />
         </Styled.SidebarContent>
@@ -53,9 +63,10 @@ const OutcomeTab = () => {
           <Button
             variant="contained"
             color="primary"
+            disabled={!canManageOutcomes}
             onClick={goToEditOutcomes}
           >
-            {_t('Edit outcomes')}
+            {_t('Add outcomes')}
           </Button>
         </Styled.SidebarActions>
       </Styled.SidebarInnerWrap>
@@ -77,9 +88,11 @@ const OutcomeTab = () => {
           (group, idx) =>
             !!group.outcomes.length && (
               <Styled.GroupWrap key={idx}>
-                <Typography component="h6" variant="body2">
-                  {group.title}
-                </Typography>
+                {group.title && (
+                  <Typography component="h6" variant="body2">
+                    {group.title}
+                  </Typography>
+                )}
                 {group.outcomes.map((outcomeUuid) => (
                   <Outcome
                     key={outcomeUuid}
@@ -95,6 +108,7 @@ const OutcomeTab = () => {
         <Button
           variant="contained"
           color="secondary"
+          disabled={!canManageOutcomes}
           onClick={goToEditOutcomes}
         >
           {_t('Edit outcomes')}

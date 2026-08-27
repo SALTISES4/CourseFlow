@@ -292,11 +292,6 @@ test.describe('Outcome duplicate/delete — permissions (FR-WF-EO-009/010/013)',
       await gotoOutcomesView(page, workflow.path);
       await expect(workflowOutcomeHeader(page, E2E_OUTCOME_TITLE)).toBeVisible();
 
-      test.fail(
-        true,
-        'Commenter outcome hover menu omits duplicate/delete items; FR-WF-EO-010/013 require them disabled per FR-WF-EO-003',
-      );
-
       await workflowOutcomeHeader(page, E2E_OUTCOME_TITLE).hover();
       await expect(workflowOutcomeHoverCommentsItem(page, E2E_OUTCOME_TITLE)).toBeVisible();
       await expect(workflowOutcomeHoverDuplicateItem(page, E2E_OUTCOME_TITLE)).toBeDisabled();

@@ -1,5 +1,9 @@
 import { styled } from '@mui/material/styles'
 
+export const EdgeLayer = styled('div')(() => ({
+  display: 'contents'
+}))
+
 export const BottomSVG = styled('svg')(() => ({
   position: 'absolute',
   top: '-30px',
@@ -7,7 +11,7 @@ export const BottomSVG = styled('svg')(() => ({
   width: 'calc(100% + 60px)',
   height: 'calc(100% + 60px)',
   pointerEvents: 'none',
-  zIndex: '0'
+  zIndex: 2
 }))
 
 export const TopSVG = styled(BottomSVG)(() => ({

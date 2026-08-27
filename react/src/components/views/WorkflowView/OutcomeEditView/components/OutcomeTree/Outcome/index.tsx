@@ -11,6 +11,7 @@ import {
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/list-item'
 import { WorkflowPermission } from '@cf/api/gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
+import { displayOutcomeTitle } from '@cf/features/graph/outcomeTitle'
 import type {
   GraphUuid,
   OutcomeEntity
@@ -226,15 +227,12 @@ const Outcome = ({
   )
 
   const onHeaderClick = useCallback(() => {
-    if (!canManageOutcomes) {
-      return
-    }
     if (selected) {
       manager.current.clearSidebar()
     } else {
       manager.current.updateSidebar(uuid, CfObjectType.OUTCOME, '-1')
     }
-  }, [canManageOutcomes, uuid, selected])
+  }, [uuid, selected])
 
   return (
     <Styled.OutcomeWrapper dragging={dragging?.uuid === uuid}>
@@ -245,7 +243,7 @@ const Outcome = ({
         tags={tagIds}
         greenHover={greenHover}
         dragRef={dragHandleRef}
-        title={`${prefix}${title}`}
+        title={`${prefix}${displayOutcomeTitle(title)}`}
         selected={selected || state.dragHighlight}
         highlighted={highlighted}
         collapsed={state.collapsed}

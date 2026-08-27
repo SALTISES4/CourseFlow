@@ -99,6 +99,78 @@ def _node_payload(n: Node) -> dict:
     }
 
 
+def _outcome_tree_ids(
+    graph_id: int,
+) -> tuple[dict[int, int | None], dict[int, set[int]]]:
+    parent_by_id: dict[int, int | None] = {}
+    children_by_parent: dict[int, set[int]] = {}
+    for outcome_id, parent_id in Outcome.objects.filter(graph_id=graph_id).values_list(
+        "id", "parent_id"
+    ):
+        parent_by_id[outcome_id] = parent_id
+        if parent_id is not None:
+            children_by_parent.setdefault(parent_id, set()).add(outcome_id)
+    return parent_by_id, children_by_parent
+
+
+def _outcome_subtree_ids(
+    outcome_id: int,
+    children_by_parent: dict[int, set[int]],
+) -> set[int]:
+    subtree: set[int] = set()
+    pending = [outcome_id]
+    while pending:
+        current = pending.pop()
+        if current in subtree:
+            continue
+        subtree.add(current)
+        pending.extend(children_by_parent.get(current, ()))
+    return subtree
+
+
+def _assigned_outcome_ids_after_link(node: Node, outcome: Outcome) -> set[int]:
+    parent_by_id, children_by_parent = _outcome_tree_ids(outcome.graph_id)
+    assigned = set(node.outcomes.values_list("id", flat=True))
+
+    # Every assigned branch includes all of its descendants.
+    for assigned_id in tuple(assigned | {outcome.id}):
+        assigned.update(_outcome_subtree_ids(assigned_id, children_by_parent))
+
+    # A parent becomes assigned as soon as every direct child is assigned. Walk
+    # until stable because adding a parent can satisfy its own parent.
+    changed = True
+    while changed:
+        changed = False
+        for parent_id, child_ids in children_by_parent.items():
+            if parent_id not in assigned and child_ids.issubset(assigned):
+                assigned.add(parent_id)
+                changed = True
+
+    return assigned.intersection(parent_by_id)
+
+
+def _assigned_outcome_ids_after_unlink(node: Node, outcome: Outcome) -> set[int]:
+    parent_by_id, children_by_parent = _outcome_tree_ids(outcome.graph_id)
+    assigned = set(node.outcomes.values_list("id", flat=True))
+
+    # Unlinking a branch removes that outcome and its assigned descendants. This
+    # is required when unlinking an assigned non-leaf: otherwise the invariant
+    # below would immediately re-add the parent because all children remained.
+    assigned.difference_update(_outcome_subtree_ids(outcome.id, children_by_parent))
+
+    # If any direct child is absent, its assigned parent must also be absent.
+    # Repeat to propagate removals through every ancestor.
+    changed = True
+    while changed:
+        changed = False
+        for parent_id, child_ids in children_by_parent.items():
+            if parent_id in assigned and not child_ids.issubset(assigned):
+                assigned.remove(parent_id)
+                changed = True
+
+    return assigned.intersection(parent_by_id)
+
+
 def _create_grid_node(
     *,
     section: Section,
@@ -430,17 +502,48 @@ class GraphMutationService:
             gn.instance.save(update_fields=["section_row"])
             builder.add_node_updated(_node_payload(self._reload_node(gn.instance.pk)))
 
-        edge_ids = list(
-            Edge.objects.filter(
-                Q(source_node_id=node.id) | Q(target_node_id=node.id),
-            ).values_list("id", flat=True),
+        incoming_edges = list(
+            Edge.objects.filter(target_node_id=node.id).select_related(
+                "source_node", "target_node"
+            )
         )
+        outgoing_edges = list(
+            Edge.objects.filter(source_node_id=node.id).select_related(
+                "source_node", "target_node"
+            )
+        )
+        incident_edges = {edge.id: edge for edge in incoming_edges + outgoing_edges}
 
-        for eid in edge_ids:
+        for eid in incident_edges:
             builder.add_edge_deleted(eid)
+
+        bypass_endpoints: tuple[int, int] | None = None
+        if len(incoming_edges) == 1 and len(outgoing_edges) == 1:
+            predecessor_id = incoming_edges[0].source_node_id
+            successor_id = outgoing_edges[0].target_node_id
+            if predecessor_id != successor_id:
+                bypass_endpoints = (predecessor_id, successor_id)
 
         builder.add_node_deleted(node.uuid)
         node.delete()
+
+        if bypass_endpoints is not None:
+            predecessor_id, successor_id = bypass_endpoints
+            if not Edge.objects.filter(
+                source_node_id=predecessor_id,
+                target_node_id=successor_id,
+            ).exists():
+                bypass = Edge.objects.create(
+                    source_node_id=predecessor_id,
+                    target_node_id=successor_id,
+                    source_port="1",
+                    target_port="1",
+                )
+                bypass = Edge.objects.select_related(
+                    "source_node", "target_node"
+                ).get(pk=bypass.pk)
+                builder.add_edge_created(_edge_payload(bypass))
+
         _bump_revision(wf_locked)
 
         env = builder.build_envelope(
@@ -550,6 +653,9 @@ class GraphMutationService:
         if section.graph_id != wf_locked.id:
             return None, "not_found"
 
+        if Section.objects.filter(graph_id=wf_locked.id).count() <= 1:
+            return None, "forbidden"
+
         node_rows = list(
             Node.objects.filter(section_id=section.id).values_list("id", "uuid")
         )
@@ -626,17 +732,17 @@ class GraphMutationService:
                 ch = Channel.objects.select_related("graph", "thread").get(pk=ch.pk)
                 builder.add_channel_updated(_channel_payload(ch))
 
-        colour = ""
+        colour = "#CFD8DC"
         if duplicate:
             source = anchor if anchor is not None else (channels[0] if channels else None)
             if source is None:
-                title = " (copy)"
+                title = ""
             else:
                 source_title = (source.title or "").strip()
-                title = f"{source_title} (copy)" if source_title else " (copy)"
-                colour = source.colour or ""
+                title = f"{source_title} (copy)" if source_title else ""
+                colour = source.colour or "#CFD8DC"
         else:
-            title = ""
+            title = "Custom node category"
 
         new_ch = Channel.objects.create(
             graph_id=wf.id,
@@ -915,6 +1021,18 @@ class GraphMutationService:
         if not _node_in_graph(sn, wf.id) or not _node_in_graph(tn, wf.id):
             return None, "bad_request"
 
+        if sn.pk == tn.pk:
+            return None, "bad_request"
+
+        if Edge.objects.filter(source_node=sn, target_node=tn).exists():
+            return None, "bad_request"
+
+        if Edge.objects.filter(source_node=sn).count() >= 50:
+            return None, "bad_request"
+
+        if Edge.objects.filter(target_node=tn).count() >= 50:
+            return None, "bad_request"
+
         e = Edge.objects.create(
             source_node=sn,
             target_node=tn,
@@ -1024,6 +1142,10 @@ class GraphMutationService:
         title: str | None = None,
         text_position: int | None = None,
         line_type: str | None = None,
+        source_node_uuid: UUID | None = None,
+        target_node_uuid: UUID | None = None,
+        source_port: str | None = None,
+        target_port: str | None = None,
     ) -> tuple[dict | None, MutationError | None]:
         try:
             e = Edge.objects.select_related(
@@ -1076,6 +1198,54 @@ class GraphMutationService:
         ):
             return None, "not_found"
 
+        replacement_source = e.source_node
+        replacement_target = e.target_node
+
+        if source_node_uuid is not None:
+            try:
+                replacement_source = Node.objects.select_related(
+                    "section", "channel"
+                ).get(uuid=source_node_uuid)
+            except Node.DoesNotExist:
+                return None, "bad_request"
+            if not _node_in_graph(replacement_source, wf_locked.id):
+                return None, "bad_request"
+
+        if target_node_uuid is not None:
+            try:
+                replacement_target = Node.objects.select_related(
+                    "section", "channel"
+                ).get(uuid=target_node_uuid)
+            except Node.DoesNotExist:
+                return None, "bad_request"
+            if not _node_in_graph(replacement_target, wf_locked.id):
+                return None, "bad_request"
+
+        if replacement_source.pk == replacement_target.pk:
+            return None, "bad_request"
+
+        endpoint_changed = (
+            replacement_source.pk != e.source_node_id
+            or replacement_target.pk != e.target_node_id
+        )
+        if endpoint_changed and Edge.objects.filter(
+            source_node=replacement_source,
+            target_node=replacement_target,
+        ).exclude(pk=e.pk).exists():
+            return None, "bad_request"
+
+        if (
+            replacement_source.pk != e.source_node_id
+            and Edge.objects.filter(source_node=replacement_source).count() >= 50
+        ):
+            return None, "bad_request"
+
+        if (
+            replacement_target.pk != e.target_node_id
+            and Edge.objects.filter(target_node=replacement_target).count() >= 50
+        ):
+            return None, "bad_request"
+
         updates: list[str] = []
         if title is not None:
             e.title = title
@@ -1088,6 +1258,24 @@ class GraphMutationService:
         if line_type is not None:
             e.line_type = line_type
             updates.append("line_type")
+        if replacement_source.pk != e.source_node_id:
+            e.source_node = replacement_source
+            updates.append("source_node")
+        if replacement_target.pk != e.target_node_id:
+            e.target_node = replacement_target
+            updates.append("target_node")
+        if source_port is not None:
+            source_port = source_port.strip()
+            if not source_port:
+                return None, "bad_request"
+            e.source_port = source_port
+            updates.append("source_port")
+        if target_port is not None:
+            target_port = target_port.strip()
+            if not target_port:
+                return None, "bad_request"
+            e.target_port = target_port
+            updates.append("target_port")
 
         if not updates:
             return None, "bad_request"
@@ -1401,30 +1589,6 @@ class GraphMutationService:
             )
             builder.add_node_updated(_node_payload(self._reload_node(gn.instance.pk)))
 
-    def _copy_edges_to_node(
-        self,
-        builder: GraphMutationDeltaBuilder,
-        *,
-        source: Node,
-        target: Node,
-    ) -> None:
-        incident = Edge.objects.filter(
-            Q(source_node_id=source.id) | Q(target_node_id=source.id)
-        )
-        for edge in incident:
-            src = target if edge.source_node_id == source.id else edge.source_node
-            tgt = target if edge.target_node_id == source.id else edge.target_node
-            new_edge = Edge.objects.create(
-                source_node=src,
-                target_node=tgt,
-                title=edge.title,
-                text_position=edge.text_position,
-                line_type=edge.line_type,
-                source_port=edge.source_port,
-                target_port=edge.target_port,
-            )
-            builder.add_edge_created(_edge_payload(new_edge))
-
     @transaction.atomic
     def insert_node_below(
         self,
@@ -1483,11 +1647,14 @@ class GraphMutationService:
         if duplicate:
             from course_flow.core.node_meta import copy_node_typed_meta
 
-            new_node.title = anchor.title
+            new_node.title = (
+                f"{anchor.title} (copy)" if (anchor.title or "").strip() else ""
+            )
             new_node.description = anchor.description
             new_node.save(update_fields=["title", "description"])
             copy_node_typed_meta(source=anchor, target=new_node)
-            self._copy_edges_to_node(builder, source=anchor, target=new_node)
+            new_node.tags.set(anchor.tags.all())
+            new_node.outcomes.set(anchor.outcomes.all())
             if anchor.linked_workflow_id:
                 new_node.linked_workflow = anchor.linked_workflow
                 new_node.save(update_fields=["linked_workflow_id"])
@@ -1791,9 +1958,9 @@ class GraphMutationService:
             return None, err or "bad_request"
 
         n = self._reload_node(node.pk)
-        if not n.outcomes.filter(pk=outcome.pk).exists():
-            n.outcomes.add(outcome)
-            n = self._reload_node(n.pk)
+        assigned_ids = _assigned_outcome_ids_after_link(n, outcome)
+        n.outcomes.set(assigned_ids)
+        n = self._reload_node(n.pk)
 
         builder = GraphMutationDeltaBuilder()
         builder.add_node_updated(_node_payload(n))
@@ -1826,9 +1993,9 @@ class GraphMutationService:
             return None, err or "bad_request"
 
         n = self._reload_node(node.pk)
-        if n.outcomes.filter(pk=outcome.pk).exists():
-            n.outcomes.remove(outcome)
-            n = self._reload_node(n.pk)
+        assigned_ids = _assigned_outcome_ids_after_unlink(n, outcome)
+        n.outcomes.set(assigned_ids)
+        n = self._reload_node(n.pk)
 
         builder = GraphMutationDeltaBuilder()
         builder.add_node_updated(_node_payload(n))
@@ -2009,9 +2176,25 @@ class GraphMutationService:
         parent_pk = outcome.parent_id
         deleted_uuid = outcome.uuid
         deleted_uuids = _outcome_subtree_uuids(wf.id, outcome.pk)
-        outcome.delete()
+        deleted_ids = _outcome_subtree_ids(
+            outcome.pk,
+            _outcome_tree_ids(wf.id)[1],
+        )
+        affected_nodes = list(
+            Node.objects.filter(outcomes__id__in=deleted_ids).distinct()
+        )
 
         builder = GraphMutationDeltaBuilder()
+        for affected_node in affected_nodes:
+            affected_node.outcomes.set(
+                _assigned_outcome_ids_after_unlink(affected_node, outcome)
+            )
+            builder.add_node_updated(
+                _node_payload(self._reload_node(affected_node.pk))
+            )
+
+        outcome.delete()
+
         for outcome_uuid in deleted_uuids:
             builder.add_outcome_deleted(outcome_uuid)
         _renumber_sibling_outcomes(wf.id, parent_pk, builder)

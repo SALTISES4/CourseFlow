@@ -522,9 +522,6 @@ export const changeNodeMetaCommand = async (
   if (meta.timeRequired !== undefined) {
     body.timeRequired = meta.timeRequired
   }
-  if (meta.timeUnits !== undefined) {
-    body.timeUnits = meta.timeUnits
-  }
   if (meta.representsWorkflow !== undefined) {
     body.representsWorkflow = meta.representsWorkflow
   }
@@ -629,6 +626,18 @@ export const updateEdgeCommand = async (
   }
   if (input.meta.lineType !== undefined) {
     body.lineType = input.meta.lineType
+  }
+  if (input.sourceNodeUuid !== undefined) {
+    body.sourceNodeUuid = input.sourceNodeUuid
+  }
+  if (input.targetNodeUuid !== undefined) {
+    body.targetNodeUuid = input.targetNodeUuid
+  }
+  if (input.sourcePort !== undefined) {
+    body.sourcePort = input.sourcePort
+  }
+  if (input.targetPort !== undefined) {
+    body.targetPort = input.targetPort
   }
   const result = await updateEdge({
     path: { edge_id: parseEdgeId(String(input.edgeId)) },

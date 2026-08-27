@@ -2273,6 +2273,22 @@ export type GraphEdgePatchIn = {
    * Linetype
    */
   lineType?: string | null
+  /**
+   * Sourcenodeuuid
+   */
+  sourceNodeUuid?: string | null
+  /**
+   * Targetnodeuuid
+   */
+  targetNodeUuid?: string | null
+  /**
+   * Sourceport
+   */
+  sourcePort?: string | null
+  /**
+   * Targetport
+   */
+  targetPort?: string | null
 }
 
 /**

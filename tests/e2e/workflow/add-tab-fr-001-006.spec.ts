@@ -355,11 +355,6 @@ test.describe('add-tab-fr-001-006', () => {
       page,
       workflow,
     }) => {
-      test.fail(
-        true,
-        'Add-tab custom-category drop creates channel with empty title instead of FR-CHAN-004 defaults',
-      );
-
       const sectionUuid = workflow.blankSection().uuid;
       const workflowUuid = workflowUuidFromPath(workflow.path);
       const before = await fetchGraphView(page, workflowUuid);
@@ -435,11 +430,6 @@ test.describe('add-tab-fr-001-006', () => {
       page,
       workflow,
     }) => {
-      test.fail(
-        true,
-        'Column add-tab drop on node lower half places new workflowNode one row below FR-WF-ADD-005 target cell',
-      );
-
       const sectionUuid = workflow.blankSection().uuid;
       const workflowUuid = workflowUuidFromPath(workflow.path);
       const targetChannelUuid = await channelUuidByTitle(page, E2E_CHANNEL_A);
@@ -484,11 +474,6 @@ test.describe('add-tab-fr-001-006', () => {
       page,
       workflow,
     }) => {
-      test.fail(
-        true,
-        'Column add-tab drop on node lower half places new workflowNode one row below FR-WF-ADD-005 target cell',
-      );
-
       const sectionUuid = workflow.blankSection().uuid;
       const workflowUuid = workflowUuidFromPath(workflow.path);
       const targetChannelUuid = await channelUuidByTitle(page, E2E_CHANNEL_A);
@@ -533,11 +518,6 @@ test.describe('add-tab-fr-001-006', () => {
       page,
       workflow,
     }) => {
-      test.fail(
-        true,
-        'Column add-tab drop on node lower half places new workflowNode one row below FR-WF-ADD-005 target cell',
-      );
-
       const sectionUuid = workflow.sectionByTitle(disposableSectionTitle).uuid;
       const workflowUuid = workflowUuidFromPath(workflow.path);
       const before = await fetchGraphView(page, workflowUuid);

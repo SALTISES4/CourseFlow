@@ -136,7 +136,7 @@ export async function restoreChannelOrderViaApi(
     page,
     'PUT',
     `/api/graph/${graphUuid}/channels/order`,
-    { channelUuids: desiredOrder },
+    { data: { channelUuids: desiredOrder } },
   );
   expect(response.ok(), `restore channel order HTTP ${response.status()}`).toBeTruthy();
   await page.reload();

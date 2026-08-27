@@ -8,6 +8,7 @@ import {
 import { hoverWorkflowNode } from './comments-tab.helpers';
 import {
   customizeEdgeMetadata,
+  createIsolatedNodeCopiesViaApi,
   ensureDirectedEdge,
   edgesAmongNodes,
   expectBypassEdgeBetween,
@@ -26,7 +27,6 @@ import {
 } from './workflow-graph.locators';
 import {
   fetchGraphView,
-  nodeSetWithoutInternalEdges,
   workflowUuidFromPath,
 } from './workflow-graph.helpers';
 
@@ -119,18 +119,31 @@ test.describe('Delete node — edge handling (FR-WF-DEL-004)', () => {
     const workflowUuid = workflowUuidFromPath(workflow.path);
     const sectionUuid = workflow.firstSection().uuid;
     const graphBefore = await fetchGraphView(page, workflowUuid);
-    const [n1, n2, n3] = nodeSetWithoutInternalEdges(graphBefore, sectionUuid, 3);
+    const sourceNode = graphBefore.nodes.find((node) => node.sectionUuid === sectionUuid);
+    expect(sourceNode).toBeTruthy();
+    const [n1Uuid, n2Uuid, n3Uuid] = await createIsolatedNodeCopiesViaApi(
+      page,
+      workflow.graphUuid,
+      sourceNode!.uuid,
+      3,
+    );
 
-    const edgeIn = await ensureDirectedEdge(page, workflowUuid, n1.uuid, n2.uuid);
-    await ensureDirectedEdge(page, workflowUuid, n2.uuid, n3.uuid);
+    const edgeIn = await ensureDirectedEdge(
+      page,
+      workflow.graphUuid,
+      workflowUuid,
+      n1Uuid,
+      n2Uuid,
+    );
+    await ensureDirectedEdge(page, workflow.graphUuid, workflowUuid, n2Uuid, n3Uuid);
     await customizeEdgeMetadata(page, edgeIn, 'E2E incident edge title');
 
-    await hoverDeleteWorkflowNode(page, n2.uuid);
+    await hoverDeleteWorkflowNode(page, n2Uuid);
 
     const graphAfter = await fetchGraphView(page, workflowUuid);
-    expectNoEdgesIncidentOnNode(graphAfter, n2.uuid);
-    expectBypassEdgeBetween(graphAfter, n1.uuid, n3.uuid);
-    expect(graphAfter.nodes.some((node) => node.uuid === n2.uuid)).toBe(false);
+    expectNoEdgesIncidentOnNode(graphAfter, n2Uuid);
+    expectBypassEdgeBetween(graphAfter, n1Uuid, n3Uuid);
+    expect(graphAfter.nodes.some((node) => node.uuid === n2Uuid)).toBe(false);
   });
 
   test('FR-WF-DEL-004: multi-edge node delete removes every incident edge without bypass', async ({
@@ -140,26 +153,34 @@ test.describe('Delete node — edge handling (FR-WF-DEL-004)', () => {
     const workflowUuid = workflowUuidFromPath(workflow.path);
     const sectionUuid = workflow.firstSection().uuid;
     const graphBefore = await fetchGraphView(page, workflowUuid);
-    const [a1, a2, middle, b1, b2] = nodeSetWithoutInternalEdges(graphBefore, sectionUuid, 5);
-    const disposableUuids = [a1.uuid, a2.uuid, middle.uuid, b1.uuid, b2.uuid];
+    const sourceNode = graphBefore.nodes.find((node) => node.sectionUuid === sectionUuid);
+    expect(sourceNode).toBeTruthy();
+    const [a1Uuid, a2Uuid, middleUuid, b1Uuid, b2Uuid] =
+      await createIsolatedNodeCopiesViaApi(
+        page,
+        workflow.graphUuid,
+        sourceNode!.uuid,
+        5,
+      );
+    const disposableUuids = [a1Uuid, a2Uuid, middleUuid, b1Uuid, b2Uuid];
 
-    await ensureDirectedEdge(page, workflowUuid, a1.uuid, middle.uuid);
-    await ensureDirectedEdge(page, workflowUuid, a2.uuid, middle.uuid);
-    await ensureDirectedEdge(page, workflowUuid, middle.uuid, b1.uuid);
-    await ensureDirectedEdge(page, workflowUuid, middle.uuid, b2.uuid);
+    await ensureDirectedEdge(page, workflow.graphUuid, workflowUuid, a1Uuid, middleUuid);
+    await ensureDirectedEdge(page, workflow.graphUuid, workflowUuid, a2Uuid, middleUuid);
+    await ensureDirectedEdge(page, workflow.graphUuid, workflowUuid, middleUuid, b1Uuid);
+    await ensureDirectedEdge(page, workflow.graphUuid, workflowUuid, middleUuid, b2Uuid);
 
     const graphWithEdges = await fetchGraphView(page, workflowUuid);
     expect(edgesAmongNodes(graphWithEdges, disposableUuids)).toHaveLength(4);
 
-    await hoverDeleteWorkflowNode(page, middle.uuid);
+    await hoverDeleteWorkflowNode(page, middleUuid);
 
     const graphAfter = await fetchGraphView(page, workflowUuid);
-    expectNoEdgesIncidentOnNode(graphAfter, middle.uuid);
+    expectNoEdgesIncidentOnNode(graphAfter, middleUuid);
     expect(edgesAmongNodes(graphAfter, disposableUuids)).toHaveLength(0);
-    expectNoEdgeBetween(graphAfter, a1.uuid, b1.uuid);
-    expectNoEdgeBetween(graphAfter, a1.uuid, b2.uuid);
-    expectNoEdgeBetween(graphAfter, a2.uuid, b1.uuid);
-    expectNoEdgeBetween(graphAfter, a2.uuid, b2.uuid);
+    expectNoEdgeBetween(graphAfter, a1Uuid, b1Uuid);
+    expectNoEdgeBetween(graphAfter, a1Uuid, b2Uuid);
+    expectNoEdgeBetween(graphAfter, a2Uuid, b1Uuid);
+    expectNoEdgeBetween(graphAfter, a2Uuid, b2Uuid);
   });
 
   test('FR-WF-DEL-004: incoming-only node delete removes incoming edges without bypass', async ({
@@ -169,14 +190,21 @@ test.describe('Delete node — edge handling (FR-WF-DEL-004)', () => {
     const workflowUuid = workflowUuidFromPath(workflow.path);
     const sectionUuid = workflow.firstSection().uuid;
     const graphBefore = await fetchGraphView(page, workflowUuid);
-    const [source, target] = nodeSetWithoutInternalEdges(graphBefore, sectionUuid, 2);
+    const sourceNode = graphBefore.nodes.find((node) => node.sectionUuid === sectionUuid);
+    expect(sourceNode).toBeTruthy();
+    const [sourceUuid, targetUuid] = await createIsolatedNodeCopiesViaApi(
+      page,
+      workflow.graphUuid,
+      sourceNode!.uuid,
+      2,
+    );
 
-    await ensureDirectedEdge(page, workflowUuid, source.uuid, target.uuid);
-    await hoverDeleteWorkflowNode(page, target.uuid);
+    await ensureDirectedEdge(page, workflow.graphUuid, workflowUuid, sourceUuid, targetUuid);
+    await hoverDeleteWorkflowNode(page, targetUuid);
 
     const graphAfter = await fetchGraphView(page, workflowUuid);
-    expectNoEdgesIncidentOnNode(graphAfter, target.uuid);
-    expectNoEdgeBetween(graphAfter, source.uuid, target.uuid);
+    expectNoEdgesIncidentOnNode(graphAfter, targetUuid);
+    expectNoEdgeBetween(graphAfter, sourceUuid, targetUuid);
   });
 
   test('FR-WF-DEL-004: outgoing-only node delete removes outgoing edges without bypass', async ({
@@ -186,14 +214,21 @@ test.describe('Delete node — edge handling (FR-WF-DEL-004)', () => {
     const workflowUuid = workflowUuidFromPath(workflow.path);
     const sectionUuid = workflow.firstSection().uuid;
     const graphBefore = await fetchGraphView(page, workflowUuid);
-    const [source, target] = nodeSetWithoutInternalEdges(graphBefore, sectionUuid, 2);
+    const sourceNode = graphBefore.nodes.find((node) => node.sectionUuid === sectionUuid);
+    expect(sourceNode).toBeTruthy();
+    const [sourceUuid, targetUuid] = await createIsolatedNodeCopiesViaApi(
+      page,
+      workflow.graphUuid,
+      sourceNode!.uuid,
+      2,
+    );
 
-    await ensureDirectedEdge(page, workflowUuid, source.uuid, target.uuid);
-    await hoverDeleteWorkflowNode(page, source.uuid);
+    await ensureDirectedEdge(page, workflow.graphUuid, workflowUuid, sourceUuid, targetUuid);
+    await hoverDeleteWorkflowNode(page, sourceUuid);
 
     const graphAfter = await fetchGraphView(page, workflowUuid);
-    expectNoEdgesIncidentOnNode(graphAfter, source.uuid);
-    expectNoEdgeBetween(graphAfter, source.uuid, target.uuid);
+    expectNoEdgesIncidentOnNode(graphAfter, sourceUuid);
+    expectNoEdgeBetween(graphAfter, sourceUuid, targetUuid);
   });
 });
 

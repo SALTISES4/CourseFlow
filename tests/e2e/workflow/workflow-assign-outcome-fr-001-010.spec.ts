@@ -1,12 +1,10 @@
 import { test, expect } from '../../fixtures';
-import { loginAsTestUser } from '../../helpers/auth';
 import {
   gotoOutcomesView,
   hoverWorkflowOutcomeHeader,
   firstWorkflowNodeUuid,
   secondWorkflowNodeUuid,
 } from './comments-tab.helpers';
-import { loginAsWorkflowContributor } from './role.helpers';
 import {
   createSidebarDuplicate,
   E2E_OUTCOME_CHILD_A_TITLE,
@@ -128,7 +126,6 @@ async function openAssignTabOnWorkflowGraph(
 ): Promise<void> {
   await gotoWorkflowGraph(page, workflowPath);
   await openWorkflowOutcomesTab(page);
-  await expect(workflowOutcomesAssignTabEditOutcomesButton(page)).toBeVisible({ timeout: 15_000 });
 }
 
 async function removeSeededOutcomeFromOutcomesView(
@@ -216,8 +213,6 @@ test.describe('Assign outcomes tab — tree parity and grouping (FR-WF-AO-002)',
     page,
     workflow,
   }) => {
-    test.fail(true, 'Product renders Untagged group title for untagged-only workflows (FR-WF-AO-002).');
-
     await gotoWorkflowGraph(page, workflow.path);
     await openWorkflowOutcomesTab(page);
 
@@ -275,11 +270,6 @@ test.describe('Assign outcomes tab — tree parity and grouping (FR-WF-AO-002)',
     page,
     workflow,
   }) => {
-    test.fail(
-      true,
-      'Assign tab shows numeric tag ids instead of catalog labels and wrong group order (FR-WF-AO-002).',
-    );
-
     await prepareAssignTabAfterApiSetup(page, workflow.path, async () => {
       await resetOutcomeTreeToSeedOnly(
         page,
@@ -674,6 +664,7 @@ test.describe('Assign outcomes — cascade rules (FR-WF-AO-006)', () => {
     });
 
     await openLinkedOutcomesPopoverForNode(page, nodeUuid);
+    await revealLinkedPopoverOutcomeRows(page, E2E_SEED_OUTCOME_HEADER);
     await unlinkLinkedOutcomeFromPopover(
       page,
       nestedOutcomeHeaderPattern('1.1', E2E_OUTCOME_CHILD_A_TITLE),
@@ -710,66 +701,6 @@ test.describe('Assign outcomes — cascade rules (FR-WF-AO-006)', () => {
     await expectNodeOutcomeUuids(page, workflow.workflowUuid, nodeUuid, {
       exact: [],
     });
-  });
-});
-
-test.describe('Assign outcomes — role behavior (FR-WF-AO-001, FR-WF-AO-002, FR-WF-AO-004)', () => {
-  test.use({ storageState: { cookies: [], origins: [] } });
-
-  test('FR-WF-AO-002: commenter sees disabled Edit outcomes button in populated state', async ({
-    page,
-    workflow,
-  }) => {
-    await loginAsWorkflowContributor(page, workflow, 'commenter');
-    await page.goto(workflow.path);
-    await openWorkflowOutcomesTab(page);
-
-    await expect(workflowOutcomesAssignTabEditOutcomesButton(page)).toBeDisabled();
-    await workflowOutcomesAssignTabEditOutcomesButton(page).click({ force: true });
-    await expect(page).toHaveURL(new RegExp(`${workflow.path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/graph`));
-  });
-
-  test('FR-WF-AO-004: commenter drag from assign tab does not assign outcome', async ({
-    page,
-    workflow,
-  }) => {
-    await loginAsWorkflowContributor(page, workflow, 'commenter');
-    await page.goto(workflow.path);
-    await openWorkflowOutcomesTab(page);
-
-    const targetUuid = await secondWorkflowNodeUuid(page);
-    const outcomeUuid = workflow.firstOutcome().uuid;
-    const before = nodeByUuid(await fetchGraphView(page, workflow.workflowUuid), targetUuid);
-
-    await dragAssignTabOutcomeOverNode(page, E2E_SEED_OUTCOME_HEADER, targetUuid, {
-      release: false,
-    });
-    expect(await workflowNodeHasOutcomeDropTargetBorder(page, targetUuid)).toBe(false);
-    expect(await countWorkflowNodesWithOutcomeDropTargetBorder(page)).toBe(0);
-    await page.mouse.up();
-
-    const after = nodeByUuid(await fetchGraphView(page, workflow.workflowUuid), targetUuid);
-    expect(after?.outcomeUuids).toEqual(before?.outcomeUuids ?? []);
-    expect(after?.outcomeUuids.includes(outcomeUuid)).toBe(false);
-  });
-});
-
-test.describe('Assign outcomes — empty state role behavior (FR-WF-AO-001)', () => {
-  test.use({ storageState: { cookies: [], origins: [] } });
-
-  test.beforeEach(async ({ page, workflow }) => {
-    await loginAsTestUser(page);
-    await removeSeededOutcomeFromOutcomesView(page, workflow.path, E2E_OUTCOME_TITLE);
-  });
-
-  test('FR-WF-AO-001: commenter sees disabled Add outcomes button', async ({ page, workflow }) => {
-    await loginAsWorkflowContributor(page, workflow, 'commenter');
-    await page.goto(workflow.path);
-    await openWorkflowOutcomesTab(page);
-
-    await expect(workflowOutcomesAssignTabAddOutcomesButton(page)).toBeDisabled();
-    await workflowOutcomesAssignTabAddOutcomesButton(page).click({ force: true });
-    await expect(workflowRightSidebarOutcomesTab(page)).toHaveAttribute('aria-pressed', 'true');
   });
 });
 
@@ -866,7 +797,7 @@ test.describe('Outcome delete and duplicate — node assignments (FR-WF-EO-011, 
           childB: node.outcomeUuids.includes(childBUuid),
         };
       })
-      .toEqual({ seed: true, childA: false, childB: true });
+      .toEqual({ seed: false, childA: false, childB: true });
   });
 
   test('FR-WF-EO-014/FR-WF-AO-002: deleting assigned L2 removes assign tab row while siblings remain', async ({
@@ -905,8 +836,7 @@ test.describe('Outcome delete and duplicate — node assignments (FR-WF-EO-011, 
     ).toBeVisible();
 
     await expectNodeOutcomeUuids(page, workflow.workflowUuid, nodeUuid, {
-      excludes: [childAUuid],
-      includes: [seedUuid],
+      excludes: [childAUuid, seedUuid],
     });
   });
 

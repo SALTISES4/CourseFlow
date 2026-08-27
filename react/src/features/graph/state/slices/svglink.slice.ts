@@ -78,12 +78,7 @@ const svglinkSlice = createSlice({
       }
 
       state.snap = snap
-
-      const target = state.snap[editing]
-      if (target) {
-        target.nodeUuid = uuid
-        target.edge = edge
-      }
+      state.snap[editing] = { nodeUuid: uuid, edge }
     },
     lineEdit(state, action: PayloadAction<LineEdit>) {
       state.dragging.uuid = action.payload.uuid

@@ -58,8 +58,8 @@ const permissionMatrix: PermissionMatrixType = {
     [WorkflowType.PROGRAM]: [WorkflowViewType.GRAPH]
   },
   related: {
-    [WorkflowType.ACTIVITY]: [WorkflowViewType.OUTCOME_EDIT],
-    [WorkflowType.COURSE]: [WorkflowViewType.OUTCOME_EDIT]
+    // Related is outside the normalized right-sidebar contract and is not
+    // rendered in the Workflow or Outcomes sub-views.
   }
 }
 

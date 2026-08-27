@@ -1,3 +1,6 @@
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import RichTextDescription from '@cf/components/common/dialog/Workflow/components/RichTextDescription'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { OutcomeEntity } from '@cf/features/graph/state/model/types'
 import { selectOutcomeById } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { selectOutcomeLevel } from '@cf/features/graph/state/selectors/outcomes.selectors'
@@ -6,6 +9,7 @@ import {
   duplicateOutcome,
   updateOutcome
 } from '@cf/features/graph/state/thunks/outcomeMutations.thunks'
+import { useGraphProjectTags } from '@cf/features/graph/useGraphProjectTags'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import type { AppDispatch } from '@cf/redux/store'
 import { RootState } from '@cf/redux/store'
@@ -24,8 +28,6 @@ import TextField from '@mui/material/TextField'
 import { useCallback, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-
-import data from '../EditNode/optionsData'
 
 type OutcomeFormValues = {
   title: string
@@ -50,9 +52,13 @@ const EditOutcome = ({ outcomeUuid }: { outcomeUuid: string }) => {
 
 const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
   const dispatch = useDispatch<AppDispatch>()
+  const canManageOutcomes = useResourcePermission(
+    WorkflowPermission.OUTCOME_MANAGEMENT
+  )
   const level = useSelector((state: RootState) =>
     selectOutcomeLevel(state, outcome.graphUuid, outcome.uuid)
   )
+  const { data: projectTags = [] } = useGraphProjectTags(outcome.graphUuid)
 
   const {
     control,
@@ -85,6 +91,9 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
   const debouncedDispatch = useMemo(
     () =>
       debounce((formData: OutcomeFormValues) => {
+        if (!canManageOutcomes) {
+          return
+        }
         dispatch(
           updateOutcome({
             graphUuid: outcome.graphUuid,
@@ -100,7 +109,7 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
 
         reset({}, { keepValues: true })
       }, 300),
-    [dispatch, reset, outcome.graphUuid, outcome.uuid]
+    [canManageOutcomes, dispatch, reset, outcome.graphUuid, outcome.uuid]
   )
 
   useEffect(() => {
@@ -135,19 +144,23 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
         </SidebarTitle>
         <Stack direction="column" gap={3}>
           <TextField
-            required
             variant="outlined"
             label={_t('Title')}
             size="small"
             {...register('title')}
+            InputProps={{ readOnly: !canManageOutcomes }}
           />
-          <TextField
-            variant="outlined"
-            label={_t('Description')}
-            size="small"
-            multiline
-            maxRows={5}
-            {...register('description')}
+          <Controller
+            name="description"
+            control={control}
+            render={({ field }) => (
+              <RichTextDescription
+                label={_t('Description')}
+                readOnly={!canManageOutcomes}
+                value={field.value || ''}
+                onChange={field.onChange}
+              />
+            )}
           />
           {level === 0 && (
             <>
@@ -156,48 +169,56 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
                 label={_t('Code')}
                 size="small"
                 {...register('code')}
+                InputProps={{ readOnly: !canManageOutcomes }}
               />
-              {data.tags && (
-                <Controller
-                  name="tagIds"
-                  control={control}
-                  render={({ field }) => (
-                    <Autocomplete
-                      multiple
-                      size="small"
-                      options={data.tags}
-                      getOptionLabel={(tag) => tag.label}
-                      value={data.tags.filter((tag) =>
-                        field.value.includes(tag.uuid)
-                      )}
-                      onChange={(_, selectedOptions) =>
-                        field.onChange(
-                          selectedOptions.map((option) => option.uuid)
-                        )
-                      }
-                      isOptionEqualToValue={(option, value) =>
-                        option.uuid === value.uuid
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          variant="outlined"
-                          label={_t('Tags')}
-                        />
-                      )}
-                    />
-                  )}
-                />
-              )}
+              <Controller
+                name="tagIds"
+                control={control}
+                render={({ field }) => (
+                  <Autocomplete
+                    multiple
+                    size="small"
+                    disabled={!canManageOutcomes}
+                    options={projectTags}
+                    getOptionLabel={(tag) => tag.label}
+                    value={projectTags.filter((tag) =>
+                      field.value.includes(tag.id)
+                    )}
+                    onChange={(_, selectedOptions) =>
+                      field.onChange(selectedOptions.map((option) => option.id))
+                    }
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant="outlined"
+                        label={_t('Tags')}
+                      />
+                    )}
+                  />
+                )}
+              />
             </>
           )}
         </Stack>
       </SidebarContent>
       <SidebarActions>
-        <Button variant="contained" color="secondary" onClick={onDuplicate}>
+        <Button
+          variant="contained"
+          color="secondary"
+          disabled={!canManageOutcomes}
+          onClick={onDuplicate}
+        >
           {_t('Duplicate')}
         </Button>
-        <Button variant="contained" color="secondary" onClick={onDelete}>
+        <Button
+          variant="contained"
+          color="secondary"
+          disabled={!canManageOutcomes}
+          onClick={onDelete}
+        >
           {_t('Delete')}
         </Button>
       </SidebarActions>

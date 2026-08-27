@@ -186,7 +186,13 @@ export async function expectAssignTabMatchesOutcomesViewTree(
     .not.toEqual([]);
 
   await gotoOutcomesView(page, workflowPath);
-  const treeHeaders = sortOutcomeHeaderTexts(await collectOutcomesViewOutcomeHeaderTexts(page));
+  let treeHeaders: string[] = [];
+  await expect
+    .poll(async () => {
+      treeHeaders = sortOutcomeHeaderTexts(await collectOutcomesViewOutcomeHeaderTexts(page));
+      return treeHeaders;
+    }, { timeout: 15_000 })
+    .not.toEqual([]);
   expect(assignTabHeaders).toEqual(treeHeaders);
 }
 

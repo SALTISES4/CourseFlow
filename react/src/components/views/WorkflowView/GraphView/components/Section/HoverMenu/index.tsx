@@ -1,5 +1,6 @@
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
+import { selectSectionCount } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { selectThreadCommentCount } from '@cf/features/graph/state/selectors/threadCommentCounts.selectors'
 import { insertSectionBelow } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
@@ -24,6 +25,7 @@ type PropsType = {
 type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
 
 const HoverMenu = ({ graphUuid, sectionId, show, threadUuid }: PropsType) => {
+  const totalSectionCount = useSelector(selectSectionCount)
   const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
   const canEdit = useResourcePermission(WorkflowPermission.PART_MANAGEMENT)
@@ -36,6 +38,9 @@ const HoverMenu = ({ graphUuid, sectionId, show, threadUuid }: PropsType) => {
     (action: HoverMenuActions) => {
       return (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
+        if (action !== 'comments' && !canEdit) {
+          return
+        }
         switch (action) {
           case 'insert':
             dispatch(
@@ -75,7 +80,7 @@ const HoverMenu = ({ graphUuid, sectionId, show, threadUuid }: PropsType) => {
         }
       }
     },
-    [dispatch, dialogDispatch, graphUuid, sectionId]
+    [canEdit, dispatch, dialogDispatch, graphUuid, sectionId]
   )
 
   return (
@@ -83,7 +88,7 @@ const HoverMenu = ({ graphUuid, sectionId, show, threadUuid }: PropsType) => {
       sx={{ top: '0.7em', right: '4em' }}
       classNames="hover-menu"
       data-test-id="workflow-section-hover-menu"
-      show={show && (canEdit || canComment)}
+      show={show}
       items={[
         {
           label: 'Insert section below',
@@ -101,7 +106,7 @@ const HoverMenu = ({ graphUuid, sectionId, show, threadUuid }: PropsType) => {
           label: 'Delete section',
           icon: <DeleteOutlinedIcon />,
           onClick: onActionClick('delete'),
-          disabled: !canEdit
+          disabled: !canEdit || totalSectionCount <= 1
         },
         canComment && {
           label: 'Comments',
@@ -109,7 +114,7 @@ const HoverMenu = ({ graphUuid, sectionId, show, threadUuid }: PropsType) => {
           showCommentsPresenceIndicator: commentCount > 0,
           onClick: onActionClick('comments')
         }
-      ].filter(Boolean)}
+      ].filter((item) => item && (canEdit || canComment))}
     />
   )
 }

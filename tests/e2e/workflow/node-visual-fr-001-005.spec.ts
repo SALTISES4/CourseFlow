@@ -482,10 +482,14 @@ test.describe('Workflow node — hover menu (FR-WF-NODE-004, FR-WF-NODE-005)', (
       }) => {
         const sectionUuid = workflow.sectionByTitle('E2E Section 3').uuid;
         const sourceUuid = await firstNodeUuidInSection(page, sectionUuid);
+        const beforeCount = await workflowNodeCount(page);
 
         await hoverWorkflowNode(page, sourceUuid);
         await workflowNodeHoverDuplicateItem(page, sourceUuid).click();
 
+        await expect
+          .poll(async () => workflowNodeCount(page), { timeout: 10_000 })
+          .toBe(beforeCount + 1);
         const duplicateUuid = await findNodeBelowSourceInSection(page, sectionUuid, sourceUuid);
         await assertNodeIsBelowSourceInSameColumn(page, sourceUuid, duplicateUuid);
       });

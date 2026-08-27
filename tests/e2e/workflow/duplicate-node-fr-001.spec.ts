@@ -96,11 +96,6 @@ test.describe('Duplicate node', () => {
       page,
       workflow,
     }) => {
-      test.fail(
-        true,
-        'Duplicate currently preserves/creates workflowEdges on the copy (FR-WF-DUP-004 gap)',
-      );
-
       const workflowUuid = workflowUuidFromPath(workflow.path);
       const before = await fetchGraphView(page, workflowUuid);
       const source = findNodeWithIncidentEdges(before);
@@ -122,8 +117,6 @@ test.describe('Duplicate node', () => {
       page,
       workflow,
     }) => {
-      test.fail(true, 'Duplicate title does not yet append " (copy)" per FR-WF-DUP-004');
-
       const sectionUuid = workflow.sectionByTitle(disposableSectionTitle).uuid;
       const workflowUuid = workflowUuidFromPath(workflow.path);
       const sourceUuid = await firstNodeUuidInSection(page, sectionUuid);

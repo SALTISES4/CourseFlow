@@ -720,7 +720,7 @@ test.describe('FR-CHAN-008: lateral channel reorder', () => {
       expect(graphNodeAssignments(graphAfter)).toEqual(graphNodeAssignments(graphBefore));
       expect(graphEdgesSnapshot(graphAfter)).toEqual(graphEdgesSnapshot(graphBefore));
     } finally {
-      await restoreChannelOrderViaApi(page, workflow.workflowUuid, orderBefore);
+      await restoreChannelOrderViaApi(page, workflow.graphUuid, orderBefore);
     }
   });
 

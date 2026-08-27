@@ -8,6 +8,7 @@ import {
   deleteOutcome,
   duplicateOutcome
 } from '@cf/features/graph/state/thunks/outcomeMutations.thunks'
+import { useGraphProjectTags } from '@cf/features/graph/useGraphProjectTags'
 import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import useHover from '@cf/hooks/useHover'
 import { RootState } from '@cf/redux/store'
@@ -15,7 +16,6 @@ import type { AppDispatch } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
-import editTabNodeData from '@cfSidebar/components/EditTab/components/EditNode/optionsData'
 import AddIcon from '@mui/icons-material/Add'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
@@ -29,8 +29,6 @@ import { MouseEvent, RefObject, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import * as Styled from '../../styles'
-
-const tagsData = editTabNodeData.tags
 
 type PropsType = {
   graphUuid: GraphUuid
@@ -66,6 +64,7 @@ const OutcomeHeader = ({
   onToggleClick
 }: PropsType) => {
   const [, isHovered] = useHover(dragRef)
+  const { data: projectTags = [] } = useGraphProjectTags(graphUuid)
 
   return (
     <Styled.OutcomeHeader
@@ -88,7 +87,7 @@ const OutcomeHeader = ({
             {tags.map((id) => (
               <Chip
                 key={id}
-                label={tagsData.find((t) => t.uuid === id)?.label ?? id}
+                label={projectTags.find((tag) => tag.id === id)?.label ?? id}
                 size="small"
                 variant="outlined"
               />
@@ -153,6 +152,9 @@ const HoverMenu = ({
     (action: HoverMenuActions) => {
       return (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
+        if (action !== 'comments' && !canManageOutcomes) {
+          return
+        }
         switch (action) {
           case 'insert-sibling':
             if (sibling) {
@@ -206,28 +208,38 @@ const HoverMenu = ({
         }
       }
     },
-    [canInsertChild, dispatch, graphUuid, setCollapsed, sibling, uuid]
+    [
+      canInsertChild,
+      canManageOutcomes,
+      dispatch,
+      graphUuid,
+      setCollapsed,
+      sibling,
+      uuid
+    ]
   )
 
   return (
     <NodeHoverMenu
       show={show}
       items={[
-        canManageOutcomes && {
+        {
           label: _t('Insert sibling'),
           icon: <AddCircleOutlineIcon />,
-          onClick: onActionClick('insert-sibling')
+          onClick: onActionClick('insert-sibling'),
+          disabled: !canManageOutcomes
         },
-        canManageOutcomes &&
-          canInsertChild && {
-            label: _t('Insert child'),
-            icon: <QueueIcon />,
-            onClick: onActionClick('insert-child')
-          },
-        canManageOutcomes && {
+        canInsertChild && {
+          label: _t('Insert child'),
+          icon: <QueueIcon />,
+          onClick: onActionClick('insert-child'),
+          disabled: !canManageOutcomes
+        },
+        {
           label: _t('Duplicate'),
           icon: <ContentCopyIcon />,
-          onClick: onActionClick('duplicate')
+          onClick: onActionClick('duplicate'),
+          disabled: !canManageOutcomes
         },
         canComment && {
           label: _t('Comments'),
@@ -235,12 +247,13 @@ const HoverMenu = ({
           showCommentsPresenceIndicator: commentCount > 0,
           onClick: onActionClick('comments')
         },
-        canManageOutcomes && {
+        {
           label: _t('Delete'),
           icon: <DeleteOutlinedIcon />,
-          onClick: onActionClick('delete')
+          onClick: onActionClick('delete'),
+          disabled: !canManageOutcomes
         }
-      ].filter(Boolean)}
+      ].filter((item) => item && (canManageOutcomes || canComment))}
     />
   )
 }

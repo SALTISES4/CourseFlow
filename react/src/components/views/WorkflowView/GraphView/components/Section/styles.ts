@@ -28,7 +28,10 @@ export const SectionWrapper = styled(Box, {
     position: 'relative',
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
-    zIndex: 1,
+    // Keep workflow content above the edge hit layer. The visible edges still
+    // render through the gaps between sections, while their transparent click
+    // targets can no longer intercept section and node interactions.
+    zIndex: 3,
     borderRadius: theme.shape.borderRadius,
     pointerEvents: 'none',
     ...(hovering && {

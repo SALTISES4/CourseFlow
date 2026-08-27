@@ -179,6 +179,10 @@ def update_edge(request, edge_id: int, payload: GraphEdgePatchIn):
         title=updates.get("title"),
         text_position=updates.get("text_position"),
         line_type=updates.get("line_type"),
+        source_node_uuid=updates.get("source_node_uuid"),
+        target_node_uuid=updates.get("target_node_uuid"),
+        source_port=updates.get("source_port"),
+        target_port=updates.get("target_port"),
     )
     return graph_mutation_http(out, err)
 

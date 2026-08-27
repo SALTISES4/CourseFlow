@@ -1,5 +1,5 @@
+import type { TagListItemOut } from '@cf/api/gen/types.gen'
 import { _t } from '@cf/utility/Utility.class'
-import editTabNodeData from '@cfSidebar/components/EditTab/components/EditNode/optionsData'
 import { createSelector } from 'reselect'
 
 import type { GraphState } from '../graphState'
@@ -74,8 +74,6 @@ export const isHighlightedViaOutcome = createSelector(
   (haystack, needle) => needle.some((n) => haystack.includes(n))
 )
 
-const tagsData = editTabNodeData.tags
-
 type TagGroup = {
   uuid: number
   title: string
@@ -83,8 +81,15 @@ type TagGroup = {
 }
 
 export const selectOutcomeTagGroups = createSelector(
-  [selectRootOutcomes, (_: StateWithGraph, graphUuid: GraphUuid) => graphUuid],
-  (rootOutcomes) => {
+  [
+    selectRootOutcomes,
+    (
+      _: StateWithGraph,
+      _graphUuid: GraphUuid,
+      projectTags?: TagListItemOut[]
+    ) => projectTags ?? []
+  ],
+  (rootOutcomes, projectTags) => {
     const tagGroups: TagGroup[] = []
     const untagged: TagGroup = {
       uuid: -1,
@@ -101,7 +106,7 @@ export const selectOutcomeTagGroups = createSelector(
       for (const tagId of outcome.tagIds) {
         const foundIndex = tagGroups.findIndex((t) => t.uuid === tagId)
         if (foundIndex === -1) {
-          const tagMeta = tagsData.find((t) => t.uuid === tagId)
+          const tagMeta = projectTags.find((tag) => tag.id === tagId)
           tagGroups.push({
             uuid: tagId,
             title: tagMeta?.label ?? String(tagId),
@@ -113,11 +118,18 @@ export const selectOutcomeTagGroups = createSelector(
       }
     }
 
+    tagGroups.sort((a, b) =>
+      a.title.localeCompare(b.title, undefined, { sensitivity: 'base' })
+    )
+
     if (untagged.outcomes.length) {
-      tagGroups.push(untagged)
+      tagGroups.push({
+        ...untagged,
+        title: tagGroups.length ? untagged.title : ''
+      })
     }
 
-    return tagGroups.sort((a, b) => a.uuid - b.uuid)
+    return tagGroups
   }
 )
 

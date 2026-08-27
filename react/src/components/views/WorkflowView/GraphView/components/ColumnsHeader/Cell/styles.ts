@@ -44,7 +44,6 @@ export const Background = styled(Box, {
     bottom: '-8px',
     pointerEvents: 'none',
     borderRadius: theme.shape.borderRadius,
-    transition: 'all 0.15s ease',
     ...(hovering && {
       boxShadow: `0 0 0 1px ${theme.palette.workflow.selected}`
     }),

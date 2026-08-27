@@ -1,5 +1,6 @@
 import { CFRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/Utility.class'
+import { formatHoursDuration } from '@cfComponents/DurationTextField'
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined'
 import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined'
 import Link from '@mui/material/Link'
@@ -9,8 +10,6 @@ import { generatePath } from 'react-router-dom'
 import * as Styled from './styles'
 import { getIcon } from './utility'
 
-const choices = COURSEFLOW_APP.globalContextData.workflowChoices
-
 type PropsType = {
   /** Linked library workflow UUID when set on the node. */
   workflow?: string | null
@@ -18,10 +17,7 @@ type PropsType = {
   parentWorkflowType?: string | null
   contextType: number
   taskType: number
-  time?: {
-    length: number
-    unit: number
-  }
+  time?: number | null
 }
 
 function linkedIndicatorLabel(
@@ -84,10 +80,10 @@ const Meta = ({
               {taskIcon && <Styled.Tag>{taskIcon}</Styled.Tag>}
             </Styled.IconWrap>
           )}
-          {!!(time && time.length && time.unit) && (
+          {time && (
             <Styled.Tag>
               <TimerOutlinedIcon />
-              <span>{`${time.length} ${choices.timeChoices[time.unit].name}`}</span>
+              <span>{formatHoursDuration(time)}</span>
             </Styled.Tag>
           )}
         </Styled.Footer>

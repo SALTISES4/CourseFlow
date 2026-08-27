@@ -99,7 +99,7 @@ const LineSVG = ({
   }, [rerender, condensed, nodeUuids, edges])
 
   return (
-    <>
+    <Styled.EdgeLayer id="line-svg">
       <BottomSVG
         svgRef={ref}
         connections={connections}
@@ -109,7 +109,7 @@ const LineSVG = ({
         nodesBCR={nodesBCR}
         connection={connections.find((c) => c.uuid === selectedEdgeUuid)}
       />
-    </>
+    </Styled.EdgeLayer>
   )
 }
 
@@ -123,7 +123,7 @@ const BottomSVG = ({
   selectedEdgeUuid: string | null
 }) => {
   return (
-    <Styled.BottomSVG id="line-svg" ref={svgRef}>
+    <Styled.BottomSVG ref={svgRef}>
       <defs>
         <marker
           id="line-arrow"

@@ -316,6 +316,10 @@ export interface UpdateEdgeInput {
   graphUuid: GraphUuid
   edgeId: EdgeKey
   meta: EdgeMetaPatch
+  sourceNodeUuid?: ResourceUuid
+  targetNodeUuid?: ResourceUuid
+  sourcePort?: string
+  targetPort?: string
 }
 
 export interface DeleteNodeInput {

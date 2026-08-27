@@ -9,8 +9,8 @@ export type MenuItem = {
   label: string
   icon: ReactNode
   onClick: (e: MouseEvent<HTMLButtonElement>) => void
-  disabled?: boolean
   showCommentsPresenceIndicator?: boolean
+  disabled?: boolean
 }
 
 type PropsType = {
@@ -40,8 +40,8 @@ const HoverMenu = ({
           <IconButton
             color="secondary"
             size="small"
-            onClick={item.onClick}
             disabled={item.disabled}
+            onClick={item.onClick}
           >
             <Styled.IconWrap>
               {item.icon}

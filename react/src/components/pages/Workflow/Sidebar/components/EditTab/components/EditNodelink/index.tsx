@@ -1,3 +1,5 @@
+import { WorkflowPermission } from '@cf/api/gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { EdgeEntity } from '@cf/features/graph/state/model/types'
 import { selectEdgeByEdgeId } from '@cf/features/graph/state/selectors/canonical.selectors'
 import {
@@ -52,6 +54,7 @@ const EditNodeLink = ({ nodeLinkId }: { nodeLinkId: string }) => {
 
 const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
   const dispatch = useDispatch<AppDispatch>()
+  const canEdit = useResourcePermission(WorkflowPermission.NODE_LINK_MANAGEMENT)
   const [titleDraft, setTitleDraft] = useState(edge.title)
   const [textPosition, setTextPosition] = useState(edge.textPosition)
   const [dashed, setDashed] = useState(() =>
@@ -72,6 +75,9 @@ const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
           textPosition?: number
           lineType?: string
         }) => {
+          if (!canEdit) {
+            return
+          }
           void dispatch(
             updateEdge({
               graphUuid: edge.graphUuid,
@@ -82,24 +88,50 @@ const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
         },
         300
       ),
-    [dispatch, edge.edgeId, edge.graphUuid]
+    [canEdit, dispatch, edge.edgeId, edge.graphUuid]
   )
 
   useEffect(() => () => debouncedMetaDispatch.clear(), [debouncedMetaDispatch])
 
   const onTitleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
+      if (!canEdit) {
+        return
+      }
       const value = e.target.value
       setTitleDraft(value)
       debouncedMetaDispatch({ title: value })
     },
-    [debouncedMetaDispatch]
+    [canEdit, debouncedMetaDispatch]
   )
+
+  const onTitleBlur = useCallback(() => {
+    if (!canEdit) {
+      return
+    }
+    debouncedMetaDispatch.clear()
+    void dispatch(
+      updateEdge({
+        graphUuid: edge.graphUuid,
+        edgeId: edge.edgeId,
+        meta: { title: titleDraft }
+      })
+    )
+  }, [
+    canEdit,
+    debouncedMetaDispatch,
+    dispatch,
+    edge.edgeId,
+    edge.graphUuid,
+    titleDraft
+  ])
 
   const onDashChange = useCallback(
     (_: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+      if (!canEdit) {
+        return
+      }
       setDashed(checked)
-      debouncedMetaDispatch.clear()
       void dispatch(
         updateEdge({
           graphUuid: edge.graphUuid,
@@ -108,27 +140,33 @@ const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
         })
       )
     },
-    [debouncedMetaDispatch, dispatch, edge.edgeId, edge.graphUuid]
+    [canEdit, dispatch, edge.edgeId, edge.graphUuid]
   )
 
   const onSliderChange = useCallback(
     (_: Event, value: number | number[]) => {
+      if (!canEdit) {
+        return
+      }
       const next = value as number
       setTextPosition(next)
       debouncedMetaDispatch({ textPosition: next })
     },
-    [debouncedMetaDispatch]
+    [canEdit, debouncedMetaDispatch]
   )
 
-  const onDelete = useCallback(() => {
-    dispatch(
+  const onDelete = useCallback(async () => {
+    if (!canEdit) {
+      return
+    }
+    await dispatch(
       deleteEdge({
         graphUuid: edge.graphUuid,
         edgeId: edge.edgeId
       })
     )
     dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
-  }, [dispatch, edge.edgeId, edge.graphUuid])
+  }, [canEdit, dispatch, edge.edgeId, edge.graphUuid])
 
   return (
     <SidebarInnerWrap>
@@ -143,6 +181,8 @@ const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
             size="small"
             value={titleDraft}
             onChange={onTitleChange}
+            onBlur={onTitleBlur}
+            disabled={!canEdit}
           />
           <Box>
             <Typography id="edit-text-position" gutterBottom>
@@ -153,19 +193,30 @@ const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
               aria-labelledby="edit-text-position"
               valueLabelDisplay="off"
               onChange={onSliderChange}
+              disabled={!canEdit}
             />
           </Box>
           <FormControlLabel
             sx={{ ml: 0 }}
             label="Dashed line"
             control={
-              <Switch checked={dashed} onChange={onDashChange} size="small" />
+              <Switch
+                checked={dashed}
+                onChange={onDashChange}
+                size="small"
+                disabled={!canEdit}
+              />
             }
           />
         </Stack>
       </SidebarContent>
       <SidebarActions>
-        <Button variant="contained" color="secondary" onClick={onDelete}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={onDelete}
+          disabled={!canEdit}
+        >
           {_t('Delete')}
         </Button>
       </SidebarActions>

@@ -6,6 +6,7 @@ import { deleteOutcomeViaApi } from './outcome-drag.helpers';
 import {
   clearOutcomeTitleField,
   createChildOutcomeUnderParent,
+  createProjectTagForOutcomeTests,
   expectEditableWorkflowEditOutcomeFormRichTextDescription,
   expectEditOutcomeTagsIncludeOption,
   expectOutcomeHeaderTagChipVisible,
@@ -98,11 +99,6 @@ test.describe('edit-outcome-fr-001-006', () => {
       page,
       workflow,
     }) => {
-      test.fail(
-        true,
-        'New outcome header shows "1." without Untitled outcome display fallback per FR-WF-EO-006',
-      );
-
       await removeSeededOutcome(page, workflow.firstOutcome().title);
       await expect(workflowOutcomeViewAddOutcomeButton(page)).toBeVisible();
 
@@ -120,11 +116,6 @@ test.describe('edit-outcome-fr-001-006', () => {
     test.use({ storageState: { cookies: [], origins: [] } });
 
     test('FR-WF-EO-001: commenter sees disabled Add outcome button', async ({ page, workflow }) => {
-      test.fail(
-        true,
-        'Empty-state Add outcome button is hidden for commenter/viewer instead of rendered disabled per FR-WF-EO-001',
-      );
-
       await gotoEmptyOutcomesViewAsContributor(page, workflow, 'commenter');
 
       await expect(workflowOutcomeViewEmptyStateAlert(page)).toBeVisible();
@@ -134,11 +125,6 @@ test.describe('edit-outcome-fr-001-006', () => {
     });
 
     test('FR-WF-EO-001: viewer sees disabled Add outcome button', async ({ page, workflow }) => {
-      test.fail(
-        true,
-        'Empty-state Add outcome button is hidden for commenter/viewer instead of rendered disabled per FR-WF-EO-001',
-      );
-
       await gotoEmptyOutcomesViewAsContributor(page, workflow, 'viewer');
 
       await expect(workflowOutcomeViewEmptyStateAlert(page)).toBeVisible();
@@ -172,6 +158,8 @@ test.describe('edit-outcome-fr-001-006', () => {
   });
 
   test.describe('Fields and auto-save (FR-WF-EO-005, FR-WF-EO-006)', () => {
+    test.use({ seedAccess: 'disposable-project-copy' });
+
     test.beforeEach(async ({ page, workflow }) => {
       expect(workflow.outcomes.length).toBeGreaterThan(0);
       await gotoOutcomesView(page, workflow.path);
@@ -193,29 +181,17 @@ test.describe('edit-outcome-fr-001-006', () => {
     test('FR-WF-EO-005: description field hosts workflowRichTextDescriptionEditor per FR-WF-EN-012', async ({
       page,
     }) => {
-      test.fail(
-        true,
-        'workflowEditOutcomeFormDescriptionField uses plain multiline TextField instead of workflowRichTextDescriptionEditor',
-      );
-
       await expectEditableWorkflowEditOutcomeFormRichTextDescription(page);
     });
 
     test('FR-WF-EO-005: workflowEditOutcomeFormTitleField is optional (not required)', async ({
       page,
     }) => {
-      test.fail(true, 'workflowEditOutcomeFormTitleField is marked required in product vs FR-WF-EO-005');
-
       await expect(workflowEditOutcomeFormTitleField(page)).not.toHaveAttribute('required');
       await expect(page.getByLabel('Title *')).toHaveCount(0);
     });
 
     test('FR-WF-EO-006: clearing title shows Untitled outcome header fallback', async ({ page }) => {
-      test.fail(
-        true,
-        'Empty workflowEditOutcomeFormTitleField does not show Untitled outcome header fallback per FR-WF-EO-006',
-      );
-
       await clearOutcomeTitleField(page);
       await expect(workflowOutcomeHeaderTitleText(page, '1', 'Untitled outcome')).toBeVisible({
         timeout: 15_000,
@@ -227,20 +203,26 @@ test.describe('edit-outcome-fr-001-006', () => {
 
     test('FR-WF-EO-006: workflowEditOutcomeFormTagsAutocomplete accepts tag selection', async ({
       page,
+      workflow,
     }) => {
-      const tagLabel = 'Tag 1';
+      const tagLabel = 'E2E Outcome Tag';
+
+      await createProjectTagForOutcomeTests(page, workflow, tagLabel);
+      await gotoOutcomesView(page, workflow.path);
+      await openEditOutcomeFormForTitle(page, E2E_OUTCOME_TITLE);
 
       await expectEditOutcomeTagsIncludeOption(page, tagLabel);
       await selectEditOutcomeTag(page, tagLabel);
     });
 
-    test('FR-WF-EO-006: tag selection updates workflowOutcomeHeaderTagChips', async ({ page }) => {
-      test.fail(
-        true,
-        'workflowEditOutcomeFormTagsAutocomplete selection does not propagate to workflowOutcomeHeaderTagChips',
-      );
-
-      const tagLabel = 'Tag 1';
+    test('FR-WF-EO-006: tag selection updates workflowOutcomeHeaderTagChips', async ({
+      page,
+      workflow,
+    }) => {
+      const tagLabel = 'E2E Outcome Tag';
+      await createProjectTagForOutcomeTests(page, workflow, tagLabel);
+      await gotoOutcomesView(page, workflow.path);
+      await openEditOutcomeFormForTitle(page, E2E_OUTCOME_TITLE);
       await selectEditOutcomeTag(page, tagLabel);
       await expectOutcomeHeaderTagChipVisible(page, E2E_OUTCOME_TITLE, tagLabel);
     });
@@ -306,11 +288,6 @@ test.describe('edit-outcome-fr-001-006', () => {
         page,
         workflow,
       }) => {
-        test.fail(
-          true,
-          'Commenter/viewer cannot open workflowEditOutcomeForm — outcome header click is gated by OUTCOME_MANAGEMENT',
-        );
-
         await loginAsWorkflowContributor(page, workflow, 'commenter');
         await gotoOutcomesView(page, workflow.path);
         await workflowOutcomeHeader(page, E2E_OUTCOME_TITLE).click();
@@ -326,11 +303,6 @@ test.describe('edit-outcome-fr-001-006', () => {
         page,
         workflow,
       }) => {
-        test.fail(
-          true,
-          'Commenter/viewer cannot open workflowEditOutcomeForm — outcome header click is gated by OUTCOME_MANAGEMENT',
-        );
-
         await loginAsWorkflowContributor(page, workflow, 'viewer');
         await gotoOutcomesView(page, workflow.path);
         await workflowOutcomeHeader(page, E2E_OUTCOME_TITLE).click();

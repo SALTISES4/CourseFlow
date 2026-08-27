@@ -1,6 +1,7 @@
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { WorkflowPermission } from '@cf/api/gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
+import { displayOutcomeTitle } from '@cf/features/graph/outcomeTitle'
 import type {
   GraphUuid,
   OutcomeEntity
@@ -131,7 +132,7 @@ const OutcomeBlock = ({
         uuid={uuid}
         level={level}
         dragRef={dragHandleRef}
-        title={`${prefix}${title}`}
+        title={`${prefix}${displayOutcomeTitle(title)}`}
         collapsed={state.collapsed}
         setCollapsed={setCollapsed}
         showToggle={!!childOutcomes.length}

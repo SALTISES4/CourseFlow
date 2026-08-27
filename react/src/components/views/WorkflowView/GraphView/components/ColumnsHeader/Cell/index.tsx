@@ -1,6 +1,7 @@
 import {
   draggable,
-  dropTargetForElements
+  dropTargetForElements,
+  monitorForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import {
   Edge,
@@ -15,7 +16,7 @@ import {
   selectChannelThemeColumnType,
   selectGraphByUuid
 } from '@cf/features/graph/state/selectors/canonical.selectors'
-import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
+import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import useHover from '@cf/hooks/useHover'
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
@@ -124,21 +125,26 @@ const ColumnCellInner = ({
       state.sidebar.edit.objectType === CfObjectType.COLUMN &&
       state.sidebar.edit.uuid === columnId
   )
+  const sidebarTab = useSelector((state: RootState) => state.sidebar.tab)
   const [dragging, setDragging] = useState(false)
+  const [columnDragActive, setColumnDragActive] = useState(false)
   const canEdit = useResourcePermission(
     WorkflowPermission.NODE_CATEGORY_MANAGEMENT
   )
 
-  const manager = useMemo(
-    () => new BetterSelectionManager(dispatch),
-    [dispatch]
-  )
-
   const onClickHandler = (e: MouseEvent<HTMLDivElement>) => {
     e.stopPropagation()
-    if (channel) {
-      manager.updateSidebar(channel.uuid, CfObjectType.COLUMN, parentId)
+    if (!channel || (selected && sidebarTab === 'edit')) {
+      return
     }
+    dispatch(
+      sidebarEdit({
+        uuid: channel.uuid,
+        objectType: CfObjectType.COLUMN,
+        parentId,
+        tab: 'edit'
+      })
+    )
   }
 
   const columnColourHex = ThemeHelper.getColumnColour({
@@ -155,10 +161,20 @@ const ColumnCellInner = ({
     return draggable({
       element: el,
       getInitialData: () => ({ index, columnId, type: DraggableType.COLUMN }),
-      onDragStart: () => setDragging(!dragging),
+      onDragStart: () => setDragging(true),
       onDrop: () => setDragging(false)
     })
-  }, [canEdit, columnId, dragging, index, ref])
+  }, [canEdit, columnId, index, ref])
+
+  useEffect(
+    () =>
+      monitorForElements({
+        canMonitor: ({ source }) => source.data.type === DraggableType.COLUMN,
+        onDragStart: () => setColumnDragActive(true),
+        onDrop: () => setColumnDragActive(false)
+      }),
+    []
+  )
 
   if (!channel || !graph) {
     return null
@@ -174,7 +190,7 @@ const ColumnCellInner = ({
       <HoverMenu
         nodeId={columnId}
         graphUuid={parentId}
-        show={isHovering}
+        show={isHovering && !columnDragActive}
         threadUuid={channel.threadUuid}
       />
       <Styled.Inner onClick={onClickHandler}>

@@ -8,12 +8,14 @@ type PropsType = {
   color: string
   onBlur?: FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>
   onChange?: (color: string) => void
+  disabled?: boolean
 }
 
 const ColorPicker = ({
   label = 'Color',
   size = 'medium',
   color,
+  disabled,
   onBlur,
   onChange
 }: PropsType) => (
@@ -22,6 +24,7 @@ const ColorPicker = ({
     size={size}
     value={color}
     format="hex"
+    disabled={disabled}
     isAlphaHidden={true}
     onBlur={onBlur}
     onChange={onChange}
