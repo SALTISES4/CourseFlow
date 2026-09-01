@@ -23,7 +23,7 @@ import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined'
 import LinkIcon from '@mui/icons-material/Link'
 import Paper from '@mui/material/Paper'
 import ToggleButton from '@mui/material/ToggleButton'
-import { ReactNode, useCallback, useEffect } from 'react'
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
@@ -33,7 +33,12 @@ import EditTab from './components/EditTab'
 import { EditableType } from './components/EditTab/types'
 import OutcomesTab from './components/OutcomesTab'
 import RelatedTab from './components/RelatedTab'
-import { SidebarTabsWrap, SidebarToggle, SidebarWrap } from './styles'
+import {
+  SIDEBAR_TRANSITION_DURATION_MS,
+  SidebarTabsWrap,
+  SidebarToggle,
+  SidebarWrap
+} from './styles'
 
 function getTabContent(
   tab: SidebarState['tab'],
@@ -149,6 +154,31 @@ const WorkspaceSidebar = () => {
     ? getTabContent(sidebar.tab, sidebar.edit)
     : null
 
+  const lastTabContent = useRef<ReactNode>(null)
+  const [retainClosingContent, setRetainClosingContent] = useState(false)
+
+  if (!sidebar.collapsed) {
+    lastTabContent.current = tabContent
+  }
+
+  useEffect(() => {
+    if (!sidebar.collapsed) {
+      setRetainClosingContent(true)
+      return
+    }
+
+    const timeout = window.setTimeout(() => {
+      setRetainClosingContent(false)
+    }, SIDEBAR_TRANSITION_DURATION_MS)
+
+    return () => window.clearTimeout(timeout)
+  }, [sidebar.collapsed])
+
+  const renderedTabContent =
+    sidebar.collapsed && retainClosingContent
+      ? lastTabContent.current
+      : tabContent
+
   const tabs: {
     disabled?: boolean
     value: Exclude<SidebarState['tab'], null>
@@ -225,11 +255,14 @@ const WorkspaceSidebar = () => {
         {visibleTabs}
       </SidebarTabsWrap>
 
-      <Paper>
+      <Paper
+        aria-hidden={sidebar.collapsed}
+        {...(sidebar.collapsed ? { inert: '' } : {})}
+      >
         <SidebarToggle color="primary" onClick={onToggleClick}>
           <ArrowForwardIcon />
         </SidebarToggle>
-        {tabContent}
+        {renderedTabContent}
       </Paper>
     </SidebarWrap>
   )

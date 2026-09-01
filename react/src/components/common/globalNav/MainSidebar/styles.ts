@@ -6,6 +6,9 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { Link as RouterLink } from 'react-router-dom'
 
+const SIDEBAR_WIDTH = '256px'
+const SIDEBAR_TRANSITION_DURATION_MS = 200
+
 export const MainSidebarRootStyles = {
   height: '100%'
 }
@@ -52,11 +55,32 @@ export const SidebarWrap = styled(Box, {
   flexDirection: 'column',
   position: 'relative',
   zIndex: 1,
+  width: collapsed ? 0 : SIDEBAR_WIDTH,
   height: '100%',
+  flexShrink: 0,
+  transition: theme.transitions.create('width', {
+    duration: SIDEBAR_TRANSITION_DURATION_MS,
+    easing: theme.transitions.easing.sharp
+  }),
+  '& > .MuiPaper-root': {
+    opacity: collapsed ? 0 : 1,
+    transform: collapsed ? 'translateX(-100%)' : 'translateX(0)',
+    visibility: collapsed ? 'hidden' : 'visible',
+    pointerEvents: collapsed ? 'none' : 'auto',
+    transition: [
+      theme.transitions.create('transform', {
+        duration: SIDEBAR_TRANSITION_DURATION_MS,
+        easing: theme.transitions.easing.sharp
+      }),
+      theme.transitions.create('opacity', {
+        duration: SIDEBAR_TRANSITION_DURATION_MS,
+        easing: theme.transitions.easing.sharp
+      }),
+      `visibility 0s linear ${collapsed ? SIDEBAR_TRANSITION_DURATION_MS : 0}ms`
+    ].join(', '),
+    willChange: 'transform, opacity'
+  },
   ...(collapsed && {
-    '& .MuiPaper-root': {
-      display: 'none'
-    },
     '& ~ .main-block .back-links-wrap': {
       paddingLeft: theme.spacing(5)
     }
@@ -66,14 +90,21 @@ export const SidebarWrap = styled(Box, {
       opacity: 0,
       visibility: 'hidden'
     }
-  })
+  }),
+  '@media (prefers-reduced-motion: reduce)': {
+    transition: 'none',
+    '& > .MuiPaper-root': {
+      transition: 'none'
+    }
+  }
 }))
 
 export const SidebarInner = styled(Paper)({
   display: 'flex',
   flexDirection: 'column',
-  width: '256px',
+  width: SIDEBAR_WIDTH,
   height: '100%',
+  flexShrink: 0,
 
   '& .MuiListItemIcon-root': {
     minWidth: 0,

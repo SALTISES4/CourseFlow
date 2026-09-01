@@ -126,7 +126,7 @@ test.describe('edit-node-fr-001-007', () => {
       await expect(workflowEditNodeFormLinkWorkflowButton(page, 'Link workflow')).toHaveCount(0);
     });
 
-    test('FR-WF-EN-002: activity Context and Type of task offer exact FR option sets', async ({ page }) => {
+    test('FR-WF-EN-002: activity Context and Task offer exact FR option sets', async ({ page }) => {
       await expectSelectOptionsExactly(page, workflowEditNodeFormContextField(page), ACTIVITY_CONTEXT_OPTIONS);
       await expectSelectOptionsExactly(page, workflowEditNodeFormTaskTypeField(page), ACTIVITY_TASK_TYPE_OPTIONS);
     });

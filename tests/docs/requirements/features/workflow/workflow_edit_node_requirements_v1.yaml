@@ -82,7 +82,7 @@ uiObjectDefinitions:
   workflowEditNodeFormCourseContextSelect:
     meaning: Context select on workflowEditNodeForm labeled 'Context'; course parent workflow type only; options are 'None', 'Formative', 'Summative', and 'Comprehensive'.
   workflowEditNodeFormTaskTypeSelect:
-    meaning: Task-type select on workflowEditNodeForm labeled 'Type of task'; activity parent workflow type only; options are 'None', 'Gather Information', 'Discuss', 'Problem Solve', 'Analyze', 'Assess/Review Peers', 'Debate', 'Game/Roleplay', 'Create/Design', 'Revise/Improve', 'Read', 'Write', 'Present', 'Experiment/Inquiry', 'Quiz/Test', 'Instructor Resource Curation', 'Instructor Orchestration', 'Instructor Evaluation', and 'Other'.
+    meaning: Task-type select on workflowEditNodeForm labeled 'Task'; activity parent workflow type only; options are 'None', 'Gather Information', 'Discuss', 'Problem Solve', 'Analyze', 'Assess/Review Peers', 'Debate', 'Game/Roleplay', 'Create/Design', 'Revise/Improve', 'Read', 'Write', 'Present', 'Experiment/Inquiry', 'Quiz/Test', 'Instructor Resource Curation', 'Instructor Orchestration', 'Instructor Evaluation', and 'Other'.
   workflowEditNodeFormTimeField:
     meaning: Duration input on workflowEditNodeForm labeled 'Time'.
   workflowEditNodeFormCreditsField:
@@ -288,6 +288,7 @@ requirements:
     acceptanceCriteria:
       - given parent workflow type is activity, when workflowEditNodeForm is rendered, the visible fields are exactly workflowEditNodeFormTitleField, workflowEditNodeFormDescriptionField, workflowEditNodeFormActivityContextSelect, workflowEditNodeFormTaskTypeSelect, workflowEditNodeFormTimeField, and workflowEditNodeFormTagsAutocomplete
       - given parent workflow type is activity, when workflowEditNodeForm is rendered, workflowEditNodeFormActivityContextSelect offers exactly the options defined in uiObjectDefinitions for workflowEditNodeFormActivityContextSelect
+      - given parent workflow type is activity, when workflowEditNodeForm is rendered, workflowEditNodeFormTaskTypeSelect has the exact visible label 'Task'
       - given parent workflow type is activity, when workflowEditNodeForm is rendered, workflowEditNodeFormTaskTypeSelect offers exactly the options defined in uiObjectDefinitions for workflowEditNodeFormTaskTypeSelect
       - given parent workflow type is activity, workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are present in the form's action area
       - given parent workflow type is activity, workflowEditNodeForm does not render workflowEditNodeFormLinkWorkflowButton per FR-WF-EN-010

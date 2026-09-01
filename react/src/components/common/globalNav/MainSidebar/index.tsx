@@ -131,7 +131,11 @@ const Sidebar = () => {
         {collapsed ? <MenuIcon /> : <ArrowBackIcon />}
       </SC.Collapse>
 
-      <SC.SidebarInner elevation={8}>
+      <SC.SidebarInner
+        elevation={8}
+        aria-hidden={collapsed}
+        {...(collapsed ? { inert: '' } : {})}
+      >
         <SC.LogoWrap>
           <CFLogo />
           <Typography component="span">CourseFlow</Typography>

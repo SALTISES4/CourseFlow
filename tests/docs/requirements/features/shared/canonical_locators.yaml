@@ -1107,7 +1107,7 @@ locatorMappings:
     strategy: "{workflowEditNodeForm} input[role='combobox']"
     confidence: inferred
   workflowEditNodeFormTaskTypeSelect:
-    strategy: "{workflowEditNodeForm} [aria-labelledby='task-type-select-label']"
+    strategy: "{workflowEditNodeForm} select with label 'Task'"
     confidence: inferred
   workflowEditNodeFormTimeField:
     strategy: null

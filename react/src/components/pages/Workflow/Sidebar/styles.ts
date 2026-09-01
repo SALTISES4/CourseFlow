@@ -5,6 +5,8 @@ import { styled } from '@mui/material/styles'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 
+export const SIDEBAR_TRANSITION_DURATION_MS = 200
+
 export const SidebarWrap = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'collapsed'
 })<{ collapsed: boolean }>(({ theme, collapsed }) => ({
@@ -14,21 +16,46 @@ export const SidebarWrap = styled(Box, {
   marginLeft: 'auto',
   paddingLeft: '40px',
   flexShrink: 0,
+  transition: theme.transitions.create('width', {
+    duration: SIDEBAR_TRANSITION_DURATION_MS,
+    easing: theme.transitions.easing.sharp
+  }),
   '& > .MuiPaper-root': {
     position: 'relative',
     display: 'flex',
     flexDirection: 'column',
+    width: '250px',
     height: '100%',
+    flexShrink: 0,
     borderRadius: 0,
     boxShadow: '1.05em 0 1em 0.5em #000000',
-    overflow: 'auto'
+    overflow: 'auto',
+    opacity: collapsed ? 0 : 1,
+    transform: collapsed ? 'translateX(100%)' : 'translateX(0)',
+    visibility: collapsed ? 'hidden' : 'visible',
+    pointerEvents: collapsed ? 'none' : 'auto',
+    transition: [
+      theme.transitions.create('transform', {
+        duration: SIDEBAR_TRANSITION_DURATION_MS,
+        easing: theme.transitions.easing.sharp
+      }),
+      theme.transitions.create('opacity', {
+        duration: SIDEBAR_TRANSITION_DURATION_MS,
+        easing: theme.transitions.easing.sharp
+      }),
+      `visibility 0s linear ${collapsed ? SIDEBAR_TRANSITION_DURATION_MS : 0}ms`
+    ].join(', '),
+    willChange: 'transform, opacity'
   },
   ...(collapsed && {
-    width: '40px',
-    '& .MuiPaper-root': {
-      display: 'none'
+    width: '40px'
+  }),
+  '@media (prefers-reduced-motion: reduce)': {
+    transition: 'none',
+    '& > .MuiPaper-root': {
+      transition: 'none'
     }
-  })
+  }
 }))
 
 export const SidebarToggle = styled(IconButton)(() => ({
