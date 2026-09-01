@@ -726,7 +726,7 @@ def test_insert_channel_append_returns_created_channel(client: Client, user):
     assert body["meta"]["triggeredBy"] == "insert_channel_below"
     assert len(body["changes"]["channels"]["created"]) == 1
     created = body["changes"]["channels"]["created"][0]
-    assert created["title"] == ""
+    assert created["title"] == "Custom node category"
     assert created["position"] == 1
     assert body["changes"]["channels"]["updated"] == []
 

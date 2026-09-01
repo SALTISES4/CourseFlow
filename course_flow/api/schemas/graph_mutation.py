@@ -242,6 +242,10 @@ class GraphEdgePatchIn(CamelSchema):
     title: str | None = None
     text_position: int | None = None
     line_type: str | None = None
+    source_node_uuid: UUID | None = None
+    target_node_uuid: UUID | None = None
+    source_port: str | None = Field(default=None, min_length=1)
+    target_port: str | None = Field(default=None, min_length=1)
 
 
 class GraphReorderChannelsIn(CamelSchema):

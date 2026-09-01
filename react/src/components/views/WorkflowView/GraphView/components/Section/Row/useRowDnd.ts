@@ -33,7 +33,7 @@ type StateType = {
 type PendingSidebarDrop = {
   channelId: string
   custom: boolean
-  row: number
+  row: number | 'empty'
   edge?: GridDropEdge
 }
 
@@ -81,12 +81,9 @@ function useRowDnd(props: PropsType) {
           channelId = createdChannelUuid
         }
 
-        const rowHint =
-          rowIndex === 'empty'
-            ? 0
-            : drop.edge === 'top'
-              ? drop.row
-              : drop.row + 1
+        // The backend owns edge-to-row resolution. Pass the reference row as
+        // the hint so a bottom-edge drop is advanced exactly once.
+        const rowHint = drop.row === 'empty' ? 0 : drop.row
         const createdNodeUuid = await dispatch(
           placeNode({
             graphUuid,
@@ -111,7 +108,7 @@ function useRowDnd(props: PropsType) {
         resetState()
       }
     },
-    [dispatch, graphUuid, resetState, rowIndex, sectionId]
+    [dispatch, graphUuid, resetState, sectionId]
   )
 
   const chooseManualPlacement = useCallback(
@@ -191,7 +188,7 @@ function useRowDnd(props: PropsType) {
       canDrop: ({ source }) => isSidebarNode(source.data),
       onDrop: async ({ source, self }) => {
         const isCustom = isSidebarCustomNode(source.data)
-        const row = self.data.row as number
+        const row = self.data.row as number | 'empty'
         let closestEdge = extractClosestEdge(self.data)
 
         if (isCustom) {

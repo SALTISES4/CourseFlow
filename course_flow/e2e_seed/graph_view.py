@@ -16,6 +16,7 @@ from course_flow.core.models import (
     User,
     Workflow,
 )
+from course_flow.e2e_seed.constants import E2E_CHANNEL_COLOURS
 from course_flow.e2e_seed.graph_shape import (
     GraphLayoutPlan,
     GraphShapeParams,
@@ -73,6 +74,7 @@ def build_sections_and_channels(
             Channel.objects.create(
                 graph=graph,
                 title=title,
+                colour=E2E_CHANNEL_COLOURS[j % len(E2E_CHANNEL_COLOURS)],
                 position=j,
                 thread=th,
             )

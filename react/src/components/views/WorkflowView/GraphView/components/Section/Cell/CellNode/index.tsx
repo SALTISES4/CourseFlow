@@ -25,6 +25,8 @@ import * as StyledNode from '../styles'
 import { SectionCellNodeTypeTypeInternal, SectionCellType } from '../types'
 import useCellNodeDnd from './useCellNodeDnd'
 
+const EMPTY_OUTCOME_UUIDS: string[] = []
+
 const SectionCellNode = ({
   nodeId,
   graphUuid,
@@ -88,7 +90,7 @@ const SectionCellNode = ({
   )
 
   const highlighted = useSelector((state: RootState) =>
-    isHighlightedViaOutcome(state, [])
+    isHighlightedViaOutcome(state, node?.outcomeUuids ?? EMPTY_OUTCOME_UUIDS)
   )
 
   const edgeIndicator = highlight !== 'cell' && highlight
@@ -145,10 +147,7 @@ const SectionCellNode = ({
             parentWorkflowType={graph?.workflowType}
             contextType={node.contextClassification ?? 0}
             taskType={node.taskClassification ?? 0}
-            time={{
-              length: node.timeRequired ?? 0,
-              unit: node.timeUnits ?? 0
-            }}
+            time={node.timeRequired ?? 0}
           />
         </StyledNode.Content>
 

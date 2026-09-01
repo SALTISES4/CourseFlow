@@ -1,6 +1,6 @@
 # Normalized requirements: create and edit a workflowOutcome in the workflowOutcomeView ('Outcomes' view), including workflowEditOutcomeForm rendered in the right-sidebar Edit tab
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Scope (this file): creating an outcome from the workflowOutcomeView (empty state and hover-menu inserts), editing an outcome's fields via workflowEditOutcomeForm in the right sidebar Edit tab, and outcome header selection chrome (FR-WF-EO-018). Out of scope (companion FRs in other files): deleting an outcome (tests/docs/requirements/features/workflow/workflow_delete_outcome_requirements_v1.yaml), duplicating an outcome (tests/docs/requirements/features/workflow/workflow_duplicate_outcome_requirements_v1.yaml), drag-and-drop reorder/reparent/nest in workflowOutcomeTree (tests/docs/requirements/features/workflow/workflow_outcome_tree_drag_reorder_requirements_v1.yaml — FR-WF-EO-015 through FR-WF-EO-017), outcome-to-node assignment (workflowRightSidebar Outcomes tab in 'Workflow' view), outcome filter via View settings, and commenting on an outcome.
+# Scope (this file): creating an outcome from the workflowOutcomeView (empty state and hover-menu inserts), editing an outcome's fields via workflowEditOutcomeForm in the right sidebar Edit tab, outcome header selection chrome (FR-WF-EO-018), and permission-gated outcome header hover presentation (FR-WF-EO-019). Out of scope (companion FRs in other files): deleting an outcome (tests/docs/requirements/features/workflow/workflow_delete_outcome_requirements_v1.yaml), duplicating an outcome (tests/docs/requirements/features/workflow/workflow_duplicate_outcome_requirements_v1.yaml), drag-and-drop reorder/reparent/nest in workflowOutcomeTree (tests/docs/requirements/features/workflow/workflow_outcome_tree_drag_reorder_requirements_v1.yaml — FR-WF-EO-015 through FR-WF-EO-017), outcome-to-node assignment (workflowRightSidebar Outcomes tab in 'Workflow' view), outcome filter via View settings, and commenting on an outcome.
 # Cross-reference: tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebar, workflowRightSidebarEditTab, workflowRightSidebarEditTabContent — FR-WF-RS-001, FR-WF-RS-002, FR-WF-RS-004); tests/docs/requirements/features/workflow/workflow_node_visual_requirements_v1.yaml (workflowOutcomeHoverActionsMenu gating — FR-WF-NODE-004, FR-WF-NODE-005); tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml (sidebar Edit-tab patterns; workflowEditNodeFormTagsAutocomplete; workflowRichTextDescriptionEditor and FR-WF-EN-012 for workflowEditOutcomeFormDescriptionField); tests/docs/requirements/features/project/project_overview_requirements_v1.yaml (projectTagsSection, projectTagItem — canonical project-level tag catalog shared by workflowEditNodeFormTagsAutocomplete and workflowEditOutcomeFormTagsAutocomplete; catalog deletion removes tag from level-1 outcomes per FR-PROJ-OV-005); tests/docs/requirements/features/workflow/workflow_comments_tab_requirements_v1.yaml (comments tab for a workflowOutcome host object — FR-WF-COMMENTS-004; entry via hover-menu Comments item, deferred to that file); tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml (published-access vs contributor-role gating for the '/workflow/{id}/outcomes' route); tests/docs/requirements/features/workflow/workflow_outcome_tree_drag_reorder_requirements_v1.yaml (workflowOutcomeTree drag reorder — FR-WF-EO-015 through FR-WF-EO-017); tests/docs/requirements/guidelines_functional_requirements.md
 
 documentPreconditions:
@@ -26,6 +26,10 @@ uiObjectDefinitions:
     meaning: Header strip of a workflowOutcome.
   workflowOutcomeHeaderSelectedBorder:
     meaning: Selection outline on workflowOutcomeHeader when workflowRightSidebar is bound to that workflowOutcome (Edit or Comments tab); parallel role to workflowNodeSelectedBorder per FR-WF-NODE-002.
+  workflowOutcomeHeaderEditHoverBorder:
+    meaning: Transient outline on an unselected workflowOutcomeHeader while an actor with outcome editing rights hovers it, indicating that the outcome can be managed or dragged; distinct from workflowOutcomeHeaderSelectedBorder.
+  workflowOutcomeHeaderEditHoverCursor:
+    meaning: Transient drag-style mouse cursor on workflowOutcomeHeader while an actor with outcome editing rights hovers it.
   workflowOutcomeHeaderTitle:
     meaning: Title label inside workflowOutcomeHeader.
   workflowOutcomeHeaderTagChips:
@@ -80,6 +84,8 @@ locatorMappings:
   workflowOutcome: "canonical_locators.yaml -> workflowOutcome"
   workflowOutcomeHeader: "canonical_locators.yaml -> workflowOutcomeHeader"
   workflowOutcomeHeaderSelectedBorder: "canonical_locators.yaml -> workflowOutcomeHeaderSelectedBorder"
+  workflowOutcomeHeaderEditHoverBorder: "canonical_locators.yaml -> workflowOutcomeHeader (hover presentation)"
+  workflowOutcomeHeaderEditHoverCursor: "canonical_locators.yaml -> workflowOutcomeHeader (computed cursor during hover)"
   workflowOutcomeHeaderTitle: "canonical_locators.yaml -> workflowOutcomeHeaderTitle"
   workflowOutcomeHeaderTagChips: "canonical_locators.yaml -> workflowOutcomeHeaderTagChips"
   workflowOutcomeHeaderToggle: "canonical_locators.yaml -> workflowOutcomeHeaderToggle"
@@ -625,3 +631,64 @@ requirements:
     
     openQuestions: []
 
+  - id: FR-WF-EO-019
+    title: workflowOutcomeHeader edit hover presentation is limited to actors with outcome editing rights
+
+    designEvidence:
+      - FIGMA-WF-EO-OE-EDIT (establishes the edit-capable workflowOutcomeHeader hover presentation; role gating follows the outcome-management permission contract)
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowOutcomeView
+      - workflowOutcomeTree
+      - workflowOutcome
+      - workflowOutcomeHeader
+      - workflowOutcomeHeaderEditHoverBorder
+      - workflowOutcomeHeaderEditHoverCursor
+      - workflowOutcomeHeaderSelectedBorder
+
+    preconditions:
+      - workflowOutcomeView is open
+      - workflowOutcomeTree is rendered with at least one workflowOutcome
+      - the target workflowOutcomeHeader is not selected
+
+    trigger:
+      - actor moves the mouse pointer over workflowOutcomeHeader
+
+    mainFlow:
+      - for owner and editor, hovering workflowOutcomeHeader renders workflowOutcomeHeaderEditHoverBorder and changes the mouse cursor to workflowOutcomeHeaderEditHoverCursor to preserve the outcome-management and drag affordance
+      - for commenter, viewer, and user (published-access), hovering workflowOutcomeHeader does not render workflowOutcomeHeaderEditHoverBorder and does not change the mouse cursor from its non-hover presentation
+      - hover-presentation gating does not change workflowOutcomeHeader click and read-only sidebar behavior per FR-WF-EO-004, workflowOutcomeHoverActionsMenu role behavior per FR-WF-EO-003, or workflowOutcomeHeaderSelectedBorder behavior per FR-WF-EO-018
+      - when workflowOutcomeHeader is selected, workflowOutcomeHeaderSelectedBorder remains visible per FR-WF-EO-018 for every actor; this selected state is not a hover effect and is not suppressed by this FR
+
+    roleBehavior:
+      owner:
+        workflowOutcomeHeaderEditHoverBorder: shownOnHover
+        workflowOutcomeHeaderEditHoverCursor: shownOnHover
+      editor:
+        workflowOutcomeHeaderEditHoverBorder: shownOnHover
+        workflowOutcomeHeaderEditHoverCursor: shownOnHover
+      commenter:
+        workflowOutcomeHeaderEditHoverBorder: notRendered
+        workflowOutcomeHeaderEditHoverCursor: notApplied
+      viewer:
+        workflowOutcomeHeaderEditHoverBorder: notRendered
+        workflowOutcomeHeaderEditHoverCursor: notApplied
+      user:
+        workflowOutcomeHeaderEditHoverBorder: notRendered
+        workflowOutcomeHeaderEditHoverCursor: notApplied
+
+    acceptanceCriteria:
+      - given actor is owner or editor and an unselected workflowOutcomeHeader is rendered, when actor moves the mouse pointer over that workflowOutcomeHeader, then workflowOutcomeHeaderEditHoverBorder is visible and the mouse cursor changes to workflowOutcomeHeaderEditHoverCursor
+      - given actor is viewer and an unselected workflowOutcomeHeader is rendered, when actor moves the mouse pointer over that workflowOutcomeHeader, then no hover-only border or outline is added and the mouse cursor remains unchanged from its non-hover presentation
+      - given actor is commenter or user (published-access) and an unselected workflowOutcomeHeader is rendered, when actor moves the mouse pointer over that workflowOutcomeHeader, then no hover-only border or outline is added and the mouse cursor remains unchanged from its non-hover presentation
+      - given actor is commenter, viewer, or user (published-access), hover-presentation suppression does not prevent actor from clicking workflowOutcomeHeader to open workflowEditOutcomeForm in readOnlyPresentation per FR-WF-EO-004 and does not alter workflowOutcomeHoverActionsMenu role behavior per FR-WF-EO-003
+      - given any actor has selected workflowOutcome O and workflowRightSidebar is bound to O, workflowOutcomeHeaderSelectedBorder remains visible on O per FR-WF-EO-018 whether or not the mouse pointer is over O
+
+    openQuestions: []

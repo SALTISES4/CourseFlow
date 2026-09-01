@@ -6,6 +6,7 @@ import {
   clickWorkflowEdge,
   dragWorkflowEdgeFromHandleToHandle,
   dragWorkflowEdgeReconnectTarget,
+  firstClickableWorkflowEdgeId,
 } from './edge.helpers';
 import {
   workflowEdge,
@@ -21,6 +22,8 @@ import {
   edgeIdString,
   fetchGraphView,
   findEdgeBetween,
+  type GraphViewEdge,
+  type GraphViewPayload,
   nodePairWithoutEdge,
   workflowUuidFromPath,
 } from './workflow-graph.helpers';
@@ -50,6 +53,18 @@ async function gotoWorkflowGraph(page: import('@playwright/test').Page, path: st
   });
 }
 
+async function firstClickableSeedEdge(
+  page: import('@playwright/test').Page,
+  graph: GraphViewPayload,
+): Promise<GraphViewEdge> {
+  const edgeId = await firstClickableWorkflowEdgeId(page, graph.edges.map(edgeIdString));
+  const edge = graph.edges.find((candidate) => edgeIdString(candidate) === edgeId);
+  if (!edge) {
+    throw new Error(`Clickable workflowEdge ${edgeId} is missing from graph payload`);
+  }
+  return edge;
+}
+
 test.describe('Workflow edge — select and edit (FR-WF-EDGE-004)', () => {
   test.beforeEach(async ({ page, workflow }) => {
     await gotoWorkflowGraph(page, workflow.path);
@@ -61,7 +76,7 @@ test.describe('Workflow edge — select and edit (FR-WF-EDGE-004)', () => {
   }) => {
     const workflowUuid = workflowUuidFromPath(workflow.path);
     const graph = await fetchGraphView(page, workflowUuid);
-    const edge = graph.edges[0];
+    const edge = await firstClickableSeedEdge(page, graph);
     expect(edge, 'seeded workflow should include at least one workflowEdge').toBeTruthy();
 
     await clickWorkflowEdge(page, edgeIdString(edge));
@@ -79,7 +94,7 @@ test.describe('Workflow edge — select and edit (FR-WF-EDGE-004)', () => {
   }) => {
     const workflowUuid = workflowUuidFromPath(workflow.path);
     const graph = await fetchGraphView(page, workflowUuid);
-    const edge = graph.edges[0];
+    const edge = await firstClickableSeedEdge(page, graph);
 
     await clickWorkflowEdge(page, edgeIdString(edge));
     await workflowEditEdgeFormTitleField(page).fill('E2E edge title');
@@ -112,7 +127,7 @@ test.describe('Workflow edge — delete (FR-WF-EDGE-002)', () => {
 
     const workflowUuid = workflowUuidFromPath(workflow.path);
     const graph = await fetchGraphView(page, workflowUuid);
-    const edge = graph.edges[0];
+    const edge = await firstClickableSeedEdge(page, graph);
     const edgeId = edgeIdString(edge);
 
     await clickWorkflowEdge(page, edgeId);
@@ -169,7 +184,7 @@ test.describe('Workflow edge — create (FR-WF-EDGE-001)', () => {
     const edgeCountBefore = before.edges.length;
 
     await workflowNode(page, nodeUuid!).hover();
-    await expect(workflowNodeEdgeHandles(page, nodeUuid!)).toBeVisible();
+    await expect(workflowNodeEdgeHandles(page, nodeUuid!)).toHaveCount(4);
 
     const handle = workflowNodeEdgeHandles(page, nodeUuid!).first();
     const handleBox = await handle.boundingBox();
@@ -196,7 +211,7 @@ test.describe('Workflow edge — reconnect (FR-WF-EDGE-003)', () => {
 
     const workflowUuid = workflowUuidFromPath(workflow.path);
     const graph = await fetchGraphView(page, workflowUuid);
-    const edge = graph.edges[0];
+    const edge = await firstClickableSeedEdge(page, graph);
     const originalTarget = edge.targetNodeUuid;
 
     const replacementTarget = graph.nodes.find(
@@ -239,7 +254,7 @@ test.describe('Workflow edge — role behavior (FR-WF-EDGE-001, FR-WF-EDGE-004)'
     await gotoWorkflowGraph(page, workflow.path);
 
     const graph = await fetchGraphView(page, workflow.workflowUuid);
-    const edge = graph.edges[0];
+    const edge = await firstClickableSeedEdge(page, graph);
 
     await clickWorkflowEdge(page, edgeIdString(edge));
 
@@ -257,7 +272,7 @@ test.describe('Workflow edge — role behavior (FR-WF-EDGE-001, FR-WF-EDGE-004)'
     await gotoWorkflowGraph(page, workflow.path);
 
     const graph = await fetchGraphView(page, workflow.workflowUuid);
-    const edge = graph.edges[0];
+    const edge = await firstClickableSeedEdge(page, graph);
 
     await clickWorkflowEdge(page, edgeIdString(edge));
 

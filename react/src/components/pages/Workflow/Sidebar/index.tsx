@@ -82,18 +82,18 @@ function canUseTab(
       return hasPermission(permissions, WorkflowPermission.VIEW)
     case 'edit':
       if (editType === CfObjectType.OUTCOME) {
-        return hasPermission(permissions, WorkflowPermission.OUTCOME_MANAGEMENT)
+        return hasPermission(permissions, WorkflowPermission.VIEW)
       }
       if (editType === CfObjectType.COLUMN) {
-        return hasPermission(
-          permissions,
-          WorkflowPermission.NODE_CATEGORY_MANAGEMENT
-        )
+        return hasPermission(permissions, WorkflowPermission.VIEW)
       }
       if (editType === CfObjectType.SECTION) {
         return hasPermission(permissions, WorkflowPermission.VIEW)
       }
       if (editType === CfObjectType.NODE) {
+        return hasPermission(permissions, WorkflowPermission.VIEW)
+      }
+      if (editType === CfObjectType.EDGE) {
         return hasPermission(permissions, WorkflowPermission.VIEW)
       }
       return hasPermission(permissions, WorkflowPermission.NODE_MANAGEMENT)
@@ -163,6 +163,10 @@ const WorkspaceSidebar = () => {
       value: 'add',
       icon: <AddCircleIcon />
     },
+    {
+      value: 'outcomes',
+      icon: <EmojiEventsOutlinedIcon />
+    },
     ...(sidebar.edit.objectType &&
     objectTypesWithComments.includes(sidebar.edit.objectType)
       ? [
@@ -172,10 +176,6 @@ const WorkspaceSidebar = () => {
           }
         ]
       : []),
-    {
-      value: 'outcomes',
-      icon: <EmojiEventsOutlinedIcon />
-    },
     {
       value: 'related',
       icon: <LinkIcon />
@@ -187,15 +187,14 @@ const WorkspaceSidebar = () => {
   // need both workflow type and view type in order to determine whether tabs show
   if (sidebarConfig.workflowType && sidebarConfig.viewType) {
     tabs.map((tab) => {
-      if (
-        tab &&
-        isTabVisible(tab.value, sidebarConfig) &&
-        canUseTab(tab.value, sidebar.edit.objectType, permissions)
-      ) {
+      if (tab && isTabVisible(tab.value, sidebarConfig)) {
         visibleTabs.push(
           <ToggleButton
             key={tab.value}
-            disabled={tab.disabled}
+            disabled={
+              tab.disabled ||
+              !canUseTab(tab.value, sidebar.edit.objectType, permissions)
+            }
             size="small"
             color="primary"
             value={tab.value}

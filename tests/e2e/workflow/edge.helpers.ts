@@ -9,23 +9,63 @@ import {
   workflowNodeEdgeHandle,
 } from './edge.locators';
 
-/** Midpoint of the transparent hit-stroke in screen coords (bbox center often misses the 16px path). */
+/**
+ * Find a point where this transparent hit-stroke is the topmost clickable edge.
+ * Edge paths can overlap, so clicking an arbitrary midpoint can select a different edge.
+ */
 async function edgeClickPointOnScreen(
   target: ReturnType<typeof workflowEdgeClickTarget>,
 ): Promise<{ x: number; y: number }> {
   return target.evaluate((path) => {
     const svgPath = path as SVGPathElement;
-    const pt = svgPath.getPointAtLength(svgPath.getTotalLength() / 2);
     const ctm = svgPath.getScreenCTM();
     if (!ctm) {
       throw new Error('workflowEdge click target has no screen CTM');
     }
-    const screen = svgPath.ownerSVGElement!.createSVGPoint();
-    screen.x = pt.x;
-    screen.y = pt.y;
-    const { x, y } = screen.matrixTransform(ctm);
-    return { x, y };
+
+    const totalLength = svgPath.getTotalLength();
+    const fractions = [
+      0.5,
+      0.25,
+      0.75,
+      ...Array.from({ length: 97 }, (_, index) => (index + 2) / 100),
+    ];
+
+    for (const fraction of fractions) {
+      const pathPoint = svgPath.getPointAtLength(totalLength * fraction);
+      const screenPoint = svgPath.ownerSVGElement!.createSVGPoint();
+      screenPoint.x = pathPoint.x;
+      screenPoint.y = pathPoint.y;
+      const { x, y } = screenPoint.matrixTransform(ctm);
+      if (document.elementFromPoint(x, y) === svgPath) {
+        return { x, y };
+      }
+    }
+
+    throw new Error('workflowEdge has no unobscured clickable point');
   });
+}
+
+export async function firstClickableWorkflowEdgeId(
+  page: Page,
+  edgeIds: string[],
+): Promise<string> {
+  for (const edgeId of edgeIds) {
+    const target = workflowEdgeClickTarget(page, edgeId);
+    if ((await target.count()) === 0) {
+      continue;
+    }
+    await target.scrollIntoViewIfNeeded();
+    try {
+      await edgeClickPointOnScreen(target);
+      return edgeId;
+    } catch (error) {
+      if (!(error instanceof Error) || !error.message.includes('no unobscured clickable point')) {
+        throw error;
+      }
+    }
+  }
+  throw new Error('No seeded workflowEdge has an unobscured clickable point');
 }
 
 export async function clickWorkflowEdge(page: Page, edgeId: string): Promise<void> {

@@ -26,6 +26,7 @@ class DjangoChannelRepository:
         title: str,
         position: int,
         thread_uuid: UUID | None = None,
+        colour: str | None = None,
     ) -> ChannelDTO | None:
         try:
             graph = Graph.objects.only("id").get(uuid=graph_uuid)
@@ -42,6 +43,7 @@ class DjangoChannelRepository:
         ch = Channel.objects.create(
             graph_id=graph.id,
             title=title,
+            colour=colour or "",
             position=position,
             thread_id=thread_id,
         )

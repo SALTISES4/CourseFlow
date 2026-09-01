@@ -39,7 +39,7 @@ const Handles = ({ nodeUuid, nodeRef, diameter = 10 }: PropsType) => {
       const target = e.currentTarget
       const edge = target.dataset.edge as Position
       const bcr = target.getBoundingClientRect()
-      const svg = document.querySelector<SVGSVGElement>('#line-svg')
+      const svg = document.querySelector<SVGSVGElement>('#line-svg svg')
       if (!svg) {
         return
       }

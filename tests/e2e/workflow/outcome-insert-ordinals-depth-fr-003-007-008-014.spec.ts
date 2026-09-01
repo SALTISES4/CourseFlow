@@ -199,6 +199,7 @@ test.describe('Outcome insert — role behavior (FR-WF-EO-003)', () => {
     }) => {
       await loginAsWorkflowContributor(page, workflow, 'commenter');
       await gotoOutcomesView(page, workflow.path);
+      await expect(workflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE)).toBeVisible();
       const beforeCount = await workflowOutcomeHeaderCount(page);
 
       await hoverWorkflowOutcomeHeader(page, E2E_SEED_OUTCOME_TITLE);

@@ -12,17 +12,17 @@ export const CellInner = styled(Box, {
   highlighted?: boolean
 }>(({ theme, dragging, dropHighlight, selected, highlighted }) => ({
   display: 'flex',
+  position: 'relative',
   pointerEvents: 'auto',
   flexDirection: 'column',
   height: '100%',
   borderRadius: theme.shape.borderRadius,
-  transition: 'all 0.15s ease',
+  transition: 'opacity 0.15s ease',
   ...(dragging && {
     opacity: 0.6
   }),
   ...(dropHighlight && {
     '&': {
-      position: 'relative',
       transition: 'none',
       boxShadow: `0 0 0 2px ${theme.palette.workflow.selected}`,
       '&::before': {

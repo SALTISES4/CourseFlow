@@ -1101,7 +1101,11 @@ export const zGraphOutcomeMoveIn = z.object({
 export const zGraphEdgePatchIn = z.object({
   title: z.string().nullish(),
   textPosition: z.number().int().nullish(),
-  lineType: z.string().nullish()
+  lineType: z.string().nullish(),
+  sourceNodeUuid: z.string().uuid().nullish(),
+  targetNodeUuid: z.string().uuid().nullish(),
+  sourcePort: z.string().min(1).nullish(),
+  targetPort: z.string().min(1).nullish()
 })
 
 /**

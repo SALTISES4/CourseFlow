@@ -11,7 +11,8 @@ export const Wrap = styled(Box, {
   background: theme.palette.common.white,
   borderRadius: theme.shape.borderRadius,
   boxShadow: `0 2px 1px -1px rgba(0, 0, 0, 0.16), 0 1px 1px 0 rgba(0, 0, 0, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.08)`,
-  zIndex: 5,
+  // Keep action controls above workflow-node edge handles (z-index 10).
+  zIndex: 11,
   opacity: 0,
   visibility: 'hidden',
   transition: 'all 0.15s ease',

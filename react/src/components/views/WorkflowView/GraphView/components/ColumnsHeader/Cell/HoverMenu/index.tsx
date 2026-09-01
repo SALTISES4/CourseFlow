@@ -39,6 +39,9 @@ const HoverMenu = ({ nodeId, graphUuid, show, threadUuid }: PropsType) => {
     (action: HoverMenuActions) => {
       return (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
+        if (action !== 'comments' && !canEdit) {
+          return
+        }
         switch (action) {
           case 'insert':
             dispatch(
@@ -78,27 +81,31 @@ const HoverMenu = ({ nodeId, graphUuid, show, threadUuid }: PropsType) => {
         }
       }
     },
-    [dispatch, dialogDispatch, graphUuid, nodeId]
+    [canEdit, dispatch, dialogDispatch, graphUuid, nodeId]
   )
 
   return (
     <NodeHoverMenu
       show={show}
+      sx={{ top: '-16px' }}
       items={[
-        canEdit && {
+        {
           label: _t('Insert right'),
           icon: <AddCircleOutlineIcon />,
-          onClick: onActionClick('insert')
+          onClick: onActionClick('insert'),
+          disabled: !canEdit
         },
-        canEdit && {
+        {
           label: _t('Duplicate'),
           icon: <ContentCopyIcon />,
-          onClick: onActionClick('duplicate')
+          onClick: onActionClick('duplicate'),
+          disabled: !canEdit
         },
-        canEdit && {
+        {
           label: _t('Delete'),
           icon: <DeleteOutlinedIcon />,
-          onClick: onActionClick('delete')
+          onClick: onActionClick('delete'),
+          disabled: !canEdit
         },
         canComment && {
           label: _t('Comments'),
@@ -106,7 +113,7 @@ const HoverMenu = ({ nodeId, graphUuid, show, threadUuid }: PropsType) => {
           showCommentsPresenceIndicator: commentCount > 0,
           onClick: onActionClick('comments')
         }
-      ].filter(Boolean)}
+      ].filter((item) => item && (canEdit || canComment))}
     />
   )
 }

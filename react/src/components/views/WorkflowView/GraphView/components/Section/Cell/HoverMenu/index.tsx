@@ -54,6 +54,9 @@ const HoverMenu = ({ nodeId, graphUuid, nodeRef, threadUuid }: PropsType) => {
     (action: HoverMenuActions) => {
       return (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
+        if (action !== 'comments' && !canEdit) {
+          return
+        }
         switch (action) {
           case 'insert':
           case 'duplicate':
@@ -95,7 +98,7 @@ const HoverMenu = ({ nodeId, graphUuid, nodeRef, threadUuid }: PropsType) => {
         }
       }
     },
-    [dispatch, graphUuid, insertMode, nodeId, nodeRef]
+    [canEdit, dispatch, graphUuid, insertMode, nodeId, nodeRef]
   )
 
   const onInsertCancel = useCallback(
@@ -122,21 +125,25 @@ const HoverMenu = ({ nodeId, graphUuid, nodeRef, threadUuid }: PropsType) => {
     <>
       <NodeHoverMenu
         show={hovering}
+        sx={{ top: '-16px' }}
         items={[
-          canEdit && {
+          {
             label: 'Insert node below',
             icon: <AddCircleOutlineIcon />,
-            onClick: onActionClick('insert')
+            onClick: onActionClick('insert'),
+            disabled: !canEdit
           },
-          canEdit && {
+          {
             label: 'Duplicate node below',
             icon: <ContentCopyIcon />,
-            onClick: onActionClick('duplicate')
+            onClick: onActionClick('duplicate'),
+            disabled: !canEdit
           },
-          canEdit && {
+          {
             label: 'Delete node',
             icon: <DeleteOutlinedIcon />,
-            onClick: onActionClick('delete')
+            onClick: onActionClick('delete'),
+            disabled: !canEdit
           },
           canComment && {
             label: 'Comments',
@@ -144,7 +151,7 @@ const HoverMenu = ({ nodeId, graphUuid, nodeRef, threadUuid }: PropsType) => {
             showCommentsPresenceIndicator: commentCount > 0,
             onClick: onActionClick('comments')
           }
-        ].filter(Boolean)}
+        ].filter((item) => item && (canEdit || canComment))}
       />
       <InsertMenu
         anchorEl={state.anchor}

@@ -1,3 +1,5 @@
+import { WorkflowPermission } from '@cf/api/gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { selectIsDrawingLinkPreview } from '@cf/features/graph/state/selectors/svglink.selectors'
 import { svglinkLineEdit } from '@cf/features/graph/state/slices/svglink.slice'
 import { dragEndThunk } from '@cf/features/graph/state/thunks/svglink.thunk'
@@ -25,6 +27,72 @@ type ConnectionState = {
   hovering: boolean
 }
 
+function getConnectionPath(
+  lineStart: PositionCoords,
+  lineEnd: PositionCoords,
+  fromEdge: Position,
+  toEdge: Position,
+  laneOffset: number
+): [string, number, number] {
+  const sameHorizontalSide =
+    fromEdge === toEdge &&
+    (fromEdge === Position.Right || fromEdge === Position.Left)
+  if (sameHorizontalSide) {
+    const direction = fromEdge === Position.Right ? 1 : -1
+    const sourceOutX = lineStart.x + direction * 20
+    const targetOutX = lineEnd.x + direction * 20
+    const aligned = Math.abs(lineStart.y - lineEnd.y) < 1
+    const laneY = aligned
+      ? Math.min(lineStart.y, lineEnd.y) - 55 - laneOffset
+      : (lineStart.y + lineEnd.y) / 2 + laneOffset * 0.4
+    return [
+      `M ${lineStart.x} ${lineStart.y} L ${sourceOutX} ${lineStart.y} L ${sourceOutX} ${laneY} L ${targetOutX} ${laneY} L ${targetOutX} ${lineEnd.y} L ${lineEnd.x} ${lineEnd.y}`,
+      (sourceOutX + targetOutX) / 2,
+      laneY
+    ]
+  }
+
+  const sameVerticalSide =
+    fromEdge === toEdge &&
+    (fromEdge === Position.Top || fromEdge === Position.Bottom)
+  if (sameVerticalSide) {
+    const direction = fromEdge === Position.Bottom ? 1 : -1
+    const sourceOutY = lineStart.y + direction * 20
+    const targetOutY = lineEnd.y + direction * 20
+    const aligned = Math.abs(lineStart.x - lineEnd.x) < 1
+    const laneX = aligned
+      ? Math.min(lineStart.x, lineEnd.x) - 55 - laneOffset
+      : (lineStart.x + lineEnd.x) / 2 + laneOffset * 0.4
+    return [
+      `M ${lineStart.x} ${lineStart.y} L ${lineStart.x} ${sourceOutY} L ${laneX} ${sourceOutY} L ${laneX} ${targetOutY} L ${lineEnd.x} ${targetOutY} L ${lineEnd.x} ${lineEnd.y}`,
+      laneX,
+      (sourceOutY + targetOutY) / 2
+    ]
+  }
+
+  const laneCenter =
+    fromEdge === toEdge
+      ? fromEdge === Position.Right
+        ? { centerX: Math.max(lineStart.x, lineEnd.x) + 20 + laneOffset }
+        : fromEdge === Position.Left
+          ? { centerX: Math.min(lineStart.x, lineEnd.x) - 20 + laneOffset }
+          : fromEdge === Position.Bottom
+            ? { centerY: Math.max(lineStart.y, lineEnd.y) + 20 + laneOffset }
+            : { centerY: Math.min(lineStart.y, lineEnd.y) - 20 + laneOffset }
+      : {}
+
+  const [path, labelX, labelY] = getSmoothStepPath({
+    sourceX: lineStart.x,
+    sourceY: lineStart.y,
+    sourcePosition: fromEdge,
+    targetX: lineEnd.x,
+    targetY: lineEnd.y,
+    targetPosition: toEdge,
+    ...laneCenter
+  })
+  return [path, labelX, labelY]
+}
+
 const Connection = ({
   uuid,
   dashed,
@@ -38,6 +106,9 @@ const Connection = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>()
   const isDraggingPreview = useSelector(selectIsDrawingLinkPreview)
+  const canManageLinks = useResourcePermission(
+    WorkflowPermission.NODE_LINK_MANAGEMENT
+  )
   const [state, setState] = useState<ConnectionState>({
     hovering: false
   })
@@ -163,19 +234,35 @@ const Connection = ({
   lineEnd.x -= svgBCR.left
   lineEnd.y -= svgBCR.top
 
-  const [path, labelX, labelY] = getSmoothStepPath({
-    sourceX: lineStart.x,
-    sourceY: lineStart.y,
-    sourcePosition: fromEdge as Position,
-    targetX: lineEnd.x,
-    targetY: lineEnd.y,
-    targetPosition: toEdge as Position
-  })
+  const numericEdgeId = Number(uuid)
+  const laneOffset = Number.isFinite(numericEdgeId)
+    ? ((numericEdgeId % 11) - 5) * 3
+    : 0
+  const [path, labelX, labelY] = getConnectionPath(
+    lineStart,
+    lineEnd,
+    fromEdge as Position,
+    toEdge as Position,
+    laneOffset
+  )
+  // Axis-aligned SVG paths have a zero-width or zero-height DOM box. Add a
+  // sub-pixel segment to the transparent hit path so it remains an operable
+  // pointer target without changing the rendered edge.
+  const hitPath = `${path} M ${labelX} ${labelY} l 0.01 0.01`
 
   const lineId = `line-${fromId}-${fromEdge}-to-${toId}-${toEdge}`
 
   return (
     <g fill="none" data-edge-id={uuid}>
+      <rect
+        x={labelX - 0.5}
+        y={labelY - 0.5}
+        width={1}
+        height={1}
+        fill="transparent"
+        pointerEvents="none"
+        aria-hidden="true"
+      />
       <path
         d={path}
         stroke={strokeColor}
@@ -187,7 +274,7 @@ const Connection = ({
       />
       <path
         id={lineId}
-        d={path}
+        d={hitPath}
         stroke="transparent"
         strokeWidth="16"
         fill="none"
@@ -196,7 +283,7 @@ const Connection = ({
         onClick={onClick}
         style={{ pointerEvents: 'auto', cursor: 'pointer' }}
       />
-      {selected && (
+      {selected && canManageLinks && (
         <>
           <StyledHandle
             cx={lineStart.x}

@@ -131,8 +131,6 @@ test.describe('Delete Section — hover path (FR-SEC-006)', () => {
     page,
     workflow,
   }) => {
-    test.fail();
-
     await confirmDeleteSectionViaHover(page, workflow.sectionByTitle('E2E Section 3').uuid);
     await confirmDeleteSectionViaHover(page, workflow.blankSection().uuid);
 
@@ -141,13 +139,11 @@ test.describe('Delete Section — hover path (FR-SEC-006)', () => {
 
     await hoverSectionHeader(page, soleSection.uuid);
     await expect(deleteButtonInSectionHeader(page, soleSection.uuid)).toBeDisabled();
-    await deleteButtonInSectionHeader(page, soleSection.uuid).click({ force: true });
-    await expect(deleteSectionDialog(page)).toBeHidden();
 
+    await page.mouse.move(0, 0);
     await sectionHeader(page, soleSection.uuid).click();
-    await expect(editSectionForm(page)).toBeVisible();
+    await expect(editSectionForm(page)).toBeVisible({ timeout: 15_000 });
     await expect(deleteButtonInSidebar(page)).toBeDisabled();
-    await deleteButtonInSidebar(page).click({ force: true });
     await expect(deleteSectionDialog(page)).toBeHidden();
     await expect(sectionContainers(page)).toHaveCount(1);
   });

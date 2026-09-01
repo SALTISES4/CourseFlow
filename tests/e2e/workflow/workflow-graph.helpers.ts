@@ -219,42 +219,6 @@ export function edgeLineTypeIsSolid(lineType: string): boolean {
   return lineType.toLowerCase() !== 'dashed';
 }
 
-/** Pick N nodes in one section with no existing edges between any pair in the set. */
-export function nodeSetWithoutInternalEdges(
-  graph: GraphViewPayload,
-  sectionUuid: string,
-  count: number,
-): GraphViewNode[] {
-  const candidates = nodesInSection(graph, sectionUuid).sort((left, right) => {
-    const rowDelta = (left.sectionRow ?? 0) - (right.sectionRow ?? 0);
-    if (rowDelta !== 0) {
-      return rowDelta;
-    }
-    return left.uuid.localeCompare(right.uuid);
-  });
-
-  if (candidates.length < count) {
-    throw new Error(
-      `Section ${sectionUuid} has ${candidates.length} nodes; need ${count} without internal edges.`,
-    );
-  }
-
-  for (let start = 0; start <= candidates.length - count; start += 1) {
-    const selected = candidates.slice(start, start + count);
-    const uuids = new Set(selected.map((node) => node.uuid));
-    const hasInternalEdge = graph.edges.some(
-      (edge) => uuids.has(edge.sourceNodeUuid) && uuids.has(edge.targetNodeUuid),
-    );
-    if (!hasInternalEdge) {
-      return selected;
-    }
-  }
-
-  throw new Error(
-    `Could not find ${count} nodes in section ${sectionUuid} without internal workflowEdges.`,
-  );
-}
-
 function nodesInSectionChannel(
   graph: GraphViewPayload,
   sectionUuid: string,

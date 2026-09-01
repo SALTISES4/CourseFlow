@@ -36,7 +36,7 @@ export function readPrimaryActorAccessToken(): string {
 export async function apiRequestWithAccessToken(
   request: APIRequestContext,
   accessToken: string,
-  method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
   path: string,
   options: AuthenticatedApiRequestOptions = {},
 ): Promise<APIResponse> {
@@ -58,7 +58,7 @@ export async function apiRequestWithAccessToken(
  */
 export async function authenticatedApiRequest(
   page: Page,
-  method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
   path: string,
   options: AuthenticatedApiRequestOptions = {},
 ): Promise<APIResponse> {

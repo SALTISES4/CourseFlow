@@ -1,3 +1,5 @@
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { ChannelEntity } from '@cf/features/graph/state/model/types'
 import {
   selectChannelByUuid,
@@ -77,6 +79,9 @@ const EditColumnForm = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
+  const canEdit = useResourcePermission(
+    WorkflowPermission.NODE_CATEGORY_MANAGEMENT
+  )
 
   const [color, setColor] = useState(() =>
     resolveChannelColour(channel, themeColumnType)
@@ -86,7 +91,7 @@ const EditColumnForm = ({
   useEffect(() => {
     setTitleDraft(channel.title ?? '')
     setColor(resolveChannelColour(channel, themeColumnType))
-  }, [channel.colour, channel.title, channel.uuid, themeColumnType])
+  }, [channel, themeColumnType])
 
   const debouncedPersistMeta = useMemo(
     () =>
@@ -102,24 +107,32 @@ const EditColumnForm = ({
     [channel.graphUuid, channel.uuid, dispatch]
   )
 
-  useEffect(() => () => debouncedPersistMeta.clear(), [debouncedPersistMeta])
-
   const onTitleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
+      if (!canEdit) {
+        return
+      }
       const value = e.target.value
       setTitleDraft(value)
       debouncedPersistMeta({ title: value })
     },
-    [debouncedPersistMeta]
+    [canEdit, debouncedPersistMeta]
   )
 
   const onColorChange = useCallback(
     (next: string) => {
-      setColor(next)
-      debouncedPersistMeta({ colour: next })
+      if (!canEdit) {
+        return
+      }
+      const newColor = next || '#CFD8DC'
+
+      setColor(newColor)
+      debouncedPersistMeta({ colour: newColor })
     },
-    [debouncedPersistMeta]
+    [canEdit, debouncedPersistMeta]
   )
+
+  useEffect(() => () => debouncedPersistMeta.clear(), [debouncedPersistMeta])
 
   const onDuplicate = useCallback(() => {
     dispatch(
@@ -151,15 +164,31 @@ const EditColumnForm = ({
             size="small"
             value={titleDraft}
             onChange={onTitleChange}
+            disabled={!canEdit}
           />
-          <ColorPicker size="small" color={color} onChange={onColorChange} />
+          <ColorPicker
+            size="small"
+            color={color}
+            onChange={onColorChange}
+            disabled={!canEdit}
+          />
         </Stack>
       </SidebarContent>
       <SidebarActions>
-        <Button variant="contained" color="secondary" onClick={onDuplicate}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={onDuplicate}
+          disabled={!canEdit}
+        >
           {_t('Duplicate')}
         </Button>
-        <Button variant="contained" color="secondary" onClick={onDelete}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={onDelete}
+          disabled={!canEdit}
+        >
           {_t('Delete')}
         </Button>
       </SidebarActions>

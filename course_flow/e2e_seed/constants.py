@@ -59,6 +59,14 @@ E2E_CHANNEL_TITLES: tuple[str, ...] = (
     "E2E Channel C",
 )
 
+# Persist the legacy colours already rendered by the workflow UI for these
+# positions. This makes colour a channel property that duplication can copy.
+E2E_CHANNEL_COLOURS: tuple[str, ...] = (
+    "#6738FF",
+    "#0B118A",
+    "#114CD4",
+)
+
 E2E_OUTCOME_TITLE = "E2E Outcome 1"
 
 # Structural graph layout seed — topology only; section/channel copy is fixed above.

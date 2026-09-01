@@ -1,14 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 export default function useSkipFirstRender() {
-  const [hasRendered, setHasRendered] = useState(false)
+  const isFirstRender = useRef(true)
 
   useEffect(() => {
-    if (!hasRendered) {
-      setHasRendered(true)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    isFirstRender.current = false
   }, [])
 
-  return hasRendered
+  return isFirstRender.current
 }

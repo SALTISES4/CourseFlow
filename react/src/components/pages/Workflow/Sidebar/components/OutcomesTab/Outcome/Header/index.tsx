@@ -2,7 +2,7 @@ import { _t } from '@cf/utility/Utility.class'
 import * as Styled from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
-import { MouseEvent, RefObject } from 'react'
+import { MouseEvent, ReactNode, RefObject } from 'react'
 
 type PropsType = {
   uuid: string
@@ -15,6 +15,8 @@ type PropsType = {
   showToggle: boolean
   onClick: () => void
   onToggleClick: (e: MouseEvent<HTMLButtonElement>) => void
+  action?: ReactNode
+  onContentMouseEnter?: () => void
 }
 
 const OutcomeHeader = ({
@@ -25,7 +27,9 @@ const OutcomeHeader = ({
   collapsed,
   onClick,
   showToggle,
-  onToggleClick
+  onToggleClick,
+  action,
+  onContentMouseEnter
 }: PropsType) => (
   <Styled.OutcomeHeader
     ref={dragRef}
@@ -33,9 +37,10 @@ const OutcomeHeader = ({
     level={level}
     onClick={onClick}
   >
-    <Styled.OutcomeHeaderInner>
+    <Styled.OutcomeHeaderInner onMouseEnter={onContentMouseEnter}>
       <Styled.OutcomeTitle variant="body2">{title}</Styled.OutcomeTitle>
     </Styled.OutcomeHeaderInner>
+    {action}
     {showToggle && (
       <Styled.OutcomeHeaderToggle onClick={onToggleClick}>
         {collapsed ? (

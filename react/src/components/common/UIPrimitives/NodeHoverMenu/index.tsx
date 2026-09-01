@@ -9,8 +9,8 @@ export type MenuItem = {
   label: string
   icon: ReactNode
   onClick: (e: MouseEvent<HTMLButtonElement>) => void
-  disabled?: boolean
   showCommentsPresenceIndicator?: boolean
+  disabled?: boolean
 }
 
 type PropsType = {
@@ -27,33 +27,45 @@ const HoverMenu = ({
   sx,
   classNames,
   'data-test-id': dataTestId
-}: PropsType) => (
-  <Styled.Wrap
-    sx={sx}
-    show={show}
-    className={classNames}
-    data-test-id={dataTestId}
-  >
-    {items.map((item, index) =>
-      item ? (
-        <Tooltip key={index} placement="top" arrow title={item.label}>
-          <IconButton
-            color="secondary"
-            size="small"
-            onClick={item.onClick}
-            disabled={item.disabled}
+}: PropsType) => {
+  if (!items.some(Boolean)) {
+    return null
+  }
+
+  return (
+    <Styled.Wrap
+      sx={sx}
+      show={show}
+      className={classNames}
+      data-test-id={dataTestId}
+    >
+      {items.map((item, index) =>
+        item ? (
+          <Tooltip
+            key={index}
+            placement="top"
+            arrow
+            disableInteractive
+            title={item.label}
           >
-            <Styled.IconWrap>
-              {item.icon}
-              {item.showCommentsPresenceIndicator && (
-                <Styled.CommentsPresenceIndicator data-test-id="workflow-comments-presence-indicator" />
-              )}
-            </Styled.IconWrap>
-          </IconButton>
-        </Tooltip>
-      ) : null
-    )}
-  </Styled.Wrap>
-)
+            <IconButton
+              color="secondary"
+              size="small"
+              disabled={item.disabled}
+              onClick={item.onClick}
+            >
+              <Styled.IconWrap>
+                {item.icon}
+                {item.showCommentsPresenceIndicator && (
+                  <Styled.CommentsPresenceIndicator data-test-id="workflow-comments-presence-indicator" />
+                )}
+              </Styled.IconWrap>
+            </IconButton>
+          </Tooltip>
+        ) : null
+      )}
+    </Styled.Wrap>
+  )
+}
 
 export default HoverMenu

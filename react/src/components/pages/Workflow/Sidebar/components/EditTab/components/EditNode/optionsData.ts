@@ -1,65 +1,21 @@
-const activityContexts = [
-  {
-    value: 0,
-    label: 'None'
-  },
-  {
-    value: 1,
-    label: 'Individual Work'
-  },
-  {
-    value: 2,
-    label: 'Work in Groups'
-  },
-  {
-    value: 3,
-    label: 'Whole Class'
-  }
-]
+const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
-const courseContexts = [
-  { value: 0, label: 'None' },
-  { value: 1, label: 'Formative' },
-  { value: 2, label: 'Summative' },
-  { value: 3, label: 'Comprehensive' }
-]
+const toOption = (choice: { type: number | string; name: string }) => ({
+  value: choice.type,
+  label: choice.name
+})
 
-const taskTypes = [
-  { value: 0, label: 'None' },
-  {
-    value: 1,
-    label: 'Gather Information'
-  },
-  {
-    value: 2,
-    label: 'Discuss'
-  },
-  {
-    value: 3,
-    label: 'Problem Solve'
-  },
-  {
-    value: 4,
-    label: 'Analyze'
-  },
-  {
-    value: 5,
-    label: 'Assess/Review Peers'
-  },
-  { value: 6, label: 'Debate' },
-  { value: 7, label: 'Game/Roleplay' },
-  { value: 8, label: 'Create/Design' },
-  { value: 9, label: 'Revise/Improve' },
-  { value: 10, label: 'Read' },
-  { value: 11, label: 'Write' },
-  { value: 12, label: 'Present' },
-  { value: 13, label: 'Experiment/Inquiry' },
-  { value: 14, label: 'Quiz/Test' },
-  { value: 15, label: 'Instructor Resource Curation' },
-  { value: 16, label: 'Instructor Orchestration' },
-  { value: 17, label: 'Instructor Evaluation' },
-  { value: 18, label: 'Other' }
-]
+const activityContexts = choices.contextChoices
+  .filter((choice) => Number(choice.type) <= 3)
+  .map(toOption)
+
+const courseContexts = choices.contextChoices
+  .filter((choice) => choice.type === 0 || Number(choice.type) >= 100)
+  .map(toOption)
+
+const activityTaskTypes = choices.taskChoices
+  .filter((choice) => Number(choice.type) <= 18)
+  .map(toOption)
 
 // Outcome editing still consumes this legacy local option seam. Edit-node tags
 // are loaded from the parent project's persisted catalog instead.
@@ -74,6 +30,6 @@ const tags = [
 export default {
   activityContexts,
   courseContexts,
-  taskTypes,
+  activityTaskTypes,
   tags
 }

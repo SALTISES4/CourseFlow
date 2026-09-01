@@ -3,11 +3,11 @@ import { svglinkDragEnd } from '@cf/features/graph/state/slices/svglink.slice'
 import type { AppDispatch, RootState } from '@cfRedux/store'
 import { connectionEdgeToCanonicalPort } from '@cfViews/WorkflowView/GraphView/components/LineSVG/utility'
 
-import { createEdge } from './graphMutations.thunks'
+import { createEdge, updateEdge } from './graphMutations.thunks'
 
 export const dragEndThunk =
   () => async (dispatch: AppDispatch, getState: () => RootState) => {
-    const { dragging, snap } = getState().svglink
+    const { dragging, snap, editing } = getState().svglink
 
     const sourceNodeUuid =
       dragging.from?.nodeUuid ?? snap.from?.nodeUuid ?? null
@@ -25,7 +25,44 @@ export const dragEndThunk =
     )
 
     if (editingExistingEdge) {
-      // Endpoint drag on an existing edge — no patch API yet.
+      if (
+        !dragging.uuid ||
+        !sourceNodeUuid ||
+        !targetNodeUuid ||
+        sourceNodeUuid === targetNodeUuid ||
+        !sourcePort ||
+        !targetPort
+      ) {
+        return
+      }
+
+      const sourceNode = selectNodeByUuid(sourceNodeUuid)(getState())
+      if (!sourceNode) {
+        return
+      }
+
+      try {
+        await dispatch(
+          updateEdge({
+            graphUuid: sourceNode.graphUuid,
+            edgeId: dragging.uuid,
+            meta: {},
+            ...(editing === 'from'
+              ? {
+                  sourceNodeUuid,
+                  sourcePort: connectionEdgeToCanonicalPort(sourcePort)
+                }
+              : {
+                  targetNodeUuid,
+                  targetPort: connectionEdgeToCanonicalPort(targetPort)
+                })
+          })
+        )
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('[svglink] updateEdge failed', error)
+        }
+      }
       return
     }
 

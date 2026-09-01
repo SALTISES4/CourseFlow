@@ -188,6 +188,16 @@ def apply_insert_reflow(
         channel_id=column_filter,
     )
     updated: list[GridNode] = []
+    if mode == "column":
+        next_occupied_row = new_row
+        for gn in sorted(grid_after, key=lambda node: node.section_row):
+            if gn.section_row != next_occupied_row:
+                break
+            gn.section_row += 1
+            next_occupied_row += 1
+            updated.append(gn)
+        return updated
+
     for gn in grid_after:
         gn.section_row += 1
         updated.append(gn)

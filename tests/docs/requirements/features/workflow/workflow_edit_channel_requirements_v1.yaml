@@ -227,6 +227,7 @@ requirements:
     trigger:
       - user types, pastes, or clears workflowEditChannelFormTitleField
       - user selects a new value in workflowEditChannelFormColorField
+      - owner or editor clears workflowEditChannelFormColorField
 
     mainFlow:
       - system persists changes without an explicit save control on workflowEditChannelForm
@@ -236,6 +237,7 @@ requirements:
       - after save, workflowChannelHeaderTitleText updates per FR-CHAN-002, workflowEditChannelFormTitleField shows the saved title (blank when the channel has no title), and workflowChannelHeaderColorIndicator updates to the saved colour
       - workflowChannelHeaderColorIndicator and workflowEditChannelFormColorField show the same channel colour
       - when workflowEditChannelFormColorField changes for workflowChannel C, every workflowNode placed in workflowChannel C in any workflowSectionContainer updates workflowNodeBorder to that same colour
+      - when owner or editor clears workflowEditChannelFormColorField, system resets and persists the channel colour as default '#CFD8DC'; workflowEditChannelFormColorField is repopulated with '#CFD8DC', and workflowChannelHeaderColorIndicator and every workflowNodeBorder in that channel update to '#CFD8DC' under the same synchronization rules as any other colour change
 
     roleBehavior:
       owner:
@@ -261,6 +263,7 @@ requirements:
       - given owner or editor clears workflowEditChannelFormTitleField on any channel, when save completes, the channel has no title; workflowChannelHeaderTitleText shows 'Untitled node category' per FR-CHAN-002 and workflowEditChannelFormTitleField is blank
       - given workflowEditChannelForm is open for workflowChannel C, workflowChannelHeaderColorIndicator and workflowEditChannelFormColorField show the same colour
       - given owner or editor changes workflowEditChannelFormColorField for workflowChannel C, workflowChannelHeaderColorIndicator and workflowNodeBorder on every workflowNode in workflowChannel C across all workflowSectionContainers show that same colour
+      - given owner or editor clears workflowEditChannelFormColorField for workflowChannel C, when save completes, the channel colour is '#CFD8DC'; workflowEditChannelFormColorField shows '#CFD8DC', workflowChannelHeaderColorIndicator shows '#CFD8DC', and workflowNodeBorder on every workflowNode in workflowChannel C across all workflowSectionContainers shows '#CFD8DC'
 
     openQuestions: []
 

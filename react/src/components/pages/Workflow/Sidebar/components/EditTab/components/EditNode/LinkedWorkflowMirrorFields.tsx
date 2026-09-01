@@ -1,5 +1,5 @@
+import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
 import { _t } from '@cf/utility/Utility.class'
-import RichTextDescription from '@cfComponents/dialog/Workflow/components/RichTextDescription'
 import { formatHoursDuration } from '@cfComponents/DurationTextField'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -52,7 +52,7 @@ const LinkedWorkflowMirrorFields = ({
       value={title}
       InputProps={{ readOnly: true }}
     />
-    <RichTextDescription value={description} readOnly />
+    <WysiwygField readOnly label={_t('Description')} value={description} />
     {showTime && (
       <TextField
         label={_t('Time')}

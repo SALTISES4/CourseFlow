@@ -130,6 +130,11 @@ export function projectViewTabSelector(page: Page): Locator {
   return page.getByRole('tablist');
 }
 
+/** canonical: projectLoadingIndicator — full project-view loader during route identity changes */
+export function projectLoadingIndicator(page: Page): Locator {
+  return page.locator('#container > .load-screen');
+}
+
 export function projectOverviewTab(page: Page): Locator {
   return page.getByRole('tab', { name: 'Overview', exact: true });
 }
