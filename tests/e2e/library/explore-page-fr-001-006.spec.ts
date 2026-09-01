@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { loginAs } from '../../helpers/auth';
 import {
   expectDisciplineFilterCatalogue,
   expectDisciplineFilterAllSelectsOnlyVisibleRows,
@@ -12,8 +13,11 @@ import {
 import { DISCIPLINE_CATALOGUE_AZ } from '../../helpers/discipline-catalogue';
 import {
   expectExploreFilterToolbarPerFrExp001,
+  expectExploreKeywordSearchExcludesTitles,
+  expectExploreKeywordSearchIncludesTitle,
   expectExploreResultsContainOnlyProjectCards,
   expectExploreResultsContainOnlyWorkflowCards,
+  expectExploreResultsExcludeTitles,
 } from '../../helpers/explore';
 import {
   expectTypeFilterResetPerFrLib003,
@@ -30,7 +34,15 @@ import {
 import { expectSortControlPerFrLib002 } from '../../helpers/library-sort';
 import { describeLibraryPaginationTests } from '../../helpers/library-pagination';
 import { describeLibraryResultsSummaryTests } from '../../helpers/library-results-summary';
-import { E2E_FIXTURE_TEMPLATE_WORKFLOW_TITLES } from '../../shared/locators/cards';
+import {
+  contributorByRole,
+  getPrimaryWorkflow,
+  loadWorkflowManifest,
+} from '../../helpers/manifest';
+import {
+  E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE,
+  E2E_FIXTURE_TEMPLATE_WORKFLOW_TITLES,
+} from '../../shared/locators/cards';
 import { gotoExplore } from '../../helpers/navigation';
 import {
   favouritesToggle,
@@ -439,6 +451,101 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
     await expect(keywordSearchClearButton(page)).toBeVisible();
     await keywordSearchClearButton(page).click();
     await expect(keywordSearchField(page)).toHaveValue('');
+  });
+});
+
+test.describe('Explore — published scope (FR-EXP-001, FR-PROJ-OV-003)', () => {
+  test.beforeEach(async ({ page }) => {
+    await gotoExplore(page);
+    await expect(page).toHaveURL(/\/explore\/?$/);
+    await waitForLibraryResultsLoaded(page);
+  });
+
+  test('FR-EXP-001: default resultsRegion excludes unpublished primary seed project and workflow', async ({
+    page,
+  }) => {
+    const manifest = loadWorkflowManifest();
+    const primaryWorkflow = getPrimaryWorkflow(manifest);
+    await expectExploreResultsExcludeTitles(page, [
+      manifest.project_title,
+      primaryWorkflow.workflow_title,
+    ]);
+  });
+
+  test('FR-EXP-001: keyword search for unpublished primary project title returns no matching card', async ({
+    page,
+  }) => {
+    const manifest = loadWorkflowManifest();
+    await expectExploreKeywordSearchExcludesTitles(page, manifest.project_title, [
+      manifest.project_title,
+    ]);
+  });
+
+  test('FR-EXP-001: keyword search for unpublished primary workflow title returns no matching card', async ({
+    page,
+  }) => {
+    const primaryWorkflow = getPrimaryWorkflow(loadWorkflowManifest());
+    await expectExploreKeywordSearchExcludesTitles(
+      page,
+      primaryWorkflow.workflow_title,
+      [primaryWorkflow.workflow_title],
+    );
+  });
+
+  test('FR-EXP-001: keyword search surfaces published template project title', async ({
+    page,
+  }) => {
+    const manifest = loadWorkflowManifest();
+    expect(
+      manifest.template_project_title,
+      'E2E seed must include published template project.',
+    ).toBeTruthy();
+    await expectExploreKeywordSearchIncludesTitle(
+      page,
+      manifest.template_project_title!,
+      manifest.template_project_title!,
+    );
+  });
+
+  test('FR-EXP-001: keyword search surfaces published template workflow title', async ({
+    page,
+  }) => {
+    await expectExploreKeywordSearchIncludesTitle(
+      page,
+      E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE,
+      E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE,
+    );
+  });
+
+  test.describe('viewer contributor on unpublished primary project', () => {
+    test.beforeEach(async ({ page }) => {
+      const viewer = contributorByRole(loadWorkflowManifest(), 'viewer');
+      await page.evaluate(() => window.localStorage.removeItem('cf2_access_token'));
+      await loginAs(page, { email: viewer.email, password: viewer.password });
+      await gotoExplore(page);
+      await waitForLibraryResultsLoaded(page);
+    });
+
+    test('FR-PROJ-OV-003: default resultsRegion excludes unpublished primary seed project and workflow', async ({
+      page,
+    }) => {
+      const manifest = loadWorkflowManifest();
+      const primaryWorkflow = getPrimaryWorkflow(manifest);
+      await expectExploreResultsExcludeTitles(page, [
+        manifest.project_title,
+        primaryWorkflow.workflow_title,
+      ]);
+    });
+
+    test('FR-PROJ-OV-003: keyword search surfaces published template workflow title', async ({
+      page,
+    }) => {
+      await expectExploreKeywordSearchIncludesTitle(
+        page,
+        E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE,
+        E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE,
+      );
+    });
   });
 });
 
