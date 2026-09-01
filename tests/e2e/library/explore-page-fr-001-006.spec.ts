@@ -73,6 +73,17 @@ import {
   disciplineFilterCheckboxOption,
 } from './library.locators';
 
+test.use({
+  seedDependencies: [
+    'actor.teacher',
+    'actor.viewer',
+    'project.primary',
+    'project.templates',
+    'workflow.standard_activity',
+    'workflow.template_activity',
+  ],
+});
+
 /**
  * Calibration slice — FR-EXP-001 through FR-EXP-006.
  * Requirements: tests/docs/requirements/features/library/explore_page_requirements_v1.yaml

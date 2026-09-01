@@ -11,12 +11,12 @@ set working-directory := "../.."
 
 # Deterministic fixtures for local development and Playwright E2E.
 [group: 'Testing:setup']
-django-seed-e2e-tests:
+e2e-tests-seed:
   uv run cf-seed-e2e-data --clear-and-seed --manifest-path tests/.playwright-fixtures/workflow.json
   uv run cf-check-e2e-assets
 
 [group: 'Testing:setup']
-django-clear-e2e-tests:
+e2e-tests-clear:
   uv run cf-seed-e2e-data --clear
 
 [group: 'Testing:setup']

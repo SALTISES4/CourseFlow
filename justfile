@@ -69,28 +69,28 @@ init:
 # dev machine
 [group: 'Workflows']
 dev:
-  just uv-sync
-  just docker-up
-  just django-migrate
-  just iterm
-  just browsers
-  just django-run
+  just toolchain::uv-sync
+  just docker::up
+  just django::migrate
+  just toolchain::iterm
+  just toolchain::browsers
+  just django::run
 
 [group: 'Workflows']
 rebuild-dev-db:
-  just django-kill-background
-  just docker-reset
-  just docker-up
-  just django-wait-db
-  just django-migrate
-  just django-create-superuser
-  just django-seed-e2e-tests
-  just django-kill-background
+  just django::kill-background
+  just docker::reset
+  just docker::up
+  just django::wait-db
+  just django::migrate
+  just django::create-superuser
+  just testing::e2e-tests-seed
+  just django::kill-background
 
 # Prepare deterministic fixtures locally; CI owns test database isolation.
 [group: 'Workflows test']
 e2e-prepare:
-  just docker-up
-  just django-wait-db
-  just django-migrate
-  just django-seed-e2e-tests
+  just docker::up
+  just django::wait-db
+  just django::migrate
+  just testing::e2e-tests-seed
