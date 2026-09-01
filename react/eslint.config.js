@@ -43,7 +43,6 @@ export default [
       globals: {
         ...globals.browser,
         $: true,
-        COURSEFLOW_APP: true,
         JSX: true,
         makeActiveSidebar: true
       },

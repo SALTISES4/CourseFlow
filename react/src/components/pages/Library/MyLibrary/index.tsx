@@ -1,8 +1,7 @@
-import { LibraryContentTypeIn, LibrarySearchIn } from '@cf/api/gen'
+import { LibraryContentTypeIn } from '@cf/api/gen'
 import LibrarySearchView, {
   LibraryFilterConfig
 } from '@cfViews/LibrarySearchView'
-import { useCallback, useState } from 'react'
 
 /*******************************************************
  * @LibraryRenderer
@@ -23,22 +22,10 @@ const LibraryPage = () => {
     }
   }
 
-  const [searchArgs, setSearchArgs] = useState<LibrarySearchIn>({})
-
-  const updateSearchArgsHandler = useCallback((args: LibrarySearchIn) => {
-    setSearchArgs(args)
-  }, [])
-
   /*******************************************************
    * RENDER
    *******************************************************/
-  return (
-    <LibrarySearchView
-      config={config}
-      searchArgs={searchArgs}
-      setSearchArgs={updateSearchArgsHandler}
-    />
-  )
+  return <LibrarySearchView config={config} />
 }
 
 export default LibraryPage

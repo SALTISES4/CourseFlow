@@ -16,7 +16,13 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import OutcomeTree from './components/OutcomeTree'
 
-const OutcomeEditView = ({ graphUuid }: { graphUuid: GraphUuid }) => {
+const OutcomeEditView = ({
+  graphUuid,
+  publicView = false
+}: {
+  graphUuid: GraphUuid
+  publicView?: boolean
+}) => {
   const dispatch = useDispatch<AppDispatch>()
   const canManageOutcomes = useResourcePermission(
     WorkflowPermission.OUTCOME_MANAGEMENT
@@ -32,7 +38,7 @@ const OutcomeEditView = ({ graphUuid }: { graphUuid: GraphUuid }) => {
   }, [canManageOutcomes, dispatch, graphUuid])
 
   return (
-    <OuterContentWrap sx={{ pt: 4 }}>
+    <OuterContentWrap sx={{ pt: 4 }} data-test-id="workflow-outcomes-view">
       {!outcomes.length ? (
         <Box maxWidth="md">
           <Alert
@@ -43,14 +49,16 @@ const OutcomeEditView = ({ graphUuid }: { graphUuid: GraphUuid }) => {
               'In this view you can add and edit outcomes for this workflow. Once added, outcomes can be attached to nodes within your workflow by navigating to the “Workflow” tab and drag and dropping your outcomes to your nodes from the Outcomes tab of the right sidebar.'
             )}
           />
-          <Button
-            color="primary"
-            variant="contained"
-            disabled={!canManageOutcomes}
-            onClick={onAddNewOutcome}
-          >
-            {_t('Add outcome')}
-          </Button>
+          {!publicView && (
+            <Button
+              color="primary"
+              variant="contained"
+              disabled={!canManageOutcomes}
+              onClick={onAddNewOutcome}
+            >
+              {_t('Add outcome')}
+            </Button>
+          )}
         </Box>
       ) : (
         <Stack spacing={3} direction="column">

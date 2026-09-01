@@ -118,6 +118,30 @@ export function workflowMetadataPermissionsPanel(page: Page): Locator {
   return workflowOverviewView(page).locator('[data-test-id="workflow-permissions-panel"]');
 }
 
+/** canonical: workflowGeneratePublicLinkButton */
+export function workflowGeneratePublicLinkButton(page: Page): Locator {
+  return workflowOverviewView(page).getByRole('button', {
+    name: 'Generate public link',
+    exact: true,
+  });
+}
+
+/** canonical: workflowCopyPublicLinkButton */
+export function workflowCopyPublicLinkButton(page: Page): Locator {
+  return workflowOverviewView(page).getByRole('button', {
+    name: 'Copy public link',
+    exact: true,
+  });
+}
+
+/** canonical: workflowRemovePublicLinkButton */
+export function workflowRemovePublicLinkButton(page: Page): Locator {
+  return workflowOverviewView(page).getByRole('button', {
+    name: 'Remove public link',
+    exact: true,
+  });
+}
+
 /** Contributor row in workflowMetadataPermissionsPanel, located by email. */
 export function workflowContributorRow(page: Page, contributorEmail: string): Locator {
   return workflowOverviewView(page)

@@ -20,7 +20,7 @@ class ProjectService:
         description: str | None = None,
         is_published: bool = False,
         is_template: bool = False,
-        disciplines: list[int] | None = None,
+        disciplines: list[str] | None = None,
     ) -> ProjectDTO:
         return self._repository.create(
             owner_id=owner_id,

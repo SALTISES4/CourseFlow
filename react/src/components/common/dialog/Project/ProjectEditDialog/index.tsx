@@ -65,7 +65,7 @@ const ProjectEditDialog = () => {
   const defaultValues: ProjectFormValues = {
     title: data?.item.title ?? '',
     description: data?.item.description ?? '',
-    disciplines: data?.item.disciplines?.map((d) => d.id) ?? []
+    disciplines: data?.item.disciplines?.map((d) => d.code) ?? []
   }
 
   const onSubmit = useCallback(

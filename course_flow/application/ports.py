@@ -18,7 +18,7 @@ class ProjectRepositoryPort(Protocol):
         description: str | None,
         is_published: bool,
         is_template: bool,
-        disciplines: list[int],
+        disciplines: list[str],
     ) -> ProjectDTO: ...
 
     def get_by_uuid(self, uuid: UUID) -> ProjectDTO | None: ...

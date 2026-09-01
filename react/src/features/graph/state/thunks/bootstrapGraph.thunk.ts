@@ -60,7 +60,8 @@ export type BootstrapGraphResult = {
 }
 
 export const bootstrapWorkflowGraph = (
-  graphUuid: GraphUuid
+  graphUuid: GraphUuid,
+  publicView = false
 ): GraphThunk<Promise<BootstrapGraphResult>> => {
   return async (dispatch) => {
     dispatch(graphLoadActions.initializeGraphLoadState({ graphUuid }))
@@ -73,7 +74,7 @@ export const bootstrapWorkflowGraph = (
     dispatch(setLoading(graphUuid, 'tags'))
     dispatch(setLoading(graphUuid, 'outcomes'))
 
-    const graphPromise = fetchWorkflowGraphBundle(graphUuid)
+    const graphPromise = fetchWorkflowGraphBundle(graphUuid, publicView)
       .then((bundle) => {
         dispatch(graphActions.upsertOne(bundle.graph))
         if (bundle.workflow) {

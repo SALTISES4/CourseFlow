@@ -47,7 +47,13 @@ type StateType = {
   redrawLines: boolean
 }
 
-const GraphView = ({ graphUuid }: { graphUuid: string }) => {
+const GraphView = ({
+  graphUuid,
+  publicView = false
+}: {
+  graphUuid: string
+  publicView?: boolean
+}) => {
   const dispatch = useDispatch<AppDispatch>()
   const canManageCategories = useResourcePermission(
     WorkflowPermission.NODE_CATEGORY_MANAGEMENT
@@ -247,7 +253,7 @@ const GraphView = ({ graphUuid }: { graphUuid: string }) => {
   )
 
   return (
-    <GraphViewWrap dragging={dragging}>
+    <GraphViewWrap dragging={dragging} data-test-id="workflow-view">
       <ColumnsHeader board={graphBoard} onReorder={onColumnReorder} />
       <SectionsWrapper data-test-id="sections-block" ref={sectionsWrapperRef}>
         {graphBoard.sections.map((section, index) => (
@@ -288,8 +294,12 @@ const GraphView = ({ graphUuid }: { graphUuid: string }) => {
         />
       </SectionsWrapper>
 
-      <DeleteNodeCategoryDialog />
-      <DeleteSectionDialog />
+      {!publicView && (
+        <>
+          <DeleteNodeCategoryDialog />
+          <DeleteSectionDialog />
+        </>
+      )}
     </GraphViewWrap>
   )
 }

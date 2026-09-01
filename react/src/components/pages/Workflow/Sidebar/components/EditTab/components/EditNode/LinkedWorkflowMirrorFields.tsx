@@ -36,15 +36,6 @@ const LinkedWorkflowMirrorFields = ({
   ponderationIndividual
 }: Props) => (
   <Stack spacing={2}>
-    <Typography variant="body2" color="text.secondary">
-      {parentWorkflowType === 'program'
-        ? _t(
-            'Title, description, and course metadata are read-only. Edit the linked course workflow to change them.'
-          )
-        : _t(
-            'Title, description, and time are read-only. Edit the linked activity workflow to change them.'
-          )}
-    </Typography>
     <TextField
       label={_t('Title')}
       variant="outlined"

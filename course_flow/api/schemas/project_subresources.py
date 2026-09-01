@@ -11,7 +11,7 @@ class ProjectTeamRoleSchema(str, Enum):
 
 
 class DisciplineListItemOut(CamelSchema):
-    id: int
+    code: str
     label: str
     translation_plural: str
 

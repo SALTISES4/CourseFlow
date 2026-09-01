@@ -1,5 +1,9 @@
 import { getApiErrorStatus, isArchivedApiError } from '@cf/api/apiError'
-import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import {
+  getPublicWorkflowOptions,
+  getWorkflowOptions
+} from '@cf/api/gen/@tanstack/react-query.gen'
+import type { WorkflowDetailOutResp } from '@cf/api/gen/types.gen'
 import { WorkspacePermissionsProvider } from '@cf/context/workspacePermissionsContext'
 import { selectAuthUser } from '@cf/features/auth/state/auth.slice'
 import { loadNodeInsertModePreference } from '@cf/features/graph/state/nodeInsertModePreference'
@@ -14,6 +18,7 @@ import { AppDispatch, RootState } from '@cf/redux/store'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
 import WorkspaceAccessDenied from '@cfPages/MsgViews/WorkspaceAccessDenied'
+import type { WorkflowPageData } from '@cfPages/Workflow/types'
 import WorkflowTabs from '@cfPages/Workflow/WorkflowTabs'
 import { WorkflowSidebarContextProvider } from '@cfSidebar/hooks/useSidebar/context'
 import { useQuery } from '@tanstack/react-query'
@@ -21,7 +26,47 @@ import { useCallback, useLayoutEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useParams } from 'react-router-dom'
 
-const Workflow = () => {
+type WorkflowContentProps = {
+  workflow: WorkflowPageData
+  publicView: boolean
+}
+
+const WorkflowContent = ({ workflow, publicView }: WorkflowContentProps) => {
+  const workflowUuid = workflow.uuid
+  useGraphBootstrap(workflowUuid, publicView)
+
+  const shellReady = useSelector((state: RootState) =>
+    canRenderShell(workflowUuid)(state)
+  )
+  const loadState = useSelector((state: RootState) =>
+    selectWorkflowLoadState(workflowUuid)(state)
+  )
+
+  if (!shellReady && loadState?.graph !== 'failed') {
+    return <Loader />
+  }
+
+  if (loadState?.graph === 'failed') {
+    return <ErrorView />
+  }
+
+  return (
+    <WorkspacePermissionsProvider
+      resource={workflow.permissions}
+      project={
+        'projectPermissions' in workflow
+          ? workflow.projectPermissions
+          : undefined
+      }
+    >
+      <WorkflowSidebarContextProvider>
+        <WorkflowTabs workflow={workflow} publicView={publicView} />
+      </WorkflowSidebarContextProvider>
+    </WorkspacePermissionsProvider>
+  )
+}
+
+const AuthenticatedWorkflow = () => {
   const { uuid } = useParams<{ uuid: string }>()
   const location = useLocation()
   const workflowUuid = uuid ?? null
@@ -38,7 +83,7 @@ const Workflow = () => {
     enabled: Boolean(workflowUuid)
   })
   const lastResourceUuid = useRef(workflowUuid)
-  const lastSuccessfulResponse = useRef<typeof workflowResponse>()
+  const lastSuccessfulResponse = useRef<WorkflowDetailOutResp>()
   if (lastResourceUuid.current !== workflowUuid) {
     lastResourceUuid.current = workflowUuid
     lastSuccessfulResponse.current = undefined
@@ -74,15 +119,6 @@ const Workflow = () => {
     )
   }, [dispatch, userUuid, workflowUuid])
 
-  useGraphBootstrap(resolvedWorkflowResponse ? workflowUuid : null)
-
-  const shellReady = useSelector((state: RootState) =>
-    workflowUuid ? canRenderShell(workflowUuid)(state) : false
-  )
-  const loadState = useSelector((state: RootState) =>
-    workflowUuid ? selectWorkflowLoadState(workflowUuid)(state) : undefined
-  )
-
   if (!workflowUuid) {
     return <ErrorView />
   }
@@ -107,24 +143,38 @@ const Workflow = () => {
     return <Loader />
   }
 
-  if (!shellReady && loadState?.graph !== 'failed') {
-    return <Loader />
-  }
+  return (
+    <WorkflowContent
+      workflow={resolvedWorkflowResponse.item}
+      publicView={false}
+    />
+  )
+}
 
-  if (loadState?.graph === 'failed') {
+const PublicWorkflow = () => {
+  const { uuid } = useParams<{ uuid: string }>()
+  const workflowUuid = uuid ?? null
+  const { data, isError, isPending } = useQuery({
+    ...getPublicWorkflowOptions({ path: { uuid: workflowUuid ?? '' } }),
+    enabled: Boolean(workflowUuid)
+  })
+
+  if (!workflowUuid) {
     return <ErrorView />
   }
 
-  return (
-    <WorkspacePermissionsProvider
-      resource={resolvedWorkflowResponse.item.permissions}
-      project={resolvedWorkflowResponse.item.projectPermissions}
-    >
-      <WorkflowSidebarContextProvider>
-        <WorkflowTabs />
-      </WorkflowSidebarContextProvider>
-    </WorkspacePermissionsProvider>
-  )
+  if (isError) {
+    return <ErrorView message="This workflow is not publicly available" />
+  }
+
+  if (isPending || !data) {
+    return <Loader />
+  }
+
+  return <WorkflowContent workflow={data.item} publicView />
 }
+
+const Workflow = ({ publicView = false }: { publicView?: boolean }) =>
+  publicView ? <PublicWorkflow /> : <AuthenticatedWorkflow />
 
 export default Workflow

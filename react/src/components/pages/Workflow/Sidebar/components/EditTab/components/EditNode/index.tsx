@@ -21,6 +21,7 @@ import {
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import { useReferenceData } from '@cf/hooks/useReferenceData'
 import type { AppDispatch, RootState } from '@cf/redux/store'
 import { _t } from '@cf/utility/Utility.class'
 import * as SC from '@cfSidebar/styles'
@@ -50,7 +51,6 @@ import {
   linkWorkflowActionLabel,
   nodeTitleFallback
 } from './linkedWorkflowUi'
-import optionsData from './optionsData'
 import type { NodeForm } from './types'
 
 const toNullableNumber = (value: unknown): number | null => {
@@ -133,6 +133,7 @@ const EditNodeForm = ({
   )
   const [duplicateMenuAnchor, setDuplicateMenuAnchor] =
     useState<HTMLElement | null>(null)
+  const { data: referenceData } = useReferenceData()
 
   const isLinked = Boolean(node.linkedWorkflowUuid)
   const isCourseParent = parentWorkflowType === 'course'
@@ -201,10 +202,10 @@ const EditNodeForm = ({
           meta.timeRequired = toNullableNumber(data.timeRequired)
 
           if (isCourseParent || isActivityParent) {
-            meta.contextClassification = toNullableNumber(data.contextType)
+            meta.contextClassification = data.contextType || null
           }
           if (isActivityParent) {
-            meta.taskClassification = toNullableNumber(data.taskType)
+            meta.taskClassification = data.taskType || null
           }
           if (isProgramParent) {
             meta.credits = toNullableNumber(data.credits)
@@ -218,7 +219,7 @@ const EditNodeForm = ({
             meta.specificEducation = Boolean(data.specificEducation)
           }
         } else if (isCourseParent) {
-          meta.contextClassification = toNullableNumber(data.contextType)
+          meta.contextClassification = data.contextType || null
         } else if (isProgramParent) {
           meta.specificEducation = Boolean(data.specificEducation)
         }
@@ -318,8 +319,9 @@ const EditNodeForm = ({
   }, [canEdit, dispatch, graphUuid, node.uuid])
 
   const contextOptions = isCourseParent
-    ? optionsData.courseContexts
-    : optionsData.activityContexts
+    ? (referenceData?.courseContexts ?? [])
+    : (referenceData?.activityContexts ?? [])
+  const taskOptions = referenceData?.activityTaskClassifications ?? []
   const linkActionLabel = linkWorkflowActionLabel(parentWorkflowType, isLinked)
   const showContextField = isCourseParent || isActivityParent
   const showTaskTypeField = isActivityParent && !isLinked
@@ -412,7 +414,7 @@ const EditNodeForm = ({
                     label={_t('Type')}
                     labelId="task-type-select-label"
                   >
-                    {optionsData.activityTaskTypes.map((option) => (
+                    {taskOptions.map((option) => (
                       <MenuItem key={option.value} value={option.value}>
                         {option.label}
                       </MenuItem>

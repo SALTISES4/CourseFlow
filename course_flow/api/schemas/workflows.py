@@ -7,7 +7,7 @@ from pydantic import Field
 from course_flow.api.common.schemas import CamelSchema
 from course_flow.api.schemas.auth import UserSummaryOut
 from course_flow.api.schemas.permissions import PermissionContextOut
-from course_flow.core.enum import WorkflowType
+from course_flow.core.enum import TimeUnit, WorkflowType
 
 
 class WorkflowTypeIn(str, Enum):
@@ -38,7 +38,7 @@ class WorkflowOverviewMetadataIn(CamelSchema):
     code: str | None = Field(default=None, max_length=255)
     calculate_time_automatically: bool | None = None
     time: float | None = Field(default=None, ge=0)
-    time_units: int | None = Field(default=None, ge=1)
+    time_units: TimeUnit | None = None
     calculate_ponderation_automatically: bool | None = None
     theory_time: float | None = Field(default=None, ge=0)
     practical_time: float | None = Field(default=None, ge=0)
@@ -54,7 +54,7 @@ class WorkflowOverviewMetadataOut(CamelSchema):
     code: str = ""
     calculate_time_automatically: bool = False
     time: float | None = None
-    time_units: int | None = None
+    time_units: TimeUnit | None = None
     calculate_ponderation_automatically: bool = False
     theory_time: float | None = None
     practical_time: float | None = None
@@ -71,6 +71,10 @@ class WorkflowUpdateIn(CamelSchema):
     project_uuid: UUID | None = None
     description: str | None = None
     overview_metadata: WorkflowOverviewMetadataIn | None = None
+
+
+class WorkflowPublicLinkIn(CamelSchema):
+    enabled: bool
 
 
 class WorkflowListItemOut(CamelSchema):
@@ -111,6 +115,7 @@ class WorkflowDetailOut(CamelSchema):
     owner: UserSummaryOut
     project_uuid: UUID | None
     is_archived: bool
+    public_link_enabled: bool
     is_favorite: bool
     revision_id: int
     date_created: datetime
@@ -121,3 +126,19 @@ class WorkflowDetailOut(CamelSchema):
 
 class WorkflowDetailOutResp(CamelSchema):
     item: WorkflowDetailOut
+
+
+class PublicWorkflowDetailOut(CamelSchema):
+    uuid: UUID
+    graph_uuid: UUID
+    title: str
+    description: str
+    overview_metadata: WorkflowOverviewMetadataOut
+    workflow_type: WorkflowType
+    date_created: datetime
+    modified_on: datetime
+    permissions: PermissionContextOut
+
+
+class PublicWorkflowDetailOutResp(CamelSchema):
+    item: PublicWorkflowDetailOut

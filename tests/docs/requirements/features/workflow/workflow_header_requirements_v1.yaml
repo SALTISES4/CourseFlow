@@ -7,6 +7,7 @@
 #   - tests/docs/requirements/features/shared/context_action_bar_requirements_v1.yaml (workflow-level action bar controls)
 #   - tests/docs/requirements/features/workflow/workflow_edit_form_requirements_v1.yaml (workflowTitle update on save—FR-WF-FORM-003; edit dialog open—FR-WF-FORM-001)
 #   - tests/docs/requirements/features/shared/card_content_requirements_v1.yaml (FR-CARD-005 favourite snackbar copy for workflowHeaderFavouriteToggle)
+#   - tests/docs/requirements/features/workflow/workflow_public_link_requirements_v1.yaml (anonymous workflowHeader/tab exception and hidden favourite control — FR-WF-PUBLIC-002)
 
 documentPreconditions:
   - user is authenticated to CourseFlow

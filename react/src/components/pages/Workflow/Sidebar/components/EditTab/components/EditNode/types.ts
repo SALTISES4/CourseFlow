@@ -1,8 +1,13 @@
+import type {
+  ContextClassification,
+  TaskClassification
+} from '@cf/api/gen/types.gen'
+
 export type NodeForm = {
   title?: string
   description?: string
-  contextType?: number | string
-  taskType?: number | string
+  contextType?: ContextClassification | ''
+  taskType?: TaskClassification | ''
   timeRequired?: number
   tags?: number[]
   credits?: number | string

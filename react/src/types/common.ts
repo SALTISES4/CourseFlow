@@ -1,10 +1,5 @@
 import { MouseEvent as ReactMouseEvent } from 'react'
 
-export type FieldChoice = {
-  type: number | string
-  name: string
-}
-
 export type FormFieldSerialized = {
   name: string
   label?: string

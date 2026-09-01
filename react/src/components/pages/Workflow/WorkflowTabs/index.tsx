@@ -1,12 +1,10 @@
-import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { ResourceRole } from '@cf/api/gen/types.gen'
 import { useWorkspacePermissions } from '@cf/context/workspacePermissionsContext'
 import { selectSectionUuidsOrderedForGraph } from '@cf/features/graph/state/selectors/canonical.selectors'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
-import Loader from '@cfComponents/UIPrimitives/Loader'
 import { OuterContentWrap } from '@cfMUI/helper'
-import ErrorView from '@cfPages/MsgViews/ErrorView'
 import WorkspaceSidebar from '@cfPages/Workflow/Sidebar'
+import type { WorkflowPageData } from '@cfPages/Workflow/types'
 import Header from '@cfPages/Workflow/WorkflowTabs/components/Header'
 import {
   ActionMenu,
@@ -22,7 +20,6 @@ import WorkflowLegend from '@cfViews/WorkflowView/GraphView/components/WorkflowL
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Tabs from '@mui/material/Tabs'
-import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { Routes, useParams } from 'react-router-dom'
@@ -35,36 +32,25 @@ import { Routes, useParams } from 'react-router-dom'
 
 const workflowChromeIsStrategy = false
 
-const WorkflowTabs = () => {
+const WorkflowTabs = ({
+  workflow,
+  publicView
+}: {
+  workflow: WorkflowPageData
+  publicView: boolean
+}) => {
   const { uuid } = useParams()
   const workflowViewType = useWorkflowViewTypeFromRoute()
   const { resource: permissions } = useWorkspacePermissions()
   const workflowChromePublicView =
-    permissions.resourceRole === ResourceRole.PUBLIC
-
-  const {
-    data: workflowDetailResp,
-    isPending,
-    isFetching,
-    isError
-  } = useQuery({
-    ...getWorkflowOptions({
-      path: {
-        uuid: uuid ?? ''
-      }
-    }),
-    enabled: Boolean(uuid)
-  })
+    publicView || permissions.resourceRole === ResourceRole.PUBLIC
 
   const sectionIdsOrderedSelector = useMemo(
-    () =>
-      selectSectionUuidsOrderedForGraph(
-        workflowDetailResp?.item?.graphUuid ?? ''
-      ),
-    [workflowDetailResp?.item?.graphUuid]
+    () => selectSectionUuidsOrderedForGraph(workflow.graphUuid),
+    [workflow.graphUuid]
   )
   const sectionIdsOrdered = useSelector(sectionIdsOrderedSelector)
-  const workflowType = workflowDetailResp?.item.workflowType
+  const workflowType = workflow.workflowType
 
   useWorkflowSidebar({
     workflowType,
@@ -72,20 +58,14 @@ const WorkflowTabs = () => {
   })
 
   // @todo should be memoized (calling the tabs per render)
-  const { tabRoutes, tabButtons } = useWorkflowTabs(workflowDetailResp, {
-    workflowView: workflowViewType
-  })
+  const { tabRoutes, tabButtons } = useWorkflowTabs(
+    workflow,
+    { workflowView: workflowViewType },
+    publicView
+  )
 
   if (!uuid) {
     return null
-  }
-
-  if (!workflowDetailResp && (isPending || isFetching)) {
-    return <Loader />
-  }
-
-  if (!workflowDetailResp && isError) {
-    return <ErrorView />
   }
 
   /*******************************************************
@@ -107,15 +87,17 @@ const WorkflowTabs = () => {
   return (
     <>
       <div className="main-block">
-        <MenuBar
-          leftSection={<ActionMenu />}
-          viewbar={<ViewBar />}
-          userbar={<ConnectionBar show={!workflowChromePublicView} />}
-        />
+        {!publicView && (
+          <MenuBar
+            leftSection={<ActionMenu />}
+            viewbar={<ViewBar />}
+            userbar={<ConnectionBar show={!workflowChromePublicView} />}
+          />
+        )}
         <div className="right-panel-wrapper">
           <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">
-              <Header />
+              <Header workflow={workflow} publicView={publicView} />
               {!workflowChromeIsStrategy && (
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                   <OuterContentWrap sx={{ pb: 0 }}>
@@ -130,11 +112,11 @@ const WorkflowTabs = () => {
             </div>
           </div>
 
-          <WorkspaceSidebar />
+          {!publicView && <WorkspaceSidebar />}
         </div>
       </div>
 
-      <WorkflowDialogs />
+      {!publicView && <WorkflowDialogs />}
     </>
   )
 }

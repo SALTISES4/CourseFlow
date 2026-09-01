@@ -58,26 +58,3 @@ const ExplorePage = () => {
 }
 
 export default ExplorePage
-
-/*******************************************************
- * ATCHIVE
- * disciplines are being added inside the view now
- *******************************************************/
-// there is probably a better way to do this, but i think it's fine for now until everything else has settled \
-// this lib filter patterm might not stay here for long
-// const options = useMemo(() => {
-//   const { disciplines } = COURSEFLOW_APP.globalContextData
-//   return produce(LibraryHelper.defaultOptionsSearchOptions, (draft) => {
-//     draft.filterGroups = {
-//       ...draft.filterGroups,
-//       disciplineFilter: {
-//         ...draft.filterGroups.disciplineFilter,
-//         options: disciplines.map((item) => ({
-//           name: `discipline_option_${item.uuid}`,
-//           label: _t(item.title),
-//           value: item.uuid
-//         }))
-//       }
-//     }
-//   })
-// }, [])

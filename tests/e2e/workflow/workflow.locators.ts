@@ -1,3 +1,5 @@
+import type { Locator, Page } from '@playwright/test';
+
 /**
  * Workflow shell uiObjects — canonical_locators.yaml (workflowHeader*, workflowViewTabSelector).
  * Graph/section uiObjects live in edit-section.locators.ts (re-export workflow.ts).
@@ -13,6 +15,16 @@ export {
   workflowTitle,
   workflowViewTabSelector,
 } from '../../shared/locators/workflow';
+
+/** canonical: workflowOutcomeView */
+export function workflowOutcomeView(page: Page): Locator {
+  return page.locator('[data-test-id="workflow-outcomes-view"]');
+}
+
+/** canonical: workflowView */
+export function workflowView(page: Page): Locator {
+  return page.locator('[data-test-id="workflow-view"]');
+}
 
 export {
   workflowRightSidebar,

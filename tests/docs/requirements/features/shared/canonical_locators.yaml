@@ -1154,6 +1154,15 @@ locatorMappings:
   workflowFormFieldValidationMessage:
     strategy: null
     confidence: unresolved
+  workflowGeneratePublicLinkButton:
+    strategy: "{workflowOverviewView} button with accessible name 'Generate public link'"
+    confidence: confirmed
+  workflowCopyPublicLinkButton:
+    strategy: "{workflowOverviewView} button with accessible name 'Copy public link'"
+    confidence: confirmed
+  workflowRemovePublicLinkButton:
+    strategy: "{workflowOverviewView} button with accessible name 'Remove public link'"
+    confidence: confirmed
   workflowHeader:
     strategy: "URL route pattern '/workflow/{id}/*' with workflow header chrome (title, favourite toggle, tab selector)"
     confidence: inferred
@@ -1386,8 +1395,8 @@ locatorMappings:
     strategy: null
     confidence: unresolved
   workflowOutcomeView:
-    strategy: null
-    confidence: unresolved
+    strategy: "container with data-test-id 'workflow-outcomes-view'"
+    confidence: confirmed
   workflowOutcomeViewAddOutcomeButton:
     strategy: "{workflowOutcomeViewEmptyState} button with text 'Add outcome'"
     confidence: inferred
@@ -1581,8 +1590,8 @@ locatorMappings:
     strategy: "{workflowTypeFilter} top-right count badge showing selected workflow-type count when count is at least one"
     confidence: inferred
   workflowView:
-    strategy: null
-    confidence: unresolved
+    strategy: "container with data-test-id 'workflow-view'"
+    confidence: confirmed
   workflowViewSettingsMenu:
     strategy: null
     confidence: unresolved

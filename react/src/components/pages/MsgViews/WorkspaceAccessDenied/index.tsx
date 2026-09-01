@@ -12,7 +12,7 @@ const WorkspaceAccessDenied = ({
   archived = false
 }: WorkspaceAccessDeniedProps) => {
   const title = archived
-    ? `The ${workspace} is archived`
+    ? `This ${workspace} is archived`
     : `No ${workspace} access`
   const subtitle = archived
     ? `The ${workspace} must be restored by the owner to enable viewing and editing.`

@@ -1,6 +1,10 @@
 import { type Locator, type Page } from '@playwright/test';
 
 /** Canonical workspace-access uiObjects from canonical_locators.yaml. */
+export function projectAccessDeniedView(page: Page): Locator {
+  return page.locator('[data-test-id="project-access-denied-view"]');
+}
+
 export function workflowAccessDeniedView(page: Page): Locator {
   return page.locator('[data-test-id="workflow-access-denied-view"]');
 }

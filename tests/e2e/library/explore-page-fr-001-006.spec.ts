@@ -197,8 +197,8 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
           await closeDisciplineFilterPopover(page);
         },
         (request) =>
-          Array.isArray(request.filters?.disciplineIds) &&
-          request.filters.disciplineIds.length === 1,
+          Array.isArray(request.filters?.disciplineCodes) &&
+          request.filters.disciplineCodes.length === 1,
       );
 
       await expect(disciplineFilterSelectionIndicator(page)).toHaveText('1');
@@ -218,8 +218,8 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
         },
         (request) =>
           request.filters?.contentType === 'project' &&
-          Array.isArray(request.filters.disciplineIds) &&
-          request.filters.disciplineIds.length === 1,
+          Array.isArray(request.filters.disciplineCodes) &&
+          request.filters.disciplineCodes.length === 1,
       );
 
       await expect(typeFilter(page)).toHaveText('Projects');
@@ -239,8 +239,8 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
           await closeDisciplineFilterPopover(page);
         },
         (request) =>
-          Array.isArray(request.filters?.disciplineIds) &&
-          request.filters.disciplineIds.length === 1,
+          Array.isArray(request.filters?.disciplineCodes) &&
+          request.filters.disciplineCodes.length === 1,
       );
 
       await openDisciplineFilterPopover(page);
@@ -273,8 +273,8 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
         },
         (request) =>
           request.pagination?.page === 0 &&
-          Array.isArray(request.filters?.disciplineIds) &&
-          request.filters.disciplineIds.length === 1,
+          Array.isArray(request.filters?.disciplineCodes) &&
+          request.filters.disciplineCodes.length === 1,
       );
 
       await expect(libraryPagination(page)).toBeVisible();

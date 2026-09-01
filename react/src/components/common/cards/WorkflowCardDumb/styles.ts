@@ -18,6 +18,9 @@ export const CardWrap = styled(Box)(({ theme }) => ({
       opacity: 1
     }
   },
+  '&.disabled-link:hover': {
+    cursor: 'default'
+  },
   '&:focus-within .library-lifecycle-actions': {
     opacity: 1
   },

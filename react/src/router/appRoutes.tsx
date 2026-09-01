@@ -2,6 +2,7 @@ import Base from '@cf/base'
 import { CFRoutes, RelativeRoutes } from '@cf/router/cfRoutes'
 import UserLoginPage from '@cf/router/LoginPage'
 import { RequireAuth } from '@cf/router/RequireAuth'
+import { WorkflowRoute } from '@cf/router/WorkflowRoute'
 import Home from '@cfPages/Home'
 import Explore from '@cfPages/Library/Explore'
 import Favorites from '@cfPages/Library/Favourites'
@@ -12,8 +13,6 @@ import NotificationsSettingsPage from '@cfPages/Settings/NotificationsSettings'
 import PasswordResetPage from '@cfPages/Settings/PasswordReset'
 import ProfileSettingsPage from '@cfPages/Settings/ProfileSettings'
 import UserRegisterPage from '@cfPages/SignIn/Register'
-import WorkflowPage from '@cfPages/Workflow'
-import { WorkflowViewType } from '@cfPages/Workflow/types'
 import { Navigate, createBrowserRouter } from 'react-router-dom'
 
 /*******************************************************
@@ -38,12 +37,16 @@ export const CFRouter = createBrowserRouter([
     element: <Navigate to={CFRoutes.HOME} replace />
   },
   {
+    path: `${CFRoutes.WORKFLOW}/*`,
+    element: <WorkflowRoute />
+  },
+  {
     element: <RequireAuth />,
     children: [
       {
         path: CFRoutes.HOME,
         element: (
-          <Base showNotifications>
+          <Base>
             <Home />
           </Base>
         )
@@ -51,7 +54,7 @@ export const CFRouter = createBrowserRouter([
       {
         path: CFRoutes.FAVORITES,
         element: (
-          <Base showNotifications={false}>
+          <Base>
             <Favorites />
           </Base>
         )
@@ -59,7 +62,7 @@ export const CFRouter = createBrowserRouter([
       {
         path: CFRoutes.LIBRARY,
         element: (
-          <Base showNotifications={false}>
+          <Base>
             <MyLibrary />
           </Base>
         )
@@ -67,7 +70,7 @@ export const CFRouter = createBrowserRouter([
       {
         path: CFRoutes.EXPLORE,
         element: (
-          <Base showNotifications={false}>
+          <Base>
             <Explore />
           </Base>
         )
@@ -75,7 +78,7 @@ export const CFRouter = createBrowserRouter([
       {
         path: CFRoutes.NOTIFICATIONS,
         element: (
-          <Base showNotifications={false}>
+          <Base>
             <NotificationsPage />
           </Base>
         )
@@ -83,7 +86,7 @@ export const CFRouter = createBrowserRouter([
       {
         path: CFRoutes.NOTIFICATIONS_SETTINGS,
         element: (
-          <Base showNotifications={false}>
+          <Base>
             <NotificationsSettingsPage />
           </Base>
         )
@@ -91,7 +94,7 @@ export const CFRouter = createBrowserRouter([
       {
         path: CFRoutes.PROFILE_SETTINGS,
         element: (
-          <Base showNotifications={false}>
+          <Base>
             <ProfileSettingsPage />
           </Base>
         )
@@ -99,7 +102,7 @@ export const CFRouter = createBrowserRouter([
       {
         path: CFRoutes.PASSWORD_RESET,
         element: (
-          <Base showNotifications={false}>
+          <Base>
             <PasswordResetPage />
           </Base>
         )
@@ -107,17 +110,8 @@ export const CFRouter = createBrowserRouter([
       {
         path: `${CFRoutes.PROJECT}/*`,
         element: (
-          <Base showNotifications={false}>
+          <Base>
             <Project />
-          </Base>
-        )
-      },
-      {
-        path: `${CFRoutes.WORKFLOW}/*`,
-        element: (
-          <Base showNotifications={false}>
-            {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-            <WorkflowPage initialView={WorkflowViewType.OVERVIEW} />
           </Base>
         )
       },

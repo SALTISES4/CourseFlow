@@ -67,10 +67,10 @@ export interface NodeEntity {
   nodeType: string
   title: string
   description: string
-  contextClassification: number | null
-  taskClassification: number | null
+  contextClassification: ContextClassification | null
+  taskClassification: TaskClassification | null
   timeRequired: number | null
-  timeUnits: number | null
+  timeUnits: TimeUnit | null
   representsWorkflow: boolean
   ponderationTheory: number | null
   ponderationPractice: number | null
@@ -400,10 +400,10 @@ export interface LinkNodeWorkflowInput {
 export interface NodeMetaPatch {
   title?: string
   description?: string
-  contextClassification?: number | null
-  taskClassification?: number | null
+  contextClassification?: ContextClassification | null
+  taskClassification?: TaskClassification | null
   timeRequired?: number | null
-  timeUnits?: number | null
+  timeUnits?: TimeUnit | null
   representsWorkflow?: boolean
   ponderationTheory?: number | null
   ponderationPractice?: number | null
@@ -473,3 +473,8 @@ export interface MoveOutcomeInput {
   beforeUuid?: ResourceUuid
   afterUuid?: ResourceUuid
 }
+import type {
+  ContextClassification,
+  TaskClassification,
+  TimeUnit
+} from '@cf/api/gen/types.gen'

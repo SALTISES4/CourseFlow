@@ -32,54 +32,57 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined'
 import { ReactElement } from 'react'
 
-type IconMapGroup = Record<number, ReactElement>
+type IconMapGroup = Record<string, ReactElement>
 
 const contextIconMap: IconMapGroup = {
   // activity
-  1: <Person2OutlinedIcon />,
-  2: <GroupOutlinedIcon />,
-  3: <Groups2OutlinedIcon />,
+  individual_work: <Person2OutlinedIcon />,
+  work_in_groups: <GroupOutlinedIcon />,
+  in_the_classroom: <Groups2OutlinedIcon />,
 
   // course
-  101: <PsychologyOutlinedIcon />,
-  102: <ChecklistOutlinedIcon />,
-  103: <GradingOutlinedIcon />
+  formative: <PsychologyOutlinedIcon />,
+  summative: <ChecklistOutlinedIcon />,
+  comprehensive: <GradingOutlinedIcon />
 }
 
 const taskIconMap: IconMapGroup = {
   // activity
-  1: <SearchOutlinedIcon />,
-  2: <ForumOutlinedIcon />,
-  3: <LightbulbOutlinedIcon />,
-  4: <ImageSearchOutlinedIcon />,
-  5: <FactCheckOutlinedIcon />,
-  6: <SafetyDividerOutlinedIcon />,
-  7: <CasinoOutlinedIcon />,
-  8: <DrawOutlinedIcon />,
-  9: <CachedOutlinedIcon />,
-  10: <ChromeReaderModeOutlinedIcon />,
-  11: <EditOutlinedIcon />,
-  12: <InterpreterModeOutlinedIcon />,
-  13: <ScienceOutlinedIcon />,
-  14: <QuizOutlinedIcon />,
-  15: <CollectionsBookmarkOutlinedIcon />,
-  16: <DeviceHubOutlinedIcon />,
-  17: <AssignmentTurnedInOutlinedIcon />,
-  18: <MoreHorizOutlinedIcon />,
+  gather_information: <SearchOutlinedIcon />,
+  discuss: <ForumOutlinedIcon />,
+  problem_solve: <LightbulbOutlinedIcon />,
+  analyze: <ImageSearchOutlinedIcon />,
+  assess_review_peers: <FactCheckOutlinedIcon />,
+  debate: <SafetyDividerOutlinedIcon />,
+  game_roleplay: <CasinoOutlinedIcon />,
+  create_design: <DrawOutlinedIcon />,
+  revise_improve: <CachedOutlinedIcon />,
+  read: <ChromeReaderModeOutlinedIcon />,
+  write: <EditOutlinedIcon />,
+  present: <InterpreterModeOutlinedIcon />,
+  experiment_inquiry: <ScienceOutlinedIcon />,
+  quiz_test: <QuizOutlinedIcon />,
+  instructor_resource_curation: <CollectionsBookmarkOutlinedIcon />,
+  instructor_orchestration: <DeviceHubOutlinedIcon />,
+  instructor_evaluation: <AssignmentTurnedInOutlinedIcon />,
+  other: <MoreHorizOutlinedIcon />,
 
   // course
-  101: <ExtensionOutlinedIcon />,
-  102: <ChecklistOutlinedIcon />,
-  103: <ContentPasteSearchOutlinedIcon />,
-  104: <CollectionsOutlinedIcon />,
-  105: <EditNoteOutlinedIcon />,
-  106: <BallotOutlinedIcon />,
-  107: <HomeRepairServiceOutlinedIcon />,
-  108: <TimerOutlinedIcon />,
-  109: <PolylineOutlinedIcon />,
-  110: <GradingOutlinedIcon />
+  jigsaw: <ExtensionOutlinedIcon />,
+  peer_instruction: <ChecklistOutlinedIcon />,
+  case_studies: <ContentPasteSearchOutlinedIcon />,
+  gallery_walk: <CollectionsOutlinedIcon />,
+  reflective_writing: <EditNoteOutlinedIcon />,
+  two_stage_exam: <BallotOutlinedIcon />,
+  toolkit: <HomeRepairServiceOutlinedIcon />,
+  one_minute_paper: <TimerOutlinedIcon />,
+  distributed_problem_solving: <PolylineOutlinedIcon />,
+  peer_assessment: <GradingOutlinedIcon />
 }
 
-export function getIcon(type: 'context' | 'task', value: number) {
+export function getIcon(type: 'context' | 'task', value: string | null) {
+  if (!value || value === 'none') {
+    return undefined
+  }
   return type === 'context' ? contextIconMap[value] : taskIconMap[value]
 }

@@ -184,30 +184,34 @@ def test_patch_project_success_updates_fields(client: Client, user):
 @pytest.mark.django_db
 def test_project_create_and_update_persist_disciplines(client: Client, user):
     raw = _issue_token_for(user)
-    first = Discipline.objects.create(label="Biology", translation_plural="Biologies")
-    second = Discipline.objects.create(label="History", translation_plural="Histories")
+    first = Discipline.objects.get(code="biology")
+    first.translation_plural = "Biologies"
+    first.save(update_fields=["translation_plural"])
+    second = Discipline.objects.get(code="history")
+    second.translation_plural = "Histories"
+    second.save(update_fields=["translation_plural"])
 
     created = client.post(
         "/api/project",
-        data={"title": "Disciplines", "disciplines": [first.id]},
+        data={"title": "Disciplines", "disciplines": [first.code]},
         content_type="application/json",
         **_auth_header(raw),
     )
     assert created.status_code == 200, created.content
     assert created.json()["disciplines"] == [
-        {"id": first.id, "title": "Biology"}
+        {"code": first.code, "label": "Biology"}
     ]
 
     project_uuid = created.json()["uuid"]
     updated = client.patch(
         f"/api/project/{project_uuid}",
-        data={"disciplines": [second.id]},
+        data={"disciplines": [second.code]},
         content_type="application/json",
         **_auth_header(raw),
     )
     assert updated.status_code == 200, updated.content
     assert updated.json()["item"]["disciplines"] == [
-        {"id": second.id, "title": "History"}
+        {"code": second.code, "label": "History"}
     ]
 
 
@@ -220,7 +224,7 @@ def test_project_create_rejects_unknown_discipline_without_creating_project(
 
     response = client.post(
         "/api/project",
-        data={"title": "Invalid discipline", "disciplines": [999_999]},
+        data={"title": "Invalid discipline", "disciplines": ["not_a_discipline"]},
         content_type="application/json",
         **_auth_header(raw),
     )

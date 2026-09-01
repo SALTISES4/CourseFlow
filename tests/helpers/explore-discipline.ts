@@ -42,12 +42,12 @@ type MockExploreItem = {
     actions: string[];
     adminOverride: false;
   };
-  disciplineIds: number[];
+  disciplineCodes: string[];
 };
 
 const mockItem = (
   sequence: number,
-  disciplineId: number,
+  disciplineCode: string,
   contentType: MockExploreItem['contentType'],
   label: MockExploreItem['label'],
 ): MockExploreItem => ({
@@ -70,31 +70,35 @@ const mockItem = (
     actions: [],
     adminOverride: false,
   },
-  disciplineIds: [disciplineId],
+  disciplineCodes: [disciplineCode],
 });
 
-const ANTHROPOLOGY_ID = 10;
-const BIOLOGY_ID = 3;
-const SCIENCE_DISCIPLINE_IDS = [4, 5, 17] as const;
+const ANTHROPOLOGY_CODE = 'anthropology';
+const BIOLOGY_CODE = 'biology';
+const SCIENCE_DISCIPLINE_CODES = [
+  'environmental_science',
+  'science_general',
+  'social_sciences_general',
+] as const;
 
 const MOCK_EXPLORE_ITEMS: MockExploreItem[] = [
   ...Array.from({ length: 11 }, (_, index) =>
     mockItem(
       index + 1,
-      ANTHROPOLOGY_ID,
+      ANTHROPOLOGY_CODE,
       index < 6 ? 'project' : 'workflow',
       index < 6 ? 'project' : 'activity',
     ),
   ),
-  mockItem(12, BIOLOGY_ID, 'project', 'project'),
-  mockItem(13, BIOLOGY_ID, 'workflow', 'course'),
-  mockItem(14, SCIENCE_DISCIPLINE_IDS[0], 'project', 'project'),
-  mockItem(15, SCIENCE_DISCIPLINE_IDS[1], 'workflow', 'program'),
-  mockItem(16, SCIENCE_DISCIPLINE_IDS[2], 'workflow', 'activity'),
+  mockItem(12, BIOLOGY_CODE, 'project', 'project'),
+  mockItem(13, BIOLOGY_CODE, 'workflow', 'course'),
+  mockItem(14, SCIENCE_DISCIPLINE_CODES[0], 'project', 'project'),
+  mockItem(15, SCIENCE_DISCIPLINE_CODES[1], 'workflow', 'program'),
+  mockItem(16, SCIENCE_DISCIPLINE_CODES[2], 'workflow', 'activity'),
 ];
 
-function withoutMockOnlyFields(item: MockExploreItem): Omit<MockExploreItem, 'disciplineIds'> {
-  const { disciplineIds: _disciplineIds, ...responseItem } = item;
+function withoutMockOnlyFields(item: MockExploreItem): Omit<MockExploreItem, 'disciplineCodes'> {
+  const { disciplineCodes: _disciplineCodes, ...responseItem } = item;
   return responseItem;
 }
 
@@ -106,8 +110,8 @@ export async function installExploreDisciplineSearchMock(page: Page): Promise<vo
     const contentType = filters.contentType;
     const workflowTypes = Array.isArray(filters.workflowTypes) ? filters.workflowTypes : [];
     const keyword = typeof filters.keyword === 'string' ? filters.keyword.toLowerCase() : null;
-    const selectedDisciplineIds = Array.isArray(filters.disciplineIds)
-      ? filters.disciplineIds.filter((value): value is number => typeof value === 'number')
+    const selectedDisciplineCodes = Array.isArray(filters.disciplineCodes)
+      ? filters.disciplineCodes.filter((value): value is string => typeof value === 'string')
       : [];
 
     let contextItems = MOCK_EXPLORE_ITEMS.filter((item) => {
@@ -125,13 +129,15 @@ export async function installExploreDisciplineSearchMock(page: Page): Promise<vo
       return true;
     });
 
-    const allowedDisciplineIds = new Set(
-      contextItems.flatMap((item) => item.disciplineIds),
+    const allowedDisciplineCodes = new Set(
+      contextItems.flatMap((item) => item.disciplineCodes),
     );
 
-    if (selectedDisciplineIds.length) {
+    if (selectedDisciplineCodes.length) {
       contextItems = contextItems.filter((item) =>
-        item.disciplineIds.some((id) => selectedDisciplineIds.includes(id)),
+        item.disciplineCodes.some((code) =>
+          selectedDisciplineCodes.includes(code),
+        ),
       );
     }
 
@@ -157,11 +163,10 @@ export async function installExploreDisciplineSearchMock(page: Page): Promise<vo
           appliedFilters: filters,
           allowed: {
             disciplines: DISCIPLINE_CATALOGUE_OPTIONS.filter((option) =>
-              allowedDisciplineIds.has(option.id),
+              allowedDisciplineCodes.has(option.code),
             ).map((option) => ({
-              id: option.id,
+              code: option.code,
               label: option.label,
-              translationPlural: `${option.label}s`,
             })),
           },
         },
@@ -216,8 +221,8 @@ export async function expectDisciplineFilterAllSelectsOnlyVisibleRows(page: Page
       await closeDisciplineFilterPopover(page);
     },
     (request) =>
-      Array.isArray(request.filters?.disciplineIds) &&
-      request.filters.disciplineIds.length === selectableVisibleLabels.length,
+      Array.isArray(request.filters?.disciplineCodes) &&
+      request.filters.disciplineCodes.length === selectableVisibleLabels.length,
   );
 
   await expect(disciplineFilterSelectionIndicator(page)).toHaveText(
@@ -284,8 +289,8 @@ export async function expectDisciplineFilterOrResultsInRegion(
       await closeDisciplineFilterPopover(page);
     },
     (request) =>
-      Array.isArray(request.filters?.disciplineIds) &&
-      request.filters.disciplineIds.length === 2,
+      Array.isArray(request.filters?.disciplineCodes) &&
+      request.filters.disciplineCodes.length === 2,
   );
 
   await expect(disciplineFilterSelectionIndicator(page)).toHaveText('2');
@@ -345,8 +350,8 @@ export async function expectDisciplineFilterSelectionIndicatorBehaviour(page: Pa
       await closeDisciplineFilterPopover(page);
     },
     (request) =>
-      Array.isArray(request.filters?.disciplineIds) &&
-      request.filters.disciplineIds.length === selectableCount,
+      Array.isArray(request.filters?.disciplineCodes) &&
+      request.filters.disciplineCodes.length === selectableCount,
   );
 
   await expect(disciplineFilterSelectionIndicator(page)).toBeVisible();

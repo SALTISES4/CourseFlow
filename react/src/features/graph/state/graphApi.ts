@@ -8,6 +8,7 @@ import {
   deleteSection,
   duplicateOutcome,
   getGraphView,
+  getPublicGraphView,
   insertGraphChannelBelow,
   insertGraphNodeBelow,
   insertGraphSectionBelow,
@@ -29,6 +30,7 @@ import {
 import type {
   ChannelOut,
   ChannelOutResp,
+  ContextClassification,
   GraphChannelMutationOut,
   GraphEdgeMutationOut,
   GraphMetaOut,
@@ -39,7 +41,9 @@ import type {
   GraphTagStubOut,
   GraphViewOut,
   SectionOut,
-  SectionOutResp
+  SectionOutResp,
+  TaskClassification,
+  TimeUnit
 } from '@cf/api/gen/types.gen'
 
 import type {
@@ -219,11 +223,12 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
 }
 
 export const fetchWorkflowGraphBundle = async (
-  graphUuid: GraphUuid
+  graphUuid: GraphUuid,
+  publicView = false
 ): Promise<GraphResourceBundle> => {
-  const result = await getGraphView({
-    path: { uuid: graphUuid }
-  })
+  const result = publicView
+    ? await getPublicGraphView({ path: { uuid: graphUuid } })
+    : await getGraphView({ path: { uuid: graphUuid } })
   const view = unwrapSdkData<GraphViewOut>(result)
   return mapViewToBundle(view)
 }
@@ -231,10 +236,10 @@ export const fetchWorkflowGraphBundle = async (
 function mapNodeMetaFromApi(node: {
   title?: string
   description?: string
-  contextClassification?: number | null
-  taskClassification?: number | null
+  contextClassification?: ContextClassification | null
+  taskClassification?: TaskClassification | null
   timeRequired?: number | null
-  timeUnits?: number | null
+  timeUnits?: TimeUnit | null
   representsWorkflow?: boolean
   ponderationTheory?: number | null
   ponderationPractice?: number | null

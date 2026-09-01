@@ -161,7 +161,7 @@ def _project_detail_out(current_user: User, dto: ProjectDTO) -> ProjectDetailOut
     is_archived = False
 
     disciplines = [
-        DisciplineOption(id=d.id, title=d.label)
+        DisciplineOption(code=d.code, label=d.label)
         for d in Discipline.objects.filter(projects__id=dto.id)
     ]
 

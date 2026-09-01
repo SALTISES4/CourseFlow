@@ -1,0 +1,200 @@
+# Functional requirements: workflow public-link mode and anonymous read-only access
+# Status: Accepted for implementation.
+# Source: product decision recorded 2026-09-01; the existing workflow Overview control is implemented with label 'Generate public link'; the prior CourseFlow public-link lifecycle established enable, copy, and remove behavior.
+# Scope: enabling workflow-specific anonymous access through the workflow's existing URL and presenting the Overview, Workflow, and Outcomes sub-views without the authenticated left navigation.
+# Cross-reference:
+#   - tests/docs/requirements/features/workflow/workflow_overview_requirements_v1.yaml (workflowOverviewView and workflowMetadataPermissionsPanel)
+#   - tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml (workflowHeader, workflowTitle, workflowHeaderFavouriteToggle, and workflowViewTabSelector)
+#   - tests/docs/requirements/features/navigation/main_navigation_requirements_v1.yaml (mainNavigation; authenticated application shell only)
+#   - tests/docs/requirements/features/global/context_action_bar_requirements_v1.yaml (authenticated workflow action-bar controls)
+#   - tests/docs/requirements/features/global/workspace_access_requirements_v1.yaml (authenticated contributor and published-access rules; this file owns the anonymous exception)
+#   - tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml (archived workflows are unavailable)
+#   - docs/data/permissions/permissions_matrix.md (effective workflow owner/editor roles inherit from workflow authorship, project ownership, or project membership)
+
+documentPreconditions:
+  - workflow exists
+  - routes matching '/workflow/{id}/*' include '/workflow/{id}', '/workflow/{id}/graph', and the existing Outcomes sub-view route
+  - public-link mode is a workflow-specific access state; it does not publish the parent project or any other workflow
+  - public-link mode is distinct from the existing authenticated public/published-access role and from project-level published state because it grants workflow-specific access without authentication
+  - owner and editor refer to the actor's effective workflow role under docs/data/permissions/permissions_matrix.md
+
+uiObjectDefinitions:
+  workflowGeneratePublicLinkButton:
+    meaning: Existing workflow Overview button with exact label 'Generate public link'; enables public-link mode for the current workflow.
+  workflowCopyPublicLinkButton:
+    meaning: Workflow Overview button with exact label 'Copy public link'; copies the current workflow's existing Overview URL while public-link mode is enabled.
+  workflowRemovePublicLinkButton:
+    meaning: Workflow Overview button with exact label 'Remove public link'; disables public-link mode for the current workflow.
+  workflowOverviewView:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_overview_requirements_v1.yaml.
+  workflowView:
+    meaning: Canonical Workflow sub-view at route '/workflow/{id}/graph'.
+  workflowOutcomeView:
+    meaning: Canonical Outcomes sub-view at the existing route '/workflow/{id}/outcomedit'.
+  workflowHeader:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml.
+  workflowTitle:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml.
+  workflowHeaderFavouriteToggle:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml.
+  workflowViewTabSelector:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml.
+  mainNavigation:
+    meaning: Canonical global left navigation defined in tests/docs/requirements/features/navigation/main_navigation_requirements_v1.yaml.
+  loginPage:
+    meaning: Canonical definition in tests/docs/requirements/features/auth/login_requirements_v1.yaml.
+
+locatorMappings:
+  workflowGeneratePublicLinkButton: "canonical_locators.yaml -> workflowGeneratePublicLinkButton"
+  workflowCopyPublicLinkButton: "canonical_locators.yaml -> workflowCopyPublicLinkButton"
+  workflowRemovePublicLinkButton: "canonical_locators.yaml -> workflowRemovePublicLinkButton"
+  workflowOverviewView: "canonical_locators.yaml -> workflowOverviewView"
+  workflowView: "canonical_locators.yaml -> workflowView"
+  workflowOutcomeView: "canonical_locators.yaml -> workflowOutcomeView"
+  workflowHeader: "canonical_locators.yaml -> workflowHeader"
+  workflowTitle: "canonical_locators.yaml -> workflowTitle"
+  workflowHeaderFavouriteToggle: "canonical_locators.yaml -> workflowHeaderFavouriteToggle"
+  workflowViewTabSelector: "canonical_locators.yaml -> workflowViewTabSelector"
+  mainNavigation: "canonical_locators.yaml -> mainNavigation"
+  loginPage: "canonical_locators.yaml -> loginPage"
+
+requirements:
+  - id: FR-WF-PUBLIC-001
+    title: Owner or editor enables anonymous access through the existing workflow URL
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowOverviewView
+      - workflowGeneratePublicLinkButton
+      - workflowCopyPublicLinkButton
+      - workflowRemovePublicLinkButton
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - user is authenticated to CourseFlow
+      - workflow is not archived
+      - current route matches '/workflow/{id}'
+
+    trigger:
+      - owner or editor clicks workflowGeneratePublicLinkButton
+
+    mainFlow:
+      - workflowGeneratePublicLinkButton is visible and enabled only when the authenticated actor's effective workflow role is owner or editor
+      - when owner or editor clicks workflowGeneratePublicLinkButton and the operation succeeds, public-link mode is enabled for the current workflow
+      - enabling public-link mode does not copy a URL automatically; it replaces workflowGeneratePublicLinkButton with workflowCopyPublicLinkButton and workflowRemovePublicLinkButton
+      - when owner or editor clicks workflowCopyPublicLinkButton, the system copies the absolute existing Overview URL for '/workflow/{id}' to the clipboard and confirms success; public-link state is unchanged
+      - when owner or editor clicks workflowRemovePublicLinkButton and the operation succeeds, public-link mode is disabled immediately and workflowGeneratePublicLinkButton is shown again
+      - public-link mode uses the workflow's existing Overview URL '/workflow/{id}'; the system does not create a distinct route, tokenized URL, or replacement workflow URL
+      - the enabled state persists beyond the actor's current page and session so a later anonymous request can access the workflow per FR-WF-PUBLIC-002
+      - enabling public-link mode does not change the parent project's published state and does not enable anonymous access to the parent project, sibling workflows, child workflows, or linked workflows
+      - when enabling public-link mode fails, the current workflow remains unavailable to anonymous viewers
+
+    roleBehavior:
+      owner:
+        workflowGeneratePublicLinkButton: visibleAndEnabled
+      editor:
+        workflowGeneratePublicLinkButton: visibleAndEnabled
+      commenter:
+        workflowGeneratePublicLinkButton: notVisible
+      viewer:
+        workflowGeneratePublicLinkButton: notVisible
+      user:
+        workflowGeneratePublicLinkButton: notVisible
+
+    acceptanceCriteria:
+      - given authenticated owner or editor is on workflowOverviewView for an active workflow, workflowGeneratePublicLinkButton is visible and enabled with exact label 'Generate public link'
+      - given authenticated commenter, viewer, or user is on workflowOverviewView, workflowGeneratePublicLinkButton is not visible
+      - given owner or editor clicks workflowGeneratePublicLinkButton and the operation succeeds, public-link mode is enabled for that workflow and remains enabled after the owner or editor reloads the page or ends the session
+      - given public-link mode is enabled, workflowCopyPublicLinkButton and workflowRemovePublicLinkButton are visible and enabled and workflowGeneratePublicLinkButton is not visible
+      - given owner or editor clicks workflowCopyPublicLinkButton, the clipboard receives the absolute '/workflow/{id}' Overview URL and success feedback is shown
+      - given owner or editor clicks workflowRemovePublicLinkButton and the operation succeeds, anonymous access is revoked immediately and workflowGeneratePublicLinkButton is visible again
+      - given public-link mode was enabled for workflow W, the public link for W is its existing URL '/workflow/{id}' and no distinct public URL or access token is generated
+      - given public-link mode is enabled for workflow W, the parent project's published state is unchanged and no other workflow gains anonymous access
+      - given enabling public-link mode fails, an anonymous viewer opening W's existing URL cannot see W's workflow content
+
+    openQuestions: []
+
+  - id: FR-WF-PUBLIC-002
+    title: Anonymous viewer sees the workflow read-only without the left navigation
+
+    designEvidence: []
+
+    actors:
+      - anonymousViewer
+
+    uiObjects:
+      - mainNavigation
+      - loginPage
+      - workflowHeader
+      - workflowTitle
+      - workflowHeaderFavouriteToggle
+      - workflowViewTabSelector
+      - workflowGeneratePublicLinkButton
+      - workflowCopyPublicLinkButton
+      - workflowRemovePublicLinkButton
+      - workflowOverviewView
+      - workflowView
+      - workflowOutcomeView
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - viewer is not authenticated to CourseFlow
+      - public-link mode is enabled for the requested workflow per FR-WF-PUBLIC-001
+      - workflow is not archived
+      - current route matches '/workflow/{id}', '/workflow/{id}/graph', or the existing Outcomes sub-view route
+
+    trigger:
+      - anonymousViewer opens the workflow's existing URL or one of its three supported sub-view URLs
+      - anonymousViewer clicks a tab on workflowViewTabSelector
+
+    mainFlow:
+      - system renders the requested workflow sub-view without redirecting anonymousViewer to loginPage
+      - mainNavigation is not rendered in either expanded or collapsed form; its collapse and expand controls are also not rendered
+      - the authenticated top navigation, workflow action bar, workflow right sidebar, and workflow dialogs are not rendered
+      - workflowHeader and workflowTitle are visible
+      - workflowViewTabSelector is visible and provides exactly the tabs 'Overview', 'Workflow', and 'Outcomes'
+      - selecting 'Overview' renders workflowOverviewView at '/workflow/{id}'
+      - selecting 'Workflow' renders workflowView at '/workflow/{id}/graph'
+      - selecting 'Outcomes' renders workflowOutcomeView at the existing Outcomes sub-view route
+      - switching tabs preserves anonymous public-link presentation and does not render mainNavigation
+      - all three sub-views present the current workflow's content read-only; anonymousViewer cannot create, edit, delete, duplicate, copy, archive, restore, link, unlink, assign, reorder, comment on, favourite, or otherwise persist a change to the workflow or its content
+      - controls whose action requires an authenticated identity or can persist a change are not rendered to anonymousViewer, including workflowGeneratePublicLinkButton and workflowHeaderFavouriteToggle
+      - workflowMetadataPermissionsPanel is not rendered, so contributor and owner identities are not exposed to anonymousViewer
+      - export is not available to anonymousViewer
+      - public-link mode for the current workflow does not grant anonymousViewer access to the parent project or to sibling, child, or linked workflows unless each target workflow separately has public-link mode enabled
+      - authenticated actors continue to receive their normal role-based workflow presentation; anonymous public-link presentation does not reduce an authenticated actor's existing permissions
+      - when public-link mode is not enabled for the requested workflow, or the workflow is archived, the system does not render workflowHeader, workflowOverviewView, workflowView, workflowOutcomeView, or any workflow data to anonymousViewer
+
+    roleBehavior:
+      anonymousViewer:
+        mainNavigation: notVisible
+        workflowHeader: visible
+        workflowTitle: visibleReadOnly
+        workflowViewTabSelector: visibleAndEnabled
+        workflowHeaderFavouriteToggle: notVisible
+        workflowGeneratePublicLinkButton: notVisible
+        workflowOverviewView: visibleReadOnlyWhenSelected
+        workflowView: visibleReadOnlyWhenSelected
+        workflowOutcomeView: visibleReadOnlyWhenSelected
+
+    acceptanceCriteria:
+      - given public-link mode is enabled for active workflow W and viewer is not authenticated, when viewer opens '/workflow/{id}', current route remains '/workflow/{id}', loginPage is not visible, workflowOverviewView is visible, and mainNavigation is not visible
+      - given anonymousViewer is viewing W, workflowHeader and workflowTitle are visible and workflowViewTabSelector shows exactly 'Overview', 'Workflow', and 'Outcomes'
+      - given anonymousViewer clicks 'Workflow', current route matches '/workflow/{id}/graph', workflowView is visible read-only, and mainNavigation is not visible
+      - given anonymousViewer clicks 'Outcomes', current route matches the existing Outcomes sub-view route, workflowOutcomeView is visible read-only, and mainNavigation is not visible
+      - given anonymousViewer clicks 'Overview' from another sub-view, current route matches '/workflow/{id}', workflowOverviewView is visible read-only, and mainNavigation is not visible
+      - given anonymousViewer directly opens '/workflow/{id}/graph' or the existing Outcomes sub-view route for W, the requested sub-view is visible read-only without a login redirect and without mainNavigation
+      - given anonymousViewer is on any supported W sub-view, workflowGeneratePublicLinkButton and workflowHeaderFavouriteToggle are not visible and no operation that persists a workflow or workflow-content change is available or accepted
+      - given W's parent project is unpublished and public-link mode is enabled for W, anonymousViewer can view W per this FR while the parent project and every workflow without its own enabled public-link mode remain unavailable to anonymousViewer
+      - given public-link mode is not enabled for W, when an anonymous viewer opens any W route, no W workflow content is visible
+      - given W is archived, when an anonymous viewer opens any W route, no W workflow content is visible even if public-link mode was enabled before archive
+
+    openQuestions: []

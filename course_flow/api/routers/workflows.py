@@ -9,9 +9,9 @@ from course_flow.api.deps import (
     get_authorization_service,
     get_project_service,
     get_resource_lifecycle_service,
+    get_user_service,
     get_workflow_copy_service,
     get_workflow_service,
-    get_user_service,
 )
 from course_flow.api.permission_context import permission_context_out
 from course_flow.api.schemas.workflows import (
@@ -22,6 +22,7 @@ from course_flow.api.schemas.workflows import (
     WorkflowListItemOut,
     WorkflowListMetaOut,
     WorkflowListOut,
+    WorkflowPublicLinkIn,
     WorkflowRelatedOut,
     WorkflowUpdateIn,
 )
@@ -37,12 +38,12 @@ from course_flow.application.services.workflow_copy_service import (
     WorkflowCopySourceNotFound,
     WorkflowCopyValidationError,
 )
-from course_flow.core.models import (
-    User,
-    Graph,
-    FavoriteGraph
+from course_flow.core.models import FavoriteGraph, Graph, User
+from course_flow.core.permissions import (
+    ProjectPermission,
+    ResourceRole,
+    WorkflowPermission,
 )
-from course_flow.core.permissions import ProjectPermission, WorkflowPermission
 
 router = Router(tags=["workflows"], by_alias=True)
 
@@ -103,6 +104,7 @@ def _workflow_detail(current_user: User, dto: WorkflowDTO) -> WorkflowDetailOut:
         owner=user_service.get_user_summary(owner),
         project_uuid=dto.project_uuid,
         is_archived=dto.is_archived,
+        public_link_enabled=dto.public_link_enabled,
         is_favorite=is_favorite,
         revision_id=dto.revision_id,
         date_created=dto.date_created,
@@ -267,6 +269,39 @@ def update_workflow(request, uuid: UUID, payload: WorkflowUpdateIn):
         current_user=current_user,
     )
     dto = svc.update_by_workflow_uuid(uuid, updates)
+    if dto is None:
+        raise HttpError(404, "Workflow not found")
+    return WorkflowDetailOutResp(item=_workflow_detail(current_user, dto))
+
+
+@router.patch(
+    "/{uuid}/public-link",
+    response=WorkflowDetailOutResp,
+    auth=BearerAuth(),
+    operation_id="updateWorkflowPublicLink",
+)
+def update_workflow_public_link(
+    request,
+    uuid: UUID,
+    payload: WorkflowPublicLinkIn,
+):
+    current_user = get_current_user(request)
+    svc = get_workflow_service()
+    existing = svc.get_by_workflow_uuid(uuid)
+    if existing is None:
+        raise HttpError(404, "Workflow not found")
+
+    permissions = _workflow_permissions(current_user, existing)
+    if (
+        permissions.resource_role not in {ResourceRole.OWNER, ResourceRole.EDITOR}
+        or not permissions.allows(WorkflowPermission.EDIT_ATTRIBUTES)
+    ):
+        raise HttpError(403, "Forbidden")
+
+    dto = svc.update_by_workflow_uuid(
+        uuid,
+        {"public_link_enabled": payload.enabled},
+    )
     if dto is None:
         raise HttpError(404, "Workflow not found")
     return WorkflowDetailOutResp(item=_workflow_detail(current_user, dto))

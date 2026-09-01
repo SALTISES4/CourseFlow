@@ -9,6 +9,11 @@ from django.test import Client
 from django.utils import timezone
 
 from course_flow.core.auth import generate_raw_token, hash_token
+from course_flow.core.enum import (
+    ContextClassification,
+    TaskClassification,
+    TimeUnit,
+)
 from course_flow.core.models import (
     Authtoken,
     Channel,
@@ -419,10 +424,10 @@ def test_patch_node_meta_updates_fields_and_returns_envelope(client: Client, use
         data={
             "title": "Lab 1",
             "description": "Intro activity",
-            "contextClassification": 2,
-            "taskClassification": 3,
+            "contextClassification": ContextClassification.WORK_IN_GROUPS,
+            "taskClassification": TaskClassification.PROBLEM_SOLVE,
             "timeRequired": 1.5,
-            "timeUnits": 2,
+            "timeUnits": TimeUnit.MINUTES,
         },
         content_type="application/json",
         **_auth_header(raw),
@@ -432,12 +437,31 @@ def test_patch_node_meta_updates_fields_and_returns_envelope(client: Client, use
     assert body["meta"]["triggeredBy"] == "update_node_meta"
     updated = body["changes"]["nodes"]["updated"][0]
     assert updated["title"] == "Lab 1"
-    assert updated["contextClassification"] == 2
-    assert updated["timeUnits"] == 2
+    assert updated["contextClassification"] == ContextClassification.WORK_IN_GROUPS
+    assert updated["timeUnits"] == TimeUnit.MINUTES
 
     node.refresh_from_db()
     assert node.title == "Lab 1"
-    assert node.activitymeta.context_classification == 2
+    assert node.activitymeta.context_classification == ContextClassification.WORK_IN_GROUPS
+
+
+@pytest.mark.django_db
+def test_patch_node_meta_rejects_legacy_numeric_classifications(client: Client, user):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    node = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+
+    response = client.patch(
+        f"/api/node/{node.uuid}/meta",
+        data={"contextClassification": 3},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+
+    assert response.status_code == 422, response.content
 
 
 @pytest.mark.django_db
@@ -454,10 +478,10 @@ def test_patch_activity_task_node_meta_persists_task_classification(
     response = client.patch(
         f"/api/node/{node.uuid}/meta",
         data={
-            "contextClassification": 1,
-            "taskClassification": 2,
+            "contextClassification": ContextClassification.INDIVIDUAL_WORK,
+            "taskClassification": TaskClassification.DISCUSS,
             "timeRequired": 1.5,
-            "timeUnits": 1,
+            "timeUnits": TimeUnit.SECONDS,
         },
         content_type="application/json",
         **_auth_header(raw),
@@ -465,12 +489,12 @@ def test_patch_activity_task_node_meta_persists_task_classification(
 
     assert response.status_code == 200, response.content
     updated = response.json()["changes"]["nodes"]["updated"][0]
-    assert updated["contextClassification"] == 1
-    assert updated["taskClassification"] == 2
+    assert updated["contextClassification"] == ContextClassification.INDIVIDUAL_WORK
+    assert updated["taskClassification"] == TaskClassification.DISCUSS
 
     node.refresh_from_db()
-    assert node.taskmeta.context_classification == 1
-    assert node.taskmeta.task_classification == 2
+    assert node.taskmeta.context_classification == ContextClassification.INDIVIDUAL_WORK
+    assert node.taskmeta.task_classification == TaskClassification.DISCUSS
 
 
 @pytest.mark.django_db
@@ -855,10 +879,10 @@ def test_duplicate_section_below_copies_internal_graph_content(client: Client, u
         title="Outside",
     )
 
-    source_a.activitymeta.context_classification = 3
-    source_a.activitymeta.task_classification = 4
+    source_a.activitymeta.context_classification = ContextClassification.IN_THE_CLASSROOM
+    source_a.activitymeta.task_classification = TaskClassification.ANALYZE
     source_a.activitymeta.time_required = Decimal("2.50")
-    source_a.activitymeta.time_units = 2
+    source_a.activitymeta.time_units = TimeUnit.MINUTES
     source_a.activitymeta.represents_workflow = True
     source_a.activitymeta.context = "Seminar"
     source_a.activitymeta.classification = "Formative"
@@ -914,10 +938,13 @@ def test_duplicate_section_below_copies_internal_graph_content(client: Client, u
     assert copied_a.description == source_a.description
     assert copied_a.linked_workflow_id == source_a.linked_workflow_id
     assert copied_a.thread_id != source_a.thread_id
-    assert copied_a.activitymeta.context_classification == 3
-    assert copied_a.activitymeta.task_classification == 4
+    assert (
+        copied_a.activitymeta.context_classification
+        == ContextClassification.IN_THE_CLASSROOM
+    )
+    assert copied_a.activitymeta.task_classification == TaskClassification.ANALYZE
     assert copied_a.activitymeta.time_required == source_a.activitymeta.time_required
-    assert copied_a.activitymeta.time_units == 2
+    assert copied_a.activitymeta.time_units == TimeUnit.MINUTES
     assert copied_a.activitymeta.represents_workflow is True
     assert copied_a.activitymeta.context == "Seminar"
     assert copied_a.activitymeta.classification == "Formative"

@@ -11,6 +11,8 @@ from course_flow.api.routers import (
     notifications,
     outcomes,
     projects,
+    public_workflows,
+    reference_data,
     sections,
     threads,
     users,
@@ -33,6 +35,7 @@ api = NinjaAPI(
 
 api.add_router("/project", projects.router)
 api.add_router("/workflow", workflows.router)
+api.add_router("/public", public_workflows.router)
 api.add_router("/graph", graphs.router)
 api.add_router("/graph", channels.graph_collection_router)
 api.add_router("/graph", sections.graph_collection_router)
@@ -49,6 +52,7 @@ api.add_router("/auth", auth.router)
 api.add_router("/user", users.router)
 api.add_router("/user", notifications.router)
 api.add_router("/library", library.router)
+api.add_router("/reference-data", reference_data.router)
 
 
 class HealthResponse(CamelSchema):

@@ -12,6 +12,7 @@
 #   - tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml (workflowHeader — not rendered when hard-load access block applies)
 #   - tests/docs/requirements/features/workflow/workflow_node_visual_requirements_v1.yaml (linked-workflow new-tab — FR-WF-NODE-001; workflow denial when FR-WS-ACCESS-002 preconditions apply)
 #   - tests/docs/requirements/features/shared/card_content_requirements_v1.yaml (globalMessageSnackbar canonical uiObject — FR-CARD-001 through FR-CARD-006 as applicable)
+#   - tests/docs/requirements/features/workflow/workflow_public_link_requirements_v1.yaml (workflow-specific anonymous access is a separate exception owned by FR-WF-PUBLIC-001 and FR-WF-PUBLIC-002)
 
 documentPreconditions:
   - user is authenticated to CourseFlow

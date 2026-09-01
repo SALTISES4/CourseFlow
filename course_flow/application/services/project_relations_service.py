@@ -26,6 +26,7 @@ class ProjectRelationsService:
         return [
             DisciplineDTO(
                 id=d.id,
+                code=d.code,
                 label=d.label,
                 translation_plural=d.translation_plural,
             )

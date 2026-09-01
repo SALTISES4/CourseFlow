@@ -2,37 +2,15 @@ import UserProvider from '@cf/context/userContext'
 import GlobalDialogs from '@cfComponents/globalNav/GlobalDialogs'
 import MainSidebar from '@cfComponents/globalNav/MainSidebar'
 import TopBar from '@cfComponents/globalNav/TopBar'
-import Alert from '@cfComponents/UIPrimitives/Alert'
-import { OuterContentWrap } from '@cfMUI/helper'
-import HtmlReactParser from 'html-react-parser'
 import { ReactNode } from 'react'
 
 import NetworkActivityProvider from './components/common/NetworkActivityProvider'
 
 type PropsType = {
-  showNotifications: boolean
   children: ReactNode
 }
 
-const { appNotifications } = COURSEFLOW_APP.globalContextData
-
-const NotificationsAlert = ({ show }: { show: boolean }) => {
-  if (!appNotifications.updateNotifications.uuid || !show) {
-    return <></>
-  }
-  return (
-    <OuterContentWrap sx={{ pb: 1 }}>
-      <Alert
-        sx={{ mt: 3 }}
-        severity="update"
-        title={HtmlReactParser(appNotifications.updateNotifications.title)}
-        hideIfCookie={`cf-update-${appNotifications.updateNotifications.uuid}`}
-      />
-    </OuterContentWrap>
-  )
-}
-
-const Base = ({ showNotifications = false, children }: PropsType) => {
+const Base = ({ children }: PropsType) => {
   return (
     <UserProvider>
       <div className="main-wrapper">
@@ -41,7 +19,6 @@ const Base = ({ showNotifications = false, children }: PropsType) => {
         <div className="main-block">
           <TopBar />
           <GlobalDialogs />
-          <NotificationsAlert show={showNotifications} />
 
           {/* still being used as a portal in comparison view */}
           <div className="titlebar"></div>

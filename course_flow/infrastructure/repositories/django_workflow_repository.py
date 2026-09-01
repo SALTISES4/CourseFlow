@@ -322,6 +322,7 @@ def _to_dto(g: Graph, *, calculate_overview: bool = True) -> WorkflowDTO:
         project_is_published=project.is_published if project is not None else False,
         project_is_archived=project.is_archived if project is not None else False,
         is_archived=workflow.is_archived,
+        public_link_enabled=workflow.public_link_enabled,
         workflow_type=workflow.workflow_type,
         title=workflow.title,
         description=workflow.description,
@@ -437,6 +438,12 @@ class DjangoWorkflowRepository(WorkflowRepositoryPort):
             changed = True
         if "is_archived" in updates and updates["is_archived"] is not None:
             wf.is_archived = updates["is_archived"]
+            changed = True
+        if (
+            "public_link_enabled" in updates
+            and updates["public_link_enabled"] is not None
+        ):
+            wf.public_link_enabled = updates["public_link_enabled"]
             changed = True
         if changed:
             wf.save()

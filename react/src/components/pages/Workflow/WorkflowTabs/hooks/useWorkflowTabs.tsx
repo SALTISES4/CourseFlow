@@ -1,7 +1,9 @@
-import { WorkflowDetailOutResp } from '@cf/api/gen'
 import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/Utility.class'
-import { WorkflowViewType } from '@cfPages/Workflow/types'
+import {
+  type WorkflowPageData,
+  WorkflowViewType
+} from '@cfPages/Workflow/types'
 import GraphView from '@cfViews/WorkflowView/GraphView'
 import OutcomeEditView from '@cfViews/WorkflowView/OutcomeEditView'
 import OverviewView from '@cfViews/WorkflowView/OverviewView'
@@ -14,8 +16,9 @@ export type WorkflowTabsRouteProps = {
 }
 
 const useWorkflowTabs = (
-  workflow: WorkflowDetailOutResp | undefined,
-  _routeProps: WorkflowTabsRouteProps
+  workflow: WorkflowPageData | undefined,
+  _routeProps: WorkflowTabsRouteProps,
+  publicView = false
 ) => {
   const { uuid } = useParams()
   const navigate = useNavigate()
@@ -37,7 +40,9 @@ const useWorkflowTabs = (
             route: CFRoutes.WORKFLOW,
             relRoute: RelativeRoutes.INDEX,
             label: _t('Overview'),
-            content: <OverviewView />,
+            content: (
+              <OverviewView workflow={workflow} publicView={publicView} />
+            ),
             allowedTabs: [3]
           },
           {
@@ -45,7 +50,12 @@ const useWorkflowTabs = (
             route: CFRoutes.WORKFLOW_GRAPH,
             relRoute: RelativeRoutes.GRAPH,
             label: _t('Workflow'),
-            content: <GraphView graphUuid={workflow.item.graphUuid} />,
+            content: (
+              <GraphView
+                graphUuid={workflow.graphUuid}
+                publicView={publicView}
+              />
+            ),
             allowedTabs: [1, 2, 3, 4]
           },
           {
@@ -53,8 +63,13 @@ const useWorkflowTabs = (
             route: CFRoutes.WORKFLOW_OUTCOME_EDIT,
             relRoute: RelativeRoutes.OUTCOME_EDIT,
             label: _t('Outcomes'),
-            content: <OutcomeEditView graphUuid={workflow.item.graphUuid} />,
-            allowedTabs: workflow.item.workflowType == 'program' ? [3] : [2, 3] // @todo enum
+            content: (
+              <OutcomeEditView
+                graphUuid={workflow.graphUuid}
+                publicView={publicView}
+              />
+            ),
+            allowedTabs: workflow.workflowType == 'program' ? [3] : [2, 3] // @todo enum
           }
         ]
 

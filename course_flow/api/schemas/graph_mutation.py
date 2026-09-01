@@ -7,6 +7,11 @@ from uuid import UUID
 from pydantic import Field, field_validator
 
 from course_flow.api.common.schemas import CamelSchema
+from course_flow.core.enum import (
+    ContextClassification,
+    TaskClassification,
+    TimeUnit,
+)
 
 
 class GraphNodeMutationOut(CamelSchema):
@@ -16,10 +21,10 @@ class GraphNodeMutationOut(CamelSchema):
     node_type: str
     title: str = ""
     description: str = ""
-    context_classification: int | None = None
-    task_classification: int | None = None
+    context_classification: ContextClassification | None = None
+    task_classification: TaskClassification | None = None
     time_required: float | None = None
-    time_units: int | None = None
+    time_units: TimeUnit | None = None
     represents_workflow: bool = False
     ponderation_theory: float | None = None
     ponderation_practice: float | None = None
@@ -209,10 +214,10 @@ class GraphNodeMetaPatchIn(CamelSchema):
 
     title: str | None = None
     description: str | None = None
-    context_classification: int | None = None
-    task_classification: int | None = None
+    context_classification: ContextClassification | None = None
+    task_classification: TaskClassification | None = None
     time_required: float | None = None
-    time_units: int | None = None
+    time_units: TimeUnit | None = None
     represents_workflow: bool | None = None
     ponderation_theory: float | None = None
     ponderation_practice: float | None = None

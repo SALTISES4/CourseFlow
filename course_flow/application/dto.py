@@ -42,6 +42,7 @@ class WorkflowDTO:
     project_is_published: bool
     project_is_archived: bool
     is_archived: bool
+    public_link_enabled: bool
     workflow_type: WorkflowType
     title: str
     description: str
@@ -53,6 +54,7 @@ class WorkflowDTO:
 @dataclass(frozen=True, slots=True)
 class DisciplineDTO:
     id: int
+    code: str
     label: str
     translation_plural: str
 

@@ -12,6 +12,11 @@ from pydantic import Field
 
 from course_flow.api.common.schemas import CamelSchema
 from course_flow.api.schemas.permissions import PermissionContextOut
+from course_flow.core.enum import (
+    ContextClassification,
+    TaskClassification,
+    TimeUnit,
+)
 
 
 class GraphMetaOut(CamelSchema):
@@ -63,10 +68,10 @@ class NodeGraphOut(CamelSchema):
     node_type: str
     title: str = ""
     description: str = ""
-    context_classification: int | None = None
-    task_classification: int | None = None
+    context_classification: ContextClassification | None = None
+    task_classification: TaskClassification | None = None
     time_required: float | None = None
-    time_units: int | None = None
+    time_units: TimeUnit | None = None
     represents_workflow: bool = False
     ponderation_theory: float | None = None
     ponderation_practice: float | None = None

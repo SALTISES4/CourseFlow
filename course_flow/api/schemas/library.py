@@ -57,7 +57,7 @@ class LibraryFiltersIn(CamelSchema):
             "The project row itself is not included in library results when set."
         ),
     )
-    discipline_ids: list[int] = Field(default_factory=list)
+    discipline_codes: list[str] = Field(default_factory=list)
     workflow_types: list[WorkflowType] = Field(default_factory=list)
     ownership: LibraryOwnershipIn | None = None
     is_favorite: bool | None = None
@@ -149,7 +149,7 @@ class LibraryItemOut(CamelSchema):
 
 
 class LibraryDisciplineOptionOut(CamelSchema):
-    id: int
+    code: str
     label: str
     translation_plural: str
 
@@ -162,7 +162,7 @@ class LibraryAppliedFiltersOut(CamelSchema):
     keyword: str | None = None
     content_type: LibraryContentTypeIn | None = None
     project_uuid: UUID | None = None
-    discipline_ids: list[int] = Field(default_factory=list)
+    discipline_codes: list[str] = Field(default_factory=list)
     workflow_types: list[WorkflowType] = Field(default_factory=list)
     ownership: LibraryOwnershipIn | None = None
     is_favorite: bool | None = None

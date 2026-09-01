@@ -61,7 +61,7 @@ def test_project_delete_cascades_graph_team_favorites_not_discipline_or_tag_rows
     user_a,
 ):
     p = Project.objects.create(owner=user_a, title="P")
-    d = Discipline.objects.create(label="D")
+    d = Discipline.objects.create(code="d", label="D")
     ProjectDiscipline.objects.create(project=p, discipline=d)
     tag = Tag.objects.create(project=p, label="T")
     wf = _graph_with_workflow(user_a, project=p)

@@ -194,10 +194,10 @@ class LibraryHelper {
     const contentType = filterGroups.contentTypeFilter?.options?.find(
       (option) => option.enabled
     )?.value as LibraryContentTypeIn | null
-    const disciplineIds = (filterGroups.disciplineFilter?.options
-      ?.filter((option) => option.enabled)
-      .map((option) => Number(option.value))
-      .filter((value) => Number.isInteger(value)) ?? []) as number[]
+    const disciplineCodes =
+      filterGroups.disciplineFilter?.options
+        ?.filter((option) => option.enabled)
+        .map((option) => String(option.value)) ?? []
 
     const keyword =
       String(filterGroups.keywordFilter?.value ?? '').trim() || null
@@ -209,7 +209,7 @@ class LibraryHelper {
     return {
       keyword,
       contentType,
-      disciplineIds,
+      disciplineCodes,
       workflowTypes:
         contentType === LibraryContentTypeIn.PROJECT ? [] : workflowTypes,
       ownership:

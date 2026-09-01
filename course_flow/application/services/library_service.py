@@ -79,7 +79,7 @@ class LibraryService:
             keyword=keyword,
             content_type=raw_filters.content_type,
             project_uuid=raw_filters.project_uuid,
-            discipline_ids=list(raw_filters.discipline_ids or []),
+            discipline_codes=list(raw_filters.discipline_codes or []),
             workflow_types=list(raw_filters.workflow_types or []),
             ownership=raw_filters.ownership,
             is_archived=raw_filters.is_archived,
@@ -207,23 +207,23 @@ class LibraryService:
 
         # Availability excludes the discipline constraint itself so selecting one
         # discipline does not incorrectly disable other OR-selectable options.
-        allowed_discipline_ids = {
-            discipline_id
-            for discipline_id in (
-                *project_qs.values_list("disciplines__id", flat=True),
+        allowed_discipline_codes = {
+            discipline_code
+            for discipline_code in (
+                *project_qs.values_list("disciplines__code", flat=True),
                 *workflow_graph_qs.values_list(
-                    "workflow__project__disciplines__id", flat=True
+                    "workflow__project__disciplines__code", flat=True
                 ),
             )
-            if discipline_id is not None
+            if discipline_code is not None
         }
 
-        if filters.discipline_ids:
+        if filters.discipline_codes:
             project_qs = project_qs.filter(
-                disciplines__id__in=filters.discipline_ids
+                disciplines__code__in=filters.discipline_codes
             ).distinct()
             workflow_graph_qs = workflow_graph_qs.filter(
-                workflow__project__disciplines__id__in=filters.discipline_ids
+                workflow__project__disciplines__code__in=filters.discipline_codes
             ).distinct()
 
         project_qs = project_qs.select_related("owner").annotate(
@@ -272,7 +272,7 @@ class LibraryService:
                 "results_per_page": results_per_page,
                 "applied_filters": filters.model_dump(mode="json"),
                 "allowed": LibraryAllowedFiltersOut(
-                    disciplines=self._discipline_options(allowed_discipline_ids)
+                    disciplines=self._discipline_options(allowed_discipline_codes)
                 ).model_dump(mode="json"),
             },
         }
@@ -458,16 +458,16 @@ class LibraryService:
         }
 
     def _discipline_options(
-        self, allowed_discipline_ids: set[int]
+        self, allowed_discipline_codes: set[str]
     ) -> list[dict[str, Any]]:
         return [
             LibraryDisciplineOptionOut(
-                id=discipline.id,
+                code=discipline.code,
                 label=discipline.label,
                 translation_plural=discipline.translation_plural,
             )
             for discipline in Discipline.objects.filter(
-                id__in=allowed_discipline_ids
+                code__in=allowed_discipline_codes
             ).order_by("label", "id")
         ]
 

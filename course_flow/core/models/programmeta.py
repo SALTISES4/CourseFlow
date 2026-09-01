@@ -17,7 +17,9 @@ class Programmeta(models.Model):
     time_required = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
     )
-    time_units = models.PositiveSmallIntegerField(null=True, blank=True)
+    time_units = models.CharField(
+        max_length=16, null=True, blank=True
+    )
     ponderation_theory = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
     )

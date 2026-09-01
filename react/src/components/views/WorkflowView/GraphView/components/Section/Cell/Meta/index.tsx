@@ -15,8 +15,8 @@ type PropsType = {
   workflow?: string | null
   /** Parent graph workflow type (`course` | `program`) for link label copy. */
   parentWorkflowType?: string | null
-  contextType: number
-  taskType: number
+  contextType: string | null
+  taskType: string | null
   time?: number | null
 }
 

@@ -1,23 +1,18 @@
-import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import Favorite from '@cf/components/common/UIPrimitives/Favorite'
 import { _t } from '@cf/utility/Utility.class'
 import { workflowTitle } from '@cfComponents/UIPrimitives/Titles'
 import { OuterContentWrap } from '@cfMUI/helper'
+import type { WorkflowPageData } from '@cfPages/Workflow/types'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useQuery } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
 
-const Header = () => {
-  const { uuid } = useParams()
-  const workflowUuid = uuid ?? ''
-  const { data: workflowResp } = useQuery({
-    ...getWorkflowOptions({ path: { uuid: workflowUuid } }),
-    enabled: Boolean(workflowUuid)
-  })
-
-  const workflow = workflowResp?.item
-
+const Header = ({
+  workflow,
+  publicView
+}: {
+  workflow: WorkflowPageData
+  publicView: boolean
+}) => {
   return (
     <OuterContentWrap sx={{ pb: 0 }}>
       <Stack
@@ -36,16 +31,15 @@ const Header = () => {
           }}
         >
           {workflowTitle({
-            title: workflow?.title ?? '',
+            title: workflow.title,
             code: '',
             deleted: false
           })}
         </Typography>
 
-        <Favorite
-          id={workflowUuid}
-          isFavorite={workflow?.isFavorite ?? false}
-        />
+        {!publicView && 'isFavorite' in workflow && (
+          <Favorite id={workflow.uuid} isFavorite={workflow.isFavorite} />
+        )}
       </Stack>
     </OuterContentWrap>
   )

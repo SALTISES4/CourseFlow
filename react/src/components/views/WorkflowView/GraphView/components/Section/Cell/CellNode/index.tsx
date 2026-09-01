@@ -145,8 +145,8 @@ const SectionCellNode = ({
           <Meta
             workflow={node.linkedWorkflowUuid ?? null}
             parentWorkflowType={graph?.workflowType}
-            contextType={node.contextClassification ?? 0}
-            taskType={node.taskClassification ?? 0}
+            contextType={node.contextClassification}
+            taskType={node.taskClassification}
             time={node.timeRequired ?? 0}
           />
         </StyledNode.Content>

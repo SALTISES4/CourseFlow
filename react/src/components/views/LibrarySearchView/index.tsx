@@ -4,6 +4,7 @@ import {
   LibrarySearchIn
 } from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
+import { useReferenceData } from '@cf/hooks/useReferenceData'
 import { _t } from '@cf/utility/Utility.class'
 import type { FilterMultiselectOption } from '@cfComponents/filters/FilterMultiselect'
 import Pagination from '@cfComponents/UIPrimitives/Pagination'
@@ -121,20 +122,21 @@ const LibrarySearchView = ({
    * QUERY HOOKS
    *******************************************************/
   const { data, isLoading, isError, error } = useLibrarySearch(searchArgs)
+  const { data: referenceData } = useReferenceData()
 
   const disciplineOptions: FilterMultiselectOption[] = useMemo(() => {
-    const allowedDisciplineIds = new Set(
-      data?.meta?.allowed?.disciplines?.map((option) => option.id) ?? []
+    const allowedDisciplineCodes = new Set(
+      data?.meta?.allowed?.disciplines?.map((option) => option.code) ?? []
     )
 
-    return [...COURSEFLOW_APP.globalContextData.disciplines]
-      .sort((a, b) => a.title.localeCompare(b.title))
+    return [...(referenceData?.disciplines ?? [])]
+      .sort((a, b) => a.label.localeCompare(b.label))
       .map((option) => ({
-        value: option.id,
-        label: option.title,
-        disabled: Boolean(data) && !allowedDisciplineIds.has(option.id)
+        value: option.code,
+        label: option.label,
+        disabled: Boolean(data) && !allowedDisciplineCodes.has(option.code)
       }))
-  }, [data])
+  }, [data, referenceData])
 
   return (
     <OuterContentWrap>

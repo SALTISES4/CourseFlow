@@ -447,7 +447,7 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
       await expect(page).toHaveURL(/\/library\/?$/);
     });
 
-    test('archived workflowCard shows Archived chip, no favourite, Owner hover restore/delete, and card body does not browse', async ({
+    test('archived workflowCard uses pointer cursor only for lifecycle actions', async ({
       page,
     }) => {
       const fixture = await createArchivedWorkflowFixture(page, 'fr-card-006');
@@ -459,11 +459,19 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
         await expect(card).toHaveAttribute('data-test-id', 'workflow-card');
         await expect(cardArchivedChip(card)).toBeVisible();
         await expect(cardFavouriteToggle(card)).toHaveCount(0);
+        const restoreButton = workflowCardRestoreButton(card);
+        const deleteButton = workflowCardDeletePermanentlyButton(card);
         await expectOwnerLifecycleActionsRevealedOnHover(
           card,
-          workflowCardRestoreButton(card),
-          workflowCardDeletePermanentlyButton(card),
+          restoreButton,
+          deleteButton,
         );
+
+        await expect(card).toHaveCSS('cursor', 'default');
+        await restoreButton.hover();
+        await expect(restoreButton).toHaveCSS('cursor', 'pointer');
+        await deleteButton.hover();
+        await expect(deleteButton).toHaveCSS('cursor', 'pointer');
 
         await cardTitleText(card).click();
         await expect(page).toHaveURL(/\/library\/?$/);

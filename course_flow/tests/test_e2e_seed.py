@@ -74,32 +74,16 @@ def test_e2e_fixture_primary_user_is_teacher_owner():
 
 
 @pytest.mark.django_db
-def test_e2e_fixture_disciplines_match_frontend_fixed_id_catalogue():
+def test_e2e_fixture_disciplines_match_code_owned_catalogue():
     generate_e2e_fixtures()
 
-    frontend_context_path = (
-        Path(__file__).resolve().parents[2]
-        / "react"
-        / "src"
-        / "data"
-        / "globalContextData.mock.json"
-    )
-    frontend_catalogue = json.loads(frontend_context_path.read_text(encoding="utf-8"))[
-        "disciplines"
-    ]
-    expected_catalogue = [
-        {"id": discipline_id, "title": label}
-        for discipline_id, label in E2E_DISCIPLINE_CATALOGUE
-    ]
-
-    assert frontend_catalogue == expected_catalogue
     assert list(
         Discipline.objects.filter(
-            id__in=[discipline["id"] for discipline in frontend_catalogue]
+            code__in=[code for code, _label in E2E_DISCIPLINE_CATALOGUE]
         )
-        .order_by("id")
-        .values_list("id", "label")
-    ) == sorted(E2E_DISCIPLINE_CATALOGUE)
+        .order_by("label")
+        .values_list("code", "label")
+    ) == list(E2E_DISCIPLINE_CATALOGUE)
 
 
 @pytest.mark.django_db

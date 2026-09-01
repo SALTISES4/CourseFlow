@@ -13,7 +13,15 @@ from course_flow.application.services.workflow_copy_service import (
     WorkflowCopyService,
 )
 from course_flow.core.auth import generate_raw_token, hash_token
-from course_flow.core.enum import AccountRole, NodeType, TeamRole, WorkflowType
+from course_flow.core.enum import (
+    AccountRole,
+    ContextClassification,
+    NodeType,
+    TaskClassification,
+    TeamRole,
+    TimeUnit,
+    WorkflowType,
+)
 from course_flow.core.models import (
     Authtoken,
     Channel,
@@ -127,10 +135,10 @@ def _build_source(owner, project):
         title="Node B",
         description="Node B description",
     )
-    node_a.activitymeta.context_classification = 3
-    node_a.activitymeta.task_classification = 4
+    node_a.activitymeta.context_classification = ContextClassification.IN_THE_CLASSROOM
+    node_a.activitymeta.task_classification = TaskClassification.ANALYZE
     node_a.activitymeta.time_required = "2.50"
-    node_a.activitymeta.time_units = 2
+    node_a.activitymeta.time_units = TimeUnit.MINUTES
     node_a.activitymeta.represents_workflow = True
     node_a.activitymeta.context = "Seminar"
     node_a.activitymeta.classification = "Formative"
@@ -240,8 +248,11 @@ def test_copy_workflow_same_project_preserves_full_content_fidelity():
     assert copied_a.channel.title == "Theory"
     assert copied_a.section_row == 0
     assert copied_a.linked_workflow == source["linked"]
-    assert copied_a.activitymeta.context_classification == 3
-    assert copied_a.activitymeta.task_classification == 4
+    assert (
+        copied_a.activitymeta.context_classification
+        == ContextClassification.IN_THE_CLASSROOM
+    )
+    assert copied_a.activitymeta.task_classification == TaskClassification.ANALYZE
     assert copied_a.activitymeta.context == "Seminar"
     assert copied_a.activitymeta.classification == "Formative"
     assert list(copied_a.tags.values_list("label", flat=True)) == ["Pedagogy"]
@@ -318,10 +329,10 @@ def test_copy_preserves_activity_workflow_and_task_node_metadata():
         "Source activity",
         WorkflowType.ACTIVITY,
     )
-    source.activitymeta.context_classification = 7
-    source.activitymeta.task_classification = 8
+    source.activitymeta.context_classification = ContextClassification.IN_THE_CLASSROOM
+    source.activitymeta.task_classification = TaskClassification.CREATE_DESIGN
     source.activitymeta.time_required = Decimal("3.25")
-    source.activitymeta.time_units = 2
+    source.activitymeta.time_units = TimeUnit.MINUTES
     source.activitymeta.represents_workflow = True
     source.activitymeta.context = "Lab"
     source.activitymeta.classification = "Summative"
@@ -342,10 +353,10 @@ def test_copy_preserves_activity_workflow_and_task_node_metadata():
         node_type=NodeType.TASK,
         title="Task node",
     )
-    task.taskmeta.context_classification = 9
-    task.taskmeta.task_classification = 10
+    task.taskmeta.context_classification = ContextClassification.INDIVIDUAL_WORK
+    task.taskmeta.task_classification = TaskClassification.READ
     task.taskmeta.time_required = Decimal("1.75")
-    task.taskmeta.time_units = 1
+    task.taskmeta.time_units = TimeUnit.SECONDS
     task.taskmeta.represents_workflow = True
     task.taskmeta.context = "Independent"
     task.taskmeta.save()
@@ -361,19 +372,25 @@ def test_copy_preserves_activity_workflow_and_task_node_metadata():
     copied = Workflow.objects.select_related("activitymeta").get(
         uuid=response.json()["uuid"]
     )
-    assert copied.activitymeta.context_classification == 7
-    assert copied.activitymeta.task_classification == 8
+    assert (
+        copied.activitymeta.context_classification
+        == ContextClassification.IN_THE_CLASSROOM
+    )
+    assert copied.activitymeta.task_classification == TaskClassification.CREATE_DESIGN
     assert copied.activitymeta.time_required == Decimal("3.25")
-    assert copied.activitymeta.time_units == 2
+    assert copied.activitymeta.time_units == TimeUnit.MINUTES
     assert copied.activitymeta.represents_workflow is True
     assert copied.activitymeta.context == "Lab"
     assert copied.activitymeta.classification == "Summative"
 
     copied_task = copied.nodes.select_related("taskmeta").get(title="Task node")
-    assert copied_task.taskmeta.context_classification == 9
-    assert copied_task.taskmeta.task_classification == 10
+    assert (
+        copied_task.taskmeta.context_classification
+        == ContextClassification.INDIVIDUAL_WORK
+    )
+    assert copied_task.taskmeta.task_classification == TaskClassification.READ
     assert copied_task.taskmeta.time_required == task.taskmeta.time_required
-    assert copied_task.taskmeta.time_units == 1
+    assert copied_task.taskmeta.time_units == TimeUnit.SECONDS
     assert copied_task.taskmeta.represents_workflow is True
     assert copied_task.taskmeta.context == "Independent"
 

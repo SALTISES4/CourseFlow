@@ -1,6 +1,8 @@
 import {
   archiveProjectMutation,
   archiveWorkflowMutation,
+  getProjectQueryKey,
+  getWorkflowQueryKey,
   listProjectsQueryKey,
   listWorkflowsQueryKey
 } from '@cf/api/gen/@tanstack/react-query.gen'
@@ -31,13 +33,29 @@ const ArchiveDialog = ({
 
   const archiveWorkflow = useMutation({
     ...archiveWorkflowMutation(),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: listWorkflowsQueryKey() })
+    onSuccess: () => {
+      queryClient.removeQueries({
+        queryKey: getWorkflowQueryKey({ path: { uuid } }),
+        exact: true
+      })
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: listWorkflowsQueryKey() }),
+        queryClient.invalidateQueries({ queryKey: ['library-search'] })
+      ])
+    }
   })
   const archiveProject = useMutation({
     ...archiveProjectMutation(),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: listProjectsQueryKey() })
+    onSuccess: () => {
+      queryClient.removeQueries({
+        queryKey: getProjectQueryKey({ path: { uuid } }),
+        exact: true
+      })
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: listProjectsQueryKey() }),
+        queryClient.invalidateQueries({ queryKey: ['library-search'] })
+      ])
+    }
   })
 
   const onSubmit = async () => {

@@ -1,4 +1,4 @@
-import { Theme, createTheme } from '@mui/material/styles'
+import { Theme, alpha, createTheme } from '@mui/material/styles'
 
 declare module '@mui/material' {
   interface ButtonPropsColorOverrides {
@@ -61,6 +61,34 @@ const theme: Theme = createTheme({
     fontFamily: ['"Open Sans"', 'Helvetica', 'Arial', 'sans-serif'].join(',')
   },
   components: {
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          '&.MuiInputBase-readOnly': {
+            backgroundColor: alpha(theme.palette.text.primary, 0.04),
+            cursor: 'default',
+            '& .MuiOutlinedInput-input': {
+              cursor: 'default',
+              caretColor: 'transparent'
+            },
+            '& .MuiOutlinedInput-notchedOutline, &:hover .MuiOutlinedInput-notchedOutline, &.Mui-focused .MuiOutlinedInput-notchedOutline':
+              {
+                borderColor: theme.palette.divider,
+                borderWidth: 1
+              }
+          }
+        })
+      }
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          '&:has(.MuiInputBase-readOnly) .MuiInputLabel-root.Mui-focused': {
+            color: theme.palette.text.secondary
+          }
+        })
+      }
+    },
     MuiButton: {
       styleOverrides: {
         root: {

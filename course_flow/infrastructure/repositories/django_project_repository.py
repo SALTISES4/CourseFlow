@@ -31,7 +31,7 @@ class DjangoProjectRepository:
         description: str | None,
         is_published: bool,
         is_template: bool,
-        disciplines: list[int],
+        disciplines: list[str],
     ) -> ProjectDTO:
         discipline_objects = self._resolve_disciplines(disciplines)
         p = Project.objects.create(
@@ -72,7 +72,7 @@ class DjangoProjectRepository:
         except Project.DoesNotExist:
             return None
         changes = dict(updates)
-        discipline_ids = changes.pop("disciplines", None)
+        discipline_codes = changes.pop("disciplines", None)
         allowed = {
             "title",
             "description",
@@ -86,16 +86,16 @@ class DjangoProjectRepository:
                     value = ""
                 setattr(p, key, value)
         p.save()
-        if discipline_ids is not None:
-            p.disciplines.set(self._resolve_disciplines(discipline_ids))
+        if discipline_codes is not None:
+            p.disciplines.set(self._resolve_disciplines(discipline_codes))
         p.refresh_from_db()
         return _to_dto(p)
 
     @staticmethod
-    def _resolve_disciplines(discipline_ids: list[int]) -> list[Discipline]:
-        unique_ids = list(dict.fromkeys(discipline_ids))
-        disciplines = list(Discipline.objects.filter(id__in=unique_ids))
-        if len(disciplines) != len(unique_ids):
+    def _resolve_disciplines(discipline_codes: list[str]) -> list[Discipline]:
+        unique_codes = list(dict.fromkeys(discipline_codes))
+        disciplines = list(Discipline.objects.filter(code__in=unique_codes))
+        if len(disciplines) != len(unique_codes):
             raise ValueError("Unknown discipline")
         return disciplines
 

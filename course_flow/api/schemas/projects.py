@@ -11,8 +11,8 @@ from course_flow.core.enum import WorkflowType
 
 
 class DisciplineOption(CamelSchema):
-    id: int
-    title: str
+    code: str
+    label: str
 
 
 class ProjectCreateIn(CamelSchema):
@@ -20,7 +20,7 @@ class ProjectCreateIn(CamelSchema):
     description: str | None = None
     is_published: bool = False
     is_template: bool = False
-    disciplines: list[int] = Field(default_factory=list)
+    disciplines: list[str] = Field(default_factory=list)
 
 
 class ProjectUpdateIn(CamelSchema):
@@ -28,7 +28,7 @@ class ProjectUpdateIn(CamelSchema):
     description: str | None = None
     is_published: bool | None = None
     is_template: bool | None = None
-    disciplines: list[int] = Field(default_factory=list)
+    disciplines: list[str] = Field(default_factory=list)
 
 
 class ProjectListItemOut(CamelSchema):

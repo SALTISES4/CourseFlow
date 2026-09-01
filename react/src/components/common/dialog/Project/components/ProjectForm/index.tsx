@@ -1,3 +1,4 @@
+import { useReferenceData } from '@cf/hooks/useReferenceData'
 import { _t } from '@cf/utility/Utility.class'
 import { StyledBox } from '@cfComponents/dialog/styles'
 import Alert from '@cfComponents/UIPrimitives/Alert'
@@ -27,7 +28,7 @@ const projectSchema = z.object({
       message: _t('Project title cannot be longer than 200 characters')
     }),
   description: z.string().nullish(),
-  disciplines: z.array(z.number())
+  disciplines: z.array(z.string())
 })
 
 export type ProjectFormValues = z.infer<typeof projectSchema>
@@ -47,8 +48,8 @@ const ProjectForm = ({
   label: string
   submitLabel?: string
 }) => {
-  // TODO: grab this from the API / cf_disciplines
-  const disciplineOptions = COURSEFLOW_APP.globalContextData.disciplines
+  const { data: referenceData } = useReferenceData()
+  const disciplineOptions = referenceData?.disciplines ?? []
   const [showDisciplines, setShowDisciplines] = useState(false)
 
   const {
@@ -159,8 +160,8 @@ const ProjectForm = ({
                           clickable
                           label={
                             disciplineOptions.find(
-                              (option) => option.id === value
-                            )?.title
+                              (option) => option.code === value
+                            )?.label
                           }
                           deleteIcon={
                             <CancelIcon
@@ -178,8 +179,8 @@ const ProjectForm = ({
                   )}
                 >
                   {disciplineOptions.map((option) => (
-                    <MenuItem key={option.id} value={option.id}>
-                      {option.title}
+                    <MenuItem key={option.code} value={option.code}>
+                      {option.label}
                     </MenuItem>
                   ))}
                 </Select>

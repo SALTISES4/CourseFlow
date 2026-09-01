@@ -51,7 +51,7 @@ const OverviewTab = ({
         path: { uuid: uuid ?? '' },
         body: {
           isPublished: nextPublished,
-          disciplines: (disciplines ?? []).map((discipline) => discipline.id)
+          disciplines: (disciplines ?? []).map((discipline) => discipline.code)
         }
       })
       queryClient.setQueryData(projectQueryKey, response)
@@ -94,8 +94,8 @@ const OverviewTab = ({
             <SC.InfoBlockContent>
               {disciplines?.length
                 ? [...disciplines]
-                    .sort((a, b) => a.title.localeCompare(b.title))
-                    .map((d) => d.title)
+                    .sort((a, b) => a.label.localeCompare(b.label))
+                    .map((d) => d.label)
                     .join(', ')
                 : _t('-')}
             </SC.InfoBlockContent>
