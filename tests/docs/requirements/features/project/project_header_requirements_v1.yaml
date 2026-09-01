@@ -1,4 +1,4 @@
-# Normalized requirements: project header (header, tabs, favourite)
+# Normalized requirements: project header (header, tabs, favourite, and project-route identity changes)
 # Source: tests/docs/__ARCHIVE/functional-requirements.md (Project section: Overview, Workflows, favourites) + Figma design evidence.
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
 # Cross-reference:
@@ -25,6 +25,8 @@ uiObjectDefinitions:
     meaning: Favourite toggle control in projectHeader; shows yellow star when favourited and grey star when not favourited.
   projectViewTabSelector:
     meaning: Tab selector in projectHeader for switching between project sub-views per FR-PROJ-HEADER-001.
+  projectLoadingIndicator:
+    meaning: Full project-view loading presentation that replaces project-bound header and sub-view content while data for a newly addressed project is loading.
   globalMessageSnackbar:
     meaning: Canonical definition in tests/docs/requirements/features/shared/card_content_requirements_v1.yaml (FR-CARD-005).
 
@@ -33,6 +35,7 @@ locatorMappings:
   projectTitle: "canonical_locators.yaml -> projectTitle"
   projectHeaderFavouriteToggle: "canonical_locators.yaml -> projectHeaderFavouriteToggle"
   projectViewTabSelector: "canonical_locators.yaml -> projectViewTabSelector"
+  projectLoadingIndicator: "canonical_locators.yaml -> projectLoadingIndicator"
   globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
 
 requirements:
@@ -120,6 +123,51 @@ requirements:
       - given user clicks projectHeaderFavouriteToggle on a non-favourited project and favourite-state update succeeds, projectHeaderFavouriteToggle shows yellow star and globalMessageSnackbar copy conforms to FR-CARD-005
       - given user clicks projectHeaderFavouriteToggle on a favourited project and favourite-state update succeeds, projectHeaderFavouriteToggle shows grey star and globalMessageSnackbar copy conforms to FR-CARD-005
       - given user clicks projectHeaderFavouriteToggle and favourite-state update fails, projectHeaderFavouriteToggle visual state is unchanged and globalMessageSnackbar copy conforms to FR-CARD-005
+
+    openQuestions: []
+
+  - id: FR-PROJ-HEADER-003
+    title: Changing the project URL reloads all project-bound view state for the destination project
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - viewer
+      - commenter
+      - user
+
+    uiObjects:
+      - projectHeader
+      - projectTitle
+      - projectViewTabSelector
+      - projectLoadingIndicator
+
+    preconditions:
+      - documentPreconditions hold for both source project S and destination project D
+      - a route matching '/project/{sourceId}/*' is rendered for source project S
+      - destination project D has a different project UUID from source project S
+
+    trigger:
+      - the current client-side URL changes from a route matching '/project/{sourceId}/*' to a route matching '/project/{destinationId}/*' without a full browser document reload
+
+    mainFlow:
+      - system treats destinationId as a new project identity and loads project data for destination project D
+      - while uncached destination project data is loading, system removes projectHeader, projectViewTabSelector, and project sub-view content bound to source project S and renders projectLoadingIndicator instead; no project-bound content from S remains visible under D's URL
+      - after destination project data loads successfully, system removes projectLoadingIndicator and renders a new projectHeader, projectTitle, projectViewTabSelector, and destination sub-view bound only to destination project D
+      - projectTitle and all project metadata, permissions, favourite state, dialogs, and sub-view state come from D; state bound to S is not retained across the project-identity change
+      - the destination sub-view and active tab are derived from the destination URL per FR-PROJ-HEADER-001
+      - a full browser document reload is not required; this requirement governs replacement of the project-bound React view during client-side routing
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given project S is rendered at '/project/{sourceId}' and uncached project D is accessible, when the client-side URL changes to '/project/{destinationId}' and D's project response is pending, then projectLoadingIndicator is visible and projectHeader, projectTitle, projectViewTabSelector, and project overview content for S are not rendered
+      - given the URL now addresses destination project D, system requests project data using destinationId and does not continue presenting data for sourceId
+      - given D's project response succeeds, projectLoadingIndicator is removed, projectTitle shows D's title, projectViewTabSelector is rendered for D, the destination sub-view is visible, and S's title and project-bound content remain absent
+      - given a project-bound DOM view for S existed before the project URL changed, that source view is detached during D's loading state and the subsequently rendered project view is bound to D
+      - given the destination URL is '/project/{destinationId}/workflows', after D loads projectViewTabSelector has tab 'Workflows' active; given the destination URL is '/project/{destinationId}', tab 'Overview' is active per FR-PROJ-HEADER-001
 
     openQuestions: []
 

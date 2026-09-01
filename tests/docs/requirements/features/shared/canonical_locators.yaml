@@ -725,6 +725,9 @@ locatorMappings:
   projectHeaderFavouriteToggle:
     strategy: "{projectHeader} favourite toggle control for current project"
     confidence: inferred
+  projectLoadingIndicator:
+    strategy: "#container > .load-screen replacing projectHeader and project sub-view content while destination project data loads"
+    confidence: implemented
   projectMetadataAddContributorsButton:
     strategy: "{projectMetadataPermissionsPanel} control with label 'Add CourseFlow user' that shows the same addContributorsDialog as contextActionBarAddContributorsButton"
     confidence: inferred
