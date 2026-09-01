@@ -6,6 +6,9 @@ import { globalMessageSnackbar } from './global';
  * Scope cards with a parent locator (e.g. library resultsRegion) or use library* helpers below.
  */
 
+/** Matches course_flow/e2e_seed/constants.py E2E_FIXTURE_PROJECT_TITLE */
+export const E2E_FIXTURE_PROJECT_TITLE = 'E2E FIXTURE - Edit Section';
+
 /** Matches course_flow/e2e_seed/constants.py E2E_FIXTURE_WORKFLOW_TITLE */
 export const E2E_FIXTURE_WORKFLOW_TITLE = 'E2E Activity Workflow';
 
@@ -42,6 +45,9 @@ export function cardOwnerText(card: Locator): Locator {
 export function cardDescriptionText(card: Locator, description: string): Locator {
   return cardHeaderRegion(card).getByText(description, { exact: true });
 }
+
+/** Matches course_flow/e2e_seed/constants.py E2E_FIXTURE_TEMPLATE_PROJECT_TITLE */
+export const E2E_FIXTURE_TEMPLATE_PROJECT_TITLE = 'E2E FIXTURE - Workflow Templates';
 
 /** Matches course_flow/e2e_seed/constants.py template workflow titles */
 export const E2E_FIXTURE_TEMPLATE_ACTIVITY_TITLE = 'E2E Activity Template';
