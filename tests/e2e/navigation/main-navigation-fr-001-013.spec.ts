@@ -1,4 +1,5 @@
 import { test, expect } from '../../fixtures';
+import { projectWorkflowsUrlPattern } from '../../helpers/card-navigation';
 import {
   expectRelatedWorkflowLinkOpensInNewTab,
   expectRelatedWorkflowLinksSortedAz,
@@ -6,6 +7,11 @@ import {
   expectWorkflowContextSectionVisible,
   getNavigationLinkedWorkflows,
 } from '../../helpers/main-navigation-workflow-context';
+import {
+  getSeedAsset,
+  loadWorkflowManifest,
+  type ProjectCollectionAssetEntry,
+} from '../../helpers/manifest';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import {
   appearsInSection,
@@ -112,11 +118,26 @@ test.describe('Main navigation — calibration (FR-NAV-001-013)', () => {
       await expect(page).toHaveURL(/\/favourites\/?$/);
     });
 
-    test('FR-NAV-008: favourited item navigates to parent project route', async ({ page }) => {
+    test('FR-NAV-008: favourited item navigates to project Workflows view', async ({ page }) => {
+      const manifest = loadWorkflowManifest();
+      const favouriteProjects = getSeedAsset<ProjectCollectionAssetEntry>(
+        manifest,
+        'project.favourite_collection',
+      );
+
       const favourite = favouritedItemLinks(page).first();
       await expect(favourite).toBeVisible();
+      const projectTitle = (await favourite.innerText()).trim();
+      const favouriteProject = favouriteProjects.items.find(
+        (project) => project.title === projectTitle,
+      );
+      expect(
+        favouriteProject,
+        `Sidebar favourite "${projectTitle}" must match a seeded favourite project.`,
+      ).toBeDefined();
+
       await favourite.click();
-      await expect(page).toHaveURL(/\/project\/[0-9a-f-]+\/?$/);
+      await expect(page).toHaveURL(projectWorkflowsUrlPattern(favouriteProject!.uuid));
     });
   });
 

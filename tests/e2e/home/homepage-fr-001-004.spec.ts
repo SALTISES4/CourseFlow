@@ -1,4 +1,5 @@
 import { test, expect } from '../../fixtures';
+import { expectProjectCardClickNavigatesToWorkflowsView } from '../../helpers/card-navigation';
 import {
   clearHomeDismissCookies,
   expectHomeDashboardSectionOrder,
@@ -149,6 +150,15 @@ test.describe('Home dashboard — calibration (FR-HOME-001-004)', () => {
       await link.click();
       await expect(page).toHaveURL(/\/library\/?$/);
       await waitForLibraryResultsLoaded(page);
+    });
+
+    test('FR-CARD-003: clicking recent project card navigates to project Workflows view', async ({
+      page,
+    }) => {
+      const recentProject = getRecentHomeProjects(manifest)[0]!;
+      const card = homeRecentProjectsProjectCards(page).first();
+      await expect(cardTitleText(card)).toHaveText(recentProject.title);
+      await expectProjectCardClickNavigatesToWorkflowsView(page, card, recentProject.uuid);
     });
 
     test('shows 1–4 project cards only (no workflow cards)', async ({ page }) => {
