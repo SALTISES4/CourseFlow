@@ -79,10 +79,10 @@ def test_e2e_fixture_disciplines_match_code_owned_catalogue():
 
     assert list(
         Discipline.objects.filter(
-            code__in=[code for code, _label in E2E_DISCIPLINE_CATALOGUE]
+            code__in=E2E_DISCIPLINE_CATALOGUE
         )
-        .order_by("label")
-        .values_list("code", "label")
+        .order_by("code")
+        .values_list("code", flat=True)
     ) == list(E2E_DISCIPLINE_CATALOGUE)
 
 

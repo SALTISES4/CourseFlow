@@ -42,10 +42,17 @@ test.use({
  */
 
 type GraphViewPayload = {
-  sections: Array<{ uuid: string; title: string; position: number; threadUuid?: string | null }>;
+  sections: Array<{
+    uuid: string;
+    title: string;
+    titleCopyCount: number;
+    position: number;
+    threadUuid?: string | null;
+  }>;
   nodes: Array<{
     uuid: string;
     title: string;
+    titleCopyCount: number;
     sectionUuid: string | null;
     channelUuid: string | null;
     sectionRow: number | null;
@@ -178,7 +185,7 @@ test.describe('Duplicate section — FR-SEC-005', () => {
       await expect(sectionContainers(page)).toHaveCount(orderBefore.length, { timeout: 15_000 });
     });
 
-    test('empty source title duplicates as literal " (copy)"', async ({ page, workflow }) => {
+    test('empty source title duplicates with localized numbered fallback and copy suffix', async ({ page, workflow }) => {
       const blank = workflow.blankSection();
       const orderBefore = await sectionOrderUuids(page);
       const sourceIndex = orderBefore.indexOf(blank.uuid);
@@ -197,7 +204,9 @@ test.describe('Duplicate section — FR-SEC-005', () => {
 
         await sectionHeader(page, duplicateUuid).click();
         await expect(editSectionForm(page)).toBeVisible();
-        await expect(titleFieldInEditSectionForm(page)).toHaveValue(' (copy)');
+        await expect(titleFieldInEditSectionForm(page)).toHaveValue(
+          `Section ${sourceIndex + 2} (copy)`,
+        );
       } finally {
         if (duplicateUuid && (await sectionContainer(page, duplicateUuid).count()) > 0) {
           await deleteSectionViaHover(page, duplicateUuid);

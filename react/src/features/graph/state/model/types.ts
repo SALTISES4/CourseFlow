@@ -46,6 +46,7 @@ export interface SectionEntity {
   uuid: ResourceUuid
   graphUuid: GraphUuid
   title: string
+  titleCopyCount: number
   position: number
   threadUuid: ResourceUuid | null
 }
@@ -55,6 +56,8 @@ export interface ChannelEntity {
   uuid: ResourceUuid
   graphUuid: GraphUuid
   title: string
+  systemLabelCode: string | null
+  titleCopyCount: number
   /** Hex colour (e.g. `#6738ff`); empty string uses cyclic theme default in the UI. */
   colour: string
   position: number
@@ -66,6 +69,7 @@ export interface NodeEntity {
   /** Semantic layer (`course` | `activity` | `task`); immutable after creation. */
   nodeType: string
   title: string
+  titleCopyCount: number
   description: string
   contextClassification: ContextClassification | null
   taskClassification: TaskClassification | null
@@ -116,6 +120,7 @@ export interface OutcomeEntity {
   parentUuid: ResourceUuid | null
   order: number
   title: string
+  titleCopyCount: number
   description: string
   code: string
   tagIds: number[]

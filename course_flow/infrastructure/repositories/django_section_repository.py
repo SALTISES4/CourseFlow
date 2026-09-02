@@ -10,6 +10,7 @@ def _to_dto(sec: Section) -> SectionDTO:
         uuid=sec.uuid,
         graph_uuid=sec.graph.uuid,
         title=sec.title,
+        title_copy_count=sec.title_copy_count,
         position=sec.position,
         thread_uuid=sec.thread.uuid if sec.thread_id else None,
         date_created=sec.date_created,
@@ -74,6 +75,7 @@ class DjangoSectionRepository:
 
         if "title" in updates:
             sec.title = updates["title"]
+            sec.title_copy_count = 0
         if "position" in updates:
             sec.position = updates["position"]
         if "thread_uuid" in updates:

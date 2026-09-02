@@ -21,6 +21,7 @@ jobs:
           command: |
             cd react
             yarn install
+            yarn check-i18n
             yarn build
       - persist_to_workspace:
           root: ~/repo

@@ -11,7 +11,9 @@ class Channel(TimeStampedUUIDModel):
         on_delete=models.CASCADE,
         related_name="channels",
     )
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, blank=True)
+    system_label_code = models.CharField(max_length=64, null=True, blank=True)
+    title_copy_count = models.PositiveSmallIntegerField(default=0)
     colour = models.CharField(max_length=7, blank=True, default="")
     position = models.IntegerField(default=0)
     thread = models.OneToOneField(

@@ -11,10 +11,10 @@ see ``NotificationService.list_page_for_user``.
 from uuid import UUID
 
 from ninja import Router
-from ninja.errors import HttpError
 
 from course_flow.api.auth import BearerAuth, get_current_user
 from course_flow.api.deps import get_notification_service
+from course_flow.api.errors import ExpectedApiError
 from course_flow.api.schemas.notifications import (
     NotificationItemOut,
     NotificationItemOutResp,
@@ -25,6 +25,7 @@ from course_flow.api.schemas.notifications import (
 )
 from course_flow.application.services.notification_service import (
     DEFAULT_NOTIFICATION_PAGE_SIZE,
+    MAX_NOTIFICATION_PAGE_SIZE,
 )
 from course_flow.core.models import Notification
 
@@ -34,7 +35,9 @@ router = Router(tags=["notifications"], by_alias=True)
 def _notification_item_out(notification: Notification) -> NotificationItemOut:
     return NotificationItemOut(
         uuid=notification.uuid,
-        message=notification.message,
+        message_code=notification.message_code,
+        message_params=notification.message_params,
+        legacy_message=notification.legacy_message,
         is_read=notification.is_read,
         date_created=notification.date_created,
     )
@@ -42,7 +45,7 @@ def _notification_item_out(notification: Notification) -> NotificationItemOut:
 
 def _ensure_owner(*, notification: Notification, user_id: int) -> None:
     if notification.user_id != user_id:
-        raise HttpError(403, "You may not access this notification.")
+        raise ExpectedApiError(403, "notification_access_denied")
 
 
 @router.get(
@@ -64,7 +67,11 @@ def list_my_notifications(
             page_size=page_size,
         )
     except ValueError as exc:
-        raise HttpError(422, str(exc)) from exc
+        raise ExpectedApiError(
+            422,
+            "invalid_pagination",
+            params={"maximumPageSize": MAX_NOTIFICATION_PAGE_SIZE},
+        ) from exc
     return NotificationListOut(
         items=[_notification_item_out(row) for row in result.items],
         meta=NotificationListMetaOut(
@@ -107,7 +114,7 @@ def mark_one_notification_as_read(request, uuid: UUID):
     svc = get_notification_service()
     notif = svc.get_by_uuid(uuid)
     if notif is None:
-        raise HttpError(404, "Notification not found")
+        raise ExpectedApiError(404, "notification_not_found")
     _ensure_owner(notification=notif, user_id=current_user.id)
     notif = svc.mark_notification_read(notif)
     return NotificationItemOutResp(item=_notification_item_out(notif))
@@ -124,7 +131,7 @@ def delete_one_notification(request, uuid: UUID):
     svc = get_notification_service()
     notif = svc.get_by_uuid(uuid)
     if notif is None:
-        raise HttpError(404, "Notification not found")
+        raise ExpectedApiError(404, "notification_not_found")
     _ensure_owner(notification=notif, user_id=current_user.id)
     svc.delete_notification(notif)
     return 204

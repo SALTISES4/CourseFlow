@@ -15,6 +15,7 @@ import { selectSectionByUuid } from '@cf/features/graph/state/selectors/canonica
 import { GraphBoard } from '@cf/features/graph/state/selectors/graphBoard.selectors'
 import BetterSelectionManager from '@cf/features/selection/betterSelectionManager'
 import useHover from '@cf/hooks/useHover'
+import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import { CfObjectType } from '@cf/types/enum'
 import { RootState } from '@cfRedux/store'
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
@@ -31,6 +32,7 @@ import {
   useState
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { useResizeObserver } from 'usehooks-ts'
 
 import HoverMenu from './HoverMenu'
@@ -67,6 +69,7 @@ type SectionStateType = {
 }
 
 const Section = (props: SectionPropsType) => {
+  const { t } = useTranslation('workflow')
   const dispatch = useDispatch()
   const canEditParts = useResourcePermission(WorkflowPermission.PART_MANAGEMENT)
   const [state, setState] = useState<SectionStateType>({
@@ -259,8 +262,11 @@ const Section = (props: SectionPropsType) => {
   )
 
   const defaultText = !isStrategy
-    ? `Section ${(section.position ?? 0) + 1}`
-    : undefined
+    ? t('systemLabels.sectionNumber', {
+        number: (section.position ?? 0) + 1
+      })
+    : ''
+  const title = displaySystemTitle(t, section, defaultText)
 
   return (
     <>
@@ -281,13 +287,17 @@ const Section = (props: SectionPropsType) => {
             <StyledSection.SectionNumber>
               {props.index + 1}
             </StyledSection.SectionNumber>
-            {section.title ?? defaultText}
+            {title}
           </StyledSection.SectionTitle>
 
           <IconButton
             onClick={onCollapseIconClick}
             className="arrow-icon"
-            aria-label={props.condensed ? 'Expand section' : 'Collapse section'}
+            aria-label={
+              props.condensed
+                ? t('systemLabels.expandSection')
+                : t('systemLabels.collapseSection')
+            }
             aria-expanded={!props.condensed}
           >
             <KeyboardArrowDown />

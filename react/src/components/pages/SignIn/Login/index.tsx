@@ -4,7 +4,6 @@ import {
   selectAuthError,
   selectLoginPending
 } from '@cf/features/auth/state/auth.slice'
-import { _t } from '@cf/utility/Utility.class'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
 import type { AppDispatch } from '@cfRedux/store'
 import Button from '@mui/material/Button'
@@ -20,11 +19,13 @@ import {
   useState
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import * as Styled from '../styles'
 
 function LoginPage() {
+  const { t } = useTranslation('auth')
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const location = useLocation()
@@ -78,7 +79,7 @@ function LoginPage() {
             <Typography component="h2">CourseFlow</Typography>
           </Styled.LogoWrap>
           <Typography variant="body1">
-            {_t('Login to your CourseFlow account')}
+            {t('loginForm.heading')}
           </Typography>
           {error ? (
             <Typography color="error" role="alert">
@@ -86,7 +87,7 @@ function LoginPage() {
             </Typography>
           ) : null}
           <TextField
-            label={_t('Email')}
+            label={t('loginForm.email')}
             type="email"
             name="email"
             value={state.email}
@@ -95,7 +96,7 @@ function LoginPage() {
             required
           />
           <TextField
-            label={_t('Password')}
+            label={t('loginForm.password')}
             type="password"
             name="password"
             value={state.password}
@@ -104,7 +105,7 @@ function LoginPage() {
             required
           />
           <Link href="#" onClick={onResetPasswordClick}>
-            {_t('Forgot your password?')}
+            {t('loginForm.forgotPassword')}
           </Link>
           <Button
             type="submit"
@@ -113,11 +114,11 @@ function LoginPage() {
             disabled={pending}
             fullWidth
           >
-            {_t(pending ? 'Logging in...' : 'Login')}
+            {pending ? t('loginForm.loggingIn') : t('loginForm.submit')}
           </Button>
           <Typography variant="body1">
-            {_t("Don't have an account?")}{' '}
-            <Link href="/register">{_t('Register')}</Link>
+            {t('loginForm.noAccount')}{' '}
+            <Link href="/register">{t('loginForm.register')}</Link>
           </Typography>
         </Styled.Form>
       </Styled.Paper>

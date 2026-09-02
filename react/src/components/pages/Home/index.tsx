@@ -7,17 +7,19 @@ import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { CookieTypes } from '@cf/context/cookieContext'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
-import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { GridWrap, OuterContentWrap } from '@cfMUI/helper'
 import { exploreTemplateFilters } from '@cfPages/Library/Explore'
+import { useTranslation } from 'react-i18next'
 
 import Section from './components/Section'
 import Welcome from './components/Welcome'
 
 const Home = () => {
+  const { t } = useTranslation('home')
+  const { t: tLibrary } = useTranslation('library')
   const { data: projectsData, isLoading: projectsLoading } = useLibrarySearch({
     pagination: {
       page: 0,
@@ -58,8 +60,8 @@ const Home = () => {
   const projects = projectsData.items ?? []
   const templates = templatesData.items ?? []
 
-  const formattedProjects = formatLibraryObjects(projects)
-  const formattedTemplates = formatLibraryObjects(templates)
+  const formattedProjects = formatLibraryObjects(projects, tLibrary)
+  const formattedTemplates = formatLibraryObjects(templates, tLibrary)
 
   /*******************************************************
    * RENDER
@@ -70,9 +72,9 @@ const Home = () => {
       {!!projects.length && (
         <Section
           header={{
-            title: _t('Recent projects'),
+            title: t('sections.recentProjects'),
             seeAll: {
-              text: _t('View all projects'),
+              text: t('sections.viewAllProjects'),
               href: CFRoutes.LIBRARY
             }
           }}
@@ -88,10 +90,10 @@ const Home = () => {
       <Section
         header={{
           title: projects.length
-            ? _t('Explore templates')
-            : _t('Get started with templates'),
+            ? t('sections.exploreTemplates')
+            : t('sections.getStartedTemplates'),
           seeAll: {
-            text: _t('View all templates'),
+            text: t('sections.viewAllTemplates'),
             href: CFRoutes.EXPLORE,
             state: exploreTemplateFilters
           }
@@ -101,10 +103,8 @@ const Home = () => {
         <Alert
           sx={{ mb: 3 }}
           severity="info"
-          title={_t('How to use templates')}
-          subtitle={_t(
-            'Templates provide a pre-established structure anchored in pedagogical best practices so that you don’t need to start from scratch!'
-          )}
+          title={t('templates.howToTitle')}
+          subtitle={t('templates.howToHelp')}
           hideIfCookie={CookieTypes.HIDE_HOME_HOWTO_TEMPLATE_MESSAGE}
         />
         <GridWrap>

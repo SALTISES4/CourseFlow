@@ -82,6 +82,29 @@ def test_create_and_list_outcomes_in_graph_view(client: Client, user):
     assert len(view["outcomes"]) == 1
     assert view["outcomes"][0]["uuid"] == root_uuid
     assert view["outcomes"][0]["title"] == "Root A"
+    assert view["outcomes"][0]["titleCopyCount"] == 0
+
+
+@pytest.mark.django_db
+def test_duplicate_outcome_preserves_authored_title_and_increments_copy_count(
+    client: Client,
+    user,
+):
+    raw = _issue_token_for(user)
+    _workflow_uuid, graph_uuid = _create_workflow(client, raw)
+    graph = Graph.objects.get(uuid=graph_uuid)
+    root = Outcome.objects.create(graph=graph, title="Root A", order=0)
+
+    response = client.post(
+        f"/api/outcome/{root.uuid}/duplicate",
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+
+    assert response.status_code == 200, response.content
+    created = response.json()["changes"]["outcomes"]["created"][0]
+    assert created["title"] == "Root A"
+    assert created["titleCopyCount"] == 1
 
 
 @pytest.mark.django_db

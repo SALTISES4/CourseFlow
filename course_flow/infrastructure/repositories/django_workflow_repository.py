@@ -344,7 +344,9 @@ class DjangoWorkflowRepository(WorkflowRepositoryPort):
         description: str,
     ) -> WorkflowDTO:
         g = Graph.objects.create()
-        clean_title = (title or "").strip() or "Untitled"
+        clean_title = (title or "").strip()
+        if not clean_title:
+            raise ValueError("title must not be blank")
         Workflow.objects.create(
             graph=g,
             author_id=author_id,

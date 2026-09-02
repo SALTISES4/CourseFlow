@@ -1,11 +1,11 @@
 import { CFRoutes } from '@cf/router/appRoutes'
-import { _t } from '@cf/utility/Utility.class'
 import { formatHoursDuration } from '@cfComponents/DurationTextField'
 import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined'
 import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined'
 import Link from '@mui/material/Link'
 import { MouseEvent, useCallback } from 'react'
 import { generatePath } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import * as Styled from './styles'
 import { getIcon } from './utility'
@@ -20,18 +20,6 @@ type PropsType = {
   time?: number | null
 }
 
-function linkedIndicatorLabel(
-  parentWorkflowType: string | null | undefined
-): string {
-  if (parentWorkflowType === 'program') {
-    return _t('Linked course')
-  }
-  if (parentWorkflowType === 'course') {
-    return _t('Linked activity')
-  }
-  return _t('Linked workflow')
-}
-
 const Meta = ({
   workflow,
   parentWorkflowType,
@@ -39,6 +27,7 @@ const Meta = ({
   taskType,
   time
 }: PropsType) => {
+  const { t } = useTranslation('workflow')
   const contextIcon = getIcon('context', contextType)
   const taskIcon = getIcon('task', taskType)
   const workflowUrl = workflow
@@ -68,7 +57,13 @@ const Meta = ({
             rel="noopener noreferrer"
           >
             <LaunchOutlinedIcon />
-            {linkedIndicatorLabel(parentWorkflowType)}
+            {t(
+              parentWorkflowType === 'program'
+                ? 'linked.course'
+                : parentWorkflowType === 'course'
+                  ? 'linked.activity'
+                  : 'linked.workflow'
+            )}
           </Link>
         </Styled.WorkflowLink>
       )}

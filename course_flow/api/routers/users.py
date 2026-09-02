@@ -1,9 +1,9 @@
-from django.http import JsonResponse
 from ninja import Query, Router
 from ninja.errors import HttpError
 
 from course_flow.api.auth import BearerAuth, get_current_user
 from course_flow.api.deps import get_user_service
+from course_flow.api.errors import ExpectedApiError, validation_error
 from course_flow.api.schemas.users import (
     UserListItemOut,
     UserListMetaOut,
@@ -76,14 +76,11 @@ def patch_my_profile_settings(request, payload: UserProfileSettingsPatchIn):
     current_user = get_current_user(request)
     patch = payload.model_dump(exclude_unset=True)
     if "email" in patch:
-        raise HttpError(400, "Email updates are not supported")
+        raise ExpectedApiError(400, "email_update_not_supported")
     try:
         user = get_user_service().update_profile_settings(user_id=current_user.id, **patch)
     except ValidationError as exc:
-        return JsonResponse(
-            exc.errors,
-            status=400,
-        )
+        raise validation_error(exc.errors)
     if user is None:
         raise HttpError(404, "User not found")
     return UserProfileSettingsOutResp(item=_profile_out(user))
@@ -98,14 +95,11 @@ def patch_my_profile_password(request, payload: UserProfilePasswordPatchIn):
     current_user = get_current_user(request)
     patch = payload.model_dump(exclude_unset=True)
     if "password" not in patch or "new_password" not in patch:
-        raise HttpError(400, "Missing new password")
+        raise ExpectedApiError(400, "password_fields_required")
     try:
         user = get_user_service().reset_password(user_id=current_user.id, **patch)
     except ValidationError as exc:
-        return JsonResponse(
-            exc.errors,
-            status=400,
-        )
+        raise validation_error(exc.errors)
     if user is None:
         raise HttpError(404, "User not found")
 

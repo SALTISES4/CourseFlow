@@ -36,6 +36,7 @@ import {
 import {
   workflowNode,
   workflowNodeHoverDuplicateItem,
+  workflowNodeTitle,
 } from './workflow-graph.locators';
 import {
   workflowManualPlacementDialog,
@@ -113,7 +114,7 @@ test.describe('Duplicate node', () => {
       expectDuplicateEdgeIntegrity(before, after, source!.uuid, duplicateUuid);
     });
 
-    test('FR-WF-DUP-004: duplicate title appends (copy) when source has persisted title', async ({
+    test('FR-WF-DUP-004: duplicate title suffix is localized presentation metadata', async ({
       page,
       workflow,
     }) => {
@@ -133,7 +134,11 @@ test.describe('Duplicate node', () => {
         sourceUuid,
         before,
       );
-      expect(nodeByUuid(after, duplicateUuid)?.title).toBe(`${sourceTitle} (copy)`);
+      expect(nodeByUuid(after, duplicateUuid)?.title).toBe(sourceTitle);
+      expect(nodeByUuid(after, duplicateUuid)?.titleCopyCount).toBe(1);
+      await expect(workflowNodeTitle(page, duplicateUuid)).toHaveText(
+        `${sourceTitle} (copy)`,
+      );
       expect(nodeByUuid(after, sourceUuid)?.title).toBe(sourceTitle);
     });
   });

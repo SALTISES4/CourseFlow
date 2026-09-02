@@ -10,7 +10,8 @@
  * - If the server clamps `page` (e.g. after a delete), `meta.current_page` is synced into local state.
  * - Mutations invalidate all `listMyNotifications` queries so the current page refetches.
  *
- * Consumed fields per row: `uuid`, `is_read`, `message`, `date_created`.
+ * New rows use `message_code` plus `message_params`; pre-migration rows may
+ * carry `legacy_message` until they age out of the inbox.
  */
 import {
   deleteOneNotificationMutation,
@@ -19,7 +20,7 @@ import {
   markOneNotificationAsReadMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import type { NotificationItemOut } from '@cf/api/gen/types.gen'
-import strings from '@cf/utility/strings'
+import { normalizeLocale } from '@cf/i18n'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import * as SCCommon from '@cfMUI/helper'
 import DotsIcon from '@mui/icons-material/MoreHoriz'
@@ -38,10 +39,9 @@ import {
   useQueryClient
 } from '@tanstack/react-query'
 import { type MouseEvent, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import * as SC from './style'
-import { getErrorMessage } from '../../../utility/errorWrapper'
-
 const PAGE_SIZE = 10
 
 const invalidateAllNotificationListQueries = (queryClient: QueryClient) =>
@@ -58,10 +58,11 @@ const invalidateAllNotificationListQueries = (queryClient: QueryClient) =>
   })
 
 const NotificationsPage = (): JSX.Element => {
+  const { t, i18n } = useTranslation(['notifications', 'common'])
   const queryClient = useQueryClient()
   const [page, setPage] = useState(1)
 
-  const { data, error, isLoading, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     ...listMyNotificationsOptions({
       query: { page, page_size: PAGE_SIZE }
     })
@@ -109,6 +110,25 @@ const NotificationsPage = (): JSX.Element => {
   })
 
   const items = data?.items ?? []
+  const locale = normalizeLocale(i18n.resolvedLanguage)
+  const dateFormatter = new Intl.DateTimeFormat(locale, {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  })
+
+  const formatMessage = (notification: NotificationItemOut): string => {
+    if (notification.messageCode) {
+      const key = `messages.${notification.messageCode}`
+      return i18n.t(key, {
+        ns: 'notifications',
+        defaultValue: t('notifications:messageUnavailable'),
+        ...notification.messageParams
+      })
+    }
+
+    // Existing persisted prose remains readable, but new producers cannot use it.
+    return notification.legacyMessage ?? t('notifications:messageUnavailable')
+  }
 
   function handleMenuOpen(
     event: MouseEvent<HTMLElement>,
@@ -172,7 +192,7 @@ const NotificationsPage = (): JSX.Element => {
     return <Loader />
   }
   if (isError) {
-    return <div>An error occurred: {getErrorMessage(error)}</div>
+    return <div>{t('notifications:loadFailed')}</div>
   }
 
   if (!meta || meta.total === 0) {
@@ -180,9 +200,9 @@ const NotificationsPage = (): JSX.Element => {
       <SCCommon.OuterContentWrap>
         <SC.NotificationsWrap>
           <SC.NotificationsHeader>
-            <Typography variant="h1">{strings.notifications}</Typography>
+            <Typography variant="h1">{t('notifications:title')}</Typography>
             <Typography sx={{ marginTop: 3 }}>
-              {strings.noNotificationsYet}
+              {t('notifications:empty')}
             </Typography>
           </SC.NotificationsHeader>
         </SC.NotificationsWrap>
@@ -194,11 +214,11 @@ const NotificationsPage = (): JSX.Element => {
     <SCCommon.OuterContentWrap>
       <SC.NotificationsWrap>
         <SC.NotificationsHeader>
-          <Typography variant="h1">{strings.notifications}</Typography>
+          <Typography variant="h1">{t('notifications:title')}</Typography>
           {meta.unreadCount > 0 && (
             <SC.MarkAsRead>
               <Link href="#" underline="always" onClick={onMarkAllAsReadClick}>
-                {strings.markAllAsRead}
+                {t('notifications:markAllAsRead')}
               </Link>
             </SC.MarkAsRead>
           )}
@@ -215,7 +235,7 @@ const NotificationsPage = (): JSX.Element => {
               secondaryAction={
                 <IconButton
                   onClick={(e) => handleMenuOpen(e, n)}
-                  aria-label={strings.showNotificationsMenu}
+                  aria-label={t('notifications:showMenu')}
                   aria-haspopup="true"
                 >
                   <DotsIcon />
@@ -225,7 +245,7 @@ const NotificationsPage = (): JSX.Element => {
               <ListItemButton>
                 {!n.isRead && <Badge color="primary" variant="dot" />}
                 <ListItemText
-                  primary={n.dateCreated}
+                  primary={dateFormatter.format(new Date(n.dateCreated))}
                   secondary={
                     <Typography
                       sx={{ display: 'inline' }}
@@ -233,7 +253,7 @@ const NotificationsPage = (): JSX.Element => {
                       variant="body2"
                       color="text.primary"
                     >
-                      {n.message}
+                      {formatMessage(n)}
                     </Typography>
                   }
                 />
@@ -256,15 +276,17 @@ const NotificationsPage = (): JSX.Element => {
           open={!!pageState.menuAnchor}
           onClose={handleMenuClose}
           MenuListProps={{
-            'aria-label': strings.notificationOptions
+            'aria-label': t('notifications:options')
           }}
         >
           {pageState.notification && !pageState.notification.isRead && (
             <MenuItem onClick={onMarkAsReadClick}>
-              {strings.markAsRead}
+              {t('notifications:markAsRead')}
             </MenuItem>
           )}
-          <MenuItem onClick={onDeleteClick}>{strings.delete}</MenuItem>
+          <MenuItem onClick={onDeleteClick}>
+            {t('common:actions.delete')}
+          </MenuItem>
         </Menu>
       </SC.NotificationsWrap>
 

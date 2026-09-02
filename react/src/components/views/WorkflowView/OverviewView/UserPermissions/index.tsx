@@ -18,7 +18,6 @@ import {
   projectTeamRoleMenuOptions
 } from '@cf/utility/permissions'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
-import { _t } from '@cf/utility/Utility.class'
 import MenuButton from '@cfComponents/menu/MenuButton'
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
 import Avatar from '@mui/material/Avatar'
@@ -29,6 +28,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
 import { useCallback } from 'react'
 import { useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import * as SC from '../styles'
 
@@ -56,6 +56,8 @@ const UserPermissions = ({
   readOnly = false,
   projectUuid
 }: PropsType) => {
+  const { t } = useTranslation('workflow')
+  const { t: tWorkspace } = useTranslation('workspace')
   const { dispatch } = useDialog()
   const queryClient = useQueryClient()
   const { uuid: routeWorkflowUuid } = useParams()
@@ -110,14 +112,12 @@ const UserPermissions = ({
         },
         body: { role }
       })
-      enqueueSnackbar(_t("The contributor's role was successfully updated"), {
+      enqueueSnackbar(t('messages.roleUpdated'), {
         variant: SnackbarOptions.SUCCESS
       })
     } catch (err) {
       enqueueSnackbar(
-        _t(
-          "We encountered an issue and the contributor's role was not updated"
-        ),
+        t('messages.roleUpdateFailed'),
         { variant: SnackbarOptions.ERROR }
       )
       console.error('Failed to update contributor role:', err)
@@ -164,7 +164,7 @@ const UserPermissions = ({
               secondary={owner.email}
             />
             <Button variant="outlined" disabled>
-              {_t('Owner')}
+              {t('permissions.owner')}
             </Button>
           </SC.PermissionThumbnail>
         )}
@@ -186,14 +186,14 @@ const UserPermissions = ({
             />
             {readOnly ? (
               <Button variant="outlined" disabled>
-                {projectTeamRoleLabel(user.role)}
+                {projectTeamRoleLabel(user.role, tWorkspace)}
               </Button>
             ) : (
               <MenuButton
                 disabled={!canManageMembers}
                 selected={user.role}
                 options={[
-                  ...projectTeamRoleMenuOptions.map((item) => ({
+                  ...projectTeamRoleMenuOptions(tWorkspace).map((item) => ({
                     name: item.value,
                     label: item.label,
                     disabled: user.role === item.value
@@ -203,14 +203,14 @@ const UserPermissions = ({
                   },
                   {
                     name: 'remove',
-                    label: _t('Remove contributor'),
+                    label: t('permissions.removeContributor'),
                     onClick: onUserRemove(user.id, memberDisplayName(user))
                   }
                 ]}
                 onChange={(role) =>
                   onChangeHandler(role as ProjectTeamRoleSchema, user.id)
                 }
-                placeholder={projectTeamRoleLabel(user.role)}
+                placeholder={projectTeamRoleLabel(user.role, tWorkspace)}
               />
             )}
           </SC.PermissionThumbnail>
@@ -223,7 +223,7 @@ const UserPermissions = ({
                 <PersonAddAlt1Icon />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={_t('Add CourseFlow user')} />
+            <ListItemText primary={t('permissions.addUser')} />
           </SC.PermissionThumbnail>
         )}
       </SC.PermissionGrid>

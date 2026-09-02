@@ -2,6 +2,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile'
 import Typography from '@mui/material/Typography'
 import { ReactNode } from 'react'
 import { DropzoneOptions, FileRejection, useDropzone } from 'react-dropzone'
+import { useTranslation } from 'react-i18next'
 
 import FilePreview from './FilePreview'
 import { TextFiletypes, TextWrap, Wrap } from './styles'
@@ -24,6 +25,7 @@ const FileUploader = ({
   addFile,
   removeFile
 }: PropsType) => {
+  const { t } = useTranslation('common')
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (acceptedFiles, rejectedFiles) => {
       onFilesDrop([...acceptedFiles, ...rejectedFiles])
@@ -61,7 +63,8 @@ const FileUploader = ({
           <div>
             <UploadFileIcon />
             <Typography>
-              <span>Click to upload</span> or drag and drop
+              <span>{t('fileUpload.clickToUpload')}</span>{' '}
+              {t('fileUpload.dragAndDrop')}
             </Typography>
             {fileTypeMessage && (
               <TextFiletypes>{fileTypeMessage}</TextFiletypes>

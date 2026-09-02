@@ -5,11 +5,7 @@ from uuid import UUID
 from django.contrib.auth import get_user_model
 from django.db import transaction
 
-from course_flow.application.dto import (
-    DisciplineDTO,
-    ProjectTeamMemberDTO,
-    TagDTO,
-)
+from course_flow.application.dto import ProjectTeamMemberDTO, TagDTO
 from course_flow.core.models import Project, Tag, Team, TeamUser, Workflow
 
 User = get_user_model()
@@ -17,21 +13,6 @@ User = get_user_model()
 
 class ProjectRelationsService:
     """Read-side queries for project-related collections (not embedded on primary resources)."""
-
-    def list_disciplines(self, project_uuid: UUID) -> list[DisciplineDTO] | None:
-        try:
-            p = Project.objects.get(uuid=project_uuid)
-        except Project.DoesNotExist:
-            return None
-        return [
-            DisciplineDTO(
-                id=d.id,
-                code=d.code,
-                label=d.label,
-                translation_plural=d.translation_plural,
-            )
-            for d in p.disciplines.all().order_by("label", "id")
-        ]
 
     def list_tags(self, project_uuid: UUID) -> list[TagDTO] | None:
         try:

@@ -1,6 +1,5 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/Utility.class'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import { TTag } from '@cfRedux/types/type'
@@ -16,6 +15,7 @@ import RadioGroup from '@mui/material/RadioGroup'
 import { CourseFlowEntity, EUser } from '@XMLHTTP/types/entity'
 import { produce } from 'immer'
 import { MouseEvent, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface EProject extends CourseFlowEntity {
   author: EUser
@@ -43,31 +43,27 @@ enum EXPORT_FORMAT {
 
 const fields = {
   type: [
-    { value: EXPORT_TYPE.OUTCOME, label: 'Outcomes' },
-    { value: EXPORT_TYPE.NODE, label: 'Nodes' },
+    { value: EXPORT_TYPE.OUTCOME },
+    { value: EXPORT_TYPE.NODE },
     {
       value: EXPORT_TYPE.COURSE,
-      label: 'Course framework',
       showForType: ['project', 'course']
     },
     {
       value: EXPORT_TYPE.COMPETENCY,
-      label: 'Competency matrix',
       showForType: ['project', 'program']
     },
     {
       value: EXPORT_TYPE.SOBEC,
-      label: 'SOBEC validation',
       showForType: ['project', 'program']
     }
   ],
-  format: [
-    { value: EXPORT_FORMAT.EXCEL, label: 'Excel' },
-    { value: EXPORT_FORMAT.CSV, label: 'CSV' }
-  ]
+  format: [{ value: EXPORT_FORMAT.EXCEL }, { value: EXPORT_FORMAT.CSV }]
 }
 
 function ProjectExportDialog(data: EProject) {
+  const { t } = useTranslation('project')
+  const { t: tCommon } = useTranslation('common')
   const [state, setState] = useState({
     type: EXPORT_TYPE.OUTCOME,
     format: EXPORT_FORMAT.EXCEL
@@ -107,16 +103,19 @@ function ProjectExportDialog(data: EProject) {
   }
 
   const projectType = data.type
+  const localizedProjectType = t(`exportDialog.objectType.${projectType}`)
 
   return (
     <StyledDialog open={show} onClose={onDialogClose} fullWidth maxWidth="sm">
-      <DialogTitle>{_t(`Export ${projectType}`)}</DialogTitle>
+      <DialogTitle>
+        {t('exportDialog.title', { projectType: localizedProjectType })}
+      </DialogTitle>
       <DialogContent dividers>
         <StyledBox component="form">
-          <Alert severity="warning" title="TODO" />
+          <Alert severity="warning" title={t('exportDialog.unavailable')} />
           <FormControl>
             <FormLabel id="export-type-group-label">
-              {_t('Export type')}
+              {t('exportDialog.type')}
             </FormLabel>
             <RadioGroup
               aria-labelledby="export-type-group-label"
@@ -130,7 +129,7 @@ function ProjectExportDialog(data: EProject) {
                     key={index}
                     value={type.value}
                     control={<Radio />}
-                    label={_t(type.label)}
+                    label={t(`exportDialog.options.${type.value}`)}
                     onChange={() => onRadioChange('type', type.value)}
                     checked={type.value === state.type}
                   />
@@ -142,7 +141,7 @@ function ProjectExportDialog(data: EProject) {
           </FormControl>
           <FormControl>
             <FormLabel id="export-format-group-label">
-              {_t('Export format')}
+              {t('exportDialog.format')}
             </FormLabel>
             <RadioGroup
               aria-labelledby="export-format-group-label"
@@ -153,7 +152,7 @@ function ProjectExportDialog(data: EProject) {
                   key={index}
                   value={format.value}
                   control={<Radio />}
-                  label={_t(format.label)}
+                  label={t(`exportDialog.options.${format.value}`)}
                   onChange={() => onRadioChange('format', format.value)}
                   checked={format.value === state.format}
                 />
@@ -164,10 +163,10 @@ function ProjectExportDialog(data: EProject) {
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onDialogClose}>
-          {_t('Cancel')}
+          {tCommon('actions.cancel')}
         </Button>
         <Button variant="contained" onClick={onSubmit}>
-          {_t('Export')}
+          {t('actions.export')}
         </Button>
       </DialogActions>
     </StyledDialog>

@@ -79,8 +79,8 @@ requirements:
     mainFlow:
       - system identifies the source workflowChannel from workflowChannelHoverActionsMenuDuplicateItem on that workflowChannel's workflowChannelHeader, or from workflowEditChannelForm open in workflowRightSidebar for that workflowChannel
       - system creates a new workflowChannel in workflowChannelsHeaderRow immediately to the right of the source workflowChannel
-      - system copies only the source workflowChannel stored title and colour into the duplicate; workflowNodes assigned to the source workflowChannel are not duplicated into the new workflowChannel
-      - when the source workflowChannel has a title, the duplicate is created with that title plus ' (copy)' appended (for example 'Lesson (copy)' or 'My channel (copy)'); when the source workflowChannel has no title, the duplicate has no title and header display per FR-CHAN-002 applies
+      - system copies only the source workflowChannel persisted authored title, system-label identity, colour, and prior title-copy metadata into the duplicate; workflowNodes assigned to the source workflowChannel are not duplicated into the new workflowChannel
+      - system increments locale-neutral title-copy metadata without appending localized prose to the persisted title; workflowChannelHeaderTitleText and workflowEditChannelFormTitleField render the active-locale copy suffix after an authored title, translated system label, or untitled fallback
       - duplicate does not open or rebind workflowRightSidebar; sidebar tab and channel selection are unchanged unless the user subsequently selects the duplicate per FR-CHAN-001
 
     roleBehavior:
@@ -99,8 +99,9 @@ requirements:
       - given source workflowChannel C is at index K in left-to-right order, when duplicate completes, the new workflowChannel is at K+1 and following workflowChannels shift right by one index
       - given source workflowChannel C, when duplicate completes, a new workflowChannel appears immediately to the right of C in workflowChannelsHeaderRow with workflowChannelHeaderColorIndicator matching C and no workflowNodes in the new workflowChannel; given user opens workflowEditChannelForm for the duplicate per FR-CHAN-001, workflowEditChannelFormColorField shows that same colour
       - given source workflowChannel C has one or more workflowNodes assigned before duplicate, when duplicate completes, those workflowNodes remain assigned to C and none are assigned to the new duplicate workflowChannel
-      - given source workflowChannel has stored title 'Lesson', when duplicate completes, workflowChannelHeaderTitleText shows 'Lesson (copy)' per FR-CHAN-002; given user opens workflowEditChannelForm for the duplicate per FR-CHAN-001, workflowEditChannelFormTitleField shows 'Lesson (copy)'
-      - given source workflowChannel has no title, when duplicate completes, the duplicate has no title; workflowChannelHeaderTitleText shows 'Untitled node category' per FR-CHAN-002; given user opens workflowEditChannelForm for the duplicate per FR-CHAN-001, workflowEditChannelFormTitleField is blank
+      - given source workflowChannel has authored stored title 'Lesson', the duplicate persists title 'Lesson' with title-copy count 1; workflowChannelHeaderTitleText and workflowEditChannelFormTitleField show 'Lesson (copy)' in 'en-CA' and 'Lesson (copie)' in 'fr-CA'
+      - given source workflowChannel is an untouched system-labelled category, the duplicate preserves the same system-label code with title-copy count 1 and renders that label plus the active-locale copy suffix
+      - given source workflowChannel has neither a title nor system-label code, the duplicate keeps an empty persisted title with title-copy count 1 and renders the localized untitled fallback plus localized copy suffix
       - given actor is commenter with workflowChannelHoverActionsMenu visible per FR-CHAN-007, workflowChannelHoverActionsMenuDuplicateItem is disabled
       - given actor is viewer or user (published-access), workflowChannelHoverActionsMenu is not rendered on workflowChannelHeader hover per FR-CHAN-007, so workflowChannelHoverActionsMenuDuplicateItem is not reachable
       - given duplicate completes via workflowChannelHoverActionsMenuDuplicateItem, workflowRightSidebar tab and channel selection are unchanged until the user selects the duplicate per FR-CHAN-001

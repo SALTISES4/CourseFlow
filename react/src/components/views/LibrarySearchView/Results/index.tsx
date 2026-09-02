@@ -1,11 +1,10 @@
 import { LibrarySearchOut } from '@cf/api/gen'
-import { getErrorMessage } from '@cf/utility/errorWrapper'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
-import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
 import { Alert, Link, Skeleton, Typography } from '@mui/material'
 import { Link as LinkRouter } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export type ResultsProps = {
   data?: LibrarySearchOut
@@ -21,12 +20,12 @@ export type ResultsProps = {
 
 const Results = ({
   data,
-  error,
   isLoading,
   isError,
   errorMessage,
   override
 }: ResultsProps) => {
+  const { t } = useTranslation('library')
   if (isLoading) {
     return Array.from({ length: 10 }, (_, index) => (
       <Skeleton
@@ -44,22 +43,22 @@ const Results = ({
         {errorMessage}
       </Alert>
     ) : (
-      <ErrorView message={`An error occurred: ${getErrorMessage(error)}`} />
+      <ErrorView message={t('results.loadFailed')} />
     )
   }
 
   if (!data) {
     return (
       <ErrorView
-        message={_t('The content you were looking for is not found.')}
+        message={t('results.notFound')}
       />
     )
   }
-  const cards = formatLibraryObjects(data.items)
+  const cards = formatLibraryObjects(data.items, t)
 
   return (
     <>
-      {!cards.length && <Typography>{_t('No results found')}</Typography>}
+      {!cards.length && <Typography>{t('results.none')}</Typography>}
 
       {cards.map((item) => (
         <WorkflowCardWrapper
@@ -77,7 +76,7 @@ const Results = ({
       {/* TODO: ALL VIEW NOT IMPLEMENTED YET */}
       {cards.length > 10 && (
         <Link component={LinkRouter} to="#">
-          <Typography>{_t('+ See all')}</Typography>
+          <Typography>{t('results.seeAll')}</Typography>
         </Link>
       )}
     </>

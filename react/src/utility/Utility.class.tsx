@@ -1,9 +1,3 @@
-import { EDate } from '@XMLHTTP/types/entity'
-
-type GenericObject = {
-  [key: string]: string | GenericObject
-}
-
 // @todo this is a 'transition' class during global project restructure
 // it should be broken apart into domain specific areas and converted to modules
 class Utility {
@@ -39,30 +33,6 @@ class Utility {
     return obj === '' ? null : obj
   }
 
-  /**
-   * Add a string wrapper around a nested object of strings
-   * used to format API routes mainly
-   * @param obj
-   */
-  static wrapLeafStrings<T>(obj: GenericObject): T {
-    const traverse = (currentObj: GenericObject): GenericObject => {
-      Object.keys(currentObj).forEach((key) => {
-        if (typeof currentObj[key] === 'string') {
-          currentObj[key] = _t(currentObj[key] as string)
-        } else if (
-          typeof currentObj[key] === 'object' &&
-          currentObj[key] !== null
-        ) {
-          currentObj[key] = traverse(currentObj[key] as GenericObject)
-        }
-      })
-      return currentObj
-    }
-
-    const clonedObj = JSON.parse(JSON.stringify(obj))
-    return traverse(clonedObj) as T
-  }
-
   static getUserDisplay(user) {
     let str = ''
     if (user.firstName) {
@@ -95,21 +65,6 @@ class Utility {
   }
 
   /*******************************************************
-   * DATE TIME
-   *******************************************************/
-  static formatDate(dateString: EDate) {
-    const date = new Date(dateString)
-
-    // Create an Intl.DateTimeFormat instance with desired options
-    const formatter = new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-    return formatter.format(date)
-  }
-
-  /*******************************************************
    * SORT / MISC
    *******************************************************/
 
@@ -137,15 +92,6 @@ class Utility {
 }
 
 export default Utility
-
-/**
- * thin wrapper around the global django
- * @param str
- */
-export const _t = (str: string) => {
-  // used to return django gettext helper but we don't use that any more
-  return str
-}
 
 export const capitalize = (text: string) => {
   if (!text) {

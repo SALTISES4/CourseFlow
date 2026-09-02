@@ -1,4 +1,3 @@
-import { _t } from '@cf/utility/Utility.class'
 import FilterMultiselect, {
   FilterMultiselectOption
 } from '@cfComponents/filters/FilterMultiselect'
@@ -8,6 +7,7 @@ import LibraryHelper, {
 } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import { produce } from 'immer'
 import { Dispatch, SetStateAction, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const DisciplineFilter = ({
   show,
@@ -18,6 +18,7 @@ const DisciplineFilter = ({
   options: FilterMultiselectOption[]
   setSearchFilterState: Dispatch<SetStateAction<SearchOptions>>
 }) => {
+  const { t } = useTranslation('library')
   const onChange = useCallback(
     (values: SearchFilterOption[]) => {
       setSearchFilterState(
@@ -37,8 +38,8 @@ const DisciplineFilter = ({
 
   return (
     <FilterMultiselect
-      placeholder={_t('Discipline')}
-      searchPlaceholder={_t('Find discipline')}
+      placeholder={t('filters.discipline')}
+      searchPlaceholder={t('filters.findDiscipline')}
       options={options}
       onChange={onChange}
     />

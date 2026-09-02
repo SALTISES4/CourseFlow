@@ -2,11 +2,12 @@ import { WorkflowType } from '@cf/api/gen'
 import { deleteWorkflowPermanentlyMutation } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { _t } from '@cf/utility/Utility.class'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export const useMenuActions = () => {
+  const { t } = useTranslation('workflow')
   const { dispatch: dispatchDialog } = useDialog()
   const navigate = useNavigate()
   const { onError, onSuccess } = useGenericMsgHandler()
@@ -59,7 +60,7 @@ export const useMenuActions = () => {
     }
     if (
       window.confirm(
-        _t('Are you sure you want to permanently delete this workflow?')
+        t('menu.deleteConfirmation')
       )
     ) {
       try {

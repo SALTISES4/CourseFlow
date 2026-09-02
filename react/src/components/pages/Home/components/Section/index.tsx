@@ -1,4 +1,3 @@
-import { _t } from '@cf/utility/Utility.class'
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
 import { SxProps, styled } from '@mui/material/styles'
@@ -39,14 +38,14 @@ const Section = ({ sx, header, children }: PropsType) => (
   <SectionWrap sx={sx}>
     {header && (
       <SectionHeader>
-        <Typography variant="h5">{_t(header.title)}</Typography>
+        <Typography variant="h5">{header.title}</Typography>
         {header.seeAll && (
           <Link
             component={RouterLink}
             to={header.seeAll.href ?? ''}
             state={header.seeAll.state}
           >
-            {_t(header.seeAll.text || 'See all')}
+            {header.seeAll.text}
           </Link>
         )}
       </SectionHeader>

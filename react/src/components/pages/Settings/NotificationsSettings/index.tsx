@@ -4,8 +4,6 @@ import {
   patchMyNotificationSettingsMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import strings from '@cf/utility/strings'
-import { _t } from '@cf/utility/Utility.class'
 import { OuterContentWrap } from '@cfMUI/helper'
 import Box from '@mui/material/Box'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -16,6 +14,7 @@ import Typography from '@mui/material/Typography'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ChangeEvent, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 const PageTitle = styled(Box)(({ theme }) => ({
   paddingTop: theme.spacing(4),
@@ -28,6 +27,7 @@ const PageTitle = styled(Box)(({ theme }) => ({
 }))
 
 const NotificationsSettingsPage = () => {
+  const { t } = useTranslation('settings')
   const queryClient = useQueryClient()
   const { data } = useQuery({
     ...getMyNotificationSettingsOptions()
@@ -69,14 +69,12 @@ const NotificationsSettingsPage = () => {
       })
       reset({ notifications: response.item.notificationsActive })
       onSuccess({
-        message: _t('Your notification settings have been updated')
+        localizedMessage: t('notifications.updated')
       })
     } catch {
       setValue('notifications', previousValue)
       onError({
-        message: _t(
-          'We encountered an issue and your notification settings were not updated'
-        )
+        localizedMessage: t('notifications.updateFailed')
       })
     }
   }
@@ -84,7 +82,7 @@ const NotificationsSettingsPage = () => {
   return (
     <OuterContentWrap>
       <PageTitle>
-        <Typography variant="h1">{strings.notificationSettings}</Typography>
+        <Typography variant="h1">{t('notifications.title')}</Typography>
       </PageTitle>
 
       <form>
@@ -102,7 +100,7 @@ const NotificationsSettingsPage = () => {
                     disabled={patchNotificationSettings.isPending}
                   />
                 }
-                label={strings.productUpdatesAgree}
+                label={t('notifications.productUpdates')}
               />
             )}
           />

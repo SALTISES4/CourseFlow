@@ -13,7 +13,6 @@ import { linkNodeWorkflow } from '@cf/features/graph/state/thunks/graphMutations
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import type { AppDispatch } from '@cf/redux/store'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
-import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import { StyledDialog } from '@cfComponents/dialog/styles'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -31,6 +30,7 @@ import Fuse from 'fuse.js'
 import { produce } from 'immer'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 type StateType = {
   selected: string | null
@@ -49,6 +49,9 @@ const initialState: StateType = {
 }
 
 function NodeLinkWorkflowDialog() {
+  const { t } = useTranslation('workflow')
+  const { t: tLibrary } = useTranslation('library')
+  const { t: tCommon } = useTranslation('common')
   const dispatch = useDispatch<AppDispatch>()
   const { payload, show, onClose } = useDialog(DialogMode.NODE_LINK_WORKFLOW)
   const nodeSelector = useMemo(
@@ -71,14 +74,15 @@ function NodeLinkWorkflowDialog() {
         : null
   const dialogTitle =
     parentWorkflowType === 'program'
-      ? _t('Link a course')
-      : _t('Link an activity')
+      ? t('linkDialog.courseTitle')
+      : t('linkDialog.activityTitle')
 
   const [state, setState] = useState<StateType>(initialState)
   const { selected, workflowData, filteredWorkflows, loading, loadError } =
     state
   const filteredResults = formatLibraryObjects(
-    filteredWorkflows ?? workflowData ?? []
+    filteredWorkflows ?? workflowData ?? [],
+    tLibrary
   )
 
   const onDialogClose = useCallback(() => {
@@ -233,7 +237,7 @@ function NodeLinkWorkflowDialog() {
         <Box sx={{ px: 6 }}>
           <TextField
             variant="standard"
-            label={_t('Search')}
+            label={t('linkDialog.search')}
             fullWidth
             disabled={loading || loadError || workflowData === null}
             onChange={debounce(onSearchChange, 400)}
@@ -247,7 +251,7 @@ function NodeLinkWorkflowDialog() {
           />
           {loading && <Loader />}
           {loadError && (
-            <Box sx={{ py: 4 }}>{_t('Could not load workflows.')}</Box>
+            <Box sx={{ py: 4 }}>{t('linkDialog.loadFailed')}</Box>
           )}
           {!loading &&
             !loadError &&
@@ -266,17 +270,17 @@ function NodeLinkWorkflowDialog() {
             ) : (
               <Box sx={{ py: 4 }}>
                 {filteredWorkflows !== null
-                  ? _t('There are no exact matches.')
+                  ? t('linkDialog.noExactMatches')
                   : parentWorkflowType === 'program'
-                    ? _t('No course found')
-                    : _t('No activity found')}
+                    ? t('linkDialog.noCourse')
+                    : t('linkDialog.noActivity')}
               </Box>
             ))}
         </Box>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onDialogClose}>
-          {_t('Cancel')}
+          {tCommon('actions.cancel')}
         </Button>
         <Button
           variant="contained"
@@ -284,8 +288,8 @@ function NodeLinkWorkflowDialog() {
           onClick={onSubmit}
         >
           {parentWorkflowType === 'program'
-            ? _t('Link course')
-            : _t('Link activity')}
+            ? t('linkDialog.linkCourse')
+            : t('linkDialog.linkActivity')}
         </Button>
       </DialogActions>
     </StyledDialog>

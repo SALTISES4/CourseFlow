@@ -35,12 +35,16 @@ from course_flow.tests.node_helpers import create_grid_node
 
 @pytest.fixture
 def user_a():
-    return get_user_model().objects.create_user(email="cascade-a@example.com", password="x")
+    return get_user_model().objects.create_user(
+        email="cascade-a@example.com", password="x"
+    )
 
 
 @pytest.fixture
 def user_b():
-    return get_user_model().objects.create_user(email="cascade-b@example.com", password="x")
+    return get_user_model().objects.create_user(
+        email="cascade-b@example.com", password="x"
+    )
 
 
 def _graph_with_workflow(owner, *, project=None):
@@ -61,14 +65,14 @@ def test_project_delete_cascades_graph_team_favorites_not_discipline_or_tag_rows
     user_a,
 ):
     p = Project.objects.create(owner=user_a, title="P")
-    d = Discipline.objects.create(code="d", label="D")
+    d = Discipline.objects.create(code="d")
     ProjectDiscipline.objects.create(project=p, discipline=d)
     tag = Tag.objects.create(project=p, label="T")
     wf = _graph_with_workflow(user_a, project=p)
     FavoriteProject.objects.create(user=user_a, project=p)
     Team.objects.get_or_create(project=p)
 
-    pid, did, tag_id, wf_id = p.id, d.id, tag.id, wf.id
+    pid, did, wf_id = p.id, d.id, wf.id
     p.delete()
 
     assert not Project.objects.filter(pk=pid).exists()
@@ -87,7 +91,7 @@ def test_user_delete_cascades_owned_projects_graphs_notifications_favorites_comm
 ):
     p = Project.objects.create(owner=user_a, title="P")
     wf = _graph_with_workflow(user_a, project=p)
-    Notification.objects.create(user=user_a, message="hi")
+    Notification.objects.create(user=user_a, legacy_message="hi")
     FavoriteProject.objects.create(user=user_a, project=p)
     thread = Thread.objects.create()
     Comment.objects.create(thread=thread, author=user_a, body="c")
@@ -214,10 +218,9 @@ def test_node_delete_cascades_edges_and_thread(user_a):
         target_port="1",
     )
 
-    eid, tid, n1_id = (
+    eid, tid = (
         Edge.objects.get(source_node=n1).id,
         th1.id,
-        n1.id,
     )
     n1.delete()
     assert not Edge.objects.filter(pk=eid).exists()

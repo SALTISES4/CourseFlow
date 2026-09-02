@@ -149,6 +149,7 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
     uuid: section.uuid,
     graphUuid,
     title: section.title,
+    titleCopyCount: section.titleCopyCount ?? 0,
     position: section.position,
     threadUuid: section.threadUuid ?? null
   }))
@@ -157,6 +158,8 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
     uuid: channel.uuid,
     graphUuid,
     title: channel.title,
+    systemLabelCode: channel.systemLabelCode ?? null,
+    titleCopyCount: channel.titleCopyCount ?? 0,
     colour: channel.colour ?? '',
     position: channel.position,
     threadUuid: channel.threadUuid ?? null
@@ -204,6 +207,7 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
     parentUuid: outcome.parentUuid ?? null,
     order: outcome.order,
     title: outcome.title ?? '',
+    titleCopyCount: outcome.titleCopyCount ?? 0,
     description: outcome.description ?? '',
     code: outcome.code ?? '',
     tagIds: outcome.tagIds ?? [],
@@ -235,6 +239,7 @@ export const fetchWorkflowGraphBundle = async (
 
 function mapNodeMetaFromApi(node: {
   title?: string
+  titleCopyCount?: number
   description?: string
   contextClassification?: ContextClassification | null
   taskClassification?: TaskClassification | null
@@ -250,6 +255,7 @@ function mapNodeMetaFromApi(node: {
 }): Pick<
   NodeEntity,
   | 'title'
+  | 'titleCopyCount'
   | 'description'
   | 'contextClassification'
   | 'taskClassification'
@@ -265,6 +271,7 @@ function mapNodeMetaFromApi(node: {
 > {
   return {
     title: node.title ?? '',
+    titleCopyCount: node.titleCopyCount ?? 0,
     description: node.description ?? '',
     contextClassification: node.contextClassification ?? null,
     taskClassification: node.taskClassification ?? null,
@@ -293,6 +300,8 @@ function mapMutationChannel(
     uuid: channel.uuid,
     graphUuid: channel.graphUuid ?? graphUuid,
     title: channel.title,
+    systemLabelCode: channel.systemLabelCode ?? null,
+    titleCopyCount: channel.titleCopyCount ?? 0,
     colour: channel.colour ?? '',
     position: channel.position,
     threadUuid: channel.threadUuid ?? null
@@ -307,6 +316,7 @@ function mapMutationSection(
     uuid: section.uuid,
     graphUuid: section.graphUuid ?? graphUuid,
     title: section.title,
+    titleCopyCount: section.titleCopyCount ?? 0,
     position: section.position,
     threadUuid: section.threadUuid ?? null
   }
@@ -341,6 +351,7 @@ function mapMutationOutcome(
     parentUuid: outcome.parentUuid ?? null,
     order: outcome.order,
     title: outcome.title ?? '',
+    titleCopyCount: outcome.titleCopyCount ?? 0,
     description: outcome.description ?? '',
     code: outcome.code ?? '',
     tagIds: outcome.tagIds ?? [],
@@ -737,6 +748,7 @@ function mapSectionOut(section: SectionOut): SectionEntity {
     uuid: section.uuid,
     graphUuid: section.graphUuid,
     title: section.title,
+    titleCopyCount: section.titleCopyCount ?? 0,
     position: section.position,
     threadUuid: section.threadUuid ?? null
   }
@@ -762,6 +774,8 @@ function mapChannelOut(channel: ChannelOut): ChannelEntity {
     uuid: channel.uuid,
     graphUuid: channel.graphUuid,
     title: channel.title,
+    systemLabelCode: channel.systemLabelCode ?? null,
+    titleCopyCount: channel.titleCopyCount ?? 0,
     colour: channel.colour ?? '',
     position: channel.position,
     threadUuid: channel.threadUuid ?? null

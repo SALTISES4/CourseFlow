@@ -1,7 +1,6 @@
 import { LibraryContentTypeOut } from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { CFRoutes } from '@cf/router/appRoutes'
-import strings from '@cf/utility/strings'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
 import RelatedWorkflowList from '@cfPages/Workflow/WorkflowTabs/components/RelatedWorkflowList'
@@ -19,11 +18,13 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, generatePath, useLocation } from 'react-router-dom'
 
 import * as SC from './styles'
 
 const Favorites = () => {
+  const { t } = useTranslation('common')
   const { data, isLoading, isError } = useLibrarySearch({
     pagination: {
       page: 0,
@@ -46,7 +47,7 @@ const Favorites = () => {
             sx={{ margin: 0 }}
             primary={
               <SC.SeeAllLink sx={{ px: 2, py: 1 }} to={CFRoutes.FAVORITES}>
-                {strings.viewAll}
+                {t('navigation.viewAll')}
               </SC.SeeAllLink>
             }
           />
@@ -68,7 +69,9 @@ const Favorites = () => {
       <Divider sx={{ mt: 2 }} />
 
       <SC.SectionWrap>
-        <SC.SectionLabel variant="body1">{strings.favourites}</SC.SectionLabel>
+        <SC.SectionLabel variant="body1">
+          {t('navigation.favourites')}
+        </SC.SectionLabel>
 
         <List>
           {data.items.map((item, id) => {
@@ -103,6 +106,7 @@ const Favorites = () => {
 }
 
 const Sidebar = () => {
+  const { t } = useTranslation('common')
   const location = useLocation()
 
   const [collapsed, setCollapsed] = useState(
@@ -124,7 +128,7 @@ const Sidebar = () => {
       <SC.Collapse
         color="primary"
         size="small"
-        aria-label="collapse sidebar"
+        aria-label={t('navigation.collapseSidebar')}
         collapsed={collapsed}
         onClick={toggleCollapse}
       >
@@ -152,7 +156,7 @@ const Sidebar = () => {
               <ListItemIcon>
                 <HomeIcon />
               </ListItemIcon>
-              <ListItemText primary={strings.home} />
+              <ListItemText primary={t('navigation.home')} />
             </ListItemButton>
           </ListItem>
 
@@ -166,7 +170,7 @@ const Sidebar = () => {
               <ListItemIcon>
                 <FolderCopyIcon />
               </ListItemIcon>
-              <ListItemText primary={strings.myLibrary} />
+              <ListItemText primary={t('navigation.myLibrary')} />
             </ListItemButton>
           </ListItem>
 
@@ -180,7 +184,7 @@ const Sidebar = () => {
               <ListItemIcon>
                 <SearchIcon />
               </ListItemIcon>
-              <ListItemText primary={strings.explore} />
+              <ListItemText primary={t('navigation.explore')} />
             </ListItemButton>
           </ListItem>
         </SC.MainMenuWrap>
@@ -198,7 +202,7 @@ const Sidebar = () => {
               <ListItemIcon>
                 <HelpRoundedIcon color="primary" />
               </ListItemIcon>
-              <ListItemText primary={strings.helpSupport} />
+              <ListItemText primary={t('navigation.helpSupport')} />
             </ListItemButton>
           </ListItem>
         </SC.HelpLink>

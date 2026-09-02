@@ -1,5 +1,5 @@
 import { useReferenceData } from '@cf/hooks/useReferenceData'
-import { _t } from '@cf/utility/Utility.class'
+import { useReferenceLabels } from '@cf/i18n/referenceLabels'
 import { StyledBox } from '@cfComponents/dialog/styles'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -16,22 +16,25 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import TextField from '@mui/material/TextField'
-import { useEffect, useState } from 'react'
+import type { TFunction } from 'i18next'
+import { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 
-const projectSchema = z.object({
-  title: z
-    .string()
-    .min(1, { message: _t('Project title cannot be empty') })
-    .max(200, {
-      message: _t('Project title cannot be longer than 200 characters')
-    }),
-  description: z.string().nullish(),
-  disciplines: z.array(z.string())
-})
+const createProjectSchema = (t: TFunction<'project'>) =>
+  z.object({
+    title: z
+      .string()
+      .min(1, { message: t('form.titleRequired') })
+      .max(200, {
+        message: t('form.titleMax', { count: 200 })
+      }),
+    description: z.string().nullish(),
+    disciplines: z.array(z.string())
+  })
 
-export type ProjectFormValues = z.infer<typeof projectSchema>
+export type ProjectFormValues = z.infer<ReturnType<typeof createProjectSchema>>
 
 const ProjectForm = ({
   defaultValues,
@@ -48,8 +51,21 @@ const ProjectForm = ({
   label: string
   submitLabel?: string
 }) => {
+  const { t } = useTranslation('project')
+  const { t: tCommon } = useTranslation('common')
+  const projectSchema = useMemo(() => createProjectSchema(t), [t])
   const { data: referenceData } = useReferenceData()
-  const disciplineOptions = referenceData?.disciplines ?? []
+  const { disciplineLabel, collator } = useReferenceLabels()
+  const disciplineOptions = useMemo(
+    () =>
+      (referenceData?.disciplines ?? [])
+        .map((option) => ({
+          code: option.code,
+          label: disciplineLabel(option.code)
+        }))
+        .sort((a, b) => collator.compare(a.label, b.label)),
+    [collator, disciplineLabel, referenceData]
+  )
   const [showDisciplines, setShowDisciplines] = useState(false)
 
   const {
@@ -96,17 +112,15 @@ const ProjectForm = ({
           <Alert
             sx={{ mb: 3 }}
             persistent
-            title={_t('Start by creating a project')}
-            subtitle={_t(
-              'All workflows, whether they are programs, courses, or activities, exist within projects. You must start by creating a project before proceeding to create any type of workflow.'
-            )}
+            title={t('form.firstProjectTitle')}
+            subtitle={t('form.firstProjectHelp')}
           />
         )}
         <StyledBox>
           <FormControl fullWidth error={!!errors.title}>
             <TextField
-              label={_t('Title')}
-              placeholder={_t('Project title')}
+              label={t('form.title')}
+              placeholder={t('form.titlePlaceholder')}
               variant="standard"
               required
               {...register('title')}
@@ -117,7 +131,7 @@ const ProjectForm = ({
 
           <FormControl fullWidth error={!!errors.description}>
             <TextField
-              label={_t('Description')}
+              label={t('form.description')}
               variant="standard"
               {...register('description')}
               error={!!errors.description}
@@ -127,7 +141,7 @@ const ProjectForm = ({
 
           <FormControl fullWidth error={!!errors.disciplines}>
             <InputLabel id="create-project-discipline">
-              {_t('Discipline')}
+              {t('form.discipline')}
             </InputLabel>
             <Controller
               name="disciplines"
@@ -135,7 +149,7 @@ const ProjectForm = ({
               render={({ field }) => (
                 <Select
                   {...field}
-                  label={_t('Discipline')}
+                  label={t('form.discipline')}
                   labelId="create-project-discipline"
                   variant="outlined"
                   open={showDisciplines}
@@ -194,7 +208,7 @@ const ProjectForm = ({
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onDialogClose}>
-          {_t('Cancel')}
+          {tCommon('actions.cancel')}
         </Button>
         <Button
           type="submit"
@@ -202,7 +216,7 @@ const ProjectForm = ({
           color="primary"
           disabled={!isDirty || !isValid}
         >
-          {submitLabel ?? _t('Edit project')}
+          {submitLabel || t('actions.edit')}
         </Button>
       </DialogActions>
     </form>

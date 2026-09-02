@@ -82,6 +82,7 @@ def test_register_creates_user_and_returns_usable_token(client: Client):
     assert body["user"]["firstName"] == "New"
     assert body["user"]["lastName"] == "User"
     assert body["user"]["accountRole"] == "student"
+    assert body["user"]["languagePreference"] == "en"
 
     user_model = get_user_model()
     db_user = user_model.objects.get(email="NewUser@example.com")
@@ -90,8 +91,9 @@ def test_register_creates_user_and_returns_usable_token(client: Client):
 
     me_response = client.get("/api/auth/me", **_auth_header(body["accessToken"]))
     assert me_response.status_code == 200
-    assert me_response.json()["item"]["uuid"] == str(db_user.uuid)
-    assert me_response.json()["item"]["accountRole"] == "student"
+    assert me_response.json()["uuid"] == str(db_user.uuid)
+    assert me_response.json()["accountRole"] == "student"
+    assert me_response.json()["languagePreference"] == "en"
 
 
 @pytest.mark.django_db
@@ -107,7 +109,10 @@ def test_register_rejects_duplicate_email(client: Client, user):
         content_type="application/json",
     )
     assert response.status_code == 409
-    assert response.json()["detail"] == "Email is already registered"
+    assert response.json() == {
+        "code": "email_already_registered",
+        "params": {},
+    }
 
 
 @pytest.mark.django_db
@@ -123,7 +128,10 @@ def test_register_requires_all_fields(client: Client):
         content_type="application/json",
     )
     assert response.status_code == 400
-    assert response.json()["detail"] == "All fields are required"
+    assert response.json() == {
+        "code": "registration_fields_required",
+        "params": {},
+    }
 
 
 @pytest.mark.django_db
@@ -132,7 +140,8 @@ def test_authenticated_me_succeeds_with_valid_bearer(client: Client, user):
 
     response = client.get("/api/auth/me", **_auth_header(raw_token))
     assert response.status_code == 200
-    assert response.json()["item"]["uuid"] == str(user.uuid)
+    assert response.json()["uuid"] == str(user.uuid)
+    assert response.json()["languagePreference"] == "en"
 
 
 @pytest.mark.django_db
@@ -147,7 +156,7 @@ def test_expired_token_is_rejected(client: Client, user):
 
     response = client.get("/api/auth/me", **_auth_header(raw_token))
     assert response.status_code == 401
-    assert response.json()["detail"] == "Token expired"
+    assert response.json() == {"code": "token_expired", "params": {}}
 
 
 @pytest.mark.django_db
@@ -156,7 +165,7 @@ def test_revoked_token_is_rejected(client: Client, user):
 
     response = client.get("/api/auth/me", **_auth_header(raw_token))
     assert response.status_code == 401
-    assert response.json()["detail"] == "Token revoked"
+    assert response.json() == {"code": "token_revoked", "params": {}}
 
 
 @pytest.mark.django_db
@@ -191,7 +200,7 @@ def test_create_project_uses_authenticated_user_for_owner(
     )
     assert response.status_code == 200
     body = response.json()
-    assert body["ownerId"] == user.id
+    assert body["owner"]["id"] == user.id
     project = Project.objects.get(uuid=body["uuid"])
     assert project.owner_id == user.id
     assert project.owner_id != other_user.id

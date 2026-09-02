@@ -1,5 +1,4 @@
 import { getRelatedWorkflowsOptions } from '@cf/api/gen/@tanstack/react-query.gen'
-import { _t } from '@cf/utility/Utility.class'
 import * as MainSidebar from '@cfComponents/globalNav/MainSidebar/styles'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { workflowUrl } from '@cfComponents/UIPrimitives/Titles'
@@ -10,6 +9,7 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import { useQuery } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 /**
  * https://courseflow-staging.mydalite.org/course-flow/workflow/19
@@ -22,6 +22,7 @@ import { Link, useParams } from 'react-router-dom'
 
  */
 const RelatedWorkflowList = () => {
+  const { t } = useTranslation('workflow')
   const { uuid } = useParams()
 
   const relatedQuery = useQuery({
@@ -50,7 +51,7 @@ const RelatedWorkflowList = () => {
         <Divider sx={{ mt: 2 }} />
         <MainSidebar.SectionWrap>
           <MainSidebar.SectionLabel variant="body1">
-            {_t('Appears in')}
+            {t('related.appearsIn')}
           </MainSidebar.SectionLabel>
           <List data-test-id="panel-other-worflows">
             {relatedQuery.data.appearsIn.map((workflow) => {
@@ -89,7 +90,7 @@ const RelatedWorkflowList = () => {
         <Divider sx={{ mt: 2 }} />
         <MainSidebar.SectionWrap>
           <MainSidebar.SectionLabel variant="body1">
-            {_t('Contains')}
+            {t('related.contains')}
           </MainSidebar.SectionLabel>
           <List>
             {relatedQuery.data.contains.map((workflow) => {

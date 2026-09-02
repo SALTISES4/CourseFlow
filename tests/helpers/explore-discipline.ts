@@ -166,7 +166,6 @@ export async function installExploreDisciplineSearchMock(page: Page): Promise<vo
               allowedDisciplineCodes.has(option.code),
             ).map((option) => ({
               code: option.code,
-              label: option.label,
             })),
           },
         },

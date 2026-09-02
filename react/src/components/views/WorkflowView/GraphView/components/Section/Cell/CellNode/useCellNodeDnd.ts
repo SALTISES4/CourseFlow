@@ -14,7 +14,6 @@ import { isOutcomeLink } from '@cf/features/graph/state/selectors/outcomes.selec
 import { svglinkAllowDND } from '@cf/features/graph/state/slices/svglink.slice'
 import { linkNodeOutcome } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import type { AppDispatch } from '@cf/redux/store'
-import { _t } from '@cf/utility/Utility.class'
 import { produce } from 'immer'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'

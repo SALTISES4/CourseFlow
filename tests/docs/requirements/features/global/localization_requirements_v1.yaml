@@ -1,0 +1,244 @@
+# Normalized requirements: application localization
+# Source: product decision and current implementation
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml (language control and persistence); tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml (localized discipline catalogue); tests/docs/requirements/features/library/explore_page_requirements_v1.yaml (localized discipline filtering)
+
+documentPreconditions:
+  - CourseFlow is loaded in a supported browser
+
+uiObjectDefinitions:
+  mainNavigation:
+    meaning: Canonical definition in tests/docs/requirements/features/navigation/main_navigation_requirements_v1.yaml.
+  profileLanguagePreferenceGroup:
+    meaning: Canonical definition in tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml.
+  profileLanguageOptionEnglish:
+    meaning: Canonical definition in tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml.
+  profileLanguageOptionFrench:
+    meaning: Canonical definition in tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml.
+  projectDisciplineField:
+    meaning: Canonical definition in tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml.
+  globalMessageSnackbar:
+    meaning: Canonical application feedback region.
+
+locatorMappings:
+  mainNavigation: "canonical_locators.yaml -> mainNavigation"
+  profileLanguagePreferenceGroup: "canonical_locators.yaml -> profileLanguagePreferenceGroup"
+  profileLanguageOptionEnglish: "canonical_locators.yaml -> profileLanguageOptionEnglish"
+  profileLanguageOptionFrench: "canonical_locators.yaml -> profileLanguageOptionFrench"
+  projectDisciplineField: "canonical_locators.yaml -> projectDisciplineField"
+  globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
+
+requirements:
+  - id: FR-LOC-001
+    title: Supported locales, locale source, and fallback
+
+    designEvidence: []
+
+    actors:
+      - visitor
+      - user
+
+    uiObjects:
+      - mainNavigation
+
+    preconditions:
+      - documentPreconditions for this file hold
+
+    trigger:
+      - visitor loads CourseFlow without an authenticated user preference
+      - authenticated user loads or reloads CourseFlow
+
+    mainFlow:
+      - CourseFlow supports English Canadian as locale 'en-CA' and French Canadian as locale 'fr-CA'
+      - before an authenticated preference is available, CourseFlow uses English Canadian
+      - for an authenticated user, the persisted language preference determines the active interface locale before the authenticated application shell is presented
+      - persisted/API values 'en', 'en-ca', 'fr', and 'fr-ca' are normalized to the corresponding supported locale
+      - missing, blank, malformed, or unsupported locale values fall back to English Canadian
+      - the HTML document language matches the active locale
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given an authenticated user whose persisted language preference is 'fr-ca', the authenticated application shell is displayed in French Canadian and the HTML document language is 'fr-CA'
+      - given an authenticated user whose persisted language preference is 'en-ca', the authenticated application shell is displayed in English Canadian and the HTML document language is 'en-CA'
+      - given no authenticated preference or an unsupported preference, the interface falls back to English Canadian without failing to render
+      - the authenticated shell does not first present a complete English interface before applying a known French preference
+
+    openQuestions: []
+
+  - id: FR-LOC-002
+    title: Immediate language switching and persistence
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - profileLanguagePreferenceGroup
+      - profileLanguageOptionEnglish
+      - profileLanguageOptionFrench
+      - mainNavigation
+
+    preconditions:
+      - user is authenticated
+      - profile language settings are available
+
+    trigger:
+      - user changes profileLanguagePreferenceGroup and successfully saves the profile
+
+    mainFlow:
+      - CourseFlow persists the selected language preference
+      - CourseFlow changes the active locale immediately without a page reload
+      - visible system text, accessible names, localized option labels and ordering, dates, and third-party component text rerender in the selected locale
+      - the selected locale remains active after reload and a subsequent authenticated session
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given English Canadian is active, when user selects French and the profile update succeeds, mainNavigation and profile controls display French Canadian copy without reload
+      - given French Canadian is active, when user selects English and the profile update succeeds, mainNavigation and profile controls display English Canadian copy without reload
+      - the successfully selected locale survives reload and sign-out followed by sign-in
+      - a failed profile update does not commit a new persisted locale
+
+    openQuestions: []
+
+  - id: FR-LOC-003
+    title: System-owned text and authored-content boundary
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+
+    preconditions:
+      - documentPreconditions for this file hold
+
+    trigger:
+      - active locale changes
+      - a system-owned label or user-authored value is rendered
+
+    mainFlow:
+      - all reachable system-owned visible text and accessibility text are rendered from the active-locale catalogue
+      - interpolation and singular/plural selection use keyed locale rules rather than assembled English fragments
+      - system-owned persisted labels use stable semantic identity and locale-neutral copy counters rather than finalized English prose
+      - titles, descriptions, comments, tags, personal names, imported content, and explicit label overrides are user-authored content and remain exactly as authored when locale changes
+      - editing a system-owned default label converts that label to authored content
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - switching between English Canadian and French Canadian changes untouched default workflow channel labels, generated section fallbacks, and duplicate suffixes
+      - switching locales does not change an authored project title, workflow title, graph-object title override, description, comment, tag, or personal name
+      - duplicating a system-owned or authored graph object does not persist an English or French copy suffix in its authored title field
+      - all interactive controls retain meaningful localized accessible names in both supported locales
+
+    openQuestions: []
+
+  - id: FR-LOC-004
+    title: Fixed reference labels and locale-aware ordering
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - projectDisciplineField
+
+    preconditions:
+      - a fixed discipline, context, task-classification, or time-unit value is displayed
+
+    trigger:
+      - fixed reference data is loaded or the active locale changes
+
+    mainFlow:
+      - the backend provides stable discipline codes and reference values without presentation labels
+      - CourseFlow maps each supported code/value to an English Canadian or French Canadian client label
+      - visible option collections are sorted using locale-aware collation after labels are translated
+      - changing locale recomputes both labels and ordering from the stable codes
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - every backend-supported discipline, context, task classification, and time unit has an English Canadian and French Canadian label
+      - projectDisciplineField displays labels for the active locale and sorts them with that locale's collation rules
+      - no discipline database row or reference API response is the source of an English/French presentation label
+      - an unknown reference code does not crash rendering and is visibly marked as unavailable/unknown while remaining observable to developers
+
+    openQuestions: []
+
+  - id: FR-LOC-005
+    title: Locale-aware formatting and third-party controls
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - mainNavigation
+
+    preconditions:
+      - locale-sensitive system data or a third-party control is visible
+
+    trigger:
+      - data is formatted or the active locale changes
+
+    mainFlow:
+      - dates, times, relative times, numbers, and percentages use the active locale where they are displayed
+      - MUI components, date pickers, file upload controls, rich-text controls, graph controls, tooltips, prompts, validation messages, and empty/loading/error states use localized system text
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - the same notification date and comment-relative time use English Canadian conventions in 'en-CA' and French Canadian conventions in 'fr-CA'
+      - reachable third-party controls do not expose default English text while French Canadian is active
+      - French text remains usable without clipped actions or inaccessible controls at supported responsive widths
+
+    openQuestions: []
+
+  - id: FR-LOC-006
+    title: Structured localized errors and notifications
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - globalMessageSnackbar
+
+    preconditions:
+      - an expected backend failure or system notification is presented
+
+    trigger:
+      - an API request fails
+      - a notification is listed
+
+    mainFlow:
+      - expected backend failures provide stable error codes, optional field association, and interpolation parameters
+      - CourseFlow renders recognized errors from the active-locale catalogue
+      - unexpected or unknown failures render a localized generic message and do not expose arbitrary backend diagnostic prose
+      - new system notifications store a validated stable message code and parameters and are rendered in the active locale
+      - pre-migration notifications may display their legacy stored message, but new system producers cannot create legacy-message notifications
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - recognized authentication, profile, password, project, and workflow failures display specific guidance in the active locale
+      - unknown backend detail is not shown verbatim in globalMessageSnackbar
+      - changing locale rerenders a code-based system notification but does not alter a legacy notification's stored text
+      - an unknown notification code renders a localized unavailable message and remains observable to developers
+
+    openQuestions: []
+
+literalCopyPolicy:
+  - Exact English literals in existing feature requirements remain the required 'en-CA' copy unless that feature requirement explicitly says otherwise.
+  - When 'fr-CA' is active, the corresponding reviewed French Canadian catalogue text is required instead of the English literal.
+  - Exact copy assertions are locale-scoped; non-localization tests should select controls by stable role, value, test id, or structure rather than assuming an English accessible name.
+
+designEvidenceLinkTable: []

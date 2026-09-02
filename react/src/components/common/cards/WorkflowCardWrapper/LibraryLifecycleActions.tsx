@@ -12,7 +12,6 @@ import {
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { hasPermission } from '@cf/context/workspacePermissionsContext'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { _t } from '@cf/utility/Utility.class'
 import { StyledDialog } from '@cfComponents/dialog/styles'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -22,6 +21,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { MouseEvent, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 type Confirmation = 'delete' | 'restore-parent' | null
 
@@ -40,6 +40,7 @@ const LibraryLifecycleActions = ({
   projectUuid,
   projectIsArchived
 }: Props) => {
+  const { t } = useTranslation('common')
   const [confirmation, setConfirmation] = useState<Confirmation>(null)
   const queryClient = useQueryClient()
   const { onError, onSuccess } = useGenericMsgHandler()
@@ -92,7 +93,13 @@ const LibraryLifecycleActions = ({
       }
       await refreshLibrary()
       onSuccess({
-        message: _t(`Your ${isProject ? 'project' : 'workflow'} was restored`)
+        localizedMessage: t('lifecycle.restored', {
+          object: t(
+            isProject
+              ? 'lifecycle.object.project'
+              : 'lifecycle.object.workflow'
+          )
+        })
       })
     } catch (error) {
       onError(error)
@@ -106,7 +113,7 @@ const LibraryLifecycleActions = ({
           throw new Error('The parent project is unavailable')
         }
         await restoreProject.mutateAsync({ path: { uuid: projectUuid } })
-        onSuccess({ message: _t('Your project was restored') })
+        onSuccess({ localizedMessage: t('lifecycle.parentRestored') })
       } else if (confirmation === 'delete') {
         if (isProject) {
           await deleteProject.mutateAsync({ path: { uuid } })
@@ -114,9 +121,13 @@ const LibraryLifecycleActions = ({
           await deleteWorkflow.mutateAsync({ path: { uuid } })
         }
         onSuccess({
-          message: _t(
-            `Your ${isProject ? 'project' : 'workflow'} was permanently deleted`
-          )
+          localizedMessage: t('lifecycle.permanentlyDeleted', {
+            object: t(
+              isProject
+                ? 'lifecycle.object.project'
+                : 'lifecycle.object.workflow'
+            )
+          })
         })
       }
       setConfirmation(null)
@@ -133,7 +144,9 @@ const LibraryLifecycleActions = ({
   }
 
   const restoreParent = confirmation === 'restore-parent'
-  const objectLabel = isProject ? 'project' : 'workflow'
+  const localizedObjectLabel = t(
+    isProject ? 'lifecycle.object.project' : 'lifecycle.object.workflow'
+  )
 
   return (
     <>
@@ -153,7 +166,7 @@ const LibraryLifecycleActions = ({
               isProject ? 'project-card-restore' : 'workflow-card-restore'
             }
           >
-            {_t(isProject ? 'Restore project' : 'Restore')}
+            {t(isProject ? 'lifecycle.restoreProject' : 'lifecycle.restore')}
           </Button>
         )}
         {canDelete && (
@@ -171,7 +184,7 @@ const LibraryLifecycleActions = ({
                 : 'workflow-card-delete-permanently'
             }
           >
-            {_t('Delete permanently')}
+            {t('lifecycle.deletePermanently')}
           </Button>
         )}
       </Stack>
@@ -183,24 +196,24 @@ const LibraryLifecycleActions = ({
         maxWidth="sm"
       >
         <DialogTitle>
-          {_t(
-            restoreParent
-              ? 'Restore parent project'
-              : `Permanently delete ${objectLabel}`
-          )}
+          {restoreParent
+            ? t('lifecycle.restoreParentTitle')
+            : t('lifecycle.permanentlyDeleteTitle', {
+                object: localizedObjectLabel
+              })}
         </DialogTitle>
         <DialogContent dividers>
           <Typography>
-            {_t(
-              restoreParent
-                ? 'This workflow belongs to an archived project. Restore the project and all of its workflows?'
-                : `This ${objectLabel} will be permanently deleted and cannot be recovered.`
-            )}
+            {restoreParent
+              ? t('lifecycle.restoreParentWarning')
+              : t('lifecycle.permanentlyDeleteWarning', {
+                  object: localizedObjectLabel
+                })}
           </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={closeConfirmation} disabled={busy}>
-            {_t('Cancel')}
+            {t('actions.cancel')}
           </Button>
           <Button
             variant="contained"
@@ -208,7 +221,9 @@ const LibraryLifecycleActions = ({
             onClick={confirm}
             disabled={busy}
           >
-            {_t(restoreParent ? 'Restore project' : `Delete ${objectLabel}`)}
+            {restoreParent
+              ? t('lifecycle.restoreProject')
+              : t('lifecycle.deleteObject', { object: localizedObjectLabel })}
           </Button>
         </DialogActions>
       </StyledDialog>

@@ -5,6 +5,7 @@ import {
 } from '@cf/api/workspaceAccessEvents'
 import { enqueueSnackbar } from 'notistack'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 type Workspace = 'project' | 'workflow'
 
@@ -32,6 +33,7 @@ export function useWorkspaceAccessGuard({
   routePathname,
   revalidate
 }: UseWorkspaceAccessGuardOptions) {
+  const { t } = useTranslation('common')
   const [revokedResourceUuid, setRevokedResourceUuid] = useState<string>()
   const roleRef = useRef(resourceRole)
   const recheckingRef = useRef(false)
@@ -50,7 +52,7 @@ export function useWorkspaceAccessGuard({
         return
       }
       if (isArchivedApiError(error)) {
-        enqueueSnackbar(`this ${workspace} has been archived`, {
+        enqueueSnackbar(t(`access.${workspace}Archived`), {
           variant: 'error'
         })
         return
@@ -59,11 +61,11 @@ export function useWorkspaceAccessGuard({
         setRevokedResourceUuid(resourceUuid)
         return
       }
-      enqueueSnackbar(`you do not have access to this ${workspace}`, {
+      enqueueSnackbar(t(`access.${workspace}Denied`), {
         variant: 'error'
       })
     },
-    [resourceUuid, workspace]
+    [resourceUuid, t, workspace]
   )
 
   const recheck = useCallback(async () => {

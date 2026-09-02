@@ -1,3 +1,5 @@
+import type { SupportedLocale } from '@cf/i18n/config'
+import { enUS, frFR } from '@mui/material/locale'
 import { Theme, alpha, createTheme } from '@mui/material/styles'
 
 declare module '@mui/material' {
@@ -55,7 +57,7 @@ const palette = {
   }
 }
 
-const theme: Theme = createTheme({
+const themeOptions = {
   palette,
   typography: {
     fontFamily: ['"Open Sans"', 'Helvetica', 'Arial', 'sans-serif'].join(',')
@@ -139,6 +141,12 @@ const theme: Theme = createTheme({
       }
     }
   }
-})
+}
+
+export function createCourseFlowTheme(locale: SupportedLocale): Theme {
+  return createTheme(themeOptions, locale === 'fr-CA' ? frFR : enUS)
+}
+
+const theme = createCourseFlowTheme('en-CA')
 
 export default theme

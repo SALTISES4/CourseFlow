@@ -14,6 +14,7 @@ export type GraphViewEdge = {
 export type GraphViewNode = {
   uuid: string;
   title: string;
+  titleCopyCount: number;
   sectionUuid: string | null;
   channelUuid: string | null;
   sectionRow: number | null;
@@ -24,12 +25,20 @@ export type GraphViewNode = {
 export type GraphViewChannel = {
   uuid: string;
   title: string;
+  systemLabelCode: string | null;
+  titleCopyCount: number;
   colour: string;
   position: number;
 };
 
 export type GraphViewPayload = {
-  sections: Array<{ uuid: string; title: string; position: number; threadUuid?: string | null }>;
+  sections: Array<{
+    uuid: string;
+    title: string;
+    titleCopyCount: number;
+    position: number;
+    threadUuid?: string | null;
+  }>;
   channels: GraphViewChannel[];
   nodes: GraphViewNode[];
   edges: GraphViewEdge[];

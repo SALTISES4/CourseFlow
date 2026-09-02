@@ -1,6 +1,4 @@
 import { defaultColumnSettings } from '@cf/utility/constants'
-import { _t } from '@cf/utility/Utility.class'
-
 class ThemeHelper {
   static getInitials(name: string): string {
     const split = name.trim().split(' ')

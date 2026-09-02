@@ -3,14 +3,15 @@ import {
   hasPermission,
   useWorkspacePermissions
 } from '@cf/context/workspacePermissionsContext'
-import { _t } from '@cf/utility/Utility.class'
 import { MenuItemType, MenuWithOverflow } from '@cfComponents/menu/Menu'
 import { useMenuActions } from '@cfPages/Project/hooks/useMenuActions'
 import EditIcon from '@mui/icons-material/Edit'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
+import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
 const ActionMenu = () => {
+  const { t } = useTranslation('project')
   const { uuid } = useParams()
   const projectUuid = uuid ?? ''
   const { resource: permissions } = useWorkspacePermissions()
@@ -28,7 +29,7 @@ const ActionMenu = () => {
   const menuItems: MenuItemType[] = [
     {
       uuid: 'edit-project',
-      title: _t('Edit project'),
+      title: t('actions.edit'),
       action: openEditDialog,
       iconButton: {
         icon: <EditIcon />
@@ -39,7 +40,7 @@ const ActionMenu = () => {
     },
     {
       uuid: 'share',
-      title: _t('Sharing'),
+      title: t('actions.share'),
       iconButton: {
         icon: <PersonAddIcon />
       },
@@ -50,14 +51,14 @@ const ActionMenu = () => {
     },
     {
       uuid: 'duplicate-project',
-      content: _t('Copy project'),
+      content: t('actions.copy'),
       action: () => duplicateProject(projectUuid),
       show: false
     },
     {
       uuid: 'archive-project',
       action: archiveProject,
-      content: _t('Archive project'),
+      content: t('actions.archive'),
       show:
         !isArchived &&
         hasPermission(permissions, ProjectPermission.ARCHIVE_PROJECT)
@@ -65,7 +66,7 @@ const ActionMenu = () => {
     {
       uuid: 'unarchive-project',
       action: unarchiveProject,
-      content: _t('Restore project'),
+      content: t('actions.restore'),
       show:
         isArchived &&
         hasPermission(permissions, ProjectPermission.RESTORE_PROJECT)
@@ -73,7 +74,7 @@ const ActionMenu = () => {
     {
       uuid: 'hard-delete-project',
       action: deleteProject,
-      content: _t('Permanently delete project'),
+      content: t('actions.permanentlyDelete'),
       show:
         isArchived &&
         hasPermission(permissions, ProjectPermission.DELETE_PROJECT)

@@ -8,7 +8,6 @@ import {
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import type { AppDispatch } from '@cf/redux/store'
-import { _t } from '@cf/utility/Utility.class'
 import {
   SidebarActions,
   SidebarContent,
@@ -30,6 +29,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 const EditNodeLink = ({ nodeLinkId }: { nodeLinkId: string }) => {
   const dispatch = useDispatch()
@@ -53,6 +53,8 @@ const EditNodeLink = ({ nodeLinkId }: { nodeLinkId: string }) => {
 }
 
 const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
+  const { t } = useTranslation('workflow')
+  const { t: tCommon } = useTranslation('common')
   const dispatch = useDispatch<AppDispatch>()
   const canEdit = useResourcePermission(WorkflowPermission.NODE_LINK_MANAGEMENT)
   const [titleDraft, setTitleDraft] = useState(edge.title)
@@ -172,12 +174,12 @@ const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
     <SidebarInnerWrap>
       <SidebarContent>
         <SidebarTitle as="h3" variant="h6">
-          {_t('Edit node link')}
+          {t('edit.nodeLink')}
         </SidebarTitle>
         <Stack direction="column" gap={3}>
           <TextField
             variant="outlined"
-            label="Title"
+            label={t('edit.title')}
             size="small"
             value={titleDraft}
             onChange={onTitleChange}
@@ -186,7 +188,7 @@ const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
           />
           <Box>
             <Typography id="edit-text-position" gutterBottom>
-              {_t('Text position')}
+              {t('edit.textPosition')}
             </Typography>
             <Slider
               value={textPosition}
@@ -198,7 +200,7 @@ const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
           </Box>
           <FormControlLabel
             sx={{ ml: 0 }}
-            label="Dashed line"
+            label={t('edit.dashedLine')}
             control={
               <Switch
                 checked={dashed}
@@ -217,7 +219,7 @@ const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
           onClick={onDelete}
           disabled={!canEdit}
         >
-          {_t('Delete')}
+          {tCommon('actions.delete')}
         </Button>
       </SidebarActions>
     </SidebarInnerWrap>

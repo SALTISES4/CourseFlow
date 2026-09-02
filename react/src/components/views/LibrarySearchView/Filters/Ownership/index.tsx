@@ -1,4 +1,3 @@
-import { _t } from '@cf/utility/Utility.class'
 import FilterButton from '@cfComponents/filters/FilterButton'
 import LibraryHelper, {
   SearchOptions

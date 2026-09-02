@@ -8,8 +8,5 @@ E2E_DISCIPLINE_CATALOGUE = DISCIPLINE_CATALOGUE
 
 def ensure_e2e_disciplines() -> None:
     """Synchronize the code-owned catalogue without exposing database PKs."""
-    for code, label in E2E_DISCIPLINE_CATALOGUE:
-        Discipline.objects.update_or_create(
-            code=code,
-            defaults={"label": label},
-        )
+    for code in E2E_DISCIPLINE_CATALOGUE:
+        Discipline.objects.get_or_create(code=code)

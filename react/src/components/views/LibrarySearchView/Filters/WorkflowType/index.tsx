@@ -1,5 +1,4 @@
 import { LibraryContentTypeIn, LibrarySearchIn } from '@cf/api/gen'
-import { _t } from '@cf/utility/Utility.class'
 import FilterMultiselect from '@cfComponents/filters/FilterMultiselect'
 import { SearchFilterOption } from '@cfComponents/filters/types'
 import LibraryHelper, {

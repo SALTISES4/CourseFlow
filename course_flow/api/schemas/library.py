@@ -150,8 +150,6 @@ class LibraryItemOut(CamelSchema):
 
 class LibraryDisciplineOptionOut(CamelSchema):
     code: str
-    label: str
-    translation_plural: str
 
 
 class LibraryAllowedFiltersOut(CamelSchema):

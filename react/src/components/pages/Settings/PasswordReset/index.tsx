@@ -1,7 +1,6 @@
-import { CourseFlowApiError } from '@cf/api/apiError'
+import { getApiFieldError } from '@cf/api/apiError'
 import { patchMyProfilePasswordMutation } from '@cf/api/gen/@tanstack/react-query.gen'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { _t } from '@cf/utility/Utility.class'
 import { OuterContentWrap } from '@cfMUI/helper'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Box from '@mui/material/Box'
@@ -11,7 +10,10 @@ import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useMutation } from '@tanstack/react-query'
+import type { TFunction } from 'i18next'
+import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 
 const StyledTitleBox = styled(Box)(({ theme }) => ({
@@ -30,60 +32,61 @@ const StyledFormBox = styled(Box)({
   }
 })
 
-const passwordGuidelines = _t(
-  'Your password must contain at least 12 characters and include a mix of numbers, letters and symbols'
-)
+const createPasswordSchema = (t: TFunction<'profile'>) => {
+  const passwordGuidelines = t('password.validation.strength')
 
-const passwordSchema = z
-  .object({
-    oldPass: z
-      .string()
-      .min(1, { message: _t('Current password is required') })
-      .max(200),
+  return z
+    .object({
+      oldPass: z
+        .string()
+        .min(1, { message: t('password.validation.currentRequired') })
+        .max(200),
 
-    newPass: z
-      .string()
-      .min(1, { message: _t('New password is required') })
-      .refine(
-        (password) =>
-          password.length >= 12 &&
-          /[a-zA-Z]/.test(password) &&
-          /\d/.test(password) &&
-          /[^a-zA-Z0-9]/.test(password),
-        {
-          message: passwordGuidelines
-        }
-      ),
+      newPass: z
+        .string()
+        .min(1, { message: t('password.validation.newRequired') })
+        .refine(
+          (password) =>
+            password.length >= 12 &&
+            /[a-zA-Z]/.test(password) &&
+            /\d/.test(password) &&
+            /[^a-zA-Z0-9]/.test(password),
+          { message: passwordGuidelines }
+        ),
 
-    newPassConfirm: z
-      .string()
-      .min(1, { message: _t('Confirm new password is required') })
-  })
-  .superRefine((data, context) => {
-    if (data.oldPass && data.newPass && data.oldPass === data.newPass) {
-      context.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['newPass'],
-        message: _t('New password must be different from your current password')
-      })
-    }
+      newPassConfirm: z
+        .string()
+        .min(1, { message: t('password.validation.confirmRequired') })
+    })
+    .superRefine((data, context) => {
+      if (data.oldPass && data.newPass && data.oldPass === data.newPass) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['newPass'],
+          message: t('password.validation.newMatchesCurrent')
+        })
+      }
 
-    if (
-      data.newPass &&
-      data.newPassConfirm &&
-      data.newPass !== data.newPassConfirm
-    ) {
-      context.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['newPassConfirm'],
-        message: _t('Passwords do not match')
-      })
-    }
-  })
+      if (
+        data.newPass &&
+        data.newPassConfirm &&
+        data.newPass !== data.newPassConfirm
+      ) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['newPassConfirm'],
+          message: t('password.validation.mismatch')
+        })
+      }
+    })
+}
 
-type FormValues = z.infer<typeof passwordSchema>
+type FormValues = z.infer<ReturnType<typeof createPasswordSchema>>
 
 const PasswordResetPage = () => {
+  const { t } = useTranslation('profile')
+  const passwordSchema = useMemo(() => createPasswordSchema(t), [t])
+  const passwordGuidelines = t('password.validation.strength')
   const patchMyProfilePassword = useMutation({
     ...patchMyProfilePasswordMutation()
   })
@@ -114,28 +117,35 @@ const PasswordResetPage = () => {
           newPassword: formData.newPass
         }
       })
-      onSuccess({ message: _t('Your password has been successfully reset') })
+      onSuccess({ localizedMessage: t('password.messages.updated') })
       reset()
     } catch (err) {
-      const errorBody = err instanceof CourseFlowApiError ? err.body : err
-      if (typeof errorBody === 'object' && errorBody !== null) {
-        if ('password' in errorBody) {
-          setError('oldPass', {
-            type: 'server',
-            message: String(errorBody.password)
-          })
-          return
-        }
-        if ('newPassword' in errorBody) {
-          setError('newPass', {
-            type: 'server',
-            message: String(errorBody.newPassword)
-          })
+      const currentPasswordIssue = getApiFieldError(err, 'password')
+      if (currentPasswordIssue?.code === 'current_password_incorrect') {
+        setError('oldPass', {
+          type: 'server',
+          message: t('password.validation.currentIncorrect')
+        })
+        return
+      }
+
+      const newPasswordIssue = getApiFieldError(err, 'newPassword')
+      if (newPasswordIssue) {
+        const message =
+          newPasswordIssue.code === 'new_password_required'
+            ? t('password.validation.newRequired')
+            : newPasswordIssue.code === 'new_password_matches_current'
+              ? t('password.validation.newMatchesCurrent')
+              : newPasswordIssue.code === 'password_strength_required'
+                ? t('password.validation.strength')
+                : null
+        if (message) {
+          setError('newPass', { type: 'server', message })
           return
         }
       }
       onError({
-        message: _t('We encountered an issue and your password was not reset')
+        localizedMessage: t('password.messages.updateFailed')
       })
     }
   }
@@ -143,7 +153,7 @@ const PasswordResetPage = () => {
   return (
     <OuterContentWrap narrow>
       <StyledTitleBox>
-        <Typography variant="h1">{_t('Password reset')}</Typography>
+        <Typography variant="h1">{t('password.title')}</Typography>
       </StyledTitleBox>
 
       <StyledFormBox>
@@ -154,7 +164,7 @@ const PasswordResetPage = () => {
                 {...register('oldPass')}
                 type="password"
                 required
-                label={_t('Current password')}
+                label={t('password.fields.current')}
                 error={!!errors.oldPass}
                 helperText={errors && errors.oldPass?.message}
                 variant="standard"
@@ -168,7 +178,7 @@ const PasswordResetPage = () => {
                 {...register('newPass', { deps: ['newPassConfirm'] })}
                 type="password"
                 required
-                label={_t('New password')}
+                label={t('password.fields.new')}
                 error={!!errors.newPass}
                 helperText={
                   (errors && errors.newPass?.message) ?? passwordGuidelines
@@ -184,7 +194,7 @@ const PasswordResetPage = () => {
                 {...register('newPassConfirm')}
                 type="password"
                 required
-                label={_t('Confirm new password')}
+                label={t('password.fields.confirm')}
                 error={!!errors.newPassConfirm}
                 helperText={errors && errors.newPassConfirm?.message}
                 variant="standard"
@@ -200,7 +210,7 @@ const PasswordResetPage = () => {
                 !isDirty || !isValid || patchMyProfilePassword.isPending
               }
             >
-              {_t('Reset password')}
+              {t('password.actions.reset')}
             </Button>
           </Box>
         </form>

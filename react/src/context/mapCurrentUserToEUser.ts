@@ -1,4 +1,8 @@
 import { UserSummaryOut } from '@cf/api/gen'
+import {
+  normalizeLocale,
+  toApiLanguagePreference
+} from '@cf/i18n/config'
 import type { EUser } from '@XMLHTTP/types/entity'
 
 /**
@@ -14,6 +18,8 @@ export function mapCurrentUserToEUser(u: UserSummaryOut): EUser {
     lastName,
     name: `${firstName} ${lastName}`.trim() || u.email,
     email: u.email,
-    language: 'en'
+    language: toApiLanguagePreference(
+      normalizeLocale(u.languagePreference)
+    )
   }
 }

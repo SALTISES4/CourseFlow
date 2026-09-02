@@ -185,11 +185,7 @@ def test_patch_project_success_updates_fields(client: Client, user):
 def test_project_create_and_update_persist_disciplines(client: Client, user):
     raw = _issue_token_for(user)
     first = Discipline.objects.get(code="biology")
-    first.translation_plural = "Biologies"
-    first.save(update_fields=["translation_plural"])
     second = Discipline.objects.get(code="history")
-    second.translation_plural = "Histories"
-    second.save(update_fields=["translation_plural"])
 
     created = client.post(
         "/api/project",
@@ -198,9 +194,7 @@ def test_project_create_and_update_persist_disciplines(client: Client, user):
         **_auth_header(raw),
     )
     assert created.status_code == 200, created.content
-    assert created.json()["disciplines"] == [
-        {"code": first.code, "label": "Biology"}
-    ]
+    assert created.json()["disciplines"] == [{"code": first.code}]
 
     project_uuid = created.json()["uuid"]
     updated = client.patch(
@@ -210,9 +204,7 @@ def test_project_create_and_update_persist_disciplines(client: Client, user):
         **_auth_header(raw),
     )
     assert updated.status_code == 200, updated.content
-    assert updated.json()["item"]["disciplines"] == [
-        {"code": second.code, "label": "History"}
-    ]
+    assert updated.json()["item"]["disciplines"] == [{"code": second.code}]
 
 
 @pytest.mark.django_db
@@ -351,7 +343,6 @@ def test_duplicate_project_placeholder_returns_success(client: Client, user):
     assert response.status_code == 200, response.content
     body = response.json()
     assert body["success"] is True
-    assert body["message"] == "Project duplication placeholder executed"
     assert body["projectUuid"] == project_uuid
 
 

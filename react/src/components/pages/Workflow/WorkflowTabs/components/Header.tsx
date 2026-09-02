@@ -1,10 +1,10 @@
 import Favorite from '@cf/components/common/UIPrimitives/Favorite'
-import { _t } from '@cf/utility/Utility.class'
 import { workflowTitle } from '@cfComponents/UIPrimitives/Titles'
 import { OuterContentWrap } from '@cfMUI/helper'
 import type { WorkflowPageData } from '@cfPages/Workflow/types'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'react-i18next'
 
 const Header = ({
   workflow,
@@ -13,6 +13,7 @@ const Header = ({
   workflow: WorkflowPageData
   publicView: boolean
 }) => {
+  const { t } = useTranslation('common')
   return (
     <OuterContentWrap sx={{ pb: 0 }}>
       <Stack
@@ -33,7 +34,9 @@ const Header = ({
           {workflowTitle({
             title: workflow.title,
             code: '',
-            deleted: false
+            deleted: false,
+            fallbackText: t('labels.untitled'),
+            deletedText: t('labels.deletedSuffix')
           })}
         </Typography>
 

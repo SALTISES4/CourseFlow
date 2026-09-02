@@ -18,6 +18,7 @@ import * as Styled from '@cfViews/WorkflowView/OutcomeEditView/components/Outcom
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import OutcomeHeader from './Header'
 
@@ -48,8 +49,10 @@ export const Outcome = ({
 const OutcomeBlock = ({
   graphUuid,
   uuid,
-  title
+  title,
+  titleCopyCount
 }: OutcomeEntity & { graphUuid: GraphUuid }) => {
+  const { t } = useTranslation('workflow')
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
   const canAssignOutcomes = useResourcePermission(
@@ -132,7 +135,11 @@ const OutcomeBlock = ({
         uuid={uuid}
         level={level}
         dragRef={dragHandleRef}
-        title={`${prefix}${displayOutcomeTitle(title)}`}
+        title={`${prefix}${displayOutcomeTitle(
+          { title, titleCopyCount },
+          t,
+          t('outcomes.untitled')
+        )}`}
         collapsed={state.collapsed}
         setCollapsed={setCollapsed}
         showToggle={!!childOutcomes.length}

@@ -1,4 +1,3 @@
-import { _t } from '@cf/utility/Utility.class'
 import { debounce } from '@mui/material'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -8,6 +7,7 @@ import { getHours, getMinutes } from 'date-fns'
 import { produce } from 'immer'
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { NumericFormat } from 'react-number-format'
+import { useTranslation } from 'react-i18next'
 
 type Duration = {
   days: number
@@ -24,6 +24,7 @@ type Props = Pick<TextFieldProps, 'variant' | 'size'> & {
 }
 
 const TimeDurationField = ({ value, onChange, variant, size }: Props) => {
+  const { t } = useTranslation('common')
   const isDirty = useRef(false)
   const [state, setState] = useState<Duration>({
     days: value?.days ?? 0,
@@ -85,14 +86,14 @@ const TimeDurationField = ({ value, onChange, variant, size }: Props) => {
     <Stack direction="row" gap={2}>
       <NumericFormat
         customInput={TextField}
-        label={_t('Days')}
+        label={t('duration.days')}
         value={state.days || ''}
         variant={variant}
         size={size}
         onChange={onDaysChange}
       />
       <TimeField
-        label={_t('Hours')}
+        label={t('duration.hours')}
         format="HH:mm"
         variant={variant}
         value={timeValue}

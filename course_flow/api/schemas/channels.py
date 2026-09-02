@@ -28,6 +28,8 @@ class ChannelOut(CamelSchema):
     uuid: UUID
     graph_uuid: UUID
     title: str
+    system_label_code: str | None = None
+    title_copy_count: int = 0
     colour: str = ""
     position: int
     thread_uuid: UUID | None

@@ -15,6 +15,11 @@ _CANONICAL_LANG = {
     LanguagePreference.FR.value: LanguagePreference.FR.value,
 }
 
+_API_LANG = {
+    LanguagePreference.EN.value: "en",
+    LanguagePreference.FR.value: "fr",
+}
+
 
 class UserService:
     ALLOWED_LANGUAGE_PREFERENCES = set(_CANONICAL_LANG.keys())
@@ -28,6 +33,7 @@ class UserService:
             email=user.email,
             first_name=user.first_name,
             last_name=user.last_name,
+            language_preference=_API_LANG.get(user.language_preference, "en"),
             account_role=user.account_role,
             meta=UserMeta(
                 owns_any_project=owns_any_project,
@@ -51,25 +57,25 @@ class UserService:
         if first_name is not None:
             value = first_name.strip()
             if not value:
-                errors["firstName"] = "First name is required"
+                errors["firstName"] = "first_name_required"
             elif len(value) > 200:
-                errors["firstName"] = "First name is limited to 200 characters"
+                errors["firstName"] = "first_name_too_long"
             else:
                 user.first_name = value
 
         if last_name is not None:
             value = last_name.strip()
             if not value:
-                errors["lastName"] = "Last name is required"
+                errors["lastName"] = "last_name_required"
             elif len(value) > 200:
-                errors["lastName"] = "Last name is limited to 200 characters"
+                errors["lastName"] = "last_name_too_long"
             else:
                 user.last_name = value
 
         if language_preference is not None:
             value = language_preference.strip().lower()
             if value not in self.ALLOWED_LANGUAGE_PREFERENCES:
-                errors["languagePreference"] = "Language is required"
+                errors["languagePreference"] = "language_required"
             else:
                 user.language_preference = _CANONICAL_LANG[value]
 
@@ -93,14 +99,12 @@ class UserService:
         errors: dict[str, str] = {}
 
         if password is None or not user.check_password(password):
-            errors["password"] = "Current password is incorrect"
+            errors["password"] = "current_password_incorrect"
 
         if new_password is None:
-            errors["newPassword"] = "New password is required"
+            errors["newPassword"] = "new_password_required"
         elif password is not None and new_password == password:
-            errors["newPassword"] = (
-                "New password must be different from your current password"
-            )
+            errors["newPassword"] = "new_password_matches_current"
 
         if new_password is not None and "newPassword" not in errors:
             is_new_pass_valid = (
@@ -112,10 +116,7 @@ class UserService:
                 )  # at least one symbol
             )
             if not is_new_pass_valid:
-                errors["newPassword"] = (
-                    "Your password must contain at least 12 characters and include "
-                    "a mix of numbers, letters and symbols"
-                )
+                errors["newPassword"] = "password_strength_required"
 
         if errors:
             raise ValidationError(errors)

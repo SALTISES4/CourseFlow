@@ -10,7 +10,6 @@ import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { threadCommentCountsActions } from '@cf/features/graph/state/slices/threadCommentCounts.slice'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import type { AppDispatch } from '@cf/redux/store'
-import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
 import { useCommentThreadContext } from '@cfSidebar/hooks/useCommentThreadContext'
 import Button from '@mui/material/Button'
@@ -29,6 +28,8 @@ import {
   useState
 } from 'react'
 import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import { normalizeLocale } from '@cf/i18n/config'
 
 import * as Styled from './styles'
 import {
@@ -42,27 +43,28 @@ const MINUTE_MS = 60_000
 const HOUR_MS = 60 * MINUTE_MS
 const DAY_MS = 24 * HOUR_MS
 
-const formatCommentDate = (dateCreated: string): string => {
+const formatCommentDate = (dateCreated: string, locale: string): string => {
   const date = new Date(dateCreated)
   const ageMs = Math.max(0, Date.now() - date.getTime())
+  const relative = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
 
   if (ageMs < MINUTE_MS) {
-    return 'just now'
+    return relative.format(0, 'second')
   }
   if (ageMs < HOUR_MS) {
     const minutes = Math.floor(ageMs / MINUTE_MS)
-    return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`
+    return relative.format(-minutes, 'minute')
   }
   if (ageMs < DAY_MS) {
     const hours = Math.floor(ageMs / HOUR_MS)
-    return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`
+    return relative.format(-hours, 'hour')
   }
   if (ageMs <= 7 * DAY_MS) {
     const days = Math.floor(ageMs / DAY_MS)
-    return `${days} ${days === 1 ? 'day' : 'days'} ago`
+    return relative.format(-days, 'day')
   }
 
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -70,6 +72,9 @@ const formatCommentDate = (dateCreated: string): string => {
 }
 
 const CommentsTab = () => {
+  const { t, i18n } = useTranslation('workflow')
+  const { t: tCommon } = useTranslation('common')
+  const locale = normalizeLocale(i18n.resolvedLanguage)
   const contentRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch<AppDispatch>()
   const userContext = useContext(UserContext)
@@ -127,11 +132,13 @@ const CommentsTab = () => {
         })
       )
       showSuccess({
-        message: _t('Your comment has been successfully deleted')
+        localizedMessage: t('messages.commentDeleted')
       })
     },
     onError: () =>
-      showError(_t('We encountered an issue and your comment was not deleted'))
+      showError({
+        localizedMessage: t('messages.commentDeleteFailed')
+      })
   })
 
   const comments = useMemo(
@@ -198,10 +205,10 @@ const CommentsTab = () => {
       <SidebarInnerWrap>
         <SidebarContent>
           <SidebarTitle as="h3" variant="h6">
-            {_t('Comments')}
+            {t('comments.title')}
           </SidebarTitle>
           <Typography variant="body2" color="text.secondary">
-            {_t('Select an item to view or add comments.')}
+            {t('comments.selectItem')}
           </Typography>
         </SidebarContent>
       </SidebarInnerWrap>
@@ -213,10 +220,10 @@ const CommentsTab = () => {
       <SidebarInnerWrap>
         <SidebarContent>
           <SidebarTitle as="h3" variant="h6">
-            {_t('Comments')}
+            {t('comments.title')}
           </SidebarTitle>
           <Typography variant="body2" color="text.secondary">
-            {_t('Comments are not available for this item yet.')}
+            {t('comments.unavailable')}
           </Typography>
         </SidebarContent>
       </SidebarInnerWrap>
@@ -227,16 +234,16 @@ const CommentsTab = () => {
     <SidebarInnerWrap>
       <SidebarContent ref={contentRef}>
         <SidebarTitle as="h3" variant="h6">
-          {_t('Comments')}
+          {t('comments.title')}
         </SidebarTitle>
 
         {commentsQuery.isPending && (
-          <CircularProgress size={24} aria-label={_t('Loading comments')} />
+          <CircularProgress size={24} aria-label={t('comments.loading')} />
         )}
 
         {commentsQuery.isError && (
           <Typography variant="body2" color="error">
-            {_t('Could not load comments.')}
+            {t('comments.loadFailed')}
           </Typography>
         )}
 
@@ -250,7 +257,8 @@ const CommentsTab = () => {
                 data-test-id="workflow-comments-list-item"
               >
                 <Styled.CommentHeader data-test-id="workflow-comments-list-item-header">
-                  {authorLabel} &bull; {formatCommentDate(comment.dateCreated)}
+                  {authorLabel} &bull;{' '}
+                  {formatCommentDate(comment.dateCreated, locale)}
                 </Styled.CommentHeader>
                 <Styled.CommentText data-test-id="workflow-comments-list-item-body">
                   {comment.body}
@@ -263,7 +271,7 @@ const CommentsTab = () => {
                     onClick={onCommentDelete(comment.uuid)}
                     disabled={deleteMutation.isPending}
                   >
-                    {_t('Delete')}
+                    {tCommon('actions.delete')}
                   </Link>
                 )}
               </Styled.Comment>
@@ -274,7 +282,7 @@ const CommentsTab = () => {
 
       <SidebarActions>
         <TextField
-          label={_t('Add a comment')}
+          label={t('comments.addPlaceholder')}
           multiline
           maxRows={5}
           value={draft}
@@ -286,7 +294,7 @@ const CommentsTab = () => {
           onClick={onCommentSubmit}
           disabled={!canComment || !draft.trim() || createMutation.isPending}
         >
-          {_t('Add comment')}
+          {t('comments.add')}
         </Button>
       </SidebarActions>
     </SidebarInnerWrap>

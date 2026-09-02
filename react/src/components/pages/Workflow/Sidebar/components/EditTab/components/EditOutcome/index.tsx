@@ -2,6 +2,7 @@ import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import RichTextDescription from '@cf/components/common/dialog/Workflow/components/RichTextDescription'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { OutcomeEntity } from '@cf/features/graph/state/model/types'
+import { displayOutcomeTitle } from '@cf/features/graph/outcomeTitle'
 import { selectOutcomeById } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { selectOutcomeLevel } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import {
@@ -13,7 +14,6 @@ import { useGraphProjectTags } from '@cf/features/graph/useGraphProjectTags'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import type { AppDispatch } from '@cf/redux/store'
 import { RootState } from '@cf/redux/store'
-import { _t } from '@cf/utility/Utility.class'
 import {
   SidebarActions,
   SidebarContent,
@@ -28,6 +28,7 @@ import TextField from '@mui/material/TextField'
 import { useCallback, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 type OutcomeFormValues = {
   title: string
@@ -51,6 +52,8 @@ const EditOutcome = ({ outcomeUuid }: { outcomeUuid: string }) => {
 }
 
 const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
+  const { t } = useTranslation('workflow')
+  const { t: tCommon } = useTranslation('common')
   const dispatch = useDispatch<AppDispatch>()
   const canManageOutcomes = useResourcePermission(
     WorkflowPermission.OUTCOME_MANAGEMENT
@@ -59,6 +62,11 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
     selectOutcomeLevel(state, outcome.graphUuid, outcome.uuid)
   )
   const { data: projectTags = [] } = useGraphProjectTags(outcome.graphUuid)
+  const localizedTitle = displayOutcomeTitle(
+    outcome,
+    t,
+    t('outcomes.untitled')
+  )
 
   const {
     control,
@@ -68,7 +76,7 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
     formState: { isDirty }
   } = useForm<OutcomeFormValues>({
     defaultValues: {
-      title: outcome.title,
+      title: localizedTitle,
       description: outcome.description,
       code: outcome.code,
       tagIds: outcome.tagIds
@@ -80,13 +88,13 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
   useEffect(() => {
     if (!isDirty) {
       reset({
-        title: outcome.title,
+        title: localizedTitle,
         description: outcome.description,
         code: outcome.code,
         tagIds: outcome.tagIds
       })
     }
-  }, [reset, isDirty, outcome])
+  }, [reset, isDirty, localizedTitle, outcome])
 
   const debouncedDispatch = useMemo(
     () =>
@@ -140,12 +148,12 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
     <SidebarInnerWrap>
       <SidebarContent>
         <SidebarTitle as="h3" variant="h6">
-          {_t('Edit outcome')}
+          {t('outcomes.editOne')}
         </SidebarTitle>
         <Stack direction="column" gap={3}>
           <TextField
             variant="outlined"
-            label={_t('Title')}
+            label={t('edit.title')}
             size="small"
             {...register('title')}
             InputProps={{ readOnly: !canManageOutcomes }}
@@ -155,7 +163,7 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
             control={control}
             render={({ field }) => (
               <RichTextDescription
-                label={_t('Description')}
+                label={t('edit.description')}
                 readOnly={!canManageOutcomes}
                 value={field.value || ''}
                 onChange={field.onChange}
@@ -166,7 +174,7 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
             <>
               <TextField
                 variant="outlined"
-                label={_t('Code')}
+                label={t('metadata.code')}
                 size="small"
                 {...register('code')}
                 InputProps={{ readOnly: !canManageOutcomes }}
@@ -194,7 +202,7 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
                       <TextField
                         {...params}
                         variant="outlined"
-                        label={_t('Tags')}
+                        label={t('edit.tags')}
                       />
                     )}
                   />
@@ -211,7 +219,7 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
           disabled={!canManageOutcomes}
           onClick={onDuplicate}
         >
-          {_t('Duplicate')}
+          {tCommon('actions.duplicate')}
         </Button>
         <Button
           variant="contained"
@@ -219,7 +227,7 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
           disabled={!canManageOutcomes}
           onClick={onDelete}
         >
-          {_t('Delete')}
+          {tCommon('actions.delete')}
         </Button>
       </SidebarActions>
     </SidebarInnerWrap>

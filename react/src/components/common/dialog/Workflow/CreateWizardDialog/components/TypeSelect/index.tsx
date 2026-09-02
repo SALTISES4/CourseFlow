@@ -1,7 +1,9 @@
 import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize'
+import { workflowTypeLabel } from '@cf/i18n/workflowLabels'
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'react-i18next'
 
 import { TypeBlock } from './styles'
 import { CreateResourceOptions } from '../../types'
@@ -13,6 +15,8 @@ type PropsType = {
 }
 
 const TypeSelect = ({ resourceLabel, type, onTypeSelect }: PropsType) => {
+  const { t } = useTranslation('workflow')
+  const localizedResourceLabel = workflowTypeLabel(t, resourceLabel, true)
   return (
     <Stack direction="row" spacing={2}>
       <TypeBlock
@@ -23,14 +27,18 @@ const TypeSelect = ({ resourceLabel, type, onTypeSelect }: PropsType) => {
         <Stack direction="row" spacing={2}>
           <DashboardCustomizeIcon />
           <div>
-            <Typography variant="body1">Blank {resourceLabel}</Typography>
+            <Typography variant="body1">
+              {t('wizard.blank', { workflowType: localizedResourceLabel })}
+            </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Recommented for advanced users
+              {t('wizard.recommendedAdvanced')}
             </Typography>
           </div>
         </Stack>
         <Typography variant="body1">
-          Create your own tailored {resourceLabel} structure
+          {t('wizard.blankDescription', {
+            workflowType: localizedResourceLabel
+          })}
         </Typography>
       </TypeBlock>
       <TypeBlock
@@ -41,14 +49,14 @@ const TypeSelect = ({ resourceLabel, type, onTypeSelect }: PropsType) => {
         <Stack direction="row" spacing={2}>
           <RocketLaunchIcon />
           <div>
-            <Typography variant="body1">From a template</Typography>
+            <Typography variant="body1">{t('wizard.fromTemplate')}</Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Recommented for beginners
+              {t('wizard.recommendedBeginners')}
             </Typography>
           </div>
         </Stack>
         <Typography variant="body1">
-          Get a head start with a template anchored in best practices
+          {t('wizard.templateDescription')}
         </Typography>
       </TypeBlock>
     </Stack>

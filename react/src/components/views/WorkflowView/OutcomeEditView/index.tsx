@@ -5,7 +5,6 @@ import { selectOutcomeChildrenById } from '@cf/features/graph/state/selectors/ou
 import { createOutcome } from '@cf/features/graph/state/thunks/outcomeMutations.thunks'
 import type { AppDispatch } from '@cf/redux/store'
 import { RootState } from '@cf/redux/store'
-import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import { OuterContentWrap } from '@cfMUI/helper'
 import Box from '@mui/material/Box'
@@ -13,6 +12,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { memo, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import OutcomeTree from './components/OutcomeTree'
 
@@ -23,6 +23,7 @@ const OutcomeEditView = ({
   graphUuid: GraphUuid
   publicView?: boolean
 }) => {
+  const { t } = useTranslation('workflow')
   const dispatch = useDispatch<AppDispatch>()
   const canManageOutcomes = useResourcePermission(
     WorkflowPermission.OUTCOME_MANAGEMENT
@@ -44,10 +45,8 @@ const OutcomeEditView = ({
           <Alert
             sx={{ mb: 3 }}
             persistent
-            title={_t('How to use outcomes')}
-            subtitle={_t(
-              'In this view you can add and edit outcomes for this workflow. Once added, outcomes can be attached to nodes within your workflow by navigating to the “Workflow” tab and drag and dropping your outcomes to your nodes from the Outcomes tab of the right sidebar.'
-            )}
+            title={t('outcomes.howToTitle')}
+            subtitle={t('outcomes.howToHelp')}
           />
           {!publicView && (
             <Button
@@ -56,7 +55,7 @@ const OutcomeEditView = ({
               disabled={!canManageOutcomes}
               onClick={onAddNewOutcome}
             >
-              {_t('Add outcome')}
+              {t('outcomes.add')}
             </Button>
           )}
         </Box>

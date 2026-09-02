@@ -7,7 +7,7 @@ import {
 import { graphUiActions } from '@cf/features/graph/state/slices/graphUi.slice'
 import type { AppDispatch, RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/Utility.class'
+import { workflowTypeLabel } from '@cf/i18n/workflowLabels'
 import {
   MenuItemType,
   MenuWithOverflow,
@@ -28,17 +28,23 @@ import { produce } from 'immer'
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import SectionTitle from './SectionTitle'
 
 const ActionMenu = () => {
+  const { t } = useTranslation('workflow')
   const { uuid } = useParams()
   const { data: workflowDetailResp } = useQuery({
     ...getWorkflowOptions({ path: { uuid: uuid! } }),
     enabled: Boolean(uuid)
   })
   const workflow = workflowDetailResp?.item
-  const workflowTypeLabel = workflow?.workflowType ?? 'workflow'
+  const localizedWorkflowType = workflowTypeLabel(
+    t,
+    workflow?.workflowType,
+    true
+  )
   const { resource: permissions, project: projectPermissions } =
     useWorkspacePermissions()
   const isArchived = permissions.state === 'archived'
@@ -60,7 +66,7 @@ const ActionMenu = () => {
   const menuItems: MenuItemType[] = [
     {
       uuid: 'edit-project',
-      title: _t('Edit workflow'),
+      title: t('menu.edit'),
       action: openEditMenu,
       iconButton: {
         icon: <EditIcon />,
@@ -70,7 +76,7 @@ const ActionMenu = () => {
     },
     {
       uuid: 'share',
-      title: _t('Sharing'),
+      title: t('menu.sharing'),
       iconButton: {
         icon: <PersonAddIcon />
       },
@@ -83,7 +89,7 @@ const ActionMenu = () => {
     // NOTE: scoped out temporarily, see COURSEFLOW-489
     // {
     //   uuid: 'export',
-    //   content: _t('Export'),
+    //   content: t('menu.export'),
     //   action: openExportDialog,
     //   show: (!publicView || userId) && workflow.workflowPermissions.read,
     //   separator: true
@@ -91,13 +97,13 @@ const ActionMenu = () => {
     // NOTE: scoped out temporarily, see COURSEFLOW-489
     // {
     //   uuid: 'import-outcomes',
-    //   content: _t('Import outcomes'),
+    //   content: t('menu.importOutcomes'),
     //   action: importOutcomes,
     //   show: !(publicView && !userId)
     // },
     // {
     //   uuid: 'import-nodes',
-    //   content: _t('Import nodes'),
+    //   content: t('menu.importNodes'),
     //   action: importNodes,
     //   show: !(publicView && !userId),
     //   separator: true
@@ -105,27 +111,27 @@ const ActionMenu = () => {
     {
       uuid: 'archive-workflow',
       action: archiveWorkflow,
-      content: _t(`Archive ${workflowTypeLabel}`),
+      content: t('menu.archive', { workflowType: localizedWorkflowType }),
       show:
         !isArchived && hasPermission(permissions, WorkflowPermission.ARCHIVE),
       separator: 'top'
     },
     {
       uuid: 'copy-to-project',
-      content: _t(`Copy ${workflowTypeLabel}`),
+      content: t('menu.copy', { workflowType: localizedWorkflowType }),
       action: copyToProject,
       show: !isArchived && hasPermission(permissions, WorkflowPermission.COPY)
     },
     {
       uuid: 'restore-workflow',
       action: restoreWorkflow,
-      content: _t('Restore workflow'),
+      content: t('menu.restore'),
       show: isArchived && hasPermission(permissions, WorkflowPermission.RESTORE)
     },
     {
       uuid: 'hard-delete-workflow',
       action: () => deleteWorkflowHard(workflow?.uuid ?? ''),
-      content: _t('Permanently delete workflow'),
+      content: t('menu.permanentlyDelete'),
       show:
         isArchived &&
         hasPermission(permissions, WorkflowPermission.DELETE_PERMANENTLY)
@@ -144,6 +150,7 @@ const ExpandCollapseMenu = ({
   legend?: ReactElement
   sectionIds: string[]
 }) => {
+  const { t } = useTranslation('workflow')
   const workflowViewType = useWorkflowViewTypeFromRoute()
   const dispatch = useDispatch<AppDispatch>()
   const collapsedSectionUuids = useSelector(
@@ -180,7 +187,7 @@ const ExpandCollapseMenu = ({
   }
 
   const header: MenuItemType = {
-    content: _t('View settings'),
+    content: t('menu.viewSettings'),
     icon: <TuneIcon />,
     showIconInList: true,
     show: true
@@ -195,10 +202,10 @@ const ExpandCollapseMenu = ({
               value={CfObjectType.SECTION}
               checked={collapsedSectionUuids.length === 0}
               onChange={onExpandChange}
-              inputProps={{ 'aria-label': _t('Expand all sections') }}
+              inputProps={{ 'aria-label': t('menu.expandSections') }}
             />
           }
-          label={_t('Expand all sections')}
+          label={t('menu.expandSections')}
         />
       ),
       icon: <ZoomOutMapIcon />,
@@ -213,10 +220,10 @@ const ExpandCollapseMenu = ({
               value={CfObjectType.NODE}
               checked={expanded[CfObjectType.NODE]}
               onChange={onExpandChange}
-              inputProps={{ 'aria-label': 'controlled' }}
+              inputProps={{ 'aria-label': t('menu.expandNodes') }}
             />
           }
-          label={_t('Expand all nodes')}
+          label={t('menu.expandNodes')}
         />
       ),
       icon: <ZoomInMapIcon />,
@@ -231,10 +238,10 @@ const ExpandCollapseMenu = ({
               value={CfObjectType.OUTCOME}
               checked={expanded[CfObjectType.OUTCOME]}
               onChange={onExpandChange}
-              inputProps={{ 'aria-label': 'controlled' }}
+              inputProps={{ 'aria-label': t('menu.expandOutcomes') }}
             />
           }
-          label={_t('Expand all outcomes')}
+          label={t('menu.expandOutcomes')}
         />
       ),
       icon: <ZoomInMapIcon />,
@@ -264,6 +271,7 @@ const ExpandCollapseMenu = ({
  * JUMP MENU
  *******************************************************/
 const JumpToMenu = ({ sectionIds }: { sectionIds: string[] }) => {
+  const { t } = useTranslation('workflow')
   const viewType = useWorkflowViewTypeFromRoute()
 
   const scrollToHandler = useCallback((objectId: string) => {
@@ -291,7 +299,7 @@ const JumpToMenu = ({ sectionIds }: { sectionIds: string[] }) => {
   }))
 
   const header: MenuItemType = {
-    content: _t('Jump to'),
+    content: t('menu.jumpTo'),
     icon: <KeyboardDoubleArrowDownIcon />,
     showIconInList: true,
     show: true

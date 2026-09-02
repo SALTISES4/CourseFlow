@@ -7,7 +7,6 @@ import {
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { WorkspaceType } from '@cf/types/enum'
-import strings from '@cf/utility/strings'
 import { StyledDialog } from '@cfComponents/dialog/styles'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -15,6 +14,7 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 
 const RestoreDialog = ({
   objectType,
@@ -28,6 +28,7 @@ const RestoreDialog = ({
   callback?: () => void | Promise<unknown>
 }) => {
   const entityUuid = uuid ?? id ?? ''
+  const { t } = useTranslation(['workspace', 'common'])
   const { show, onClose } = useDialog(DialogMode.RESTORE)
   const { onError, onSuccess } = useGenericMsgHandler()
   const queryClient = useQueryClient()
@@ -50,10 +51,18 @@ const RestoreDialog = ({
     try {
       if (objectType === WorkspaceType.WORKFLOW) {
         await restoreWorkflow.mutateAsync({ path: { uuid: entityUuid } })
-        onSuccess({ message: strings.workflowUnarchiveSuccess })
+        onSuccess({
+          localizedMessage: t('workspace:lifecycle.restoreSuccess', {
+            object: t('workspace:lifecycle.object.workflow')
+          })
+        })
       } else {
         await restoreProject.mutateAsync({ path: { uuid: entityUuid } })
-        onSuccess({ message: strings.projectUnarchiveSuccess })
+        onSuccess({
+          localizedMessage: t('workspace:lifecycle.restoreSuccess', {
+            object: t('workspace:lifecycle.object.project')
+          })
+        })
       }
       onClose()
       await callback?.()
@@ -63,7 +72,9 @@ const RestoreDialog = ({
   }
 
   const objectLabel =
-    objectType === WorkspaceType.WORKFLOW ? 'workflow' : 'project'
+    objectType === WorkspaceType.WORKFLOW
+      ? t('workspace:lifecycle.object.workflow')
+      : t('workspace:lifecycle.object.project')
   const busy = restoreWorkflow.isPending || restoreProject.isPending
 
   return (
@@ -75,23 +86,23 @@ const RestoreDialog = ({
       aria-labelledby={`restore-${objectType}-modal`}
     >
       <DialogTitle id={`restore-${objectType}-modal`}>
-        Restore {objectLabel}
+        {t('workspace:lifecycle.restoreTitle', { object: objectLabel })}
       </DialogTitle>
       <DialogContent dividers>
         <Typography gutterBottom>
-          Do you want to restore your {objectLabel}?
+          {t('workspace:lifecycle.restoreQuestion', { object: objectLabel })}
         </Typography>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onClose}>
-          Cancel
+          {t('common:actions.cancel')}
         </Button>
         <Button
           variant="contained"
           onClick={onSubmit}
           disabled={busy || !entityUuid}
         >
-          Restore {objectLabel}
+          {t('workspace:lifecycle.restoreAction', { object: objectLabel })}
         </Button>
       </DialogActions>
     </StyledDialog>

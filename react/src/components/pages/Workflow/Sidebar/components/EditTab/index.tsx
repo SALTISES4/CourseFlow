@@ -1,4 +1,5 @@
 import Alert from '@cfComponents/UIPrimitives/Alert'
+import { useTranslation } from 'react-i18next'
 
 import EditColumn from './components/EditColumn'
 import EditNode from './components/EditNode'
@@ -8,6 +9,7 @@ import EditSection from './components/EditSection'
 import { EditableType } from './types'
 
 const EditTab = ({ uuid, type }: { uuid: string; type: EditableType }) => {
+  const { t } = useTranslation('workflow')
   if (!type) {
     return null
   }
@@ -28,8 +30,8 @@ const EditTab = ({ uuid, type }: { uuid: string; type: EditableType }) => {
         <Alert
           persistent
           severity="error"
-          title="Woopsie"
-          subtitle={`edit ${type} form not supported yet`}
+          title={t('sidebar.unavailableTitle')}
+          subtitle={t('sidebar.unsupportedEditor', { type })}
         />
       )
   }

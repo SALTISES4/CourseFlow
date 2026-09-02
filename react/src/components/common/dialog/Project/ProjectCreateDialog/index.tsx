@@ -3,13 +3,13 @@ import { createProjectMutation } from '@cf/api/gen/@tanstack/react-query.gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
-import { _t } from '@cf/utility/Utility.class'
 import ProjectForm, {
   ProjectFormValues
 } from '@cfComponents/dialog/Project/components/ProjectForm'
 import * as SC from '@cfComponents/dialog/styles'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
+import { useTranslation } from 'react-i18next'
 import { generatePath, useNavigate } from 'react-router-dom'
 
 const defaultValues: ProjectFormValues = {
@@ -23,6 +23,7 @@ type PropsType = {
 }
 
 const ProjectCreateDialog = ({ showNoProjectsAlert = false }: PropsType) => {
+  const { t } = useTranslation('project')
   const { show, onClose } = useDialog(DialogMode.PROJECT_CREATE)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -54,14 +55,14 @@ const ProjectCreateDialog = ({ showNoProjectsAlert = false }: PropsType) => {
     const path = generatePath(CFRoutes.PROJECT, { uuid })
     onDialogClose()
     navigate(path)
-    enqueueSnackbar(_t('Your project has been successfully created'), {
+    enqueueSnackbar(t('messages.created'), {
       variant: 'success'
     })
   }
 
   function onError(error) {
     enqueueSnackbar(
-      _t('We encountered an issue and your project was not created'),
+      t('messages.createFailed'),
       { variant: 'error' }
     )
     // this won't work because we're getting back errors from the serializer
@@ -101,8 +102,8 @@ const ProjectCreateDialog = ({ showNoProjectsAlert = false }: PropsType) => {
         submitHandler={onSubmit}
         closeCallback={onDialogClose}
         showNoProjectsAlert={showNoProjectsAlert}
-        label={_t('Create project')}
-        submitLabel={_t('Create project')}
+        label={t('actions.create')}
+        submitLabel={t('actions.create')}
       />
     </SC.StyledDialog>
   )

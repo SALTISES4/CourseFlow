@@ -1,6 +1,7 @@
 from ninja import NinjaAPI, Router
 
 from course_flow.api.common.schemas import CamelSchema
+from course_flow.api.errors import ExpectedApiError
 from course_flow.api.routers import (
     auth,
     channels,
@@ -32,6 +33,15 @@ api = NinjaAPI(
     openapi_url="/openapi.json",
     default_router=Router(by_alias=True),
 )
+
+
+@api.exception_handler(ExpectedApiError)
+def expected_api_error_handler(request, exc: ExpectedApiError):
+    return api.create_response(
+        request,
+        exc.as_payload(),
+        status=exc.status_code,
+    )
 
 api.add_router("/project", projects.router)
 api.add_router("/workflow", workflows.router)

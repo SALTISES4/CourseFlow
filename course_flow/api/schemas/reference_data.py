@@ -10,22 +10,18 @@ from course_flow.core.enum import (
 
 class DisciplineReferenceOptionOut(CamelSchema):
     code: str
-    label: str
 
 
 class ContextReferenceOptionOut(CamelSchema):
     value: ContextClassification
-    label: str
 
 
 class TaskReferenceOptionOut(CamelSchema):
     value: TaskClassification
-    label: str
 
 
 class TimeUnitReferenceOptionOut(CamelSchema):
     value: TimeUnit
-    label: str
 
 
 class ReferenceDataOut(CamelSchema):

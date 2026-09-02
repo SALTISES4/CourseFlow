@@ -9,42 +9,39 @@ from course_flow.core.enum import (
 )
 
 ACTIVITY_CONTEXT_OPTIONS = (
-    (ContextClassification.NONE, "None"),
-    (ContextClassification.INDIVIDUAL_WORK, "Individual Work"),
-    (ContextClassification.WORK_IN_GROUPS, "Work in Groups"),
-    (ContextClassification.IN_THE_CLASSROOM, "Whole Class"),
+    ContextClassification.NONE,
+    ContextClassification.INDIVIDUAL_WORK,
+    ContextClassification.WORK_IN_GROUPS,
+    ContextClassification.IN_THE_CLASSROOM,
 )
 
 COURSE_CONTEXT_OPTIONS = (
-    (ContextClassification.NONE, "None"),
-    (ContextClassification.FORMATIVE, "Formative"),
-    (ContextClassification.SUMMATIVE, "Summative"),
-    (ContextClassification.COMPREHENSIVE, "Comprehensive"),
+    ContextClassification.NONE,
+    ContextClassification.FORMATIVE,
+    ContextClassification.SUMMATIVE,
+    ContextClassification.COMPREHENSIVE,
 )
 
 ACTIVITY_TASK_OPTIONS = (
-    (TaskClassification.NONE, "None"),
-    (TaskClassification.GATHER_INFORMATION, "Gather Information"),
-    (TaskClassification.DISCUSS, "Discuss"),
-    (TaskClassification.PROBLEM_SOLVE, "Problem Solve"),
-    (TaskClassification.ANALYZE, "Analyze"),
-    (TaskClassification.ASSESS_REVIEW_PEERS, "Assess/Review Peers"),
-    (TaskClassification.DEBATE, "Debate"),
-    (TaskClassification.GAME_ROLEPLAY, "Game/Roleplay"),
-    (TaskClassification.CREATE_DESIGN, "Create/Design"),
-    (TaskClassification.REVISE_IMPROVE, "Revise/Improve"),
-    (TaskClassification.READ, "Read"),
-    (TaskClassification.WRITE, "Write"),
-    (TaskClassification.PRESENT, "Present"),
-    (TaskClassification.EXPERIMENT_INQUIRY, "Experiment/Inquiry"),
-    (TaskClassification.QUIZ_TEST, "Quiz/Test"),
-    (
-        TaskClassification.INSTRUCTOR_RESOURCE_CURATION,
-        "Instructor Resource Curation",
-    ),
-    (TaskClassification.INSTRUCTOR_ORCHESTRATION, "Instructor Orchestration"),
-    (TaskClassification.INSTRUCTOR_EVALUATION, "Instructor Evaluation"),
-    (TaskClassification.OTHER, "Other"),
+    TaskClassification.NONE,
+    TaskClassification.GATHER_INFORMATION,
+    TaskClassification.DISCUSS,
+    TaskClassification.PROBLEM_SOLVE,
+    TaskClassification.ANALYZE,
+    TaskClassification.ASSESS_REVIEW_PEERS,
+    TaskClassification.DEBATE,
+    TaskClassification.GAME_ROLEPLAY,
+    TaskClassification.CREATE_DESIGN,
+    TaskClassification.REVISE_IMPROVE,
+    TaskClassification.READ,
+    TaskClassification.WRITE,
+    TaskClassification.PRESENT,
+    TaskClassification.EXPERIMENT_INQUIRY,
+    TaskClassification.QUIZ_TEST,
+    TaskClassification.INSTRUCTOR_RESOURCE_CURATION,
+    TaskClassification.INSTRUCTOR_ORCHESTRATION,
+    TaskClassification.INSTRUCTOR_EVALUATION,
+    TaskClassification.OTHER,
 )
 
-TIME_UNIT_OPTIONS = tuple((unit, unit.value.title()) for unit in TimeUnit)
+TIME_UNIT_OPTIONS = tuple(TimeUnit)

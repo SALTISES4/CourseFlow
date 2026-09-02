@@ -14,7 +14,7 @@ import {
 import { UserSummaryOut } from '@cf/api/gen'
 import { meQueryKey } from '@cf/api/gen/@tanstack/react-query.gen'
 import { courseFlowQueryClient } from '@cf/api/queryClient'
-import { _t } from '@cf/utility/Utility.class'
+import i18n, { setAppLocale } from '@cf/i18n'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 export type AuthStatus = 'unknown' | 'authenticated' | 'unauthenticated'
@@ -35,6 +35,19 @@ const initialState: AuthState = {
   error: null
 }
 
+function localizedAuthError(error: AuthRequestError): string {
+  switch (error.code) {
+    case 'invalid_credentials':
+      return i18n.t('errors.invalidCredentials', { ns: 'auth' })
+    case 'email_already_registered':
+      return i18n.t('errors.emailAlreadyRegistered', { ns: 'auth' })
+    case 'registration_fields_required':
+      return i18n.t('errors.registrationFieldsRequired', { ns: 'auth' })
+    default:
+      return i18n.t('errors.requestFailed', { ns: 'auth' })
+  }
+}
+
 export const bootstrapAuth = createAsyncThunk<
   { user: UserSummaryOut | null },
   void,
@@ -47,6 +60,7 @@ export const bootstrapAuth = createAsyncThunk<
   }
   try {
     const user = await fetchCurrentUser()
+    await setAppLocale(user.languagePreference)
     courseFlowQueryClient.setQueryData(
       meQueryKey(),
       user satisfies UserSummaryOut
@@ -59,11 +73,9 @@ export const bootstrapAuth = createAsyncThunk<
       return { user: null }
     }
     if (e instanceof AuthRequestError) {
-      return rejectWithValue(e.message)
+      return rejectWithValue(localizedAuthError(e))
     }
-    const message =
-      e instanceof Error ? e.message : _t('Unable to verify session')
-    return rejectWithValue(message)
+    return rejectWithValue(i18n.t('session.unableToVerify', { ns: 'auth' }))
   }
 })
 
@@ -74,6 +86,7 @@ export const login = createAsyncThunk<
 >('auth/login', async (payload, { rejectWithValue }) => {
   try {
     const data = await loginRequest(payload)
+    await setAppLocale(data.user.languagePreference)
     setAccessToken(data.accessToken)
     courseFlowQueryClient.setQueryData(
       meQueryKey(),
@@ -82,10 +95,9 @@ export const login = createAsyncThunk<
     return { user: data.user }
   } catch (e) {
     if (e instanceof AuthRequestError) {
-      return rejectWithValue(e.message)
+      return rejectWithValue(localizedAuthError(e))
     }
-    const message = e instanceof Error ? e.message : _t('Login failed')
-    return rejectWithValue(message)
+    return rejectWithValue(i18n.t('login.failed', { ns: 'auth' }))
   }
 })
 
@@ -95,8 +107,8 @@ export const register = createAsyncThunk<
   { rejectValue: string }
 >('auth/register', async (payload, { rejectWithValue }) => {
   try {
-    console.log('attempting to register with', payload)
     const data = await registerRequest(payload)
+    await setAppLocale(data.user.languagePreference)
     setAccessToken(data.accessToken)
     courseFlowQueryClient.setQueryData(
       meQueryKey(),
@@ -105,10 +117,9 @@ export const register = createAsyncThunk<
     return { user: data.user }
   } catch (e) {
     if (e instanceof AuthRequestError) {
-      return rejectWithValue(e.message)
+      return rejectWithValue(localizedAuthError(e))
     }
-    const message = e instanceof Error ? e.message : _t('Registration failed')
-    return rejectWithValue(message)
+    return rejectWithValue(i18n.t('registration.failed', { ns: 'auth' }))
   }
 })
 
@@ -118,6 +129,11 @@ const authSlice = createSlice({
   reducers: {
     clearAuthError(state) {
       state.error = null
+    },
+    setAuthLanguagePreference(state, action: { payload: string }) {
+      if (state.user) {
+        state.user.languagePreference = action.payload
+      }
     },
     /**
      * Dev / future logout wiring — not exposed in UI for this milestone.
@@ -151,7 +167,7 @@ const authSlice = createSlice({
         state.status = 'unauthenticated'
         state.user = null
         state.error =
-          action.payload ?? action.error.message ?? 'Bootstrap failed'
+          action.payload ?? i18n.t('session.unableToVerify', { ns: 'auth' })
       })
       .addCase(login.pending, (state) => {
         state.loginPending = true
@@ -165,12 +181,13 @@ const authSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.loginPending = false
-        state.error = action.payload ?? action.error.message ?? 'Login failed'
+        state.error = action.payload ?? i18n.t('login.failed', { ns: 'auth' })
       })
   }
 })
 
-export const { clearAuthError, clearSession } = authSlice.actions
+export const { clearAuthError, clearSession, setAuthLanguagePreference } =
+  authSlice.actions
 
 type WithAuth = { auth: AuthState }
 

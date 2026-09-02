@@ -1,15 +1,18 @@
 import { ProjectDetailOut } from '@cf/api/gen'
 import Favorite from '@cf/components/common/UIPrimitives/Favorite'
-import { _t } from '@cf/utility/Utility.class'
 import { ChipOptions } from '@cfComponents/cards/WorkflowCardDumb'
 import { CardChip } from '@cfComponents/cards/WorkflowCardDumb/styles'
 import { OuterContentWrap } from '@cfMUI/helper'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'react-i18next'
 
-const ProjectHeader = ({ project }: { project: ProjectDetailOut }) => (
-  <OuterContentWrap sx={{ pb: 0 }}>
+const ProjectHeader = ({ project }: { project: ProjectDetailOut }) => {
+  const { t } = useTranslation('project')
+
+  return (
+    <OuterContentWrap sx={{ pb: 0 }}>
     <Stack
       direction="row"
       spacing={3}
@@ -29,7 +32,7 @@ const ProjectHeader = ({ project }: { project: ProjectDetailOut }) => (
           <CardChip
             style={{ display: 'flex', alignItems: 'center' }}
             className={ChipOptions.ACTIVITY as string}
-            label={_t('Archived')}
+            label={t('status.archived')}
           />
         )}
       </Typography>
@@ -38,7 +41,8 @@ const ProjectHeader = ({ project }: { project: ProjectDetailOut }) => (
         <Favorite uuid={project.uuid} isFavorite={project.isFavorite} />
       </Box>
     </Stack>
-  </OuterContentWrap>
-)
+    </OuterContentWrap>
+  )
+}
 
 export default ProjectHeader

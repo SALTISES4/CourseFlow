@@ -1,21 +1,14 @@
-import { _t } from '@cf/utility/Utility.class'
-import WarningIcon from '@mui/icons-material/Warning'
-import Alert from '@mui/material/Alert'
-import Avatar from '@mui/material/Avatar'
-import AvatarGroup from '@mui/material/AvatarGroup'
-import Tooltip from '@mui/material/Tooltip'
-function getAvatarInitials(username: string) {
-  return username.substring(0, 1)
-}
+import { useTranslation } from 'react-i18next'
 
 const ConnectionBar = ({ show }: { show: boolean }) => {
+  const { t } = useTranslation('workflow')
   // if (!show) {
   //   return null
   // }
   //
   // if (!context.ws.wsConnected) {
   //   return (
-  //     <Tooltip arrow placement="top" title={_t('Not Connected')}>
+  //     <Tooltip arrow placement="top" title={t('menu.notConnected')}>
   //       <WarningIcon
   //         sx={{
   //           verticalAlign: 'center',
@@ -50,7 +43,7 @@ const ConnectionBar = ({ show }: { show: boolean }) => {
   // ))
 
   // return <AvatarGroup max={2}>{users}</AvatarGroup>
-  return <>online users</>
+  return show ? <>{t('menu.onlineUsers')}</> : null
 }
 
 export default ConnectionBar

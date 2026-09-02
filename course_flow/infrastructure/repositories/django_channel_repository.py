@@ -10,6 +10,8 @@ def _to_dto(ch: Channel) -> ChannelDTO:
         uuid=ch.uuid,
         graph_uuid=ch.graph.uuid,
         title=ch.title,
+        system_label_code=ch.system_label_code,
+        title_copy_count=ch.title_copy_count,
         colour=ch.colour or "",
         position=ch.position,
         thread_uuid=ch.thread.uuid if ch.thread_id else None,
@@ -77,6 +79,8 @@ class DjangoChannelRepository:
 
         if "title" in updates:
             ch.title = updates["title"]
+            ch.system_label_code = None
+            ch.title_copy_count = 0
         if "colour" in updates:
             ch.colour = updates["colour"] or ""
         if "position" in updates:

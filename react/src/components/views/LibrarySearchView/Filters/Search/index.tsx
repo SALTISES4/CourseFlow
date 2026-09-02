@@ -1,11 +1,11 @@
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
-import { _t } from '@cf/utility/Utility.class'
 import FilterWorkflows from '@cfComponents/filters/FilterWorkflows'
 import { SearchOptions } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import { produce } from 'immer'
 import { Dispatch, SetStateAction } from 'react'
+import { useTranslation } from 'react-i18next'
 
 /*******************************************************
  * Input field
@@ -22,15 +22,16 @@ const Search = ({
 }: {
   setSearchFilterState: Dispatch<SetStateAction<SearchOptions>>
 }) => {
+  const { t } = useTranslation('library')
   const navigateToItem = useNavigateToLibraryItem()
   const { data, isError } = useLibrarySearch({})
 
   if (isError) {
-    return <div>error</div>
+    return <div>{t('results.searchFailed')}</div>
   }
 
   const res = data?.items || []
-  const cards = formatLibraryObjects(res)
+  const cards = formatLibraryObjects(res, t)
 
   return (
     <FilterWorkflows

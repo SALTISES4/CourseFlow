@@ -46,8 +46,6 @@ class ProjectService:
     def delete(self, uuid: UUID) -> bool:
         return self._repository.delete(uuid)
 
-    DUPLICATE_PLACEHOLDER_MESSAGE = "Project duplication placeholder executed"
-
     def duplicate_placeholder(
         self,
         *,

@@ -25,23 +25,23 @@ router = Router(tags=["reference-data"], by_alias=True)
 def get_reference_data(request):
     return ReferenceDataOut(
         disciplines=[
-            DisciplineReferenceOptionOut(code=row.code, label=row.label)
-            for row in Discipline.objects.order_by("label", "code")
+            DisciplineReferenceOptionOut(code=row.code)
+            for row in Discipline.objects.order_by("code")
         ],
         activity_contexts=[
-            ContextReferenceOptionOut(value=value, label=label)
-            for value, label in ACTIVITY_CONTEXT_OPTIONS
+            ContextReferenceOptionOut(value=value)
+            for value in ACTIVITY_CONTEXT_OPTIONS
         ],
         course_contexts=[
-            ContextReferenceOptionOut(value=value, label=label)
-            for value, label in COURSE_CONTEXT_OPTIONS
+            ContextReferenceOptionOut(value=value)
+            for value in COURSE_CONTEXT_OPTIONS
         ],
         activity_task_classifications=[
-            TaskReferenceOptionOut(value=value, label=label)
-            for value, label in ACTIVITY_TASK_OPTIONS
+            TaskReferenceOptionOut(value=value)
+            for value in ACTIVITY_TASK_OPTIONS
         ],
         time_units=[
-            TimeUnitReferenceOptionOut(value=value, label=label)
-            for value, label in TIME_UNIT_OPTIONS
+            TimeUnitReferenceOptionOut(value=value)
+            for value in TIME_UNIT_OPTIONS
         ],
     )

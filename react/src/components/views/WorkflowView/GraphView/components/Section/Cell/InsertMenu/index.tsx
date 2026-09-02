@@ -1,11 +1,11 @@
 import type { NodeInsertMode } from '@cf/features/graph/state/resolveNodeDropRow'
-import { _t } from '@cf/utility/Utility.class'
 import TableRowsOutlinedIcon from '@mui/icons-material/TableRowsOutlined'
 import ViewSectionOutlinedIcon from '@mui/icons-material/ViewWeekOutlined'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
+import { useTranslation } from 'react-i18next'
 
 const InsertMenu = ({
   anchorEl,
@@ -15,8 +15,10 @@ const InsertMenu = ({
   anchorEl: HTMLElement | null
   onOption: (val: Exclude<NodeInsertMode, 'manual'>) => void
   onClose: () => void
-}) => (
-  <Menu
+}) => {
+  const { t } = useTranslation('workflow')
+
+  return <Menu
     id="node-insert-menu"
     data-test-id="workflow-manual-placement-dialog"
     aria-labelledby="insert-menu-button"
@@ -41,7 +43,7 @@ const InsertMenu = ({
       <ListItemIcon>
         <TableRowsOutlinedIcon color="primary" />
       </ListItemIcon>
-      <ListItemText>{_t('Insert row')}</ListItemText>
+      <ListItemText>{t('graph.insertRow')}</ListItemText>
     </MenuItem>
     <MenuItem
       dense
@@ -51,9 +53,9 @@ const InsertMenu = ({
       <ListItemIcon>
         <ViewSectionOutlinedIcon color="primary" />
       </ListItemIcon>
-      <ListItemText>{_t('Keep in same column')}</ListItemText>
+      <ListItemText>{t('graph.keepSameColumn')}</ListItemText>
     </MenuItem>
   </Menu>
-)
+}
 
 export default InsertMenu

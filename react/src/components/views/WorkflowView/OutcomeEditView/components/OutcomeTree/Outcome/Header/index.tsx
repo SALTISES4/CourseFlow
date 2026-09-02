@@ -14,7 +14,6 @@ import useHover from '@cf/hooks/useHover'
 import { RootState } from '@cf/redux/store'
 import type { AppDispatch } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import AddIcon from '@mui/icons-material/Add'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
@@ -27,6 +26,7 @@ import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import { MouseEvent, RefObject, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import * as Styled from '../../styles'
 
@@ -135,6 +135,7 @@ const HoverMenu = ({
   show: boolean
   setCollapsed: PropsType['setCollapsed']
 }) => {
+  const { t } = useTranslation(['workflow', 'common'])
   const dispatch = useDispatch<AppDispatch>()
   const canManageOutcomes = useResourcePermission(
     WorkflowPermission.OUTCOME_MANAGEMENT
@@ -224,31 +225,31 @@ const HoverMenu = ({
       show={show}
       items={[
         {
-          label: _t('Insert sibling'),
+          label: t('workflow:outcomes.insertSibling'),
           icon: <AddCircleOutlineIcon />,
           onClick: onActionClick('insert-sibling'),
           disabled: !canManageOutcomes
         },
         canInsertChild && {
-          label: _t('Insert child'),
+          label: t('workflow:outcomes.insertChild'),
           icon: <QueueIcon />,
           onClick: onActionClick('insert-child'),
           disabled: !canManageOutcomes
         },
         {
-          label: _t('Duplicate'),
+          label: t('common:actions.duplicate'),
           icon: <ContentCopyIcon />,
           onClick: onActionClick('duplicate'),
           disabled: !canManageOutcomes
         },
         canComment && {
-          label: _t('Comments'),
+          label: t('workflow:comments.title'),
           icon: <CommentOutlinedIcon />,
           showCommentsPresenceIndicator: commentCount > 0,
           onClick: onActionClick('comments')
         },
         {
-          label: _t('Delete'),
+          label: t('common:actions.delete'),
           icon: <DeleteOutlinedIcon />,
           onClick: onActionClick('delete'),
           disabled: !canManageOutcomes

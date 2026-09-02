@@ -8,13 +8,13 @@ import {
   LibrarySortValueIn,
   WorkflowType
 } from '@cf/api/gen'
-import { _t } from '@cf/utility/Utility.class'
 import {
   SearchFilterGroup,
   SearchFilterOption,
   SortOption
 } from '@cfComponents/filters/types'
 import { produce } from 'immer'
+import type { TFunction } from 'i18next'
 
 export type SearchOptions = {
   pagination: {
@@ -39,7 +39,10 @@ export type SearchOptions = {
  *
  **/
 class LibraryHelper {
-  static defaultOptionsSearchOptions: SearchOptions = {
+  public static createDefaultSearchOptions(
+    t: TFunction<'library'>
+  ): SearchOptions {
+    return {
     pagination: {
       page: 0
     },
@@ -47,11 +50,11 @@ class LibraryHelper {
       options: [
         {
           value: LibrarySortValueIn.A_Z,
-          label: _t('A - Z')
+          label: t('sort.alphabetical')
         },
         {
           value: LibrarySortValueIn.DATE_CREATED,
-          label: _t('Date created')
+          label: t('sort.dateCreated')
         }
       ]
     },
@@ -59,36 +62,36 @@ class LibraryHelper {
       // Filter group with dynamically populated options
       ownershipFilter: {
         name: 'type',
-        label: _t('Ownership'),
+        label: t('filters.ownership'),
         options: [
           {
             value: LibraryOwnershipIn.OWNED,
-            label: _t('Owned')
+            label: t('filters.owned')
           },
           {
             value: LibraryOwnershipIn.SHARED,
-            label: _t('Shared')
+            label: t('filters.shared')
           }
         ]
       },
       // Filter group with dynamically populated options
       disciplineFilter: {
         name: 'discipline',
-        label: _t('Discipline'),
+        label: t('filters.discipline'),
         selectMultiple: true,
         options: []
       },
       // Filter group with a single selectable options at one time
       contentTypeFilter: {
         name: 'contentType',
-        label: _t('Type'),
+        label: t('filters.type'),
         options: [
           {
-            label: _t('Projects'),
+            label: t('filters.projects'),
             value: LibraryContentTypeIn.PROJECT
           },
           {
-            label: _t('Workflows'),
+            label: t('filters.workflows'),
             value: LibraryContentTypeIn.WORKFLOW
           }
         ]
@@ -96,18 +99,18 @@ class LibraryHelper {
       // Filter group with a single selectable options at one time
       workflowTypeFilter: {
         name: 'workflowType',
-        label: _t('Workflow Type'),
+        label: t('filters.workflowType'),
         options: [
           {
-            label: _t('Activity'),
+            label: t('filters.activity'),
             value: WorkflowType.ACTIVITY
           },
           {
-            label: _t('Course'),
+            label: t('filters.course'),
             value: WorkflowType.COURSE
           },
           {
-            label: _t('Program'),
+            label: t('filters.program'),
             value: WorkflowType.PROGRAM
           }
         ]
@@ -115,25 +118,53 @@ class LibraryHelper {
       // Filter group with no options or value is binary
       templateFilter: {
         name: 'isTemplate',
-        label: _t('Templates')
+        label: t('filters.templates')
       },
       // Filter group with no options or value is binary
       favoritesFilter: {
         name: 'isFavorite',
-        label: _t('Favourites')
+        label: t('filters.favourites')
       },
       // Filter group with no options or value is binary
       archiveFilter: {
         name: 'isArchive',
-        label: _t('Archive')
+        label: t('filters.archive')
       },
       // Filter group with a single value
       keywordFilter: {
         name: 'keyword',
-        label: _t('Search'),
+        label: t('filters.search'),
         value: ''
       }
     }
+    }
+  }
+
+  public static relabelSearchOptions(
+    current: SearchOptions,
+    translated: SearchOptions
+  ): SearchOptions {
+    return produce(current, (draft) => {
+      draft.sortOptions.options.forEach((option) => {
+        const translatedOption = translated.sortOptions.options.find(
+          (candidate) => candidate.value === option.value
+        )
+        if (translatedOption) option.label = translatedOption.label
+      })
+
+      Object.keys(draft.filterGroups).forEach((key) => {
+        const groupKey = key as keyof SearchOptions['filterGroups']
+        const translatedGroup = translated.filterGroups[groupKey]
+        const group = draft.filterGroups[groupKey]
+        group.label = translatedGroup.label
+        group.options?.forEach((option) => {
+          const translatedOption = translatedGroup.options?.find(
+            (candidate) => candidate.value === option.value
+          )
+          if (translatedOption) option.label = translatedOption.label
+        })
+      })
+    })
   }
 
   /**
@@ -305,14 +336,17 @@ class LibraryHelper {
     })
   }
 
-  public static formatResultsSummary(data: LibrarySearchOut) {
+  public static formatResultsSummary(
+    data: LibrarySearchOut,
+    t: TFunction<'library'>
+  ) {
     const { currentPage, resultsPerPage, totalResults } = data.meta
     const rangeStart = currentPage * resultsPerPage + 1
     const rangeEnd = Math.min(totalResults, rangeStart + data.items.length - 1)
     const range =
       rangeStart === rangeEnd ? String(rangeStart) : `${rangeStart}-${rangeEnd}`
 
-    return `Showing ${range} of ${totalResults} results`
+    return t('results.summary', { range, count: totalResults })
   }
 }
 

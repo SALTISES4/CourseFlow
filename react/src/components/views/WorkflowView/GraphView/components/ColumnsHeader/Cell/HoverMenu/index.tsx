@@ -6,7 +6,6 @@ import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import type { AppDispatch, RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined'
@@ -14,6 +13,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import { MouseEvent, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 type PropsType = {
   nodeId: string
@@ -25,6 +25,7 @@ type PropsType = {
 type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
 
 const HoverMenu = ({ nodeId, graphUuid, show, threadUuid }: PropsType) => {
+  const { t } = useTranslation(['workflow', 'common'])
   const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
   const canEdit = useResourcePermission(
@@ -90,25 +91,25 @@ const HoverMenu = ({ nodeId, graphUuid, show, threadUuid }: PropsType) => {
       sx={{ top: '-16px' }}
       items={[
         {
-          label: _t('Insert right'),
+          label: t('workflow:graph.insertRight'),
           icon: <AddCircleOutlineIcon />,
           onClick: onActionClick('insert'),
           disabled: !canEdit
         },
         {
-          label: _t('Duplicate'),
+          label: t('common:actions.duplicate'),
           icon: <ContentCopyIcon />,
           onClick: onActionClick('duplicate'),
           disabled: !canEdit
         },
         {
-          label: _t('Delete'),
+          label: t('common:actions.delete'),
           icon: <DeleteOutlinedIcon />,
           onClick: onActionClick('delete'),
           disabled: !canEdit
         },
         canComment && {
-          label: _t('Comments'),
+          label: t('workflow:comments.title'),
           icon: <CommentOutlinedIcon />,
           showCommentsPresenceIndicator: commentCount > 0,
           onClick: onActionClick('comments')

@@ -17,6 +17,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import { MouseEvent, RefObject, useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import InsertMenu from '../InsertMenu'
 
@@ -35,6 +36,7 @@ type StateType = {
 }
 
 const HoverMenu = ({ nodeId, graphUuid, nodeRef, threadUuid }: PropsType) => {
+  const { t } = useTranslation('workflow')
   const dispatch = useDispatch<AppDispatch>()
   const [state, setState] = useState<StateType>({
     anchor: null,
@@ -128,25 +130,25 @@ const HoverMenu = ({ nodeId, graphUuid, nodeRef, threadUuid }: PropsType) => {
         sx={{ top: '-16px' }}
         items={[
           {
-            label: 'Insert node below',
+            label: t('graph.insertNodeBelow'),
             icon: <AddCircleOutlineIcon />,
             onClick: onActionClick('insert'),
             disabled: !canEdit
           },
           {
-            label: 'Duplicate node below',
+            label: t('graph.duplicateNodeBelow'),
             icon: <ContentCopyIcon />,
             onClick: onActionClick('duplicate'),
             disabled: !canEdit
           },
           {
-            label: 'Delete node',
+            label: t('graph.deleteNode'),
             icon: <DeleteOutlinedIcon />,
             onClick: onActionClick('delete'),
             disabled: !canEdit
           },
           canComment && {
-            label: 'Comments',
+            label: t('comments.title'),
             icon: <CommentOutlinedIcon />,
             showCommentsPresenceIndicator: commentCount > 0,
             onClick: onActionClick('comments')

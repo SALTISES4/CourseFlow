@@ -1,12 +1,16 @@
-import { CourseFlowApiError } from '@cf/api/apiError'
+import { getApiFieldError } from '@cf/api/apiError'
 import {
   getMyProfileSettingsOptions,
   getMyProfileSettingsQueryKey,
   patchMyProfileSettingsMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
+import {
+  setAuthLanguagePreference
+} from '@cf/features/auth/state/auth.slice'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
+import { setAppLocale } from '@cf/i18n'
 import { languageOptions } from '@cf/utility/constants'
-import { _t } from '@cf/utility/Utility.class'
+import type { AppDispatch } from '@cfRedux/store'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { OuterContentWrap } from '@cfMUI/helper'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -21,8 +25,11 @@ import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect } from 'react'
+import type { TFunction } from 'i18next'
+import { useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+import { useDispatch } from 'react-redux'
 import { z } from 'zod'
 
 const StyledTitleBox = styled(Box)(({ theme }) => ({
@@ -41,37 +48,44 @@ const StyledFormBox = styled(Box)({
   }
 })
 
-const profileSchema = z.object({
-  email: z.string(),
+const createProfileSchema = (t: TFunction<'profile'>) =>
+  z.object({
+    email: z.string(),
 
-  firstName: z
-    .string()
-    .min(1, { message: _t('First name is required') })
-    .max(200, { message: _t('First name is limited to 200 characters') }),
+    firstName: z
+      .string()
+      .min(1, { message: t('validation.firstNameRequired') })
+      .max(200, { message: t('validation.firstNameMax', { count: 200 }) }),
 
-  lastName: z
-    .string()
-    .min(1, { message: _t('Last name is required') })
-    .max(200, { message: _t('Last name is limited to 200 characters') }),
+    lastName: z
+      .string()
+      .min(1, { message: t('validation.lastNameRequired') })
+      .max(200, { message: t('validation.lastNameMax', { count: 200 }) }),
 
-  languagePreference: z
-    .string()
-    .min(1, { message: _t('Language is required') })
-    .max(200)
-})
+    languagePreference: z
+      .string()
+      .min(1, { message: t('validation.languageRequired') })
+      .max(200)
+  })
 
-type FormValues = z.infer<typeof profileSchema>
+type FormValues = z.infer<ReturnType<typeof createProfileSchema>>
 type FormField = keyof FormValues
 
 const ProfileSettingsPage = () => {
+  const { t } = useTranslation('profile')
+  const { t: tCommon } = useTranslation('common')
+  const profileSchema = useMemo(() => createProfileSchema(t), [t])
   const queryClient = useQueryClient()
+  const dispatch = useDispatch<AppDispatch>()
   const { data, isLoading } = useQuery({
     ...getMyProfileSettingsOptions()
   })
 
   const patchProfileSettings = useMutation({
     ...patchMyProfileSettingsMutation(),
-    onSuccess: async () => {
+    onSuccess: async (response) => {
+      await setAppLocale(response.item.languagePreference)
+      dispatch(setAuthLanguagePreference(response.item.languagePreference))
       await queryClient.invalidateQueries({
         queryKey: getMyProfileSettingsQueryKey()
       })
@@ -113,34 +127,47 @@ const ProfileSettingsPage = () => {
         }
       })
 
-      onSuccess({ message: _t('Your profile settings have been updated') })
+      onSuccess({ localizedMessage: t('messages.updated') })
     } catch (err) {
-      const errorBody = err instanceof CourseFlowApiError ? err.body : err
       let hasFieldError = false
+      const formFields: FormField[] = [
+        'firstName',
+        'lastName',
+        'languagePreference'
+      ]
+      formFields.forEach((field) => {
+        const issue = getApiFieldError(err, field)
+        if (!issue) {
+          return
+        }
 
-      if (typeof errorBody === 'object' && errorBody !== null) {
-        const errorRecord = errorBody as Record<string, unknown>
-        const formFields: FormField[] = [
-          'firstName',
-          'lastName',
-          'languagePreference'
-        ]
-        formFields.forEach((field) => {
-          if (!(field in errorRecord)) {
-            return
+        const message = (() => {
+          switch (issue.code) {
+            case 'first_name_required':
+              return t('validation.firstNameRequired')
+            case 'first_name_too_long':
+              return t('validation.firstNameMax', { count: 200 })
+            case 'last_name_required':
+              return t('validation.lastNameRequired')
+            case 'last_name_too_long':
+              return t('validation.lastNameMax', { count: 200 })
+            case 'language_required':
+              return t('validation.languageRequired')
+            default:
+              return null
           }
-          hasFieldError = true
-          setError(field, {
-            message: String(errorRecord[field])
-          })
-        })
-      }
+        })()
+
+        if (!message) {
+          return
+        }
+        hasFieldError = true
+        setError(field, { message })
+      })
 
       if (!hasFieldError) {
         onError({
-          message: _t(
-            'We encountered an issue and your profile settings have not been updated'
-          )
+          localizedMessage: t('messages.updateFailed')
         })
       }
     }
@@ -153,18 +180,22 @@ const ProfileSettingsPage = () => {
   return (
     <OuterContentWrap narrow>
       <StyledTitleBox>
-        <Typography variant="h1">{_t('Profile settings')}</Typography>
+        <Typography variant="h1">{t('title')}</Typography>
       </StyledTitleBox>
 
       <StyledFormBox>
-        <form noValidate onSubmit={handleSubmit(onFormSubmit)}>
+        <form
+          noValidate
+          onSubmit={handleSubmit(onFormSubmit)}
+          data-test-id="profile-settings-form"
+        >
           <Box sx={{ mb: 4 }}>
             <FormControl>
               <TextField
                 {...register('email')}
                 required
                 disabled
-                label={_t('Email / Username')}
+                label={t('fields.email')}
                 variant="standard"
               />
             </FormControl>
@@ -175,7 +206,7 @@ const ProfileSettingsPage = () => {
               <TextField
                 {...register('firstName')}
                 required
-                label={_t('First name')}
+                label={t('fields.firstName')}
                 error={!!errors.firstName}
                 helperText={errors && errors.firstName?.message}
                 variant="standard"
@@ -188,7 +219,7 @@ const ProfileSettingsPage = () => {
               <TextField
                 {...register('lastName')}
                 required
-                label={_t('Last name')}
+                label={t('fields.lastName')}
                 error={!!errors.lastName}
                 helperText={errors && errors.lastName?.message}
                 variant="standard"
@@ -202,7 +233,7 @@ const ProfileSettingsPage = () => {
               error={!!errors.languagePreference}
             >
               <FormLabel component="legend">
-                {_t('Language preferences')}
+                {t('fields.language')}
               </FormLabel>
               <Controller
                 name="languagePreference"
@@ -214,13 +245,17 @@ const ProfileSettingsPage = () => {
                       value={field.value || ''}
                       onChange={(e) => field.onChange(e.target.value)}
                     >
-                      {languageOptions.map((item) => {
+                      {languageOptions.map((language) => {
                         return (
                           <FormControlLabel
-                            key={item.value}
-                            value={item.value}
+                            key={language}
+                            value={language}
                             control={<Radio />}
-                            label={item.label}
+                            label={
+                              language === 'fr'
+                                ? tCommon('language.french')
+                                : tCommon('language.english')
+                            }
                           />
                         )
                       })}
@@ -241,7 +276,7 @@ const ProfileSettingsPage = () => {
                 patchProfileSettings.isPending
               }
             >
-              {_t('Update profile')}
+              {t('actions.update')}
             </Button>
           </Box>
         </form>

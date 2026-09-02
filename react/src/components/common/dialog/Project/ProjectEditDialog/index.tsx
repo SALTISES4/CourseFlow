@@ -6,16 +6,17 @@ import {
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { _t } from '@cf/utility/Utility.class'
 import ProjectForm, {
   ProjectFormValues
 } from '@cfComponents/dialog/Project/components/ProjectForm'
 import * as SC from '@cfComponents/dialog/styles'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
 const ProjectEditDialog = () => {
+  const { t } = useTranslation('project')
   const { show, onClose } = useDialog(DialogMode.PROJECT_EDIT)
   const { uuid } = useParams()
   const projectUuid = uuid ?? ''
@@ -45,7 +46,7 @@ const ProjectEditDialog = () => {
       })
 
       onSuccess(
-        { message: _t('Your project has been successfully updated') },
+        { localizedMessage: t('messages.updated') },
         () => {
           refetch()
           onClose()
@@ -54,7 +55,7 @@ const ProjectEditDialog = () => {
     },
     onError: (err) => {
       onError({
-        message: _t('We encountered an issue and your project was not updated')
+        localizedMessage: t('messages.updateFailed')
       })
     }
   })
@@ -89,8 +90,8 @@ const ProjectEditDialog = () => {
         submitHandler={onSubmit}
         closeCallback={onClose}
         showNoProjectsAlert={false}
-        label={_t('Edit project')}
-        submitLabel={_t('Update project')}
+        label={t('actions.edit')}
+        submitLabel={t('actions.update')}
       />
     </SC.StyledDialog>
   )

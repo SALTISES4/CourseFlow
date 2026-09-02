@@ -3,7 +3,6 @@ import type {
   WorkflowOverviewMetadataOut
 } from '@cf/api/gen/types.gen'
 import { WorkflowType } from '@cf/api/gen/types.gen'
-import { _t } from '@cf/utility/Utility.class'
 import DurationTextField from '@cfComponents/DurationTextField'
 import Alert from '@mui/material/Alert'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -12,6 +11,7 @@ import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import { ChangeEvent, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import * as SC from './styles'
 
@@ -38,6 +38,7 @@ const MetadataFields = ({
   isSaving,
   onSave
 }: Props) => {
+  const { t } = useTranslation('workflow')
   const [values, setValues] = useState(metadata)
 
   useEffect(() => setValues(metadata), [metadata])
@@ -67,7 +68,7 @@ const MetadataFields = ({
     fullWidth = false
   ) => (
     <TextField
-      label={_t(label)}
+      label={label}
       type="number"
       size="small"
       fullWidth={fullWidth}
@@ -86,7 +87,7 @@ const MetadataFields = ({
     fullWidth = false
   ) => (
     <DurationTextField
-      label={_t(label)}
+      label={label}
       value={values[key] as number | null | undefined}
       disabled={!canEdit || disabled || isSaving}
       fullWidth={fullWidth}
@@ -127,12 +128,12 @@ const MetadataFields = ({
     >
       <Grid item xs={6}>
         <SC.InfoBlock>
-          <SC.InfoBlockTitle>{_t('Time')}</SC.InfoBlockTitle>
+          <SC.InfoBlockTitle>{t('metadata.time')}</SC.InfoBlockTitle>
           <SC.InfoBlockContent>
             <Stack direction="row" spacing={2}>
-              {durationField('Time', 'time', timeAutomatic)}
+              {durationField(t('metadata.time'), 'time', timeAutomatic)}
               <FormControlLabel
-                label={_t('Calculate time automatically')}
+                label={t('metadata.calculateTime')}
                 control={
                   <Switch
                     checked={timeAutomatic}
@@ -149,13 +150,13 @@ const MetadataFields = ({
       {isCourseOrProgram && (
         <Grid item xs={6}>
           <SC.InfoBlock>
-            <SC.InfoBlockTitle>{_t('Credits')}</SC.InfoBlockTitle>
+            <SC.InfoBlockTitle>{t('metadata.credits')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
               <Stack direction="row" spacing={2}>
-                {numericField('Credits', 'credits', creditsAutomatic, true)}
+                {numericField(t('metadata.credits'), 'credits', creditsAutomatic, true)}
                 {isProgram && (
                   <FormControlLabel
-                    label={_t('Calculate credits automatically')}
+                    label={t('metadata.calculateCredits')}
                     control={
                       <Switch
                         checked={creditsAutomatic}
@@ -174,11 +175,11 @@ const MetadataFields = ({
       {isCourseOrProgram && (
         <Grid item xs={6}>
           <SC.InfoBlock>
-            <SC.InfoBlockTitle>{_t('Ponderation')}</SC.InfoBlockTitle>
+            <SC.InfoBlockTitle>{t('metadata.ponderation')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
               {isProgram && (
                 <FormControlLabel
-                  label={_t('Calculate ponderation automatically')}
+                  label={t('metadata.calculatePonderation')}
                   control={
                     <Switch
                       checked={ponderationAutomatic}
@@ -190,18 +191,18 @@ const MetadataFields = ({
               )}
               <Grid container spacing={2}>
                 <Grid item xs={12} md={4}>
-                  {durationField('Theory', 'theoryTime', ponderationAutomatic)}
+                  {durationField(t('metadata.theory'), 'theoryTime', ponderationAutomatic)}
                 </Grid>
                 <Grid item xs={12} md={4}>
                   {durationField(
-                    'Practical',
+                    t('metadata.practical'),
                     'practicalTime',
                     ponderationAutomatic
                   )}
                 </Grid>
                 <Grid item xs={12} md={4}>
                   {durationField(
-                    'Individual',
+                    t('metadata.individual'),
                     'individualTime',
                     ponderationAutomatic
                   )}
@@ -212,9 +213,9 @@ const MetadataFields = ({
                   severity="warning"
                   data-test-id="workflow-ponderation-warning"
                 >
-                  {_t(
-                    `Total of ponderation hours does not match ${workflowType} time.`
-                  )}
+                  {t('metadata.ponderationMismatch', {
+                    workflowType
+                  })}
                 </Alert>
               )}
             </SC.InfoBlockContent>
@@ -225,10 +226,10 @@ const MetadataFields = ({
       {isProgram && (
         <Grid item xs={6}>
           <SC.InfoBlock>
-            <SC.InfoBlockTitle>{_t('Classification')}</SC.InfoBlockTitle>
+            <SC.InfoBlockTitle>{t('metadata.classification')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
               <FormControlLabel
-                label={_t('Calculate classification automatically')}
+                label={t('metadata.calculateClassification')}
                 control={
                   <Switch
                     checked={classificationAutomatic}
@@ -240,7 +241,7 @@ const MetadataFields = ({
               <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
                   {durationField(
-                    'General time',
+                    t('metadata.generalTime'),
                     'generalTime',
                     classificationAutomatic,
                     true
@@ -248,7 +249,7 @@ const MetadataFields = ({
                 </Grid>
                 <Grid item xs={12} md={6}>
                   {durationField(
-                    'Specific time',
+                    t('metadata.specificTime'),
                     'specificTime',
                     classificationAutomatic,
                     true
@@ -260,9 +261,7 @@ const MetadataFields = ({
                   severity="warning"
                   data-test-id="workflow-classification-warning"
                 >
-                  {_t(
-                    'Total of classification hours does not match program time'
-                  )}
+                  {t('metadata.classificationMismatch')}
                 </Alert>
               )}
             </SC.InfoBlockContent>
@@ -273,10 +272,10 @@ const MetadataFields = ({
       {isCourseOrProgram && (
         <Grid item xs={6}>
           <SC.InfoBlock>
-            <SC.InfoBlockTitle>{_t('Code')}</SC.InfoBlockTitle>
+            <SC.InfoBlockTitle>{t('metadata.code')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
               <TextField
-                label={_t('Code')}
+                label={t('metadata.code')}
                 size="small"
                 value={values.code ?? ''}
                 disabled={!canEdit || isSaving}

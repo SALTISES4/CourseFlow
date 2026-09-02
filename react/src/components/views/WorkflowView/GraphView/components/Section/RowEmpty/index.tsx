@@ -1,8 +1,8 @@
 import type { GraphBoard } from '@cf/features/graph/state/selectors/graphBoard.selectors'
 import { RootState } from '@cf/redux/store'
-import { _t } from '@cf/utility/Utility.class'
 import { memo, useRef } from 'react'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import type { SectionPropsType } from '../'
 import * as StyledWorkflow from '../../../styles'
@@ -23,6 +23,7 @@ const EmptySectionRow = ({
   columnColors,
   onNodeDrop
 }: PropsType) => {
+  const { t } = useTranslation('workflow')
   const ref = useRef<HTMLDivElement>(null)
   const dragging = useSelector((state: RootState) => state.svglink.allowDnd)
 
@@ -41,7 +42,7 @@ const EmptySectionRow = ({
         />
       ))}
       <Styled.EmptyText sx={{ opacity: dragging ? 0 : 1 }}>
-        {_t('Drag nodes from the sidebar or other sections to add them here.')}
+        {t('graph.emptySection')}
       </Styled.EmptyText>
     </StyledWorkflow.CellRow>
   )

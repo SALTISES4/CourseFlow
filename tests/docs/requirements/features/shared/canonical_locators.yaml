@@ -660,10 +660,10 @@ locatorMappings:
     strategy: "{profileSettingsForm} input[name=\"firstName\"] with label 'First name'"
     confidence: inferred
   profileLanguageOptionEnglish:
-    strategy: "{profileLanguagePreferenceGroup} radio option with label 'English' and value 'en'"
+    strategy: "{profileLanguagePreferenceGroup} radio option with value 'en' (accessible label is localized)"
     confidence: inferred
   profileLanguageOptionFrench:
-    strategy: "{profileLanguagePreferenceGroup} radio option with label 'French' and value 'fr'"
+    strategy: "{profileLanguagePreferenceGroup} radio option with value 'fr' (accessible label is localized)"
     confidence: inferred
   profileLanguagePreferenceGroup:
     strategy: "{profileSettingsForm} fieldset with legend label 'Language preferences'"
@@ -1616,3 +1616,12 @@ locatorMappings:
   workflowViewTabSelector:
     strategy: "{workflowHeader} tab selector for workflow sub-views"
     confidence: inferred
+  workspaceEditLockBanner:
+    strategy: null
+    confidence: unresolved
+  workspaceEditLockMessage:
+    strategy: null
+    confidence: unresolved
+  workspaceEditLockTakeoverButton:
+    strategy: null
+    confidence: unresolved

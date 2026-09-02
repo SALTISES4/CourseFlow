@@ -12,7 +12,7 @@ import {
 } from './workflow-outcome.locators';
 
 export const E2E_OUTCOME_TITLE = 'E2E Outcome 1';
-/** FR-WF-EO-011: duplicate root title is source title + literal ` (copy)`. */
+/** FR-WF-EO-011: English display title for copy-count 1. */
 export const E2E_OUTCOME_DUPLICATE = `${E2E_OUTCOME_TITLE} (copy)`;
 export const E2E_OUTCOME_CHILD_TITLE = 'E2E Outcome Child';
 export const E2E_OUTCOME_GRANDCHILD_TITLE = 'E2E Outcome Grandchild';

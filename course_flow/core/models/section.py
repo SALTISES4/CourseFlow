@@ -12,6 +12,7 @@ class Section(TimeStampedUUIDModel):
         related_name="sections",
     )
     title = models.CharField(max_length=200)
+    title_copy_count = models.PositiveSmallIntegerField(default=0)
     position = models.IntegerField(default=0)
     thread = models.OneToOneField(
         Thread,

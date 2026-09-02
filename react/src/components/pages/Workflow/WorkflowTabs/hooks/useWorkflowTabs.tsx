@@ -1,5 +1,4 @@
 import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
-import { _t } from '@cf/utility/Utility.class'
 import {
   type WorkflowPageData,
   WorkflowViewType
@@ -10,6 +9,7 @@ import OverviewView from '@cfViews/WorkflowView/OverviewView'
 import Tab from '@mui/material/Tab'
 import { ReactNode } from 'react'
 import { Route, generatePath, useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export type WorkflowTabsRouteProps = {
   workflowView: WorkflowViewType
@@ -20,6 +20,7 @@ const useWorkflowTabs = (
   _routeProps: WorkflowTabsRouteProps,
   publicView = false
 ) => {
+  const { t } = useTranslation('workflow')
   const { uuid } = useParams()
   const navigate = useNavigate()
 
@@ -39,7 +40,7 @@ const useWorkflowTabs = (
             type: WorkflowViewType.OVERVIEW,
             route: CFRoutes.WORKFLOW,
             relRoute: RelativeRoutes.INDEX,
-            label: _t('Overview'),
+            label: t('tabs.overview'),
             content: (
               <OverviewView workflow={workflow} publicView={publicView} />
             ),
@@ -49,7 +50,7 @@ const useWorkflowTabs = (
             type: WorkflowViewType.GRAPH,
             route: CFRoutes.WORKFLOW_GRAPH,
             relRoute: RelativeRoutes.GRAPH,
-            label: _t('Workflow'),
+            label: t('tabs.workflow'),
             content: (
               <GraphView
                 graphUuid={workflow.graphUuid}
@@ -62,7 +63,7 @@ const useWorkflowTabs = (
             type: WorkflowViewType.OUTCOME_EDIT,
             route: CFRoutes.WORKFLOW_OUTCOME_EDIT,
             relRoute: RelativeRoutes.OUTCOME_EDIT,
-            label: _t('Outcomes'),
+            label: t('tabs.outcomes'),
             content: (
               <OutcomeEditView
                 graphUuid={workflow.graphUuid}

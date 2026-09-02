@@ -18,12 +18,13 @@ import {
 } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { sidebarEdit } from '@cf/features/sidebar/state/sidebar.slice'
 import useHover from '@cf/hooks/useHover'
+import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
-import { _t } from '@cf/utility/Utility.class'
 import { RootState } from '@cfRedux/store'
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import HoverMenu from './HoverMenu'
 import * as Styled from './styles'
@@ -106,6 +107,7 @@ const ColumnCellInner = ({
   columnId,
   parentId
 }: Omit<CellProps, 'onReorder'>) => {
+  const { t } = useTranslation('workflow')
   const [ref, isHovering] = useHover()
   const dispatch = useDispatch()
   const graphSelector = useMemo(() => selectGraphByUuid(parentId), [parentId])
@@ -180,9 +182,11 @@ const ColumnCellInner = ({
     return null
   }
 
-  const title = channel.title?.trim()
-    ? channel.title
-    : _t('Untitled node category')
+  const title = displaySystemTitle(
+    t,
+    channel,
+    t('graph.untitledNodeCategory')
+  )
 
   return (
     <Styled.ColumnWrap ref={ref} dragging={dragging}>

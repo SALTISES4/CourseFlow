@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import { MouseEventHandler, ReactNode, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { StyledMenu, StyledMenuItem } from './styles'
 
@@ -19,10 +20,12 @@ type PropsType = {
 
 const FilterButton = ({
   icon,
-  placeholder = 'Filter',
+  placeholder,
   options,
   onChange
 }: PropsType) => {
+  const { t } = useTranslation('common')
+  const buttonPlaceholder = placeholder ?? t('labels.filter')
   const selectedOption = options.find(
     (option) => option.enabled && option.value !== null
   )
@@ -42,7 +45,7 @@ const FilterButton = ({
     e.stopPropagation()
 
     const resetOption = options.find((option) => option.value === null) ?? {
-      label: placeholder,
+      label: buttonPlaceholder,
       value: null
     }
     onChange(resetOption)
@@ -57,11 +60,11 @@ const FilterButton = ({
           startIcon={icon}
           onClick={onButtonClick}
         >
-          {selectedOption?.label ?? placeholder}
+          {selectedOption?.label ?? buttonPlaceholder}
           {selectedOption && (
             <IconButton
               color="primary"
-              aria-label="close"
+              aria-label={t('actions.close')}
               size="small"
               onClick={onReset}
               style={{ margin: '-3px -8px -3px 8px' }}

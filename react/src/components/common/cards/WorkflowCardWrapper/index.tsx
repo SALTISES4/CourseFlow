@@ -1,13 +1,13 @@
 import { LibraryContentTypeOut, type PermissionContextOut } from '@cf/api/gen'
 import Favorite from '@cf/components/common/UIPrimitives/Favorite'
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
-import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardDumb, {
   ChipOptions,
   PropsType as WorkflowCardDumbPropsType
 } from '@cfComponents/cards/WorkflowCardDumb'
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
 import Tooltip from '@mui/material/Tooltip'
+import { useTranslation } from 'react-i18next'
 
 import LibraryLifecycleActions from './LibraryLifecycleActions'
 import { workflowTitle } from '../../UIPrimitives/Titles'
@@ -47,6 +47,7 @@ const WorkflowCardWrapper = ({
   isSelected = false,
   onClick
 }: WorkflowCardWrapperPropsType) => {
+  const { t } = useTranslation('common')
   /******************************************E*************
    * FUNCTIONS
    *******************************************************/
@@ -84,29 +85,35 @@ const WorkflowCardWrapper = ({
           ? 'project-card'
           : 'workflow-card'
       }
-      title={workflowTitle({ title, code, deleted })}
+      title={workflowTitle({
+        title,
+        code,
+        deleted,
+        fallbackText: t('labels.untitled'),
+        deletedText: t('labels.deletedSuffix')
+      })}
       favorite={actions}
       isDisabledLink={isDisabledLink}
-      description={ownerName ? `${_t('Owned by')} ${ownerName}` : undefined}
+      description={ownerName ? t('cards.ownedBy', { name: ownerName }) : undefined}
       isSelected={isSelected}
       onClick={onClick ? onClick : () => navigateToItem(uuid, type)}
       chips={[
         ...chips,
-        isArchived && { type: ChipOptions.ARCHIVED, label: _t('Archived') },
+        isArchived && { type: ChipOptions.ARCHIVED, label: t('labels.archived') },
         isLinked && <InUseChip key="in-use" />
       ]}
     />
   )
 }
 
-const InUseChip = () => (
-  <Tooltip
+const InUseChip = () => {
+  const { t } = useTranslation('common')
+
+  return <Tooltip
     className="linked-workflow-warning"
     placement="top"
     arrow
-    title={_t(
-      'Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes.'
-    )}
+    title={t('cards.linkedWorkflowWarning')}
   >
     <WorkflowCardChip
       color="warning"
@@ -119,10 +126,10 @@ const InUseChip = () => (
         }
       }}
       icon={<WarningAmberRoundedIcon sx={{ marginLeft: '2px' }} />}
-      label={_t('Already in use')}
+      label={t('cards.alreadyInUse')}
       variant="outlined"
     />
   </Tooltip>
-)
+}
 
 export default WorkflowCardWrapper

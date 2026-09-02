@@ -7,7 +7,6 @@ import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { selectOutcomeTagGroups } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { RootState } from '@cf/redux/store'
 import { CFRoutes } from '@cf/router/appRoutes'
-import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -16,11 +15,13 @@ import { useQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { generatePath, useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import Outcome from './Outcome'
 import * as Styled from '../../styles'
 
 const OutcomeTab = () => {
+  const { t } = useTranslation('workflow')
   const { uuid } = useParams()
   const { data: workflowDetailResp } = useQuery({
     ...getWorkflowOptions({ path: { uuid: uuid! } }),
@@ -60,13 +61,13 @@ const OutcomeTab = () => {
       <Styled.SidebarInnerWrap>
         <Styled.SidebarContent>
           <Styled.SidebarTitle as="h3" variant="h6">
-            {_t('Outcomes')}
+            {t('outcomes.title')}
           </Styled.SidebarTitle>
           <Alert
             severity="info"
             persistent
             subtitle={
-              <>{`There are currently no outcomes in this ${workflowType}, navigate to the outcomes view to add outcomes.`}</>
+              <>{t('outcomes.empty', { workflowType })}</>
             }
           />
         </Styled.SidebarContent>
@@ -77,7 +78,7 @@ const OutcomeTab = () => {
             disabled={!canManageOutcomes}
             onClick={goToEditOutcomes}
           >
-            {_t('Add outcomes')}
+            {t('outcomes.addPlural')}
           </Button>
         </Styled.SidebarActions>
       </Styled.SidebarInnerWrap>
@@ -88,12 +89,10 @@ const OutcomeTab = () => {
     <Styled.SidebarInnerWrap>
       <Styled.SidebarContent>
         <Styled.SidebarTitle as="h3" variant="h6">
-          {_t('Outcomes')}
+          {t('outcomes.title')}
         </Styled.SidebarTitle>
         <Typography variant="body2" sx={{ mb: 3 }}>
-          {_t(
-            'Drag and drop to associate outcomes from parents workflows to outcomes of your current workflow. Click on an outcome to highlight relevant nodes.'
-          )}
+          {t('outcomes.sidebarHelp')}
         </Typography>
         {outcomeGroups.map(
           (group, idx) =>
@@ -101,7 +100,9 @@ const OutcomeTab = () => {
               <Styled.GroupWrap key={idx}>
                 {group.title && (
                   <Typography component="h6" variant="body2">
-                    {group.title}
+                    {group.uuid === -1 && outcomeGroups.length > 1
+                      ? t('outcomes.untagged')
+                      : group.title}
                   </Typography>
                 )}
                 {group.outcomes.map((outcomeUuid) => (
@@ -122,7 +123,7 @@ const OutcomeTab = () => {
           disabled={!canManageOutcomes}
           onClick={goToEditOutcomes}
         >
-          {_t('Edit outcomes')}
+          {t('outcomes.edit')}
         </Button>
       </Styled.SidebarActions>
     </Styled.SidebarInnerWrap>

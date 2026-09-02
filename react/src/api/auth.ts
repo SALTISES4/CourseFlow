@@ -19,7 +19,8 @@ export class AuthRequestError extends Error {
   constructor(
     message: string,
     readonly status: number,
-    readonly body?: unknown
+    readonly body?: unknown,
+    readonly code?: string
   ) {
     super(message)
     this.name = 'AuthRequestError'
@@ -39,6 +40,14 @@ function parseDetail(body: unknown): string {
   return 'Request failed'
 }
 
+function parseCode(body: unknown): string | undefined {
+  if (body && typeof body === 'object' && 'code' in body) {
+    const code = (body as { code?: unknown }).code
+    return typeof code === 'string' ? code : undefined
+  }
+  return undefined
+}
+
 export async function loginRequest(
   data: UserLoginPayload
 ): Promise<LoginResponse> {
@@ -51,7 +60,12 @@ export async function loginRequest(
 
   if (result.error) {
     const status = result.response?.status ?? 0
-    throw new AuthRequestError(parseDetail(result.error), status, result.error)
+    throw new AuthRequestError(
+      parseDetail(result.error),
+      status,
+      result.error,
+      parseCode(result.error)
+    )
   }
 
   if (!result.data) {
@@ -78,7 +92,12 @@ export async function registerRequest(
 
   if (result.error) {
     const status = result.response?.status ?? 0
-    throw new AuthRequestError(parseDetail(result.error), status, result.error)
+    throw new AuthRequestError(
+      parseDetail(result.error),
+      status,
+      result.error,
+      parseCode(result.error)
+    )
   }
 
   if (!result.data) {

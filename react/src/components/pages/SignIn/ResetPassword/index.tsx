@@ -1,4 +1,3 @@
-import { _t } from '@cf/utility/Utility.class'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
@@ -6,10 +5,12 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
 import { ChangeEvent, FormEvent, useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import * as Styled from '../styles'
 
 function RegisterPage() {
+  const { t } = useTranslation('auth')
   const [state, setState] = useState({
     pending: false,
     email: ''
@@ -46,10 +47,10 @@ function RegisterPage() {
             <Typography component="h2">CourseFlow</Typography>
           </Styled.LogoWrap>
           <Typography variant="body1">
-            {_t('Reset your CourseFlow password')}
+            {t('resetPassword.heading')}
           </Typography>
           <TextField
-            label={_t('Email')}
+            label={t('loginForm.email')}
             type="email"
             name="email"
             value={state.email}
@@ -64,10 +65,11 @@ function RegisterPage() {
             disabled={state.pending}
             fullWidth
           >
-            {_t('Reset password')}
+            {t('resetPassword.submit')}
           </Button>
           <Typography variant="body1">
-            {_t('Back to')} <Link href="/login">{_t('Login')}</Link>
+            {t('registration.backToLogin')}{' '}
+            <Link href="/login">{t('loginForm.submit')}</Link>
           </Typography>
         </Styled.Form>
       </Styled.Paper>

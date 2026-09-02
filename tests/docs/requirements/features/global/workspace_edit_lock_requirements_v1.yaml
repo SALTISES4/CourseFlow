@@ -1,0 +1,318 @@
+# Functional requirements: one-editor workspace edit locks
+# Status: Accepted for implementation.
+# Version: 1.0
+# Source: product decision recorded 2026-09-02.
+# Scope: authenticated project and workflow workspaces use a short-lived, database-backed edit lock so no two different users may edit the same resource at the same time.
+# Cross-reference:
+#   - tests/docs/requirements/features/global/workspace_access_requirements_v1.yaml (workspace access and mid-session permission changes)
+#   - tests/docs/requirements/features/project/project_header_requirements_v1.yaml (all '/project/{id}/*' routes belong to one project workspace)
+#   - tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml (all '/workflow/{id}/*' routes belong to one workflow workspace)
+#   - tests/docs/requirements/features/workflow/workflow_public_link_requirements_v1.yaml (anonymous public-link mode is read-only and does not acquire an edit lock)
+#   - docs/data/permissions/permissions_matrix.md (authoritative owner/editor capabilities)
+#   - docs/architecture/workflow_graph_mutation_concurrency.md (transaction-scoped graph mutation serialization; separate from this user-visible edit-lock contract)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - target resource is an active, non-archived project or workflow that the actor may view
+  - owner and editor mean an actor whose effective resource permissions authorize editing the target project or workflow; an edit lock never grants a permission the actor does not already have
+  - project workspace means every route matching '/project/{id}/*' for one project, including '/project/{id}' and '/project/{id}/workflows'
+  - workflow workspace means every authenticated route matching '/workflow/{id}/*' for one workflow, including '/workflow/{id}', '/workflow/{id}/graph', and '/workflow/{id}/outcomedit'
+  - an edit lock is scoped by resource type and resource ID, records its holder by user ID, and has a server-evaluated expiry time
+  - a shared-resource mutation is any user-initiated operation that creates, changes, reorders, publishes, unpublishes, archives, or deletes shared data belonging to the current project or workflow; this includes metadata, contributors, tags, comments, child-workflow creation from a project, and workflow graph content
+  - read-only actions do not change shared project or workflow data; examples include navigating sub-views, copying or exporting a resource, and changing a user-specific favourite state
+
+timingContract:
+  lockStatusPollIntervalSeconds: 15
+  lockExpirySecondsAfterLastSuccessfulRefresh: 15
+  holderRefreshRule: The holder refreshes the edit lock more frequently than the expiry threshold so normal timer jitter does not cause an active page to lose its lock; the implementation must schedule at least two refresh attempts within each 15-second expiry window.
+  timingAuthority: The server determines acquisition, refresh, takeover, and expiry from server time; client clocks are not authoritative.
+
+scopeRules:
+  - this document is a cross-workspace editability gate; while lock state is unresolved or another user holds the lock, its non-actionable and read-only rules take precedence over owner/editor editable roleBehavior in project and workflow feature requirements; after the actor acquires the lock, those feature-specific requirements apply unchanged
+  - project and workflow edit locks are independent; a project lock does not automatically lock its child workflows, and a workflow lock does not lock its parent project
+  - navigating between sub-views of the same project or workflow retains the same resource lock and polling lifecycle
+  - navigating from a project workspace to a workflow workspace, from a workflow workspace to a project workspace, or to a different resource stops refreshing the prior resource lock and begins lock acquisition for the newly opened resource
+  - only owner and editor actors participate in lock acquisition, refresh, and takeover; viewer, commenter, user with published access, and anonymous public-link visitor remain governed by their existing read-only or comment permissions and do not create edit locks
+
+outOfScope:
+  - real-time or socket-based collaboration, presence, cursor sharing, operational transforms, and conflict-free replicated data types
+  - merging, queuing, replaying, or automatically recovering changes rejected after an edit lock is lost
+  - a request-access flow, waitlist, countdown, or approval prompt sent to the current lock holder
+  - protection against two tabs or browser windows authenticated as the same user when lock ownership is identified only by user ID
+  - coordination between independent project and workflow locks for cross-resource side effects; this version prevents two different users from editing the same exact project or the same exact workflow
+  - background or system-owned mutations that are not initiated by a user editing a project or workflow workspace
+
+uiObjectDefinitions:
+  workspaceEditLockBanner:
+    meaning: Persistent banner shown to an owner or editor whose current project or workflow workspace is locked by a different user; contains workspaceEditLockMessage and workspaceEditLockTakeoverButton.
+  workspaceEditLockMessage:
+    meaning: Message in workspaceEditLockBanner identifying the current lock holder by display name and explaining that the current page is read-only.
+  workspaceEditLockTakeoverButton:
+    meaning: The only call-to-action in workspaceEditLockBanner; has exact label 'Yes' and requests immediate takeover of the current resource edit lock.
+  globalMessageSnackbar:
+    meaning: Canonical definition in tests/docs/requirements/features/global/card_content_requirements_v1.yaml; used for lock-loss and edit-unavailable error feedback.
+
+locatorMappings:
+  workspaceEditLockBanner:
+    strategy: null
+    confidence: unresolved
+  workspaceEditLockMessage:
+    strategy: null
+    confidence: unresolved
+  workspaceEditLockTakeoverButton:
+    strategy: null
+    confidence: unresolved
+  globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
+
+requirements:
+  - id: FR-WS-LOCK-001
+    title: Eligible actor acquires an edit lock before editing a workspace
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workspaceEditLockBanner
+      - globalMessageSnackbar
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - actor opens a project or workflow workspace for which the actor has edit permission
+
+    trigger:
+      - owner or editor opens or reloads any route in the target project or workflow workspace
+
+    mainFlow:
+      - system immediately requests the edit-lock state for the exact project or workflow resource
+      - until lock acquisition succeeds or an active lock held by another user is returned, shared-resource mutation controls remain non-actionable; the client must not enable editing optimistically while lock state is unresolved
+      - when no unexpired edit lock exists, the system atomically creates an edit lock for the actor
+      - an expired edit lock is treated as absent and may be atomically replaced by the actor
+      - at most one unexpired edit lock exists for the same resource type and resource ID at any time
+      - after acquisition succeeds, the system reloads the latest server state for that resource before enabling shared-resource mutation controls
+      - edit controls become actionable only after both lock acquisition and the post-acquisition reload succeed, and remain subject to the actor's existing permissions
+      - acquiring a workflow lock does not acquire the parent project's lock; acquiring a project lock does not acquire locks for child workflows
+      - viewer, commenter, user with published access, and anonymous public-link visitor do not request or hold an edit lock
+      - if initial lock state or acquisition cannot be confirmed, shared-resource mutation controls remain non-actionable and globalMessageSnackbar shows exactly 'Editing is temporarily unavailable. Please try again.'
+
+    roleBehavior:
+      owner:
+        workspaceEditLockBanner: hiddenWhenLockAcquired
+      editor:
+        workspaceEditLockBanner: hiddenWhenLockAcquired
+
+    acceptanceCriteria:
+      - given no unexpired edit lock exists for project P, when owner or editor opens any route matching '/project/{id}/*' for P, the system creates one unexpired project edit lock held by that actor
+      - given no unexpired edit lock exists for workflow W, when owner or editor opens any authenticated route matching '/workflow/{id}/*' for W, the system creates one unexpired workflow edit lock held by that actor
+      - given lock acquisition has not completed, shared-resource mutation controls are not actionable
+      - given actor acquires the edit lock, the latest server state is reloaded before shared-resource mutation controls become actionable
+      - given two different eligible actors concurrently attempt to acquire an unlocked resource, exactly one actor receives the edit lock; the other actor is handled by FR-WS-LOCK-003
+      - given an existing edit lock has expired, when eligible actor opens the resource, actor may acquire a replacement lock without confirmation from the expired holder
+      - given actor is viewer, commenter, user with published access, or anonymous public-link visitor, when actor opens a project or workflow workspace, no edit lock is created or refreshed for that actor
+      - given initial lock state or acquisition cannot be confirmed, shared-resource mutation controls remain non-actionable and globalMessageSnackbar shows exactly 'Editing is temporarily unavailable. Please try again.'
+
+    openQuestions: []
+
+  - id: FR-WS-LOCK-002
+    title: An actively mounted editor refreshes the lock and abandoned locks expire
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workspaceEditLockBanner
+
+    preconditions:
+      - FR-WS-LOCK-001 preconditions hold
+      - actor currently holds the unexpired edit lock for the resource
+
+    trigger:
+      - the project or workflow workspace remains mounted in the actor's browser
+      - the actor navigates away, closes the page, quits the browser, loses execution because the page crashes, or otherwise stops refreshing the edit lock
+
+    mainFlow:
+      - while the workspace remains mounted, the client refreshes the edit lock according to timingContract
+      - each successful refresh extends expiry from the server's refresh time
+      - a refresh succeeds only while the actor remains the current lock holder and retains edit permission for the resource
+      - when the workspace unmounts or can no longer run, lock correctness does not depend on an unload or release request reaching the server; refreshes stop and the lock expires according to timingContract
+      - an expired edit lock does not authorize shared-resource mutations and does not block a different eligible actor from acquiring the resource
+      - a browser tab being mounted is sufficient for the client to attempt refreshes; focus, pointer movement, and keyboard activity are not separately required
+      - browser timer throttling, connectivity loss, or a failed refresh may cause the lock to expire; disruption to the prior editor is accepted under this initial collaboration model
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given actor holds the edit lock and the workspace remains mounted with successful refresh requests, the lock remains unexpired
+      - given actor closes or navigates away from the workspace and no further refresh succeeds, the lock is expired no later than 15 seconds after the last successful refresh
+      - given the page or browser crashes and cannot send a release request, the lock still expires no later than 15 seconds after the last successful refresh
+      - given actor no longer has edit permission, a later refresh does not extend the lock and the lock cannot authorize a mutation
+      - given a lock is expired, a different eligible actor may acquire the resource without clicking workspaceEditLockTakeoverButton
+
+    openQuestions: []
+
+  - id: FR-WS-LOCK-003
+    title: Eligible non-holder sees the workspace in read-only mode
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workspaceEditLockBanner
+      - workspaceEditLockMessage
+      - workspaceEditLockTakeoverButton
+
+    preconditions:
+      - FR-WS-LOCK-001 preconditions hold
+      - an unexpired edit lock for the exact project or workflow is held by a different user
+
+    trigger:
+      - owner or editor opens the locked resource
+      - owner or editor is already viewing the locked resource without holding its lock and receives a status-poll result
+
+    mainFlow:
+      - system renders the existing project or workflow workspace and its readable content
+      - all controls that can perform a shared-resource mutation are read-only, disabled, or hidden according to the owning feature's established read-only presentation; none is actionable
+      - read-only navigation and actions that do not change shared project or workflow data remain available according to the actor's existing permissions
+      - workspaceEditLockBanner remains visible while a different user holds the unexpired lock
+      - workspaceEditLockMessage shows exactly '{displayName} is currently editing this page. Do you wish to take over?' using the current lock holder's display name
+      - workspaceEditLockTakeoverButton is visible and enabled with exact label 'Yes'
+      - workspaceEditLockTakeoverButton is the banner's only call-to-action; the banner does not provide a 'No', cancel, request-access, or waitlist action
+      - while the actor remains on the page without taking over, the client polls lock status at least once every 15 seconds
+      - if a later poll finds no unexpired lock, the system atomically attempts acquisition for the waiting actor; if acquisition succeeds, it reloads current server state before enabling edits and removes workspaceEditLockBanner
+      - if another eligible actor acquires the newly available lock first, this actor remains read-only and workspaceEditLockMessage updates to identify the actual holder
+
+    roleBehavior:
+      owner:
+        workspaceEditLockBanner: visible
+        workspaceEditLockMessage: visible
+        workspaceEditLockTakeoverButton: enabled
+      editor:
+        workspaceEditLockBanner: visible
+        workspaceEditLockMessage: visible
+        workspaceEditLockTakeoverButton: enabled
+
+    acceptanceCriteria:
+      - given user A holds the project edit lock for P, when eligible user B opens any route matching '/project/{id}/*' for P, B sees readable project content, cannot perform shared-resource mutations, and sees workspaceEditLockBanner
+      - given user A holds the workflow edit lock for W, when eligible user B opens any authenticated route matching '/workflow/{id}/*' for W, B sees readable workflow content, cannot perform shared-resource mutations, and sees workspaceEditLockBanner
+      - given A's display name is 'Alex Smith', workspaceEditLockMessage shows exactly 'Alex Smith is currently editing this page. Do you wish to take over?'
+      - workspaceEditLockTakeoverButton shows exactly 'Yes' and no other banner call-to-action is rendered
+      - given B remains on the locked page and does not click 'Yes', B checks lock status at least once every 15 seconds
+      - given A's lock expires while B remains on the page, when B next polls and atomically acquires the resource, B's page reloads current server state, workspaceEditLockBanner is removed, and edit controls become actionable only after the reload succeeds
+      - given A holds the project lock for P and B holds the workflow lock for child workflow W, A may remain project editor and B may remain workflow editor because the resources have independent lock scopes
+
+    openQuestions: []
+
+  - id: FR-WS-LOCK-004
+    title: Eligible non-holder may take over the edit lock immediately
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workspaceEditLockBanner
+      - workspaceEditLockMessage
+      - workspaceEditLockTakeoverButton
+      - globalMessageSnackbar
+
+    preconditions:
+      - FR-WS-LOCK-003 preconditions hold
+      - workspaceEditLockBanner is visible to the actor
+
+    trigger:
+      - actor clicks workspaceEditLockTakeoverButton
+
+    mainFlow:
+      - system atomically replaces the prior user's edit lock with a new edit lock held by the actor; takeover does not require confirmation or approval from the prior holder
+      - after takeover succeeds, the system reloads the latest server state for the resource before enabling shared-resource mutation controls
+      - workspaceEditLockBanner is removed only after takeover and the post-takeover reload succeed
+      - once takeover succeeds, the prior holder cannot refresh the replaced lock and cannot successfully perform a new shared-resource mutation under the prior lock
+      - when two or more eligible actors attempt takeover concurrently, exactly one becomes the current holder; every other actor remains or becomes read-only and sees workspaceEditLockBanner naming the winning holder
+      - if takeover cannot be confirmed, the actor remains read-only and globalMessageSnackbar shows exactly 'Editing is temporarily unavailable. Please try again.'
+
+    roleBehavior:
+      owner:
+        workspaceEditLockTakeoverButton: enabled
+      editor:
+        workspaceEditLockTakeoverButton: enabled
+
+    acceptanceCriteria:
+      - given A holds the edit lock and B sees workspaceEditLockBanner, when B clicks 'Yes' and takeover succeeds, B becomes the only current lock holder
+      - given B takes over the lock, the system does not request or wait for approval from A
+      - given B takes over the lock, B's page reloads current server state before shared-resource mutation controls become actionable
+      - given B takes over the lock, A's next refresh request does not renew A's prior lock
+      - given B and C attempt takeover concurrently, exactly one of B or C becomes lock holder and the other sees the winner named in workspaceEditLockMessage
+      - given takeover fails or cannot be confirmed, B remains read-only and globalMessageSnackbar shows exactly 'Editing is temporarily unavailable. Please try again.'
+
+    openQuestions: []
+
+  - id: FR-WS-LOCK-005
+    title: Lock loss is detected by polling and stale mutations are rejected authoritatively
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workspaceEditLockBanner
+      - workspaceEditLockMessage
+      - workspaceEditLockTakeoverButton
+      - globalMessageSnackbar
+
+    preconditions:
+      - actor previously acquired the edit lock and rendered the resource in editable mode
+      - actor's edit lock has since expired or been replaced by another eligible user
+
+    trigger:
+      - actor's next lock refresh or status poll returns current lock status
+      - before the client detects lock loss, actor attempts a shared-resource mutation
+
+    mainFlow:
+      - the client is permitted to remain visually editable until its next lock refresh or status poll, creating an expected detection delay of up to 15 seconds
+      - when the client learns that another user holds the lock, it transitions the workspace to FR-WS-LOCK-003 read-only mode and renders workspaceEditLockBanner naming the current holder
+      - when the client learns that its lock expired and no other user holds the resource, it atomically attempts reacquisition and reloads current server state before re-enabling edits
+      - every shared-resource mutation is authorized by the server against the current, unexpired edit lock at mutation time; client state and a previously held lock are not sufficient
+      - if another user holds the current lock, the server rejects the stale actor's mutation without partially applying it
+      - for a rejected workflow mutation, globalMessageSnackbar shows exactly 'This workflow is currently being edited by {displayName}. Your changes were not saved.' using the current holder's display name
+      - for a rejected project mutation, globalMessageSnackbar shows exactly 'This project is currently being edited by {displayName}. Your changes were not saved.' using the current holder's display name
+      - if the actor has no unexpired lock and no other user currently holds the resource, the server rejects the mutation without partially applying it and globalMessageSnackbar shows exactly 'Your edit lock has expired. Your changes were not saved. Refresh the page to continue editing.'
+      - an already accepted mutation that completed before takeover remains persisted; a mutation authorized after takeover belongs only to the new holder
+      - rejected local changes are not merged, queued, replayed, or automatically recovered
+
+    roleBehavior:
+      owner:
+        workspaceEditLockBanner: visibleWhenAnotherUserHoldsLock
+      editor:
+        workspaceEditLockBanner: visibleWhenAnotherUserHoldsLock
+
+    acceptanceCriteria:
+      - given A previously held the lock and B takes it over, A's client may remain visually editable until A's next refresh or status poll, but for no more than 15 seconds under normal polling execution
+      - given B now holds workflow W's lock and A submits a workflow mutation before detecting takeover, the mutation is rejected with no partial persistence and globalMessageSnackbar shows 'This workflow is currently being edited by {displayName}. Your changes were not saved.' using B's display name
+      - given B now holds project P's lock and A submits a project mutation before detecting takeover, the mutation is rejected with no partial persistence and globalMessageSnackbar shows 'This project is currently being edited by {displayName}. Your changes were not saved.' using B's display name
+      - given A's lock expired and nobody currently holds the resource, when A submits a shared-resource mutation without first reacquiring a lock, the mutation is rejected with no partial persistence and globalMessageSnackbar shows exactly 'Your edit lock has expired. Your changes were not saved. Refresh the page to continue editing.'
+      - given A's poll detects that B holds the lock, A's shared-resource mutation controls become non-actionable and workspaceEditLockBanner identifies B
+      - given A's in-flight mutation is accepted and committed before B's takeover is authorized, B's required post-takeover reload includes A's committed change
+      - given B's takeover is authorized before A's mutation is authorized, A's mutation is rejected and does not partially change the resource
+      - given A loses the lock with unsaved local changes, the system does not automatically merge, queue, replay, or recover those changes
+
+    openQuestions: []
+
+changelog:
+  - version: '1.0'
+    date: '2026-09-02'
+    changes:
+      - Added initial one-editor-at-a-time edit-lock requirements for project and workflow workspaces.
+      - Defined acquisition, server-state reload, heartbeat and expiry, locked read-only presentation, takeover, polling delay, and authoritative stale-write rejection.
+      - Recorded explicit non-goals for real-time collaboration, queued or merged edits, and cross-resource or same-user multi-tab coordination.

@@ -52,14 +52,6 @@ class WorkflowDTO:
 
 
 @dataclass(frozen=True, slots=True)
-class DisciplineDTO:
-    id: int
-    code: str
-    label: str
-    translation_plural: str
-
-
-@dataclass(frozen=True, slots=True)
 class TagDTO:
     id: int
     label: str
@@ -102,6 +94,8 @@ class ChannelDTO:
     uuid: UUID
     graph_uuid: UUID
     title: str
+    system_label_code: str | None
+    title_copy_count: int
     colour: str
     position: int
     thread_uuid: UUID | None
@@ -114,6 +108,7 @@ class SectionDTO:
     uuid: UUID
     graph_uuid: UUID
     title: str
+    title_copy_count: int
     position: int
     thread_uuid: UUID | None
     date_created: datetime

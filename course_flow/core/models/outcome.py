@@ -25,6 +25,7 @@ class Outcome(UUIDModel):
     )
     order = models.PositiveIntegerField(default=0)
     title = models.CharField(max_length=200, blank=True)
+    title_copy_count = models.PositiveSmallIntegerField(default=0)
     description = models.TextField(blank=True)
     code = models.CharField(max_length=64, blank=True)
     tags = models.ManyToManyField(

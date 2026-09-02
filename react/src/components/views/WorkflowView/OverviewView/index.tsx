@@ -10,9 +10,9 @@ import {
   useWorkspacePermissions
 } from '@cf/context/workspacePermissionsContext'
 import { CFRoutes } from '@cf/router/cfRoutes'
+import { useReferenceLabels } from '@cf/i18n/referenceLabels'
 import { WorkspaceType } from '@cf/types/enum'
 import { SnackbarOptions } from '@cf/utility/constants'
-import Utility, { _t } from '@cf/utility/Utility.class'
 import { OuterContentWrap } from '@cfMUI/helper'
 import {
   type WorkflowPageData,
@@ -27,6 +27,7 @@ import Stack from '@mui/material/Stack'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
 import { generatePath } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import MetadataFields from './MetadataFields'
 import * as SC from './styles'
@@ -39,6 +40,8 @@ const OverviewView = ({
   workflow: WorkflowPageData
   publicView: boolean
 }) => {
+  const { t } = useTranslation('workflow')
+  const { locale } = useReferenceLabels()
   const workflowUuid = workflow.uuid
   const queryClient = useQueryClient()
   const updateMetadata = useMutation(updateWorkflowMutation())
@@ -68,7 +71,7 @@ const OverviewView = ({
       queryClient.setQueryData(workflowQueryKey, response)
     } catch (error) {
       await queryClient.invalidateQueries({ queryKey: workflowQueryKey })
-      enqueueSnackbar(_t('Workflow metadata could not be saved'), {
+      enqueueSnackbar(t('messages.metadataSaveFailed'), {
         variant: SnackbarOptions.ERROR
       })
       console.error('Failed to update workflow overview metadata:', error)
@@ -83,11 +86,11 @@ const OverviewView = ({
       })
       queryClient.setQueryData(workflowQueryKey, response)
       enqueueSnackbar(
-        enabled ? _t('Public link enabled') : _t('Public link removed'),
+        enabled ? t('messages.publicLinkEnabled') : t('messages.publicLinkRemoved'),
         { variant: SnackbarOptions.SUCCESS }
       )
     } catch (error) {
-      enqueueSnackbar(_t('Public link could not be updated'), {
+      enqueueSnackbar(t('messages.publicLinkUpdateFailed'), {
         variant: SnackbarOptions.ERROR
       })
       console.error('Failed to update workflow public link:', error)
@@ -100,11 +103,11 @@ const OverviewView = ({
       await navigator.clipboard.writeText(
         new URL(path, window.location.origin).toString()
       )
-      enqueueSnackbar(_t('Public link copied'), {
+      enqueueSnackbar(t('messages.publicLinkCopied'), {
         variant: SnackbarOptions.SUCCESS
       })
     } catch (error) {
-      enqueueSnackbar(_t('Public link could not be copied'), {
+      enqueueSnackbar(t('messages.publicLinkCopyFailed'), {
         variant: SnackbarOptions.ERROR
       })
       console.error('Failed to copy workflow public link:', error)
@@ -114,26 +117,32 @@ const OverviewView = ({
   return (
     <OuterContentWrap sx={{ pt: 4 }} data-test-id="workflow-overview-view">
       <SC.InfoBlock sx={{ mb: 3 }}>
-        <SC.InfoBlockTitle>{_t('Description')}</SC.InfoBlockTitle>
-        <SC.InfoBlockContent>{description || _t('-')}</SC.InfoBlockContent>
+        <SC.InfoBlockTitle>{t('overview.description')}</SC.InfoBlockTitle>
+        <SC.InfoBlockContent>{description || t('overview.emptyValue')}</SC.InfoBlockContent>
       </SC.InfoBlock>
 
       <Grid container columnSpacing={3}>
         <Grid item xs={6}>
           <SC.InfoBlock>
-            <SC.InfoBlockTitle>{_t('Disciplines')}</SC.InfoBlockTitle>
+            <SC.InfoBlockTitle>{t('overview.disciplines')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
               {disciplines.length
                 ? disciplines.map((d) => d.title).join(', ')
-                : _t('No disciplines found.')}
+                : t('overview.noDisciplines')}
             </SC.InfoBlockContent>
           </SC.InfoBlock>
         </Grid>
         <Grid item xs={6}>
           <SC.InfoBlock>
-            <SC.InfoBlockTitle>{_t('Created on')}</SC.InfoBlockTitle>
+            <SC.InfoBlockTitle>{t('overview.createdOn')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
-              {createdOn ? Utility.formatDate(createdOn) : '-'}
+              {createdOn
+                ? new Intl.DateTimeFormat(locale, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  }).format(new Date(createdOn))
+                : t('overview.emptyValue')}
             </SC.InfoBlockContent>
           </SC.InfoBlock>
         </Grid>
@@ -141,7 +150,7 @@ const OverviewView = ({
 
       {!publicView && authenticatedWorkflow && (
         <SC.InfoBlock sx={{ mt: 3 }} data-test-id="workflow-permissions-panel">
-          <SC.InfoBlockTitle>{_t('Permissions')}</SC.InfoBlockTitle>
+          <SC.InfoBlockTitle>{t('overview.permissions')}</SC.InfoBlockTitle>
           <UserPermissions
             workspaceId={workflowUuid}
             owner={workflow.owner}
@@ -167,7 +176,7 @@ const OverviewView = ({
                     disabled={updatePublicLink.isPending}
                     onClick={copyPublicLink}
                   >
-                    {_t('Copy public link')}
+                    {t('overview.copyPublicLink')}
                   </Button>
                   <Button
                     size="medium"
@@ -177,7 +186,7 @@ const OverviewView = ({
                     disabled={updatePublicLink.isPending}
                     onClick={() => setPublicLinkEnabled(false)}
                   >
-                    {_t('Remove public link')}
+                    {t('overview.removePublicLink')}
                   </Button>
                 </>
               ) : (
@@ -189,7 +198,7 @@ const OverviewView = ({
                   disabled={updatePublicLink.isPending}
                   onClick={() => setPublicLinkEnabled(true)}
                 >
-                  {_t('Generate public link')}
+                  {t('overview.generatePublicLink')}
                 </Button>
               )}
             </Stack>

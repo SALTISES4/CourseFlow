@@ -36,13 +36,17 @@ def client() -> Client:
 @pytest.fixture
 def user():
     user_model = get_user_model()
-    return user_model.objects.create_user(email="mut-owner@example.com", password="password123")
+    return user_model.objects.create_user(
+        email="mut-owner@example.com", password="password123"
+    )
 
 
 @pytest.fixture
 def other_user():
     user_model = get_user_model()
-    return user_model.objects.create_user(email="mut-other@example.com", password="password123")
+    return user_model.objects.create_user(
+        email="mut-other@example.com", password="password123"
+    )
 
 
 def _auth_header(raw_token: str) -> dict[str, str]:
@@ -341,6 +345,47 @@ def test_insert_node_below_row_mode_shifts_sibling(client: Client, user):
 
 
 @pytest.mark.django_db
+def test_duplicate_node_preserves_authored_title_and_increments_copy_count(
+    client: Client,
+    user,
+):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(wf_uuid)
+    source = create_grid_node(
+        section=section,
+        channel=channel,
+        workflow=workflow,
+        section_row=0,
+        title="Lecture",
+    )
+    source.title_copy_count = 1
+    source.save(update_fields=["title_copy_count"])
+
+    response = client.post(
+        f"/api/graph/{wf_uuid}/nodes/insert-below",
+        data={
+            "nodeUuid": str(source.uuid),
+            "mode": "row",
+            "duplicate": True,
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+
+    assert response.status_code == 200, response.content
+    body = response.json()
+    duplicate_uuid = body["meta"]["triggerEntityId"]
+    duplicate = next(
+        item
+        for item in body["changes"]["nodes"]["updated"]
+        if item["uuid"] == duplicate_uuid
+    )
+    assert duplicate["title"] == "Lecture"
+    assert duplicate["titleCopyCount"] == 2
+
+
+@pytest.mark.django_db
 def test_move_graph_node_returns_multi_node_envelope(client: Client, user):
     raw = _issue_token_for(user)
     wf_uuid = _create_graph(client, raw)
@@ -350,9 +395,7 @@ def test_move_graph_node_returns_multi_node_envelope(client: Client, user):
     n0 = create_grid_node(
         section=section, channel=channel, workflow=workflow, section_row=0
     )
-    n1 = create_grid_node(
-        section=section, channel=channel, workflow=workflow, section_row=1
-    )
+    create_grid_node(section=section, channel=channel, workflow=workflow, section_row=1)
 
     r = client.post(
         f"/api/node/{n0.uuid}/move",
@@ -442,7 +485,9 @@ def test_patch_node_meta_updates_fields_and_returns_envelope(client: Client, use
 
     node.refresh_from_db()
     assert node.title == "Lab 1"
-    assert node.activitymeta.context_classification == ContextClassification.WORK_IN_GROUPS
+    assert (
+        node.activitymeta.context_classification == ContextClassification.WORK_IN_GROUPS
+    )
 
 
 @pytest.mark.django_db
@@ -694,10 +739,21 @@ def test_reorder_channels_returns_updated_positions(client: Client, user):
     wf_uuid = _create_graph(client, raw)
     section, channel, workflow = _section_and_channel(wf_uuid)
     ch2 = Channel.objects.create(graph=section.graph, title="C2", position=1)
+    remaining = list(
+        Channel.objects.filter(graph=section.graph)
+        .exclude(uuid__in=[ch2.uuid, channel.uuid])
+        .order_by("position", "id")
+    )
 
     r = client.put(
         f"/api/graph/{wf_uuid}/channels/order",
-        data={"channelUuids": [str(ch2.uuid), str(channel.uuid)]},
+        data={
+            "channelUuids": [
+                str(ch2.uuid),
+                str(channel.uuid),
+                *(str(item.uuid) for item in remaining),
+            ]
+        },
         content_type="application/json",
         **_auth_header(raw),
     )
@@ -705,7 +761,10 @@ def test_reorder_channels_returns_updated_positions(client: Client, user):
     body = r.json()
     _assert_envelope_shape(body)
     assert body["meta"]["triggeredBy"] == "reorder_channels"
-    updated = {item["uuid"]: item["position"] for item in body["changes"]["channels"]["updated"]}
+    updated = {
+        item["uuid"]: item["position"]
+        for item in body["changes"]["channels"]["updated"]
+    }
     assert updated[str(ch2.uuid)] == 0
     assert updated[str(channel.uuid)] == 1
 
@@ -716,10 +775,21 @@ def test_reorder_sections_returns_updated_positions(client: Client, user):
     wf_uuid = _create_graph(client, raw)
     section, channel, workflow = _section_and_channel(wf_uuid)
     sec2 = Section.objects.create(graph=section.graph, title="S2", position=1)
+    remaining = list(
+        Section.objects.filter(graph=section.graph)
+        .exclude(uuid__in=[sec2.uuid, section.uuid])
+        .order_by("position", "id")
+    )
 
     r = client.put(
         f"/api/graph/{wf_uuid}/sections/order",
-        data={"sectionUuids": [str(sec2.uuid), str(section.uuid)]},
+        data={
+            "sectionUuids": [
+                str(sec2.uuid),
+                str(section.uuid),
+                *(str(item.uuid) for item in remaining),
+            ]
+        },
         content_type="application/json",
         **_auth_header(raw),
     )
@@ -727,7 +797,10 @@ def test_reorder_sections_returns_updated_positions(client: Client, user):
     body = r.json()
     _assert_envelope_shape(body)
     assert body["meta"]["triggeredBy"] == "reorder_sections"
-    updated = {item["uuid"]: item["position"] for item in body["changes"]["sections"]["updated"]}
+    updated = {
+        item["uuid"]: item["position"]
+        for item in body["changes"]["sections"]["updated"]
+    }
     assert updated[str(sec2.uuid)] == 0
     assert updated[str(section.uuid)] == 1
 
@@ -737,6 +810,13 @@ def test_insert_channel_append_returns_created_channel(client: Client, user):
     raw = _issue_token_for(user)
     wf_uuid = _create_graph(client, raw)
     section, channel, workflow = _section_and_channel(wf_uuid)
+    expected_position = (
+        Channel.objects.filter(graph=section.graph)
+        .order_by("-position")
+        .values_list("position", flat=True)
+        .first()
+        + 1
+    )
 
     r = client.post(
         f"/api/graph/{wf_uuid}/channels/insert-below",
@@ -750,8 +830,10 @@ def test_insert_channel_append_returns_created_channel(client: Client, user):
     assert body["meta"]["triggeredBy"] == "insert_channel_below"
     assert len(body["changes"]["channels"]["created"]) == 1
     created = body["changes"]["channels"]["created"][0]
-    assert created["title"] == "Custom node category"
-    assert created["position"] == 1
+    assert created["title"] == ""
+    assert created["systemLabelCode"] == "custom_node_category"
+    assert created["titleCopyCount"] == 0
+    assert created["position"] == expected_position
     assert body["changes"]["channels"]["updated"] == []
 
 
@@ -772,7 +854,10 @@ def test_insert_channel_below_shifts_positions(client: Client, user):
     body = r.json()
     created = body["changes"]["channels"]["created"][0]
     assert created["position"] == 1
-    updated = {item["uuid"]: item["position"] for item in body["changes"]["channels"]["updated"]}
+    updated = {
+        item["uuid"]: item["position"]
+        for item in body["changes"]["channels"]["updated"]
+    }
     assert updated[str(ch2.uuid)] == 2
 
 
@@ -797,6 +882,56 @@ def test_update_channel_colour(client: Client, user):
 
 
 @pytest.mark.django_db
+def test_duplicate_channel_preserves_semantic_title_and_increments_copy_count(
+    client: Client,
+    user,
+):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    _section, channel, _workflow = _section_and_channel(wf_uuid)
+
+    response = client.post(
+        f"/api/graph/{wf_uuid}/channels/insert-below",
+        data={"channelUuid": str(channel.uuid), "duplicate": True},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+
+    assert response.status_code == 200, response.content
+    created = response.json()["changes"]["channels"]["created"][0]
+    assert created["title"] == channel.title
+    assert created["systemLabelCode"] == channel.system_label_code
+    assert created["titleCopyCount"] == channel.title_copy_count + 1
+
+
+@pytest.mark.django_db
+def test_editing_system_channel_title_converts_it_to_authored_content(
+    client: Client,
+    user,
+):
+    raw = _issue_token_for(user)
+    wf_uuid = _create_graph(client, raw)
+    channel = Channel.objects.filter(
+        graph__uuid=wf_uuid,
+        system_label_code__isnull=False,
+    ).first()
+    assert channel is not None
+
+    response = client.patch(
+        f"/api/channel/{channel.uuid}",
+        data={"title": "Authored category"},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+
+    assert response.status_code == 200, response.content
+    item = response.json()["item"]
+    assert item["title"] == "Authored category"
+    assert item["systemLabelCode"] is None
+    assert item["titleCopyCount"] == 0
+
+
+@pytest.mark.django_db
 def test_insert_section_below_returns_created_section(client: Client, user):
     raw = _issue_token_for(user)
     wf_uuid = _create_graph(client, raw)
@@ -817,7 +952,10 @@ def test_insert_section_below_returns_created_section(client: Client, user):
     created = body["changes"]["sections"]["created"][0]
     assert created["title"] == ""
     assert created["position"] == 1
-    updated = {item["uuid"]: item["position"] for item in body["changes"]["sections"]["updated"]}
+    updated = {
+        item["uuid"]: item["position"]
+        for item in body["changes"]["sections"]["updated"]
+    }
     assert updated[str(sec2.uuid)] == 2
 
 
@@ -839,7 +977,8 @@ def test_duplicate_section_below_copies_title(client: Client, user):
     body = r.json()
     assert body["meta"]["triggeredBy"] == "duplicate_section_below"
     created = body["changes"]["sections"]["created"][0]
-    assert created["title"] == "Week 1 (copy)"
+    assert created["title"] == "Week 1"
+    assert created["titleCopyCount"] == 1
     assert created["position"] == 1
 
 
@@ -851,9 +990,9 @@ def test_duplicate_section_below_copies_internal_graph_content(client: Client, u
     section, channel, workflow = _section_and_channel(wf_uuid)
     graph = section.graph
     other_section = Section.objects.create(graph=graph, title="Other", position=1)
-    linked_workflow = Graph.objects.select_related("workflow").get(
-        uuid=linked_graph_uuid
-    ).workflow
+    linked_workflow = (
+        Graph.objects.select_related("workflow").get(uuid=linked_graph_uuid).workflow
+    )
 
     source_a = create_grid_node(
         section=section,
@@ -879,7 +1018,9 @@ def test_duplicate_section_below_copies_internal_graph_content(client: Client, u
         title="Outside",
     )
 
-    source_a.activitymeta.context_classification = ContextClassification.IN_THE_CLASSROOM
+    source_a.activitymeta.context_classification = (
+        ContextClassification.IN_THE_CLASSROOM
+    )
     source_a.activitymeta.task_classification = TaskClassification.ANALYZE
     source_a.activitymeta.time_required = Decimal("2.50")
     source_a.activitymeta.time_units = TimeUnit.MINUTES

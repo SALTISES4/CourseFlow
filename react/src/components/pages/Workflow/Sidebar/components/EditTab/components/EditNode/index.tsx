@@ -22,8 +22,9 @@ import {
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { useReferenceData } from '@cf/hooks/useReferenceData'
+import { useReferenceLabels } from '@cf/i18n/referenceLabels'
+import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import type { AppDispatch, RootState } from '@cf/redux/store'
-import { _t } from '@cf/utility/Utility.class'
 import * as SC from '@cfSidebar/styles'
 import InsertMenu from '@cfViews/WorkflowView/GraphView/components/Section/Cell/InsertMenu'
 import { debounce } from '@mui/material'
@@ -44,6 +45,7 @@ import { useQuery } from '@tanstack/react-query'
 import { MouseEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import LinkedWorkflowMirrorFields from './LinkedWorkflowMirrorFields'
 import {
@@ -124,6 +126,8 @@ const EditNodeForm = ({
   projectUuid: string | null
   linkedWorkflowTitle?: string
 }) => {
+  const { t } = useTranslation('workflow')
+  const { t: tCommon } = useTranslation('common')
   const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
   const canEdit = useResourcePermission(WorkflowPermission.NODE_MANAGEMENT)
@@ -134,6 +138,7 @@ const EditNodeForm = ({
   const [duplicateMenuAnchor, setDuplicateMenuAnchor] =
     useState<HTMLElement | null>(null)
   const { data: referenceData } = useReferenceData()
+  const { contextLabel, taskClassificationLabel } = useReferenceLabels()
 
   const isLinked = Boolean(node.linkedWorkflowUuid)
   const isCourseParent = parentWorkflowType === 'course'
@@ -156,8 +161,15 @@ const EditNodeForm = ({
   })
 
   const mirroredTitle =
-    linkedWorkflowDetail?.title ?? linkedWorkflowTitle ?? nodeTitleFallback()
+    linkedWorkflowDetail?.title ??
+    linkedWorkflowTitle ??
+    nodeTitleFallback(t('linked.untitledNode'))
   const mirroredDescription = linkedWorkflowDetail?.description ?? ''
+  const editableTitle = displaySystemTitle(
+    t,
+    node,
+    nodeTitleFallback(t('linked.untitledNode'))
+  )
 
   const {
     control,
@@ -167,7 +179,7 @@ const EditNodeForm = ({
     formState: { errors }
   } = useForm<NodeForm>({
     defaultValues: {
-      title: node.title,
+      title: editableTitle,
       description: node.description,
       ponderation: {
         theory: String(node.ponderationTheory ?? ''),
@@ -322,7 +334,11 @@ const EditNodeForm = ({
     ? (referenceData?.courseContexts ?? [])
     : (referenceData?.activityContexts ?? [])
   const taskOptions = referenceData?.activityTaskClassifications ?? []
-  const linkActionLabel = linkWorkflowActionLabel(parentWorkflowType, isLinked)
+  const linkActionLabel = linkWorkflowActionLabel(
+    parentWorkflowType,
+    isLinked,
+    t
+  )
   const showContextField = isCourseParent || isActivityParent
   const showTaskTypeField = isActivityParent && !isLinked
   const showEditableFields = !isLinked
@@ -333,7 +349,7 @@ const EditNodeForm = ({
     <SC.SidebarInnerWrap as="form" onSubmit={handleSubmit(() => undefined)}>
       <SC.SidebarContent>
         <SC.SidebarTitle as="h3" variant="h6">
-          {_t('Edit node')}
+          {t('edit.node')}
         </SC.SidebarTitle>
 
         {isLinked && (
@@ -355,10 +371,10 @@ const EditNodeForm = ({
           {showEditableFields && (
             <>
               <TextField
-                label={_t('Title')}
+                label={t('edit.title')}
                 variant="outlined"
                 size="small"
-                {...register('title', { required: _t('Title is required') })}
+                {...register('title', { required: t('edit.titleRequired') })}
                 error={!!errors.title}
                 helperText={errors.title?.message}
                 InputProps={{ readOnly: !canEdit }}
@@ -368,7 +384,7 @@ const EditNodeForm = ({
                 control={control}
                 render={({ field }) => (
                   <WysiwygField
-                    placeholder={_t('Description')}
+                    placeholder={t('edit.description')}
                     field={field}
                     readOnly={!canEdit}
                   />
@@ -380,7 +396,7 @@ const EditNodeForm = ({
           {showContextField && (
             <FormControl fullWidth size="small" disabled={!canEdit}>
               <InputLabel id="context-type-select-label">
-                {_t('Context')}
+                {t('edit.context')}
               </InputLabel>
               <Controller
                 name="contextType"
@@ -388,12 +404,12 @@ const EditNodeForm = ({
                 render={({ field }) => (
                   <Select
                     {...field}
-                    label={_t('Context')}
+                    label={t('edit.context')}
                     labelId="context-type-select-label"
                   >
                     {contextOptions.map((option) => (
                       <MenuItem key={option.value} value={option.value}>
-                        {option.label}
+                        {contextLabel(option.value)}
                       </MenuItem>
                     ))}
                   </Select>
@@ -404,19 +420,19 @@ const EditNodeForm = ({
 
           {showTaskTypeField && (
             <FormControl fullWidth size="small" disabled={!canEdit}>
-              <InputLabel id="task-type-select-label">{_t('Type')}</InputLabel>
+              <InputLabel id="task-type-select-label">{t('edit.type')}</InputLabel>
               <Controller
                 name="taskType"
                 control={control}
                 render={({ field }) => (
                   <Select
                     {...field}
-                    label={_t('Type')}
+                    label={t('edit.type')}
                     labelId="task-type-select-label"
                   >
                     {taskOptions.map((option) => (
                       <MenuItem key={option.value} value={option.value}>
-                        {option.label}
+                        {taskClassificationLabel(option.value)}
                       </MenuItem>
                     ))}
                   </Select>
@@ -431,7 +447,7 @@ const EditNodeForm = ({
               control={control}
               render={({ field }) => (
                 <DurationTextField
-                  label={_t('Time')}
+                  label={t('edit.time')}
                   value={field.value}
                   readOnly={!canEdit}
                   fullWidth
@@ -444,7 +460,7 @@ const EditNodeForm = ({
 
           {showProgramFields && (
             <TextField
-              label={_t('Credits')}
+              label={t('edit.credits')}
               variant="outlined"
               size="small"
               type="number"
@@ -462,12 +478,12 @@ const EditNodeForm = ({
               variant="body2"
               sx={{ mt: 1, mb: 3, fontWeight: 600 }}
             >
-              {_t('Ponderation')}
+              {t('edit.ponderation')}
             </Typography>
             <Grid container rowSpacing={2} columnSpacing={1} sx={{ mb: 3 }}>
               <Grid item xs={6}>
                 <TextField
-                  label={_t('Hrs. theory')}
+                  label={t('edit.theoryHours')}
                   variant="outlined"
                   size="small"
                   type="number"
@@ -477,7 +493,7 @@ const EditNodeForm = ({
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  label={_t('Hrs. practice')}
+                  label={t('edit.practiceHours')}
                   variant="outlined"
                   size="small"
                   type="number"
@@ -487,7 +503,7 @@ const EditNodeForm = ({
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  label={_t('Hrs. individual')}
+                  label={t('edit.individualHours')}
                   variant="outlined"
                   size="small"
                   type="number"
@@ -506,7 +522,7 @@ const EditNodeForm = ({
         >
           {isProgramParent && (
             <FormControlLabel
-              label={_t('Specific education')}
+              label={t('edit.specificEducation')}
               control={
                 <Controller
                   name="specificEducation"
@@ -555,7 +571,7 @@ const EditNodeForm = ({
                       <TextField
                         {...params}
                         variant="outlined"
-                        label={_t('Tags')}
+                        label={t('edit.tags')}
                       />
                     )}
                   />
@@ -585,7 +601,7 @@ const EditNodeForm = ({
           disabled={!canEdit}
           onClick={onDuplicate}
         >
-          {_t('Duplicate')}
+          {tCommon('actions.duplicate')}
         </Button>
         <Button
           type="button"
@@ -594,7 +610,7 @@ const EditNodeForm = ({
           disabled={!canEdit}
           onClick={onDelete}
         >
-          {_t('Delete')}
+          {tCommon('actions.delete')}
         </Button>
         <InsertMenu
           anchorEl={duplicateMenuAnchor}

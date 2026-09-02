@@ -5,7 +5,7 @@ import {
 } from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { useReferenceData } from '@cf/hooks/useReferenceData'
-import { _t } from '@cf/utility/Utility.class'
+import { useReferenceLabels } from '@cf/i18n/referenceLabels'
 import type { FilterMultiselectOption } from '@cfComponents/filters/FilterMultiselect'
 import Pagination from '@cfComponents/UIPrimitives/Pagination'
 import { GridWrap, OuterContentWrap } from '@cfMUI/helper'
@@ -16,7 +16,8 @@ import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import ContentTypeFilter from './Filters/ContentType'
 import DisciplineFilter from './Filters/Discipline'
@@ -79,13 +80,18 @@ const LibrarySearchView = ({
   /*******************************************************
    * HOOKS
    *******************************************************/
+  const { t } = useTranslation('library')
+  const translatedDefaults = useMemo(
+    () => LibraryHelper.createDefaultSearchOptions(t),
+    [t]
+  )
   // these are the UI filters, they represent the state of the UI grouping, separated into different sections
   const [searchFilterState, setSearchFilterState] = useState<SearchOptions>(
     () => {
       const defaults =
         LibraryHelper.translateLockedFiltersToInitialSearchOptions(
           lockedFilters,
-          LibraryHelper.defaultOptionsSearchOptions
+          translatedDefaults
         )
 
       return produce(defaults, (draft) => {
@@ -109,6 +115,12 @@ const LibrarySearchView = ({
     }
   )
 
+  useEffect(() => {
+    setSearchFilterState((current) =>
+      LibraryHelper.relabelSearchOptions(current, translatedDefaults)
+    )
+  }, [translatedDefaults])
+
   const searchArgs = useMemo(
     () =>
       LibraryHelper.applyLockedFilters(
@@ -123,6 +135,7 @@ const LibrarySearchView = ({
    *******************************************************/
   const { data, isLoading, isError, error } = useLibrarySearch(searchArgs)
   const { data: referenceData } = useReferenceData()
+  const { disciplineLabel, collator } = useReferenceLabels()
 
   const disciplineOptions: FilterMultiselectOption[] = useMemo(() => {
     const allowedDisciplineCodes = new Set(
@@ -130,13 +143,13 @@ const LibrarySearchView = ({
     )
 
     return [...(referenceData?.disciplines ?? [])]
-      .sort((a, b) => a.label.localeCompare(b.label))
       .map((option) => ({
         value: option.code,
-        label: option.label,
+        label: disciplineLabel(option.code),
         disabled: Boolean(data) && !allowedDisciplineCodes.has(option.code)
       }))
-  }, [data, referenceData])
+      .sort((a, b) => collator.compare(a.label, b.label))
+  }, [collator, data, disciplineLabel, referenceData])
 
   return (
     <OuterContentWrap>
@@ -202,7 +215,7 @@ const LibrarySearchView = ({
 
       {!isLoading && !isError && data?.items.length ? (
         <Typography sx={{ mb: 2 }}>
-          {LibraryHelper.formatResultsSummary(data)}
+          {LibraryHelper.formatResultsSummary(data, t)}
         </Typography>
       ) : null}
 

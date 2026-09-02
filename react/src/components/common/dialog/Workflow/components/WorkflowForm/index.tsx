@@ -1,5 +1,5 @@
 import { WorkflowTypeIn } from '@cf/api/gen'
-import { _t, capitalize } from '@cf/utility/Utility.class'
+import { workflowTypeLabel } from '@cf/i18n/workflowLabels'
 import { StyledBox } from '@cfComponents/dialog/styles'
 import RichTextDescription from '@cfComponents/dialog/Workflow/components/RichTextDescription'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -9,18 +9,23 @@ import TextField from '@mui/material/TextField'
 import { RefObject, useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
+import type { TFunction } from 'i18next'
+import { useTranslation } from 'react-i18next'
 
-export const workflowSchema = z.object({
+export const createWorkflowSchema = (t: TFunction<'workflow'>) => z.object({
   title: z
     .string()
-    .max(200, { message: 'Title cannot be longer than 200 characters' })
+    .max(200, { message: t('form.titleMax', { count: 200 }) })
     .refine((value) => value.trim().length > 0, {
-      message: 'Title is required'
+      message: t('form.titleRequired')
     }),
   description: z.string().nullish()
 })
 
-export type WorkflowFormType = z.infer<typeof workflowSchema>
+export type WorkflowFormType = {
+  title: string
+  description?: string | null
+}
 
 const emptyDefaultValues: WorkflowFormType = {
   title: '',
@@ -46,6 +51,9 @@ const WorkflowForm = ({
   onValuesChange?: (values: WorkflowFormType) => void
   formRef: RefObject<HTMLFormElement>
 }) => {
+  const { t } = useTranslation('workflow')
+  const { t: tCommon } = useTranslation('common')
+  const localizedWorkflowType = workflowTypeLabel(t, workflowType, true)
   const {
     register,
     control,
@@ -53,7 +61,7 @@ const WorkflowForm = ({
     reset,
     formState: { errors, isValid }
   } = useForm<WorkflowFormType>({
-    resolver: zodResolver(workflowSchema),
+    resolver: zodResolver(createWorkflowSchema(t)),
     defaultValues,
     mode: 'onChange'
   })
@@ -81,9 +89,11 @@ const WorkflowForm = ({
         <TextField
           {...register('title')}
           name="title"
-          placeholder={'Title'}
+          placeholder={t('form.title')}
           variant="standard"
-          label={`${capitalize(workflowType)} title`}
+          label={t('form.titleForType', {
+            workflowType: localizedWorkflowType
+          })}
           error={!!errors.title}
           fullWidth
           helperText={errors.title?.message}
@@ -94,7 +104,9 @@ const WorkflowForm = ({
           control={control}
           render={({ field }) => (
             <RichTextDescription
-              label={`${capitalize(workflowType)} description`}
+              label={t('form.descriptionForType', {
+                workflowType: localizedWorkflowType
+              })}
               value={field.value ?? ''}
               onChange={field.onChange}
             />
@@ -109,7 +121,7 @@ const WorkflowForm = ({
       {!formRef && (
         <DialogActions>
           <Button variant="contained" color="secondary" onClick={onDialogClose}>
-            {_t('Cancel')}
+            {tCommon('actions.cancel')}
           </Button>
           <Button type="submit" variant="contained" disabled={!isValid}>
             {label}

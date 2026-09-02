@@ -3,6 +3,7 @@ import Button from '@mui/material/Button'
 import FormLabel from '@mui/material/FormLabel'
 import Stack from '@mui/material/Stack'
 import { useEffect, useId, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   value: string
@@ -17,16 +18,6 @@ type EditorCommand = {
   value?: string
   text: string
 }
-
-const commands: EditorCommand[] = [
-  { label: 'Bold', command: 'bold', text: 'B' },
-  { label: 'Italic', command: 'italic', text: 'I' },
-  { label: 'Underline', command: 'underline', text: 'U' },
-  { label: 'Superscript', command: 'superscript', text: 'x²' },
-  { label: 'Subscript', command: 'subscript', text: 'x₂' },
-  { label: 'Bulleted list', command: 'insertUnorderedList', text: '• List' },
-  { label: 'Numbered list', command: 'insertOrderedList', text: '1. List' }
-]
 
 function normalizeLink(value: string): string | null {
   const clean = value.trim()
@@ -43,12 +34,35 @@ function normalizeLink(value: string): string | null {
 const RichTextDescription = ({
   value,
   onChange,
-  label = 'Description',
+  label,
   readOnly = false
 }: Props) => {
+  const { t } = useTranslation('workflow')
   const editorRef = useRef<HTMLDivElement>(null)
   const editorId = useId()
   const labelId = `${editorId}-label`
+  const localizedLabel = label ?? t('richText.description')
+  const commands: EditorCommand[] = [
+    { label: t('richText.bold'), command: 'bold', text: 'B' },
+    { label: t('richText.italic'), command: 'italic', text: 'I' },
+    { label: t('richText.underline'), command: 'underline', text: 'U' },
+    {
+      label: t('richText.superscript'),
+      command: 'superscript',
+      text: 'x²'
+    },
+    { label: t('richText.subscript'), command: 'subscript', text: 'x₂' },
+    {
+      label: t('richText.bulletedList'),
+      command: 'insertUnorderedList',
+      text: `• ${t('richText.list')}`
+    },
+    {
+      label: t('richText.numberedList'),
+      command: 'insertOrderedList',
+      text: `1. ${t('richText.list')}`
+    }
+  ]
 
   useEffect(() => {
     const editor = editorRef.current
@@ -68,7 +82,7 @@ const RichTextDescription = ({
   }
 
   const createLink = () => {
-    const link = normalizeLink(window.prompt('Link URL') ?? '')
+    const link = normalizeLink(window.prompt(t('richText.linkUrl')) ?? '')
     if (link) {
       runCommand('createLink', link)
     }
@@ -77,12 +91,12 @@ const RichTextDescription = ({
   return (
     <Box>
       <FormLabel id={labelId} component="label" htmlFor={editorId}>
-        {label}
+        {localizedLabel}
       </FormLabel>
       {!readOnly && (
         <Stack
           role="toolbar"
-          aria-label="Description formatting"
+          aria-label={t('richText.toolbar')}
           direction="row"
           flexWrap="wrap"
           gap={0.5}
@@ -104,14 +118,14 @@ const RichTextDescription = ({
           ))}
           <Button
             type="button"
-            aria-label="Link"
+            aria-label={t('richText.link')}
             size="small"
             variant="outlined"
             onMouseDown={(event) => event.preventDefault()}
             onClick={createLink}
             sx={{ minWidth: 32, px: 0.75 }}
           >
-            Link
+            {t('richText.link')}
           </Button>
         </Stack>
       )}

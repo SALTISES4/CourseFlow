@@ -1,5 +1,4 @@
 import { LibrarySortDirectionIn, LibrarySortValueIn } from '@cf/api/gen'
-import { _t } from '@cf/utility/Utility.class'
 import { SortOption } from '@cfComponents/filters/types'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
@@ -8,6 +7,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import { MouseEvent, MouseEventHandler, ReactNode, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { StyledMenu, StyledMenuItem } from './styles'
 
@@ -36,11 +36,12 @@ function toggleSortDirection(
 
 const SortableFilterButton = ({
   icon,
-  placeholder = _t('Sort'),
+  placeholder,
   options,
   onChange,
   onReset
 }: PropsType) => {
+  const { t } = useTranslation('common')
   const enabledOption = options.find((o) => o.enabled)
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null)
 
@@ -74,11 +75,11 @@ const SortableFilterButton = ({
           startIcon={icon}
           onClick={onButtonClick}
         >
-          {enabledOption?.label ?? placeholder}
+          {enabledOption?.label ?? placeholder ?? t('labels.sort')}
           {enabledOption && (
             <IconButton
               color="primary"
-              aria-label="close"
+              aria-label={t('labels.close')}
               size="small"
               onClick={onReset}
               style={{ margin: '-3px -8px -3px 8px' }}

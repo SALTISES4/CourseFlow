@@ -14,7 +14,6 @@ import {
   reorderSections
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import type { AppDispatch, RootState } from '@cf/redux/store'
-import { _t } from '@cf/utility/Utility.class'
 import DeleteNodeCategoryDialog from '@cfComponents/dialog/Workflow/DeleteNodeCategory'
 import DeleteSectionDialog from '@cfComponents/dialog/Workflow/DeleteSection'
 import { produce } from 'immer'

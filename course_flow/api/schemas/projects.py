@@ -12,7 +12,6 @@ from course_flow.core.enum import WorkflowType
 
 class DisciplineOption(CamelSchema):
     code: str
-    label: str
 
 
 class ProjectCreateIn(CamelSchema):
@@ -97,5 +96,4 @@ class ProjectDuplicatePlaceholderOut(CamelSchema):
     """
 
     success: bool = True
-    message: str
     project_uuid: UUID

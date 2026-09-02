@@ -463,12 +463,10 @@ class LibraryService:
         return [
             LibraryDisciplineOptionOut(
                 code=discipline.code,
-                label=discipline.label,
-                translation_plural=discipline.translation_plural,
             )
             for discipline in Discipline.objects.filter(
                 code__in=allowed_discipline_codes
-            ).order_by("label", "id")
+            ).order_by("code")
         ]
 
     def _sort_items(

@@ -38,6 +38,7 @@ class SectionGraphOut(CamelSchema):
     uuid: UUID
     graph_uuid: UUID
     title: str
+    title_copy_count: int = 0
     position: int
     thread_uuid: UUID | None = None
 
@@ -46,6 +47,8 @@ class ChannelGraphOut(CamelSchema):
     uuid: UUID
     graph_uuid: UUID
     title: str
+    system_label_code: str | None = None
+    title_copy_count: int = 0
     colour: str = ""
     position: int
     thread_uuid: UUID | None = None
@@ -57,6 +60,7 @@ class OutcomeGraphOut(CamelSchema):
     parent_uuid: UUID | None = None
     order: int
     title: str = ""
+    title_copy_count: int = 0
     description: str = ""
     code: str = ""
     tag_ids: list[int] = Field(default_factory=list)
@@ -67,6 +71,7 @@ class NodeGraphOut(CamelSchema):
     uuid: UUID
     node_type: str
     title: str = ""
+    title_copy_count: int = 0
     description: str = ""
     context_classification: ContextClassification | None = None
     task_classification: TaskClassification | None = None

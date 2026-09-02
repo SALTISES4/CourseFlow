@@ -15,6 +15,7 @@ import LinkOffOutlinedIcon from '@mui/icons-material/LinkOffOutlined'
 import Tooltip from '@mui/material/Tooltip'
 import { MouseEvent, useCallback, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import * as Styled from './styles'
 import type { LinkedOutcomesPropsType } from './types'
@@ -34,6 +35,7 @@ const LinkedOutcomeRow = ({
   hoveredOutcomeUuid: string | null
   setHoveredOutcomeUuid: (uuid: string | null) => void
 }) => {
+  const { t } = useTranslation('workflow')
   const dispatch = useDispatch<AppDispatch>()
   const rowRef = useRef<HTMLDivElement>(null)
   const [collapsed, setCollapsed] = useState(true)
@@ -82,7 +84,11 @@ const LinkedOutcomeRow = ({
         uuid={outcome.uuid}
         level={level}
         dragRef={rowRef}
-        title={`${prefix}${displayOutcomeTitle(outcome.title)}`}
+        title={`${prefix}${displayOutcomeTitle(
+          outcome,
+          t,
+          t('outcomes.untitled')
+        )}`}
         collapsed={collapsed}
         setCollapsed={setCollapsed}
         showToggle={children.length > 0}
@@ -92,10 +98,10 @@ const LinkedOutcomeRow = ({
         onContentMouseEnter={() => setHoveredOutcomeUuid(outcome.uuid)}
         action={
           hoveredOutcomeUuid === outcome.uuid && canShowActions ? (
-            <Tooltip title="Unlink outcome" disableInteractive>
+            <Tooltip title={t('related.unlinkOutcome')} disableInteractive>
               <span>
                 <Styled.UnlinkButton
-                  aria-label="Unlink outcome"
+                  aria-label={t('related.unlinkOutcome')}
                   disabled={!canUnlink}
                   size="small"
                   onClick={onUnlink}

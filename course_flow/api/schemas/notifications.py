@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 from uuid import UUID
 
 from course_flow.api.common.schemas import CamelSchema
@@ -6,7 +7,9 @@ from course_flow.api.common.schemas import CamelSchema
 
 class NotificationItemOut(CamelSchema):
     uuid: UUID
-    message: str
+    message_code: str | None
+    message_params: dict[str, Any]
+    legacy_message: str | None
     is_read: bool
     date_created: datetime
 

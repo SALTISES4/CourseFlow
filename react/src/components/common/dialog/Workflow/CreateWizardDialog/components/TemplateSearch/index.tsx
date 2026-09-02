@@ -17,6 +17,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { debounce } from '@mui/material/utils'
 import { ChangeEvent, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 type PropsType = {
   selected?: WorkflowTemplateSelection
@@ -29,6 +30,7 @@ const TemplateSearch = ({
   workflowType,
   onTemplateSelect
 }: PropsType) => {
+  const { t } = useTranslation('library')
   /*******************************************************
    * HOOKS
    *******************************************************/
@@ -71,8 +73,8 @@ const TemplateSearch = ({
   }, [data?.items, keyword, selected])
 
   const workflowData = useMemo(
-    () => visibleItems.map((workflow) => formatLibraryObject(workflow)),
-    [visibleItems]
+    () => visibleItems.map((workflow) => formatLibraryObject(workflow, t)),
+    [t, visibleItems]
   )
 
   useEffect(() => {
@@ -97,7 +99,7 @@ const TemplateSearch = ({
     <Box data-test-id="workflow-template-search-view">
       <TextField
         variant="standard"
-        label="Search"
+        label={t('filters.search')}
         fullWidth
         onChange={debounce(onSearchChange, 400)}
         inputProps={{ 'data-test-id': 'workflow-template-search-field' }}
@@ -112,7 +114,7 @@ const TemplateSearch = ({
       <GridWrap sx={{ mt: 4 }} data-test-id="workflow-template-search-results">
         {!workflowData.length && (
           <Typography data-test-id="workflow-template-search-empty-state">
-            No results found
+            {t('results.none')}
           </Typography>
         )}
         {workflowData.map((workflow, index) => (

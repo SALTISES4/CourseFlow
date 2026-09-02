@@ -13,6 +13,7 @@ from course_flow.api.deps import (
     get_workflow_copy_service,
     get_workflow_service,
 )
+from course_flow.api.errors import ExpectedApiError
 from course_flow.api.permission_context import permission_context_out
 from course_flow.api.schemas.workflows import (
     WorkflowCopyIn,
@@ -242,7 +243,7 @@ def get_workflow(request, uuid: UUID):
     if (dto.is_archived or dto.project_is_archived) and not permissions.allows(
         WorkflowPermission.VIEW
     ):
-        raise HttpError(403, "Workflow archived")
+        raise ExpectedApiError(403, "workflow_archived")
     _require_workflow_permission(current_user, dto, WorkflowPermission.VIEW)
     return WorkflowDetailOutResp(item=_workflow_detail(current_user, dto))
 

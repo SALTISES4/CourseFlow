@@ -84,6 +84,7 @@ def _node_payload(n: Node) -> dict:
         "uuid": n.uuid,
         "node_type": n.node_type,
         "title": n.title or "",
+        "title_copy_count": n.title_copy_count,
         "description": n.description or "",
         **meta_fields,
         "tag_ids": _node_tag_ids(n),
@@ -209,6 +210,8 @@ def _channel_payload(ch: Channel) -> dict:
         "uuid": ch.uuid,
         "graph_uuid": ch.graph.uuid,
         "title": ch.title,
+        "system_label_code": ch.system_label_code,
+        "title_copy_count": ch.title_copy_count,
         "colour": ch.colour or "",
         "position": ch.position,
         "thread_uuid": ch.thread.uuid if ch.thread_id else None,
@@ -220,6 +223,7 @@ def _section_payload(sec: Section) -> dict:
         "uuid": sec.uuid,
         "graph_uuid": sec.graph.uuid,
         "title": sec.title,
+        "title_copy_count": sec.title_copy_count,
         "position": sec.position,
         "thread_uuid": sec.thread.uuid if sec.thread_id else None,
     }
@@ -244,6 +248,7 @@ def _outcome_payload(o: Outcome) -> dict:
         "parent_uuid": o.parent.uuid if o.parent_id else None,
         "order": o.order,
         "title": o.title or "",
+        "title_copy_count": o.title_copy_count,
         "description": o.description or "",
         "code": o.code or "",
         "tag_ids": _outcome_tag_ids(o),
@@ -737,16 +742,23 @@ class GraphMutationService:
             source = anchor if anchor is not None else (channels[0] if channels else None)
             if source is None:
                 title = ""
+                system_label_code = None
+                title_copy_count = 0
             else:
-                source_title = (source.title or "").strip()
-                title = f"{source_title} (copy)" if source_title else ""
+                title = source.title
+                system_label_code = source.system_label_code
+                title_copy_count = source.title_copy_count + 1
                 colour = source.colour or "#CFD8DC"
         else:
-            title = "Custom node category"
+            title = ""
+            system_label_code = "custom_node_category"
+            title_copy_count = 0
 
         new_ch = Channel.objects.create(
             graph_id=wf.id,
             title=title,
+            system_label_code=system_label_code,
+            title_copy_count=title_copy_count,
             colour=colour,
             position=insert_position,
         )
@@ -845,14 +857,16 @@ class GraphMutationService:
             builder.add_section_updated(_section_payload(sec))
 
         if duplicate:
-            source_title = (anchor.title or "").strip()
-            title = f"{source_title} (copy)" if source_title else " (copy)"
+            title = anchor.title
+            title_copy_count = anchor.title_copy_count + 1
         else:
             title = ""
+            title_copy_count = 0
 
         new_sec = Section.objects.create(
             graph_id=wf.id,
             title=title,
+            title_copy_count=title_copy_count,
             position=insert_position,
         )
         new_sec = Section.objects.select_related("graph", "thread").get(pk=new_sec.pk)
@@ -908,6 +922,7 @@ class GraphMutationService:
                 section_row=source_node.section_row,
                 node_type=source_node.node_type,
                 title=source_node.title,
+                title_copy_count=source_node.title_copy_count,
                 description=source_node.description,
             )
             copy_node_typed_meta(source=source_node, target=copied_node)
@@ -1520,7 +1535,8 @@ class GraphMutationService:
 
         if "title" in patch and patch["title"] is not None:
             n.title = patch["title"]
-            update_fields.append("title")
+            n.title_copy_count = 0
+            update_fields.extend(("title", "title_copy_count"))
         if "description" in patch and patch["description"] is not None:
             n.description = patch["description"]
             update_fields.append("description")
@@ -1647,11 +1663,12 @@ class GraphMutationService:
         if duplicate:
             from course_flow.core.node_meta import copy_node_typed_meta
 
-            new_node.title = (
-                f"{anchor.title} (copy)" if (anchor.title or "").strip() else ""
-            )
+            new_node.title = anchor.title
+            new_node.title_copy_count = anchor.title_copy_count + 1
             new_node.description = anchor.description
-            new_node.save(update_fields=["title", "description"])
+            new_node.save(
+                update_fields=["title", "title_copy_count", "description"]
+            )
             copy_node_typed_meta(source=anchor, target=new_node)
             new_node.tags.set(anchor.tags.all())
             new_node.outcomes.set(anchor.outcomes.all())
@@ -2119,7 +2136,8 @@ class GraphMutationService:
         update_fields: list[str] = []
         if title is not None:
             outcome.title = title
-            update_fields.append("title")
+            outcome.title_copy_count = 0
+            update_fields.extend(("title", "title_copy_count"))
         if description is not None:
             outcome.description = description
             update_fields.append("description")
@@ -2250,14 +2268,17 @@ class GraphMutationService:
             is_root_duplicate: bool = False,
         ) -> Outcome:
             if is_root_duplicate:
-                title = f"{o.title} (copy)" if o.title else ""
+                title = o.title
+                title_copy_count = o.title_copy_count + 1
             else:
                 title = o.title
+                title_copy_count = o.title_copy_count
             clone = Outcome.objects.create(
                 graph_id=wf.id,
                 parent_id=parent_pk,
                 order=order,
                 title=title,
+                title_copy_count=title_copy_count,
                 description=o.description,
                 code=o.code,
             )

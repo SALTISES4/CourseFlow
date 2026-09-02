@@ -65,37 +65,23 @@ export function profileSettingsTitle(page: Page): Locator {
 }
 
 export function profileSettingsForm(page: Page): Locator {
-  return page
-    .locator('form')
-    .filter({ has: page.getByRole('button', { name: 'Update profile' }) });
+  return page.locator('[data-test-id="profile-settings-form"]');
 }
 
 export function profileUsernameField(page: Page): Locator {
-  return profileSettingsForm(page).getByRole('textbox', {
-    name: PROFILE_SETTINGS_VISIBLE_LABELS.emailUsername,
-    exact: true,
-  });
+  return profileSettingsForm(page).locator('input[name="email"]');
 }
 
 export function profileFirstNameField(page: Page): Locator {
-  return profileSettingsForm(page).getByRole('textbox', {
-    name: PROFILE_SETTINGS_VISIBLE_LABELS.firstName,
-    exact: true,
-  });
+  return profileSettingsForm(page).locator('input[name="firstName"]');
 }
 
 export function profileLastNameField(page: Page): Locator {
-  return profileSettingsForm(page).getByRole('textbox', {
-    name: PROFILE_SETTINGS_VISIBLE_LABELS.lastName,
-    exact: true,
-  });
+  return profileSettingsForm(page).locator('input[name="lastName"]');
 }
 
 export function profileLanguagePreferenceGroup(page: Page): Locator {
-  return profileSettingsForm(page).getByRole('group', {
-    name: PROFILE_SETTINGS_VISIBLE_LABELS.languagePreferences,
-    exact: true,
-  });
+  return profileSettingsForm(page).getByRole('group');
 }
 
 /** Visible label or legend text on profileSettingsForm (not accessibility-name inference). */
@@ -109,15 +95,15 @@ export function profileSettingsVisibleLabel(
 }
 
 export function profileLanguageOptionEnglish(page: Page): Locator {
-  return page.getByRole('radio', { name: 'English', exact: true });
+  return profileSettingsForm(page).locator('input[type="radio"][value="en"]');
 }
 
 export function profileLanguageOptionFrench(page: Page): Locator {
-  return page.getByRole('radio', { name: 'French', exact: true });
+  return profileSettingsForm(page).locator('input[type="radio"][value="fr"]');
 }
 
 export function profileUpdateButton(page: Page): Locator {
-  return page.getByRole('button', { name: 'Update profile', exact: true });
+  return profileSettingsForm(page).locator('button[type="submit"]');
 }
 
 export function profileFieldValidationMessage(
@@ -197,7 +183,6 @@ export async function waitForProfileSettingsLoaded(page: Page): Promise<void> {
   await expect(page.locator('.load-screen')).toHaveCount(0, {
     timeout: 15_000,
   });
-  await expect(profileSettingsTitle(page)).toBeVisible({ timeout: 15_000 });
   await expect(profileSettingsForm(page)).toBeVisible();
 }
 

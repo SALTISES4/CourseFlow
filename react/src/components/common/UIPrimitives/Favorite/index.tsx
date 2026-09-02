@@ -1,12 +1,12 @@
 import { ProjectDetailOutResp } from '@cf/api/gen'
 import { libraryItemFavoriteToggleMutation } from '@cf/api/gen/@tanstack/react-query.gen'
 import { usePatchQueryCache } from '@cf/api/wrappedHooks'
-import { _t } from '@cf/utility/Utility.class'
 import StarIcon from '@mui/icons-material/Star'
 import IconButton from '@mui/material/IconButton'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
 import { MouseEvent, useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 type PropsType = {
   id?: string
@@ -15,6 +15,7 @@ type PropsType = {
 }
 
 const Favorite = ({ id, uuid, isFavorite }: PropsType) => {
+  const { t } = useTranslation('common')
   const targetUuid = uuid ?? id
   const [isFavoriteState, setFavoriteState] = useState<boolean>(isFavorite)
   const queryClient = useQueryClient()
@@ -37,14 +38,14 @@ const Favorite = ({ id, uuid, isFavorite }: PropsType) => {
       })
 
       const msg = isFavoriteState
-        ? _t('Removed from your favourites')
-        : _t('Added to your favourites')
+        ? t('favourites.removed')
+        : t('favourites.added')
       setFavoriteState(!isFavoriteState)
       enqueueSnackbar(msg, { variant: 'success' })
     },
     onError: (error) => {
       console.error('Error updating toggle:', error)
-      enqueueSnackbar(_t('We were not able to update favourite status'), {
+      enqueueSnackbar(t('favourites.updateFailed'), {
         variant: 'error'
       })
     }
@@ -66,7 +67,7 @@ const Favorite = ({ id, uuid, isFavorite }: PropsType) => {
 
   return (
     <IconButton
-      aria-label={_t('Favourite')}
+      aria-label={t('labels.favourite')}
       sx={{
         color: isFavoriteState
           ? 'courseflow.favouriteActive'

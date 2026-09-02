@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from django.utils import timezone
 from ninja import Router
-from ninja.errors import HttpError
 
 from course_flow.api.auth import (
     BearerAuth,
@@ -10,6 +9,7 @@ from course_flow.api.auth import (
     get_current_user,
 )
 from course_flow.api.deps import get_auth_service, get_user_service
+from course_flow.api.errors import ExpectedApiError
 from course_flow.api.schemas.auth import (
     LoginIn,
     LoginOut,
@@ -39,7 +39,7 @@ def login(request, payload: LoginIn):
             label=payload.label,
         )
     except InvalidCredentialsError:
-        raise HttpError(401, "Invalid credentials")
+        raise ExpectedApiError(401, "invalid_credentials")
     return LoginOut(
         access_token=issued.access_token,
         token_type="Bearer",
@@ -61,9 +61,9 @@ def register(request, payload: RegisterIn):
             label=payload.label,
         )
     except DuplicateEmailError:
-        raise HttpError(409, "Email is already registered")
-    except RegistrationValidationError as exc:
-        raise HttpError(400, str(exc))
+        raise ExpectedApiError(409, "email_already_registered")
+    except RegistrationValidationError:
+        raise ExpectedApiError(400, "registration_fields_required")
 
     return LoginOut(
         access_token=issued.access_token,

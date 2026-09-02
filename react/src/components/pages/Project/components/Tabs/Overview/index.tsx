@@ -5,9 +5,9 @@ import {
 import { ProjectDetailOut, ProjectPermission } from '@cf/api/gen/types.gen'
 import { hasPermission } from '@cf/context/workspacePermissionsContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import { useReferenceLabels } from '@cf/i18n/referenceLabels'
 import { WorkspaceType } from '@cf/types/enum'
 import { SnackbarOptions } from '@cf/utility/constants'
-import { _t } from '@cf/utility/Utility.class'
 import { StyledDialog } from '@cfComponents/dialog/styles'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import { OuterContentWrap } from '@cfMUI/helper'
@@ -23,6 +23,7 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
+import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
 import TagsSection from './TagsSection'
@@ -35,8 +36,11 @@ const OverviewTab = ({
   permissions,
   tags
 }: ProjectDetailOut) => {
+  const { t } = useTranslation('project')
+  const { t: tCommon } = useTranslation('common')
   const { uuid } = useParams()
   const queryClient = useQueryClient()
+  const { disciplineLabel, collator } = useReferenceLabels()
   const { dispatch, show, onClose } = useDialog(DialogMode.PROJECT_PUBLISH)
   const canPublish = hasPermission(
     permissions,
@@ -61,20 +65,14 @@ const OverviewTab = ({
       }
 
       enqueueSnackbar(
-        _t(
-          nextPublished
-            ? 'Your project has been successfully published'
-            : 'Your project has been successfully unpublished'
-        ),
+        nextPublished ? t('messages.published') : t('messages.unpublished'),
         { variant: SnackbarOptions.SUCCESS }
       )
     } catch (error) {
       enqueueSnackbar(
-        _t(
-          nextPublished
-            ? 'We encountered an issue and your project was not published'
-            : 'We encountered an issue and your project was not unpublished'
-        ),
+        nextPublished
+          ? t('messages.publishFailed')
+          : t('messages.unpublishFailed'),
         { variant: SnackbarOptions.ERROR }
       )
     }
@@ -83,28 +81,30 @@ const OverviewTab = ({
   return (
     <OuterContentWrap sx={{ pt: 4 }} data-test-id="project-overview-view">
       <SC.InfoBlock sx={{ mb: 3 }}>
-        <SC.InfoBlockTitle>{_t('Description')}</SC.InfoBlockTitle>
-        <SC.InfoBlockContent>{description || _t('-')}</SC.InfoBlockContent>
+        <SC.InfoBlockTitle>{t('overview.description')}</SC.InfoBlockTitle>
+        <SC.InfoBlockContent>
+          {description || t('overview.emptyValue')}
+        </SC.InfoBlockContent>
       </SC.InfoBlock>
 
       <Grid container>
         <Grid item xs={12}>
           <SC.InfoBlock>
-            <SC.InfoBlockTitle>{_t('Disciplines')}</SC.InfoBlockTitle>
+            <SC.InfoBlockTitle>{t('overview.disciplines')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
               {disciplines?.length
                 ? [...disciplines]
-                    .sort((a, b) => a.label.localeCompare(b.label))
-                    .map((d) => d.label)
+                    .map((discipline) => disciplineLabel(discipline.code))
+                    .sort(collator.compare)
                     .join(', ')
-                : _t('-')}
+                : t('overview.emptyValue')}
             </SC.InfoBlockContent>
           </SC.InfoBlock>
         </Grid>
       </Grid>
 
       <SC.InfoBlock sx={{ mt: 3 }}>
-        <SC.InfoBlockTitle>{_t('Contributors')}</SC.InfoBlockTitle>
+        <SC.InfoBlockTitle>{t('overview.contributors')}</SC.InfoBlockTitle>
 
         <UserPermissions
           workspaceId={uuid ?? ''}
@@ -122,9 +122,11 @@ const OverviewTab = ({
               <VisibilityOffOutlinedIcon />
             )
           }
-          title={_t(
-            `The project is currently ${isPublished ? 'public' : 'private'}`
-          )}
+          title={
+            isPublished
+              ? t('status.currentPublic')
+              : t('status.currentPrivate')
+          }
           cta={
             canPublish && (
               <Button
@@ -140,7 +142,7 @@ const OverviewTab = ({
                   }
                 }}
               >
-                {_t(isPublished ? 'Unpublish project' : 'Publish project')}
+                {isPublished ? t('actions.unpublish') : t('actions.publish')}
               </Button>
             )
           }
@@ -150,12 +152,10 @@ const OverviewTab = ({
       <TagsSection projectUuid={uuid ?? ''} data={tags ?? []} />
 
       <StyledDialog open={!!show} onClose={onClose} fullWidth maxWidth="sm">
-        <DialogTitle>{_t('Publish project')}</DialogTitle>
+        <DialogTitle>{t('actions.publish')}</DialogTitle>
         <DialogContent dividers>
           <Typography>
-            {_t(
-              'Publishing this project will make all associated workflows visible to all CourseFlow users. Are you ready to share this content?'
-            )}
+            {t('overview.publishConfirmation')}
           </Typography>
         </DialogContent>
         <DialogActions>
@@ -165,14 +165,14 @@ const OverviewTab = ({
             disabled={visibilityMutation.isPending}
             onClick={onClose}
           >
-            {_t('Cancel')}
+            {tCommon('actions.cancel')}
           </Button>
           <Button
             variant="contained"
             disabled={visibilityMutation.isPending}
             onClick={() => void updateVisibility(true)}
           >
-            {_t('Publish project')}
+            {t('actions.publish')}
           </Button>
         </DialogActions>
       </StyledDialog>

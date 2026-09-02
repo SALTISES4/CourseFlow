@@ -9,7 +9,6 @@ import {
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { WorkspaceType } from '@cf/types/enum'
-import strings from '@cf/utility/strings'
 import { StyledDialog } from '@cfComponents/dialog/styles'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -17,6 +16,7 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 
 const ArchiveDialog = ({
   objectType,
@@ -28,6 +28,7 @@ const ArchiveDialog = ({
   callback?: () => void | Promise<unknown>
 }) => {
   const { show, onClose } = useDialog(DialogMode.ARCHIVE)
+  const { t } = useTranslation(['workspace', 'common'])
   const { onError, onSuccess } = useGenericMsgHandler()
   const queryClient = useQueryClient()
 
@@ -65,10 +66,18 @@ const ArchiveDialog = ({
     try {
       if (objectType === WorkspaceType.WORKFLOW) {
         await archiveWorkflow.mutateAsync({ path: { uuid } })
-        onSuccess({ message: strings.workflowArchiveSuccess })
+        onSuccess({
+          localizedMessage: t('workspace:lifecycle.archiveSuccess', {
+            object: t('workspace:lifecycle.object.workflow')
+          })
+        })
       } else {
         await archiveProject.mutateAsync({ path: { uuid } })
-        onSuccess({ message: strings.projectArchiveSuccess })
+        onSuccess({
+          localizedMessage: t('workspace:lifecycle.archiveSuccess', {
+            object: t('workspace:lifecycle.object.project')
+          })
+        })
       }
       onClose()
       await callback?.()
@@ -78,7 +87,9 @@ const ArchiveDialog = ({
   }
 
   const objectLabel =
-    objectType === WorkspaceType.WORKFLOW ? 'workflow' : 'project'
+    objectType === WorkspaceType.WORKFLOW
+      ? t('workspace:lifecycle.object.workflow')
+      : t('workspace:lifecycle.object.project')
   const busy = archiveWorkflow.isPending || archiveProject.isPending
 
   return (
@@ -90,20 +101,19 @@ const ArchiveDialog = ({
       aria-labelledby={`archive-${objectType}-modal`}
     >
       <DialogTitle id={`archive-${objectType}-modal`}>
-        Archive {objectLabel}
+        {t('workspace:lifecycle.archiveTitle', { object: objectLabel })}
       </DialogTitle>
       <DialogContent dividers>
         <Typography gutterBottom>
-          Once your {objectLabel} is archived, it cannot be opened from the
-          workspace. You can restore it from your archived library items.
+          {t('workspace:lifecycle.archiveWarning', { object: objectLabel })}
         </Typography>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onClose}>
-          Cancel
+          {t('common:actions.cancel')}
         </Button>
         <Button variant="contained" onClick={onSubmit} disabled={busy || !uuid}>
-          Archive {objectLabel}
+          {t('workspace:lifecycle.archiveAction', { object: objectLabel })}
         </Button>
       </DialogActions>
     </StyledDialog>

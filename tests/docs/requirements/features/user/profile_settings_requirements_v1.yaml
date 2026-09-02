@@ -1,7 +1,7 @@
 # Normalized requirements: profile settings page
 # Source: application code (no separate Google Doc for this run)
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Cross-reference: tests/docs/requirements/features/navigation/top_navigation_requirements_v1.yaml (entry path to '/user/profile-settings' via accountMenuItemProfile per FR-TOP-003); tests/docs/requirements/features/auth/register_requirements_v1.yaml (profileUsernameField, profileFirstNameField, and profileLastNameField show registerEmailField, registerFirstNameField, and registerLastNameField values from signup per FR-REG-004 and FR-PROFILE-002); tests/docs/requirements/features/deferred/notifications_page_requirements_v1.yaml (notificationListItemUserName uses profileFirstNameField and profileLastNameField values per FR-NPAGE-002); tests/docs/requirements/features/shared/card_content_requirements_v1.yaml (globalMessageSnackbar per FR-PROFILE-005)
+# Cross-reference: tests/docs/requirements/features/navigation/top_navigation_requirements_v1.yaml (entry path to '/user/profile-settings' via accountMenuItemProfile per FR-TOP-003); tests/docs/requirements/features/auth/register_requirements_v1.yaml (profileUsernameField, profileFirstNameField, and profileLastNameField show registerEmailField, registerFirstNameField, and registerLastNameField values from signup per FR-REG-004 and FR-PROFILE-002); tests/docs/requirements/features/deferred/notifications_page_requirements_v1.yaml (notificationListItemUserName uses profileFirstNameField and profileLastNameField values per FR-NPAGE-002); tests/docs/requirements/features/global/localization_requirements_v1.yaml (application locale source, switching, persistence, and literal-copy policy)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
@@ -219,6 +219,8 @@ requirements:
       - profileLanguageOptionFrench value is 'fr'
       - no additional language options are present beyond profileLanguageOptionEnglish and profileLanguageOptionFrench
       - given no user-specific language value is provided, profileLanguageOptionEnglish is selected
+      - given 'fr-CA' is active, profileLanguageOptionEnglish is visible with label 'Anglais' and profileLanguageOptionFrench is visible with label 'Français'
+      - language switching and persistence conform to FR-LOC-001 and FR-LOC-002 in tests/docs/requirements/features/global/localization_requirements_v1.yaml
 
     openQuestions: []
 

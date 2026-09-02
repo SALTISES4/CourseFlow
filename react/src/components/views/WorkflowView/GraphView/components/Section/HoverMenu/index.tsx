@@ -14,6 +14,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import { MouseEvent, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 type PropsType = {
   graphUuid: string
@@ -25,6 +26,7 @@ type PropsType = {
 type HoverMenuActions = 'insert' | 'duplicate' | 'delete' | 'comments'
 
 const HoverMenu = ({ graphUuid, sectionId, show, threadUuid }: PropsType) => {
+  const { t } = useTranslation('workflow')
   const totalSectionCount = useSelector(selectSectionCount)
   const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
@@ -91,25 +93,25 @@ const HoverMenu = ({ graphUuid, sectionId, show, threadUuid }: PropsType) => {
       show={show}
       items={[
         {
-          label: 'Insert section below',
+          label: t('graph.insertSectionBelow'),
           icon: <AddCircleOutlineIcon />,
           onClick: onActionClick('insert'),
           disabled: !canEdit
         },
         {
-          label: 'Duplicate section below',
+          label: t('graph.duplicateSectionBelow'),
           icon: <ContentCopyIcon />,
           onClick: onActionClick('duplicate'),
           disabled: !canEdit
         },
         {
-          label: 'Delete section',
+          label: t('graph.deleteSection'),
           icon: <DeleteOutlinedIcon />,
           onClick: onActionClick('delete'),
           disabled: !canEdit || totalSectionCount <= 1
         },
         canComment && {
-          label: 'Comments',
+          label: t('comments.title'),
           icon: <CommentOutlinedIcon />,
           showCommentsPresenceIndicator: commentCount > 0,
           onClick: onActionClick('comments')

@@ -1,4 +1,3 @@
-import { _t } from '@cf/utility/Utility.class'
 import SortableFilterButton from '@cfComponents/filters/SortableFilterButton'
 import { SortOption } from '@cfComponents/filters/types'
 import LibraryHelper, {

@@ -5,11 +5,11 @@ import {
 } from '@cf/api/gen/sdk.gen'
 import { ProjectPermission, TagListItemOut } from '@cf/api/gen/types.gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
-import { _t } from '@cf/utility/Utility.class'
 import * as SC from '@cfViews/WorkflowView/OverviewView/styles'
 import Grid from '@mui/material/Grid'
 import { produce } from 'immer'
 import { useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Tag from './Tag'
 
@@ -19,6 +19,7 @@ type PropsType = {
 }
 
 const Tags = ({ projectUuid, data }: PropsType) => {
+  const { t } = useTranslation('project')
   const [state, setState] = useState<TagListItemOut[]>(data)
   const canEdit = useResourcePermission(ProjectPermission.EDIT_PROJECT)
 
@@ -87,7 +88,7 @@ const Tags = ({ projectUuid, data }: PropsType) => {
 
   return (
     <SC.InfoBlock sx={{ mt: 3 }}>
-      <SC.InfoBlockTitle>{_t('Tags')}</SC.InfoBlockTitle>
+      <SC.InfoBlockTitle>{t('tags.title')}</SC.InfoBlockTitle>
 
       <SC.InfoBlockContent sx={{ mt: 2 }}>
         <Grid container spacing={2}>

@@ -1,5 +1,4 @@
 import type { TagListItemOut } from '@cf/api/gen/types.gen'
-import { _t } from '@cf/utility/Utility.class'
 import { createSelector } from 'reselect'
 
 import type { GraphState } from '../graphState'
@@ -93,7 +92,7 @@ export const selectOutcomeTagGroups = createSelector(
     const tagGroups: TagGroup[] = []
     const untagged: TagGroup = {
       uuid: -1,
-      title: _t('Untagged'),
+      title: '',
       outcomes: []
     }
 
@@ -125,7 +124,7 @@ export const selectOutcomeTagGroups = createSelector(
     if (untagged.outcomes.length) {
       tagGroups.push({
         ...untagged,
-        title: tagGroups.length ? untagged.title : ''
+        title: ''
       })
     }
 

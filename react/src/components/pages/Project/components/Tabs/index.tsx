@@ -1,11 +1,11 @@
 import { ProjectDetailOut } from '@cf/api/gen'
 import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
-import { _t } from '@cf/utility/Utility.class'
 import { OuterContentWrap } from '@cfMUI/helper'
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Route,
   Routes,
@@ -19,6 +19,7 @@ import TabOverview from './Overview'
 import TabWorkflows from './Workflows'
 
 const ProjectTabs = ({ project }: { project: ProjectDetailOut }) => {
+  const { t } = useTranslation('project')
   const location = useLocation()
   const [activeTab, setActiveTab] = useState<RelativeRoutes>(
     RelativeRoutes.INDEX
@@ -30,7 +31,7 @@ const ProjectTabs = ({ project }: { project: ProjectDetailOut }) => {
       {
         path: CFRoutes.PROJECT,
         relativePath: RelativeRoutes.INDEX,
-        label: _t('Overview'),
+        label: t('tabs.overview'),
         action: () => {
           const path = generatePath(CFRoutes.PROJECT, {
             uuid: project.uuid
@@ -41,7 +42,7 @@ const ProjectTabs = ({ project }: { project: ProjectDetailOut }) => {
       {
         path: CFRoutes.PROJECT_WORKFLOW,
         relativePath: RelativeRoutes.WORKFLOWS,
-        label: _t('Workflows'),
+        label: t('tabs.workflows'),
         action: () => {
           const path = generatePath(CFRoutes.PROJECT_WORKFLOW, {
             uuid: project.uuid
@@ -50,7 +51,7 @@ const ProjectTabs = ({ project }: { project: ProjectDetailOut }) => {
         }
       }
     ],
-    [navigate, project.uuid]
+    [navigate, project.uuid, t]
   )
 
   const tabs = tabsObject.map((item) => (

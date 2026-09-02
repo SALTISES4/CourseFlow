@@ -1,12 +1,11 @@
-import { WorkflowType } from '@cf/api/gen'
 import {
   copyWorkflowMutation,
   getWorkflowOptions,
   listWorkflowsQueryKey
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import { workflowTypeLabel } from '@cf/i18n/workflowLabels'
 import { CFRoutes } from '@cf/router/appRoutes'
-import { _t } from '@cf/utility/Utility.class'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import WorkflowDestinationProjectSearch from '@cfComponents/dialog/Workflow/WorkflowDestinationProjectSearch'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -20,15 +19,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { generatePath, useNavigate, useParams } from 'react-router-dom'
-
-const workflowTypeLabels: Record<WorkflowType, string> = {
-  [WorkflowType.PROGRAM]: 'program',
-  [WorkflowType.COURSE]: 'course',
-  [WorkflowType.ACTIVITY]: 'activity',
-  [WorkflowType.TASK]: 'task'
-}
+import { useTranslation } from 'react-i18next'
 
 const WorkflowCopyToProjectDialog = () => {
+  const { t } = useTranslation('workflow')
+  const { t: tCommon } = useTranslation('common')
   const { uuid } = useParams()
   const workflowUuid = uuid ?? ''
   const { show, onClose } = useDialog(DialogMode.WORKFLOW_COPY_TO_PROJECT)
@@ -42,25 +37,27 @@ const WorkflowCopyToProjectDialog = () => {
     enabled: show && Boolean(workflowUuid)
   })
   const workflow = workflowQuery.data?.item
-  const workflowTypeLabel = workflow
-    ? workflowTypeLabels[workflow.workflowType]
-    : 'workflow'
+  const localizedWorkflowType = workflowTypeLabel(
+    t,
+    workflow?.workflowType,
+    true
+  )
 
   useEffect(() => {
     if (show && workflow) {
-      setTitle(`${workflow.title} (copy)`)
+      setTitle(t('form.copyTitle', { title: workflow.title }))
     }
-  }, [show, workflow])
+  }, [show, t, workflow])
 
   const titleError = useMemo(() => {
     if (!title.trim()) {
-      return 'Title is required'
+      return t('form.titleRequired')
     }
     if (title.length > 200) {
-      return 'Title cannot be longer than 200 characters'
+      return t('form.titleMax', { count: 200 })
     }
     return undefined
-  }, [title])
+  }, [t, title])
 
   const copyWorkflow = useMutation({
     ...copyWorkflowMutation(),
@@ -70,7 +67,7 @@ const WorkflowCopyToProjectDialog = () => {
         queryClient.invalidateQueries({ queryKey: ['library-search'] })
       ])
       enqueueSnackbar(
-        _t(`The ${workflowTypeLabel} has been successfully copied`),
+        t('messages.copied', { workflowType: localizedWorkflowType }),
         { variant: 'success' }
       )
       onClose()
@@ -80,9 +77,7 @@ const WorkflowCopyToProjectDialog = () => {
     },
     onError: () => {
       enqueueSnackbar(
-        _t(
-          `We encountered an issue and your ${workflowTypeLabel} was not copied`
-        ),
+        t('messages.copyFailed', { workflowType: localizedWorkflowType }),
         { variant: 'error' }
       )
     }
@@ -121,11 +116,11 @@ const WorkflowCopyToProjectDialog = () => {
     >
       <form onSubmit={submit}>
         <DialogTitle data-test-id="copy-workflow-dialog-title">
-          {_t(`Copy ${workflowTypeLabel}`)}
+          {t('copyDialog.title', { workflowType: localizedWorkflowType })}
         </DialogTitle>
         <DialogContent dividers>
           {workflowQuery.isError ? (
-            <Alert severity="error">{_t('Unable to load workflow')}</Alert>
+            <Alert severity="error">{t('copyDialog.loadFailed')}</Alert>
           ) : workflowQuery.isLoading || !workflow ? (
             <Loader />
           ) : (
@@ -134,11 +129,11 @@ const WorkflowCopyToProjectDialog = () => {
                 name="title"
                 variant="standard"
                 required
-                label={_t('Title')}
+                label={t('form.title')}
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
                 error={Boolean(titleError)}
-                helperText={titleError ? _t(titleError) : undefined}
+                helperText={titleError}
                 inputProps={{
                   maxLength: 201,
                   'data-test-id': 'copy-workflow-title-field'
@@ -161,7 +156,7 @@ const WorkflowCopyToProjectDialog = () => {
             onClick={onClose}
             data-test-id="copy-workflow-cancel-button"
           >
-            {_t('Cancel')}
+            {tCommon('actions.cancel')}
           </Button>
           <Button
             type="submit"
@@ -174,7 +169,7 @@ const WorkflowCopyToProjectDialog = () => {
             }
             data-test-id="copy-workflow-submit-button"
           >
-            {_t(`Copy ${workflowTypeLabel}`)}
+            {t('copyDialog.submit', { workflowType: localizedWorkflowType })}
           </Button>
         </DialogActions>
       </form>

@@ -5,7 +5,6 @@ import {
   selectAuthError
 } from '@cf/features/auth/state/auth.slice'
 import { AppDispatch } from '@cf/redux/store'
-import { _t } from '@cf/utility/Utility.class'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
@@ -15,6 +14,7 @@ import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
 import { ChangeEvent, FormEvent, useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import * as Styled from '../styles'
@@ -25,6 +25,7 @@ type StateType = {
 }
 
 function RegisterPage() {
+  const { t } = useTranslation('auth')
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const error = useSelector(selectAuthError)
@@ -69,7 +70,7 @@ function RegisterPage() {
             <Typography component="h2">CourseFlow</Typography>
           </Styled.LogoWrap>
           <Typography variant="body1">
-            {_t('Create your CourseFlow account')}
+            {t('registration.heading')}
           </Typography>
           {error ? (
             <Typography color="error" role="alert">
@@ -79,7 +80,7 @@ function RegisterPage() {
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <TextField
-                label={_t('First Name')}
+                label={t('registerForm.firstName')}
                 type="text"
                 name="firstName"
                 value={state.user.firstName}
@@ -89,7 +90,7 @@ function RegisterPage() {
             </Grid>
             <Grid item xs={6}>
               <TextField
-                label={_t('Last Name')}
+                label={t('registerForm.lastName')}
                 type="text"
                 name="lastName"
                 value={state.user.lastName}
@@ -99,7 +100,7 @@ function RegisterPage() {
             </Grid>
           </Grid>
           <TextField
-            label={_t('Email')}
+            label={t('loginForm.email')}
             type="email"
             name="email"
             value={state.user.email}
@@ -108,7 +109,7 @@ function RegisterPage() {
             required
           />
           <TextField
-            label={_t('Password')}
+            label={t('loginForm.password')}
             type="password"
             name="password"
             value={state.user.password}
@@ -123,10 +124,13 @@ function RegisterPage() {
             disabled={state.pending}
             fullWidth
           >
-            {_t(state.pending ? 'Creating an account...' : 'Register')}
+            {state.pending
+              ? t('registration.creating')
+              : t('registration.submit')}
           </Button>
           <Typography variant="body1">
-            {_t('Back to')} <Link href="/login">{_t('Login')}</Link>
+            {t('registration.backToLogin')}{' '}
+            <Link href="/login">{t('loginForm.submit')}</Link>
           </Typography>
         </Styled.Form>
       </Styled.Paper>

@@ -11,8 +11,8 @@ import {
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import type { AppDispatch } from '@cf/redux/store'
-import { _t } from '@cf/utility/Utility.class'
 import * as SC from '@cfSidebar/styles'
 import { debounce } from '@mui/material'
 import Button from '@mui/material/Button'
@@ -20,6 +20,7 @@ import TextField from '@mui/material/TextField'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 type SectionFormType = {
   title: string
@@ -47,10 +48,17 @@ const EditSection = ({ sectionId }: { sectionId: string }) => {
 }
 
 const EditSectionForm = ({ section }: { section: SectionEntity }) => {
+  const { t } = useTranslation('workflow')
+  const { t: tCommon } = useTranslation('common')
   const totalSectionCount = useSelector(selectSectionCount)
   const canEdit = useResourcePermission(WorkflowPermission.PART_MANAGEMENT)
   const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
+  const localizedTitle = displaySystemTitle(
+    t,
+    section,
+    t('systemLabels.sectionNumber', { number: section.position + 1 })
+  )
 
   const {
     register,
@@ -60,7 +68,7 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
     formState: { errors, isDirty }
   } = useForm<SectionFormType>({
     defaultValues: {
-      title: section.title
+      title: localizedTitle
     }
   })
   const watchedFields = watch()
@@ -68,10 +76,10 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
   useEffect(() => {
     if (section && !isDirty) {
       reset({
-        title: section.title
+        title: localizedTitle
       })
     }
-  }, [reset, isDirty, section])
+  }, [reset, isDirty, localizedTitle])
 
   const debouncedDispatch = useMemo(
     () =>
@@ -117,10 +125,10 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
     <SC.SidebarInnerWrap data-test-id="workflow-edit-section-form">
       <SC.SidebarContent>
         <SC.SidebarTitle as="h3" variant="h6">
-          {_t('Edit section')}
+          {t('edit.section')}
         </SC.SidebarTitle>
         <TextField
-          label={_t('Section')}
+          label={t('edit.sectionLabel')}
           variant="outlined"
           size="small"
           {...register('title')}
@@ -136,7 +144,7 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
           onClick={onDuplicate}
           disabled={!canEdit}
         >
-          {_t('Duplicate')}
+          {tCommon('actions.duplicate')}
         </Button>
         <Button
           variant="contained"
@@ -144,7 +152,7 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
           onClick={onDelete}
           disabled={!canEdit || totalSectionCount <= 1}
         >
-          {_t('Delete')}
+          {tCommon('actions.delete')}
         </Button>
       </SC.SidebarActions>
     </SC.SidebarInnerWrap>

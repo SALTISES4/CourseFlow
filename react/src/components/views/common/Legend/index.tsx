@@ -1,13 +1,14 @@
-import { _t } from '@cf/utility/Utility.class'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 import { FormControlLabel } from '@mui/material'
 import { Switch } from '@mui/material'
 import { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import * as Styled from './styles'
 import useLegend from './useLegend'
 
 const Legend = ({ children }: { children: ReactNode }) => {
+  const { t } = useTranslation('workflow')
   const legend = useLegend()
 
   return (
@@ -18,15 +19,18 @@ const Legend = ({ children }: { children: ReactNode }) => {
             value={'legend'}
             checked={legend.show}
             onChange={legend.toggle}
-            inputProps={{ 'aria-label': 'controlled' }}
+            inputProps={{ 'aria-label': t('legend.show') }}
           />
         }
-        label={_t('Show Legend')}
+        label={t('legend.show')}
       />
 
       <Styled.LegendWrap show={legend.show}>
         {children}
-        <Styled.LegendCloseButton onClick={legend.toggle}>
+        <Styled.LegendCloseButton
+          aria-label={t('legend.show')}
+          onClick={legend.toggle}
+        >
           <HighlightOffIcon />
         </Styled.LegendCloseButton>
       </Styled.LegendWrap>

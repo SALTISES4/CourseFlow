@@ -2,14 +2,13 @@ import { getApiErrorStatus, isArchivedApiError } from '@cf/api/apiError'
 import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { WorkspacePermissionsProvider } from '@cf/context/workspacePermissionsContext'
 import { useWorkspaceAccessGuard } from '@cf/hooks/useWorkspaceAccessGuard'
-import { getErrorMessage } from '@cf/utility/errorWrapper'
-import { _t } from '@cf/utility/Utility.class'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
 import WorkspaceAccessDenied from '@cfPages/MsgViews/WorkspaceAccessDenied'
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useLocation, useParams } from 'react-router-dom'
 
 import ProjectActionMenu from './components/ActionMenu'
@@ -18,6 +17,7 @@ import ProjectHeader from './components/Header'
 import ProjectTabs from './components/Tabs'
 
 const ProjectDetails = () => {
+  const { t } = useTranslation('project')
   const { uuid } = useParams()
   const location = useLocation()
 
@@ -72,9 +72,7 @@ const ProjectDetails = () => {
         />
       )
     }
-    return (
-      <ErrorView message={`An error occurred: ${getErrorMessage(error)}`} />
-    )
+    return <ErrorView message={t('errors.loadFailed')} />
   }
 
   if (isLoading || !projectResponse) {
@@ -84,7 +82,7 @@ const ProjectDetails = () => {
   const project = projectResponse.item
 
   if (!project) {
-    return <ErrorView message={_t(`Project does not exist`)} />
+    return <ErrorView message={t('errors.notFound')} />
   }
 
   return (

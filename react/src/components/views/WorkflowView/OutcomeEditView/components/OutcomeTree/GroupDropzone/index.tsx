@@ -4,7 +4,6 @@ import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { GraphUuid } from '@cf/features/graph/state/model/types'
 import { moveOutcome } from '@cf/features/graph/state/thunks/outcomeMutations.thunks'
 import type { AppDispatch } from '@cf/redux/store'
-import { _t } from '@cf/utility/Utility.class'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 

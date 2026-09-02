@@ -18,7 +18,7 @@ uiObjectDefinitions:
   sortResetButton:
     meaning: Canonical definition in tests/docs/requirements/features/library/library_page_requirements_v1.yaml.
   disciplineFilter:
-    meaning: Multiselect discipline filter on the Explore filter toolbar; selectable options are the fixed discipline catalogue per FR-PROJ-FORM-001 in tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml, ordered alphabetically from A to Z
+    meaning: Multiselect discipline filter on the Explore filter toolbar; selectable options are the localized fixed discipline catalogue per FR-PROJ-FORM-001 in tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml, ordered by active-locale collation
   disciplineFilterSearchField:
     meaning: Search field inside the disciplineFilter popover.
   disciplineFilterAllOption:
@@ -236,7 +236,7 @@ requirements:
       - user opens disciplineFilter and uses search, 'All', 'None', or individual discipline checkboxes, then closes or applies the selection
 
     mainFlow:
-      - user can restrict results to one or more disciplines; disciplineFilter selectable options match the fixed discipline catalogue per FR-PROJ-FORM-001 in tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml, ordered alphabetically from A to Z
+      - user can restrict results to one or more disciplines; disciplineFilter selectable options match the localized fixed discipline catalogue per FR-PROJ-FORM-001 in tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml, ordered by active-locale collation per FR-LOC-004 in tests/docs/requirements/features/global/localization_requirements_v1.yaml
       - when a discipline row has no matching results in the current query context, that row's checkbox is read-only and cannot be clicked (same read-only zero-result rule as workflowTypeFilter per FR-LIB-003)
       - when more than one discipline is selected, discipline matching is additive (OR): a row is eligible if it matches any selected discipline
       - disciplineFilterSearchField lets the user type to narrow which disciplines appear in the checklist (label match)

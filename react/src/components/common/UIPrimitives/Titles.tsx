@@ -1,5 +1,4 @@
 import { CFRoutes } from '@cf/router/appRoutes'
-import { _t } from '@cf/utility/Utility.class'
 import { generatePath } from 'react-router-dom'
 
 /*******************************************************
@@ -35,20 +34,24 @@ export function workflowUrl(workflow) {
 export function workflowTitle({
   title,
   code,
-  deleted
+  deleted,
+  fallbackText,
+  deletedText
 }: {
   title: string
   code: string
   deleted: boolean
+  fallbackText: string
+  deletedText: string
 }) {
-  let text = title || _t('Untitled')
+  let text = title || fallbackText
 
   if (code) {
     text = `${code} - ${text}`
   }
 
   if (deleted) {
-    text += ' (deleted)'
+    text += ` (${deletedText})`
   }
   return text
 }

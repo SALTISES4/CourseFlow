@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from importlib import import_module
 
 import pytest
+from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.test import Client
 from django.utils import timezone
 
 from course_flow.core.auth import generate_raw_token, hash_token
-from course_flow.core.models import Authtoken
+from course_flow.core.models import Authtoken, Channel, Graph
+from course_flow.core.system_labels import DEFAULT_CHANNELS_BY_WORKFLOW_TYPE
 
 
 @pytest.fixture
@@ -19,13 +22,17 @@ def client() -> Client:
 @pytest.fixture
 def user():
     user_model = get_user_model()
-    return user_model.objects.create_user(email="channel-owner@example.com", password="password123")
+    return user_model.objects.create_user(
+        email="channel-owner@example.com", password="password123"
+    )
 
 
 @pytest.fixture
 def other_user():
     user_model = get_user_model()
-    return user_model.objects.create_user(email="channel-other@example.com", password="password123")
+    return user_model.objects.create_user(
+        email="channel-other@example.com", password="password123"
+    )
 
 
 def _auth_header(raw_token: str) -> dict[str, str]:
@@ -91,8 +98,17 @@ def test_channel_crud_and_graph_collection(client: Client, user):
 
     listing = client.get(f"/api/graph/{graph_uuid}/channels", **_auth_header(raw))
     assert listing.status_code == 200
-    assert listing.json()["meta"]["total"] == 1
-    assert listing.json()["items"][0]["uuid"] == channel_uuid
+    items = listing.json()["items"]
+    course_label_codes = {
+        code for code, _colour in DEFAULT_CHANNELS_BY_WORKFLOW_TYPE["course"]
+    }
+    assert listing.json()["meta"]["total"] == len(course_label_codes) + 1
+    assert {
+        item["systemLabelCode"] for item in items if item["systemLabelCode"]
+    } == set(course_label_codes)
+    assert next(item for item in items if item["uuid"] == channel_uuid)["title"] == (
+        "Channel B"
+    )
 
     deleted = client.delete(f"/api/channel/{channel_uuid}", **_auth_header(raw))
     assert deleted.status_code == 200
@@ -105,9 +121,37 @@ def test_channel_crud_and_graph_collection(client: Client, user):
 
 
 @pytest.mark.django_db
-def test_section_reads_deny_non_contributor(
-    client: Client, user, other_user
+def test_system_channel_backfill_requires_the_full_generated_signature(
+    client: Client, user
 ):
+    raw = _issue_token_for(user)
+    graph_uuid = _create_graph(client, raw)
+    graph = Graph.objects.get(uuid=graph_uuid)
+    generated = Channel.objects.get(graph=graph, position=0)
+    generated.title = "Preparation"
+    generated.colour = "#F7B92A"
+    generated.system_label_code = None
+    generated.save(update_fields=["title", "colour", "system_label_code"])
+    authored_near_match = Channel.objects.create(
+        graph=graph,
+        title="Preparation",
+        colour="#F7B92A",
+        position=9,
+    )
+
+    migration = import_module("course_flow.core.migrations.0022_system_graph_labels")
+    migration.mark_known_system_channels(apps, None)
+
+    generated.refresh_from_db()
+    authored_near_match.refresh_from_db()
+    assert generated.title == ""
+    assert generated.system_label_code == "course_preparation"
+    assert authored_near_match.title == "Preparation"
+    assert authored_near_match.system_label_code is None
+
+
+@pytest.mark.django_db
+def test_section_reads_deny_non_contributor(client: Client, user, other_user):
     raw_owner = _issue_token_for(user)
     graph_uuid = _create_graph(client, raw_owner)
 
@@ -141,7 +185,9 @@ def test_section_reads_deny_non_contributor(
     assert owner_patch.status_code == 200
     assert owner_patch.json()["item"]["title"] == "Section B"
 
-    owner_delete = client.delete(f"/api/section/{section_uuid}", **_auth_header(raw_owner))
+    owner_delete = client.delete(
+        f"/api/section/{section_uuid}", **_auth_header(raw_owner)
+    )
     assert owner_delete.status_code == 200
     body = owner_delete.json()
     assert body["changes"]["sections"]["deleted"] == [section_uuid]

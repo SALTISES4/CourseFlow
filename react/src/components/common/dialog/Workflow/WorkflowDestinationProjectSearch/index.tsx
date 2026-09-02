@@ -9,7 +9,6 @@ import {
 import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
-import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { GridWrap } from '@cfMUI/helper'
@@ -22,11 +21,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useQuery } from '@tanstack/react-query'
 import { ChangeEvent, useEffect, useMemo, useState } from 'react'
-
-const NO_ELIGIBLE_PROJECTS_TITLE =
-  'You are not an owner or editor of any projects'
-const NO_ELIGIBLE_PROJECTS_DESCRIPTION =
-  'All workflows, whether they are programs, courses, or activities, exist within projects. You must always start by creating a project before proceeding to create any type of workflow. Currently you are not the owner and have not been added as an editor of any project.'
+import { useTranslation } from 'react-i18next'
 
 type PropsType = {
   selected?: string
@@ -41,6 +36,8 @@ const WorkflowDestinationProjectSearch = ({
   onProjectSelect,
   panelTestId = 'workflow-project-search-view'
 }: PropsType) => {
+  const { t } = useTranslation('workflow')
+  const { t: tLibrary } = useTranslation('library')
   const [keyword, setKeyword] = useState('')
 
   const baseSearch = useLibrarySearch({
@@ -154,25 +151,25 @@ const WorkflowDestinationProjectSearch = ({
   }
 
   if (baseSearch.isError || search.isError || contextProject.isError) {
-    return <Alert severity="error">{_t('Unable to load projects')}</Alert>
+    return <Alert severity="error">{t('searchProjects.loadFailed')}</Alert>
   }
 
   if (baseSearch.data?.meta.totalResults === 0) {
     return (
       <Alert severity="warning" data-test-id="no-eligible-projects">
-        <AlertTitle>{_t(NO_ELIGIBLE_PROJECTS_TITLE)}</AlertTitle>
-        {_t(NO_ELIGIBLE_PROJECTS_DESCRIPTION)}
+        <AlertTitle>{t('searchProjects.noEligibleTitle')}</AlertTitle>
+        {t('searchProjects.noEligibleDescription')}
       </Alert>
     )
   }
 
-  const cards = formatLibraryObjects(visibleItems)
+  const cards = formatLibraryObjects(visibleItems, tLibrary)
 
   return (
     <Box data-test-id={panelTestId}>
       <TextField
         variant="standard"
-        placeholder={_t('Search in projects...')}
+        placeholder={t('searchProjects.placeholder')}
         value={keyword}
         fullWidth
         onChange={(event: ChangeEvent<HTMLInputElement>) =>
@@ -190,7 +187,7 @@ const WorkflowDestinationProjectSearch = ({
       <GridWrap data-test-id="library-results" sx={{ mt: 4 }}>
         {!cards.length && (
           <Typography data-test-id="workflow-project-search-empty-state">
-            {_t('No results found')}
+            {t('searchProjects.noResults')}
           </Typography>
         )}
         {cards.map((project) => (

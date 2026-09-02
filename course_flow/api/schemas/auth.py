@@ -30,6 +30,7 @@ class UserSummaryOut(CamelSchema):
     email: str
     first_name: str
     last_name: str
+    language_preference: str
     account_role: AccountRole | None
     meta: UserMeta | None
 

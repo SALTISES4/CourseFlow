@@ -1,11 +1,11 @@
 import { WorkflowTypeIn } from '@cf/api/gen'
 import { CookieTypes, useCookies } from '@cf/context/cookieContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { _t } from '@cf/utility/Utility.class'
 import CloseIcon from '@mui/icons-material/Close'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import * as SC from './style'
 
@@ -18,6 +18,7 @@ const Welcome = ({ hide }: PropsType) => {
    * HOOKS
    *******************************************************/
   const { dispatch } = useDialog()
+  const { t } = useTranslation('home')
   const [visible, setVisible] = useState(true)
   const { cookies, updateCookie } = useCookies()
 
@@ -47,16 +48,14 @@ const Welcome = ({ hide }: PropsType) => {
    *******************************************************/
   return (
     <SC.Wrap>
-      <SC.CloseButton aria-label="close" onClick={handleClose}>
+      <SC.CloseButton aria-label={t('welcome.closeLabel')} onClick={handleClose}>
         <CloseIcon />
       </SC.CloseButton>
 
-      <Typography variant="h4">{_t('Welcome to CourseFlow')}</Typography>
+      <Typography variant="h4">{t('welcome.title')}</Typography>
 
       <Typography sx={{ mt: 2 }}>
-        {_t(
-          'Tell us a bit more about your goals so that we can help you get started.'
-        )}
+        {t('welcome.prompt')}
       </Typography>
 
       <SC.Actions>
@@ -68,7 +67,7 @@ const Welcome = ({ hide }: PropsType) => {
             })
           }
         >
-          {_t('I want to create an activity')}
+          {t('welcome.createActivity')}
         </Button>
         <Button
           variant="contained"
@@ -78,7 +77,7 @@ const Welcome = ({ hide }: PropsType) => {
             })
           }
         >
-          {_t('I want to create a course')}
+          {t('welcome.createCourse')}
         </Button>
         <Button
           variant="contained"
@@ -88,7 +87,7 @@ const Welcome = ({ hide }: PropsType) => {
             })
           }
         >
-          {_t('I want to create a program')}
+          {t('welcome.createProgram')}
         </Button>
       </SC.Actions>
     </SC.Wrap>

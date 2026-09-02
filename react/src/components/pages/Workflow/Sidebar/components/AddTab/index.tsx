@@ -4,8 +4,8 @@ import { saveNodeInsertModePreference } from '@cf/features/graph/state/nodeInser
 import type { NodeInsertMode } from '@cf/features/graph/state/resolveNodeDropRow'
 import { selectChannelsOrderedByGraphUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { graphUiActions } from '@cf/features/graph/state/slices/graphUi.slice'
+import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import type { AppDispatch, RootState } from '@cf/redux/store'
-import { _t } from '@cf/utility/Utility.class'
 import * as SC from '@cfSidebar/styles'
 import { DraggableType } from '@cfViews/WorkflowView/GraphView/types'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
@@ -16,11 +16,13 @@ import { useQuery } from '@tanstack/react-query'
 import { MouseEvent, useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import DraggableItem from './Draggable'
 import * as Styled from './styles'
 
 const AddTab = () => {
+  const { t } = useTranslation('workflow')
   const dispatch = useDispatch<AppDispatch>()
   const { uuid: workflowUuid } = useParams<{ uuid: string }>()
   const userUuid = useSelector(selectAuthUser)?.uuid
@@ -59,17 +61,15 @@ const AddTab = () => {
     <SC.SidebarInnerWrap>
       <SC.SidebarContent>
         <SC.SidebarTitle as="h3" variant="h6">
-          {_t('Add to workflow')}
+          {t('addPanel.title')}
         </SC.SidebarTitle>
         <SC.GroupWrap separator={false}>
           <Styled.InsertModeTitle variant="body2">
-            {_t('Insert mode')}
+            {t('addPanel.insertMode')}
             <Tooltip
               arrow
               placement="top"
-              title={_t(
-                'Row mode forces nodes into a vertical sequence. Column mode allows multiple nodes side-by-side. Manual mode prompts you to choose a layout style for every new node.'
-              )}
+              title={t('addPanel.insertModeHelp')}
             >
               <InfoOutlinedIcon
                 sx={{
@@ -83,23 +83,23 @@ const AddTab = () => {
             value={insertMode}
             exclusive
             onChange={onInsertModeChange}
-            aria-label="Insert mode"
+            aria-label={t('addPanel.insertMode')}
           >
             <ToggleButton color="primary" size="small" value="manual">
-              {_t('Manual')}
+              {t('addPanel.manual')}
             </ToggleButton>
             <ToggleButton color="primary" size="small" value="row">
-              {_t('Row')}
+              {t('addPanel.row')}
             </ToggleButton>
             <ToggleButton color="primary" size="small" value="column">
-              {_t('Column')}
+              {t('addPanel.column')}
             </ToggleButton>
           </Styled.InsertButtonGroup>
         </SC.GroupWrap>
         {channels.length > 0 && (
           <SC.GroupWrap>
             <Typography component="h6" variant="body2">
-              {_t('Node categories')}
+              {t('addPanel.nodeCategories')}
             </Typography>
             <ul>
               {channels.map((column) => (
@@ -107,7 +107,11 @@ const AddTab = () => {
                   key={column.uuid}
                   component="li"
                   uuid={column.uuid}
-                  label={column.title}
+                  label={displaySystemTitle(
+                    t,
+                    column,
+                    t('graph.untitledNodeCategory')
+                  )}
                   type={DraggableType.SIDEBAR_NODE}
                   typeColor={column.colour}
                 />
@@ -115,7 +119,7 @@ const AddTab = () => {
               <DraggableItem
                 component="li"
                 uuid={'-1'}
-                label={_t('Custom node category')}
+                label={t('addPanel.customNodeCategory')}
                 type={DraggableType.SIDEBAR_NODE_CUSTOM}
                 dashed
               />

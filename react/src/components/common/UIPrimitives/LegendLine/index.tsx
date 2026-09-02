@@ -17,7 +17,7 @@ const LegendLine = ({ icon, divClass, div, text }: PropsType) => {
             width: '24px'
           }}
           src={`/static/course_flow/img/images_svg/${icon}.svg`}
-          alt="icon"
+          alt=""
         />
       )
     }

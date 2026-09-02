@@ -7,8 +7,8 @@ import {
   selectWorkflowByUuid
 } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { isHighlightedViaOutcome } from '@cf/features/graph/state/selectors/outcomes.selectors'
+import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/Utility.class'
 import { RootState } from '@cfRedux/store'
 import { nodeTitleFallback } from '@cfSidebar/components/EditTab/components/EditNode/linkedWorkflowUi'
 import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
@@ -16,6 +16,7 @@ import { useQuery } from '@tanstack/react-query'
 import { MouseEvent, useCallback, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import Handles from '../../../../components/LineSVG/Handles'
 import DropIndicator from '../DropIndicator'
@@ -40,6 +41,7 @@ const SectionCellNode = ({
   onClick,
   onDrop
 }: SectionCellNodeTypeTypeInternal) => {
+  const { t } = useTranslation('workflow')
   const nodeSelector = useMemo(() => selectNodeByUuid(nodeId), [nodeId])
   const node = useSelector(nodeSelector)
   const graphSelector = useMemo(() => selectGraphByUuid(graphUuid), [graphUuid])
@@ -104,8 +106,12 @@ const SectionCellNode = ({
     ? linkedWorkflowResp?.item?.title ||
       linkedWorkflow?.title ||
       node.title ||
-      nodeTitleFallback()
-    : node.title || nodeTitleFallback()
+      nodeTitleFallback(t('linked.untitledNode'))
+    : displaySystemTitle(
+        t,
+        node,
+        nodeTitleFallback(t('linked.untitledNode'))
+      )
 
   return (
     <>

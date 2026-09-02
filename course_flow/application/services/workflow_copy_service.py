@@ -236,6 +236,7 @@ class WorkflowCopyService:
             section_map[source.id] = Section.objects.create(
                 graph=destination_graph,
                 title=source.title,
+                title_copy_count=source.title_copy_count,
                 position=source.position,
             )
         return section_map
@@ -251,6 +252,8 @@ class WorkflowCopyService:
             channel_map[source.id] = Channel.objects.create(
                 graph=destination_graph,
                 title=source.title,
+                system_label_code=source.system_label_code,
+                title_copy_count=source.title_copy_count,
                 colour=source.colour,
                 position=source.position,
             )
@@ -284,6 +287,7 @@ class WorkflowCopyService:
                     parent=destination_parent,
                     order=source.order,
                     title=source.title,
+                    title_copy_count=source.title_copy_count,
                     description=source.description,
                     code=source.code,
                 )
@@ -334,6 +338,7 @@ class WorkflowCopyService:
                 section_row=source.section_row,
                 node_type=source.node_type,
                 title=source.title,
+                title_copy_count=source.title_copy_count,
                 description=source.description,
             )
             copy_node_typed_meta(source=source, target=destination)

@@ -100,6 +100,15 @@ def test_graph_view_top_level_shape_and_flat_collections(client: Client, user):
     assert isinstance(body["edges"], list)
     assert isinstance(body["outcomes"], list)
     assert isinstance(body["threadCommentCounts"], list)
+    assert [channel["systemLabelCode"] for channel in body["channels"]] == [
+        "course_preparation",
+        "course_lesson",
+        "course_artifact",
+        "course_assessment",
+    ]
+    assert all(channel["title"] == "" for channel in body["channels"])
+    assert all(channel["titleCopyCount"] == 0 for channel in body["channels"])
+    assert body["sections"][0]["titleCopyCount"] == 0
 
     wf = body["graph"]
     assert wf["uuid"] == str(graph_uuid)
@@ -125,12 +134,15 @@ def test_graph_view_uses_uuid_references_not_nested_entities(client: Client, use
         assert "graphUuid" in ch
         assert ch["graphUuid"] == str(graph_uuid)
         assert "threadUuid" in ch
+        assert "systemLabelCode" in ch
+        assert "titleCopyCount" in ch
 
     for node in body["nodes"]:
         assert isinstance(node, dict)
         assert "uuid" in node
         for key in ("sectionUuid", "channelUuid", "sectionRow", "workflowUuid", "threadUuid"):
             assert key in node
+        assert "titleCopyCount" in node
         assert "outcomeUuids" in node
         assert isinstance(node["outcomeUuids"], list)
 

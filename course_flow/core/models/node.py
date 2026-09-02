@@ -53,6 +53,7 @@ class Node(UUIDModel):
         ),
     )
     title = models.CharField(max_length=200, blank=True)
+    title_copy_count = models.PositiveSmallIntegerField(default=0)
     description = models.TextField(blank=True)
     outcomes = models.ManyToManyField(
         Outcome,

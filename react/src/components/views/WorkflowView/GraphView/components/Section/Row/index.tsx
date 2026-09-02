@@ -2,11 +2,11 @@ import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { RootState } from '@cf/redux/store'
 import { defaultColumnSettings } from '@cf/utility/constants'
-import { _t } from '@cf/utility/Utility.class'
 import { SectionRowPropsType } from '@cfViews/WorkflowView/GraphView/components/Section/Row/type'
 import { alpha } from '@mui/material'
 import { ReactNode, memo, useRef } from 'react'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import useRowDnd from './useRowDnd'
 import * as StyledWorkflow from '../../../styles'
@@ -130,13 +130,14 @@ const SectionRow = (props: SectionRowPropsType) => {
 }
 
 const SectionRowEmpty = ({ children }: { children: ReactNode }) => {
+  const { t } = useTranslation('workflow')
   const dragging = useSelector((state: RootState) => state.svglink.allowDnd)
 
   return (
     <>
       {children}
       <StyledSection.EmptyText sx={{ opacity: dragging ? 0 : 1 }}>
-        {_t('Drag nodes from the sidebar or other sections to add them here.')}
+        {t('graph.emptySection')}
       </StyledSection.EmptyText>
     </>
   )

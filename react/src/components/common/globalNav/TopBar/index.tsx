@@ -1,37 +1,25 @@
 import { logoutRequest } from '@cf/api/auth'
 import { clearAccessToken } from '@cf/api/authToken'
 import { WorkflowTypeIn } from '@cf/api/gen'
-import { listMyNotificationsOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
-import strings from '@cf/utility/strings'
-import { _t } from '@cf/utility/Utility.class'
-import { MenuItemType, SimpleMenu, StaticMenu } from '@cfComponents/menu/Menu'
+import { MenuItemType, SimpleMenu } from '@cfComponents/menu/Menu'
 import ReturnLinks from '@cfPages/Workflow/WorkflowTabs/components/ReturnLinks'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import LogoutIcon from '@mui/icons-material/Logout'
-import NotificationsIcon from '@mui/icons-material/Notifications'
 import AppBar from '@mui/material/AppBar'
-import Badge from '@mui/material/Badge'
 import Box from '@mui/material/Box'
-import Link from '@mui/material/Link'
-import ListItem from '@mui/material/ListItem'
-import ListItemButton from '@mui/material/ListItemButton'
-import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
-import { useQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import * as SC from './styles'
 
-/** First page only; large enough for the dropdown preview without loading the full inbox. */
-const TOPBAR_NOTIFICATION_PREVIEW_PAGE_SIZE = 40
-
 const TopBar = () => {
+  const { t } = useTranslation(['common', 'project', 'workflow'])
   const navigate = useNavigate()
   const { dispatch } = useDialog()
 
@@ -53,7 +41,7 @@ const TopBar = () => {
     const header: MenuItemType = {
       iconButton: {
         icon: <AddCircleIcon />,
-        'aria-label': 'add menu',
+        'aria-label': t('common:navigation.addMenu'),
         'aria-controls': 'add-menu',
         'aria-haspopup': 'true',
         color: 'primary',
@@ -64,12 +52,12 @@ const TopBar = () => {
 
     const menuItems: MenuItemType[] = [
       {
-        content: strings.project,
+        content: t('project:exportDialog.objectType.project'),
         action: () => dispatch(DialogMode.PROJECT_CREATE),
         show: true
       },
       {
-        content: strings.program,
+        content: t('workflow:type.program'),
         action: () =>
           dispatch(DialogMode.WORKFLOW_CREATE, {
             workflowType: WorkflowTypeIn.PROGRAM
@@ -77,7 +65,7 @@ const TopBar = () => {
         show: true
       },
       {
-        content: strings.course,
+        content: t('workflow:type.course'),
         action: () =>
           dispatch(DialogMode.WORKFLOW_CREATE, {
             workflowType: WorkflowTypeIn.COURSE
@@ -85,7 +73,7 @@ const TopBar = () => {
         show: true
       },
       {
-        content: strings.activity,
+        content: t('workflow:type.activity'),
         action: () =>
           dispatch(DialogMode.WORKFLOW_CREATE, {
             workflowType: WorkflowTypeIn.ACTIVITY
@@ -101,7 +89,7 @@ const TopBar = () => {
     const header: MenuItemType = {
       iconButton: {
         icon: <AccountCircle />,
-        'aria-label': 'account of current user',
+        'aria-label': t('common:navigation.accountMenu'),
         'aria-controls': 'account-menu',
         'aria-haspopup': 'true',
         size: 'large'
@@ -111,23 +99,23 @@ const TopBar = () => {
 
     const menuItems: MenuItemType[] = [
       {
-        content: _t('Profile'),
+        content: t('common:navigation.profile'),
         action: () => navigate(CFRoutes.PROFILE_SETTINGS),
         show: true
       },
       {
-        content: _t('Password reset'),
+        content: t('common:navigation.passwordReset'),
         action: () => navigate(CFRoutes.PASSWORD_RESET),
         show: true
       },
       {
-        content: strings.notificationSettings,
+        content: t('common:navigation.notificationSettings'),
         action: () => navigate(CFRoutes.NOTIFICATIONS_SETTINGS),
         show: true,
         separator: true
       },
       {
-        content: _t('Sign out'),
+        content: t('common:navigation.signOut'),
         action: handleLogout,
         icon: <LogoutIcon />,
         showIconInList: true,
@@ -138,95 +126,6 @@ const TopBar = () => {
       <SimpleMenu id={'account-menu'} header={header} menuItems={menuItems} />
     )
   }
-
-  // NOTE: Notifications temporarily out of scope
-  // const NotificationsMenu = () => {
-  //   const { data, isLoading } = useQuery({
-  //     ...listMyNotificationsOptions({
-  //       query: { page: 1, page_size: TOPBAR_NOTIFICATION_PREVIEW_PAGE_SIZE }
-  //     })
-  //   })
-
-  //   if (isLoading) {
-  //     return <></>
-  //   }
-
-  //   const items = data?.items ?? []
-  //   const unreadCount = data?.meta.unreadCount ?? 0
-
-  //   const content = (
-  //     <>
-  //       <SC.NotificationsHeader>
-  //         <Typography variant="h5">{strings.notifications}</Typography>
-  //         <Link
-  //           component={RouterLink}
-  //           to={CFRoutes.NOTIFICATIONS}
-  //           underline="always"
-  //         >
-  //           {strings.seeAll}
-  //         </Link>
-  //       </SC.NotificationsHeader>
-
-  //       <SC.NotificationsList>
-  //         {items.map((item) => (
-  //           <ListItem
-  //             key={String(item.uuid)}
-  //             alignItems="flex-start"
-  //             sx={{
-  //               backgroundColor: !item.isRead ? 'courseflow.lightest' : null
-  //             }}
-  //           >
-  //             <ListItemButton
-  //               component={RouterLink}
-  //               to={CFRoutes.NOTIFICATIONS}
-  //             >
-  //               {!item.isRead && <Badge color="primary" variant="dot" />}
-  //               <ListItemText
-  //                 primary={item.dateCreated}
-  //                 secondary={
-  //                   <Typography
-  //                     style={{ display: 'inline' }}
-  //                     component="span"
-  //                     variant="body2"
-  //                     color="text.primary"
-  //                   >
-  //                     {item.message}
-  //                   </Typography>
-  //                 }
-  //               />
-  //             </ListItemButton>
-  //           </ListItem>
-  //         ))}
-  //       </SC.NotificationsList>
-  //     </>
-  //   )
-
-  //   const header: MenuItemType = {
-  //     iconButton: {
-  //       icon: (
-  //         <Badge badgeContent={unreadCount} color="primary">
-  //           <NotificationsIcon />
-  //         </Badge>
-  //       ),
-  //       'aria-label':
-  //         unreadCount >= 1
-  //           ? `show ${unreadCount} new notifications`
-  //           : 'no new notifications',
-  //       'aria-controls': 'notifications-menu',
-  //       'aria-haspopup': 'true',
-  //       size: 'large'
-  //     },
-  //     show: true
-  //   }
-
-  //   return (
-  //     <StaticMenu
-  //       id="notificationsMenu-menu"
-  //       header={header}
-  //       content={content}
-  //     />
-  //   )
-  // }
 
   /*******************************************************
    * RENDER

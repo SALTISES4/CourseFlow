@@ -9,6 +9,7 @@ import WorkflowForm, {
   WorkflowFormType
 } from '@cf/components/common/dialog/Workflow/components/WorkflowForm'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import { workflowTypeLabel } from '@cf/i18n/workflowLabels'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import ProjectSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/ProjectSearch'
@@ -35,6 +36,7 @@ import {
   useNavigate,
   useParams
 } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 type StateType = {
   step: number
@@ -55,6 +57,8 @@ const emptyWorkflowFormValues: WorkflowFormType = {
 }
 
 const CreateWizardDialog = () => {
+  const { t } = useTranslation('workflow')
+  const { t: tCommon } = useTranslation('common')
   const formRef = useRef<HTMLFormElement>(null)
   const [state, setState] = useState<StateType>(initialState)
   const [projectUuid, setProjectUuid] = useState<string>()
@@ -75,6 +79,11 @@ const CreateWizardDialog = () => {
   const routeProjectUuid = location.pathname.startsWith('/project/')
     ? routeUuid
     : routeWorkflow.data?.item.projectUuid
+  const localizedWorkflowType = workflowTypeLabel(
+    t,
+    state.workflowType,
+    true
+  )
 
   const createWorkflow = useMutation({
     ...createWorkflowMutation(),
@@ -105,21 +114,29 @@ const CreateWizardDialog = () => {
 
   const steps = [
     {
-      label: 'Select project',
-      title: 'Select project',
+      label: t('wizard.selectProject'),
+      title: t('wizard.selectProject'),
       canSubmit: projectUuid
     },
     {
-      label: `Select ${state.workflowType} type`,
-      title: `Select ${state.workflowType} type`,
+      label: t('wizard.selectType', {
+        workflowType: localizedWorkflowType
+      }),
+      title: t('wizard.selectType', {
+        workflowType: localizedWorkflowType
+      }),
       canSubmit: state.resourceType
     },
     {
-      label: `Create ${state.workflowType}`,
+      label: t('wizard.create', { workflowType: localizedWorkflowType }),
       title:
         state.resourceType === CreateResourceOptions.TEMPLATE
-          ? `Create ${state.workflowType} from a template`
-          : `Create blank ${state.workflowType}`,
+          ? t('wizard.createFromTemplate', {
+              workflowType: localizedWorkflowType
+            })
+          : t('wizard.createBlank', {
+              workflowType: localizedWorkflowType
+            }),
       canSubmit: ((): boolean => {
         if (state.resourceType === CreateResourceOptions.TEMPLATE) {
           return !!state.template
@@ -128,7 +145,9 @@ const CreateWizardDialog = () => {
       })()
     }
   ]
-  const ctaTitle = `Create ${state.workflowType}`
+  const ctaTitle = t('wizard.create', {
+    workflowType: localizedWorkflowType
+  })
 
   /**
    */
@@ -200,24 +219,22 @@ const CreateWizardDialog = () => {
       onDialogClose()
       navigate(path)
       enqueueSnackbar(
-        `Your ${state.workflowType} has been successfully created`,
-        {
-          variant: 'success'
-        }
+        t('wizard.created', { workflowType: localizedWorkflowType }),
+        { variant: 'success' }
       )
     },
-    [navigate, onDialogClose, state.workflowType]
+    [localizedWorkflowType, navigate, onDialogClose, t]
   )
 
   const onError = useCallback(
     (error: unknown) => {
       enqueueSnackbar(
-        `We encountered an issue and your ${state.workflowType} was not created`,
+        t('wizard.createFailed', { workflowType: localizedWorkflowType }),
         { variant: 'error' }
       )
       console.error('Error creating workflow:', error)
     },
-    [state.workflowType]
+    [localizedWorkflowType, t]
   )
 
   const onSubmit = useCallback(
@@ -357,7 +374,7 @@ const CreateWizardDialog = () => {
     return (
       <>
         <Button variant="contained" color="secondary" onClick={onCloseHandler}>
-          Cancel
+          {tCommon('actions.cancel')}
         </Button>
         {!!state.step && (
           <Button
@@ -365,7 +382,7 @@ const CreateWizardDialog = () => {
             color="secondary"
             onClick={goToPreviousStep}
           >
-            Previous step
+            {t('wizard.previousStep')}
           </Button>
         )}
         <Button
@@ -383,7 +400,9 @@ const CreateWizardDialog = () => {
             copyWorkflow.isPending
           }
         >
-          {state.step !== steps.length - 1 ? 'Next step' : ctaTitle}
+          {state.step !== steps.length - 1
+            ? t('wizard.nextStep')
+            : ctaTitle}
         </Button>
       </>
     )

@@ -7,6 +7,9 @@ from django.contrib.auth import get_user_model
 from django.test import Client
 from django.utils import timezone
 
+from course_flow.application.services.notification_service import (
+    NotificationService,
+)
 from course_flow.core.auth import generate_raw_token, hash_token
 from course_flow.core.models import Authtoken, Notification
 
@@ -101,7 +104,10 @@ def test_patch_profile_settings_rejects_email_mutation(client: Client, user):
         **_auth_header(raw_token),
     )
     assert response.status_code == 400
-    assert response.json()["detail"] == "Email updates are not supported"
+    assert response.json() == {
+        "code": "email_update_not_supported",
+        "params": {},
+    }
     user.refresh_from_db()
     assert user.email == "owner@example.com"
 
@@ -119,8 +125,12 @@ def test_patch_profile_settings_rejects_names_over_200_characters(
     )
     assert response.status_code == 400
     assert response.json() == {
-        "firstName": "First name is limited to 200 characters",
-        "lastName": "Last name is limited to 200 characters",
+        "code": "validation_failed",
+        "params": {},
+        "fieldErrors": {
+            "firstName": {"code": "first_name_too_long", "params": {}},
+            "lastName": {"code": "last_name_too_long", "params": {}},
+        },
     }
     user.refresh_from_db()
     assert user.first_name == "Owner"
@@ -142,7 +152,13 @@ def test_patch_profile_password_rejects_incorrect_current_password(
         **_auth_header(raw_token),
     )
     assert response.status_code == 400
-    assert response.json() == {"password": "Current password is incorrect"}
+    assert response.json() == {
+        "code": "validation_failed",
+        "params": {},
+        "fieldErrors": {
+            "password": {"code": "current_password_incorrect", "params": {}}
+        },
+    }
     user.refresh_from_db()
     assert user.check_password("password123")
 
@@ -158,10 +174,11 @@ def test_patch_profile_password_rejects_weak_or_reused_password(client: Client, 
     )
     assert weak_response.status_code == 400
     assert weak_response.json() == {
-        "newPassword": (
-            "Your password must contain at least 12 characters and include a mix "
-            "of numbers, letters and symbols"
-        )
+        "code": "validation_failed",
+        "params": {},
+        "fieldErrors": {
+            "newPassword": {"code": "password_strength_required", "params": {}}
+        },
     }
 
     reused_response = client.patch(
@@ -172,7 +189,14 @@ def test_patch_profile_password_rejects_weak_or_reused_password(client: Client, 
     )
     assert reused_response.status_code == 400
     assert reused_response.json() == {
-        "newPassword": "New password must be different from your current password"
+        "code": "validation_failed",
+        "params": {},
+        "fieldErrors": {
+            "newPassword": {
+                "code": "new_password_matches_current",
+                "params": {},
+            }
+        },
     }
     user.refresh_from_db()
     assert user.check_password("password123")
@@ -346,9 +370,9 @@ def test_list_notifications_only_for_current_user_ordered_newest_first(
     client: Client, user, other_user
 ):
     raw_token = _issue_token_for(user)
-    older = Notification.objects.create(user=user, message="old", is_read=False)
-    newer = Notification.objects.create(user=user, message="new", is_read=True)
-    Notification.objects.create(user=other_user, message="other", is_read=False)
+    older = Notification.objects.create(user=user, legacy_message="old", is_read=False)
+    newer = Notification.objects.create(user=user, legacy_message="new", is_read=True)
+    Notification.objects.create(user=other_user, legacy_message="other", is_read=False)
     response = client.get("/api/user/me/notifications", **_auth_header(raw_token))
     assert response.status_code == 200
     body = response.json()
@@ -360,13 +384,59 @@ def test_list_notifications_only_for_current_user_ordered_newest_first(
     assert len(body["items"]) == 2
     assert body["items"][0]["uuid"] == str(newer.uuid)
     assert body["items"][1]["uuid"] == str(older.uuid)
+    assert body["items"][0]["messageCode"] is None
+    assert body["items"][0]["messageParams"] == {}
+    assert body["items"][0]["legacyMessage"] == "new"
+
+
+@pytest.mark.django_db
+def test_list_notifications_returns_semantic_message_contract(client: Client, user):
+    raw_token = _issue_token_for(user)
+    notification = Notification.objects.create(
+        user=user,
+        message_code="project.shared",
+        message_params={"projectTitle": "Biology 101"},
+    )
+
+    response = client.get("/api/user/me/notifications", **_auth_header(raw_token))
+
+    assert response.status_code == 200
+    item = response.json()["items"][0]
+    assert item["uuid"] == str(notification.uuid)
+    assert item["messageCode"] == "project.shared"
+    assert item["messageParams"] == {"projectTitle": "Biology 101"}
+    assert item["legacyMessage"] is None
+
+
+@pytest.mark.django_db
+def test_system_notification_creation_validates_code_and_required_params(user):
+    service = NotificationService()
+    notification = service.create_system_notification(
+        user_id=user.id,
+        message_code="project.shared",
+        message_params={"projectTitle": "Biology 101"},
+    )
+    assert notification.message_code == "project.shared"
+    assert notification.message_params == {"projectTitle": "Biology 101"}
+
+    with pytest.raises(ValueError, match="Unknown system notification code"):
+        service.create_system_notification(
+            user_id=user.id,
+            message_code="unknown.event",
+        )
+
+    with pytest.raises(ValueError, match="Missing parameters"):
+        service.create_system_notification(
+            user_id=user.id,
+            message_code="project.shared",
+        )
 
 
 @pytest.mark.django_db
 def test_list_notifications_pagination_distinct_pages(client: Client, user):
     raw_token = _issue_token_for(user)
     for i in range(11):
-        Notification.objects.create(user=user, message=f"n{i}", is_read=False)
+        Notification.objects.create(user=user, legacy_message=f"n{i}", is_read=False)
     r1 = client.get(
         "/api/user/me/notifications?page=1&page_size=10",
         **_auth_header(raw_token),
@@ -399,7 +469,7 @@ def test_list_notifications_pagination_distinct_pages(client: Client, user):
 @pytest.mark.django_db
 def test_list_notifications_page_beyond_last_is_clamped(client: Client, user):
     raw_token = _issue_token_for(user)
-    Notification.objects.create(user=user, message="only", is_read=False)
+    Notification.objects.create(user=user, legacy_message="only", is_read=False)
     response = client.get(
         "/api/user/me/notifications?page=5&page_size=10",
         **_auth_header(raw_token),
@@ -435,7 +505,7 @@ def test_list_notifications_rejects_oversized_page_size(client: Client, user):
 @pytest.mark.django_db
 def test_mark_one_notification_as_read(client: Client, user):
     raw_token = _issue_token_for(user)
-    notification = Notification.objects.create(user=user, message="mark me", is_read=False)
+    notification = Notification.objects.create(user=user, legacy_message="mark me", is_read=False)
     response = client.post(
         f"/api/user/me/notifications/{notification.uuid}/mark-as-read",
         content_type="application/json",
@@ -450,7 +520,7 @@ def test_mark_one_notification_as_read(client: Client, user):
 @pytest.mark.django_db
 def test_mark_one_notification_as_read_already_read_noop(client: Client, user):
     raw_token = _issue_token_for(user)
-    notification = Notification.objects.create(user=user, message="already", is_read=True)
+    notification = Notification.objects.create(user=user, legacy_message="already", is_read=True)
     response = client.post(
         f"/api/user/me/notifications/{notification.uuid}/mark-as-read",
         content_type="application/json",
@@ -464,7 +534,7 @@ def test_mark_one_notification_as_read_already_read_noop(client: Client, user):
 def test_mark_one_notification_as_read_cross_user_forbidden(client: Client, user, other_user):
     raw_token = _issue_token_for(user)
     other_notification = Notification.objects.create(
-        user=other_user, message="private", is_read=False
+        user=other_user, legacy_message="private", is_read=False
     )
     response = client.post(
         f"/api/user/me/notifications/{other_notification.uuid}/mark-as-read",
@@ -477,9 +547,9 @@ def test_mark_one_notification_as_read_cross_user_forbidden(client: Client, user
 @pytest.mark.django_db
 def test_mark_all_notifications_as_read_only_for_current_user(client: Client, user, other_user):
     raw_token = _issue_token_for(user)
-    Notification.objects.create(user=user, message="one", is_read=False)
-    Notification.objects.create(user=user, message="two", is_read=False)
-    Notification.objects.create(user=other_user, message="other", is_read=False)
+    Notification.objects.create(user=user, legacy_message="one", is_read=False)
+    Notification.objects.create(user=user, legacy_message="two", is_read=False)
+    Notification.objects.create(user=other_user, legacy_message="other", is_read=False)
     response = client.post(
         "/api/user/me/notifications/mark-all-as-read",
         content_type="application/json",
@@ -495,7 +565,7 @@ def test_mark_all_notifications_as_read_only_for_current_user(client: Client, us
 @pytest.mark.django_db
 def test_delete_notification_for_current_user_returns_204(client: Client, user):
     raw_token = _issue_token_for(user)
-    notification = Notification.objects.create(user=user, message="delete me", is_read=False)
+    notification = Notification.objects.create(user=user, legacy_message="delete me", is_read=False)
     response = client.delete(
         f"/api/user/me/notifications/{notification.uuid}",
         **_auth_header(raw_token),
@@ -508,7 +578,7 @@ def test_delete_notification_for_current_user_returns_204(client: Client, user):
 def test_delete_notification_cross_user_forbidden(client: Client, user, other_user):
     raw_token = _issue_token_for(user)
     notification = Notification.objects.create(
-        user=other_user, message="do not delete", is_read=False
+        user=other_user, legacy_message="do not delete", is_read=False
     )
     response = client.delete(
         f"/api/user/me/notifications/{notification.uuid}",

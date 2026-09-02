@@ -29,6 +29,7 @@ import { CfObjectType } from '@cf/types/enum'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import OutcomeHeader from './Header'
 import * as Styled from '../styles'
@@ -43,12 +44,14 @@ const Outcome = ({
   graphUuid,
   uuid,
   title,
+  titleCopyCount,
   tagIds,
   greenHover
 }: OutcomeEntity & {
   graphUuid: GraphUuid
   greenHover?: boolean
 }) => {
+  const { t } = useTranslation('workflow')
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch<AppDispatch>()
   const canManageOutcomes = useResourcePermission(
@@ -243,7 +246,11 @@ const Outcome = ({
         tags={tagIds}
         greenHover={greenHover}
         dragRef={dragHandleRef}
-        title={`${prefix}${displayOutcomeTitle(title)}`}
+        title={`${prefix}${displayOutcomeTitle(
+          { title, titleCopyCount },
+          t,
+          t('outcomes.untitled')
+        )}`}
         selected={selected || state.dragHighlight}
         highlighted={highlighted}
         collapsed={state.collapsed}

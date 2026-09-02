@@ -11,9 +11,9 @@ import {
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import type { AppDispatch, RootState } from '@cf/redux/store'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
-import { _t } from '@cf/utility/Utility.class'
 import ColorPicker from '@cfComponents/UIPrimitives/ColorPicker'
 import {
   SidebarActions,
@@ -27,6 +27,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 function resolveChannelColour(
   channel: ChannelEntity,
@@ -77,21 +78,28 @@ const EditColumnForm = ({
   channel: ChannelEntity
   themeColumnType: number
 }) => {
+  const { t } = useTranslation('workflow')
+  const { t: tCommon } = useTranslation('common')
   const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
   const canEdit = useResourcePermission(
     WorkflowPermission.NODE_CATEGORY_MANAGEMENT
   )
+  const localizedTitle = displaySystemTitle(
+    t,
+    channel,
+    t('graph.untitledNodeCategory')
+  )
 
   const [color, setColor] = useState(() =>
     resolveChannelColour(channel, themeColumnType)
   )
-  const [titleDraft, setTitleDraft] = useState(channel.title ?? '')
+  const [titleDraft, setTitleDraft] = useState(localizedTitle)
 
   useEffect(() => {
-    setTitleDraft(channel.title ?? '')
+    setTitleDraft(localizedTitle)
     setColor(resolveChannelColour(channel, themeColumnType))
-  }, [channel, themeColumnType])
+  }, [channel, localizedTitle, themeColumnType])
 
   const debouncedPersistMeta = useMemo(
     () =>
@@ -155,12 +163,12 @@ const EditColumnForm = ({
     <SidebarInnerWrap>
       <SidebarContent>
         <SidebarTitle as="h3" variant="h6">
-          {_t('Edit node category')}
+          {t('edit.nodeCategory')}
         </SidebarTitle>
         <Stack direction="column" gap={3}>
           <TextField
             variant="outlined"
-            label={_t('Title')}
+            label={t('edit.title')}
             size="small"
             value={titleDraft}
             onChange={onTitleChange}
@@ -181,7 +189,7 @@ const EditColumnForm = ({
           onClick={onDuplicate}
           disabled={!canEdit}
         >
-          {_t('Duplicate')}
+          {tCommon('actions.duplicate')}
         </Button>
         <Button
           variant="contained"
@@ -189,7 +197,7 @@ const EditColumnForm = ({
           onClick={onDelete}
           disabled={!canEdit}
         >
-          {_t('Delete')}
+          {tCommon('actions.delete')}
         </Button>
       </SidebarActions>
     </SidebarInnerWrap>

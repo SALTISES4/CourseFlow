@@ -3,13 +3,13 @@ import {
   getWorkflowOptions
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { CFRoutes } from '@cf/router/appRoutes'
-import { _t } from '@cf/utility/Utility.class'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import { useQuery } from '@tanstack/react-query'
 import { Link as RouterLink, generatePath, useMatch } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 /**
  * @todo did a first pass, but there is work to do still
@@ -17,6 +17,7 @@ import { Link as RouterLink, generatePath, useMatch } from 'react-router-dom'
  * data source and 'should show' logic not well managed currently
  */
 const ReturnLinks = () => {
+  const { t } = useTranslation('workflow')
   const workflowMatch = useMatch({ path: CFRoutes.WORKFLOW, end: false })
   const workflowUuid = workflowMatch?.params.uuid
 
@@ -63,7 +64,7 @@ const ReturnLinks = () => {
         <Box sx={{ display: 'flex' }}>
           <ArrowBackIosIcon color="primary" />
           <Typography color="primary">
-            {_t('Return to')} {project.title}
+            {t('related.returnTo')} {project.title}
           </Typography>
         </Box>
       </Link>
@@ -94,7 +95,7 @@ const ReturnLinks = () => {
         <Box sx={{ display: 'flex' }}>
           <ArrowBackIosIcon color="primary" />
           <Typography color="primary">
-            {_t('Return to')} {project.title}
+            {t('related.returnTo')} {project.title}
           </Typography>
         </Box>
       </Link>
@@ -125,7 +126,7 @@ const ReturnLinks = () => {
         <Box sx={{ display: 'flex' }}>
           <ArrowBackIosIcon color="primary" />
           <Typography color="primary">
-            {_t('Return to Editable Workflow')}
+            {t('related.returnToEditable')}
           </Typography>
         </Box>
       </Link>

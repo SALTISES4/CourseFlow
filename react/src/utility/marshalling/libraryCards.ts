@@ -1,12 +1,12 @@
 import { LibraryContentTypeOut, LibraryItemOut } from '@cf/api/gen'
 import { LibraryObjectType } from '@cf/types/enum'
-import ThemeHelper from '@cf/utility/ThemeHelper.class'
-import Utility, { _t } from '@cf/utility/Utility.class'
+import Utility from '@cf/utility/Utility.class'
 import {
   ChipOptions,
   WorkflowCardChipType
 } from '@cfComponents/cards/WorkflowCardDumb'
 import { WorkflowCardWrapperPropsType } from '@cfComponents/cards/WorkflowCardWrapper'
+import type { TFunction } from 'i18next'
 
 /**
  * this thin wrapper is for when we move CHIP_TYPE away from the domain
@@ -19,38 +19,56 @@ function mapChipType(type: LibraryContentTypeOut): ChipOptions {
   )
 }
 
-function getTypeChip(workflow: LibraryItemOut): WorkflowCardChipType {
-  const typeLabel = workflow.label
-  let typeText = _t(typeLabel)
+function getTypeChip(
+  workflow: LibraryItemOut,
+  t: TFunction<'library'>
+): WorkflowCardChipType {
+  const itemType = getLibraryItemType(workflow)
+  const typeKey = {
+    [LibraryObjectType.PROJECT]: 'cards.type.project',
+    [LibraryObjectType.PROGRAM]: 'cards.type.program',
+    [LibraryObjectType.COURSE]: 'cards.type.course',
+    [LibraryObjectType.ACTIVITY]: 'cards.type.activity',
+    [LibraryObjectType.TASK]: 'cards.type.task'
+  }[itemType] as
+    | 'cards.type.project'
+    | 'cards.type.program'
+    | 'cards.type.course'
+    | 'cards.type.activity'
+    | 'cards.type.task'
+    | undefined
+  let typeText = t(typeKey ?? 'cards.type.workflow')
 
   // TODO: figure out wheee this is coming from with the new v2 data
   const isStrategy = false
 
   if (isStrategy) {
-    typeText += ` ${_t('strategy')}`
+    typeText += ` ${t('cards.strategy')}`
   }
 
   return {
     type: mapChipType(getLibraryItemType(workflow)),
-    label: ThemeHelper.capWords(typeText)
+    label: typeText
   }
 }
 
 function getTemplateChip(
-  workflow: LibraryItemOut
+  workflow: LibraryItemOut,
+  t: TFunction<'library'>
 ): WorkflowCardChipType | null {
   const isTemplate = workflow.isTemplate
   if (isTemplate) {
     return {
       type: ChipOptions.TEMPLATE,
-      label: _t('Template')
+      label: t('cards.template')
     }
   }
   return null
 }
 
 function getWorkflowCountChip(
-  workflow: LibraryItemOut
+  workflow: LibraryItemOut,
+  t: TFunction<'library'>
 ): WorkflowCardChipType | null {
   if (
     workflow.contentType === LibraryContentTypeOut.PROJECT &&
@@ -59,9 +77,7 @@ function getWorkflowCountChip(
   ) {
     return {
       type: ChipOptions.DEFAULT,
-      label: `${workflow.workflowCount} ${_t(
-        `workflow` + (workflow.workflowCount > 1 ? 's' : '')
-      )}`
+      label: t('cards.workflowCount', { count: workflow.workflowCount })
     }
   }
   return null
@@ -84,12 +100,16 @@ function getLibraryItemType(item: LibraryItemOut): LibraryContentTypeOut {
   return validTypes[label] ?? LibraryObjectType.COURSE
 }
 
-export function formatLibraryObjects(data: LibraryItemOut[]) {
-  return data ? data.map((item) => formatLibraryObject(item)) : []
+export function formatLibraryObjects(
+  data: LibraryItemOut[],
+  t: TFunction<'library'>
+) {
+  return data ? data.map((item) => formatLibraryObject(item, t)) : []
 }
 
 export function formatLibraryObject(
-  libraryObject: LibraryItemOut
+  libraryObject: LibraryItemOut,
+  t: TFunction<'library'>
 ): Pick<
   WorkflowCardWrapperPropsType,
   | 'uuid'
@@ -115,9 +135,9 @@ export function formatLibraryObject(
     projectIsArchived
   } = libraryObject
 
-  const typeChip = getTypeChip(libraryObject)
-  const templateChip = getTemplateChip(libraryObject)
-  const countChip = getWorkflowCountChip(libraryObject)
+  const typeChip = getTypeChip(libraryObject, t)
+  const templateChip = getTemplateChip(libraryObject, t)
+  const countChip = getWorkflowCountChip(libraryObject, t)
 
   return {
     uuid,

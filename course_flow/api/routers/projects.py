@@ -14,6 +14,7 @@ from course_flow.api.deps import (
     get_user_service,
     get_workflow_service,
 )
+from course_flow.api.errors import ExpectedApiError
 from course_flow.api.permission_context import permission_context_out
 from course_flow.api.schemas.project_graph_view import ProjectGraphViewOut
 from course_flow.api.schemas.project_subresources import (
@@ -154,15 +155,14 @@ def _project_detail_out(current_user: User, dto: ProjectDTO) -> ProjectDetailOut
         user_id=current_user_id,
         project_id=dto.id,
     ).exists()
-    disciplines = get_project_relations_service().list_disciplines(dto.uuid) or []
     tags = get_project_relations_service().list_tags(dto.uuid) or []
 
     # TODO: properly handle archived flag
     is_archived = False
 
     disciplines = [
-        DisciplineOption(code=d.code, label=d.label)
-        for d in Discipline.objects.filter(projects__id=dto.id)
+        DisciplineOption(code=d.code)
+        for d in Discipline.objects.filter(projects__id=dto.id).order_by("code")
     ]
 
     user_service = get_user_service()
@@ -301,7 +301,7 @@ def get_project_graph(request, uuid: UUID):
 
     permissions = _project_permissions(current_user, dto)
     if dto.is_archived and not permissions.allows(ProjectPermission.VIEW):
-        raise HttpError(403, "Project archived")
+        raise ExpectedApiError(403, "project_archived")
     _require_project_permission(current_user, dto, ProjectPermission.VIEW)
 
     view = get_project_graph_view_service()
@@ -346,7 +346,6 @@ def duplicate_project_placeholder(request, uuid: UUID):
 
     return ProjectDuplicatePlaceholderOut(
         success=True,
-        message=svc.DUPLICATE_PLACEHOLDER_MESSAGE,
         project_uuid=result.project_uuid,
     )
 
@@ -468,7 +467,7 @@ def get_project(request, uuid: UUID):
 
     permissions = _project_permissions(current_user, dto)
     if dto.is_archived and not permissions.allows(ProjectPermission.VIEW):
-        raise HttpError(403, "Project archived")
+        raise ExpectedApiError(403, "project_archived")
     _require_project_permission(current_user, dto, ProjectPermission.VIEW)
 
     return ProjectDetailOutResp(item=_project_detail_out(current_user, dto))

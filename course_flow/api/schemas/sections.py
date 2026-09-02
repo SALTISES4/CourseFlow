@@ -27,6 +27,7 @@ class SectionOut(CamelSchema):
     uuid: UUID
     graph_uuid: UUID
     title: str
+    title_copy_count: int = 0
     position: int
     thread_uuid: UUID | None
     date_created: datetime

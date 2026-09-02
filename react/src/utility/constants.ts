@@ -1,5 +1,3 @@
-import { _t } from '@cf/utility/Utility.class'
-
 export const taskKeys = {
   none: '',
   gather_information: 'research',
@@ -82,14 +80,8 @@ export enum LanguageOptions {
 }
 
 export const languageOptions = [
-  {
-    label: 'English',
-    value: LanguageOptions.EN
-  },
-  {
-    label: 'French',
-    value: LanguageOptions.FR
-  }
+  LanguageOptions.EN,
+  LanguageOptions.FR
 ]
 
 export enum SnackbarOptions {

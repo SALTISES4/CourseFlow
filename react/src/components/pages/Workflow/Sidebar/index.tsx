@@ -24,8 +24,10 @@ import LinkIcon from '@mui/icons-material/Link'
 import Paper from '@mui/material/Paper'
 import ToggleButton from '@mui/material/ToggleButton'
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react'
+import type { TFunction } from 'i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import AddTab from './components/AddTab'
 import CommentsTab from './components/CommentsTab'
@@ -42,7 +44,8 @@ import {
 
 function getTabContent(
   tab: SidebarState['tab'],
-  edit: SidebarState['edit']
+  edit: SidebarState['edit'],
+  t: TFunction<'workflow'>
 ): ReactNode {
   if (!tab) {
     return
@@ -67,7 +70,7 @@ function getTabContent(
     case 'related':
       return <RelatedTab />
     default:
-      return <>{tab} tab not implemented yet</>
+      return <>{t('sidebar.unsupportedEditor', { type: tab })}</>
   }
 }
 
@@ -116,6 +119,7 @@ const objectTypesWithComments: CfObjectType[] = [
 ]
 
 const WorkspaceSidebar = () => {
+  const { t } = useTranslation('workflow')
   const [sidebarConfig] = useWorkflowSidebar()
   const location = useLocation()
   const dispatch = useDispatch()
@@ -151,7 +155,7 @@ const WorkspaceSidebar = () => {
     sidebar.edit.objectType,
     permissions
   )
-    ? getTabContent(sidebar.tab, sidebar.edit)
+    ? getTabContent(sidebar.tab, sidebar.edit, t)
     : null
 
   const lastTabContent = useRef<ReactNode>(null)
@@ -228,7 +232,9 @@ const WorkspaceSidebar = () => {
             size="small"
             color="primary"
             value={tab.value}
-            aria-label={`${tab.value} tab`}
+            aria-label={t('sidebar.tabLabel', {
+              tab: t(`sidebar.tabs.${tab.value}`)
+            })}
           >
             {tab.icon}
           </ToggleButton>

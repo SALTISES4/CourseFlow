@@ -1,4 +1,3 @@
-import { _t } from '@cf/utility/Utility.class'
 import FilterToggle from '@cfComponents/filters/FilterToggle'
 import { SearchOptions } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'

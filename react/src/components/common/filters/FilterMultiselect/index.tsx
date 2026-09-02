@@ -1,4 +1,3 @@
-import { _t } from '@cf/utility/Utility.class'
 import { SearchFilterOption } from '@cfComponents/filters/types'
 import FilterIcon from '@mui/icons-material/FilterAlt'
 import Button from '@mui/material/Button'
@@ -15,6 +14,7 @@ import {
   useRef,
   useState
 } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   StyledActions,
@@ -48,13 +48,16 @@ const FilterMultiselect = ({
   icon,
   disabled,
   menuAlign = 'left',
-  placeholder = 'Filter',
-  searchPlaceholder = 'Find',
+  placeholder,
+  searchPlaceholder,
   showSearch = true,
   options,
   selected,
   onChange
 }: PropsType) => {
+  const { t } = useTranslation('common')
+  const resolvedPlaceholder = placeholder ?? t('labels.filter')
+  const resolvedSearchPlaceholder = searchPlaceholder ?? t('labels.find')
   const preselected = options.filter((o) =>
     selected ? o.value === selected : o.selected
   )
@@ -154,7 +157,7 @@ const FilterMultiselect = ({
         menuActive={!!menuAnchor}
         hasValue={!!value.length}
       >
-        {placeholder}
+        {resolvedPlaceholder}
         {!!value.length && <StyledCounter>{value.length}</StyledCounter>}
       </StyledButton>
 
@@ -179,7 +182,7 @@ const FilterMultiselect = ({
                 fullWidth
                 name="search"
                 variant="standard"
-                label={searchPlaceholder}
+                label={resolvedSearchPlaceholder}
                 value={search}
                 onChange={onSearchChange}
               />
@@ -203,8 +206,8 @@ const FilterMultiselect = ({
             })}
           </StyledMenu>
           <StyledActions>
-            <Button onClick={onSelectNone}>{_t('None')}</Button>
-            <Button onClick={onSelectAll}>{_t('All')}</Button>
+            <Button onClick={onSelectNone}>{t('labels.none')}</Button>
+            <Button onClick={onSelectAll}>{t('labels.all')}</Button>
           </StyledActions>
         </StyledPopover>
       )}

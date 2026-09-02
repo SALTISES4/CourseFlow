@@ -10,19 +10,45 @@ export class CourseFlowApiError extends Error {
   }
 }
 
+export type ApiErrorDescriptor = {
+  code: string
+  params?: Record<string, unknown>
+}
+
+export type ExpectedApiErrorBody = ApiErrorDescriptor & {
+  fieldErrors?: Record<string, ApiErrorDescriptor>
+}
+
+export function getApiErrorBody(error: unknown): ExpectedApiErrorBody | null {
+  const body = error instanceof CourseFlowApiError ? error.body : error
+  if (
+    typeof body !== 'object' ||
+    body === null ||
+    !('code' in body) ||
+    typeof body.code !== 'string'
+  ) {
+    return null
+  }
+  return body as ExpectedApiErrorBody
+}
+
+export function getApiErrorCode(error: unknown): string | undefined {
+  return getApiErrorBody(error)?.code
+}
+
+export function getApiFieldError(
+  error: unknown,
+  field: string
+): ApiErrorDescriptor | undefined {
+  return getApiErrorBody(error)?.fieldErrors?.[field]
+}
+
 export function getApiErrorStatus(error: unknown): number | undefined {
   return error instanceof CourseFlowApiError ? error.status : undefined
 }
 
 export function isArchivedApiError(error: unknown): boolean {
-  if (!(error instanceof CourseFlowApiError)) {
-    return false
-  }
-  const detail =
-    typeof error.body === 'object' &&
-    error.body !== null &&
-    'detail' in error.body
-      ? String(error.body.detail)
-      : String(error.body ?? '')
-  return detail.toLowerCase().includes('archived')
+  return ['project_archived', 'workflow_archived'].includes(
+    getApiErrorCode(error) ?? ''
+  )
 }

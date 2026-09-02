@@ -8,7 +8,6 @@ import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { WorkspaceType } from '@cf/types/enum'
 import { SnackbarOptions } from '@cf/utility/constants'
 import { projectTeamRoleMenuOptions } from '@cf/utility/permissions'
-import { _t } from '@cf/utility/Utility.class'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import ClearIcon from '@mui/icons-material/Clear'
 import SearchIcon from '@mui/icons-material/Search'
@@ -29,6 +28,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 interface IFormInputs {
   userId: string[] | null
@@ -49,6 +49,8 @@ const ContributorAddDialog = ({
   type: WorkspaceType
   refetch: () => void
 }) => {
+  const { t } = useTranslation('workspace')
+  const { t: tCommon } = useTranslation('common')
   const { show, onClose } = useDialog(DialogMode.CONTRIBUTOR_ADD)
   const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
@@ -111,16 +113,14 @@ const ContributorAddDialog = ({
         }
       })
       enqueueSnackbar(
-        _t('The contributor was successfully added to your project'),
+        t('contributor.added'),
         { variant: SnackbarOptions.SUCCESS }
       )
       refetch()
       onClose()
     } catch (err) {
       enqueueSnackbar(
-        _t(
-          'We encountered an issue and the contributor could not be added to your project'
-        ),
+        t('contributor.addFailed'),
         { variant: SnackbarOptions.ERROR }
       )
       console.error('Failed to add contributor:', err)
@@ -141,7 +141,7 @@ const ContributorAddDialog = ({
       TransitionProps={{ onExited: () => reset() }}
     >
       <DialogTitle id="add-contributor-modal">
-        {_t('Add contributor')}
+        {t('contributor.addTitle')}
       </DialogTitle>
       <DialogContent dividers>
         <StyledBox component="form">
@@ -165,7 +165,7 @@ const ContributorAddDialog = ({
                     <TextField
                       {...params}
                       variant="outlined"
-                      label={_t('CourseFlow users')}
+                      label={t('contributor.users')}
                       InputProps={{
                         ...params.InputProps,
                         startAdornment: (
@@ -181,7 +181,7 @@ const ContributorAddDialog = ({
                             {search && (
                               <IconButton
                                 size="small"
-                                aria-label={_t('Clear')}
+                                aria-label={tCommon('actions.clear')}
                                 onClick={() => setSearch('')}
                               >
                                 <ClearIcon fontSize="small" />
@@ -199,7 +199,9 @@ const ContributorAddDialog = ({
           </FormControl>
 
           <FormControl>
-            <FormLabel id="add-contributor-role-label">{_t('Role')}</FormLabel>
+            <FormLabel id="add-contributor-role-label">
+              {t('contributor.role')}
+            </FormLabel>
             <Controller
               name="role"
               control={control}
@@ -208,7 +210,7 @@ const ContributorAddDialog = ({
                   aria-labelledby="add-contributor-role-label"
                   {...field}
                 >
-                  {projectTeamRoleMenuOptions.map((option) => (
+                  {projectTeamRoleMenuOptions(t).map((option) => (
                     <FormControlLabel
                       key={option.value}
                       value={option.value}
@@ -225,7 +227,7 @@ const ContributorAddDialog = ({
 
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onClose}>
-          {_t('Cancel')}
+          {tCommon('actions.cancel')}
         </Button>
         <Button
           type="submit"
@@ -233,7 +235,7 @@ const ContributorAddDialog = ({
           disabled={disableSubmit}
           onClick={onSubmit}
         >
-          {_t('Add contributor')}
+          {t('contributor.addTitle')}
         </Button>
       </DialogActions>
     </StyledDialog>

@@ -1,7 +1,11 @@
 from dataclasses import dataclass
+from typing import Any, Mapping
 from uuid import UUID
 
 from course_flow.core.models import Notification
+from course_flow.core.system_notifications import (
+    SYSTEM_NOTIFICATION_REQUIRED_PARAMS,
+)
 
 DEFAULT_NOTIFICATION_PAGE_SIZE = 10
 MAX_NOTIFICATION_PAGE_SIZE = 100
@@ -20,6 +24,34 @@ class NotificationListPage:
 
 
 class NotificationService:
+    def create_system_notification(
+        self,
+        *,
+        user_id: int,
+        message_code: str,
+        message_params: Mapping[str, Any] | None = None,
+    ) -> Notification:
+        """Create a locale-independent notification for a frontend renderer."""
+        normalized_code = message_code.strip()
+        if not normalized_code:
+            raise ValueError("message_code must not be blank")
+        required_params = SYSTEM_NOTIFICATION_REQUIRED_PARAMS.get(normalized_code)
+        if required_params is None:
+            raise ValueError(f"Unknown system notification code: {normalized_code}")
+
+        normalized_params = dict(message_params or {})
+        missing_params = required_params - normalized_params.keys()
+        if missing_params:
+            missing = ", ".join(sorted(missing_params))
+            raise ValueError(
+                f"Missing parameters for system notification {normalized_code}: {missing}"
+            )
+        return Notification.objects.create(
+            user_id=user_id,
+            message_code=normalized_code,
+            message_params=normalized_params,
+        )
+
     def list_page_for_user(
         self,
         *,

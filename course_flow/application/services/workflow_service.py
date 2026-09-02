@@ -9,6 +9,7 @@ from course_flow.core.hierarchy import (
     assert_allowed_root_workflow_type,
 )
 from course_flow.core.models import Channel, Graph, Section, Thread
+from course_flow.core.system_labels import DEFAULT_CHANNELS_BY_WORKFLOW_TYPE
 
 
 class WorkflowService:
@@ -52,33 +53,17 @@ class WorkflowService:
         )
 
         # create proper channels depending on the workflow_type
-        default_channels = {
-            WorkflowTypeIn.ACTIVITY: [
-                ["Out of class (instructor)", "#0B118A"],
-                ["Out of class (students)", "#114BD4"],
-                ["In class (instructor)", "#268AE5"],
-                ["In class (students)", "#8BC8FF"],
-            ],
-            WorkflowTypeIn.COURSE: [
-                ["Preparation", "#F7B92A"],
-                ["Lesson", "#ED8934"],
-                ["Artifact", "#ED4A28"],
-                ["Assessment", "#AD1D35"],
-            ],
-            WorkflowTypeIn.PROGRAM: [
-                ["Custom node category", "#468884"],
-                ["Custom node category", "#6FA29F"],
-                ["Custom node category", "#98BDBB"],
-            ],
-        }
-
-        for title, colour in default_channels[workflow_type]:
+        for position, (system_label_code, colour) in enumerate(
+            DEFAULT_CHANNELS_BY_WORKFLOW_TYPE[workflow_type.value]
+        ):
             thread = Thread.objects.create()
 
             Channel.objects.create(
                 graph_id=graph.id,
-                title=title,
+                title="",
+                system_label_code=system_label_code,
                 colour=colour,
+                position=position,
                 thread=thread,
             )
 

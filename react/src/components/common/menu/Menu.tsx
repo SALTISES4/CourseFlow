@@ -1,4 +1,3 @@
-import { _t } from '@cf/utility/Utility.class'
 import { StyledMenu } from '@cfComponents/globalNav/TopBar/styles'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import Button from '@mui/material/Button'

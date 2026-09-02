@@ -37,6 +37,7 @@ def _section_out(dto: SectionDTO) -> SectionOut:
         uuid=dto.uuid,
         graph_uuid=dto.graph_uuid,
         title=dto.title,
+        title_copy_count=dto.title_copy_count,
         position=dto.position,
         thread_uuid=dto.thread_uuid,
         date_created=dto.date_created,

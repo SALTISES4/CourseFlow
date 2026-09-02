@@ -23,6 +23,7 @@ import {
   profileLanguageOptionFrench,
   profileLanguagePreferenceGroup,
   profileLastNameField,
+  profileSettingsForm,
   profileUpdateButton,
   profileUsernameField,
 } from './user.locators';
@@ -41,6 +42,14 @@ test.describe('Profile settings — calibration (FR-PROFILE-001-005)', () => {
     profileBeforeTest = undefined;
     await gotoProfileSettingsPage(page);
     profileBeforeTest = await fetchMyProfileSettings(page);
+    if (profileBeforeTest.languagePreference !== 'en') {
+      await patchMyProfileSettings(page, {
+        ...profileBeforeTest,
+        languagePreference: 'en',
+      });
+      await page.reload();
+      await gotoProfileSettingsPage(page);
+    }
   });
 
   test.afterEach(async ({ page }) => {
@@ -168,7 +177,7 @@ test.describe('Profile settings — calibration (FR-PROFILE-001-005)', () => {
       await expect(profileLastNameField(page)).toHaveValue(updatedLast);
     });
 
-    test('language preference saves and persists after successful submit', async ({
+    test('FR-LOC-001/002: language changes immediately and persists after reload', async ({
       page,
     }) => {
       const profile = await fetchMyProfileSettings(page);
@@ -186,9 +195,32 @@ test.describe('Profile settings — calibration (FR-PROFILE-001-005)', () => {
 
       await expectProfileSettingsSnackbarMessage(
         page,
-        PROFILE_SETTINGS_SNACKBAR_MESSAGES.success,
+        targetLanguage === 'fr'
+          ? 'Les paramètres de votre profil ont été mis à jour'
+          : PROFILE_SETTINGS_SNACKBAR_MESSAGES.success,
       );
       await expect(targetLanguageOption).toBeChecked();
+      await expect(page.locator('html')).toHaveAttribute(
+        'lang',
+        targetLanguage === 'fr' ? 'fr-CA' : 'en-CA',
+      );
+
+      if (targetLanguage === 'fr') {
+        await expect(
+          page.getByRole('heading', {
+            name: 'Paramètres du profil',
+            exact: true,
+          }),
+        ).toBeVisible();
+        await expect(profileUpdateButton(page)).toHaveText(
+          'Mettre à jour le profil',
+        );
+        await expect(page.getByText('Anglais', { exact: true })).toBeVisible();
+        await expect(page.getByText('Français', { exact: true })).toBeVisible();
+        await expect(
+          page.getByRole('link', { name: 'Explorer', exact: true }),
+        ).toBeVisible();
+      }
 
       const savedProfile = await fetchMyProfileSettings(page);
       expect(savedProfile.languagePreference).toBe(targetLanguage);
@@ -196,6 +228,15 @@ test.describe('Profile settings — calibration (FR-PROFILE-001-005)', () => {
         page,
         savedProfile,
       );
+
+      await page.reload();
+      await expect(profileSettingsForm(page)).toBeVisible({ timeout: 15_000 });
+      await expect(page.locator('html')).toHaveAttribute(
+        'lang',
+        targetLanguage === 'fr' ? 'fr-CA' : 'en-CA',
+      );
+      await expect(profileFirstNameField(page)).toHaveValue(profile.firstName);
+      await expect(profileLastNameField(page)).toHaveValue(profile.lastName);
     });
 
     test('server failure shows snackbar and retains field values', async ({

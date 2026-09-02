@@ -1,4 +1,3 @@
-import { _t } from '@cf/utility/Utility.class'
 import CloseIcon from '@mui/icons-material/Close'
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
@@ -12,6 +11,7 @@ import {
   useRef,
   useState
 } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import * as Styled from './styles'
 
@@ -37,6 +37,7 @@ const Tag = ({
   onChange,
   onDelete
 }: PropsType) => {
+  const { t } = useTranslation('project')
   const [state, setState] = useState<StateType>({
     label: label ?? '',
     focused: false
@@ -142,7 +143,7 @@ const Tag = ({
           onFocus={onInputFocus}
           onChange={onInputChange}
           onKeyDown={onInputKeyDown}
-          placeholder={create ? _t('Add new tag') : undefined}
+          placeholder={create ? t('tags.addPlaceholder') : undefined}
         />
         {!create && !disabled && (
           <Styled.DeleteButton tabIndex={-1} onClick={onDeleteClick}>

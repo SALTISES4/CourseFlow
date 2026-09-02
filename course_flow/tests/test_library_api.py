@@ -281,12 +281,8 @@ def test_filter_workflow_types_returns_matching_workflow_items_only(client: Clie
 @pytest.mark.django_db
 def test_filter_discipline_codes_applies_to_projects_and_workflows(client: Client, user):
     raw = _issue_token_for(user)
-    d_match = Discipline.objects.create(
-        code="match_test", label="Match", translation_plural="Matches"
-    )
-    d_other = Discipline.objects.create(
-        code="other_test", label="Other Test", translation_plural="Other Tests"
-    )
+    d_match = Discipline.objects.create(code="match_test")
+    d_other = Discipline.objects.create(code="other_test")
 
     p_match = Project.objects.create(owner=user, title="Keep", description="")
     ProjectDiscipline.objects.create(project=p_match, discipline=d_match)
@@ -462,11 +458,7 @@ def test_include_published_favorites_requires_favorite_filter(client: Client, us
 def test_response_meta_includes_applied_filters_and_allowed_disciplines(client: Client, user):
     raw = _issue_token_for(user)
     d1 = Discipline.objects.get(code="biology")
-    d1.translation_plural = "Biologies"
-    d1.save(update_fields=["translation_plural"])
-    d2 = Discipline.objects.create(
-        code="astronomy", label="Astronomy", translation_plural="Astronomies"
-    )
+    d2 = Discipline.objects.create(code="astronomy")
     project = Project.objects.create(owner=user, title="Project", description="", is_template=True)
     ProjectDiscipline.objects.create(project=project, discipline=d1)
     _graph_with_workflow(user, project=project, workflow_title="Workflow", workflow_type=WorkflowType.COURSE)
@@ -495,9 +487,7 @@ def test_response_meta_includes_applied_filters_and_allowed_disciplines(client: 
     assert meta["appliedFilters"]["isTemplate"] is True
 
     allowed_disciplines = meta["allowed"]["disciplines"]
-    assert [d["label"] for d in allowed_disciplines] == ["Biology"]
-    assert {d["code"] for d in allowed_disciplines} == {d1.code}
-    assert {d["translationPlural"] for d in allowed_disciplines} == {"Biologies"}
+    assert allowed_disciplines == [{"code": d1.code}]
     assert d2.code not in {d["code"] for d in allowed_disciplines}
 
 

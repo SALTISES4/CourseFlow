@@ -1,17 +1,18 @@
 import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { selectOutcomeTagGroups } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { RootState } from '@cf/redux/store'
-import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import Typography from '@mui/material/Typography'
 import { useQuery } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import * as Styled from '../../styles'
 import Outcome from '../OutcomesTab/Outcome'
 
 const RelatedTab = () => {
+  const { t } = useTranslation('workflow')
   const { uuid } = useParams()
   const { data: workflowDetailResp } = useQuery({
     ...getWorkflowOptions({ path: { uuid: uuid! } }),
@@ -28,16 +29,14 @@ const RelatedTab = () => {
       <Styled.SidebarInnerWrap>
         <Styled.SidebarContent>
           <Styled.SidebarTitle as="h3" variant="h6">
-            {_t('Outcomes')}
+            {t('outcomes.title')}
           </Styled.SidebarTitle>
           <Alert
             severity="info"
             persistent
             subtitle={
               <>
-                {_t(
-                  'Add Outcomes to be able to attach them to nodes and outcomes within the current workflow.'
-                )}
+                {t('outcomes.addRequired')}
               </>
             }
           />
@@ -50,18 +49,16 @@ const RelatedTab = () => {
     <Styled.SidebarInnerWrap>
       <Styled.SidebarContent>
         <Styled.SidebarTitle as="h3" variant="h6">
-          {_t('Outcomes from parent workflows')}
+          {t('outcomes.fromParents')}
         </Styled.SidebarTitle>
         <Typography variant="body2" sx={{ mb: 3 }}>
-          {_t(
-            'Drag and drop to associate outcomes from parents workflows to outcomes of your current workflow. Click on an outcome to highlight relevant nodes.'
-          )}
+          {t('outcomes.sidebarHelp')}
         </Typography>
         {alert && (
           <Alert
             severity="warning"
             persistent
-            subtitle="You have linked this workflow to multiple nodes. You may see outcomes from different parent workflows, or duplicates of outcomes."
+            subtitle={t('related.multipleLinksWarning')}
           />
         )}
         {outcomeGroups.map(
@@ -69,7 +66,9 @@ const RelatedTab = () => {
             !!group.outcomes.length && (
               <Styled.GroupWrap key={group.uuid}>
                 <Typography component="h6" variant="body2">
-                  {group.title}
+                  {group.uuid === -1 && outcomeGroups.length > 1
+                    ? t('outcomes.untagged')
+                    : group.title}
                 </Typography>
                 {group.outcomes.map((outcomeUuid) => (
                   <Outcome

@@ -5,7 +5,6 @@ import {
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { WorkspaceType } from '@cf/types/enum'
 import { SnackbarOptions } from '@cf/utility/constants'
-import { _t } from '@cf/utility/Utility.class'
 import { StyledDialog } from '@cfComponents/dialog/styles'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -14,6 +13,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
+import { useTranslation } from 'react-i18next'
 
 // @todo is this used?
 const ContributorRemoveDialog = ({
@@ -23,6 +23,8 @@ const ContributorRemoveDialog = ({
   uuid: string
   type: WorkspaceType
 }) => {
+  const { t } = useTranslation('workspace')
+  const { t: tCommon } = useTranslation('common')
   const { show, onClose, payload } = useDialog<DialogMode.CONTRIBUTOR_REMOVE>(
     DialogMode.CONTRIBUTOR_REMOVE
   )
@@ -49,15 +51,13 @@ const ContributorRemoveDialog = ({
         }
       })
       enqueueSnackbar(
-        _t('The contributor was successfully removed from your project'),
+        t('contributor.removed'),
         { variant: SnackbarOptions.SUCCESS }
       )
       onClose()
     } catch (err) {
       enqueueSnackbar(
-        _t(
-          'We encountered an issue and the contributor was not removed from your project'
-        ),
+        t('contributor.removeFailed'),
         { variant: SnackbarOptions.ERROR }
       )
       console.error('Failed to remove contributor:', err)
@@ -72,19 +72,20 @@ const ContributorRemoveDialog = ({
       maxWidth="xs"
       aria-labelledby="remove-user-modal"
     >
-      <DialogTitle id="remove-user-modal">{_t('Remove user?')}</DialogTitle>
+      <DialogTitle id="remove-user-modal">{t('contributor.removeTitle')}</DialogTitle>
       <DialogContent dividers>
         <Typography gutterBottom>
-          {_t('Are you sure you want to remove')}{' '}
-          <strong>{payload?.username}</strong>?
+          {t('contributor.removeConfirmation', {
+            name: payload?.username ?? ''
+          })}
         </Typography>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onClose}>
-          {_t('Cancel')}
+          {tCommon('actions.cancel')}
         </Button>
         <Button variant="contained" onClick={onSubmit}>
-          {_t('Remove')}
+          {tCommon('actions.remove')}
         </Button>
       </DialogActions>
     </StyledDialog>

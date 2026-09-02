@@ -7,11 +7,12 @@ import {
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import {
   WorkflowFormType,
-  workflowSchema
+  createWorkflowSchema
 } from '@cf/components/common/dialog/Workflow/components/WorkflowForm'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import Utility, { _t } from '@cf/utility/Utility.class'
+import { workflowTypeLabel } from '@cf/i18n/workflowLabels'
+import Utility from '@cf/utility/Utility.class'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'
@@ -23,15 +24,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
-
-const WorkflowLabels: Record<WorkflowType, string> = {
-  [WorkflowType.PROGRAM]: _t('Program'),
-  [WorkflowType.ACTIVITY]: _t('Activity'),
-  [WorkflowType.COURSE]: _t('Course'),
-  [WorkflowType.TASK]: _t('Task')
-}
+import { useTranslation } from 'react-i18next'
 
 const WorkflowEditDialog = () => {
+  const { t } = useTranslation('workflow')
+  const { t: tCommon } = useTranslation('common')
   const { uuid } = useParams()
   const workflowUuid = uuid ?? ''
 
@@ -44,10 +41,11 @@ const WorkflowEditDialog = () => {
     enabled: Boolean(workflowUuid) && show
   })
   const workflow = workflowDetail?.item
-  const workflowTypeLabel =
-    (workflow?.workflowType &&
-      WorkflowLabels[workflow.workflowType as WorkflowType]) ||
-    _t('Workflow')
+  const localizedWorkflowType = workflowTypeLabel(
+    t,
+    workflow?.workflowType,
+    true
+  )
 
   const {
     register,
@@ -55,7 +53,7 @@ const WorkflowEditDialog = () => {
     reset,
     formState: { errors, isDirty }
   } = useForm<WorkflowFormType>({
-    resolver: zodResolver(workflowSchema),
+    resolver: zodResolver(createWorkflowSchema(t)),
     mode: 'onChange',
     defaultValues: {
       title: workflow?.title ?? '',
@@ -84,19 +82,19 @@ const WorkflowEditDialog = () => {
       })
 
       onSuccess({
-        message: _t(
-          `Your ${workflowTypeLabel.toLowerCase()} has been successfully updated`
-        )
+        localizedMessage: t('messages.updated', {
+          workflowType: localizedWorkflowType
+        })
       })
 
       onClose()
     },
     onError: (err) =>
-      onError(
-        _t(
-          `We encountered an issue and your ${workflowTypeLabel.toLowerCase()} was not updated`
-        )
-      )
+      onError({
+        localizedMessage: t('messages.updateFailed', {
+          workflowType: localizedWorkflowType
+        })
+      })
   })
 
   const onSubmit = useCallback(
@@ -126,7 +124,7 @@ const WorkflowEditDialog = () => {
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogTitle>
-          {_t(`Edit ${workflowTypeLabel.toLowerCase()}`)}
+          {t('form.editTitle', { workflowType: localizedWorkflowType })}
         </DialogTitle>
         <DialogContent dividers>
           <StyledBox>
@@ -135,7 +133,7 @@ const WorkflowEditDialog = () => {
               name="title"
               variant="standard"
               required
-              label={_t('Title')}
+              label={t('form.title')}
               error={!!errors.title}
               fullWidth
               helperText={errors.title?.message}
@@ -147,7 +145,7 @@ const WorkflowEditDialog = () => {
               maxRows={3}
               name="description"
               variant="standard"
-              label={_t(`Description`)}
+              label={t('form.description')}
               error={!!errors.description}
               helperText={errors.description?.message}
               fullWidth
@@ -157,14 +155,14 @@ const WorkflowEditDialog = () => {
 
         <DialogActions>
           <Button variant="contained" color="secondary" onClick={onClose}>
-            {_t('Cancel')}
+            {tCommon('actions.cancel')}
           </Button>
           <Button
             type="submit"
             variant="contained"
             disabled={!isDirty || !workflow || !!Object.keys(errors).length}
           >
-            {_t(`Update ${workflowTypeLabel.toLowerCase()}`)}
+            {t('form.update', { workflowType: localizedWorkflowType })}
           </Button>
         </DialogActions>
       </form>
