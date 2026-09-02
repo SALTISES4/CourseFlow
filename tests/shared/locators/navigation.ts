@@ -45,9 +45,9 @@ export function favouritesSectionLabel(page: Page): Locator {
   return mainNavigation(page).getByText('Favourites', { exact: true });
 }
 
-/** canonical: favouritedItemLink */
+/** canonical: favouritedItemLink — scoped to the Favourites section only */
 export function favouritedItemLinks(page: Page): Locator {
-  return mainNavigation(page).locator('[data-test-id="panel-favourite"]');
+  return favouritesSectionLabel(page).locator('..').locator('[data-test-id="panel-favourite"]');
 }
 
 export function viewAllLink(page: Page): Locator {

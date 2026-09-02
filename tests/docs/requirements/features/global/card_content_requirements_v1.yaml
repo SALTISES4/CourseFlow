@@ -226,9 +226,6 @@ requirements:
     acceptanceCriteria:
       - given non-archived projectCard, user clicks projectCard card body, current route matches /project/{id}/workflows
 
-    openQuestions:
-      - Confirm whether projectCard click lands on the project 'Workflows' tab at '/project/{id}/workflows' or on another project route (e.g. Overview) until routing is finalized.
-
   - id: FR-CARD-004
     title: workflowCard click destination
 

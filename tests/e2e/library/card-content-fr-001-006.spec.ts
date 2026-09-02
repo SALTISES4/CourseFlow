@@ -4,13 +4,15 @@ import {
   cleanupLibraryLifecycleFixture,
   createArchivedWorkflowFixture,
 } from '../../helpers/library-lifecycle';
+import { expectProjectCardClickNavigatesToWorkflowsView } from '../../helpers/card-navigation';
 import {
   getPrimaryWorkflow,
-  getProjectWorkflowsPath,
+  getSeedAsset,
   getWorkflowByType,
   loadWorkflowManifest,
+  type ProjectCollectionAssetEntry,
 } from '../../helpers/manifest';
-import { gotoExplore, gotoLibrary } from '../../helpers/navigation';
+import { gotoExplore, gotoFavourites, gotoLibrary } from '../../helpers/navigation';
 import {
   archiveToggle,
   cardArchivedChip,
@@ -216,7 +218,6 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
   const courseWorkflow = getWorkflowByType(manifest, 'course');
   const courseWorkflowTitle =
     manifest.navigation_linked_workflows?.course.workflow_title ?? 'E2E Course Workflow';
-  const projectWorkflowsPath = getProjectWorkflowsPath(manifest);
 
   test.beforeEach(async ({ page }) => {
     await gotoLibrary(page);
@@ -290,8 +291,7 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
   test.describe('FR-CARD-003: projectCard click destination', () => {
     test('clicking project card navigates to project Workflows view', async ({ page }) => {
       const { card } = await showLibraryProjectCard(page, manifest.project_title);
-      await cardTitleText(card).click();
-      await expect(page).toHaveURL(new RegExp(`${projectWorkflowsPath.replace(/\//g, '\\/')}/?$`));
+      await expectProjectCardClickNavigatesToWorkflowsView(page, card, manifest.project_uuid);
     });
   });
 
@@ -479,6 +479,72 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
         await cleanupLibraryLifecycleFixture(page, fixture);
       }
     });
+  });
+});
+
+test.describe('Explore — FR-CARD-003: projectCard click destination', () => {
+  test.use({
+    seedDependencies: ['actor.teacher', 'project.templates'],
+  });
+
+  test('clicking published project card navigates to project Workflows view', async ({ page }) => {
+    const manifest = loadWorkflowManifest();
+    expect(
+      manifest.template_project_uuid,
+      'E2E seed must include published template project.',
+    ).toBeTruthy();
+    expect(manifest.template_project_title).toBeTruthy();
+
+    await gotoExplore(page);
+    await waitForLibraryResultsLoaded(page);
+
+    await triggerLibrarySearchAndWait(
+      page,
+      async () => {
+        await keywordSearchField(page).fill(manifest.template_project_title!);
+        await keywordSearchField(page).press('Enter');
+      },
+      { filters: { keyword: manifest.template_project_title } },
+    );
+
+    const card = libraryProjectCardByTitle(page, manifest.template_project_title!);
+    await expect(card).toBeVisible();
+    await expectProjectCardClickNavigatesToWorkflowsView(
+      page,
+      card,
+      manifest.template_project_uuid!,
+    );
+  });
+});
+
+test.describe('Favourites — FR-CARD-003: projectCard click destination', () => {
+  test.use({
+    seedDependencies: ['actor.teacher', 'project.favourite_collection'],
+  });
+
+  test('clicking favourited project card navigates to project Workflows view', async ({ page }) => {
+    const manifest = loadWorkflowManifest();
+    const favouriteProjects = getSeedAsset<ProjectCollectionAssetEntry>(
+      manifest,
+      'project.favourite_collection',
+    );
+    const favouriteProject = favouriteProjects.items[0]!;
+
+    await gotoFavourites(page);
+    await waitForLibraryResultsLoaded(page);
+
+    await triggerLibrarySearchAndWait(
+      page,
+      async () => {
+        await keywordSearchField(page).fill(favouriteProject.title);
+        await keywordSearchField(page).press('Enter');
+      },
+      { filters: { contentType: 'project', keyword: favouriteProject.title } },
+    );
+
+    const card = libraryProjectCardByTitle(page, favouriteProject.title);
+    await expect(card).toBeVisible();
+    await expectProjectCardClickNavigatesToWorkflowsView(page, card, favouriteProject.uuid);
   });
 });
 

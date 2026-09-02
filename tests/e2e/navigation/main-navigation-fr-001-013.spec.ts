@@ -1,4 +1,12 @@
 import { test, expect } from '../../fixtures';
+import { projectWorkflowsUrlPattern } from '../../helpers/card-navigation';
+import {
+  expectFavouritedWorkflowInSidebarFeedButNotInDom,
+  expectSidebarFavouritesShowProjectsOnly,
+  readSidebarFavouriteEntries,
+  withFavouritedProjectsClearedFromSidebarFeed,
+  withLibraryObjectFavouriteState,
+} from '../../helpers/main-navigation-favourites';
 import {
   expectRelatedWorkflowLinkOpensInNewTab,
   expectRelatedWorkflowLinksSortedAz,
@@ -6,6 +14,12 @@ import {
   expectWorkflowContextSectionVisible,
   getNavigationLinkedWorkflows,
 } from '../../helpers/main-navigation-workflow-context';
+import {
+  getSeedAsset,
+  getWorkflowByType,
+  loadWorkflowManifest,
+  type ProjectCollectionAssetEntry,
+} from '../../helpers/manifest';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import {
   appearsInSection,
@@ -29,6 +43,7 @@ test.use({
   seedDependencies: [
     'actor.teacher',
     'project.favourite_collection',
+    'project.primary',
     'workflow.standard_activity',
     'workflow.navigation_course',
     'workflow.navigation_program',
@@ -92,10 +107,35 @@ test.describe('Main navigation — calibration (FR-NAV-001-013)', () => {
   });
 
   test.describe('Favourites sidebar (FR-NAV-005-008)', () => {
+    test('FR-NAV-005: sidebar favourites query and DOM list projects only', async ({ page }) => {
+      await expectSidebarFavouritesShowProjectsOnly(page);
+    });
+
+    test('FR-NAV-005: favourited workflow in sidebar feed is not rendered in Favourites', async ({
+      page,
+    }) => {
+      const manifest = loadWorkflowManifest();
+      const courseWorkflow = getWorkflowByType(manifest, 'course');
+      const workflowItem = {
+        uuid: courseWorkflow.workflow_uuid,
+        title: courseWorkflow.workflow_title,
+        contentType: 'workflow' as const,
+      };
+
+      await withFavouritedProjectsClearedFromSidebarFeed(page, async () => {
+        await withLibraryObjectFavouriteState(page, workflowItem, true, async () => {
+          await expectFavouritedWorkflowInSidebarFeedButNotInDom(page, workflowItem);
+        });
+      });
+    });
+
     test('FR-NAV-005/006: favourites section lists up to five favourited projects', async ({
       page,
     }) => {
-      await expect(favouritesSectionLabel(page)).toBeVisible();
+      await expectSidebarFavouritesShowProjectsOnly(page, {
+        requireWorkflowInSidebarFeed: false,
+      });
+
       const favouriteCount = await favouritedItemLinks(page).count();
       expect(favouriteCount).toBeGreaterThanOrEqual(1);
       expect(favouriteCount).toBeLessThanOrEqual(5);
@@ -112,11 +152,30 @@ test.describe('Main navigation — calibration (FR-NAV-001-013)', () => {
       await expect(page).toHaveURL(/\/favourites\/?$/);
     });
 
-    test('FR-NAV-008: favourited item navigates to parent project route', async ({ page }) => {
-      const favourite = favouritedItemLinks(page).first();
-      await expect(favourite).toBeVisible();
-      await favourite.click();
-      await expect(page).toHaveURL(/\/project\/[0-9a-f-]+\/?$/);
+    test('FR-NAV-008: favourited item navigates to project Workflows view', async ({ page }) => {
+      const manifest = loadWorkflowManifest();
+      const favouriteProjects = getSeedAsset<ProjectCollectionAssetEntry>(
+        manifest,
+        'project.favourite_collection',
+      );
+
+      const entries = await readSidebarFavouriteEntries(page);
+      expect(entries.length).toBeGreaterThan(0);
+
+      const favouriteProjectLink = favouritedItemLinks(page).first();
+      await expect(favouriteProjectLink).toBeVisible();
+
+      const projectTitle = entries[0]!.title;
+      const favouriteProject = favouriteProjects.items.find(
+        (project) => project.title === projectTitle,
+      );
+      expect(
+        favouriteProject,
+        `Sidebar favourite "${projectTitle}" must match a seeded favourite project.`,
+      ).toBeDefined();
+
+      await favouriteProjectLink.click();
+      await expect(page).toHaveURL(projectWorkflowsUrlPattern(favouriteProject!.uuid));
     });
   });
 
