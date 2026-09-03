@@ -4,8 +4,8 @@
 
 repo_root := `pwd`
 compose_cmd := "docker compose"
-dev_profile := "--profile development -f docker-compose.yaml"
-staging_profile := "-p cf-staging --profile staging -f docker-compose.yaml -f docker-compose.staging.yaml"
+dev_profile := "--profile development -f docker-compose.yml"
+staging_profile := "-p cf-staging --profile staging -f docker-compose.yml -f docker-compose.staging.yml"
 
 frontend_dir := "react"
 testing_dir := "tests"
