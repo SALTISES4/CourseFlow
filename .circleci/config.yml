@@ -1,108 +1,225 @@
-# notes: CCI manages the virtual envs for us
-# wrapping each job in a venv allows pip persistence
-
 version: 2.1
+
+commands:
+  install-uv:
+    steps:
+      - restore_cache:
+          keys:
+            - uv-v1-{{ arch }}-{{ checksum "uv.lock" }}
+            - uv-v1-{{ arch }}-
+      - run:
+          name: Install uv
+          command: |
+            python -m pip install --user "uv==0.7.0"
+            echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$BASH_ENV"
+
 executors:
-  python_node:
+  backend:
     docker:
-      - image: cimg/python:3.9.0
-      - image: cimg/redis:5.0
+      - image: cimg/python:3.12
+        environment:
+          POSTGRES_DB: courseflow_ci
+          POSTGRES_USER: courseflow
+          POSTGRES_PASSWORD: courseflow_ci
+          POSTGRES_HOST: 127.0.0.1
+          POSTGRES_PORT: "5432"
+          DJANGO_SECRET_KEY: circleci-not-for-production
+          DJANGO_DEBUG: "false"
+      - image: cimg/postgres:16.15
+        environment:
+          POSTGRES_DB: courseflow_ci
+          POSTGRES_USER: courseflow
+          POSTGRES_PASSWORD: courseflow_ci
     working_directory: ~/repo
 
 jobs:
-  build-node:
+  backend-tests:
+    executor: backend
+    steps:
+      - checkout
+      - run:
+          name: Wait for PostgreSQL
+          command: |
+            python - <<'PY'
+            import socket
+            import time
+
+            for attempt in range(60):
+                try:
+                    with socket.create_connection(("127.0.0.1", 5432), timeout=1):
+                        break
+                except OSError:
+                    if attempt == 59:
+                        raise
+                    time.sleep(1)
+            PY
+      - install-uv
+      - run:
+          name: Install backend dependencies
+          command: uv sync --frozen --group dev
+      - save_cache:
+          key: uv-v1-{{ arch }}-{{ checksum "uv.lock" }}
+          paths:
+            - ~/.cache/uv
+      - run:
+          name: Run backend tests
+          command: uv run pytest
+
+  frontend-build:
     docker:
-      - image: cimg/node:18.15.0
+      - image: cimg/node:24.14.1
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - yarn-v1-{{ arch }}-{{ checksum "react/yarn.lock" }}
+            - yarn-v1-{{ arch }}-
+      - run:
+          name: Install frontend dependencies
+          command: |
+            cd react
+            yarn install --frozen-lockfile
+      - save_cache:
+          key: yarn-v1-{{ arch }}-{{ checksum "react/yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+      - run:
+          name: Check translations and build frontend
+          command: |
+            cd react
+            yarn check-i18n
+            yarn build
+            test -f dist/index.html
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - react/dist
+
+  deploy-staging:
+    parameters:
+      DEPLOY_HOST:
+        type: string
+      DEPLOY_USER:
+        type: string
+      DEPLOY_PATH:
+        type: string
+      DEPLOY_KNOWN_HOSTS:
+        type: string
+      SSH_FINGERPRINT:
+        type: string
+    circleci_ip_ranges: true
+    docker:
+      - image: cimg/base:stable
+        environment:
+          DEPLOY_HOST: << parameters.DEPLOY_HOST >>
+          DEPLOY_USER: << parameters.DEPLOY_USER >>
+          DEPLOY_PATH: << parameters.DEPLOY_PATH >>
+          DEPLOY_KNOWN_HOSTS: << parameters.DEPLOY_KNOWN_HOSTS >>
+          DEPLOY_SSH_FINGERPRINT: << parameters.SSH_FINGERPRINT >>
     working_directory: ~/repo
     steps:
       - checkout
       - run:
-          name: Install via Yarn
+          name: Validate deployment target and configure SSH host key
           command: |
-            cd react
-            yarn install
-            yarn check-i18n
-            yarn build
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - react/node_modules
-            - react/build
-
-  install-pip-requirements:
-    executor: python_node
-    steps:
-      - checkout
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+            printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+            chmod 600 ~/.ssh/known_hosts
+            ssh-keygen -F "$DEPLOY_HOST" -f ~/.ssh/known_hosts >/dev/null
+      - add_ssh_keys:
+          fingerprints:
+            - << parameters.SSH_FINGERPRINT >>
       - attach_workspace:
           at: ~/repo
       - run:
-          name: Create virtualenv and activate
+          name: Install deployment tools
           command: |
-            python -m venv .venv
-            . .venv/bin/activate
+            sudo apt-get update
+            sudo apt-get install --yes --no-install-recommends rsync
       - run:
-          name: Install pip v23x
+          name: Upload frontend artifact
           command: |
-            . .venv/bin/activate
-            pip install pip==23
-            pip install pip-tools
+            remote_artifact_dir="/tmp/courseflow-${CIRCLE_SHA1}"
+            ssh -o BatchMode=yes -o StrictHostKeyChecking=yes \
+              "${DEPLOY_USER}@${DEPLOY_HOST}" \
+              "install -d -m 700 '${remote_artifact_dir}'"
+            rsync --archive --compress --delete --safe-links \
+              -e "ssh -o BatchMode=yes -o StrictHostKeyChecking=yes" \
+              react/dist/ \
+              "${DEPLOY_USER}@${DEPLOY_HOST}:${remote_artifact_dir}/"
       - run:
-          name: Install Pip Requirements
+          name: Deploy exact commit and restart CourseFlow
           command: |
-            . .venv/bin/activate
-            pip install -r requirements/requirements.txt
-      - save_cache: # Save the virtual environment to cache
-          key: deps3-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
-          paths:
-            - "~/repo/.venv"
+            remote_artifact_dir="/tmp/courseflow-${CIRCLE_SHA1}"
+            ssh -o BatchMode=yes -o StrictHostKeyChecking=yes \
+              "${DEPLOY_USER}@${DEPLOY_HOST}" \
+              bash -s -- "$DEPLOY_PATH" "$CIRCLE_BRANCH" "$CIRCLE_SHA1" "$remote_artifact_dir" <<'REMOTE'
+            set -euo pipefail
 
-  run-tests:
-    executor: python_node
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/repo
-      - restore_cache: # Restoring the packages from cache
-          key: deps3-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
-      - run:
-          name: Run Tests
-          command: |
-            . .venv/bin/activate
-            python manage.py test
+            deploy_path=$1
+            deploy_branch=$2
+            deploy_sha=$3
+            frontend_artifact_dir=$4
 
-  package-app:
-    executor: python_node
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/repo
-      - restore_cache: # Restoring the packages from cache
-          key: deps3-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
-      - run:
-          name: Package Application
-          command: |
-            . .venv/bin/activate
-            python -m build
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - dist
+            if [ "$deploy_branch" != staging ]; then
+              echo "Refusing non-staging branch deployment: $deploy_branch" >&2
+              exit 1
+            fi
 
+            cd "$deploy_path"
 
+            if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+              echo "Refusing to deploy over tracked changes in $deploy_path" >&2
+              git status --short --untracked-files=no >&2
+              exit 1
+            fi
+
+            git fetch --prune origin "$deploy_branch"
+            git cat-file -e "${deploy_sha}^{commit}"
+
+            if git show-ref --verify --quiet "refs/heads/${deploy_branch}"; then
+              git checkout "$deploy_branch"
+            else
+              git checkout --track -b "$deploy_branch" "origin/${deploy_branch}"
+            fi
+
+            git merge --ff-only "$deploy_sha"
+
+            if [ "$(git rev-parse HEAD)" != "$deploy_sha" ]; then
+              echo "Server checkout did not resolve to requested commit $deploy_sha" >&2
+              exit 1
+            fi
+
+            just --yes deploy-staging "$deploy_sha" "$frontend_artifact_dir"
+            REMOTE
 
 workflows:
-  version: 2
-  build-and-deploy:
+  continuous-integration:
     jobs:
-      - build-node:
+      - backend-tests:
           filters:
             branches:
-              only:
-                #                - staging
-                - master
-      - install-pip-requirements:
+              ignore: staging
+      - frontend-build:
           filters:
             branches:
-              only:
-                #                - staging
-                - master
+              ignore: staging
+
+  staging-deployment:
+    when:
+      equal: [staging, << pipeline.git.branch >>]
+    jobs:
+      - backend-tests
+      - frontend-build
+      - deploy-staging:
+          DEPLOY_HOST: 138.197.135.157
+          DEPLOY_USER: littlebox
+          DEPLOY_PATH: /srv/courseflow-staging.mydalite.org
+          DEPLOY_KNOWN_HOSTS: "138.197.135.157 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPu/wf+UWtM37jbU8pfgJOPuZvvapCklcYqrsNQaSl1H"
+          SSH_FINGERPRINT: SHA256:M8AB7asPZCR2b9AEaPyRyKxczYo+Z0kkcGqdFX1avzE
+          requires:
+            - backend-tests
+            - frontend-build
+          serial-group: << pipeline.project.slug >>/courseflow-staging-deploy

@@ -59,6 +59,10 @@ Where possible, framework code remains at the boundary.
 5. `docs/architecture/openapi_and_client_graph.md`
 6. `docs/architecture/adr_frontend_api_client.md` (frontend API client and server-state decision)
 
+## Operational runbooks
+
+- [Staging deployment](runbooks/staging-deployment.md)
+
 ## Working Rule
 
 When architecture is not yet confirmed, do not invent it in code or in docs.
