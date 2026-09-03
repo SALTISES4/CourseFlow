@@ -26,6 +26,7 @@ executors:
     docker:
       - image: cimg/python:3.12
         environment:
+          # these are only for testing values
           POSTGRES_DB: courseflow_ci
           POSTGRES_USER: courseflow
           POSTGRES_PASSWORD: courseflow_ci
@@ -150,59 +151,22 @@ jobs:
       - run:
           name: Upload frontend artifact
           command: |
-            remote_artifact_dir="/tmp/courseflow-${CIRCLE_SHA1}"
+            remote_artifact_dir="/tmp/courseflow"
+
             ssh -o BatchMode=yes -o StrictHostKeyChecking=yes \
               "${DEPLOY_USER}@${DEPLOY_HOST}" \
               "install -d -m 700 '${remote_artifact_dir}'"
+
             rsync --archive --compress --delete --safe-links \
               -e "ssh -o BatchMode=yes -o StrictHostKeyChecking=yes" \
               react/dist/ \
               "${DEPLOY_USER}@${DEPLOY_HOST}:${remote_artifact_dir}/"
       - run:
-          name: Deploy exact commit and restart CourseFlow
+          name: SSH to server and deploy with just
           command: |
-            remote_artifact_dir="/tmp/courseflow-${CIRCLE_SHA1}"
-            ssh -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            ssh -o StrictHostKeyChecking=yes \
               "${DEPLOY_USER}@${DEPLOY_HOST}" \
-              bash -s -- "$DEPLOY_PATH" "$CIRCLE_BRANCH" "$CIRCLE_SHA1" "$remote_artifact_dir" \<<'REMOTE'
-            set -euo pipefail
-
-            deploy_path=$1
-            deploy_branch=$2
-            deploy_sha=$3
-            frontend_artifact_dir=$4
-
-            if [ "$deploy_branch" != staging ]; then
-              echo "Refusing non-staging branch deployment: $deploy_branch" >&2
-              exit 1
-            fi
-
-            cd "${deploy_path}/courseflow"
-
-            if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
-              echo "Refusing to deploy over tracked changes in $deploy_path" >&2
-              git status --short --untracked-files=no >&2
-              exit 1
-            fi
-
-            git fetch --prune origin "$deploy_branch"
-            git cat-file -e "${deploy_sha}^{commit}"
-
-            if git show-ref --verify --quiet "refs/heads/${deploy_branch}"; then
-              git checkout "$deploy_branch"
-            else
-              git checkout --track -b "$deploy_branch" "origin/${deploy_branch}"
-            fi
-
-            git merge --ff-only "$deploy_sha"
-
-            if [ "$(git rev-parse HEAD)" != "$deploy_sha" ]; then
-              echo "Server checkout did not resolve to requested commit $deploy_sha" >&2
-              exit 1
-            fi
-
-            just --yes deploy-staging "$deploy_sha" "$frontend_artifact_dir"
-            REMOTE
+              "cd '${DEPLOY_PATH}/courseflow' && git pull && just --yes deploy-staging"
       - notify-slack-on-failure
 
   notify-workflow:

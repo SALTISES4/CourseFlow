@@ -4,10 +4,12 @@
 
 repo_root := `pwd`
 compose_cmd := "docker compose"
-dev_profile := "dev"
+dev_profile := "--profile development -f docker-compose.yaml"
+staging_profile := "-p cf-staging --profile staging -f docker-compose.yaml -f docker-compose.staging.yaml"
 
 frontend_dir := "react"
 testing_dir := "tests"
+expected_artifact_dir := "/tmp/courseflow"
 
 # Dedicated websocket/app log files (outside docker stderr)
 py_log_file := "logs/python.log"

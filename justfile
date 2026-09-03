@@ -102,59 +102,19 @@ e2e-prepare:
 
 # Deploy the exact checked-out staging commit with a pre-built frontend artifact.
 [group: 'Deployment']
-deploy-staging $deploy_sha $frontend_artifact_dir:
+deploy-staging:
   #!/usr/bin/env bash
   set -euo pipefail
 
-  frontend_artifact_dir=${frontend_artifact_dir%/}
-
-  if [[ ! "$deploy_sha" =~ ^[0-9a-f]{40}$ ]]; then
-    echo "Invalid deployment commit: $deploy_sha" >&2
-    exit 64
-  fi
-
-  expected_artifact_dir="/tmp/courseflow-${deploy_sha}"
-  if [ "$frontend_artifact_dir" != "$expected_artifact_dir" ]; then
-    echo "Unexpected frontend artifact directory: $frontend_artifact_dir" >&2
-    exit 64
-  fi
-
-  cleanup() {
-    rm -rf -- "$expected_artifact_dir"
-  }
-  trap cleanup EXIT
-
-  repo_root=$(git rev-parse --show-toplevel)
-  cd "$repo_root"
-
-  if [ "$(git rev-parse HEAD)" != "$deploy_sha" ]; then
-    echo "Refusing to deploy: checkout does not match $deploy_sha" >&2
-    exit 1
-  fi
-
-  if [ ! -f .env ]; then
-    echo "Refusing to deploy without $repo_root/.env" >&2
-    exit 1
-  fi
-
-  if [ ! -f "$frontend_artifact_dir/index.html" ]; then
-    echo "Frontend artifact does not contain index.html" >&2
-    exit 1
-  fi
-
-  compose=(docker compose --profile staging)
-
-  "${compose[@]}" config --quiet
-  "${compose[@]}" build django
-  "${compose[@]}" up -d --wait --wait-timeout 60 postgres
-  "${compose[@]}" up -d --no-deps --no-build --force-recreate --wait --wait-timeout 180 django
+  {{ compose_cmd }} {{ staging_profile }} config --quiet
+  {{ compose_cmd }} {{ staging_profile }} up -d --build --no-deps --force-recreate
 
   mkdir -p ../react
   rsync --archive --delay-updates \
-    "$frontend_artifact_dir/" \
+    "{{ expected_artifact_dir }}" \
     ../react/
 
-  test -f ../react/dist/index.html
-  "${compose[@]}" ps
+  test -f ../react/index.html
+  {{ compose_cmd }} {{ staging_profile }} ps
 
-  echo "CourseFlow staging deployed at commit $deploy_sha"
+  echo "CourseFlow staging deployed at commit"
