@@ -215,12 +215,16 @@ jobs:
 
 workflows:
   staging-deployment:
+    context:
+      - slack-integration-cf
     when:
       equal: [staging, << pipeline.git.branch >>]
     jobs:
       - backend-tests
       - frontend-build
       - deploy-staging:
+          context:
+            - slack-integration-cf
           DEPLOY_HOST: 138.197.135.157
           DEPLOY_USER: littlebox
           DEPLOY_PATH: /srv/courseflow-staging.mydalite.org
@@ -232,8 +236,6 @@ workflows:
           serial-group: << pipeline.project.slug >>/courseflow-staging-deploy
 
       - notify-workflow:
-          context:
-            - slack-integration-cf
           requires:
             - deploy-staging
             - frontend-build
