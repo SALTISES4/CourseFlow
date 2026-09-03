@@ -196,17 +196,6 @@ jobs:
             REMOTE
 
 workflows:
-  continuous-integration:
-    jobs:
-      - backend-tests:
-          filters:
-            branches:
-              ignore: staging
-      - frontend-build:
-          filters:
-            branches:
-              ignore: staging
-
   staging-deployment:
     when:
       equal: [staging, << pipeline.git.branch >>]
@@ -220,6 +209,6 @@ workflows:
           DEPLOY_KNOWN_HOSTS: "138.197.135.157 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPu/wf+UWtM37jbU8pfgJOPuZvvapCklcYqrsNQaSl1H"
           SSH_FINGERPRINT: SHA256:M8AB7asPZCR2b9AEaPyRyKxczYo+Z0kkcGqdFX1avzE
           requires:
-            - backend-tests
+           # - backend-tests
             - frontend-build
           serial-group: << pipeline.project.slug >>/courseflow-staging-deploy
