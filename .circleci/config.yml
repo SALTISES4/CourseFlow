@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  slack: circleci/slack@6.1.3
 
 commands:
   install-uv:
@@ -168,7 +170,7 @@ jobs:
               exit 1
             fi
 
-            cd "$deploy_path"
+            cd "${deploy_path}/courseflow"
 
             if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
               echo "Refusing to deploy over tracked changes in $deploy_path" >&2
@@ -195,6 +197,14 @@ jobs:
             just --yes deploy-staging "$deploy_sha" "$frontend_artifact_dir"
             REMOTE
 
+  notify-workflow:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - slack/notify:
+          event: pass
+          template: basic_success_1
+
 workflows:
   staging-deployment:
     when:
@@ -212,3 +222,10 @@ workflows:
            # - backend-tests
             - frontend-build
           serial-group: << pipeline.project.slug >>/courseflow-staging-deploy
+
+      - notify-workflow:
+          context:
+            - slack-integration-cf
+          requires:
+            - deploy-staging
+            - frontend-build

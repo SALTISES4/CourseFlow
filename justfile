@@ -149,12 +149,12 @@ deploy-staging $deploy_sha $frontend_artifact_dir:
   "${compose[@]}" up -d --wait --wait-timeout 60 postgres
   "${compose[@]}" up -d --no-deps --no-build --force-recreate --wait --wait-timeout 180 django
 
-  mkdir -p react/dist
+  mkdir -p ../react
   rsync --archive --delay-updates \
     "$frontend_artifact_dir/" \
-    react/dist/
+    ../react/
 
-  test -f react/dist/index.html
+  test -f ../react/dist/index.html
   "${compose[@]}" ps
 
   echo "CourseFlow staging deployed at commit $deploy_sha"
