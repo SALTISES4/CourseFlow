@@ -15,6 +15,12 @@ commands:
             python -m pip install --user "uv==0.7.0"
             echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$BASH_ENV"
 
+  notify-slack-on-failure:
+    steps:
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+
 executors:
   backend:
     docker:
@@ -97,6 +103,7 @@ jobs:
           root: ~/repo
           paths:
             - react/dist
+      - notify-slack-on-failure
 
   deploy-staging:
     parameters:
@@ -196,6 +203,7 @@ jobs:
 
             just --yes deploy-staging "$deploy_sha" "$frontend_artifact_dir"
             REMOTE
+      - notify-slack-on-failure
 
   notify-workflow:
     docker:
