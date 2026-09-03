@@ -215,13 +215,15 @@ jobs:
 
 workflows:
   staging-deployment:
-    context:
-      - slack-integration-cf
     when:
       equal: [staging, << pipeline.git.branch >>]
     jobs:
-      - backend-tests
-      - frontend-build
+      - backend-tests:
+          context:
+            - slack-integration-cf
+      - frontend-build:
+          context:
+            - slack-integration-cf
       - deploy-staging:
           context:
             - slack-integration-cf
@@ -236,6 +238,8 @@ workflows:
           serial-group: << pipeline.project.slug >>/courseflow-staging-deploy
 
       - notify-workflow:
+          context:
+            - slack-integration-cf
           requires:
             - deploy-staging
             - frontend-build
