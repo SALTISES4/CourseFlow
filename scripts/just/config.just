@@ -3,7 +3,7 @@
 #########################################################
 
 repo_root := `pwd`
-compose_cmd := "docker compose"
+compose_cmd := "sudo docker compose"
 dev_profile := "--profile development -f docker-compose.yml"
 staging_profile := "-p cf-staging --profile staging -f docker-compose.yml -f docker-compose.staging.yml"
 
