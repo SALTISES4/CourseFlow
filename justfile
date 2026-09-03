@@ -111,7 +111,7 @@ deploy-staging:
 
   mkdir -p ../react
   rsync --archive --delay-updates \
-    "{{ expected_artifact_dir }}" \
+    "{{ expected_artifact_dir }}/" \
     ../react/
 
   test -f ../react/index.html
