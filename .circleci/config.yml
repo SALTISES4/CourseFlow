@@ -155,7 +155,7 @@ jobs:
             remote_artifact_dir="/tmp/courseflow-${CIRCLE_SHA1}"
             ssh -o BatchMode=yes -o StrictHostKeyChecking=yes \
               "${DEPLOY_USER}@${DEPLOY_HOST}" \
-              bash -s -- "$DEPLOY_PATH" "$CIRCLE_BRANCH" "$CIRCLE_SHA1" "$remote_artifact_dir" <<'REMOTE'
+              bash -s -- "$DEPLOY_PATH" "$CIRCLE_BRANCH" "$CIRCLE_SHA1" "$remote_artifact_dir" \<<'REMOTE'
             set -euo pipefail
 
             deploy_path=$1
