@@ -11,7 +11,6 @@ import {
   ExpandCollapseMenu,
   JumpToMenu
 } from '@cfPages/Workflow/WorkflowTabs/components/menuBar'
-import ConnectionBar from '@cfPages/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
 import WorkflowDialogs from '@cfPages/Workflow/WorkflowTabs/components/WorkflowDialogs'
 import useWorkflowTabs from '@cfPages/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
 import { useWorkflowViewTypeFromRoute } from '@cfPages/Workflow/WorkflowTabs/hooks/useWorkflowViewTypeFromRoute'
@@ -88,11 +87,7 @@ const WorkflowTabs = ({
     <>
       <div className="main-block">
         {!publicView && (
-          <MenuBar
-            leftSection={<ActionMenu />}
-            viewbar={<ViewBar />}
-            userbar={<ConnectionBar show={!workflowChromePublicView} />}
-          />
+          <MenuBar leftSection={<ActionMenu />} viewbar={<ViewBar />} />
         )}
         <div className="right-panel-wrapper">
           <div className="body-wrapper">
