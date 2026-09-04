@@ -1160,11 +1160,6 @@ h3.big-space {
   flex-grow: 1;
   background-color: $color-white;
 
-  .body-wrapper {
-    height: initial;
-    overflow: initial;
-  }
-
   .right-panel-wrapper {
     overflow-y: auto;
     overflow-x: hidden;
