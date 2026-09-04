@@ -22,13 +22,14 @@ services:
 
   django:
     profiles:
-      - staging
+      - uat
     build:
       context: .
       dockerfile: docker/Dockerfile
     ports:
       - "${DJANGO_PORT:-8000}:8000"
     environment:
+      ENV: ${ENV:?}
       POSTGRES_HOST: ${POSTGRES_HOST:?}
       POSTGRES_DB: ${POSTGRES_DB:?}
       POSTGRES_USER: ${POSTGRES_USER:?}

@@ -45,7 +45,7 @@ Playwright. Host ports and the development database volume are removed by the CI
 override. React and Playwright dependencies use job-owned Docker volumes so native
 packages cannot leak between the host and Linux containers. Frontend dependencies
 are installed before Vite's health-check window begins. The job always tears down
-containers and volumes, and staging deployment is gated on the complete test suite.
+containers and volumes, and DigitalOcean UAT deployment is gated on the complete test suite.
 
 ### Stable asset catalog
 

@@ -52,6 +52,7 @@ chown 10001:10001 \
   "${release_dir}/secrets/django_secret_key"
 
 cat > "${release_dir}/runtime.env" <<EOF
+ENV=staging
 COURSEFLOW_IMAGE=${image_uri}
 AWS_REGION=${aws_region}
 API_DOMAIN=${api_domain}

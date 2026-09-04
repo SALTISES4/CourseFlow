@@ -1,5 +1,5 @@
-from django.test import Client
 import pytest
+from django.test import Client
 
 
 def test_health_endpoint_reports_django_ready():

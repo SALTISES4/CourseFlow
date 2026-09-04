@@ -102,12 +102,17 @@ e2e-prepare:
 
 # Deploy the current server checkout with a pre-built frontend artifact.
 [group: 'Deployment']
-deploy-staging:
+deploy-uat:
   #!/usr/bin/env bash
   set -euo pipefail
 
-  {{ compose_cmd }} {{ staging_profile }} config --quiet
-  if ! {{ compose_cmd }} {{ staging_profile }} up \
+  if ! grep -qx 'ENV=uat' .env; then
+    echo "DigitalOcean UAT requires ENV=uat in .env" >&2
+    exit 1
+  fi
+
+  {{ compose_cmd }} {{ uat_profile }} config --quiet
+  if ! {{ compose_cmd }} {{ uat_profile }} up \
     -d \
     --build \
     --no-deps \
@@ -115,12 +120,12 @@ deploy-staging:
     --wait \
     --wait-timeout 180 \
     django; then
-    {{ compose_cmd }} {{ staging_profile }} ps django >&2 || true
-    {{ compose_cmd }} {{ staging_profile }} logs --tail 100 django >&2 || true
+    {{ compose_cmd }} {{ uat_profile }} ps django >&2 || true
+    {{ compose_cmd }} {{ uat_profile }} logs --tail 100 django >&2 || true
     exit 1
   fi
 
-  {{ compose_cmd }} {{ staging_profile }} exec -T django \
+  {{ compose_cmd }} {{ uat_profile }} exec -T django \
     uv run --no-sync python manage.py migrate --check
 
   mkdir -p ../react
@@ -129,6 +134,6 @@ deploy-staging:
     ../react/
 
   test -f ../react/index.html
-  {{ compose_cmd }} {{ staging_profile }} ps
+  {{ compose_cmd }} {{ uat_profile }} ps
 
-  echo "CourseFlow staging deployed at commit $(git rev-parse --verify HEAD)"
+  echo "CourseFlow DigitalOcean UAT deployed at commit $(git rev-parse --verify HEAD)"

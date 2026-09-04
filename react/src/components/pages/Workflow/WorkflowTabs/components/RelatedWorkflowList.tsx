@@ -12,7 +12,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 /**
- * https://courseflow-staging.mydalite.org/course-flow/workflow/19
+ * https://courseflow-uat.mydalite.org/course-flow/workflow/19
  * There are two parts:
  *
  * Child linked workflows: for current workflow context, show workflow linked to by nodes in current workflow

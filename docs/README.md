@@ -61,7 +61,7 @@ Where possible, framework code remains at the boundary.
 
 ## Operational runbooks
 
-- [Staging deployment](runbooks/staging-deployment.md)
+- [DigitalOcean UAT deployment](runbooks/uat-deployment.md)
 
 ## Working Rule
 

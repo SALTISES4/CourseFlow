@@ -24,6 +24,7 @@ jobs:
       image: ubuntu-2404:current
     working_directory: ~/repo
     environment:
+      ENV: test
       POSTGRES_DB: courseflow_ci
       POSTGRES_USER: courseflow
       POSTGRES_PASSWORD: courseflow_ci
@@ -183,7 +184,7 @@ jobs:
               "$API_BASE_URL"
       - notify-slack-on-failure
 
-  deploy-staging:
+  deploy-uat:
     parameters:
       DEPLOY_HOST:
         type: string
@@ -243,7 +244,7 @@ jobs:
           command: |
             ssh -o StrictHostKeyChecking=yes \
               "${DEPLOY_USER}@${DEPLOY_HOST}" \
-              "cd '${DEPLOY_PATH}/courseflow' && git pull && just --yes deploy-staging"
+              "cd '${DEPLOY_PATH}/courseflow' && git pull && just --yes deploy-uat"
       - notify-slack-on-failure
 
   notify-workflow:
@@ -255,7 +256,7 @@ jobs:
           template: basic_success_1
 
 workflows:
-  staging-deployment:
+  uat-deployment:
     when:
       equal: [staging, << pipeline.git.branch >>]
     jobs:
@@ -265,24 +266,24 @@ workflows:
       - frontend-build:
           context:
             - slack-integration-cf
-      - deploy-staging:
+      - deploy-uat:
           context:
             - slack-integration-cf
           DEPLOY_HOST: 138.197.135.157
           DEPLOY_USER: littlebox
-          DEPLOY_PATH: /srv/courseflow-staging.mydalite.org
+          DEPLOY_PATH: /srv/courseflow-uat.mydalite.org
           DEPLOY_KNOWN_HOSTS: "138.197.135.157 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPu/wf+UWtM37jbU8pfgJOPuZvvapCklcYqrsNQaSl1H"
           SSH_FINGERPRINT: SHA256:M8AB7asPZCR2b9AEaPyRyKxczYo+Z0kkcGqdFX1avzE
           requires:
             - test-suite
             - frontend-build
-          serial-group: << pipeline.project.slug >>/courseflow-staging-deploy
+          serial-group: << pipeline.project.slug >>/courseflow-uat-deploy
 
       - notify-workflow:
           context:
             - slack-integration-cf
           requires:
-            - deploy-staging
+            - deploy-uat
             - frontend-build
 
   aws-staging-deployment:

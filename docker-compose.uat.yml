@@ -1,7 +1,7 @@
 services:
   django:
     profiles:
-      - staging
+      - uat
     volumes: !reset []
     depends_on: !reset {}
     restart: unless-stopped

@@ -6,6 +6,3 @@ repos:
     hooks:
       - id: isort
         verbose: true
-        args:
-          - --check-only
-          - --diff

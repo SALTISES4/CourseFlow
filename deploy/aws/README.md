@@ -14,9 +14,10 @@ CloudFormation templates live in the `saltise-infra` repository.
 6. retrieves RDS and Django secrets on the host, runs migrations once, starts
    Docker Compose, and verifies database-backed readiness.
 
-The backend is deployed by immutable image digest. CircleCI never receives the
-database password or Django secret. The existing DigitalOcean workflow remains
-active while the AWS workflow is disabled by default.
+The backend is deployed by immutable image digest. Its generated runtime file
+sets `ENV=staging`. CircleCI never receives the database password or Django
+secret. The DigitalOcean UAT workflow remains active in parallel while the AWS
+workflow is disabled by default.
 
 ## CircleCI inputs
 

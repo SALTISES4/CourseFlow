@@ -282,7 +282,7 @@ the complete isolated test stack:
    that order
 6. Upload Playwright diagnostics and destroy all containers and job-owned volumes
 
-The staging deployment requires both `test-suite` and `frontend-build`, so any failed
+The DigitalOcean UAT deployment requires both `test-suite` and `frontend-build`, so any failed
 gate prevents deployment.
 
 Pyright currently covers the explicitly listed schema, DTO, port, and pure-domain
