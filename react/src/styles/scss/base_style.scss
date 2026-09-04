@@ -1151,12 +1151,28 @@ h3.big-space {
   overflow: visible;
 }
 
+// NOTE: this should potentially be untangled in the layout itself
+// potential double nesting of .body-wrapper and .right-panel-wrapper
 .body-wrapper {
+  position: relative;
+  height: 100%;
   overflow: auto;
   flex-grow: 1;
-  height: 100%;
-  position: relative;
   background-color: $color-white;
+
+  .body-wrapper {
+    height: initial;
+    overflow: initial;
+  }
+
+  .right-panel-wrapper {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .workflow-wrapper {
+    min-height: initial;
+  }
 }
 
 .body-wrapper.printing {
