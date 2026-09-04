@@ -1,4 +1,4 @@
-import { LibraryContentTypeOut } from '@cf/api/gen'
+import { LibraryContentTypeIn, LibraryContentTypeOut } from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { CFRoutes } from '@cf/router/appRoutes'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -31,7 +31,8 @@ const Favorites = () => {
       resultsPerPage: 5
     },
     filters: {
-      isFavorite: true
+      isFavorite: true,
+      contentType: LibraryContentTypeIn.PROJECT
     }
   })
 
@@ -74,29 +75,20 @@ const Favorites = () => {
         </SC.SectionLabel>
 
         <List>
-          {data.items.map((item, id) => {
-            const url =
-              item.contentType === LibraryContentTypeOut.PROJECT
-                ? generatePath(CFRoutes.PROJECT_WORKFLOW, {
-                    uuid: String(item.uuid)
-                  })
-                : generatePath(CFRoutes.WORKFLOW, {
-                    uuid: String(item.uuid)
-                  })
-
-            return (
-              <ListItem disablePadding dense key={id}>
-                <ListItemButton
-                  component={Link}
-                  to={url}
-                  data-test-id="panel-favourite"
-                  selected={location.pathname === url}
-                >
-                  <ListItemText primary={item.title} />
-                </ListItemButton>
-              </ListItem>
-            )
-          })}
+          {data.items.map((item, id) => (
+            <ListItem disablePadding dense key={id}>
+              <ListItemButton
+                component={Link}
+                to={generatePath(CFRoutes.PROJECT_WORKFLOW, {
+                  uuid: String(item.uuid)
+                })}
+                data-test-id="panel-favourite"
+                selected={location.pathname.includes(item.uuid)}
+              >
+                <ListItemText primary={item.title} />
+              </ListItemButton>
+            </ListItem>
+          ))}
 
           <SeeAll />
         </List>
