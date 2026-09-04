@@ -5650,10 +5650,10 @@ ms@^2.1.1, ms@^2.1.3:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-mui-color-input@^4.0.1:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/mui-color-input/-/mui-color-input-4.0.2.tgz#0a09fd3899a6c3030a8013a39481c691190e61c0"
-  integrity sha512-TXbdtgBqyeUFXmmT2PW4LZfr/j14J24wtjp0GhQxmskwRl7NF54UmBFs1/Qsx9jev3V67weAs0GyYUT+Nkw9Tg==
+mui-color-input@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/mui-color-input/-/mui-color-input-4.0.0.tgz#1dd45e9aaca1123eaf5ecd2167adaef48a032590"
+  integrity sha512-o0G9BXoHSY+AMpOZF2jdVvxNE7NBx3c3DOyFeS8Llq1jmVfgR3v606sVgGLupJ9RMbKdRMSTNQ7hvlwW8mBqgg==
   dependencies:
     "@ctrl/tinycolor" "^4.1.0"
 

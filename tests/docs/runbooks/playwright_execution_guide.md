@@ -273,13 +273,14 @@ Requires `PLAYWRIGHT_WORKFLOW_PATH`, Django on `:8000`, and an owner/editor sess
 The `test-suite` job uses `docker-compose.yml` with `docker-compose.ci.yml` and owns
 the complete isolated test stack:
 
-1. Start a temporary Postgres database in Docker for the job
-2. Run `just django::wait-db`, `just django::migrate`,
+1. Install frontend dependencies into a CI-owned Linux `node_modules` volume
+2. Start a temporary Postgres database in Docker for the job
+3. Run `just django::wait-db`, `just django::migrate`,
    `just django::create-superuser`, and `just testing::e2e-tests-seed`
-3. Start Django and Vite and wait for both health checks
-4. Run pre-commit, Django tests, the current Pyright ratchet, and Playwright in
+4. Start Django and Vite and wait for both health checks
+5. Run pre-commit, Django tests, the current Pyright ratchet, and Playwright in
    that order
-5. Upload Playwright diagnostics and destroy all containers and the database volume
+6. Upload Playwright diagnostics and destroy all containers and job-owned volumes
 
 The staging deployment requires both `test-suite` and `frontend-build`, so any failed
 gate prevents deployment.

@@ -45,6 +45,11 @@ jobs:
           command: |
             docker compose build django frontend
       - run:
+          name: Install frontend dependencies
+          command: |
+            docker compose run --rm --no-deps frontend \
+              yarn --cwd react install --frozen-lockfile
+      - run:
           name: Start PostgreSQL test database
           command: |
             docker compose up -d --wait --wait-timeout 60 postgres

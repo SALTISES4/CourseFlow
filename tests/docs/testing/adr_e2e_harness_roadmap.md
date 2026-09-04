@@ -38,12 +38,14 @@ workflow.
 
 ### CI-owned test stack
 
-CircleCI combines `docker-compose.yml` with `docker-compose.ci.yml`. It starts
-PostgreSQL first, runs the same Just migration and seed recipes used locally, then
-starts health-checked Django and Vite services before Playwright. Host ports and the
-development database volume are removed by the CI override. The job always tears
-down containers and volumes, and staging deployment is gated on the complete test
-suite.
+CircleCI combines `docker-compose.yml` with `docker-compose.ci.yml`. It installs
+frontend dependencies, starts PostgreSQL, runs the same Just migration and seed
+recipes used locally, then starts health-checked Django and Vite services before
+Playwright. Host ports and the development database volume are removed by the CI
+override. React and Playwright dependencies use job-owned Docker volumes so native
+packages cannot leak between the host and Linux containers. Frontend dependencies
+are installed before Vite's health-check window begins. The job always tears down
+containers and volumes, and staging deployment is gated on the complete test suite.
 
 ### Stable asset catalog
 
