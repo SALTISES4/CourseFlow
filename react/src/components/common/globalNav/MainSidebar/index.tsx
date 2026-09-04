@@ -77,7 +77,7 @@ const Favorites = () => {
           {data.items.map((item, id) => {
             const url =
               item.contentType === LibraryContentTypeOut.PROJECT
-                ? generatePath(CFRoutes.PROJECT, {
+                ? generatePath(CFRoutes.PROJECT_WORKFLOW, {
                     uuid: String(item.uuid)
                   })
                 : generatePath(CFRoutes.WORKFLOW, {
