@@ -258,7 +258,7 @@ jobs:
 workflows:
   uat-deployment:
     when:
-      equal: [staging, << pipeline.git.branch >>]
+      equal: [uat, << pipeline.git.branch >>]
     jobs:
       - test-suite:
           context:
