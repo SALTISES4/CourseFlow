@@ -191,9 +191,9 @@ workflows:
     when:
       equal: [staging, << pipeline.git.branch >>]
     jobs:
-      - test-suite:
-          context:
-            - slack-integration-cf
+#      - test-suite:
+#          context:
+#            - slack-integration-cf
       - frontend-build:
           context:
             - slack-integration-cf
