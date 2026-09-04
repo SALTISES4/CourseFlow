@@ -1,0 +1,75 @@
+services:
+  postgres:
+    profiles: !reset []
+    ports: !reset []
+    volumes: !reset []
+    restart: "no"
+
+  django:
+    profiles: !reset []
+    image: courseflow-django-ci
+    build:
+      target: test
+    ports: !reset []
+    environment:
+      DJANGO_MIGRATE_ON_STARTUP: "false"
+      POSTGRES_HOST: postgres
+    volumes:
+      - .:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  frontend:
+    image: courseflow-playwright-ci
+    build:
+      context: .
+      dockerfile: docker/Playwright.Dockerfile
+    working_dir: /app
+    command:
+      - bash
+      - -lc
+      - yarn --cwd react install --frozen-lockfile && yarn --cwd react dev --host 0.0.0.0
+    environment:
+      VITE_ALLOWED_HOSTS: frontend
+      VITE_API_BASE_URL: http://django:8000
+    volumes:
+      - .:/app
+    networks:
+      - cf-network
+    depends_on:
+      django:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:3000').then(response => { if (!response.ok) process.exit(1) }).catch(() => process.exit(1))
+      interval: 5s
+      timeout: 3s
+      retries: 24
+      start_period: 30s
+    restart: "no"
+
+  test-runner:
+    profiles:
+      - test
+    image: courseflow-playwright-ci
+    working_dir: /app
+    environment:
+      CI: "true"
+      PLAYWRIGHT_API_BASE_URL: http://django:8000
+      PLAYWRIGHT_BASE_URL: http://frontend:3000
+      TEST_PASSWORD: password
+      TEST_USERNAME: teacher@courseflow.com
+    volumes:
+      - .:/app
+    networks:
+      - cf-network
+    depends_on:
+      django:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy

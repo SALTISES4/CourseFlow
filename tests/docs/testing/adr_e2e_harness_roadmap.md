@@ -10,13 +10,14 @@ Accepted
 
 Amended 2026-07-31 to adopt one local database, one seed path, stable asset IDs,
 and disposable workflow isolation. Amended 2026-08-07 to add disposable project
-and account isolation for successful mutation tests.
+and account isolation for successful mutation tests. Amended 2026-09-03 to record
+the temporary Docker Compose stack owned by CircleCI.
 
 ## Context
 
 CourseFlow browser tests exercise a real browser, Vite, Django, and Postgres. Local
-development and Playwright intentionally use the same `courseflow` database. CI/CD
-will eventually provide a temporary Docker database owned by the job.
+development and Playwright intentionally use the same `courseflow` database. CircleCI
+provides a temporary Docker database owned by the `test-suite` job.
 
 The earlier harness exposed seeded rows through positional manifest fields and let
 multiple specs mutate the same workflow. `serial` groups protected only one describe
@@ -34,6 +35,15 @@ runtime manifest, and refreshes the asset dependency CSV.
 
 There is no local test database, database switch, dev seed, or grouped reseed
 workflow.
+
+### CI-owned test stack
+
+CircleCI combines `docker-compose.yml` with `docker-compose.ci.yml`. It starts
+PostgreSQL first, runs the same Just migration and seed recipes used locally, then
+starts health-checked Django and Vite services before Playwright. Host ports and the
+development database volume are removed by the CI override. The job always tears
+down containers and volumes, and staging deployment is gated on the complete test
+suite.
 
 ### Stable asset catalog
 

@@ -3,76 +3,85 @@ orbs:
   slack: circleci/slack@6.1.3
 
 commands:
-  install-uv:
-    steps:
-      - restore_cache:
-          keys:
-            - uv-v1-{{ arch }}-{{ checksum "uv.lock" }}
-            - uv-v1-{{ arch }}-
-      - run:
-          name: Install uv
-          command: |
-            python -m pip install --user "uv==0.7.0"
-            echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$BASH_ENV"
-
   notify-slack-on-failure:
     steps:
       - slack/notify:
           event: fail
           template: basic_fail_1
 
-executors:
-  backend:
-    docker:
-      - image: cimg/python:3.12
-        environment:
-          # these are only for testing values
-          POSTGRES_DB: courseflow_ci
-          POSTGRES_USER: courseflow
-          POSTGRES_PASSWORD: courseflow_ci
-          POSTGRES_HOST: 127.0.0.1
-          POSTGRES_PORT: "5432"
-          DJANGO_SECRET_KEY: circleci-not-for-production
-          DJANGO_DEBUG: "false"
-      - image: cimg/postgres:16.15
-        environment:
-          POSTGRES_DB: courseflow_ci
-          POSTGRES_USER: courseflow
-          POSTGRES_PASSWORD: courseflow_ci
-    working_directory: ~/repo
-
 jobs:
-  backend-tests:
-    executor: backend
+  test-suite:
+    machine:
+      image: ubuntu-2404:current
+    working_directory: ~/repo
+    environment:
+      POSTGRES_DB: courseflow_ci
+      POSTGRES_USER: courseflow
+      POSTGRES_PASSWORD: courseflow_ci
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      DJANGO_SECRET_KEY: circleci-not-for-production
+      DJANGO_DEBUG: "false"
+      DJANGO_ALLOWED_HOSTS: 127.0.0.1,localhost,django
+      CORS_ALLOWED_ORIGINS: http://127.0.0.1,http://localhost,http://frontend:3000
+      COMPOSE_PROJECT_NAME: cf-ci
+      COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
     steps:
       - checkout
-#      - run:
-#          name: Wait for PostgreSQL
-#          command: |
-#            python - <<'PY'
-#            import socket
-#            import time
-#
-#            for attempt in range(60):
-#                try:
-#                    with socket.create_connection(("127.0.0.1", 5432), timeout=1):
-#                        break
-#                except OSError:
-#                    if attempt == 59:
-#                        raise
-#                    time.sleep(1)
-#            PY
-#      - install-uv
-#      - run:
-#          name: Install backend dependencies
-#          command: uv sync --frozen --group dev
-#      - save_cache:
-#          key: uv-v1-{{ arch }}-{{ checksum "uv.lock" }}
-#          paths:
-#            - ~/.cache/uv
-#      - run:
-#          name: Run backend tests
-#          command: uv run pytest
+      - run:
+          name: Validate CI container configuration
+          command: docker compose config --quiet
+      - run:
+          name: Build CI images
+          command: |
+            docker compose build django frontend
+      - run:
+          name: Start PostgreSQL test database
+          command: |
+            docker compose up -d --wait --wait-timeout 60 postgres
+      - run:
+          name: Prepare test database and E2E fixtures
+          command: |
+            docker compose run --rm --no-deps django just django::wait-db
+            docker compose run --rm --no-deps django just django::migrate
+            docker compose run --rm --no-deps django just django::create-superuser
+            docker compose run --rm --no-deps django just testing::e2e-tests-seed
+      - run:
+          name: Start Django and frontend
+          command: |
+            docker compose up -d --no-build --wait --wait-timeout 180 django frontend
+      - run:
+          name: Run pre-commit checks
+          command: docker compose exec -T django just testing::pre-commit-run
+      - run:
+          name: Run backend unit tests
+          command: docker compose exec -T django just testing::test-unit
+      - run:
+          name: Run backend type checking
+          command: docker compose exec -T django just testing::typecheck
+      - run:
+          name: Run frontend E2E tests
+          command: |
+            docker compose --profile test run --rm --no-deps test-runner \
+              bash -lc 'yarn --cwd tests install --frozen-lockfile && just testing::test-frontend'
+      - store_artifacts:
+          path: tests/test-results
+          destination: playwright-test-results
+      - store_artifacts:
+          path: tests/playwright-report
+          destination: playwright-report
+      - run:
+          name: Print container diagnostics
+          when: on_fail
+          command: |
+            docker compose ps
+            docker compose logs --no-color --tail 200
+      - run:
+          name: Stop CI containers
+          when: always
+          command: |
+            docker compose --profile test down --volumes --remove-orphans
+      - notify-slack-on-failure
 
   frontend-build:
     docker:
@@ -182,7 +191,7 @@ workflows:
     when:
       equal: [staging, << pipeline.git.branch >>]
     jobs:
-      - backend-tests:
+      - test-suite:
           context:
             - slack-integration-cf
       - frontend-build:
@@ -197,7 +206,7 @@ workflows:
           DEPLOY_KNOWN_HOSTS: "138.197.135.157 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPu/wf+UWtM37jbU8pfgJOPuZvvapCklcYqrsNQaSl1H"
           SSH_FINGERPRINT: SHA256:M8AB7asPZCR2b9AEaPyRyKxczYo+Z0kkcGqdFX1avzE
           requires:
-           # - backend-tests
+      #      - test-suite
             - frontend-build
           serial-group: << pipeline.project.slug >>/courseflow-staging-deploy
 

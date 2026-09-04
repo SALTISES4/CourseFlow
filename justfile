@@ -100,14 +100,28 @@ e2e-prepare:
 # Deployment
 #########################################################
 
-# Deploy the exact checked-out staging commit with a pre-built frontend artifact.
+# Deploy the current server checkout with a pre-built frontend artifact.
 [group: 'Deployment']
 deploy-staging:
   #!/usr/bin/env bash
   set -euo pipefail
 
   {{ compose_cmd }} {{ staging_profile }} config --quiet
-  {{ compose_cmd }} {{ staging_profile }} up -d --build --no-deps --force-recreate
+  if ! {{ compose_cmd }} {{ staging_profile }} up \
+    -d \
+    --build \
+    --no-deps \
+    --force-recreate \
+    --wait \
+    --wait-timeout 180 \
+    django; then
+    {{ compose_cmd }} {{ staging_profile }} ps django >&2 || true
+    {{ compose_cmd }} {{ staging_profile }} logs --tail 100 django >&2 || true
+    exit 1
+  fi
+
+  {{ compose_cmd }} {{ staging_profile }} exec -T django \
+    uv run --no-sync python manage.py migrate --check
 
   mkdir -p ../react
   rsync --archive --delay-updates \
@@ -117,4 +131,4 @@ deploy-staging:
   test -f ../react/index.html
   {{ compose_cmd }} {{ staging_profile }} ps
 
-  echo "CourseFlow staging deployed at commit"
+  echo "CourseFlow staging deployed at commit $(git rev-parse --verify HEAD)"

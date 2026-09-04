@@ -45,6 +45,8 @@ package = true
 
 [dependency-groups]
 dev = [
+  "pre-commit>=4.3",
+  "pyright>=1.1.400",
   "pytest>=8.0",
   "pytest-django>=4.8",
   "ruff>=0.8",
@@ -54,6 +56,24 @@ dev = [
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "course_flow.settings"
 python_files = ["tests.py", "test_*.py", "*_tests.py"]
+
+# Initial CI ratchet. Pyright does not understand Django's generated ORM attributes;
+# expand this list as Django-aware typing is introduced instead of suppressing errors.
+[tool.pyright]
+include = [
+  "course_flow/api/common/schemas.py",
+  "course_flow/api/schemas",
+  "course_flow/application/dto.py",
+  "course_flow/application/graph_mutation_delta.py",
+  "course_flow/application/ports.py",
+  "course_flow/core/discipline_catalogue.py",
+  "course_flow/core/enum.py",
+  "course_flow/core/hierarchy.py",
+  "course_flow/core/reference_data.py",
+  "course_flow/core/system_labels.py",
+]
+pythonVersion = "3.12"
+typeCheckingMode = "standard"
 
 [tool.isort]
 skip = ["./course_flow/models/__init__.py"]

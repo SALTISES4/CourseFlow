@@ -63,7 +63,9 @@ Local development and Playwright use one Postgres database:
   intentionally want to restore the local content baseline.
 - `just rebuild-dev-db` wipes the local volume and is the only full local database reset.
 
-CI/CD should eventually run browser tests against a temporary Docker database created for the job. That isolation mechanism is not wired yet.
+CircleCI runs browser tests against a temporary PostgreSQL container and destroys the
+database volume at the end of the job. Local development continues to use the single
+`courseflow` database described above.
 
 ## Package layout
 
@@ -266,17 +268,26 @@ Active specs in `e2e/workflow/edit-section-fr-001-012.spec.ts`:
 
 Requires `PLAYWRIGHT_WORKFLOW_PATH`, Django on `:8000`, and an owner/editor session from auth setup.
 
-## CI goal (not wired yet)
+## CircleCI execution
 
-CI/CD should own isolation instead of introducing another local database mode:
+The `test-suite` job uses `docker-compose.yml` with `docker-compose.ci.yml` and owns
+the complete isolated test stack:
 
 1. Start a temporary Postgres database in Docker for the job
-2. Run migrations and `cf-seed-e2e-data` against that database
-3. Start Django and Vite (or serve the built frontend)
-4. Run Playwright `globalSetup` → auth setup → specs
-5. Destroy the temporary database with the job
+2. Run `just django::wait-db`, `just django::migrate`,
+   `just django::create-superuser`, and `just testing::e2e-tests-seed`
+3. Start Django and Vite and wait for both health checks
+4. Run pre-commit, Django tests, the current Pyright ratchet, and Playwright in
+   that order
+5. Upload Playwright diagnostics and destroy all containers and the database volume
 
-CircleCI currently runs Django unit tests only; browser E2E is local-first until this pipeline exists.
+The staging deployment requires both `test-suite` and `frontend-build`, so any failed
+gate prevents deployment.
+
+Pyright currently covers the explicitly listed schema, DTO, port, and pure-domain
+modules in `pyproject.toml`. It is an incremental boundary, not a claim that the
+entire Django application is type-clean. Expand the include list only as additional
+modules pass without masking Django ORM errors.
 
 ## Troubleshooting
 

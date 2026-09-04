@@ -9,7 +9,8 @@ export default defineConfig({
   base: '/',
   server: {
     port: 3000,
-    strictPort: true
+    strictPort: true,
+    allowedHosts: process.env.VITE_ALLOWED_HOSTS?.split(',').filter(Boolean)
   },
   css: {
     preprocessorOptions: {

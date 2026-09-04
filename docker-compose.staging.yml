@@ -4,5 +4,4 @@ services:
       - staging
     volumes: !reset []
     depends_on: !reset {}
-    healthcheck: !reset null
     restart: unless-stopped

@@ -28,10 +28,10 @@ e2e-assets-check:
 #  TESTING : RUN
 #########################################################
 
-# run all the precommit hooks including (ruff, safety) see .pre-commit-config.yaml
+# Run every hook configured in .pre-commit-config.yaml against the repository.
 [group: 'Testing:run']
 pre-commit-run:
-  pre-commit run
+  uv run pre-commit run --all-files
 
 [group: 'Testing:run']
 test:
@@ -39,7 +39,7 @@ test:
 
 [group: 'Testing:run']
 test-unit:
-  uv run pytest tests/unit_tests
+  uv run pytest course_flow/tests
 
 [group: 'Testing:run']
 typecheck:
@@ -48,4 +48,8 @@ typecheck:
 
 [group: 'Testing:run']
 test-frontend:
+  cd {{ testing_dir }} && yarn test
+
+[group: 'Testing:run']
+test-frontend-ui:
   cd {{ testing_dir }} && yarn test-ui

@@ -681,7 +681,7 @@
     playwright "1.61.0-alpha-1781023400000"
     playwright-core "1.61.0-alpha-1781023400000"
 
-"@playwright/test@^1.59.1":
+"@playwright/test@1.61.0":
   version "1.61.0"
   resolved "https://registry.yarnpkg.com/@playwright/test/-/test-1.61.0.tgz#dcc3d43e581aab2985d70413309d89350e980ad8"
   integrity sha512-cKA5B6lpFEMyMGjxF54QihfYpB4FkEGH+qZhtArDEG+wezQAJY8Pq6C7T1SjWz+FFzt3TbyoXBQYk/0292TdJA==

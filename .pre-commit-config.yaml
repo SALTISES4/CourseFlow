@@ -6,4 +6,6 @@ repos:
     hooks:
       - id: isort
         verbose: true
-        entry: bash -c 'isort "$@" || true' --
+        args:
+          - --check-only
+          - --diff
