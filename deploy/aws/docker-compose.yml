@@ -1,0 +1,75 @@
+name: courseflow-staging
+
+services:
+  caddy:
+    image: caddy:2.10.2-alpine
+    depends_on:
+      django:
+        condition: service_healthy
+    env_file:
+      - ${COURSEFLOW_RUNTIME_ENV_FILE:-runtime.env}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    logging:
+      driver: awslogs
+      options:
+        awslogs-region: ${AWS_REGION:?}
+        awslogs-group: ${CLOUDWATCH_LOG_GROUP:?}
+        awslogs-stream: caddy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:2019/config/"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - courseflow
+
+  django:
+    image: ${COURSEFLOW_IMAGE:?}
+    env_file:
+      - ${COURSEFLOW_RUNTIME_ENV_FILE:-runtime.env}
+    environment:
+      DJANGO_MIGRATE_ON_STARTUP: "false"
+      DJANGO_SECRET_KEY_FILE: /run/secrets/django_secret_key
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    expose:
+      - "8000"
+    secrets:
+      - django_secret_key
+      - postgres_password
+    healthcheck:
+      test: ["CMD", "python", "/healthcheck.py"]
+      interval: 10s
+      timeout: 3s
+      retries: 18
+      start_period: 20s
+    logging:
+      driver: awslogs
+      options:
+        awslogs-region: ${AWS_REGION:?}
+        awslogs-group: ${CLOUDWATCH_LOG_GROUP:?}
+        awslogs-stream: django
+    restart: unless-stopped
+    networks:
+      - courseflow
+
+secrets:
+  django_secret_key:
+    file: ./secrets/django_secret_key
+  postgres_password:
+    file: ./secrets/postgres_password
+
+volumes:
+  caddy_config:
+  caddy_data:
+
+networks:
+  courseflow:
+    driver: bridge

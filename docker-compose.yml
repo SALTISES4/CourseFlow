@@ -38,6 +38,7 @@ services:
       DJANGO_DEBUG: ${DJANGO_DEBUG:?}
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:?}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:?}
+      DJANGO_MIGRATE_ON_STARTUP: ${DJANGO_MIGRATE_ON_STARTUP:-true}
     depends_on:
       []
     healthcheck:

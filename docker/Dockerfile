@@ -32,4 +32,14 @@ RUN apt-get update \
 
 FROM base AS runtime
 
-RUN uv sync --frozen --no-dev
+RUN uv sync --frozen --no-dev \
+    && groupadd --gid 10001 courseflow \
+    && useradd --no-create-home --uid 10001 --gid courseflow courseflow
+
+ENV GUNICORN_CMD_ARGS="--bind=0.0.0.0:8000 --workers=2 --timeout=60 --access-logfile=- --error-logfile=- --capture-output" \
+    HOME=/tmp \
+    UV_CACHE_DIR=/tmp/uv-cache
+
+USER courseflow
+
+CMD ["uv", "run", "--no-sync", "gunicorn", "course_flow.wsgi:application"]

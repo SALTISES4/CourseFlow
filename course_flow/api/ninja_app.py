@@ -1,3 +1,4 @@
+from django.db import connection
 from ninja import NinjaAPI, Router
 
 from course_flow.api.common.schemas import CamelSchema
@@ -71,4 +72,12 @@ class HealthResponse(CamelSchema):
 
 @api.get("/health", response=HealthResponse, summary="Liveness check", tags=["meta"])
 def health(request):
+    return HealthResponse(status="ok")
+
+
+@api.get("/ready", response=HealthResponse, summary="Readiness check", tags=["meta"])
+def ready(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT 1")
+        cursor.fetchone()
     return HealthResponse(status="ok")
