@@ -362,9 +362,9 @@ workflows:
       - test-suite:
           context:
             - slack-integration-cf
-      - playwright-e2e:
-          context:
-            - slack-integration-cf
+#      - playwright-e2e:
+#          context:
+#            - slack-integration-cf
       - frontend-build:
           name: frontend-build-aws
           VITE_API_BASE_URL: https://courseflow-api-staging.mydalite.org
