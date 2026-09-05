@@ -30,21 +30,35 @@ export default defineConfig({
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  /* Bound broken CI runs while preserving the complete local failure signal. */
+  globalTimeout: process.env.CI ? 60 * 60 * 1_000 : undefined,
+  maxFailures: process.env.CI ? 10 : 0,
+  /* One retry is enough to classify a CI failure as flaky. */
+  retries: process.env.CI ? 1 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [
-    ['list'],
-    ['html', {
-      outputFolder: 'playwright-report',
-      open: 'never',
-    }],
-    ['allure-playwright', {
-      resultsDir: 'allure-results',
-    }],
-  ],
+  reporter: process.env.CI
+    ? [
+        ['line'],
+        ['html', {
+          outputFolder: 'playwright-report',
+          open: 'never',
+        }],
+        ['junit', {
+          outputFile: process.env.PLAYWRIGHT_JUNIT_OUTPUT_FILE ?? 'test-results/junit.xml',
+        }],
+      ]
+    : [
+        ['list'],
+        ['html', {
+          outputFolder: 'playwright-report',
+          open: 'never',
+        }],
+        ['allure-playwright', {
+          resultsDir: 'allure-results',
+        }],
+      ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Vite dev server (react/vite.config.js port 3000). Override via PLAYWRIGHT_BASE_URL. */
@@ -54,7 +68,7 @@ export default defineConfig({
     trace: "on-first-retry",
    // trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    video: process.env.CI ? 'on-first-retry' : 'retain-on-failure',
   },
 
   /* Configure projects for major browsers */

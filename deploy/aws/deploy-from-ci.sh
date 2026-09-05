@@ -163,10 +163,10 @@ remote_script="$(printf '%s\n' \
   'set -euo pipefail' \
   'for attempt in {1..60}; do command -v aws >/dev/null && command -v docker >/dev/null && command -v jq >/dev/null && docker compose version >/dev/null 2>&1 && break; sleep 10; done' \
   'command -v aws >/dev/null && command -v docker >/dev/null && command -v jq >/dev/null && docker compose version >/dev/null' \
-  "release_dir='/opt/courseflow/releases/${image_tag}'" \
+  "release_dir='/opt/courseflowv2/releases/${image_tag}'" \
   'install -d -m 0750 "${release_dir}"' \
-  "aws s3 cp 's3://${deployment_bucket}/${bundle_key}' /tmp/courseflow-runtime.tar.gz --region '${aws_region}' --only-show-errors" \
-  'tar -xzf /tmp/courseflow-runtime.tar.gz -C "${release_dir}"' \
+  "aws s3 cp 's3://${deployment_bucket}/${bundle_key}' /tmp/courseflowv2-runtime.tar.gz --region '${aws_region}' --only-show-errors" \
+  'tar -xzf /tmp/courseflowv2-runtime.tar.gz -C "${release_dir}"' \
   'chmod 0755 "${release_dir}/deploy.sh"' \
   'bash "${release_dir}/deploy.sh" "${release_dir}"')"
 remote_script_base64="$(printf '%s' "${remote_script}" | base64 | tr -d '\n')"

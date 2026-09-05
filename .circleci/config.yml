@@ -1,14 +1,7 @@
 version: 2.1
 
-parameters:
-  deploy_aws_staging:
-    type: boolean
-    default: false
-  aws_staging_api_base_url:
-    type: string
-    default: ""
-
 orbs:
+  aws-cli: circleci/aws-cli@5.4.1
   slack: circleci/slack@6.1.3
 
 commands:
@@ -19,9 +12,18 @@ commands:
           template: basic_fail_1
 
 jobs:
+  notify-workflow:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - slack/notify:
+          event: pass
+          template: basic_success_1
+
   test-suite:
     machine:
       image: ubuntu-2404:current
+    resource_class: medium.gen2
     working_directory: ~/repo
     environment:
       ENV: test
@@ -42,7 +44,76 @@ jobs:
           name: Validate CI container configuration
           command: docker compose config --quiet
       - run:
-          name: Build CI images
+          name: Build Django CI image
+          command: |
+            docker compose build django
+      - run:
+          name: Start PostgreSQL test database
+          command: |
+            docker compose up -d --wait --wait-timeout 60 postgres
+      - run:
+          name: Prepare test database
+          command: |
+            docker compose run --rm --no-deps django just django::wait-db
+            docker compose run --rm --no-deps django just django::migrate
+      - run:
+          name: Start Django
+          command: |
+            docker compose up -d --no-build --wait --wait-timeout 180 django
+      - run:
+          name: Run pre-commit checks
+          command: docker compose exec -T django just testing::pre-commit-run
+      - run:
+          name: Run backend unit tests
+          command: docker compose exec -T django just testing::test-unit
+      - run:
+          name: Run backend type checking
+          command: docker compose exec -T django just testing::typecheck
+      - run:
+          name: Print container diagnostics
+          when: on_fail
+          command: |
+            docker compose ps
+            docker compose logs --no-color --tail 200
+      - run:
+          name: Stop CI containers
+          when: always
+          command: |
+            docker compose --profile test down --volumes --remove-orphans
+      - notify-slack-on-failure
+
+  playwright-e2e:
+    machine:
+      image: ubuntu-2404:current
+    resource_class: medium.gen2
+    parallelism: 4
+    working_directory: ~/repo
+    environment:
+      ENV: test
+      POSTGRES_DB: courseflow_ci
+      POSTGRES_USER: courseflow
+      POSTGRES_PASSWORD: courseflow_ci
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      DJANGO_SECRET_KEY: circleci-not-for-production
+      DJANGO_DEBUG: "false"
+      DJANGO_ALLOWED_HOSTS: 127.0.0.1,localhost,django
+      CORS_ALLOWED_ORIGINS: http://127.0.0.1,http://localhost,http://frontend:3000
+      COMPOSE_PROJECT_NAME: cf-ci-e2e
+      COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
+    steps:
+      - checkout
+      - run:
+          name: Record shard runtime environment
+          command: |
+            printf 'Playwright shard %s of %s\n' "$((CIRCLE_NODE_INDEX + 1))" "$CIRCLE_NODE_TOTAL"
+            nproc
+            free -h
+      - run:
+          name: Validate CI container configuration
+          command: docker compose config --quiet
+      - run:
+          name: Build E2E images
           command: |
             docker compose build django frontend
       - run:
@@ -55,7 +126,7 @@ jobs:
           command: |
             docker compose up -d --wait --wait-timeout 60 postgres
       - run:
-          name: Prepare test database and E2E fixtures
+          name: Prepare E2E fixtures
           command: |
             docker compose run --rm --no-deps django just django::wait-db
             docker compose run --rm --no-deps django just django::migrate
@@ -66,19 +137,16 @@ jobs:
           command: |
             docker compose up -d --no-build --wait --wait-timeout 180 django frontend
       - run:
-          name: Run pre-commit checks
-          command: docker compose exec -T django just testing::pre-commit-run
-      - run:
-          name: Run backend unit tests
-          command: docker compose exec -T django just testing::test-unit
-      - run:
-          name: Run backend type checking
-          command: docker compose exec -T django just testing::typecheck
-      - run:
-          name: Run frontend E2E tests
+          name: Run Playwright shard
           command: |
-            docker compose --profile test run --rm --no-deps test-runner \
-              bash -lc 'yarn --cwd tests install --frozen-lockfile && just testing::test-frontend'
+            shard="$((CIRCLE_NODE_INDEX + 1))/${CIRCLE_NODE_TOTAL}"
+            time docker compose --profile test run --rm --no-deps \
+              -e PLAYWRIGHT_SHARD="$shard" \
+              -e PLAYWRIGHT_JUNIT_OUTPUT_FILE="test-results/junit-${CIRCLE_NODE_INDEX}.xml" \
+              test-runner \
+              bash -lc 'yarn --cwd tests install --frozen-lockfile && yarn --cwd tests test --shard="$PLAYWRIGHT_SHARD"'
+      - store_test_results:
+          path: tests/test-results
       - store_artifacts:
           path: tests/test-results
           destination: playwright-test-results
@@ -134,54 +202,6 @@ jobs:
           root: ~/repo
           paths:
             - react/dist
-      - notify-slack-on-failure
-
-  deploy-aws-staging:
-    parameters:
-      AWS_REGION:
-        type: string
-      CORE_STACK_NAME:
-        type: string
-      EDGE_STACK_NAME:
-        type: string
-      API_BASE_URL:
-        type: string
-    machine:
-      image: ubuntu-2404:current
-    working_directory: ~/repo
-    environment:
-      AWS_REGION: << parameters.AWS_REGION >>
-      CORE_STACK_NAME: << parameters.CORE_STACK_NAME >>
-      EDGE_STACK_NAME: << parameters.EDGE_STACK_NAME >>
-      API_BASE_URL: << parameters.API_BASE_URL >>
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/repo
-      - run:
-          name: Install AWS deployment tools
-          command: |
-            sudo apt-get update
-            sudo apt-get install --yes --no-install-recommends awscli jq
-      - run:
-          name: Validate AWS deployment credentials and frontend configuration
-          command: |
-            test -n "$AWS_ACCESS_KEY_ID"
-            test -n "$AWS_SECRET_ACCESS_KEY"
-            test -n "$API_BASE_URL"
-            aws sts get-caller-identity >/dev/null
-            test -f react/dist/index.html
-      - run:
-          name: Publish and deploy CourseFlow to AWS staging
-          no_output_timeout: 20m
-          command: |
-            bash deploy/aws/deploy-from-ci.sh \
-              "$CIRCLE_SHA1" \
-              react/dist \
-              "$CORE_STACK_NAME" \
-              "$EDGE_STACK_NAME" \
-              "$AWS_REGION" \
-              "$API_BASE_URL"
       - notify-slack-on-failure
 
   deploy-uat:
@@ -247,13 +267,58 @@ jobs:
               "cd '${DEPLOY_PATH}/courseflow' && git pull && just --yes deploy-uat"
       - notify-slack-on-failure
 
-  notify-workflow:
-    docker:
-      - image: cimg/base:stable
+  deploy-aws:
+    parameters:
+      AWS_REGION:
+        type: string
+      CORE_STACK_NAME:
+        type: string
+      EDGE_STACK_NAME:
+        type: string
+      API_BASE_URL:
+        type: string
+    machine:
+      image: ubuntu-2404:current
+    working_directory: ~/repo
+    environment:
+      AWS_REGION: << parameters.AWS_REGION >>
+      CORE_STACK_NAME: << parameters.CORE_STACK_NAME >>
+      EDGE_STACK_NAME: << parameters.EDGE_STACK_NAME >>
+      API_BASE_URL: << parameters.API_BASE_URL >>
     steps:
-      - slack/notify:
-          event: pass
-          template: basic_success_1
+      - checkout
+      - attach_workspace:
+          at: ~/repo
+      - aws-cli/setup:
+          aws_access_key_id: $AWS_ACCESS_KEY_ID
+          aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
+          region: $AWS_REGION
+      - run:
+          name: Install AWS deployment support tools
+          command: |
+            sudo apt-get update
+            sudo apt-get install --yes --no-install-recommends jq
+      - run:
+          name: Validate AWS deployment credentials and frontend configuration
+          command: |
+            test -n "$AWS_ACCESS_KEY_ID"
+            test -n "$AWS_SECRET_ACCESS_KEY"
+            test -n "$API_BASE_URL"
+            aws sts get-caller-identity >/dev/null
+            test -f react/dist/index.html
+      - run:
+          name: Publish and deploy CourseFlow to AWS staging
+          no_output_timeout: 20m
+          command: |
+            bash deploy/aws/deploy-from-ci.sh \
+              "$CIRCLE_SHA1" \
+              react/dist \
+              "$CORE_STACK_NAME" \
+              "$EDGE_STACK_NAME" \
+              "$AWS_REGION" \
+              "$API_BASE_URL"
+      - notify-slack-on-failure
+
 
 workflows:
   uat-deployment:
@@ -263,6 +328,9 @@ workflows:
       - test-suite:
           context:
             - slack-integration-cf
+#      - playwright-e2e:
+#          context:
+#            - slack-integration-cf
       - frontend-build:
           context:
             - slack-integration-cf
@@ -276,6 +344,7 @@ workflows:
           SSH_FINGERPRINT: SHA256:M8AB7asPZCR2b9AEaPyRyKxczYo+Z0kkcGqdFX1avzE
           requires:
             - test-suite
+         #   - playwright-e2e
             - frontend-build
           serial-group: << pipeline.project.slug >>/courseflow-uat-deploy
 
@@ -288,35 +357,38 @@ workflows:
 
   aws-staging-deployment:
     when:
-      and:
-        - equal: [staging, << pipeline.git.branch >>]
-        - << pipeline.parameters.deploy_aws_staging >>
+      equal: [staging, << pipeline.git.branch >>]
     jobs:
       - test-suite:
           context:
             - slack-integration-cf
+      - playwright-e2e:
+          context:
+            - slack-integration-cf
       - frontend-build:
           name: frontend-build-aws
-          VITE_API_BASE_URL: << pipeline.parameters.aws_staging_api_base_url >>
+          VITE_API_BASE_URL: https://courseflow-api-staging.mydalite.org
           context:
             - slack-integration-cf
-      - deploy-aws-staging:
+      - deploy-aws:
           context:
-            - aws-courseflow-staging
+            - aws-courseflowv2-staging
             - slack-integration-cf
           AWS_REGION: ca-central-1
-          CORE_STACK_NAME: courseflow-staging-core
-          EDGE_STACK_NAME: courseflow-staging-edge
-          API_BASE_URL: << pipeline.parameters.aws_staging_api_base_url >>
+          CORE_STACK_NAME: courseflowv2-staging-core
+          EDGE_STACK_NAME: courseflowv2-staging-edge
+          API_BASE_URL: https://courseflow-api-staging.mydalite.org
           requires:
             - test-suite
+            # - playwright-e2e
             - frontend-build-aws
-          serial-group: << pipeline.project.slug >>/courseflow-aws-staging-deploy
+          serial-group: << pipeline.project.slug >>/courseflowv2-aws-staging-deploy
       - notify-workflow:
           name: notify-aws-staging-workflow
           context:
             - slack-integration-cf
           requires:
-            - deploy-aws-staging
+            - deploy-aws
             - frontend-build-aws
+            # - playwright-e2e
             - test-suite

@@ -93,8 +93,8 @@ compose=(
 "${compose[@]}" pull
 
 previous_release=""
-if [[ -L /opt/courseflow/current ]]; then
-  previous_release="$(readlink -f /opt/courseflow/current)"
+if [[ -L /opt/courseflowv2/current ]]; then
+  previous_release="$(readlink -f /opt/courseflowv2/current)"
 fi
 
 if [[ -n "${previous_release}" && -f "${previous_release}/runtime.env" ]]; then
@@ -132,6 +132,6 @@ if ! "${compose[@]}" up \
 fi
 
 "${compose[@]}" exec -T django python /healthcheck.py
-ln -sfn "${release_dir}" /opt/courseflow/current
+ln -sfn "${release_dir}" /opt/courseflowv2/current
 
 echo "CourseFlow deployed from ${image_uri}"

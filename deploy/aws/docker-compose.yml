@@ -1,4 +1,4 @@
-name: courseflow-staging
+name: courseflowv2-staging
 
 services:
   caddy:

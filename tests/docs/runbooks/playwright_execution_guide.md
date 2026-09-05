@@ -270,20 +270,32 @@ Requires `PLAYWRIGHT_WORKFLOW_PATH`, Django on `:8000`, and an owner/editor sess
 
 ## CircleCI execution
 
-The `test-suite` job uses `docker-compose.yml` with `docker-compose.ci.yml` and owns
-the complete isolated test stack:
+CircleCI keeps backend quality checks and browser tests in separate jobs:
 
-1. Install frontend dependencies into a CI-owned Linux `node_modules` volume
-2. Start a temporary Postgres database in Docker for the job
-3. Run `just django::wait-db`, `just django::migrate`,
-   `just django::create-superuser`, and `just testing::e2e-tests-seed`
-4. Start Django and Vite and wait for both health checks
-5. Run pre-commit, Django tests, the current Pyright ratchet, and Playwright in
-   that order
-6. Upload Playwright diagnostics and destroy all containers and job-owned volumes
+- `test-suite` runs pre-commit, backend unit tests, and Pyright once.
+- `playwright-e2e` uses four CircleCI execution nodes. Each node owns an isolated
+  PostgreSQL, Django, Vite, and Playwright stack and runs one Playwright shard.
+- Playwright keeps one worker per node. `fullyParallel: true` balances individual
+  tests across the four shards, including large parameterized spec files.
+- The authentication setup project runs once on every shard before that shard's
+  Chromium tests.
 
-The DigitalOcean UAT deployment requires both `test-suite` and `frontend-build`, so any failed
-gate prevents deployment.
+CI permits one retry, stops a shard after 10 failures, and applies a 60-minute
+Playwright global timeout. These limits keep deployment fail-closed while preventing a
+deterministically broken suite from consuming an unbounded job.
+
+Each shard writes JUnit XML under `tests/test-results/`. CircleCI uploads that directory
+with `store_test_results`, making per-test duration and flaky-test data available in the
+Tests tab. The HTML report and failure attachments remain build artifacts. Allure is
+local-only because the CircleCI workflow does not consume Allure output.
+
+Both UAT and AWS staging deployment require `test-suite`, `playwright-e2e`, and the
+applicable frontend build job, so any failed gate prevents deployment.
+
+For an execution-policy change, compare at least three hosted runs. Record overall job
+wall time, slowest shard, median and p95 test duration, retry count, and failures. The
+initial target is a complete Playwright job in under 45 minutes without increasing the
+flaky-test rate.
 
 Pyright currently covers the explicitly listed schema, DTO, port, and pure-domain
 modules in `pyproject.toml`. It is an incremental boundary, not a claim that the
