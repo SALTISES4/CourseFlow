@@ -15,13 +15,12 @@ import * as Styled from './styles'
 type PropsType = {
   leftSection: ReactElement
   viewbar?: ReactElement
-  userbar?: ReactElement
 }
 
 /**
  * there is room to make this more flex, i.e. left, middle etc sections should be just layout wrappers that content gets assigned to
  */
-const MenuBar = ({ leftSection, viewbar, userbar }: PropsType) => {
+const MenuBar = ({ leftSection, viewbar }: PropsType) => {
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -33,7 +32,6 @@ const MenuBar = ({ leftSection, viewbar, userbar }: PropsType) => {
             {leftSection}
           </div>
           <Stack direction="row" spacing={2}>
-            <div data-test-id="user-bar">{userbar}</div>
             <div data-test-id="view-bar">{viewbar}</div>
           </Stack>
         </Styled.Inner>
