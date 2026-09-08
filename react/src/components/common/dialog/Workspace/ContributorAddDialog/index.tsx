@@ -1,9 +1,9 @@
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import {
   addProjectTeamMembersMutation,
   listProjectTeamQueryKey,
   listUsersOptions
 } from '@cf/api/gen/@tanstack/react-query.gen'
-import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import { ProjectTeamRoleSchema } from '@cf/api/gen/types.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { WorkspaceType } from '@cf/types/enum'
@@ -113,10 +113,9 @@ const ContributorAddDialog = ({
           role
         }
       })
-      enqueueSnackbar(
-        t('contributor.added'),
-        { variant: SnackbarOptions.SUCCESS }
-      )
+      enqueueSnackbar(t('contributor.added'), {
+        variant: SnackbarOptions.SUCCESS
+      })
       refetch()
       onClose()
     } catch (err) {
@@ -127,7 +126,7 @@ const ContributorAddDialog = ({
       }
       console.error('Failed to add contributor:', err)
     }
-  }, [addMembers, uuid, onClose, refetch, role, userUuids])
+  }, [addMembers, uuid, onClose, refetch, role, t, userUuids])
 
   const onAutocompleteChange = useCallback((value: string) => {
     setSearch(value)

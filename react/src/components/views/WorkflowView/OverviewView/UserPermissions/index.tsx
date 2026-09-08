@@ -1,9 +1,9 @@
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import {
   listProjectTeamOptions,
   listProjectTeamQueryKey,
   updateProjectTeamMemberMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
-import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import type {
   ProjectTeamMemberOut,
   UserSummaryOut

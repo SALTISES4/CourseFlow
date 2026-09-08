@@ -1,8 +1,8 @@
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import {
   getProjectQueryKey,
   updateProjectMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
-import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import { ProjectDetailOut, ProjectPermission } from '@cf/api/gen/types.gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
@@ -122,9 +122,7 @@ const OverviewTab = ({
             )
           }
           title={
-            isPublished
-              ? t('status.currentPublic')
-              : t('status.currentPrivate')
+            isPublished ? t('status.currentPublic') : t('status.currentPrivate')
           }
           cta={
             canPublish && (
@@ -153,9 +151,7 @@ const OverviewTab = ({
       <StyledDialog open={!!show} onClose={onClose} fullWidth maxWidth="sm">
         <DialogTitle>{t('actions.publish')}</DialogTitle>
         <DialogContent dividers>
-          <Typography>
-            {t('overview.publishConfirmation')}
-          </Typography>
+          <Typography>{t('overview.publishConfirmation')}</Typography>
         </DialogContent>
         <DialogActions>
           <Button

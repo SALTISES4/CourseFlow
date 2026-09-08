@@ -203,9 +203,7 @@ class WorkspaceEditLockService:
             else {"workflow_id": resource.id}
         )
         lock = (
-            WorkspaceEditLock.objects.filter(**filters)
-            .select_related("holder")
-            .first()
+            WorkspaceEditLock.objects.filter(**filters).select_related("holder").first()
         )
         now = timezone.now()
         if lock is None or lock.expires_at <= now:

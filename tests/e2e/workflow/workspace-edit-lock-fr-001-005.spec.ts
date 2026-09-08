@@ -8,7 +8,7 @@ import {
   workspaceEditLockTakeoverButton,
 } from '../../shared/locators/workspace-edit-lock';
 import {
-  workflowMetadataFieldCode,
+  workflowMetadataFieldTime,
   workflowOverviewView,
 } from './workflow-overview.locators';
 
@@ -42,7 +42,7 @@ test('FR-WS-LOCK-001/003/004/005: workflow takeover transfers editability and th
   const overviewPath = workflowOverviewPath(workflow.path);
   await page.goto(overviewPath);
   await expect(workflowOverviewView(page)).toBeVisible();
-  await expect(workflowMetadataFieldCode(page)).toBeEditable();
+  await expect(workflowMetadataFieldTime(page)).toBeEditable();
   await expect(workspaceEditLockBanner(page)).toHaveCount(0);
 
   const ownerLock = await readWorkflowLock(page, workflow.workflowUuid);
@@ -64,11 +64,11 @@ test('FR-WS-LOCK-001/003/004/005: workflow takeover transfers editability and th
     );
     await expect(workspaceEditLockTakeoverButton(editorPage)).toHaveText('Yes');
     await expect(workspaceEditLockTakeoverButton(editorPage)).toBeEnabled();
-    await expect(workflowMetadataFieldCode(editorPage)).not.toBeEditable();
+    await expect(workflowMetadataFieldTime(editorPage)).not.toBeEditable();
 
     await workspaceEditLockTakeoverButton(editorPage).click();
     await expect(workspaceEditLockBanner(editorPage)).toHaveCount(0);
-    await expect(workflowMetadataFieldCode(editorPage)).toBeEditable();
+    await expect(workflowMetadataFieldTime(editorPage)).toBeEditable();
 
     const editorLock = await readWorkflowLock(editorPage, workflow.workflowUuid);
     expect(editorLock.state).toBe('held');
@@ -78,7 +78,7 @@ test('FR-WS-LOCK-001/003/004/005: workflow takeover transfers editability and th
       `${editorLock.holder!.displayName} is currently editing this page. Do you wish to take over?`,
       { timeout: 10_000 },
     );
-    await expect(workflowMetadataFieldCode(page)).not.toBeEditable();
+    await expect(workflowMetadataFieldTime(page)).not.toBeEditable();
   } finally {
     await editorContext.close();
   }

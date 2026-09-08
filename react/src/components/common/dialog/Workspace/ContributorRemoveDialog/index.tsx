@@ -1,8 +1,8 @@
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import {
   deleteProjectTeamMemberMutation,
   listProjectTeamQueryKey
 } from '@cf/api/gen/@tanstack/react-query.gen'
-import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { WorkspaceType } from '@cf/types/enum'
 import { SnackbarOptions } from '@cf/utility/constants'
@@ -51,10 +51,9 @@ const ContributorRemoveDialog = ({
           membership_id: payload.membershipId
         }
       })
-      enqueueSnackbar(
-        t('contributor.removed'),
-        { variant: SnackbarOptions.SUCCESS }
-      )
+      enqueueSnackbar(t('contributor.removed'), {
+        variant: SnackbarOptions.SUCCESS
+      })
       onClose()
     } catch (err) {
       if (!isApiErrorNotificationHandled(err)) {
@@ -74,7 +73,9 @@ const ContributorRemoveDialog = ({
       maxWidth="xs"
       aria-labelledby="remove-user-modal"
     >
-      <DialogTitle id="remove-user-modal">{t('contributor.removeTitle')}</DialogTitle>
+      <DialogTitle id="remove-user-modal">
+        {t('contributor.removeTitle')}
+      </DialogTitle>
       <DialogContent dividers>
         <Typography gutterBottom>
           {t('contributor.removeConfirmation', {

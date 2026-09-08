@@ -297,7 +297,7 @@ export function useWorkspaceEditLock({
     resourceUuid,
     showUnavailable,
     takeoverPending,
-    viewState.lock?.version,
+    viewState.lock,
     workspace
   ])
 

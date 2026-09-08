@@ -138,9 +138,7 @@ def workspace_mutation_lock(
         type_hints = get_type_hints(func)
         signature = signature.replace(
             parameters=[
-                parameter.replace(
-                    annotation=type_hints.get(name, parameter.annotation)
-                )
+                parameter.replace(annotation=type_hints.get(name, parameter.annotation))
                 for name, parameter in signature.parameters.items()
             ],
             return_annotation=type_hints.get("return", signature.return_annotation),

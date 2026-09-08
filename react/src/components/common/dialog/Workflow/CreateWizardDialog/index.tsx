@@ -1,3 +1,4 @@
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import { WorkflowTypeIn } from '@cf/api/gen'
 import {
   copyWorkflowMutation,
@@ -5,7 +6,6 @@ import {
   getWorkflowOptions,
   listWorkflowsQueryKey
 } from '@cf/api/gen/@tanstack/react-query.gen'
-import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import WorkflowForm, {
   WorkflowFormType
 } from '@cf/components/common/dialog/Workflow/components/WorkflowForm'
@@ -80,11 +80,7 @@ const CreateWizardDialog = () => {
   const routeProjectUuid = location.pathname.startsWith('/project/')
     ? routeUuid
     : routeWorkflow.data?.item.projectUuid
-  const localizedWorkflowType = workflowTypeLabel(
-    t,
-    state.workflowType,
-    true
-  )
+  const localizedWorkflowType = workflowTypeLabel(t, state.workflowType, true)
 
   const createWorkflow = useMutation({
     ...createWorkflowMutation(),
@@ -403,9 +399,7 @@ const CreateWizardDialog = () => {
             copyWorkflow.isPending
           }
         >
-          {state.step !== steps.length - 1
-            ? t('wizard.nextStep')
-            : ctaTitle}
+          {state.step !== steps.length - 1 ? t('wizard.nextStep') : ctaTitle}
         </Button>
       </>
     )
