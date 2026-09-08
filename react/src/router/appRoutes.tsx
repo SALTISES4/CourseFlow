@@ -13,8 +13,8 @@ import NotificationsSettingsPage from '@cfPages/Settings/NotificationsSettings'
 import PasswordResetPage from '@cfPages/Settings/PasswordReset'
 import ProfileSettingsPage from '@cfPages/Settings/ProfileSettings'
 import UserRegisterPage from '@cfPages/SignIn/Register'
-import { Navigate, createBrowserRouter } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Navigate, createBrowserRouter } from 'react-router-dom'
 
 /*******************************************************
  * NOTE:  RR6 drastically altered its approach and no longer robustly supports absolute paths

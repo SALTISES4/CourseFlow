@@ -6,8 +6,8 @@ import { TimeField } from '@mui/x-date-pickers/TimeField'
 import { getHours, getMinutes } from 'date-fns'
 import { produce } from 'immer'
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
-import { NumericFormat } from 'react-number-format'
 import { useTranslation } from 'react-i18next'
+import { NumericFormat } from 'react-number-format'
 
 type Duration = {
   days: number

@@ -15,8 +15,8 @@ import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/Lin
 import { useQuery } from '@tanstack/react-query'
 import { MouseEvent, useCallback, useMemo } from 'react'
 import { createPortal } from 'react-dom'
-import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 
 import Handles from '../../../../components/LineSVG/Handles'
 import DropIndicator from '../DropIndicator'
@@ -107,11 +107,7 @@ const SectionCellNode = ({
       linkedWorkflow?.title ||
       node.title ||
       nodeTitleFallback(t('linked.untitledNode'))
-    : displaySystemTitle(
-        t,
-        node,
-        nodeTitleFallback(t('linked.untitledNode'))
-      )
+    : displaySystemTitle(t, node, nodeTitleFallback(t('linked.untitledNode')))
 
   return (
     <>

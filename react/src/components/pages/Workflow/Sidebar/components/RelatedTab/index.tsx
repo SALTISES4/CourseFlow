@@ -4,9 +4,9 @@ import { RootState } from '@cf/redux/store'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import Typography from '@mui/material/Typography'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 
 import * as Styled from '../../styles'
 import Outcome from '../OutcomesTab/Outcome'
@@ -34,11 +34,7 @@ const RelatedTab = () => {
           <Alert
             severity="info"
             persistent
-            subtitle={
-              <>
-                {t('outcomes.addRequired')}
-              </>
-            }
+            subtitle={<>{t('outcomes.addRequired')}</>}
           />
         </Styled.SidebarContent>
       </Styled.SidebarInnerWrap>

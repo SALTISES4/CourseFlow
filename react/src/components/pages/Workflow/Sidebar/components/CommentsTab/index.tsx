@@ -9,6 +9,7 @@ import { UserContext } from '@cf/context/userContext'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { threadCommentCountsActions } from '@cf/features/graph/state/slices/threadCommentCounts.slice'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
+import { normalizeLocale } from '@cf/i18n/config'
 import type { AppDispatch } from '@cf/redux/store'
 import Utility from '@cf/utility/Utility.class'
 import { useCommentThreadContext } from '@cfSidebar/hooks/useCommentThreadContext'
@@ -27,9 +28,8 @@ import {
   useRef,
   useState
 } from 'react'
-import { useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import { normalizeLocale } from '@cf/i18n/config'
+import { useDispatch } from 'react-redux'
 
 import * as Styled from './styles'
 import {

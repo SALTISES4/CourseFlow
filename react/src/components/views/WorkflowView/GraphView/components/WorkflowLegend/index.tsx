@@ -4,9 +4,9 @@ import * as Constants from '@cf/utility/constants'
 import LegendLine from '@cfComponents/UIPrimitives/LegendLine'
 import Legend from '@cfViews/common/Legend'
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 
 const uniqueNamedValues = <T extends string>(values: Array<T | null>) =>
   [...new Set(values)].filter((value): value is T =>

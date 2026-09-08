@@ -13,8 +13,8 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
 import { ChangeEvent, FormEvent, useCallback, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import * as Styled from '../styles'
@@ -69,9 +69,7 @@ function RegisterPage() {
             <CFLogo />
             <Typography component="h2">CourseFlow</Typography>
           </Styled.LogoWrap>
-          <Typography variant="body1">
-            {t('registration.heading')}
-          </Typography>
+          <Typography variant="body1">{t('registration.heading')}</Typography>
           {error ? (
             <Typography color="error" role="alert">
               {error}

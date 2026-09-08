@@ -25,8 +25,8 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import { MouseEvent, RefObject, useCallback } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { useDispatch, useSelector } from 'react-redux'
 
 import * as Styled from '../../styles'
 

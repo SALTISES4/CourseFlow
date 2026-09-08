@@ -23,8 +23,8 @@ import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { RootState } from '@cfRedux/store'
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { useDispatch, useSelector } from 'react-redux'
 
 import HoverMenu from './HoverMenu'
 import * as Styled from './styles'
@@ -182,11 +182,7 @@ const ColumnCellInner = ({
     return null
   }
 
-  const title = displaySystemTitle(
-    t,
-    channel,
-    t('graph.untitledNodeCategory')
-  )
+  const title = displaySystemTitle(t, channel, t('graph.untitledNodeCategory'))
 
   return (
     <Styled.ColumnWrap ref={ref} dragging={dragging}>

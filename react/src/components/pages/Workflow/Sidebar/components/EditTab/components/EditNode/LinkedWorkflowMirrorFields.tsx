@@ -37,62 +37,68 @@ const LinkedWorkflowMirrorFields = ({
 }: Props) => {
   const { t } = useTranslation('workflow')
 
-  return <Stack spacing={2}>
-    <TextField
-      label={t('edit.title')}
-      variant="outlined"
-      size="small"
-      value={title}
-      InputProps={{ readOnly: true }}
-    />
-    <WysiwygField readOnly label={t('edit.description')} value={description} />
-    {showTime && (
+  return (
+    <Stack spacing={2}>
       <TextField
-        label={t('edit.time')}
+        label={t('edit.title')}
         variant="outlined"
         size="small"
-        value={formatHoursDuration(time)}
-        placeholder="—"
+        value={title}
         InputProps={{ readOnly: true }}
       />
-    )}
-    {showProgramFields && (
-      <>
+      <WysiwygField
+        readOnly
+        label={t('edit.description')}
+        value={description}
+      />
+      {showTime && (
         <TextField
-          label={t('edit.credits')}
+          label={t('edit.time')}
           variant="outlined"
           size="small"
-          value={credits ?? ''}
+          value={formatHoursDuration(time)}
           placeholder="—"
           InputProps={{ readOnly: true }}
         />
-        <TextField
-          label={t('edit.theoryHours')}
-          variant="outlined"
-          size="small"
-          value={formatHoursDuration(ponderationTheory)}
-          placeholder="—"
-          InputProps={{ readOnly: true }}
-        />
-        <TextField
-          label={t('edit.practiceHours')}
-          variant="outlined"
-          size="small"
-          value={formatHoursDuration(ponderationPractice)}
-          placeholder="—"
-          InputProps={{ readOnly: true }}
-        />
-        <TextField
-          label={t('edit.individualHours')}
-          variant="outlined"
-          size="small"
-          value={formatHoursDuration(ponderationIndividual)}
-          placeholder="—"
-          InputProps={{ readOnly: true }}
-        />
-      </>
-    )}
-  </Stack>
+      )}
+      {showProgramFields && (
+        <>
+          <TextField
+            label={t('edit.credits')}
+            variant="outlined"
+            size="small"
+            value={credits ?? ''}
+            placeholder="—"
+            InputProps={{ readOnly: true }}
+          />
+          <TextField
+            label={t('edit.theoryHours')}
+            variant="outlined"
+            size="small"
+            value={formatHoursDuration(ponderationTheory)}
+            placeholder="—"
+            InputProps={{ readOnly: true }}
+          />
+          <TextField
+            label={t('edit.practiceHours')}
+            variant="outlined"
+            size="small"
+            value={formatHoursDuration(ponderationPractice)}
+            placeholder="—"
+            InputProps={{ readOnly: true }}
+          />
+          <TextField
+            label={t('edit.individualHours')}
+            variant="outlined"
+            size="small"
+            value={formatHoursDuration(ponderationIndividual)}
+            placeholder="—"
+            InputProps={{ readOnly: true }}
+          />
+        </>
+      )}
+    </Stack>
+  )
 }
 
 export default LinkedWorkflowMirrorFields

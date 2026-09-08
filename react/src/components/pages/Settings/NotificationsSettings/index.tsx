@@ -80,7 +80,7 @@ const NotificationsSettingsPage = () => {
   }
 
   return (
-    <OuterContentWrap>
+    <OuterContentWrap narrow>
       <PageTitle>
         <Typography variant="h1">{t('notifications.title')}</Typography>
       </PageTitle>

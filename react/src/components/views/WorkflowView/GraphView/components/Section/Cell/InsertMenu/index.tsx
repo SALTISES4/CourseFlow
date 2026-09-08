@@ -18,44 +18,46 @@ const InsertMenu = ({
 }) => {
   const { t } = useTranslation('workflow')
 
-  return <Menu
-    id="node-insert-menu"
-    data-test-id="workflow-manual-placement-dialog"
-    aria-labelledby="insert-menu-button"
-    anchorEl={anchorEl}
-    open={Boolean(anchorEl)}
-    disableAutoFocusItem
-    onClose={onClose}
-    anchorOrigin={{
-      vertical: 'top',
-      horizontal: 'center'
-    }}
-    transformOrigin={{
-      vertical: 'top',
-      horizontal: 'center'
-    }}
-  >
-    <MenuItem
-      dense
-      data-test-id="workflow-manual-placement-row-button"
-      onClick={() => onOption('row')}
+  return (
+    <Menu
+      id="node-insert-menu"
+      data-test-id="workflow-manual-placement-dialog"
+      aria-labelledby="insert-menu-button"
+      anchorEl={anchorEl}
+      open={Boolean(anchorEl)}
+      disableAutoFocusItem
+      onClose={onClose}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'center'
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'center'
+      }}
     >
-      <ListItemIcon>
-        <TableRowsOutlinedIcon color="primary" />
-      </ListItemIcon>
-      <ListItemText>{t('graph.insertRow')}</ListItemText>
-    </MenuItem>
-    <MenuItem
-      dense
-      data-test-id="workflow-manual-placement-column-button"
-      onClick={() => onOption('column')}
-    >
-      <ListItemIcon>
-        <ViewSectionOutlinedIcon color="primary" />
-      </ListItemIcon>
-      <ListItemText>{t('graph.keepSameColumn')}</ListItemText>
-    </MenuItem>
-  </Menu>
+      <MenuItem
+        dense
+        data-test-id="workflow-manual-placement-row-button"
+        onClick={() => onOption('row')}
+      >
+        <ListItemIcon>
+          <TableRowsOutlinedIcon color="primary" />
+        </ListItemIcon>
+        <ListItemText>{t('graph.insertRow')}</ListItemText>
+      </MenuItem>
+      <MenuItem
+        dense
+        data-test-id="workflow-manual-placement-column-button"
+        onClick={() => onOption('column')}
+      >
+        <ListItemIcon>
+          <ViewSectionOutlinedIcon color="primary" />
+        </ListItemIcon>
+        <ListItemText>{t('graph.keepSameColumn')}</ListItemText>
+      </MenuItem>
+    </Menu>
+  )
 }
 
 export default InsertMenu

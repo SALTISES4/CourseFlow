@@ -17,17 +17,17 @@ import { CacheProvider } from '@emotion/react'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import {
   enUS as datePickerEnUS,
   frFR as datePickerFrFR
 } from '@mui/x-date-pickers/locales'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { enCA, frCA } from 'date-fns/locale'
 import { SnackbarProvider } from 'notistack'
 import { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 import ReactDOM from 'react-dom/client'
+import { useTranslation } from 'react-i18next'
 import { Provider } from 'react-redux'
 import { RouterProvider } from 'react-router-dom'
 
@@ -75,8 +75,10 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement)
 
 const datePickerLocaleText = {
-  'en-CA': datePickerEnUS.components.MuiLocalizationProvider.defaultProps.localeText,
-  'fr-CA': datePickerFrFR.components.MuiLocalizationProvider.defaultProps.localeText
+  'en-CA':
+    datePickerEnUS.components.MuiLocalizationProvider.defaultProps.localeText,
+  'fr-CA':
+    datePickerFrFR.components.MuiLocalizationProvider.defaultProps.localeText
 } as const
 
 function LocalizedApplication() {

@@ -46,9 +46,7 @@ function RegisterPage() {
             <CFLogo />
             <Typography component="h2">CourseFlow</Typography>
           </Styled.LogoWrap>
-          <Typography variant="body1">
-            {t('resetPassword.heading')}
-          </Typography>
+          <Typography variant="body1">{t('resetPassword.heading')}</Typography>
           <TextField
             label={t('loginForm.email')}
             type="email"

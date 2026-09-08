@@ -1,8 +1,8 @@
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import RichTextDescription from '@cf/components/common/dialog/Workflow/components/RichTextDescription'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
-import type { OutcomeEntity } from '@cf/features/graph/state/model/types'
 import { displayOutcomeTitle } from '@cf/features/graph/outcomeTitle'
+import type { OutcomeEntity } from '@cf/features/graph/state/model/types'
 import { selectOutcomeById } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { selectOutcomeLevel } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import {
@@ -27,8 +27,8 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useCallback, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { useDispatch, useSelector } from 'react-redux'
 
 type OutcomeFormValues = {
   title: string
@@ -62,11 +62,7 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
     selectOutcomeLevel(state, outcome.graphUuid, outcome.uuid)
   )
   const { data: projectTags = [] } = useGraphProjectTags(outcome.graphUuid)
-  const localizedTitle = displayOutcomeTitle(
-    outcome,
-    t,
-    t('outcomes.untitled')
-  )
+  const localizedTitle = displayOutcomeTitle(outcome, t, t('outcomes.untitled'))
 
   const {
     control,

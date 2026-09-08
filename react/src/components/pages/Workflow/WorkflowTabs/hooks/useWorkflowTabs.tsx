@@ -8,8 +8,8 @@ import OutcomeEditView from '@cfViews/WorkflowView/OutcomeEditView'
 import OverviewView from '@cfViews/WorkflowView/OverviewView'
 import Tab from '@mui/material/Tab'
 import { ReactNode } from 'react'
-import { Route, generatePath, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Route, generatePath, useNavigate, useParams } from 'react-router-dom'
 
 export type WorkflowTabsRouteProps = {
   workflowView: WorkflowViewType

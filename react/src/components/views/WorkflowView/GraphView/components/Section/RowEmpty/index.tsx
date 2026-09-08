@@ -1,8 +1,8 @@
 import type { GraphBoard } from '@cf/features/graph/state/selectors/graphBoard.selectors'
 import { RootState } from '@cf/redux/store'
 import { memo, useRef } from 'react'
-import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 
 import type { SectionPropsType } from '../'
 import * as StyledWorkflow from '../../../styles'

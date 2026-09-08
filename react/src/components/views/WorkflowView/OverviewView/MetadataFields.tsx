@@ -153,7 +153,12 @@ const MetadataFields = ({
             <SC.InfoBlockTitle>{t('metadata.credits')}</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
               <Stack direction="row" spacing={2}>
-                {numericField(t('metadata.credits'), 'credits', creditsAutomatic, true)}
+                {numericField(
+                  t('metadata.credits'),
+                  'credits',
+                  creditsAutomatic,
+                  true
+                )}
                 {isProgram && (
                   <FormControlLabel
                     label={t('metadata.calculateCredits')}
@@ -191,7 +196,11 @@ const MetadataFields = ({
               )}
               <Grid container spacing={2}>
                 <Grid item xs={12} md={4}>
-                  {durationField(t('metadata.theory'), 'theoryTime', ponderationAutomatic)}
+                  {durationField(
+                    t('metadata.theory'),
+                    'theoryTime',
+                    ponderationAutomatic
+                  )}
                 </Grid>
                 <Grid item xs={12} md={4}>
                   {durationField(
@@ -226,7 +235,9 @@ const MetadataFields = ({
       {isProgram && (
         <Grid item xs={6}>
           <SC.InfoBlock>
-            <SC.InfoBlockTitle>{t('metadata.classification')}</SC.InfoBlockTitle>
+            <SC.InfoBlockTitle>
+              {t('metadata.classification')}
+            </SC.InfoBlockTitle>
             <SC.InfoBlockContent>
               <FormControlLabel
                 label={t('metadata.calculateClassification')}

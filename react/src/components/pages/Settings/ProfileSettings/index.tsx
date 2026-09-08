@@ -4,15 +4,13 @@ import {
   getMyProfileSettingsQueryKey,
   patchMyProfileSettingsMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
-import {
-  setAuthLanguagePreference
-} from '@cf/features/auth/state/auth.slice'
+import { setAuthLanguagePreference } from '@cf/features/auth/state/auth.slice'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { setAppLocale } from '@cf/i18n'
 import { languageOptions } from '@cf/utility/constants'
-import type { AppDispatch } from '@cfRedux/store'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { OuterContentWrap } from '@cfMUI/helper'
+import type { AppDispatch } from '@cfRedux/store'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -232,9 +230,7 @@ const ProfileSettingsPage = () => {
               component="fieldset"
               error={!!errors.languagePreference}
             >
-              <FormLabel component="legend">
-                {t('fields.language')}
-              </FormLabel>
+              <FormLabel component="legend">{t('fields.language')}</FormLabel>
               <Controller
                 name="languagePreference"
                 control={control}

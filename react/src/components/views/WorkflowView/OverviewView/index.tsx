@@ -80,7 +80,9 @@ const OverviewView = ({
       })
       queryClient.setQueryData(workflowQueryKey, response)
       enqueueSnackbar(
-        enabled ? t('messages.publicLinkEnabled') : t('messages.publicLinkRemoved'),
+        enabled
+          ? t('messages.publicLinkEnabled')
+          : t('messages.publicLinkRemoved'),
         { variant: SnackbarOptions.SUCCESS }
       )
     } catch (error) {
@@ -114,7 +116,9 @@ const OverviewView = ({
     <OuterContentWrap sx={{ pt: 4 }} data-test-id="workflow-overview-view">
       <SC.InfoBlock sx={{ mb: 3 }}>
         <SC.InfoBlockTitle>{t('overview.description')}</SC.InfoBlockTitle>
-        <SC.InfoBlockContent>{description || t('overview.emptyValue')}</SC.InfoBlockContent>
+        <SC.InfoBlockContent>
+          {description || t('overview.emptyValue')}
+        </SC.InfoBlockContent>
       </SC.InfoBlock>
 
       <Grid container columnSpacing={3}>
