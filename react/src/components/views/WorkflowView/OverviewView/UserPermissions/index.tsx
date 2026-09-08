@@ -27,8 +27,8 @@ import ListItemText from '@mui/material/ListItemText'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
 import { useCallback } from 'react'
-import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useParams } from 'react-router-dom'
 
 import * as SC from '../styles'
 
@@ -116,10 +116,9 @@ const UserPermissions = ({
         variant: SnackbarOptions.SUCCESS
       })
     } catch (err) {
-      enqueueSnackbar(
-        t('messages.roleUpdateFailed'),
-        { variant: SnackbarOptions.ERROR }
-      )
+      enqueueSnackbar(t('messages.roleUpdateFailed'), {
+        variant: SnackbarOptions.ERROR
+      })
       console.error('Failed to update contributor role:', err)
     }
   }

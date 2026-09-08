@@ -13,34 +13,34 @@ const ProjectHeader = ({ project }: { project: ProjectDetailOut }) => {
 
   return (
     <OuterContentWrap sx={{ pb: 0 }}>
-    <Stack
-      direction="row"
-      spacing={3}
-      justifyContent="space-between"
-      sx={{ mt: 6, mb: 3 }}
-    >
-      <Typography
-        style={{
-          display: 'flex',
-          alignItems: 'center'
-        }}
-        component="h1"
-        variant="h4"
+      <Stack
+        direction="row"
+        spacing={3}
+        justifyContent="space-between"
+        sx={{ mt: 6, mb: 3 }}
       >
-        {project.title}
-        {project.isArchived && (
-          <CardChip
-            style={{ display: 'flex', alignItems: 'center' }}
-            className={ChipOptions.ACTIVITY as string}
-            label={t('status.archived')}
-          />
-        )}
-      </Typography>
+        <Typography
+          style={{
+            display: 'flex',
+            alignItems: 'center'
+          }}
+          component="h1"
+          variant="h4"
+        >
+          {project.title}
+          {project.isArchived && (
+            <CardChip
+              style={{ display: 'flex', alignItems: 'center' }}
+              className={ChipOptions.ACTIVITY as string}
+              label={t('status.archived')}
+            />
+          )}
+        </Typography>
 
-      <Box>
-        <Favorite uuid={project.uuid} isFavorite={project.isFavorite} />
-      </Box>
-    </Stack>
+        <Box>
+          <Favorite uuid={project.uuid} isFavorite={project.isFavorite} />
+        </Box>
+      </Stack>
     </OuterContentWrap>
   )
 }

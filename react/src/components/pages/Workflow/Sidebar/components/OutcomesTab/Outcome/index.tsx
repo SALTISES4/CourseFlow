@@ -17,8 +17,8 @@ import * as StyledOutcomes from '@cfViews/WorkflowView/OutcomeEditView/component
 import * as Styled from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { useDispatch, useSelector } from 'react-redux'
 
 import OutcomeHeader from './Header'
 

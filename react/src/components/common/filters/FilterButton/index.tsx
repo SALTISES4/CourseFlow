@@ -18,12 +18,7 @@ type PropsType = {
   options: SearchFilterOption[]
 } & NonSortableProps
 
-const FilterButton = ({
-  icon,
-  placeholder,
-  options,
-  onChange
-}: PropsType) => {
+const FilterButton = ({ icon, placeholder, options, onChange }: PropsType) => {
   const { t } = useTranslation('common')
   const buttonPlaceholder = placeholder ?? t('labels.filter')
   const selectedOption = options.find(

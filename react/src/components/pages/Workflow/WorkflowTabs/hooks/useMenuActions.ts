@@ -3,8 +3,8 @@ import { deleteWorkflowPermanentlyMutation } from '@cf/api/gen/@tanstack/react-q
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { useMutation } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 
 export const useMenuActions = () => {
   const { t } = useTranslation('workflow')
@@ -58,11 +58,7 @@ export const useMenuActions = () => {
     if (!workflowId) {
       return
     }
-    if (
-      window.confirm(
-        t('menu.deleteConfirmation')
-      )
-    ) {
+    if (window.confirm(t('menu.deleteConfirmation'))) {
       try {
         const response = await deleteWorkflow.mutateAsync({
           path: { uuid: workflowId }

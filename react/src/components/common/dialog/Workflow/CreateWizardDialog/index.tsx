@@ -30,13 +30,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { enqueueSnackbar } from 'notistack'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   generatePath,
   useLocation,
   useNavigate,
   useParams
 } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 
 type StateType = {
   step: number

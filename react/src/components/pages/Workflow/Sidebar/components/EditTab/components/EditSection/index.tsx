@@ -19,8 +19,8 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { useDispatch, useSelector } from 'react-redux'
 
 type SectionFormType = {
   title: string

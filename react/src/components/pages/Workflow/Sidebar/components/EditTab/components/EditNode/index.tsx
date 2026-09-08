@@ -44,8 +44,8 @@ import Typography from '@mui/material/Typography'
 import { useQuery } from '@tanstack/react-query'
 import { MouseEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { useDispatch, useSelector } from 'react-redux'
 
 import LinkedWorkflowMirrorFields from './LinkedWorkflowMirrorFields'
 import {
@@ -420,7 +420,9 @@ const EditNodeForm = ({
 
           {showTaskTypeField && (
             <FormControl fullWidth size="small" disabled={!canEdit}>
-              <InputLabel id="task-type-select-label">{t('edit.type')}</InputLabel>
+              <InputLabel id="task-type-select-label">
+                {t('edit.type')}
+              </InputLabel>
               <Controller
                 name="taskType"
                 control={control}

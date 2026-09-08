@@ -5,9 +5,9 @@ import {
   useWorkspacePermissions
 } from '@cf/context/workspacePermissionsContext'
 import { graphUiActions } from '@cf/features/graph/state/slices/graphUi.slice'
+import { workflowTypeLabel } from '@cf/i18n/workflowLabels'
 import type { AppDispatch, RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
-import { workflowTypeLabel } from '@cf/i18n/workflowLabels'
 import {
   MenuItemType,
   MenuWithOverflow,
@@ -26,9 +26,9 @@ import { FormControlLabel, Switch } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 
 import SectionTitle from './SectionTitle'
 

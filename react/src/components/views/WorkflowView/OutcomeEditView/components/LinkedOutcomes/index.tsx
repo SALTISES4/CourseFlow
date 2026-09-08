@@ -14,8 +14,8 @@ import * as StyledOutcome from '@cfViews/WorkflowView/OutcomeEditView/components
 import LinkOffOutlinedIcon from '@mui/icons-material/LinkOffOutlined'
 import Tooltip from '@mui/material/Tooltip'
 import { MouseEvent, useCallback, useMemo, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { useDispatch, useSelector } from 'react-redux'
 
 import * as Styled from './styles'
 import type { LinkedOutcomesPropsType } from './types'

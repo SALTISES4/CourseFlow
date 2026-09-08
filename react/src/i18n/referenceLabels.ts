@@ -5,8 +5,13 @@ import { useTranslation } from 'react-i18next'
 
 import referenceEn from './locales/en-CA/reference'
 
-type ReferenceGroup = 'discipline' | 'context' | 'taskClassification' | 'timeUnit'
-type ReferenceCode<Group extends ReferenceGroup> = keyof (typeof referenceEn)[Group]
+type ReferenceGroup =
+  | 'discipline'
+  | 'context'
+  | 'taskClassification'
+  | 'timeUnit'
+type ReferenceCode<Group extends ReferenceGroup> =
+  keyof (typeof referenceEn)[Group]
 type ReferenceTranslationKey = {
   [Group in ReferenceGroup]: `${Group}.${Extract<ReferenceCode<Group>, string>}`
 }[ReferenceGroup]

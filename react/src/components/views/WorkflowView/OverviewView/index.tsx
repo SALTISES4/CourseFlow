@@ -9,8 +9,8 @@ import {
   useResourcePermission,
   useWorkspacePermissions
 } from '@cf/context/workspacePermissionsContext'
-import { CFRoutes } from '@cf/router/cfRoutes'
 import { useReferenceLabels } from '@cf/i18n/referenceLabels'
+import { CFRoutes } from '@cf/router/cfRoutes'
 import { WorkspaceType } from '@cf/types/enum'
 import { SnackbarOptions } from '@cf/utility/constants'
 import { OuterContentWrap } from '@cfMUI/helper'
@@ -26,8 +26,8 @@ import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
-import { generatePath } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { generatePath } from 'react-router-dom'
 
 import MetadataFields from './MetadataFields'
 import * as SC from './styles'
@@ -86,7 +86,9 @@ const OverviewView = ({
       })
       queryClient.setQueryData(workflowQueryKey, response)
       enqueueSnackbar(
-        enabled ? t('messages.publicLinkEnabled') : t('messages.publicLinkRemoved'),
+        enabled
+          ? t('messages.publicLinkEnabled')
+          : t('messages.publicLinkRemoved'),
         { variant: SnackbarOptions.SUCCESS }
       )
     } catch (error) {
@@ -118,7 +120,9 @@ const OverviewView = ({
     <OuterContentWrap sx={{ pt: 4 }} data-test-id="workflow-overview-view">
       <SC.InfoBlock sx={{ mb: 3 }}>
         <SC.InfoBlockTitle>{t('overview.description')}</SC.InfoBlockTitle>
-        <SC.InfoBlockContent>{description || t('overview.emptyValue')}</SC.InfoBlockContent>
+        <SC.InfoBlockContent>
+          {description || t('overview.emptyValue')}
+        </SC.InfoBlockContent>
       </SC.InfoBlock>
 
       <Grid container columnSpacing={3}>

@@ -2,8 +2,8 @@ import {
   selectAuthStatus,
   selectIsBootstrapping
 } from '@cf/features/auth/state/auth.slice'
-import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 /**

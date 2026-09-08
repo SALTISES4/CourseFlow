@@ -6,21 +6,22 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import TextField from '@mui/material/TextField'
+import type { TFunction } from 'i18next'
 import { RefObject, useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { z } from 'zod'
-import type { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
+import { z } from 'zod'
 
-export const createWorkflowSchema = (t: TFunction<'workflow'>) => z.object({
-  title: z
-    .string()
-    .max(200, { message: t('form.titleMax', { count: 200 }) })
-    .refine((value) => value.trim().length > 0, {
-      message: t('form.titleRequired')
-    }),
-  description: z.string().nullish()
-})
+export const createWorkflowSchema = (t: TFunction<'workflow'>) =>
+  z.object({
+    title: z
+      .string()
+      .max(200, { message: t('form.titleMax', { count: 200 }) })
+      .refine((value) => value.trim().length > 0, {
+        message: t('form.titleRequired')
+      }),
+    description: z.string().nullish()
+  })
 
 export type WorkflowFormType = {
   title: string

@@ -1,5 +1,5 @@
-import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize'
 import { workflowTypeLabel } from '@cf/i18n/workflowLabels'
+import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize'
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'

@@ -13,9 +13,9 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 import { useQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { generatePath, useNavigate, useParams } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 
 import Outcome from './Outcome'
 import * as Styled from '../../styles'
@@ -66,9 +66,7 @@ const OutcomeTab = () => {
           <Alert
             severity="info"
             persistent
-            subtitle={
-              <>{t('outcomes.empty', { workflowType })}</>
-            }
+            subtitle={<>{t('outcomes.empty', { workflowType })}</>}
           />
         </Styled.SidebarContent>
         <Styled.SidebarActions>

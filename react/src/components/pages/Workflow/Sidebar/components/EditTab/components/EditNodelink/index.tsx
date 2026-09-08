@@ -28,8 +28,8 @@ import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
+import { useDispatch, useSelector } from 'react-redux'
 
 const EditNodeLink = ({ nodeLinkId }: { nodeLinkId: string }) => {
   const dispatch = useDispatch()

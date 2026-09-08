@@ -3,8 +3,8 @@ import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
 import { Alert, Link, Skeleton, Typography } from '@mui/material'
-import { Link as LinkRouter } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Link as LinkRouter } from 'react-router-dom'
 
 export type ResultsProps = {
   data?: LibrarySearchOut
@@ -48,11 +48,7 @@ const Results = ({
   }
 
   if (!data) {
-    return (
-      <ErrorView
-        message={t('results.notFound')}
-      />
-    )
+    return <ErrorView message={t('results.notFound')} />
   }
   const cards = formatLibraryObjects(data.items, t)
 

@@ -14,9 +14,9 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useQuery } from '@tanstack/react-query'
 import { MouseEvent, useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 
 import DraggableItem from './Draggable'
 import * as Styled from './styles'
@@ -66,11 +66,7 @@ const AddTab = () => {
         <SC.GroupWrap separator={false}>
           <Styled.InsertModeTitle variant="body2">
             {t('addPanel.insertMode')}
-            <Tooltip
-              arrow
-              placement="top"
-              title={t('addPanel.insertModeHelp')}
-            >
+            <Tooltip arrow placement="top" title={t('addPanel.insertModeHelp')}>
               <InfoOutlinedIcon
                 sx={{
                   fontSize: '1.2em',
