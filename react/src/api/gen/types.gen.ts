@@ -3192,6 +3192,70 @@ export type TimeUnitReferenceOptionOut = {
   value: TimeUnit
 }
 
+/**
+ * WorkspaceResourceType
+ *
+ * Resource scopes that participate in the one-editor lease contract.
+ */
+export enum WorkspaceResourceType {
+  PROJECT = 'project',
+  WORKFLOW = 'workflow'
+}
+
+/**
+ * WorkspaceEditLockHolderOut
+ */
+export type WorkspaceEditLockHolderOut = {
+  /**
+   * Uuid
+   */
+  uuid: string
+  /**
+   * Displayname
+   */
+  displayName: string
+}
+
+/**
+ * WorkspaceEditLockOut
+ */
+export type WorkspaceEditLockOut = {
+  resourceType: WorkspaceResourceType
+  /**
+   * Resourceuuid
+   */
+  resourceUuid: string
+  state: WorkspaceEditLockState
+  holder?: WorkspaceEditLockHolderOut | null
+  /**
+   * Version
+   */
+  version?: string | null
+  /**
+   * Expiresat
+   */
+  expiresAt?: string | null
+}
+
+/**
+ * WorkspaceEditLockState
+ */
+export enum WorkspaceEditLockState {
+  HELD = 'held',
+  LOCKED = 'locked',
+  AVAILABLE = 'available'
+}
+
+/**
+ * WorkspaceEditLockTakeoverIn
+ */
+export type WorkspaceEditLockTakeoverIn = {
+  /**
+   * Expectedversion
+   */
+  expectedVersion: string
+}
+
 export type CourseFlowApiNinjaAppHealthData = {
   body?: never
   path?: never
@@ -3208,6 +3272,23 @@ export type CourseFlowApiNinjaAppHealthResponses = {
 
 export type CourseFlowApiNinjaAppHealthResponse =
   CourseFlowApiNinjaAppHealthResponses[keyof CourseFlowApiNinjaAppHealthResponses]
+
+export type CourseFlowApiNinjaAppReadyData = {
+  body?: never
+  path?: never
+  query?: never
+  url: '/api/ready'
+}
+
+export type CourseFlowApiNinjaAppReadyResponses = {
+  /**
+   * OK
+   */
+  200: HealthResponse
+}
+
+export type CourseFlowApiNinjaAppReadyResponse =
+  CourseFlowApiNinjaAppReadyResponses[keyof CourseFlowApiNinjaAppReadyResponses]
 
 export type ListProjectTagsData = {
   body?: never
@@ -5088,3 +5169,115 @@ export type GetReferenceDataResponses = {
 
 export type GetReferenceDataResponse =
   GetReferenceDataResponses[keyof GetReferenceDataResponses]
+
+export type AcquireWorkspaceEditLockData = {
+  body?: never
+  path: {
+    /**
+     * WorkspaceResourceType
+     *
+     * Resource scopes that participate in the one-editor lease contract.
+     */
+    resource_type: 'project' | 'workflow'
+    /**
+     * Resource Uuid
+     */
+    resource_uuid: string
+  }
+  query?: never
+  url: '/api/workspace-lock/{resource_type}/{resource_uuid}/acquire'
+}
+
+export type AcquireWorkspaceEditLockResponses = {
+  /**
+   * OK
+   */
+  200: WorkspaceEditLockOut
+}
+
+export type AcquireWorkspaceEditLockResponse =
+  AcquireWorkspaceEditLockResponses[keyof AcquireWorkspaceEditLockResponses]
+
+export type GetWorkspaceEditLockData = {
+  body?: never
+  path: {
+    /**
+     * WorkspaceResourceType
+     *
+     * Resource scopes that participate in the one-editor lease contract.
+     */
+    resource_type: 'project' | 'workflow'
+    /**
+     * Resource Uuid
+     */
+    resource_uuid: string
+  }
+  query?: never
+  url: '/api/workspace-lock/{resource_type}/{resource_uuid}'
+}
+
+export type GetWorkspaceEditLockResponses = {
+  /**
+   * OK
+   */
+  200: WorkspaceEditLockOut
+}
+
+export type GetWorkspaceEditLockResponse =
+  GetWorkspaceEditLockResponses[keyof GetWorkspaceEditLockResponses]
+
+export type RefreshWorkspaceEditLockData = {
+  body?: never
+  path: {
+    /**
+     * WorkspaceResourceType
+     *
+     * Resource scopes that participate in the one-editor lease contract.
+     */
+    resource_type: 'project' | 'workflow'
+    /**
+     * Resource Uuid
+     */
+    resource_uuid: string
+  }
+  query?: never
+  url: '/api/workspace-lock/{resource_type}/{resource_uuid}/refresh'
+}
+
+export type RefreshWorkspaceEditLockResponses = {
+  /**
+   * OK
+   */
+  200: WorkspaceEditLockOut
+}
+
+export type RefreshWorkspaceEditLockResponse =
+  RefreshWorkspaceEditLockResponses[keyof RefreshWorkspaceEditLockResponses]
+
+export type TakeoverWorkspaceEditLockData = {
+  body: WorkspaceEditLockTakeoverIn
+  path: {
+    /**
+     * WorkspaceResourceType
+     *
+     * Resource scopes that participate in the one-editor lease contract.
+     */
+    resource_type: 'project' | 'workflow'
+    /**
+     * Resource Uuid
+     */
+    resource_uuid: string
+  }
+  query?: never
+  url: '/api/workspace-lock/{resource_type}/{resource_uuid}/takeover'
+}
+
+export type TakeoverWorkspaceEditLockResponses = {
+  /**
+   * OK
+   */
+  200: WorkspaceEditLockOut
+}
+
+export type TakeoverWorkspaceEditLockResponse =
+  TakeoverWorkspaceEditLockResponses[keyof TakeoverWorkspaceEditLockResponses]

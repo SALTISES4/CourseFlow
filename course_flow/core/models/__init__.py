@@ -29,6 +29,7 @@ from course_flow.core.models.team import Team
 from course_flow.core.models.thread import Thread
 from course_flow.core.models.user import User
 from course_flow.core.models.workflow import Workflow
+from course_flow.core.models.workspaceeditlock import WorkspaceEditLock
 
 __all__ = [
     "Activitymeta",
@@ -60,4 +61,5 @@ __all__ = [
     "Workflow",
     "User",
     "Graph",
+    "WorkspaceEditLock",
 ]

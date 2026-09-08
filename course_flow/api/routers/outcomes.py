@@ -16,6 +16,10 @@ from course_flow.api.schemas.graph_mutation import (
     GraphOutcomeMoveIn,
     GraphOutcomePatchIn,
 )
+from course_flow.api.workspace_edit_locks import workspace_mutation_lock
+from course_flow.application.services.workspace_edit_lock_service import (
+    WorkspaceReferenceType,
+)
 from course_flow.core.models import Outcome
 from course_flow.core.permissions import WorkflowPermission
 
@@ -66,6 +70,7 @@ def _ensure_outcome_permission(
     auth=BearerAuth(),
     operation_id="createGraphOutcome",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.GRAPH)
 def create_graph_outcome(request, uuid: UUID, payload: GraphOutcomeCreateIn):
     current_user = get_current_user(request)
     _ensure_graph_permission(
@@ -93,6 +98,7 @@ def create_graph_outcome(request, uuid: UUID, payload: GraphOutcomeCreateIn):
     auth=BearerAuth(),
     operation_id="patchOutcome",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.OUTCOME)
 def patch_outcome(request, uuid: UUID, payload: GraphOutcomePatchIn):
     current_user = get_current_user(request)
     _ensure_outcome_permission(
@@ -118,6 +124,7 @@ def patch_outcome(request, uuid: UUID, payload: GraphOutcomePatchIn):
     auth=BearerAuth(),
     operation_id="deleteOutcome",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.OUTCOME)
 def delete_outcome(request, uuid: UUID):
     current_user = get_current_user(request)
     _ensure_outcome_permission(
@@ -139,6 +146,7 @@ def delete_outcome(request, uuid: UUID):
     auth=BearerAuth(),
     operation_id="duplicateOutcome",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.OUTCOME)
 def duplicate_outcome(request, uuid: UUID):
     current_user = get_current_user(request)
     _ensure_outcome_permission(
@@ -160,6 +168,7 @@ def duplicate_outcome(request, uuid: UUID):
     auth=BearerAuth(),
     operation_id="moveOutcome",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.OUTCOME)
 def move_outcome(request, uuid: UUID, payload: GraphOutcomeMoveIn):
     current_user = get_current_user(request)
     _ensure_outcome_permission(

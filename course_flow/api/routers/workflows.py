@@ -27,6 +27,7 @@ from course_flow.api.schemas.workflows import (
     WorkflowRelatedOut,
     WorkflowUpdateIn,
 )
+from course_flow.api.workspace_edit_locks import workspace_mutation_lock
 from course_flow.application.dto import WorkflowDTO
 from course_flow.application.services.authorization_service import (
     AuthorizationDenied,
@@ -38,6 +39,9 @@ from course_flow.application.services.workflow_copy_service import (
     WorkflowCopyDestinationNotFound,
     WorkflowCopySourceNotFound,
     WorkflowCopyValidationError,
+)
+from course_flow.application.services.workspace_edit_lock_service import (
+    WorkspaceReferenceType,
 )
 from course_flow.core.models import FavoriteGraph, Graph, User
 from course_flow.core.permissions import (
@@ -177,6 +181,11 @@ def _updates_with_resolved_project(
     auth=BearerAuth(),
     operation_id="createWorkflow",
 )
+@workspace_mutation_lock(
+    WorkspaceReferenceType.PROJECT,
+    lookup_arg="payload",
+    lookup_attr="project_uuid",
+)
 def create_workflow(request, payload: WorkflowCreateIn):
     current_user = get_current_user(request)
     svc = get_workflow_service()
@@ -254,6 +263,7 @@ def get_workflow(request, uuid: UUID):
     auth=BearerAuth(),
     operation_id="updateWorkflow",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.WORKFLOW)
 def update_workflow(request, uuid: UUID, payload: WorkflowUpdateIn):
     current_user = get_current_user(request)
     svc = get_workflow_service()
@@ -281,6 +291,7 @@ def update_workflow(request, uuid: UUID, payload: WorkflowUpdateIn):
     auth=BearerAuth(),
     operation_id="updateWorkflowPublicLink",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.WORKFLOW)
 def update_workflow_public_link(
     request,
     uuid: UUID,
@@ -314,6 +325,7 @@ def update_workflow_public_link(
     auth=BearerAuth(),
     operation_id="archiveWorkflow",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.WORKFLOW)
 def archive_workflow(request, uuid: UUID):
     current_user = get_current_user(request)
     try:

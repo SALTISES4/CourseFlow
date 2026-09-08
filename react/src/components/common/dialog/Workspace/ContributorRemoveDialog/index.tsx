@@ -2,6 +2,7 @@ import {
   deleteProjectTeamMemberMutation,
   listProjectTeamQueryKey
 } from '@cf/api/gen/@tanstack/react-query.gen'
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { WorkspaceType } from '@cf/types/enum'
 import { SnackbarOptions } from '@cf/utility/constants'
@@ -56,10 +57,11 @@ const ContributorRemoveDialog = ({
       )
       onClose()
     } catch (err) {
-      enqueueSnackbar(
-        t('contributor.removeFailed'),
-        { variant: SnackbarOptions.ERROR }
-      )
+      if (!isApiErrorNotificationHandled(err)) {
+        enqueueSnackbar(t('contributor.removeFailed'), {
+          variant: SnackbarOptions.ERROR
+        })
+      }
       console.error('Failed to remove contributor:', err)
     }
   }

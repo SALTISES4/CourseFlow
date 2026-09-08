@@ -18,6 +18,7 @@ from course_flow.core.models import (
     Section,
     TeamUser,
     Workflow,
+    WorkspaceEditLock,
 )
 from course_flow.tests.node_helpers import create_grid_node
 
@@ -42,7 +43,7 @@ def _auth(user) -> dict[str, str]:
 
 
 def _workflow(owner, *, project: Project | None = None) -> Workflow:
-    return Workflow.objects.create(
+    workflow = Workflow.objects.create(
         graph=Graph.objects.create(),
         author=owner,
         project=project,
@@ -50,6 +51,12 @@ def _workflow(owner, *, project: Project | None = None) -> Workflow:
         description="Anonymous read-only content",
         workflow_type=WorkflowType.COURSE,
     )
+    WorkspaceEditLock.objects.create(
+        workflow=workflow,
+        holder=owner,
+        expires_at=timezone.now() + timedelta(hours=1),
+    )
+    return workflow
 
 
 @pytest.mark.django_db
@@ -83,11 +90,26 @@ def test_owner_and_project_editor_can_enable_and_revoke_public_link():
     assert workflow.public_link_enabled is True
     assert project.is_published is False
 
+    editor_headers = _auth(editor)
+    blocked = client.post(
+        f"/api/workspace-lock/workflow/{workflow.uuid}/acquire",
+        content_type="application/json",
+        **editor_headers,
+    )
+    takeover = client.post(
+        f"/api/workspace-lock/workflow/{workflow.uuid}/takeover",
+        data={"expectedVersion": blocked.json()["version"]},
+        content_type="application/json",
+        **editor_headers,
+    )
+    assert takeover.status_code == 200, takeover.content
+    assert takeover.json()["state"] == "held"
+
     revoked = client.patch(
         f"/api/workflow/{workflow.uuid}/public-link",
         data={"enabled": False},
         content_type="application/json",
-        **_auth(editor),
+        **editor_headers,
     )
 
     assert revoked.status_code == 200, revoked.content

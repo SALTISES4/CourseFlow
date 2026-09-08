@@ -5,6 +5,7 @@ import {
   getWorkflowOptions,
   listWorkflowsQueryKey
 } from '@cf/api/gen/@tanstack/react-query.gen'
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import WorkflowForm, {
   WorkflowFormType
 } from '@cf/components/common/dialog/Workflow/components/WorkflowForm'
@@ -228,10 +229,12 @@ const CreateWizardDialog = () => {
 
   const onError = useCallback(
     (error: unknown) => {
-      enqueueSnackbar(
-        t('wizard.createFailed', { workflowType: localizedWorkflowType }),
-        { variant: 'error' }
-      )
+      if (!isApiErrorNotificationHandled(error)) {
+        enqueueSnackbar(
+          t('wizard.createFailed', { workflowType: localizedWorkflowType }),
+          { variant: 'error' }
+        )
+      }
       console.error('Error creating workflow:', error)
     },
     [localizedWorkflowType, t]

@@ -25,7 +25,11 @@ from course_flow.api.schemas.sections import (
     SectionOutResp,
     SectionPatchIn,
 )
+from course_flow.api.workspace_edit_locks import workspace_mutation_lock
 from course_flow.application.dto import SectionDTO
+from course_flow.application.services.workspace_edit_lock_service import (
+    WorkspaceReferenceType,
+)
 from course_flow.core.permissions import WorkflowPermission
 
 graph_collection_router = Router(tags=["sections"], by_alias=True)
@@ -85,6 +89,7 @@ def list_graph_sections(request, uuid: UUID):
     auth=BearerAuth(),
     operation_id="createGraphSection",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.GRAPH)
 def create_graph_section(
     request, uuid: UUID, payload: GraphSectionCreateIn
 ):
@@ -114,6 +119,7 @@ def create_graph_section(
     auth=BearerAuth(),
     operation_id="insertGraphSectionBelow",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.GRAPH)
 def insert_graph_section_below(
     request, uuid: UUID, payload: GraphSectionInsertBelowIn
 ):
@@ -139,6 +145,7 @@ def insert_graph_section_below(
     auth=BearerAuth(),
     operation_id="reorderGraphSections",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.GRAPH)
 def reorder_graph_sections(request, uuid: UUID, payload: GraphReorderSectionsIn):
     current_user = get_current_user(request)
     _ensure_graph_permission(
@@ -160,6 +167,11 @@ def reorder_graph_sections(request, uuid: UUID, payload: GraphReorderSectionsIn)
     response=SectionOut,
     auth=BearerAuth(),
     operation_id="createSection",
+)
+@workspace_mutation_lock(
+    WorkspaceReferenceType.GRAPH,
+    lookup_arg="payload",
+    lookup_attr="graph_uuid",
 )
 def create_section(request, payload: SectionCreateIn):
     current_user = get_current_user(request)
@@ -213,6 +225,7 @@ def get_section(request, uuid: UUID):
 @resource_router.patch(
     "/{uuid}", response=SectionOutResp, auth=BearerAuth(), operation_id="updateSection"
 )
+@workspace_mutation_lock(WorkspaceReferenceType.SECTION)
 def update_section(request, uuid: UUID, payload: SectionPatchIn):
     current_user = get_current_user(request)
     existing = get_section_service().get_by_uuid(uuid)
@@ -246,6 +259,7 @@ def update_section(request, uuid: UUID, payload: SectionPatchIn):
     auth=BearerAuth(),
     operation_id="deleteSection",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.SECTION)
 def delete_section(request, uuid: UUID):
     current_user = get_current_user(request)
     existing = get_section_service().get_by_uuid(uuid)

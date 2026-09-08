@@ -1,7 +1,9 @@
 import { getApiErrorStatus, isArchivedApiError } from '@cf/api/apiError'
 import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
+import WorkspaceEditLockBanner from '@cf/components/common/WorkspaceEditLockBanner'
 import { WorkspacePermissionsProvider } from '@cf/context/workspacePermissionsContext'
 import { useWorkspaceAccessGuard } from '@cf/hooks/useWorkspaceAccessGuard'
+import { useWorkspaceEditLock } from '@cf/hooks/useWorkspaceEditLock'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
@@ -54,6 +56,13 @@ const ProjectDetails = () => {
     routePathname: location.pathname,
     revalidate
   })
+  const editLock = useWorkspaceEditLock({
+    workspace: 'project',
+    resourceUuid: uuid ?? '',
+    resourceRole: projectResponse?.item.permissions.resourceRole,
+    resourceState: projectResponse?.item.permissions.state,
+    reload: revalidate
+  })
 
   if (privateAccessRevoked) {
     return <WorkspaceAccessDenied workspace="project" />
@@ -85,8 +94,20 @@ const ProjectDetails = () => {
     return <ErrorView message={t('errors.notFound')} />
   }
 
+  if (editLock.initialResolving) {
+    return <Loader />
+  }
+
   return (
-    <WorkspacePermissionsProvider resource={projectResponse.item.permissions}>
+    <WorkspacePermissionsProvider
+      resource={projectResponse.item.permissions}
+      resourceReadOnly={!editLock.editingEnabled}
+    >
+      <WorkspaceEditLockBanner
+        lock={editLock.locked}
+        takeoverPending={editLock.takeoverPending}
+        onTakeover={editLock.takeover}
+      />
       <MenuBar leftSection={<ProjectActionMenu />} />
       <ProjectHeader project={project} />
       <ProjectTabs project={project} />

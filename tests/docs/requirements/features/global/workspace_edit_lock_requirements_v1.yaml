@@ -54,14 +54,14 @@ uiObjectDefinitions:
 
 locatorMappings:
   workspaceEditLockBanner:
-    strategy: null
-    confidence: unresolved
+    strategy: '[data-testid="workspace-edit-lock-banner"]'
+    confidence: confirmed
   workspaceEditLockMessage:
-    strategy: null
-    confidence: unresolved
+    strategy: '[data-testid="workspace-edit-lock-message"]'
+    confidence: confirmed
   workspaceEditLockTakeoverButton:
-    strategy: null
-    confidence: unresolved
+    strategy: '[data-testid="workspace-edit-lock-takeover"]'
+    confidence: confirmed
   globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
 
 requirements:

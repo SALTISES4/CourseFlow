@@ -4,6 +4,7 @@ import {
   getWorkflowOptions
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import type { WorkflowDetailOutResp } from '@cf/api/gen/types.gen'
+import WorkspaceEditLockBanner from '@cf/components/common/WorkspaceEditLockBanner'
 import { WorkspacePermissionsProvider } from '@cf/context/workspacePermissionsContext'
 import { selectAuthUser } from '@cf/features/auth/state/auth.slice'
 import { loadNodeInsertModePreference } from '@cf/features/graph/state/nodeInsertModePreference'
@@ -12,8 +13,10 @@ import {
   selectWorkflowLoadState
 } from '@cf/features/graph/state/selectors/readiness.selectors'
 import { graphUiActions } from '@cf/features/graph/state/slices/graphUi.slice'
+import { bootstrapWorkflowGraph } from '@cf/features/graph/state/thunks/bootstrapGraph.thunk'
 import { useGraphBootstrap } from '@cf/features/graph/state/useGraphBootstrap'
 import { useWorkspaceAccessGuard } from '@cf/hooks/useWorkspaceAccessGuard'
+import { useWorkspaceEditLock } from '@cf/hooks/useWorkspaceEditLock'
 import { AppDispatch, RootState } from '@cf/redux/store'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import ErrorView from '@cfPages/MsgViews/ErrorView'
@@ -29,9 +32,14 @@ import { useLocation, useParams } from 'react-router-dom'
 type WorkflowContentProps = {
   workflow: WorkflowPageData
   publicView: boolean
+  editLock?: ReturnType<typeof useWorkspaceEditLock>
 }
 
-const WorkflowContent = ({ workflow, publicView }: WorkflowContentProps) => {
+const WorkflowContent = ({
+  workflow,
+  publicView,
+  editLock
+}: WorkflowContentProps) => {
   const workflowUuid = workflow.uuid
   useGraphBootstrap(workflowUuid, publicView)
 
@@ -53,12 +61,20 @@ const WorkflowContent = ({ workflow, publicView }: WorkflowContentProps) => {
   return (
     <WorkspacePermissionsProvider
       resource={workflow.permissions}
+      resourceReadOnly={Boolean(editLock && !editLock.editingEnabled)}
       project={
         'projectPermissions' in workflow
           ? workflow.projectPermissions
           : undefined
       }
     >
+      {editLock && (
+        <WorkspaceEditLockBanner
+          lock={editLock.locked}
+          takeoverPending={editLock.takeoverPending}
+          onTakeover={editLock.takeover}
+        />
+      )}
       <WorkflowSidebarContextProvider>
         <WorkflowTabs workflow={workflow} publicView={publicView} />
       </WorkflowSidebarContextProvider>
@@ -106,6 +122,26 @@ const AuthenticatedWorkflow = () => {
     routePathname: location.pathname,
     revalidate
   })
+  const reloadForEditLock = useCallback(async () => {
+    if (!workflowUuid) {
+      return new Error('Workflow UUID is unavailable')
+    }
+    const [workflowResult, graphResult] = await Promise.all([
+      refetch(),
+      dispatch(bootstrapWorkflowGraph(workflowUuid, false))
+    ])
+    return (
+      workflowResult.error ??
+      (graphResult.ok ? null : new Error('Workflow graph reload failed'))
+    )
+  }, [dispatch, refetch, workflowUuid])
+  const editLock = useWorkspaceEditLock({
+    workspace: 'workflow',
+    resourceUuid: workflowUuid ?? '',
+    resourceRole: resolvedWorkflowResponse?.item.permissions.resourceRole,
+    resourceState: resolvedWorkflowResponse?.item.permissions.state,
+    reload: reloadForEditLock
+  })
 
   useLayoutEffect(() => {
     if (!userUuid || !workflowUuid) {
@@ -143,10 +179,15 @@ const AuthenticatedWorkflow = () => {
     return <Loader />
   }
 
+  if (editLock.initialResolving) {
+    return <Loader />
+  }
+
   return (
     <WorkflowContent
       workflow={resolvedWorkflowResponse.item}
       publicView={false}
+      editLock={editLock}
     />
   )
 }

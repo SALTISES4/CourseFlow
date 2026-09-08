@@ -20,6 +20,7 @@ from course_flow.core.models import (
     Thread,
     Workflow,
 )
+from course_flow.tests.edit_lock_helpers import acquire_project_edit_lock
 
 
 @pytest.fixture
@@ -112,6 +113,7 @@ def test_editor_can_edit_publish_manage_members_and_create_workflow(
     users,
 ):
     headers = _auth_header(users["editor"])
+    acquire_project_edit_lock(client, headers, project.uuid)
 
     updated = client.patch(
         f"/api/project/{project.uuid}",

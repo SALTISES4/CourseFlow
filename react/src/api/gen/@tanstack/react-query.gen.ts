@@ -11,11 +11,13 @@ import {
 import { client } from '../client.gen'
 import {
   type Options,
+  acquireWorkspaceEditLock,
   addProjectTeamMembers,
   archiveProject,
   archiveWorkflow,
   copyWorkflow,
   courseFlowApiNinjaAppHealth,
+  courseFlowApiNinjaAppReady,
   createChannel,
   createGraphEdge,
   createGraphNode,
@@ -55,6 +57,7 @@ import {
   getRelatedWorkflows,
   getSection,
   getWorkflow,
+  getWorkspaceEditLock,
   insertGraphChannelBelow,
   insertGraphNodeBelow,
   insertGraphSectionBelow,
@@ -86,12 +89,14 @@ import {
   patchNodeMeta,
   patchOutcome,
   placeGraphNode,
+  refreshWorkspaceEditLock,
   register,
   reorderGraphChannels,
   reorderGraphSections,
   restoreProject,
   restoreWorkflow,
   searchLibrary,
+  takeoverWorkspaceEditLock,
   unlinkNodeOutcome,
   updateChannel,
   updateEdge,
@@ -103,6 +108,8 @@ import {
   updateWorkflowPublicLink
 } from '../sdk.gen'
 import type {
+  AcquireWorkspaceEditLockData,
+  AcquireWorkspaceEditLockResponse,
   AddProjectTeamMembersData,
   AddProjectTeamMembersResponse,
   ArchiveProjectData,
@@ -113,6 +120,8 @@ import type {
   CopyWorkflowResponse,
   CourseFlowApiNinjaAppHealthData,
   CourseFlowApiNinjaAppHealthResponse,
+  CourseFlowApiNinjaAppReadyData,
+  CourseFlowApiNinjaAppReadyResponse,
   CreateChannelData,
   CreateChannelResponse,
   CreateGraphEdgeData,
@@ -191,6 +200,8 @@ import type {
   GetSectionResponse,
   GetWorkflowData,
   GetWorkflowResponse,
+  GetWorkspaceEditLockData,
+  GetWorkspaceEditLockResponse,
   InsertGraphChannelBelowData,
   InsertGraphChannelBelowResponse,
   InsertGraphNodeBelowData,
@@ -253,6 +264,8 @@ import type {
   PatchOutcomeResponse,
   PlaceGraphNodeData,
   PlaceGraphNodeResponse,
+  RefreshWorkspaceEditLockData,
+  RefreshWorkspaceEditLockResponse,
   RegisterData,
   RegisterResponse,
   ReorderGraphChannelsData,
@@ -265,6 +278,8 @@ import type {
   RestoreWorkflowResponse,
   SearchLibraryData,
   SearchLibraryResponse,
+  TakeoverWorkspaceEditLockData,
+  TakeoverWorkspaceEditLockResponse,
   UnlinkNodeOutcomeData,
   UnlinkNodeOutcomeResponse,
   UpdateChannelData,
@@ -350,6 +365,34 @@ export const courseFlowApiNinjaAppHealthOptions = (
       return data
     },
     queryKey: courseFlowApiNinjaAppHealthQueryKey(options)
+  })
+
+export const courseFlowApiNinjaAppReadyQueryKey = (
+  options?: Options<CourseFlowApiNinjaAppReadyData>
+) => createQueryKey('courseFlowApiNinjaAppReady', options)
+
+/**
+ * Readiness check
+ */
+export const courseFlowApiNinjaAppReadyOptions = (
+  options?: Options<CourseFlowApiNinjaAppReadyData>
+) =>
+  queryOptions<
+    CourseFlowApiNinjaAppReadyResponse,
+    DefaultError,
+    CourseFlowApiNinjaAppReadyResponse,
+    ReturnType<typeof courseFlowApiNinjaAppReadyQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await courseFlowApiNinjaAppReady({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true
+      })
+      return data
+    },
+    queryKey: courseFlowApiNinjaAppReadyQueryKey(options)
   })
 
 export const listProjectTagsQueryKey = (
@@ -2811,3 +2854,112 @@ export const getReferenceDataOptions = (
     },
     queryKey: getReferenceDataQueryKey(options)
   })
+
+/**
+ * Acquire Workspace Edit Lock
+ */
+export const acquireWorkspaceEditLockMutation = (
+  options?: Partial<Options<AcquireWorkspaceEditLockData>>
+): UseMutationOptions<
+  AcquireWorkspaceEditLockResponse,
+  DefaultError,
+  Options<AcquireWorkspaceEditLockData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    AcquireWorkspaceEditLockResponse,
+    DefaultError,
+    Options<AcquireWorkspaceEditLockData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await acquireWorkspaceEditLock({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+export const getWorkspaceEditLockQueryKey = (
+  options: Options<GetWorkspaceEditLockData>
+) => createQueryKey('getWorkspaceEditLock', options)
+
+/**
+ * Get Workspace Edit Lock
+ */
+export const getWorkspaceEditLockOptions = (
+  options: Options<GetWorkspaceEditLockData>
+) =>
+  queryOptions<
+    GetWorkspaceEditLockResponse,
+    DefaultError,
+    GetWorkspaceEditLockResponse,
+    ReturnType<typeof getWorkspaceEditLockQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getWorkspaceEditLock({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true
+      })
+      return data
+    },
+    queryKey: getWorkspaceEditLockQueryKey(options)
+  })
+
+/**
+ * Refresh Workspace Edit Lock
+ */
+export const refreshWorkspaceEditLockMutation = (
+  options?: Partial<Options<RefreshWorkspaceEditLockData>>
+): UseMutationOptions<
+  RefreshWorkspaceEditLockResponse,
+  DefaultError,
+  Options<RefreshWorkspaceEditLockData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    RefreshWorkspaceEditLockResponse,
+    DefaultError,
+    Options<RefreshWorkspaceEditLockData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await refreshWorkspaceEditLock({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Takeover Workspace Edit Lock
+ */
+export const takeoverWorkspaceEditLockMutation = (
+  options?: Partial<Options<TakeoverWorkspaceEditLockData>>
+): UseMutationOptions<
+  TakeoverWorkspaceEditLockResponse,
+  DefaultError,
+  Options<TakeoverWorkspaceEditLockData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    TakeoverWorkspaceEditLockResponse,
+    DefaultError,
+    Options<TakeoverWorkspaceEditLockData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await takeoverWorkspaceEditLock({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}

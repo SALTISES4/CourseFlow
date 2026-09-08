@@ -27,8 +27,12 @@ from course_flow.api.schemas.graph_mutation import (
     GraphNodePlaceIn,
 )
 from course_flow.api.schemas.graph_view import NodeGraphOut
+from course_flow.api.workspace_edit_locks import workspace_mutation_lock
 from course_flow.application.services.graph_mutation_service import (
     graph_from_node,
+)
+from course_flow.application.services.workspace_edit_lock_service import (
+    WorkspaceReferenceType,
 )
 from course_flow.core.models import Node
 from course_flow.core.permissions import WorkflowPermission
@@ -128,6 +132,7 @@ def list_graph_nodes(request, uuid: UUID):
     auth=BearerAuth(),
     operation_id="createGraphNode",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.GRAPH)
 def create_graph_node(request, uuid: UUID, payload: GraphNodeCreateIn):
     current_user = get_current_user(request)
     _ensure_graph_permission(
@@ -153,6 +158,7 @@ def create_graph_node(request, uuid: UUID, payload: GraphNodeCreateIn):
     auth=BearerAuth(),
     operation_id="insertGraphNodeBelow",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.GRAPH)
 def insert_graph_node_below(request, uuid: UUID, payload: GraphNodeInsertBelowIn):
     current_user = get_current_user(request)
     _ensure_graph_permission(
@@ -180,6 +186,7 @@ def insert_graph_node_below(request, uuid: UUID, payload: GraphNodeInsertBelowIn
     auth=BearerAuth(),
     operation_id="placeGraphNode",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.GRAPH)
 def place_graph_node(request, uuid: UUID, payload: GraphNodePlaceIn):
     current_user = get_current_user(request)
     _ensure_graph_permission(
@@ -233,6 +240,7 @@ def get_node(request, uuid: UUID):
     auth=BearerAuth(),
     operation_id="patchNode",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.NODE)
 def patch_node(request, uuid: UUID, payload: GraphNodePatchIn):
     current_user = get_current_user(request)
     _ensure_node_permission(
@@ -256,6 +264,7 @@ def patch_node(request, uuid: UUID, payload: GraphNodePatchIn):
     auth=BearerAuth(),
     operation_id="linkNodeOutcome",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.NODE)
 def link_node_outcome(request, uuid: UUID, payload: GraphNodeLinkOutcomeIn):
     current_user = get_current_user(request)
     _ensure_node_permission(
@@ -278,6 +287,7 @@ def link_node_outcome(request, uuid: UUID, payload: GraphNodeLinkOutcomeIn):
     auth=BearerAuth(),
     operation_id="unlinkNodeOutcome",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.NODE)
 def unlink_node_outcome(request, uuid: UUID, payload: GraphNodeLinkOutcomeIn):
     current_user = get_current_user(request)
     _ensure_node_permission(
@@ -300,6 +310,7 @@ def unlink_node_outcome(request, uuid: UUID, payload: GraphNodeLinkOutcomeIn):
     auth=BearerAuth(),
     operation_id="patchNodeMeta",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.NODE)
 def patch_node_meta(request, uuid: UUID, payload: GraphNodeMetaPatchIn):
     current_user = get_current_user(request)
     _ensure_node_permission(
@@ -323,6 +334,7 @@ def patch_node_meta(request, uuid: UUID, payload: GraphNodeMetaPatchIn):
     auth=BearerAuth(),
     operation_id="linkNodeWorkflow",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.NODE)
 def link_node_workflow(request, uuid: UUID, payload: GraphNodeLinkWorkflowIn):
     current_user = get_current_user(request)
     _ensure_node_permission(
@@ -345,6 +357,7 @@ def link_node_workflow(request, uuid: UUID, payload: GraphNodeLinkWorkflowIn):
     auth=BearerAuth(),
     operation_id="moveGraphNode",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.NODE)
 def move_graph_node(request, uuid: UUID, payload: GraphNodeMoveIn):
     current_user = get_current_user(request)
     _ensure_node_permission(
@@ -373,6 +386,7 @@ def move_graph_node(request, uuid: UUID, payload: GraphNodeMoveIn):
     auth=BearerAuth(),
     operation_id="deleteNode",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.NODE)
 def delete_node(request, uuid: UUID):
     current_user = get_current_user(request)
     _ensure_node_permission(

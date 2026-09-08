@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+import type { GraphViewEdge } from './workflow-graph.helpers';
 import { workflowNode } from './workflow-graph.locators';
 import {
   type EdgeHandle,
@@ -6,8 +7,71 @@ import {
   workflowEdgeClickTarget,
   workflowEdgeSourceReconnectHandle,
   workflowEdgeTargetReconnectHandle,
+  workflowEdgeVisiblePath,
   workflowNodeEdgeHandle,
 } from './edge.locators';
+
+/** Assert that an edge's rendered path terminates on its current node bounds. */
+export async function expectWorkflowEdgeEndpointsAttached(
+  page: Page,
+  edge: GraphViewEdge,
+): Promise<void> {
+  const path = workflowEdgeVisiblePath(page, String(edge.id));
+
+  await expect
+    .poll(async () => {
+      if ((await path.count()) === 0) return Number.POSITIVE_INFINITY;
+
+      return path.evaluate((element, currentEdge) => {
+        const svgPath = element as SVGPathElement;
+        const ctm = svgPath.getScreenCTM();
+        const source = document.getElementById(
+          `node-${currentEdge.sourceNodeUuid}`,
+        );
+        const target = document.getElementById(
+          `node-${currentEdge.targetNodeUuid}`,
+        );
+        if (!ctm || !source || !target || !svgPath.ownerSVGElement) {
+          return Number.POSITIVE_INFINITY;
+        }
+
+        const screenPoint = (point: DOMPoint) => {
+          const svgPoint = svgPath.ownerSVGElement!.createSVGPoint();
+          svgPoint.x = point.x;
+          svgPoint.y = point.y;
+          return svgPoint.matrixTransform(ctm);
+        };
+        const distanceToBoundary = (point: DOMPoint, rect: DOMRect) => {
+          const withinX =
+            point.x >= rect.left - 1 && point.x <= rect.right + 1;
+          const withinY =
+            point.y >= rect.top - 1 && point.y <= rect.bottom + 1;
+          return Math.min(
+            withinX ? Math.abs(point.y - rect.top) : Number.POSITIVE_INFINITY,
+            withinX ? Math.abs(point.y - rect.bottom) : Number.POSITIVE_INFINITY,
+            withinY ? Math.abs(point.x - rect.left) : Number.POSITIVE_INFINITY,
+            withinY ? Math.abs(point.x - rect.right) : Number.POSITIVE_INFINITY,
+          );
+        };
+
+        const totalLength = svgPath.getTotalLength();
+        return Math.max(
+          distanceToBoundary(
+            screenPoint(svgPath.getPointAtLength(0)),
+            source.getBoundingClientRect(),
+          ),
+          distanceToBoundary(
+            screenPoint(svgPath.getPointAtLength(totalLength)),
+            target.getBoundingClientRect(),
+          ),
+        );
+      }, edge);
+    }, {
+      message: `workflowEdge ${edge.id} endpoints should follow their nodes`,
+      timeout: 5_000,
+    })
+    .toBeLessThan(1);
+}
 
 /**
  * Find a point where this transparent hit-stroke is the topmost clickable edge.

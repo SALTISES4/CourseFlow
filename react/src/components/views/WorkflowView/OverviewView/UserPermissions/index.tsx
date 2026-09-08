@@ -3,6 +3,7 @@ import {
   listProjectTeamQueryKey,
   updateProjectTeamMemberMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import type {
   ProjectTeamMemberOut,
   UserSummaryOut
@@ -116,10 +117,11 @@ const UserPermissions = ({
         variant: SnackbarOptions.SUCCESS
       })
     } catch (err) {
-      enqueueSnackbar(
-        t('messages.roleUpdateFailed'),
-        { variant: SnackbarOptions.ERROR }
-      )
+      if (!isApiErrorNotificationHandled(err)) {
+        enqueueSnackbar(t('messages.roleUpdateFailed'), {
+          variant: SnackbarOptions.ERROR
+        })
+      }
       console.error('Failed to update contributor role:', err)
     }
   }

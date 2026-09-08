@@ -1638,6 +1638,45 @@ export const zReferenceDataOut = z.object({
   timeUnits: z.array(zTimeUnitReferenceOptionOut).optional()
 })
 
+/**
+ * WorkspaceResourceType
+ *
+ * Resource scopes that participate in the one-editor lease contract.
+ */
+export const zWorkspaceResourceType = z.enum(['project', 'workflow'])
+
+/**
+ * WorkspaceEditLockHolderOut
+ */
+export const zWorkspaceEditLockHolderOut = z.object({
+  uuid: z.string().uuid(),
+  displayName: z.string()
+})
+
+/**
+ * WorkspaceEditLockState
+ */
+export const zWorkspaceEditLockState = z.enum(['held', 'locked', 'available'])
+
+/**
+ * WorkspaceEditLockOut
+ */
+export const zWorkspaceEditLockOut = z.object({
+  resourceType: zWorkspaceResourceType,
+  resourceUuid: z.string().uuid(),
+  state: zWorkspaceEditLockState,
+  holder: zWorkspaceEditLockHolderOut.nullish(),
+  version: z.string().uuid().nullish(),
+  expiresAt: z.string().datetime().nullish()
+})
+
+/**
+ * WorkspaceEditLockTakeoverIn
+ */
+export const zWorkspaceEditLockTakeoverIn = z.object({
+  expectedVersion: z.string().uuid()
+})
+
 export const zCourseFlowApiNinjaAppHealthData = z.object({
   body: z.never().optional(),
   path: z.never().optional(),
@@ -1648,6 +1687,17 @@ export const zCourseFlowApiNinjaAppHealthData = z.object({
  * OK
  */
 export const zCourseFlowApiNinjaAppHealthResponse = zHealthResponse
+
+export const zCourseFlowApiNinjaAppReadyData = z.object({
+  body: z.never().optional(),
+  path: z.never().optional(),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zCourseFlowApiNinjaAppReadyResponse = zHealthResponse
 
 export const zListProjectTagsData = z.object({
   body: z.never().optional(),
@@ -2789,3 +2839,59 @@ export const zGetReferenceDataData = z.object({
  * OK
  */
 export const zGetReferenceDataResponse = zReferenceDataOut
+
+export const zAcquireWorkspaceEditLockData = z.object({
+  body: z.never().optional(),
+  path: z.object({
+    resource_type: z.enum(['project', 'workflow']),
+    resource_uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zAcquireWorkspaceEditLockResponse = zWorkspaceEditLockOut
+
+export const zGetWorkspaceEditLockData = z.object({
+  body: z.never().optional(),
+  path: z.object({
+    resource_type: z.enum(['project', 'workflow']),
+    resource_uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zGetWorkspaceEditLockResponse = zWorkspaceEditLockOut
+
+export const zRefreshWorkspaceEditLockData = z.object({
+  body: z.never().optional(),
+  path: z.object({
+    resource_type: z.enum(['project', 'workflow']),
+    resource_uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zRefreshWorkspaceEditLockResponse = zWorkspaceEditLockOut
+
+export const zTakeoverWorkspaceEditLockData = z.object({
+  body: zWorkspaceEditLockTakeoverIn,
+  path: z.object({
+    resource_type: z.enum(['project', 'workflow']),
+    resource_uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zTakeoverWorkspaceEditLockResponse = zWorkspaceEditLockOut

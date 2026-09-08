@@ -8,6 +8,11 @@ export function workflowEdge(page: Page, edgeId: string): Locator {
   return page.locator(`#line-svg g[data-edge-id="${edgeId}"]`);
 }
 
+/** Visible workflowEdge stroke; the second path is the transparent click target. */
+export function workflowEdgeVisiblePath(page: Page, edgeId: string): Locator {
+  return workflowEdge(page, edgeId).locator('path').first();
+}
+
 /** Clickable transparent stroke on workflowEdge (FR-WF-EDGE-004). */
 export function workflowEdgeClickTarget(page: Page, edgeId: string): Locator {
   return workflowEdge(page, edgeId).locator('path[style*="cursor: pointer"]');

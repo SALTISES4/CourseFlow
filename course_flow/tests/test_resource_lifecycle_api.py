@@ -20,6 +20,10 @@ from course_flow.core.models import (
     Thread,
     Workflow,
 )
+from course_flow.tests.edit_lock_helpers import (
+    acquire_project_edit_lock,
+    acquire_workflow_edit_lock,
+)
 
 
 @pytest.fixture
@@ -71,6 +75,7 @@ def test_project_archive_and_restore_apply_required_batch_side_effects(
     FavoriteProject.objects.create(user=owner, project=project)
     FavoriteGraph.objects.create(user=owner, graph=workflow.graph)
     headers = _auth_header(owner)
+    acquire_project_edit_lock(client, headers, project.uuid)
 
     archived = client.post(f"/api/project/{project.uuid}/archive", **headers)
 
@@ -140,6 +145,7 @@ def test_single_workflow_archive_breaks_links_and_requires_archive_before_delete
     FavoriteGraph.objects.create(user=owner, graph=child.graph)
     parent_revision = parent.graph.revision_id
     headers = _auth_header(owner)
+    acquire_workflow_edit_lock(client, headers, child.uuid)
 
     active_delete = client.delete(f"/api/workflow/{child.uuid}", **headers)
     assert active_delete.status_code == 403
@@ -175,6 +181,7 @@ def test_workflow_cannot_be_restored_independently_under_archived_project(
     project = Project.objects.create(owner=owner, title="Archived parent")
     workflow = _workflow(project=project, owner=owner, title="Child")
     headers = _auth_header(owner)
+    acquire_project_edit_lock(client, headers, project.uuid)
     client.post(f"/api/project/{project.uuid}/archive", **headers)
 
     response = client.post(f"/api/workflow/{workflow.uuid}/restore", **headers)

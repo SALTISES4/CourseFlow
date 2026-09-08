@@ -3,6 +3,7 @@ import {
   listProjectTeamQueryKey,
   listUsersOptions
 } from '@cf/api/gen/@tanstack/react-query.gen'
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import { ProjectTeamRoleSchema } from '@cf/api/gen/types.gen'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { WorkspaceType } from '@cf/types/enum'
@@ -119,10 +120,11 @@ const ContributorAddDialog = ({
       refetch()
       onClose()
     } catch (err) {
-      enqueueSnackbar(
-        t('contributor.addFailed'),
-        { variant: SnackbarOptions.ERROR }
-      )
+      if (!isApiErrorNotificationHandled(err)) {
+        enqueueSnackbar(t('contributor.addFailed'), {
+          variant: SnackbarOptions.ERROR
+        })
+      }
       console.error('Failed to add contributor:', err)
     }
   }, [addMembers, uuid, onClose, refetch, role, userUuids])

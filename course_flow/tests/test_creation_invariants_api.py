@@ -21,6 +21,7 @@ from course_flow.core.models import (
     Team,
     Workflow,
 )
+from course_flow.tests.edit_lock_helpers import acquire_project_edit_lock
 
 
 @pytest.fixture
@@ -86,6 +87,7 @@ def test_project_detail_includes_workflow_list_metadata(client: Client, user):
     )
     assert create_project.status_code == 200, create_project.content
     project_uuid = create_project.json()["uuid"]
+    acquire_project_edit_lock(client, _auth_header(raw), project_uuid)
 
     create_graph = client.post(
         "/api/workflow",

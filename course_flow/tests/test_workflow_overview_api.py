@@ -19,6 +19,7 @@ from course_flow.core.models import (
     Team,
     TeamUser,
     Workflow,
+    WorkspaceEditLock,
 )
 
 
@@ -44,13 +45,19 @@ def _auth(user) -> dict[str, str]:
 
 def _workflow(owner, workflow_type: WorkflowType) -> Workflow:
     project = Project.objects.create(owner=owner, title=f"{workflow_type} project")
-    return Workflow.objects.create(
+    workflow = Workflow.objects.create(
         graph=Graph.objects.create(),
         author=owner,
         project=project,
         title=f"{workflow_type} workflow",
         workflow_type=workflow_type,
     )
+    WorkspaceEditLock.objects.create(
+        workflow=workflow,
+        holder=owner,
+        expires_at=timezone.now() + timedelta(hours=1),
+    )
+    return workflow
 
 
 def _node(workflow: Workflow, node_type: NodeType, row: int) -> Node:

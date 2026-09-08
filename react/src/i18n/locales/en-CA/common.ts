@@ -47,7 +47,8 @@ const common = {
   },
   cards: {
     ownedBy: 'Owned by {{name}}',
-    linkedWorkflowWarning: 'Linking the same workflow to multiple nodes can reduce readability when parent and child workflow outcomes are associated.',
+    linkedWorkflowWarning:
+      'Linking the same workflow to multiple nodes can reduce readability when parent and child workflow outcomes are associated.',
     alreadyInUse: 'Already in use'
   },
   lifecycle: {
@@ -59,8 +60,10 @@ const common = {
     deletePermanently: 'Delete permanently',
     restoreParentTitle: 'Restore parent project',
     permanentlyDeleteTitle: 'Permanently delete {{object}}',
-    restoreParentWarning: 'This workflow belongs to an archived project. Restore the project and all of its workflows?',
-    permanentlyDeleteWarning: 'This {{object}} will be permanently deleted and cannot be recovered.',
+    restoreParentWarning:
+      'This workflow belongs to an archived project. Restore the project and all of its workflows?',
+    permanentlyDeleteWarning:
+      'This {{object}} will be permanently deleted and cannot be recovered.',
     deleteObject: 'Delete {{object}}',
     object: { project: 'project', workflow: 'workflow' }
   },
@@ -101,6 +104,18 @@ const common = {
     workflowArchived: 'This workflow has been archived.',
     projectDenied: 'You do not have access to this project.',
     workflowDenied: 'You do not have access to this workflow.'
+  },
+  editLock: {
+    banner:
+      '{{displayName}} is currently editing this page. Do you wish to take over?',
+    takeover: 'Yes',
+    unavailable: 'Editing is temporarily unavailable. Please try again.',
+    projectConflict:
+      'This project is currently being edited by {{displayName}}. Your changes were not saved.',
+    workflowConflict:
+      'This workflow is currently being edited by {{displayName}}. Your changes were not saved.',
+    expired:
+      'Your edit lock has expired. Your changes were not saved. Refresh the page to continue editing.'
   },
   examples: {
     greeting: 'Hello, {{name}}',
