@@ -6,7 +6,6 @@ import {
   waitForMainNavigationReady,
 } from '../shared/locators/navigation';
 import { authenticatedApiRequest } from './api';
-import { fetchWorkflowDetail } from './edit-workflow-form';
 
 /** Sidebar Favourites query in MainSidebar/index.tsx */
 export const SIDEBAR_FAVOURITES_RESULTS_PER_PAGE = 5;
@@ -41,6 +40,7 @@ export type SidebarFavouriteEntry = {
 function isSidebarFavouritesSearchRequest(body: LibrarySearchRequestBody): boolean {
   return (
     body.filters?.isFavorite === true &&
+    body.filters?.contentType === 'project' &&
     body.pagination?.resultsPerPage === SIDEBAR_FAVOURITES_RESULTS_PER_PAGE &&
     (body.pagination?.page ?? 0) === 0
   );
@@ -141,95 +141,6 @@ export async function withLibraryObjectFavouriteState(
   }
 }
 
-/** Bump workflow recency so it wins default sidebar favourites sort (DATE_MODIFIED DESC). */
-export async function touchWorkflowModifiedOn(
-  page: Page,
-  workflowUuid: string,
-): Promise<{ restore: () => Promise<void> }> {
-  const workflow = await fetchWorkflowDetail(page, workflowUuid);
-  const touchedDescription = workflow.description?.endsWith(' ')
-    ? workflow.description.trimEnd()
-    : `${workflow.description ?? ''} `;
-
-  const response = await authenticatedApiRequest(page, 'PATCH', `/api/workflow/${workflowUuid}`, {
-    data: {
-      title: workflow.title,
-      description: touchedDescription,
-    },
-  });
-  expect(
-    response.ok(),
-    `Could not touch modified_on for workflow ${workflowUuid}.`,
-  ).toBeTruthy();
-
-  return {
-    restore: async () => {
-      const restoreResponse = await authenticatedApiRequest(
-        page,
-        'PATCH',
-        `/api/workflow/${workflowUuid}`,
-        {
-          data: {
-            title: workflow.title,
-            description: workflow.description ?? '',
-          },
-        },
-      );
-      expect(
-        restoreResponse.ok(),
-        `Could not restore description for workflow ${workflowUuid}.`,
-      ).toBeTruthy();
-    },
-  };
-}
-
-/**
- * Sidebar favourites are sorted by modified_on. Seed data includes five favourited
- * projects that crowd workflows out of the top five, so FR-NAV-005 regressions
- * would not surface unless favourited projects are temporarily cleared.
- */
-export async function withFavouritedProjectsClearedFromSidebarFeed(
-  page: Page,
-  assertion: () => Promise<void>,
-): Promise<void> {
-  const favouritedProjects = await listFavouritedProjects(page);
-  expect(
-    favouritedProjects.length,
-    'Precondition: account must have favourited projects to clear from sidebar feed.',
-  ).toBeGreaterThan(0);
-
-  const initialStates = await Promise.all(
-    favouritedProjects.map(async (project) => ({
-      project,
-      favourited: await readLibraryObjectFavouriteState(page, {
-        uuid: project.uuid,
-        title: project.title,
-        contentType: 'project',
-      }),
-    })),
-  );
-
-  for (const project of favouritedProjects) {
-    await setLibraryObjectFavouriteState(
-      page,
-      { uuid: project.uuid, title: project.title, contentType: 'project' },
-      false,
-    );
-  }
-
-  try {
-    await assertion();
-  } finally {
-    for (const { project, favourited } of initialStates) {
-      await setLibraryObjectFavouriteState(
-        page,
-        { uuid: project.uuid, title: project.title, contentType: 'project' },
-        favourited,
-      );
-    }
-  }
-}
-
 /** Read visible sidebar Favourites rows (title + resolved link pathname). */
 export async function readSidebarFavouriteEntries(page: Page): Promise<SidebarFavouriteEntry[]> {
   const links = favouritedItemLinks(page);
@@ -263,19 +174,6 @@ export async function readSidebarFavouriteEntries(page: Page): Promise<SidebarFa
   return entries;
 }
 
-export async function querySidebarFavouritesFeed(
-  page: Page,
-): Promise<LibrarySearchResponseBody> {
-  const response = await authenticatedApiRequest(page, 'POST', '/api/library/search', {
-    data: {
-      pagination: { page: 0, resultsPerPage: SIDEBAR_FAVOURITES_RESULTS_PER_PAGE },
-      filters: { isFavorite: true, isArchived: false },
-    },
-  });
-  expect(response.ok(), 'Could not query sidebar favourites feed.').toBeTruthy();
-  return (await response.json()) as LibrarySearchResponseBody;
-}
-
 export async function listFavouritedProjects(
   page: Page,
 ): Promise<Array<{ uuid: string; title: string }>> {
@@ -297,105 +195,52 @@ export async function listFavouritedProjects(
     .map((item) => ({ uuid: item.uuid, title: item.title }));
 }
 
-export async function listFavouritedWorkflows(
-  page: Page,
-): Promise<Array<{ uuid: string; title: string }>> {
-  const response = await authenticatedApiRequest(page, 'POST', '/api/library/search', {
-    data: {
-      pagination: { page: 0, resultsPerPage: 50 },
-      filters: {
-        isFavorite: true,
-        contentType: 'workflow',
-        isArchived: false,
-      },
-    },
-  });
-  expect(response.ok(), 'Could not list favourited workflows.').toBeTruthy();
-
-  const body = (await response.json()) as LibrarySearchResponseBody;
-  return body.items
-    .filter((item) => item.contentType === 'workflow' && item.isFavorite)
-    .map((item) => ({ uuid: item.uuid, title: item.title }));
-}
-
 /**
  * FR-NAV-005 — sidebar Favourites lists favourited projects only.
- * Uses the sidebar's own library-search payload (resultsPerPage 5) plus DOM rows.
+ * Verifies both the sidebar's project-only query and the rendered rows.
  */
 export async function expectSidebarFavouritesShowProjectsOnly(
   page: Page,
-  options: { requireWorkflowInSidebarFeed?: boolean } = {},
 ): Promise<void> {
-  const requireWorkflowInSidebarFeed = options.requireWorkflowInSidebarFeed ?? true;
+  const favouritedProjects = await listFavouritedProjects(page);
+  expect(
+    favouritedProjects.length,
+    'Precondition: account must have at least one favourited project.',
+  ).toBeGreaterThan(0);
 
-  const runAssertion = async (): Promise<void> => {
-    const favouritedWorkflows = await listFavouritedWorkflows(page);
+  const sidebarResponse = await waitForSidebarFavouritesSearchResponse(page, async () => {
+    await page.reload();
+  });
+  await waitForMainNavigationReady(page);
+  await expect(favouritesSectionLabel(page)).toBeVisible();
+
+  expect(sidebarResponse.items.length).toBeGreaterThan(0);
+  expect(
+    sidebarResponse.items.every(
+      (item) => item.contentType === 'project' && item.isFavorite,
+    ),
+    'Sidebar favourites query must return favourited projects only.',
+  ).toBe(true);
+
+  const visibleEntries = await readSidebarFavouriteEntries(page);
+  expect(
+    visibleEntries.length,
+    'Sidebar Favourites row count must match sidebar favourites query payload.',
+  ).toBe(sidebarResponse.items.length);
+  expect(visibleEntries.map((entry) => entry.title)).toEqual(
+    sidebarResponse.items.map((item) => item.title),
+  );
+
+  for (const [index, entry] of visibleEntries.entries()) {
     expect(
-      favouritedWorkflows.length,
-      'Precondition: account must have at least one favourited workflow in library data.',
-    ).toBeGreaterThan(0);
-
-    const sidebarResponse = await waitForSidebarFavouritesSearchResponse(page, async () => {
-      await page.reload();
-    });
-    await waitForMainNavigationReady(page);
-    await expect(favouritesSectionLabel(page)).toBeVisible();
-
-    const sidebarApiWorkflows = sidebarResponse.items.filter(
-      (item) => item.contentType === 'workflow',
-    );
-    if (requireWorkflowInSidebarFeed) {
-      expect(
-        sidebarApiWorkflows.length,
-        `Sidebar favourites query must include at least one workflow in the top ${SIDEBAR_FAVOURITES_RESULTS_PER_PAGE} so FR-NAV-005 can detect workflow rows.`,
-      ).toBeGreaterThan(0);
-    }
-
-    const visibleEntries = await readSidebarFavouriteEntries(page);
-
-    expect(
-      visibleEntries.length,
-      'Sidebar Favourites row count must match sidebar favourites query payload.',
-    ).toBe(sidebarResponse.items.length);
-
-    const visibleTitles = visibleEntries.map((entry) => entry.title);
-
-    for (const workflow of sidebarApiWorkflows) {
-      expect(
-        visibleTitles,
-        `Sidebar must not render workflow "${workflow.title}" returned by sidebar favourites query (FR-NAV-005).`,
-      ).not.toContain(workflow.title);
-    }
-
-    for (const workflow of favouritedWorkflows) {
-      expect(
-        visibleTitles,
-        `Sidebar must not render favourited workflow "${workflow.title}" (FR-NAV-005).`,
-      ).not.toContain(workflow.title);
-    }
-
-    for (const [index, entry] of visibleEntries.entries()) {
-      expect(
-        entry.pathname,
-        `Sidebar favourite[${index}] must route to a project (FR-NAV-005).`,
-      ).toMatch(/^\/project\/[0-9a-f-]+/);
-      expect(
-        entry.pathname,
-        `Sidebar favourite[${index}] must not route to a workflow (FR-NAV-005).`,
-      ).not.toMatch(/^\/workflow\//);
-    }
-  };
-
-  if (requireWorkflowInSidebarFeed) {
-    await withFavouritedProjectsClearedFromSidebarFeed(page, runAssertion);
-    return;
+      entry.pathname,
+      `Sidebar favourite[${index}] must route to a project (FR-NAV-005).`,
+    ).toMatch(/^\/project\/[0-9a-f-]+/);
   }
-
-  await runAssertion();
 }
 
 /**
- * FR-NAV-005 — after favouriting a workflow, sidebar feed includes it but DOM must not.
+ * FR-NAV-005 — a favourited workflow is excluded from the project-only sidebar query and DOM.
  */
 export async function expectFavouritedWorkflowInSidebarFeedButNotInDom(
   page: Page,
@@ -404,42 +249,33 @@ export async function expectFavouritedWorkflowInSidebarFeedButNotInDom(
   expect(workflow.contentType).toBe('workflow');
   expect(await readLibraryObjectFavouriteState(page, workflow)).toBe(true);
 
-  const { restore: restoreWorkflowDescription } = await touchWorkflowModifiedOn(
-    page,
-    workflow.uuid,
-  );
+  const sidebarResponse = await waitForSidebarFavouritesSearchResponse(page, async () => {
+    await page.reload();
+  });
+  await waitForMainNavigationReady(page);
+  await expect(favouritesSectionLabel(page)).toBeVisible();
 
-  try {
-    const sidebarResponse = await waitForSidebarFavouritesSearchResponse(page, async () => {
-      await page.reload();
-    });
-    await waitForMainNavigationReady(page);
-    await expect(favouritesSectionLabel(page)).toBeVisible();
+  expect(
+    sidebarResponse.items.some((item) => item.uuid === workflow.uuid),
+    `Project-only sidebar query must exclude favourited workflow "${workflow.title}".`,
+  ).toBe(false);
+  expect(
+    sidebarResponse.items.every((item) => item.contentType === 'project'),
+    'Sidebar favourites query must return projects only.',
+  ).toBe(true);
 
-    const workflowInSidebarFeed = sidebarResponse.items.some(
-      (item) => item.uuid === workflow.uuid && item.contentType === 'workflow',
-    );
+  const visibleEntries = await readSidebarFavouriteEntries(page);
+  const visibleTitles = visibleEntries.map((entry) => entry.title);
+  expect(
+    visibleTitles,
+    `Sidebar must not render favourited workflow "${workflow.title}" (FR-NAV-005).`,
+  ).not.toContain(workflow.title);
+
+  for (const [index, entry] of visibleEntries.entries()) {
+    expect(entry.pathname).not.toMatch(new RegExp(`/workflow/${workflow.uuid}(?:/|$)`));
     expect(
-      workflowInSidebarFeed,
-      `Favourited workflow "${workflow.title}" must appear in sidebar favourites query top ${SIDEBAR_FAVOURITES_RESULTS_PER_PAGE} so FR-NAV-005 can be exercised.`,
-    ).toBe(true);
-
-    const visibleEntries = await readSidebarFavouriteEntries(page);
-    const visibleTitles = visibleEntries.map((entry) => entry.title);
-
-    expect(
-      visibleTitles,
-      `Sidebar must not render newly favourited workflow "${workflow.title}" (FR-NAV-005).`,
-    ).not.toContain(workflow.title);
-
-    for (const [index, entry] of visibleEntries.entries()) {
-      expect(entry.pathname).not.toMatch(new RegExp(`/workflow/${workflow.uuid}(?:/|$)`));
-      expect(
-        entry.pathname,
-        `Sidebar favourite[${index}] must route to a project (FR-NAV-005).`,
-      ).toMatch(/^\/project\/[0-9a-f-]+/);
-    }
-  } finally {
-    await restoreWorkflowDescription();
+      entry.pathname,
+      `Sidebar favourite[${index}] must route to a project (FR-NAV-005).`,
+    ).toMatch(/^\/project\/[0-9a-f-]+/);
   }
 }

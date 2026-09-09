@@ -3,10 +3,7 @@ import { expect, type Locator, type Page } from "@playwright/test";
 import {
   cardFavouriteToggle,
   cardTitleText,
-  CARD_FAVOURITE_SNACKBAR_ADDED,
   CARD_FAVOURITE_SNACKBAR_REMOVED,
-  libraryProjectCardByTitle,
-  libraryWorkflowCardByTitle,
 } from "../shared/locators/cards";
 import { globalMessageSnackbar } from "../shared/locators/global";
 import {
@@ -34,7 +31,7 @@ import {
   expectExploreResultsContainOnlyWorkflowCards,
 } from "./explore";
 import { expectExploreResultsContainOnlyTemplateCards } from "./explore-boolean-filters";
-import { gotoExplore } from "./navigation";
+import { authenticatedApiRequest } from "./api";
 
 export {
   expectExploreResultsContainOnlyProjectCards as expectFavouritesResultsContainOnlyProjectCards,
@@ -137,17 +134,17 @@ export async function expectFavouritesListingItemsAreFavourited(
     isFavouritesLibrarySearchResponse,
   );
   await page.reload();
-  await expect(page).toHaveURL(/\/favourites\/?$/);
-  await waitForLibraryResultsLoaded(page);
-
   const response = await searchResponse;
   const requestBody =
     response.request().postDataJSON() as FavouritesLibrarySearchRequest;
+  const body = (await response.json()) as FavouritesLibrarySearchResponse;
+
+  await expect(page).toHaveURL(/\/favourites\/?$/);
+  await waitForLibraryResultsLoaded(page);
   expect(requestBody.filters?.isFavorite).toBe(true);
   expect(requestBody.filters?.includePublishedFavorites).toBe(true);
   expect(requestBody.filters?.contentType).toBe("project");
 
-  const body = (await response.json()) as FavouritesLibrarySearchResponse;
   for (const item of body.items) {
     expect(item.isFavorite).toBe(true);
   }
@@ -238,7 +235,7 @@ export async function expectKeywordSearchNarrowsFavouritesResults(
 
 /**
  * FR-FAV-001 — unfavouriting removes the card from /favourites listing.
- * Caller should restore favourite state afterward (see restoreFavouritedCardByTitle).
+ * Caller should restore favourite state afterward (see restoreFavouritedCard).
  * Star colour vs API isFavorite is covered in card-content FR-CARD-005.
  */
 export async function expectUnfavouritingRemovesCardFromFavouritesListing(
@@ -269,33 +266,45 @@ export async function expectUnfavouritingRemovesCardFromFavouritesListing(
   expect(await libraryCards(page).count()).toBeLessThan(countBefore);
 }
 
-/** Restore favourite after FR-FAV-001 unfavourite test — re-favourites via published Explore listing. */
-export async function restoreFavouritedCardByTitle(
+/** Restore favourite state without assuming that the resource belongs in Explore's published scope. */
+export async function restoreFavouritedCard(
   page: Page,
-  title: string,
+  item: {
+    uuid: string;
+    title: string;
+    contentType: "project" | "workflow";
+  },
 ): Promise<void> {
-  await gotoExplore(page);
-  await expect(page).toHaveURL(/\/explore\/?$/);
-  await waitForLibraryResultsLoaded(page);
-  await triggerLibrarySearchAndWait(
-    page,
-    async () => {
-      await keywordSearchField(page).fill(title);
-      await keywordSearchField(page).press("Enter");
-    },
-    { filters: { keyword: title } },
-  );
+  let current: { uuid: string; isFavorite: boolean } | undefined;
+  for (const scope of ["membership", "published"] as const) {
+    const search = await authenticatedApiRequest(page, "POST", "/api/library/search", {
+      data: {
+        scope,
+        pagination: { page: 0, resultsPerPage: 10 },
+        filters: {
+          keyword: item.title,
+          contentType: item.contentType,
+        },
+      },
+    });
+    expect(search.ok(), `Could not read favourite state for ${item.uuid}`).toBeTruthy();
 
-  const card = libraryWorkflowCardByTitle(page, title).or(
-    libraryProjectCardByTitle(page, title),
-  );
-  await expect(card).toBeVisible({ timeout: 15_000 });
+    const body = (await search.json()) as {
+      items: Array<{ uuid: string; isFavorite: boolean }>;
+    };
+    current = body.items.find((candidate) => candidate.uuid === item.uuid);
+    if (current) {
+      break;
+    }
+  }
 
-  await cardFavouriteToggle(card).click();
-  await expect(globalMessageSnackbar(page)).toHaveText(
-    CARD_FAVOURITE_SNACKBAR_ADDED,
-    {
-      timeout: 15_000,
-    },
-  );
+  expect(current, `Library search did not return ${item.uuid}`).toBeDefined();
+  if (current!.isFavorite) {
+    return;
+  }
+
+  const restore = await authenticatedApiRequest(page, "POST", "/api/library/favorite", {
+    data: { uuid: item.uuid },
+  });
+  expect(restore.ok(), `Could not restore favourite ${item.uuid}`).toBeTruthy();
 }

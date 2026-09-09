@@ -1,7 +1,8 @@
 import {
   LibraryContentTypeIn,
   LibraryFiltersIn,
-  LibrarySearchIn
+  LibrarySearchIn,
+  LibrarySearchScopeIn
 } from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
 import { useReferenceData } from '@cf/hooks/useReferenceData'
@@ -43,12 +44,14 @@ export type LibraryFilterConfig = {
  *******************************************************/
 type PropsType = {
   config: LibraryFilterConfig
+  scope?: LibrarySearchScopeIn
   lockedFilters?: Partial<LibraryFiltersIn>
   override?: ResultsProps['override']
 }
 
 const LibrarySearchView = ({
   config,
+  scope = LibrarySearchScopeIn.MEMBERSHIP,
   lockedFilters = {},
   override
 }: PropsType) => {
@@ -122,12 +125,14 @@ const LibrarySearchView = ({
   }, [translatedDefaults])
 
   const searchArgs = useMemo(
-    () =>
-      LibraryHelper.applyLockedFilters(
+    () => ({
+      ...LibraryHelper.applyLockedFilters(
         LibraryHelper.reduceStateToSearchArgs(searchFilterState),
         lockedFilters
       ),
-    [lockedFilters, searchFilterState]
+      scope
+    }),
+    [lockedFilters, scope, searchFilterState]
   )
 
   /*******************************************************

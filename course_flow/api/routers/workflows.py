@@ -181,11 +181,6 @@ def _updates_with_resolved_project(
     auth=BearerAuth(),
     operation_id="createWorkflow",
 )
-@workspace_mutation_lock(
-    WorkspaceReferenceType.PROJECT,
-    lookup_arg="payload",
-    lookup_attr="project_uuid",
-)
 def create_workflow(request, payload: WorkflowCreateIn):
     current_user = get_current_user(request)
     svc = get_workflow_service()

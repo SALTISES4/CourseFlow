@@ -1,4 +1,5 @@
 import { test, expect } from '../../fixtures';
+import { ensurePageWorkspaceEditLock } from '../../helpers/edit-lock';
 import {
   gotoOutcomesView,
   hoverWorkflowOutcomeHeader,
@@ -79,7 +80,7 @@ test.use({
   seedAsset: 'workflow.standard_activity',
   seedDependencies: ['project.primary', 'actor.commenter', 'actor.viewer'],
   actorAsset: 'actor.teacher',
-  seedAccess: 'disposable-copy',
+  seedAccess: 'disposable-project-copy',
 });
 
 /**
@@ -91,9 +92,9 @@ test.use({
  *   workflow_duplicate_outcome_requirements_v1.yaml (FR-WF-EO-011 assignment parity)
  */
 
-// These cases mutate the same canonical workflow fixture. Keep this file
-// sequential even when the project enables fullyParallel execution.
-test.describe.configure({ mode: 'default' });
+test.beforeEach(async ({ page, workflow }) => {
+  await ensurePageWorkspaceEditLock(page, 'workflow', workflow.workflowUuid);
+});
 
 async function gotoWorkflowGraph(page: import('@playwright/test').Page, path: string): Promise<void> {
   await page.goto(path);
@@ -455,7 +456,7 @@ test.describe('Assign outcomes tab — empty state (FR-WF-AO-001)', () => {
     await expect(workflowOutcomesAssignTabEmptyStateAlert(page)).toBeVisible();
     await expect(
       page.getByText(
-        /There are currently no outcomes in this activity, navigate to the outcomes view to add outcomes\./,
+        /There are currently no outcomes in this activity\. Open the outcomes view to add outcomes\./,
       ),
     ).toBeVisible();
     await expect(workflowOutcomesAssignTabAddOutcomesButton(page)).toBeVisible();
@@ -887,7 +888,10 @@ test.describe('Outcome delete and duplicate — node assignments (FR-WF-EO-011, 
 
     const outcomes = await fetchGraphOutcomes(page, workflow.workflowUuid);
     const copyRoot = outcomes.find(
-      (outcome) => outcome.title === E2E_OUTCOME_DUPLICATE && outcome.parentUuid == null,
+      (outcome) =>
+        outcome.title === E2E_OUTCOME_TITLE &&
+        outcome.titleCopyCount === 1 &&
+        outcome.parentUuid == null,
     );
     expect(copyRoot?.uuid).toBeTruthy();
 
@@ -938,7 +942,10 @@ test.describe('Outcome delete and duplicate — node assignments (FR-WF-EO-011, 
 
     const outcomes = await fetchGraphOutcomes(page, workflow.workflowUuid);
     const copyRoot = outcomes.find(
-      (outcome) => outcome.title === E2E_OUTCOME_DUPLICATE && outcome.parentUuid == null,
+      (outcome) =>
+        outcome.title === E2E_OUTCOME_TITLE &&
+        outcome.titleCopyCount === 1 &&
+        outcome.parentUuid == null,
     );
     expect(copyRoot?.uuid).toBeTruthy();
     const copyChild = outcomes.find(

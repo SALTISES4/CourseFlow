@@ -53,6 +53,7 @@ function isWorkflowCardChipType(chip: any): chip is WorkflowCardChipType {
 }
 
 const WorkflowCardDumb = ({
+  uuid,
   title,
   description,
   isSelected,
@@ -69,6 +70,7 @@ const WorkflowCardDumb = ({
       .filter(Boolean)
       .join(' ')}
     data-test-id={dataTestId}
+    data-resource-uuid={uuid}
   >
     <CardHeader>
       <CardTitle>{title}</CardTitle>

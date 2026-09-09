@@ -1,9 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import {
-  KEYWORD_SEARCH_PLACEHOLDER,
-  LIBRARY_EMPTY_MESSAGE,
-} from '../../shared/locators/library';
+import { LIBRARY_EMPTY_MESSAGE } from '../../shared/locators/library';
 
 /**
  * Locators for Home dashboard e2e — aligned with
@@ -207,7 +204,7 @@ export function workflowProjectSearchView(page: Page): Locator {
 
 /** canonical: workflowProjectSearchField (step 1) */
 export function workflowProjectSearchField(page: Page): Locator {
-  return createWorkflowDialog(page).getByPlaceholder(KEYWORD_SEARCH_PLACEHOLDER);
+  return createWorkflowDialog(page).locator('[data-test-id="workflow-project-search-field"]');
 }
 
 /** canonical: workflowProjectSearchEmptyState (step 1) */

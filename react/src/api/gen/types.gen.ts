@@ -3077,9 +3077,21 @@ export type LibraryPaginationIn = {
  * LibrarySearchIn
  */
 export type LibrarySearchIn = {
+  /**
+   * Select the base result set before filters are applied: resources where the actor is a contributor, or published resources available to explore.
+   */
+  scope?: LibrarySearchScopeIn
   pagination?: LibraryPaginationIn | null
   sort?: LibrarySortIn | null
   filters?: LibraryFiltersIn | null
+}
+
+/**
+ * LibrarySearchScopeIn
+ */
+export enum LibrarySearchScopeIn {
+  MEMBERSHIP = 'membership',
+  PUBLISHED = 'published'
 }
 
 /**

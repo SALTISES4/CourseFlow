@@ -147,7 +147,8 @@ export async function expectCustomCategoryDropDefaults(
   newChannelUuid: string,
 ): Promise<void> {
   const newChannel = orderedGraphChannels(after).find((channel) => channel.uuid === newChannelUuid);
-  expect(newChannel?.title).toBe(INSERT_CHANNEL_DEFAULT_TITLE);
+  expect(newChannel?.title).toBe('');
+  expect(newChannel?.systemLabelCode).toBe('custom_node_category');
   expect(newChannel?.colour).toBe(INSERT_CHANNEL_DEFAULT_COLOUR);
 
   await expect(workflowChannelHeader(page, newChannelUuid)).toContainText(

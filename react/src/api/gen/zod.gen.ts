@@ -1553,6 +1553,11 @@ export const zLibraryPaginationIn = z.object({
 })
 
 /**
+ * LibrarySearchScopeIn
+ */
+export const zLibrarySearchScopeIn = z.enum(['membership', 'published'])
+
+/**
  * LibrarySortDirectionIn
  */
 export const zLibrarySortDirectionIn = z.enum(['ASC', 'DESC'])
@@ -1578,6 +1583,7 @@ export const zLibrarySortIn = z.object({
  * LibrarySearchIn
  */
 export const zLibrarySearchIn = z.object({
+  scope: zLibrarySearchScopeIn.optional().default('membership'),
   pagination: zLibraryPaginationIn.nullish(),
   sort: zLibrarySortIn.nullish(),
   filters: zLibraryFiltersIn.nullish()

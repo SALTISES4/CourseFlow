@@ -1,4 +1,4 @@
-import { expect, test, type Locator, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 
 import {
   createWorkflowDialog,
@@ -52,17 +52,6 @@ export async function expectHomeDashboardSectionOrder(page: Page): Promise<void>
   for (let i = 0; i < visibleSections.length - 1; i++) {
     await expectFollowsInDocumentOrder(visibleSections[i]!, visibleSections[i + 1]!);
   }
-}
-
-export async function skipUnlessWelcomePanelVisible(page: Page): Promise<void> {
-  const welcome = homeWelcomeHeading(page);
-  if ((await welcome.count()) === 0) {
-    test.skip(
-      true,
-      'Welcome panel not rendered — implementation hides it when library has no projects.',
-    );
-  }
-  await expect(welcome).toBeVisible();
 }
 
 /** FR-HOME-002 — activity, course, program CTAs appear in document order. */

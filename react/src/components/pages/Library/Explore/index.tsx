@@ -1,4 +1,4 @@
-import { LibraryFiltersIn } from '@cf/api/gen'
+import { LibraryFiltersIn, LibrarySearchScopeIn } from '@cf/api/gen'
 import LibrarySearchView, {
   LibraryFilterConfig
 } from '@cfViews/LibrarySearchView'
@@ -50,6 +50,7 @@ const ExplorePage = () => {
   return (
     <LibrarySearchView
       config={config}
+      scope={LibrarySearchScopeIn.PUBLISHED}
       lockedFilters={{
         isTemplate: isTemplateFilter
       }}

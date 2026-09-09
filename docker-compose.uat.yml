@@ -2,6 +2,10 @@ services:
   django:
     profiles:
       - uat
+    environment:
+      ALLOW_UAT_DATABASE_RESET: "true"
+      UAT_DATABASE_RESET_HOST: ${UAT_DATABASE_RESET_HOST:?}
+      UAT_DATABASE_RESET_NAME: ${UAT_DATABASE_RESET_NAME:?}
     volumes: !reset []
     depends_on: !reset {}
     restart: unless-stopped

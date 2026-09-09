@@ -47,6 +47,11 @@ class LibraryContentTypeOut(str, Enum):
     WORKFLOW = "workflow"
 
 
+class LibrarySearchScopeIn(str, Enum):
+    MEMBERSHIP = "membership"
+    PUBLISHED = "published"
+
+
 class LibraryFiltersIn(CamelSchema):
     keyword: str | None = None
     content_type: LibraryContentTypeIn | None = None
@@ -104,6 +109,13 @@ class LibraryFiltersIn(CamelSchema):
 
 
 class LibrarySearchIn(CamelSchema):
+    scope: LibrarySearchScopeIn = Field(
+        default=LibrarySearchScopeIn.MEMBERSHIP,
+        description=(
+            "Select the base result set before filters are applied: resources where "
+            "the actor is a contributor, or published resources available to explore."
+        ),
+    )
     pagination: LibraryPaginationIn | None = None
     sort: LibrarySortIn | None = None
     filters: LibraryFiltersIn | None = None

@@ -1,6 +1,6 @@
-import type { APIRequestContext } from '@playwright/test';
+import type { APIRequestContext, APIResponse, Page } from '@playwright/test';
 
-import { apiRequestWithAccessToken } from './api';
+import { apiRequestWithAccessToken, authenticatedApiRequest } from './api';
 
 type Workspace = 'project' | 'workflow';
 
@@ -9,17 +9,14 @@ type WorkspaceEditLockResponse = {
   version: string | null;
 };
 
-/** Acquire or take over a workspace lease for API-driven E2E setup/cleanup. */
-export async function ensureWorkspaceEditLock(
-  request: APIRequestContext,
-  accessToken: string,
+type WorkspaceEditLockRequest = (path: string, data?: unknown) => Promise<APIResponse>;
+
+async function ensureWorkspaceEditLockWith(
+  requestLock: WorkspaceEditLockRequest,
   workspace: Workspace,
   resourceUuid: string,
 ): Promise<boolean> {
-  const acquire = await apiRequestWithAccessToken(
-    request,
-    accessToken,
-    'POST',
+  const acquire = await requestLock(
     `/api/workspace-lock/${workspace}/${resourceUuid}/acquire`,
   );
   if ([403, 404].includes(acquire.status())) {
@@ -39,12 +36,9 @@ export async function ensureWorkspaceEditLock(
     throw new Error(`Acquire ${workspace} edit lock returned unexpected state ${lock.state}.`);
   }
 
-  const takeover = await apiRequestWithAccessToken(
-    request,
-    accessToken,
-    'POST',
+  const takeover = await requestLock(
     `/api/workspace-lock/${workspace}/${resourceUuid}/takeover`,
-    { data: { expectedVersion: lock.version } },
+    { expectedVersion: lock.version },
   );
   if (!takeover.ok()) {
     throw new Error(
@@ -56,4 +50,34 @@ export async function ensureWorkspaceEditLock(
     throw new Error(`Take over ${workspace} edit lock returned state ${replacement.state}.`);
   }
   return true;
+}
+
+/** Acquire or take over a workspace lease for API-driven E2E setup/cleanup. */
+export async function ensureWorkspaceEditLock(
+  request: APIRequestContext,
+  accessToken: string,
+  workspace: Workspace,
+  resourceUuid: string,
+): Promise<boolean> {
+  return ensureWorkspaceEditLockWith(
+    (path, data) =>
+      apiRequestWithAccessToken(request, accessToken, 'POST', path, {
+        data,
+      }),
+    workspace,
+    resourceUuid,
+  );
+}
+
+/** Acquire or take over a workspace lease as the actor authenticated in the page. */
+export async function ensurePageWorkspaceEditLock(
+  page: Page,
+  workspace: Workspace,
+  resourceUuid: string,
+): Promise<boolean> {
+  return ensureWorkspaceEditLockWith(
+    (path, data) => authenticatedApiRequest(page, 'POST', path, { data }),
+    workspace,
+    resourceUuid,
+  );
 }

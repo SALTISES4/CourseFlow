@@ -1,13 +1,21 @@
 import { test, expect } from '../../fixtures';
 import { expectProjectCardClickNavigatesToWorkflowsView } from '../../helpers/card-navigation';
 import {
+  expectUserOwnsAtLeastOneProject,
+  expectUserOwnsNoProjects,
+} from '../../helpers/create-project-form';
+import { loginAs } from '../../helpers/auth';
+import {
   clearHomeDismissCookies,
   expectHomeDashboardSectionOrder,
   expectWelcomeCtaButtonOrder,
   expectWelcomeCtaOpensCreateWorkflowStepOne,
-  skipUnlessWelcomePanelVisible,
 } from '../../helpers/home';
-import { getRecentHomeProjects, loadWorkflowManifest } from '../../helpers/manifest';
+import {
+  getActorAsset,
+  getRecentHomeProjects,
+  loadWorkflowManifest,
+} from '../../helpers/manifest';
 import { gotoCourseFlowHome } from '../../helpers/navigation';
 import { templatesToggle, waitForLibraryResultsLoaded } from '../library/library.locators';
 import {
@@ -36,6 +44,7 @@ import { cardChipWithLabel, cardTitleText } from '../../shared/locators/cards';
 test.use({
   seedDependencies: [
     'actor.teacher',
+    'actor.viewer',
     'project.recent_collection',
     'project.archived_home',
     'project.templates',
@@ -48,12 +57,12 @@ test.use({
 /**
  * Calibration slice — FR-HOME-001 through FR-HOME-004 (happy-path dashboard).
  * Requirements: tests/docs/requirements/features/home/homepage_requirements_v1.yaml
- * Auth: default chromium storage state (teacher@courseflow.com), owner of the E2E projects.
+ * Auth: teacher@courseflow.com for owner paths; student@courseflow.com for no-owned-project paths.
  */
 
-test.describe('Home dashboard — calibration (FR-HOME-001-004)', () => {
-  const manifest = loadWorkflowManifest();
+const manifest = loadWorkflowManifest();
 
+test.describe('Home dashboard — calibration (FR-HOME-001-004)', () => {
   test.beforeEach(async ({ page }) => {
     await gotoCourseFlowHome(page);
     await expect(homeErrorState(page)).toBeHidden({ timeout: 15_000 });
@@ -69,71 +78,16 @@ test.describe('Home dashboard — calibration (FR-HOME-001-004)', () => {
     await expectHomeDashboardSectionOrder(page);
   });
 
-  test('FR-HOME-001: welcome through templates section order when welcome panel is visible', async ({
+  test('FR-HOME-002: owner does not see welcome panel even when dismissal cookie is absent', async ({
     page,
   }) => {
+    await expectUserOwnsAtLeastOneProject(page);
     await clearHomeDismissCookies(page);
     await page.reload();
     await expect(homeErrorState(page)).toBeHidden({ timeout: 15_000 });
     await expect(homeTemplatesSectionTitle(page)).toBeVisible({ timeout: 15_000 });
 
-    const welcome = homeWelcomeHeading(page);
-    await expect(welcome).toBeVisible();
-    await expectHomeDashboardSectionOrder(page);
-  });
-
-  test.describe('FR-HOME-002: welcome panel', () => {
-    test.beforeEach(async ({ page }) => {
-      await clearHomeDismissCookies(page);
-      await page.reload();
-      await expect(homeErrorState(page)).toBeHidden({ timeout: 15_000 });
-      await expect(homeTemplatesSectionTitle(page)).toBeVisible({ timeout: 15_000 });
-    });
-
-    test('shows welcome heading and create-workflow CTAs in activity-course-program order', async ({
-      page,
-    }) => {
-      await skipUnlessWelcomePanelVisible(page);
-
-      await expect(
-        page.getByText(
-          'Tell us a bit more about your goals so that we can help you get started.',
-        ),
-      ).toBeVisible();
-      await expectWelcomeCtaButtonOrder(page);
-    });
-
-    test('dismiss button hides welcome panel and preference persists after reload', async ({
-      page,
-    }) => {
-      const welcome = homeWelcomeHeading(page);
-      await skipUnlessWelcomePanelVisible(page);
-
-      await homeWelcomeDismissButton(page).click();
-      await expect(welcome).toBeHidden();
-
-      await page.reload();
-      await expect(welcome).toBeHidden();
-    });
-
-    test.describe('welcome CTAs open create workflow dialog step 1', () => {
-      test.describe.configure({ mode: 'serial' });
-
-      test('activity CTA opens Select project step', async ({ page }) => {
-        await skipUnlessWelcomePanelVisible(page);
-        await expectWelcomeCtaOpensCreateWorkflowStepOne(page, homeWelcomeActivityButton(page));
-      });
-
-      test('course CTA opens Select project step', async ({ page }) => {
-        await skipUnlessWelcomePanelVisible(page);
-        await expectWelcomeCtaOpensCreateWorkflowStepOne(page, homeWelcomeCourseButton(page));
-      });
-
-      test('program CTA opens Select project step', async ({ page }) => {
-        await skipUnlessWelcomePanelVisible(page);
-        await expectWelcomeCtaOpensCreateWorkflowStepOne(page, homeWelcomeProgramButton(page));
-      });
-    });
+    await expect(homeWelcomeHeading(page)).toHaveCount(0);
   });
 
   test.describe('FR-HOME-003: recent projects section', () => {
@@ -329,6 +283,60 @@ test.describe('Home dashboard — calibration (FR-HOME-001-004)', () => {
 
       await page.reload();
       await expect(alert).toBeHidden();
+    });
+  });
+});
+
+test.describe('FR-HOME-002: welcome panel for a user without owned projects', () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test.beforeEach(async ({ page }) => {
+    const student = getActorAsset(manifest, 'actor.viewer');
+    await loginAs(page, { email: student.email, password: student.password });
+    await gotoCourseFlowHome(page);
+    await expectUserOwnsNoProjects(page);
+    await clearHomeDismissCookies(page);
+    await page.reload();
+    await expect(homeErrorState(page)).toBeHidden({ timeout: 15_000 });
+    await expect(homeTemplatesSectionTitle(page)).toBeVisible({ timeout: 15_000 });
+  });
+
+  test('shows welcome content and preserves dashboard section order', async ({ page }) => {
+    await expect(homeWelcomeHeading(page)).toBeVisible();
+    await expect(
+      page.getByText(
+        'Tell us a bit more about your goals so that we can help you get started.',
+      ),
+    ).toBeVisible();
+    await expectWelcomeCtaButtonOrder(page);
+    await expectHomeDashboardSectionOrder(page);
+  });
+
+  test('dismiss button hides welcome panel before project creation and persists after reload', async ({
+    page,
+  }) => {
+    const welcome = homeWelcomeHeading(page);
+    await expect(welcome).toBeVisible();
+
+    await homeWelcomeDismissButton(page).click();
+    await expect(welcome).toBeHidden();
+    await expectUserOwnsNoProjects(page);
+
+    await page.reload();
+    await expect(welcome).toBeHidden();
+  });
+
+  test.describe('welcome CTAs open create workflow dialog step 1', () => {
+    test('activity CTA opens Select project step', async ({ page }) => {
+      await expectWelcomeCtaOpensCreateWorkflowStepOne(page, homeWelcomeActivityButton(page));
+    });
+
+    test('course CTA opens Select project step', async ({ page }) => {
+      await expectWelcomeCtaOpensCreateWorkflowStepOne(page, homeWelcomeCourseButton(page));
+    });
+
+    test('program CTA opens Select project step', async ({ page }) => {
+      await expectWelcomeCtaOpensCreateWorkflowStepOne(page, homeWelcomeProgramButton(page));
     });
   });
 });

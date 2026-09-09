@@ -421,7 +421,7 @@ const EditNodeForm = ({
           {showTaskTypeField && (
             <FormControl fullWidth size="small" disabled={!canEdit}>
               <InputLabel id="task-type-select-label">
-                {t('edit.type')}
+                {t('edit.task')}
               </InputLabel>
               <Controller
                 name="taskType"
@@ -429,7 +429,7 @@ const EditNodeForm = ({
                 render={({ field }) => (
                   <Select
                     {...field}
-                    label={t('edit.type')}
+                    label={t('edit.task')}
                     labelId="task-type-select-label"
                   >
                     {taskOptions.map((option) => (

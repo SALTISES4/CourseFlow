@@ -23,6 +23,7 @@ type GraphViewOutcomesPayload = {
   outcomes: Array<{
     uuid: string;
     title: string;
+    titleCopyCount: number;
     parentUuid: string | null;
     order: number;
   }>;

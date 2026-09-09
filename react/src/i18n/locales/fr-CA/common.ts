@@ -41,6 +41,7 @@ const commonFr = {
     notificationSettings: 'Paramètres de notification',
     signOut: 'Se déconnecter',
     addMenu: 'Menu d’ajout',
+    project: 'Projet',
     accountMenu: 'Compte de la personne connectée'
   },
   favourites: {

@@ -26,11 +26,6 @@ import {
 } from '../e2e/project/project.locators';
 import { expectExploreResultsContainOnlyFavouritedCards } from './explore-boolean-filters';
 import { expectExploreResultsContainOnlyWorkflowCards } from './explore';
-import {
-  loadWorkflowManifest,
-  type WorkflowEntry,
-  type WorkflowManifest,
-} from './manifest';
 
 /**
  * FR-PROJ-WF-001 / FR-PROJ-WF-003 — projectWorkflowsFilterToolbar exposes sort, ownership,
@@ -64,7 +59,13 @@ export {
 };
 
 type ProjectWorkflowSearchResponse = {
-  items: Array<{ uuid: string; contentType?: string; content_type?: string }>;
+  items: Array<{
+    uuid: string;
+    contentType?: string;
+    content_type?: string;
+    projectUuid?: string | null;
+    project_uuid?: string | null;
+  }>;
 };
 
 function isProjectWorkflowLibrarySearchResponse(response: {
@@ -83,24 +84,6 @@ function isProjectWorkflowLibrarySearchResponse(response: {
   );
 }
 
-function primaryWorkflowUuid(workflow: WorkflowEntry): string {
-  const withUuid = workflow as WorkflowEntry & { workflow_uuid?: string };
-  if (withUuid.workflow_uuid) {
-    return withUuid.workflow_uuid;
-  }
-
-  const match = workflow.workflow_path.match(/^\/workflow\/([^/]+)\//);
-  if (!match?.[1]) {
-    throw new Error(`Cannot resolve workflow UUID from path ${workflow.workflow_path}`);
-  }
-
-  return match[1];
-}
-
-function collectProjectWorkflowScopeUuids(manifest: WorkflowManifest): Set<string> {
-  return new Set(manifest.workflows.map((workflow) => primaryWorkflowUuid(workflow)));
-}
-
 /**
  * FR-PROJ-WF-001 — project Workflows listing is scoped to current project workflows only (API contract).
  */
@@ -108,9 +91,6 @@ export async function expectProjectWorkflowListingItemsBelongToCurrentProject(
   page: Page,
   projectUuid: string,
 ): Promise<void> {
-  const manifest = loadWorkflowManifest();
-  const projectWorkflowUuids = collectProjectWorkflowScopeUuids(manifest);
-
   const searchResponse = page.waitForResponse(isProjectWorkflowLibrarySearchResponse);
   await page.reload();
   await expect(page).toHaveURL(new RegExp(`/project/${projectUuid}/workflows/?$`));
@@ -126,11 +106,12 @@ export async function expectProjectWorkflowListingItemsBelongToCurrentProject(
   const body = (await response.json()) as ProjectWorkflowSearchResponse;
   for (const item of body.items) {
     const contentType = item.contentType ?? item.content_type;
+    const itemProjectUuid = item.projectUuid ?? item.project_uuid;
     expect(contentType).toBe('workflow');
     expect(
-      projectWorkflowUuids.has(item.uuid),
+      itemProjectUuid,
       `workflow search item ${item.uuid} is outside current project scope`,
-    ).toBe(true);
+    ).toBe(projectUuid);
   }
 }
 

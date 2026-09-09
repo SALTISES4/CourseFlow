@@ -66,7 +66,7 @@ export function sortResetButton(
     .getByRole("button")
     .first()
     .locator("..")
-    .getByRole("button", { name: "close", exact: true });
+    .getByRole("button", { name: /^close$/i });
 }
 
 /** canonical: ownershipFilter */
@@ -83,7 +83,7 @@ export function ownershipFilterResetButton(
 ): Locator {
   return filter
     .locator("..")
-    .getByRole("button", { name: "close", exact: true });
+    .getByRole("button", { name: /^close$/i });
 }
 
 /** canonical: typeFilter / contentTypeFilter */
@@ -97,7 +97,7 @@ export function typeFilter(page: Page): Locator {
 export function typeFilterResetButton(page: Page): Locator {
   return typeFilter(page)
     .locator("..")
-    .getByRole("button", { name: "close", exact: true });
+    .getByRole("button", { name: /^close$/i });
 }
 
 export function workflowTypeFilter(page: Page): Locator {

@@ -52,7 +52,7 @@ const TopBar = () => {
 
     const menuItems: MenuItemType[] = [
       {
-        content: t('project:exportDialog.objectType.project'),
+        content: t('common:navigation.project'),
         action: () => dispatch(DialogMode.PROJECT_CREATE),
         show: true
       },

@@ -242,3 +242,9 @@ export function libraryWorkflowCardByTitle(page: Page, title: string): Locator {
     .locator('[data-test-id="workflow-card"]')
     .filter({ has: page.getByRole('heading', { name: title, exact: true }) });
 }
+
+export function libraryWorkflowCardByUuid(page: Page, uuid: string): Locator {
+  return libraryResultsRegion(page).locator(
+    `[data-test-id="workflow-card"][data-resource-uuid="${uuid}"]`,
+  );
+}

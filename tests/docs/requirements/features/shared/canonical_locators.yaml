@@ -696,7 +696,7 @@ locatorMappings:
     strategy: "full-page access-denied block in place of project workspace content on route '/project/{id}/*'"
     confidence: inferred
   projectCard:
-    strategy: "{resultsRegion} project card (project scope)"
+    strategy: "{resultsRegion} project card (project scope); a known resource is identified by its UUID-backed data-resource-uuid attribute, not title text"
     confidence: inferred
   projectCardDeletePermanentlyButton:
     strategy: "{projectCard} button with label 'Delete permanently' when archived and offered"
@@ -915,7 +915,7 @@ locatorMappings:
     strategy: "{createWorkflowDialog} form (blank mode step 3)"
     confidence: inferred
   workflowCard:
-    strategy: "{resultsRegion} workflow card (workflow scope); when templatesToggle constrains listing to templates, template workflows are still represented as workflowCard with cardTemplateChip per FR-CARD-002"
+    strategy: "{resultsRegion} workflow card (workflow scope), with a known resource identified by its UUID-backed data-resource-uuid attribute rather than non-unique title text; when templatesToggle constrains listing to templates, template workflows are still represented as workflowCard with cardTemplateChip per FR-CARD-002"
     confidence: inferred
   workflowCardDeletePermanentlyButton:
     strategy: "{workflowCard} button with label 'Delete permanently' when archived and offered"

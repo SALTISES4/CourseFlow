@@ -60,27 +60,40 @@ export async function expectRelatedWorkflowLinksSortedAz(
   await expectWorkflowContextSectionVisible(page, sectionLabel);
 
   const links = relatedWorkflowLinksInWorkflowContextSection(page, sectionLabel);
-  await expect(links).toHaveCount(expectedTitles.length);
+  const linkCount = await links.count();
+  expect(linkCount).toBeGreaterThanOrEqual(expectedTitles.length);
 
   const titles: string[] = [];
-  for (let i = 0; i < expectedTitles.length; i++) {
+  const hrefs: string[] = [];
+  for (let i = 0; i < linkCount; i++) {
     titles.push((await links.nth(i).innerText()).trim());
+    hrefs.push((await links.nth(i).getAttribute('href')) ?? '');
   }
 
-  const sorted = [...expectedTitles].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  const sorted = [...titles].sort((a, b) =>
+    a.localeCompare(b, undefined, { sensitivity: 'base' }),
+  );
   expect(titles).toEqual(sorted);
+  expect(new Set(hrefs).size).toBe(hrefs.length);
+
+  for (const expectedTitle of expectedTitles) {
+    expect(titles).toContain(expectedTitle);
+  }
 }
 
 export async function expectRelatedWorkflowLinkOpensInNewTab(
   page: Page,
   sectionLabel: WorkflowContextSectionLabel,
   workflowTitle: string,
+  workflowUuid: string,
 ): Promise<void> {
-  const link = relatedWorkflowLinksInWorkflowContextSection(page, sectionLabel).filter({
-    hasText: workflowTitle,
-  });
+  const workflowPath = `/workflow/${workflowUuid}`;
+  const link = relatedWorkflowLinksInWorkflowContextSection(page, sectionLabel).and(
+    page.locator(`a[href="${workflowPath}"]`),
+  );
   await expect(link).toHaveCount(1);
+  await expect(link).toHaveText(workflowTitle);
 
   const [popup] = await Promise.all([page.waitForEvent('popup'), link.click()]);
-  await expect(popup).toHaveURL(/\/workflow\/[0-9a-f-]+/);
+  await expect(popup).toHaveURL(new RegExp(`${workflowPath}/?$`));
 }

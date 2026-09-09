@@ -19,6 +19,7 @@ from course_flow.api.schemas.library import (
     LibraryItemOut,
     LibrarySearchIn,
     LibrarySearchOut,
+    LibrarySearchScopeIn,
     LibrarySortDirectionIn,
     LibrarySortValueIn,
 )
@@ -93,17 +94,36 @@ class LibraryService:
             Q(owner_id=user_id) | Q(team__users__user_id=user_id)
         ).distinct()
 
-        project_qs = contributor_projects
-        workflow_graph_qs = Graph.objects.select_related(
-            "workflow",
-            "workflow__author",
-            "workflow__project",
-            "workflow__project__owner",
-        ).filter(
-            workflow__project_id__in=contributor_projects.values("id"),
-        )
+        if payload.scope == LibrarySearchScopeIn.PUBLISHED:
+            project_qs = Project.objects.filter(
+                is_published=True,
+                is_archived=False,
+            )
+            workflow_graph_qs = Graph.objects.select_related(
+                "workflow",
+                "workflow__author",
+                "workflow__project",
+                "workflow__project__owner",
+            ).filter(
+                workflow__project__is_published=True,
+                workflow__project__is_archived=False,
+                workflow__is_archived=False,
+            )
+        else:
+            project_qs = contributor_projects
+            workflow_graph_qs = Graph.objects.select_related(
+                "workflow",
+                "workflow__author",
+                "workflow__project",
+                "workflow__project__owner",
+            ).filter(
+                workflow__project_id__in=contributor_projects.values("id"),
+            )
 
-        if filters.include_published_favorites:
+        if (
+            payload.scope == LibrarySearchScopeIn.MEMBERSHIP
+            and filters.include_published_favorites
+        ):
             project_qs = Project.objects.filter(
                 Q(id__in=contributor_projects.values("id"))
                 | Q(is_published=True, favorite_links__user_id=user_id)

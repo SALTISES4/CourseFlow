@@ -47,6 +47,7 @@ import {
   waitForCreateWorkflowProjectSearchLoaded,
 } from '../../helpers/create-workflow';
 import { authenticatedApiRequest } from '../../helpers/api';
+import { ensurePageWorkspaceEditLock } from '../../helpers/edit-lock';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import {
   contributorByRole,
@@ -786,6 +787,7 @@ test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006',
       await openCreateWorkflowDialogBlankStep3(page, project.title, entry);
       await workflowTitleField(page).fill(`E2E failed activity ${Date.now()}`);
 
+      await ensurePageWorkspaceEditLock(page, 'project', project.uuid);
       const archived = await authenticatedApiRequest(
         page,
         'POST',
@@ -814,6 +816,7 @@ test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006',
       const templateCard = cardByTitle(dialog, templateFixture.workflow_title);
       await templateCard.click();
 
+      await ensurePageWorkspaceEditLock(page, 'project', project.uuid);
       const archived = await authenticatedApiRequest(
         page,
         'POST',

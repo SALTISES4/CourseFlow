@@ -18,7 +18,8 @@ documentPreconditions:
   - project workspace means every route matching '/project/{id}/*' for one project, including '/project/{id}' and '/project/{id}/workflows'
   - workflow workspace means every authenticated route matching '/workflow/{id}/*' for one workflow, including '/workflow/{id}', '/workflow/{id}/graph', and '/workflow/{id}/outcomedit'
   - an edit lock is scoped by resource type and resource ID, records its holder by user ID, and has a server-evaluated expiry time
-  - a shared-resource mutation is any user-initiated operation that creates, changes, reorders, publishes, unpublishes, archives, or deletes shared data belonging to the current project or workflow; this includes metadata, contributors, tags, comments, child-workflow creation from a project, and workflow graph content
+  - a shared-resource mutation is any user-initiated operation that creates, changes, reorders, publishes, unpublishes, archives, or deletes shared data belonging to the current project or workflow; this includes metadata, contributors, tags, comments, and workflow graph content
+  - creating a workflow inside a project is exempt from the project's edit lock because it creates a separate workflow resource; it remains subject to the actor's existing project create-workflow permission
   - read-only actions do not change shared project or workflow data; examples include navigating sub-views, copying or exporting a resource, and changing a user-specific favourite state
 
 timingContract:
@@ -30,6 +31,7 @@ timingContract:
 scopeRules:
   - this document is a cross-workspace editability gate; while lock state is unresolved or another user holds the lock, its non-actionable and read-only rules take precedence over owner/editor editable roleBehavior in project and workflow feature requirements; after the actor acquires the lock, those feature-specific requirements apply unchanged
   - project and workflow edit locks are independent; a project lock does not automatically lock its child workflows, and a workflow lock does not lock its parent project
+  - an eligible actor may create a workflow inside a project without holding or taking over the project's edit lock; after creation, editing the new workflow is governed by that workflow's independent edit lock
   - navigating between sub-views of the same project or workflow retains the same resource lock and polling lifecycle
   - navigating from a project workspace to a workflow workspace, from a workflow workspace to a project workspace, or to a different resource stops refreshing the prior resource lock and begins lock acquisition for the newly opened resource
   - only owner and editor actors participate in lock acquisition, refresh, and takeover; viewer, commenter, user with published access, and anonymous public-link visitor remain governed by their existing read-only or comment permissions and do not create edit locks
@@ -181,6 +183,7 @@ requirements:
       - system renders the existing project or workflow workspace and its readable content
       - all controls that can perform a shared-resource mutation are read-only, disabled, or hidden according to the owning feature's established read-only presentation; none is actionable
       - read-only navigation and actions that do not change shared project or workflow data remain available according to the actor's existing permissions
+      - workflow creation remains available to an actor with the project's create-workflow permission and does not require takeover of the project edit lock
       - workspaceEditLockBanner remains visible while a different user holds the unexpired lock
       - workspaceEditLockMessage shows exactly '{displayName} is currently editing this page. Do you wish to take over?' using the current lock holder's display name
       - workspaceEditLockTakeoverButton is visible and enabled with exact label 'Yes'
@@ -207,6 +210,7 @@ requirements:
       - given B remains on the locked page and does not click 'Yes', B checks lock status at least once every 15 seconds
       - given A's lock expires while B remains on the page, when B next polls and atomically acquires the resource, B's page reloads current server state, workspaceEditLockBanner is removed, and edit controls become actionable only after the reload succeeds
       - given A holds the project lock for P and B holds the workflow lock for child workflow W, A may remain project editor and B may remain workflow editor because the resources have independent lock scopes
+      - given user A holds the project edit lock for P, when eligible user B has create-workflow permission for P, B may create a child workflow without taking over A's project lock
 
     openQuestions: []
 

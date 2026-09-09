@@ -38,11 +38,12 @@ const common = {
     notificationSettings: 'Notification settings',
     signOut: 'Sign out',
     addMenu: 'Add menu',
+    project: 'Project',
     accountMenu: 'Current user account'
   },
   favourites: {
-    added: 'Added to your favourites.',
-    removed: 'Removed from your favourites.',
+    added: 'Added to your favourites',
+    removed: 'Removed from your favourites',
     updateFailed: 'Favourite status could not be updated.'
   },
   cards: {

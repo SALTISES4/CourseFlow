@@ -1,5 +1,8 @@
 import type { Locator, Page } from '@playwright/test';
-import { workflowRightSidebarContentPanel } from '../../shared/locators/workflow';
+import {
+  workflowChannelsHeaderRow,
+  workflowRightSidebarContentPanel,
+} from '../../shared/locators/workflow';
 
 /**
  * Workflow graph uiObjects — canonical_locators.yaml (workflowNode*, workflowChannel*).
@@ -135,12 +138,12 @@ export async function workflowNodeHasSelectedBorder(page: Page, nodeUuid: string
 }
 
 export function workflowChannelHeaders(page: Page): Locator {
-  return page.locator('[data-column-id]');
+  return workflowChannelsHeaderRow(page).locator('[data-column-id]');
 }
 
 /** canonical: workflowChannel — column shell with data-column-id */
 export function workflowChannelHeader(page: Page, channelUuid: string): Locator {
-  return page.locator(`[data-column-id="${channelUuid}"]`);
+  return workflowChannelsHeaderRow(page).locator(`[data-column-id="${channelUuid}"]`);
 }
 
 export function workflowChannelHeaderByTitle(page: Page, title: string): Locator {

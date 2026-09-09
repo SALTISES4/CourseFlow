@@ -89,11 +89,11 @@ export async function expectMyLibraryListingItemsAreInMembershipScope(page: Page
 
   const searchResponse = page.waitForResponse(isLibrarySearchResponse);
   await page.reload();
-  await expect(page).toHaveURL(/\/library\/?$/);
-  await waitForLibraryResultsLoaded(page);
-
   const response = await searchResponse;
   const body = (await response.json()) as LibrarySearchResponse;
+
+  await expect(page).toHaveURL(/\/library\/?$/);
+  await waitForLibraryResultsLoaded(page);
 
   for (const item of body.items) {
     const resourceRole = item.permissions.resourceRole;

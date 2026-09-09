@@ -321,6 +321,7 @@ export {
   type LibraryPaginationIn,
   type LibrarySearchIn,
   type LibrarySearchOut,
+  LibrarySearchScopeIn,
   LibrarySortDirectionIn,
   type LibrarySortIn,
   LibrarySortValueIn,

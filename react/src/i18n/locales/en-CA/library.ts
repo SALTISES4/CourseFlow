@@ -1,6 +1,6 @@
 const library = {
   sort: {
-    alphabetical: 'A – Z',
+    alphabetical: 'A - Z',
     dateCreated: 'Date created'
   },
   filters: {
@@ -12,7 +12,7 @@ const library = {
     type: 'Type',
     projects: 'Projects',
     workflows: 'Workflows',
-    workflowType: 'Workflow type',
+    workflowType: 'Workflow Type',
     activity: 'Activity',
     course: 'Course',
     program: 'Program',

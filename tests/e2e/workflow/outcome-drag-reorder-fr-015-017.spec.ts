@@ -1,5 +1,6 @@
 import { test, expect } from '../../fixtures';
 import { loginAsTestUser } from '../../helpers/auth';
+import { ensurePageWorkspaceEditLock } from '../../helpers/edit-lock';
 import { gotoOutcomesView } from './comments-tab.helpers';
 import {
   attemptDragOutcomeOntoHeader,
@@ -49,6 +50,10 @@ const GRANDCHILD = `${DRAG_TITLE_PREFIX} Grandchild`;
 const GRANDCHILD_A = `${DRAG_TITLE_PREFIX} Grandchild A`;
 const GRANDCHILD_B = `${DRAG_TITLE_PREFIX} Grandchild B`;
 const CHILD_UNDER_B = `${DRAG_TITLE_PREFIX} Child Under B`;
+
+test.beforeEach(async ({ page, workflow }) => {
+  await ensurePageWorkspaceEditLock(page, 'workflow', workflow.workflowUuid);
+});
 
 test.describe('outcome tree drag reorder ordinals (FR-WF-EO-015/016/017 + EO-007)', () => {
   test.beforeEach(async ({ page, workflow }) => {
@@ -766,6 +771,7 @@ test.describe('owner and editor (FR-WF-EO-016/017)', () => {
     const seedTitle = await seedReorderTargets(page, workflow);
 
     await loginAsWorkflowContributor(page, workflow, 'editor');
+    await ensurePageWorkspaceEditLock(page, 'workflow', workflow.workflowUuid);
     await gotoOutcomesView(page, workflow.path);
     await expect(workflowOutcomeHeader(page, seedTitle)).toBeVisible({ timeout: 15_000 });
     await expectOutcomeHeaderAtOrdinal(page, '1', seedTitle);
@@ -790,6 +796,7 @@ test.describe('owner and editor (FR-WF-EO-016/017)', () => {
     await ensureExpandedShowingChild(page, seedTitle, CHILD_B);
 
     await loginAsWorkflowContributor(page, workflow, 'editor');
+    await ensurePageWorkspaceEditLock(page, 'workflow', workflow.workflowUuid);
     await gotoOutcomesView(page, workflow.path);
     await ensureExpandedShowingChild(page, seedTitle, CHILD_B);
     await expectOutcomeHeaderAtOrdinal(page, '1.1', CHILD_B);

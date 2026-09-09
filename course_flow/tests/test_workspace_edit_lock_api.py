@@ -203,7 +203,7 @@ def test_viewer_does_not_participate_and_expired_lock_can_be_reacquired(lock_con
 
 
 @pytest.mark.django_db
-def test_project_and_child_workflow_locks_are_independent(lock_context):
+def test_project_lock_does_not_block_child_workflow_creation_or_lock(lock_context):
     client = Client()
     project = lock_context["project"]
 
@@ -217,7 +217,7 @@ def test_project_and_child_workflow_locks_are_independent(lock_context):
             "workflowType": "course",
         },
         content_type="application/json",
-        **lock_context["owner_headers"],
+        **lock_context["editor_headers"],
     )
     assert workflow_create.status_code == 200, workflow_create.content
     workflow_uuid = workflow_create.json()["uuid"]

@@ -5,7 +5,9 @@ import { workflowRightSidebarContentPanel } from '../../shared/locators/workflow
 /** Outcome tree header row showing the auto-numbered outcome title on /outcomedit. */
 export function workflowOutcomeHeader(page: Page, title: string): Locator {
   const escaped = title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return page.getByText(new RegExp(`^\\d+(\\.\\d+)*\\.\\s*${escaped}$`));
+  return page
+    .locator('[data-test-id="workflow-outcomes-view"]')
+    .getByText(new RegExp(`^\\d+(\\.\\d+)*\\.\\s*${escaped}$`));
 }
 
 export function workflowOutcomeHoverCommentsItem(page: Page, title: string): Locator {

@@ -161,6 +161,70 @@ def test_search_no_filters_returns_project_and_workflow_items(client: Client, us
 
 
 @pytest.mark.django_db
+def test_published_scope_returns_only_active_published_resources(
+    client: Client, user, teammate
+):
+    raw = _issue_token_for(user)
+
+    private_owned = Project.objects.create(
+        owner=user,
+        title="Private owned project",
+        description="",
+    )
+    _graph_with_workflow(
+        user,
+        project=private_owned,
+        workflow_title="Private owned workflow",
+    )
+
+    published = Project.objects.create(
+        owner=teammate,
+        title="Published project",
+        description="",
+        is_published=True,
+    )
+    _graph_with_workflow(
+        teammate,
+        project=published,
+        workflow_title="Published workflow",
+    )
+
+    private_other = Project.objects.create(
+        owner=teammate,
+        title="Private other project",
+        description="",
+    )
+    _graph_with_workflow(
+        teammate,
+        project=private_other,
+        workflow_title="Private other workflow",
+    )
+
+    archived_published = Project.objects.create(
+        owner=teammate,
+        title="Archived published project",
+        description="",
+        is_published=True,
+        is_archived=True,
+    )
+    _graph_with_workflow(
+        teammate,
+        project=archived_published,
+        workflow_title="Archived published workflow",
+    )
+
+    body = _post_search(client, raw, {"scope": "published"})
+
+    assert {item["title"] for item in body["items"]} == {
+        "Published project",
+        "Published workflow",
+    }
+    assert {
+        item["permissions"]["resourceRole"] for item in body["items"]
+    } == {"public"}
+
+
+@pytest.mark.django_db
 def test_search_default_sort_is_most_recently_modified(client: Client, user):
     raw = _issue_token_for(user)
     modified_later = Project.objects.create(

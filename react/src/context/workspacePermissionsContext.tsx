@@ -12,7 +12,12 @@ type WorkspacePermissions = {
   project?: PermissionContextOut | null
 }
 
-const LOCKED_READ_ONLY_ACTIONS = new Set(['view', 'export', 'copy'])
+const LOCK_ALLOWED_ACTIONS = new Set([
+  'view',
+  'export',
+  'copy',
+  'create_workflow'
+])
 
 const WorkspacePermissionsContext = createContext<
   WorkspacePermissions | undefined
@@ -33,7 +38,7 @@ export const WorkspacePermissionsProvider = ({
         ? {
             ...resource,
             actions: resource.actions.filter((action) =>
-              LOCKED_READ_ONLY_ACTIONS.has(action)
+              LOCK_ALLOWED_ACTIONS.has(action)
             )
           }
         : resource,

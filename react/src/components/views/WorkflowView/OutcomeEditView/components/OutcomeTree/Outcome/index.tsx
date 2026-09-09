@@ -245,6 +245,7 @@ const Outcome = ({
         level={level}
         tags={tagIds}
         greenHover={greenHover}
+        editableHover={canManageOutcomes}
         dragRef={dragHandleRef}
         title={`${prefix}${displayOutcomeTitle(
           { title, titleCopyCount },

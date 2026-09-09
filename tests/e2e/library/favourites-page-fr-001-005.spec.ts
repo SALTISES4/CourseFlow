@@ -14,7 +14,7 @@ import {
   expectWorkflowTypeFilterHiddenWhenTypeIsProjects,
   expectWorkflowTypeFilterVisibleWhenTypeIsUnset,
   expectWorkflowTypeFilterVisibleWhenTypeIsWorkflows,
-  restoreFavouritedCardByTitle,
+  restoreFavouritedCard,
 } from "../../helpers/favourites";
 import { expectSortControlPerFrLib002 } from "../../helpers/library-sort";
 import { expectOwnershipFilterCommittedStatePerFrLib003 } from "../../helpers/library-ownership-filter";
@@ -89,7 +89,11 @@ test.describe("Favourites — calibration (FR-FAV-001-005)", () => {
 
       const card = libraryCards(page).first();
       const title = (await cardTitleText(card).innerText()).trim();
+      const uuid = await card.getAttribute("data-resource-uuid");
+      const cardType = await card.getAttribute("data-test-id");
       expect(title).not.toBe("");
+      expect(uuid).toBeTruthy();
+      expect(["project-card", "workflow-card"]).toContain(cardType);
 
       try {
         await expectUnfavouritingRemovesCardFromFavouritesListing(
@@ -98,7 +102,11 @@ test.describe("Favourites — calibration (FR-FAV-001-005)", () => {
           title,
         );
       } finally {
-        await restoreFavouritedCardByTitle(page, title);
+        await restoreFavouritedCard(page, {
+          uuid: uuid!,
+          title,
+          contentType: cardType === "project-card" ? "project" : "workflow",
+        });
       }
     });
   });
