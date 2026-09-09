@@ -68,6 +68,7 @@ import {
   firstLibraryCardTitle,
   disciplineFilterNoneOption,
   disciplineFilterSelectionIndicator,
+  expectNoKeywordSearchSuggestions,
   openDisciplineFilterPopover,
   closeDisciplineFilterPopover,
   disciplineFilterCheckboxOption,
@@ -440,7 +441,7 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
     });
   });
 
-  test('FR-EXP-006: keyword search field supports clear control after Enter', async ({ page }) => {
+  test('FR-EXP-006: Enter updates full results without suggestions and clear resets field', async ({ page }) => {
     expect(
       await libraryCards(page).count(),
       'E2E seed must include an Explore card for keyword search.',
@@ -449,19 +450,21 @@ test.describe('Explore — calibration (FR-EXP-001-006)', () => {
     const title = (await firstLibraryCardTitle(page).innerText()).trim();
     const keyword = title.slice(0, Math.min(8, title.length));
     expect(keyword, 'First Explore card must have title text.').not.toBe('');
+    const baselineTitles = await libraryCardTitles(page).allInnerTexts();
+
+    await keywordSearchField(page).fill(keyword);
+    await expectNoKeywordSearchSuggestions(page);
 
     await triggerLibrarySearchAndWait(
       page,
-      async () => {
-        await keywordSearchField(page).fill(keyword);
-        await keywordSearchField(page).press('Enter');
-      },
+      () => keywordSearchField(page).press('Enter'),
       { filters: { keyword } },
     );
 
     await expect(keywordSearchClearButton(page)).toBeVisible();
     await keywordSearchClearButton(page).click();
     await expect(keywordSearchField(page)).toHaveValue('');
+    await expectLibraryCardTitles(page, baselineTitles);
   });
 });
 

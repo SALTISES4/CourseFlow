@@ -359,28 +359,29 @@ requirements:
       - libraryPage is rendered
 
     trigger:
-      - user types a keyword in keywordSearchField, or clicks keywordSearchClearButton to clear search
+      - user enters a keyword in keywordSearchField and presses 'Enter', or clicks keywordSearchClearButton to clear search
 
     mainFlow:
-      - keyword search narrows results as user types in keywordSearchField; pressing 'Enter' is not required
-      - no overlay or dropdown workflow picker is shown for keyword search on libraryPage
+      - typing changes the value in keywordSearchField but does not commit the keyword search until the user presses 'Enter'
+      - no search-results overlay, suggestion dropdown, or per-item picker is rendered while the user types or when the user presses 'Enter'
       - keyword search uses the same contract as 'Explore'; resultsRegion lists matching projectCard and/or workflowCard instances per typeFilter scope
-      - when search is triggered, system refreshes results directly in resultsRegion
+      - when the user presses 'Enter', system applies the keyword directly to the full listing in resultsRegion on the current libraryPage; this is the contextual all-results destination and does not navigate to an individual project or workflow
       - when keywordSearchField is not empty, keywordSearchClearButton ('X') is visible on the right side of the field
       - when user clicks keywordSearchClearButton, system clears keywordSearchField and resets keyword-search filtering
-      - when keyword search changes, system resets listing to the first results page
+      - when keyword search is committed or cleared, system resets listing to the first results page
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given user types text in keywordSearchField, keyword search is applied without requiring 'Enter'
-      - given keyword search updates from typing, results refresh in resultsRegion without opening an overlay or dropdown picker
+      - given user types text in keywordSearchField without pressing 'Enter', keywordSearchField retains the text and the committed keyword constraint is unchanged
+      - given keywordSearchField contains text, when user presses 'Enter', results refresh directly in resultsRegion without rendering a search-results overlay, suggestion dropdown, or per-item picker
+      - given user presses 'Enter' in keywordSearchField, system remains in the current libraryPage context and does not navigate to an individual projectCard or workflowCard
       - given keywordSearchField contains one or more characters, keywordSearchClearButton ('X') is visible
       - given user clicks keywordSearchClearButton ('X'), keywordSearchField is cleared and keyword search is reset
       - given user applies a keyword that matches a project title, matching project appears as a projectCard in resultsRegion when 'Type' scope and other filters allow it
       - given user applies a keyword that matches a workflow title, matching workflow appears as a workflowCard in resultsRegion when 'Type' scope includes workflows and other filters allow it
-      - given user applies one or more filters and types in keywordSearchField, keyword and filter constraints both apply to resultsRegion
-      - given user types in keywordSearchField and then changes filters, keyword and filter constraints both apply to resultsRegion
+      - given user applies one or more filters and commits keywordSearchField with 'Enter', keyword and filter constraints both apply to resultsRegion
+      - given user commits keywordSearchField with 'Enter' and then changes filters, keyword and filter constraints both apply to resultsRegion
 
     openQuestions: []
 

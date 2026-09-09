@@ -32,9 +32,11 @@ import { WORKFLOW_TYPE_FILTER_OPTIONS_FR_LIB_003 } from '../../shared/locators/l
 import {
   archiveToggle,
   archivedCardChip,
+  expectLibraryCardTitles,
   keywordSearchClearButton,
   keywordSearchField,
   libraryCardByTitle,
+  libraryCardTitles,
   libraryCards,
   libraryEmptyState,
   libraryErrorState,
@@ -189,19 +191,21 @@ test.describe('My library — listing and filtering (FR-LIB-001-004)', () => {
     });
   });
 
-  test('FR-LIB-004: keyword search narrows results and clear control resets field', async ({
+  test('FR-LIB-004: Enter updates full results without suggestions and clear resets field', async ({
     page,
   }) => {
     await expect(libraryCards(page)).not.toHaveCount(0);
     const title = (await firstLibraryCardTitle(page).innerText()).trim();
     const keyword = title.slice(0, Math.min(8, title.length));
     expect(keyword).not.toBe('');
+    const baselineTitles = await libraryCardTitles(page).allInnerTexts();
 
     await expectKeywordSearchNarrowsMyLibraryResults(page, keyword);
 
     await expect(keywordSearchClearButton(page)).toBeVisible();
     await keywordSearchClearButton(page).click();
     await expect(keywordSearchField(page)).toHaveValue('');
+    await expectLibraryCardTitles(page, baselineTitles);
   });
 });
 

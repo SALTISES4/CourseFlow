@@ -111,6 +111,10 @@ test.describe('edit-outcome-fr-001-006', () => {
       expect(await workflowOutcomeHeaderCount(page)).toBe(1);
       await expect(workflowEditOutcomeForm(page)).toHaveCount(0);
       await expect(workflowRightSidebarContentPanel(page)).toBeHidden();
+
+      await workflowOutcomeHeader(page, 'Untitled outcome').click();
+      await expect(workflowEditOutcomeForm(page)).toBeVisible();
+      await expect(workflowEditOutcomeFormTitleField(page)).toHaveValue('');
     });
   });
 

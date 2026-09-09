@@ -3,6 +3,7 @@ import { expect, type Page } from '@playwright/test';
 import {
   archiveToggle,
   disciplineFilter,
+  expectNoKeywordSearchSuggestions,
   favouritesToggle,
   keywordSearchField,
   libraryCards,
@@ -21,6 +22,7 @@ import {
 
 async function submitExploreKeywordSearch(page: Page, keyword: string): Promise<void> {
   await keywordSearchField(page).fill(keyword);
+  await expectNoKeywordSearchSuggestions(page);
   await keywordSearchField(page).press('Enter');
 }
 

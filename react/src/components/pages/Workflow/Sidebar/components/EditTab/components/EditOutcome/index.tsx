@@ -1,7 +1,7 @@
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import RichTextDescription from '@cf/components/common/dialog/Workflow/components/RichTextDescription'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
-import { displayOutcomeTitle } from '@cf/features/graph/outcomeTitle'
+import { displayEditableOutcomeTitle } from '@cf/features/graph/outcomeTitle'
 import type { OutcomeEntity } from '@cf/features/graph/state/model/types'
 import { selectOutcomeById } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { selectOutcomeLevel } from '@cf/features/graph/state/selectors/outcomes.selectors'
@@ -62,17 +62,21 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
     selectOutcomeLevel(state, outcome.graphUuid, outcome.uuid)
   )
   const { data: projectTags = [] } = useGraphProjectTags(outcome.graphUuid)
-  const localizedTitle = displayOutcomeTitle(outcome, t, t('outcomes.untitled'))
+  const editableTitle = displayEditableOutcomeTitle(
+    outcome,
+    t,
+    t('outcomes.untitled')
+  )
 
   const {
     control,
     register,
     watch,
     reset,
-    formState: { isDirty }
+    formState: { dirtyFields, isDirty }
   } = useForm<OutcomeFormValues>({
     defaultValues: {
-      title: localizedTitle,
+      title: editableTitle,
       description: outcome.description,
       code: outcome.code,
       tagIds: outcome.tagIds
@@ -84,17 +88,17 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
   useEffect(() => {
     if (!isDirty) {
       reset({
-        title: localizedTitle,
+        title: editableTitle,
         description: outcome.description,
         code: outcome.code,
         tagIds: outcome.tagIds
       })
     }
-  }, [reset, isDirty, localizedTitle, outcome])
+  }, [reset, isDirty, editableTitle, outcome])
 
   const debouncedDispatch = useMemo(
     () =>
-      debounce((formData: OutcomeFormValues) => {
+      debounce((formData: OutcomeFormValues, titleChanged: boolean) => {
         if (!canManageOutcomes) {
           return
         }
@@ -103,7 +107,7 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
             graphUuid: outcome.graphUuid,
             outcomeUuid: outcome.uuid,
             meta: {
-              title: formData.title,
+              ...(titleChanged ? { title: formData.title } : {}),
               description: formData.description,
               code: formData.code,
               tagIds: formData.tagIds
@@ -118,9 +122,9 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
 
   useEffect(() => {
     if (isDirty) {
-      debouncedDispatch(watchedFields)
+      debouncedDispatch(watchedFields, Boolean(dirtyFields.title))
     }
-  }, [watchedFields, isDirty, debouncedDispatch])
+  }, [watchedFields, dirtyFields.title, isDirty, debouncedDispatch])
 
   const onDuplicate = useCallback(() => {
     dispatch(

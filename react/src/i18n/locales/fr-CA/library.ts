@@ -30,7 +30,6 @@ const libraryFr = {
     none: 'Aucun résultat',
     notFound: 'Le contenu recherché est introuvable.',
     loadFailed: 'La bibliothèque n’a pas pu être chargée.',
-    searchFailed: 'Les suggestions de recherche n’ont pas pu être chargées.',
     seeAll: '+ Tout afficher'
   },
   cards: {

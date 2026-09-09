@@ -23,8 +23,10 @@ import { gotoFavourites } from "../../helpers/navigation";
 import { WORKFLOW_TYPE_FILTER_OPTIONS_FR_LIB_003 } from "../../shared/locators/library";
 import { cardTitleText } from "../../shared/locators/cards";
 import {
+  expectLibraryCardTitles,
   keywordSearchClearButton,
   keywordSearchField,
+  libraryCardTitles,
   libraryCards,
   libraryEmptyState,
   libraryErrorState,
@@ -213,7 +215,7 @@ test.describe("Favourites — calibration (FR-FAV-001-005)", () => {
     });
   });
 
-  test("FR-FAV-005: keyword search narrows results and clear control resets field", async ({
+  test("FR-FAV-005: Enter updates full results without suggestions and clear resets field", async ({
     page,
   }) => {
     expect(await ensureFavouritesResultsHaveCards(page)).toBe(true);
@@ -221,12 +223,14 @@ test.describe("Favourites — calibration (FR-FAV-001-005)", () => {
     const title = (await firstLibraryCardTitle(page).innerText()).trim();
     const keyword = title.slice(0, Math.min(8, title.length));
     expect(keyword).not.toBe("");
+    const baselineTitles = await libraryCardTitles(page).allInnerTexts();
 
     await expectKeywordSearchNarrowsFavouritesResults(page, keyword);
 
     await expect(keywordSearchClearButton(page)).toBeVisible();
     await keywordSearchClearButton(page).click();
     await expect(keywordSearchField(page)).toHaveValue("");
+    await expectLibraryCardTitles(page, baselineTitles);
   });
 });
 

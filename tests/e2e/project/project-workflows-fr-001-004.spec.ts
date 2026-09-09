@@ -20,7 +20,9 @@ import {
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import { getProjectWorkflowsPath, loadWorkflowManifest } from '../../helpers/manifest';
 import {
+  expectLibraryCardTitles,
   firstLibraryCardTitle,
+  libraryCardTitles,
   sortResetButton,
   WORKFLOW_TYPE_FILTER_OPTIONS_FR_LIB_003,
 } from '../../shared/locators/library';
@@ -149,19 +151,21 @@ test.describe('Project workflows — calibration (FR-PROJ-WF-001-004)', () => {
     });
   });
 
-  test('FR-PROJ-WF-004: keyword search narrows results and clear control resets field', async ({
+  test('FR-PROJ-WF-004: Enter updates full results without suggestions and clear resets field', async ({
     page,
   }) => {
     await expect(projectWorkflowCards(page)).not.toHaveCount(0);
     const title = (await firstLibraryCardTitle(page).innerText()).trim();
     const keyword = title.slice(0, Math.min(8, title.length));
     expect(keyword).not.toBe('');
+    const baselineTitles = await libraryCardTitles(page).allInnerTexts();
 
     await expectKeywordSearchNarrowsProjectWorkflowsResults(page, keyword);
 
     await expect(keywordSearchClearButton(page)).toBeVisible();
     await keywordSearchClearButton(page).click();
     await expect(keywordSearchField(page)).toHaveValue('');
+    await expectLibraryCardTitles(page, baselineTitles);
   });
 });
 

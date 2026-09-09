@@ -375,23 +375,25 @@ requirements:
       - explorePage is rendered
 
     trigger:
-      - user enters or commits keyword search via keywordSearchField, or clears via keywordSearchClearButton
+      - user enters a keyword in keywordSearchField and presses 'Enter', or clears via keywordSearchClearButton
 
     mainFlow:
       - keywordSearchField is inline within exploreFilterToolbar (same toolbar row as other filters per design), not an overlay surface
-      - Same contract as keyword search on 'My library' (FR-LIB-004)—keyword search matches project and workflow titles only; results narrow as user types; keywordSearchClearButton clears the field and removes keyword constraint
+      - Same contract as keyword search on 'My library' (FR-LIB-004)—keyword search matches project and workflow titles only; typing does not commit search; pressing 'Enter' updates the full resultsRegion directly without a search-results overlay or suggestion dropdown; keywordSearchClearButton clears the field and removes keyword constraint
       - keyword and toolbar filter constraints combine on explorePage; both apply subtractively to resultsRegion within explorePage base query scope per FR-EXP-001
       - resultsRegion lists matching projectCard and workflowCard items only, up to 10 per page with pager when 11 or more total matches (same paging rule as 'My library' FR-LIB-001)
-      - when keyword search changes, system resets listing to the first results page
+      - when keyword search is committed or cleared, system resets listing to the first results page
 
     roleBehavior: {}
 
     acceptanceCriteria:
       - given explorePage is rendered, keywordSearchField is inline within exploreFilterToolbar (not an overlay)
+      - given user types in keywordSearchField without pressing 'Enter', no search-results overlay or suggestion dropdown is rendered and the committed keyword constraint is unchanged
+      - given user presses 'Enter' in keywordSearchField, matching results replace the full explorePage resultsRegion while the application remains in the explorePage context
       - given keyword matches a published project or workflow title, a matching projectCard or workflowCard instance appears in resultsRegion when other filters allow it
       - given keywordSearchField is non-empty, keywordSearchClearButton is visible; given user clicks it, field clears and keyword filter is removed
-      - given user applies one or more filters and types in keywordSearchField, keyword and filter constraints both apply to resultsRegion
-      - given user types in keywordSearchField and then changes filters, keyword and filter constraints both apply to resultsRegion
+      - given user applies one or more filters and commits keywordSearchField with 'Enter', keyword and filter constraints both apply to resultsRegion
+      - given user commits keywordSearchField with 'Enter' and then changes filters, keyword and filter constraints both apply to resultsRegion
 
     openQuestions: []
 

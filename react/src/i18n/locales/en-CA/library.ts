@@ -27,7 +27,6 @@ const library = {
     none: 'No results found',
     notFound: 'The content you were looking for was not found.',
     loadFailed: 'The library could not be loaded.',
-    searchFailed: 'Search suggestions could not be loaded.',
     seeAll: '+ See all'
   },
   cards: {

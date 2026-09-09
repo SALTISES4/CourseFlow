@@ -4,6 +4,7 @@ import { cardTitleText } from '../shared/locators/cards';
 import {
   archiveToggle,
   disciplineFilter,
+  expectNoKeywordSearchSuggestions,
   favouritesToggle,
   expectLibraryCardTitles,
   keywordSearchField,
@@ -176,12 +177,12 @@ export async function expectKeywordSearchNarrowsMyLibraryResults(
   const baselineCount = await libraryCards(page).count();
   expect(baselineCount).toBeGreaterThan(0);
 
+  await keywordSearchField(page).fill(keyword);
+  await expectNoKeywordSearchSuggestions(page);
+
   const filteredResponse = await triggerLibrarySearchAndWait(
     page,
-    async () => {
-      await keywordSearchField(page).fill(keyword);
-      await keywordSearchField(page).press('Enter');
-    },
+    () => keywordSearchField(page).press('Enter'),
     { filters: { keyword } },
   );
 

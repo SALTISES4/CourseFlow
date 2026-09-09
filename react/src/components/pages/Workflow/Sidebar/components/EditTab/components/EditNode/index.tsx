@@ -23,7 +23,7 @@ import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { useReferenceData } from '@cf/hooks/useReferenceData'
 import { useReferenceLabels } from '@cf/i18n/referenceLabels'
-import { displaySystemTitle } from '@cf/i18n/systemTitles'
+import { displayEditableSystemTitle } from '@cf/i18n/systemTitles'
 import type { AppDispatch, RootState } from '@cf/redux/store'
 import * as SC from '@cfSidebar/styles'
 import InsertMenu from '@cfViews/WorkflowView/GraphView/components/Section/Cell/InsertMenu'
@@ -165,7 +165,7 @@ const EditNodeForm = ({
     linkedWorkflowTitle ??
     nodeTitleFallback(t('linked.untitledNode'))
   const mirroredDescription = linkedWorkflowDetail?.description ?? ''
-  const editableTitle = displaySystemTitle(
+  const editableTitle = displayEditableSystemTitle(
     t,
     node,
     nodeTitleFallback(t('linked.untitledNode'))
@@ -199,7 +199,7 @@ const EditNodeForm = ({
 
   const debouncedDispatch = useMemo(
     () =>
-      debounce((data: NodeForm) => {
+      debounce((data: NodeForm, titleChanged: boolean) => {
         if (!canEdit) {
           return
         }
@@ -209,7 +209,9 @@ const EditNodeForm = ({
         }
 
         if (!isLinked) {
-          meta.title = data.title
+          if (titleChanged) {
+            meta.title = data.title
+          }
           meta.description = data.description
           meta.timeRequired = toNullableNumber(data.timeRequired)
 
@@ -258,8 +260,9 @@ const EditNodeForm = ({
 
   useEffect(() => {
     const unsubscribe = subscribe({
-      formState: { values: true },
-      callback: ({ values }) => debouncedDispatch(values as NodeForm)
+      formState: { values: true, dirtyFields: true },
+      callback: ({ values, dirtyFields }) =>
+        debouncedDispatch(values as NodeForm, Boolean(dirtyFields?.title))
     })
 
     return () => {
