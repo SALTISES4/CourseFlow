@@ -1,6 +1,25 @@
 import CircularProgress from '@mui/material/CircularProgress'
 import { useEffect, useState } from 'react'
 
+function isWorkspaceEditLockRequest(
+  input: Parameters<typeof fetch>[0]
+): boolean {
+  const value =
+    typeof input === 'string'
+      ? input
+      : input instanceof URL
+        ? input.href
+        : input.url
+
+  try {
+    return new URL(value, window.location.origin).pathname.startsWith(
+      '/api/workspace-lock/'
+    )
+  } catch {
+    return false
+  }
+}
+
 // From https://github.com/mui/material-ui/issues/9496#issuecomment-959408221
 const GradientCircularProgress = () => (
   <>
@@ -26,19 +45,16 @@ const NetworkActivityProvider = () => {
     window.fetch = async (
       ...args: Parameters<typeof fetch>
     ): Promise<Response> => {
-      setIsLoading(true)
+      if (isWorkspaceEditLockRequest(args[0])) {
+        return originalFetch(...args)
+      }
+
       setRequestCount((prevCount) => prevCount + 1)
 
       try {
-        const response: Response = await originalFetch(...args)
-        return response
+        return await originalFetch(...args)
       } finally {
-        setRequestCount((prevCount) => prevCount - 1)
-        if (requestCount <= 1) {
-          setTimeout(() => {
-            setIsLoading(false)
-          }, 500)
-        }
+        setRequestCount((prevCount) => Math.max(0, prevCount - 1))
       }
     }
 
@@ -46,6 +62,16 @@ const NetworkActivityProvider = () => {
     return () => {
       window.fetch = originalFetch
     }
+  }, [])
+
+  useEffect(() => {
+    if (requestCount > 0) {
+      setIsLoading(true)
+      return
+    }
+
+    const timeout = window.setTimeout(() => setIsLoading(false), 500)
+    return () => window.clearTimeout(timeout)
   }, [requestCount])
 
   return <>{isLoading && <Loader />}</>
@@ -53,6 +79,7 @@ const NetworkActivityProvider = () => {
 
 const Loader = () => (
   <div
+    data-testid="network-activity-loader"
     style={{
       position: 'absolute',
       right: '50px',

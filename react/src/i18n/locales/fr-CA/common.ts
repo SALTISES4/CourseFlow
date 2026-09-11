@@ -110,9 +110,13 @@ const commonFr = {
     workflowDenied: 'Vous n’avez pas accès à ce flux de travail.'
   },
   editLock: {
-    banner:
-      '{{displayName}} modifie actuellement cette page. Voulez-vous prendre le contrôle?',
-    takeover: 'Oui',
+    currentlyEditing: '{{displayName}} modifie actuellement',
+    takeoverAction: 'Prendre le contrôle de la modification',
+    takeoverTitle: 'Prendre le contrôle de la modification?',
+    takeoverMessage:
+      '{{displayName}} modifie actuellement ce document. Prendre le contrôle déverrouillera le fichier pour vous et fera passer {{displayName}} en mode lecture seule.',
+    takenOver:
+      '{{displayName}} a pris le contrôle de la modification et vous êtes maintenant en mode lecture seule.',
     unavailable:
       'La modification est temporairement indisponible. Veuillez réessayer.',
     projectConflict:

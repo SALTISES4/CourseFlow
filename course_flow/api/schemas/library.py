@@ -157,6 +157,7 @@ class LibraryItemOut(CamelSchema):
     is_favorite: bool
     project_uuid: UUID | None = None
     project_is_archived: bool | None = None
+    edit_lock_holder_name: str | None = None
     permissions: PermissionContextOut
 
 

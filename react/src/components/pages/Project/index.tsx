@@ -1,6 +1,9 @@
 import { getApiErrorStatus, isArchivedApiError } from '@cf/api/apiError'
 import { getProjectOptions } from '@cf/api/gen/@tanstack/react-query.gen'
-import WorkspaceEditLockBanner from '@cf/components/common/WorkspaceEditLockBanner'
+import {
+  WorkspaceEditLockLostAlert,
+  WorkspaceEditLockTakeover
+} from '@cf/components/common/WorkspaceEditLockBanner'
 import { WorkspacePermissionsProvider } from '@cf/context/workspacePermissionsContext'
 import { useWorkspaceAccessGuard } from '@cf/hooks/useWorkspaceAccessGuard'
 import { useWorkspaceEditLock } from '@cf/hooks/useWorkspaceEditLock'
@@ -103,12 +106,20 @@ const ProjectDetails = () => {
       resource={projectResponse.item.permissions}
       resourceReadOnly={!editLock.editingEnabled}
     >
-      <WorkspaceEditLockBanner
-        lock={editLock.locked}
-        takeoverPending={editLock.takeoverPending}
-        onTakeover={editLock.takeover}
+      <MenuBar
+        leftSection={<ProjectActionMenu />}
+        viewbar={
+          <WorkspaceEditLockTakeover
+            lock={editLock.locked}
+            takeoverPending={editLock.takeoverPending}
+            onTakeover={editLock.takeover}
+          />
+        }
       />
-      <MenuBar leftSection={<ProjectActionMenu />} />
+      <WorkspaceEditLockLostAlert
+        lock={editLock.locked}
+        visible={editLock.lockLost}
+      />
       <ProjectHeader project={project} />
       <ProjectTabs project={project} />
       <ProjectDialogs />

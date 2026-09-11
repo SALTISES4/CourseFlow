@@ -4,7 +4,10 @@ import {
   getWorkflowOptions
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import type { WorkflowDetailOutResp } from '@cf/api/gen/types.gen'
-import WorkspaceEditLockBanner from '@cf/components/common/WorkspaceEditLockBanner'
+import {
+  WorkspaceEditLockLostAlert,
+  WorkspaceEditLockTakeover
+} from '@cf/components/common/WorkspaceEditLockBanner'
 import { WorkspacePermissionsProvider } from '@cf/context/workspacePermissionsContext'
 import { selectAuthUser } from '@cf/features/auth/state/auth.slice'
 import { loadNodeInsertModePreference } from '@cf/features/graph/state/nodeInsertModePreference'
@@ -68,15 +71,28 @@ const WorkflowContent = ({
           : undefined
       }
     >
-      {editLock && (
-        <WorkspaceEditLockBanner
-          lock={editLock.locked}
-          takeoverPending={editLock.takeoverPending}
-          onTakeover={editLock.takeover}
-        />
-      )}
       <WorkflowSidebarContextProvider>
-        <WorkflowTabs workflow={workflow} publicView={publicView} />
+        <WorkflowTabs
+          workflow={workflow}
+          publicView={publicView}
+          editLockControl={
+            editLock ? (
+              <WorkspaceEditLockTakeover
+                lock={editLock.locked}
+                takeoverPending={editLock.takeoverPending}
+                onTakeover={editLock.takeover}
+              />
+            ) : undefined
+          }
+          editLockNotice={
+            editLock ? (
+              <WorkspaceEditLockLostAlert
+                lock={editLock.locked}
+                visible={editLock.lockLost}
+              />
+            ) : undefined
+          }
+        />
       </WorkflowSidebarContextProvider>
     </WorkspacePermissionsProvider>
   )

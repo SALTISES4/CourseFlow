@@ -107,9 +107,13 @@ const common = {
     workflowDenied: 'You do not have access to this workflow.'
   },
   editLock: {
-    banner:
-      '{{displayName}} is currently editing this page. Do you wish to take over?',
-    takeover: 'Yes',
+    currentlyEditing: '{{displayName}} is currently editing',
+    takeoverAction: 'Take over editing',
+    takeoverTitle: 'Take over editing?',
+    takeoverMessage:
+      '{{displayName}} is currently editing this document. Taking over will unlock the file for you and switch {{displayName}} to read-only mode.',
+    takenOver:
+      '{{displayName}} took over editing and you are now in read-only mode.',
     unavailable: 'Editing is temporarily unavailable. Please try again.',
     projectConflict:
       'This project is currently being edited by {{displayName}}. Your changes were not saved.',

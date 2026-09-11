@@ -123,6 +123,7 @@ export function formatLibraryObject(
   | 'permissions'
   | 'projectUuid'
   | 'projectIsArchived'
+  | 'editLockHolderName'
 > {
   const {
     uuid,
@@ -132,7 +133,8 @@ export function formatLibraryObject(
     isArchived,
     permissions,
     projectUuid,
-    projectIsArchived
+    projectIsArchived,
+    editLockHolderName
   } = libraryObject
 
   const typeChip = getTypeChip(libraryObject, t)
@@ -148,6 +150,7 @@ export function formatLibraryObject(
     permissions,
     projectUuid,
     projectIsArchived,
+    editLockHolderName,
     // TODO: figure out where this comes from
     // isLinked: libraryObject.isLinked,
     isLinked: false,

@@ -2963,6 +2963,10 @@ export type LibraryItemOut = {
    * Projectisarchived
    */
   projectIsArchived?: boolean | null
+  /**
+   * Editlockholdername
+   */
+  editLockHolderName?: string | null
   permissions: PermissionContextOut
 }
 

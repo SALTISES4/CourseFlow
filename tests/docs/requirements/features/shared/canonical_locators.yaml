@@ -1616,12 +1616,21 @@ locatorMappings:
   workflowViewTabSelector:
     strategy: "{workflowHeader} tab selector for workflow sub-views"
     confidence: inferred
-  workspaceEditLockBanner:
-    strategy: '[data-testid="workspace-edit-lock-banner"]'
-    confidence: confirmed
-  workspaceEditLockMessage:
-    strategy: '[data-testid="workspace-edit-lock-message"]'
+  cardEditLockTag:
+    strategy: '[data-testid="card-edit-lock"]'
     confidence: confirmed
   workspaceEditLockTakeoverButton:
     strategy: '[data-testid="workspace-edit-lock-takeover"]'
+    confidence: confirmed
+  workspaceEditLockTakeoverDialog:
+    strategy: '[data-testid="workspace-edit-lock-takeover-dialog"]'
+    confidence: confirmed
+  workspaceEditLockTakeoverDialogMessage:
+    strategy: '[data-testid="workspace-edit-lock-takeover-dialog-message"]'
+    confidence: confirmed
+  workspaceEditLockLostAlert:
+    strategy: '[data-testid="workspace-edit-lock-lost-alert"]'
+    confidence: confirmed
+  networkActivityLoader:
+    strategy: '[data-testid="network-activity-loader"]'
     confidence: confirmed

@@ -1,5 +1,6 @@
 import {
   acquireWorkspaceEditLock,
+  getWorkspaceEditLock,
   refreshWorkspaceEditLock,
   takeoverWorkspaceEditLock
 } from '@cf/api/gen/sdk.gen'
@@ -34,6 +35,19 @@ type UseWorkspaceEditLockOptions = {
 type LockViewState = {
   phase: LockPhase
   lock: WorkspaceEditLockOut | null
+  lockLost: boolean
+}
+
+function isSameLock(
+  left: WorkspaceEditLockOut | null,
+  right: WorkspaceEditLockOut | null
+): boolean {
+  return (
+    left?.state === right?.state &&
+    left?.version === right?.version &&
+    left?.holder?.uuid === right?.holder?.uuid &&
+    left?.holder?.displayName === right?.holder?.displayName
+  )
 }
 
 function isEligible(
@@ -58,11 +72,13 @@ export function useWorkspaceEditLock({
   const resourceKey = `${workspace}:${resourceUuid}`
   const currentResourceKeyRef = useRef(resourceKey)
   const requestInFlightRef = useRef(false)
+  const requestHandledByLockEventRef = useRef(false)
   const unavailableNotifiedRef = useRef(false)
   const [takeoverPending, setTakeoverPending] = useState(false)
   const [viewState, setViewState] = useState<LockViewState>({
     phase: eligible ? 'resolving' : 'ineligible',
-    lock: null
+    lock: null,
+    lockLost: false
   })
 
   currentResourceKeyRef.current = resourceKey
@@ -87,11 +103,25 @@ export function useWorkspaceEditLock({
       }
       if (lock.state === WorkspaceEditLockState.LOCKED) {
         unavailableNotifiedRef.current = false
-        setViewState({ phase: 'locked', lock })
+        setViewState((current) => {
+          const lockLost = current.lockLost || current.phase === 'held'
+          if (
+            current.phase === 'locked' &&
+            current.lockLost === lockLost &&
+            isSameLock(current.lock, lock)
+          ) {
+            return current
+          }
+          return { phase: 'locked', lock, lockLost }
+        })
         return
       }
       if (lock.state === WorkspaceEditLockState.AVAILABLE) {
-        setViewState({ phase: 'unavailable', lock: null })
+        setViewState((current) =>
+          current.phase === 'unavailable' && current.lock === null
+            ? current
+            : { phase: 'unavailable', lock: null, lockLost: false }
+        )
         return
       }
 
@@ -101,14 +131,18 @@ export function useWorkspaceEditLock({
           return
         }
         if (reloadError) {
-          setViewState({ phase: 'unavailable', lock })
+          setViewState({ phase: 'unavailable', lock, lockLost: false })
           showUnavailable()
           return
         }
       }
 
       unavailableNotifiedRef.current = false
-      setViewState({ phase: 'held', lock })
+      setViewState((current) =>
+        current.phase === 'held' && isSameLock(current.lock, lock)
+          ? current
+          : { phase: 'held', lock, lockLost: false }
+      )
     },
     [isCurrentResource, reload, showUnavailable]
   )
@@ -118,6 +152,7 @@ export function useWorkspaceEditLock({
       return
     }
     requestInFlightRef.current = true
+    requestHandledByLockEventRef.current = false
     try {
       const { data } = await acquireWorkspaceEditLock({
         path: {
@@ -128,8 +163,8 @@ export function useWorkspaceEditLock({
       })
       await applyResponse(data, data.state === WorkspaceEditLockState.HELD)
     } catch {
-      if (isCurrentResource()) {
-        setViewState({ phase: 'unavailable', lock: null })
+      if (isCurrentResource() && !requestHandledByLockEventRef.current) {
+        setViewState({ phase: 'unavailable', lock: null, lockLost: false })
         showUnavailable()
       }
     } finally {
@@ -147,12 +182,13 @@ export function useWorkspaceEditLock({
   useEffect(() => {
     unavailableNotifiedRef.current = false
     requestInFlightRef.current = false
+    requestHandledByLockEventRef.current = false
     setTakeoverPending(false)
     if (!eligible) {
-      setViewState({ phase: 'ineligible', lock: null })
+      setViewState({ phase: 'ineligible', lock: null, lockLost: false })
       return
     }
-    setViewState({ phase: 'resolving', lock: null })
+    setViewState({ phase: 'resolving', lock: null, lockLost: false })
     void acquireLease()
   }, [acquireLease, eligible, resourceKey])
 
@@ -165,13 +201,51 @@ export function useWorkspaceEditLock({
       viewState.phase === 'held' ? REFRESH_INTERVAL_MS : STATUS_POLL_INTERVAL_MS
     const interval = window.setInterval(() => {
       if (viewState.phase !== 'held') {
-        void acquireLease()
+        if (requestInFlightRef.current) {
+          return
+        }
+        requestInFlightRef.current = true
+        requestHandledByLockEventRef.current = false
+        void getWorkspaceEditLock({
+          path: {
+            resource_type: workspace,
+            resource_uuid: resourceUuid
+          },
+          throwOnError: true
+        })
+          .then(async ({ data }) => {
+            if (data.state === WorkspaceEditLockState.AVAILABLE) {
+              setViewState({
+                phase: 'unavailable',
+                lock: null,
+                lockLost: false
+              })
+              requestInFlightRef.current = false
+              await acquireLease()
+              return
+            }
+            await applyResponse(data, false)
+          })
+          .catch(() => {
+            if (isCurrentResource() && !requestHandledByLockEventRef.current) {
+              setViewState({
+                phase: 'unavailable',
+                lock: null,
+                lockLost: false
+              })
+              showUnavailable()
+            }
+          })
+          .finally(() => {
+            requestInFlightRef.current = false
+          })
         return
       }
       if (requestInFlightRef.current) {
         return
       }
       requestInFlightRef.current = true
+      requestHandledByLockEventRef.current = false
       void refreshWorkspaceEditLock({
         path: {
           resource_type: workspace,
@@ -181,14 +255,23 @@ export function useWorkspaceEditLock({
       })
         .then(({ data }) => {
           if (data.state === WorkspaceEditLockState.AVAILABLE) {
+            setViewState({
+              phase: 'unavailable',
+              lock: null,
+              lockLost: false
+            })
             requestInFlightRef.current = false
             return acquireLease()
           }
           return applyResponse(data, false)
         })
         .catch(() => {
-          if (isCurrentResource()) {
-            setViewState({ phase: 'unavailable', lock: null })
+          if (isCurrentResource() && !requestHandledByLockEventRef.current) {
+            setViewState({
+              phase: 'unavailable',
+              lock: null,
+              lockLost: false
+            })
             showUnavailable()
           }
         })
@@ -221,12 +304,14 @@ export function useWorkspaceEditLock({
       ) {
         return
       }
+      requestHandledByLockEventRef.current = true
       if (detail.code === 'edit_lock_expired') {
-        setViewState({ phase: 'unavailable', lock: null })
+        setViewState({ phase: 'unavailable', lock: null, lockLost: false })
         return
       }
-      setViewState({
+      setViewState((current) => ({
         phase: 'locked',
+        lockLost: current.lockLost || current.phase === 'held',
         lock: {
           resourceType:
             workspace === 'project'
@@ -244,7 +329,7 @@ export function useWorkspaceEditLock({
           version: detail.version ?? null,
           expiresAt: null
         }
-      })
+      }))
     }
     window.addEventListener(WORKSPACE_EDIT_LOCK_ERROR_EVENT, onLockError)
     return () =>
@@ -258,6 +343,7 @@ export function useWorkspaceEditLock({
       return
     }
     setTakeoverPending(true)
+    requestHandledByLockEventRef.current = false
     try {
       const { data } = await takeoverWorkspaceEditLock({
         body: { expectedVersion },
@@ -276,15 +362,15 @@ export function useWorkspaceEditLock({
         return
       }
       if (reloadError) {
-        setViewState({ phase: 'locked', lock: priorLock })
+        setViewState({ phase: 'locked', lock: priorLock, lockLost: false })
         showUnavailable()
         return
       }
       unavailableNotifiedRef.current = false
-      setViewState({ phase: 'held', lock: data })
+      setViewState({ phase: 'held', lock: data, lockLost: false })
     } catch {
-      if (isCurrentResource()) {
-        setViewState({ phase: 'locked', lock: priorLock })
+      if (isCurrentResource() && !requestHandledByLockEventRef.current) {
+        setViewState({ phase: 'locked', lock: priorLock, lockLost: false })
         showUnavailable()
       }
     } finally {
@@ -306,6 +392,7 @@ export function useWorkspaceEditLock({
       viewState.phase === 'held' || viewState.phase === 'ineligible',
     initialResolving: viewState.phase === 'resolving',
     locked: viewState.phase === 'locked' ? viewState.lock : null,
+    lockLost: viewState.lockLost,
     takeover,
     takeoverPending
   }

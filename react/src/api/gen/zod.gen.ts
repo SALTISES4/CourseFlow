@@ -1482,6 +1482,7 @@ export const zLibraryItemOut = z.object({
   isFavorite: z.boolean(),
   projectUuid: z.string().uuid().nullish(),
   projectIsArchived: z.boolean().nullish(),
+  editLockHolderName: z.string().nullish(),
   permissions: zPermissionContextOut
 })
 
