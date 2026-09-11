@@ -4,7 +4,6 @@ import {
   expectFavouritedWorkflowInSidebarFeedButNotInDom,
   expectSidebarFavouritesShowProjectsOnly,
   readSidebarFavouriteEntries,
-  withFavouritedProjectsClearedFromSidebarFeed,
   withLibraryObjectFavouriteState,
 } from '../../helpers/main-navigation-favourites';
 import {
@@ -107,11 +106,13 @@ test.describe('Main navigation — calibration (FR-NAV-001-013)', () => {
   });
 
   test.describe('Favourites sidebar (FR-NAV-005-008)', () => {
+    test.describe.configure({ mode: 'serial' });
+
     test('FR-NAV-005: sidebar favourites query and DOM list projects only', async ({ page }) => {
       await expectSidebarFavouritesShowProjectsOnly(page);
     });
 
-    test('FR-NAV-005: favourited workflow in sidebar feed is not rendered in Favourites', async ({
+    test('FR-NAV-005: favourited workflow is excluded from the sidebar query and DOM', async ({
       page,
     }) => {
       const manifest = loadWorkflowManifest();
@@ -122,19 +123,15 @@ test.describe('Main navigation — calibration (FR-NAV-001-013)', () => {
         contentType: 'workflow' as const,
       };
 
-      await withFavouritedProjectsClearedFromSidebarFeed(page, async () => {
-        await withLibraryObjectFavouriteState(page, workflowItem, true, async () => {
-          await expectFavouritedWorkflowInSidebarFeedButNotInDom(page, workflowItem);
-        });
+      await withLibraryObjectFavouriteState(page, workflowItem, true, async () => {
+        await expectFavouritedWorkflowInSidebarFeedButNotInDom(page, workflowItem);
       });
     });
 
     test('FR-NAV-005/006: favourites section lists up to five favourited projects', async ({
       page,
     }) => {
-      await expectSidebarFavouritesShowProjectsOnly(page, {
-        requireWorkflowInSidebarFeed: false,
-      });
+      await expectSidebarFavouritesShowProjectsOnly(page);
 
       const favouriteCount = await favouritedItemLinks(page).count();
       expect(favouriteCount).toBeGreaterThanOrEqual(1);
@@ -264,6 +261,7 @@ test.describe('Main navigation — workflow context (FR-NAV-012–013)', () => {
         page,
         'Contains',
         linked.activity.workflow_title,
+        linked.activity.workflow_uuid,
       );
     });
   });
@@ -292,6 +290,7 @@ test.describe('Main navigation — workflow context (FR-NAV-012–013)', () => {
         page,
         'Appears in',
         linked.course.workflow_title,
+        linked.course.workflow_uuid,
       );
     });
 

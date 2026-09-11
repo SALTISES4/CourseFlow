@@ -1,3 +1,4 @@
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import {
   addProjectTeamMembersMutation,
   listProjectTeamQueryKey,
@@ -112,20 +113,20 @@ const ContributorAddDialog = ({
           role
         }
       })
-      enqueueSnackbar(
-        t('contributor.added'),
-        { variant: SnackbarOptions.SUCCESS }
-      )
+      enqueueSnackbar(t('contributor.added'), {
+        variant: SnackbarOptions.SUCCESS
+      })
       refetch()
       onClose()
     } catch (err) {
-      enqueueSnackbar(
-        t('contributor.addFailed'),
-        { variant: SnackbarOptions.ERROR }
-      )
+      if (!isApiErrorNotificationHandled(err)) {
+        enqueueSnackbar(t('contributor.addFailed'), {
+          variant: SnackbarOptions.ERROR
+        })
+      }
       console.error('Failed to add contributor:', err)
     }
-  }, [addMembers, uuid, onClose, refetch, role, userUuids])
+  }, [addMembers, uuid, onClose, refetch, role, t, userUuids])
 
   const onAutocompleteChange = useCallback((value: string) => {
     setSearch(value)

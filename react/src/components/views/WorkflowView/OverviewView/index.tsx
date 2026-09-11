@@ -1,14 +1,12 @@
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import {
   getWorkflowQueryKey,
   updateWorkflowMutation,
   updateWorkflowPublicLinkMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import type { WorkflowOverviewMetadataIn } from '@cf/api/gen/types.gen'
-import { ResourceRole, WorkflowPermission } from '@cf/api/gen/types.gen'
-import {
-  useResourcePermission,
-  useWorkspacePermissions
-} from '@cf/context/workspacePermissionsContext'
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { useReferenceLabels } from '@cf/i18n/referenceLabels'
 import { CFRoutes } from '@cf/router/cfRoutes'
 import { WorkspaceType } from '@cf/types/enum'
@@ -47,14 +45,8 @@ const OverviewView = ({
   const updateMetadata = useMutation(updateWorkflowMutation())
   const updatePublicLink = useMutation(updateWorkflowPublicLinkMutation())
   const canEdit = useResourcePermission(WorkflowPermission.EDIT_ATTRIBUTES)
-  const { resource: permissions } = useWorkspacePermissions()
   const authenticatedWorkflow = isAuthenticatedWorkflow(workflow)
-  const canManagePublicLink =
-    !publicView &&
-    authenticatedWorkflow &&
-    [ResourceRole.OWNER, ResourceRole.EDITOR].includes(
-      permissions.resourceRole as ResourceRole
-    )
+  const canManagePublicLink = !publicView && authenticatedWorkflow && canEdit
 
   // @todo disciplines is missing from workflow data type
   const disciplines: { title: string }[] = []
@@ -71,9 +63,11 @@ const OverviewView = ({
       queryClient.setQueryData(workflowQueryKey, response)
     } catch (error) {
       await queryClient.invalidateQueries({ queryKey: workflowQueryKey })
-      enqueueSnackbar(t('messages.metadataSaveFailed'), {
-        variant: SnackbarOptions.ERROR
-      })
+      if (!isApiErrorNotificationHandled(error)) {
+        enqueueSnackbar(t('messages.metadataSaveFailed'), {
+          variant: SnackbarOptions.ERROR
+        })
+      }
       console.error('Failed to update workflow overview metadata:', error)
     }
   }
@@ -92,9 +86,11 @@ const OverviewView = ({
         { variant: SnackbarOptions.SUCCESS }
       )
     } catch (error) {
-      enqueueSnackbar(t('messages.publicLinkUpdateFailed'), {
-        variant: SnackbarOptions.ERROR
-      })
+      if (!isApiErrorNotificationHandled(error)) {
+        enqueueSnackbar(t('messages.publicLinkUpdateFailed'), {
+          variant: SnackbarOptions.ERROR
+        })
+      }
       console.error('Failed to update workflow public link:', error)
     }
   }

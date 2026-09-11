@@ -12,6 +12,13 @@ type WorkspacePermissions = {
   project?: PermissionContextOut | null
 }
 
+const LOCK_ALLOWED_ACTIONS = new Set([
+  'view',
+  'export',
+  'copy',
+  'create_workflow'
+])
+
 const WorkspacePermissionsContext = createContext<
   WorkspacePermissions | undefined
 >(undefined)
@@ -19,9 +26,25 @@ const WorkspacePermissionsContext = createContext<
 export const WorkspacePermissionsProvider = ({
   resource,
   project,
+  resourceReadOnly = false,
   children
-}: WorkspacePermissions & { children: ReactNode }) => (
-  <WorkspacePermissionsContext.Provider value={{ resource, project }}>
+}: WorkspacePermissions & {
+  resourceReadOnly?: boolean
+  children: ReactNode
+}) => (
+  <WorkspacePermissionsContext.Provider
+    value={{
+      resource: resourceReadOnly
+        ? {
+            ...resource,
+            actions: resource.actions.filter((action) =>
+              LOCK_ALLOWED_ACTIONS.has(action)
+            )
+          }
+        : resource,
+      project
+    }}
+  >
     {children}
   </WorkspacePermissionsContext.Provider>
 )

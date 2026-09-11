@@ -43,13 +43,17 @@ const MINUTE_MS = 60_000
 const HOUR_MS = 60 * MINUTE_MS
 const DAY_MS = 24 * HOUR_MS
 
-const formatCommentDate = (dateCreated: string, locale: string): string => {
+const formatCommentDate = (
+  dateCreated: string,
+  locale: string,
+  justNow: string
+): string => {
   const date = new Date(dateCreated)
   const ageMs = Math.max(0, Date.now() - date.getTime())
   const relative = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
 
   if (ageMs < MINUTE_MS) {
-    return relative.format(0, 'second')
+    return justNow
   }
   if (ageMs < HOUR_MS) {
     const minutes = Math.floor(ageMs / MINUTE_MS)
@@ -258,7 +262,11 @@ const CommentsTab = () => {
               >
                 <Styled.CommentHeader data-test-id="workflow-comments-list-item-header">
                   {authorLabel} &bull;{' '}
-                  {formatCommentDate(comment.dateCreated, locale)}
+                  {formatCommentDate(
+                    comment.dateCreated,
+                    locale,
+                    t('comments.justNow')
+                  )}
                 </Styled.CommentHeader>
                 <Styled.CommentText data-test-id="workflow-comments-list-item-body">
                   {comment.body}

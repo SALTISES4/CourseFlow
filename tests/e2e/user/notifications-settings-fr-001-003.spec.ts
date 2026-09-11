@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { authenticatedApiRequest } from '../../helpers/api';
+import { loginAs } from '../../helpers/auth';
+import { getActorAsset, loadWorkflowManifest } from '../../helpers/manifest';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import {
   NOTIFICATIONS_SETTINGS_API_ROUTE,
@@ -15,8 +17,12 @@ import {
 /**
  * Calibration slice — FR-NOTIF-001 through FR-NOTIF-003.
  * Requirements: tests/docs/requirements/features/user/notifications_settings_requirements_v1.yaml
- * Auth: chromium project storage state (teacher@courseflow.com).
+ * Auth: seeded actor.viewer account, isolated from profile-language mutations.
  */
+
+const notificationActor = getActorAsset(loadWorkflowManifest(), 'actor.viewer');
+
+test.use({ storageState: { cookies: [], origins: [] } });
 
 test.describe('Notifications settings — calibration (FR-NOTIF-001-003)', () => {
   test.describe.configure({ mode: 'serial' });
@@ -24,6 +30,10 @@ test.describe('Notifications settings — calibration (FR-NOTIF-001-003)', () =>
 
   test.beforeEach(async ({ page }) => {
     notificationsBeforeTest = undefined;
+    await loginAs(page, {
+      email: notificationActor.email,
+      password: notificationActor.password,
+    });
     await gotoAuthenticatedShell(page, '/user/notifications-settings');
     await waitForNotificationsSettingsLoaded(page);
 

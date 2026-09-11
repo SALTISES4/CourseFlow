@@ -12,7 +12,11 @@ from course_flow.api.schemas.comments import (
     CommentOut,
     ThreadCommentsBulkDeleteOut,
 )
+from course_flow.api.workspace_edit_locks import workspace_mutation_lock
 from course_flow.application.dto import CommentDTO
+from course_flow.application.services.workspace_edit_lock_service import (
+    WorkspaceReferenceType,
+)
 
 router = Router(tags=["threads"], by_alias=True)
 
@@ -57,6 +61,7 @@ def list_thread_comments(request, uuid: UUID):
     auth=BearerAuth(),
     operation_id="createThreadComment",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.THREAD)
 def create_thread_comment(request, uuid: UUID, payload: CommentCreateIn):
     current_user = get_current_user(request)
     svc = get_thread_comment_service()
@@ -77,6 +82,7 @@ def create_thread_comment(request, uuid: UUID, payload: CommentCreateIn):
     auth=BearerAuth(),
     operation_id="deleteThreadComment",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.THREAD)
 def delete_thread_comment(request, uuid: UUID, comment_uuid: UUID):
     current_user = get_current_user(request)
     svc = get_thread_comment_service()
@@ -97,6 +103,7 @@ def delete_thread_comment(request, uuid: UUID, comment_uuid: UUID):
     auth=BearerAuth(),
     operation_id="deleteAllThreadComments",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.THREAD)
 def delete_all_thread_comments(request, uuid: UUID):
     current_user = get_current_user(request)
     svc = get_thread_comment_service()

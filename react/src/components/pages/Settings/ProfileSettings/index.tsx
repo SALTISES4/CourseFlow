@@ -6,7 +6,7 @@ import {
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { setAuthLanguagePreference } from '@cf/features/auth/state/auth.slice'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { setAppLocale } from '@cf/i18n'
+import { normalizeLocale, setAppLocale } from '@cf/i18n'
 import { languageOptions } from '@cf/utility/constants'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { OuterContentWrap } from '@cfMUI/helper'
@@ -117,7 +117,7 @@ const ProfileSettingsPage = () => {
 
   const onFormSubmit = async (formData: FormValues) => {
     try {
-      await patchProfileSettings.mutateAsync({
+      const response = await patchProfileSettings.mutateAsync({
         body: {
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -125,7 +125,11 @@ const ProfileSettingsPage = () => {
         }
       })
 
-      onSuccess({ localizedMessage: t('messages.updated') })
+      onSuccess({
+        localizedMessage: t('messages.updated', {
+          lng: normalizeLocale(response.item.languagePreference)
+        })
+      })
     } catch (err) {
       let hasFieldError = false
       const formFields: FormField[] = [

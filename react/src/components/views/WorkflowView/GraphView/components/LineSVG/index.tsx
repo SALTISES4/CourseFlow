@@ -22,11 +22,11 @@ import { canonicalPortToConnectionEdge, edgeLineTypeIsDashed } from './utility'
 
 const LineSVG = ({
   graphUuid,
-  rerender,
+  layoutRevision,
   condensed
 }: {
   graphUuid: string
-  rerender: boolean
+  layoutRevision: number
   condensed: number
 }) => {
   const ref = useRef<SVGSVGElement>(null)
@@ -96,7 +96,7 @@ const LineSVG = ({
     })
 
     setNodesBCR(results)
-  }, [rerender, condensed, nodeUuids, edges])
+  }, [layoutRevision, condensed, nodeUuids, edges])
 
   return (
     <Styled.EdgeLayer id="line-svg">

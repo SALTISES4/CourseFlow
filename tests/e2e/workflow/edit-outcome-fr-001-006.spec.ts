@@ -1,5 +1,6 @@
 import { test, expect } from '../../fixtures';
 import { loginAsTestUser } from '../../helpers/auth';
+import { ensurePageWorkspaceEditLock } from '../../helpers/edit-lock';
 import { workflowOutcomeHeaderCount } from './add-tab.helpers';
 import { gotoOutcomesView, hoverWorkflowOutcomeHeader } from './comments-tab.helpers';
 import { deleteOutcomeViaApi } from './outcome-drag.helpers';
@@ -64,10 +65,11 @@ async function removeSeededOutcome(page: import('@playwright/test').Page, title:
 /** Owner clears outcomes via API, then contributor lands on empty Outcomes view. */
 async function gotoEmptyOutcomesViewAsContributor(
   page: import('@playwright/test').Page,
-  workflow: { path: string; firstOutcome: () => { uuid: string } },
+  workflow: { path: string; workflowUuid: string; firstOutcome: () => { uuid: string } },
   role: WorkflowContributorRole,
 ): Promise<void> {
   await loginAsTestUser(page);
+  await ensurePageWorkspaceEditLock(page, 'workflow', workflow.workflowUuid);
   await deleteOutcomeViaApi(page, workflow.firstOutcome().uuid);
   await loginAsWorkflowContributor(page, workflow, role);
   await gotoOutcomesView(page, workflow.path);
@@ -109,6 +111,10 @@ test.describe('edit-outcome-fr-001-006', () => {
       expect(await workflowOutcomeHeaderCount(page)).toBe(1);
       await expect(workflowEditOutcomeForm(page)).toHaveCount(0);
       await expect(workflowRightSidebarContentPanel(page)).toBeHidden();
+
+      await workflowOutcomeHeader(page, 'Untitled outcome').click();
+      await expect(workflowEditOutcomeForm(page)).toBeVisible();
+      await expect(workflowEditOutcomeFormTitleField(page)).toHaveValue('');
     });
   });
 

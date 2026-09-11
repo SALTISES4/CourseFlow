@@ -100,9 +100,9 @@ e2e-prepare:
 # Deployment
 #########################################################
 
-# Deploy the current server checkout with a pre-built frontend artifact.
+# Destructively rebuild the managed UAT database and restart Django.
 [group: 'Deployment']
-deploy-uat:
+reset-uat-db:
   #!/usr/bin/env bash
   set -euo pipefail
 
@@ -112,9 +112,17 @@ deploy-uat:
   fi
 
   {{ compose_cmd }} {{ uat_profile }} config --quiet
+  {{ compose_cmd }} {{ uat_profile }} build django
+  {{ compose_cmd }} {{ uat_profile }} stop django
+  {{ compose_cmd }} {{ uat_profile }} run --rm --no-deps \
+    -e DJANGO_MIGRATE_ON_STARTUP=false \
+    django \
+    uv run --no-sync python manage.py cf_rebuild_uat_database \
+      --confirm-uat-reset
+
   if ! {{ compose_cmd }} {{ uat_profile }} up \
     -d \
-    --build \
+    --no-build \
     --no-deps \
     --force-recreate \
     --wait \
@@ -124,6 +132,14 @@ deploy-uat:
     {{ compose_cmd }} {{ uat_profile }} logs --tail 100 django >&2 || true
     exit 1
   fi
+
+# Deploy the current server checkout with a pre-built frontend artifact.
+[group: 'Deployment']
+deploy-uat:
+  #!/usr/bin/env bash
+  set -euo pipefail
+
+  just reset-uat-db
 
   {{ compose_cmd }} {{ uat_profile }} exec -T django \
     uv run --no-sync python manage.py migrate --check

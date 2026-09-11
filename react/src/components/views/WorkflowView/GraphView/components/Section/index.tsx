@@ -59,7 +59,8 @@ export type SectionPropsType = {
   onNodeDrop: CellReorderCallbackFn
   onSectionReorder: SectionReorderCallbackFn
   onSectionInsert: SectionInsertCallbackFn
-  memoBuster: (number | boolean)[]
+  /** Invalidates render-time background measurements after layout commits. */
+  layoutRevision: number
 }
 
 type SectionStateType = {
@@ -69,6 +70,15 @@ type SectionStateType = {
 }
 
 const Section = (props: SectionPropsType) => {
+  const {
+    index,
+    onSectionCollapse,
+    onSectionDragEnd,
+    onSectionDragStart,
+    onSectionInsert,
+    onSectionReorder,
+    sectionId
+  } = props
   const { t } = useTranslation('workflow')
   const dispatch = useDispatch()
   const canEditParts = useResourcePermission(WorkflowPermission.PART_MANAGEMENT)
@@ -114,7 +124,7 @@ const Section = (props: SectionPropsType) => {
       draggable({
         element: el,
         getInitialData: () => ({
-          index: props.index,
+          index,
           type: DraggableType.WEEK
         }),
         onDragStart() {
@@ -123,7 +133,7 @@ const Section = (props: SectionPropsType) => {
               draft.dragging = true
             })
           )
-          props.onSectionDragStart()
+          onSectionDragStart()
         },
         onDrop() {
           setState(
@@ -132,14 +142,14 @@ const Section = (props: SectionPropsType) => {
             })
           )
           resetState()
-          props.onSectionDragEnd()
+          onSectionDragEnd()
         }
       }),
       dropTargetForElements({
         element: outerEl,
         getData: ({ element, input }) => {
           const data = {
-            index: props.index,
+            index,
             type: DraggableType.WEEK
           }
           return attachClosestEdge(data, {
@@ -190,19 +200,27 @@ const Section = (props: SectionPropsType) => {
               moveToIndex += 1
             }
             if (from.index !== moveToIndex) {
-              props.onSectionReorder(from.index, moveToIndex)
+              onSectionReorder(from.index, moveToIndex)
             }
           } else if (isSidebarPart(from)) {
             const insertIndex =
               closestEdge === 'bottom' ? to.index + 1 : to.index
-            props.onSectionInsert(insertIndex)
+            onSectionInsert(insertIndex)
           } else {
             return
           }
         }
       })
     )
-  }, [canEditParts, resetState, props])
+  }, [
+    canEditParts,
+    index,
+    onSectionDragEnd,
+    onSectionDragStart,
+    onSectionInsert,
+    onSectionReorder,
+    resetState
+  ])
 
   const onSectionWrapperClick = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
@@ -227,9 +245,9 @@ const Section = (props: SectionPropsType) => {
   const onCollapseIconClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
       e.stopPropagation()
-      props.onSectionCollapse(props.sectionId)
+      onSectionCollapse(sectionId)
     },
-    [props]
+    [onSectionCollapse, sectionId]
   )
 
   if (!section) {

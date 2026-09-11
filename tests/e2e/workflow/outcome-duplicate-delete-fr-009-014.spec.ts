@@ -20,7 +20,6 @@ import {
 import {
   workflowEditOutcomeForm,
   workflowEditOutcomeFormDeleteButton,
-  workflowEditOutcomeFormDuplicateButton,
   workflowEditOutcomeFormTitleField,
   workflowOutcomeExpandToggle,
   workflowOutcomeHeader,

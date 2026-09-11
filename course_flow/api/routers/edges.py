@@ -24,8 +24,12 @@ from course_flow.api.schemas.graph_mutation import (
     GraphMutationEnvelopeOut,
 )
 from course_flow.api.schemas.graph_view import EdgeGraphOut
+from course_flow.api.workspace_edit_locks import workspace_mutation_lock
 from course_flow.application.services.graph_mutation_service import (
     graph_from_node,
+)
+from course_flow.application.services.workspace_edit_lock_service import (
+    WorkspaceReferenceType,
 )
 from course_flow.core.models import Edge
 from course_flow.core.permissions import WorkflowPermission
@@ -95,6 +99,7 @@ def list_graph_edges(request, uuid: UUID):
     auth=BearerAuth(),
     operation_id="createGraphEdge",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.GRAPH)
 def create_graph_edge(request, uuid: UUID, payload: GraphEdgeCreateIn):
     current_user = get_current_user(request)
     _ensure_graph_permission(
@@ -164,6 +169,7 @@ def get_edge(request, edge_id: int):
     auth=BearerAuth(),
     operation_id="updateEdge",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.EDGE, lookup_arg="edge_id")
 def update_edge(request, edge_id: int, payload: GraphEdgePatchIn):
     current_user = get_current_user(request)
     _ensure_edge_permission(
@@ -193,6 +199,7 @@ def update_edge(request, edge_id: int, payload: GraphEdgePatchIn):
     auth=BearerAuth(),
     operation_id="deleteEdge",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.EDGE, lookup_arg="edge_id")
 def delete_edge(request, edge_id: int):
     current_user = get_current_user(request)
     _ensure_edge_permission(

@@ -48,6 +48,21 @@ export function keywordSearchClearButton(page: Page): Locator {
   return keywordSearchField(page).locator("..").getByRole("button");
 }
 
+/** Removed keyword-suggestion menu; retained as a negative regression locator. */
+export function keywordSearchSuggestionsDropdown(page: Page): Locator {
+  return page.locator("#filter-projects-menu");
+}
+
+/**
+ * The removed suggestions were populated by a 500 ms debounce. Wait past that
+ * boundary so the assertion detects a reintroduced dropdown, not only its
+ * initially closed state.
+ */
+export async function expectNoKeywordSearchSuggestions(page: Page): Promise<void> {
+  await page.waitForTimeout(600);
+  await expect(keywordSearchSuggestionsDropdown(page)).toHaveCount(0);
+}
+
 /** canonical: libraryFilterToolbar / projectWorkflowsFilterToolbar */
 export function libraryFilterToolbar(page: Page): Locator {
   return page.locator('[data-test-id="library-filter-toolbar"]');
@@ -66,7 +81,7 @@ export function sortResetButton(
     .getByRole("button")
     .first()
     .locator("..")
-    .getByRole("button", { name: "close", exact: true });
+    .getByRole("button", { name: /^close$/i });
 }
 
 /** canonical: ownershipFilter */
@@ -83,7 +98,7 @@ export function ownershipFilterResetButton(
 ): Locator {
   return filter
     .locator("..")
-    .getByRole("button", { name: "close", exact: true });
+    .getByRole("button", { name: /^close$/i });
 }
 
 /** canonical: typeFilter / contentTypeFilter */
@@ -97,7 +112,7 @@ export function typeFilter(page: Page): Locator {
 export function typeFilterResetButton(page: Page): Locator {
   return typeFilter(page)
     .locator("..")
-    .getByRole("button", { name: "close", exact: true });
+    .getByRole("button", { name: /^close$/i });
 }
 
 export function workflowTypeFilter(page: Page): Locator {

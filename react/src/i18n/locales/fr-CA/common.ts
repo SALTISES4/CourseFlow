@@ -41,6 +41,7 @@ const commonFr = {
     notificationSettings: 'Paramètres de notification',
     signOut: 'Se déconnecter',
     addMenu: 'Menu d’ajout',
+    project: 'Projet',
     accountMenu: 'Compte de la personne connectée'
   },
   favourites: {
@@ -50,7 +51,8 @@ const commonFr = {
   },
   cards: {
     ownedBy: 'Propriété de {{name}}',
-    linkedWorkflowWarning: 'Lier le même flux de travail à plusieurs nœuds peut nuire à la lisibilité lorsque les résultats des flux parents et enfants sont associés.',
+    linkedWorkflowWarning:
+      'Lier le même flux de travail à plusieurs nœuds peut nuire à la lisibilité lorsque les résultats des flux parents et enfants sont associés.',
     alreadyInUse: 'Déjà utilisé'
   },
   lifecycle: {
@@ -62,8 +64,10 @@ const commonFr = {
     deletePermanently: 'Supprimer définitivement',
     restoreParentTitle: 'Restaurer le projet parent',
     permanentlyDeleteTitle: 'Supprimer définitivement {{object}}',
-    restoreParentWarning: 'Ce flux de travail appartient à un projet archivé. Restaurer le projet et tous ses flux de travail?',
-    permanentlyDeleteWarning: 'Ce {{object}} sera supprimé définitivement et ne pourra pas être récupéré.',
+    restoreParentWarning:
+      'Ce flux de travail appartient à un projet archivé. Restaurer le projet et tous ses flux de travail?',
+    permanentlyDeleteWarning:
+      'Ce {{object}} sera supprimé définitivement et ne pourra pas être récupéré.',
     deleteObject: 'Supprimer {{object}}',
     object: { project: 'projet', workflow: 'flux de travail' }
   },
@@ -104,6 +108,23 @@ const commonFr = {
     workflowArchived: 'Ce flux de travail a été archivé.',
     projectDenied: 'Vous n’avez pas accès à ce projet.',
     workflowDenied: 'Vous n’avez pas accès à ce flux de travail.'
+  },
+  editLock: {
+    currentlyEditing: '{{displayName}} modifie actuellement',
+    takeoverAction: 'Prendre le contrôle de la modification',
+    takeoverTitle: 'Prendre le contrôle de la modification?',
+    takeoverMessage:
+      '{{displayName}} modifie actuellement ce document. Prendre le contrôle déverrouillera le fichier pour vous et fera passer {{displayName}} en mode lecture seule.',
+    takenOver:
+      '{{displayName}} a pris le contrôle de la modification et vous êtes maintenant en mode lecture seule.',
+    unavailable:
+      'La modification est temporairement indisponible. Veuillez réessayer.',
+    projectConflict:
+      'Ce projet est actuellement modifié par {{displayName}}. Vos modifications n’ont pas été enregistrées.',
+    workflowConflict:
+      'Ce flux de travail est actuellement modifié par {{displayName}}. Vos modifications n’ont pas été enregistrées.',
+    expired:
+      'Votre verrou de modification a expiré. Vos modifications n’ont pas été enregistrées. Actualisez la page pour continuer.'
   },
   examples: {
     greeting: 'Bonjour, {{name}}',

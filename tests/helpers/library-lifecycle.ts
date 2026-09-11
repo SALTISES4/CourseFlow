@@ -1,6 +1,7 @@
 import { expect, type APIResponse, type Page } from '@playwright/test';
 
 import { authenticatedApiRequest } from './api';
+import { ensurePageWorkspaceEditLock } from './edit-lock';
 
 export type LibraryLifecycleFixture = {
   projectUuid: string;
@@ -47,6 +48,7 @@ async function createWorkflow(
   projectUuid: string,
   label: string,
 ): Promise<ResourceCreateResponse> {
+  await ensurePageWorkspaceEditLock(page, 'project', projectUuid);
   const response = await authenticatedApiRequest(page, 'POST', '/api/workflow', {
     data: {
       projectUuid,
@@ -60,6 +62,7 @@ async function createWorkflow(
 }
 
 async function archiveProject(page: Page, projectUuid: string): Promise<void> {
+  await ensurePageWorkspaceEditLock(page, 'project', projectUuid);
   const response = await authenticatedApiRequest(
     page,
     'POST',
@@ -69,6 +72,7 @@ async function archiveProject(page: Page, projectUuid: string): Promise<void> {
 }
 
 async function archiveWorkflow(page: Page, workflowUuid: string): Promise<void> {
+  await ensurePageWorkspaceEditLock(page, 'workflow', workflowUuid);
   const response = await authenticatedApiRequest(
     page,
     'POST',
@@ -120,6 +124,7 @@ export async function cleanupLibraryLifecycleFixture(
   page: Page,
   fixture: LibraryLifecycleFixture,
 ): Promise<void> {
+  await ensurePageWorkspaceEditLock(page, 'project', fixture.projectUuid);
   const archiveResponse = await authenticatedApiRequest(
     page,
     'POST',

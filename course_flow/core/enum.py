@@ -45,6 +45,13 @@ class LanguagePreference(StrEnum):
     FR = "fr-ca"
 
 
+class WorkspaceResourceType(StrEnum):
+    """Resource scopes that participate in the one-editor lease contract."""
+
+    PROJECT = "project"
+    WORKFLOW = "workflow"
+
+
 class ContextClassification(StrEnum):
     """Stable API/database values for activity and course-node context."""
 

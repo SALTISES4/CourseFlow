@@ -39,7 +39,7 @@ const projectFr = {
     description: 'Description',
     disciplines: 'Disciplines',
     contributors: 'Collaborateurs',
-    emptyValue: '—',
+    emptyValue: '-',
     publishConfirmation:
       'La publication de ce projet rendra tous les flux de travail associés visibles à tous les utilisateurs de CourseFlow. Êtes-vous prêt à partager ce contenu?'
   },

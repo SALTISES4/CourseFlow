@@ -21,9 +21,9 @@ from course_flow.core.models import (
     Graph,
     Node,
     Section,
-    Taskmeta,
     Workflow,
 )
+from course_flow.tests.edit_lock_helpers import acquire_workflow_edit_lock
 
 
 @pytest.fixture
@@ -144,6 +144,11 @@ def test_api_place_node_assigns_child_type(client: Client, user):
         **_auth_header(raw),
     )
     assert create.status_code == 200, create.content
+    acquire_workflow_edit_lock(
+        client,
+        _auth_header(raw),
+        create.json()["uuid"],
+    )
     graph_uuid = create.json()["graphUuid"]
     g = Graph.objects.select_related("workflow").get(uuid=graph_uuid)
     section = Section.objects.create(graph=g, title="S", position=0)

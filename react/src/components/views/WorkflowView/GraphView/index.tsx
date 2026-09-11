@@ -22,6 +22,7 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState
 } from 'react'
@@ -31,6 +32,7 @@ import { useResizeObserver } from 'usehooks-ts'
 import ColumnsHeader from './components/ColumnsHeader'
 import LineSVG from './components/LineSVG'
 import Section from './components/Section'
+import { createGraphLayoutSignature } from './layoutSignature'
 import { GraphViewWrap, SectionsWrapper } from './styles'
 import {
   CellReorderCallbackFn,
@@ -43,7 +45,7 @@ import {
 
 type StateType = {
   collapseAllForDrag: boolean
-  redrawLines: boolean
+  layoutRevision: number
 }
 
 const GraphView = ({
@@ -79,7 +81,7 @@ const GraphView = ({
 
   const [state, setState] = useState<StateType>({
     collapseAllForDrag: false,
-    redrawLines: false // just to trigger LineSVG to redraw on layout change
+    layoutRevision: 0
   })
 
   useEffect(() => {
@@ -90,12 +92,17 @@ const GraphView = ({
     }
   }, [dispatch, graphUuid])
 
-  // basically retrigger repaint when any width/height change happens
-  // to trigger section backgrounds to correctly recalculate their BCR
-  useResizeObserver({
-    ref: sectionsWrapperRef,
-    box: 'border-box'
-  })
+  const { width: sectionsWidth = 0, height: sectionsHeight = 0 } =
+    useResizeObserver({
+      ref: sectionsWrapperRef,
+      box: 'border-box'
+    })
+
+  const graphLayoutSignature = useMemo(
+    () => createGraphLayoutSignature(graphBoard),
+    [graphBoard]
+  )
+  const collapsedSectionSignature = JSON.stringify(collapsedSectionUuids)
 
   useEffect(() => {
     const el = sectionsWrapperRef.current
@@ -141,18 +148,23 @@ const GraphView = ({
     )
   }, [canManageParts, dispatch])
 
-  const triggerLineRerender = useCallback(() => {
-    setTimeout(() => {
-      setState(
-        produce((draft) => {
-          draft.redrawLines = !draft.redrawLines
-        })
-      )
-    }, 0) // schedule for next frame
-  }, [])
-
-  // just do the initial line rerender once DOM is ready
-  useLayoutEffect(() => triggerLineRerender(), [triggerLineRerender])
+  // Geometry is read from the DOM during render. Advance the revision from a
+  // layout effect so sections and edges render once more after React commits a
+  // canonical layout change. This remains correct when mutations resolve
+  // asynchronously and also covers wrapper resizes and collapsed sections.
+  useLayoutEffect(() => {
+    setState(
+      produce((draft) => {
+        draft.layoutRevision += 1
+      })
+    )
+  }, [
+    collapsedSectionSignature,
+    graphLayoutSignature,
+    sectionsHeight,
+    sectionsWidth,
+    state.collapseAllForDrag
+  ])
 
   const onColumnReorder: ColumnReorderCallbackFn = useCallback(
     (oldIndex: number, newIndex: number) => {
@@ -163,15 +175,8 @@ const GraphView = ({
       const [moved] = channelUuids.splice(oldIndex, 1)
       channelUuids.splice(newIndex, 0, moved)
       dispatch(reorderChannels({ graphUuid, channelUuids }))
-      triggerLineRerender()
     },
-    [
-      canManageCategories,
-      dispatch,
-      graphBoard.columns.ids,
-      graphUuid,
-      triggerLineRerender
-    ]
+    [canManageCategories, dispatch, graphBoard.columns.ids, graphUuid]
   )
 
   const onSectionCollapse = useCallback(
@@ -217,15 +222,8 @@ const GraphView = ({
       const [moved] = sectionUuids.splice(from, 1)
       sectionUuids.splice(to, 0, moved)
       dispatch(reorderSections({ graphUuid, sectionUuids }))
-      triggerLineRerender()
     },
-    [
-      canManageParts,
-      dispatch,
-      graphBoard.sections,
-      graphUuid,
-      triggerLineRerender
-    ]
+    [canManageParts, dispatch, graphBoard.sections, graphUuid]
   )
 
   const onNodeDrop: CellReorderCallbackFn = useCallback(
@@ -246,9 +244,8 @@ const GraphView = ({
           edge: payload.edge
         })
       )
-      triggerLineRerender()
     },
-    [canManageNodes, dispatch, graphUuid, nodeInsertMode, triggerLineRerender]
+    [canManageNodes, dispatch, graphUuid, nodeInsertMode]
   )
 
   return (
@@ -275,16 +272,12 @@ const GraphView = ({
             onSectionInsert={onSectionInsert}
             onSectionReorder={onSectionReorder}
             onNodeDrop={onNodeDrop}
-            memoBuster={[
-              state.collapseAllForDrag,
-              collapsedSectionUuids.length,
-              state.redrawLines
-            ]}
+            layoutRevision={state.layoutRevision}
           />
         ))}
         <LineSVG
           graphUuid={graphUuid}
-          rerender={state.redrawLines}
+          layoutRevision={state.layoutRevision}
           condensed={
             state.collapseAllForDrag
               ? graphBoard.sections.length

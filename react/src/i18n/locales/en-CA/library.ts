@@ -1,6 +1,6 @@
 const library = {
   sort: {
-    alphabetical: 'A – Z',
+    alphabetical: 'A - Z',
     dateCreated: 'Date created'
   },
   filters: {
@@ -12,7 +12,7 @@ const library = {
     type: 'Type',
     projects: 'Projects',
     workflows: 'Workflows',
-    workflowType: 'Workflow type',
+    workflowType: 'Workflow Type',
     activity: 'Activity',
     course: 'Course',
     program: 'Program',
@@ -27,7 +27,6 @@ const library = {
     none: 'No results found',
     notFound: 'The content you were looking for was not found.',
     loadFailed: 'The library could not be loaded.',
-    searchFailed: 'Search suggestions could not be loaded.',
     seeAll: '+ See all'
   },
   cards: {

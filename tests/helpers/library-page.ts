@@ -4,6 +4,7 @@ import { cardTitleText } from '../shared/locators/cards';
 import {
   archiveToggle,
   disciplineFilter,
+  expectNoKeywordSearchSuggestions,
   favouritesToggle,
   expectLibraryCardTitles,
   keywordSearchField,
@@ -89,11 +90,11 @@ export async function expectMyLibraryListingItemsAreInMembershipScope(page: Page
 
   const searchResponse = page.waitForResponse(isLibrarySearchResponse);
   await page.reload();
-  await expect(page).toHaveURL(/\/library\/?$/);
-  await waitForLibraryResultsLoaded(page);
-
   const response = await searchResponse;
   const body = (await response.json()) as LibrarySearchResponse;
+
+  await expect(page).toHaveURL(/\/library\/?$/);
+  await waitForLibraryResultsLoaded(page);
 
   for (const item of body.items) {
     const resourceRole = item.permissions.resourceRole;
@@ -176,12 +177,12 @@ export async function expectKeywordSearchNarrowsMyLibraryResults(
   const baselineCount = await libraryCards(page).count();
   expect(baselineCount).toBeGreaterThan(0);
 
+  await keywordSearchField(page).fill(keyword);
+  await expectNoKeywordSearchSuggestions(page);
+
   const filteredResponse = await triggerLibrarySearchAndWait(
     page,
-    async () => {
-      await keywordSearchField(page).fill(keyword);
-      await keywordSearchField(page).press('Enter');
-    },
+    () => keywordSearchField(page).press('Enter'),
     { filters: { keyword } },
   );
 

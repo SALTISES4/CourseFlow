@@ -1,3 +1,4 @@
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import { WorkflowTypeIn } from '@cf/api/gen'
 import {
   copyWorkflowMutation,
@@ -79,11 +80,7 @@ const CreateWizardDialog = () => {
   const routeProjectUuid = location.pathname.startsWith('/project/')
     ? routeUuid
     : routeWorkflow.data?.item.projectUuid
-  const localizedWorkflowType = workflowTypeLabel(
-    t,
-    state.workflowType,
-    true
-  )
+  const localizedWorkflowType = workflowTypeLabel(t, state.workflowType, true)
 
   const createWorkflow = useMutation({
     ...createWorkflowMutation(),
@@ -228,10 +225,12 @@ const CreateWizardDialog = () => {
 
   const onError = useCallback(
     (error: unknown) => {
-      enqueueSnackbar(
-        t('wizard.createFailed', { workflowType: localizedWorkflowType }),
-        { variant: 'error' }
-      )
+      if (!isApiErrorNotificationHandled(error)) {
+        enqueueSnackbar(
+          t('wizard.createFailed', { workflowType: localizedWorkflowType }),
+          { variant: 'error' }
+        )
+      }
       console.error('Error creating workflow:', error)
     },
     [localizedWorkflowType, t]
@@ -400,9 +399,7 @@ const CreateWizardDialog = () => {
             copyWorkflow.isPending
           }
         >
-          {state.step !== steps.length - 1
-            ? t('wizard.nextStep')
-            : ctaTitle}
+          {state.step !== steps.length - 1 ? t('wizard.nextStep') : ctaTitle}
         </Button>
       </>
     )

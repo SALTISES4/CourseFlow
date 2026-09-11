@@ -1,6 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 
 import { authenticatedApiRequest } from '../../helpers/api';
+import { ensurePageWorkspaceEditLock } from '../../helpers/edit-lock';
 import {
   workflowChannelHeader,
   workflowEditNodeForm,
@@ -94,6 +95,7 @@ export async function ensureFirstWorkflowNodeViaApi(
     );
   }
 
+  await ensurePageWorkspaceEditLock(page, 'workflow', workflowUuid);
   const createResponse = await authenticatedApiRequest(
     page,
     'POST',

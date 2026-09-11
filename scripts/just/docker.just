@@ -23,7 +23,7 @@ logs:
 
 [group: 'docker aliases']
 down:
-  {{ compose_cmd }} down
+  {{ compose_cmd }} {{ dev_profile }} down
 
 [group: 'docker aliases']
 restart:
@@ -31,4 +31,4 @@ restart:
 
 [group: 'docker aliases']
 reset:
-  {{ compose_cmd }} down -v
+  {{ compose_cmd }} {{ dev_profile }} down -v

@@ -38,16 +38,18 @@ const common = {
     notificationSettings: 'Notification settings',
     signOut: 'Sign out',
     addMenu: 'Add menu',
+    project: 'Project',
     accountMenu: 'Current user account'
   },
   favourites: {
-    added: 'Added to your favourites.',
-    removed: 'Removed from your favourites.',
+    added: 'Added to your favourites',
+    removed: 'Removed from your favourites',
     updateFailed: 'Favourite status could not be updated.'
   },
   cards: {
     ownedBy: 'Owned by {{name}}',
-    linkedWorkflowWarning: 'Linking the same workflow to multiple nodes can reduce readability when parent and child workflow outcomes are associated.',
+    linkedWorkflowWarning:
+      'Linking the same workflow to multiple nodes can reduce readability when parent and child workflow outcomes are associated.',
     alreadyInUse: 'Already in use'
   },
   lifecycle: {
@@ -59,8 +61,10 @@ const common = {
     deletePermanently: 'Delete permanently',
     restoreParentTitle: 'Restore parent project',
     permanentlyDeleteTitle: 'Permanently delete {{object}}',
-    restoreParentWarning: 'This workflow belongs to an archived project. Restore the project and all of its workflows?',
-    permanentlyDeleteWarning: 'This {{object}} will be permanently deleted and cannot be recovered.',
+    restoreParentWarning:
+      'This workflow belongs to an archived project. Restore the project and all of its workflows?',
+    permanentlyDeleteWarning:
+      'This {{object}} will be permanently deleted and cannot be recovered.',
     deleteObject: 'Delete {{object}}',
     object: { project: 'project', workflow: 'workflow' }
   },
@@ -101,6 +105,22 @@ const common = {
     workflowArchived: 'This workflow has been archived.',
     projectDenied: 'You do not have access to this project.',
     workflowDenied: 'You do not have access to this workflow.'
+  },
+  editLock: {
+    currentlyEditing: '{{displayName}} is currently editing',
+    takeoverAction: 'Take over editing',
+    takeoverTitle: 'Take over editing?',
+    takeoverMessage:
+      '{{displayName}} is currently editing this document. Taking over will unlock the file for you and switch {{displayName}} to read-only mode.',
+    takenOver:
+      '{{displayName}} took over editing and you are now in read-only mode.',
+    unavailable: 'Editing is temporarily unavailable. Please try again.',
+    projectConflict:
+      'This project is currently being edited by {{displayName}}. Your changes were not saved.',
+    workflowConflict:
+      'This workflow is currently being edited by {{displayName}}. Your changes were not saved.',
+    expired:
+      'Your edit lock has expired. Your changes were not saved. Refresh the page to continue editing.'
   },
   examples: {
     greeting: 'Hello, {{name}}',

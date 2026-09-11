@@ -11,7 +11,7 @@ import {
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { displaySystemTitle } from '@cf/i18n/systemTitles'
+import { displayEditableSystemTitle } from '@cf/i18n/systemTitles'
 import type { AppDispatch } from '@cf/redux/store'
 import * as SC from '@cfSidebar/styles'
 import { debounce } from '@mui/material'
@@ -54,7 +54,7 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
   const canEdit = useResourcePermission(WorkflowPermission.PART_MANAGEMENT)
   const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dialogDispatch } = useDialog()
-  const localizedTitle = displaySystemTitle(
+  const editableTitle = displayEditableSystemTitle(
     t,
     section,
     t('systemLabels.sectionNumber', { number: section.position + 1 })
@@ -68,7 +68,7 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
     formState: { errors, isDirty }
   } = useForm<SectionFormType>({
     defaultValues: {
-      title: localizedTitle
+      title: editableTitle
     }
   })
   const watchedFields = watch()
@@ -76,10 +76,10 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
   useEffect(() => {
     if (section && !isDirty) {
       reset({
-        title: localizedTitle
+        title: editableTitle
       })
     }
-  }, [reset, isDirty, localizedTitle])
+  }, [reset, isDirty, editableTitle, section])
 
   const debouncedDispatch = useMemo(
     () =>

@@ -19,7 +19,7 @@ import WorkflowLegend from '@cfViews/WorkflowView/GraphView/components/WorkflowL
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Tabs from '@mui/material/Tabs'
-import { useMemo } from 'react'
+import { type ReactNode, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { Routes, useParams } from 'react-router-dom'
 
@@ -33,10 +33,14 @@ const workflowChromeIsStrategy = false
 
 const WorkflowTabs = ({
   workflow,
-  publicView
+  publicView,
+  editLockControl,
+  editLockNotice
 }: {
   workflow: WorkflowPageData
   publicView: boolean
+  editLockControl?: ReactNode
+  editLockNotice?: ReactNode
 }) => {
   const { uuid } = useParams()
   const workflowViewType = useWorkflowViewTypeFromRoute()
@@ -70,8 +74,9 @@ const WorkflowTabs = ({
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  const ViewBar = () => (
+  const viewBar = (
     <Stack direction="row" spacing={2}>
+      {editLockControl}
       <JumpToMenu sectionIds={sectionIdsOrdered} />
       <ExpandCollapseMenu
         legend={<WorkflowLegend />}
@@ -87,8 +92,9 @@ const WorkflowTabs = ({
     <>
       <div className="main-block">
         {!publicView && (
-          <MenuBar leftSection={<ActionMenu />} viewbar={<ViewBar />} />
+          <MenuBar leftSection={<ActionMenu />} viewbar={viewBar} />
         )}
+        {editLockNotice}
         <div className="right-panel-wrapper">
           <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">

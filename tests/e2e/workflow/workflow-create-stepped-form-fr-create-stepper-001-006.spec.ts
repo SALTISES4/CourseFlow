@@ -47,6 +47,7 @@ import {
   waitForCreateWorkflowProjectSearchLoaded,
 } from '../../helpers/create-workflow';
 import { authenticatedApiRequest } from '../../helpers/api';
+import { ensurePageWorkspaceEditLock } from '../../helpers/edit-lock';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import {
   contributorByRole,
@@ -56,7 +57,12 @@ import {
 } from '../../helpers/manifest';
 import { globalMessageSnackbar } from '../../shared/locators/global';
 import { workflowSectionContainers, workflowTitle } from '../../shared/locators/workflow';
-import { cardByTitle, cardChipWithLabel, cardTitleText } from '../../shared/locators/cards';
+import {
+  cardByTitle,
+  cardChipWithLabel,
+  cardTitleText,
+  workflowTypeChipLabel,
+} from '../../shared/locators/cards';
 import { workflowNodes } from './workflow-graph.locators';
 
 test.use({
@@ -76,7 +82,9 @@ test.use({
  * Card content in dialog: tests/docs/requirements/features/global/card_content_requirements_v1.yaml (FR-CARD-002)
  * Auth: chromium storage state (teacher@courseflow.com) for owner/editor paths;
  * FR-WF-CREATE-STEPPER-002 uses empty storage + viewer login (no canCreateWorkflow destinations).
- * Suites are nested by workflow type so type-scoped titles/labels are asserted per fixture.
+ * Course owns the full shared wizard contract. Activity and program retain focused
+ * coverage for their type-scoped labels, blank-workflow defaults, and template filtering.
+ * Type-specific node fields and link eligibility are owned by edit-node-fr-001-007.spec.ts.
  */
 
 type CreateWorkflowEntry = {
@@ -87,7 +95,11 @@ type CreateWorkflowEntry = {
   step3TemplateDialogTitle: string;
 };
 
-const WORKFLOW_TYPES = ['activity', 'course', 'program'] as const satisfies readonly TemplateWorkflowType[];
+const FULL_COVERAGE_WORKFLOW_TYPE = 'course' as const satisfies TemplateWorkflowType;
+const VARIANT_WORKFLOW_TYPES = [
+  'activity',
+  'program',
+] as const satisfies readonly TemplateWorkflowType[];
 
 function buildCreateWorkflowEntry(workflowType: TemplateWorkflowType): CreateWorkflowEntry {
   const openDialogByType = {
@@ -160,11 +172,12 @@ async function openCreateWorkflowTemplateStep3(
 test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006', () => {
   const manifest = loadWorkflowManifest();
 
-  for (const workflowType of WORKFLOW_TYPES) {
+  {
+    const workflowType = FULL_COVERAGE_WORKFLOW_TYPE;
     const entry = buildCreateWorkflowEntry(workflowType);
     let destinationProjectTitle = '';
 
-    test.describe(workflowType, () => {
+    test.describe(`${workflowType} — full shared wizard contract`, () => {
       test.describe('FR-WF-CREATE-STEPPER-002: no eligible destination projects', () => {
         test.use({ storageState: { cookies: [], origins: [] } });
 
@@ -689,6 +702,79 @@ test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006',
     });
   }
 
+  for (const workflowType of VARIANT_WORKFLOW_TYPES) {
+    const entry = buildCreateWorkflowEntry(workflowType);
+
+    test.describe(`${workflowType} — type-specific create coverage`, () => {
+      test.use({ projectAccess: 'disposable' });
+
+      test.beforeEach(async ({ page }) => {
+        await gotoAuthenticatedShell(page, '/home');
+      });
+
+      test('uses type-scoped stepper, dialog, and blank-form labels', async ({
+        page,
+        project,
+      }) => {
+        await openCreateWorkflowDialogStep1(page, entry);
+        await expectCreateWorkflowStepperStepLabels(
+          page,
+          createWorkflowStepperLabels(entry.workflowType),
+        );
+        await selectCreateWorkflowDestinationProject(page, project.title);
+        await createWorkflowDialogNextStep(page).click();
+
+        await expect(createWorkflowDialogTitle(page)).toHaveText(entry.step2DialogTitle);
+        await expect(workflowCreationModeBlankOption(page, entry.workflowType)).toBeVisible();
+        await createWorkflowDialogNextStep(page).click();
+
+        await expect(createWorkflowDialogTitle(page)).toHaveText(entry.step3BlankDialogTitle);
+        await expectBlankWorkflowFormLayoutPerFrCreateStepper005(page, entry.workflowType);
+        await expect(createWorkflowSubmitButton(page, entry.workflowType)).toBeVisible();
+      });
+
+      test('creates the workflow type with its unique default channels', async ({
+        page,
+        project,
+      }) => {
+        await openCreateWorkflowDialogBlankStep3(page, project.title, entry);
+
+        await workflowTitleField(page).fill(`E2E ${entry.workflowType} variant ${Date.now()}`);
+        await createWorkflowSubmitButton(page, entry.workflowType).click();
+
+        await expect(createWorkflowDialog(page)).toBeHidden({ timeout: 15_000 });
+        await expect(page).toHaveURL(/\/workflow\/[0-9a-f-]+\/graph\/?$/);
+        await expectDefaultWorkflowChannelsInHeaderRow(page, entry.workflowType);
+      });
+
+      test('filters templates by workflow type and enables the type-scoped submit', async ({
+        page,
+        project,
+      }) => {
+        const templateFixture = getTemplateWorkflowFixture(manifest, entry.workflowType);
+        const dialog = await openCreateWorkflowTemplateStep3(page, entry, project.title);
+        const cards = createWorkflowDialogTemplateCards(page);
+
+        await expect(cards.first()).toBeVisible({ timeout: 15_000 });
+        const cardCount = await cards.count();
+        expect(cardCount).toBeGreaterThanOrEqual(1);
+        expect(cardCount).toBeLessThanOrEqual(4);
+        for (let index = 0; index < cardCount; index += 1) {
+          const card = cards.nth(index);
+          await expect(
+            cardChipWithLabel(card, workflowTypeChipLabel(entry.workflowType)),
+          ).toBeVisible();
+          await expect(cardChipWithLabel(card, 'Template')).toBeVisible();
+        }
+
+        const templateCard = cardByTitle(dialog, templateFixture.workflow_title);
+        await expect(templateCard).toBeVisible();
+        await templateCard.click();
+        await expect(createWorkflowSubmitButton(page, entry.workflowType)).toBeEnabled();
+      });
+    });
+  }
+
   test.describe('FR-WF-CREATE-STEPPER-005: real API failure feedback', () => {
     test.use({ projectAccess: 'disposable' });
 
@@ -701,6 +787,7 @@ test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006',
       await openCreateWorkflowDialogBlankStep3(page, project.title, entry);
       await workflowTitleField(page).fill(`E2E failed activity ${Date.now()}`);
 
+      await ensurePageWorkspaceEditLock(page, 'project', project.uuid);
       const archived = await authenticatedApiRequest(
         page,
         'POST',
@@ -729,6 +816,7 @@ test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006',
       const templateCard = cardByTitle(dialog, templateFixture.workflow_title);
       await templateCard.click();
 
+      await ensurePageWorkspaceEditLock(page, 'project', project.uuid);
       const archived = await authenticatedApiRequest(
         page,
         'POST',

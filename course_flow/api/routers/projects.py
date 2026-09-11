@@ -40,6 +40,7 @@ from course_flow.api.schemas.projects import (
     ProjectUpdateIn,
     ProjectWorkflowListItemOut,
 )
+from course_flow.api.workspace_edit_locks import workspace_mutation_lock
 from course_flow.application.dto import (
     ProjectDTO,
     ProjectTeamMemberDTO,
@@ -47,6 +48,9 @@ from course_flow.application.dto import (
 )
 from course_flow.application.services.authorization_service import (
     AuthorizationDenied,
+)
+from course_flow.application.services.workspace_edit_lock_service import (
+    WorkspaceReferenceType,
 )
 from course_flow.core.enum import WorkflowType
 from course_flow.core.models import (
@@ -208,6 +212,7 @@ def list_project_tags(request, uuid: UUID):
     auth=BearerAuth(),
     operation_id="createProjectTag",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.PROJECT)
 def create_project_tag(request, uuid: UUID, payload: ProjectTagCreateIn):
     current_user = get_current_user(request)
     dto = get_project_service().get_by_uuid(uuid)
@@ -229,6 +234,7 @@ def create_project_tag(request, uuid: UUID, payload: ProjectTagCreateIn):
     auth=BearerAuth(),
     operation_id="updateProjectTag",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.PROJECT)
 def update_project_tag(request, uuid: UUID, tag_id: int, payload: ProjectTagPatchIn):
     current_user = get_current_user(request)
     dto = get_project_service().get_by_uuid(uuid)
@@ -250,6 +256,7 @@ def update_project_tag(request, uuid: UUID, tag_id: int, payload: ProjectTagPatc
     auth=BearerAuth(),
     operation_id="deleteProjectTag",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.PROJECT)
 def delete_project_tag(request, uuid: UUID, tag_id: int):
     current_user = get_current_user(request)
     dto = get_project_service().get_by_uuid(uuid)
@@ -381,6 +388,7 @@ def list_project_team(request, uuid: UUID):
     auth=BearerAuth(),
     operation_id="addProjectTeamMembers",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.PROJECT)
 def add_project_team_members(request, uuid: UUID, payload: ProjectTeamMemberAddIn):
     current_user = get_current_user(request)
     svc = get_project_service()
@@ -410,6 +418,7 @@ def add_project_team_members(request, uuid: UUID, payload: ProjectTeamMemberAddI
     auth=BearerAuth(),
     operation_id="updateProjectTeamMember",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.PROJECT)
 def update_project_team_member(
     request, uuid: UUID, membership_id: int, payload: ProjectTeamMemberRolePatchIn
 ):
@@ -436,6 +445,7 @@ def update_project_team_member(
     auth=BearerAuth(),
     operation_id="deleteProjectTeamMember",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.PROJECT)
 def delete_project_team_member(request, uuid: UUID, membership_id: int):
     current_user = get_current_user(request)
     svc = get_project_service()
@@ -479,6 +489,7 @@ def get_project(request, uuid: UUID):
     auth=BearerAuth(),
     operation_id="updateProject",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.PROJECT)
 def update_project(request, uuid: UUID, payload: ProjectUpdateIn):
     current_user = get_current_user(request)
     svc = get_project_service()
@@ -518,6 +529,7 @@ def update_project(request, uuid: UUID, payload: ProjectUpdateIn):
     auth=BearerAuth(),
     operation_id="archiveProject",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.PROJECT)
 def archive_project(request, uuid: UUID):
     current_user = get_current_user(request)
     try:

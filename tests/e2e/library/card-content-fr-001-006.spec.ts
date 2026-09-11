@@ -40,6 +40,7 @@ import {
   libraryCardByTitle,
   libraryProjectCardByTitle,
   libraryWorkflowCardByTitle,
+  libraryWorkflowCardByUuid,
   projectCardDeletePermanentlyButton,
   projectCardRestoreButton,
   selectFilterOption,
@@ -265,7 +266,7 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
       await showLibraryWorkflowCards(page);
 
       const workflowTypeLabel = workflowTypeChipLabel(workflow.workflow_type);
-      const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
+      const card = libraryWorkflowCardByUuid(page, workflow.workflow_uuid);
       await expect(card).toBeVisible();
       await expect(cardHeaderRegion(card)).toBeVisible();
       await expect(cardFooterRegion(card)).toBeVisible();
@@ -299,7 +300,7 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
     test('clicking workflow card navigates to workflow graph view', async ({ page }) => {
       await showLibraryWorkflowCards(page);
 
-      const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
+      const card = libraryWorkflowCardByUuid(page, workflow.workflow_uuid);
       await expect(card).toBeVisible();
       await cardTitleText(card).click();
       await expect(page).toHaveURL(new RegExp(`${workflow.workflow_path.replace(/\//g, '\\/')}/?$`));
@@ -330,7 +331,7 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
         );
         expect(workflowItem?.isFavorite).toBe(false);
 
-        const card = libraryWorkflowCardByTitle(page, courseWorkflowTitle);
+        const card = libraryWorkflowCardByUuid(page, courseWorkflow.workflow_uuid);
         await expect(card).toBeVisible();
         await expectCardFavouriteToggleShowsNotFavourited(card);
       });
@@ -349,7 +350,7 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
       test('workflow card shows yellow star when favourited', async ({ page }) => {
         await showLibraryWorkflowCards(page);
 
-        const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
+        const card = libraryWorkflowCardByUuid(page, workflow.workflow_uuid);
         await expect(card).toBeVisible();
         await withRestoredFavouriteState(page, primaryWorkflow, async () => {
           await ensureCardFavourited(page, card);
@@ -376,7 +377,7 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
     test('workflow card favourite toggle does not change route', async ({ page }) => {
       await showLibraryWorkflowCards(page);
 
-      const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
+      const card = libraryWorkflowCardByUuid(page, workflow.workflow_uuid);
       await expect(card).toBeVisible();
       await withRestoredFavouriteState(page, primaryWorkflow, async () => {
         await expectCardFavouriteToggleRoundTrip(page, card);
@@ -404,7 +405,7 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
     test('workflow card favourite toggle shows Added to your favourites', async ({ page }) => {
       await showLibraryWorkflowCards(page);
 
-      const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
+      const card = libraryWorkflowCardByUuid(page, workflow.workflow_uuid);
       await expect(card).toBeVisible();
       await withRestoredFavouriteState(page, primaryWorkflow, async () => {
         await ensureCardNotFavourited(page, card);
@@ -416,7 +417,7 @@ test.describe('My library — card content (FR-CARD-001–006)', () => {
     test('workflow card favourite toggle shows Removed from your favourites', async ({ page }) => {
       await showLibraryWorkflowCards(page);
 
-      const card = libraryWorkflowCardByTitle(page, E2E_FIXTURE_WORKFLOW_TITLE);
+      const card = libraryWorkflowCardByUuid(page, workflow.workflow_uuid);
       await expect(card).toBeVisible();
       await withRestoredFavouriteState(page, primaryWorkflow, async () => {
         await ensureCardFavourited(page, card);

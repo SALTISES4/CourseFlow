@@ -49,19 +49,19 @@ const workflow = {
   },
   messages: {
     metadataSaveFailed: 'Workflow metadata could not be saved.',
-    publicLinkEnabled: 'Public link enabled.',
-    publicLinkRemoved: 'Public link removed.',
+    publicLinkEnabled: 'Public link enabled',
+    publicLinkRemoved: 'Public link removed',
     publicLinkUpdateFailed: 'Public link could not be updated.',
-    publicLinkCopied: 'Public link copied.',
+    publicLinkCopied: 'Public link copied',
     publicLinkCopyFailed: 'Public link could not be copied.',
-    roleUpdated: 'The contributor’s role was updated.',
-    roleUpdateFailed: 'The contributor’s role could not be updated.',
-    commentDeleted: 'Your comment was deleted.',
-    commentDeleteFailed: 'Your comment could not be deleted.',
-    copied: 'The {{workflowType}} was copied.',
-    copyFailed: 'The {{workflowType}} could not be copied.',
-    updated: 'Your {{workflowType}} was updated.',
-    updateFailed: 'Your {{workflowType}} could not be updated.'
+    roleUpdated: "The contributor's role was successfully updated",
+    roleUpdateFailed: "We encountered an issue and the contributor's role was not updated",
+    commentDeleted: 'Your comment has been successfully deleted',
+    commentDeleteFailed: 'We encountered an issue and your comment was not deleted',
+    copied: 'The {{workflowType}} has been successfully copied',
+    copyFailed: 'We encountered an issue and your {{workflowType}} was not copied',
+    updated: 'Your {{workflowType}} has been successfully updated',
+    updateFailed: 'We encountered an issue and your {{workflowType}} was not updated'
   },
   permissions: {
     owner: 'Owner',
@@ -100,6 +100,7 @@ const workflow = {
     unavailable: 'Comments are not available for this item yet.',
     loading: 'Loading comments',
     loadFailed: 'Comments could not be loaded.',
+    justNow: 'just now',
     addPlaceholder: 'Add a comment',
     add: 'Add comment'
   },
@@ -135,8 +136,8 @@ const workflow = {
     create: 'Create {{workflowType}}',
     createFromTemplate: 'Create {{workflowType}} from a template',
     createBlank: 'Create blank {{workflowType}}',
-    created: 'Your {{workflowType}} has been successfully created.',
-    createFailed: 'We encountered an issue and your {{workflowType}} was not created.',
+    created: 'Your {{workflowType}} has been successfully created',
+    createFailed: 'We encountered an issue and your {{workflowType}} was not created',
     previousStep: 'Previous step',
     nextStep: 'Next step',
     blank: 'Blank {{workflowType}}',
@@ -159,7 +160,7 @@ const workflow = {
     title: 'Add to workflow',
     insertMode: 'Insert mode',
     insertModeHelp:
-      'Row mode forces nodes into a vertical sequence. Column mode allows multiple nodes side by side. Manual mode prompts you to choose a layout for each new node.',
+      'Row mode forces nodes into a vertical sequence. Column mode allows multiple nodes side-by-side. Manual mode prompts you to choose a layout style for every new node.',
     manual: 'Manual',
     row: 'Row',
     column: 'Column',
@@ -175,6 +176,7 @@ const workflow = {
     titleRequired: 'Title is required',
     description: 'Description',
     context: 'Context',
+    task: 'Task',
     type: 'Type',
     time: 'Time',
     credits: 'Credits',
@@ -257,7 +259,7 @@ const workflow = {
     loadFailed: 'Projects could not be loaded.',
     noEligibleTitle: 'You are not an owner or editor of any projects',
     noEligibleDescription:
-      'All programs, courses, and activities belong to projects. Create a project or ask a project owner to add you as an editor before creating a workflow.',
+      'All workflows, whether they are programs, courses, or activities, exist within projects. You must always start by creating a project before proceeding to create any type of workflow. Currently you are not the owner and have not been added as an editor of any project.',
     placeholder: 'Search in projects…',
     noResults: 'No results found'
   },
@@ -297,7 +299,7 @@ const workflow = {
   deleteNodeCategory: {
     title: 'You are about to delete a node category',
     warning:
-      'Deleting this node category will also delete every associated node. Are you sure you want to proceed?',
+      'By deleting this node category, you will delete all associated nodes. Are you sure you want to proceed?',
     submit: 'Delete node category'
   }
 } as const

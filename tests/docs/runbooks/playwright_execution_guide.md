@@ -280,6 +280,23 @@ CircleCI keeps backend quality checks and browser tests in separate jobs:
 - The authentication setup project runs once on every shard before that shard's
   Chromium tests.
 
+### Workflow-type coverage policy
+
+Do not multiply a shared workflow behavior across activity, course, and program unless
+the requirement or implementation has a type-dependent branch. For the create wizard:
+
+- course owns the complete shared stepper, search, validation, navigation, and failure
+  contract;
+- activity and program each retain focused coverage for type-scoped labels, blank-create
+  default channels, template filtering, and type-scoped template selection;
+- type-specific node fields and link eligibility remain in
+  `e2e/workflow/edit-node-fr-001-007.spec.ts`: activity nodes cannot link, course nodes
+  link only to activities, and program nodes link only to courses.
+
+When a new workflow type is added, first add its unique field, label, default, template,
+and link-capability assertions. Add the complete shared suite only when the new type uses
+a genuinely different wizard implementation path.
+
 CI permits one retry, stops a shard after 10 failures, and applies a 60-minute
 Playwright global timeout. These limits keep deployment fail-closed while preventing a
 deterministically broken suite from consuming an unbounded job.

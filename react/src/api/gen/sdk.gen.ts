@@ -3,6 +3,8 @@
 import type { Client, Options as Options2, TDataShape } from './client'
 import { client } from './client.gen'
 import type {
+  AcquireWorkspaceEditLockData,
+  AcquireWorkspaceEditLockResponses,
   AddProjectTeamMembersData,
   AddProjectTeamMembersResponses,
   ArchiveProjectData,
@@ -13,6 +15,8 @@ import type {
   CopyWorkflowResponses,
   CourseFlowApiNinjaAppHealthData,
   CourseFlowApiNinjaAppHealthResponses,
+  CourseFlowApiNinjaAppReadyData,
+  CourseFlowApiNinjaAppReadyResponses,
   CreateChannelData,
   CreateChannelResponses,
   CreateGraphEdgeData,
@@ -91,6 +95,8 @@ import type {
   GetSectionResponses,
   GetWorkflowData,
   GetWorkflowResponses,
+  GetWorkspaceEditLockData,
+  GetWorkspaceEditLockResponses,
   InsertGraphChannelBelowData,
   InsertGraphChannelBelowResponses,
   InsertGraphNodeBelowData,
@@ -153,6 +159,8 @@ import type {
   PatchOutcomeResponses,
   PlaceGraphNodeData,
   PlaceGraphNodeResponses,
+  RefreshWorkspaceEditLockData,
+  RefreshWorkspaceEditLockResponses,
   RegisterData,
   RegisterResponses,
   ReorderGraphChannelsData,
@@ -165,6 +173,8 @@ import type {
   RestoreWorkflowResponses,
   SearchLibraryData,
   SearchLibraryResponses,
+  TakeoverWorkspaceEditLockData,
+  TakeoverWorkspaceEditLockResponses,
   UnlinkNodeOutcomeData,
   UnlinkNodeOutcomeResponses,
   UpdateChannelData,
@@ -185,6 +195,8 @@ import type {
   UpdateWorkflowResponses
 } from './types.gen'
 import {
+  zAcquireWorkspaceEditLockData,
+  zAcquireWorkspaceEditLockResponse,
   zAddProjectTeamMembersData,
   zAddProjectTeamMembersResponse,
   zArchiveProjectData,
@@ -195,6 +207,8 @@ import {
   zCopyWorkflowResponse,
   zCourseFlowApiNinjaAppHealthData,
   zCourseFlowApiNinjaAppHealthResponse,
+  zCourseFlowApiNinjaAppReadyData,
+  zCourseFlowApiNinjaAppReadyResponse,
   zCreateChannelData,
   zCreateChannelResponse,
   zCreateGraphEdgeData,
@@ -273,6 +287,8 @@ import {
   zGetSectionResponse,
   zGetWorkflowData,
   zGetWorkflowResponse,
+  zGetWorkspaceEditLockData,
+  zGetWorkspaceEditLockResponse,
   zInsertGraphChannelBelowData,
   zInsertGraphChannelBelowResponse,
   zInsertGraphNodeBelowData,
@@ -335,6 +351,8 @@ import {
   zPatchOutcomeResponse,
   zPlaceGraphNodeData,
   zPlaceGraphNodeResponse,
+  zRefreshWorkspaceEditLockData,
+  zRefreshWorkspaceEditLockResponse,
   zRegisterData,
   zRegisterResponse,
   zReorderGraphChannelsData,
@@ -347,6 +365,8 @@ import {
   zRestoreWorkflowResponse,
   zSearchLibraryData,
   zSearchLibraryResponse,
+  zTakeoverWorkspaceEditLockData,
+  zTakeoverWorkspaceEditLockResponse,
   zUnlinkNodeOutcomeData,
   zUnlinkNodeOutcomeResponse,
   zUpdateChannelData,
@@ -402,6 +422,27 @@ export const courseFlowApiNinjaAppHealth = <
     responseValidator: async (data) =>
       await zCourseFlowApiNinjaAppHealthResponse.parseAsync(data),
     url: '/api/health',
+    ...options
+  })
+
+/**
+ * Readiness check
+ */
+export const courseFlowApiNinjaAppReady = <
+  ThrowOnError extends boolean = false
+>(
+  options?: Options<CourseFlowApiNinjaAppReadyData, ThrowOnError>
+) =>
+  (options?.client ?? client).get<
+    CourseFlowApiNinjaAppReadyResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zCourseFlowApiNinjaAppReadyData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zCourseFlowApiNinjaAppReadyResponse.parseAsync(data),
+    url: '/api/ready',
     ...options
   })
 
@@ -2239,4 +2280,88 @@ export const getReferenceData = <ThrowOnError extends boolean = false>(
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/reference-data',
     ...options
+  })
+
+/**
+ * Acquire Workspace Edit Lock
+ */
+export const acquireWorkspaceEditLock = <ThrowOnError extends boolean = false>(
+  options: Options<AcquireWorkspaceEditLockData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    AcquireWorkspaceEditLockResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zAcquireWorkspaceEditLockData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zAcquireWorkspaceEditLockResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workspace-lock/{resource_type}/{resource_uuid}/acquire',
+    ...options
+  })
+
+/**
+ * Get Workspace Edit Lock
+ */
+export const getWorkspaceEditLock = <ThrowOnError extends boolean = false>(
+  options: Options<GetWorkspaceEditLockData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    GetWorkspaceEditLockResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zGetWorkspaceEditLockData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zGetWorkspaceEditLockResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workspace-lock/{resource_type}/{resource_uuid}',
+    ...options
+  })
+
+/**
+ * Refresh Workspace Edit Lock
+ */
+export const refreshWorkspaceEditLock = <ThrowOnError extends boolean = false>(
+  options: Options<RefreshWorkspaceEditLockData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    RefreshWorkspaceEditLockResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zRefreshWorkspaceEditLockData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zRefreshWorkspaceEditLockResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workspace-lock/{resource_type}/{resource_uuid}/refresh',
+    ...options
+  })
+
+/**
+ * Takeover Workspace Edit Lock
+ */
+export const takeoverWorkspaceEditLock = <ThrowOnError extends boolean = false>(
+  options: Options<TakeoverWorkspaceEditLockData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    TakeoverWorkspaceEditLockResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zTakeoverWorkspaceEditLockData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zTakeoverWorkspaceEditLockResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/workspace-lock/{resource_type}/{resource_uuid}/takeover',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
   })

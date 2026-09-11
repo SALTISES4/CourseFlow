@@ -1,5 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import { authenticatedApiRequest } from '../../helpers/api';
+import { ensurePageWorkspaceEditLock } from '../../helpers/edit-lock';
 import { workflowOutcomesPath } from '../../helpers/workflow-navigation';
 import {
   workflowRightSidebarOutcomesTab,
@@ -40,6 +41,7 @@ export async function createProjectTagViaApi(
   projectUuid: string,
   label: string,
 ): Promise<{ id: number; label: string }> {
+  await ensurePageWorkspaceEditLock(page, 'project', projectUuid);
   const response = await authenticatedApiRequest(page, 'POST', `/api/project/${projectUuid}/tags`, {
     data: { label },
   });

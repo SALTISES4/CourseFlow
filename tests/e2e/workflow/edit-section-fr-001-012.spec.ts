@@ -9,6 +9,7 @@ import {
   beginSectionDragToward,
   dragSectionBelow,
   endSectionDrag,
+  expectSectionBackgroundAligned,
   expectSectionNumberLabelsMatchOrder,
   expectClearingSectionTitleShowsNumberLabelOnly,
   expectSectionTitleChangePersistsAfterReload,
@@ -43,6 +44,7 @@ import {
   viewSettingsButton,
   EDIT_SECTION_HEADING,
 } from './edit-section.locators';
+import { expectWorkflowEdgeEndpointsAttached } from './edge.helpers';
 import { fetchGraphView, type GraphViewPayload } from './workflow-graph.helpers';
 import { workflowEditNodeForm } from './workflow-graph.locators';
 
@@ -481,8 +483,18 @@ test.describe('edit-section-fr-001-012', () => {
       const orderBefore = await sectionOrderUuids(page);
       const nodesInFirst = await sectionNodeUuids(page, first.uuid);
       const graphBefore = await fetchGraphView(page, workflow.workflowUuid);
+      const firstNodeUuids = new Set(nodesInFirst);
+      const incidentEdge = graphBefore.edges.find(
+        (edge) =>
+          firstNodeUuids.has(edge.sourceNodeUuid) ||
+          firstNodeUuids.has(edge.targetNodeUuid),
+      );
 
       expect(orderBefore[0]).toBe(first.uuid);
+      expect(
+        incidentEdge,
+        'The first section must have an incident edge for geometry coverage',
+      ).toBeDefined();
 
       try {
         await dragSectionBelow(page, first.uuid, blank.uuid);
@@ -492,6 +504,9 @@ test.describe('edit-section-fr-001-012', () => {
         const orderAfter = await sectionOrderUuids(page);
         expect(orderAfter.indexOf(first.uuid)).toBeGreaterThan(orderAfter.indexOf(blank.uuid));
         await expectSectionNumberLabelsMatchOrder(page, orderAfter);
+        await expectSectionBackgroundAligned(page, first.uuid);
+        await expectSectionBackgroundAligned(page, blank.uuid);
+        await expectWorkflowEdgeEndpointsAttached(page, incidentEdge!);
         expect(await sectionNodeUuids(page, first.uuid)).toEqual(nodesInFirst);
 
         await expect

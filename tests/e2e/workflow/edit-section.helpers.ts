@@ -57,6 +57,37 @@ export async function expectSectionNumberLabelsMatchOrder(
   }
 }
 
+/** Assert that the absolutely positioned section background follows its section. */
+export async function expectSectionBackgroundAligned(
+  page: Page,
+  sectionUuid: string,
+): Promise<void> {
+  const section = sectionContainer(page, sectionUuid);
+
+  await expect
+    .poll(() =>
+      section.evaluate((element) => {
+        const background = element.nextElementSibling;
+        if (!(background instanceof HTMLElement)) {
+          return Number.POSITIVE_INFINITY;
+        }
+
+        const sectionRect = element.getBoundingClientRect();
+        const backgroundRect = background.getBoundingClientRect();
+        return Math.max(
+          Math.abs(sectionRect.top - backgroundRect.top),
+          Math.abs(sectionRect.left - backgroundRect.left),
+          Math.abs(sectionRect.width - backgroundRect.width),
+          Math.abs(sectionRect.height - backgroundRect.height),
+        );
+      }),
+    {
+      message: `section ${sectionUuid} background should follow its section`,
+      timeout: 5_000,
+    })
+    .toBeLessThan(1);
+}
+
 type SectionFixture = {
   sectionByTitle: (title: string) => {
     uuid: string;
