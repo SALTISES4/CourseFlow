@@ -20,6 +20,7 @@ import {
   workflowMetadataSwitchCalculateTimeAutomatically,
   workflowOverviewView,
   workflowOwnerRoleControl,
+  WORKFLOW_OVERVIEW_FORBIDDEN_METADATA_LABELS,
 } from '../e2e/workflow/workflow-overview.locators';
 import {
   contributorRoleDropdown,
@@ -45,6 +46,20 @@ export async function expectOverviewDurationFieldDisplaysHours(
 }
 
 /**
+ * FR-WF-OV-001 — workflow overview must not show project-only metadata blocks
+ * (Disciplines, Created on).
+ */
+export async function expectWorkflowOverviewForbiddenMetadataAbsentPerFrWfOv001(
+  page: Page,
+): Promise<void> {
+  for (const forbiddenLabel of WORKFLOW_OVERVIEW_FORBIDDEN_METADATA_LABELS) {
+    await expect(
+      workflowOverviewView(page).getByText(forbiddenLabel, { exact: true }),
+    ).toHaveCount(0);
+  }
+}
+
+/**
  * FR-WF-OV-002 — Description is display-only on Overview (not an in-place textbox).
  */
 async function expectDescriptionDisplayOnlyPerFrWfOv002(page: Page): Promise<void> {
@@ -62,6 +77,7 @@ export async function expectActivityOverviewMetadataCompositionPerFrWfOv001(
   page: Page,
 ): Promise<void> {
   await expect(workflowOverviewView(page)).toBeVisible();
+  await expectWorkflowOverviewForbiddenMetadataAbsentPerFrWfOv001(page);
 
   await expectDescriptionDisplayOnlyPerFrWfOv002(page);
   await expect(workflowMetadataSwitchCalculateTimeAutomatically(page)).toBeVisible();
@@ -89,6 +105,7 @@ export async function expectCourseOverviewMetadataCompositionPerFrWfOv001(
   page: Page,
 ): Promise<void> {
   await expect(workflowOverviewView(page)).toBeVisible();
+  await expectWorkflowOverviewForbiddenMetadataAbsentPerFrWfOv001(page);
 
   await expectDescriptionDisplayOnlyPerFrWfOv002(page);
   await expect(workflowMetadataFieldCode(page)).toBeVisible();
@@ -116,6 +133,7 @@ export async function expectProgramOverviewMetadataCompositionPerFrWfOv001(
   page: Page,
 ): Promise<void> {
   await expect(workflowOverviewView(page)).toBeVisible();
+  await expectWorkflowOverviewForbiddenMetadataAbsentPerFrWfOv001(page);
 
   await expectDescriptionDisplayOnlyPerFrWfOv002(page);
   await expect(workflowMetadataFieldCode(page)).toBeVisible();

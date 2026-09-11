@@ -4,6 +4,7 @@ import { getNavigationLinkedWorkflows } from '../../helpers/main-navigation-work
 import { workflowOverviewPath } from '../../helpers/workflow-navigation';
 import {
   expectActivityOverviewMetadataCompositionPerFrWfOv001,
+  expectWorkflowOverviewForbiddenMetadataAbsentPerFrWfOv001,
   expectClassificationEditableWhenAutoCalculateOffPerFrWfOv006,
   expectClassificationReadOnlyWhenAutoCalculateOnPerFrWfOv006,
   expectCourseCreditsEditablePerFrWfOv005,
@@ -36,9 +37,7 @@ import {
 } from './workflow.locators';
 import { openWorkflowOverview, setWorkflowOverviewSwitch } from './workflow-overview.helpers';
 import {
-  workflowMetadataDisciplinesBlock,
   workflowMetadataFieldCode,
-  workflowMetadataFieldCreatedOn,
   workflowMetadataFieldCredits,
   workflowMetadataFieldDescription,
   workflowMetadataFieldGeneralTime,
@@ -48,7 +47,6 @@ import {
   workflowMetadataFieldTheoryTime,
   workflowMetadataFieldTime,
   workflowMetadataPermissionsPanel,
-  workflowMetadataSection,
   workflowMetadataSwitchCalculateClassificationAutomatically,
   workflowMetadataSwitchCalculateCreditsAutomatically,
   workflowMetadataSwitchCalculatePonderationAutomatically,
@@ -79,30 +77,17 @@ test.describe('workflow-overview-fr-001-007', () => {
       await openWorkflowOverview(page, workflow.path);
     });
 
-    test('FR-WF-OV-001: Overview route renders workflowOverviewView with metadata blocks', async ({
+    test('FR-WF-OV-001: Overview route renders workflowOverviewView without project-only metadata', async ({
       page,
     }) => {
       await expect(workflowTitle(page)).toBeVisible();
       await expect(workflowOverviewTab(page)).toHaveAttribute('aria-selected', 'true');
-      await expect(workflowMetadataDisciplinesBlock(page)).toBeVisible();
-      await expect(workflowMetadataFieldCreatedOn(page)).toBeVisible();
+      await expect(workflowOverviewView(page)).toBeVisible();
+      await expectWorkflowOverviewForbiddenMetadataAbsentPerFrWfOv001(page);
     });
 
     test('FR-WF-OV-001: activity workflow renders its required fields only', async ({ page }) => {
-      await expect(workflowMetadataSection(page)).toBeVisible();
-      await expect(workflowMetadataSwitchCalculateTimeAutomatically(page)).toBeVisible();
-      await expect(workflowMetadataFieldTime(page)).toBeVisible();
-      await expect(workflowMetadataPermissionsPanel(page)).toBeVisible();
-      await expect(workflowMetadataFieldCode(page)).toHaveCount(0);
-      await expect(workflowMetadataSwitchCalculatePonderationAutomatically(page)).toHaveCount(0);
-      await expect(workflowMetadataFieldTheoryTime(page)).toHaveCount(0);
-      await expect(workflowMetadataFieldPracticalTime(page)).toHaveCount(0);
-      await expect(workflowMetadataFieldIndividualTime(page)).toHaveCount(0);
-      await expect(workflowMetadataFieldCredits(page)).toHaveCount(0);
-      await expect(workflowMetadataSwitchCalculateCreditsAutomatically(page)).toHaveCount(0);
-      await expect(workflowMetadataSwitchCalculateClassificationAutomatically(page)).toHaveCount(0);
-      await expect(workflowMetadataFieldGeneralTime(page)).toHaveCount(0);
-      await expect(workflowMetadataFieldSpecificTime(page)).toHaveCount(0);
+      await expectActivityOverviewMetadataCompositionPerFrWfOv001(page);
     });
 
     test('FR-WF-OV-001: Overview route does not render workflowRightSidebar', async ({ page }) => {
@@ -118,8 +103,7 @@ test.describe('workflow-overview-fr-001-007', () => {
 
       await workflowOverviewTab(page).click();
       await expect(page).toHaveURL(new RegExp(`${workflowOverviewPath(workflow.path)}/?$`));
-      await expect(workflowMetadataDisciplinesBlock(page)).toBeVisible();
-      await expect(workflowMetadataFieldCreatedOn(page)).toBeVisible();
+      await expectActivityOverviewMetadataCompositionPerFrWfOv001(page);
     });
 
     test('FR-WF-OV-001: course workflow renders course fields without program-only switches', async ({
@@ -144,14 +128,6 @@ test.describe('workflow-overview-fr-001-007', () => {
   test.describe('description metadata (FR-WF-OV-002)', () => {
     test.beforeEach(async ({ page, workflow }) => {
       await openWorkflowOverview(page, workflow.path);
-    });
-
-    test('FR-WF-OV-002: disciplines block shows label and value or empty copy', async ({ page }) => {
-      const block = workflowMetadataDisciplinesBlock(page);
-      await expect(block).toBeVisible();
-      const text = await block.innerText();
-      expect(text).toMatch(/Disciplines/);
-      expect(text.length).toBeGreaterThan('Disciplines'.length);
     });
 
     test('FR-WF-OV-002: workflowMetadataFieldDescription is read-only when rendered', async ({

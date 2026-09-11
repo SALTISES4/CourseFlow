@@ -22,15 +22,11 @@ export function workflowMetadataFieldDescription(page: Page): Locator {
     .locator('xpath=following-sibling::*[1]');
 }
 
-/** Disciplines info block on workflowOverviewView. */
-export function workflowMetadataDisciplinesBlock(page: Page): Locator {
-  return workflowOverviewView(page).getByText('Disciplines', { exact: true }).locator('..');
-}
-
-/** Created on info block on workflowOverviewView. */
-export function workflowMetadataFieldCreatedOn(page: Page): Locator {
-  return workflowOverviewView(page).getByText('Created on', { exact: true }).locator('..');
-}
+/**
+ * Project-overview metadata labels that must not appear on workflowOverviewView
+ * (FR-WF-OV-001 — Disciplines belong on project overview per FR-PROJ-OV-001).
+ */
+export const WORKFLOW_OVERVIEW_FORBIDDEN_METADATA_LABELS = ['Disciplines', 'Created on'] as const;
 
 /** canonical: workflowMetadataFieldCode — label 'Code' */
 export function workflowMetadataFieldCode(page: Page): Locator {
