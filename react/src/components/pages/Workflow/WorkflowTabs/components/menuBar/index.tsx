@@ -109,18 +109,18 @@ const ActionMenu = () => {
     //   separator: true
     // },
     {
+      uuid: 'copy-to-project',
+      content: t('menu.copy', { workflowType: localizedWorkflowType }),
+      action: copyToProject,
+      show: !isArchived && hasPermission(permissions, WorkflowPermission.COPY)
+    },
+    {
       uuid: 'archive-workflow',
       action: archiveWorkflow,
       content: t('menu.archive', { workflowType: localizedWorkflowType }),
       show:
         !isArchived && hasPermission(permissions, WorkflowPermission.ARCHIVE),
       separator: 'top'
-    },
-    {
-      uuid: 'copy-to-project',
-      content: t('menu.copy', { workflowType: localizedWorkflowType }),
-      action: copyToProject,
-      show: !isArchived && hasPermission(permissions, WorkflowPermission.COPY)
     },
     {
       uuid: 'restore-workflow',
