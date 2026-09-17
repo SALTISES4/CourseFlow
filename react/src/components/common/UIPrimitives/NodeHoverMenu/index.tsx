@@ -48,19 +48,21 @@ const HoverMenu = ({
             disableInteractive
             title={item.label}
           >
-            <IconButton
-              color="secondary"
-              size="small"
-              disabled={item.disabled}
-              onClick={item.onClick}
-            >
-              <Styled.IconWrap>
-                {item.icon}
-                {item.showCommentsPresenceIndicator && (
-                  <Styled.CommentsPresenceIndicator data-test-id="workflow-comments-presence-indicator" />
-                )}
-              </Styled.IconWrap>
-            </IconButton>
+            <span>
+              <IconButton
+                color="secondary"
+                size="small"
+                disabled={item.disabled}
+                onClick={item.onClick}
+              >
+                <Styled.IconWrap>
+                  {item.icon}
+                  {item.showCommentsPresenceIndicator && (
+                    <Styled.CommentsPresenceIndicator data-test-id="workflow-comments-presence-indicator" />
+                  )}
+                </Styled.IconWrap>
+              </IconButton>
+            </span>
           </Tooltip>
         ) : null
       )}

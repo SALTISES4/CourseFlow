@@ -98,11 +98,10 @@ const LinkedOutcomeRow = ({
         onClick={() => undefined}
         onContentMouseEnter={() => setHoveredOutcomeUuid(outcome.uuid)}
         action={
-          hoveredOutcomeUuid === outcome.uuid && canShowActions ? (
+          hoveredOutcomeUuid === outcome.uuid && canShowActions && canUnlink ? (
             <Tooltip title={t('related.unlinkOutcome')} disableInteractive>
               <Styled.UnlinkButton
                 aria-label={t('related.unlinkOutcome')}
-                disabled={!canUnlink}
                 size="small"
                 onClick={onUnlink}
               >
