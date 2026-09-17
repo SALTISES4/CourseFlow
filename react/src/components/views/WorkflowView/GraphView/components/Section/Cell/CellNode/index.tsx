@@ -128,6 +128,7 @@ const SectionCellNode = ({
           />
         )}
 
+        {/* Here */}
         {node.outcomeUuids.length > 0 && (
           <LinkedOutcomes
             graphUuid={node.graphUuid}

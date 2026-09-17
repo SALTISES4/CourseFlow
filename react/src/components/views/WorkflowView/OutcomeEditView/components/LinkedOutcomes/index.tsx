@@ -80,6 +80,7 @@ const LinkedOutcomeRow = ({
         }
       }}
     >
+      {/* WTF */}
       <OutcomeHeader
         uuid={outcome.uuid}
         level={level}
@@ -99,16 +100,14 @@ const LinkedOutcomeRow = ({
         action={
           hoveredOutcomeUuid === outcome.uuid && canShowActions ? (
             <Tooltip title={t('related.unlinkOutcome')} disableInteractive>
-              <span>
-                <Styled.UnlinkButton
-                  aria-label={t('related.unlinkOutcome')}
-                  disabled={!canUnlink}
-                  size="small"
-                  onClick={onUnlink}
-                >
-                  <LinkOffOutlinedIcon fontSize="small" />
-                </Styled.UnlinkButton>
-              </span>
+              <Styled.UnlinkButton
+                aria-label={t('related.unlinkOutcome')}
+                disabled={!canUnlink}
+                size="small"
+                onClick={onUnlink}
+              >
+                <LinkOffOutlinedIcon fontSize="small" />
+              </Styled.UnlinkButton>
             </Tooltip>
           ) : undefined
         }

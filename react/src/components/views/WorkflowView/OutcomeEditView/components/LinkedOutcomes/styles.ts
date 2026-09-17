@@ -20,6 +20,7 @@ export const Wrap = styled(Box, {
 
 export const Popover = styled(MuiPopover)(({ theme }) => ({
   '& .MuiPaper-root': {
+    width: '300px',
     marginLeft: '8px',
     padding: theme.spacing(1),
     borderRadius: theme.shape.borderRadius,
@@ -44,6 +45,7 @@ export const Badge = styled(MuiBadge, {
   }
 }))
 
+// Here
 export const UnlinkButton = styled(IconButton)(({ theme }) => ({
   marginLeft: 'auto',
   borderRadius: 0,
