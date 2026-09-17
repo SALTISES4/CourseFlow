@@ -39,7 +39,6 @@ const LinkedOutcomeRow = ({
   const dispatch = useDispatch<AppDispatch>()
   const rowRef = useRef<HTMLDivElement>(null)
   const [collapsed, setCollapsed] = useState(true)
-  const canShowActions = useResourcePermission(WorkflowPermission.COMMENT)
   const canUnlink = useResourcePermission(WorkflowPermission.ASSIGN_OUTCOMES)
   const prefix = useSelector((state: RootState) =>
     getPrefixPath(state, graphUuid, outcome.uuid)
@@ -98,7 +97,7 @@ const LinkedOutcomeRow = ({
         onClick={() => undefined}
         onContentMouseEnter={() => setHoveredOutcomeUuid(outcome.uuid)}
         action={
-          hoveredOutcomeUuid === outcome.uuid && canShowActions && canUnlink ? (
+          hoveredOutcomeUuid === outcome.uuid && canUnlink ? (
             <Tooltip title={t('related.unlinkOutcome')} disableInteractive>
               <Styled.UnlinkButton
                 aria-label={t('related.unlinkOutcome')}
