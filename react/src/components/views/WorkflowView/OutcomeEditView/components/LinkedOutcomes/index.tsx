@@ -168,7 +168,7 @@ const LinkedOutcomes = ({
   }, [])
 
   return (
-    <Styled.Wrap ref={wrapRef} type={parent.type}>
+    <Styled.Wrap ref={wrapRef}>
       <Styled.Badge
         ref={badgeRef}
         onClick={showPopover(true)}

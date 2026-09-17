@@ -7,9 +7,7 @@ import { styled } from '@mui/material/styles'
 
 type LinkedTo = LinkedOutcomesPropsType['parent']['type']
 
-export const Wrap = styled(Box, {
-  shouldForwardProp: (prop) => !['type'].includes(prop as string)
-})<{ type: LinkedTo }>(({ theme, type }) => ({
+export const Wrap = styled(Box)(() => ({
   position: 'absolute',
   top: '18px',
   right: 0,
