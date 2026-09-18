@@ -1,7 +1,6 @@
 import {
   LibraryContentTypeIn,
   LibraryFiltersIn,
-  LibrarySearchIn,
   LibrarySearchScopeIn
 } from '@cf/api/gen'
 import { useLibrarySearch } from '@cf/api/wrappedHooks'
@@ -13,8 +12,6 @@ import { GridWrap, OuterContentWrap } from '@cfMUI/helper'
 import LibraryHelper, {
   SearchOptions
 } from '@cfViews/LibrarySearchView/LibraryHelper.Class'
-import Stack from '@mui/material/Stack'
-import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
 import { useEffect, useMemo, useState } from 'react'
@@ -30,6 +27,7 @@ import ToggleFavorite from './Filters/ToggleFavorite'
 import ToggleTemplate from './Filters/ToggleTemplate'
 import WorkflowTypeFilter from './Filters/WorkflowType'
 import Results, { type ResultsProps } from './Results'
+import * as SC from './styles'
 
 export type LibraryFilterConfig = {
   pagination?: boolean
@@ -158,18 +156,9 @@ const LibrarySearchView = ({
 
   return (
     <OuterContentWrap>
-      <Toolbar
-        disableGutters
-        sx={{ mt: 4, mb: 4 }}
-        data-test-id="library-filter-toolbar"
-      >
-        <Stack
-          direction="row"
-          spacing={2}
-          justifyContent="space-between"
-          style={{ width: '100%' }}
-        >
-          <Stack direction="row" spacing={2}>
+      <SC.ToolbarWrap disableGutters data-test-id="library-filter-toolbar">
+        <SC.StackOuter>
+          <SC.StackInner>
             <SortFilter
               show={Boolean(filters.sortOptions)}
               options={searchFilterState.sortOptions.options}
@@ -213,10 +202,10 @@ const LibrarySearchView = ({
               filterGroup={searchFilterState.filterGroups.archiveFilter}
               setSearchFilterState={setSearchFilterState}
             />
-          </Stack>
+          </SC.StackInner>
           <SearchFilter setSearchFilterState={setSearchFilterState} />
-        </Stack>
-      </Toolbar>
+        </SC.StackOuter>
+      </SC.ToolbarWrap>
 
       {!isLoading && !isError && data?.items.length ? (
         <Typography sx={{ mb: 2 }}>
