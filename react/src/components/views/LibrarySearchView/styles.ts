@@ -17,7 +17,7 @@ export const StackOuter = styled(Stack)(({ theme }) => ({
 export const StackInner = styled(Stack)(({ theme }) => ({
   flexDirection: 'row',
   spacing: theme.spacing(2),
-  gap: '0.5em 1rem',
+  gap: theme.spacing(1),
   flexWrap: 'wrap',
   '& > *': {
     marginLeft: '0 !important'
