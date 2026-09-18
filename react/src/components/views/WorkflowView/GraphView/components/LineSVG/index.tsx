@@ -56,6 +56,7 @@ const LineSVG = ({
     () =>
       edges.map((edge) => ({
         uuid: edge.edgeId,
+        title: edge.title,
         dashed: edgeLineTypeIsDashed(edge.lineType),
         fromId: edge.sourceNodeUuid,
         fromEdge: canonicalPortToConnectionEdge(edge.sourcePort),

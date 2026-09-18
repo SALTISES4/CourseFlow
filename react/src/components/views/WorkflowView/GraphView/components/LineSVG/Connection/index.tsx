@@ -299,12 +299,11 @@ const Connection = ({
             sx={{ cursor: 'grab', stroke: strokeColor }}
             onMouseDown={onMouseDown(lineStart, lineEnd, 'to')}
           />
-
-          {/* <text x={labelX} y={labelY} fill="red">
-            Line text label
-          </text> */}
         </>
       )}
+      {/* <text x={labelX} y={labelY} fill="red">
+        {title}
+      </text> */}
     </g>
   )
 }
