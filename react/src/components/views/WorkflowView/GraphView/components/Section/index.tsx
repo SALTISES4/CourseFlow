@@ -284,7 +284,10 @@ const Section = (props: SectionPropsType) => {
         number: (section.position ?? 0) + 1
       })
     : ''
-  const title = displaySystemTitle(t, section, defaultText)
+
+  const title = !section.title
+    ? ''
+    : displaySystemTitle(t, section, defaultText)
 
   return (
     <>
