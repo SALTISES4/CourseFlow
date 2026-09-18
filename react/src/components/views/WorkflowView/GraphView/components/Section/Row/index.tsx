@@ -111,7 +111,15 @@ const SectionRow = (props: SectionRowPropsType) => {
             coordsX={index}
             coordsY={rowIndex}
             columnId={columnId}
-            highlight={dnd.dragId === columnId ? 'cell' : undefined}
+            highlight={
+              dnd.insertMode === 'column'
+                ? dnd.dragId === columnId
+                  ? 'cell'
+                  : undefined
+                : dnd.dragId === columnId
+                  ? (dnd.closestEdge ?? undefined)
+                  : undefined
+            }
             borderColor={columnColors[columnId]}
             onReorder={onNodeDrop}
           />

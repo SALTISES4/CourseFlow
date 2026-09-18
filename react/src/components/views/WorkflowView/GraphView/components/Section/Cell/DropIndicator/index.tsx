@@ -2,14 +2,16 @@ import { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 
 import * as Styled from './styles'
 
-type PropsType =
-  | {
-      edge: Edge
-      offset?: number
-    }
-  | {
-      color: string
-    }
+type EdgeIndicator = {
+  edge: Edge
+  offset?: number
+}
+
+type BackgroundIndicator = {
+  color: string
+}
+
+type PropsType = EdgeIndicator | BackgroundIndicator
 
 const DropIndicator = (props: PropsType) => {
   if ('edge' in props && (props.edge === 'top' || props.edge === 'bottom')) {
