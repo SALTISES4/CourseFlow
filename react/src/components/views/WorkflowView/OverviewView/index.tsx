@@ -159,7 +159,8 @@ const OverviewView = ({
             readOnly
           />
 
-          {canManagePublicLink && (
+          {/* Temporarily commented out - see COURSEFLOW-654 */}
+          {/* {canManagePublicLink && (
             <Stack
               direction="row"
               spacing={2}
@@ -202,7 +203,7 @@ const OverviewView = ({
                 </Button>
               )}
             </Stack>
-          )}
+          )} */}
         </SC.InfoBlock>
       )}
 
