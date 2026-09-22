@@ -7,6 +7,7 @@ import {
   selectWorkflowByUuid
 } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { isHighlightedViaOutcome } from '@cf/features/graph/state/selectors/outcomes.selectors'
+import { selectIsDrawingLinkPreview } from '@cf/features/graph/state/selectors/svglink.selectors'
 import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import { CfObjectType } from '@cf/types/enum'
 import { RootState } from '@cfRedux/store'
@@ -85,6 +86,8 @@ const SectionCellNode = ({
     [onClick, nodeId]
   )
 
+  const isDraggingPreview = useSelector(selectIsDrawingLinkPreview)
+
   const selected = useSelector(
     (state: RootState) =>
       state.sidebar.edit.objectType === CfObjectType.NODE &&
@@ -119,7 +122,7 @@ const SectionCellNode = ({
         dropHighlight={dnd.dropHighlight}
         dragging={dnd.dragging}
       >
-        {!dnd.dragging && (
+        {!dnd.dragging && !isDraggingPreview && (
           <HoverMenu
             nodeId={nodeId}
             graphUuid={node.graphUuid}
@@ -128,7 +131,6 @@ const SectionCellNode = ({
           />
         )}
 
-        {/* Here */}
         {node.outcomeUuids.length > 0 && (
           <LinkedOutcomes
             graphUuid={node.graphUuid}
