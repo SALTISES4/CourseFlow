@@ -104,46 +104,48 @@ const OverviewTab = ({
 
       <SC.InfoBlock sx={{ mt: 3 }}>
         <SC.InfoBlockTitle>{t('overview.contributors')}</SC.InfoBlockTitle>
+        <SC.InfoBlockContent>
+          <UserPermissions
+            workspaceId={uuid ?? ''}
+            owner={owner}
+            workspaceType={WorkspaceType.PROJECT}
+          />
 
-        <UserPermissions
-          workspaceId={uuid ?? ''}
-          owner={owner}
-          workspaceType={WorkspaceType.PROJECT}
-        />
-
-        <Alert
-          sx={{ mt: 2 }}
-          severity="info"
-          icon={
-            isPublished ? (
-              <VisibilityOutlinedIcon />
-            ) : (
-              <VisibilityOffOutlinedIcon />
-            )
-          }
-          title={
-            isPublished ? t('status.currentPublic') : t('status.currentPrivate')
-          }
-          cta={
-            canPublish && (
-              <Button
-                size="small"
-                variant="outlined"
-                color="inherit"
-                disabled={visibilityMutation.isPending}
-                onClick={() => {
-                  if (isPublished) {
-                    void updateVisibility(false)
-                  } else {
-                    dispatch(DialogMode.PROJECT_PUBLISH)
-                  }
-                }}
-              >
-                {isPublished ? t('actions.unpublish') : t('actions.publish')}
-              </Button>
-            )
-          }
-        />
+          <Alert
+            severity="info"
+            icon={
+              isPublished ? (
+                <VisibilityOutlinedIcon />
+              ) : (
+                <VisibilityOffOutlinedIcon />
+              )
+            }
+            title={
+              isPublished
+                ? t('status.currentPublic')
+                : t('status.currentPrivate')
+            }
+            cta={
+              canPublish && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color="inherit"
+                  disabled={visibilityMutation.isPending}
+                  onClick={() => {
+                    if (isPublished) {
+                      void updateVisibility(false)
+                    } else {
+                      dispatch(DialogMode.PROJECT_PUBLISH)
+                    }
+                  }}
+                >
+                  {isPublished ? t('actions.unpublish') : t('actions.publish')}
+                </Button>
+              )
+            }
+          />
+        </SC.InfoBlockContent>
       </SC.InfoBlock>
 
       <TagsSection projectUuid={uuid ?? ''} data={tags ?? []} />

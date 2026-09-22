@@ -23,7 +23,9 @@ export const InfoBlockContent = styled(Box)(({ theme }) => ({
 export const PermissionGrid = styled(List)(({ theme }) => ({
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
-  gap: theme.spacing(2)
+  gap: theme.spacing(2),
+  paddingTop: 0,
+  paddingBottom: 0
 }))
 
 export const PermissionThumbnail = styled(ListItem, {
