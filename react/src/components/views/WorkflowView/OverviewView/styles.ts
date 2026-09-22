@@ -14,7 +14,10 @@ export const InfoBlockTitle = styled(Typography)(({ theme }) => ({
 }))
 
 export const InfoBlockContent = styled(Box)(({ theme }) => ({
-  marginTop: theme.spacing(1)
+  display: 'flex',
+  marginTop: theme.spacing(2),
+  flexDirection: 'column',
+  gap: theme.spacing(2)
 }))
 
 export const PermissionGrid = styled(List)(({ theme }) => ({
