@@ -5,17 +5,17 @@ const homeFr = {
   sections: {
     recentProjects: 'Projets récents',
     viewAllProjects: 'Voir tous les projets',
-    exploreTemplates: 'Explorer les modèles',
-    getStartedTemplates: 'Commencer avec des modèles',
-    viewAllTemplates: 'Voir tous les modèles'
+    exploreTemplates: 'Explorer les gabarits',
+    getStartedTemplates: 'Commencer avec des gabarits',
+    viewAllTemplates: 'Voir tous les gabarits'
   },
   templates: {
-    howToTitle: 'Comment utiliser les modèles',
+    howToTitle: 'Comment utiliser les gabarits',
     howToHelp:
-      'Les modèles offrent une structure préétablie fondée sur les meilleures pratiques pédagogiques afin que vous n’ayez pas à partir de zéro!'
+      'Les gabarits offrent une structure préétablie fondée sur les meilleures pratiques pédagogiques afin que vous n’ayez pas à partir de zéro!'
   },
   welcome: {
-    closeLabel: 'Fermer le message de bienvenue',
+    closeLabel: 'Cacher le message de bienvenue',
     title: 'Bienvenue dans CourseFlow',
     prompt:
       'Parlez-nous de vos objectifs afin que nous puissions vous aider à démarrer.',

@@ -58,7 +58,7 @@ uiObjectDefinitions:
   workflowJumpToMenu:
     meaning: Dropdown menu listing workflowSectionContainer entries from workflowJumpToTrigger.
   workflowJumpToMenuSectionItem:
-    meaning: A selectable row inside workflowJumpToMenu for one workflowSectionContainer; visible label follows FR-CAB-007 (index, space, title or untitled fallback).
+    meaning: A selectable row inside workflowJumpToMenu for one workflowSectionContainer; visible label follows FR-CAB-007 ('{index} - {title or untitled fallback}').
   workflowJumpToUntitledSectionDisplayFallback:
     meaning: Display-only label fragment 'Untitled section' in en-CA when workflowEditSectionFormTitleField is empty; active-locale localized equivalent in other locales; not persisted as the section title.
   workflowSectionNumberLabel:
@@ -438,7 +438,7 @@ requirements:
       - workflowJumpToTrigger is visible on contextActionBar with label 'Jump to'
       - clicking workflowJumpToTrigger per roleBehavior opens workflowJumpToMenu
       - workflowJumpToMenu lists every workflowSectionContainer in workflowView top-to-bottom order, each as one workflowJumpToMenuSectionItem row
-      - each workflowJumpToMenuSectionItem visible label is workflowSectionNumberLabel text for that section, one ASCII space, then either the persisted workflowEditSectionFormTitleField value when non-empty or workflowJumpToUntitledSectionDisplayFallback when the persisted title is the empty string
+      - each workflowJumpToMenuSectionItem visible label is workflowSectionNumberLabel text for that section, the literal separator ' - ' (ASCII space, hyphen, ASCII space), then either the persisted workflowEditSectionFormTitleField value when non-empty or workflowJumpToUntitledSectionDisplayFallback when the persisted title is the empty string
       - Jump to row label rules apply only inside workflowJumpToMenu and do not change workflowSectionHeader presentation on the canvas, which remains per FR-SEC-002 (empty persisted title shows workflowSectionNumberLabel only with no workflowSectionTitleText)
       - when section order or titles change per FR-SEC-002 or FR-SEC-003, workflowJumpToMenuSectionItem labels reflect the updated workflowSectionNumberLabel values and persisted titles the next time workflowJumpToMenu is opened
       - clicking a workflowJumpToMenuSectionItem scrolls the viewport to the matching workflowSectionContainer in workflowView
@@ -459,8 +459,8 @@ requirements:
       - given FR-CAB-007 preconditions hold, workflowJumpToTrigger is visible on contextActionBar with label 'Jump to'
       - given actor clicks workflowJumpToTrigger per roleBehavior, workflowJumpToMenu opens
       - given workflowJumpToMenu is open, every workflowSectionContainer in workflowView is listed as a selectable workflowJumpToMenuSectionItem row in top-to-bottom section order
-      - given workflowEditSectionFormTitleField is non-empty for a section, the matching workflowJumpToMenuSectionItem visible label is '{workflowSectionNumberLabel} {persisted title}' with exactly one space between the index and the title text
-      - given workflowEditSectionFormTitleField is the empty string for a section, the matching workflowJumpToMenuSectionItem visible label is '{workflowSectionNumberLabel} Untitled section' in en-CA (workflowJumpToUntitledSectionDisplayFallback after one ASCII space)
+      - given workflowEditSectionFormTitleField is non-empty for a section, the matching workflowJumpToMenuSectionItem visible label is '{workflowSectionNumberLabel} - {persisted title}' with the literal separator ' - ' between the index and the title text
+      - given workflowEditSectionFormTitleField is the empty string for a section, the matching workflowJumpToMenuSectionItem visible label is '{workflowSectionNumberLabel} - Untitled section' in en-CA (workflowJumpToUntitledSectionDisplayFallback after the literal separator ' - ')
       - given a section has an empty persisted title, workflowSectionHeader on the canvas still shows workflowSectionNumberLabel only with no workflowSectionTitleText per FR-SEC-002
       - given actor clicks a workflowJumpToMenuSectionItem, viewport scroll position moves to that corresponding workflowSectionContainer
 

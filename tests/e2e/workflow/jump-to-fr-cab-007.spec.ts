@@ -35,7 +35,7 @@ test.describe('jump-to-fr-cab-007', () => {
     await expect(workflowJumpToTrigger(page)).toHaveCount(0);
   });
 
-  test('FR-CAB-007: menu lists sections as index plus title or Untitled section', async ({
+  test('FR-CAB-007: menu lists sections as index - title or index - Untitled section', async ({
     page,
     workflow,
   }) => {
