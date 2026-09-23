@@ -1,15 +1,12 @@
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import {
   getWorkflowQueryKey,
   updateWorkflowMutation,
   updateWorkflowPublicLinkMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import type { WorkflowOverviewMetadataIn } from '@cf/api/gen/types.gen'
-import { ResourceRole, WorkflowPermission } from '@cf/api/gen/types.gen'
-import {
-  useResourcePermission,
-  useWorkspacePermissions
-} from '@cf/context/workspacePermissionsContext'
-import { useReferenceLabels } from '@cf/i18n/referenceLabels'
+import { WorkflowPermission } from '@cf/api/gen/types.gen'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { CFRoutes } from '@cf/router/cfRoutes'
 import { WorkspaceType } from '@cf/types/enum'
 import { SnackbarOptions } from '@cf/utility/constants'
@@ -18,12 +15,6 @@ import {
   type WorkflowPageData,
   isAuthenticatedWorkflow
 } from '@cfPages/Workflow/types'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import LinkIcon from '@mui/icons-material/Link'
-import LinkOffIcon from '@mui/icons-material/LinkOff'
-import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
-import Stack from '@mui/material/Stack'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { enqueueSnackbar } from 'notistack'
 import { useTranslation } from 'react-i18next'
@@ -41,25 +32,15 @@ const OverviewView = ({
   publicView: boolean
 }) => {
   const { t } = useTranslation('workflow')
-  const { locale } = useReferenceLabels()
   const workflowUuid = workflow.uuid
   const queryClient = useQueryClient()
   const updateMetadata = useMutation(updateWorkflowMutation())
   const updatePublicLink = useMutation(updateWorkflowPublicLinkMutation())
   const canEdit = useResourcePermission(WorkflowPermission.EDIT_ATTRIBUTES)
-  const { resource: permissions } = useWorkspacePermissions()
   const authenticatedWorkflow = isAuthenticatedWorkflow(workflow)
-  const canManagePublicLink =
-    !publicView &&
-    authenticatedWorkflow &&
-    [ResourceRole.OWNER, ResourceRole.EDITOR].includes(
-      permissions.resourceRole as ResourceRole
-    )
+  const canManagePublicLink = !publicView && authenticatedWorkflow && canEdit
 
-  // @todo disciplines is missing from workflow data type
-  const disciplines: { title: string }[] = []
   const description = workflow?.description ?? ''
-  const createdOn = workflow?.dateCreated
   const workflowQueryKey = getWorkflowQueryKey({ path: { uuid: workflowUuid } })
 
   const saveMetadata = async (updates: WorkflowOverviewMetadataIn) => {
@@ -71,9 +52,11 @@ const OverviewView = ({
       queryClient.setQueryData(workflowQueryKey, response)
     } catch (error) {
       await queryClient.invalidateQueries({ queryKey: workflowQueryKey })
-      enqueueSnackbar(t('messages.metadataSaveFailed'), {
-        variant: SnackbarOptions.ERROR
-      })
+      if (!isApiErrorNotificationHandled(error)) {
+        enqueueSnackbar(t('messages.metadataSaveFailed'), {
+          variant: SnackbarOptions.ERROR
+        })
+      }
       console.error('Failed to update workflow overview metadata:', error)
     }
   }
@@ -92,9 +75,11 @@ const OverviewView = ({
         { variant: SnackbarOptions.SUCCESS }
       )
     } catch (error) {
-      enqueueSnackbar(t('messages.publicLinkUpdateFailed'), {
-        variant: SnackbarOptions.ERROR
-      })
+      if (!isApiErrorNotificationHandled(error)) {
+        enqueueSnackbar(t('messages.publicLinkUpdateFailed'), {
+          variant: SnackbarOptions.ERROR
+        })
+      }
       console.error('Failed to update workflow public link:', error)
     }
   }
@@ -125,33 +110,6 @@ const OverviewView = ({
         </SC.InfoBlockContent>
       </SC.InfoBlock>
 
-      <Grid container columnSpacing={3}>
-        <Grid item xs={6}>
-          <SC.InfoBlock>
-            <SC.InfoBlockTitle>{t('overview.disciplines')}</SC.InfoBlockTitle>
-            <SC.InfoBlockContent>
-              {disciplines.length
-                ? disciplines.map((d) => d.title).join(', ')
-                : t('overview.noDisciplines')}
-            </SC.InfoBlockContent>
-          </SC.InfoBlock>
-        </Grid>
-        <Grid item xs={6}>
-          <SC.InfoBlock>
-            <SC.InfoBlockTitle>{t('overview.createdOn')}</SC.InfoBlockTitle>
-            <SC.InfoBlockContent>
-              {createdOn
-                ? new Intl.DateTimeFormat(locale, {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  }).format(new Date(createdOn))
-                : t('overview.emptyValue')}
-            </SC.InfoBlockContent>
-          </SC.InfoBlock>
-        </Grid>
-      </Grid>
-
       {!publicView && authenticatedWorkflow && (
         <SC.InfoBlock sx={{ mt: 3 }} data-test-id="workflow-permissions-panel">
           <SC.InfoBlockTitle>{t('overview.permissions')}</SC.InfoBlockTitle>
@@ -163,7 +121,8 @@ const OverviewView = ({
             readOnly
           />
 
-          {canManagePublicLink && (
+          {/* Temporarily commented out - see COURSEFLOW-654 */}
+          {/* {canManagePublicLink && (
             <Stack
               direction="row"
               spacing={2}
@@ -206,7 +165,7 @@ const OverviewView = ({
                 </Button>
               )}
             </Stack>
-          )}
+          )} */}
         </SC.InfoBlock>
       )}
 

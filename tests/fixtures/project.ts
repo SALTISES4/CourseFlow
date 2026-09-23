@@ -2,6 +2,7 @@ import type { APIRequestContext } from '@playwright/test';
 
 import { getActorAsset, loadWorkflowManifest, type ActorAssetId } from '../helpers/manifest';
 import { apiRequestWithAccessToken, readPrimaryActorAccessToken } from '../helpers/api';
+import { ensureWorkspaceEditLock } from '../helpers/edit-lock';
 import { test as workflowTest } from './workflow';
 
 type ProjectContributorRole = 'editor' | 'commenter' | 'viewer';
@@ -52,6 +53,7 @@ async function cleanupProject(
   accessToken: string,
   projectUuid: string,
 ): Promise<void> {
+  await ensureWorkspaceEditLock(request, accessToken, 'project', projectUuid);
   const archive = await apiRequestWithAccessToken(
     request,
     accessToken,
@@ -96,6 +98,7 @@ async function addProjectContributor(
   actorAsset: ActorAssetId,
   role: ProjectContributorRole,
 ): Promise<void> {
+  await ensureWorkspaceEditLock(request, accessToken, 'project', projectUuid);
   const actor = getActorAsset(loadWorkflowManifest(), actorAsset);
   const userUuid = await findUserUuid(request, accessToken, actor.email);
   const response = await apiRequestWithAccessToken(

@@ -186,7 +186,8 @@ const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
             onBlur={onTitleBlur}
             disabled={!canEdit}
           />
-          <Box>
+          {/* NOTE: temporarily hidden - see COURSEFLOW-657 */}
+          {/* <Box>
             <Typography id="edit-text-position" gutterBottom>
               {t('edit.textPosition')}
             </Typography>
@@ -197,7 +198,7 @@ const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
               onChange={onSliderChange}
               disabled={!canEdit}
             />
-          </Box>
+          </Box> */}
           <FormControlLabel
             sx={{ ml: 0 }}
             label={t('edit.dashedLine')}

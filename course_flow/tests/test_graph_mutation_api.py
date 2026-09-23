@@ -25,6 +25,7 @@ from course_flow.core.models import (
     Tag,
     Thread,
 )
+from course_flow.tests.edit_lock_helpers import acquire_workflow_edit_lock
 from course_flow.tests.node_helpers import create_grid_node
 
 
@@ -80,7 +81,9 @@ def _create_graph(
         **_auth_header(raw_token),
     )
     assert response.status_code == 200, response.content
-    return response.json()["graphUuid"]
+    body = response.json()
+    acquire_workflow_edit_lock(client, _auth_header(raw_token), body["uuid"])
+    return body["graphUuid"]
 
 
 def _section_and_channel(wf_uuid: str):

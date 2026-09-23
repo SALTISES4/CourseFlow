@@ -17,6 +17,7 @@ from course_flow.core.models import (
     Section,
     Thread,
     Workflow,
+    WorkspaceEditLock,
 )
 
 
@@ -55,12 +56,17 @@ def _issue_token_for(user, *, expires_delta: timedelta = timedelta(hours=1)):
 
 def _graph_with_section_thread(user):
     g = Graph.objects.create()
-    Workflow.objects.create(
+    workflow = Workflow.objects.create(
         graph=g,
         author=user,
         title="",
         description="",
         workflow_type=WorkflowType.COURSE,
+    )
+    WorkspaceEditLock.objects.create(
+        workflow=workflow,
+        holder=user,
+        expires_at=timezone.now() + timedelta(hours=1),
     )
     thread = Thread.objects.create()
     Section.objects.create(graph=g, title="S1", position=0, thread=thread)

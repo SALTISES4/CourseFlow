@@ -16,6 +16,7 @@ from course_flow.core.models import (
     Project,
     Team,
     Workflow,
+    WorkspaceEditLock,
 )
 from course_flow.core.models.relations import (
     FavoriteGraph,
@@ -151,6 +152,7 @@ def test_search_no_filters_returns_project_and_workflow_items(client: Client, us
         "isFavorite",
         "projectUuid",
         "projectIsArchived",
+        "editLockHolderName",
         "permissions",
     }
     for item in body["items"]:
@@ -158,6 +160,118 @@ def test_search_no_filters_returns_project_and_workflow_items(client: Client, us
         assert "graphUuid" not in item
         assert "workflowUuid" not in item
         assert "objectType" not in item
+
+
+@pytest.mark.django_db
+def test_search_returns_only_active_edit_lock_holders_to_editors(
+    client: Client, user, teammate
+):
+    raw = _issue_token_for(user)
+    teammate.first_name = "John"
+    teammate.last_name = "Editor"
+    teammate.save(update_fields=["first_name", "last_name"])
+    project = Project.objects.create(owner=user, title="Project", description="")
+    graph = _graph_with_workflow(
+        user,
+        project=project,
+        workflow_title="Workflow",
+    )
+    expires_at = timezone.now() + timedelta(minutes=1)
+    project_lock = WorkspaceEditLock.objects.create(
+        project=project,
+        holder=teammate,
+        expires_at=expires_at,
+    )
+    workflow_lock = WorkspaceEditLock.objects.create(
+        workflow=graph.workflow,
+        holder=teammate,
+        expires_at=expires_at,
+    )
+
+    body = _post_search(client, raw, {})
+    assert {item["editLockHolderName"] for item in body["items"]} == {"John Editor"}
+
+    WorkspaceEditLock.objects.filter(pk__in=[project_lock.pk, workflow_lock.pk]).update(
+        expires_at=timezone.now() - timedelta(seconds=1)
+    )
+
+    body = _post_search(client, raw, {})
+    assert all(item["editLockHolderName"] is None for item in body["items"])
+
+
+@pytest.mark.django_db
+def test_published_scope_returns_only_active_published_resources(
+    client: Client, user, teammate
+):
+    raw = _issue_token_for(user)
+
+    private_owned = Project.objects.create(
+        owner=user,
+        title="Private owned project",
+        description="",
+    )
+    _graph_with_workflow(
+        user,
+        project=private_owned,
+        workflow_title="Private owned workflow",
+    )
+
+    published = Project.objects.create(
+        owner=teammate,
+        title="Published project",
+        description="",
+        is_published=True,
+    )
+    published_graph = _graph_with_workflow(
+        teammate,
+        project=published,
+        workflow_title="Published workflow",
+    )
+    WorkspaceEditLock.objects.create(
+        project=published,
+        holder=teammate,
+        expires_at=timezone.now() + timedelta(minutes=1),
+    )
+    WorkspaceEditLock.objects.create(
+        workflow=published_graph.workflow,
+        holder=teammate,
+        expires_at=timezone.now() + timedelta(minutes=1),
+    )
+
+    private_other = Project.objects.create(
+        owner=teammate,
+        title="Private other project",
+        description="",
+    )
+    _graph_with_workflow(
+        teammate,
+        project=private_other,
+        workflow_title="Private other workflow",
+    )
+
+    archived_published = Project.objects.create(
+        owner=teammate,
+        title="Archived published project",
+        description="",
+        is_published=True,
+        is_archived=True,
+    )
+    _graph_with_workflow(
+        teammate,
+        project=archived_published,
+        workflow_title="Archived published workflow",
+    )
+
+    body = _post_search(client, raw, {"scope": "published"})
+
+    assert {item["title"] for item in body["items"]} == {
+        "Published project",
+        "Published workflow",
+    }
+    assert {
+        item["permissions"]["resourceRole"] for item in body["items"]
+    } == {"public"}
+    assert all(item["editLockHolderName"] is None for item in body["items"])
 
 
 @pytest.mark.django_db

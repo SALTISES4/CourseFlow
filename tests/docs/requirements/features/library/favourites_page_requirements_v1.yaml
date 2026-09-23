@@ -308,20 +308,23 @@ requirements:
       - favouritesPage is rendered
 
     trigger:
-      - user enters or commits keyword search via keywordSearchField, or clears via keywordSearchClearButton
+      - user enters a keyword in keywordSearchField and presses 'Enter', or clears via keywordSearchClearButton
 
     mainFlow:
       - keywordSearchField and keywordSearchClearButton behaviour conform to library_page_requirements_v1.yaml FR-LIB-004 on favouritesFilterToolbar, applied within favouritesPage base query scope per FR-FAV-001
       - keyword and toolbar filter constraints combine on favouritesPage; both apply subtractively to resultsRegion within favouritesPage base query scope per FR-FAV-001
-      - when keyword search changes, system resets listing to the first results page
+      - when the user presses 'Enter', matching results replace the full resultsRegion in the current favouritesPage context; no search-results overlay or suggestion dropdown is rendered
+      - when keyword search is committed or cleared, system resets listing to the first results page
 
     roleBehavior: {}
 
     acceptanceCriteria:
       - given favouritesPage is rendered, keywordSearchField behaviour conforms to FR-LIB-004 within favouritesPage base query scope per FR-FAV-001
+      - given user types in keywordSearchField without pressing 'Enter', no search-results overlay or suggestion dropdown is rendered and the committed keyword constraint is unchanged
+      - given user presses 'Enter' in keywordSearchField, matching results replace the full favouritesPage resultsRegion while the application remains in the favouritesPage context
       - given keyword matches a favourited project or workflow title, a matching projectCard or workflowCard instance appears in resultsRegion when other filters allow it
-      - given user applies one or more filters and types in keywordSearchField, keyword and filter constraints both apply to resultsRegion
-      - given user types in keywordSearchField and then changes filters, keyword and filter constraints both apply to resultsRegion
+      - given user applies one or more filters and commits keywordSearchField with 'Enter', keyword and filter constraints both apply to resultsRegion
+      - given user commits keywordSearchField with 'Enter' and then changes filters, keyword and filter constraints both apply to resultsRegion
 
     openQuestions: []
 

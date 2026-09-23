@@ -128,22 +128,24 @@ requirements:
       - user views homePage or clicks a button in homeWelcomePanel
 
     mainFlow:
-      - homeWelcomePanel is visible when welcome-dismiss cookie is not set, independent of whether homeRecentProjectsSection or any projectCard instances are shown on homePage
+      - homeWelcomePanel is visible when the current user owns no projects and the welcome-dismiss cookie is not set; this ownership rule is independent of whether shared projects cause homeRecentProjectsSection or any projectCard instances to be shown on homePage
+      - when the current user owns at least one project, homeWelcomePanel is not rendered regardless of the welcome-dismiss cookie
       - homeWelcomePanel shows heading 'Welcome to CourseFlow'
       - homeWelcomePanel shows copy 'Tell us a bit more about your goals so that we can help you get started.'
       - homeWelcomePanel shows three CTAs in document order: homeWelcomeActivityButton, then homeWelcomeCourseButton, then homeWelcomeProgramButton
       - when user clicks homeWelcomeActivityButton, system opens createWorkflowDialog with workflowType activity per workflow_create_stepped_form_requirements_v1.yaml and createWorkflowDialogTitle 'Select project' on step 1
       - when user clicks homeWelcomeCourseButton, system opens createWorkflowDialog with workflowType course per workflow_create_stepped_form_requirements_v1.yaml and createWorkflowDialogTitle 'Select project' on step 1
       - when user clicks homeWelcomeProgramButton, system opens createWorkflowDialog with workflowType program per workflow_create_stepped_form_requirements_v1.yaml and createWorkflowDialogTitle 'Select project' on step 1
-      - when user clicks homeWelcomeDismissButton, system hides homeWelcomePanel and stores welcome-dismiss preference cookie
+      - while the current user still owns no projects, the user may click homeWelcomeDismissButton to hide homeWelcomePanel and store the welcome-dismiss preference cookie before creating a project
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given welcome-dismiss cookie is not set, homeWelcomePanel is visible with heading 'Welcome to CourseFlow'
+      - given the current user owns no projects and the welcome-dismiss cookie is not set, homeWelcomePanel is visible with heading 'Welcome to CourseFlow'
+      - given the current user owns at least one project, homeWelcomePanel is not visible regardless of the welcome-dismiss cookie
       - given homeWelcomePanel is visible, homeWelcomeActivityButton, homeWelcomeCourseButton, and homeWelcomeProgramButton are visible in document order activity, then course, then program
-      - given user clicks homeWelcomeDismissButton, homeWelcomePanel is hidden and welcome-dismiss preference is stored
-      - given welcome-dismiss cookie is set, homeWelcomePanel is not visible
+      - given the current user owns no projects and clicks homeWelcomeDismissButton, homeWelcomePanel is hidden and welcome-dismiss preference is stored even though the user has not created a project
+      - given the current user owns no projects and the welcome-dismiss cookie is set, homeWelcomePanel is not visible
       - given user clicks homeWelcomeActivityButton, createWorkflowDialog opens with createWorkflowDialogTitle 'Select project' on step 1 and workflowType activity per workflow_create_stepped_form_requirements_v1.yaml
       - given user clicks homeWelcomeCourseButton, createWorkflowDialog opens with createWorkflowDialogTitle 'Select project' on step 1 and workflowType course per workflow_create_stepped_form_requirements_v1.yaml
       - given user clicks homeWelcomeProgramButton, createWorkflowDialog opens with createWorkflowDialogTitle 'Select project' on step 1 and workflowType program per workflow_create_stepped_form_requirements_v1.yaml

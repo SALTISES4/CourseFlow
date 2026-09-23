@@ -1,3 +1,4 @@
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import { SnackbarOptions } from '@cf/utility/constants'
 import { enqueueSnackbar } from 'notistack'
 import { useTranslation } from 'react-i18next'
@@ -24,6 +25,9 @@ const useGenericQueryMsgHandler = () => {
   }
 
   function onError(error: unknown) {
+    if (isApiErrorNotificationHandled(error)) {
+      return
+    }
     const localizedMessage =
       typeof error === 'object' &&
       error !== null &&

@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
 from typing import Any
 from uuid import UUID
 
 from django.db.models import Count, Q, QuerySet
+from django.utils import timezone
 
 from course_flow.api.schemas.library import (
     LibraryAllowedFiltersOut,
@@ -19,6 +21,7 @@ from course_flow.api.schemas.library import (
     LibraryItemOut,
     LibrarySearchIn,
     LibrarySearchOut,
+    LibrarySearchScopeIn,
     LibrarySortDirectionIn,
     LibrarySortValueIn,
 )
@@ -93,17 +96,36 @@ class LibraryService:
             Q(owner_id=user_id) | Q(team__users__user_id=user_id)
         ).distinct()
 
-        project_qs = contributor_projects
-        workflow_graph_qs = Graph.objects.select_related(
-            "workflow",
-            "workflow__author",
-            "workflow__project",
-            "workflow__project__owner",
-        ).filter(
-            workflow__project_id__in=contributor_projects.values("id"),
-        )
+        if payload.scope == LibrarySearchScopeIn.PUBLISHED:
+            project_qs = Project.objects.filter(
+                is_published=True,
+                is_archived=False,
+            )
+            workflow_graph_qs = Graph.objects.select_related(
+                "workflow",
+                "workflow__author",
+                "workflow__project",
+                "workflow__project__owner",
+            ).filter(
+                workflow__project__is_published=True,
+                workflow__project__is_archived=False,
+                workflow__is_archived=False,
+            )
+        else:
+            project_qs = contributor_projects
+            workflow_graph_qs = Graph.objects.select_related(
+                "workflow",
+                "workflow__author",
+                "workflow__project",
+                "workflow__project__owner",
+            ).filter(
+                workflow__project_id__in=contributor_projects.values("id"),
+            )
 
-        if filters.include_published_favorites:
+        if (
+            payload.scope == LibrarySearchScopeIn.MEMBERSHIP
+            and filters.include_published_favorites
+        ):
             project_qs = Project.objects.filter(
                 Q(id__in=contributor_projects.values("id"))
                 | Q(is_published=True, favorite_links__user_id=user_id)
@@ -226,8 +248,11 @@ class LibraryService:
                 workflow__project__disciplines__code__in=filters.discipline_codes
             ).distinct()
 
-        project_qs = project_qs.select_related("owner").annotate(
+        project_qs = project_qs.select_related("owner", "edit_lock__holder").annotate(
             library_workflow_count=Count("workflows", distinct=True)
+        )
+        workflow_graph_qs = workflow_graph_qs.select_related(
+            "workflow__edit_lock__holder"
         )
 
         project_favorite_uuids = self._favorite_project_uuids(
@@ -240,16 +265,19 @@ class LibraryService:
         )
 
         user = User.objects.get(pk=user_id)
+        active_lock_cutoff = timezone.now()
         items = self._normalize_project_items(
             user,
             project_qs,
             project_favorite_uuids,
+            active_lock_cutoff,
         )
         items.extend(
             self._normalize_workflow_items(
                 user,
                 workflow_graph_qs,
                 graph_favorite_uuids,
+                active_lock_cutoff,
             )
         )
 
@@ -376,9 +404,14 @@ class LibraryService:
         user: User,
         project_qs: QuerySet[Project],
         favorite_uuids: set[UUID],
+        active_lock_cutoff: datetime,
     ) -> list[LibraryItemOut]:
         rows: list[LibraryItemOut] = []
         for project in project_qs:
+            permissions = self._authorization.permissions_for_project(
+                user=user,
+                project=project,
+            )
             rows.append(
                 LibraryItemOut(
                     uuid=project.uuid,
@@ -395,12 +428,12 @@ class LibraryService:
                     is_favorite=project.uuid in favorite_uuids,
                     project_uuid=None,
                     project_is_archived=None,
-                    permissions=self._permission_payload(
-                        self._authorization.permissions_for_project(
-                            user=user,
-                            project=project,
-                        )
+                    edit_lock_holder_name=self._edit_lock_holder_name(
+                        project,
+                        can_edit=permissions.allows(ProjectPermission.EDIT_PROJECT),
+                        active_lock_cutoff=active_lock_cutoff,
                     ),
+                    permissions=self._permission_payload(permissions),
                 )
             )
         return rows
@@ -410,11 +443,16 @@ class LibraryService:
         user: User,
         workflow_graph_qs: QuerySet[Graph],
         favorite_uuids: set[UUID],
+        active_lock_cutoff: datetime,
     ) -> list[LibraryItemOut]:
         rows: list[LibraryItemOut] = []
         for graph in workflow_graph_qs:
             workflow = graph.workflow
             proj = workflow.project
+            permissions = self._authorization.permissions_for_workflow(
+                user=user,
+                workflow=workflow,
+            )
             rows.append(
                 LibraryItemOut(
                     content_type=LibraryContentTypeOut.WORKFLOW,
@@ -431,12 +469,12 @@ class LibraryService:
                     is_favorite=graph.uuid in favorite_uuids,
                     project_uuid=proj.uuid,
                     project_is_archived=proj.is_archived,
-                    permissions=self._permission_payload(
-                        self._authorization.permissions_for_workflow(
-                            user=user,
-                            workflow=workflow,
-                        )
+                    edit_lock_holder_name=self._edit_lock_holder_name(
+                        workflow,
+                        can_edit=permissions.allows(WorkflowPermission.EDIT_ATTRIBUTES),
+                        active_lock_cutoff=active_lock_cutoff,
                     ),
+                    permissions=self._permission_payload(permissions),
                 )
             )
         return rows
@@ -447,6 +485,21 @@ class LibraryService:
             return None
         full_name = owner.get_full_name().strip()
         return full_name or owner.email
+
+    @classmethod
+    def _edit_lock_holder_name(
+        cls,
+        resource: Project | Workflow,
+        *,
+        can_edit: bool,
+        active_lock_cutoff: datetime,
+    ) -> str | None:
+        if not can_edit:
+            return None
+        edit_lock = getattr(resource, "edit_lock", None)
+        if edit_lock is None or edit_lock.expires_at <= active_lock_cutoff:
+            return None
+        return cls._owner_name(edit_lock.holder)
 
     def _permission_payload(self, context: PermissionContext) -> dict[str, Any]:
         return {

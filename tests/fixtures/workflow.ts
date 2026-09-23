@@ -18,6 +18,7 @@ import {
   type WorkflowFixtureType,
 } from '../helpers/manifest';
 import { apiRequestWithAccessToken, readPrimaryActorAccessToken } from '../helpers/api';
+import { ensureWorkspaceEditLock } from '../helpers/edit-lock';
 
 export type { OutcomeEntry };
 
@@ -244,6 +245,7 @@ async function addDisposableProjectContributor(
   projectUuid: string,
   actor: ActorAssetEntry,
 ): Promise<void> {
+  await ensureWorkspaceEditLock(request, accessToken, 'project', projectUuid);
   const usersResponse = await apiRequestWithAccessToken(
     request,
     accessToken,
@@ -267,6 +269,7 @@ async function cleanupDisposableWorkflowProject(
   accessToken: string,
   projectUuid: string,
 ): Promise<void> {
+  await ensureWorkspaceEditLock(request, accessToken, 'project', projectUuid);
   const tagsResponse = await apiRequestWithAccessToken(request, accessToken, 'GET', `/api/project/${projectUuid}/tags`);
   if (tagsResponse.ok()) {
     const tags = (await tagsResponse.json()) as Array<{ id: number }>;
@@ -297,6 +300,7 @@ async function linkFirstWorkflowNode(
   parent: WorkflowEntry,
   child: WorkflowEntry,
 ): Promise<void> {
+  await ensureWorkspaceEditLock(request, accessToken, 'workflow', parent.workflow_uuid);
   const graph = await loadGraphView(request, accessToken, parent.workflow_uuid);
   const firstNode = graph.nodes[0] as { uuid?: string } | undefined;
   if (!firstNode?.uuid) {
@@ -317,6 +321,7 @@ async function cleanupWorkflowCopy(
   accessToken: string,
   workflowUuid: string,
 ): Promise<void> {
+  await ensureWorkspaceEditLock(request, accessToken, 'workflow', workflowUuid);
   const archive = await apiRequestWithAccessToken(
     request,
     accessToken,

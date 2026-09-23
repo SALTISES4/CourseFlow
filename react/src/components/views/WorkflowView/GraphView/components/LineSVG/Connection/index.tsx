@@ -12,7 +12,9 @@ import {
   MutableRefObject,
   MouseEvent as ReactMouseEvent,
   useCallback,
+  useEffect,
   useMemo,
+  useRef,
   useState
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -25,6 +27,7 @@ type PositionCoords = ReturnType<typeof getCoords>
 
 type ConnectionState = {
   hovering: boolean
+  textBg: [number, number]
 }
 
 function getConnectionPath(
@@ -90,11 +93,13 @@ function getConnectionPath(
     targetPosition: toEdge,
     ...laneCenter
   })
+
   return [path, labelX, labelY]
 }
 
 const Connection = ({
   uuid,
+  title,
   dashed,
   fromId,
   fromEdge,
@@ -105,12 +110,14 @@ const Connection = ({
   svgRef: MutableRefObject<SVGSVGElement | null>
 }) => {
   const dispatch = useDispatch<AppDispatch>()
+  const textRef = useRef<SVGTextElement>(null)
   const isDraggingPreview = useSelector(selectIsDrawingLinkPreview)
   const canManageLinks = useResourcePermission(
     WorkflowPermission.NODE_LINK_MANAGEMENT
   )
   const [state, setState] = useState<ConnectionState>({
-    hovering: false
+    hovering: false,
+    textBg: [0, 0]
   })
 
   const manager = useMemo(
@@ -252,6 +259,15 @@ const Connection = ({
 
   const lineId = `line-${fromId}-${fromEdge}-to-${toId}-${toEdge}`
 
+  // calculate the edge title background rectangle dimensions
+  let [bgWidth, bgHeight] = [0, 0]
+  const bgPadding = 6 // add some padding
+  if (textRef.current) {
+    const bBox = textRef.current.getBBox()
+    bgWidth = bBox.width + bgPadding
+    bgHeight = bBox.height + bgPadding / 2
+  }
+
   return (
     <g fill="none" data-edge-id={uuid}>
       <rect
@@ -299,12 +315,33 @@ const Connection = ({
             sx={{ cursor: 'grab', stroke: strokeColor }}
             onMouseDown={onMouseDown(lineStart, lineEnd, 'to')}
           />
-
-          {/* <text x={labelX} y={labelY} fill="red">
-            Line text label
-          </text> */}
         </>
       )}
+      <g>
+        <rect
+          x={labelX}
+          y={labelY - 1}
+          width={bgWidth}
+          height={bgHeight}
+          rx="5"
+          ry="5"
+          fill="white"
+          stroke="#000"
+          strokeWidth="0.1"
+          transform={`translate(-${bgWidth / 2} -${bgHeight / 2})`}
+        />
+        <text
+          ref={textRef}
+          x={labelX}
+          y={labelY}
+          dominantBaseline="middle"
+          textAnchor="middle"
+          fontSize="12"
+          fill="#000"
+        >
+          {title}
+        </text>
+      </g>
     </g>
   )
 }

@@ -96,7 +96,8 @@ const OutcomeTab = () => {
           (group, idx) =>
             !!group.outcomes.length && (
               <Styled.GroupWrap key={idx}>
-                {group.title && (
+                {(group.title ||
+                  (group.uuid === -1 && outcomeGroups.length > 1)) && (
                   <Typography component="h6" variant="body2">
                     {group.uuid === -1 && outcomeGroups.length > 1
                       ? t('outcomes.untagged')

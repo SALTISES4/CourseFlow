@@ -47,7 +47,7 @@ const workflowFr = {
   comments: {
     title: 'Commentaires', selectItem: 'Sélectionnez un élément pour consulter ou ajouter des commentaires.',
     unavailable: 'Les commentaires ne sont pas encore disponibles pour cet élément.', loading: 'Chargement des commentaires',
-    loadFailed: 'Les commentaires n’ont pas pu être chargés.', addPlaceholder: 'Ajouter un commentaire', add: 'Ajouter le commentaire'
+    loadFailed: 'Les commentaires n’ont pas pu être chargés.', justNow: 'à l’instant', addPlaceholder: 'Ajouter un commentaire', add: 'Ajouter le commentaire'
   },
   sidebar: {
     tabLabel: 'Onglet {{tab}}',
@@ -85,7 +85,7 @@ const workflowFr = {
   edit: {
     node: 'Modifier le nœud', nodeLink: 'Modifier le lien du nœud', nodeCategory: 'Modifier la catégorie de nœuds',
     section: 'Modifier la section', title: 'Titre', titleRequired: 'Le titre est obligatoire', description: 'Description',
-    context: 'Contexte', type: 'Type', time: 'Durée', credits: 'Crédits', ponderation: 'Pondération',
+    context: 'Contexte', task: 'Tâche', type: 'Type', time: 'Durée', credits: 'Crédits', ponderation: 'Pondération',
     theoryHours: 'H théoriques', practiceHours: 'H pratiques', individualHours: 'H individuelles',
     specificEducation: 'Formation spécifique', tags: 'Étiquettes', sectionLabel: 'Section', textPosition: 'Position du texte',
     dashedLine: 'Ligne pointillée'

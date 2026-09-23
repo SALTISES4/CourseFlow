@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from course_flow.core.auth import generate_raw_token, hash_token
 from course_flow.core.models import Authtoken, Graph, Outcome
+from course_flow.tests.edit_lock_helpers import acquire_workflow_edit_lock
 
 
 @pytest.fixture
@@ -54,6 +55,7 @@ def _create_workflow(client: Client, raw_token: str) -> tuple[str, str]:
     )
     assert response.status_code == 200, response.content
     body = response.json()
+    acquire_workflow_edit_lock(client, _auth_header(raw_token), body["uuid"])
     return body["uuid"], body["graphUuid"]
 
 

@@ -1,6 +1,8 @@
 export class CourseFlowApiError extends Error {
   readonly status: number | undefined
   readonly body: unknown
+  localizedMessage?: string
+  notificationHandled = false
 
   constructor(status: number | undefined, body: unknown) {
     super(`CourseFlow API request failed${status ? ` (${status})` : ''}`)
@@ -50,5 +52,11 @@ export function getApiErrorStatus(error: unknown): number | undefined {
 export function isArchivedApiError(error: unknown): boolean {
   return ['project_archived', 'workflow_archived'].includes(
     getApiErrorCode(error) ?? ''
+  )
+}
+
+export function isApiErrorNotificationHandled(error: unknown): boolean {
+  return (
+    error instanceof CourseFlowApiError && error.notificationHandled === true
   )
 }

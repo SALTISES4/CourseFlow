@@ -1,5 +1,6 @@
 import { expect, test } from '../../fixtures';
 import { apiRequestWithAccessToken, readPrimaryActorAccessToken } from '../../helpers/api';
+import { ensureWorkspaceEditLock } from '../../helpers/edit-lock';
 import { workflowOutcomesPath, workflowOverviewPath } from '../../helpers/workflow-navigation';
 import { globalMessageSnackbar } from '../../shared/locators/global';
 import { mainNavigation, topNavigationBar } from '../../shared/locators/navigation';
@@ -91,6 +92,12 @@ test.describe('anonymous read-only workflow (FR-WF-PUBLIC-002)', () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test.beforeEach(async ({ request, workflow }) => {
+    await ensureWorkspaceEditLock(
+      request,
+      readPrimaryActorAccessToken(),
+      'workflow',
+      workflow.workflowUuid,
+    );
     const response = await apiRequestWithAccessToken(
       request,
       readPrimaryActorAccessToken(),

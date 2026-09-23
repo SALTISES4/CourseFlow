@@ -1,7 +1,7 @@
 # Functional requirements: one-editor workspace edit locks
 # Status: Accepted for implementation.
-# Version: 1.0
-# Source: product decision recorded 2026-09-02.
+# Version: 1.1
+# Source: product decision recorded 2026-09-02 and Figma UI revision accepted 2026-09-11.
 # Scope: authenticated project and workflow workspaces use a short-lived, database-backed edit lock so no two different users may edit the same resource at the same time.
 # Cross-reference:
 #   - tests/docs/requirements/features/global/workspace_access_requirements_v1.yaml (workspace access and mid-session permission changes)
@@ -18,18 +18,21 @@ documentPreconditions:
   - project workspace means every route matching '/project/{id}/*' for one project, including '/project/{id}' and '/project/{id}/workflows'
   - workflow workspace means every authenticated route matching '/workflow/{id}/*' for one workflow, including '/workflow/{id}', '/workflow/{id}/graph', and '/workflow/{id}/outcomedit'
   - an edit lock is scoped by resource type and resource ID, records its holder by user ID, and has a server-evaluated expiry time
-  - a shared-resource mutation is any user-initiated operation that creates, changes, reorders, publishes, unpublishes, archives, or deletes shared data belonging to the current project or workflow; this includes metadata, contributors, tags, comments, child-workflow creation from a project, and workflow graph content
+  - a shared-resource mutation is any user-initiated operation that creates, changes, reorders, publishes, unpublishes, archives, or deletes shared data belonging to the current project or workflow; this includes metadata, contributors, tags, comments, and workflow graph content
+  - creating a workflow inside a project is exempt from the project's edit lock because it creates a separate workflow resource; it remains subject to the actor's existing project create-workflow permission
   - read-only actions do not change shared project or workflow data; examples include navigating sub-views, copying or exporting a resource, and changing a user-specific favourite state
 
 timingContract:
   lockStatusPollIntervalSeconds: 15
   lockExpirySecondsAfterLastSuccessfulRefresh: 15
   holderRefreshRule: The holder refreshes the edit lock more frequently than the expiry threshold so normal timer jitter does not cause an active page to lose its lock; the implementation must schedule at least two refresh attempts within each 15-second expiry window.
+  backgroundMaintenanceRule: Edit-lock acquisition, status checks, and holder refreshes are background maintenance. They do not activate the global network loader, reload project or workflow state when lock ownership is unchanged, or replace/reset a mounted form and its unsaved local values.
   timingAuthority: The server determines acquisition, refresh, takeover, and expiry from server time; client clocks are not authoritative.
 
 scopeRules:
   - this document is a cross-workspace editability gate; while lock state is unresolved or another user holds the lock, its non-actionable and read-only rules take precedence over owner/editor editable roleBehavior in project and workflow feature requirements; after the actor acquires the lock, those feature-specific requirements apply unchanged
   - project and workflow edit locks are independent; a project lock does not automatically lock its child workflows, and a workflow lock does not lock its parent project
+  - an eligible actor may create a workflow inside a project without holding or taking over the project's edit lock; after creation, editing the new workflow is governed by that workflow's independent edit lock
   - navigating between sub-views of the same project or workflow retains the same resource lock and polling lifecycle
   - navigating from a project workspace to a workflow workspace, from a workflow workspace to a project workspace, or to a different resource stops refreshing the prior resource lock and begins lock acquisition for the newly opened resource
   - only owner and editor actors participate in lock acquisition, refresh, and takeover; viewer, commenter, user with published access, and anonymous public-link visitor remain governed by their existing read-only or comment permissions and do not create edit locks
@@ -43,39 +46,55 @@ outOfScope:
   - background or system-owned mutations that are not initiated by a user editing a project or workflow workspace
 
 uiObjectDefinitions:
-  workspaceEditLockBanner:
-    meaning: Persistent banner shown to an owner or editor whose current project or workflow workspace is locked by a different user; contains workspaceEditLockMessage and workspaceEditLockTakeoverButton.
-  workspaceEditLockMessage:
-    meaning: Message in workspaceEditLockBanner identifying the current lock holder by display name and explaining that the current page is read-only.
+  cardEditLockTag:
+    meaning: Lock-icon tag on an editable project or workflow library card while an active lock exists; shows exact English text '{displayName} is currently editing'.
   workspaceEditLockTakeoverButton:
-    meaning: The only call-to-action in workspaceEditLockBanner; has exact label 'Yes' and requests immediate takeover of the current resource edit lock.
+    meaning: Primary lock-icon call-to-action in the workspace top action bar while another user holds the lock; has exact English label 'Take over editing'.
+  workspaceEditLockTakeoverDialog:
+    meaning: Confirmation dialog opened from workspaceEditLockTakeoverButton with exact English title 'Take over editing?', explanatory body, Cancel, and Take over editing actions.
+  workspaceEditLockTakeoverDialogMessage:
+    meaning: Dialog body showing exactly '{displayName} is currently editing this document. Taking over will unlock the file for you and switch {displayName} to read-only mode.' in English.
+  workspaceEditLockLostAlert:
+    meaning: Warning alert shown when an actor who held the lock learns another user took over; shows exact English text '{displayName} took over editing and you are now in read-only mode.'
+  networkActivityLoader:
+    meaning: Global foreground-network activity indicator; edit-lock background maintenance never displays it.
   globalMessageSnackbar:
     meaning: Canonical definition in tests/docs/requirements/features/global/card_content_requirements_v1.yaml; used for lock-loss and edit-unavailable error feedback.
 
 locatorMappings:
-  workspaceEditLockBanner:
-    strategy: null
-    confidence: unresolved
-  workspaceEditLockMessage:
-    strategy: null
-    confidence: unresolved
+  cardEditLockTag:
+    strategy: '[data-testid="card-edit-lock"]'
+    confidence: confirmed
   workspaceEditLockTakeoverButton:
-    strategy: null
-    confidence: unresolved
+    strategy: '[data-testid="workspace-edit-lock-takeover"]'
+    confidence: confirmed
+  workspaceEditLockTakeoverDialog:
+    strategy: '[data-testid="workspace-edit-lock-takeover-dialog"]'
+    confidence: confirmed
+  workspaceEditLockTakeoverDialogMessage:
+    strategy: '[data-testid="workspace-edit-lock-takeover-dialog-message"]'
+    confidence: confirmed
+  workspaceEditLockLostAlert:
+    strategy: '[data-testid="workspace-edit-lock-lost-alert"]'
+    confidence: confirmed
+  networkActivityLoader:
+    strategy: '[data-testid="network-activity-loader"]'
+    confidence: confirmed
   globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
 
 requirements:
   - id: FR-WS-LOCK-001
     title: Eligible actor acquires an edit lock before editing a workspace
 
-    designEvidence: []
+    designEvidence:
+      - https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7613-63249
 
     actors:
       - owner
       - editor
 
     uiObjects:
-      - workspaceEditLockBanner
+      - workspaceEditLockTakeoverButton
       - globalMessageSnackbar
 
     preconditions:
@@ -99,9 +118,9 @@ requirements:
 
     roleBehavior:
       owner:
-        workspaceEditLockBanner: hiddenWhenLockAcquired
+        workspaceEditLockTakeoverButton: hiddenWhenLockAcquired
       editor:
-        workspaceEditLockBanner: hiddenWhenLockAcquired
+        workspaceEditLockTakeoverButton: hiddenWhenLockAcquired
 
     acceptanceCriteria:
       - given no unexpired edit lock exists for project P, when owner or editor opens any route matching '/project/{id}/*' for P, the system creates one unexpired project edit lock held by that actor
@@ -118,14 +137,15 @@ requirements:
   - id: FR-WS-LOCK-002
     title: An actively mounted editor refreshes the lock and abandoned locks expire
 
-    designEvidence: []
+    designEvidence:
+      - https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7616-70402
 
     actors:
       - owner
       - editor
 
     uiObjects:
-      - workspaceEditLockBanner
+      - networkActivityLoader
 
     preconditions:
       - FR-WS-LOCK-001 preconditions hold
@@ -143,6 +163,9 @@ requirements:
       - an expired edit lock does not authorize shared-resource mutations and does not block a different eligible actor from acquiring the resource
       - a browser tab being mounted is sufficient for the client to attempt refreshes; focus, pointer movement, and keyboard activity are not separately required
       - browser timer throttling, connectivity loss, or a failed refresh may cause the lock to expire; disruption to the prior editor is accepted under this initial collaboration model
+      - successful refreshes and status polls that do not change lock ownership do not reload project or workflow data and do not replace equivalent client lock state
+      - lock maintenance requests do not activate the global network activity loader
+      - a dirty mounted form retains its unsaved local values across lock refreshes and status polls while the actor remains the holder
 
     roleBehavior: {}
 
@@ -152,21 +175,24 @@ requirements:
       - given the page or browser crashes and cannot send a release request, the lock still expires no later than 15 seconds after the last successful refresh
       - given actor no longer has edit permission, a later refresh does not extend the lock and the lock cannot authorize a mutation
       - given a lock is expired, a different eligible actor may acquire the resource without clicking workspaceEditLockTakeoverButton
+      - given actor holds the lock with a dirty mounted form, when a successful holder refresh returns unchanged ownership, the form remains mounted with the same unsaved values and no project/workflow data reload occurs
+      - given any edit-lock background maintenance request occurs, the global network activity loader does not become visible
 
     openQuestions: []
 
   - id: FR-WS-LOCK-003
     title: Eligible non-holder sees the workspace in read-only mode
 
-    designEvidence: []
+    designEvidence:
+      - https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7613-50551
+      - https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7613-63249
 
     actors:
       - owner
       - editor
 
     uiObjects:
-      - workspaceEditLockBanner
-      - workspaceEditLockMessage
+      - cardEditLockTag
       - workspaceEditLockTakeoverButton
 
     preconditions:
@@ -181,63 +207,67 @@ requirements:
       - system renders the existing project or workflow workspace and its readable content
       - all controls that can perform a shared-resource mutation are read-only, disabled, or hidden according to the owning feature's established read-only presentation; none is actionable
       - read-only navigation and actions that do not change shared project or workflow data remain available according to the actor's existing permissions
-      - workspaceEditLockBanner remains visible while a different user holds the unexpired lock
-      - workspaceEditLockMessage shows exactly '{displayName} is currently editing this page. Do you wish to take over?' using the current lock holder's display name
-      - workspaceEditLockTakeoverButton is visible and enabled with exact label 'Yes'
-      - workspaceEditLockTakeoverButton is the banner's only call-to-action; the banner does not provide a 'No', cancel, request-access, or waitlist action
+      - workflow creation remains available to an actor with the project's create-workflow permission and does not require takeover of the project edit lock
+      - workspaceEditLockTakeoverButton remains visible in the top action bar while a different user holds the unexpired lock
+      - workspaceEditLockTakeoverButton is visible and enabled with a lock icon and exact English label 'Take over editing'
+      - an editable project or workflow card with an active lock shows cardEditLockTag with a lock icon and exact English text '{displayName} is currently editing' using the holder's display name; public/read-only library results do not disclose the lock holder
       - while the actor remains on the page without taking over, the client polls lock status at least once every 15 seconds
-      - if a later poll finds no unexpired lock, the system atomically attempts acquisition for the waiting actor; if acquisition succeeds, it reloads current server state before enabling edits and removes workspaceEditLockBanner
-      - if another eligible actor acquires the newly available lock first, this actor remains read-only and workspaceEditLockMessage updates to identify the actual holder
+      - if a later poll finds no unexpired lock, the system atomically attempts acquisition for the waiting actor; if acquisition succeeds, it reloads current server state before enabling edits and removes workspaceEditLockTakeoverButton
+      - if another eligible actor acquires the newly available lock first, this actor remains read-only and the takeover action remains available for the actual holder's lock
 
     roleBehavior:
       owner:
-        workspaceEditLockBanner: visible
-        workspaceEditLockMessage: visible
+        cardEditLockTag: visibleOnEditableLibraryCardsWithActiveLock
         workspaceEditLockTakeoverButton: enabled
       editor:
-        workspaceEditLockBanner: visible
-        workspaceEditLockMessage: visible
+        cardEditLockTag: visibleOnEditableLibraryCardsWithActiveLock
         workspaceEditLockTakeoverButton: enabled
 
     acceptanceCriteria:
-      - given user A holds the project edit lock for P, when eligible user B opens any route matching '/project/{id}/*' for P, B sees readable project content, cannot perform shared-resource mutations, and sees workspaceEditLockBanner
-      - given user A holds the workflow edit lock for W, when eligible user B opens any authenticated route matching '/workflow/{id}/*' for W, B sees readable workflow content, cannot perform shared-resource mutations, and sees workspaceEditLockBanner
-      - given A's display name is 'Alex Smith', workspaceEditLockMessage shows exactly 'Alex Smith is currently editing this page. Do you wish to take over?'
-      - workspaceEditLockTakeoverButton shows exactly 'Yes' and no other banner call-to-action is rendered
-      - given B remains on the locked page and does not click 'Yes', B checks lock status at least once every 15 seconds
-      - given A's lock expires while B remains on the page, when B next polls and atomically acquires the resource, B's page reloads current server state, workspaceEditLockBanner is removed, and edit controls become actionable only after the reload succeeds
+      - given user A holds the project edit lock for P, when eligible user B opens any route matching '/project/{id}/*' for P, B sees readable project content, cannot perform shared-resource mutations, and sees workspaceEditLockTakeoverButton in the top action bar
+      - given user A holds the workflow edit lock for W, when eligible user B opens any authenticated route matching '/workflow/{id}/*' for W, B sees readable workflow content, cannot perform shared-resource mutations, and sees workspaceEditLockTakeoverButton in the top action bar
+      - workspaceEditLockTakeoverButton shows exactly 'Take over editing' in English and 'Prendre le contrôle de la modification' in French
+      - given A's display name is 'Alex Smith', an editable library card for A's actively locked resource shows 'Alex Smith is currently editing' in English and 'Alex Smith modifie actuellement' in French
+      - given B remains on the locked page and does not request takeover, B checks lock status at least once every 15 seconds
+      - given A's lock expires while B remains on the page, when B next polls and atomically acquires the resource, B's page reloads current server state, workspaceEditLockTakeoverButton is removed, and edit controls become actionable only after the reload succeeds
       - given A holds the project lock for P and B holds the workflow lock for child workflow W, A may remain project editor and B may remain workflow editor because the resources have independent lock scopes
+      - given user A holds the project edit lock for P, when eligible user B has create-workflow permission for P, B may create a child workflow without taking over A's project lock
 
     openQuestions: []
 
   - id: FR-WS-LOCK-004
     title: Eligible non-holder may take over the edit lock immediately
 
-    designEvidence: []
+    designEvidence:
+      - https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7615-67705
 
     actors:
       - owner
       - editor
 
     uiObjects:
-      - workspaceEditLockBanner
-      - workspaceEditLockMessage
       - workspaceEditLockTakeoverButton
+      - workspaceEditLockTakeoverDialog
+      - workspaceEditLockTakeoverDialogMessage
       - globalMessageSnackbar
 
     preconditions:
       - FR-WS-LOCK-003 preconditions hold
-      - workspaceEditLockBanner is visible to the actor
+      - workspaceEditLockTakeoverButton is visible to the actor
 
     trigger:
-      - actor clicks workspaceEditLockTakeoverButton
+      - actor clicks workspaceEditLockTakeoverButton and confirms in workspaceEditLockTakeoverDialog
 
     mainFlow:
-      - system atomically replaces the prior user's edit lock with a new edit lock held by the actor; takeover does not require confirmation or approval from the prior holder
+      - clicking workspaceEditLockTakeoverButton opens workspaceEditLockTakeoverDialog; no lock mutation occurs until the actor confirms
+      - workspaceEditLockTakeoverDialog shows exact English title 'Take over editing?', workspaceEditLockTakeoverDialogMessage, a 'Cancel' action, and a 'Take over editing' confirmation action
+      - the French dialog shows title 'Prendre le contrôle de la modification?', cancel action 'Annuler', confirmation action 'Prendre le contrôle de la modification', and translated explanatory body
+      - Cancel closes the dialog without changing lock ownership or workspace editability
+      - after actor confirmation, system atomically replaces the prior user's edit lock with a new edit lock held by the actor; takeover does not require confirmation or approval from the prior holder
       - after takeover succeeds, the system reloads the latest server state for the resource before enabling shared-resource mutation controls
-      - workspaceEditLockBanner is removed only after takeover and the post-takeover reload succeed
+      - workspaceEditLockTakeoverButton is removed only after takeover and the post-takeover reload succeed
       - once takeover succeeds, the prior holder cannot refresh the replaced lock and cannot successfully perform a new shared-resource mutation under the prior lock
-      - when two or more eligible actors attempt takeover concurrently, exactly one becomes the current holder; every other actor remains or becomes read-only and sees workspaceEditLockBanner naming the winning holder
+      - when two or more eligible actors attempt takeover concurrently, exactly one becomes the current holder; every other actor remains or becomes read-only and may request takeover of the winning holder's lock
       - if takeover cannot be confirmed, the actor remains read-only and globalMessageSnackbar shows exactly 'Editing is temporarily unavailable. Please try again.'
 
     roleBehavior:
@@ -247,11 +277,14 @@ requirements:
         workspaceEditLockTakeoverButton: enabled
 
     acceptanceCriteria:
-      - given A holds the edit lock and B sees workspaceEditLockBanner, when B clicks 'Yes' and takeover succeeds, B becomes the only current lock holder
+      - given A holds the edit lock and B sees workspaceEditLockTakeoverButton, when B opens workspaceEditLockTakeoverDialog and selects Cancel, A remains holder and B remains read-only
+      - given A holds the edit lock and B sees workspaceEditLockTakeoverButton, when B confirms 'Take over editing' and takeover succeeds, B becomes the only current lock holder
+      - workspaceEditLockTakeoverDialogMessage shows exactly '{displayName} is currently editing this document. Taking over will unlock the file for you and switch {displayName} to read-only mode.' in English
+      - workspaceEditLockTakeoverDialogMessage shows exactly '{displayName} modifie actuellement ce document. Prendre le contrôle déverrouillera le fichier pour vous et fera passer {displayName} en mode lecture seule.' in French
       - given B takes over the lock, the system does not request or wait for approval from A
       - given B takes over the lock, B's page reloads current server state before shared-resource mutation controls become actionable
       - given B takes over the lock, A's next refresh request does not renew A's prior lock
-      - given B and C attempt takeover concurrently, exactly one of B or C becomes lock holder and the other sees the winner named in workspaceEditLockMessage
+      - given B and C attempt takeover concurrently, exactly one of B or C becomes lock holder and the other remains read-only with workspaceEditLockTakeoverButton available
       - given takeover fails or cannot be confirmed, B remains read-only and globalMessageSnackbar shows exactly 'Editing is temporarily unavailable. Please try again.'
 
     openQuestions: []
@@ -259,16 +292,16 @@ requirements:
   - id: FR-WS-LOCK-005
     title: Lock loss is detected by polling and stale mutations are rejected authoritatively
 
-    designEvidence: []
+    designEvidence:
+      - https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7615-70272
 
     actors:
       - owner
       - editor
 
     uiObjects:
-      - workspaceEditLockBanner
-      - workspaceEditLockMessage
       - workspaceEditLockTakeoverButton
+      - workspaceEditLockLostAlert
       - globalMessageSnackbar
 
     preconditions:
@@ -281,7 +314,8 @@ requirements:
 
     mainFlow:
       - the client is permitted to remain visually editable until its next lock refresh or status poll, creating an expected detection delay of up to 15 seconds
-      - when the client learns that another user holds the lock, it transitions the workspace to FR-WS-LOCK-003 read-only mode and renders workspaceEditLockBanner naming the current holder
+      - when an actor who previously held the lock learns that another user holds it, the client transitions the workspace to FR-WS-LOCK-003 read-only mode, renders workspaceEditLockTakeoverButton, and renders workspaceEditLockLostAlert naming the current holder
+      - workspaceEditLockLostAlert shows exactly '{displayName} took over editing and you are now in read-only mode.' in English and '{displayName} a pris le contrôle de la modification et vous êtes maintenant en mode lecture seule.' in French
       - when the client learns that its lock expired and no other user holds the resource, it atomically attempts reacquisition and reloads current server state before re-enabling edits
       - every shared-resource mutation is authorized by the server against the current, unexpired edit lock at mutation time; client state and a previously held lock are not sufficient
       - if another user holds the current lock, the server rejects the stale actor's mutation without partially applying it
@@ -293,16 +327,16 @@ requirements:
 
     roleBehavior:
       owner:
-        workspaceEditLockBanner: visibleWhenAnotherUserHoldsLock
+        workspaceEditLockLostAlert: visibleAfterHeldToLockedTransition
       editor:
-        workspaceEditLockBanner: visibleWhenAnotherUserHoldsLock
+        workspaceEditLockLostAlert: visibleAfterHeldToLockedTransition
 
     acceptanceCriteria:
       - given A previously held the lock and B takes it over, A's client may remain visually editable until A's next refresh or status poll, but for no more than 15 seconds under normal polling execution
       - given B now holds workflow W's lock and A submits a workflow mutation before detecting takeover, the mutation is rejected with no partial persistence and globalMessageSnackbar shows 'This workflow is currently being edited by {displayName}. Your changes were not saved.' using B's display name
       - given B now holds project P's lock and A submits a project mutation before detecting takeover, the mutation is rejected with no partial persistence and globalMessageSnackbar shows 'This project is currently being edited by {displayName}. Your changes were not saved.' using B's display name
       - given A's lock expired and nobody currently holds the resource, when A submits a shared-resource mutation without first reacquiring a lock, the mutation is rejected with no partial persistence and globalMessageSnackbar shows exactly 'Your edit lock has expired. Your changes were not saved. Refresh the page to continue editing.'
-      - given A's poll detects that B holds the lock, A's shared-resource mutation controls become non-actionable and workspaceEditLockBanner identifies B
+      - given A's poll detects that B holds the lock, A's shared-resource mutation controls become non-actionable, workspaceEditLockTakeoverButton becomes available, and workspaceEditLockLostAlert identifies B
       - given A's in-flight mutation is accepted and committed before B's takeover is authorized, B's required post-takeover reload includes A's committed change
       - given B's takeover is authorized before A's mutation is authorized, A's mutation is rejected and does not partially change the resource
       - given A loses the lock with unsaved local changes, the system does not automatically merge, queue, replay, or recover those changes
@@ -310,6 +344,12 @@ requirements:
     openQuestions: []
 
 changelog:
+  - version: '1.1'
+    date: '2026-09-11'
+    changes:
+      - Replaced the old banner and Yes action with the Figma-aligned top-bar Take over editing action and confirmation dialog.
+      - Added active-lock tags on editable library cards and the post-takeover warning alert, including French copy.
+      - Required background lock maintenance to avoid the global loader, redundant resource reloads, and dirty-form resets.
   - version: '1.0'
     date: '2026-09-02'
     changes:

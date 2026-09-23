@@ -3,13 +3,14 @@ import { styled } from '@mui/material/styles'
 
 interface BoxProps extends MuiBoxProps {
   narrow?: boolean
+  padTop?: boolean
 }
 
 export const OuterContentWrap = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'narrow'
-})<BoxProps>(({ theme, narrow }) => ({
+  shouldForwardProp: (prop) => !['narrow', 'padTop'].includes(prop as string)
+})<BoxProps>(({ theme, narrow, padTop }) => ({
   padding: theme.spacing(8),
-  paddingTop: 0,
+  paddingTop: padTop ? theme.spacing(4) : 0,
   ...(narrow && {
     maxWidth: '34.25rem',
     marginLeft: 'auto',

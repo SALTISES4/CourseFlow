@@ -1,10 +1,10 @@
 # DigitalOcean UAT deployment
 
 CourseFlow UAT on DigitalOcean deploys automatically when a commit reaches the
-`staging` branch. The branch remains the shared pre-production release source;
-`ENV=uat` identifies this runtime, while the parallel AWS runtime uses
-`ENV=staging`. CircleCI tests the backend, builds the frontend once, and deploys
-after both gates pass. A failed test or frontend build prevents deployment.
+`uat` branch. `ENV=uat` identifies this runtime, while the parallel AWS runtime
+uses the `staging` branch and `ENV=staging`. CircleCI tests the backend, builds
+the frontend once, and deploys after both gates pass. A failed test or frontend
+build prevents deployment.
 
 This workflow is intentionally UAT-only. Do not enable the same workflow for
 `master` until the production runtime, health endpoint, rollback policy, and
@@ -16,10 +16,25 @@ deployment topology are defined.
 2. Run the frontend translation checks and production Vite build.
 3. Upload `react/dist` to `/tmp/courseflow` on the server.
 4. Run `git pull` in the server checkout.
-5. Build the Django image, recreate only Django,
-   and wait for the Django container health check.
-6. Confirm that Django reports no unapplied migrations.
-7. Replace the served files in `react/dist` with the tested frontend artifact.
+5. Build the Django image and stop the running Django container.
+6. From a one-off UAT container, delete every table in the managed database's
+   `public` schema, rerun migrations, and seed the canonical E2E fixtures.
+7. Recreate Django and wait for the container health check.
+8. Confirm that Django reports no unapplied migrations.
+9. Replace the served files in `react/dist` with the tested frontend artifact.
+
+UAT is intentionally ephemeral: every successful deployment replaces all
+application data. The reset command requires `ENV=uat`, the UAT Compose-only
+`ALLOW_UAT_DATABASE_RESET=true` flag, a non-local PostgreSQL host, and an
+explicit confirmation argument. The configured database must also exactly
+match the `UAT_DATABASE_RESET_HOST` and `UAT_DATABASE_RESET_NAME` fingerprints
+from the server-managed `.env`. It cannot run through the development Compose
+profile. The managed database role must be able to drop every table in the
+`public` schema and create the tables defined by Django migrations.
+
+`just reset-uat-db` performs the same guarded rebuild and returns Django to a
+healthy state without replacing the frontend artifact. `just deploy-uat` calls
+that recipe on every deployment before activating the tested frontend build.
 
 The current `git pull` is not pinned to the pipeline SHA. If the `staging`
 branch advances after the pipeline checkout, the server can deploy a newer
@@ -81,7 +96,10 @@ SSH broadly.
 - An existing clean clone at `DEPLOY_PATH`, with an `origin` remote that can
   fetch the private repository.
 - A persistent, server-managed `.env` at the repository root. CircleCI never
-  copies this file. It must contain exactly `ENV=uat`.
+  copies this file. It must contain an exact `ENV=uat` line, the managed
+  PostgreSQL connection settings, and `UAT_DATABASE_RESET_HOST` /
+  `UAT_DATABASE_RESET_NAME` values that repeat the expected UAT host and
+  database name. A mismatch stops deployment before Django is stopped.
 - Docker Engine, Docker Compose v2 with `--wait` support, Just, Git, and rsync.
 - Permission for `DEPLOY_USER` to run this repository's Docker Compose stack.
 - Nginx (or the current static server) configured to serve
@@ -121,9 +139,11 @@ stop arbitrary legacy projects on every deployment.
 - Mismatched SSH host key, failed `git pull`, invalid Compose configuration,
   failed image build, failed migration, or unhealthy Django all stop the release.
 - The frontend is not replaced if the Django container does not become healthy.
-- Database migrations are not automatically rolled back. A migration failure
-  requires inspection before retrying; rerunning an older pipeline is not a
-  safe database rollback strategy.
+- A database reset, migration, or fixture-seeding failure leaves Django stopped
+  so UAT cannot serve a partially rebuilt data set. Inspect the failed step and
+  rerun the deployment after correcting it.
+- Database migrations are not automatically rolled back. Rerunning an older
+  pipeline is not a safe database rollback strategy.
 - CircleCI reports the Git HEAD observed by the server-side Just recipe. Runtime
   verification must compare that SHA with the pipeline commit and reject a
   mismatch.

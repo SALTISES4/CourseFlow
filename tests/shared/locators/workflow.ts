@@ -205,7 +205,7 @@ export function workflowHeaderFavouriteToggle(page: Page): Locator {
 
 export const DELETE_SECTION_DIALOG_TITLE = 'You are about to delete a section';
 export const DELETE_SECTION_DIALOG_BODY =
-  'By deleting this section, you will deleted all nodes which have been added to the section. Are you sure you want to proceed?';
+  'Deleting this section will also delete every node in it. Are you sure you want to proceed?';
 
 export function workflowSectionDeleteDialogTitle(page: Page): Locator {
   return workflowSectionDeleteDialog(page).getByRole('heading', {

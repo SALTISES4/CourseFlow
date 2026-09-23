@@ -35,23 +35,28 @@ export const OutcomeWrapper = styled(Box, {
 
 export const OutcomeHeader = styled(Box, {
   shouldForwardProp: (prop) =>
-    !['selected', 'highlighted', 'level', 'greenHover'].includes(prop as string)
+    !['selected', 'highlighted', 'level', 'greenHover', 'editableHover'].includes(
+      prop as string
+    )
 })<{
   selected?: boolean
   highlighted?: boolean
   level: number
   greenHover?: boolean
-}>(({ theme, selected, highlighted, level, greenHover }) => ({
+  editableHover?: boolean
+}>(({ theme, selected, highlighted, level, greenHover, editableHover }) => ({
   position: 'relative',
   display: 'flex',
   borderRadius: `${theme.shape.borderRadius}px`,
   flexDirection: 'row',
   flexGrow: 1,
   minWidth: 0,
-  '&:hover': {
-    boxShadow: `0 0 0 1px ${greenHover ? theme.palette.workflow.selected : blueGrey[100]}`,
-    cursor: 'grab'
-  },
+  ...(editableHover && {
+    '&:hover': {
+      boxShadow: `0 0 0 1px ${greenHover ? theme.palette.workflow.selected : blueGrey[100]}`,
+      cursor: 'grab'
+    }
+  }),
   ...(selected && {
     '&, &:hover': {
       boxShadow: `0 0 0 2px ${theme.palette.workflow.selected}`

@@ -54,7 +54,7 @@ const WorkflowForm = ({
 }) => {
   const { t } = useTranslation('workflow')
   const { t: tCommon } = useTranslation('common')
-  const localizedWorkflowType = workflowTypeLabel(t, workflowType, true)
+  const localizedWorkflowType = workflowTypeLabel(t, workflowType)
   const {
     register,
     control,

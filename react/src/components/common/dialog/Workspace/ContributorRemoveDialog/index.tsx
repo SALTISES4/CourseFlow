@@ -1,3 +1,4 @@
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import {
   deleteProjectTeamMemberMutation,
   listProjectTeamQueryKey
@@ -50,16 +51,16 @@ const ContributorRemoveDialog = ({
           membership_id: payload.membershipId
         }
       })
-      enqueueSnackbar(
-        t('contributor.removed'),
-        { variant: SnackbarOptions.SUCCESS }
-      )
+      enqueueSnackbar(t('contributor.removed'), {
+        variant: SnackbarOptions.SUCCESS
+      })
       onClose()
     } catch (err) {
-      enqueueSnackbar(
-        t('contributor.removeFailed'),
-        { variant: SnackbarOptions.ERROR }
-      )
+      if (!isApiErrorNotificationHandled(err)) {
+        enqueueSnackbar(t('contributor.removeFailed'), {
+          variant: SnackbarOptions.ERROR
+        })
+      }
       console.error('Failed to remove contributor:', err)
     }
   }
@@ -72,7 +73,9 @@ const ContributorRemoveDialog = ({
       maxWidth="xs"
       aria-labelledby="remove-user-modal"
     >
-      <DialogTitle id="remove-user-modal">{t('contributor.removeTitle')}</DialogTitle>
+      <DialogTitle id="remove-user-modal">
+        {t('contributor.removeTitle')}
+      </DialogTitle>
       <DialogContent dividers>
         <Typography gutterBottom>
           {t('contributor.removeConfirmation', {

@@ -24,7 +24,11 @@ from course_flow.api.schemas.graph_mutation import (
     GraphMutationEnvelopeOut,
     GraphReorderChannelsIn,
 )
+from course_flow.api.workspace_edit_locks import workspace_mutation_lock
 from course_flow.application.dto import ChannelDTO
+from course_flow.application.services.workspace_edit_lock_service import (
+    WorkspaceReferenceType,
+)
 from course_flow.core.permissions import WorkflowPermission
 
 graph_collection_router = Router(tags=["channels"], by_alias=True)
@@ -87,6 +91,7 @@ def list_graph_channels(request, uuid: UUID):
     auth=BearerAuth(),
     operation_id="insertGraphChannelBelow",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.GRAPH)
 def insert_graph_channel_below(
     request, uuid: UUID, payload: GraphChannelInsertBelowIn
 ):
@@ -112,6 +117,7 @@ def insert_graph_channel_below(
     auth=BearerAuth(),
     operation_id="reorderGraphChannels",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.GRAPH)
 def reorder_graph_channels(request, uuid: UUID, payload: GraphReorderChannelsIn):
     current_user = get_current_user(request)
     _ensure_graph_permission(
@@ -133,6 +139,11 @@ def reorder_graph_channels(request, uuid: UUID, payload: GraphReorderChannelsIn)
     response=ChannelOut,
     auth=BearerAuth(),
     operation_id="createChannel",
+)
+@workspace_mutation_lock(
+    WorkspaceReferenceType.GRAPH,
+    lookup_arg="payload",
+    lookup_attr="graph_uuid",
 )
 def create_channel(request, payload: ChannelCreateIn):
     current_user = get_current_user(request)
@@ -184,6 +195,7 @@ def get_channel(request, uuid: UUID):
     auth=BearerAuth(),
     operation_id="updateChannel",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.CHANNEL)
 def update_channel(request, uuid: UUID, payload: ChannelPatchIn):
     current_user = get_current_user(request)
     existing = get_channel_service().get_by_uuid(uuid)
@@ -212,6 +224,7 @@ def update_channel(request, uuid: UUID, payload: ChannelPatchIn):
     auth=BearerAuth(),
     operation_id="deleteChannel",
 )
+@workspace_mutation_lock(WorkspaceReferenceType.CHANNEL)
 def delete_channel(request, uuid: UUID):
     current_user = get_current_user(request)
     existing = get_channel_service().get_by_uuid(uuid)

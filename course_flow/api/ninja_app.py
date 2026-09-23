@@ -1,6 +1,7 @@
 from django.db import connection
 from ninja import NinjaAPI, Router
 
+from course_flow.api import workspace_edit_locks
 from course_flow.api.common.schemas import CamelSchema
 from course_flow.api.errors import ExpectedApiError
 from course_flow.api.routers import (
@@ -64,6 +65,7 @@ api.add_router("/user", users.router)
 api.add_router("/user", notifications.router)
 api.add_router("/library", library.router)
 api.add_router("/reference-data", reference_data.router)
+api.add_router("/workspace-lock", workspace_edit_locks.router)
 
 
 class HealthResponse(CamelSchema):

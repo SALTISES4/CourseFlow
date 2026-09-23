@@ -18,6 +18,7 @@ from course_flow.core.models import (
     Tag,
     Workflow,
 )
+from course_flow.tests.edit_lock_helpers import acquire_project_edit_lock
 
 
 @pytest.fixture
@@ -80,7 +81,9 @@ def _create_project(client: Client, raw_token: str) -> str:
         **_auth_header(raw_token),
     )
     assert response.status_code == 200, response.content
-    return response.json()["uuid"]
+    project_uuid = response.json()["uuid"]
+    acquire_project_edit_lock(client, _auth_header(raw_token), project_uuid)
+    return project_uuid
 
 
 @pytest.mark.django_db
@@ -197,6 +200,7 @@ def test_project_create_and_update_persist_disciplines(client: Client, user):
     assert created.json()["disciplines"] == [{"code": first.code}]
 
     project_uuid = created.json()["uuid"]
+    acquire_project_edit_lock(client, _auth_header(raw), project_uuid)
     updated = client.patch(
         f"/api/project/{project_uuid}",
         data={"disciplines": [second.code]},

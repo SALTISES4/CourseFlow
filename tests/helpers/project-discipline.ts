@@ -4,7 +4,9 @@ import { projectDisciplineField } from '../e2e/project/project.locators';
 
 export async function openProjectDisciplineSelect(page: Page): Promise<void> {
   await projectDisciplineField(page).click();
-  await expect(page.getByRole('listbox')).toBeVisible();
+  const listbox = page.getByRole('listbox');
+  await expect(listbox).toBeVisible();
+  await expect(listbox.getByRole('option').first()).toBeVisible();
 }
 
 export async function closeProjectDisciplineSelect(page: Page): Promise<void> {

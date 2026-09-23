@@ -11,6 +11,7 @@ export type ConnectionTargetType = [number, ConnectionEdge]
 
 export type ConnectionType = {
   uuid: string
+  title?: string
   dashed: boolean
   fromId: string
   fromEdge: ConnectionEdge

@@ -1,9 +1,10 @@
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import {
   getProjectQueryKey,
   updateProjectMutation
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { ProjectDetailOut, ProjectPermission } from '@cf/api/gen/types.gen'
-import { hasPermission } from '@cf/context/workspacePermissionsContext'
+import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { useReferenceLabels } from '@cf/i18n/referenceLabels'
 import { WorkspaceType } from '@cf/types/enum'
@@ -33,7 +34,6 @@ const OverviewTab = ({
   disciplines,
   owner,
   isPublished,
-  permissions,
   tags
 }: ProjectDetailOut) => {
   const { t } = useTranslation('project')
@@ -42,10 +42,7 @@ const OverviewTab = ({
   const queryClient = useQueryClient()
   const { disciplineLabel, collator } = useReferenceLabels()
   const { dispatch, show, onClose } = useDialog(DialogMode.PROJECT_PUBLISH)
-  const canPublish = hasPermission(
-    permissions,
-    ProjectPermission.PUBLISH_PROJECT
-  )
+  const canPublish = useResourcePermission(ProjectPermission.PUBLISH_PROJECT)
   const visibilityMutation = useMutation(updateProjectMutation())
   const projectQueryKey = getProjectQueryKey({ path: { uuid: uuid ?? '' } })
 
@@ -69,12 +66,14 @@ const OverviewTab = ({
         { variant: SnackbarOptions.SUCCESS }
       )
     } catch (error) {
-      enqueueSnackbar(
-        nextPublished
-          ? t('messages.publishFailed')
-          : t('messages.unpublishFailed'),
-        { variant: SnackbarOptions.ERROR }
-      )
+      if (!isApiErrorNotificationHandled(error)) {
+        enqueueSnackbar(
+          nextPublished
+            ? t('messages.publishFailed')
+            : t('messages.unpublishFailed'),
+          { variant: SnackbarOptions.ERROR }
+        )
+      }
     }
   }
 
@@ -105,48 +104,48 @@ const OverviewTab = ({
 
       <SC.InfoBlock sx={{ mt: 3 }}>
         <SC.InfoBlockTitle>{t('overview.contributors')}</SC.InfoBlockTitle>
+        <SC.InfoBlockContent>
+          <UserPermissions
+            workspaceId={uuid ?? ''}
+            owner={owner}
+            workspaceType={WorkspaceType.PROJECT}
+          />
 
-        <UserPermissions
-          workspaceId={uuid ?? ''}
-          owner={owner}
-          workspaceType={WorkspaceType.PROJECT}
-        />
-
-        <Alert
-          sx={{ mt: 2 }}
-          severity="info"
-          icon={
-            isPublished ? (
-              <VisibilityOutlinedIcon />
-            ) : (
-              <VisibilityOffOutlinedIcon />
-            )
-          }
-          title={
-            isPublished
-              ? t('status.currentPublic')
-              : t('status.currentPrivate')
-          }
-          cta={
-            canPublish && (
-              <Button
-                size="small"
-                variant="outlined"
-                color="inherit"
-                disabled={visibilityMutation.isPending}
-                onClick={() => {
-                  if (isPublished) {
-                    void updateVisibility(false)
-                  } else {
-                    dispatch(DialogMode.PROJECT_PUBLISH)
-                  }
-                }}
-              >
-                {isPublished ? t('actions.unpublish') : t('actions.publish')}
-              </Button>
-            )
-          }
-        />
+          <Alert
+            severity="info"
+            icon={
+              isPublished ? (
+                <VisibilityOutlinedIcon />
+              ) : (
+                <VisibilityOffOutlinedIcon />
+              )
+            }
+            title={
+              isPublished
+                ? t('status.currentPublic')
+                : t('status.currentPrivate')
+            }
+            cta={
+              canPublish && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color="inherit"
+                  disabled={visibilityMutation.isPending}
+                  onClick={() => {
+                    if (isPublished) {
+                      void updateVisibility(false)
+                    } else {
+                      dispatch(DialogMode.PROJECT_PUBLISH)
+                    }
+                  }}
+                >
+                  {isPublished ? t('actions.unpublish') : t('actions.publish')}
+                </Button>
+              )
+            }
+          />
+        </SC.InfoBlockContent>
       </SC.InfoBlock>
 
       <TagsSection projectUuid={uuid ?? ''} data={tags ?? []} />
@@ -154,9 +153,7 @@ const OverviewTab = ({
       <StyledDialog open={!!show} onClose={onClose} fullWidth maxWidth="sm">
         <DialogTitle>{t('actions.publish')}</DialogTitle>
         <DialogContent dividers>
-          <Typography>
-            {t('overview.publishConfirmation')}
-          </Typography>
+          <Typography>{t('overview.publishConfirmation')}</Typography>
         </DialogContent>
         <DialogActions>
           <Button

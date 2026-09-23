@@ -45,6 +45,7 @@ type PropsType = {
   onClick: () => void
   onToggleClick: (e: MouseEvent<HTMLButtonElement>) => void
   greenHover?: boolean
+  editableHover: boolean
 }
 
 const OutcomeHeader = ({
@@ -58,6 +59,7 @@ const OutcomeHeader = ({
   selected,
   collapsed,
   greenHover,
+  editableHover,
   setCollapsed,
   onClick,
   showToggle,
@@ -74,6 +76,7 @@ const OutcomeHeader = ({
       level={level}
       onClick={onClick}
       greenHover={greenHover}
+      editableHover={editableHover}
     >
       <Styled.OutcomeHeaderInner sx={{ position: 'relative' }}>
         <Styled.OutcomeTitle variant="body2">{title}</Styled.OutcomeTitle>

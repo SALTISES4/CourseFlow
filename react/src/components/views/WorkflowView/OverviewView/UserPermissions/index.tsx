@@ -1,3 +1,4 @@
+import { isApiErrorNotificationHandled } from '@cf/api/apiError'
 import {
   listProjectTeamOptions,
   listProjectTeamQueryKey,
@@ -116,9 +117,11 @@ const UserPermissions = ({
         variant: SnackbarOptions.SUCCESS
       })
     } catch (err) {
-      enqueueSnackbar(t('messages.roleUpdateFailed'), {
-        variant: SnackbarOptions.ERROR
-      })
+      if (!isApiErrorNotificationHandled(err)) {
+        enqueueSnackbar(t('messages.roleUpdateFailed'), {
+          variant: SnackbarOptions.ERROR
+        })
+      }
       console.error('Failed to update contributor role:', err)
     }
   }
@@ -147,76 +150,81 @@ const UserPermissions = ({
     teamData?.items.filter((u) => u.userEmail !== owner.email) ?? []
 
   return (
-    <SC.InfoBlockContent>
-      <SC.PermissionGrid>
-        {owner && (
-          <SC.PermissionThumbnail>
-            <ListItemAvatar>
-              <Avatar alt={owner.firstName}>
-                {ThemeHelper.getInitials(
-                  `${owner.firstName} ${owner.lastName}`
-                ).toUpperCase()}
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={`${owner.firstName} ${owner.lastName}`}
-              secondary={owner.email}
-            />
+    <SC.PermissionGrid>
+      {owner && (
+        <SC.PermissionThumbnail>
+          <ListItemAvatar>
+            <Avatar alt={owner.firstName}>
+              {ThemeHelper.getInitials(
+                `${owner.firstName} ${owner.lastName}`
+              ).toUpperCase()}
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText
+            primary={`${owner.firstName} ${owner.lastName}`}
+            secondary={owner.email}
+          />
+          <Button variant="outlined" disabled>
+            {t('permissions.owner')}
+          </Button>
+        </SC.PermissionThumbnail>
+      )}
+
+      {members.map((user) => (
+        <SC.PermissionThumbnail key={user.id}>
+          <ListItemAvatar>
+            <Avatar alt={memberDisplayName(user)}>
+              {ThemeHelper.getInitials(
+                memberDisplayName(user).trim().length > 2
+                  ? memberDisplayName(user).trim()
+                  : user.userEmail
+              ).toUpperCase()}
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText
+            primary={memberDisplayName(user)}
+            secondary={user.userEmail}
+          />
+          {readOnly ? (
             <Button variant="outlined" disabled>
-              {t('permissions.owner')}
+              {projectTeamRoleLabel(user.role, tWorkspace)}
             </Button>
-          </SC.PermissionThumbnail>
-        )}
-
-        {members.map((user) => (
-          <SC.PermissionThumbnail key={user.id}>
-            <ListItemAvatar>
-              <Avatar alt={memberDisplayName(user)}>
-                {ThemeHelper.getInitials(
-                  memberDisplayName(user).trim().length > 2
-                    ? memberDisplayName(user).trim()
-                    : user.userEmail
-                ).toUpperCase()}
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={memberDisplayName(user)}
-              secondary={user.userEmail}
-            />
-            {readOnly ? (
-              <Button variant="outlined" disabled>
-                {projectTeamRoleLabel(user.role, tWorkspace)}
-              </Button>
-            ) : (
-              <MenuButton
-                disabled={!canManageMembers}
-                selected={user.role}
-                options={[
-                  ...projectTeamRoleMenuOptions(tWorkspace).map((item) => ({
-                    name: item.value,
-                    label: item.label,
-                    disabled: user.role === item.value
-                  })),
-                  {
-                    name: 'mui-divider'
-                  },
-                  {
-                    name: 'remove',
-                    label: t('permissions.removeContributor'),
-                    onClick: onUserRemove(user.id, memberDisplayName(user))
-                  }
-                ]}
-                onChange={(role) =>
-                  onChangeHandler(role as ProjectTeamRoleSchema, user.id)
+          ) : (
+            <MenuButton
+              disabled={!canManageMembers}
+              selected={user.role}
+              options={[
+                ...projectTeamRoleMenuOptions(tWorkspace).map((item) => ({
+                  name: item.value,
+                  label: item.label,
+                  disabled: user.role === item.value
+                })),
+                {
+                  name: 'mui-divider'
+                },
+                {
+                  name: 'remove',
+                  label: t('permissions.removeContributor'),
+                  onClick: onUserRemove(user.id, memberDisplayName(user))
                 }
-                placeholder={projectTeamRoleLabel(user.role, tWorkspace)}
-              />
-            )}
-          </SC.PermissionThumbnail>
-        ))}
+              ]}
+              onChange={(role) =>
+                onChangeHandler(role as ProjectTeamRoleSchema, user.id)
+              }
+              placeholder={projectTeamRoleLabel(user.role, tWorkspace)}
+            />
+          )}
+        </SC.PermissionThumbnail>
+      ))}
 
-        {canManageMembers && (
-          <SC.PermissionThumbnail addNew as={Button} onClick={onUserAdd}>
+      {canManageMembers && (
+        <li>
+          <SC.PermissionThumbnail
+            addNew
+            as={Button}
+            onClick={onUserAdd}
+            sx={{ height: '100%' }}
+          >
             <ListItemAvatar>
               <Avatar>
                 <PersonAddAlt1Icon />
@@ -224,9 +232,9 @@ const UserPermissions = ({
             </ListItemAvatar>
             <ListItemText primary={t('permissions.addUser')} />
           </SC.PermissionThumbnail>
-        )}
-      </SC.PermissionGrid>
-    </SC.InfoBlockContent>
+        </li>
+      )}
+    </SC.PermissionGrid>
   )
 }
 

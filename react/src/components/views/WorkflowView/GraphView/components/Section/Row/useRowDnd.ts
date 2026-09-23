@@ -236,6 +236,7 @@ function useRowDnd(props: PropsType) {
 
   return {
     ...state,
+    insertMode,
     chooseManualPlacement,
     cancelManualPlacement: resetState
   }

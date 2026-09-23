@@ -696,7 +696,7 @@ locatorMappings:
     strategy: "full-page access-denied block in place of project workspace content on route '/project/{id}/*'"
     confidence: inferred
   projectCard:
-    strategy: "{resultsRegion} project card (project scope)"
+    strategy: "{resultsRegion} project card (project scope); a known resource is identified by its UUID-backed data-resource-uuid attribute, not title text"
     confidence: inferred
   projectCardDeletePermanentlyButton:
     strategy: "{projectCard} button with label 'Delete permanently' when archived and offered"
@@ -915,7 +915,7 @@ locatorMappings:
     strategy: "{createWorkflowDialog} form (blank mode step 3)"
     confidence: inferred
   workflowCard:
-    strategy: "{resultsRegion} workflow card (workflow scope); when templatesToggle constrains listing to templates, template workflows are still represented as workflowCard with cardTemplateChip per FR-CARD-002"
+    strategy: "{resultsRegion} workflow card (workflow scope), with a known resource identified by its UUID-backed data-resource-uuid attribute rather than non-unique title text; when templatesToggle constrains listing to templates, template workflows are still represented as workflowCard with cardTemplateChip per FR-CARD-002"
     confidence: inferred
   workflowCardDeletePermanentlyButton:
     strategy: "{workflowCard} button with label 'Delete permanently' when archived and offered"
@@ -1616,12 +1616,21 @@ locatorMappings:
   workflowViewTabSelector:
     strategy: "{workflowHeader} tab selector for workflow sub-views"
     confidence: inferred
-  workspaceEditLockBanner:
-    strategy: null
-    confidence: unresolved
-  workspaceEditLockMessage:
-    strategy: null
-    confidence: unresolved
+  cardEditLockTag:
+    strategy: '[data-testid="card-edit-lock"]'
+    confidence: confirmed
   workspaceEditLockTakeoverButton:
-    strategy: null
-    confidence: unresolved
+    strategy: '[data-testid="workspace-edit-lock-takeover"]'
+    confidence: confirmed
+  workspaceEditLockTakeoverDialog:
+    strategy: '[data-testid="workspace-edit-lock-takeover-dialog"]'
+    confidence: confirmed
+  workspaceEditLockTakeoverDialogMessage:
+    strategy: '[data-testid="workspace-edit-lock-takeover-dialog-message"]'
+    confidence: confirmed
+  workspaceEditLockLostAlert:
+    strategy: '[data-testid="workspace-edit-lock-lost-alert"]'
+    confidence: confirmed
+  networkActivityLoader:
+    strategy: '[data-testid="network-activity-loader"]'
+    confidence: confirmed

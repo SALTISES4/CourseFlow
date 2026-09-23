@@ -45,3 +45,20 @@ export function displaySystemTitle(
   }
   return title
 }
+
+/**
+ * Resolve a title for an edit field without turning an ordinary empty title
+ * into persisted presentation text. Duplicates keep their localized copy
+ * presentation until the user explicitly replaces the title.
+ */
+export function displayEditableSystemTitle(
+  t: TFunction<'workflow'>,
+  entity: SystemTitle,
+  fallback: string
+): string {
+  const copyCount = Math.max(0, entity.titleCopyCount ?? 0)
+  if (copyCount === 0 && !entity.systemLabelCode) {
+    return entity.title
+  }
+  return displaySystemTitle(t, entity, fallback)
+}

@@ -36,7 +36,7 @@ const project = {
     description: 'Description',
     disciplines: 'Disciplines',
     contributors: 'Contributors',
-    emptyValue: '—',
+    emptyValue: '-',
     publishConfirmation:
       'Publishing this project will make all associated workflows visible to all CourseFlow users. Are you ready to share this content?'
   },

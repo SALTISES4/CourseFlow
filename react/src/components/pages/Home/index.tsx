@@ -71,8 +71,7 @@ const Home = () => {
    * RENDER
    *******************************************************/
   return (
-    <OuterContentWrap>
-      <Welcome hide={ownsAnyProject} />
+    <OuterContentWrap padTop={ownsAnyProject}>
       {!!projects.length && (
         <Section
           header={{

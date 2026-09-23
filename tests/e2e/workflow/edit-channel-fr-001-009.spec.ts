@@ -139,14 +139,12 @@ async function insertChannelRight(page: Page, sourceUuid: string): Promise<strin
 async function assertDuplicateChannelColorParity(
   page: Page,
   sourceUuid: string,
-  copyTitle: string,
+  copyUuid: string,
 ): Promise<void> {
   const sourceStripeColor = await workflowChannelHeaderColorIndicatorBackgroundColor(
     page,
     sourceUuid,
   );
-  const copyUuid = await channelUuidByTitle(page, copyTitle);
-
   await expect
     .poll(async () => workflowChannelHeaderColorIndicatorBackgroundColor(page, copyUuid), {
       timeout: 10_000,
@@ -164,17 +162,26 @@ async function assertDuplicateChannelColorParity(
 async function duplicateChannelViaHover(page: Page, sourceTitle: string): Promise<string> {
   const sourceUuid = await channelUuidByTitle(page, sourceTitle);
   const copyTitle = `${sourceTitle} (copy)`;
-  const beforeCount = await workflowChannelCount(page);
+  const beforeOrder = await channelOrderUuids(page);
 
   await hoverWorkflowChannelHeader(page, sourceUuid);
   await workflowChannelHoverDuplicateItem(page, sourceUuid).click();
 
   await expect
     .poll(async () => workflowChannelCount(page), { timeout: 10_000 })
-    .toBe(beforeCount + 1);
-  await expect(workflowChannelHeaderByTitle(page, copyTitle)).toBeVisible();
+    .toBe(beforeOrder.length + 1);
 
-  return channelUuidByTitle(page, copyTitle);
+  const afterOrder = await channelOrderUuids(page);
+  const sourceIndex = afterOrder.indexOf(sourceUuid);
+  const copyUuid = afterOrder[sourceIndex + 1];
+  expect(sourceIndex).toBeGreaterThanOrEqual(0);
+  if (!copyUuid) {
+    throw new Error(`No duplicate channel found immediately to the right of ${sourceUuid}.`);
+  }
+  expect(beforeOrder).not.toContain(copyUuid);
+  await expect(workflowChannelHeader(page, copyUuid)).toContainText(copyTitle);
+
+  return copyUuid;
 }
 
 test.describe('FR-CHAN-001: open workflowEditChannelForm', () => {
@@ -468,15 +475,15 @@ test.describe('FR-CHAN-005: duplicate', () => {
   }) => {
     const sourceUuid = await channelUuidByTitle(page, E2E_CHANNEL_A);
 
-    await duplicateChannelViaHover(page, E2E_CHANNEL_A);
-    await assertDuplicateChannelColorParity(page, sourceUuid, E2E_CHANNEL_A_COPY);
+    const copyUuid = await duplicateChannelViaHover(page, E2E_CHANNEL_A);
+    await assertDuplicateChannelColorParity(page, sourceUuid, copyUuid);
   });
 
   test('sidebar Duplicate creates workflowChannel with (copy) title and matching colour', async ({
     page,
   }) => {
     const sourceUuid = await channelUuidByTitle(page, E2E_CHANNEL_C);
-    const beforeCount = await workflowChannelCount(page);
+    const beforeOrder = await channelOrderUuids(page);
 
     await workflowChannelHeader(page, sourceUuid).click();
     await expect(workflowEditChannelForm(page)).toBeVisible();
@@ -484,12 +491,21 @@ test.describe('FR-CHAN-005: duplicate', () => {
 
     await expect
       .poll(async () => workflowChannelCount(page), { timeout: 10_000 })
-      .toBe(beforeCount + 1);
-    await expect(workflowChannelHeaderByTitle(page, E2E_CHANNEL_C_COPY)).toBeVisible();
+      .toBe(beforeOrder.length + 1);
+
+    const afterOrder = await channelOrderUuids(page);
+    const sourceIndex = afterOrder.indexOf(sourceUuid);
+    const copyUuid = afterOrder[sourceIndex + 1];
+    expect(sourceIndex).toBeGreaterThanOrEqual(0);
+    if (!copyUuid) {
+      throw new Error(`No duplicate channel found immediately to the right of ${sourceUuid}.`);
+    }
+    expect(beforeOrder).not.toContain(copyUuid);
+    await expect(workflowChannelHeader(page, copyUuid)).toContainText(E2E_CHANNEL_C_COPY);
 
     // FR-CHAN-005: duplicate does not rebind sidebar — form stays on source channel.
     await expect(workflowEditChannelFormTitleField(page)).toHaveValue(E2E_CHANNEL_C);
-    await assertDuplicateChannelColorParity(page, sourceUuid, E2E_CHANNEL_C_COPY);
+    await assertDuplicateChannelColorParity(page, sourceUuid, copyUuid);
   });
 });
 

@@ -7,9 +7,7 @@ import { styled } from '@mui/material/styles'
 
 type LinkedTo = LinkedOutcomesPropsType['parent']['type']
 
-export const Wrap = styled(Box, {
-  shouldForwardProp: (prop) => !['type'].includes(prop as string)
-})<{ type: LinkedTo }>(({ theme, type }) => ({
+export const Wrap = styled(Box)(() => ({
   position: 'absolute',
   top: '18px',
   right: 0,
@@ -20,6 +18,7 @@ export const Wrap = styled(Box, {
 
 export const Popover = styled(MuiPopover)(({ theme }) => ({
   '& .MuiPaper-root': {
+    width: '300px',
     marginLeft: '8px',
     padding: theme.spacing(1),
     borderRadius: theme.shape.borderRadius,
@@ -44,6 +43,7 @@ export const Badge = styled(MuiBadge, {
   }
 }))
 
+// Here
 export const UnlinkButton = styled(IconButton)(({ theme }) => ({
   marginLeft: 'auto',
   borderRadius: 0,

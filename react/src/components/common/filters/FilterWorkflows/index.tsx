@@ -1,175 +1,54 @@
-import { PropsType as ResultType } from '@cfComponents/cards/WorkflowCardDumb'
 import CancelIcon from '@mui/icons-material/Cancel'
 import SearchIcon from '@mui/icons-material/Search'
-import { debounce } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import Input from '@mui/material/Input'
 import InputAdornment from '@mui/material/InputAdornment'
-import Link from '@mui/material/Link'
-import MenuItem from '@mui/material/MenuItem'
-import Fuse from 'fuse.js'
-import {
-  ChangeEvent,
-  KeyboardEvent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ChangeEvent, KeyboardEvent, useRef, useState } from 'react'
 
-import {
-  ProjectGroup,
-  ProjectName,
-  ProjectTag,
-  StyledMenu,
-  Suggestion,
-  Wrap
-} from './styles'
+import { Wrap } from './styles'
 
 export type PropsType = {
-  workflows: ResultType[]
-  onChange: (item: ResultType) => void
   onPropagateChange: (keyword: string) => void
   placeholder?: string
-  resultsLimit?: number
-  seeAllText?: string
 }
 
 const FilterWorkflows = ({
-  workflows,
   placeholder = 'Search in projects...',
-  seeAllText = 'See all results',
-  resultsLimit = 8,
-  onChange,
   onPropagateChange
 }: PropsType) => {
   const [term, setTerm] = useState('')
-  const [selected, setSelected] = useState<ResultType>()
-  const [results, setResults] = useState<ResultType[]>([])
-  const [menuAnchor, setMenuAnchor] = useState<HTMLDivElement | null>(null)
-  const wrapRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const debouncedFilter = useMemo(() => {
-    return debounce((term) => {
-      const fuse = new Fuse(workflows, {
-        keys: ['title', 'description']
-      })
-
-      const filtered: typeof workflows = fuse
-        .search(term)
-        .map((result) => result.item)
-
-      setResults(filtered.slice(0, resultsLimit))
-    }, 500)
-    // trust me bro - debounced + controlled inputs are yuck
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  /*******************************************************
-   * LIFECYCLE HOOKS
-   *******************************************************/
-  useEffect(() => {
-    debouncedFilter(term)
-    // trust me bro - debounced + controlled inputs are yuck
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [term])
-
-  useEffect(() => {
-    setMenuAnchor(results.length > 0 ? wrapRef.current : null)
-  }, [results])
-
   const onSearchTermChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target
-    setTerm(value)
-
-    if (value === '') {
-      onMenuClose()
-    }
+    setTerm(e.target.value)
   }
 
   /*******************************************************
    * LISTENERS / FUNCTIONS
    *******************************************************/
 
-  /**
-   * Manually control the suggestion list "selected" item
-   **/
   const onInputKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(e.key)) {
+    if (e.key === 'Enter') {
       e.preventDefault()
-    }
-
-    const currentIndex = !selected
-      ? -1
-      : results.findIndex((p) => p.uuid === selected.uuid)
-
-    switch (e.key) {
-      case 'ArrowDown':
-        if (!selected || currentIndex + 1 === results.length) {
-          setSelected(results[0])
-          break
-        }
-        setSelected(results[currentIndex + 1])
-        break
-      case 'ArrowUp':
-        if (!selected || currentIndex - 1 === -1) {
-          setSelected(results[results.length - 1])
-          break
-        }
-        setSelected(results[currentIndex - 1])
-        break
-      case 'Enter':
-        // @todo maybe we need some logic for where the user is focused
-        // this UX has not been fully thought through
-        // what about 'see all' case as wel
-        // so, for now, hijack enter for now to push input val to parent search
-        // this is not fully fleshed out
-        onPropagateChange(term)
-        onMenuClose()
-
-        // ...and comment out the previous command which was trigering a navigate click (also desirable if arrowing through results)
-        // selected && onSuggestionClick(selected)
-        break
-      case 'Escape':
-        onMenuClose()
-        break
-    }
-  }
-
-  const onInputFocus = () => {
-    if (results.length) {
-      setMenuAnchor(wrapRef.current)
+      onPropagateChange(term)
     }
   }
 
   const onClearClick = () => {
     setTerm('')
-    // for now, if we clear the term, update the parent search state
-    onPropagateChange(term)
+    onPropagateChange('')
     inputRef.current?.focus()
-  }
-
-  const onSuggestionClick = (p: ResultType) => {
-    onChange(p)
-    onMenuClose()
-  }
-
-  const onMenuClose = () => {
-    setSelected(undefined)
-    setMenuAnchor(null)
   }
 
   /*******************************************************
    * RENDER
    *******************************************************/
   return (
-    <Wrap ref={wrapRef}>
+    <Wrap>
       <Input
         placeholder={placeholder}
         value={term}
         onChange={onSearchTermChange}
-        onFocus={onInputFocus}
         onKeyDown={onInputKeydown}
         inputProps={{
           ref: inputRef
@@ -189,49 +68,6 @@ const FilterWorkflows = ({
           ) : null
         }
       />
-
-      <StyledMenu
-        id="filter-projects-menu"
-        disableAutoFocus
-        disableAutoFocusItem
-        disableRestoreFocus
-        keepMounted
-        autoFocus={false}
-        anchorEl={menuAnchor}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-        open={!!menuAnchor}
-        onClose={onMenuClose}
-      >
-        {results.map((p) => (
-          <Suggestion
-            key={p.uuid}
-            onClick={() => onSuggestionClick(p)}
-            selected={selected && selected.uuid === p.uuid}
-          >
-            <ProjectGroup>{p.description}</ProjectGroup>
-            {/*<ProjectName>{p.name}</ProjectName>*/}
-            <ProjectName>{p.title}</ProjectName>
-            <ProjectTag>
-              {/*<CardChip className={p.chip.type} label={p.chip.label} />*/}
-            </ProjectTag>
-          </Suggestion>
-        ))}
-
-        {results.length >= resultsLimit && (
-          <MenuItem key="see-all">
-            <Link href="#" underline="always">
-              {seeAllText}
-            </Link>
-          </MenuItem>
-        )}
-      </StyledMenu>
     </Wrap>
   )
 }

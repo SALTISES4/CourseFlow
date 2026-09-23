@@ -39,7 +39,6 @@ const LinkedOutcomeRow = ({
   const dispatch = useDispatch<AppDispatch>()
   const rowRef = useRef<HTMLDivElement>(null)
   const [collapsed, setCollapsed] = useState(true)
-  const canShowActions = useResourcePermission(WorkflowPermission.COMMENT)
   const canUnlink = useResourcePermission(WorkflowPermission.ASSIGN_OUTCOMES)
   const prefix = useSelector((state: RootState) =>
     getPrefixPath(state, graphUuid, outcome.uuid)
@@ -97,18 +96,15 @@ const LinkedOutcomeRow = ({
         onClick={() => undefined}
         onContentMouseEnter={() => setHoveredOutcomeUuid(outcome.uuid)}
         action={
-          hoveredOutcomeUuid === outcome.uuid && canShowActions ? (
+          hoveredOutcomeUuid === outcome.uuid && canUnlink ? (
             <Tooltip title={t('related.unlinkOutcome')} disableInteractive>
-              <span>
-                <Styled.UnlinkButton
-                  aria-label={t('related.unlinkOutcome')}
-                  disabled={!canUnlink}
-                  size="small"
-                  onClick={onUnlink}
-                >
-                  <LinkOffOutlinedIcon fontSize="small" />
-                </Styled.UnlinkButton>
-              </span>
+              <Styled.UnlinkButton
+                aria-label={t('related.unlinkOutcome')}
+                size="small"
+                onClick={onUnlink}
+              >
+                <LinkOffOutlinedIcon fontSize="small" />
+              </Styled.UnlinkButton>
             </Tooltip>
           ) : undefined
         }
@@ -171,7 +167,7 @@ const LinkedOutcomes = ({
   }, [])
 
   return (
-    <Styled.Wrap ref={wrapRef} type={parent.type}>
+    <Styled.Wrap ref={wrapRef}>
       <Styled.Badge
         ref={badgeRef}
         onClick={showPopover(true)}

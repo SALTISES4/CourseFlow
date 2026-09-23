@@ -28,7 +28,7 @@ test.use({
   seedAsset: 'workflow.standard_activity',
   seedDependencies: ['project.primary', 'actor.commenter', 'actor.editor', 'actor.viewer'],
   actorAsset: 'actor.teacher',
-  seedAccess: 'read-only',
+  seedAccess: 'disposable-copy',
 });
 
 /** Fixture outcome: course_flow/e2e_seed/constants.py */
@@ -186,9 +186,9 @@ test.describe('Right sidebar — tab strip (FR-WF-RS-002)', () => {
   }) => {
     const tabs = workflowRightSidebarTabStrip(page).getByRole('button');
     await expect(tabs).toHaveCount(3);
-    await expect(tabs.nth(0)).toHaveAttribute('aria-label', 'edit tab');
-    await expect(tabs.nth(1)).toHaveAttribute('aria-label', 'add tab');
-    await expect(tabs.nth(2)).toHaveAttribute('aria-label', 'outcomes tab');
+    await expect(tabs.nth(0)).toHaveAttribute('aria-label', 'Edit tab');
+    await expect(tabs.nth(1)).toHaveAttribute('aria-label', 'Add tab');
+    await expect(tabs.nth(2)).toHaveAttribute('aria-label', 'Outcomes tab');
     await expect(workflowRightSidebarCommentsTab(page)).toHaveCount(0);
   });
 
@@ -200,7 +200,7 @@ test.describe('Right sidebar — tab strip (FR-WF-RS-002)', () => {
 
     const tabs = workflowRightSidebarTabStrip(page).getByRole('button');
     await expect(tabs).toHaveCount(4);
-    await expect(tabs.nth(3)).toHaveAttribute('aria-label', 'comments tab');
+    await expect(tabs.nth(3)).toHaveAttribute('aria-label', 'Comments tab');
   });
 
   test('FR-WF-RS-002: outcomes sub-view tab strip shows Edit only without outcome selection', async ({
@@ -214,7 +214,7 @@ test.describe('Right sidebar — tab strip (FR-WF-RS-002)', () => {
 
     const tabs = workflowRightSidebarTabStrip(page).getByRole('button');
     await expect(tabs).toHaveCount(1);
-    await expect(tabs.nth(0)).toHaveAttribute('aria-label', 'edit tab');
+    await expect(tabs.nth(0)).toHaveAttribute('aria-label', 'Edit tab');
     await expect(workflowRightSidebarCommentsTab(page)).toHaveCount(0);
     await expect(workflowRightSidebarAddTab(page)).toHaveCount(0);
     await expect(workflowRightSidebarOutcomesTab(page)).toHaveCount(0);
@@ -234,8 +234,8 @@ test.describe('Right sidebar — tab strip (FR-WF-RS-002)', () => {
 
     const tabs = workflowRightSidebarTabStrip(page).getByRole('button');
     await expect(tabs).toHaveCount(2);
-    await expect(tabs.nth(0)).toHaveAttribute('aria-label', 'edit tab');
-    await expect(tabs.nth(1)).toHaveAttribute('aria-label', 'comments tab');
+    await expect(tabs.nth(0)).toHaveAttribute('aria-label', 'Edit tab');
+    await expect(tabs.nth(1)).toHaveAttribute('aria-label', 'Comments tab');
   });
 });
 
