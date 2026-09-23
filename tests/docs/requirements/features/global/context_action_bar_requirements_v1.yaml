@@ -9,7 +9,7 @@
 #   - tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml (FR-WF-ARCH-* after 'Archive [workflow type]' overflow row)
 #   - tests/docs/requirements/features/workflow/workflow_copy_requirements_v1.yaml (FR-WF-COPY-* after 'Copy [workflow type]' overflow row)
 #   - tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail — FR-WS-ACCESS-001, FR-WS-ACCESS-002)
-#   - tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml (workflowView, workflowSectionContainer — expand/collapse section canvas behavior FR-SEC-012)
+#   - tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml (workflowView, workflowSectionContainer, workflowSectionNumberLabel, workflowSectionTitleText, workflowEditSectionFormTitleField — FR-SEC-002 section header display; FR-SEC-012 expand/collapse; Jump to row labels FR-CAB-007)
 #   - tests/docs/requirements/features/workflow/workflow_node_visual_requirements_v1.yaml (workflowNode — tag filter targets on Workflow sub-view)
 #   - tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml (workflowOutcomeView, workflowOutcome — expand/collapse outcome targets)
 #   - tests/docs/requirements/features/workflow/workflow_delete_section_requirements_v1.yaml (sole-section delete guard — FR-SEC-006; workflow always retains ≥1 workflowSectionContainer)
@@ -58,7 +58,15 @@ uiObjectDefinitions:
   workflowJumpToMenu:
     meaning: Dropdown menu listing workflowSectionContainer entries from workflowJumpToTrigger.
   workflowJumpToMenuSectionItem:
-    meaning: A workflowSectionContainer row inside workflowJumpToMenu.
+    meaning: A selectable row inside workflowJumpToMenu for one workflowSectionContainer; visible label follows FR-CAB-007 (index, space, title or untitled fallback).
+  workflowJumpToUntitledSectionDisplayFallback:
+    meaning: Display-only label fragment 'Untitled section' in en-CA when workflowEditSectionFormTitleField is empty; active-locale localized equivalent in other locales; not persisted as the section title.
+  workflowSectionNumberLabel:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml (FR-SEC-002).
+  workflowSectionTitleText:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml (FR-SEC-002).
+  workflowEditSectionFormTitleField:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml (FR-SEC-003).
   workflowSectionContainer:
     meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml.
 
@@ -412,7 +420,11 @@ requirements:
       - workflowJumpToTrigger
       - workflowJumpToMenu
       - workflowJumpToMenuSectionItem
+      - workflowJumpToUntitledSectionDisplayFallback
       - workflowSectionContainer
+      - workflowSectionNumberLabel
+      - workflowSectionTitleText
+      - workflowEditSectionFormTitleField
 
     preconditions:
       - FR-CAB-004 preconditions hold
@@ -425,7 +437,10 @@ requirements:
     mainFlow:
       - workflowJumpToTrigger is visible on contextActionBar with label 'Jump to'
       - clicking workflowJumpToTrigger per roleBehavior opens workflowJumpToMenu
-      - workflowJumpToMenu lists every workflowSectionContainer in workflowView as a workflowJumpToMenuSectionItem row
+      - workflowJumpToMenu lists every workflowSectionContainer in workflowView top-to-bottom order, each as one workflowJumpToMenuSectionItem row
+      - each workflowJumpToMenuSectionItem visible label is workflowSectionNumberLabel text for that section, one ASCII space, then either the persisted workflowEditSectionFormTitleField value when non-empty or workflowJumpToUntitledSectionDisplayFallback when the persisted title is the empty string
+      - Jump to row label rules apply only inside workflowJumpToMenu and do not change workflowSectionHeader presentation on the canvas, which remains per FR-SEC-002 (empty persisted title shows workflowSectionNumberLabel only with no workflowSectionTitleText)
+      - when section order or titles change per FR-SEC-002 or FR-SEC-003, workflowJumpToMenuSectionItem labels reflect the updated workflowSectionNumberLabel values and persisted titles the next time workflowJumpToMenu is opened
       - clicking a workflowJumpToMenuSectionItem scrolls the viewport to the matching workflowSectionContainer in workflowView
 
     roleBehavior:
@@ -443,7 +458,10 @@ requirements:
     acceptanceCriteria:
       - given FR-CAB-007 preconditions hold, workflowJumpToTrigger is visible on contextActionBar with label 'Jump to'
       - given actor clicks workflowJumpToTrigger per roleBehavior, workflowJumpToMenu opens
-      - given workflowJumpToMenu is open, every workflowSectionContainer in workflowView is listed as a selectable workflowJumpToMenuSectionItem row
+      - given workflowJumpToMenu is open, every workflowSectionContainer in workflowView is listed as a selectable workflowJumpToMenuSectionItem row in top-to-bottom section order
+      - given workflowEditSectionFormTitleField is non-empty for a section, the matching workflowJumpToMenuSectionItem visible label is '{workflowSectionNumberLabel} {persisted title}' with exactly one space between the index and the title text
+      - given workflowEditSectionFormTitleField is the empty string for a section, the matching workflowJumpToMenuSectionItem visible label is '{workflowSectionNumberLabel} Untitled section' in en-CA (workflowJumpToUntitledSectionDisplayFallback after one ASCII space)
+      - given a section has an empty persisted title, workflowSectionHeader on the canvas still shows workflowSectionNumberLabel only with no workflowSectionTitleText per FR-SEC-002
       - given actor clicks a workflowJumpToMenuSectionItem, viewport scroll position moves to that corresponding workflowSectionContainer
 
     openQuestions: []

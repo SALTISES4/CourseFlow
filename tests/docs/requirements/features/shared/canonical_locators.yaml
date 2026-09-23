@@ -1170,14 +1170,14 @@ locatorMappings:
     strategy: "{workflowHeader} favourite toggle control for current workflow"
     confidence: inferred
   workflowJumpToMenu:
-    strategy: null
-    confidence: unresolved
+    strategy: "#jump-to-menu-menu"
+    confidence: confirmed
   workflowJumpToMenuSectionItem:
-    strategy: null
-    confidence: unresolved
+    strategy: "{workflowJumpToMenu} [role='menuitem']"
+    confidence: confirmed
   workflowJumpToTrigger:
-    strategy: null
-    confidence: unresolved
+    strategy: "[data-test-id='jump-to-menu-button']"
+    confidence: confirmed
   workflowLinkWorkflowDialog:
     strategy: null
     confidence: unresolved
