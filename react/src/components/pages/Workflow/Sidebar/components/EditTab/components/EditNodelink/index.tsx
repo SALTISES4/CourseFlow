@@ -19,14 +19,11 @@ import {
   edgeLineTypeIsDashed
 } from '@cfViews/WorkflowView/GraphView/components/LineSVG/utility'
 import { debounce } from '@mui/material'
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
@@ -58,14 +55,12 @@ const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
   const dispatch = useDispatch<AppDispatch>()
   const canEdit = useResourcePermission(WorkflowPermission.NODE_LINK_MANAGEMENT)
   const [titleDraft, setTitleDraft] = useState(edge.title)
-  const [textPosition, setTextPosition] = useState(edge.textPosition)
   const [dashed, setDashed] = useState(() =>
     edgeLineTypeIsDashed(edge.lineType)
   )
 
   useEffect(() => {
     setTitleDraft(edge.title)
-    setTextPosition(edge.textPosition)
     setDashed(edgeLineTypeIsDashed(edge.lineType))
   }, [edge.edgeId, edge.title, edge.textPosition, edge.lineType])
 
@@ -145,18 +140,6 @@ const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
     [canEdit, dispatch, edge.edgeId, edge.graphUuid]
   )
 
-  const onSliderChange = useCallback(
-    (_: Event, value: number | number[]) => {
-      if (!canEdit) {
-        return
-      }
-      const next = value as number
-      setTextPosition(next)
-      debouncedMetaDispatch({ textPosition: next })
-    },
-    [canEdit, debouncedMetaDispatch]
-  )
-
   const onDelete = useCallback(async () => {
     if (!canEdit) {
       return
@@ -186,19 +169,7 @@ const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
             onBlur={onTitleBlur}
             disabled={!canEdit}
           />
-          {/* NOTE: temporarily hidden - see COURSEFLOW-657 */}
-          {/* <Box>
-            <Typography id="edit-text-position" gutterBottom>
-              {t('edit.textPosition')}
-            </Typography>
-            <Slider
-              value={textPosition}
-              aria-labelledby="edit-text-position"
-              valueLabelDisplay="off"
-              onChange={onSliderChange}
-              disabled={!canEdit}
-            />
-          </Box> */}
+          {/* NOTE: text position temporarily hidden - see COURSEFLOW-657 */}
           <FormControlLabel
             sx={{ ml: 0 }}
             label={t('edit.dashedLine')}
