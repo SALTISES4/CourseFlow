@@ -79,7 +79,6 @@ const LinkedOutcomeRow = ({
         }
       }}
     >
-      {/* WTF */}
       <OutcomeHeader
         uuid={outcome.uuid}
         level={level}

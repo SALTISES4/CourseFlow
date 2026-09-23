@@ -12,6 +12,7 @@ import {
   expectSectionBackgroundAligned,
   expectSectionNumberLabelsMatchOrder,
   expectClearingSectionTitleShowsNumberLabelOnly,
+  expectEmptySectionHeaderShowsNumberLabelOnlyPerFrSec002,
   expectSectionTitleChangePersistsAfterReload,
   restoreSectionOrder,
   sectionNodeUuids,
@@ -171,10 +172,12 @@ test.describe('edit-section-fr-001-012', () => {
       workflow,
     }) => {
       const blank = workflow.blankSection();
-      const displayIndex = String(blank.position + 1);
 
-      await expect(sectionNumberLabel(page, blank.uuid)).toHaveText(displayIndex);
-      await expect(sectionHeader(page, blank.uuid)).not.toContainText('E2E Section');
+      await expectEmptySectionHeaderShowsNumberLabelOnlyPerFrSec002(
+        page,
+        blank.uuid,
+        blank.position + 1,
+      );
     });
 
     test('FR-SEC-002: titled section shows workflowSectionNumberLabel and title text', async ({

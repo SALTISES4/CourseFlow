@@ -96,10 +96,9 @@ const MetadataFields = ({
     />
   )
 
-  const isCourseOrProgram =
-    workflowType === WorkflowType.COURSE ||
-    workflowType === WorkflowType.PROGRAM
+  const isCourse = workflowType === WorkflowType.COURSE
   const isProgram = workflowType === WorkflowType.PROGRAM
+  const isCourseOrProgram = isCourse || isProgram
   const timeAutomatic = Boolean(values.calculateTimeAutomatically)
   const ponderationAutomatic = Boolean(values.calculatePonderationAutomatically)
   const creditsAutomatic = Boolean(values.calculateCreditsAutomatically)
@@ -280,7 +279,7 @@ const MetadataFields = ({
         </Grid>
       )}
 
-      {isCourseOrProgram && (
+      {isCourse && (
         <Grid item xs={6}>
           <SC.InfoBlock>
             <SC.InfoBlockTitle>{t('metadata.code')}</SC.InfoBlockTitle>

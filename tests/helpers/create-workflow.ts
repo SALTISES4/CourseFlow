@@ -20,6 +20,7 @@ import {
   workflowProjectSearchField,
   workflowTitleField,
 } from '../e2e/home/home.locators';
+import { expectEditableWorkflowDescriptionRichTextPerFrWfEn012 } from './workflow-description-rich-text';
 import {
   addMenuItemActivity,
   addMenuItemCourse,
@@ -146,12 +147,8 @@ export async function expectBlankWorkflowFormLayoutPerFrCreateStepper005(
   await expect(
     workflowBlankFormVisibleLabel(page, workflowBlankDescriptionVisibleLabel(workflowType)),
   ).toBeVisible();
-  const description = workflowDescriptionField(page, workflowType);
-  await expect(description).toBeVisible();
-  await expect(description).toHaveAttribute('contenteditable', 'true');
-  await expect(
-    workflowBlankForm(page).getByRole('toolbar', { name: 'Description formatting' }),
-  ).toBeVisible();
+  await expect(workflowDescriptionField(page, workflowType)).toBeVisible();
+  await expectEditableWorkflowDescriptionRichTextPerFrWfEn012(workflowBlankForm(page));
 
   for (const label of WORKFLOW_BLANK_FORM_FORBIDDEN_METADATA_LABELS) {
     await expect(

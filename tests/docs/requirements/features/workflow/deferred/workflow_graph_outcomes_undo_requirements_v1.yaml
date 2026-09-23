@@ -1,0 +1,138 @@
+# Normalized requirements: workflow graph and outcomes — single-step UNDO (deferred)
+# Deferred from current test-generation phase; preliminary scope only — normalized FR entries not yet authored.
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Scope (intended): one undo step (latest committed canvas mutation only) on '/workflow/{id}/graph' and '/workflow/{id}/outcomes' for owner and editor after a successful finalize (not mid-drag abort).
+# Cross-reference:
+#   - tests/docs/requirements/features/workflow/workflow_move_node_requirements_v1.yaml (FR-WF-MV-003, FR-WF-MV-004)
+#   - tests/docs/requirements/features/workflow/workflow_edge_requirements_v1.yaml (FR-WF-EDGE-001, FR-WF-EDGE-002, FR-WF-EDGE-003)
+#   - tests/docs/requirements/features/workflow/workflow_add_tab_requirements_v1.yaml (FR-WF-ADD-004, FR-WF-ADD-005, FR-WF-ADD-006)
+#   - tests/docs/requirements/features/workflow/workflow_duplicate_node_requirements_v1.yaml (FR-WF-DUP-002)
+#   - tests/docs/requirements/features/workflow/workflow_delete_node_requirements_v1.yaml (FR-WF-DEL-002, FR-WF-DEL-003)
+#   - tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml (section reorder — FR-SEC-009)
+#   - tests/docs/requirements/features/workflow/workflow_edit_channel_requirements_v1.yaml (channel reorder — FR-CHAN-008)
+#   - tests/docs/requirements/features/workflow/workflow_outcome_tree_drag_reorder_requirements_v1.yaml (FR-WF-EO-015, FR-WF-EO-016, FR-WF-EO-017)
+#   - tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml (FR-WF-EO-003)
+#   - tests/docs/requirements/features/workflow/workflow_duplicate_outcome_requirements_v1.yaml (FR-WF-EO-009, FR-WF-EO-010, FR-WF-EO-011)
+#   - tests/docs/requirements/features/workflow/workflow_delete_outcome_requirements_v1.yaml (FR-WF-EO-012, FR-WF-EO-013, FR-WF-EO-014)
+#   - tests/docs/requirements/features/workflow/workflow_assign_outcome_to_node_requirements_v1.yaml (FR-WF-AO-006 tree-change side effects on outcome tree moves — not in-scope assign/unlink gestures)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - actor is owner or editor on the parent project of the current workflow
+  - current route is '/workflow/{id}/graph' or '/workflow/{id}/outcomes'
+
+# Preliminary product scope (not yet expressed as FR-* entries). Each row is one candidate undo unit.
+preliminaryUndoScope:
+  model:
+    depth: singleStep
+    appliesAfter: successfulFinalize
+    doesNotApplyTo: midDragAbortOrEscapeCancel
+  inScopeActions:
+    - view: graph
+      action: Move workflowNode to a new workflowSectionContainer, workflowSectionRow, and/or workflowChannel cell.
+      reverseAction: Restore prior section, row, and channel placement and grid side effects from that move.
+      notes: Edges remain attached; path routing follows existing edge rules — undo restores layout, not edge deletion.
+      relatedRequirements:
+        - FR-WF-MV-003
+        - FR-WF-MV-004
+    - view: graph
+      action: Create workflowEdge by dragging from a source handle on one workflowNode to a target handle on another.
+      reverseAction: Delete that workflowEdge.
+      relatedRequirements:
+        - FR-WF-EDGE-001
+    - view: graph
+      action: Reconnect workflowEdge source or target to a different workflowNode or handle.
+      reverseAction: Restore previous source workflowNode, target workflowNode, and both handles.
+      notes: Rejected finalize attempts (self-loop, duplicate pair) do not create an undo entry.
+      relatedRequirements:
+        - FR-WF-EDGE-003
+    - view: graph
+      action: Delete workflowEdge via Edit node link sidebar control.
+      reverseAction: Recreate the workflowEdge with the same endpoints, title, dashed flag, and handles as before deletion.
+      notes: Include only if sidebar-on-graph counts as in-view undo; delete path is sidebar-only in current specs.
+      relatedRequirements:
+        - FR-WF-EDGE-002
+    - view: graph
+      action: Add workflowNode by dropping from Add tab onto workflowView.
+      reverseAction: Remove the new workflowNode, any workflowEdges created with it, and restore prior layout.
+      relatedRequirements:
+        - FR-WF-ADD-004
+        - FR-WF-ADD-005
+        - FR-WF-ADD-006
+    - view: graph
+      action: Duplicate workflowNode via hover menu and placement.
+      reverseAction: Remove the duplicated workflowNode and anything created with it.
+      relatedRequirements:
+        - FR-WF-DUP-002
+    - view: graph
+      action: Insert workflowNode below via hover menu and placement.
+      reverseAction: Remove the inserted workflowNode and restore prior row order in the section or channel.
+      relatedRequirements: []
+    - view: graph
+      action: Delete workflowNode via hover menu or sidebar delete.
+      reverseAction: Restore deleted workflowNode at prior cell with prior metadata, workflowEdges, and outcome assignments.
+      notes: High snapshot or server restore cost.
+      relatedRequirements:
+        - FR-WF-DEL-002
+        - FR-WF-DEL-003
+    - view: graph
+      action: Reorder workflowSectionContainer by vertical drag on section header.
+      reverseAction: Restore prior section index and dependent layout.
+      relatedRequirements:
+        - FR-SEC-009
+    - view: graph
+      action: Reorder workflowChannel by lateral drag on channel header.
+      reverseAction: Restore prior channel column order.
+      relatedRequirements:
+        - FR-CHAN-008
+    - view: outcomes
+      action: Reorder or reparent workflowOutcome via drag on workflowOutcomeHeader to a line drop indicator.
+      reverseAction: Restore prior parent and sibling index; recompute ordinals per FR-WF-EO-007.
+      notes: May change workflowNode assignment sets via FR-WF-AO-006 — undo may need tree and assignment snapshot.
+      relatedRequirements:
+        - FR-WF-EO-015
+        - FR-WF-EO-016
+    - view: outcomes
+      action: Nest workflowOutcome as last child of another row (combine drop).
+      reverseAction: Restore prior parent and position in the tree.
+      notes: Same FR-WF-AO-006 side-effect note as reorder or reparent.
+      relatedRequirements:
+        - FR-WF-EO-017
+    - view: outcomes
+      action: Insert sibling or child workflowOutcome via hover menu.
+      reverseAction: Delete the new workflowOutcome subtree and restore ordinals.
+      relatedRequirements:
+        - FR-WF-EO-003
+    - view: outcomes
+      action: Duplicate workflowOutcome subtree via hover menu.
+      reverseAction: Remove the duplicated subtree root and descendants.
+      relatedRequirements:
+        - FR-WF-EO-009
+        - FR-WF-EO-010
+        - FR-WF-EO-011
+    - view: outcomes
+      action: Delete workflowOutcome via hover menu or sidebar delete.
+      reverseAction: Restore deleted subtree, sibling ordinals, and node assignments removed per FR-WF-EO-014.
+      relatedRequirements:
+        - FR-WF-EO-012
+        - FR-WF-EO-013
+        - FR-WF-EO-014
+  explicitlyExcludedFromUndo:
+    - reason: Reversible directly in edge or link UI without global undo.
+      actions:
+        - Change workflowEdge dashed line flag
+    - reason: Reversible via linked-outcomes UI or Outcomes sidebar without global undo.
+      actions:
+        - Assign workflowOutcome to workflowNode by drag from workflowRightSidebarOutcomesTab (FR-WF-AO-004)
+        - Unlink workflowOutcome from workflowNode (FR-WF-AO-010)
+    - reason: No durable model change.
+      actions:
+        - Selection, outcome highlight set toggles, expand or collapse, view settings
+    - reason: Typing or form auto-save model, not last canvas gesture.
+      actions:
+        - Auto-save edits to node, outcome, or edge fields (title, description, tags, and similar)
+    - reason: Outside graph and outcomes canvas scope.
+      actions:
+        - Comments, archive, copy workflow, navigation between routes
+
+requirements: []

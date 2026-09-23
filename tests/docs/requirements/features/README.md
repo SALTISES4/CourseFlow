@@ -17,8 +17,9 @@ Folder layout mirrors product domains (aligned with `tests/e2e/` and `tests/docs
 | `library/` | Library, Explore, Favourites | `library_page_requirements_v1.yaml` |
 | `project/` | Project workspace and forms | `project_overview_requirements_v1.yaml` |
 | `workflow/` | Workflow editor (sections, nodes, channels, outcomes, sidebar, …) | `workflow_edit_section_requirements_v1.yaml` |
+| `workflow/deferred/` | Workflow specs deferred from active scope (same “deferred” intent as top-level `deferred/`, but kept under the workflow domain) | `workflow_outcome_table_requirements_v1.yaml`, `workflow_graph_outcomes_undo_requirements_v1.yaml` |
 | `user/` | Account and notification settings | `profile_settings_requirements_v1.yaml` |
-| `deferred/` | Specs extracted or deferred from active scope | `notifications_page_requirements_v1.yaml` |
+| `deferred/` | Cross-domain specs deferred from active scope (not owned by a single feature folder) | `notifications_page_requirements_v1.yaml` |
 
 Playwright specs for these domains live under `tests/e2e/<domain>/` (e.g. `tests/e2e/home/homepage-fr-001-004.spec.ts` for this folder's `home/` requirements).
 
@@ -26,5 +27,6 @@ Playwright specs for these domains live under `tests/e2e/<domain>/` (e.g. `tests
 
 - **Cross-references** use full repo paths, e.g. `tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml`.
 - **New feature specs** go in the domain folder that matches the primary screen or route under test.
+- **Deferred workflow specs** go in `workflow/deferred/`; **deferred cross-domain specs** go in top-level `deferred/`.
 - **Shared uiObjects** used across domains belong in `shared/` (or define once in the owning domain file and reference by path elsewhere).
 - Authoring rules: [../guidelines_functional_requirements.md](../guidelines_functional_requirements.md). Normalization ADR: [../adr_requirement_normalization_for_test_generation.md](../adr_requirement_normalization_for_test_generation.md).
