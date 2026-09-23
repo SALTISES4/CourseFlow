@@ -1,4 +1,5 @@
 const common = {
+  appVersion: 'CourseFlow v',
   actions: {
     add: 'Add',
     cancel: 'Cancel',

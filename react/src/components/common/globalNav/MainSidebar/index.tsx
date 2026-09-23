@@ -202,7 +202,7 @@ const Sidebar = () => {
         <SC.MainMenuWrap>
           <ListItem dense>
             <Typography variant="caption">
-              CourseFlow v{__APP_VERSION__}
+              {t('appVersion')} {__APP_VERSION__}
             </Typography>
           </ListItem>
         </SC.MainMenuWrap>
