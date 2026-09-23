@@ -18,12 +18,14 @@ export function workflowJumpToMenuSectionItem(page: Page, visibleLabel: string):
   return workflowJumpToMenu(page).getByRole('menuitem', { name: visibleLabel, exact: true });
 }
 
-/** FR-CAB-007 — '{index} {title}' or '{index} Untitled section' when title is empty. */
+/** FR-CAB-007 — '{index} - {title}' or '{index} - Untitled section' when title is empty. */
+export const WORKFLOW_JUMP_TO_SECTION_LABEL_SEPARATOR = ' - ';
+
 export function workflowJumpToMenuSectionItemLabel(
   sectionIndex: number,
   persistedTitle: string,
 ): string {
   const titlePart =
     persistedTitle.length > 0 ? persistedTitle : WORKFLOW_JUMP_TO_UNTITLED_SECTION_LABEL;
-  return `${sectionIndex} ${titlePart}`;
+  return `${sectionIndex}${WORKFLOW_JUMP_TO_SECTION_LABEL_SEPARATOR}${titlePart}`;
 }
