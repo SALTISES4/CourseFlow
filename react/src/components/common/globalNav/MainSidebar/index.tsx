@@ -198,6 +198,14 @@ const Sidebar = () => {
             </ListItemButton>
           </ListItem>
         </SC.HelpLink>
+
+        <SC.MainMenuWrap>
+          <ListItem dense>
+            <Typography variant="caption">
+              CourseFlow v{__APP_VERSION__}
+            </Typography>
+          </ListItem>
+        </SC.MainMenuWrap>
       </SC.SidebarInner>
     </SC.SidebarWrap>
   )
