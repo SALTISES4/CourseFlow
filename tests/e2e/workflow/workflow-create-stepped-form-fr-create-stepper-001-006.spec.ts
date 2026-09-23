@@ -495,7 +495,7 @@ test.describe('Create workflow stepped form — FR-WF-CREATE-STEPPER-001–006',
       });
 
         test.describe('FR-WF-CREATE-STEPPER-005: step 3 blank workflow form and submit outcome', () => {
-          test('blank step 3 shows type-scoped title and description labels only', async ({
+          test('FR-WF-CREATE-STEPPER-005 / FR-WF-EN-012: blank step 3 labels and rich-text description field', async ({
           page,
         }) => {
           await openCreateWorkflowDialogBlankStep3(page, destinationProjectTitle, entry);

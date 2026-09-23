@@ -44,6 +44,11 @@ export function workflowSectionNumberLabel(page: Page, sectionUuid: string): Loc
   return workflowSectionHeader(page, sectionUuid).locator('span').first();
 }
 
+/** Title band in workflowSectionHeader (index badge + optional workflowSectionTitleText). */
+export function workflowSectionTitleHeading(page: Page, sectionUuid: string): Locator {
+  return workflowSectionHeader(page, sectionUuid).getByRole('heading', { level: 6 });
+}
+
 export function workflowSectionContainers(page: Page): Locator {
   return page.locator(WORKFLOW_SECTION_CONTAINER);
 }

@@ -7,8 +7,14 @@ import {
   sectionHeader,
   sectionNodes,
   sectionNumberLabel,
+  sectionTitleHeading,
   titleFieldInEditSectionForm,
 } from './edit-section.locators';
+
+/** Active-locale numbered-section fallback the app must not show when persisted title is empty (FR-SEC-002). */
+export function localizedNumberedSectionFallback(displayIndex: number | string): string {
+  return `Section ${displayIndex}`;
+}
 import {
   edgesReferencingNodeUuids,
   fetchGraphView,
@@ -65,6 +71,21 @@ type SectionFixture = {
   };
 };
 
+/** FR-SEC-002 — empty persisted title: index badge only; no workflowSectionTitleText or numbered fallback. */
+export async function expectEmptySectionHeaderShowsNumberLabelOnlyPerFrSec002(
+  page: Page,
+  sectionUuid: string,
+  displayIndex: number | string,
+): Promise<void> {
+  const indexLabel = String(displayIndex);
+
+  await expect(sectionNumberLabel(page, sectionUuid)).toHaveText(indexLabel);
+  await expect(sectionTitleHeading(page, sectionUuid)).toHaveText(indexLabel);
+  await expect(sectionHeader(page, sectionUuid)).not.toContainText(
+    localizedNumberedSectionFallback(displayIndex),
+  );
+}
+
 /** FR-SEC-003 — editable section title auto-saves and survives reload. */
 export async function expectSectionTitleChangePersistsAfterReload(
   page: Page,
@@ -97,10 +118,10 @@ export async function expectSectionTitleChangePersistsAfterReload(
 export async function expectClearingSectionTitleShowsNumberLabelOnly(
   page: Page,
   workflow: SectionFixture,
-  sectionTitle = 'E2E Section 3',
+  sectionTitle = 'E2E Section 1',
 ): Promise<void> {
   const section = workflow.sectionByTitle(sectionTitle);
-  const displayIndex = String(section.position + 1);
+  const displayIndex = section.position + 1;
 
   await sectionHeader(page, section.uuid).click();
   await expect(editSectionForm(page)).toBeVisible();
@@ -112,7 +133,11 @@ export async function expectClearingSectionTitleShowsNumberLabelOnly(
     await titleFieldInEditSectionForm(page).blur();
 
     await expect(titleFieldInEditSectionForm(page)).toHaveValue('', { timeout: 15_000 });
-    await expect(sectionNumberLabel(page, section.uuid)).toHaveText(displayIndex);
+    await expectEmptySectionHeaderShowsNumberLabelOnlyPerFrSec002(
+      page,
+      section.uuid,
+      displayIndex,
+    );
     if (titleBeforeClear) {
       await expect(sectionHeader(page, section.uuid)).not.toContainText(titleBeforeClear);
     }

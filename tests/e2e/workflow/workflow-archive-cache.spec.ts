@@ -11,7 +11,10 @@ import {
   projectWorkflowsArchiveToggle,
   waitForProjectWorkflowsLoaded,
 } from '../project/project.locators';
-import { workflowOverflowButton } from './workflow-copy.locators';
+import {
+  archiveWorkflowOverflowMenuItem,
+  workflowOverflowTrigger,
+} from './workflow-overflow.locators';
 
 test.use({
   seedAsset: 'workflow.standard_activity',
@@ -22,13 +25,6 @@ test.use({
   ],
   seedAccess: 'disposable-project-copy',
 });
-
-function archiveWorkflowMenuItem(page: Page, workflowType: string) {
-  return page.getByRole('menuitem', {
-    name: `Archive ${workflowType}`,
-    exact: true,
-  });
-}
 
 function archiveWorkflowConfirmButton(page: Page) {
   return page.getByRole('dialog').getByRole('button', {
@@ -55,9 +51,9 @@ test('FR-WF-ARCH-003 / FR-PROJ-WF-003: archiving refreshes both active and archi
     await expect(workflowCard).toBeVisible();
 
     await workflowCard.click();
-    await expect(workflowOverflowButton(page)).toBeVisible({ timeout: 15_000 });
-    await workflowOverflowButton(page).click();
-    await archiveWorkflowMenuItem(page, workflow.workflowType).click();
+    await expect(workflowOverflowTrigger(page)).toBeVisible({ timeout: 15_000 });
+    await workflowOverflowTrigger(page).click();
+    await archiveWorkflowOverflowMenuItem(page, workflow.workflowType).click();
 
     const archiveResponsePromise = page.waitForResponse(
       (response) =>

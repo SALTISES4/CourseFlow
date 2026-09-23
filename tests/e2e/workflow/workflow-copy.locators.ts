@@ -1,16 +1,12 @@
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 
-export function workflowOverflowButton(page: Page): Locator {
-  return page.locator('[data-test-id="overflow-button"]');
-}
-
-export function copyWorkflowMenuItem(page: Page, workflowType: string): Locator {
-  return page.getByRole('menuitem', {
-    name: `Copy ${workflowType}`,
-    exact: true,
-  });
-}
+export {
+  copyWorkflowMenuItem,
+  copyWorkflowOverflowMenuItem,
+  workflowOverflowButton,
+  workflowOverflowTrigger,
+} from './workflow-overflow.locators';
 
 export function copyWorkflowDialog(page: Page): Locator {
   return page.locator('[data-test-id="copy-workflow-dialog"]');

@@ -12,6 +12,7 @@ import {
   workflowSectionDeleteDialog,
   workflowSectionHeader,
   workflowSectionNumberLabel,
+  workflowSectionTitleHeading,
   workflowSectionHoverActionsMenu,
   workflowSectionHoverCommentsItem,
   workflowSectionHoverDeleteItem,
@@ -57,6 +58,10 @@ export function sectionHeader(page: Page, sectionUuid: string): Locator {
 
 export function sectionNumberLabel(page: Page, sectionUuid: string): Locator {
   return workflowSectionNumberLabel(page, sectionUuid);
+}
+
+export function sectionTitleHeading(page: Page, sectionUuid: string): Locator {
+  return workflowSectionTitleHeading(page, sectionUuid);
 }
 
 export function sectionHoverMenu(page: Page, sectionUuid: string): Locator {

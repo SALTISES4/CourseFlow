@@ -259,7 +259,7 @@ requirements:
     openQuestions: []
 
   - id: FR-CAB-005
-    title: Workflow overflow menu rows ('Archive [workflow type]', 'Copy [workflow type]')
+    title: Workflow overflow menu rows ('Copy [workflow type]', 'Archive [workflow type]')
 
     designEvidence:
       - FIGMA-CAB-WF-WORKFLOW-VIEW-SETTINGS
@@ -276,8 +276,8 @@ requirements:
       - contextActionBar
       - contextActionBarOverflowTrigger
       - contextActionBarOverflowMenu
-      - contextActionBarOverflowItemArchiveWorkflow
       - contextActionBarOverflowItemCopyWorkflow
+      - contextActionBarOverflowItemArchiveWorkflow
 
     preconditions:
       - FR-CAB-004 preconditions hold
@@ -287,12 +287,12 @@ requirements:
 
     mainFlow:
       - actor clicks contextActionBarOverflowTrigger per roleBehavior to open contextActionBarOverflowMenu
-      - contextActionBarOverflowMenu lists contextActionBarOverflowItemArchiveWorkflow labeled matching the 'Archive [workflow type]' template after substituting the current workflow's user-visible type label for '[workflow type]'
       - contextActionBarOverflowMenu lists contextActionBarOverflowItemCopyWorkflow labeled matching the 'Copy [workflow type]' template after substituting the current workflow's user-visible type label for '[workflow type]'
-      - contextActionBarOverflowItemArchiveWorkflow and contextActionBarOverflowItemCopyWorkflow actionability per roleBehavior below; archiving a workflow is owner-only
+      - contextActionBarOverflowMenu lists contextActionBarOverflowItemArchiveWorkflow labeled matching the 'Archive [workflow type]' template after substituting the current workflow's user-visible type label for '[workflow type]'
+      - contextActionBarOverflowItemCopyWorkflow and contextActionBarOverflowItemArchiveWorkflow actionability per roleBehavior below; archiving a workflow is owner-only
       - no additional overflow rows exist in this product scope beyond those two
-      - when actor clicks contextActionBarOverflowItemArchiveWorkflow per roleBehavior, post-click behaviour is specified in workflow_archive_requirements_v1.yaml (FR-WF-ARCH-001 onward)
       - when actor clicks contextActionBarOverflowItemCopyWorkflow per roleBehavior, post-click behaviour is specified in workflow_copy_requirements_v1.yaml (FR-WF-COPY-001 onward)
+      - when actor clicks contextActionBarOverflowItemArchiveWorkflow per roleBehavior, post-click behaviour is specified in workflow_archive_requirements_v1.yaml (FR-WF-ARCH-001 onward)
 
     roleBehavior:
       owner:
@@ -317,8 +317,8 @@ requirements:
         contextActionBarOverflowItemCopyWorkflow: available
 
     acceptanceCriteria:
-      - given FR-CAB-005 preconditions hold and actor clicks contextActionBarOverflowTrigger per roleBehavior, contextActionBarOverflowMenu opens and shows exactly two rows with labels matching the 'Archive [workflow type]' and 'Copy [workflow type]' templates after substituting the current workflow's user-visible type label for '[workflow type]', in that top-to-bottom order
-      - contextActionBarOverflowItemArchiveWorkflow and contextActionBarOverflowItemCopyWorkflow actionability per roleBehavior; archiving a workflow is owner-only
+      - given FR-CAB-005 preconditions hold and actor clicks contextActionBarOverflowTrigger per roleBehavior, contextActionBarOverflowMenu opens and shows exactly two rows with labels matching the 'Copy [workflow type]' and 'Archive [workflow type]' templates after substituting the current workflow's user-visible type label for '[workflow type]', in that top-to-bottom order
+      - contextActionBarOverflowItemCopyWorkflow and contextActionBarOverflowItemArchiveWorkflow actionability per roleBehavior; archiving a workflow is owner-only
 
     openQuestions: []
 
