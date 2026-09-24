@@ -228,6 +228,7 @@ const workflow = {
       course_lesson: 'Lesson',
       course_artifact: 'Artifact',
       course_assessment: 'Assessment',
+      untitled_node_category: 'Untitled node category',
       custom_node_category: 'Custom node category'
     },
     copy: '{{title}} (copy)',

@@ -196,7 +196,7 @@ const ColumnCellInner = ({
       <Styled.Inner onClick={onClickHandler}>
         <Styled.Border color={columnColourHex} />
         <Styled.Title variant="body2">
-          <span dangerouslySetInnerHTML={{ __html: title }}></span>
+          <span>{title}</span>
         </Styled.Title>
       </Styled.Inner>
     </Styled.ColumnWrap>

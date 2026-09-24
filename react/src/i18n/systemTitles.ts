@@ -7,13 +7,12 @@ const channelLabelKeys = {
     'systemLabels.channel.activity_out_of_class_students',
   activity_in_class_instructor:
     'systemLabels.channel.activity_in_class_instructor',
-  activity_in_class_students:
-    'systemLabels.channel.activity_in_class_students',
+  activity_in_class_students: 'systemLabels.channel.activity_in_class_students',
   course_preparation: 'systemLabels.channel.course_preparation',
   course_lesson: 'systemLabels.channel.course_lesson',
   course_artifact: 'systemLabels.channel.course_artifact',
   course_assessment: 'systemLabels.channel.course_assessment',
-  custom_node_category: 'systemLabels.channel.custom_node_category'
+  custom_node_category: 'systemLabels.channel.untitled_node_category'
 } as const
 
 type SystemTitle = {
