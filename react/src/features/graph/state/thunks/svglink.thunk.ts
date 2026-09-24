@@ -10,9 +10,9 @@ export const dragEndThunk =
     const { dragging, snap, editing } = getState().svglink
 
     const sourceNodeUuid =
-      dragging.from?.nodeUuid ?? snap.from?.nodeUuid ?? null
+      snap.from?.nodeUuid ?? dragging.from?.nodeUuid ?? null
     const targetNodeUuid = snap.to?.nodeUuid ?? null
-    const sourcePort = dragging.from?.edge ?? snap.from?.edge ?? null
+    const sourcePort = snap.from?.edge ?? dragging.from?.edge ?? null
     const targetPort = snap.to?.edge ?? null
     const editingExistingEdge = Boolean(dragging.uuid)
 
