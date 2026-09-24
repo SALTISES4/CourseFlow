@@ -317,31 +317,33 @@ const Connection = ({
           />
         </>
       )}
-      <g>
-        <rect
-          x={labelX}
-          y={labelY - 1}
-          width={bgWidth}
-          height={bgHeight}
-          rx="5"
-          ry="5"
-          fill="white"
-          stroke="#000"
-          strokeWidth="0.1"
-          transform={`translate(-${bgWidth / 2} -${bgHeight / 2})`}
-        />
-        <text
-          ref={textRef}
-          x={labelX}
-          y={labelY}
-          dominantBaseline="middle"
-          textAnchor="middle"
-          fontSize="12"
-          fill="#000"
-        >
-          {title}
-        </text>
-      </g>
+      {title && (
+        <g>
+          <rect
+            x={labelX}
+            y={labelY - 1}
+            width={bgWidth}
+            height={bgHeight}
+            rx="5"
+            ry="5"
+            fill="white"
+            stroke="#000"
+            strokeWidth="0.1"
+            transform={`translate(-${bgWidth / 2} -${bgHeight / 2})`}
+          />
+          <text
+            ref={textRef}
+            x={labelX}
+            y={labelY}
+            dominantBaseline="middle"
+            textAnchor="middle"
+            fontSize="12"
+            fill="#000"
+          >
+            {title}
+          </text>
+        </g>
+      )}
     </g>
   )
 }
