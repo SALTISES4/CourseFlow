@@ -6,6 +6,7 @@ import {
   fetchWorkflowDetail,
   workflowEditSnackbarMessages,
 } from '../../helpers/edit-workflow-form';
+import { expectEditableWorkflowDescriptionRichTextPerFrWfEn012 } from '../../helpers/workflow-description-rich-text';
 import type { WorkflowFixtureType } from '../../helpers/manifest';
 import { workflowTitle } from './workflow.locators';
 import {
@@ -31,7 +32,7 @@ test.use({
 });
 
 /**
- * Edit workflow form — FR-WF-FORM-001, FR-WF-FORM-002, FR-WF-FORM-003.
+ * Edit workflow form — FR-WF-FORM-001, FR-WF-FORM-002, FR-WF-FORM-003; Description rich text FR-WF-EN-012.
  * Requirements: tests/docs/requirements/features/workflow/workflow_edit_form_requirements_v1.yaml
  * Auth: chromium workflow storage state (teacher@courseflow.com) unless noted.
  * Note: edit entry is workflow ActionMenu (edit-project-button), not a dedicated CAB pencil id.
@@ -64,6 +65,13 @@ test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
           entry.workflow_uuid,
           workflowType,
         );
+      });
+
+      test('FR-WF-EN-012: workflowDescriptionField hosts rich-text editor with required toolbar', async ({
+        page,
+      }) => {
+        await openEditWorkflowDialog(page, workflowType);
+        await expectEditableWorkflowDescriptionRichTextPerFrWfEn012(editWorkflowDialog(page));
       });
 
       test('FR-WF-FORM-001: cancel discards title and description changes', async ({

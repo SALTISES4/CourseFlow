@@ -29,7 +29,7 @@ const projectFr = {
     titlePlaceholder: 'Titre du projet',
     description: 'Description',
     discipline: 'Discipline',
-    titleRequired: 'Le titre du projet ne peut pas être vide',
+    titleRequired: 'Le titre du projet est requis',
     titleMax: 'Le titre du projet ne peut pas dépasser {{count}} caractères',
     firstProjectTitle: 'Commencez par créer un projet',
     firstProjectHelp:

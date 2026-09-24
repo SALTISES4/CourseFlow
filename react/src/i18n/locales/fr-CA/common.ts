@@ -2,6 +2,7 @@ import type { LocaleResourceShape } from '../../resourceShape'
 import type common from '../en-CA/common'
 
 const commonFr = {
+  appVersion: 'CourseFlow v',
   actions: {
     add: 'Ajouter',
     cancel: 'Annuler',
