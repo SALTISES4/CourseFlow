@@ -86,23 +86,19 @@ const OverviewTab = ({
         </SC.InfoBlockContent>
       </SC.InfoBlock>
 
-      <Grid container>
-        <Grid item xs={12}>
-          <SC.InfoBlock>
-            <SC.InfoBlockTitle>{t('overview.disciplines')}</SC.InfoBlockTitle>
-            <SC.InfoBlockContent>
-              {disciplines?.length
-                ? [...disciplines]
-                    .map((discipline) => disciplineLabel(discipline.code))
-                    .sort(collator.compare)
-                    .join(', ')
-                : t('overview.emptyValue')}
-            </SC.InfoBlockContent>
-          </SC.InfoBlock>
-        </Grid>
-      </Grid>
+      <SC.InfoBlock sx={{ mb: 3 }}>
+        <SC.InfoBlockTitle>{t('overview.disciplines')}</SC.InfoBlockTitle>
+        <SC.InfoBlockContent>
+          {disciplines?.length
+            ? [...disciplines]
+                .map((discipline) => disciplineLabel(discipline.code))
+                .sort(collator.compare)
+                .join(', ')
+            : t('overview.emptyValue')}
+        </SC.InfoBlockContent>
+      </SC.InfoBlock>
 
-      <SC.InfoBlock sx={{ mt: 3 }}>
+      <SC.InfoBlock sx={{ mb: 3 }}>
         <SC.InfoBlockTitle>{t('overview.contributors')}</SC.InfoBlockTitle>
         <SC.InfoBlockContent>
           <UserPermissions

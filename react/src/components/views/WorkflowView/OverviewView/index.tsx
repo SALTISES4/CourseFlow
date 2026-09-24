@@ -111,18 +111,19 @@ const OverviewView = ({
       </SC.InfoBlock>
 
       {!publicView && authenticatedWorkflow && (
-        <SC.InfoBlock sx={{ mt: 3 }} data-test-id="workflow-permissions-panel">
+        <SC.InfoBlock sx={{ mb: 3 }} data-test-id="workflow-permissions-panel">
           <SC.InfoBlockTitle>{t('overview.permissions')}</SC.InfoBlockTitle>
-          <UserPermissions
-            workspaceId={workflowUuid}
-            owner={workflow.owner}
-            workspaceType={WorkspaceType.WORKFLOW}
-            projectUuid={workflow.projectUuid}
-            readOnly
-          />
+          <SC.InfoBlockContent>
+            <UserPermissions
+              workspaceId={workflowUuid}
+              owner={workflow.owner}
+              workspaceType={WorkspaceType.WORKFLOW}
+              projectUuid={workflow.projectUuid}
+              readOnly
+            />
 
-          {/* Temporarily commented out - see COURSEFLOW-654 */}
-          {/* {canManagePublicLink && (
+            {/* Temporarily commented out - see COURSEFLOW-654 */}
+            {/* {canManagePublicLink && (
             <Stack
               direction="row"
               spacing={2}
@@ -166,6 +167,7 @@ const OverviewView = ({
               )}
             </Stack>
           )} */}
+          </SC.InfoBlockContent>
         </SC.InfoBlock>
       )}
 
