@@ -5,6 +5,7 @@ import {
 } from '@cfPages/Workflow/types'
 import GraphView from '@cfViews/WorkflowView/GraphView'
 import OutcomeEditView from '@cfViews/WorkflowView/OutcomeEditView'
+import OutcomeTableView from '@cfViews/WorkflowView/OutcomeTableView'
 import OverviewView from '@cfViews/WorkflowView/OverviewView'
 import Tab from '@mui/material/Tab'
 import { ReactNode } from 'react'
@@ -30,7 +31,6 @@ const useWorkflowTabs = (
     relRoute: RelativeRoutes
     label: string
     content: ReactNode
-    allowedTabs: number[]
     hidden?: boolean
   }[] =
     workflow == null
@@ -43,8 +43,7 @@ const useWorkflowTabs = (
             label: t('tabs.overview'),
             content: (
               <OverviewView workflow={workflow} publicView={publicView} />
-            ),
-            allowedTabs: [3]
+            )
           },
           {
             type: WorkflowViewType.GRAPH,
@@ -56,8 +55,7 @@ const useWorkflowTabs = (
                 graphUuid={workflow.graphUuid}
                 publicView={publicView}
               />
-            ),
-            allowedTabs: [1, 2, 3, 4]
+            )
           },
           {
             type: WorkflowViewType.OUTCOME_EDIT,
@@ -69,16 +67,22 @@ const useWorkflowTabs = (
                 graphUuid={workflow.graphUuid}
                 publicView={publicView}
               />
-            ),
-            allowedTabs: workflow.workflowType == 'program' ? [3] : [2, 3] // @todo enum
+            )
+          },
+          {
+            type: WorkflowViewType.OUTCOME_TABLE,
+            route: CFRoutes.WORKFLOW_OUTCOME_TABLE,
+            relRoute: RelativeRoutes.OUTCOME_TABLE,
+            label: t('tabs.outcomeTable'),
+            content: <OutcomeTableView workflow={workflow} />
           }
         ]
 
   const tabButtons = tabs
     .filter((item) => !item.hidden)
-    .map((item, index) => (
+    .map((item) => (
       <Tab
-        key={index}
+        key={item.type}
         label={item.label}
         value={item.type}
         onClick={() => {

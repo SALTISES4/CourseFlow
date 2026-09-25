@@ -9,7 +9,7 @@ export enum RelativeRoutes {
   WORKFLOWS = 'workflows',
   GRAPH = `graph`,
   ALIGNMENT_ANALYSIS = `alignment`,
-  OUTCOME_TABLE = `outcometable`,
+  OUTCOME_TABLE = `outcome-table`,
   OUTCOME_EDIT = `outcomedit`,
   GRID = `grid`,
   COMPARISON = 'comparison'
@@ -30,6 +30,6 @@ export enum CFRoutes {
   WORKFLOW_GRAPH = `/workflow/:uuid/${RelativeRoutes.GRAPH}`,
   WORKFLOW_OUTCOME_EDIT = `/workflow/:uuid/${RelativeRoutes.OUTCOME_EDIT}`,
   WORKFLOW_ALIGNMENT_ANALYSIS = `/workflow/:uuid/${RelativeRoutes.ALIGNMENT_ANALYSIS}`, // @todo
-  WORKFLOW_OUTCOME_TABLE = `/workflow/:uuid/${RelativeRoutes.OUTCOME_TABLE}`, // @todo
+  WORKFLOW_OUTCOME_TABLE = `/workflow/:uuid/${RelativeRoutes.OUTCOME_TABLE}`,
   WORKFLOW_GRID = `/workflow/:uuid/${RelativeRoutes.GRID}` // @todo
 }
