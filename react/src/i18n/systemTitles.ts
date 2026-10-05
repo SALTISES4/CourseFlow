@@ -12,7 +12,7 @@ const channelLabelKeys = {
   course_lesson: 'systemLabels.channel.course_lesson',
   course_artifact: 'systemLabels.channel.course_artifact',
   course_assessment: 'systemLabels.channel.course_assessment',
-  custom_node_category: 'systemLabels.channel.untitled_node_category'
+  custom_node_category: 'systemLabels.channel.custom_node_category'
 } as const
 
 type SystemTitle = {

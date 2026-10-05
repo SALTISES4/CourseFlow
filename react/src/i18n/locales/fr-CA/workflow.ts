@@ -109,8 +109,7 @@ const workflowFr = {
       activity_in_class_instructor: 'En classe (personnel enseignant)',
       activity_in_class_students: 'En classe (personnes étudiantes)',
       course_preparation: 'Préparation', course_lesson: 'Leçon', course_artifact: 'Production',
-      course_assessment: 'Évaluation', untitled_node_category: 'Catégorie de nœuds sans titre',
-      custom_node_category: 'Catégorie de nœuds personnalisée'
+      course_assessment: 'Évaluation', custom_node_category: 'Catégorie de nœuds sans titre'
     },
     copy: '{{title}} (copie)', copyNumbered: '{{title}} (copie {{count}})',
     sectionNumber: 'Section {{number}}', expandSection: 'Développer la section', collapseSection: 'Réduire la section'
