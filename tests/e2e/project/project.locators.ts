@@ -226,7 +226,7 @@ export function addNewTagInput(page: Page): Locator {
 
 /** canonical: projectTagItem — existing tag row identified by its label value */
 export function projectTagItemByLabel(page: Page, label: string): Locator {
-  return page.locator(`input[value=${JSON.stringify(label)}]`);
+  return page.locator(`input[value=${JSON.stringify(label)}]`).locator('..');
 }
 
 /** canonical: projectWorkflowsView — main content region on /project/{id}/workflows */
@@ -452,6 +452,8 @@ export function addContributorsDialog(page: Page): Locator {
 export const ADD_CONTRIBUTORS_DIALOG_COPY = {
   title: 'Add contributor',
   userSelectorLabel: 'CourseFlow users',
+  noOptions: 'No options',
+  noResults: 'No results',
   roleLabel: 'Role',
   cancelButton: 'Cancel',
   submitButton: 'Add contributor',
@@ -506,6 +508,10 @@ export function addContributorsCancelButton(page: Page): Locator {
 
 export function addContributorsUserSelectorClearButton(page: Page): Locator {
   return addContributorsDialog(page).getByRole('button', { name: 'Clear', exact: true });
+}
+
+export function addContributorsUserSelectorStatus(page: Page, message: string): Locator {
+  return page.getByText(message, { exact: true });
 }
 
 export function projectPermissionsPanelContributorEmail(page: Page, email: string): Locator {

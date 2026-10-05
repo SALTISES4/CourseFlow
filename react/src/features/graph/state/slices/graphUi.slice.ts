@@ -12,6 +12,8 @@ const initialState: GraphUiState = {
   activePanel: 'none',
   nodeInsertMode: DEFAULT_NODE_INSERT_MODE,
   collapsedSectionUuids: [],
+  hiddenNodeTagIds: [],
+  hiddenOutcomeTagIds: [],
   edgeDraft: {
     sourceNodeUuid: null,
     sourcePort: null,
@@ -58,6 +60,28 @@ const graphUiSlice = createSlice({
       } else {
         state.collapsedSectionUuids.splice(index, 1)
       }
+    },
+    setNodeTagVisibility(
+      state,
+      action: PayloadAction<{ tagId: number; visible: boolean }>
+    ) {
+      const { tagId, visible } = action.payload
+      state.hiddenNodeTagIds = visible
+        ? state.hiddenNodeTagIds.filter((id) => id !== tagId)
+        : Array.from(new Set([...state.hiddenNodeTagIds, tagId]))
+    },
+    setOutcomeTagVisibility(
+      state,
+      action: PayloadAction<{ tagId: number; visible: boolean }>
+    ) {
+      const { tagId, visible } = action.payload
+      state.hiddenOutcomeTagIds = visible
+        ? state.hiddenOutcomeTagIds.filter((id) => id !== tagId)
+        : Array.from(new Set([...state.hiddenOutcomeTagIds, tagId]))
+    },
+    clearViewSettingsTagFilters(state) {
+      state.hiddenNodeTagIds = []
+      state.hiddenOutcomeTagIds = []
     },
     setEdgeDraft(state, action: PayloadAction<GraphUiState['edgeDraft']>) {
       state.edgeDraft = action.payload

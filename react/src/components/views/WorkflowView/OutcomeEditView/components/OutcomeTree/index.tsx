@@ -2,7 +2,7 @@ import type {
   GraphUuid,
   OutcomeEntity
 } from '@cf/features/graph/state/model/types'
-import { selectOutcomeChildrenById } from '@cf/features/graph/state/selectors/outcomes.selectors'
+import { selectVisibleOutcomeChildrenById } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { RootState } from '@cf/redux/store'
 import { useSelector } from 'react-redux'
 
@@ -18,7 +18,7 @@ export const OutcomeGroup = ({
   parentUuid: string | null
 }) => {
   const childOutcomes = useSelector((state: RootState) =>
-    selectOutcomeChildrenById(state, graphUuid, parentUuid)
+    selectVisibleOutcomeChildrenById(state, graphUuid, parentUuid)
   )
 
   return (

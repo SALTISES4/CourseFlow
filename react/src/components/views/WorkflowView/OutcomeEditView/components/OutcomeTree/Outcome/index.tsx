@@ -18,7 +18,7 @@ import type {
 } from '@cf/features/graph/state/model/types'
 import {
   getPrefixPath,
-  selectOutcomeChildrenById
+  selectVisibleOutcomeChildrenById
 } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { outcomeUiActions } from '@cf/features/graph/state/slices/outcomeUi.slice'
 import { moveOutcome } from '@cf/features/graph/state/thunks/outcomeMutations.thunks'
@@ -35,7 +35,6 @@ import OutcomeHeader from './Header'
 import * as Styled from '../styles'
 
 type OutcomeStateType = {
-  collapsed: boolean
   dragHighlight: boolean
   operation: null | Instruction['operation']
 }
@@ -74,11 +73,13 @@ const Outcome = ({
     return depth
   })
   const childOutcomes = useSelector((state: RootState) =>
-    selectOutcomeChildrenById(state, graphUuid, uuid)
+    selectVisibleOutcomeChildrenById(state, graphUuid, uuid)
+  )
+  const expanded = useSelector((state: RootState) =>
+    state.graph.outcomeUi.expandedOutcomeUuids.includes(uuid)
   )
   const manager = useRef(new BetterSelectionManager(dispatch))
   const [state, setState] = useState<OutcomeStateType>({
-    collapsed: true,
     dragHighlight: false,
     operation: null
   })
@@ -157,15 +158,10 @@ const Outcome = ({
           )
 
           if (instruction) {
-            setState(
-              produce((draft) => {
-                if (draft.collapsed) {
-                  draft.collapsed = false
-                }
-              })
-            )
-
             if (instruction.operation === 'combine') {
+              dispatch(
+                outcomeUiActions.setOutcomeExpanded({ uuid, expanded: true })
+              )
               dispatch(
                 moveOutcome({
                   graphUuid,
@@ -213,20 +209,19 @@ const Outcome = ({
     graphUuid
   ])
 
-  const setCollapsed = useCallback((value: boolean) => {
-    setState(
-      produce((draft) => {
-        draft.collapsed = value
-      })
-    )
-  }, [])
+  const setCollapsed = useCallback(
+    (value: boolean) => {
+      dispatch(outcomeUiActions.setOutcomeExpanded({ uuid, expanded: !value }))
+    },
+    [dispatch, uuid]
+  )
 
   const onToggleClick = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation()
-      setCollapsed(!state.collapsed)
+      setCollapsed(expanded)
     },
-    [setCollapsed, state.collapsed]
+    [expanded, setCollapsed]
   )
 
   const onHeaderClick = useCallback(() => {
@@ -254,7 +249,7 @@ const Outcome = ({
         )}`}
         selected={selected || state.dragHighlight}
         highlighted={highlighted}
-        collapsed={state.collapsed}
+        collapsed={!expanded}
         setCollapsed={setCollapsed}
         showToggle={!!childOutcomes.length}
         onClick={onHeaderClick}
@@ -273,7 +268,7 @@ const Outcome = ({
         />
       )}
 
-      {!state.collapsed && childOutcomes.length > 0 && (
+      {expanded && childOutcomes.length > 0 && (
         <Styled.OutcomeGroup>
           {childOutcomes.map((child) => (
             <Styled.OutcomeGroupItem key={child.uuid}>

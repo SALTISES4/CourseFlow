@@ -8,8 +8,8 @@ const workspaceFr = {
     addFailed: 'La personne collaboratrice n’a pas pu être ajoutée à votre projet.',
     removed: 'La personne collaboratrice a été retirée de votre projet.',
     removeFailed: 'La personne collaboratrice n’a pas pu être retirée de votre projet.',
-    addTitle: 'Ajouter une personne collaboratrice', users: 'Utilisateurs de CourseFlow', role: 'Rôle',
-    removeTitle: 'Retirer cette personne?', removeConfirmation: 'Voulez-vous vraiment retirer {{name}}?'
+    addTitle: 'Ajouter une personne collaboratrice', users: 'Utilisateurs de CourseFlow', noOptions: 'Aucune option',
+    noResults: 'Aucun résultat', role: 'Rôle', removeTitle: 'Retirer cette personne?', removeConfirmation: 'Voulez-vous vraiment retirer {{name}}?'
   },
   lifecycle: {
     object: { project: 'projet', workflow: 'flux de travail' },

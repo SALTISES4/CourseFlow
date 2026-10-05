@@ -147,6 +147,9 @@ export interface GraphUiState {
   nodeInsertMode: 'manual' | 'row' | 'column'
   /** Presentation-only section collapse state for the currently mounted graph. */
   collapsedSectionUuids: ResourceUuid[]
+  /** Session-only tag filters for the workflow graph and outcome tree. */
+  hiddenNodeTagIds: number[]
+  hiddenOutcomeTagIds: number[]
   edgeDraft: {
     sourceNodeUuid: ResourceUuid | null
     sourcePort: string | null

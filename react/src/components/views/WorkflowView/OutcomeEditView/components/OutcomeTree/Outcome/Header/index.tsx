@@ -106,7 +106,10 @@ const OutcomeHeader = ({
         />
       </Styled.OutcomeHeaderInner>
       {showToggle && (
-        <Styled.OutcomeHeaderToggle onClick={onToggleClick}>
+        <Styled.OutcomeHeaderToggle
+          aria-expanded={!collapsed}
+          onClick={onToggleClick}
+        >
           {collapsed ? (
             <AddIcon fontSize="small" />
           ) : (

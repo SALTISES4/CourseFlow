@@ -5,11 +5,13 @@ import type { ResourceUuid } from '../model/types'
 export type OutcomeUiState = {
   dragging: { uuid: ResourceUuid; level: number } | null
   highlightedOutcomeUuids: ResourceUuid[]
+  expandedOutcomeUuids: ResourceUuid[]
 }
 
 const initialState: OutcomeUiState = {
   dragging: null,
-  highlightedOutcomeUuids: []
+  highlightedOutcomeUuids: [],
+  expandedOutcomeUuids: []
 }
 
 const outcomeUiSlice = createSlice({
@@ -30,6 +32,18 @@ const outcomeUiSlice = createSlice({
       } else {
         state.highlightedOutcomeUuids.splice(index, 1)
       }
+    },
+    setOutcomeExpanded(
+      state,
+      action: PayloadAction<{ uuid: ResourceUuid; expanded: boolean }>
+    ) {
+      const { uuid, expanded } = action.payload
+      state.expandedOutcomeUuids = expanded
+        ? Array.from(new Set([...state.expandedOutcomeUuids, uuid]))
+        : state.expandedOutcomeUuids.filter((id) => id !== uuid)
+    },
+    setExpandedOutcomeUuids(state, action: PayloadAction<ResourceUuid[]>) {
+      state.expandedOutcomeUuids = Array.from(new Set(action.payload))
     },
     clearOutcomeUi() {
       return initialState

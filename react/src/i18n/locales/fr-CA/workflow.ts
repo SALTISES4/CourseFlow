@@ -118,8 +118,8 @@ const workflowFr = {
     edit: 'Modifier le flux de travail', sharing: 'Partage', export: 'Exporter', importOutcomes: 'Importer des résultats',
     importNodes: 'Importer des nœuds', archive: 'Archiver {{workflowType}}', copy: 'Copier {{workflowType}}',
     restore: 'Restaurer le flux de travail', permanentlyDelete: 'Supprimer définitivement le flux de travail',
-    viewSettings: 'Paramètres d’affichage', expandSections: 'Développer toutes les sections', expandNodes: 'Développer tous les nœuds',
-    expandOutcomes: 'Développer tous les résultats', jumpTo: 'Aller à', notConnected: 'Non connecté', onlineUsers: 'Utilisateurs en ligne',
+    viewSettings: 'Paramètres d’affichage', expandSections: 'Développer toutes les sections', collapseSections: 'Réduire toutes les sections', expandNodes: 'Développer tous les nœuds',
+    expandOutcomes: 'Développer tous les résultats', collapseOutcomes: 'Réduire tous les résultats', jumpTo: 'Aller à', notConnected: 'Non connecté', onlineUsers: 'Utilisateurs en ligne',
     deleteConfirmation: 'Voulez-vous vraiment supprimer définitivement ce flux de travail?'
   },
   searchProjects: {

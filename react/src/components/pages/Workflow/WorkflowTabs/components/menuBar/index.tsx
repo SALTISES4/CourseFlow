@@ -4,10 +4,13 @@ import {
   hasPermission,
   useWorkspacePermissions
 } from '@cf/context/workspacePermissionsContext'
+import { selectNodesByGraphUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
+import { selectAllOutcomes } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { graphUiActions } from '@cf/features/graph/state/slices/graphUi.slice'
+import { outcomeUiActions } from '@cf/features/graph/state/slices/outcomeUi.slice'
+import { useGraphProjectTags } from '@cf/features/graph/useGraphProjectTags'
 import { workflowTypeLabel } from '@cf/i18n/workflowLabels'
 import type { AppDispatch, RootState } from '@cf/redux/store'
-import { CfObjectType } from '@cf/types/enum'
 import {
   MenuItemType,
   MenuWithOverflow,
@@ -22,10 +25,9 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import TuneIcon from '@mui/icons-material/Tune'
 import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
-import { FormControlLabel, Switch } from '@mui/material'
+import { Box, Checkbox, FormControlLabel, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { produce } from 'immer'
-import { ChangeEvent, ReactElement, useCallback, useState } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
@@ -144,42 +146,63 @@ const ActionMenu = () => {
 }
 
 const ExpandCollapseMenu = ({
-  legend,
+  graphUuid,
   sectionIds
 }: {
-  legend?: ReactElement
+  graphUuid: string
   sectionIds: string[]
 }) => {
   const { t } = useTranslation('workflow')
   const workflowViewType = useWorkflowViewTypeFromRoute()
   const dispatch = useDispatch<AppDispatch>()
-  const collapsedSectionUuids = useSelector(
-    (state: RootState) => state.graph.graphUi.collapsedSectionUuids
+  const nodeSelector = useMemo(
+    () => selectNodesByGraphUuid(graphUuid),
+    [graphUuid]
   )
-  const [expanded, setExpanded] = useState({
-    [CfObjectType.NODE]: true,
-    [CfObjectType.OUTCOME]: true
-  })
+  const nodes = useSelector(nodeSelector)
+  const outcomes = useSelector(selectAllOutcomes)
+  const hiddenNodeTagIds = useSelector(
+    (state: RootState) => state.graph.graphUi.hiddenNodeTagIds
+  )
+  const hiddenOutcomeTagIds = useSelector(
+    (state: RootState) => state.graph.graphUi.hiddenOutcomeTagIds
+  )
+  const { data: projectTags = [], isFetching: projectTagsLoading } =
+    useGraphProjectTags(graphUuid)
 
-  const onExpandChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const type = event.target.value as CfObjectType
-      const checked = event.target.checked
+  const graphOutcomes = useMemo(
+    () => outcomes.filter((outcome) => outcome.graphUuid === graphUuid),
+    [graphUuid, outcomes]
+  )
+  const tagsInUse = useMemo(() => {
+    const tagIds =
+      workflowViewType === WorkflowViewType.GRAPH
+        ? nodes.flatMap((node) => node.tagIds)
+        : graphOutcomes.flatMap((outcome) => outcome.tagIds)
+    return new Set(tagIds)
+  }, [graphOutcomes, nodes, workflowViewType])
+  const displayedTags = useMemo(
+    () =>
+      projectTagsLoading
+        ? []
+        : projectTags.filter((tag) => tagsInUse.has(tag.id)),
+    [projectTags, projectTagsLoading, tagsInUse]
+  )
 
-      if (type === CfObjectType.SECTION) {
-        dispatch(
-          graphUiActions.setCollapsedSectionUuids(checked ? [] : sectionIds)
-        )
-        return
+  useEffect(() => {
+    dispatch(graphUiActions.clearViewSettingsTagFilters())
+    dispatch(outcomeUiActions.setExpandedOutcomeUuids([]))
+  }, [dispatch, graphUuid])
+
+  const setTagVisibility = useCallback(
+    (tagId: number, visible: boolean) => {
+      if (workflowViewType === WorkflowViewType.GRAPH) {
+        dispatch(graphUiActions.setNodeTagVisibility({ tagId, visible }))
+      } else {
+        dispatch(graphUiActions.setOutcomeTagVisibility({ tagId, visible }))
       }
-
-      setExpanded(
-        produce((draft) => {
-          draft[type] = checked
-        })
-      )
     },
-    [dispatch, sectionIds]
+    [dispatch, workflowViewType]
   )
 
   if (workflowViewType === WorkflowViewType.OVERVIEW) {
@@ -193,66 +216,78 @@ const ExpandCollapseMenu = ({
     show: true
   }
 
-  const menuItems: MenuItemType[] = [
-    {
-      content: (
-        <FormControlLabel
-          control={
-            <Switch
-              value={CfObjectType.SECTION}
-              checked={collapsedSectionUuids.length === 0}
-              onChange={onExpandChange}
-              inputProps={{ 'aria-label': t('menu.expandSections') }}
-            />
+  const menuItems: MenuItemType[] =
+    workflowViewType === WorkflowViewType.GRAPH
+      ? [
+          {
+            uuid: 'expand-all-sections',
+            content: t('menu.expandSections'),
+            action: () => dispatch(graphUiActions.setCollapsedSectionUuids([])),
+            icon: <ZoomOutMapIcon />,
+            showIconInList: true,
+            show: true
+          },
+          {
+            uuid: 'collapse-all-sections',
+            content: t('menu.collapseSections'),
+            action: () =>
+              dispatch(graphUiActions.setCollapsedSectionUuids(sectionIds)),
+            icon: <ZoomInMapIcon />,
+            showIconInList: true,
+            show: true
           }
-          label={t('menu.expandSections')}
-        />
-      ),
-      icon: <ZoomOutMapIcon />,
-      showIconInList: true,
-      show: true
-    },
-    {
-      content: (
-        <FormControlLabel
-          control={
-            <Switch
-              value={CfObjectType.NODE}
-              checked={expanded[CfObjectType.NODE]}
-              onChange={onExpandChange}
-              inputProps={{ 'aria-label': t('menu.expandNodes') }}
-            />
+        ]
+      : [
+          {
+            uuid: 'expand-all-outcomes',
+            content: t('menu.expandOutcomes'),
+            action: () =>
+              dispatch(
+                outcomeUiActions.setExpandedOutcomeUuids(
+                  graphOutcomes.map((outcome) => outcome.uuid)
+                )
+              ),
+            icon: <ZoomOutMapIcon />,
+            showIconInList: true,
+            show: true
+          },
+          {
+            uuid: 'collapse-all-outcomes',
+            content: t('menu.collapseOutcomes'),
+            action: () =>
+              dispatch(outcomeUiActions.setExpandedOutcomeUuids([])),
+            icon: <ZoomInMapIcon />,
+            showIconInList: true,
+            show: true
           }
-          label={t('menu.expandNodes')}
-        />
-      ),
-      icon: <ZoomInMapIcon />,
-      showIconInList: true,
-      show: true
-    },
-    {
-      content: (
-        <FormControlLabel
-          control={
-            <Switch
-              value={CfObjectType.OUTCOME}
-              checked={expanded[CfObjectType.OUTCOME]}
-              onChange={onExpandChange}
-              inputProps={{ 'aria-label': t('menu.expandOutcomes') }}
-            />
-          }
-          label={t('menu.expandOutcomes')}
-        />
-      ),
-      icon: <ZoomInMapIcon />,
-      showIconInList: true,
-      show: true
-    }
-  ]
+        ]
 
-  if (legend) {
-    menuItems.unshift({
-      content: legend,
+  if (displayedTags.length > 0) {
+    const hiddenTagIds =
+      workflowViewType === WorkflowViewType.GRAPH
+        ? hiddenNodeTagIds
+        : hiddenOutcomeTagIds
+
+    menuItems.push({
+      uuid: 'view-settings-tags',
+      content: (
+        <Box>
+          <Typography variant="subtitle2">{t('edit.tags')}</Typography>
+          {displayedTags.map((tag) => (
+            <FormControlLabel
+              key={tag.id}
+              control={
+                <Checkbox
+                  checked={!hiddenTagIds.includes(tag.id)}
+                  onChange={(_, checked) => setTagVisibility(tag.id, checked)}
+                  inputProps={{ 'aria-label': tag.label }}
+                />
+              }
+              label={tag.label}
+            />
+          ))}
+        </Box>
+      ),
       show: true
     })
   }

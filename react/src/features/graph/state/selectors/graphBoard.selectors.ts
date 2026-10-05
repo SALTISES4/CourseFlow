@@ -21,6 +21,9 @@ type StateWithGraph = {
   graph: GraphState
 }
 
+const selectHiddenNodeTagIds = (state: StateWithGraph) =>
+  state.graph.graphUi.hiddenNodeTagIds
+
 type SectionBoard = {
   uuid: string
   rows: Record<string, string>[]
@@ -82,9 +85,15 @@ const makeSelectGraphBoard = lruMemoize(
       [
         selectSectionsOrderedByGraphUuid(graphUuid),
         selectChannelsOrderedByGraphUuid(graphUuid),
-        selectNodesByGraphUuid(graphUuid)
+        selectNodesByGraphUuid(graphUuid),
+        selectHiddenNodeTagIds
       ],
-      (orderedSections, orderedChannels, workflowNodes): GraphBoard => {
+      (
+        orderedSections,
+        orderedChannels,
+        workflowNodes,
+        hiddenNodeTagIds
+      ): GraphBoard => {
         const columnIds = orderedChannels.map((c) => c.uuid)
         const columnIndexMap = new Map<string, number>()
         columnIds.forEach((id, idx) => {
@@ -96,7 +105,9 @@ const makeSelectGraphBoard = lruMemoize(
         const sections: SectionBoard[] = orderedSections.map((section) => {
           const rows: SectionBoard['rows'] = []
           const sectionNodes = workflowNodes.filter(
-            (n) => n.sectionUuid === section.uuid
+            (n) =>
+              n.sectionUuid === section.uuid &&
+              !n.tagIds.some((tagId) => hiddenNodeTagIds.includes(tagId))
           )
 
           sectionNodes

@@ -1,7 +1,7 @@
 import { WorkflowPermission } from '@cf/api/gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { GraphUuid } from '@cf/features/graph/state/model/types'
-import { selectOutcomeChildrenById } from '@cf/features/graph/state/selectors/outcomes.selectors'
+import { selectVisibleOutcomeChildrenById } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { createOutcome } from '@cf/features/graph/state/thunks/outcomeMutations.thunks'
 import type { AppDispatch } from '@cf/redux/store'
 import { RootState } from '@cf/redux/store'
@@ -29,7 +29,7 @@ const OutcomeEditView = ({
     WorkflowPermission.OUTCOME_MANAGEMENT
   )
   const outcomes = useSelector((state: RootState) =>
-    selectOutcomeChildrenById(state, graphUuid, null)
+    selectVisibleOutcomeChildrenById(state, graphUuid, null)
   )
 
   const onAddNewOutcome = useCallback(() => {

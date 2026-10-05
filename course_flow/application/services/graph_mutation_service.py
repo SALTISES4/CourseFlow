@@ -129,6 +129,20 @@ def _outcome_subtree_ids(
     return subtree
 
 
+def _add_outcome_parents_with_all_children(
+    assigned: set[int],
+    children_by_parent: dict[int, set[int]],
+) -> None:
+    """Add every parent whose direct children are all assigned, recursively."""
+    changed = True
+    while changed:
+        changed = False
+        for parent_id, child_ids in children_by_parent.items():
+            if parent_id not in assigned and child_ids.issubset(assigned):
+                assigned.add(parent_id)
+                changed = True
+
+
 def _assigned_outcome_ids_after_link(node: Node, outcome: Outcome) -> set[int]:
     parent_by_id, children_by_parent = _outcome_tree_ids(outcome.graph_id)
     assigned = set(node.outcomes.values_list("id", flat=True))
@@ -139,14 +153,28 @@ def _assigned_outcome_ids_after_link(node: Node, outcome: Outcome) -> set[int]:
 
     # A parent becomes assigned as soon as every direct child is assigned. Walk
     # until stable because adding a parent can satisfy its own parent.
-    changed = True
-    while changed:
-        changed = False
-        for parent_id, child_ids in children_by_parent.items():
-            if parent_id not in assigned and child_ids.issubset(assigned):
-                assigned.add(parent_id)
-                changed = True
+    _add_outcome_parents_with_all_children(assigned, children_by_parent)
 
+    return assigned.intersection(parent_by_id)
+
+
+def _assigned_outcome_ids_after_tree_attach(
+    node: Node,
+    *,
+    attached_outcome_id: int,
+    parent_id: int,
+    parent_by_id: dict[int, int | None],
+    children_by_parent: dict[int, set[int]],
+) -> set[int]:
+    """Apply FR-WF-AO-006 after a subtree is attached below a parent."""
+    assigned = {assigned_outcome.id for assigned_outcome in node.outcomes.all()}
+
+    if parent_id in assigned:
+        assigned.update(
+            _outcome_subtree_ids(attached_outcome_id, children_by_parent)
+        )
+
+    _add_outcome_parents_with_all_children(assigned, children_by_parent)
     return assigned.intersection(parent_by_id)
 
 
@@ -1492,6 +1520,49 @@ class GraphMutationService:
             .get(pk=node_pk)
         )
 
+    def _cascade_assignments_after_outcome_tree_attach(
+        self,
+        *,
+        graph_id: int,
+        attached_outcome_id: int,
+        parent_id: int | None,
+        builder: GraphMutationDeltaBuilder,
+    ) -> None:
+        """Persist and report assignment changes caused by an outcome-tree attach."""
+        if parent_id is None:
+            return
+
+        parent_by_id, children_by_parent = _outcome_tree_ids(graph_id)
+        attached_subtree_ids = _outcome_subtree_ids(
+            attached_outcome_id,
+            children_by_parent,
+        )
+        candidate_outcome_ids = attached_subtree_ids | {parent_id}
+        candidate_nodes = (
+            Node.objects.filter(
+                workflow__graph_id=graph_id,
+                outcomes__id__in=candidate_outcome_ids,
+            )
+            .prefetch_related("outcomes")
+            .distinct()
+        )
+
+        for node in candidate_nodes:
+            assigned_before = {
+                assigned_outcome.id for assigned_outcome in node.outcomes.all()
+            }
+            assigned_after = _assigned_outcome_ids_after_tree_attach(
+                node,
+                attached_outcome_id=attached_outcome_id,
+                parent_id=parent_id,
+                parent_by_id=parent_by_id,
+                children_by_parent=children_by_parent,
+            )
+            if assigned_after == assigned_before:
+                continue
+            node.outcomes.set(assigned_after)
+            builder.add_node_updated(_node_payload(self._reload_node(node.pk)))
+
     @transaction.atomic
     def update_node_meta(
         self,
@@ -2087,7 +2158,14 @@ class GraphMutationService:
         insert_at = min(resolved_index, len(siblings))
         siblings.insert(insert_at, outcome)
         _assign_outcome_sibling_orders(siblings, builder)
-        builder.add_outcome_created(_outcome_payload(_reload_outcome(outcome.pk)))
+        outcome = _reload_outcome(outcome.pk)
+        builder.add_outcome_created(_outcome_payload(outcome))
+        self._cascade_assignments_after_outcome_tree_attach(
+            graph_id=wf.id,
+            attached_outcome_id=outcome.pk,
+            parent_id=parent_pk,
+            builder=builder,
+        )
         _bump_revision(wf)
 
         return (
@@ -2406,6 +2484,12 @@ class GraphMutationService:
         moving.save(update_fields=["parent_id"])
         new_siblings.insert(resolved_index, moving)
         _assign_outcome_sibling_orders(new_siblings, builder)
+        self._cascade_assignments_after_outcome_tree_attach(
+            graph_id=wf.id,
+            attached_outcome_id=moving.pk,
+            parent_id=new_parent_pk,
+            builder=builder,
+        )
 
         _bump_revision(wf)
 

@@ -52,6 +52,7 @@ const HoverMenu = ({
               <IconButton
                 color="secondary"
                 size="small"
+                aria-label={item.label}
                 disabled={item.disabled}
                 onClick={item.onClick}
               >

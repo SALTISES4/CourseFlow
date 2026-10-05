@@ -60,6 +60,28 @@ export const selectOutcomeChildrenById = createSelector(
       .sort((a, b) => a.order - b.order)
 )
 
+export const selectVisibleOutcomeChildrenById = createSelector(
+  [
+    selectAllOutcomes,
+    (state: StateWithGraph) => state.graph.graphUi.hiddenOutcomeTagIds,
+    (_: StateWithGraph, graphUuid: GraphUuid) => graphUuid,
+    (
+      _: StateWithGraph,
+      _graphUuid: GraphUuid,
+      parentUuid: ResourceUuid | null
+    ) => parentUuid
+  ],
+  (outcomes, hiddenOutcomeTagIds, graphUuid, parentUuid) =>
+    outcomes
+      .filter(
+        (outcome) =>
+          outcome.graphUuid === graphUuid &&
+          outcome.parentUuid === parentUuid &&
+          !outcome.tagIds.some((tagId) => hiddenOutcomeTagIds.includes(tagId))
+      )
+      .sort((a, b) => a.order - b.order)
+)
+
 export const selectHighlightedOutcomes = createSelector(
   selectGraphState,
   (graph) => graph.outcomeUi.highlightedOutcomeUuids

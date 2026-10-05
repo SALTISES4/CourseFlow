@@ -67,9 +67,11 @@ import {
 import { fetchGraphView, nodeByUuid } from './workflow-graph.helpers';
 import {
   workflowOutcomeHoverDeleteItem,
+  workflowOutcomeHoverInsertChildForHeader,
   workflowOutcomeHeader,
   workflowOutcomeHeaderTitleText,
   revealOutcomeByOrdinalPath,
+  waitForOutcomeCreateResponse,
 } from './workflow-outcome.locators';
 import {
   workflowRightSidebarOutcomesTab,
@@ -620,6 +622,39 @@ test.describe('Assign outcomes — cascade rules (FR-WF-AO-006)', () => {
 
     await expectNodeOutcomeUuids(page, workflow.workflowUuid, nodeUuid, {
       includes: [seedUuid, childUuid, grandchildUuid],
+    });
+  });
+
+  test('FR-WF-AO-006: inserting L2 under assigned L1 assigns the new child to the node', async ({
+    page,
+    workflow,
+  }) => {
+    const nodeUuid = await secondWorkflowNodeUuid(page);
+    const rootOutcome = workflow.firstOutcome();
+
+    await openWorkflowOutcomesTab(page);
+    await dragAssignTabOutcomeOntoNode(page, E2E_SEED_OUTCOME_HEADER, nodeUuid);
+    await expectNodeOutcomeUuids(page, workflow.workflowUuid, nodeUuid, {
+      exact: [rootOutcome.uuid],
+    });
+
+    await gotoOutcomesView(page, workflow.path);
+    await hoverWorkflowOutcomeHeader(page, rootOutcome.title);
+    await Promise.all([
+      waitForOutcomeCreateResponse(page),
+      workflowOutcomeHoverInsertChildForHeader(
+        page,
+        workflowOutcomeHeader(page, rootOutcome.title),
+      ).click(),
+    ]);
+
+    const child = (await fetchGraphOutcomes(page, workflow.workflowUuid)).find(
+      (outcome) => outcome.parentUuid === rootOutcome.uuid,
+    );
+    expect(child, 'insert child should create a level-2 outcome under the assigned root').toBeDefined();
+
+    await expectNodeOutcomeUuids(page, workflow.workflowUuid, nodeUuid, {
+      exact: [rootOutcome.uuid, child!.uuid],
     });
   });
 

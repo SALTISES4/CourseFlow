@@ -3,6 +3,7 @@ import { loginAs } from '../../helpers/auth';
 import { gotoAuthenticatedShell } from '../../helpers/navigation';
 import { getProjectPath, loadWorkflowManifest } from '../../helpers/manifest';
 import {
+  ADD_CONTRIBUTORS_DIALOG_COPY,
   ADD_CONTRIBUTORS_SNACKBAR_MESSAGES,
   expectAddContributorSnackbarMessage,
   expectAddContributorsDialogOpensPerFrProjOv002,
@@ -49,6 +50,7 @@ import {
   addContributorsSubmitButton,
   addContributorsUserSelector,
   addContributorsUserSelectorClearButton,
+  addContributorsUserSelectorStatus,
   addNewTagInput,
   contributorRoleDropdown,
   E2E_CONTRIBUTOR_EDITOR_EMAIL,
@@ -305,6 +307,19 @@ test.describe('Project overview — calibration (FR-PROJ-OV-001-005)', () => {
           name: E2E_ADD_CONTRIBUTOR_CANDIDATE.displayName,
           exact: true,
         }),
+      ).toBeVisible({ timeout: 10_000 });
+    });
+
+    test('user selector distinguishes no input from a search with no results', async ({ page }) => {
+      await openAddContributorsDialog(page);
+      await addContributorsUserSelector(page).click();
+      await expect(
+        addContributorsUserSelectorStatus(page, ADD_CONTRIBUTORS_DIALOG_COPY.noOptions),
+      ).toBeVisible();
+
+      await addContributorsUserSelector(page).fill('no-such-courseflow-user-8d7a91');
+      await expect(
+        addContributorsUserSelectorStatus(page, ADD_CONTRIBUTORS_DIALOG_COPY.noResults),
       ).toBeVisible({ timeout: 10_000 });
     });
 

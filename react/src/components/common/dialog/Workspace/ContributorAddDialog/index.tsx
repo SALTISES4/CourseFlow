@@ -56,6 +56,7 @@ const ContributorAddDialog = ({
   const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
   const [debouncedFilter, setDebouncedFilter] = useState('')
+  const normalizedSearch = search.trim()
 
   useEffect(() => {
     const t = window.setTimeout(() => setDebouncedFilter(search), 500)
@@ -73,7 +74,7 @@ const ContributorAddDialog = ({
   const role = watch('role')
   const disableSubmit = !userUuids || userUuids?.length === 0 || !role || !uuid
 
-  const { data: listUsersData } = useQuery({
+  const { data: listUsersData, isFetching: isFetchingUsers } = useQuery({
     ...listUsersOptions({
       query: debouncedFilter.trim()
         ? { filter: debouncedFilter.trim() }
@@ -81,6 +82,11 @@ const ContributorAddDialog = ({
     }),
     enabled: Boolean(show && uuid && debouncedFilter.trim())
   })
+
+  const isSearchPending = Boolean(
+    normalizedSearch &&
+      (normalizedSearch !== debouncedFilter.trim() || isFetchingUsers)
+  )
 
   const userOptions: UserFormOption[] = useMemo(
     () =>
@@ -155,6 +161,13 @@ const ContributorAddDialog = ({
                   multiple
                   inputValue={search}
                   options={userOptions}
+                  loading={isSearchPending}
+                  loadingText={tCommon('loading')}
+                  noOptionsText={
+                    normalizedSearch
+                      ? t('contributor.noResults')
+                      : t('contributor.noOptions')
+                  }
                   getOptionLabel={(user) => user.name}
                   onChange={(_, selectedUsers) =>
                     field.onChange(selectedUsers.map((user) => user.uuid))

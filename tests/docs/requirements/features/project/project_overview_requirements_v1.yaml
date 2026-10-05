@@ -353,7 +353,9 @@ requirements:
 
     mainFlow:
       - addContributorsDialog shows addContributorsUserSelector and addContributorsRoleSelector
+      - before user enters a search term, addContributorsUserSelector shows 'No options'
       - addContributorsUserSelector is an autocomplete on existing CourseFlow users; when user types, narrowed matching results are displayed automatically
+      - when a non-empty user search completes with no matches, addContributorsUserSelector shows 'No results'
       - addContributorsUserSelectorClearButton clears typed input in addContributorsUserSelector
       - addContributorsRoleSelector allows assignable roles 'Editor', 'Commenter', and 'Viewer' only
       - when no user is selected in addContributorsUserSelector, addContributorsSubmitButton ('Add contributor') is disabled and not actionable
@@ -370,7 +372,9 @@ requirements:
     acceptanceCriteria:
       - addContributorsDialog title is 'Add contributor'
       - addContributorsDialog shows addContributorsUserSelector and addContributorsRoleSelector
+      - given addContributorsUserSelector has no typed input, its empty state is 'No options'
       - given user types in addContributorsUserSelector, narrowed matching CourseFlow users are displayed automatically
+      - given user types a non-empty value and the user search succeeds with zero matches, the empty state is 'No results'
       - given addContributorsUserSelector has typed input, addContributorsUserSelectorClearButton is visible; clicking it clears the input
       - given owner or editor clicks addContributorsRoleSelector in addContributorsDialog, assignable options are 'Editor', 'Commenter', and 'Viewer'
       - given no user is selected in addContributorsUserSelector, addContributorsSubmitButton ('Add contributor') is disabled

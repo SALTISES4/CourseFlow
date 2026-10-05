@@ -9,6 +9,8 @@ const workspace = {
       'We encountered an issue and the contributor was not removed from your project',
     addTitle: 'Add contributor',
     users: 'CourseFlow users',
+    noOptions: 'No options',
+    noResults: 'No results',
     role: 'Role',
     removeTitle: 'Remove user?',
     removeConfirmation: 'Are you sure you want to remove {{name}}?'

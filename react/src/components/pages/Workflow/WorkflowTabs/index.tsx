@@ -15,7 +15,6 @@ import WorkflowDialogs from '@cfPages/Workflow/WorkflowTabs/components/WorkflowD
 import useWorkflowTabs from '@cfPages/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
 import { useWorkflowViewTypeFromRoute } from '@cfPages/Workflow/WorkflowTabs/hooks/useWorkflowViewTypeFromRoute'
 import { useWorkflowSidebar } from '@cfSidebar/hooks/useSidebar'
-import WorkflowLegend from '@cfViews/WorkflowView/GraphView/components/WorkflowLegend'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Tabs from '@mui/material/Tabs'
@@ -79,7 +78,7 @@ const WorkflowTabs = ({
       {editLockControl}
       <JumpToMenu sectionIds={sectionIdsOrdered} />
       <ExpandCollapseMenu
-        legend={<WorkflowLegend />}
+        graphUuid={workflow.graphUuid}
         sectionIds={sectionIdsOrdered}
       />
     </Stack>
