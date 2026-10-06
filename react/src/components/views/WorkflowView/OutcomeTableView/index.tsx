@@ -1,11 +1,14 @@
-import { selectGraphBoard } from '@cf/features/graph/state/selectors/graphBoard.selectors'
+import { selectOutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
 import { RootState } from '@cf/redux/store'
 import { OuterContentWrap } from '@cfMUI/helper'
 import { type WorkflowPageData } from '@cfPages/Workflow/types'
 import { produce } from 'immer'
-import { useCallback, useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 import { useSelector } from 'react-redux'
 
+import * as Styled from './styles'
+import TableBody from './TableBody'
+import TableHeader from './TableHeader'
 import ViewToolbar from './Toolbar'
 
 type StateType = {
@@ -17,8 +20,8 @@ const OutcomeTableView = ({ workflow }: { workflow: WorkflowPageData }) => {
     viewType: 'normal'
   })
 
-  const graphBoard = useSelector((state: RootState) =>
-    selectGraphBoard(state, workflow.graphUuid)
+  const outcomeTable = useSelector((state: RootState) =>
+    selectOutcomeTable(state, workflow.graphUuid)
   )
 
   const onViewTypeChange = useCallback((_, newVal: StateType['viewType']) => {
@@ -39,9 +42,13 @@ const OutcomeTableView = ({ workflow }: { workflow: WorkflowPageData }) => {
         viewType={state.viewType}
         onViewTypeChange={onViewTypeChange}
       />
-      <header></header>
+
+      <Styled.TableWrap>
+        <TableHeader viewType={state.viewType} table={outcomeTable} />
+        <TableBody viewType={state.viewType} table={outcomeTable} />
+      </Styled.TableWrap>
     </OuterContentWrap>
   )
 }
 
-export default OutcomeTableView
+export default memo(OutcomeTableView)

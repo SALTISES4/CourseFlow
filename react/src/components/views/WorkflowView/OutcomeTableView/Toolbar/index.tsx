@@ -8,7 +8,7 @@ type PropsType = {
 
 const OutcomeTableViewToolbar = ({ viewType, onViewTypeChange }: PropsType) => {
   return (
-    <div style={{ width: '250px' }}>
+    <div style={{ width: '250px', marginBottom: '3em' }}>
       <Styled.InsertButtonGroup
         exclusive
         value={viewType}
