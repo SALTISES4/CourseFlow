@@ -253,6 +253,7 @@ const workflow = {
     expandOutcomes: 'Expand all outcomes',
     collapseOutcomes: 'Collapse all outcomes',
     jumpTo: 'Jump to',
+    untitledSection: 'Untitled section',
     notConnected: 'Not connected',
     onlineUsers: 'Online users',
     deleteConfirmation: 'Are you sure you want to permanently delete this workflow?'

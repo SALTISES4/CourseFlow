@@ -325,9 +325,13 @@ const JumpToMenu = ({ sectionIds }: { sectionIds: string[] }) => {
     return null
   }
 
-  const menuItems: MenuItemType[] = sectionIds.map((sectionId) => ({
+  const menuItems: MenuItemType[] = sectionIds.map((sectionId, index) => ({
     content: (
-      <SectionTitle key={`sectionworkflow-${sectionId}`} objectId={sectionId} />
+      <SectionTitle
+        key={`sectionworkflow-${sectionId}`}
+        objectId={sectionId}
+        sectionIndex={index + 1}
+      />
     ),
     action: scrollToHandler(sectionId),
     show: true
@@ -340,7 +344,14 @@ const JumpToMenu = ({ sectionIds }: { sectionIds: string[] }) => {
     show: true
   }
 
-  return <SimpleMenu id="jump-to-menu" menuItems={menuItems} header={header} />
+  return (
+    <SimpleMenu
+      id="jump-to-menu"
+      menuItems={menuItems}
+      header={header}
+      closeOnItemAction
+    />
+  )
 }
 
 export { JumpToMenu, ActionMenu, ExpandCollapseMenu }

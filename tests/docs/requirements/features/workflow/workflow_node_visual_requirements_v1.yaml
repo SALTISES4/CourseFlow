@@ -1,9 +1,11 @@
 # Normalized requirements: workflowNode visual appearance and hover actions in 'Workflow' view
+# Version: 1.1
 # Out of scope: canonical mapping of context-classification and task-classification values to workflowNodeMetaContextTag and workflowNodeMetaTaskTag icon glyphs and accessible names (deferred until a dedicated lookup or FR-WF-NODE-001 extension is authored).
 # Source: Figma workflow node frame (see designEvidenceLinkTable); tests/docs/requirements/guidelines_functional_requirements.md
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
 # Cross-reference: tests/docs/requirements/features/workflow/workflow_add_tab_requirements_v1.yaml (workflowView; workflowNode canonical in workflow_edit_node_requirements_v1.yaml); tests/docs/requirements/features/workflow/workflow_edit_channel_requirements_v1.yaml (workflowChannel colour and workflowNodeBorder fill sync — FR-CHAN-003 canonical; workflowNodeBorder stripe presentation — FR-WF-NODE-001; channel hover menu lockstep — FR-CHAN-007); tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml (section hover menu lockstep — FR-SEC-007); tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml (canonical workflowNode, workflowEditNodeForm field values and applicability — FR-WF-EN-002 through FR-WF-EN-010; canvas layout and chrome — FR-WF-NODE-001); tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml (single-workflow archive clears parent node link—FR-WF-ARCH-003); tests/docs/requirements/features/project/project_archive_requirements_v1.yaml (project archive preserves in-project links—FR-PROJ-ARCH-003); tests/docs/requirements/features/workflow/workflow_copy_requirements_v1.yaml (same-project copy preserves links; cross-project copy clears links per FR-WF-ARCH-003—FR-WF-COPY-003); tests/docs/requirements/features/workflow/workflow_edge_requirements_v1.yaml (edge authoring — FR-WF-EDGE-001 through FR-WF-EDGE-004; aligns with workflowNodeEdgeHandles display — FR-WF-NODE-006 canonical); tests/docs/requirements/features/workflow/workflow_duplicate_node_requirements_v1.yaml (workflowNodeHoverActionsMenuDuplicateItem click outcomes — FR-WF-DUP-002; placement — FR-WF-DUP-003; defers hover-menu item roleBehavior to FR-WF-NODE-005); tests/docs/requirements/features/workflow/workflow_delete_node_requirements_v1.yaml (workflowNodeHoverActionsMenuDeleteItem click outcomes — FR-WF-DEL-002; defers hover-menu item roleBehavior to FR-WF-NODE-005); tests/docs/requirements/features/workflow/workflow_move_node_requirements_v1.yaml (move drag source — FR-WF-MV-001; workflowNodeHoverActionsMenu suppressed on all placed nodes during move drag — FR-WF-NODE-004); tests/docs/requirements/features/workflow/workflow_assign_outcome_to_node_requirements_v1.yaml (outcome-assign drag — FR-WF-AO-004; canvas hover-menu suppression during outcome-assign drag canonical in that FR); tests/docs/requirements/features/workflow/workflow_node_linked_outcomes_badge_requirements_v1.yaml (workflowNodeLinkedOutcomesBadge — FR-WF-AO-007 through FR-WF-AO-010); tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebarCommentsTab role actionability — FR-WF-RS-003, referenced by workflowNodeHoverActionsMenuCommentsItem); tests/docs/requirements/features/workflow/workflow_comments_tab_requirements_v1.yaml (workflowNodeHoverActionsMenuCommentsItem click-to-open flow — FR-WF-COMMENTS-001).
 #   - tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-002)
+#   - tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml (normalized compact whole Days + Hours duration presentation—FR-WF-DURATION-002 and FR-WF-DURATION-003)
 #
 # Naming note: The earlier identifier 'workflowNodeHoverMenu' (and its items workflowNodeHoverMenuInsertItem, workflowNodeHoverMenuDuplicateItem, workflowNodeHoverMenuDeleteItem, workflowNodeHoverMenuCommentsItem) is replaced in this file by workflowNodeHoverActionsMenu (and workflowNodeHoverActionsMenuInsertItem, workflowNodeHoverActionsMenuDuplicateItem, workflowNodeHoverActionsMenuDeleteItem, workflowNodeHoverActionsMenuCommentsItem). tests/docs/requirements/features/workflow/workflow_delete_node_requirements_v1.yaml uses the same workflowNodeHoverActionsMenu* identifiers.
 
@@ -40,7 +42,7 @@ uiObjectDefinitions:
   workflowNodeMetaTaskTag:
     meaning: Icon-only task-type tag in workflowNodeMeta.
   workflowNodeMetaTimeTag:
-    meaning: Icon-only time-duration tag in workflowNodeMeta.
+    meaning: Time-duration tag in workflowNodeMeta containing the timer icon and normalized compact duration text per FR-WF-DURATION-002 and FR-WF-DURATION-003.
   workflowNodeSelectedBorder:
     meaning: Selection outline rendered on a selected workflowNode.
   workflowNodeOutcomeHighlightBorder:
@@ -169,6 +171,7 @@ requirements:
       - workflowNodeMetaContextTag is rendered only when workflowEditNodeFormActivityContextSelect or workflowEditNodeFormCourseContextSelect applies to the workflowNode per FR-WF-EN-002, FR-WF-EN-003, or FR-WF-EN-004 and the persisted context value is not 'None'
       - workflowNodeMetaTaskTag is rendered only when workflowEditNodeFormTaskTypeSelect applies to the workflowNode per FR-WF-EN-002 and the persisted task-type value is not 'None'
       - workflowNodeMetaTimeTag is rendered only when workflowEditNodeFormTimeField applies to the workflowNode per FR-WF-EN-002 through FR-WF-EN-006 and the persisted time value has a non-zero length with a valid unit (empty or cleared time is not shown on the canvas)
+      - when workflowNodeMetaTimeTag is rendered, its text presents only normalized whole Days and Hours per FR-WF-DURATION-002 and FR-WF-DURATION-003; it does not present an integer-hours-only value when the duration is at least one day and never presents minutes or seconds
       - when no workflowNodeMeta tag would render for a workflowNode, workflowNodeMeta is not rendered for that workflowNode
       - when workflowNodeMetaContextTag and workflowNodeMetaTaskTag are both present, they are left-aligned within workflowNodeMeta; when workflowNodeMetaTimeTag is present, it is right-aligned within workflowNodeMeta
       - out of scope — per-value icon glyphs and accessible names for workflowNodeMetaContextTag and workflowNodeMetaTaskTag; tag presence and layout per field applicability are in scope
@@ -208,6 +211,7 @@ requirements:
       - given parent workflow type is course or program, workflowNodeMetaTaskTag is not rendered for that workflowNode (workflowEditNodeFormTaskTypeSelect does not apply per FR-WF-EN-003 through FR-WF-EN-006)
       - given parent workflow type is program, workflowNodeMetaContextTag is not rendered for that workflowNode (neither workflowEditNodeFormActivityContextSelect nor workflowEditNodeFormCourseContextSelect applies per FR-WF-EN-005 and FR-WF-EN-006)
       - given workflowEditNodeFormTimeField for the workflowNode has no persisted duration (empty or cleared), workflowNodeMetaTimeTag is not rendered for that workflowNode
+      - given workflowEditNodeFormTimeField represents 26 hours, workflowNodeMetaTimeTag displays the localized equivalent of '1 day 2 hours' rather than '26 hours'
       - given a workflowNode would show no workflowNodeMetaContextTag, workflowNodeMetaTaskTag, or workflowNodeMetaTimeTag, workflowNodeMeta is not rendered for that workflowNode
       - given a workflowNode is rendered in workflowView, workflowNodeBorder is rendered as the channel-colored top stripe on that workflowNode
       - given a workflowNode is in workflowChannel C, workflowNodeBorder fill colour conforms to FR-CHAN-003
@@ -507,3 +511,9 @@ designEvidenceLinkTable:
     hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=1835-115859&t=6weYZA8hUf6tm7DF-1
   - key: FIGMA-WF-NODE-LINKED-WORKFLOW-LINK-PROGRAM
     hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5677-55544&t=6weYZA8hUf6tm7DF-1
+
+changelog:
+  - version: '1.1'
+    date: '2026-10-05'
+    changes:
+      - Aligned workflowNodeMetaTimeTag with the shared normalized Days + Hours duration contract.

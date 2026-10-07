@@ -1,5 +1,7 @@
 # Normalized requirements: workflow 'Overview' view metadata (activity, course, program)
+# Version: 1.1
 # Source: tests/docs/__ARCHIVE/functional-requirements.md (Workflow Metadata + Views/Overview sections)
+# Product decision: 2026-10-05 restored workflow duration fields as whole Days + Hours controls.
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
 # Cross-reference:
 #   - tests/docs/requirements/features/shared/context_action_bar_requirements_v1.yaml (workflow header-level controls on contextActionBar)
@@ -14,6 +16,7 @@
 #   - tests/docs/requirements/features/project/project_overview_requirements_v1.yaml (project-level publish/visibility and contributor inheritance—FR-PROJ-OV-002; contributor removal mid-session—FR-WS-ACCESS-004)
 #   - tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail — FR-WS-ACCESS-002; mid-session contributor removal — FR-WS-ACCESS-004)
 #   - tests/docs/requirements/features/workflow/workflow_public_link_requirements_v1.yaml (workflowGeneratePublicLinkButton and anonymous Overview exception — FR-WF-PUBLIC-001 and FR-WF-PUBLIC-002)
+#   - tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml (shared whole Days + Hours duration contract — FR-WF-DURATION-001 through FR-WF-DURATION-003)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
@@ -33,15 +36,15 @@ uiObjectDefinitions:
   workflowMetadataSwitchCalculateTimeAutomatically:
     meaning: Switch control labeled 'Auto-calculate' for Time on workflowOverviewView.
   workflowMetadataFieldTime:
-    meaning: Time duration metadata field on workflowOverviewView.
+    meaning: Time duration metadata field on workflowOverviewView; conforms to FR-WF-DURATION-001 through FR-WF-DURATION-003.
   workflowMetadataSwitchCalculatePonderationAutomatically:
     meaning: Program-only switch control labeled 'Auto-calculate' for Ponderation on workflowOverviewView.
   workflowMetadataFieldIndividualTime:
-    meaning: Individual duration field in the Ponderation section on workflowOverviewView.
+    meaning: Individual duration field in the Ponderation section on workflowOverviewView; conforms to FR-WF-DURATION-001 through FR-WF-DURATION-003.
   workflowMetadataFieldPracticalTime:
-    meaning: Practical duration field in the Ponderation section on workflowOverviewView.
+    meaning: Practical duration field in the Ponderation section on workflowOverviewView; conforms to FR-WF-DURATION-001 through FR-WF-DURATION-003.
   workflowMetadataFieldTheoryTime:
-    meaning: Theory duration field in the Ponderation section on workflowOverviewView.
+    meaning: Theory duration field in the Ponderation section on workflowOverviewView; conforms to FR-WF-DURATION-001 through FR-WF-DURATION-003.
   workflowMetadataSwitchCalculateCreditsAutomatically:
     meaning: Program-only switch control labeled 'Auto-calculate' for Credits on workflowOverviewView.
   workflowMetadataFieldCredits:
@@ -49,9 +52,9 @@ uiObjectDefinitions:
   workflowMetadataSwitchCalculateClassificationAutomatically:
     meaning: Program-only switch control labeled 'Auto-calculate' for classification on workflowOverviewView.
   workflowMetadataFieldGeneralTime:
-    meaning: General time duration field on program workflowOverviewView.
+    meaning: General time duration field on program workflowOverviewView; conforms to FR-WF-DURATION-001 through FR-WF-DURATION-003.
   workflowMetadataFieldSpecificTime:
-    meaning: Specific time duration field on program workflowOverviewView.
+    meaning: Specific time duration field on program workflowOverviewView; conforms to FR-WF-DURATION-001 through FR-WF-DURATION-003.
   workflowMetadataClassificationWarningBanner:
     meaning: Classification mismatch warning banner on program workflowOverviewView.
   workflowMetadataWarningBanner:
@@ -238,7 +241,7 @@ requirements:
       - while workflowMetadataSwitchCalculateTimeAutomatically is ON, any change to the effective time contribution of one or more workflowNodes in the current workflow, including workflowNode create or delete in workflowView per tests/docs/requirements/features/workflow/workflow_add_tab_requirements_v1.yaml and tests/docs/requirements/features/workflow/workflow_delete_node_requirements_v1.yaml FR-WF-DEL-003, workflowEditNodeFormTimeField edit on a non-linked workflowNode per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-007, workflow link or unlink on a workflowNode per FR-WF-EN-010 and FR-WF-EN-011, archive of a linked child workflow that clears parent node links per tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml FR-WF-ARCH-003, and linked activity or course workflowMetadataFieldTime change on a child workflow that is linked from a node in this workflow per FR-WF-EN-004 and FR-WF-EN-006
 
     mainFlow:
-      - workflowMetadataFieldTime is a duration-type field
+      - workflowMetadataFieldTime is a duration-type field that conforms to the whole Days + Hours input, validation, normalization, display, and localization contract in tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml FR-WF-DURATION-001 through FR-WF-DURATION-003; it is not a free-form or integer-hours-only field
       - for a newly blank-created workflow, initial auto-calculate switch defaults are defined in FR-WF-OV-008; for a template-created workflow, overview metadata including switch states are copied from the template source per FR-WF-OV-009
       - when workflowMetadataSwitchCalculateTimeAutomatically is OFF, workflowMetadataFieldTime is editable for owner or editor
       - when workflowMetadataSwitchCalculateTimeAutomatically is ON, workflowMetadataFieldTime is read-only and its displayed value equals the arithmetic sum of effective time durations across all workflowNodes in the current workflow; for each workflowNode, effective time is workflowEditNodeFormTimeField when the node has no linked workflow, or the linked activity/course workflow's workflowMetadataFieldTime when the node has a linked workflow per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-004 and FR-WF-EN-006; nodes with empty or unset effective time contribute zero to the sum
@@ -268,8 +271,9 @@ requirements:
       - given switch is OFF and actor is owner or editor, workflowMetadataFieldTime is editable
       - given switch is ON and actor is owner or editor, workflowMetadataFieldTime is read-only and shows calculated value
       - given actor is viewer, commenter, or user, switch and field are read-only regardless of switch state
+      - given workflowMetadataSwitchCalculateTimeAutomatically is OFF and owner enters Days 2 and Hours 3 in workflowMetadataFieldTime, the persisted duration is 2 days and 3 hours and reopening Overview displays Days 2 and Hours 3
       - given owner or editor toggles workflowMetadataSwitchCalculateTimeAutomatically while workflowOverviewView is visible, workflowMetadataFieldTime updates immediately to reflect the new mode and value
-      - given workflowMetadataSwitchCalculateTimeAutomatically is ON and workflowNode N1 has effective time 2 hours and workflowNode N2 has effective time 3 hours (whether from local workflowEditNodeFormTimeField values or linked child workflowMetadataFieldTime per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-004 and FR-WF-EN-006), workflowMetadataFieldTime displays 5 hours
+      - given workflowMetadataSwitchCalculateTimeAutomatically is ON and workflowNode N1 has effective time 20 hours and workflowNode N2 has effective time 8 hours (whether from local workflowEditNodeFormTimeField values or linked child workflowMetadataFieldTime per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-004 and FR-WF-EN-006), workflowMetadataFieldTime displays Days 1 and Hours 4 per FR-WF-DURATION-002
       - given workflowMetadataSwitchCalculateTimeAutomatically is ON and owner edits workflowEditNodeFormTimeField on a non-linked workflowNode from 2 hours to 4 hours on the Workflow sub-view, when owner selects Overview on workflowViewTabSelector per FR-WF-HEADER-001, workflowMetadataFieldTime reflects the new sum per FR-WF-OV-010
       - given workflowMetadataSwitchCalculateTimeAutomatically is ON and a workflowNode with effective time 2 hours is deleted per tests/docs/requirements/features/workflow/workflow_delete_node_requirements_v1.yaml FR-WF-DEL-003 on the Workflow sub-view, when owner selects Overview on workflowViewTabSelector per FR-WF-HEADER-001, workflowMetadataFieldTime reflects the reduced total per FR-WF-OV-010
       - given workflowMetadataSwitchCalculateTimeAutomatically is ON and a course workflowNode is linked to an activity workflow whose workflowMetadataFieldTime is 6 hours per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-004, that node contributes 6 hours to workflowMetadataFieldTime until the link is removed per FR-WF-EN-011 or the linked activity workflowMetadataFieldTime changes
@@ -310,13 +314,13 @@ requirements:
       - workflowMetadataFieldTime changes on the current workflow per FR-WF-OV-003 (manual edit when workflowMetadataSwitchCalculateTimeAutomatically is OFF, or recomputed display value when workflowMetadataSwitchCalculateTimeAutomatically is ON)
 
     mainFlow:
-      - on course and program workflows, the 'Ponderation' section shows three duration fields: workflowMetadataFieldTheoryTime ('Theory'), workflowMetadataFieldPracticalTime ('Practical'), and workflowMetadataFieldIndividualTime ('Individual'), which are editable for owner or editor
+      - on course and program workflows, the 'Ponderation' section shows three duration fields: workflowMetadataFieldTheoryTime ('Theory'), workflowMetadataFieldPracticalTime ('Practical'), and workflowMetadataFieldIndividualTime ('Individual'), which are editable for owner or editor and each conform to FR-WF-DURATION-001 through FR-WF-DURATION-003
       - on program workflows, there is an additional switch control: workflowMetadataSwitchCalculatePonderationAutomatically, which is editable for owner or editor
       - on program workflows, when workflowMetadataSwitchCalculatePonderationAutomatically is OFF, those three duration fields in the 'Ponderation' section are editable for owner or editor
       - on program workflows, when workflowMetadataSwitchCalculatePonderationAutomatically is ON, workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, and workflowMetadataFieldIndividualTime are read-only and their displayed values equal the arithmetic sums of effective ponderation durations across all workflowNodes in the current program workflow as follows — workflowMetadataFieldTheoryTime equals the sum of each workflowNode's effective Theory duration (workflowEditNodeFormPonderationTheoryField when the node has no linked workflow, or the linked course workflow's workflowMetadataFieldTheoryTime when the node has a linked course workflow per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-006); workflowMetadataFieldPracticalTime equals the sum of each workflowNode's effective Practical duration (workflowEditNodeFormPonderationPracticeField when the node has no linked workflow, or the linked course workflow's workflowMetadataFieldPracticalTime when the node has a linked course workflow per FR-WF-EN-006); workflowMetadataFieldIndividualTime equals the sum of each workflowNode's effective Individual duration (workflowEditNodeFormPonderationIndividualField when the node has no linked workflow, or the linked course workflow's workflowMetadataFieldIndividualTime when the node has a linked course workflow per FR-WF-EN-006); nodes with empty or unset effective values contribute zero to each respective sum
       - when workflowMetadataSwitchCalculatePonderationAutomatically is ON and a qualifying trigger occurs while workflowOverviewView is visible, workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, workflowMetadataFieldIndividualTime, and workflowMetadataWarningBanner visibility update immediately to reflect the recomputed values (no separate save step for displayed calculated values)
       - when workflowMetadataSwitchCalculatePonderationAutomatically is ON and a qualifying trigger occurs on the Workflow sub-view while Overview is not visible, ponderation totals and workflowMetadataWarningBanner eligibility reflect the current workflow state when the actor opens Overview per FR-WF-OV-010
-      - when the combined duration represented by workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, and workflowMetadataFieldIndividualTime is not equal to the duration represented by workflowMetadataFieldTime, workflowMetadataWarningBanner is shown; its message is 'Total of ponderation hours does not match [workflow type] time.' where [workflow type] is replaced by the workflow type label (course or program)
+      - when the combined duration represented by workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, and workflowMetadataFieldIndividualTime is not equal to the duration represented by workflowMetadataFieldTime, workflowMetadataWarningBanner is shown; its message is 'The total ponderation duration does not match the [workflow type] time.' where [workflow type] is replaced by the workflow type label (course or program)
       - when workflowMetadataFieldTime changes per FR-WF-OV-003 while workflowOverviewView is rendered, workflowMetadataWarningBanner visibility updates immediately to reflect whether the sum of workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, and workflowMetadataFieldIndividualTime equals workflowMetadataFieldTime
       - example of a mismatch that triggers workflowMetadataWarningBanner — workflowMetadataFieldTheoryTime 40 hours, workflowMetadataFieldPracticalTime 60 hours, workflowMetadataFieldIndividualTime 80 hours (combined total 180 hours), and workflowMetadataFieldTime 150 hours
 
@@ -349,6 +353,7 @@ requirements:
 
     acceptanceCriteria:
       - given workflow type is course or program, the 'Ponderation' section shows Theory, Practical, and Individual as duration fields (workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, workflowMetadataFieldIndividualTime)
+      - given any Ponderation duration field is rendered, it uses the Days + Hours control and validation contract in FR-WF-DURATION-001 rather than an integer-hours-only input
       - given workflow type is course, workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, workflowMetadataFieldIndividualTime are editable
       - given workflow type is course, workflowMetadataSwitchCalculatePonderationAutomatically is not shown
       - given workflow type is program, workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, workflowMetadataFieldIndividualTime are editable for owner or editor when workflowMetadataSwitchCalculatePonderationAutomatically is OFF
@@ -356,8 +361,8 @@ requirements:
       - given workflow type is course or program and actor is viewer, commenter, or user, the three ponderation duration fields are read-only
       - given workflow type is program and actor is viewer, commenter, or user, workflowMetadataSwitchCalculatePonderationAutomatically is read-only
       - given workflow type is course or program, when the sum of the three ponderation duration values does not equal the duration in workflowMetadataFieldTime, workflowMetadataWarningBanner is visible
-      - given workflowMetadataWarningBanner is visible, its text is 'Total of ponderation hours does not match [workflow type] time.' with [workflow type] substituted by the current workflow type label (course or program)
-      - given workflow type is program, workflowMetadataSwitchCalculatePonderationAutomatically is ON, workflowNode N1 has workflowEditNodeFormPonderationTheoryField 10 hours and workflowNode N2 has workflowEditNodeFormPonderationTheoryField 15 hours (local values on non-linked nodes, or mirrored linked-course workflowMetadataFieldTheoryTime per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-006), workflowMetadataFieldTheoryTime displays 25 hours
+      - given workflowMetadataWarningBanner is visible, its text is 'The total ponderation duration does not match the [workflow type] time.' with [workflow type] substituted by the current workflow type label (course or program)
+      - given workflow type is program, workflowMetadataSwitchCalculatePonderationAutomatically is ON, workflowNode N1 has workflowEditNodeFormPonderationTheoryField 20 hours and workflowNode N2 has workflowEditNodeFormPonderationTheoryField 10 hours (local values on non-linked nodes, or mirrored linked-course workflowMetadataFieldTheoryTime per tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml FR-WF-EN-006), workflowMetadataFieldTheoryTime displays Days 1 and Hours 6 per FR-WF-DURATION-002
       - given workflow type is program, workflowMetadataSwitchCalculatePonderationAutomatically is ON, and owner edits workflowEditNodeFormPonderationIndividualField on a non-linked program workflowNode on the Workflow sub-view, when owner selects Overview on workflowViewTabSelector per FR-WF-HEADER-001, workflowMetadataFieldIndividualTime reflects the new sum per FR-WF-OV-010
       - given workflow type is program, workflowMetadataSwitchCalculatePonderationAutomatically is ON, and a program workflowNode is linked to a course whose workflowMetadataFieldPracticalTime is 8 hours per FR-WF-EN-006, that node's workflowEditNodeFormPonderationPracticeField mirrors 8 hours and contributes 8 hours to workflowMetadataFieldPracticalTime until the link is removed per FR-WF-EN-011 or the linked course workflowMetadataFieldPracticalTime changes
       - given workflow type is course or program, workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, and workflowMetadataFieldIndividualTime sum to 180 hours, workflowMetadataFieldTime is 150 hours, and workflowMetadataWarningBanner is visible, when owner toggles workflowMetadataSwitchCalculateTimeAutomatically ON per FR-WF-OV-003 and workflowMetadataFieldTime recomputes to 180 hours, workflowMetadataWarningBanner is no longer visible
@@ -464,12 +469,12 @@ requirements:
       - workflowMetadataFieldTime changes on the current program workflow per FR-WF-OV-003
 
     mainFlow:
-      - workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are duration-type fields in the program overview classification controls
+      - workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are duration-type fields in the program overview classification controls and each conforms to FR-WF-DURATION-001 through FR-WF-DURATION-003
       - when workflowMetadataSwitchCalculateClassificationAutomatically is OFF, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are editable for owner or editor and workflowEditNodeFormSpecificEducationSwitch has no effect on these totals
       - when workflowMetadataSwitchCalculateClassificationAutomatically is ON, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are read-only and calculated from each program workflowNode's workflowEditNodeFormSpecificEducationSwitch (defined in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml) — a workflowNode with workflowEditNodeFormSpecificEducationSwitch ON contributes its workflowEditNodeFormTimeField duration to workflowMetadataFieldSpecificTime, and a workflowNode with workflowEditNodeFormSpecificEducationSwitch OFF contributes its workflowEditNodeFormTimeField duration to workflowMetadataFieldGeneralTime
       - when workflowMetadataSwitchCalculateClassificationAutomatically is ON and a qualifying trigger occurs while workflowOverviewView is visible, workflowMetadataFieldGeneralTime, workflowMetadataFieldSpecificTime, and workflowMetadataClassificationWarningBanner visibility update immediately to reflect the recomputed sums (no separate save step for displayed calculated values)
       - when workflowMetadataSwitchCalculateClassificationAutomatically is ON and a qualifying trigger occurs on the Workflow sub-view while Overview is not visible, classification totals and workflowMetadataClassificationWarningBanner eligibility reflect the current workflow state when the actor opens Overview per FR-WF-OV-010
-      - when the combined duration represented by workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime is not equal to the duration represented by workflowMetadataFieldTime, workflowMetadataClassificationWarningBanner is shown with message 'Total of classification hours does not match program time'
+      - when the combined duration represented by workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime is not equal to the duration represented by workflowMetadataFieldTime, workflowMetadataClassificationWarningBanner is shown with message 'The total classification duration does not match the program time.'
       - when workflowMetadataFieldTime changes per FR-WF-OV-003 while workflowOverviewView is rendered, workflowMetadataClassificationWarningBanner visibility updates immediately to reflect whether the sum of workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime equals workflowMetadataFieldTime
       - viewer, commenter, or user cannot edit workflowMetadataSwitchCalculateClassificationAutomatically, workflowMetadataFieldGeneralTime, or workflowMetadataFieldSpecificTime
 
@@ -497,11 +502,12 @@ requirements:
 
     acceptanceCriteria:
       - given owner or editor and workflowMetadataSwitchCalculateClassificationAutomatically is OFF, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are editable and workflowEditNodeFormSpecificEducationSwitch state on individual program workflowNodes does not affect either total
+      - given workflowMetadataFieldGeneralTime or workflowMetadataFieldSpecificTime is rendered, it uses the Days + Hours control and validation contract in FR-WF-DURATION-001 rather than an integer-hours-only input
       - given owner or editor and workflowMetadataSwitchCalculateClassificationAutomatically is ON, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime are read-only and computed by summing each program workflowNode's workflowEditNodeFormTimeField duration into workflowMetadataFieldSpecificTime when workflowEditNodeFormSpecificEducationSwitch is ON and into workflowMetadataFieldGeneralTime when workflowEditNodeFormSpecificEducationSwitch is OFF
       - given viewer, commenter, or user, workflowMetadataSwitchCalculateClassificationAutomatically, workflowMetadataFieldGeneralTime, and workflowMetadataFieldSpecificTime are read-only
       - given workflow type is program, when the sum of workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime does not equal the duration in workflowMetadataFieldTime, workflowMetadataClassificationWarningBanner is visible
-      - given workflowMetadataClassificationWarningBanner is visible, its text is 'Total of classification hours does not match program time'
-      - given workflowMetadataSwitchCalculateClassificationAutomatically is ON, program workflowNode N1 has workflowEditNodeFormSpecificEducationSwitch OFF and workflowEditNodeFormTimeField 2 hours and program workflowNode N2 has workflowEditNodeFormSpecificEducationSwitch ON and workflowEditNodeFormTimeField 3 hours, workflowMetadataFieldGeneralTime displays 2 hours and workflowMetadataFieldSpecificTime displays 3 hours
+      - given workflowMetadataClassificationWarningBanner is visible, its text is 'The total classification duration does not match the program time.'
+      - given workflowMetadataSwitchCalculateClassificationAutomatically is ON, program workflowNode N1 has workflowEditNodeFormSpecificEducationSwitch OFF and workflowEditNodeFormTimeField 1 day and 2 hours and program workflowNode N2 has workflowEditNodeFormSpecificEducationSwitch ON and workflowEditNodeFormTimeField 3 hours, workflowMetadataFieldGeneralTime displays Days 1 and Hours 2 and workflowMetadataFieldSpecificTime displays Days 0 and Hours 3
       - given workflowMetadataSwitchCalculateClassificationAutomatically is ON and owner toggles workflowEditNodeFormSpecificEducationSwitch on a program workflowNode from OFF to ON on the Workflow sub-view, when owner selects Overview on workflowViewTabSelector per FR-WF-HEADER-001, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime reflect the moved duration per FR-WF-OV-010
       - given workflowMetadataSwitchCalculateClassificationAutomatically is ON and a program workflowNode with workflowEditNodeFormTimeField 2 hours is deleted per tests/docs/requirements/features/workflow/workflow_delete_node_requirements_v1.yaml FR-WF-DEL-003 on the Workflow sub-view, when owner selects Overview on workflowViewTabSelector per FR-WF-HEADER-001, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime reflect the reduced totals per FR-WF-OV-010
       - given workflow type is program, workflowMetadataFieldGeneralTime and workflowMetadataFieldSpecificTime sum to 180 hours, workflowMetadataFieldTime is 150 hours, and workflowMetadataClassificationWarningBanner is visible, when workflowMetadataFieldTime updates to 180 hours per FR-WF-OV-003, workflowMetadataClassificationWarningBanner is no longer visible
@@ -737,3 +743,11 @@ designEvidenceLinkTable:
     hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-108254&t=6weYZA8hUf6tm7DF-1
   - key: FIGMA-WF-OV-PROGRAM-OWNER-EDITOR-WARNING
     hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-108844&t=6weYZA8hUf6tm7DF-1
+
+changelog:
+  - version: '1.1'
+    date: '2026-10-05'
+    changes:
+      - Restored every Overview duration field as a whole Days + Hours control through the shared FR-WF-DURATION contract.
+      - Added normalized days-and-hours examples for manual values and automatic totals.
+      - Replaced hours-only mismatch wording with duration wording for Ponderation and Classification.

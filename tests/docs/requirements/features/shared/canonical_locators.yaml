@@ -1092,13 +1092,13 @@ locatorMappings:
     strategy: null
     confidence: unresolved
   workflowEditNodeFormPonderationIndividualField:
-    strategy: "{workflowEditNodeFormPonderationGroup} [name='ponderation.individual']"
+    strategy: "{workflowEditNodeFormPonderationGroup} duration field group with accessible name 'Individual'"
     confidence: inferred
   workflowEditNodeFormPonderationPracticeField:
-    strategy: "{workflowEditNodeFormPonderationGroup} [name='ponderation.practice']"
+    strategy: "{workflowEditNodeFormPonderationGroup} duration field group with accessible name 'Practical'"
     confidence: inferred
   workflowEditNodeFormPonderationTheoryField:
-    strategy: "{workflowEditNodeFormPonderationGroup} [name='ponderation.theory']"
+    strategy: "{workflowEditNodeFormPonderationGroup} duration field group with accessible name 'Theory'"
     confidence: inferred
   workflowEditNodeFormSpecificEducationSwitch:
     strategy: null
@@ -1110,8 +1110,8 @@ locatorMappings:
     strategy: "{workflowEditNodeForm} select with label 'Task'"
     confidence: inferred
   workflowEditNodeFormTimeField:
-    strategy: null
-    confidence: unresolved
+    strategy: "{workflowEditNodeForm} duration field group with accessible name 'Time'"
+    confidence: inferred
   workflowEditNodeFormTitleField:
     strategy: "{workflowEditNodeForm} [name='title']"
     confidence: inferred
@@ -1154,6 +1154,18 @@ locatorMappings:
   workflowFormFieldValidationMessage:
     strategy: null
     confidence: unresolved
+  workflowDurationDaysInput:
+    strategy: "{workflowDurationField} whole-number input with accessible label 'Days'"
+    confidence: inferred
+  workflowDurationField:
+    strategy: "duration field group scoped to its hosting uiObject and identified by that hosting field's accessible name"
+    confidence: inferred
+  workflowDurationHoursInput:
+    strategy: "{workflowDurationField} whole-number input with accessible label 'Hours'"
+    confidence: inferred
+  workflowDurationValidationMessage:
+    strategy: "validation message associated with {workflowDurationDaysInput} or {workflowDurationHoursInput}"
+    confidence: inferred
   workflowGeneratePublicLinkButton:
     strategy: "{workflowOverviewView} button with accessible name 'Generate public link'"
     confidence: confirmed
@@ -1221,23 +1233,23 @@ locatorMappings:
     strategy: null
     confidence: unresolved
   workflowMetadataFieldGeneralTime:
-    strategy: null
-    confidence: unresolved
+    strategy: "{workflowMetadataSection} duration field group with accessible name 'General time'"
+    confidence: inferred
   workflowMetadataFieldIndividualTime:
-    strategy: null
-    confidence: unresolved
+    strategy: "{workflowMetadataSection} duration field group with accessible name 'Individual'"
+    confidence: inferred
   workflowMetadataFieldPracticalTime:
-    strategy: null
-    confidence: unresolved
+    strategy: "{workflowMetadataSection} duration field group with accessible name 'Practical'"
+    confidence: inferred
   workflowMetadataFieldSpecificTime:
-    strategy: null
-    confidence: unresolved
+    strategy: "{workflowMetadataSection} duration field group with accessible name 'Specific time'"
+    confidence: inferred
   workflowMetadataFieldTheoryTime:
-    strategy: null
-    confidence: unresolved
+    strategy: "{workflowMetadataSection} duration field group with accessible name 'Theory'"
+    confidence: inferred
   workflowMetadataFieldTime:
-    strategy: null
-    confidence: unresolved
+    strategy: "{workflowMetadataSection} duration field group with accessible name 'Time'"
+    confidence: inferred
   workflowMetadataPermissionsPanel:
     strategy: "{workflowOverviewView} contributors and permissions summary panel"
     confidence: inferred

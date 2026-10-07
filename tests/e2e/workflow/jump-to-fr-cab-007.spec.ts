@@ -5,7 +5,8 @@ import {
   navigateToWorkflowGraphSubView,
   workflowJumpToMenuSectionItemLabel,
 } from '../../helpers/jump-to';
-import { sectionHeader, sectionTitleHeading } from './edit-section.locators';
+import { expectEmptySectionHeaderShowsNumberLabelOnlyPerFrSec002 } from './edit-section.helpers';
+import { sectionHeader } from './edit-section.locators';
 import { workflowJumpToTrigger } from './jump-to.locators';
 import { workflowOverviewTab } from './workflow.locators';
 
@@ -46,8 +47,12 @@ test.describe('jump-to-fr-cab-007', () => {
     ]);
 
     const blank = workflow.blankSection();
+    await expectEmptySectionHeaderShowsNumberLabelOnlyPerFrSec002(
+      page,
+      blank.uuid,
+      blank.position + 1,
+    );
     await expect(sectionHeader(page, blank.uuid)).not.toContainText('Untitled section');
-    await expect(sectionTitleHeading(page, blank.uuid)).toHaveCount(0);
   });
 
   test('FR-CAB-007: selecting a row scrolls to the matching section', async ({ page, workflow }) => {

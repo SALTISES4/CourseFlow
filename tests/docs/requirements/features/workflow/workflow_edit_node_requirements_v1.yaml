@@ -1,5 +1,7 @@
 # Normalized requirements: edit an existing workflowNode via workflowRightSidebarEditTab / workflowRightSidebarEditTabContent ('Workflow' view), including link-workflow dialog (course → activity, program → course)
+# Version: 1.1
 # Source: tests/docs/__ARCHIVE/functional-requirements.md (Nodes — Node Metadata; Node Actions — Link a Workflow)
+# Product decision: 2026-10-05 restored workflow duration fields as whole Days + Hours controls.
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
 # Cross-reference:
 #   - tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml (workflowRightSidebar / Edit tab — FR-WF-RS-001, FR-WF-RS-002, FR-WF-RS-003)
@@ -18,6 +20,7 @@
 #   - tests/docs/requirements/features/workflow/workflow_edit_form_requirements_v1.yaml (workflowDescriptionField in editWorkflowDialog per FR-WF-EN-012)
 #   - tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml (archive breaks parent node links and retains displayed node data—FR-WF-ARCH-003; batch project archive preserves links—FR-PROJ-ARCH-003)
 #   - tests/docs/requirements/features/workflow/workflow_copy_requirements_v1.yaml (cross-project copy link break matches FR-WF-ARCH-003; same-project copy preserves links—FR-WF-COPY-003)
+#   - tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml (shared whole Days + Hours duration contract — FR-WF-DURATION-001 through FR-WF-DURATION-003)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
@@ -84,7 +87,7 @@ uiObjectDefinitions:
   workflowEditNodeFormTaskTypeSelect:
     meaning: Task-type select on workflowEditNodeForm labeled 'Task'; activity parent workflow type only; options are 'None', 'Gather Information', 'Discuss', 'Problem Solve', 'Analyze', 'Assess/Review Peers', 'Debate', 'Game/Roleplay', 'Create/Design', 'Revise/Improve', 'Read', 'Write', 'Present', 'Experiment/Inquiry', 'Quiz/Test', 'Instructor Resource Curation', 'Instructor Orchestration', 'Instructor Evaluation', and 'Other'.
   workflowEditNodeFormTimeField:
-    meaning: Duration input on workflowEditNodeForm labeled 'Time'.
+    meaning: Duration input group on workflowEditNodeForm labeled 'Time'; conforms to FR-WF-DURATION-001 through FR-WF-DURATION-003.
   workflowEditNodeFormCreditsField:
     meaning: Numeric input on workflowEditNodeForm labeled 'Credits'; program workflow type only.
   workflowEditNodeFormTagsAutocomplete:
@@ -92,11 +95,11 @@ uiObjectDefinitions:
   workflowEditNodeFormPonderationGroup:
     meaning: Field group on workflowEditNodeForm with heading 'Ponderation'; program workflow type only.
   workflowEditNodeFormPonderationTheoryField:
-    meaning: Numeric input inside workflowEditNodeFormPonderationGroup labeled 'Hrs. theory'.
+    meaning: Duration input group inside workflowEditNodeFormPonderationGroup labeled 'Theory'; conforms to FR-WF-DURATION-001 through FR-WF-DURATION-003.
   workflowEditNodeFormPonderationPracticeField:
-    meaning: Numeric input inside workflowEditNodeFormPonderationGroup labeled 'Hrs. practice'.
+    meaning: Duration input group inside workflowEditNodeFormPonderationGroup labeled 'Practical'; conforms to FR-WF-DURATION-001 through FR-WF-DURATION-003.
   workflowEditNodeFormPonderationIndividualField:
-    meaning: Numeric input inside workflowEditNodeFormPonderationGroup labeled 'Hrs. individual'.
+    meaning: Duration input group inside workflowEditNodeFormPonderationGroup labeled 'Individual'; conforms to FR-WF-DURATION-001 through FR-WF-DURATION-003.
   workflowEditNodeFormSpecificEducationSwitch:
     meaning: Binary switch on workflowEditNodeForm labeled 'Specific education'; program workflow type only.
   workflowEditNodeFormLinkWorkflowButton:
@@ -215,6 +218,7 @@ requirements:
       - field set inside workflowEditNodeForm follows the parent workflow type per FR-WF-EN-002 (activity), FR-WF-EN-003 / FR-WF-EN-004 (course, depending on whether the workflowNode has a linked workflow), or FR-WF-EN-005 / FR-WF-EN-006 (program, depending on whether the workflowNode has a linked workflow)
       - editable field changes auto-save per FR-WF-EN-007 without an explicit save control on workflowEditNodeForm
       - canvas presentation of workflowNodeTitle, workflowNodeMeta tags, and workflowNodeLinkedWorkflowIndicator in workflowView uses the same field values and applicability as workflowEditNodeForm per FR-WF-EN-002 through FR-WF-EN-006; layout and chrome on the canvas conform to FR-WF-NODE-001
+      - workflowEditNodeFormTimeField and, when present, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField conform to the whole Days + Hours input, validation, normalization, display, and localization contract in tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml FR-WF-DURATION-001 through FR-WF-DURATION-003; none is a free-form or integer-hours-only field
       - field-level read-only when linked per FR-WF-EN-004 or FR-WF-EN-006
 
     roleBehavior:
@@ -236,6 +240,7 @@ requirements:
       - given workflowNode N shows workflowNodeOutcomeHighlightBorder per FR-WF-NODE-003, when the user opens comments for N via workflowNodeHoverActionsMenuCommentsItem per FR-WF-NODE-005 and FR-WF-COMMENTS-001 and then clicks workflowRightSidebarEditTab, workflowEditNodeForm is rendered for N per this FR and is not blocked by N showing workflowNodeOutcomeHighlightBorder
       - given owner or editor completes a drop from workflowRightSidebarAddTabContent that finalizes a new workflowNode per FR-WF-ADD-004, FR-WF-ADD-005, or FR-WF-ADD-006, post-drop sidebar and edit-form behavior per FR-WF-ADD-004
       - when workflowEditNodeForm is rendered, workflowEditNodeFormHeading text is 'Edit node'
+      - given workflowEditNodeFormTimeField is rendered, it contains Days and Hours inputs and no minutes, seconds, arbitrary-unit selector, or free-form integer-hours input per FR-WF-DURATION-001
 
     openQuestions: []
 
@@ -394,6 +399,7 @@ requirements:
     acceptanceCriteria:
       - given parent workflow type is course and the workflowNode has a linked activity workflow, workflowEditNodeFormTitleField is rendered read-only at the top and displays the linked activity workflow's workflowTitle
       - given parent workflow type is course and the workflowNode has a linked activity workflow, workflowEditNodeFormDescriptionField and workflowEditNodeFormTimeField are read-only for every actor and mirror the linked activity workflow's workflowMetadataFieldDescription and workflowMetadataFieldTime respectively; updates follow only when those metadata fields change on the linked activity workflow
+      - given the linked activity workflow's workflowMetadataFieldTime is 1 day and 2 hours, workflowEditNodeFormTimeField is read-only and displays Days 1 and Hours 2 per FR-WF-DURATION-002
       - given parent workflow type is course and the workflowNode has a linked activity workflow, workflowEditNodeFormCourseContextSelect and workflowEditNodeFormTagsAutocomplete are still rendered as course-node-local metadata and remain editable for owner/editor (they are not forced to read-only by the linked workflow)
       - given parent workflow type is course and the workflowNode has a linked activity workflow, workflowEditNodeFormCourseContextSelect offers the same option set as on unlinked course nodes per FR-WF-EN-003
       - given parent workflow type is course and the workflowNode has a linked activity workflow, workflowEditNodeFormLinkWorkflowButton displays 'Remove linked activity' and permissions per FR-WF-EN-010 roleBehavior; workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are present in the form's action area
@@ -453,7 +459,8 @@ requirements:
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given parent workflow type is program and the workflowNode has no linked workflow, the visible fields in workflowEditNodeForm are, in order, workflowEditNodeFormTitleField, workflowEditNodeFormDescriptionField, workflowEditNodeFormTimeField, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationGroup (with its three hours fields), workflowEditNodeFormSpecificEducationSwitch, and workflowEditNodeFormTagsAutocomplete; workflowEditNodeFormLinkWorkflowButton, workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are visible in the action area
+      - given parent workflow type is program and the workflowNode has no linked workflow, the visible fields in workflowEditNodeForm are, in order, workflowEditNodeFormTitleField, workflowEditNodeFormDescriptionField, workflowEditNodeFormTimeField, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationGroup (with its three duration fields), workflowEditNodeFormSpecificEducationSwitch, and workflowEditNodeFormTagsAutocomplete; workflowEditNodeFormLinkWorkflowButton, workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are visible in the action area
+      - given parent workflow type is program and the workflowNode has no linked workflow, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField each contain Days and Hours inputs per FR-WF-DURATION-001
       - given parent workflow type is program and the workflowNode has no linked workflow, workflowEditNodeFormLinkWorkflowButton displays 'Link a course'
       - given parent workflow type is program and the workflowNode is newly created (no prior user interaction with workflowEditNodeFormSpecificEducationSwitch), workflowEditNodeFormSpecificEducationSwitch defaults to OFF
 
@@ -512,6 +519,7 @@ requirements:
     acceptanceCriteria:
       - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormTitleField is rendered read-only at the top and displays the linked course workflow's workflowTitle
       - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormDescriptionField, workflowEditNodeFormTimeField, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField are read-only for every actor and mirror the linked course workflow's workflowMetadataFieldDescription, workflowMetadataFieldTime, workflowMetadataFieldCredits, workflowMetadataFieldTheoryTime, workflowMetadataFieldPracticalTime, and workflowMetadataFieldIndividualTime respectively; updates follow only when those metadata fields change on the linked course workflow
+      - given a linked course duration field is 2 days and 3 hours, its corresponding read-only workflowEditNodeForm Time or Ponderation duration field displays Days 2 and Hours 3 per FR-WF-DURATION-002
       - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormTagsAutocomplete is rendered as program-node-local metadata and remains editable for owner/editor (it is not forced to read-only by the linked workflow)
       - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormSpecificEducationSwitch is rendered and editable for owner/editor
       - given parent workflow type is program and the workflowNode has a linked course workflow, workflowEditNodeFormLinkWorkflowButton displays 'Remove linked course' and permissions per FR-WF-EN-010 roleBehavior; workflowEditNodeFormDuplicateButton and workflowEditNodeFormDeleteButton are present in the form's action area
@@ -542,6 +550,7 @@ requirements:
 
     mainFlow:
       - system persists changes without an explicit save control on workflowEditNodeForm
+      - for workflowEditNodeFormTimeField and the three workflowEditNodeFormPonderation* duration fields, Days and Hours are persisted as one logical duration only when both child values satisfy FR-WF-DURATION-001; an invalid child value is not auto-saved as a partial or replacement duration
       - workflowEditNodeForm does not render any visible auto-save status indicator (e.g. 'Saving…' or 'Saved')
       - applying a toolbar format on workflowEditNodeFormDescriptionField or inserting or editing a hyperlink via workflowRichTextDescriptionEditorLinkButton counts as a field modification for auto-save
       - if workflowEditNodeFormTitleField is rendered and editable for the actor and the actor clears it, the empty string is persisted as the workflowNode's title; the 'Untitled node' placeholder is a display fallback only and is not auto-substituted into the persisted value; workflowNodeTitle in workflowView shows the same display fallback when persisted title is empty (canvas layout per FR-WF-NODE-001)
@@ -556,6 +565,8 @@ requirements:
     acceptanceCriteria:
       - given workflowEditNodeForm is open for a workflowNode and actor is owner or editor, when user modifies an editable field, then the change is persisted without an explicit save control click
       - given workflowEditNodeForm is open for a workflowNode and actor is owner or editor, when user modifies an editable field, workflowEditNodeForm does not show any visible auto-save status indicator
+      - given owner or editor changes an editable duration field to Days 2 and Hours 3, the valid logical duration auto-saves and reopening the workflowNode displays Days 2 and Hours 3
+      - given owner or editor enters an invalid duration child value, no partial duration auto-save occurs and validation is shown per FR-WF-DURATION-001
 
     openQuestions: []
 
@@ -845,7 +856,7 @@ requirements:
 
     mainFlow:
       - system clears the workflowNode's linkedWorkflow association immediately on click
-      - the workflowNode's own values for title, description, time, and (for program parent workflow type) credits and ponderation hours are preserved while the link is active (they are not overwritten by the linked workflow's metadata, only masked in the read-only mirror fields per FR-WF-EN-004 and FR-WF-EN-006); on link removal those persisted node-local values are restored to their respective fields
+      - the workflowNode's own values for title, description, time, and (for program parent workflow type) credits and ponderation durations are preserved while the link is active (they are not overwritten by the linked workflow's metadata, only masked in the read-only mirror fields per FR-WF-EN-004 and FR-WF-EN-006); on link removal those persisted node-local values are restored to their respective fields
       - workflowEditNodeFormTitleField switches from read-only display of the linked workflow's workflowTitle to an editable field for owner/editor and shows the workflowNode's own previously-persisted title (or the placeholder 'Untitled node' if that persisted title is empty per FR-WF-EN-007)
       - workflowEditNodeFormLinkWorkflowButton label returns to 'Link an activity' when parent workflow type is course, or 'Link a course' when parent workflow type is program, and becomes the active entry path to workflowLinkWorkflowDialog per FR-WF-EN-008 for owner and editor
       - workflowEditNodeFormDescriptionField and workflowEditNodeFormTimeField become editable for owner/editor again and show the workflowNode's own previously-persisted values; for parent workflow type program, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, and workflowEditNodeFormPonderationIndividualField also become editable for owner/editor again and show the workflowNode's own previously-persisted values
@@ -882,3 +893,10 @@ designEvidenceLinkTable:
     hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6858-110994&t=6weYZA8hUf6tm7DF-1
   - key: FIGMA-WF-EN-PROGRAM-CUSTOMINFO
     hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5677-55544&t=6weYZA8hUf6tm7DF-1
+
+changelog:
+  - version: '1.1'
+    date: '2026-10-05'
+    changes:
+      - Restored node Time and Ponderation values as whole Days + Hours duration controls through the shared FR-WF-DURATION contract.
+      - Removed hours-only Ponderation field terminology and added duration validation, auto-save, persistence, and linked-mirror criteria.

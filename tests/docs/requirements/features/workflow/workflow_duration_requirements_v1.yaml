@@ -1,0 +1,198 @@
+# Functional requirements: workflow duration fields
+# Status: Accepted for requirements; implementation and legacy-data migration are not covered by this change.
+# Version: 1.0
+# Source: product decision recorded 2026-10-05; current workflow Overview screenshot supplied with the decision.
+# Scope: duration-valued fields on workflow Overview and workflow node edit surfaces use one days-and-hours contract. This includes Time, Ponderation, and Classification durations, including read-only linked-workflow mirrors and automatically calculated values.
+# Cross-reference:
+#   - tests/docs/requirements/features/workflow/workflow_overview_requirements_v1.yaml (workflow Time, Ponderation, and Classification duration fields)
+#   - tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml (node Time and Ponderation duration fields, including linked-workflow mirrors)
+#   - tests/docs/requirements/features/workflow/workflow_node_visual_requirements_v1.yaml (compact node time-duration presentation)
+#   - tests/docs/requirements/features/global/localization_requirements_v1.yaml (localized labels, validation, and duration presentation)
+
+documentPreconditions:
+  - a duration-valued field or compact duration presentation covered by this document is rendered
+  - when a logical duration field is rendered, the hosting feature requirement determines whether it is editable, read-only, disabled, optional, or automatically calculated
+
+durationSemantics:
+  allowedUnits:
+    - days
+    - hours
+  precision: whole hours
+  conversionRule: One day equals 24 hours for input normalization, display, arithmetic, equality comparisons, linked-workflow mirroring, copy, and persistence round trips.
+  normalizedValueRule: A non-negative duration is presented as a non-negative integer number of days plus an integer number of remaining hours from 0 through 23.
+  requirednessRule: This shared contract does not make a hosting field required. Empty or unset behavior remains owned by the hosting feature requirement; wherever a hosting calculation treats empty or unset duration as zero, that rule remains unchanged.
+  storageBoundary: This document specifies observable duration behavior, not a storage shape. An implementation may store an equivalent total duration, but it must return and display the same normalized whole-day and whole-hour value without loss.
+
+compatibilityConstraints:
+  - existing values equal to a whole number of hours can be normalized without loss (for example, 26 stored hours is displayed as 1 day and 2 hours)
+  - an existing value with sub-hour precision, or one expressed only in minutes or seconds, cannot be represented by this contract without a product-approved migration rule
+  - implementation must not silently round, truncate, or discard an incompatible existing value; migration and rollout must remain blocked for that value until the legacy-data policy in openQuestions is resolved
+  - backend or reference-data support for other legacy time units does not make those units selectable or enterable in a workflow duration field covered by this document
+
+uiObjectDefinitions:
+  workflowDurationField:
+    meaning: Logical duration control identified by its hosting field label (for example, 'Time', 'Theory', 'Practical', 'Individual', 'General time', or 'Specific time') and containing exactly workflowDurationDaysInput and workflowDurationHoursInput.
+  workflowDurationDaysInput:
+    meaning: Whole-number input labeled 'Days' within a workflowDurationField; accepts values greater than or equal to zero.
+  workflowDurationHoursInput:
+    meaning: Whole-number input labeled 'Hours' within a workflowDurationField; accepts values from zero through 23 inclusive.
+  workflowDurationValidationMessage:
+    meaning: Localized validation feedback associated with the invalid child input in a workflowDurationField.
+
+locatorMappings:
+  workflowDurationField: "canonical_locators.yaml -> workflowDurationField"
+  workflowDurationDaysInput: "canonical_locators.yaml -> workflowDurationDaysInput"
+  workflowDurationHoursInput: "canonical_locators.yaml -> workflowDurationHoursInput"
+  workflowDurationValidationMessage: "canonical_locators.yaml -> workflowDurationValidationMessage"
+
+requirements:
+  - id: FR-WF-DURATION-001
+    title: Workflow duration fields accept whole days and whole hours only
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowDurationField
+      - workflowDurationDaysInput
+      - workflowDurationHoursInput
+      - workflowDurationValidationMessage
+
+    preconditions:
+      - documentPreconditions for this file hold
+
+    trigger:
+      - a workflow duration field renders
+      - owner or editor changes an editable workflow duration field
+
+    mainFlow:
+      - workflowDurationField renders as one logical, accessibly named field group using the hosting field label
+      - workflowDurationField contains exactly workflowDurationDaysInput and workflowDurationHoursInput for duration entry; it does not render a unit selector or a minutes, seconds, months, years, or free-form duration input
+      - workflowDurationDaysInput accepts only non-negative integers
+      - workflowDurationHoursInput accepts only integers from 0 through 23 inclusive
+      - decimal and negative values are invalid in both child inputs; a value of 24 or greater is invalid in workflowDurationHoursInput rather than being silently carried into workflowDurationDaysInput
+      - when either child input is invalid, workflowDurationValidationMessage identifies the invalid value and the system does not persist a replacement duration until the field contains a valid days-and-hours value
+      - when the hosting feature makes workflowDurationField read-only or disabled, both child inputs are read-only or disabled consistently and neither value can be changed
+
+    roleBehavior:
+      owner:
+        workflowDurationField: followsHostingFeature
+      editor:
+        workflowDurationField: followsHostingFeature
+      commenter:
+        workflowDurationField: readOnly
+      viewer:
+        workflowDurationField: readOnly
+      user:
+        workflowDurationField: readOnly
+
+    acceptanceCriteria:
+      - given any workflow duration field covered by this document, it contains a Days input and an Hours input and no control for minutes, seconds, or an arbitrary unit
+      - given an editable workflowDurationField, when owner enters Days 2 and Hours 3, the logical duration is 2 days and 3 hours
+      - given an editable workflowDurationField, Days accepts 0 and positive whole numbers and rejects negative or decimal values
+      - given an editable workflowDurationField, Hours accepts 0 and 23 and rejects negative, decimal, and 24-or-greater values
+      - given either child input is invalid, the invalid replacement value is not persisted and localized workflowDurationValidationMessage is associated with that input
+      - given a hosting feature makes workflowDurationField read-only, both Days and Hours are read-only and retain their displayed values
+
+    openQuestions: []
+
+  - id: FR-WF-DURATION-002
+    title: Duration display, persistence, mirroring, and calculations preserve normalized value
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowDurationField
+      - workflowDurationDaysInput
+      - workflowDurationHoursInput
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - the duration is valid per FR-WF-DURATION-001
+
+    trigger:
+      - a valid editable duration is persisted and rendered again
+      - a duration is copied or mirrored from a linked workflow
+      - the system calculates a duration total
+
+    mainFlow:
+      - the system preserves the exact duration value across persistence, reload, workflow copy, and linked-workflow mirroring
+      - any persisted or calculated whole-hour total is normalized for presentation using 24 hours per day and a remaining Hours value from 0 through 23
+      - automatic duration totals convert each contribution to an equivalent whole-hour total, sum those totals, and normalize the result back to Days and Hours
+      - duration equality and mismatch warnings compare equivalent total duration rather than comparing displayed Days and Hours strings independently
+      - non-editable compact duration text, including workflow node metadata, uses localized day and hour units, omits a zero-valued leading Days component, and never displays minutes or seconds
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given owner persists Days 2 and Hours 3, reopening the same field displays Days 2 and Hours 3 without loss
+      - given a stored or calculated duration equals 26 whole hours, the field displays Days 1 and Hours 2 rather than Hours 26
+      - given one contribution is 1 day and 20 hours and another is 10 hours, the calculated total displays 2 days and 6 hours
+      - given one duration is displayed as 1 day and 2 hours and another equivalent value is represented internally as 26 whole hours, equality comparison treats them as equal and does not show a mismatch warning
+      - given a linked workflow duration is 2 days and 3 hours, its read-only mirror displays Days 2 and Hours 3
+      - given compact duration text represents 2 days and 0 hours, it displays the localized equivalent of '2 days' and does not display a minutes or seconds component
+
+    openQuestions: []
+
+  - id: FR-WF-DURATION-003
+    title: Duration labels, validation, and compact text are localized
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowDurationDaysInput
+      - workflowDurationHoursInput
+      - workflowDurationValidationMessage
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - active locale is English Canadian or French Canadian per FR-LOC-001
+
+    trigger:
+      - a duration field or compact duration value renders
+      - active locale changes
+
+    mainFlow:
+      - Days and Hours labels, validation feedback, and compact duration unit text use the active locale
+      - singular and plural unit forms are selected from locale rules rather than assembled English fragments
+      - changing locale rerenders duration labels and compact text without changing the underlying duration
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given a one-day, one-hour duration in English Canadian, compact text uses singular day and hour forms
+      - given a multi-day or multi-hour duration, compact text uses the correct plural form for the active locale
+      - given the active locale changes, duration labels, validation feedback, and compact text change locale while Days and Hours numeric values remain unchanged
+
+    openQuestions: []
+
+openQuestions:
+  - Before implementation rollout, inventory persisted workflow and node durations and decide how values with sub-hour precision or unsupported legacy units are migrated or surfaced; silent rounding or truncation is not acceptable.
+
+changelog:
+  - version: '1.0'
+    date: '2026-10-05'
+    changes:
+      - Added the shared days-and-hours duration contract for workflow Overview and node-edit duration fields.
+      - Limited duration precision to whole hours, normalized Hours to 0 through 23, and excluded minutes, seconds, arbitrary units, and free-form hour text.
+      - Required exact round trips, normalized calculated totals, localized display, and explicit handling of incompatible legacy values.

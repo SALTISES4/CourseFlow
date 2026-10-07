@@ -152,17 +152,22 @@ export async function expandWorkflowOutcomeByOrdinalPrefix(
   ordinalPath: string,
   targetChildPrefix?: string,
 ): Promise<void> {
-  if (targetChildPrefix) {
-    const childHeader = workflowOutcomeHeaderWithOrdinalPrefix(page, targetChildPrefix);
-    if ((await childHeader.count()) > 0 && (await childHeader.first().isVisible())) {
-      return;
-    }
+  const childHeader = targetChildPrefix
+    ? workflowOutcomeHeaderWithOrdinalPrefix(page, targetChildPrefix).first()
+    : null;
+
+  if (childHeader && (await childHeader.isVisible())) {
+    return;
   }
 
   const toggle = workflowOutcomeExpandToggleByOrdinal(page, ordinalPath);
-  if ((await toggle.count()) > 0) {
+  await expect(toggle).toBeVisible({ timeout: 10_000 });
+  if ((await toggle.getAttribute('aria-expanded')) === 'false') {
     await toggle.click();
-    await page.waitForTimeout(300);
+  }
+
+  if (childHeader) {
+    await expect(childHeader).toBeVisible({ timeout: 10_000 });
   }
 }
 

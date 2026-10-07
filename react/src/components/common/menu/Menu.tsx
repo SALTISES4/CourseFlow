@@ -129,12 +129,14 @@ const SimpleMenu = ({
   id,
   uuid: menuId,
   menuItems,
-  header
+  header,
+  closeOnItemAction = false
 }: {
   id?: string
   uuid?: string
   menuItems: MenuItemType[]
   header: MenuItemType
+  closeOnItemAction?: boolean
 }) => {
   const resolvedMenuId = id ?? menuId ?? 'menu'
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -145,10 +147,6 @@ const SimpleMenu = ({
   const handleClose = () => {
     setAnchorEl(null)
   }
-
-  const buttons = menuItems.map((item, el) => {
-    return <ListMenuItem key={item.uuid ?? item.id ?? el} {...item} />
-  })
 
   return (
     <>
@@ -167,7 +165,20 @@ const SimpleMenu = ({
         open={open}
         onClose={handleClose}
       >
-        {buttons}
+        {menuItems.map((item, index) => (
+          <ListMenuItem
+            key={item.uuid ?? item.id ?? index}
+            {...item}
+            action={
+              closeOnItemAction && item.action
+                ? (event: MouseEvent<HTMLElement>) => {
+                    item.action(event)
+                    handleClose()
+                  }
+                : item.action
+            }
+          />
+        ))}
       </StyledMenu>
     </>
   )
