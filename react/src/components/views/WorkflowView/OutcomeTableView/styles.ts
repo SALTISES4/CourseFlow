@@ -27,7 +27,11 @@ export const HeaderLegendWrap = styled(Box)(({ theme }) => ({
   // empty corner cell
   '&:first-child': {
     width: `${HEADING_WIDTH}px`,
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
+    position: 'sticky',
+    left: 0,
+    zIndex: 100,
+    background: 'linear-gradient(to right, #fff 60%, transparent 100%)'
   },
 
   // diagonal headers
