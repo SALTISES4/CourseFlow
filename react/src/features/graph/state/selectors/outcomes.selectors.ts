@@ -1,4 +1,5 @@
 import type { TagListItemOut } from '@cf/api/gen/types.gen'
+import { displayOutcomeTitle } from '@cf/features/graph/outcomeTitle'
 import { createSelector } from 'reselect'
 
 import type { GraphState } from '../graphState'
@@ -79,6 +80,10 @@ type TagGroup = {
   outcomes: ResourceUuid[]
 }
 
+// to avoid inline array invalidating memoization every time
+// since it would return new reference to a new empty array
+const EmptyProjectTags: TagListItemOut[] = []
+
 export const selectOutcomeTagGroups = createSelector(
   [
     selectRootOutcomes,
@@ -86,7 +91,7 @@ export const selectOutcomeTagGroups = createSelector(
       _: StateWithGraph,
       _graphUuid: GraphUuid,
       projectTags?: TagListItemOut[]
-    ) => projectTags ?? []
+    ) => projectTags ?? EmptyProjectTags
   ],
   (rootOutcomes, projectTags) => {
     const tagGroups: TagGroup[] = []
@@ -131,6 +136,75 @@ export const selectOutcomeTagGroups = createSelector(
     return tagGroups
   }
 )
+
+type OutcomeTagGroupTree = {
+  groups: TagGroup[]
+  outcomes: Record<ResourceUuid, Outcome>
+}
+
+type Outcome = {
+  uuid: ResourceUuid
+  title: string
+  level: number
+  parent: ResourceUuid | null
+  children: ResourceUuid[]
+}
+
+export const selectOutcomeTagGroupsTree = createSelector(
+  [
+    (state: StateWithGraph) => state,
+    selectOutcomeEntities,
+    (state: StateWithGraph, graphUuid: string) =>
+      selectOutcomeTagGroups(state, graphUuid)
+  ],
+  (state, outcomeEntities, rootTagGroups) => {
+    const tree: OutcomeTagGroupTree = {
+      groups: rootTagGroups,
+      outcomes: {}
+    }
+
+    rootTagGroups.forEach((group) => {
+      group.outcomes.forEach((outcomeUuid) => {
+        parseOutcome(state, tree, outcomeEntities, outcomeUuid)
+      })
+    })
+
+    return tree
+  }
+)
+
+// prepare outcome structure to be nested into the outcome tag group tree
+function parseOutcome(
+  state: StateWithGraph,
+  tree: OutcomeTagGroupTree,
+  entities: Record<string, OutcomeEntity>,
+  uuid: ResourceUuid
+) {
+  const entity = entities[uuid]
+
+  // early exit if this was parsed already or if it doesn't exist for some reason =o
+  if (!entity || tree.outcomes[uuid]) {
+    return
+  }
+
+  const childrenUuids = selectOutcomeChildrenById(
+    state,
+    entity.graphUuid,
+    entity.uuid
+  ).map((c) => c.uuid)
+
+  tree.outcomes[uuid] = {
+    uuid: entity.uuid,
+    level: selectOutcomeLevel(state, entity.graphUuid, entity.uuid),
+    title: getPrefixPath(state, entity.graphUuid, entity.uuid) + entity.title,
+    parent: entity.parentUuid,
+    children: childrenUuids
+  }
+
+  childrenUuids.forEach((uuid) => {
+    parseOutcome(state, tree, entities, uuid)
+  })
+}
 
 export const getPrefixPath = createSelector(
   [

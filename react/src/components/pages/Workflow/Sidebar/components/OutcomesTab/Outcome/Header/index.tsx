@@ -7,12 +7,12 @@ type PropsType = {
   uuid: string
   level: number
   title: string
-  dragRef: RefObject<HTMLDivElement>
-  highlighted: boolean
+  dragRef?: RefObject<HTMLDivElement>
+  highlighted?: boolean
   collapsed: boolean
   setCollapsed: (value: boolean) => void
   showToggle: boolean
-  onClick: () => void
+  onClick?: () => void
   onToggleClick: (e: MouseEvent<HTMLButtonElement>) => void
   action?: ReactNode
   onContentMouseEnter?: () => void

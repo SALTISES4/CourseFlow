@@ -1,5 +1,7 @@
 import { OutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
 import { displaySystemTitle } from '@cf/i18n/systemTitles'
+import OutcomeHeader from '@cfPages/Workflow/Sidebar/components/OutcomesTab/Outcome/Header'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import Checkmark from '../Checkmark'
@@ -63,42 +65,72 @@ const TagGroups = ({ table }: { table: OutcomeTable }) => {
       </Styled.BodyRow>
 
       {group.outcomes.map((outcomeUuid) => (
-        <Styled.BodyRow key={outcomeUuid}>
-          <Styled.BodyLegendWrap>
-            <Styled.TableLegend>
-              {table.outcomes[outcomeUuid].title}
-            </Styled.TableLegend>
-          </Styled.BodyLegendWrap>
+        <TagGroupRow key={outcomeUuid} table={table} uuid={outcomeUuid} />
+      ))}
+    </Styled.TagGroup>
+  ))
+}
 
-          <Styled.CheckmarkGroup className="Checkmarks-root">
-            {table.sections.map((sec) => (
-              <Styled.CheckmarkGroup key={sec.uuid}>
+const TagGroupRow = ({
+  table,
+  uuid
+}: {
+  table: OutcomeTable
+  uuid: string
+}) => {
+  // TODO: move this to a global state so it can be controlled from the outside
+  const [collapsed, setCollapsed] = useState(true)
+  const outcome = table.outcomeTree.outcomes[uuid]
+
+  const onOutcomeToggleClick = () => setCollapsed(!collapsed)
+
+  return (
+    <>
+      <Styled.BodyRow>
+        <Styled.BodyLegendWrap>
+          <OutcomeHeader
+            uuid={uuid}
+            level={outcome.level}
+            title={outcome.title}
+            collapsed={collapsed}
+            showToggle={!!outcome.children.length}
+            setCollapsed={() => {}} // this should be nuked really
+            onToggleClick={onOutcomeToggleClick}
+          />
+        </Styled.BodyLegendWrap>
+
+        <Styled.CheckmarkGroup className="Checkmarks-root">
+          {table.sections.map((sec) => (
+            <Styled.CheckmarkGroup key={sec.uuid}>
+              <Checkmark
+                readOnly
+                sx={{ background: '#eef2fd' }}
+                value={
+                  ['empty', 'partial', 'full'][
+                    Math.floor(Math.random() * 3)
+                  ] as any
+                }
+              />
+              {table.channels.map((chan) => (
                 <Checkmark
-                  readOnly
-                  sx={{ background: '#eef2fd' }}
+                  key={chan.uuid}
                   value={
                     ['empty', 'partial', 'full'][
                       Math.floor(Math.random() * 3)
                     ] as any
                   }
                 />
-                {table.channels.map((chan) => (
-                  <Checkmark
-                    key={chan.uuid}
-                    value={
-                      ['empty', 'partial', 'full'][
-                        Math.floor(Math.random() * 3)
-                      ] as any
-                    }
-                  />
-                ))}
-              </Styled.CheckmarkGroup>
-            ))}
-          </Styled.CheckmarkGroup>
-        </Styled.BodyRow>
-      ))}
-    </Styled.TagGroup>
-  ))
+              ))}
+            </Styled.CheckmarkGroup>
+          ))}
+        </Styled.CheckmarkGroup>
+      </Styled.BodyRow>
+      {!collapsed &&
+        outcome.children.map((childUuid) => (
+          <TagGroupRow key={childUuid} table={table} uuid={childUuid} />
+        ))}
+    </>
+  )
 }
 
 export default OutcomeTableBody
