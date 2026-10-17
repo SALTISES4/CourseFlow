@@ -24,9 +24,10 @@ const OutcomeTableBody = ({ viewType, table }: PropsType) => {
   )
 }
 
+// TODO: implement
 const SectionGroups = ({ table }: { table: OutcomeTable }) => {
   const { t } = useTranslation('workflow')
-  const groups = table.sections.map((section) => {
+  const groups = table.entities.sections.map((section) => {
     const sectionDefaultTitle = t('systemLabels.sectionNumber', {
       number: (section.position ?? 0) + 1
     })
@@ -38,7 +39,7 @@ const SectionGroups = ({ table }: { table: OutcomeTable }) => {
         <Styled.BodyLegendWrap key={section.uuid}>
           <Styled.TableLegend>{sectionTitle}</Styled.TableLegend>
         </Styled.BodyLegendWrap>
-        {table.channels.map((chan) => (
+        {table.entities.channels.map((chan) => (
           <Styled.BodyLegendWrap key={chan.uuid}>
             <Styled.TableLegend color={chan.colour}>
               {displaySystemTitle(t, chan, t('graph.untitledNodeCategory'))}
@@ -100,7 +101,7 @@ const TagGroupRow = ({
         </Styled.BodyLegendWrap>
 
         <Styled.CheckmarkGroup className="Checkmarks-root">
-          {table.sections.map((sec) => (
+          {table.entities.sections.map((sec) => (
             <Styled.CheckmarkGroup key={sec.uuid}>
               <Checkmark
                 readOnly
@@ -111,7 +112,7 @@ const TagGroupRow = ({
                   ] as any
                 }
               />
-              {table.channels.map((chan) => (
+              {table.entities.channels.map((chan) => (
                 <Checkmark
                   key={chan.uuid}
                   value={

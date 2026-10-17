@@ -3,6 +3,7 @@ import { createSelector } from '@reduxjs/toolkit'
 
 import {
   selectChannelsOrderedByGraphUuid,
+  selectNodeEntitiesByGraphUuid,
   selectSectionsOrderedByGraphUuid
 } from './canonical.selectors'
 import { GraphBoard, selectGraphBoard } from './graphBoard.selectors'
@@ -11,17 +12,19 @@ import {
   selectOutcomeTagGroups,
   selectOutcomeTagGroupsTree
 } from './outcomes.selectors'
-import { ChannelEntity, SectionEntity } from '../model/types'
+import { ChannelEntity, NodeEntity, SectionEntity } from '../model/types'
 
 export type OutcomeTable = {
   tagGroups: ReturnType<typeof selectOutcomeTagGroups>
   board: GraphBoard
-
-  // entities
   outcomes: ReturnType<typeof selectOutcomeEntities>
   outcomeTree: ReturnType<typeof selectOutcomeTagGroupsTree>
-  sections: SectionEntity[]
-  channels: ChannelEntity[]
+
+  entities: {
+    sections: SectionEntity[]
+    channels: ChannelEntity[]
+    nodes: Record<string, NodeEntity>
+  }
 }
 
 export const selectOutcomeTable = createSelector(
@@ -35,7 +38,9 @@ export const selectOutcomeTable = createSelector(
     (state: RootState, graphUuid: string) =>
       selectSectionsOrderedByGraphUuid(graphUuid)(state),
     (state: RootState, graphUuid: string) =>
-      selectChannelsOrderedByGraphUuid(graphUuid)(state)
+      selectChannelsOrderedByGraphUuid(graphUuid)(state),
+    (state: RootState, graphUuid: string) =>
+      selectNodeEntitiesByGraphUuid(graphUuid)(state)
   ],
   (
     graphBoard,
@@ -43,13 +48,17 @@ export const selectOutcomeTable = createSelector(
     outcomeTree,
     outcomes,
     sections,
-    channels
+    channels,
+    nodes
   ): OutcomeTable => ({
     tagGroups: outcomeGroups,
     board: graphBoard,
     outcomes,
     outcomeTree,
-    channels,
-    sections
+    entities: {
+      channels,
+      sections,
+      nodes
+    }
   })
 )
