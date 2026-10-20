@@ -1,6 +1,5 @@
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
 import { SxProps } from '@mui/material'
-import { useCallback, useState } from 'react'
 
 import * as Styled from '../styles'
 
@@ -10,19 +9,10 @@ type PropsType = {
   sx?: SxProps
   readOnly?: boolean
   value: OutcomeCheckmarkStatus
-  onChange?: () => void
+  onClick?: () => void
 }
 
-const states = ['empty', 'partial', 'full'] as const
-
-const Checkmark = ({ value, readOnly, sx, onChange }: PropsType) => {
-  const [state, setState] = useState(value)
-
-  const onLabelClick = useCallback(() => {
-    const newState = states[states.indexOf(state) + 1] || states[0]
-    setState(newState)
-  }, [state])
-
+const Checkmark = ({ value, readOnly, sx, onClick }: PropsType) => {
   const styles = {
     ...sx,
     ...(readOnly && {
@@ -30,10 +20,10 @@ const Checkmark = ({ value, readOnly, sx, onChange }: PropsType) => {
     })
   }
 
-  if (state === 'empty') {
+  if (value === 'empty') {
     return (
       <Styled.CheckmarkCell sx={styles}>
-        <label onClick={onLabelClick}>
+        <label onClick={onClick}>
           <span />
         </label>
       </Styled.CheckmarkCell>
@@ -42,8 +32,8 @@ const Checkmark = ({ value, readOnly, sx, onChange }: PropsType) => {
 
   return (
     <Styled.CheckmarkCell sx={styles}>
-      <label htmlFor="" onClick={onLabelClick}>
-        <input type="checkbox" checked={state === 'full'}></input>
+      <label htmlFor="" onClick={onClick}>
+        <input type="checkbox" checked={value === 'full'}></input>
         <span>
           <CheckRoundedIcon />
         </span>

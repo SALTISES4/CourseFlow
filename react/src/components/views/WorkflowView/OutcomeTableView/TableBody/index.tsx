@@ -1,9 +1,15 @@
 import { getNodeOutcomeCompletionStatus } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { OutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
+import {
+  linkNodeOutcome,
+  unlinkNodeOutcome
+} from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { displaySystemTitle } from '@cf/i18n/systemTitles'
+import { AppDispatch } from '@cf/redux/store'
 import OutcomeHeader from '@cfPages/Workflow/Sidebar/components/OutcomesTab/Outcome/Header'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useDispatch } from 'react-redux'
 
 import Checkmark, { OutcomeCheckmarkStatus } from '../Checkmark'
 import * as Styled from '../styles'
@@ -80,11 +86,33 @@ const TagGroupRow = ({
   table: OutcomeTable
   uuid: string
 }) => {
+  const dispatch = useDispatch<AppDispatch>()
   // TODO: move this to a global state so it can be controlled from the outside
   const [collapsed, setCollapsed] = useState(true)
   const outcome = table.outcomeTree.outcomes[uuid]
 
   const onOutcomeToggleClick = () => setCollapsed(!collapsed)
+
+  const onCheckmarkClick = (
+    nodeUuid: string,
+    status: OutcomeCheckmarkStatus
+  ) => {
+    return () => {
+      // if the existing status is full, we're unlinking this and the children outcomes
+      // otherwise, partial or empty will trigger the linking
+      const action = status === 'full' ? 'unlink' : 'link'
+
+      const params = {
+        graphUuid: table.board.uuid,
+        nodeUuid,
+        outcomeUuid: outcome.uuid
+      }
+
+      dispatch(
+        action === 'link' ? linkNodeOutcome(params) : unlinkNodeOutcome(params)
+      )
+    }
+  }
 
   return (
     <>
@@ -119,7 +147,13 @@ const TagGroupRow = ({
                     table.outcomeTree.outcomes
                   )
 
-                  return <Checkmark key={node.uuid} value={status} />
+                  return (
+                    <Checkmark
+                      key={node.uuid}
+                      value={status}
+                      onClick={onCheckmarkClick(node.uuid, status)}
+                    />
+                  )
                 })}
               </Styled.CheckmarkGroup>
             )
