@@ -1,6 +1,9 @@
 import { nodeTitleFallback } from '@cf/components/pages/Workflow/Sidebar/components/EditTab/components/EditNode/linkedWorkflowUi'
+import { getNodeOutcomeCompletionStatus } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { OutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
 import { displaySystemTitle } from '@cf/i18n/systemTitles'
+import OutcomeHeader from '@cfPages/Workflow/Sidebar/components/OutcomesTab/Outcome/Header'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import * as Styled from '../styles'
@@ -78,19 +81,53 @@ const SectionGroups = ({ table }: { table: OutcomeTable }) => {
   return groups
 }
 
-// TODO: implement
 const TagGroups = ({ table }: { table: OutcomeTable }) => {
+  return table.tagGroups.map((group) => (
+    <>
+      <Styled.HeaderLegendWrap>
+        <Styled.TableLegend>
+          {group.title || 'Untagged outcomes'}
+        </Styled.TableLegend>
+      </Styled.HeaderLegendWrap>
+      {group.outcomes.map((outcomeUuid) => (
+        <TagGroupRow key={outcomeUuid} table={table} uuid={outcomeUuid} />
+      ))}
+    </>
+  ))
+}
+
+const TagGroupRow = ({
+  table,
+  uuid
+}: {
+  table: OutcomeTable
+  uuid: string
+}) => {
+  // TODO: move this to a global state so it can be controlled from the outside
+  const [collapsed, setCollapsed] = useState(true)
+  const outcome = table.outcomeTree.outcomes[uuid]
+
+  const onOutcomeToggleClick = () => setCollapsed(!collapsed)
+
   return (
     <>
       <Styled.HeaderLegendWrap>
-        <Styled.TableLegend>Hello</Styled.TableLegend>
+        <Styled.TableLegend sx={{ background: 'transparent', padding: 0 }}>
+          <OutcomeHeader
+            uuid={uuid}
+            level={outcome.level}
+            title={outcome.title}
+            collapsed={collapsed}
+            showToggle={!!outcome.children.length}
+            setCollapsed={() => {}} // this should be nuked really
+            onToggleClick={onOutcomeToggleClick}
+          />
+        </Styled.TableLegend>
       </Styled.HeaderLegendWrap>
-      <Styled.HeaderLegendWrap>
-        <Styled.TableLegend>From</Styled.TableLegend>
-      </Styled.HeaderLegendWrap>
-      <Styled.HeaderLegendWrap>
-        <Styled.TableLegend>Outcome tag</Styled.TableLegend>
-      </Styled.HeaderLegendWrap>
+      {!collapsed &&
+        outcome.children.map((childUuid) => (
+          <TagGroupRow key={childUuid} table={table} uuid={childUuid} />
+        ))}
     </>
   )
 }

@@ -24,6 +24,11 @@ export const HeaderLegendWrap = styled(Box)(({ theme }) => ({
   height: `${HEADING_WIDTH}px`,
   padding: 0,
 
+  '&:not(:first-child)': {
+    transform: `rotateZ(-${TILT_ANGLE}) translate(22px, 28px)`,
+    transformOrigin: 'bottom left'
+  },
+
   // empty corner cell
   '&:first-child': {
     width: `${HEADING_WIDTH}px`,
@@ -34,18 +39,17 @@ export const HeaderLegendWrap = styled(Box)(({ theme }) => ({
     background: 'linear-gradient(to right, #fff 60%, transparent 100%)'
   },
 
-  // diagonal headers
   '& [class*="TableLegend"]': {
     position: 'absolute',
     bottom: 0,
     left: 0,
-    width: `calc(${HEADING_WIDTH}px * tan(${TILT_ANGLE}))`,
-    transform: `rotate(-${TILT_ANGLE}) translate(-11px, 8px)`,
-    transformOrigin: 'top left'
+    width: `calc(${HEADING_WIDTH}px * tan(${TILT_ANGLE}))`
   }
 }))
 
-export const TableBody = styled(Box)(() => ({}))
+export const TableBody = styled(Box)(() => ({
+  width: 'fit-content'
+}))
 
 export const BodyLegendWrap = styled(Box, {
   name: 'LegendWrap'
@@ -66,7 +70,7 @@ export const BodyLegendWrap = styled(Box, {
 
 // header or first first clumn left hand side "column/row legend" element
 export const TableLegend = styled('span', {
-  shouldForwardProp: (prop) => !['color'].includes(prop as string),
+  shouldForwardProp: (prop) => !['color', 'sx'].includes(prop as string),
   name: 'TableLegend'
 })<{ color?: string }>(({ theme, color }) => ({
   display: 'block',
@@ -111,7 +115,9 @@ export const TagGroup = styled(Box)(({ theme }) => ({
 
 export const BodyRow = styled(Box, { name: 'BodyRow' })(({ theme }) => ({
   display: 'flex',
-  borderRight: `1px solid ${theme.palette.divider}`,
+  '.Checkmarks-root': {
+    borderRight: `1px solid ${theme.palette.divider}`
+  },
   '&:hover .Checkmarks-root': {
     backgroundColor: theme.palette.action.hover
   },
