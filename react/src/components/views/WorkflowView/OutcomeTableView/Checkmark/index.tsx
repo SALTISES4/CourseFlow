@@ -4,10 +4,12 @@ import { useCallback, useState } from 'react'
 
 import * as Styled from '../styles'
 
+export type OutcomeCheckmarkStatus = 'empty' | 'partial' | 'full'
+
 type PropsType = {
   sx?: SxProps
   readOnly?: boolean
-  value: 'empty' | 'partial' | 'full'
+  value: OutcomeCheckmarkStatus
   onChange?: () => void
 }
 

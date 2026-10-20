@@ -1,5 +1,5 @@
 import type { TagListItemOut } from '@cf/api/gen/types.gen'
-import { displayOutcomeTitle } from '@cf/features/graph/outcomeTitle'
+import { OutcomeCheckmarkStatus } from '@cf/components/views/WorkflowView/OutcomeTableView/Checkmark'
 import { createSelector } from 'reselect'
 
 import type { GraphState } from '../graphState'
@@ -271,4 +271,23 @@ export function isOutcomeLink(data: Record<string | symbol, unknown>): data is {
   type: 'link_outcome'
 } {
   return 'uuid' in data && 'type' in data && data.type === 'link_outcome'
+}
+
+// traverse the outcome tree (L1/L2/L3) to determine the final completion status
+// full (all children), partial (some children) or empty
+export function getNodeOutcomeCompletionStatus(
+  outcomeUuid: string,
+  nodeOutcomes: Record<string, boolean>,
+  outcomeEntities: Record<string, Outcome>
+): OutcomeCheckmarkStatus {
+  const outcome = outcomeEntities[outcomeUuid]
+
+  // if outcome has no children or has exactly one child -> either on / off
+  if (!outcome.children.length || outcome.children.length === 1) {
+    return nodeOutcomes[outcomeUuid] ? 'full' : 'empty'
+  }
+
+  // TODO: dig through children
+  // if children, check if all are present (full) or some (partial)
+  return nodeOutcomes[outcomeUuid] ? 'partial' : 'empty'
 }

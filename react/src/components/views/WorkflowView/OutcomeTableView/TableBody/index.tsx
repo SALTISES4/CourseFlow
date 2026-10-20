@@ -1,10 +1,11 @@
+import { getNodeOutcomeCompletionStatus } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { OutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
 import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import OutcomeHeader from '@cfPages/Workflow/Sidebar/components/OutcomesTab/Outcome/Header'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import Checkmark from '../Checkmark'
+import Checkmark, { OutcomeCheckmarkStatus } from '../Checkmark'
 import * as Styled from '../styles'
 
 type PropsType = {
@@ -101,29 +102,28 @@ const TagGroupRow = ({
         </Styled.BodyLegendWrap>
 
         <Styled.CheckmarkGroup className="Checkmarks-root">
-          {table.entities.sections.map((sec) => (
-            <Styled.CheckmarkGroup key={sec.uuid}>
-              <Checkmark
-                readOnly
-                sx={{ background: '#eef2fd' }}
-                value={
-                  ['empty', 'partial', 'full'][
-                    Math.floor(Math.random() * 3)
-                  ] as any
-                }
-              />
-              {table.entities.channels.map((chan) => (
+          {table.sections.map((section) => {
+            // TODO: figure out sections too
+            const sectionStatus: OutcomeCheckmarkStatus = 'empty'
+            return (
+              <Styled.CheckmarkGroup key={section.uuid}>
                 <Checkmark
-                  key={chan.uuid}
-                  value={
-                    ['empty', 'partial', 'full'][
-                      Math.floor(Math.random() * 3)
-                    ] as any
-                  }
+                  readOnly
+                  sx={{ background: '#eef2fd' }}
+                  value={sectionStatus}
                 />
-              ))}
-            </Styled.CheckmarkGroup>
-          ))}
+                {section.nodes.map((node) => {
+                  const status = getNodeOutcomeCompletionStatus(
+                    outcome.uuid,
+                    node.outcomes,
+                    table.outcomeTree.outcomes
+                  )
+
+                  return <Checkmark key={node.uuid} value={status} />
+                })}
+              </Styled.CheckmarkGroup>
+            )
+          })}
         </Styled.CheckmarkGroup>
       </Styled.BodyRow>
       {!collapsed &&
