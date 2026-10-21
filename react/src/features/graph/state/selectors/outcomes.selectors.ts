@@ -287,7 +287,38 @@ export function getNodeOutcomeCompletionStatus(
     return nodeOutcomes[outcomeUuid] ? 'full' : 'empty'
   }
 
-  // TODO: dig through children
-  // if children, check if all are present (full) or some (partial)
-  return nodeOutcomes[outcomeUuid] ? 'partial' : 'empty'
+  const allChildrenCompleted = outcome.children.every(
+    (oUuid) => nodeOutcomes[oUuid]
+  )
+
+  if (allChildrenCompleted) {
+    return 'full'
+  }
+
+  // if the outcome has been associated to the node, then it's partially complete
+  if (nodeOutcomes[outcomeUuid]) {
+    return 'partial'
+  }
+
+  // if any of the children are complete, then it's partially complete
+  const someChildrenCompleted = (children: string[]) => {
+    const found = children.find((uuid) => {
+      if (nodeOutcomes[uuid]) {
+        return true
+      }
+
+      if (someChildrenCompleted(outcomeEntities[uuid].children)) {
+        return true
+      }
+    })
+
+    return found || false
+  }
+
+  if (someChildrenCompleted(outcome.children)) {
+    return 'partial'
+  }
+
+  // finally, nothing was found
+  return 'empty'
 }
