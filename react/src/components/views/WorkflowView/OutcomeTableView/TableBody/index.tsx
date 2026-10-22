@@ -165,10 +165,10 @@ const TagGroupRow = ({
                 <Checkmark
                   readOnly
                   sx={{ background: '#eef2fd' }}
-                  value={section.status[outcome.uuid] ?? 'empty'}
+                  value={section.completion[outcome.uuid] ?? 'empty'}
                 />
                 {section.nodes.map((node) => {
-                  const status = node.status[outcome.uuid] ?? 'empty'
+                  const status = node.completion[outcome.uuid] ?? 'empty'
                   return (
                     <Checkmark
                       key={node.uuid}

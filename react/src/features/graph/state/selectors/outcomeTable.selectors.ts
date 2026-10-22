@@ -27,13 +27,15 @@ export type OutcomeTable = {
   }
 }
 
+type CompletionRecord = Record<string, OutcomeCheckmarkStatus>
+
 type PreparedSection = {
   uuid: string
   rows: Record<string, string>[]
-  status: Record<string, OutcomeCheckmarkStatus>
+  completion: CompletionRecord
   nodes: {
     uuid: string
-    status: Record<string, OutcomeCheckmarkStatus>
+    completion: CompletionRecord
   }[]
 }
 
@@ -63,7 +65,7 @@ export const selectOutcomeTable = createSelector(
     const preparedSections: PreparedSection[] = graphBoard.sections.map(
       (section) => {
         const sectionNodes: PreparedSection['nodes'] = []
-        const sectionStatuses: Record<string, OutcomeCheckmarkStatus> = {}
+        const sectionCompletion: CompletionRecord = {}
 
         for (const nodeRow of section.rows) {
           // BUG: safeguard against workflow row mode creating empty row
@@ -78,24 +80,24 @@ export const selectOutcomeTable = createSelector(
 
           for (const position of nodePositions) {
             const nodeUuid = nodeRow[position]
-            const nodeStatuses: Record<string, OutcomeCheckmarkStatus> = {}
+            const outcomeCompletion: CompletionRecord = {}
             const { outcomeUuids } = nodes[nodeUuid]
 
             // first pass - just set the completion to full
             for (const uuid of outcomeUuids) {
-              nodeStatuses[uuid] = 'full'
+              outcomeCompletion[uuid] = 'full'
             }
 
             // second pass - existing parent outcomes should be partial
             for (const uuid of outcomeUuids) {
               let parent = outcomeTree.outcomes[uuid]?.parent
-              while (parent && !nodeStatuses[parent]) {
-                nodeStatuses[parent] = 'partial'
+              while (parent && !outcomeCompletion[parent]) {
+                outcomeCompletion[parent] = 'partial'
                 parent = outcomeTree.outcomes[parent]?.parent
               }
             }
 
-            sectionNodes.push({ uuid: nodeUuid, status: nodeStatuses })
+            sectionNodes.push({ uuid: nodeUuid, completion: outcomeCompletion })
           }
         }
 
@@ -106,7 +108,7 @@ export const selectOutcomeTable = createSelector(
           let anyFound = 0
 
           sectionNodes.forEach((node) => {
-            const found = node.status[outcome.uuid]
+            const found = node.completion[outcome.uuid]
             if (found) {
               anyFound += 1
             }
@@ -115,7 +117,7 @@ export const selectOutcomeTable = createSelector(
             }
           })
 
-          sectionStatuses[uuid] =
+          sectionCompletion[uuid] =
             anyFound === 0
               ? 'empty'
               : fullFound === sectionNodeCount
@@ -126,7 +128,7 @@ export const selectOutcomeTable = createSelector(
         return {
           uuid: section.uuid,
           rows: section.rows,
-          status: sectionStatuses,
+          completion: sectionCompletion,
           nodes: sectionNodes
         }
       }
