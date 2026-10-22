@@ -34,17 +34,7 @@ const SectionGroups = ({ table }: { table: OutcomeTable }) => {
     })
 
     const sectionTitle = displaySystemTitle(t, section, sectionDefaultTitle)
-
-    // TODO: move this to a selecto preferably
-    // grab all node UUIDs for this section, ordered
-    const sectionNodes = table.board.sections[index].rows.reduce<string[]>(
-      (acc, row) => {
-        const keys = Object.keys(row).sort((a, b) => a.localeCompare(b))
-        const rowUuids = keys.map((key) => row[key])
-        return [...acc, ...rowUuids]
-      },
-      []
-    )
+    const sectionNodes = table.sections[index].nodes.map((n) => n.uuid)
 
     return (
       <>
