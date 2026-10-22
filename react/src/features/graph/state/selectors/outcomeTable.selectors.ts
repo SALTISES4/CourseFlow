@@ -63,6 +63,7 @@ export const selectOutcomeTable = createSelector(
     const preparedSections: PreparedSection[] = graphBoard.sections.map(
       (section) => {
         const sectionNodes: PreparedSection['nodes'] = []
+        const sectionStatuses: Record<string, OutcomeCheckmarkStatus> = {}
 
         for (const nodeRow of section.rows) {
           // BUG: safeguard against workflow row mode creating empty row
@@ -77,31 +78,55 @@ export const selectOutcomeTable = createSelector(
 
           for (const position of nodePositions) {
             const nodeUuid = nodeRow[position]
-            const statuses: Record<string, OutcomeCheckmarkStatus> = {}
+            const nodeStatuses: Record<string, OutcomeCheckmarkStatus> = {}
             const { outcomeUuids } = nodes[nodeUuid]
 
             // first pass - just set the completion to full
             for (const uuid of outcomeUuids) {
-              statuses[uuid] = 'full'
+              nodeStatuses[uuid] = 'full'
             }
 
             // second pass - existing parent outcomes should be partial
             for (const uuid of outcomeUuids) {
               let parent = outcomeTree.outcomes[uuid]?.parent
-              while (parent && !statuses[parent]) {
-                statuses[parent] = 'partial'
+              while (parent && !nodeStatuses[parent]) {
+                nodeStatuses[parent] = 'partial'
                 parent = outcomeTree.outcomes[parent]?.parent
               }
             }
 
-            sectionNodes.push({ uuid: nodeUuid, status: statuses })
+            sectionNodes.push({ uuid: nodeUuid, status: nodeStatuses })
           }
         }
+
+        const sectionNodeCount = sectionNodes.length
+        Object.keys(outcomeTree.outcomes).forEach((uuid) => {
+          const outcome = outcomeTree.outcomes[uuid]
+          let fullFound = 0
+          let anyFound = 0
+
+          sectionNodes.forEach((node) => {
+            const found = node.status[outcome.uuid]
+            if (found) {
+              anyFound += 1
+            }
+            if (found === 'full') {
+              fullFound += 1
+            }
+          })
+
+          sectionStatuses[uuid] =
+            anyFound === 0
+              ? 'empty'
+              : fullFound === sectionNodeCount
+                ? 'full'
+                : 'partial'
+        })
 
         return {
           uuid: section.uuid,
           rows: section.rows,
-          status: {}, // TODO:
+          status: sectionStatuses,
           nodes: sectionNodes
         }
       }
