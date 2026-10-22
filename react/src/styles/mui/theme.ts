@@ -129,12 +129,24 @@ const themeOptions = {
     },
     MuiTooltip: {
       styleOverrides: {
-        tooltip: {
-          backgroundColor: palette.secondary.dark
-        },
-        arrow: {
-          color: palette.secondary.dark
-        },
+        tooltip: ({ ownerState }) => ({
+          backgroundColor:
+            ownerState.variant === 'green'
+              ? palette.primary.main
+              : palette.secondary.dark,
+          color:
+            ownerState.variant === 'green'
+              ? palette.template.contrastText
+              : undefined
+        }),
+
+        arrow: ({ ownerState }) => ({
+          color:
+            ownerState.variant === 'green'
+              ? palette.primary.main
+              : palette.secondary.dark
+        }),
+
         tooltipPlacementTop: {
           marginBottom: '2px !important'
         }

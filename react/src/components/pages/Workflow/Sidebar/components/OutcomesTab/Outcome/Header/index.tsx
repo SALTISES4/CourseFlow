@@ -1,6 +1,7 @@
 import * as Styled from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
+import Tooltip from '@mui/material/Tooltip'
 import { MouseEvent, ReactNode, RefObject } from 'react'
 
 type PropsType = {
@@ -10,11 +11,12 @@ type PropsType = {
   dragRef?: RefObject<HTMLDivElement>
   highlighted?: boolean
   collapsed: boolean
-  setCollapsed: (value: boolean) => void
   showToggle: boolean
+  action?: ReactNode
+  titleTooltip?: boolean
+  setCollapsed: (value: boolean) => void
   onClick?: () => void
   onToggleClick: (e: MouseEvent<HTMLButtonElement>) => void
-  action?: ReactNode
   onContentMouseEnter?: () => void
 }
 
@@ -24,10 +26,11 @@ const OutcomeHeader = ({
   dragRef,
   highlighted,
   collapsed,
-  onClick,
   showToggle,
-  onToggleClick,
   action,
+  titleTooltip,
+  onClick,
+  onToggleClick,
   onContentMouseEnter
 }: PropsType) => (
   <Styled.OutcomeHeader
@@ -37,7 +40,19 @@ const OutcomeHeader = ({
     onClick={onClick}
   >
     <Styled.OutcomeHeaderInner onMouseEnter={onContentMouseEnter}>
-      <Styled.OutcomeTitle variant="body2">{title}</Styled.OutcomeTitle>
+      {titleTooltip ? (
+        <Tooltip
+          variant="green"
+          placement="top"
+          arrow
+          disableInteractive
+          title={title}
+        >
+          <Styled.OutcomeTitle variant="body2">{title}</Styled.OutcomeTitle>
+        </Tooltip>
+      ) : (
+        <Styled.OutcomeTitle variant="body2">{title}</Styled.OutcomeTitle>
+      )}
     </Styled.OutcomeHeaderInner>
     {action}
     {showToggle && (
