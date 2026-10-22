@@ -9,16 +9,10 @@ import {
 } from './canonical.selectors'
 import { GraphBoard, selectGraphBoard } from './graphBoard.selectors'
 import {
-  selectOutcomeEntities,
   selectOutcomeTagGroups,
   selectOutcomeTagGroupsTree
 } from './outcomes.selectors'
-import {
-  ChannelEntity,
-  NodeEntity,
-  OutcomeEntity,
-  SectionEntity
-} from '../model/types'
+import { ChannelEntity, NodeEntity, SectionEntity } from '../model/types'
 
 export type OutcomeTable = {
   tagGroups: ReturnType<typeof selectOutcomeTagGroups>
@@ -27,7 +21,6 @@ export type OutcomeTable = {
   sections: PreparedSection[]
 
   entities: {
-    outcomes: Record<string, OutcomeEntity>
     sections: SectionEntity[]
     channels: ChannelEntity[]
     nodes: Record<string, NodeEntity>
@@ -37,9 +30,10 @@ export type OutcomeTable = {
 type PreparedSection = {
   uuid: string
   rows: Record<string, string>[]
+  status: Record<string, OutcomeCheckmarkStatus>
   nodes: {
     uuid: string
-    outcomes: Record<string, boolean>
+    status: Record<string, OutcomeCheckmarkStatus>
   }[]
 }
 
@@ -50,7 +44,6 @@ export const selectOutcomeTable = createSelector(
       selectOutcomeTagGroups(state, graphUuid),
     (state: RootState, graphUuid: string) =>
       selectOutcomeTagGroupsTree(state, graphUuid),
-    (state: RootState) => selectOutcomeEntities(state),
     (state: RootState, graphUuid: string) =>
       selectSectionsOrderedByGraphUuid(graphUuid)(state),
     (state: RootState, graphUuid: string) =>
@@ -62,7 +55,6 @@ export const selectOutcomeTable = createSelector(
     graphBoard,
     outcomeGroups,
     outcomeTree,
-    outcomes,
     sections,
     channels,
     nodes
@@ -70,29 +62,46 @@ export const selectOutcomeTable = createSelector(
     // derive necessary sections data beforehand so the UI remains somewhat clean
     const preparedSections: PreparedSection[] = graphBoard.sections.map(
       (section) => {
-        const sectionNodes = section.rows.reduce<
-          { uuid: string; outcomes: PreparedSection['nodes'][0]['outcomes'] }[]
-        >((acc, row) => {
-          const keys = Object.keys(row).sort((a, b) => a.localeCompare(b))
-          const rowUuids = keys.map((key) => row[key])
+        const sectionNodes: PreparedSection['nodes'] = []
 
-          return [
-            ...acc,
-            ...rowUuids.map((nodeUuid) => {
-              const outcomes: PreparedSection['nodes'][0]['outcomes'] = {}
+        for (const nodeRow of section.rows) {
+          // BUG: safeguard against workflow row mode creating empty row
+          if (!nodeRow) {
+            continue
+          }
 
-              nodes[nodeUuid].outcomeUuids.forEach((uuid) => {
-                outcomes[uuid] = true
-              })
+          // sort the node uuids by their row positions/indexes
+          const nodePositions = Object.keys(nodeRow).sort((a, b) =>
+            a.localeCompare(b)
+          )
 
-              return { uuid: nodeUuid, outcomes }
-            })
-          ]
-        }, [])
+          for (const position of nodePositions) {
+            const nodeUuid = nodeRow[position]
+            const statuses: Record<string, OutcomeCheckmarkStatus> = {}
+            const { outcomeUuids } = nodes[nodeUuid]
+
+            // first pass - just set the completion to full
+            for (const uuid of outcomeUuids) {
+              statuses[uuid] = 'full'
+            }
+
+            // second pass - existing parent outcomes should be partial
+            for (const uuid of outcomeUuids) {
+              let parent = outcomeTree.outcomes[uuid]?.parent
+              while (parent && !statuses[parent]) {
+                statuses[parent] = 'partial'
+                parent = outcomeTree.outcomes[parent]?.parent
+              }
+            }
+
+            sectionNodes.push({ uuid: nodeUuid, status: statuses })
+          }
+        }
 
         return {
           uuid: section.uuid,
           rows: section.rows,
+          status: {}, // TODO:
           nodes: sectionNodes
         }
       }
@@ -104,7 +113,6 @@ export const selectOutcomeTable = createSelector(
       outcomeTree,
       sections: preparedSections,
       entities: {
-        outcomes,
         channels,
         sections,
         nodes

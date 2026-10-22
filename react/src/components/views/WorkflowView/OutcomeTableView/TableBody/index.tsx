@@ -160,22 +160,15 @@ const TagGroupRow = ({
 
         <Styled.CheckmarkGroup className="Checkmarks-root">
           {table.sections.map((section) => {
-            // TODO: figure out sections too
-            const sectionStatus: OutcomeCheckmarkStatus = 'empty'
             return (
               <Styled.CheckmarkGroup key={section.uuid}>
                 <Checkmark
                   readOnly
                   sx={{ background: '#eef2fd' }}
-                  value={sectionStatus}
+                  value={section.status[outcome.uuid] ?? 'empty'}
                 />
                 {section.nodes.map((node) => {
-                  const status = getNodeOutcomeCompletionStatus(
-                    outcome.uuid,
-                    node.outcomes,
-                    table.outcomeTree.outcomes
-                  )
-
+                  const status = node.status[outcome.uuid] ?? 'empty'
                   return (
                     <Checkmark
                       key={node.uuid}

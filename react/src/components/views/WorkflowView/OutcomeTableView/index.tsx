@@ -24,8 +24,6 @@ const OutcomeTableView = ({ workflow }: { workflow: WorkflowPageData }) => {
     selectOutcomeTable(state, workflow.graphUuid)
   )
 
-  console.log(outcomeTable)
-
   const onViewTypeChange = useCallback((_, newVal: StateType['viewType']) => {
     if (!newVal) {
       return
