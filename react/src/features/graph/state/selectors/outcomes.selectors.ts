@@ -145,6 +145,7 @@ type OutcomeTagGroupTree = {
 type Outcome = {
   uuid: ResourceUuid
   title: string
+  tooltipTitle: string
   level: number
   parent: ResourceUuid | null
   children: ResourceUuid[]
@@ -197,6 +198,7 @@ function parseOutcome(
     uuid: entity.uuid,
     level: selectOutcomeLevel(state, entity.graphUuid, entity.uuid),
     title: getPrefixPath(state, entity.graphUuid, entity.uuid) + entity.title,
+    tooltipTitle: entity.title,
     parent: entity.parentUuid,
     children: childrenUuids
   }

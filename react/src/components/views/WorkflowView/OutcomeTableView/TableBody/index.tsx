@@ -141,7 +141,7 @@ const TagGroupRow = ({
             uuid={uuid}
             level={outcome.level}
             title={outcome.title}
-            titleTooltip
+            tooltip={outcome.tooltipTitle}
             collapsed={collapsed}
             showToggle={!!outcome.children.length}
             setCollapsed={() => {}} // this should be nuked really

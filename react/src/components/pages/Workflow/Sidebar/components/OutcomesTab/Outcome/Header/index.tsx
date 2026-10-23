@@ -13,7 +13,7 @@ type PropsType = {
   collapsed: boolean
   showToggle: boolean
   action?: ReactNode
-  titleTooltip?: boolean
+  tooltip?: string
   setCollapsed: (value: boolean) => void
   onClick?: () => void
   onToggleClick: (e: MouseEvent<HTMLButtonElement>) => void
@@ -28,7 +28,7 @@ const OutcomeHeader = ({
   collapsed,
   showToggle,
   action,
-  titleTooltip,
+  tooltip,
   onClick,
   onToggleClick,
   onContentMouseEnter
@@ -40,13 +40,13 @@ const OutcomeHeader = ({
     onClick={onClick}
   >
     <Styled.OutcomeHeaderInner onMouseEnter={onContentMouseEnter}>
-      {titleTooltip ? (
+      {tooltip ? (
         <Tooltip
           variant="green"
           placement="top"
           arrow
           disableInteractive
-          title={title}
+          title={tooltip}
         >
           <Styled.OutcomeTitle variant="body2">{title}</Styled.OutcomeTitle>
         </Tooltip>
