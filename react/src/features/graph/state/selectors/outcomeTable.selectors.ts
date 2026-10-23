@@ -74,8 +74,8 @@ export const selectOutcomeTable = createSelector(
           }
 
           // sort the node uuids by their row positions/indexes
-          const nodePositions = Object.keys(nodeRow).sort((a, b) =>
-            a.localeCompare(b)
+          const nodePositions = Object.keys(nodeRow).sort(
+            (a, b) => Number(a) - Number(b)
           )
 
           for (const position of nodePositions) {
