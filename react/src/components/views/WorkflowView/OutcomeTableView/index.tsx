@@ -2,14 +2,12 @@ import { selectOutcomeTable } from '@cf/features/graph/state/selectors/outcomeTa
 import { RootState } from '@cf/redux/store'
 import { OuterContentWrap } from '@cfMUI/helper'
 import { type WorkflowPageData } from '@cfPages/Workflow/types'
-import { produce } from 'immer'
-import { memo, useCallback, useState } from 'react'
+import { memo } from 'react'
 import { useSelector } from 'react-redux'
 
 import * as Styled from './styles'
 import TableBody from './TableBody'
 import TableHeader from './TableHeader'
-import ViewToolbar from './Toolbar'
 
 const OutcomeTableView = ({ workflow }: { workflow: WorkflowPageData }) => {
   const viewType = useSelector(
@@ -21,8 +19,6 @@ const OutcomeTableView = ({ workflow }: { workflow: WorkflowPageData }) => {
 
   return (
     <OuterContentWrap sx={{ pt: 4 }} data-test-id="workflow-outcome-table-view">
-      <ViewToolbar />
-
       <Styled.TableWrap>
         <TableHeader viewType={viewType} table={outcomeTable} />
         <TableBody viewType={viewType} table={outcomeTable} />
