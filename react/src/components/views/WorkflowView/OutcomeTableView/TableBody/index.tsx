@@ -1,5 +1,4 @@
 import { nodeTitleFallback } from '@cf/components/pages/Workflow/Sidebar/components/EditTab/components/EditNode/linkedWorkflowUi'
-import { getNodeOutcomeCompletionStatus } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { OutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
 import { outcomeTableUiActions } from '@cf/features/graph/state/slices/outcomeTableUi.slice'
 import {
@@ -9,7 +8,7 @@ import {
 import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import { AppDispatch, RootState } from '@cf/redux/store'
 import OutcomeHeader from '@cfPages/Workflow/Sidebar/components/OutcomesTab/Outcome/Header'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
