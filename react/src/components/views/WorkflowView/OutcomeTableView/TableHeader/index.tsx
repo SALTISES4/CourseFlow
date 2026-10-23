@@ -1,10 +1,13 @@
 import { nodeTitleFallback } from '@cf/components/pages/Workflow/Sidebar/components/EditTab/components/EditNode/linkedWorkflowUi'
 import { getNodeOutcomeCompletionStatus } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { OutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
+import { outcomeTableUiActions } from '@cf/features/graph/state/slices/outcomeTableUi.slice'
 import { displaySystemTitle } from '@cf/i18n/systemTitles'
+import { AppDispatch, RootState } from '@cf/redux/store'
 import OutcomeHeader from '@cfPages/Workflow/Sidebar/components/OutcomesTab/Outcome/Header'
-import { useState } from 'react'
+import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useDispatch, useSelector } from 'react-redux'
 
 import * as Styled from '../styles'
 
@@ -16,7 +19,7 @@ type PropsType = {
 const OutcomeTableHeader = ({ viewType, table }: PropsType) => {
   return (
     <Styled.TableHeader>
-      <Styled.HeaderLegendWrap></Styled.HeaderLegendWrap>
+      <Styled.HeaderLegendWrap />
       {viewType === 'normal' ? (
         <SectionGroups table={table} />
       ) : (
@@ -93,11 +96,17 @@ const TagGroupRow = ({
   table: OutcomeTable
   uuid: string
 }) => {
-  // TODO: move this to a global state so it can be controlled from the outside
-  const [collapsed, setCollapsed] = useState(true)
-  const outcome = table.outcomeTree.outcomes[uuid]
+  const dispatch = useDispatch<AppDispatch>()
+  const expandedOutcomes = useSelector(
+    (state: RootState) => state.graph.outcomeTableUi.expandedOutcomes
+  )
 
-  const onOutcomeToggleClick = () => setCollapsed(!collapsed)
+  const outcome = table.outcomeTree.outcomes[uuid]
+  const collapsed = !expandedOutcomes[uuid]
+
+  const onOutcomeToggleClick = useCallback(() => {
+    dispatch(outcomeTableUiActions.outcomeExpand({ uuid: uuid }))
+  }, [dispatch, uuid])
 
   return (
     <>

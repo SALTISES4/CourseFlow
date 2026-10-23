@@ -13,6 +13,7 @@ import {
 import { graphLoadReducer } from './slices/graphLoad.slice'
 import { graphUiReducer } from './slices/graphUi.slice'
 import { optimisticOpsReducer } from './slices/optimisticOps.slice'
+import { outcomeTableUiReducer } from './slices/outcomeTableUi.slice'
 import { outcomeUiReducer } from './slices/outcomeUi.slice'
 import { threadCommentCountsReducer } from './slices/threadCommentCounts.slice'
 
@@ -32,6 +33,7 @@ export const graphStateReducer = combineReducers({
   graphLoad: graphLoadReducer,
   graphUi: graphUiReducer,
   outcomeUi: outcomeUiReducer,
+  outcomeTableUi: outcomeTableUiReducer,
   optimisticOps: optimisticOpsReducer,
   threadCommentCounts: threadCommentCountsReducer
 })

@@ -11,41 +11,21 @@ import TableBody from './TableBody'
 import TableHeader from './TableHeader'
 import ViewToolbar from './Toolbar'
 
-type StateType = {
-  viewType: 'normal' | 'matrix'
-}
-
 const OutcomeTableView = ({ workflow }: { workflow: WorkflowPageData }) => {
-  const [state, setState] = useState<StateType>({
-    viewType: 'normal'
-  })
-
+  const viewType = useSelector(
+    (state: RootState) => state.graph.outcomeTableUi.viewType
+  )
   const outcomeTable = useSelector((state: RootState) =>
     selectOutcomeTable(state, workflow.graphUuid)
   )
 
-  const onViewTypeChange = useCallback((_, newVal: StateType['viewType']) => {
-    if (!newVal) {
-      return
-    }
-
-    setState(
-      produce((draft) => {
-        draft.viewType = newVal
-      })
-    )
-  }, [])
-
   return (
     <OuterContentWrap sx={{ pt: 4 }} data-test-id="workflow-outcome-table-view">
-      <ViewToolbar
-        viewType={state.viewType}
-        onViewTypeChange={onViewTypeChange}
-      />
+      <ViewToolbar />
 
       <Styled.TableWrap>
-        <TableHeader viewType={state.viewType} table={outcomeTable} />
-        <TableBody viewType={state.viewType} table={outcomeTable} />
+        <TableHeader viewType={viewType} table={outcomeTable} />
+        <TableBody viewType={viewType} table={outcomeTable} />
       </Styled.TableWrap>
     </OuterContentWrap>
   )
