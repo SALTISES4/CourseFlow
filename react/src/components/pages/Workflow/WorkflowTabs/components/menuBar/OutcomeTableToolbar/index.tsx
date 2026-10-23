@@ -45,9 +45,24 @@ const ViewToggle = () => {
 }
 
 // TODO: translate strings
+const sortLabels: Record<
+  NonNullable<RootState['graph']['outcomeTableUi']['sortType']>,
+  string
+> = {
+  time: 'Chronological',
+  category: 'Category',
+  context: 'Context'
+}
+
+// TODO: translate strings
 const SortToggle = () => {
+  const dispatch = useDispatch<AppDispatch>()
+  const sortBy = useSelector(
+    (state: RootState) => state.graph.outcomeTableUi.sortType
+  )
+
   const header: MenuItemType = {
-    content: 'Sort',
+    content: sortBy ? `Sort: ${sortLabels[sortBy]}` : 'Sort',
     icon: <SortIcon />,
     showIconInList: true,
     show: true
@@ -56,14 +71,32 @@ const SortToggle = () => {
   const menuItems: MenuItemType[] = [
     {
       content: 'Chronological',
+      action: () =>
+        dispatch(
+          outcomeTableUiActions.sortTypeChange({
+            sort: 'time'
+          })
+        ),
       show: true
     },
     {
       content: 'By node category',
+      action: () =>
+        dispatch(
+          outcomeTableUiActions.sortTypeChange({
+            sort: 'category'
+          })
+        ),
       show: true
     },
     {
       content: 'By context',
+      action: () =>
+        dispatch(
+          outcomeTableUiActions.sortTypeChange({
+            sort: 'context'
+          })
+        ),
       show: true
     }
   ]
