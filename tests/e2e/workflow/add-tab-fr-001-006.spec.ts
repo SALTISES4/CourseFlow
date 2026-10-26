@@ -10,6 +10,7 @@ import {
   addTabColumnDropBelowReferenceNodeAndWait,
   addTabCustomCategoryRowDropAndWait,
   addTabRowDropBelowReferenceNodeAndWait,
+  dragNodeCategoryOntoEmptyCell,
   dragNodeCategoryOntoNode,
   dragNodeCategoryOntoSection,
   expectCustomCategoryDropDefaults,
@@ -18,14 +19,17 @@ import {
   workflowNodeUuids,
 } from './add-tab.helpers';
 import {
+  expectColumnExactCellPlacement,
   expectColumnInsertEmptyCellBelow,
   expectColumnInsertOccupiedChannelInsertsRow,
   expectColumnInsertOccupiedShiftToGap,
   expectRowInsertBelowReferenceNode,
   fetchGraphView,
   findNodeInSectionChannelAtRow,
+  findNewNodeUuid,
   findSourceInChannelForColumnInsertBelow,
   findSourceWithNodesBelowInSection,
+  orderedGraphChannels,
   workflowUuidFromPath,
 } from './workflow-graph.helpers';
 import {
@@ -426,7 +430,79 @@ test.describe('add-tab-fr-001-006', () => {
       }
     });
 
-    test('FR-WF-ADD-005: column drop into empty cell below reference row leaves other workflowNodes unchanged', async ({
+    test('FR-WF-ADD-005: column drop directly on an empty cell uses its exact row and leaves other workflowNodes unchanged', async ({
+      page,
+      workflow,
+    }) => {
+      const sectionUuid = workflow.blankSection().uuid;
+      const workflowUuid = workflowUuidFromPath(workflow.path);
+      const targetRow = 1;
+      const targetChannelUuid = await channelUuidByTitle(page, E2E_CHANNEL_A);
+      let before = await fetchGraphView(page, workflowUuid);
+      const targetNode = findNodeInSectionChannelAtRow(
+        before,
+        sectionUuid,
+        targetChannelUuid,
+        targetRow,
+      );
+      expect(targetNode, 'Expected channel A row 1 node in blank section').toBeTruthy();
+      await deleteWorkflowNodeViaApi(page, targetNode!.uuid);
+      before = await fetchGraphView(page, workflowUuid);
+
+      const targetColumnIndex = orderedGraphChannels(before).findIndex(
+        (channel) => channel.uuid === targetChannelUuid,
+      );
+      expect(targetColumnIndex).toBeGreaterThanOrEqual(0);
+
+      await page.reload();
+      await workflowRightSidebarAddTab(page).click();
+      await workflowAddTabInsertModeColumnButton(page).click();
+
+      const placementRequestPromise = page.waitForRequest(
+        (request) => request.method() === 'POST' && request.url().endsWith('/nodes/place'),
+      );
+      await dragNodeCategoryOntoEmptyCell(
+        page,
+        E2E_CHANNEL_A,
+        sectionUuid,
+        targetRow,
+        targetColumnIndex,
+        'bottom',
+      );
+      const placementPayload = (await placementRequestPromise).postDataJSON() as Record<
+        string,
+        unknown
+      >;
+      expect(placementPayload).toMatchObject({ rowHint: targetRow, mode: 'column' });
+      expect(placementPayload).not.toHaveProperty('edge');
+
+      let after = before;
+      let newNodeUuid = '';
+      await expect
+        .poll(async () => {
+          after = await fetchGraphView(page, workflowUuid);
+          try {
+            newNodeUuid = findNewNodeUuid(before, after);
+            return true;
+          } catch {
+            return false;
+          }
+        }, { timeout: 15_000 })
+        .toBe(true);
+
+      expectColumnExactCellPlacement(
+        before,
+        after,
+        sectionUuid,
+        newNodeUuid,
+        targetChannelUuid,
+        targetRow,
+      );
+      await expect(workflowRightSidebarEditTab(page)).toHaveAttribute('aria-pressed', 'true');
+      await expect(workflowEditNodeForm(page)).toBeVisible();
+    });
+
+    test('FR-WF-ADD-005: column drop below an existing node into an empty next cell leaves other workflowNodes unchanged', async ({
       page,
       workflow,
     }) => {
@@ -468,6 +544,51 @@ test.describe('add-tab-fr-001-006', () => {
       );
       await expect(workflowRightSidebarEditTab(page)).toHaveAttribute('aria-pressed', 'true');
       await expect(workflowEditNodeForm(page)).toBeVisible();
+    });
+
+    test('FR-WF-ADD-005: custom-category column drop uses the selected row in the new channel', async ({
+      page,
+      workflow,
+    }) => {
+      const sectionUuid = workflow.blankSection().uuid;
+      const workflowUuid = workflowUuidFromPath(workflow.path);
+      const targetRow = 1;
+      const before = await fetchGraphView(page, workflowUuid);
+
+      const placementRequestPromise = page.waitForRequest(
+        (request) => request.method() === 'POST' && request.url().endsWith('/nodes/place'),
+      );
+      const { after, newNodeUuid, newChannelUuid } =
+        await addTabCustomCategoryRowDropAndWait(
+          page,
+          sectionUuid,
+          workflowUuid,
+          before,
+          targetRow,
+          'bottom',
+        );
+      const placementPayload = (await placementRequestPromise).postDataJSON() as Record<
+        string,
+        unknown
+      >;
+      expect(placementPayload).toMatchObject({ rowHint: targetRow, mode: 'column' });
+      expect(placementPayload).not.toHaveProperty('edge');
+
+      expectCustomCategoryDropResult(
+        before,
+        after,
+        sectionUuid,
+        newNodeUuid,
+        newChannelUuid,
+      );
+      expectColumnExactCellPlacement(
+        before,
+        after,
+        sectionUuid,
+        newNodeUuid,
+        newChannelUuid,
+        targetRow,
+      );
     });
 
     test('FR-WF-ADD-005: column drop below occupied cell shifts target channel nodes to first empty cell', async ({
@@ -605,6 +726,78 @@ test.describe('add-tab-fr-001-006', () => {
           expect(response.ok()).toBeTruthy();
         }
       }
+    });
+
+    test('FR-WF-ADD-006: choosing Column after an empty-cell drop uses the exact cell row', async ({
+      page,
+      workflow,
+    }) => {
+      const sectionUuid = workflow.blankSection().uuid;
+      const workflowUuid = workflowUuidFromPath(workflow.path);
+      const targetRow = 1;
+      const targetChannelUuid = await channelUuidByTitle(page, E2E_CHANNEL_A);
+      let before = await fetchGraphView(page, workflowUuid);
+      const targetNode = findNodeInSectionChannelAtRow(
+        before,
+        sectionUuid,
+        targetChannelUuid,
+        targetRow,
+      );
+      expect(targetNode, 'Expected channel A row 1 node in blank section').toBeTruthy();
+      await deleteWorkflowNodeViaApi(page, targetNode!.uuid);
+      before = await fetchGraphView(page, workflowUuid);
+
+      const targetColumnIndex = orderedGraphChannels(before).findIndex(
+        (channel) => channel.uuid === targetChannelUuid,
+      );
+      expect(targetColumnIndex).toBeGreaterThanOrEqual(0);
+
+      await page.reload();
+      await workflowRightSidebarAddTab(page).click();
+      await workflowAddTabInsertModeManualButton(page).click();
+      await dragNodeCategoryOntoEmptyCell(
+        page,
+        E2E_CHANNEL_A,
+        sectionUuid,
+        targetRow,
+        targetColumnIndex,
+        'bottom',
+      );
+
+      await expect(workflowManualPlacementDialog(page)).toBeVisible();
+      const placementRequestPromise = page.waitForRequest(
+        (request) => request.method() === 'POST' && request.url().endsWith('/nodes/place'),
+      );
+      await workflowManualPlacementDialogColumnButton(page).click();
+      const placementPayload = (await placementRequestPromise).postDataJSON() as Record<
+        string,
+        unknown
+      >;
+      expect(placementPayload).toMatchObject({ rowHint: targetRow, mode: 'column' });
+      expect(placementPayload).not.toHaveProperty('edge');
+
+      let after = before;
+      let newNodeUuid = '';
+      await expect
+        .poll(async () => {
+          after = await fetchGraphView(page, workflowUuid);
+          try {
+            newNodeUuid = findNewNodeUuid(before, after);
+            return true;
+          } catch {
+            return false;
+          }
+        }, { timeout: 15_000 })
+        .toBe(true);
+
+      expectColumnExactCellPlacement(
+        before,
+        after,
+        sectionUuid,
+        newNodeUuid,
+        targetChannelUuid,
+        targetRow,
+      );
     });
   });
 });

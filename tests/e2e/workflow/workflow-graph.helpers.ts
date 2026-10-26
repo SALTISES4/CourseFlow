@@ -377,6 +377,27 @@ export function expectColumnInsertEmptyCellBelow(
   }
 }
 
+export function expectColumnExactCellPlacement(
+  before: GraphViewPayload,
+  after: GraphViewPayload,
+  sectionUuid: string,
+  newNodeUuid: string,
+  targetChannelUuid: string,
+  targetRow: number,
+): void {
+  const newNode = nodeByUuid(after, newNodeUuid);
+  expect(newNode?.sectionUuid).toBe(sectionUuid);
+  expect(newNode?.channelUuid).toBe(targetChannelUuid);
+  expect(newNode?.sectionRow).toBe(targetRow);
+
+  for (const node of nodesInSection(before, sectionUuid)) {
+    const afterNode = nodeByUuid(after, node.uuid);
+    expect(afterNode, `Node ${node.uuid} missing from after graph`).toBeTruthy();
+    expect(afterNode!.sectionRow).toBe(node.sectionRow);
+    expect(afterNode!.channelUuid).toBe(node.channelUuid);
+  }
+}
+
 export function expectColumnInsertOccupiedShiftToGap(
   before: GraphViewPayload,
   after: GraphViewPayload,

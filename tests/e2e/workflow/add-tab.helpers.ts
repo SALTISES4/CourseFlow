@@ -65,6 +65,41 @@ export async function dragNodeCategoryOntoSection(
   });
 }
 
+/** Drag a channel-backed Add-tab category directly over an empty grid cell. */
+export async function dragNodeCategoryOntoEmptyCell(
+  page: Page,
+  categoryLabel: string,
+  sectionUuid: string,
+  rowIndex: number,
+  columnIndex: number,
+  edge: 'top' | 'bottom' = 'bottom',
+): Promise<void> {
+  const source = workflowAddTabNodeCategoryItem(page, categoryLabel);
+  const targetRow = workflowSectionRow(page, sectionUuid, rowIndex);
+  const targetCell = targetRow.locator('> div').nth(columnIndex);
+
+  await source.scrollIntoViewIfNeeded();
+  await targetCell.scrollIntoViewIfNeeded();
+
+  const sourceBox = await source.boundingBox();
+  const targetRowBox = await targetRow.boundingBox();
+  const targetCellBox = await targetCell.boundingBox();
+  if (!sourceBox || !targetRowBox || !targetCellBox) {
+    throw new Error('Drag source or empty cell target not visible.');
+  }
+
+  await source.dragTo(targetRow, {
+    force: true,
+    targetPosition: {
+      x: targetCellBox.x - targetRowBox.x + targetCellBox.width / 2,
+      y:
+        targetCellBox.y -
+        targetRowBox.y +
+        targetCellBox.height * (edge === 'top' ? 0.25 : 0.75),
+    },
+  });
+}
+
 /** Drag workflowAddTabCustomNodeCategoryItem onto a workflowSectionRow drop target. */
 export async function dragCustomNodeCategoryOntoSection(
   page: Page,
@@ -93,7 +128,7 @@ export async function dragCustomNodeCategoryOntoSection(
   });
 }
 
-/** Row-mode custom-category drop; wait for new workflowNode and workflowChannel. */
+/** Custom-category drop; wait for new workflowNode and workflowChannel. */
 export async function addTabCustomCategoryRowDropAndWait(
   page: Page,
   sectionUuid: string,

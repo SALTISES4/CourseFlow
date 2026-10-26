@@ -4,10 +4,7 @@ import {
   attachClosestEdge,
   extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import type {
-  GridDropEdge,
-  GridInsertMode
-} from '@cf/features/graph/state/model/types'
+import type { GridInsertMode } from '@cf/features/graph/state/model/types'
 import {
   insertChannelBelow,
   placeNode
@@ -20,6 +17,8 @@ import { produce } from 'immer'
 import { RefObject, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import { resolveSidebarDropPlacement } from './sidebarDropPlacement'
+import type { PendingSidebarDrop } from './sidebarDropPlacement'
 import { isSidebarCustomNode, isSidebarNode } from '../../../types'
 
 type StateType = {
@@ -28,13 +27,6 @@ type StateType = {
   dragId: string | null
   closestEdge: Edge | null
   pendingDrop: PendingSidebarDrop | null
-}
-
-type PendingSidebarDrop = {
-  channelId: string
-  custom: boolean
-  row: number | 'empty'
-  edge?: GridDropEdge
 }
 
 type PropsType = SectionRowPropsType & {
@@ -48,6 +40,7 @@ function useRowDnd(props: PropsType) {
     (state: RootState) => state.graph.graphUi.nodeInsertMode
   )
   const { graphUuid, sectionId, rowIndex, rowRef, columnIds, enabled } = props
+  const nodes = rowIndex === 'empty' ? undefined : props.nodes
   const [state, setState] = useState<StateType>({
     highlightRow: false,
     highlightEdge: null,
@@ -81,9 +74,7 @@ function useRowDnd(props: PropsType) {
           channelId = createdChannelUuid
         }
 
-        // The backend owns edge-to-row resolution. Pass the reference row as
-        // the hint so a bottom-edge drop is advanced exactly once.
-        const rowHint = drop.row === 'empty' ? 0 : drop.row
+        const { rowHint, edge } = resolveSidebarDropPlacement(drop, mode)
         const createdNodeUuid = await dispatch(
           placeNode({
             graphUuid,
@@ -91,7 +82,7 @@ function useRowDnd(props: PropsType) {
             channelUuid: channelId,
             rowHint,
             mode,
-            edge: drop.edge
+            edge
           })
         )
 
@@ -189,20 +180,27 @@ function useRowDnd(props: PropsType) {
       onDrop: async ({ source, self }) => {
         const isCustom = isSidebarCustomNode(source.data)
         const row = self.data.row as number | 'empty'
-        let closestEdge = extractClosestEdge(self.data)
-
-        if (isCustom) {
-          closestEdge = insertMode === 'column' ? 'top' : state.highlightEdge
-        }
+        const channelId = source.data.uuid as string
+        const closestEdge = isCustom
+          ? (state.highlightEdge ?? extractClosestEdge(self.data))
+          : extractClosestEdge(self.data)
 
         const edge =
           closestEdge === 'top' || closestEdge === 'bottom'
             ? closestEdge
             : undefined
+        const columnIndex = columnIds.indexOf(channelId)
+        const targetKind =
+          isCustom ||
+          row === 'empty' ||
+          (columnIndex >= 0 && !nodes?.[columnIndex])
+            ? 'empty-cell'
+            : 'occupied-cell'
         const drop: PendingSidebarDrop = {
-          channelId: source.data.uuid as string,
+          channelId,
           custom: isCustom,
           row,
+          targetKind,
           edge
         }
 
@@ -231,6 +229,7 @@ function useRowDnd(props: PropsType) {
     state.highlightEdge,
     finalizeSidebarDrop,
     columnIds,
+    nodes,
     enabled
   ])
 

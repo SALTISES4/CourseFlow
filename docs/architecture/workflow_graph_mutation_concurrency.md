@@ -197,6 +197,33 @@ DELETE /edge/{edge_uuid}
 
 The concurrency policy does not depend on the public URL shape. It depends on all mutation code paths resolving the owning graph and acquiring the graph lock before mutation.
 
+## Technical debt: explicit grid-placement destinations
+
+The current node-placement commands encode several different user intentions through the combination of `row_hint`, `mode`, and nullable `edge` fields:
+
+* Column mode with no `edge` means place in the exact section-row × channel cell.
+* Column mode with `top` or `bottom` means insert relative to a row in one channel and reflow the contiguous occupied cells in that channel.
+* Row mode with `top` or `bottom` means insert a complete section row and reflow every channel.
+
+This contract is implicit. In October 2026, an Add-sidebar defect demonstrated the risk: the frontend displayed the exact-cell preview over an empty Column-mode cell but the enclosing row drop target submitted `edge = bottom`. The backend correctly interpreted that command as a relative insertion, placed the node one row lower, and shifted the occupied cells below it. The rendered lengths of adjacent columns were not causal.
+
+The bounded remediation keeps the current HTTP schema but makes the Add-sidebar client classify its captured destination as `empty-cell` or `occupied-cell`. It omits `edge` for an empty-cell destination when the effective mode is Column, including custom-category and Manual-to-Column placement. Existing node-edge and Row-mode behavior retains the captured edge.
+
+The remaining technical debt is that the backend still cannot distinguish an intentional exact-cell command from a malformed or incomplete relative-insert command. It also cannot reject an exact-cell command whose destination became occupied before the transaction acquired the graph lock; the current reflow algorithm will instead shift that channel.
+
+A future API revision should replace the implicit tuple with a discriminated destination, for example:
+
+```text
+destination =
+  exact-cell  { section_uuid, channel_uuid, row }
+  column-edge { section_uuid, channel_uuid, reference_row, edge }
+  row-edge    { section_uuid, reference_row, edge }
+```
+
+The application service should validate the selected variant against graph state after acquiring the graph lock. In particular, `exact-cell` should require the cell to remain empty and return a conflict rather than silently changing the operation into a reflow. A later design may replace `reference_row` with a stable anchor node UUID or combine it with an expected graph revision if stale-client placement becomes material.
+
+This migration must be coordinated across Add, Move, Duplicate, Manual placement, backend schemas and services, generated OpenAPI clients, and their API/browser tests. It is intentionally deferred from the bounded Add-sidebar repair so that the defect fix does not conceal a platform-wide contract migration.
+
 ## Rejected alternatives
 
 ### 1. No explicit aggregate lock
