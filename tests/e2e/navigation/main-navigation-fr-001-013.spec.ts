@@ -33,6 +33,7 @@ import {
   homeNavItem,
   mainNavigation,
   mainNavigationPanel,
+  mainNavigationScrollRegion,
   myLibraryNavItem,
   viewAllLink,
   waitForMainNavigationReady,
@@ -78,6 +79,46 @@ test.describe('Main navigation — calibration (FR-NAV-001-013)', () => {
 
     await expect(favouritesSectionLabel(page)).toHaveCount(0);
     await expect(viewAllLink(page)).toHaveCount(0);
+  });
+
+  test('FR-NAV-001: overflowing navigation sections share one scroll region', async ({ page }) => {
+    await page.setViewportSize({ width: 1024, height: 400 });
+    const linked = getNavigationLinkedWorkflows();
+    await gotoAuthenticatedShell(page, linked.course.workflow_path);
+    await waitForMainNavigationReady(page);
+    await expect(containsSection(page)).toHaveCount(1);
+
+    const scrollRegion = mainNavigationScrollRegion(page);
+    const helpLink = helpAndSupportLink(page);
+    await expect(scrollRegion).toBeVisible();
+    await expect(helpLink).toBeVisible();
+
+    const initialMetrics = await scrollRegion.evaluate((element) => ({
+      clientHeight: element.clientHeight,
+      overflowX: getComputedStyle(element).overflowX,
+      overflowY: getComputedStyle(element).overflowY,
+      scrollHeight: element.scrollHeight,
+    }));
+    expect(initialMetrics.overflowX).toBe('hidden');
+    expect(initialMetrics.overflowY).toBe('auto');
+    expect(initialMetrics.scrollHeight).toBeGreaterThan(initialMetrics.clientHeight);
+
+    const nestedScrollableRegions = await scrollRegion.locator('*').evaluateAll(
+      (elements) =>
+        elements.filter((element) => {
+          const overflowY = getComputedStyle(element).overflowY;
+          return (overflowY === 'auto' || overflowY === 'scroll') && element.scrollHeight > element.clientHeight;
+        }).length,
+    );
+    expect(nestedScrollableRegions).toBe(0);
+
+    const helpLinkTop = (await helpLink.boundingBox())?.y;
+    await scrollRegion.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
+    await expect.poll(() => scrollRegion.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+    await expect(helpLink).toBeVisible();
+    expect((await helpLink.boundingBox())?.y).toBe(helpLinkTop);
   });
 
   test('FR-NAV-002: Home nav item navigates to /home with selected styling', async ({ page }) => {

@@ -137,52 +137,54 @@ const Sidebar = () => {
           <Typography component="span">CourseFlow</Typography>
         </SC.LogoWrap>
 
-        <SC.MainMenuWrap>
-          <ListItem disablePadding dense>
-            <ListItemButton
-              component={Link}
-              data-test-id="panel-home"
-              to={CFRoutes.HOME}
-              selected={location.pathname === CFRoutes.HOME}
-            >
-              <ListItemIcon>
-                <HomeIcon />
-              </ListItemIcon>
-              <ListItemText primary={t('navigation.home')} />
-            </ListItemButton>
-          </ListItem>
+        <SC.NavigationScrollRegion data-test-id="main-nav-scroll-region">
+          <SC.MainMenuWrap>
+            <ListItem disablePadding dense>
+              <ListItemButton
+                component={Link}
+                data-test-id="panel-home"
+                to={CFRoutes.HOME}
+                selected={location.pathname === CFRoutes.HOME}
+              >
+                <ListItemIcon>
+                  <HomeIcon />
+                </ListItemIcon>
+                <ListItemText primary={t('navigation.home')} />
+              </ListItemButton>
+            </ListItem>
 
-          <ListItem disablePadding dense>
-            <ListItemButton
-              component={Link}
-              data-test-id="panel-library"
-              to={CFRoutes.LIBRARY}
-              selected={location.pathname === CFRoutes.LIBRARY}
-            >
-              <ListItemIcon>
-                <FolderCopyIcon />
-              </ListItemIcon>
-              <ListItemText primary={t('navigation.myLibrary')} />
-            </ListItemButton>
-          </ListItem>
+            <ListItem disablePadding dense>
+              <ListItemButton
+                component={Link}
+                data-test-id="panel-library"
+                to={CFRoutes.LIBRARY}
+                selected={location.pathname === CFRoutes.LIBRARY}
+              >
+                <ListItemIcon>
+                  <FolderCopyIcon />
+                </ListItemIcon>
+                <ListItemText primary={t('navigation.myLibrary')} />
+              </ListItemButton>
+            </ListItem>
 
-          <ListItem disablePadding dense>
-            <ListItemButton
-              component={Link}
-              to={CFRoutes.EXPLORE}
-              data-test-id="panel-explore"
-              selected={location.pathname === CFRoutes.EXPLORE}
-            >
-              <ListItemIcon>
-                <SearchIcon />
-              </ListItemIcon>
-              <ListItemText primary={t('navigation.explore')} />
-            </ListItemButton>
-          </ListItem>
-        </SC.MainMenuWrap>
+            <ListItem disablePadding dense>
+              <ListItemButton
+                component={Link}
+                to={CFRoutes.EXPLORE}
+                data-test-id="panel-explore"
+                selected={location.pathname === CFRoutes.EXPLORE}
+              >
+                <ListItemIcon>
+                  <SearchIcon />
+                </ListItemIcon>
+                <ListItemText primary={t('navigation.explore')} />
+              </ListItemButton>
+            </ListItem>
+          </SC.MainMenuWrap>
 
-        <Favorites />
-        <RelatedWorkflowList />
+          <Favorites />
+          <RelatedWorkflowList />
+        </SC.NavigationScrollRegion>
 
         <SC.HelpLink>
           <ListItem disablePadding dense>

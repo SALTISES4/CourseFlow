@@ -96,6 +96,7 @@ requirements:
       - mainNavigationPanel shows brandLockup at the top
       - mainNavigation shows homeNavItem, myLibraryNavItem, exploreNavItem, and helpAndSupportLink
       - when user has at least one favourited project, mainNavigation shows favouritesSection
+      - when the combined primary, favourites, contains, and appears-in navigation sections exceed the available mainNavigation height, those sections share one vertical scroll region while brandLockup and helpAndSupportLink remain fixed
 
     roleBehavior: {}
 
@@ -110,6 +111,8 @@ requirements:
       - given user has at least one favourited project, favouritesSection is visible
       - given user has zero favourited projects, favouritesSection is not visible in mainNavigation
       - given user has zero favourited projects, viewAllLink is not visible in mainNavigation
+      - given the combined navigation sections exceed the available mainNavigation height, mainNavigation provides one shared vertical scroll region for all sections and does not give individual sections independent scrollbars
+      - given the navigation sections are scrolled, brandLockup and helpAndSupportLink remain fixed and visible
 
     openQuestions: []
 

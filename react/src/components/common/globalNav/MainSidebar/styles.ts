@@ -120,8 +120,14 @@ export const MainMenuWrap = styled(List)({
   }
 })
 
+export const NavigationScrollRegion = styled(Box)({
+  flex: 1,
+  minHeight: 0,
+  overflowX: 'hidden',
+  overflowY: 'auto'
+})
+
 export const SectionWrap = styled(Box)({
-  overflow: 'auto',
   '& .MuiListItemText-primary': {
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',

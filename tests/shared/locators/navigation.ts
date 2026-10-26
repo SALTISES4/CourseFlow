@@ -17,6 +17,10 @@ export function mainNavigationPanel(page: Page): Locator {
   return mainNavigation(page);
 }
 
+export function mainNavigationScrollRegion(page: Page): Locator {
+  return mainNavigation(page).locator('[data-test-id="main-nav-scroll-region"]');
+}
+
 export function brandLockup(page: Page): Locator {
   return mainNavigation(page).getByText(BRAND_NAME, { exact: true });
 }
