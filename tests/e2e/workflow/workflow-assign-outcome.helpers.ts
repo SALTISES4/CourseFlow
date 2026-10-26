@@ -52,7 +52,7 @@ export async function createProjectTagViaApi(
 export async function patchOutcomeViaApi(
   page: Page,
   outcomeUuid: string,
-  patch: { title?: string; tagIds?: number[] },
+  patch: { title?: string; code?: string; tagIds?: number[] },
 ): Promise<void> {
   const response = await authenticatedApiRequest(page, 'PATCH', `/api/outcome/${outcomeUuid}`, {
     data: patch,

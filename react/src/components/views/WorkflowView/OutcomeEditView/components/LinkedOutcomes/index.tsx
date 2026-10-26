@@ -5,7 +5,8 @@ import type { OutcomeEntity } from '@cf/features/graph/state/model/types'
 import {
   getPrefixPath,
   selectOutcomeChildrenById,
-  selectOutcomeEntities
+  selectOutcomeEntities,
+  selectOutcomeLevel
 } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { unlinkNodeOutcome } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import type { AppDispatch, RootState } from '@cf/redux/store'
@@ -46,8 +47,9 @@ const LinkedOutcomeRow = ({
   const children = useSelector((state: RootState) =>
     selectOutcomeChildrenById(state, graphUuid, outcome.uuid)
   ).filter((child) => assignedOutcomeUuids.has(child.uuid))
-
-  const level = prefix.split('.').length - 2
+  const level = useSelector((state: RootState) =>
+    selectOutcomeLevel(state, graphUuid, outcome.uuid)
+  )
 
   const onToggleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()

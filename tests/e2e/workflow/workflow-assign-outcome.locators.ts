@@ -103,6 +103,14 @@ export function workflowNodeLinkedOutcomeRow(page: Page, title: string | RegExp)
     : popover.getByText(title);
 }
 
+/** Hierarchy-coloured header containing a workflowNodeLinkedOutcomeRow title. */
+export function workflowNodeLinkedOutcomeRowHeader(
+  page: Page,
+  title: string | RegExp,
+): Locator {
+  return workflowNodeLinkedOutcomeRow(page, title).locator('xpath=../..');
+}
+
 /** canonical: workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem */
 export function workflowNodeLinkedOutcomeRowUnlinkOutcomeMenuItem(page: Page): Locator {
   return page.getByRole('button', { name: 'Unlink outcome' });

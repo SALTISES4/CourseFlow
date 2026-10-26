@@ -171,11 +171,14 @@ jobs:
       VITE_API_BASE_URL:
         type: string
         default: ""
+      VITE_GTM_CONTAINER_ID:
+        type: string
     docker:
       - image: cimg/node:24.14.1
     working_directory: ~/repo
     environment:
       VITE_API_BASE_URL: << parameters.VITE_API_BASE_URL >>
+      VITE_GTM_CONTAINER_ID: << parameters.VITE_GTM_CONTAINER_ID >>
     steps:
       - checkout
       - restore_cache:
@@ -332,6 +335,7 @@ workflows:
 #          context:
 #            - slack-integration-cf
       - frontend-build:
+          VITE_GTM_CONTAINER_ID: GTM-TK2LHHDW
           context:
             - slack-integration-cf
       - deploy-uat:
@@ -368,6 +372,7 @@ workflows:
       - frontend-build:
           name: frontend-build-aws
           VITE_API_BASE_URL: https://courseflow-api-staging.mydalite.org
+          VITE_GTM_CONTAINER_ID: GTM-TK2LHHDW
           context:
             - slack-integration-cf
       - deploy-aws:

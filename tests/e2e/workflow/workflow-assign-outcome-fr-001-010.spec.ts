@@ -56,6 +56,7 @@ import {
 } from './outcome-drag.helpers';
 import {
   workflowNodeLinkedOutcomeRow,
+  workflowNodeLinkedOutcomeRowHeader,
   workflowNodeLinkedOutcomesBadge,
   workflowNodeLinkedOutcomesPopover,
   workflowOutcomesAssignTabAddOutcomesButton,
@@ -590,6 +591,49 @@ test.describe('Linked outcomes badge and popover (FR-WF-AO-007, FR-WF-AO-008, FR
     const nodeUuid = await firstWorkflowNodeUuid(page);
     await openLinkedOutcomesPopover(page, nodeUuid, 1);
     await expect(workflowNodeLinkedOutcomeRow(page, E2E_SEED_OUTCOME_HEADER)).toBeVisible();
+  });
+
+  test('FR-WF-AO-009: linked outcome rows use their hierarchy-level colour', async ({
+    page,
+    workflow,
+  }) => {
+    const nodeUuid = await secondWorkflowNodeUuid(page);
+    const rootOutcome = workflow.firstOutcome();
+    let childUuid = '';
+    let grandchildUuid = '';
+    const rootCode = 'E2E-L1';
+    const rootHeader = new RegExp(`^1 - ${rootCode} - ${E2E_OUTCOME_TITLE}$`);
+    const childHeader = nestedOutcomeHeaderPattern('1.1', E2E_OUTCOME_CHILD_TITLE);
+    const grandchildHeader = nestedOutcomeHeaderPattern(
+      '1.1.1',
+      E2E_OUTCOME_GRANDCHILD_TITLE,
+    );
+
+    await prepareGraphAfterApiSetup(page, workflow.path, async () => {
+      await patchOutcomeViaApi(page, rootOutcome.uuid, { code: rootCode });
+      ({ childUuid, grandchildUuid } = await seedThreeLevelSubtreeViaApi(page, workflow));
+      await linkOutcomesToNodeViaApi(page, nodeUuid, [
+        rootOutcome.uuid,
+        childUuid,
+        grandchildUuid,
+      ]);
+    });
+
+    await openLinkedOutcomesPopoverForNode(page, nodeUuid);
+    await revealLinkedPopoverOutcomeRows(page, rootHeader, childHeader);
+
+    await expect(workflowNodeLinkedOutcomeRowHeader(page, rootHeader)).toHaveCSS(
+      'background-color',
+      'rgb(229, 233, 244)',
+    );
+    await expect(workflowNodeLinkedOutcomeRowHeader(page, childHeader)).toHaveCSS(
+      'background-color',
+      'rgb(245, 249, 255)',
+    );
+    await expect(workflowNodeLinkedOutcomeRowHeader(page, grandchildHeader)).toHaveCSS(
+      'background-color',
+      'rgba(0, 0, 0, 0)',
+    );
   });
 
   test('FR-WF-AO-008: clicking badge again closes popover', async ({ page }) => {
