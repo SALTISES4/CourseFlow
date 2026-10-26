@@ -6,7 +6,10 @@ const TILT_ANGLE = '50deg'
 const CELL_WIDTH = 56
 const CELL_HEIGHT = 50
 
-export const TableWrap = styled(Box)(() => ({}))
+export const TableWrap = styled(Box)(() => ({
+  '&.view-normal': {},
+  '&.view-matrix': {}
+}))
 
 export const TableHeader = styled(Box)(({ theme }) => ({
   position: 'sticky',
@@ -18,16 +21,36 @@ export const TableHeader = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white
 }))
 
-export const HeaderLegendWrap = styled(Box)(({ theme }) => ({
+export const HeaderLegendWrap = styled(Box, {
+  shouldForwardProp: (prop) => !['tagLabel'].includes(prop as string)
+})<{ tagLabel?: boolean }>(({ theme, tagLabel = false }) => ({
   position: 'relative',
   width: `${CELL_WIDTH}px`,
   height: `${HEADING_WIDTH}px`,
   padding: 0,
+  transform: `rotateZ(-${TILT_ANGLE}) translate(14px, 20px)`,
+  transformOrigin: 'bottom left',
 
-  '&:not(:first-child)': {
-    transform: `rotateZ(-${TILT_ANGLE}) translate(22px, 28px)`,
-    transformOrigin: 'bottom left'
-  },
+  // tag labels have a fake background element that connects to the row below
+  ...(tagLabel && {
+    transform: `rotateZ(-${TILT_ANGLE}) translate(18px, 24px)`,
+    '& span': {
+      paddingTop: '2px',
+      paddingBottom: '2px',
+      transform: 'translateY(-8px)'
+    },
+    '&:after': {
+      content: '""',
+      position: 'absolute',
+      left: 0,
+      bottom: 0,
+      width: '28px',
+      height: '28px',
+      background: '#EEF2FD',
+      transform: `translate(-14px, -2px) rotateZ(${TILT_ANGLE})`,
+      zIndex: -1
+    }
+  }),
 
   // empty corner cell
   '&:first-child': {
@@ -35,15 +58,20 @@ export const HeaderLegendWrap = styled(Box)(({ theme }) => ({
     marginRight: theme.spacing(2),
     position: 'sticky',
     left: 0,
+    transform: 'none',
     zIndex: 100,
     background: 'linear-gradient(to right, #fff 60%, transparent 100%)'
   },
 
-  '& [class*="TableLegend"]': {
+  '& [class*="table-legend"]': {
     position: 'absolute',
     bottom: 0,
     left: 0,
     width: `calc(${HEADING_WIDTH}px * tan(${TILT_ANGLE}))`
+  },
+
+  '&.tag-offset': {
+    marginLeft: '18px'
   }
 }))
 
@@ -52,7 +80,7 @@ export const TableBody = styled(Box)(() => ({
 }))
 
 export const BodyLegendWrap = styled(Box, {
-  name: 'LegendWrap'
+  name: 'legend-wrap'
 })(({ theme }) => ({
   position: 'sticky',
   left: 0,
@@ -63,7 +91,7 @@ export const BodyLegendWrap = styled(Box, {
   alignItems: 'center',
   backgroundColor: theme.palette.common.white,
   zIndex: 10,
-  '& + [class*="LegendWrap"]': {
+  '& + [class*="legend-wrap"]': {
     zIndex: 3
   }
 }))
@@ -71,7 +99,7 @@ export const BodyLegendWrap = styled(Box, {
 // header or first first clumn left hand side "column/row legend" element
 export const TableLegend = styled('span', {
   shouldForwardProp: (prop) => !['color', 'sx'].includes(prop as string),
-  name: 'TableLegend'
+  name: 'table-legend'
 })<{ color?: string }>(({ theme, color }) => ({
   display: 'block',
   flexGrow: 1,
@@ -86,16 +114,16 @@ export const TableLegend = styled('span', {
 
 // tag group header / full row body splitter
 export const TagGroup = styled(Box)(({ theme }) => ({
-  '& [class*="BodyRow"]:first-child': {
+  '& [class*="body-row"]:first-child': {
     marginTop: theme.spacing(0.5),
     marginBottom: theme.spacing(0.5),
     border: 0,
-    '& [class*="LegendWrap"]': {
+    '& [class*="legend-wrap"]': {
       '&:first-child': {
         flexShrink: 0,
         zIndex: 10,
-        '& [class*="TableLegend"]': {
-          padding: theme.spacing(0.5)
+        '& [class*="table-legend"]': {
+          padding: '2px'
         }
       },
       '&:last-child': {
@@ -105,7 +133,7 @@ export const TagGroup = styled(Box)(({ theme }) => ({
           content: '""',
           width: '100%',
           flexGrow: 1,
-          height: '32px',
+          height: '28px',
           background: theme.palette.workspaceBlocks.background
         }
       }
@@ -113,19 +141,35 @@ export const TagGroup = styled(Box)(({ theme }) => ({
   }
 }))
 
-export const BodyRow = styled(Box, { name: 'BodyRow' })(({ theme }) => ({
+export const BodyRow = styled(Box, { name: 'body-row' })(({ theme }) => ({
   display: 'flex',
-  '.Checkmarks-root': {
+  '.checkmarks-group': {
     borderRight: `1px solid ${theme.palette.divider}`
   },
-  '&:hover .Checkmarks-root': {
+  '&:hover .checkmarks-group': {
     backgroundColor: theme.palette.action.hover
   },
-  '&:last-child > div:last-child': {
+  '&.tag-header-row [class*="legend-wrap"]': {
+    paddingRight: 0
+  },
+  '&.section-header-row:not(:first-of-type)': {
+    marginTop: theme.spacing(2)
+  },
+  '.view-normal &:last-child > div:last-child': {
     borderBottom: `1px solid ${theme.palette.divider}`
   },
-  '&.Tagheader-root [class*="LegendWrap"]': {
-    paddingRight: 0
+  '.view-matrix &': {
+    '&:has(+ [class*="section-header-row"])': {
+      '& .checkmarks-group': {
+        borderBottom: `1px solid ${theme.palette.divider}`
+      },
+      '& [class*="tag-bar"]::before': {
+        height: '200%'
+      }
+    },
+    '&:last-child .checkmarks-group': {
+      borderBottom: `1px solid ${theme.palette.divider}`
+    }
   }
 }))
 
@@ -182,3 +226,28 @@ export const CheckmarkCell = styled(Box)(({ theme }) => ({
     transition: `opacity 0.1s ease, transform 0.1s ease`
   }
 }))
+
+export const TagBarEmptyCell = styled(CheckmarkCell, { name: 'tag-bar' })(
+  ({ theme }) => ({
+    display: 'flex',
+    border: 0,
+    background: theme.palette.common.white,
+    justifyContent: 'center',
+    '&::before': {
+      content: '""',
+      position: 'relative',
+      left: '-10px',
+      display: 'block',
+      width: '28px',
+      height: '100%',
+      background: '#EEF2FD'
+    },
+
+    '&.tag-offset': {
+      width: '70px',
+      '&::before': {
+        left: 0
+      }
+    }
+  })
+)
