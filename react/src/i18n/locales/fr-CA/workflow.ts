@@ -6,7 +6,7 @@ const workflowFr = {
     program: 'Programme', activity: 'Activité', course: 'Cours', task: 'Tâche', workflow: 'Flux de travail',
     programLower: 'programme', activityLower: 'activité', courseLower: 'cours', taskLower: 'tâche', workflowLower: 'flux de travail'
   },
-  tabs: { overview: 'Aperçu', workflow: 'Flux de travail', outcomes: 'Résultats' },
+  tabs: { overview: 'Aperçu', workflow: 'Flux de travail', outcomes: 'Résultats', outcomeTable: 'Tableau des résultats' },
   overview: {
     description: 'Description', emptyValue: '—', disciplines: 'Disciplines', noDisciplines: 'Aucune discipline.',
     createdOn: 'Créé le', permissions: 'Autorisations', copyPublicLink: 'Copier le lien public',
@@ -43,6 +43,13 @@ const workflowFr = {
     empty: 'Ce {{workflowType}} ne contient actuellement aucun résultat. Ouvrez la vue des résultats pour en ajouter.',
     fromParents: 'Résultats des flux de travail parents', untitled: 'Résultat sans titre', untagged: 'Sans étiquette',
     insertSibling: 'Insérer au même niveau', insertChild: 'Insérer un enfant'
+  },
+  outcomeTable: {
+    view: { normal: 'Normal', competencyMatrix: 'Matrice de compétences' },
+    sort: {
+      title: 'Trier', chronological: 'Ordre chronologique',
+      byNodeCategory: 'Par catégorie de nœuds', byContext: 'Par contexte'
+    }
   },
   comments: {
     title: 'Commentaires', selectItem: 'Sélectionnez un élément pour consulter ou ajouter des commentaires.',

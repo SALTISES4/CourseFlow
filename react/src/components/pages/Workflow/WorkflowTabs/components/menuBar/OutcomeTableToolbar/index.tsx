@@ -4,12 +4,14 @@ import { MenuItemType, SimpleMenu } from '@cfComponents/menu/Menu'
 import SortIcon from '@mui/icons-material/Sort'
 import ToggleButton from '@mui/material/ToggleButton'
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
 import * as Styled from './styles'
 
 const ViewToggle = () => {
   const dispatch = useDispatch<AppDispatch>()
+  const { t } = useTranslation('workflow')
 
   const viewType = useSelector(
     (state: RootState) => state.graph.outcomeTableUi.viewType
@@ -34,20 +36,21 @@ const ViewToggle = () => {
         onChange={onViewTypeChange}
       >
         <ToggleButton color="primary" size="small" value="normal">
-          Normal
+          {t('outcomeTable.view.normal')}
         </ToggleButton>
         <ToggleButton color="primary" size="small" value="matrix">
-          Competency matrix
+          {t('outcomeTable.view.competencyMatrix')}
         </ToggleButton>
       </Styled.ViewTypeButtonGroup>
     </Styled.ViewTypeWrapper>
   )
 }
 
-// TODO: translate strings
 const SortToggle = () => {
+  const { t } = useTranslation('workflow')
+
   const header: MenuItemType = {
-    content: 'Sort',
+    content: t('outcomeTable.sort.title'),
     icon: <SortIcon />,
     showIconInList: true,
     show: true
@@ -55,15 +58,15 @@ const SortToggle = () => {
 
   const menuItems: MenuItemType[] = [
     {
-      content: 'Chronological',
+      content: t('outcomeTable.sort.chronological'),
       show: true
     },
     {
-      content: 'By node category',
+      content: t('outcomeTable.sort.byNodeCategory'),
       show: true
     },
     {
-      content: 'By context',
+      content: t('outcomeTable.sort.byContext'),
       show: true
     }
   ]

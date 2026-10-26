@@ -95,6 +95,18 @@ const workflow = {
     insertSibling: 'Insert sibling',
     insertChild: 'Insert child'
   },
+  outcomeTable: {
+    view: {
+      normal: 'Normal',
+      competencyMatrix: 'Competency matrix'
+    },
+    sort: {
+      title: 'Sort',
+      chronological: 'Chronological',
+      byNodeCategory: 'By node category',
+      byContext: 'By context'
+    }
+  },
   comments: {
     title: 'Comments',
     selectItem: 'Select an item to view or add comments.',
