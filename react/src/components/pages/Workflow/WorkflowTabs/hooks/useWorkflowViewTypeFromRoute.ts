@@ -11,6 +11,7 @@ const WORKFLOW_ROUTE_TO_VIEW_TYPE: ReadonlyArray<{
     | typeof CFRoutes.WORKFLOW
     | typeof CFRoutes.WORKFLOW_GRAPH
     | typeof CFRoutes.WORKFLOW_OUTCOME_EDIT
+    | typeof CFRoutes.WORKFLOW_OUTCOME_TABLE
   viewType: WorkflowViewType
 }> = [
   {
@@ -20,6 +21,10 @@ const WORKFLOW_ROUTE_TO_VIEW_TYPE: ReadonlyArray<{
   {
     routePath: CFRoutes.WORKFLOW_OUTCOME_EDIT,
     viewType: WorkflowViewType.OUTCOME_EDIT
+  },
+  {
+    routePath: CFRoutes.WORKFLOW_OUTCOME_TABLE,
+    viewType: WorkflowViewType.OUTCOME_TABLE
   },
   {
     routePath: CFRoutes.WORKFLOW,

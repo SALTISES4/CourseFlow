@@ -1,4 +1,11 @@
 import '@mui/material/styles'
+import '@mui/material/Tooltip'
+
+declare module '@mui/material/Tooltip' {
+  interface TooltipProps {
+    variant?: 'default' | 'green'
+  }
+}
 
 declare module '@mui/material/styles' {
   interface Palette {

@@ -14,7 +14,8 @@ const workflow = {
   tabs: {
     overview: 'Overview',
     workflow: 'Workflow',
-    outcomes: 'Outcomes'
+    outcomes: 'Outcomes',
+    outcomeTable: 'Outcome table'
   },
   overview: {
     description: 'Description',

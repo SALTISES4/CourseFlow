@@ -32,6 +32,7 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
+import OutcomeTableToolbar from './OutcomeTableToolbar'
 import SectionTitle from './SectionTitle'
 
 const ActionMenu = () => {
@@ -293,12 +294,17 @@ const ExpandCollapseMenu = ({
   }
 
   return (
-    <SimpleMenu
-      id="actions-menu"
-      data-test-id="ExpandCollapseMenu"
-      header={header}
-      menuItems={menuItems}
-    />
+    <>
+      {workflowViewType === WorkflowViewType.OUTCOME_TABLE && (
+        <OutcomeTableToolbar />
+      )}
+      <SimpleMenu
+        id="actions-menu"
+        data-test-id="ExpandCollapseMenu"
+        header={header}
+        menuItems={menuItems}
+      />
+    </>
   )
 }
 

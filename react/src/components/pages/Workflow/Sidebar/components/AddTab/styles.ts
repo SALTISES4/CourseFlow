@@ -21,7 +21,7 @@ export const InsertButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
       backgroundColor: alpha(theme.palette.primary.main, 0.05)
     }
   },
-  '& .Mui-selected': {
+  '& .Mui-selected.Mui-selected': {
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.common.white,
     '&:hover': {

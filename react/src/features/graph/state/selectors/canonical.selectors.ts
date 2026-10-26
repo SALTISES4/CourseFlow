@@ -5,6 +5,7 @@ import type { GraphState } from '../graphState'
 import type {
   EdgeKey,
   GraphUuid,
+  NodeEntity,
   ResourceUuid,
   WorkflowUuid
 } from '../model/types'
@@ -155,6 +156,15 @@ export const selectNodesByGraphUuid = (graphUuid: GraphUuid) =>
   createSelector([selectAllNodes], (nodes) =>
     nodes.filter((node) => node.graphUuid === graphUuid)
   )
+
+export const selectNodeEntitiesByGraphUuid = (graphUuid: GraphUuid) =>
+  createSelector([selectAllNodes], (nodes) => {
+    const n = nodes.filter((node) => node.graphUuid === graphUuid)
+
+    const res: Record<ResourceUuid, NodeEntity> = {}
+    n.forEach((node) => (res[node.uuid] = node))
+    return res
+  })
 
 /** Node UUIDs in graph scope (canonical graph store has no soft-delete flag on nodes). */
 export const selectNodeUuidsByGraphUuid = (graphUuid: GraphUuid) =>

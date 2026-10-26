@@ -24,7 +24,7 @@ export enum WorkflowViewType {
   GRAPH = 'graphview',
   OUTCOME_EDIT = 'outcomeedit',
   GRID_VIEW = 'grid',
-  OUTCOME_TABLE = 'outcometable',
+  OUTCOME_TABLE = 'outcome-table',
   OUTCOME_ANALYTICS = 'alignmentanalysis',
   HORIZONTAL_OUTCOME_TABLE = 'horizontaloutcometable'
 }
