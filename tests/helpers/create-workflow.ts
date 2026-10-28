@@ -208,7 +208,7 @@ export async function expectDefaultWorkflowChannelsInHeaderRow(
   if (workflowType === 'program') {
     await expect(
       headers.filter({
-        has: page.getByText('Custom node category', { exact: true }),
+        has: page.getByText(specs[0]!.title, { exact: true }),
       }),
     ).toHaveCount(3);
 

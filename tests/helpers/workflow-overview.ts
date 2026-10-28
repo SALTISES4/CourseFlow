@@ -127,7 +127,7 @@ export async function expectCourseOverviewMetadataCompositionPerFrWfOv001(
 
 /**
  * FR-WF-OV-001 + FR-WF-OV-002 — program workflowOverviewView field composition
- * (Description display-only; Code present).
+ * (Description display-only; Code omitted).
  */
 export async function expectProgramOverviewMetadataCompositionPerFrWfOv001(
   page: Page,
@@ -136,7 +136,7 @@ export async function expectProgramOverviewMetadataCompositionPerFrWfOv001(
   await expectWorkflowOverviewForbiddenMetadataAbsentPerFrWfOv001(page);
 
   await expectDescriptionDisplayOnlyPerFrWfOv002(page);
-  await expect(workflowMetadataFieldCode(page)).toBeVisible();
+  await expect(workflowMetadataFieldCode(page)).toHaveCount(0);
   await expect(workflowMetadataSwitchCalculateTimeAutomatically(page)).toBeVisible();
   await expect(workflowMetadataFieldTime(page)).toBeVisible();
   await expect(workflowMetadataPonderationSection(page)).toBeVisible();

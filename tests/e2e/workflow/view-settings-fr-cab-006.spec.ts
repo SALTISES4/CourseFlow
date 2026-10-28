@@ -37,7 +37,7 @@ test.use({
   seedAsset: 'workflow.standard_activity',
   seedDependencies: ['project.primary', 'actor.viewer'],
   actorAsset: 'actor.teacher',
-  seedAccess: 'disposable-copy',
+  seedAccess: 'disposable-project-copy',
 });
 
 /**

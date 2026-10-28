@@ -2,6 +2,7 @@
  * Auth helpers built on the Hey API generated client (`sdk.gen` + configured `client`).
  * HTTP paths remain Django Ninja `course_flow_v2.api.routers.auth`.
  */
+import { getApiErrorBody, getApiErrorCode, getApiErrorStatus } from './apiError'
 import { login, logout, me, register } from './gen/sdk.gen'
 import type {
   LoginIn,
@@ -48,6 +49,19 @@ function parseCode(body: unknown): string | undefined {
   return undefined
 }
 
+function toAuthRequestError(
+  error: unknown,
+  fallbackStatus: number
+): AuthRequestError {
+  const body = getApiErrorBody(error) ?? error
+  return new AuthRequestError(
+    parseDetail(body),
+    getApiErrorStatus(error) ?? fallbackStatus,
+    body,
+    getApiErrorCode(error) ?? parseCode(body)
+  )
+}
+
 export async function loginRequest(
   data: UserLoginPayload
 ): Promise<LoginResponse> {
@@ -59,13 +73,7 @@ export async function loginRequest(
   })
 
   if (result.error) {
-    const status = result.response?.status ?? 0
-    throw new AuthRequestError(
-      parseDetail(result.error),
-      status,
-      result.error,
-      parseCode(result.error)
-    )
+    throw toAuthRequestError(result.error, result.response?.status ?? 0)
   }
 
   if (!result.data) {
@@ -91,13 +99,7 @@ export async function registerRequest(
   })
 
   if (result.error) {
-    const status = result.response?.status ?? 0
-    throw new AuthRequestError(
-      parseDetail(result.error),
-      status,
-      result.error,
-      parseCode(result.error)
-    )
+    throw toAuthRequestError(result.error, result.response?.status ?? 0)
   }
 
   if (!result.data) {
@@ -114,8 +116,7 @@ export async function logoutRequest(): Promise<LogoutOut | undefined> {
   const result = await logout()
 
   if (result.error) {
-    const status = result.response?.status ?? 0
-    throw new AuthRequestError(parseDetail(result.error), status, result.error)
+    throw toAuthRequestError(result.error, result.response?.status ?? 0)
   }
 
   return result.data
@@ -129,8 +130,7 @@ export async function fetchCurrentUser(): Promise<UserSummaryOut> {
   const result = await me({})
 
   if (result.error) {
-    const status = result.response?.status ?? 0
-    throw new AuthRequestError(parseDetail(result.error), status, result.error)
+    throw toAuthRequestError(result.error, result.response?.status ?? 0)
   }
 
   if (!result.data) {

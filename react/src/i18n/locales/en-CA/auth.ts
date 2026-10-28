@@ -13,14 +13,19 @@ const auth = {
     backToLogin: 'Back to'
   },
   loginForm: {
-    heading: 'Login to your CourseFlow account',
+    heading: 'Login to CourseFlow',
     email: 'Email',
     password: 'Password',
     forgotPassword: 'Forgot your password?',
     loggingIn: 'Logging in…',
     submit: 'Login',
-    noAccount: 'Don’t have an account?',
-    register: 'Register'
+    noAccount: "Don't have an account?",
+    register: 'Register',
+    validation: {
+      emailRequired: 'Email is required',
+      invalidEmailFormat: 'Invalid email format',
+      passwordRequired: 'Password is required'
+    }
   },
   registerForm: {
     firstName: 'First name',
@@ -31,7 +36,8 @@ const auth = {
     submit: 'Reset password'
   },
   errors: {
-    invalidCredentials: 'The email or password is incorrect.',
+    invalidCredentials:
+      'The email or password you entered is incorrect. please check your details and try again.',
     emailAlreadyRegistered: 'An account already exists for this email address.',
     registrationFieldsRequired: 'All fields are required.',
     requestFailed: 'Authentication could not be completed. Please try again.'

@@ -45,6 +45,7 @@ import {
   expectWorkflowChannelHeaderColour,
   hexToRgbCss,
   INSERT_CHANNEL_DEFAULT_COLOUR,
+  INSERT_CHANNEL_DEFAULT_TITLE,
 } from './workflow-channel-color.helpers';
 import {
   abortChannelDragByReleaseOutside,
@@ -426,8 +427,12 @@ test.describe('FR-CHAN-004: insert right', () => {
     await workflowChannelHeader(page, insertedUuid).click();
     await expect(workflowEditChannelForm(page)).toBeVisible();
     await expect(workflowRightSidebarContentPanel(page)).toBeVisible();
-    await expect(workflowEditChannelFormTitleField(page)).toHaveValue('Custom node category');
-    await expect(workflowChannelHeader(page, insertedUuid)).toContainText('Custom node category');
+    await expect(workflowEditChannelFormTitleField(page)).toHaveValue(
+      INSERT_CHANNEL_DEFAULT_TITLE,
+    );
+    await expect(workflowChannelHeader(page, insertedUuid)).toContainText(
+      INSERT_CHANNEL_DEFAULT_TITLE,
+    );
   });
 
   test('insert right shows default colour on workflowChannelHeaderColorIndicator', async ({

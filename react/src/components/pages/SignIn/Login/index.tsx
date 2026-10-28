@@ -10,19 +10,16 @@ import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { produce } from 'immer'
-import {
-  ChangeEvent,
-  FormEvent,
-  MouseEvent,
-  useCallback,
-  useState
-} from 'react'
+import { ChangeEvent, FormEvent, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom'
 
 import * as Styled from '../styles'
+
+const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+$/
+
+type LoginField = 'email' | 'password'
 
 function LoginPage() {
   const { t } = useTranslation('auth')
@@ -30,17 +27,42 @@ function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const pending = useSelector(selectLoginPending)
-  const error = useSelector(selectAuthError)
+  const authError = useSelector(selectAuthError)
   const from = location.state?.from?.pathname ?? '/'
 
   const [state, setState] = useState({
     email: '',
     password: ''
   })
+  const [touched, setTouched] = useState<Record<LoginField, boolean>>({
+    email: false,
+    password: false
+  })
+
+  const normalizedEmail = state.email.trim()
+  const emailIsValid = EMAIL_PATTERN.test(normalizedEmail)
+  const passwordIsValid = state.password.length > 0
+  const formIsValid = emailIsValid && passwordIsValid
+
+  const emailValidationMessage = touched.email
+    ? normalizedEmail.length === 0
+      ? t('loginForm.validation.emailRequired')
+      : !emailIsValid
+        ? t('loginForm.validation.invalidEmailFormat')
+        : ''
+    : ''
+  const passwordValidationMessage =
+    touched.password && !passwordIsValid
+      ? t('loginForm.validation.passwordRequired')
+      : ''
 
   const onSubmit = useCallback(
     async (e: FormEvent) => {
       e.preventDefault()
+      if (pending || !formIsValid) {
+        setTouched({ email: true, password: true })
+        return
+      }
       dispatch(clearAuthError())
       const result = await dispatch(
         login({ email: state.email, password: state.password })
@@ -49,23 +71,30 @@ function LoginPage() {
         navigate(from, { replace: true })
       }
     },
-    [dispatch, navigate, from, state.email, state.password]
+    [
+      dispatch,
+      formIsValid,
+      navigate,
+      from,
+      pending,
+      state.email,
+      state.password
+    ]
   )
 
-  const onInputChange = useCallback((field: keyof typeof state) => {
-    return (e: ChangeEvent<HTMLInputElement>) => {
-      setState(
-        produce((draft) => {
-          draft[field] = e.target.value
-        })
-      )
-    }
-  }, [])
+  const onInputChange = useCallback(
+    (field: LoginField) => (e: ChangeEvent<HTMLInputElement>) => {
+      setState((current) => ({ ...current, [field]: e.target.value }))
+      if (authError) {
+        dispatch(clearAuthError())
+      }
+    },
+    [authError, dispatch]
+  )
 
-  const onResetPasswordClick = useCallback(
-    (e: MouseEvent<HTMLAnchorElement>) => {
-      e.preventDefault()
-      console.log('reset password yo!')
+  const onInputBlur = useCallback(
+    (field: LoginField) => () => {
+      setTouched((current) => ({ ...current, [field]: true }))
     },
     []
   )
@@ -79,9 +108,9 @@ function LoginPage() {
             <Typography component="h2">CourseFlow</Typography>
           </Styled.LogoWrap>
           <Typography variant="body1">{t('loginForm.heading')}</Typography>
-          {error ? (
+          {authError ? (
             <Typography color="error" role="alert">
-              {error}
+              {authError}
             </Typography>
           ) : null}
           <TextField
@@ -90,6 +119,9 @@ function LoginPage() {
             name="email"
             value={state.email}
             onChange={onInputChange('email')}
+            onBlur={onInputBlur('email')}
+            error={Boolean(emailValidationMessage)}
+            helperText={emailValidationMessage || undefined}
             fullWidth
             required
           />
@@ -99,23 +131,26 @@ function LoginPage() {
             name="password"
             value={state.password}
             onChange={onInputChange('password')}
+            onBlur={onInputBlur('password')}
+            error={Boolean(passwordValidationMessage)}
+            helperText={passwordValidationMessage || undefined}
             fullWidth
             required
           />
-          <Link href="#" onClick={onResetPasswordClick}>
+          <Link component={RouterLink} to="/password-reset">
             {t('loginForm.forgotPassword')}
           </Link>
           <Button
             type="submit"
             variant="contained"
             color="primary"
-            disabled={pending}
+            disabled={pending || !formIsValid}
             fullWidth
           >
             {pending ? t('loginForm.loggingIn') : t('loginForm.submit')}
           </Button>
           <Typography variant="body1">
-            {t('loginForm.noAccount')}{' '}
+            <span>{t('loginForm.noAccount')} </span>
             <Link href="/register">{t('loginForm.register')}</Link>
           </Typography>
         </Styled.Form>

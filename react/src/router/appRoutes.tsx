@@ -13,6 +13,7 @@ import NotificationsSettingsPage from '@cfPages/Settings/NotificationsSettings'
 import PasswordResetPage from '@cfPages/Settings/PasswordReset'
 import ProfileSettingsPage from '@cfPages/Settings/ProfileSettings'
 import UserRegisterPage from '@cfPages/SignIn/Register'
+import PasswordRecoveryPage from '@cfPages/SignIn/ResetPassword'
 import { useTranslation } from 'react-i18next'
 import { Navigate, createBrowserRouter } from 'react-router-dom'
 
@@ -37,6 +38,10 @@ export const CFRouter = createBrowserRouter([
   {
     path: '/register',
     element: <UserRegisterPage />
+  },
+  {
+    path: '/password-reset',
+    element: <PasswordRecoveryPage />
   },
   {
     path: '/',

@@ -14,6 +14,7 @@ import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { workflowTypeLabel } from '@cf/i18n/workflowLabels'
 import Utility from '@cf/utility/Utility.class'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
+import RichTextDescription from '@cfComponents/dialog/Workflow/components/RichTextDescription'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -22,7 +23,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import TextField from '@mui/material/TextField'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
@@ -49,6 +50,7 @@ const WorkflowEditDialog = () => {
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors, isDirty }
@@ -139,16 +141,16 @@ const WorkflowEditDialog = () => {
               helperText={errors.title?.message}
             />
 
-            <TextField
-              {...register('description')}
-              multiline
-              maxRows={3}
+            <Controller
               name="description"
-              variant="standard"
-              label={t('form.description')}
-              error={!!errors.description}
-              helperText={errors.description?.message}
-              fullWidth
+              control={control}
+              render={({ field }) => (
+                <RichTextDescription
+                  label={t('form.description')}
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                />
+              )}
             />
           </StyledBox>
         </DialogContent>

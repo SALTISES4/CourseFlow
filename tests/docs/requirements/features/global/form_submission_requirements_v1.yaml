@@ -1,0 +1,69 @@
+# Normalized requirements: global asynchronous form submission behavior
+# Source: product decision for CourseFlow-wide form UX
+# Scope: every user-initiated CourseFlow form that dispatches an asynchronous mutation and has a feature-defined submit control; field validation, success presentation, failure presentation, cancellation, and navigation remain owned by the feature-specific requirement.
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/features/auth/forgot_password_requirements_v1.yaml; tests/docs/requirements/features/auth/password_reset_requirements_v1.yaml
+
+documentPreconditions:
+  - a CourseFlow form with a feature-defined submit control is visible
+  - submitting the form dispatches an asynchronous mutation
+  - the owning feature requirement does not explicitly define a different concurrent-submission contract
+
+uiObjectDefinitions:
+  globalAsyncForm:
+    meaning: Any CourseFlow form covered by this document; the owning feature requirement provides the concrete form uiObject and locator.
+  globalAsyncFormSubmitButton:
+    meaning: Primary submit control for globalAsyncForm; the owning feature requirement provides the concrete submit-button uiObject, label, validation rules, and locator.
+  globalFormSubmissionPendingState:
+    meaning: Single-flight state beginning when globalAsyncForm dispatches its asynchronous mutation and ending when that mutation reaches its first success or failure result.
+
+locatorMappings:
+  globalAsyncForm: "owning feature requirement -> feature-specific form locator"
+  globalAsyncFormSubmitButton: "owning feature requirement -> feature-specific submit-button locator"
+  globalFormSubmissionPendingState: "owning feature requirement -> pending state of feature-specific form mutation"
+
+requirements:
+  - id: FR-GFORM-001
+    title: Asynchronous form submission is single-flight while pending
+
+    designEvidence: []
+
+    actors:
+      - visitor
+      - user
+
+    uiObjects:
+      - globalAsyncForm
+      - globalAsyncFormSubmitButton
+      - globalFormSubmissionPendingState
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - globalAsyncForm is valid and globalAsyncFormSubmitButton is enabled according to the owning feature requirement
+      - globalFormSubmissionPendingState is not active
+
+    trigger:
+      - actor submits globalAsyncForm by clicking globalAsyncFormSubmitButton or by using another supported form-submit interaction such as the Enter key
+
+    mainFlow:
+      - system dispatches exactly one asynchronous mutation for the submitted form values and enters globalFormSubmissionPendingState
+      - while globalFormSubmissionPendingState is active, globalAsyncFormSubmitButton is disabled and not clickable
+      - while globalFormSubmissionPendingState is active, additional click, keyboard, or programmatic submit events for the same globalAsyncForm do not dispatch another mutation
+      - globalFormSubmissionPendingState does not globally disable, lock, or make read-only the non-submit fields and controls within globalAsyncForm; those controls retain their feature-defined state unless the owning feature requirement explicitly specifies otherwise
+      - globalAsyncFormSubmitButton retains its feature-defined label while pending unless the owning feature requirement explicitly defines different pending copy or a loading indicator
+      - globalFormSubmissionPendingState ends when the mutation reaches its first success or failure result
+      - after the pending mutation settles, the owning feature requirement controls success, failure, navigation, field values, and whether the form remains visible
+      - when globalAsyncForm remains visible after the mutation settles, globalAsyncFormSubmitButton is re-evaluated against the owning feature's validation and retry rules
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given globalAsyncForm is valid and no submission is pending, when actor submits the form, exactly one asynchronous mutation is dispatched
+      - given globalFormSubmissionPendingState is active, globalAsyncFormSubmitButton is disabled and not clickable
+      - given globalFormSubmissionPendingState is active, when actor clicks the submit control again or uses another supported submit interaction, no additional mutation is dispatched
+      - given globalFormSubmissionPendingState is active and the owning feature does not explicitly define another pending state for non-submit controls, the form's non-submit fields and controls retain their feature-defined enabled, disabled, editable, or read-only state
+      - given the owning feature does not define pending copy or a loading indicator, globalAsyncFormSubmitButton retains its existing label while pending
+      - given the pending mutation succeeds or fails, globalFormSubmissionPendingState ends
+      - given the form remains visible after the mutation settles, globalAsyncFormSubmitButton reflects the owning feature's validation and retry rules
+
+    openQuestions: []

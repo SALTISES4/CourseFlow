@@ -1,5 +1,6 @@
 import { test, expect } from '../../fixtures';
 import { loginAsTestUser } from '../../helpers/auth';
+import { clickWorkflowViewSettingsMenuItem } from '../../helpers/view-settings';
 import { openFirstNodeEditForm } from './edit-node.helpers';
 import {
   expectReadOnlyWorkflowEditSectionForm,
@@ -30,7 +31,6 @@ import {
   duplicateBelowButtonInSectionHeader,
   duplicateButtonInSidebar,
   editSectionForm,
-  expandAllSectionsSwitch,
   insertBelowButtonInSectionHeader,
   rightSidebar,
   sectionCollapseButton,
@@ -42,9 +42,9 @@ import {
   sectionNumberLabel,
   selectedSectionContainer,
   titleFieldInEditSectionForm,
-  viewSettingsButton,
   EDIT_SECTION_HEADING,
 } from './edit-section.locators';
+import { WORKFLOW_VIEW_SETTINGS_MENU_ITEM_LABELS } from './view-settings.locators';
 import { expectWorkflowEdgeEndpointsAttached } from './edge.helpers';
 import { fetchGraphView, type GraphViewPayload } from './workflow-graph.helpers';
 import { workflowEditNodeForm } from './workflow-graph.locators';
@@ -699,10 +699,10 @@ test.describe('edit-section-fr-001-012', () => {
       );
       await expect(editSectionForm(page)).toBeHidden();
 
-      await viewSettingsButton(page).click();
-      await expect(expandAllSectionsSwitch(page)).not.toBeChecked();
-      await expandAllSectionsSwitch(page).check();
-      await page.keyboard.press('Escape');
+      await clickWorkflowViewSettingsMenuItem(
+        page,
+        WORKFLOW_VIEW_SETTINGS_MENU_ITEM_LABELS.expandAllSections,
+      );
 
       for (const section of workflow.sections) {
         await expect(sectionCollapseButton(page, section.uuid)).toHaveAttribute(
@@ -720,10 +720,10 @@ test.describe('edit-section-fr-001-012', () => {
     }) => {
       const firstUuid = workflow.firstSection().uuid;
 
-      await viewSettingsButton(page).click();
-      await expect(expandAllSectionsSwitch(page)).toBeChecked();
-      await expandAllSectionsSwitch(page).uncheck();
-      await page.keyboard.press('Escape');
+      await clickWorkflowViewSettingsMenuItem(
+        page,
+        WORKFLOW_VIEW_SETTINGS_MENU_ITEM_LABELS.collapseAllSections,
+      );
 
       for (const section of workflow.sections) {
         await expect(sectionCollapseButton(page, section.uuid)).toHaveAttribute(

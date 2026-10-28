@@ -16,14 +16,19 @@ const authFr = {
     backToLogin: 'Retour à'
   },
   loginForm: {
-    heading: 'Connectez-vous à votre compte CourseFlow',
+    heading: 'Connexion à CourseFlow',
     email: 'Courriel',
     password: 'Mot de passe',
     forgotPassword: 'Mot de passe oublié?',
     loggingIn: 'Connexion…',
     submit: 'Se connecter',
     noAccount: 'Vous n’avez pas de compte?',
-    register: 'S’inscrire'
+    register: 'S’inscrire',
+    validation: {
+      emailRequired: 'Le courriel est requis',
+      invalidEmailFormat: 'Format de courriel invalide',
+      passwordRequired: 'Le mot de passe est requis'
+    }
   },
   registerForm: {
     firstName: 'Prénom',
@@ -35,7 +40,8 @@ const authFr = {
   },
   errors: {
     invalidCredentials: 'L’adresse courriel ou le mot de passe est incorrect.',
-    emailAlreadyRegistered: 'Un compte existe déjà pour cette adresse courriel.',
+    emailAlreadyRegistered:
+      'Un compte existe déjà pour cette adresse courriel.',
     registrationFieldsRequired: 'Tous les champs sont requis.',
     requestFailed: 'L’authentification a échoué. Veuillez réessayer.'
   }

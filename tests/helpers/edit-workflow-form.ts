@@ -2,6 +2,7 @@ import { expect, type Page } from '@playwright/test';
 
 import { authenticatedApiRequest } from './api';
 import type { WorkflowFixtureType } from './manifest';
+import { expectWorkflowDescriptionRichTextHtml } from './workflow-description-rich-text';
 import {
   editWorkflowFormCancelButton,
   editWorkflowFormDialogTitle,
@@ -65,7 +66,10 @@ export async function expectEditWorkflowFormPrimaryLayoutPerFrWfForm001(
     `Update ${workflowType}`,
   );
   await expect(workflowEditTitleField(page)).toHaveValue(workflow.title);
-  await expect(workflowEditDescriptionField(page)).toHaveValue(workflow.description ?? '');
+  await expectWorkflowDescriptionRichTextHtml(
+    workflowEditDescriptionField(page),
+    workflow.description ?? '',
+  );
   await expect(editWorkflowFormSubmitButton(page, workflowType)).toBeDisabled();
 }
 

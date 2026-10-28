@@ -213,8 +213,13 @@ Run from `./tests/`:
 | `yarn test` | Full suite (headless) |
 | `yarn test-ui` | Playwright UI Mode — visible browser, step inspection |
 | `yarn test-debug` | Inspector / step-through |
+| `yarn test-headed` | Headed browser run without UI Mode |
 | `yarn test-list` | List discovered tests without running |
 | `yarn test-report` | Open HTML report from the last run |
+
+Every script that executes Playwright tests removes `allure-results` and `allure-report`
+before the run. Allure output therefore represents exactly one invocation rather than an
+accumulation of historical results.
 
 ### Run one file or one test
 
@@ -227,7 +232,7 @@ yarn test-debug e2e/workflow/edit-section-fr-001-012.spec.ts -g "FR-SEC-001"
 ### Headed run (browser visible, no UI shell)
 
 ```bash
-yarn exec playwright test --headed e2e/smoke/authenticated-home.spec.ts
+yarn test-headed e2e/smoke/authenticated-home.spec.ts
 ```
 
 ## E2E fixture contract

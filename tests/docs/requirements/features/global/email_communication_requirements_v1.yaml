@@ -1,0 +1,226 @@
+# Normalized requirements: global email communication
+# Source: product decision for CourseFlow transactional, security, and optional product-update email
+# Scope: user-facing email produced by CourseFlow; feature-specific requirements own each message's trigger, recipient, subject, body copy, action, and feature outcome.
+# ADR: docs/architecture/adr_transactional_email_delivery_and_templates.md
+# Cross-reference: tests/docs/requirements/features/auth/forgot_password_requirements_v1.yaml; tests/docs/requirements/features/auth/password_reset_requirements_v1.yaml; tests/docs/requirements/features/user/notifications_settings_requirements_v1.yaml
+
+documentPreconditions:
+  - CourseFlow initiates an email addressed to an application user or account email address
+  - the owning feature requirement defines why and when the email is initiated
+
+uiObjectDefinitions:
+  courseFlowEmail:
+    meaning: User-facing email initiated by CourseFlow and rendered through the shared email template and delivery contract.
+  requiredTransactionalEmail:
+    meaning: Account, security, or service email required to complete or report a user-initiated operation; delivery is not controlled by the optional product-updates preference.
+  optionalProductUpdateEmail:
+    meaning: Non-essential product-news or product-update email controlled by the user's productUpdatesToggle preference per FR-NOTIF-002 and FR-NOTIF-003.
+  essentialActionEmail:
+    meaning: requiredTransactionalEmail whose delivery is necessary for the recipient to continue the requested operation, such as a password-reset link.
+  advisoryConfirmationEmail:
+    meaning: requiredTransactionalEmail that reports an operation already completed successfully, such as a password-change confirmation.
+  courseFlowEmailHtmlPart:
+    meaning: HTML alternative of courseFlowEmail containing accessible semantic content and any feature-defined primary action link.
+  courseFlowEmailPlainTextPart:
+    meaning: Plain-text alternative of courseFlowEmail containing content semantically equivalent to courseFlowEmailHtmlPart.
+  courseFlowEmailPrimaryActionLink:
+    meaning: Feature-defined absolute action URL presented as a labeled link or button in courseFlowEmailHtmlPart and as a complete visible URL in courseFlowEmailPlainTextPart.
+  courseFlowSenderIdentity:
+    meaning: Sender displayed as 'CourseFlow' using the environment-configured sender email address.
+  courseFlowSupportEmailAddress:
+    meaning: Environment-configured monitored support and Reply-To address; default value is 'admin@courseflow.com'.
+
+locatorMappings:
+  courseFlowEmail: "Django test email backend -> captured message"
+  requiredTransactionalEmail: "captured message -> email category metadata"
+  optionalProductUpdateEmail: "captured message -> email category metadata"
+  essentialActionEmail: "captured message -> email category metadata"
+  advisoryConfirmationEmail: "captured message -> email category metadata"
+  courseFlowEmailHtmlPart: "captured multipart message -> text/html alternative"
+  courseFlowEmailPlainTextPart: "captured multipart message -> text/plain alternative"
+  courseFlowEmailPrimaryActionLink: "captured message alternatives -> feature-defined action URL"
+  courseFlowSenderIdentity: "captured message -> From header"
+  courseFlowSupportEmailAddress: "captured message -> Reply-To header and feature-defined support copy"
+
+requirements:
+  - id: FR-EMAIL-001
+    title: Required transactional email is independent of optional product-update preference
+
+    designEvidence: []
+
+    actors:
+      - visitor
+      - user
+
+    uiObjects:
+      - courseFlowEmail
+      - requiredTransactionalEmail
+      - optionalProductUpdateEmail
+
+    preconditions:
+      - documentPreconditions for this file hold
+
+    trigger:
+      - owning feature initiates courseFlowEmail
+
+    mainFlow:
+      - account, authentication, security, and service-operation messages are requiredTransactionalEmail
+      - requiredTransactionalEmail is eligible for delivery regardless of the recipient's productUpdatesToggle preference
+      - product-news and product-update messages are optionalProductUpdateEmail and are eligible for delivery only when the recipient has enabled productUpdatesToggle per FR-NOTIF-002 and FR-NOTIF-003
+      - disabling optionalProductUpdateEmail does not disable requiredTransactionalEmail
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given productUpdatesToggle is off, a feature-required password-reset request or password-change confirmation email remains eligible for delivery
+      - given productUpdatesToggle is off, optionalProductUpdateEmail is not sent
+      - given productUpdatesToggle is on, optionalProductUpdateEmail may be sent according to its owning feature requirement
+
+    openQuestions: []
+
+  - id: FR-EMAIL-002
+    title: Shared sender and monitored support identity
+
+    designEvidence: []
+
+    actors:
+      - visitor
+      - user
+
+    uiObjects:
+      - courseFlowEmail
+      - courseFlowSenderIdentity
+      - courseFlowSupportEmailAddress
+
+    preconditions:
+      - documentPreconditions for this file hold
+
+    trigger:
+      - system prepares courseFlowEmail for delivery
+
+    mainFlow:
+      - courseFlowEmail uses courseFlowSenderIdentity with display name 'CourseFlow' and the environment-configured sender email address
+      - courseFlowEmail uses courseFlowSupportEmailAddress as its Reply-To address
+      - feature-owned support or security-escalation copy that provides an email address uses courseFlowSupportEmailAddress and does not hardcode an address in a template
+      - courseFlowSupportEmailAddress defaults to 'admin@courseflow.com' and may be changed through environment configuration without changing feature requirements or templates
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - captured courseFlowEmail From header displays 'CourseFlow' and the configured sender email address
+      - captured courseFlowEmail Reply-To header equals the configured courseFlowSupportEmailAddress
+      - given courseFlowSupportEmailAddress differs from its default, rendered support copy and Reply-To use the configured value
+
+    openQuestions: []
+
+  - id: FR-EMAIL-003
+    title: Multipart accessible content and action-link equivalence
+
+    designEvidence: []
+
+    actors:
+      - visitor
+      - user
+
+    uiObjects:
+      - courseFlowEmail
+      - courseFlowEmailHtmlPart
+      - courseFlowEmailPlainTextPart
+      - courseFlowEmailPrimaryActionLink
+
+    preconditions:
+      - documentPreconditions for this file hold
+
+    trigger:
+      - system renders courseFlowEmail
+
+    mainFlow:
+      - courseFlowEmail contains both courseFlowEmailPlainTextPart and courseFlowEmailHtmlPart
+      - courseFlowEmailPlainTextPart and courseFlowEmailHtmlPart communicate the same feature-owned meaning, security information, expiry information, and next action
+      - when the owning feature defines courseFlowEmailPrimaryActionLink, courseFlowEmailHtmlPart presents it with descriptive link or button text and courseFlowEmailPlainTextPart presents the complete absolute URL
+      - in non-development environments, courseFlowEmailPrimaryActionLink uses HTTPS
+      - a password or other reusable account credential is not included in the subject or rendered content
+      - a one-time security token is included only within its feature-defined action URL and is not repeated elsewhere in the subject or rendered content
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - captured courseFlowEmail contains one text/plain alternative and one text/html alternative
+      - both alternatives contain semantically equivalent feature-owned content
+      - given the feature defines a primary action, the HTML alternative contains descriptive action text and the plain-text alternative contains the complete absolute action URL
+      - given a non-development environment, every feature-defined email action URL begins with 'https://'
+      - captured password-related email does not contain a current or new account password
+
+    openQuestions: []
+
+  - id: FR-EMAIL-004
+    title: Email locale follows account preference with English Canadian fallback
+
+    designEvidence: []
+
+    actors:
+      - visitor
+      - user
+
+    uiObjects:
+      - courseFlowEmail
+      - courseFlowEmailHtmlPart
+      - courseFlowEmailPlainTextPart
+
+    preconditions:
+      - documentPreconditions for this file hold
+
+    trigger:
+      - system renders courseFlowEmail for an account
+
+    mainFlow:
+      - given the account language preference resolves to French Canadian, the subject, plain-text alternative, HTML alternative, and action label use French Canadian
+      - given the account language preference resolves to English Canadian, the subject, plain-text alternative, HTML alternative, and action label use English Canadian
+      - missing, blank, malformed, or unsupported account language preference falls back to English Canadian
+      - all rendered parts of one courseFlowEmail use the same resolved locale
+      - the owning feature requirement defines the message-specific English Canadian copy and semantic content to be translated
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given account language preference is 'fr' or 'fr-ca', captured courseFlowEmail subject and both alternatives use French Canadian
+      - given account language preference is 'en' or 'en-ca', captured courseFlowEmail subject and both alternatives use English Canadian
+      - given account language preference is absent or unsupported, captured courseFlowEmail uses English Canadian
+      - captured courseFlowEmail does not mix English Canadian and French Canadian message content except for proper names and untranslatable URL values
+
+    openQuestions: []
+
+  - id: FR-EMAIL-005
+    title: Essential and advisory email delivery failures have different feature outcomes
+
+    designEvidence: []
+
+    actors:
+      - visitor
+      - user
+
+    uiObjects:
+      - essentialActionEmail
+      - advisoryConfirmationEmail
+
+    preconditions:
+      - documentPreconditions for this file hold
+
+    trigger:
+      - configured email delivery backend accepts or rejects a CourseFlow email delivery attempt
+
+    mainFlow:
+      - an essentialActionEmail is treated as successfully sent only after the configured email delivery backend accepts it for delivery
+      - when the configured email delivery backend rejects an essentialActionEmail, the owning feature follows its email-delivery failure behavior and does not claim that the essential action email was sent
+      - an advisoryConfirmationEmail is a best-effort side effect of an operation that has already completed
+      - when the configured email delivery backend rejects an advisoryConfirmationEmail, the completed primary operation is not rolled back and remains successful
+      - acceptance by the configured email delivery backend means accepted for delivery and does not guarantee receipt in the destination inbox
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given an essentialActionEmail is rejected by the configured email delivery backend, the owning feature does not present email delivery as successful
+      - given an advisoryConfirmationEmail is rejected after its primary operation succeeds, the primary operation remains committed and the owning feature retains its successful-operation state
+      - given either email category is accepted by the configured backend, the system may report that the email was sent without asserting inbox receipt
+
+    openQuestions: []

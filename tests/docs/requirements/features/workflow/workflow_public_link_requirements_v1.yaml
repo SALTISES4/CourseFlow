@@ -1,6 +1,8 @@
 # Functional requirements: workflow public-link mode and anonymous read-only access
-# Status: Accepted for implementation.
-# Source: product decision recorded 2026-09-01; the existing workflow Overview control is implemented with label 'Generate public link'; the prior CourseFlow public-link lifecycle established enable, copy, and remove behavior.
+# Status: Partially implemented. FR-WF-PUBLIC-001 authenticated management UI is
+# temporarily deferred by COURSEFLOW-654; FR-WF-PUBLIC-002 anonymous read-only access
+# and the underlying public-link API remain implemented.
+# Source: product decision recorded 2026-09-01; the workflow Overview control implementation uses label 'Generate public link', but its rendering is temporarily disabled by COURSEFLOW-654; the prior CourseFlow public-link lifecycle established enable, copy, and remove behavior.
 # Scope: enabling workflow-specific anonymous access through the workflow's existing URL and presenting the Overview, Workflow, and Outcomes sub-views without the authenticated left navigation.
 # Cross-reference:
 #   - tests/docs/requirements/features/workflow/workflow_overview_requirements_v1.yaml (workflowOverviewView and workflowMetadataPermissionsPanel)
@@ -120,7 +122,8 @@ requirements:
       - given public-link mode is enabled for workflow W, the parent project's published state is unchanged and no other workflow gains anonymous access
       - given enabling public-link mode fails, an anonymous viewer opening W's existing URL cannot see W's workflow content
 
-    openQuestions: []
+    openQuestions:
+      - what product or design condition closes COURSEFLOW-654 and re-enables the authenticated public-link management controls?
 
   - id: FR-WF-PUBLIC-002
     title: Anonymous viewer sees the workflow read-only without the left navigation

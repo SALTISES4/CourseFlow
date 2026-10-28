@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 
 import * as Styled from '../styles'
 
-function RegisterPage() {
+function PasswordRecoveryPage() {
   const { t } = useTranslation('auth')
   const [state, setState] = useState({
     pending: false,
@@ -75,4 +75,4 @@ function RegisterPage() {
   )
 }
 
-export default RegisterPage
+export default PasswordRecoveryPage

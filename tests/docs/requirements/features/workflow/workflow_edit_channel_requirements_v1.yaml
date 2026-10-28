@@ -300,7 +300,7 @@ requirements:
 
     mainFlow:
       - system inserts a new workflowChannel in workflowView immediately to the right of the target workflowChannel in workflowChannelsHeaderRow
-      - the new channel is created with title 'Custom node category' (same label as workflowAddTabCustomNodeCategoryItem per FR-WF-ADD-003); workflowChannelHeaderTitleText shows 'Custom node category' per FR-CHAN-002
+      - the new channel is created with an empty persisted title and system label code 'custom_node_category'; workflowChannelHeaderTitleText shows the localized system title 'Untitled node category' per FR-CHAN-002, while workflowAddTabCustomNodeCategoryItem retains the creation-action label 'Custom node category' per FR-WF-ADD-003
       - the new workflowChannel is created with default colour '#CFD8DC'; workflowChannelHeaderColorIndicator shows that colour per FR-CHAN-002
       - no workflowNodes are created in the new workflowChannel
       - insert right does not open or rebind workflowRightSidebar; sidebar state is unchanged unless the user subsequently selects the new channel per FR-CHAN-001
@@ -319,7 +319,7 @@ requirements:
 
     acceptanceCriteria:
       - given workflowChannel at index K in left-to-right order, when insert right succeeds, new workflowChannel is at K+1 and following channels shift right by one index
-      - given insert right succeeds, the new channel is created with title 'Custom node category'; workflowChannelHeaderTitleText shows 'Custom node category' per FR-CHAN-002; given user opens workflowEditChannelForm for the new channel per FR-CHAN-001, workflowEditChannelFormTitleField shows 'Custom node category'
+      - given insert right succeeds, the new channel stores an empty title with system label code 'custom_node_category'; workflowChannelHeaderTitleText shows localized title 'Untitled node category' per FR-CHAN-002; given user opens workflowEditChannelForm for the new channel per FR-CHAN-001, workflowEditChannelFormTitleField shows the localized system title 'Untitled node category'
       - given insert right succeeds, workflowChannelHeaderColorIndicator colour is '#CFD8DC'; given user opens workflowEditChannelForm for the new channel per FR-CHAN-001, workflowEditChannelFormColorField shows '#CFD8DC'
       - given insert right succeeds, workflowRightSidebar tab and channel selection are unchanged until the user selects the new channel per FR-CHAN-001
       - given actor is commenter with workflowChannelHoverActionsMenu visible per FR-CHAN-007, workflowChannelHoverActionsMenuInsertRightItem is disabled

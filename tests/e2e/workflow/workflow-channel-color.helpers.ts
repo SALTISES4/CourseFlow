@@ -5,8 +5,8 @@ import { workflowChannelHeaderColorIndicatorBackgroundColor } from './node-visua
 /** FR-WF-ADD-003 / workflow_service.py default channel title + persisted colour pairs. */
 export type WorkflowChannelColourSpec = { title: string; colour: string };
 
-/** FR-CHAN-004 — default title for a newly inserted workflowChannel. */
-export const INSERT_CHANNEL_DEFAULT_TITLE = 'Custom node category';
+/** FR-CHAN-004 — localized system title shown for a newly inserted workflowChannel. */
+export const INSERT_CHANNEL_DEFAULT_TITLE = 'Untitled node category';
 
 /** FR-CHAN-002 / FR-CHAN-004 — default when persisted channel colour is empty or cleared. */
 export const INSERT_CHANNEL_DEFAULT_COLOUR = '#CFD8DC';
@@ -29,9 +29,9 @@ export const DEFAULT_WORKFLOW_CHANNEL_SPECS_BY_TYPE: Record<
     { title: 'Assessment', colour: '#AD1D35' },
   ],
   program: [
-    { title: 'Custom node category', colour: '#468884' },
-    { title: 'Custom node category', colour: '#6FA29F' },
-    { title: 'Custom node category', colour: '#98BDBB' },
+    { title: 'Untitled node category', colour: '#468884' },
+    { title: 'Untitled node category', colour: '#6FA29F' },
+    { title: 'Untitled node category', colour: '#98BDBB' },
   ],
 };
 

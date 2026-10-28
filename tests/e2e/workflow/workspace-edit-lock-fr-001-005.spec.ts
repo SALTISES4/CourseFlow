@@ -33,6 +33,10 @@ test.use({
   seedAccess: 'disposable-copy',
 });
 
+// These tests mutate the shared actor.editor profile language. Override the
+// repository-wide fullyParallel setting so one test cannot change another's locale.
+test.describe.configure({ mode: 'default' });
+
 type LockResponse = {
   state: 'held' | 'locked' | 'available';
   holder: { displayName: string } | null;

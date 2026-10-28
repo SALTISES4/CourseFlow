@@ -36,54 +36,70 @@ test.use({
  * Requirements: workflow_public_link_requirements_v1.yaml
  */
 test.describe('authenticated public-link lifecycle (FR-WF-PUBLIC-001)', () => {
-  test('owner enables and removes anonymous access from the existing Overview control', async ({
-    context,
+  test.fixme(
+    'owner enables and removes anonymous access from the existing Overview control',
+    async ({ context, page, workflow }) => {
+      await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+      await page.goto(workflowOverviewPath(workflow.path));
+
+      await expect(workflowGeneratePublicLinkButton(page)).toBeVisible();
+      await workflowGeneratePublicLinkButton(page).click();
+
+      await expect(workflowGeneratePublicLinkButton(page)).toHaveCount(0);
+      await expect(workflowCopyPublicLinkButton(page)).toBeVisible();
+      await expect(workflowRemovePublicLinkButton(page)).toBeVisible();
+      await expect(
+        globalMessageSnackbar(page).filter({ hasText: 'Public link enabled' }),
+      ).toHaveText('Public link enabled');
+
+      await workflowCopyPublicLinkButton(page).click();
+      await expect
+        .poll(() => page.evaluate(() => navigator.clipboard.readText()))
+        .toBe(new URL(workflowOverviewPath(workflow.path), page.url()).toString());
+      await expect(
+        globalMessageSnackbar(page).filter({ hasText: 'Public link copied' }),
+      ).toHaveText('Public link copied');
+
+      await page.reload();
+      await expect(workflowCopyPublicLinkButton(page)).toBeVisible();
+
+      await workflowRemovePublicLinkButton(page).click();
+      await expect(workflowGeneratePublicLinkButton(page)).toBeVisible();
+      await expect(workflowCopyPublicLinkButton(page)).toHaveCount(0);
+      await expect(
+        globalMessageSnackbar(page).filter({ hasText: 'Public link removed' }),
+      ).toHaveText('Public link removed');
+    },
+  );
+
+  test('COURSEFLOW-654: owner management control remains hidden while deferred', async ({
     page,
     workflow,
   }) => {
-    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.goto(workflowOverviewPath(workflow.path));
-
-    await expect(workflowGeneratePublicLinkButton(page)).toBeVisible();
-    await workflowGeneratePublicLinkButton(page).click();
-
     await expect(workflowGeneratePublicLinkButton(page)).toHaveCount(0);
-    await expect(workflowCopyPublicLinkButton(page)).toBeVisible();
-    await expect(workflowRemovePublicLinkButton(page)).toBeVisible();
-    await expect(globalMessageSnackbar(page).filter({ hasText: 'Public link enabled' })).toHaveText(
-      'Public link enabled',
-    );
-
-    await workflowCopyPublicLinkButton(page).click();
-    await expect
-      .poll(() => page.evaluate(() => navigator.clipboard.readText()))
-      .toBe(new URL(workflowOverviewPath(workflow.path), page.url()).toString());
-    await expect(globalMessageSnackbar(page).filter({ hasText: 'Public link copied' })).toHaveText(
-      'Public link copied',
-    );
-
-    await page.reload();
-    await expect(workflowCopyPublicLinkButton(page)).toBeVisible();
-
-    await workflowRemovePublicLinkButton(page).click();
-    await expect(workflowGeneratePublicLinkButton(page)).toBeVisible();
     await expect(workflowCopyPublicLinkButton(page)).toHaveCount(0);
-    await expect(globalMessageSnackbar(page).filter({ hasText: 'Public link removed' })).toHaveText(
-      'Public link removed',
-    );
+    await expect(workflowRemovePublicLinkButton(page)).toHaveCount(0);
   });
 
-  for (const role of ['editor', 'commenter', 'viewer'] as WorkflowContributorRole[]) {
+  test('COURSEFLOW-654: editor management control remains hidden while deferred', async ({
+    page,
+    workflow,
+  }) => {
+    await loginAsWorkflowContributor(page, workflow, 'editor');
+    await page.goto(workflowOverviewPath(workflow.path));
+    await expect(workflowGeneratePublicLinkButton(page)).toHaveCount(0);
+    await expect(workflowCopyPublicLinkButton(page)).toHaveCount(0);
+    await expect(workflowRemovePublicLinkButton(page)).toHaveCount(0);
+  });
+
+  for (const role of ['commenter', 'viewer'] as WorkflowContributorRole[]) {
     test(`${role} sees the role-appropriate public-link control`, async ({ page, workflow }) => {
       await loginAsWorkflowContributor(page, workflow, role);
       await page.goto(workflowOverviewPath(workflow.path));
-
-      if (role === 'editor') {
-        await expect(workflowGeneratePublicLinkButton(page)).toBeVisible();
-        await expect(workflowGeneratePublicLinkButton(page)).toBeEnabled();
-      } else {
-        await expect(workflowGeneratePublicLinkButton(page)).toHaveCount(0);
-      }
+      await expect(workflowGeneratePublicLinkButton(page)).toHaveCount(0);
+      await expect(workflowCopyPublicLinkButton(page)).toHaveCount(0);
+      await expect(workflowRemovePublicLinkButton(page)).toHaveCount(0);
     });
   }
 });

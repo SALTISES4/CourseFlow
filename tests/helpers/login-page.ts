@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 
-import { homeWelcomeHeading } from '../e2e/home/home.locators';
+import { homeRecentProjectsTitle } from '../e2e/home/home.locators';
 import {
   LOGIN_AUTHENTICATION_ERROR_MESSAGE,
   LOGIN_FIELD_VALIDATION_MESSAGES,
@@ -131,5 +131,5 @@ export async function expectSuccessfulLoginPerFrLogin005(page: Page): Promise<vo
   await expect(page).toHaveURL(/\/home\/?(?:[?#].*)?$/);
   await expectAuthenticated(page);
   await expect(globalMessageSnackbar(page)).toHaveCount(0);
-  await expect(homeWelcomeHeading(page)).toBeVisible();
+  await expect(homeRecentProjectsTitle(page)).toBeVisible();
 }

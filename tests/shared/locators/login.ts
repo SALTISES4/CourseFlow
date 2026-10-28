@@ -25,7 +25,7 @@ export function loginPage(page: Page): Locator {
 
 /** canonical: loginForm — form on loginPage */
 export function loginForm(page: Page): Locator {
-  return page.locator('form').filter({ has: loginEmailField(page) });
+  return page.locator('form').filter({ has: page.locator('input[name="email"]') });
 }
 
 /** brandLockup on loginForm (CourseFlow logo + name) */

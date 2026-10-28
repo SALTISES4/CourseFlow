@@ -6,7 +6,10 @@ import {
   fetchWorkflowDetail,
   workflowEditSnackbarMessages,
 } from '../../helpers/edit-workflow-form';
-import { expectEditableWorkflowDescriptionRichTextPerFrWfEn012 } from '../../helpers/workflow-description-rich-text';
+import {
+  expectEditableWorkflowDescriptionRichTextPerFrWfEn012,
+  expectWorkflowDescriptionRichTextHtml,
+} from '../../helpers/workflow-description-rich-text';
 import type { WorkflowFixtureType } from '../../helpers/manifest';
 import { workflowTitle } from './workflow.locators';
 import {
@@ -93,7 +96,10 @@ test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
 
         await openEditWorkflowDialog(page, workflowType);
         await expect(workflowEditTitleField(page)).toHaveValue(original.title);
-        await expect(workflowEditDescriptionField(page)).toHaveValue(original.description ?? '');
+        await expectWorkflowDescriptionRichTextHtml(
+          workflowEditDescriptionField(page),
+          original.description ?? '',
+        );
       });
 
       test('FR-WF-FORM-001: submit stays disabled until any field is changed', async ({ page }) => {
@@ -224,7 +230,10 @@ test.describe('Edit workflow form — FR-WF-FORM-001-003', () => {
 
         await expect(editWorkflowDialog(page)).toBeVisible();
         await expect(workflowEditTitleField(page)).toHaveValue(updatedTitle);
-        await expect(workflowEditDescriptionField(page)).toHaveValue(updatedDescription);
+        await expectWorkflowDescriptionRichTextHtml(
+          workflowEditDescriptionField(page),
+          updatedDescription,
+        );
         await expect(editWorkflowFormSubmitButton(page, workflowType)).toBeEnabled();
         await expectEditWorkflowSnackbarMessage(page, snackbar.failure);
       });
