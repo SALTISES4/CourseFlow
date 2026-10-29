@@ -18,6 +18,7 @@ export type OutcomeTable = {
   tagGroups: ReturnType<typeof selectOutcomeTagGroups>
   board: GraphBoard
   outcomeTree: ReturnType<typeof selectOutcomeTagGroupsTree>
+  extraColumns: Record<'course' | 'program', ExtraColumnGroups>
   sections: PreparedSection[]
 
   entities: {
@@ -37,6 +38,15 @@ type PreparedSection = {
     uuid: string
     completion: CompletionRecord
   }[]
+}
+
+type ExtraColumnGroups = ExtraColumn[]
+
+type ExtraColumn = {
+  label: string
+  className?: string
+  values?: Record<string, number>
+  columns?: ExtraColumn[]
 }
 
 export const selectOutcomeTable = createSelector(
@@ -134,11 +144,43 @@ export const selectOutcomeTable = createSelector(
       }
     )
 
+    const extraCourseColums: ExtraColumnGroups = [
+      {
+        label: 'Total hours',
+        className: 'bg-dark',
+        values: { a: 10 }
+      }
+    ]
+
+    const extraProgramColumns: ExtraColumnGroups = [
+      {
+        label: 'Classification',
+        columns: [
+          { label: 'General education', values: { a: 10 } },
+          { label: 'Specific education', values: { a: 10 } }
+        ]
+      },
+      {
+        label: 'Ponderation',
+        columns: [
+          { label: 'Theory', values: { a: 10 } },
+          { label: 'Practical', values: { a: 10 } },
+          { label: 'Individual work', values: { a: 10 } },
+          { label: 'Total hours', className: 'bg-dark', values: { a: 10 } }
+        ]
+      },
+      { label: 'Total credits', className: 'bg-dark', values: { a: 10 } }
+    ]
+
     return {
       tagGroups: outcomeGroups,
       board: graphBoard,
       outcomeTree,
       sections: preparedSections,
+      extraColumns: {
+        course: extraCourseColums,
+        program: extraProgramColumns
+      },
       entities: {
         channels,
         sections,

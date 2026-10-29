@@ -9,7 +9,6 @@ import {
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import { AppDispatch, RootState } from '@cf/redux/store'
-import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -29,6 +28,8 @@ const TableBody = ({ graphUuid }: { graphUuid: string }) => {
 
     const sectionTitle = displaySystemTitle(t, section, sectionDefaultTitle)
     const sectionNodes = table.sections[sectionIndex].nodes.map((n) => n.uuid)
+    const workflowType = 'program' // TODO: grab this from RTK
+    const extraColumns = table.extraColumns[workflowType]
 
     return (
       <>
@@ -84,6 +85,38 @@ const TableBody = ({ graphUuid }: { graphUuid: string }) => {
                   </>
                 ))}
               </Styled.CheckmarkGroup>
+
+              {extraColumns.map((group, index) => (
+                <>
+                  {group.columns && (
+                    <>
+                      <Styled.TagBarEmptyCell className="tag-offset" />
+                      <Styled.CheckmarkGroup
+                        key={index}
+                        className="checkmarks-group bg-light"
+                      >
+                        {group.columns.map((colColumn, index) => (
+                          <Styled.TableCell
+                            key={index}
+                            className={colColumn.className}
+                          >
+                            {colColumn.values?.['a']}
+                          </Styled.TableCell>
+                        ))}
+                      </Styled.CheckmarkGroup>
+                    </>
+                  )}
+                  {group.values && (
+                    <Styled.CheckmarkGroup
+                      key={index}
+                      className={`checkmarks-group ${group.className}`}
+                      sx={{ marginLeft: 2 }}
+                    >
+                      <Styled.TableCell>{group.values['a']}</Styled.TableCell>
+                    </Styled.CheckmarkGroup>
+                  )}
+                </>
+              ))}
             </Styled.BodyRow>
           )
         })}
@@ -164,26 +197,59 @@ const SectionHeaderRow = ({
   title: string
   table: OutcomeTable
 }) => {
+  const workflowType = 'program' // TODO: grab this from RTK
+  const extraColumns = table.extraColumns[workflowType]
+
   return (
     <Styled.BodyRow className={`section-header-row index-${index}`}>
       <Styled.BodyLegendWrap>
         <Styled.TableLegend>{title}</Styled.TableLegend>
       </Styled.BodyLegendWrap>
       {table.tagGroups.map((group, groupIndex) => (
-        <Styled.CheckmarkGroup key={group.uuid} className="checkmarks-group">
+        <Styled.CheckmarkGroup key={group.uuid}>
           <Styled.TagBarEmptyCell
             className={groupIndex !== 0 ? 'tag-offset' : ''}
           />
-          {group.outcomes.map((outcomeUuid) => (
-            <Styled.CheckmarkGroup key={outcomeUuid}>
+          <Styled.CheckmarkGroup className="checkmarks-group bg-light">
+            {group.outcomes.map((outcomeUuid) => (
               <OutcomeGroup
+                key={outcomeUuid}
                 outcomeUuid={outcomeUuid}
                 sectionIndex={index}
                 table={table}
               />
-            </Styled.CheckmarkGroup>
-          ))}
+            ))}
+          </Styled.CheckmarkGroup>
         </Styled.CheckmarkGroup>
+      ))}
+
+      {extraColumns.map((group, index) => (
+        <>
+          {group.columns && (
+            <>
+              <Styled.TagBarEmptyCell className="tag-offset" />
+              <Styled.CheckmarkGroup
+                key={index}
+                className="checkmarks-group bg-dark"
+              >
+                {group.columns.map((colColumn, index) => (
+                  <Styled.TableCell key={index}>
+                    {colColumn.values?.['a']}
+                  </Styled.TableCell>
+                ))}
+              </Styled.CheckmarkGroup>
+            </>
+          )}
+          {group.values && (
+            <Styled.CheckmarkGroup
+              key={index}
+              className={`checkmarks-group ${group.className}`}
+              sx={{ marginLeft: 2 }}
+            >
+              <Styled.TableCell>{group.values['a']}</Styled.TableCell>
+            </Styled.CheckmarkGroup>
+          )}
+        </>
       ))}
     </Styled.BodyRow>
   )
@@ -210,7 +276,6 @@ const OutcomeGroup = ({
         key={outcomeUuid}
         readOnly
         value={table.sections[sectionIndex].completion[outcomeUuid] ?? 'empty'}
-        sx={{ background: '#EEF2FD' }}
       />
       {!collapsed &&
         outcome.children.map((childUuid) => (

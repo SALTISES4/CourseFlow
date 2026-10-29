@@ -6,9 +6,33 @@ const TILT_ANGLE = '50deg'
 const CELL_WIDTH = 56
 const CELL_HEIGHT = 50
 
-export const TableWrap = styled(Box)(() => ({
-  '&.view-normal': {},
-  '&.view-matrix': {}
+export const TableWrap = styled(Box)(({ theme }) => ({
+  '.bg-light': {
+    backgroundColor: '#EEF2FD'
+  },
+  '.bg-dark': {
+    backgroundColor: '#E5E9F4'
+  },
+  '&.view-normal': {
+    '[class*="body-row"]:last-child > div:last-child': {
+      borderBottom: `1px solid ${theme.palette.divider}`
+    }
+  },
+  '&.view-matrix': {
+    '& [class*="body-row"]': {
+      '&:has(+ [class*="section-header-row"])': {
+        '& .checkmarks-group': {
+          borderBottom: `1px solid ${theme.palette.divider}`
+        },
+        '& [class*="tag-bar"]::before': {
+          height: '200%'
+        }
+      },
+      '&:last-child .checkmarks-group': {
+        borderBottom: `1px solid ${theme.palette.divider}`
+      }
+    }
+  }
 }))
 
 export const TableHeader = styled(Box)(({ theme }) => ({
@@ -28,16 +52,17 @@ export const HeaderLegendWrap = styled(Box, {
   width: `${CELL_WIDTH}px`,
   height: `${HEADING_WIDTH}px`,
   padding: 0,
-  transform: `rotateZ(-${TILT_ANGLE}) translate(14px, 20px)`,
+  transform: `rotateZ(-${TILT_ANGLE}) translate(18px, 24px)`,
   transformOrigin: 'bottom left',
 
   // tag labels have a fake background element that connects to the row below
   ...(tagLabel && {
+    width: '70px',
     transform: `rotateZ(-${TILT_ANGLE}) translate(18px, 24px)`,
     '& span': {
       paddingTop: '2px',
       paddingBottom: '2px',
-      transform: 'translateY(-8px)'
+      transform: 'translate(7px, 8px)'
     },
     '&:after': {
       content: '""',
@@ -47,7 +72,7 @@ export const HeaderLegendWrap = styled(Box, {
       width: '28px',
       height: '28px',
       background: '#EEF2FD',
-      transform: `translate(-14px, -2px) rotateZ(${TILT_ANGLE})`,
+      transform: `translate(-8px, 16px) rotateZ(${TILT_ANGLE})`,
       zIndex: -1
     }
   }),
@@ -68,10 +93,6 @@ export const HeaderLegendWrap = styled(Box, {
     bottom: 0,
     left: 0,
     width: `calc(${HEADING_WIDTH}px * tan(${TILT_ANGLE}))`
-  },
-
-  '&.tag-offset': {
-    marginLeft: '18px'
   }
 }))
 
@@ -144,31 +165,22 @@ export const TagGroup = styled(Box)(({ theme }) => ({
 export const BodyRow = styled(Box, { name: 'body-row' })(({ theme }) => ({
   display: 'flex',
   '.checkmarks-group': {
-    borderRight: `1px solid ${theme.palette.divider}`
+    boxShadow: `inset -1px 0 0 0 ${theme.palette.divider}`
   },
-  '&:hover .checkmarks-group': {
-    backgroundColor: theme.palette.action.hover
+  '&:not(.section-header-row):hover .checkmarks-group': {
+    '&, & [class*="table-cell"]': {
+      backgroundColor: theme.palette.action.hover
+    }
   },
   '&.tag-header-row [class*="legend-wrap"]': {
     paddingRight: 0
   },
-  '&.section-header-row:not(:first-of-type)': {
-    marginTop: theme.spacing(2)
-  },
-  '.view-normal &:last-child > div:last-child': {
-    borderBottom: `1px solid ${theme.palette.divider}`
-  },
-  '.view-matrix &': {
-    '&:has(+ [class*="section-header-row"])': {
-      '& .checkmarks-group': {
-        borderBottom: `1px solid ${theme.palette.divider}`
-      },
-      '& [class*="tag-bar"]::before': {
-        height: '200%'
-      }
+  '&.section-header-row': {
+    '& label': {
+      // background: '#eef2fd'
     },
-    '&:last-child .checkmarks-group': {
-      borderBottom: `1px solid ${theme.palette.divider}`
+    '&:not(:first-of-type)': {
+      marginTop: theme.spacing(2)
     }
   }
 }))
@@ -180,11 +192,9 @@ export const CheckmarkGroup = styled(Box)(({ theme }) => ({
 export const CheckmarkCell = styled(Box)(({ theme }) => ({
   width: `${CELL_WIDTH}px`,
   height: `${CELL_HEIGHT}px`,
-  border: `1px solid ${theme.palette.divider}`,
-  borderBottomWidth: 0,
-  borderRightWidth: 0,
   alignItems: 'center',
   justifyContent: 'center',
+  boxShadow: `inset 1px 1px 0 0 ${theme.palette.divider}`,
 
   // hide the checkbox rectangle for the elements in "empty" state
   '&:not(:has(input)):not(:hover) span': {
@@ -227,27 +237,27 @@ export const CheckmarkCell = styled(Box)(({ theme }) => ({
   }
 }))
 
+export const TableCell = styled(CheckmarkCell, { name: 'table-cell' })(() => ({
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  textAlign: 'center'
+}))
+
 export const TagBarEmptyCell = styled(CheckmarkCell, { name: 'tag-bar' })(
   ({ theme }) => ({
     display: 'flex',
-    border: 0,
+    width: '70px',
+    boxShadow: 'none',
     background: theme.palette.common.white,
     justifyContent: 'center',
     '&::before': {
       content: '""',
       position: 'relative',
-      left: '-10px',
       display: 'block',
       width: '28px',
       height: '100%',
       background: '#EEF2FD'
-    },
-
-    '&.tag-offset': {
-      width: '70px',
-      '&::before': {
-        left: 0
-      }
     }
   })
 )

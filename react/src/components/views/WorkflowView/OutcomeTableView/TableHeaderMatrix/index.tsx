@@ -14,6 +14,8 @@ const TableHeader = ({ graphUuid }: { graphUuid: string }) => {
   const table = useSelector((state: RootState) =>
     selectOutcomeTable(state, graphUuid)
   )
+  const workflowType = 'program' // TODO: grab this from RTK
+  const extraColumns = table.extraColumns[workflowType]
 
   return (
     <Styled.TableHeader>
@@ -35,6 +37,37 @@ const TableHeader = ({ graphUuid }: { graphUuid: string }) => {
               uuid={outcomeUuid}
             />
           ))}
+        </Fragment>
+      ))}
+
+      {extraColumns.map((group, index) => (
+        <Fragment key={index}>
+          {group.columns ? (
+            <>
+              <Styled.HeaderLegendWrap tagLabel className="tag-offset">
+                <Styled.TableLegend>{group.label}</Styled.TableLegend>
+              </Styled.HeaderLegendWrap>
+              {group.columns.map((column, colIndex) => (
+                <Styled.HeaderLegendWrap key={colIndex}>
+                  <Styled.TableLegend
+                    className={column.className}
+                    sx={{ border: 0, left: '8px !important' }}
+                  >
+                    {column.label}
+                  </Styled.TableLegend>
+                </Styled.HeaderLegendWrap>
+              ))}
+            </>
+          ) : (
+            <Styled.HeaderLegendWrap sx={{ marginLeft: 2 }}>
+              <Styled.TableLegend
+                className={group.className}
+                sx={{ border: 0, left: '8px !important' }}
+              >
+                {group.label}
+              </Styled.TableLegend>
+            </Styled.HeaderLegendWrap>
+          )}
         </Fragment>
       ))}
     </Styled.TableHeader>
