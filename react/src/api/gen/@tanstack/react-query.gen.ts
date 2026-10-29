@@ -15,6 +15,7 @@ import {
   addProjectTeamMembers,
   archiveProject,
   archiveWorkflow,
+  confirmPasswordReset,
   copyWorkflow,
   courseFlowApiNinjaAppHealth,
   courseFlowApiNinjaAppReady,
@@ -93,6 +94,7 @@ import {
   register,
   reorderGraphChannels,
   reorderGraphSections,
+  requestPasswordReset,
   restoreProject,
   restoreWorkflow,
   searchLibrary,
@@ -105,7 +107,8 @@ import {
   updateProjectTeamMember,
   updateSection,
   updateWorkflow,
-  updateWorkflowPublicLink
+  updateWorkflowPublicLink,
+  validatePasswordResetToken
 } from '../sdk.gen'
 import type {
   AcquireWorkspaceEditLockData,
@@ -116,6 +119,8 @@ import type {
   ArchiveProjectResponse,
   ArchiveWorkflowData,
   ArchiveWorkflowResponse,
+  ConfirmPasswordResetData,
+  ConfirmPasswordResetResponse,
   CopyWorkflowData,
   CopyWorkflowResponse,
   CourseFlowApiNinjaAppHealthData,
@@ -272,6 +277,8 @@ import type {
   ReorderGraphChannelsResponse,
   ReorderGraphSectionsData,
   ReorderGraphSectionsResponse,
+  RequestPasswordResetData,
+  RequestPasswordResetResponse,
   RestoreProjectData,
   RestoreProjectResponse,
   RestoreWorkflowData,
@@ -297,7 +304,9 @@ import type {
   UpdateWorkflowData,
   UpdateWorkflowPublicLinkData,
   UpdateWorkflowPublicLinkResponse,
-  UpdateWorkflowResponse
+  UpdateWorkflowResponse,
+  ValidatePasswordResetTokenData,
+  ValidatePasswordResetTokenResponse
 } from '../types.gen'
 
 export type QueryKey<TOptions extends Options> = [
@@ -2383,6 +2392,87 @@ export const logoutMutation = (
   > = {
     mutationFn: async (fnOptions) => {
       const { data } = await logout({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Request Password Reset
+ */
+export const requestPasswordResetMutation = (
+  options?: Partial<Options<RequestPasswordResetData>>
+): UseMutationOptions<
+  RequestPasswordResetResponse,
+  DefaultError,
+  Options<RequestPasswordResetData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    RequestPasswordResetResponse,
+    DefaultError,
+    Options<RequestPasswordResetData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await requestPasswordReset({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Validate Password Reset Token
+ */
+export const validatePasswordResetTokenMutation = (
+  options?: Partial<Options<ValidatePasswordResetTokenData>>
+): UseMutationOptions<
+  ValidatePasswordResetTokenResponse,
+  DefaultError,
+  Options<ValidatePasswordResetTokenData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    ValidatePasswordResetTokenResponse,
+    DefaultError,
+    Options<ValidatePasswordResetTokenData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await validatePasswordResetToken({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+/**
+ * Confirm Password Reset
+ */
+export const confirmPasswordResetMutation = (
+  options?: Partial<Options<ConfirmPasswordResetData>>
+): UseMutationOptions<
+  ConfirmPasswordResetResponse,
+  DefaultError,
+  Options<ConfirmPasswordResetData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    ConfirmPasswordResetResponse,
+    DefaultError,
+    Options<ConfirmPasswordResetData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await confirmPasswordReset({
         ...options,
         ...fnOptions,
         throwOnError: true

@@ -44,3 +44,28 @@ class LoginOut(CamelSchema):
 
 class LogoutOut(CamelSchema):
     success: bool
+
+
+class PasswordResetRequestIn(CamelSchema):
+    email: str
+
+
+class PasswordResetTokenIn(CamelSchema):
+    uid: str
+    token: str
+
+
+class PasswordResetConfirmIn(PasswordResetTokenIn):
+    new_password: str
+
+
+class PasswordResetRequestOut(CamelSchema):
+    success: bool = True
+
+
+class PasswordResetTokenOut(CamelSchema):
+    valid: bool
+
+
+class PasswordResetConfirmOut(CamelSchema):
+    success: bool = True

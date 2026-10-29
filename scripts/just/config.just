@@ -15,7 +15,7 @@ expected_artifact_dir := "/tmp/courseflow"
 py_log_file := "logs/python.log"
 
 # Infra services you want Compose to manage in dev
-infra_services := "postgres"
+infra_services := "postgres mailpit"
 
 # we need to use volta because nvm doens't play very well in
 # docker etc.

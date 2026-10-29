@@ -33,7 +33,47 @@ const auth = {
   },
   resetPassword: {
     heading: 'Reset your CourseFlow password',
-    submit: 'Reset password'
+    submit: 'Reset password',
+    request: {
+      submitting: 'Sending reset instructions…',
+      validation: {
+        emailRequired: 'Email is required',
+        invalidEmailFormat: 'Invalid email format'
+      },
+      messages: {
+        sent: 'If the email address matches an active account, you will receive instructions to reset your password shortly.',
+        failed:
+          'We encountered an issue and your password reset request could not be sent'
+      }
+    },
+    confirm: {
+      fields: {
+        password: 'New password',
+        confirmPassword: 'Confirm new password'
+      },
+      passwordGuidelines:
+        'Your password must contain at least 12 characters and include a mix of numbers, letters and symbols',
+      validation: {
+        passwordRequired: 'New password is required',
+        confirmRequired: 'Confirm new password is required',
+        mismatch: 'Passwords do not match'
+      },
+      validating: 'Validating password reset link',
+      submitting: 'Resetting password…',
+      retry: 'Try again',
+      messages: {
+        succeeded: 'Your password has been successfully reset',
+        failed: 'We encountered an issue and your password was not reset',
+        validationFailed:
+          'We encountered an issue and could not verify your password reset link'
+      }
+    },
+    invalidLink: {
+      heading: 'Link expired or invalid',
+      explanation:
+        'For your security, password reset links expire after 24 hours and can only be used once.',
+      requestNew: 'Request a new link'
+    }
   },
   errors: {
     invalidCredentials:

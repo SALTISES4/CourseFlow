@@ -4,9 +4,11 @@ from datetime import timedelta
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.core import mail
 from django.test import Client
 from django.utils import timezone
 
+from course_flow.application.services.email_service import EmailService
 from course_flow.application.services.notification_service import (
     NotificationService,
 )
@@ -139,18 +141,27 @@ def test_patch_profile_settings_rejects_names_over_200_characters(
 
 @pytest.mark.django_db
 def test_patch_profile_password_rejects_incorrect_current_password(
-    client: Client, user
+    client: Client,
+    user,
+    django_capture_on_commit_callbacks,
 ):
     raw_token = _issue_token_for(user)
-    response = client.patch(
-        "/api/user/me/password-reset",
-        data={
-            "password": "incorrect-password",
-            "newPassword": "Valid-New-Password-123!",
-        },
-        content_type="application/json",
-        **_auth_header(raw_token),
-    )
+    current_token = Authtoken.objects.get(token_hash=hash_token(raw_token))
+    other_raw_token = _issue_token_for(user)
+    other_token = Authtoken.objects.get(token_hash=hash_token(other_raw_token))
+    original_credential_version = user.credential_version
+
+    with django_capture_on_commit_callbacks(execute=True) as callbacks:
+        response = client.patch(
+            "/api/user/me/password-reset",
+            data={
+                "password": "incorrect-password",
+                "newPassword": "Valid-New-Password-123!",
+            },
+            content_type="application/json",
+            **_auth_header(raw_token),
+        )
+
     assert response.status_code == 400
     assert response.json() == {
         "code": "validation_failed",
@@ -160,7 +171,15 @@ def test_patch_profile_password_rejects_incorrect_current_password(
         },
     }
     user.refresh_from_db()
+    current_token.refresh_from_db()
+    other_token.refresh_from_db()
     assert user.check_password("password123")
+    assert user.credential_version == original_credential_version
+    assert current_token.revoked_at is None
+    assert current_token.credential_version == original_credential_version
+    assert other_token.revoked_at is None
+    assert other_token.credential_version == original_credential_version
+    assert callbacks == []
 
 
 @pytest.mark.django_db
@@ -203,21 +222,117 @@ def test_patch_profile_password_rejects_weak_or_reused_password(client: Client, 
 
 
 @pytest.mark.django_db
-def test_patch_profile_password_updates_password(client: Client, user):
-    raw_token = _issue_token_for(user)
-    response = client.patch(
-        "/api/user/me/password-reset",
-        data={
-            "password": "password123",
-            "newPassword": "Valid-New-Password-123!",
-        },
-        content_type="application/json",
-        **_auth_header(raw_token),
+def test_patch_profile_password_updates_security_state_and_sends_confirmation(
+    client: Client,
+    user,
+    settings,
+    django_capture_on_commit_callbacks,
+):
+    settings.EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
+    settings.DEFAULT_FROM_EMAIL = "sender@example.com"
+    settings.COURSEFLOW_SUPPORT_EMAIL = "support@example.com"
+
+    current_raw_token = _issue_token_for(user)
+    current_token = Authtoken.objects.get(token_hash=hash_token(current_raw_token))
+    other_raw_token = _issue_token_for(user)
+    other_token = Authtoken.objects.get(token_hash=hash_token(other_raw_token))
+    expired_raw_token = _issue_token_for(
+        user,
+        expires_delta=timedelta(seconds=-1),
     )
+    expired_token = Authtoken.objects.get(token_hash=hash_token(expired_raw_token))
+    original_credential_version = user.credential_version
+
+    with django_capture_on_commit_callbacks(execute=True) as callbacks:
+        response = client.patch(
+            "/api/user/me/password-reset",
+            data={
+                "password": "password123",
+                "newPassword": "Valid-New-Password-123!",
+            },
+            content_type="application/json",
+            **_auth_header(current_raw_token),
+        )
+
     assert response.status_code == 200
     assert response.json()["uuid"] == str(user.uuid)
+    assert len(callbacks) == 1
+
     user.refresh_from_db()
+    current_token.refresh_from_db()
+    other_token.refresh_from_db()
+    expired_token.refresh_from_db()
+
     assert user.check_password("Valid-New-Password-123!")
+    assert user.credential_version == original_credential_version + 1
+    assert current_token.revoked_at is None
+    assert current_token.credential_version == user.credential_version
+    assert other_token.revoked_at is not None
+    assert other_token.credential_version == original_credential_version
+    assert expired_token.revoked_at is None
+
+    current_me = client.get(
+        "/api/auth/me",
+        **_auth_header(current_raw_token),
+    )
+    other_me = client.get(
+        "/api/auth/me",
+        **_auth_header(other_raw_token),
+    )
+    assert current_me.status_code == 200
+    assert other_me.status_code == 401
+    assert other_me.json() == {"code": "token_revoked", "params": {}}
+
+    assert len(mail.outbox) == 1
+    message = mail.outbox[0]
+    assert message.to == [user.email]
+    assert message.subject == "Your CourseFlow password was reset"
+    assert "Valid-New-Password-123!" not in message.body
+    assert "Valid-New-Password-123!" not in message.alternatives[0].content
+
+
+@pytest.mark.django_db
+def test_unexpected_confirmation_failure_does_not_change_successful_operation(
+    client: Client,
+    user,
+    django_capture_on_commit_callbacks,
+    monkeypatch,
+):
+    def raise_unexpected_email_error(*args, **kwargs):
+        raise RuntimeError("unexpected advisory email failure")
+
+    monkeypatch.setattr(EmailService, "send", raise_unexpected_email_error)
+
+    current_raw_token = _issue_token_for(user)
+    current_token = Authtoken.objects.get(token_hash=hash_token(current_raw_token))
+    other_raw_token = _issue_token_for(user)
+    other_token = Authtoken.objects.get(token_hash=hash_token(other_raw_token))
+
+    with django_capture_on_commit_callbacks(execute=True) as callbacks:
+        response = client.patch(
+            "/api/user/me/password-reset",
+            data={
+                "password": "password123",
+                "newPassword": "Valid-New-Password-123!",
+            },
+            content_type="application/json",
+            **_auth_header(current_raw_token),
+        )
+
+    assert response.status_code == 200
+    assert len(callbacks) == 1
+    user.refresh_from_db()
+    current_token.refresh_from_db()
+    other_token.refresh_from_db()
+    assert user.check_password("Valid-New-Password-123!")
+    assert current_token.revoked_at is None
+    assert current_token.credential_version == user.credential_version
+    assert other_token.revoked_at is not None
+
+    current_me = client.get("/api/auth/me", **_auth_header(current_raw_token))
+    other_me = client.get("/api/auth/me", **_auth_header(other_raw_token))
+    assert current_me.status_code == 200
+    assert other_me.status_code == 401
 
 
 @pytest.mark.django_db

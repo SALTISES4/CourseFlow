@@ -20,9 +20,18 @@ Playwright (Chromium)
   → Vite dev server (:3000) — React app
     → Django API (:8000) — auth, serializers, persistence
       → Postgres (Docker :5432) — local development database
+      → Mailpit (Docker SMTP :1025, inbox/API :8025) — captured test email
 ```
 
-There are no Python mocks, fake API ports, or in-process test doubles for product behavior. The manifest file (`tests/.playwright-fixtures/workflow.json`) only records UUIDs created during real seeding so specs know which routes to open.
+Core E2E scenarios use the real application and persistence layers. The manifest
+file (`tests/.playwright-fixtures/workflow.json`) only records UUIDs created during
+real seeding so specs know which routes to open. Some presentation-focused specs
+mock browser HTTP responses to exercise deterministic error states; those specs
+are explicitly separate from transport integration coverage.
+
+The Mailpit forgot-password specification exercises the real browser, Django
+endpoint, SMTP transport, captured message, reset link, password update, and
+subsequent login. Mailpit captures mail locally and never relays it externally.
 
 ## Vocabulary
 
@@ -121,6 +130,7 @@ Optional override:
 | `PLAYWRIGHT_WORKFLOW_PATH` | Workflow E2E (optional override) | Loaded from manifest by default (`just e2e-prepare`) |
 | `PLAYWRIGHT_BASE_URL` | Optional | Default `http://localhost:3000/` in `playwright.config.ts` |
 | `PLAYWRIGHT_API_BASE_URL` | Optional | Django API origin for direct authenticated API helpers; defaults to `http://127.0.0.1:8000` |
+| `MAILPIT_API_URL` | Optional | Mailpit API origin; defaults to `http://127.0.0.1:8025` |
 
 Root `.env` (`POSTGRES_DB=courseflow`) can stay unchanged for normal dev work.
 
@@ -164,11 +174,21 @@ Expect specs under `e2e/smoke/` and `e2e/workflow/`.
 
 `just dev` and Playwright use the same local database. Prepare fixtures first, then run the normal application stack.
 
-**Terminal 1 — Postgres** (if not already up):
+**Terminal 1 — Postgres and Mailpit** (if not already up):
 
 ```bash
 just docker-up
 ```
+
+Mailpit's local inbox is available at `http://127.0.0.1:8025`. Django uses its
+SMTP listener at `127.0.0.1:1025` in the development environment.
+
+The password-recovery flow requires migrations `0024` and `0025`. Migration
+`0024` intentionally has no legacy-row backfill and therefore applies only to a
+fresh/reset database. If the local database predates that migration,
+`just rebuild-dev-db` is required before running the Mailpit integration test.
+That command deletes and recreates the local development database volume; do
+not run it when local data must be retained.
 
 **Terminal 2 — Django:**
 
@@ -279,7 +299,8 @@ CircleCI keeps backend quality checks and browser tests in separate jobs:
 
 - `test-suite` runs pre-commit, backend unit tests, and Pyright once.
 - `playwright-e2e` uses four CircleCI execution nodes. Each node owns an isolated
-  PostgreSQL, Django, Vite, and Playwright stack and runs one Playwright shard.
+  PostgreSQL, Mailpit, Django, Vite, and Playwright stack and runs one Playwright
+  shard.
 - Playwright keeps one worker per node. `fullyParallel: true` balances individual
   tests across the four shards, including large parameterized spec files.
 - The authentication setup project runs once on every shard before that shard's
@@ -346,6 +367,13 @@ Run `yarn test-setup` first. Common causes:
 
 - Confirm Vite on `:3000` and Django on `:8000`
 - Credentials: `teacher@courseflow.com` / `password` after `just django-seed-e2e-tests`
+
+### Forgot-password integration cannot find a captured email
+
+- Confirm `just docker::up` reports the `mailpit` service as healthy.
+- Open `http://127.0.0.1:8025/readyz`; it must return HTTP 200.
+- Confirm local Django uses SMTP host `127.0.0.1` and port `1025`.
+- Confirm `MAILPIT_API_URL` is unset or points to `http://127.0.0.1:8025`.
 
 ### Workflow specs skip immediately
 

@@ -45,6 +45,16 @@ const workflowFr = {
     insertSibling: 'Insérer au même niveau', insertChild: 'Insérer un enfant'
   },
   outcomeTable: {
+    gridLabel: 'Affectations du tableau des résultats',
+    presentationControlsLabel: 'Options d’affichage du tableau des résultats',
+    assignmentCellLabel: '{{outcome}} — {{node}}',
+    sectionRollupCellLabel: '{{outcome}} — résumé de {{section}}',
+    summary: {
+      classification: 'Classification', generalEducation: 'Formation générale',
+      specificEducation: 'Formation spécifique', ponderation: 'Pondération',
+      theory: 'Théorie', practical: 'Pratique', individualWork: 'Travail individuel',
+      totalHours: 'Heures totales', credits: 'Crédits'
+    },
     view: { normal: 'Normal', competencyMatrix: 'Matrice de compétences' },
     sort: {
       title: 'Trier', chronological: 'Ordre chronologique',

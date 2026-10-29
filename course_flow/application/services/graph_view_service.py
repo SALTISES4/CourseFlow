@@ -18,7 +18,9 @@ class GraphViewService:
 
     def get_by_graph_uuid(self, graph_uuid: UUID) -> dict | None:
         try:
-            w = Graph.objects.select_related("workflow").get(uuid=graph_uuid)
+            w = Graph.objects.select_related("workflow", "workflow__project").get(
+                uuid=graph_uuid
+            )
         except Graph.DoesNotExist:
             return None
 
@@ -79,6 +81,21 @@ class GraphViewService:
         )
         for o in outcome_rows:
             add_thread(o.thread)
+
+        used_tag_ids = {
+            tag.id
+            for item in (*nodes, *outcome_rows)
+            for tag in item.tags.all()
+        }
+        project_tags = (
+            list(
+                workflow.project.tags.filter(id__in=used_tag_ids).order_by(
+                    "label", "id"
+                )
+            )
+            if workflow.project_id and used_tag_ids
+            else []
+        )
 
         comment_counts = {tu: 0 for tu in thread_uuids}
         if thread_uuids:
@@ -181,6 +198,14 @@ class GraphViewService:
                     "thread_uuid": o.thread.uuid if o.thread_id else None,
                 }
                 for o in outcome_rows
+            ],
+            "tags": [
+                {
+                    "id": tag.id,
+                    "label": tag.label,
+                    "translation_plural": tag.translation_plural,
+                }
+                for tag in project_tags
             ],
             "thread_comment_counts": [
                 {"thread_uuid": tu, "comment_count": comment_counts.get(tu, 0)}

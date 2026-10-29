@@ -2,6 +2,7 @@ import Base from '@cf/base'
 import { CFRoutes, RelativeRoutes } from '@cf/router/cfRoutes'
 import UserLoginPage from '@cf/router/LoginPage'
 import { RequireAuth } from '@cf/router/RequireAuth'
+import { RequireLoggedOut } from '@cf/router/RequireLoggedOut'
 import { WorkflowRoute } from '@cf/router/WorkflowRoute'
 import Home from '@cfPages/Home'
 import Explore from '@cfPages/Library/Explore'
@@ -14,6 +15,7 @@ import PasswordResetPage from '@cfPages/Settings/PasswordReset'
 import ProfileSettingsPage from '@cfPages/Settings/ProfileSettings'
 import UserRegisterPage from '@cfPages/SignIn/Register'
 import PasswordRecoveryPage from '@cfPages/SignIn/ResetPassword'
+import PasswordResetConfirmationPage from '@cfPages/SignIn/ResetPassword/Confirm'
 import { useTranslation } from 'react-i18next'
 import { Navigate, createBrowserRouter } from 'react-router-dom'
 
@@ -40,8 +42,17 @@ export const CFRouter = createBrowserRouter([
     element: <UserRegisterPage />
   },
   {
-    path: '/password-reset',
-    element: <PasswordRecoveryPage />
+    element: <RequireLoggedOut />,
+    children: [
+      {
+        path: '/password-reset',
+        element: <PasswordRecoveryPage />
+      },
+      {
+        path: '/password-reset/confirm',
+        element: <PasswordResetConfirmationPage />
+      }
+    ]
   },
   {
     path: '/',

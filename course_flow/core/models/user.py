@@ -67,6 +67,7 @@ class User(AbstractUser):
         default=LanguagePreference.EN.value,
     )
     notifications_active = models.BooleanField(default=False)
+    credential_version = models.PositiveBigIntegerField(default=1)
     objects = CourseFlowUserManager()
 
     USERNAME_FIELD = "email"
@@ -74,6 +75,12 @@ class User(AbstractUser):
 
     class Meta:
         db_table = "cf_user"
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(credential_version__gte=1),
+                name="cf_user_credver_gte_1",
+            )
+        ]
 
     def save(self, *args, **kwargs):
         self.username = self.email

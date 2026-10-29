@@ -686,6 +686,7 @@ export const zGraphViewOut = z.object({
   nodes: z.array(zNodeGraphOut),
   edges: z.array(zEdgeGraphOut),
   outcomes: z.array(zOutcomeGraphOut).optional(),
+  tags: z.array(zTagListItemOut).optional(),
   threadCommentCounts: z.array(zThreadCommentCountOut).optional(),
   permissions: zPermissionContextOut,
   projectPermissions: zPermissionContextOut.nullable()
@@ -1294,6 +1295,51 @@ export const zRegisterIn = z.object({
  */
 export const zLogoutOut = z.object({
   success: z.boolean()
+})
+
+/**
+ * PasswordResetRequestOut
+ */
+export const zPasswordResetRequestOut = z.object({
+  success: z.boolean().optional().default(true)
+})
+
+/**
+ * PasswordResetRequestIn
+ */
+export const zPasswordResetRequestIn = z.object({
+  email: z.string()
+})
+
+/**
+ * PasswordResetTokenOut
+ */
+export const zPasswordResetTokenOut = z.object({
+  valid: z.boolean()
+})
+
+/**
+ * PasswordResetTokenIn
+ */
+export const zPasswordResetTokenIn = z.object({
+  uid: z.string(),
+  token: z.string()
+})
+
+/**
+ * PasswordResetConfirmOut
+ */
+export const zPasswordResetConfirmOut = z.object({
+  success: z.boolean().optional().default(true)
+})
+
+/**
+ * PasswordResetConfirmIn
+ */
+export const zPasswordResetConfirmIn = z.object({
+  uid: z.string(),
+  token: z.string(),
+  newPassword: z.string()
 })
 
 /**
@@ -2676,6 +2722,39 @@ export const zLogoutData = z.object({
  * OK
  */
 export const zLogoutResponse = zLogoutOut
+
+export const zRequestPasswordResetData = z.object({
+  body: zPasswordResetRequestIn,
+  path: z.never().optional(),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zRequestPasswordResetResponse = zPasswordResetRequestOut
+
+export const zValidatePasswordResetTokenData = z.object({
+  body: zPasswordResetTokenIn,
+  path: z.never().optional(),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zValidatePasswordResetTokenResponse = zPasswordResetTokenOut
+
+export const zConfirmPasswordResetData = z.object({
+  body: zPasswordResetConfirmIn,
+  path: z.never().optional(),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zConfirmPasswordResetResponse = zPasswordResetConfirmOut
 
 export const zMeData = z.object({
   body: z.never().optional(),

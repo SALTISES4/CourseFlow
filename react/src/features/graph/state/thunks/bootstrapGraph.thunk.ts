@@ -1,6 +1,6 @@
 import type { ThunkAction, UnknownAction } from '@reduxjs/toolkit'
 
-import { fetchWorkflowGraphBundle, fetchWorkflowTags } from '../graphApi'
+import { fetchWorkflowGraphBundle } from '../graphApi'
 import type { GraphState } from '../graphState'
 import type { GraphResourceLoadState, GraphUuid } from '../model/types'
 import {
@@ -85,6 +85,7 @@ export const bootstrapWorkflowGraph = (
         dispatch(nodesActions.upsertMany(bundle.nodes))
         dispatch(edgesActions.upsertMany(bundle.edges))
         dispatch(outcomesActions.upsertMany(bundle.outcomes))
+        dispatch(tagsActions.upsertMany(bundle.tags))
         dispatch(
           threadCommentCountsActions.upsertMany(bundle.threadCommentCounts)
         )
@@ -94,6 +95,7 @@ export const bootstrapWorkflowGraph = (
         dispatch(setSucceeded(graphUuid, 'channels'))
         dispatch(setSucceeded(graphUuid, 'nodes'))
         dispatch(setSucceeded(graphUuid, 'edges'))
+        dispatch(setSucceeded(graphUuid, 'tags'))
         dispatch(setSucceeded(graphUuid, 'outcomes'))
       })
       .catch(() => {
@@ -102,21 +104,12 @@ export const bootstrapWorkflowGraph = (
         dispatch(setFailed(graphUuid, 'channels'))
         dispatch(setFailed(graphUuid, 'nodes'))
         dispatch(setFailed(graphUuid, 'edges'))
+        dispatch(setFailed(graphUuid, 'tags'))
         dispatch(setFailed(graphUuid, 'outcomes'))
         throw new Error('graph')
       })
 
-    const tagsPromise = fetchWorkflowTags(graphUuid)
-      .then((tags) => {
-        dispatch(tagsActions.upsertMany(tags))
-        dispatch(setSucceeded(graphUuid, 'tags'))
-      })
-      .catch(() => {
-        dispatch(setFailed(graphUuid, 'tags'))
-        throw new Error('tags')
-      })
-
-    const settled = await Promise.allSettled([graphPromise, tagsPromise])
+    const settled = await Promise.allSettled([graphPromise])
 
     const ok = settled.every((result) => result.status === 'fulfilled')
 

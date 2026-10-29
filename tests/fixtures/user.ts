@@ -1,9 +1,9 @@
-import { execFile } from 'node:child_process';
-import path from 'node:path';
-import { promisify } from 'node:util';
+import { execFile } from "node:child_process";
+import path from "node:path";
+import { promisify } from "node:util";
 
-import { getTestApiBaseUrl } from '../helpers/env';
-import { test as projectTest } from './project';
+import { getTestApiBaseUrl } from "../helpers/env";
+import { test as projectTest } from "./project";
 
 const execFileAsync = promisify(execFile);
 
@@ -25,10 +25,17 @@ type UserFixtures = {
 };
 
 async function deleteDisposableUser(email: string): Promise<void> {
-  const repositoryRoot = path.resolve(__dirname, '../..');
+  // CI-style Compose runs use a dedicated database volume that is destroyed at
+  // job teardown. The Playwright image intentionally contains no Python/uv
+  // runtime, so process-level cleanup applies only to persistent local E2E DBs.
+  if (process.env.PLAYWRIGHT_DATABASE_EPHEMERAL === "true") {
+    return;
+  }
+
+  const repositoryRoot = path.resolve(__dirname, "../..");
   await execFileAsync(
-    'uv',
-    ['run', 'python', 'manage.py', 'cf_delete_e2e_user', '--email', email],
+    "uv",
+    ["run", "python", "manage.py", "cf_delete_e2e_user", "--email", email],
     { cwd: repositoryRoot },
   );
 }
@@ -38,15 +45,18 @@ export const test = projectTest.extend<UserFixtures>({
     const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
     const email = `e2e-disposable-${suffix}@courseflow.test`;
     const password = `E2E-Original-${suffix}!`;
-    const response = await request.post(`${getTestApiBaseUrl()}/api/auth/register`, {
-      data: {
-        email,
-        password,
-        firstName: 'Disposable',
-        lastName: 'User',
-        label: 'Playwright disposable user',
+    const response = await request.post(
+      `${getTestApiBaseUrl()}/api/auth/register`,
+      {
+        data: {
+          email,
+          password,
+          firstName: "Disposable",
+          lastName: "User",
+          label: "Playwright disposable user",
+        },
       },
-    });
+    );
     if (!response.ok()) {
       throw new Error(
         `Register disposable user failed with HTTP ${response.status()}: ${await response.text()}`,

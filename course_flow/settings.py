@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
+ENVIRONMENT = os.environ.get("ENV", "development").strip().lower()
 
 
 def env_or_file(name: str, default: str = "") -> str:
@@ -70,7 +71,10 @@ DATABASES = {
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        # Transactional email templates intentionally live outside the
+        # ``course_flow.core`` Django app; make the ADR-defined location
+        # explicit instead of relying on APP_DIRS discovery.
+        "DIRS": [BASE_DIR / "course_flow" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -125,13 +129,44 @@ SECURE_HSTS_SECONDS = int(os.environ.get("DJANGO_SECURE_HSTS_SECONDS", "0"))
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env_flag("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS")
 SECURE_HSTS_PRELOAD = env_flag("DJANGO_SECURE_HSTS_PRELOAD")
 
-AWS_SES_REGION_NAME = os.environ.get("AWS_SES_REGION_NAME", "")
-if AWS_SES_REGION_NAME:
+AWS_SES_REGION_NAME = os.environ.get("AWS_SES_REGION_NAME", "").strip()
+_configured_email_backend = os.environ.get("EMAIL_BACKEND", "").strip()
+if _configured_email_backend:
+    EMAIL_BACKEND = _configured_email_backend
+elif AWS_SES_REGION_NAME:
     EMAIL_BACKEND = "django_ses.SESBackend"
-    AWS_SES_REGION_ENDPOINT = os.environ.get(
-        "AWS_SES_REGION_ENDPOINT",
-        f"email.{AWS_SES_REGION_NAME}.amazonaws.com",
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+if AWS_SES_REGION_NAME:
+    AWS_SES_REGION_ENDPOINT = (
+        os.environ.get("AWS_SES_REGION_ENDPOINT", "").strip()
+        or f"email.{AWS_SES_REGION_NAME}.amazonaws.com"
     )
     USE_SES_V2 = True
 
+_default_email_port = "1025" if ENVIRONMENT in {"development", "test"} else "25"
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "127.0.0.1").strip()
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", _default_email_port))
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = env_or_file("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = env_flag("EMAIL_USE_TLS")
+EMAIL_USE_SSL = env_flag("EMAIL_USE_SSL")
+EMAIL_TIMEOUT = float(os.environ.get("EMAIL_TIMEOUT", "10"))
+
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "webmaster@localhost")
+COURSEFLOW_SUPPORT_EMAIL = os.environ.get(
+    "COURSEFLOW_SUPPORT_EMAIL", "admin@courseflow.com"
+).strip()
+COURSEFLOW_FRONTEND_URL = os.environ.get(
+    "COURSEFLOW_FRONTEND_URL", "http://localhost:3000"
+).strip()
+COURSEFLOW_ALLOW_INSECURE_EMAIL_ACTION_URLS = env_flag(
+    "COURSEFLOW_ALLOW_INSECURE_EMAIL_ACTION_URLS",
+    default=ENVIRONMENT == "development",
+)
+COURSEFLOW_TRUST_PROXY_CLIENT_IP = env_flag("COURSEFLOW_TRUST_PROXY_CLIENT_IP")
+PASSWORD_RESET_TIMEOUT = int(os.environ.get("PASSWORD_RESET_TIMEOUT", "86400"))
+PASSWORD_RESET_RATE_LIMIT_SECRET = (
+    env_or_file("PASSWORD_RESET_RATE_LIMIT_SECRET").strip() or SECRET_KEY
+)

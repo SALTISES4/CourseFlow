@@ -12,6 +12,7 @@ from pydantic import Field
 
 from course_flow.api.common.schemas import CamelSchema
 from course_flow.api.schemas.permissions import PermissionContextOut
+from course_flow.api.schemas.project_subresources import TagListItemOut
 from course_flow.core.enum import (
     ContextClassification,
     TaskClassification,
@@ -120,6 +121,7 @@ class GraphViewOut(CamelSchema):
     nodes: list[NodeGraphOut]
     edges: list[EdgeGraphOut]
     outcomes: list[OutcomeGraphOut] = Field(default_factory=list)
+    tags: list[TagListItemOut] = Field(default_factory=list)
     thread_comment_counts: list[ThreadCommentCountOut] = Field(default_factory=list)
     permissions: PermissionContextOut
     project_permissions: PermissionContextOut | None

@@ -87,6 +87,7 @@ def test_graph_view_top_level_shape_and_flat_collections(client: Client, user):
         "nodes",
         "edges",
         "outcomes",
+        "tags",
         "threadCommentCounts",
         "permissions",
         "projectPermissions",
@@ -99,6 +100,7 @@ def test_graph_view_top_level_shape_and_flat_collections(client: Client, user):
     assert isinstance(body["nodes"], list)
     assert isinstance(body["edges"], list)
     assert isinstance(body["outcomes"], list)
+    assert isinstance(body["tags"], list)
     assert isinstance(body["threadCommentCounts"], list)
     assert [channel["systemLabelCode"] for channel in body["channels"]] == [
         "course_preparation",

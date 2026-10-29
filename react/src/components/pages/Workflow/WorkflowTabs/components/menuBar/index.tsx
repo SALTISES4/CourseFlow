@@ -1,5 +1,9 @@
 import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
-import { ProjectPermission, WorkflowPermission } from '@cf/api/gen/types.gen'
+import {
+  ProjectPermission,
+  WorkflowPermission,
+  WorkflowType
+} from '@cf/api/gen/types.gen'
 import {
   hasPermission,
   useWorkspacePermissions
@@ -7,6 +11,7 @@ import {
 import { selectNodesByGraphUuid } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { selectAllOutcomes } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { graphUiActions } from '@cf/features/graph/state/slices/graphUi.slice'
+import { outcomeTableUiActions } from '@cf/features/graph/state/slices/outcomeTableUi.slice'
 import { outcomeUiActions } from '@cf/features/graph/state/slices/outcomeUi.slice'
 import { useGraphProjectTags } from '@cf/features/graph/useGraphProjectTags'
 import { workflowTypeLabel } from '@cf/i18n/workflowLabels'
@@ -52,6 +57,7 @@ const ActionMenu = () => {
     useWorkspacePermissions()
   const isArchived = permissions.state === 'archived'
   const canEdit = hasPermission(permissions, WorkflowPermission.EDIT_ATTRIBUTES)
+  const canArchive = hasPermission(permissions, WorkflowPermission.ARCHIVE)
 
   /*******************************************************
    * MODALS
@@ -121,8 +127,8 @@ const ActionMenu = () => {
       uuid: 'archive-workflow',
       action: archiveWorkflow,
       content: t('menu.archive', { workflowType: localizedWorkflowType }),
-      show:
-        !isArchived && hasPermission(permissions, WorkflowPermission.ARCHIVE),
+      disabled: !canArchive,
+      show: !isArchived,
       separator: 'top'
     },
     {
@@ -148,10 +154,12 @@ const ActionMenu = () => {
 
 const ExpandCollapseMenu = ({
   graphUuid,
-  sectionIds
+  sectionIds,
+  workflowType
 }: {
   graphUuid: string
   sectionIds: string[]
+  workflowType: WorkflowType
 }) => {
   const { t } = useTranslation('workflow')
   const workflowViewType = useWorkflowViewTypeFromRoute()
@@ -238,30 +246,61 @@ const ExpandCollapseMenu = ({
             show: true
           }
         ]
-      : [
-          {
-            uuid: 'expand-all-outcomes',
-            content: t('menu.expandOutcomes'),
-            action: () =>
-              dispatch(
-                outcomeUiActions.setExpandedOutcomeUuids(
-                  graphOutcomes.map((outcome) => outcome.uuid)
-                )
-              ),
-            icon: <ZoomOutMapIcon />,
-            showIconInList: true,
-            show: true
-          },
-          {
-            uuid: 'collapse-all-outcomes',
-            content: t('menu.collapseOutcomes'),
-            action: () =>
-              dispatch(outcomeUiActions.setExpandedOutcomeUuids([])),
-            icon: <ZoomInMapIcon />,
-            showIconInList: true,
-            show: true
-          }
-        ]
+      : workflowViewType === WorkflowViewType.OUTCOME_TABLE
+        ? [
+            {
+              uuid: 'expand-all-outcomes',
+              content: t('menu.expandOutcomes'),
+              action: () =>
+                dispatch(
+                  outcomeTableUiActions.setExpandedOutcomes({
+                    uuids: graphOutcomes.map((outcome) => outcome.uuid),
+                    expanded: true
+                  })
+                ),
+              icon: <ZoomOutMapIcon />,
+              showIconInList: true,
+              show: true
+            },
+            {
+              uuid: 'collapse-all-outcomes',
+              content: t('menu.collapseOutcomes'),
+              action: () =>
+                dispatch(
+                  outcomeTableUiActions.setExpandedOutcomes({
+                    uuids: [],
+                    expanded: false
+                  })
+                ),
+              icon: <ZoomInMapIcon />,
+              showIconInList: true,
+              show: true
+            }
+          ]
+        : [
+            {
+              uuid: 'expand-all-outcomes',
+              content: t('menu.expandOutcomes'),
+              action: () =>
+                dispatch(
+                  outcomeUiActions.setExpandedOutcomeUuids(
+                    graphOutcomes.map((outcome) => outcome.uuid)
+                  )
+                ),
+              icon: <ZoomOutMapIcon />,
+              showIconInList: true,
+              show: true
+            },
+            {
+              uuid: 'collapse-all-outcomes',
+              content: t('menu.collapseOutcomes'),
+              action: () =>
+                dispatch(outcomeUiActions.setExpandedOutcomeUuids([])),
+              icon: <ZoomInMapIcon />,
+              showIconInList: true,
+              show: true
+            }
+          ]
 
   if (displayedTags.length > 0) {
     const hiddenTagIds =
@@ -296,7 +335,7 @@ const ExpandCollapseMenu = ({
   return (
     <>
       {workflowViewType === WorkflowViewType.OUTCOME_TABLE && (
-        <OutcomeTableToolbar />
+        <OutcomeTableToolbar workflowType={workflowType} />
       )}
       <SimpleMenu
         id="actions-menu"

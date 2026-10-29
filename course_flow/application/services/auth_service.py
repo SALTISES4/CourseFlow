@@ -4,8 +4,9 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 
 from django.conf import settings
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.utils import timezone
 
 from course_flow.core.auth import generate_raw_token, hash_token
@@ -34,25 +35,42 @@ class AuthService:
     def _token_ttl_seconds(self) -> int:
         return int(getattr(settings, "CF_AUTH_TOKEN_TTL_SECONDS", 60 * 60 * 24 * 30))
 
-    def issue_token(self, *, user: User, label: str = "") -> IssuedAuthToken:
+    def _issue_token_for_locked_user(
+        self, *, user: User, label: str = ""
+    ) -> IssuedAuthToken:
         now = timezone.now()
         expires_at = now + timedelta(seconds=self._token_ttl_seconds())
         raw_token = generate_raw_token()
         Authtoken.objects.create(
             user=user,
             token_hash=hash_token(raw_token),
+            credential_version=user.credential_version,
             label=label,
             expires_at=expires_at,
             last_used_at=now,
         )
         return IssuedAuthToken(access_token=raw_token, expires_at=expires_at)
 
+    def issue_token(self, *, user: User, label: str = "") -> IssuedAuthToken:
+        with transaction.atomic():
+            locked_user = User.objects.select_for_update().get(pk=user.pk)
+            return self._issue_token_for_locked_user(
+                user=locked_user,
+                label=label,
+            )
+
     def login(self, *, email: str, password: str, label: str = "") -> tuple[User, IssuedAuthToken]:
-        normalized_email = email.strip()
-        user = authenticate(username=normalized_email, password=password)
-        if user is None or not user.is_active:
-            raise InvalidCredentialsError
-        return user, self.issue_token(user=user, label=label)
+        user_model = get_user_model()
+        normalized_email = user_model.objects.normalize_email(email.strip())
+        with transaction.atomic():
+            user = (
+                User.objects.select_for_update()
+                .filter(email__iexact=normalized_email)
+                .first()
+            )
+            if user is None or not user.is_active or not user.check_password(password):
+                raise InvalidCredentialsError
+            return user, self._issue_token_for_locked_user(user=user, label=label)
 
     def register(
         self,

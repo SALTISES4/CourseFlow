@@ -1111,6 +1111,10 @@ export type GraphViewOut = {
    */
   outcomes?: Array<OutcomeGraphOut>
   /**
+   * Tags
+   */
+  tags?: Array<TagListItemOut>
+  /**
    * Threadcommentcounts
    */
   threadCommentCounts?: Array<ThreadCommentCountOut>
@@ -2576,6 +2580,78 @@ export type LogoutOut = {
    * Success
    */
   success: boolean
+}
+
+/**
+ * PasswordResetRequestOut
+ */
+export type PasswordResetRequestOut = {
+  /**
+   * Success
+   */
+  success?: boolean
+}
+
+/**
+ * PasswordResetRequestIn
+ */
+export type PasswordResetRequestIn = {
+  /**
+   * Email
+   */
+  email: string
+}
+
+/**
+ * PasswordResetTokenOut
+ */
+export type PasswordResetTokenOut = {
+  /**
+   * Valid
+   */
+  valid: boolean
+}
+
+/**
+ * PasswordResetTokenIn
+ */
+export type PasswordResetTokenIn = {
+  /**
+   * Uid
+   */
+  uid: string
+  /**
+   * Token
+   */
+  token: string
+}
+
+/**
+ * PasswordResetConfirmOut
+ */
+export type PasswordResetConfirmOut = {
+  /**
+   * Success
+   */
+  success?: boolean
+}
+
+/**
+ * PasswordResetConfirmIn
+ */
+export type PasswordResetConfirmIn = {
+  /**
+   * Uid
+   */
+  uid: string
+  /**
+   * Token
+   */
+  token: string
+  /**
+   * Newpassword
+   */
+  newPassword: string
 }
 
 /**
@@ -4925,6 +5001,57 @@ export type LogoutResponses = {
 }
 
 export type LogoutResponse = LogoutResponses[keyof LogoutResponses]
+
+export type RequestPasswordResetData = {
+  body: PasswordResetRequestIn
+  path?: never
+  query?: never
+  url: '/api/auth/password-reset/request'
+}
+
+export type RequestPasswordResetResponses = {
+  /**
+   * OK
+   */
+  200: PasswordResetRequestOut
+}
+
+export type RequestPasswordResetResponse =
+  RequestPasswordResetResponses[keyof RequestPasswordResetResponses]
+
+export type ValidatePasswordResetTokenData = {
+  body: PasswordResetTokenIn
+  path?: never
+  query?: never
+  url: '/api/auth/password-reset/validate'
+}
+
+export type ValidatePasswordResetTokenResponses = {
+  /**
+   * OK
+   */
+  200: PasswordResetTokenOut
+}
+
+export type ValidatePasswordResetTokenResponse =
+  ValidatePasswordResetTokenResponses[keyof ValidatePasswordResetTokenResponses]
+
+export type ConfirmPasswordResetData = {
+  body: PasswordResetConfirmIn
+  path?: never
+  query?: never
+  url: '/api/auth/password-reset/confirm'
+}
+
+export type ConfirmPasswordResetResponses = {
+  /**
+   * OK
+   */
+  200: PasswordResetConfirmOut
+}
+
+export type ConfirmPasswordResetResponse =
+  ConfirmPasswordResetResponses[keyof ConfirmPasswordResetResponses]
 
 export type MeData = {
   body?: never

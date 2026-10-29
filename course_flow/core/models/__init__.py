@@ -10,6 +10,7 @@ from course_flow.core.models.horizontaloutcome import Horizontaloutcome
 from course_flow.core.models.node import Node
 from course_flow.core.models.notification import Notification
 from course_flow.core.models.outcome import Outcome
+from course_flow.core.models.passwordresetattempt import PasswordResetAttempt
 from course_flow.core.models.programmeta import Programmeta
 from course_flow.core.models.project import Project
 from course_flow.core.models.relations import (
@@ -49,6 +50,7 @@ __all__ = [
     "Notification",
     "Outcome",
     "OutcomeTag",
+    "PasswordResetAttempt",
     "Programmeta",
     "Project",
     "ProjectDiscipline",

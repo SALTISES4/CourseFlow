@@ -99,11 +99,19 @@ SSH broadly.
   copies this file. It must contain an exact `ENV=uat` line, the managed
   PostgreSQL connection settings, and `UAT_DATABASE_RESET_HOST` /
   `UAT_DATABASE_RESET_NAME` values that repeat the expected UAT host and
-  database name. A mismatch stops deployment before Django is stopped.
+  database name. A database fingerprint mismatch stops deployment before Django
+  is stopped. The file must also set `COURSEFLOW_FRONTEND_URL` to the public
+  HTTPS frontend origin and configure the intended email backend, sender, and
+  support address.
 - Docker Engine, Docker Compose v2 with `--wait` support, Just, Git, and rsync.
 - Permission for `DEPLOY_USER` to run this repository's Docker Compose stack.
 - Nginx (or the current static server) configured to serve
   `<DEPLOY_PATH>/react/dist`.
+- Nginx configured to reach Django through `127.0.0.1:8000` and to overwrite
+  `X-Forwarded-For` with the direct client address. Set
+  `COURSEFLOW_TRUST_PROXY_CLIENT_IP=true` only after verifying that behavior;
+  appending an untrusted inbound header permits client-IP spoofing. The UAT
+  Compose port is loopback-bound so callers cannot bypass this proxy contract.
 - The deployment public key restricted to this server and environment. Do not
   reuse a production key.
 

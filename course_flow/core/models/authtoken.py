@@ -12,6 +12,7 @@ class Authtoken(models.Model):
         related_name="authtokens",
     )
     token_hash = models.CharField(max_length=64, unique=True, db_index=True)
+    credential_version = models.PositiveBigIntegerField(default=1)
     label = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()
@@ -22,6 +23,12 @@ class Authtoken(models.Model):
         db_table = "cf_authtoken"
         indexes = [
             models.Index(fields=["user", "revoked_at", "expires_at"]),
+        ]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(credential_version__gte=1),
+                name="cf_token_credver_gte_1",
+            )
         ]
 
     @property

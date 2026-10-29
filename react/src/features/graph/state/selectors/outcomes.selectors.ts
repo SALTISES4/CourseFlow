@@ -105,6 +105,7 @@ type TagGroup = {
 // to avoid inline array invalidating memoization every time
 // since it would return new reference to a new empty array
 const EmptyProjectTags: TagListItemOut[] = []
+const EmptyHiddenTagIds: number[] = []
 
 export const selectOutcomeTagGroups = createSelector(
   [
@@ -112,10 +113,17 @@ export const selectOutcomeTagGroups = createSelector(
     (
       _: StateWithGraph,
       _graphUuid: GraphUuid,
-      projectTags?: TagListItemOut[]
-    ) => projectTags ?? EmptyProjectTags
+      projectTags?: TagListItemOut[],
+      _hiddenTagIds?: number[]
+    ) => projectTags ?? EmptyProjectTags,
+    (
+      _: StateWithGraph,
+      _graphUuid: GraphUuid,
+      _projectTags?: TagListItemOut[],
+      hiddenTagIds?: number[]
+    ) => hiddenTagIds ?? EmptyHiddenTagIds
   ],
-  (rootOutcomes, projectTags) => {
+  (rootOutcomes, projectTags, hiddenTagIds) => {
     const tagGroups: TagGroup[] = []
     const untagged: TagGroup = {
       uuid: -1,
@@ -124,6 +132,10 @@ export const selectOutcomeTagGroups = createSelector(
     }
 
     for (const outcome of rootOutcomes) {
+      if (outcome.tagIds.some((tagId) => hiddenTagIds.includes(tagId))) {
+        continue
+      }
+
       if (!outcome.tagIds?.length) {
         untagged.outcomes.push(outcome.uuid)
         continue
@@ -177,10 +189,20 @@ export const selectOutcomeTagGroupsTree = createSelector(
   [
     (state: StateWithGraph) => state,
     selectOutcomeEntities,
-    (state: StateWithGraph, graphUuid: string) =>
-      selectOutcomeTagGroups(state, graphUuid)
+    (
+      state: StateWithGraph,
+      graphUuid: string,
+      projectTags?: TagListItemOut[],
+      hiddenTagIds?: number[]
+    ) => selectOutcomeTagGroups(state, graphUuid, projectTags, hiddenTagIds),
+    (
+      _: StateWithGraph,
+      _graphUuid: string,
+      _projectTags?: TagListItemOut[],
+      hiddenTagIds?: number[]
+    ) => hiddenTagIds ?? EmptyHiddenTagIds
   ],
-  (state, outcomeEntities, rootTagGroups) => {
+  (state, outcomeEntities, rootTagGroups, hiddenTagIds) => {
     const tree: OutcomeTagGroupTree = {
       groups: rootTagGroups,
       outcomes: {}
@@ -188,7 +210,7 @@ export const selectOutcomeTagGroupsTree = createSelector(
 
     rootTagGroups.forEach((group) => {
       group.outcomes.forEach((outcomeUuid) => {
-        parseOutcome(state, tree, outcomeEntities, outcomeUuid)
+        parseOutcome(state, tree, outcomeEntities, outcomeUuid, hiddenTagIds)
       })
     })
 
@@ -201,7 +223,8 @@ function parseOutcome(
   state: StateWithGraph,
   tree: OutcomeTagGroupTree,
   entities: Record<string, OutcomeEntity>,
-  uuid: ResourceUuid
+  uuid: ResourceUuid,
+  hiddenTagIds: number[]
 ) {
   const entity = entities[uuid]
 
@@ -214,7 +237,11 @@ function parseOutcome(
     state,
     entity.graphUuid,
     entity.uuid
-  ).map((c) => c.uuid)
+  )
+    .filter(
+      (child) => !child.tagIds.some((tagId) => hiddenTagIds.includes(tagId))
+    )
+    .map((c) => c.uuid)
 
   tree.outcomes[uuid] = {
     uuid: entity.uuid,
@@ -226,7 +253,7 @@ function parseOutcome(
   }
 
   childrenUuids.forEach((uuid) => {
-    parseOutcome(state, tree, entities, uuid)
+    parseOutcome(state, tree, entities, uuid, hiddenTagIds)
   })
 }
 

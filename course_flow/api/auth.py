@@ -27,6 +27,8 @@ class BearerAuth(HttpBearer):
             raise ExpectedApiError(401, "token_revoked")
         if auth_token.expires_at <= now:
             raise ExpectedApiError(401, "token_expired")
+        if auth_token.credential_version != auth_token.user.credential_version:
+            raise ExpectedApiError(401, "token_revoked")
 
         Authtoken.objects.filter(id=auth_token.id).update(last_used_at=now)
         auth_token.last_used_at = now

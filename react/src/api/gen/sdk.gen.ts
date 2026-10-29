@@ -11,6 +11,8 @@ import type {
   ArchiveProjectResponses,
   ArchiveWorkflowData,
   ArchiveWorkflowResponses,
+  ConfirmPasswordResetData,
+  ConfirmPasswordResetResponses,
   CopyWorkflowData,
   CopyWorkflowResponses,
   CourseFlowApiNinjaAppHealthData,
@@ -167,6 +169,8 @@ import type {
   ReorderGraphChannelsResponses,
   ReorderGraphSectionsData,
   ReorderGraphSectionsResponses,
+  RequestPasswordResetData,
+  RequestPasswordResetResponses,
   RestoreProjectData,
   RestoreProjectResponses,
   RestoreWorkflowData,
@@ -192,7 +196,9 @@ import type {
   UpdateWorkflowData,
   UpdateWorkflowPublicLinkData,
   UpdateWorkflowPublicLinkResponses,
-  UpdateWorkflowResponses
+  UpdateWorkflowResponses,
+  ValidatePasswordResetTokenData,
+  ValidatePasswordResetTokenResponses
 } from './types.gen'
 import {
   zAcquireWorkspaceEditLockData,
@@ -203,6 +209,8 @@ import {
   zArchiveProjectResponse,
   zArchiveWorkflowData,
   zArchiveWorkflowResponse,
+  zConfirmPasswordResetData,
+  zConfirmPasswordResetResponse,
   zCopyWorkflowData,
   zCopyWorkflowResponse,
   zCourseFlowApiNinjaAppHealthData,
@@ -359,6 +367,8 @@ import {
   zReorderGraphChannelsResponse,
   zReorderGraphSectionsData,
   zReorderGraphSectionsResponse,
+  zRequestPasswordResetData,
+  zRequestPasswordResetResponse,
   zRestoreProjectData,
   zRestoreProjectResponse,
   zRestoreWorkflowData,
@@ -384,7 +394,9 @@ import {
   zUpdateWorkflowData,
   zUpdateWorkflowPublicLinkData,
   zUpdateWorkflowPublicLinkResponse,
-  zUpdateWorkflowResponse
+  zUpdateWorkflowResponse,
+  zValidatePasswordResetTokenData,
+  zValidatePasswordResetTokenResponse
 } from './zod.gen'
 
 export type Options<
@@ -1988,6 +2000,77 @@ export const logout = <ThrowOnError extends boolean = false>(
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/auth/logout',
     ...options
+  })
+
+/**
+ * Request Password Reset
+ */
+export const requestPasswordReset = <ThrowOnError extends boolean = false>(
+  options: Options<RequestPasswordResetData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    RequestPasswordResetResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zRequestPasswordResetData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zRequestPasswordResetResponse.parseAsync(data),
+    url: '/api/auth/password-reset/request',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Validate Password Reset Token
+ */
+export const validatePasswordResetToken = <
+  ThrowOnError extends boolean = false
+>(
+  options: Options<ValidatePasswordResetTokenData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    ValidatePasswordResetTokenResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zValidatePasswordResetTokenData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zValidatePasswordResetTokenResponse.parseAsync(data),
+    url: '/api/auth/password-reset/validate',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  })
+
+/**
+ * Confirm Password Reset
+ */
+export const confirmPasswordReset = <ThrowOnError extends boolean = false>(
+  options: Options<ConfirmPasswordResetData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    ConfirmPasswordResetResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zConfirmPasswordResetData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zConfirmPasswordResetResponse.parseAsync(data),
+    url: '/api/auth/password-reset/confirm',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
   })
 
 /**

@@ -16,6 +16,7 @@ from course_flow.core.models import (
     Outcome,
     Project,
     Section,
+    Tag,
     TeamUser,
     Workflow,
     WorkspaceEditLock,
@@ -188,7 +189,15 @@ def test_public_detail_and_graph_are_anonymous_read_only_projections():
         section_row=0,
         title="Public node",
     )
-    Outcome.objects.create(graph=workflow.graph, title="Public outcome", order=0)
+    tag = Tag.objects.create(
+        project=project,
+        label="Public competency",
+        translation_plural="Public competencies",
+    )
+    outcome = Outcome.objects.create(
+        graph=workflow.graph, title="Public outcome", order=0
+    )
+    outcome.tags.add(tag)
     client = Client()
 
     detail = client.get(f"/api/public/workflow/{workflow.uuid}")
@@ -220,6 +229,13 @@ def test_public_detail_and_graph_are_anonymous_read_only_projections():
     assert all(item["threadUuid"] is None for item in graph_body["nodes"])
     assert all(item["linkedWorkflowUuid"] is None for item in graph_body["nodes"])
     assert all(item["threadUuid"] is None for item in graph_body["outcomes"])
+    assert graph_body["tags"] == [
+        {
+            "id": tag.id,
+            "label": "Public competency",
+            "translationPlural": "Public competencies",
+        }
+    ]
     assert graph_body["threadCommentCounts"] == []
 
     authenticated_update = client.patch(

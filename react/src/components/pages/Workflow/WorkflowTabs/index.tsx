@@ -1,10 +1,16 @@
 import { ResourceRole } from '@cf/api/gen/types.gen'
 import { useWorkspacePermissions } from '@cf/context/workspacePermissionsContext'
 import { selectSectionUuidsOrderedForGraph } from '@cf/features/graph/state/selectors/canonical.selectors'
+import { graphUiActions } from '@cf/features/graph/state/slices/graphUi.slice'
+import { outcomeTableUiActions } from '@cf/features/graph/state/slices/outcomeTableUi.slice'
+import type { AppDispatch } from '@cf/redux/store'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
 import { OuterContentWrap } from '@cfMUI/helper'
 import WorkspaceSidebar from '@cfPages/Workflow/Sidebar'
-import type { WorkflowPageData } from '@cfPages/Workflow/types'
+import {
+  type WorkflowPageData,
+  WorkflowViewType
+} from '@cfPages/Workflow/types'
 import Header from '@cfPages/Workflow/WorkflowTabs/components/Header'
 import {
   ActionMenu,
@@ -18,8 +24,9 @@ import { useWorkflowSidebar } from '@cfSidebar/hooks/useSidebar'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Tabs from '@mui/material/Tabs'
-import { type ReactNode, useMemo } from 'react'
-import { useSelector } from 'react-redux'
+import { type ReactNode, useLayoutEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useDispatch, useSelector } from 'react-redux'
 import { Routes, useParams } from 'react-router-dom'
 
 /**
@@ -42,6 +49,8 @@ const WorkflowTabs = ({
   editLockNotice?: ReactNode
 }) => {
   const { uuid } = useParams()
+  const { t } = useTranslation('workflow')
+  const dispatch = useDispatch<AppDispatch>()
   const workflowViewType = useWorkflowViewTypeFromRoute()
   const { resource: permissions } = useWorkspacePermissions()
   const workflowChromePublicView =
@@ -53,6 +62,16 @@ const WorkflowTabs = ({
   )
   const sectionIdsOrdered = useSelector(sectionIdsOrderedSelector)
   const workflowType = workflow.workflowType
+
+  useLayoutEffect(() => {
+    dispatch(outcomeTableUiActions.resetOutcomeTableUi())
+    dispatch(graphUiActions.clearViewSettingsTagFilters())
+
+    return () => {
+      dispatch(outcomeTableUiActions.resetOutcomeTableUi())
+      dispatch(graphUiActions.clearViewSettingsTagFilters())
+    }
+  }, [dispatch, workflow.graphUuid])
 
   useWorkflowSidebar({
     workflowType,
@@ -74,12 +93,31 @@ const WorkflowTabs = ({
    * COMPONENTS
    *******************************************************/
   const viewBar = (
-    <Stack direction="row" spacing={2}>
+    <Stack
+      direction="row"
+      spacing={2}
+      role={
+        workflowViewType === WorkflowViewType.OUTCOME_TABLE
+          ? 'group'
+          : undefined
+      }
+      aria-label={
+        workflowViewType === WorkflowViewType.OUTCOME_TABLE
+          ? t('outcomeTable.presentationControlsLabel')
+          : undefined
+      }
+      data-test-id={
+        workflowViewType === WorkflowViewType.OUTCOME_TABLE
+          ? 'workflow-outcome-table-presentation-controls'
+          : undefined
+      }
+    >
       {editLockControl}
       <JumpToMenu sectionIds={sectionIdsOrdered} />
       <ExpandCollapseMenu
         graphUuid={workflow.graphUuid}
         sectionIds={sectionIdsOrdered}
+        workflowType={workflow.workflowType}
       />
     </Stack>
   )

@@ -68,6 +68,8 @@ include = [
   "course_flow/application/dto.py",
   "course_flow/application/graph_mutation_delta.py",
   "course_flow/application/ports.py",
+  "course_flow/application/services/email_service.py",
+  "course_flow/application/services/password_policy.py",
   "course_flow/core/discipline_catalogue.py",
   "course_flow/core/enum.py",
   "course_flow/core/hierarchy.py",

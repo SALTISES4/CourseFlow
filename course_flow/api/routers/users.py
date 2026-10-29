@@ -1,8 +1,12 @@
 from ninja import Query, Router
 from ninja.errors import HttpError
 
-from course_flow.api.auth import BearerAuth, get_current_user
-from course_flow.api.deps import get_user_service
+from course_flow.api.auth import (
+    BearerAuth,
+    get_current_token,
+    get_current_user,
+)
+from course_flow.api.deps import get_account_security_service, get_user_service
 from course_flow.api.errors import ExpectedApiError, validation_error
 from course_flow.api.schemas.users import (
     UserListItemOut,
@@ -17,7 +21,13 @@ from course_flow.api.schemas.users import (
     UserProfileSettingsOutResp,
     UserProfileSettingsPatchIn,
 )
-from course_flow.application.services.user_service import ValidationError
+from course_flow.application.services.account_security_service import (
+    InvalidCurrentTokenError,
+    PasswordChangeValidationError,
+)
+from course_flow.application.services.user_service import (
+    ValidationError as UserValidationError,
+)
 from course_flow.core.enum import LanguagePreference
 from course_flow.core.models import User
 
@@ -79,7 +89,7 @@ def patch_my_profile_settings(request, payload: UserProfileSettingsPatchIn):
         raise ExpectedApiError(400, "email_update_not_supported")
     try:
         user = get_user_service().update_profile_settings(user_id=current_user.id, **patch)
-    except ValidationError as exc:
+    except UserValidationError as exc:
         raise validation_error(exc.errors)
     if user is None:
         raise HttpError(404, "User not found")
@@ -93,13 +103,21 @@ def patch_my_profile_settings(request, payload: UserProfileSettingsPatchIn):
 )
 def patch_my_profile_password(request, payload: UserProfilePasswordPatchIn):
     current_user = get_current_user(request)
+    current_token = get_current_token(request)
     patch = payload.model_dump(exclude_unset=True)
     if "password" not in patch or "new_password" not in patch:
         raise ExpectedApiError(400, "password_fields_required")
     try:
-        user = get_user_service().reset_password(user_id=current_user.id, **patch)
-    except ValidationError as exc:
+        user = get_account_security_service().change_password(
+            user_id=current_user.id,
+            current_token_id=current_token.id,
+            current_password=patch["password"],
+            new_password=patch["new_password"],
+        )
+    except PasswordChangeValidationError as exc:
         raise validation_error(exc.errors)
+    except InvalidCurrentTokenError as exc:
+        raise ExpectedApiError(401, exc.code)
     if user is None:
         raise HttpError(404, "User not found")
 

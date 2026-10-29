@@ -1,8 +1,12 @@
+from course_flow.application.services.account_security_service import (
+    AccountSecurityService,
+)
 from course_flow.application.services.auth_service import AuthService
 from course_flow.application.services.authorization_service import (
     AuthorizationService,
 )
 from course_flow.application.services.channel_service import ChannelService
+from course_flow.application.services.email_service import EmailService
 from course_flow.application.services.graph_mutation_service import (
     GraphMutationService,
 )
@@ -12,6 +16,9 @@ from course_flow.application.services.graph_view_service import (
 from course_flow.application.services.library_service import LibraryService
 from course_flow.application.services.notification_service import (
     NotificationService,
+)
+from course_flow.application.services.password_recovery_service import (
+    PasswordRecoveryService,
 )
 from course_flow.application.services.project_detail_service import (
     ProjectDetailService,
@@ -49,6 +56,9 @@ from course_flow.infrastructure.repositories.django_workflow_repository import (
 )
 
 _auth_service = AuthService()
+_email_service = EmailService()
+_account_security_service = AccountSecurityService(_email_service)
+_password_recovery_service = PasswordRecoveryService(_email_service)
 _authorization_service = AuthorizationService()
 _project_graph_view_service = ProjectGraphViewService()
 _project_detail_service = ProjectDetailService()
@@ -69,6 +79,14 @@ _library_service = LibraryService()
 
 def get_auth_service() -> AuthService:
     return _auth_service
+
+
+def get_account_security_service() -> AccountSecurityService:
+    return _account_security_service
+
+
+def get_password_recovery_service() -> PasswordRecoveryService:
+    return _password_recovery_service
 
 
 def get_authorization_service() -> AuthorizationService:

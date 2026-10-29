@@ -108,6 +108,8 @@ Amazon SES identity verification, account production access, IAM permission, and
 
 - Global functional behavior: `tests/docs/requirements/features/global/email_communication_requirements_v1.yaml`
 - Password recovery: `tests/docs/requirements/features/auth/forgot_password_requirements_v1.yaml`
+- Password-recovery tokens and rate limits: `docs/architecture/adr_password_recovery_tokens_and_rate_limits.md`
 - Authenticated password change: `tests/docs/requirements/features/auth/password_reset_requirements_v1.yaml`
+- Password-change session invalidation: `docs/architecture/adr_credential_version_and_password_change_sessions.md`
 - Email backend configuration: `course_flow/settings.py`
 - AWS SES permission and sender restriction: `../saltise-infra/courseflow/cloudformation/core.yml`

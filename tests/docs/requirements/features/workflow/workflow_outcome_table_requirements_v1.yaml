@@ -1,0 +1,866 @@
+# Normalized requirements: workflow 'Outcome table' sub-view
+# Status: Active functional requirements.
+# Source: tests/docs/__ARCHIVE/functional-requirements.md (Outcome table row in sidebar matrix — values missing in export); Figma CourseFlow-2.0 frames (see designEvidenceLinkTable); engineering interview 2026-06-25
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Scope (this file): 'Outcome table' sub-view content on route '/workflow/{id}/outcome-table' for course and program workflows; 'Normal' and 'Competency matrix' style presentations; outcome tag grouping on the grid; Competency matrix summary columns; expand/collapse; Normal outcome-style cell semantics; assignment toggling from table cells; sticky scroll regions. Out of scope: Advanced outcome-style cell semantics (I/D/A indicators) and activity workflows. Header tab entry is governed by tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml FR-WF-HEADER-003; authenticated contextActionBar controls are governed by tests/docs/requirements/features/global/context_action_bar_requirements_v1.yaml FR-CAB-008 through FR-CAB-010.
+# Cross-reference:
+#   - tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml (workflowOutcomeTableTab, tab enablement, and navigation — FR-WF-HEADER-003)
+#   - tests/docs/requirements/features/global/context_action_bar_requirements_v1.yaml ('View settings', table style, and 'Sort' on contextActionBar — FR-CAB-008, FR-CAB-009, FR-CAB-010)
+#   - tests/docs/requirements/features/workflow/workflow_right_sidebar_requirements_v1.yaml (FR-WF-RS-001 whitelist — sidebar only on '/workflow/{id}/graph' and '/workflow/{id}/outcomes'; '/workflow/{id}/outcome-table' is out of scope for sidebar; Overview also has no sidebar)
+#   - tests/docs/requirements/features/workflow/workflow_add_tab_requirements_v1.yaml (workflowView — 'Workflow' sub-view on '/workflow/{id}/graph')
+#   - tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml (workflowOutcome, workflowOutcomeTree, workflowOutcomeHeaderTitle, workflowOutcomeHeaderToggle — FR-WF-EO-007; outcome hierarchy expand/collapse)
+#   - tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml (workflowNode, workflowEditNodeFormTimeField, workflowEditNodeFormCreditsField, workflowEditNodeFormPonderationTheoryField, workflowEditNodeFormPonderationPracticeField, workflowEditNodeFormPonderationIndividualField, workflowEditNodeFormSpecificEducationSwitch — program Competency matrix column values)
+#   - tests/docs/requirements/features/workflow/workflow_edit_channel_requirements_v1.yaml (workflowChannel node-category colour — FR-CHAN-003; workflowOutcomeTableNodeChannelColorBand)
+#   - tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml (workflowSectionContainer)
+#   - tests/docs/requirements/features/workflow/workflow_assign_outcome_to_node_requirements_v1.yaml (outcome-to-node assignment on 'Workflow' sub-view — FR-WF-AO-004, FR-WF-AO-006, FR-WF-AO-010; tag grouping parity on assign tab — FR-WF-AO-002; shared assignment state with 'Outcome table' per FR-WF-OT-007)
+#   - tests/docs/requirements/features/project/project_overview_requirements_v1.yaml (projectTagsSection, projectTagItem — tag catalog per FR-PROJ-OV-005; in-use tags on workflowOutcomeTableViewSettingsMenuTagsSection per FR-CAB-008)
+#   - tests/docs/requirements/features/workflow/workflow_overview_requirements_v1.yaml (program classification and ponderation overview fields — related metadata domain for program Competency matrix columns)
+#   - tests/docs/requirements/features/global/workspace_access_requirements_v1.yaml (denied access — FR-WS-ACCESS-002)
+#   - tests/docs/requirements/features/global/workspace_edit_lock_requirements_v1.yaml (workflow mutation controls require the current edit lock — FR-WS-LOCK-001 onward)
+#   - tests/docs/requirements/features/workflow/workflow_public_link_requirements_v1.yaml (anonymous read-only Outcome Table access — FR-WF-PUBLIC-002)
+#   - tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml (normalized Days + Hours display and arithmetic for node and section duration values — FR-WF-DURATION-001 through FR-WF-DURATION-003)
+
+documentPreconditions:
+  - actor is one of (a) authenticated owner, editor, commenter, or viewer with an explicit contributor role on the parent project of the workflow, (b) authenticated user (published-access, no explicit contributor role) viewing a workflow whose parent project is published, or (c) anonymousViewer viewing a workflow whose workflow-specific public-link mode is enabled per tests/docs/requirements/features/workflow/workflow_public_link_requirements_v1.yaml FR-WF-PUBLIC-002
+  - current workflow is a course or program workflow
+  - current route matches '/workflow/{id}/outcome-table'
+  - workflowOutcomeTableTab eligibility per tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml FR-WF-HEADER-003 holds (at least one workflowOutcome and at least one workflowNode; tab enabled)
+  - requirements in this file assume the above hold; when they do not, assert per FR-WS-ACCESS-002
+  - anonymousViewer sees workflowOutcomeTableView read-only and cannot persist outcome-to-node assignment or any other workflow change
+
+uiObjectDefinitions:
+  workflowView:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_add_tab_requirements_v1.yaml.
+  workflowOutcomeTree:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml.
+  workflowSectionHeader:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml.
+  projectTagItem:
+    meaning: Canonical definition in tests/docs/requirements/features/project/project_overview_requirements_v1.yaml.
+  workflowOutcomeTableTab:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_header_requirements_v1.yaml.
+  workflowOutcomeTableView:
+    meaning: Main content region of the 'Outcome table' sub-view on route '/workflow/{id}/outcome-table'.
+  workflowOutcomeTableGrid:
+    meaning: Scrollable outcome–node assignment matrix inside workflowOutcomeTableView.
+  workflowOutcomeTableNormalLayout:
+    meaning: "'Normal' style variant of workflowOutcomeTableGrid."
+  workflowOutcomeTableCompetencyMatrixLayout:
+    meaning: "'Competency matrix' style variant of workflowOutcomeTableGrid."
+  workflowOutcomeTableOutcomeTagGroupBand:
+    meaning: Group band on the outcome axis of workflowOutcomeTableGrid for one outcome tag group.
+  workflowOutcomeTableSectionGroupBand:
+    meaning: Group band in workflowOutcomeTableGrid labeling one workflowSectionContainer from workflowView.
+  workflowOutcomeTableSectionOutcomeCell:
+    meaning: Read-only cell at the intersection of one workflowOutcome and one workflowSectionContainer in workflowOutcomeTableGrid.
+  workflowOutcomeTableSectionRow:
+    meaning: Section header row for one workflowSectionContainer in 'Competency matrix' style workflowOutcomeTableGrid.
+  workflowOutcomeTableSectionTotalHoursCell:
+    meaning: Read-only summary cell in workflowOutcomeTableSectionRow under workflowOutcomeTableTotalHoursColumn.
+  workflowOutcomeTableOutcomeRowLabel:
+    meaning: Sticky left row label for one workflowOutcome in 'Normal' style workflowOutcomeTableGrid.
+  workflowOutcomeTableColumnHeader:
+    meaning: Angled header cell on the column axis of workflowOutcomeTableGrid.
+  workflowOutcomeTableNodeRowLabel:
+    meaning: Sticky left row label for one workflowNode in 'Competency matrix' style workflowOutcomeTableGrid.
+  workflowOutcomeTableNodeChannelColorBand:
+    meaning: Left-edge colour stripe on a workflowNode label or header in workflowOutcomeTableGrid.
+  workflowChannel:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_channel_requirements_v1.yaml.
+  workflowOutcomeTableGridCell:
+    meaning: Intersection cell in workflowOutcomeTableGrid for one workflowOutcome and one workflowNode pair; exposes checkbox semantics and an accessible name containing the full outcome and node titles.
+  workflowOutcomeTableGridCellCompleteIndicator:
+    meaning: Solid checkmark icon within workflowOutcomeTableGridCell.
+  workflowOutcomeTableGridCellPartialIndicator:
+    meaning: Semi-transparent checkmark icon within workflowOutcomeTableGridCell.
+  workflowOutcomeTableGridCellFocusBorder:
+    meaning: Visible focus outline on an actionable workflowOutcomeTableGridCell when it has keyboard focus matching :focus-visible.
+  workflowOutcomeTableTruncatedLabelTooltip:
+    meaning: Tooltip showing the full localized label for a truncated workflowOutcomeTableOutcomeRowLabel, workflowOutcomeTableColumnHeader, or workflowOutcomeTableNodeRowLabel on pointer hover or keyboard focus.
+  workflowOutcomeTableTotalHoursColumn:
+    meaning: Read-only summary column labeled 'Total hours' in 'Competency matrix' style workflowOutcomeTableGrid.
+  workflowOutcomeTableProgramClassificationHeaderGroup:
+    meaning: Program-only column group header labeled 'Classification' in 'Competency matrix' style workflowOutcomeTableGrid.
+  workflowOutcomeTableProgramGeneralEducationColumn:
+    meaning: Program-only read-only column labeled 'General education' under workflowOutcomeTableProgramClassificationHeaderGroup.
+  workflowOutcomeTableProgramSpecificEducationColumn:
+    meaning: Program-only read-only column labeled 'Specific education' under workflowOutcomeTableProgramClassificationHeaderGroup.
+  workflowOutcomeTableProgramPonderationHeaderGroup:
+    meaning: Program-only column group header labeled 'Ponderation' in 'Competency matrix' style workflowOutcomeTableGrid.
+  workflowOutcomeTableProgramPonderationTheoryColumn:
+    meaning: Program-only read-only column labeled 'Theory' under workflowOutcomeTableProgramPonderationHeaderGroup.
+  workflowOutcomeTableProgramPonderationPracticalColumn:
+    meaning: Program-only read-only column labeled 'Practical' under workflowOutcomeTableProgramPonderationHeaderGroup.
+  workflowOutcomeTableProgramPonderationIndividualColumn:
+    meaning: Program-only read-only column labeled 'Individual work' under workflowOutcomeTableProgramPonderationHeaderGroup.
+  workflowOutcomeTableProgramPonderationTotalHoursColumn:
+    meaning: Program-only read-only column labeled 'Total hours' under workflowOutcomeTableProgramPonderationHeaderGroup.
+  workflowOutcomeTableProgramCreditsColumn:
+    meaning: Program-only read-only column labeled 'Credits' in 'Competency matrix' style workflowOutcomeTableGrid.
+  workflowEditNodeFormCreditsField:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml.
+  workflowEditNodeFormPonderationTheoryField:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml.
+  workflowEditNodeFormPonderationPracticeField:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml.
+  workflowEditNodeFormPonderationIndividualField:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml.
+  workflowEditNodeFormSpecificEducationSwitch:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml.
+  workflowEditNodeFormTimeField:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml.
+  workflowEditOutcomeFormTagsAutocomplete:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml.
+  workflowOutcomeTableViewSettingsMenuItemExpandOutcomes:
+    meaning: Canonical definition in tests/docs/requirements/features/global/context_action_bar_requirements_v1.yaml.
+  workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes:
+    meaning: Canonical definition in tests/docs/requirements/features/global/context_action_bar_requirements_v1.yaml.
+  workflowOutcomeTableViewSettingsMenuTagsSection:
+    meaning: Canonical definition in tests/docs/requirements/features/global/context_action_bar_requirements_v1.yaml.
+  workflowOutcomeTableStyleTrigger:
+    meaning: Canonical definition in tests/docs/requirements/features/global/context_action_bar_requirements_v1.yaml.
+  workflowOutcomeTableSortTrigger:
+    meaning: Canonical definition in tests/docs/requirements/features/global/context_action_bar_requirements_v1.yaml.
+  workflowOutcomeTablePresentationControls:
+    meaning: Non-persistent Outcome Table controls for table style, sorting, expand/collapse, and tag filtering; authenticated actors receive them on contextActionBar and anonymousViewer receives them in the public Outcome Table presentation without authenticated application chrome.
+  workflowOutcome:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml.
+  workflowOutcomeHeaderToggle:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml.
+  workflowNode:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml.
+  workflowSectionContainer:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml.
+  workflowRightSidebarOutcomesTab:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_assign_outcome_to_node_requirements_v1.yaml.
+  workflowOutcomesAssignTabOutcomeRow:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_assign_outcome_to_node_requirements_v1.yaml.
+  workflowOutcomesAssignTabTagGroup:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_assign_outcome_to_node_requirements_v1.yaml.
+  globalMessageSnackbar:
+    meaning: Canonical global message surface used for graph-mutation and workspace edit-lock feedback.
+
+locatorMappings:
+  workflowOutcomeTableTab: "canonical_locators.yaml -> workflowOutcomeTableTab"
+  workflowOutcomeTableView: "canonical_locators.yaml -> workflowOutcomeTableView"
+  workflowOutcomeTableGrid: "canonical_locators.yaml -> workflowOutcomeTableGrid"
+  workflowOutcomeTableNormalLayout: "canonical_locators.yaml -> workflowOutcomeTableNormalLayout"
+  workflowOutcomeTableCompetencyMatrixLayout: "canonical_locators.yaml -> workflowOutcomeTableCompetencyMatrixLayout"
+  workflowOutcomeTableOutcomeTagGroupBand: "canonical_locators.yaml -> workflowOutcomeTableOutcomeTagGroupBand"
+  workflowOutcomeTableSectionGroupBand: "canonical_locators.yaml -> workflowOutcomeTableSectionGroupBand"
+  workflowOutcomeTableSectionOutcomeCell: "canonical_locators.yaml -> workflowOutcomeTableSectionOutcomeCell"
+  workflowOutcomeTableSectionRow: "canonical_locators.yaml -> workflowOutcomeTableSectionRow"
+  workflowOutcomeTableSectionTotalHoursCell: "canonical_locators.yaml -> workflowOutcomeTableSectionTotalHoursCell"
+  workflowOutcomeTableOutcomeRowLabel: "canonical_locators.yaml -> workflowOutcomeTableOutcomeRowLabel"
+  workflowOutcomeTableColumnHeader: "canonical_locators.yaml -> workflowOutcomeTableColumnHeader"
+  workflowOutcomeTableNodeChannelColorBand: "canonical_locators.yaml -> workflowOutcomeTableNodeChannelColorBand"
+  workflowOutcomeTableNodeRowLabel: "canonical_locators.yaml -> workflowOutcomeTableNodeRowLabel"
+  workflowOutcomeTableGridCell: "canonical_locators.yaml -> workflowOutcomeTableGridCell"
+  workflowOutcomeTableGridCellCompleteIndicator: "canonical_locators.yaml -> workflowOutcomeTableGridCellCompleteIndicator"
+  workflowOutcomeTableGridCellPartialIndicator: "canonical_locators.yaml -> workflowOutcomeTableGridCellPartialIndicator"
+  workflowOutcomeTableGridCellFocusBorder: "canonical_locators.yaml -> workflowOutcomeTableGridCellFocusBorder"
+  workflowOutcomeTableTruncatedLabelTooltip: "canonical_locators.yaml -> workflowOutcomeTableTruncatedLabelTooltip"
+  workflowOutcomeTablePresentationControls: "canonical_locators.yaml -> workflowOutcomeTablePresentationControls"
+  globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
+  workflowOutcomeTableTotalHoursColumn: "canonical_locators.yaml -> workflowOutcomeTableTotalHoursColumn"
+  workflowOutcomeTableProgramClassificationHeaderGroup: "canonical_locators.yaml -> workflowOutcomeTableProgramClassificationHeaderGroup"
+  workflowOutcomeTableProgramGeneralEducationColumn: "canonical_locators.yaml -> workflowOutcomeTableProgramGeneralEducationColumn"
+  workflowOutcomeTableProgramSpecificEducationColumn: "canonical_locators.yaml -> workflowOutcomeTableProgramSpecificEducationColumn"
+  workflowOutcomeTableProgramPonderationHeaderGroup: "canonical_locators.yaml -> workflowOutcomeTableProgramPonderationHeaderGroup"
+  workflowOutcomeTableProgramPonderationTheoryColumn: "canonical_locators.yaml -> workflowOutcomeTableProgramPonderationTheoryColumn"
+  workflowOutcomeTableProgramPonderationPracticalColumn: "canonical_locators.yaml -> workflowOutcomeTableProgramPonderationPracticalColumn"
+  workflowOutcomeTableProgramPonderationIndividualColumn: "canonical_locators.yaml -> workflowOutcomeTableProgramPonderationIndividualColumn"
+  workflowOutcomeTableProgramPonderationTotalHoursColumn: "canonical_locators.yaml -> workflowOutcomeTableProgramPonderationTotalHoursColumn"
+  workflowOutcomeTableProgramCreditsColumn: "canonical_locators.yaml -> workflowOutcomeTableProgramCreditsColumn"
+  workflowView: "canonical_locators.yaml -> workflowView"
+  workflowOutcomeTree: "canonical_locators.yaml -> workflowOutcomeTree"
+  workflowSectionHeader: "canonical_locators.yaml -> workflowSectionHeader"
+  projectTagItem: "canonical_locators.yaml -> projectTagItem"
+  workflowChannel: "canonical_locators.yaml -> workflowChannel"
+  workflowEditNodeFormCreditsField: "canonical_locators.yaml -> workflowEditNodeFormCreditsField"
+  workflowEditNodeFormPonderationTheoryField: "canonical_locators.yaml -> workflowEditNodeFormPonderationTheoryField"
+  workflowEditNodeFormPonderationPracticeField: "canonical_locators.yaml -> workflowEditNodeFormPonderationPracticeField"
+  workflowEditNodeFormPonderationIndividualField: "canonical_locators.yaml -> workflowEditNodeFormPonderationIndividualField"
+  workflowEditNodeFormSpecificEducationSwitch: "canonical_locators.yaml -> workflowEditNodeFormSpecificEducationSwitch"
+  workflowEditNodeFormTimeField: "canonical_locators.yaml -> workflowEditNodeFormTimeField"
+  workflowEditOutcomeFormTagsAutocomplete: "canonical_locators.yaml -> workflowEditOutcomeFormTagsAutocomplete"
+  workflowOutcomeTableViewSettingsMenuItemExpandOutcomes: "canonical_locators.yaml -> workflowOutcomeTableViewSettingsMenuItemExpandOutcomes"
+  workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes: "canonical_locators.yaml -> workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes"
+  workflowOutcomeTableViewSettingsMenuTagsSection: "canonical_locators.yaml -> workflowOutcomeTableViewSettingsMenuTagsSection"
+  workflowOutcomeTableStyleTrigger: "canonical_locators.yaml -> workflowOutcomeTableStyleTrigger"
+  workflowOutcomeTableSortTrigger: "canonical_locators.yaml -> workflowOutcomeTableSortTrigger"
+  workflowOutcome: "canonical_locators.yaml -> workflowOutcome"
+  workflowOutcomeHeaderToggle: "canonical_locators.yaml -> workflowOutcomeHeaderToggle"
+  workflowNode: "canonical_locators.yaml -> workflowNode"
+  workflowSectionContainer: "canonical_locators.yaml -> workflowSectionContainer"
+  workflowRightSidebarOutcomesTab: "canonical_locators.yaml -> workflowRightSidebarOutcomesTab"
+  workflowOutcomesAssignTabOutcomeRow: "canonical_locators.yaml -> workflowOutcomesAssignTabOutcomeRow"
+  workflowOutcomesAssignTabTagGroup: "canonical_locators.yaml -> workflowOutcomesAssignTabTagGroup"
+
+requirements:
+  - id: FR-WF-OT-001
+    title: Layout of 'Normal' style on 'Outcome table'
+
+    designEvidence:
+      - FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+      - anonymousViewer
+
+    uiObjects:
+      - workflowOutcomeTableView
+      - workflowOutcomeTableGrid
+      - workflowOutcomeTableNormalLayout
+      - workflowOutcomeTableOutcomeTagGroupBand
+      - workflowOutcomeTableSectionGroupBand
+      - workflowOutcomeTableSectionOutcomeCell
+      - workflowOutcomeTableOutcomeRowLabel
+      - workflowOutcomeTableColumnHeader
+      - workflowOutcomeTableNodeChannelColorBand
+      - workflowOutcomeTableGridCell
+      - workflowOutcomeTableTruncatedLabelTooltip
+      - workflowOutcomeTree
+      - workflowView
+      - workflowNode
+      - workflowChannel
+      - workflowSectionContainer
+      - workflowSectionHeader
+      - projectTagItem
+      - workflowEditOutcomeFormTagsAutocomplete
+
+    preconditions:
+      - documentPreconditions for this file hold
+
+    trigger:
+      - user navigates to 'Outcome table' sub-view
+      - user selects 'Normal' on workflowOutcomeTableStyleTrigger per FR-CAB-010
+
+    mainFlow:
+      - workflowOutcomeTableView renders workflowOutcomeTableGrid as a scrollable matrix of workflowOutcomeTableGridCell entries at every workflowOutcome and workflowNode pair, plus workflowOutcomeTableSectionOutcomeCell entries at every workflowOutcome and workflowSectionContainer pair
+      - workflowOutcomeTableGrid uses workflowOutcomeTableNormalLayout — row axis is workflowOutcomeTree hierarchy grouped under workflowOutcomeTableOutcomeTagGroupBand per FR-WF-OT-008; column axis is workflowNode entries from workflowView grouped under workflowOutcomeTableSectionGroupBand (one band per workflowSectionContainer); workflowNode order on the column axis per FR-CAB-009 default sort
+      - within each workflowOutcomeTableSectionGroupBand, the leftmost column is workflowOutcomeTableSectionOutcomeCell (one read-only cell per workflowOutcome row, assignment rollup per FR-WF-OT-006) followed by workflowOutcomeTableColumnHeader entries for each workflowNode in that section
+      - each workflowOutcomeTableOutcomeRowLabel shows workflowOutcomeHeaderTitle with hierarchical numbering per FR-WF-EO-007
+      - each workflowOutcomeTableColumnHeader for a workflowNode shows the workflowNode title from workflowView, workflowOutcomeTableNodeChannelColorBand on the left edge coloured per the node's parent workflowChannel per FR-CHAN-003, and is angled
+      - when a workflowOutcomeTableOutcomeRowLabel or workflowOutcomeTableColumnHeader is visually truncated, pointer hover or keyboard focus shows workflowOutcomeTableTruncatedLabelTooltip containing the full localized label; no tooltip is attached to workflowOutcomeTableGridCell
+      - each workflowOutcomeTableSectionGroupBand displays workflowSectionTitleText for the corresponding workflowSectionContainer in workflowView on the 'Workflow' sub-view
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given Normal style is active, workflowOutcomeTableGrid has outcome hierarchy rows grouped by outcome tag on the vertical axis and node columns grouped by workflow section on the horizontal axis
+      - given section S contains nodes, S's group starts with one read-only section-rollup column followed by one column for each node in the selected FR-CAB-009 order
+      - given an outcome row, its sticky row header shows the full hierarchical numbered outcome title and each node column header shows the node title and its channel colour stripe
+      - given a truncated outcome row label or node column header, pointer hover and keyboard focus show the full localized label in workflowOutcomeTableTruncatedLabelTooltip and no assignment cell opens that tooltip
+      - given Normal style renders, workflowOutcomeTableGrid exposes role='grid', tag and section bands expose named groups, outcome labels expose rowheader semantics, and node headers expose columnheader semantics
+
+    openQuestions: []
+
+  - id: FR-WF-OT-002
+    title: Layout of 'Competency matrix' style on 'Outcome table'
+
+    designEvidence:
+      - FIGMA-WF-OT-COURSE-COMPETENCY-MATRIX-SCROLLED-LEFT
+      - FIGMA-WF-OT-COURSE-COMPETENCY-MATRIX-SCROLLED-RIGHT
+      - FIGMA-WF-OT-PROGRAM-COMPETENCY-MATRIX-SCROLLED-RIGHT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+      - anonymousViewer
+
+    uiObjects:
+      - workflowOutcomeTableView
+      - workflowOutcomeTableGrid
+      - workflowOutcomeTableCompetencyMatrixLayout
+      - workflowOutcomeTableOutcomeTagGroupBand
+      - workflowOutcomeTableSectionGroupBand
+      - workflowOutcomeTableSectionOutcomeCell
+      - workflowOutcomeTableSectionRow
+      - workflowOutcomeTableSectionTotalHoursCell
+      - workflowOutcomeTableNodeRowLabel
+      - workflowOutcomeTableColumnHeader
+      - workflowOutcomeTableNodeChannelColorBand
+      - workflowOutcomeTableGridCell
+      - workflowOutcomeTableTruncatedLabelTooltip
+      - workflowOutcomeTableTotalHoursColumn
+      - workflowOutcomeTableProgramClassificationHeaderGroup
+      - workflowOutcomeTableProgramGeneralEducationColumn
+      - workflowOutcomeTableProgramSpecificEducationColumn
+      - workflowOutcomeTableProgramPonderationHeaderGroup
+      - workflowOutcomeTableProgramPonderationTheoryColumn
+      - workflowOutcomeTableProgramPonderationPracticalColumn
+      - workflowOutcomeTableProgramPonderationIndividualColumn
+      - workflowOutcomeTableProgramPonderationTotalHoursColumn
+      - workflowOutcomeTableProgramCreditsColumn
+      - workflowOutcomeTree
+      - workflowView
+      - workflowNode
+      - workflowChannel
+      - workflowSectionContainer
+      - workflowSectionHeader
+      - projectTagItem
+      - workflowEditOutcomeFormTagsAutocomplete
+
+    preconditions:
+      - documentPreconditions for this file hold
+
+    trigger:
+      - user navigates to 'Outcome table' sub-view
+      - user selects 'Competency matrix' on workflowOutcomeTableStyleTrigger per FR-CAB-010
+
+    mainFlow:
+      - workflowOutcomeTableView renders workflowOutcomeTableGrid as a scrollable matrix of workflowOutcomeTableGridCell entries at every workflowOutcome and workflowNode pair, plus workflowOutcomeTableSectionOutcomeCell entries at every workflowOutcome and workflowSectionContainer pair
+      - workflowOutcomeTableGrid uses workflowOutcomeTableCompetencyMatrixLayout — row axis is workflowNode entries from workflowView grouped under workflowOutcomeTableSectionGroupBand (one band per workflowSectionContainer); column axis is workflowOutcomeTree hierarchy grouped under workflowOutcomeTableOutcomeTagGroupBand per FR-WF-OT-008; workflowNode order on the row axis per FR-CAB-009 default sort
+      - within each workflowOutcomeTableSectionGroupBand, workflowOutcomeTableSectionRow for that workflowSectionContainer contains one read-only workflowOutcomeTableSectionOutcomeCell per visible workflowOutcome column (assignment rollup per FR-WF-OT-006), read-only section totals in summary columns per FR-WF-OT-009 or FR-WF-OT-010, followed by workflowOutcomeTableNodeRowLabel rows for each workflowNode in that section
+      - each workflowOutcomeTableSectionRow displays workflowSectionTitleText for the corresponding workflowSectionContainer in workflowView on the 'Workflow' sub-view
+      - each workflowOutcomeTableNodeRowLabel shows the workflowNode title from workflowView and workflowOutcomeTableNodeChannelColorBand on the left edge coloured per the node's parent workflowChannel per FR-CHAN-003
+      - each workflowOutcomeTableColumnHeader for a workflowOutcome shows workflowOutcomeHeaderTitle with hierarchical numbering per FR-WF-EO-007 and is angled
+      - when a workflowOutcomeTableNodeRowLabel or workflowOutcomeTableColumnHeader is visually truncated, pointer hover or keyboard focus shows workflowOutcomeTableTruncatedLabelTooltip containing the full localized label; no tooltip is attached to workflowOutcomeTableGridCell
+      - on course workflows, workflowOutcomeTableCompetencyMatrixLayout includes read-only workflowOutcomeTableTotalHoursColumn only; column values and section totals per FR-WF-OT-009
+      - on program workflows, workflowOutcomeTableCompetencyMatrixLayout includes read-only workflowOutcomeTableProgramClassificationHeaderGroup spanning workflowOutcomeTableProgramGeneralEducationColumn and workflowOutcomeTableProgramSpecificEducationColumn; workflowOutcomeTableProgramPonderationHeaderGroup spanning workflowOutcomeTableProgramPonderationTheoryColumn, workflowOutcomeTableProgramPonderationPracticalColumn, workflowOutcomeTableProgramPonderationIndividualColumn, and workflowOutcomeTableProgramPonderationTotalHoursColumn; and workflowOutcomeTableProgramCreditsColumn; workflowOutcomeTableProgramClassificationHeaderGroup and workflowOutcomeTableProgramPonderationHeaderGroup are group separators only, not data columns; column values and section totals per FR-WF-OT-010
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given Competency matrix style is active, workflowOutcomeTableGrid has node rows grouped by workflow section on the vertical axis and hierarchical outcome columns grouped by outcome tag on the horizontal axis
+      - given section S renders, its section row contains one read-only rollup cell for each visible outcome column, the applicable course or program summary columns, and then one row for each node in the selected FR-CAB-009 order
+      - given a node row, its sticky row header shows the full node title and channel colour stripe; each outcome column header shows the full hierarchical numbered outcome title
+      - given a course workflow, Competency matrix renders the Total hours summary column and does not render program-only summary groups or columns
+      - given a program workflow, Competency matrix renders Classification with General education and Specific education, Ponderation with Theory, Practical, Individual work, and Total hours, plus Credits
+      - given a truncated node row label or outcome column header, pointer hover and keyboard focus show the full localized label in workflowOutcomeTableTruncatedLabelTooltip and no assignment cell opens that tooltip
+
+    openQuestions: []
+
+  - id: FR-WF-OT-009
+    title: Course summary columns in 'Competency matrix' style on 'Outcome table'
+
+    designEvidence:
+      - FIGMA-WF-OT-COURSE-COMPETENCY-MATRIX-SCROLLED-RIGHT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+      - anonymousViewer
+
+    uiObjects:
+      - workflowOutcomeTableCompetencyMatrixLayout
+      - workflowOutcomeTableSectionRow
+      - workflowOutcomeTableSectionTotalHoursCell
+      - workflowOutcomeTableTotalHoursColumn
+      - workflowOutcomeTableNodeRowLabel
+      - workflowSectionContainer
+      - workflowNode
+      - workflowEditNodeFormTimeField
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - current workflow is a course workflow
+      - workflowOutcomeTableCompetencyMatrixLayout is active per FR-WF-OT-002
+
+    trigger:
+      - system renders summary columns in workflowOutcomeTableCompetencyMatrixLayout on a course workflow
+
+    mainFlow:
+      - per workflowNode row, workflowOutcomeTableTotalHoursColumn cell displays workflowEditNodeFormTimeField for that workflowNode using the normalized localized Days + Hours presentation from FR-WF-DURATION-002 and FR-WF-DURATION-003
+      - an unset per-node workflowEditNodeFormTimeField displays an em dash, while an explicit zero displays the localized zero-duration value
+      - workflowOutcomeTableSectionTotalHoursCell on workflowOutcomeTableSectionRow for workflowSectionContainer S converts each set workflowEditNodeFormTimeField to whole hours, sums all workflowNode entries in S, and normalizes the result to localized Days + Hours per FR-WF-DURATION-002
+      - an unset duration contributes zero when at least one node in S has a set duration; when every node duration in S is unset, workflowOutcomeTableSectionTotalHoursCell displays an em dash instead of zero
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given a course node time of 1 day and 2 hours, its Total hours cell displays the localized normalized equivalent of 1 day and 2 hours
+      - given a course node has unset time, its Total hours cell displays an em dash; given explicit zero time, the cell displays the localized zero-duration value
+      - given section S contains node times of 1 day 20 hours and 10 hours, S's total displays the localized normalized equivalent of 2 days and 6 hours
+      - given S contains one set duration and one unset duration, the unset duration contributes zero to S's total
+      - given every node time in S is unset, S's total displays an em dash rather than zero
+
+    openQuestions: []
+
+  - id: FR-WF-OT-010
+    title: Program summary columns in 'Competency matrix' style on 'Outcome table'
+
+    designEvidence:
+      - FIGMA-WF-OT-PROGRAM-COMPETENCY-MATRIX-SCROLLED-RIGHT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+      - anonymousViewer
+
+    uiObjects:
+      - workflowOutcomeTableCompetencyMatrixLayout
+      - workflowOutcomeTableSectionRow
+      - workflowOutcomeTableNodeRowLabel
+      - workflowOutcomeTableProgramClassificationHeaderGroup
+      - workflowOutcomeTableProgramGeneralEducationColumn
+      - workflowOutcomeTableProgramSpecificEducationColumn
+      - workflowOutcomeTableProgramPonderationHeaderGroup
+      - workflowOutcomeTableProgramPonderationTheoryColumn
+      - workflowOutcomeTableProgramPonderationPracticalColumn
+      - workflowOutcomeTableProgramPonderationIndividualColumn
+      - workflowOutcomeTableProgramPonderationTotalHoursColumn
+      - workflowOutcomeTableProgramCreditsColumn
+      - workflowSectionContainer
+      - workflowNode
+      - workflowEditNodeFormTimeField
+      - workflowEditNodeFormCreditsField
+      - workflowEditNodeFormPonderationTheoryField
+      - workflowEditNodeFormPonderationPracticeField
+      - workflowEditNodeFormPonderationIndividualField
+      - workflowEditNodeFormSpecificEducationSwitch
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - current workflow is a program workflow
+      - workflowOutcomeTableCompetencyMatrixLayout is active per FR-WF-OT-002
+
+    trigger:
+      - system renders summary columns in workflowOutcomeTableCompetencyMatrixLayout on a program workflow
+
+    mainFlow:
+      - per workflowNode row, workflowOutcomeTableProgramGeneralEducationColumn cell displays workflowEditNodeFormTimeField when workflowEditNodeFormSpecificEducationSwitch is OFF and is empty when ON; workflowOutcomeTableProgramSpecificEducationColumn cell displays workflowEditNodeFormTimeField when ON and is empty when OFF; a displayed unset time value uses an em dash and an explicit zero uses the localized zero-duration value
+      - per workflowNode row, workflowOutcomeTableProgramPonderationTheoryColumn cell displays workflowEditNodeFormPonderationTheoryField; workflowOutcomeTableProgramPonderationPracticalColumn cell displays workflowEditNodeFormPonderationPracticeField; workflowOutcomeTableProgramPonderationIndividualColumn cell displays workflowEditNodeFormPonderationIndividualField; each set duration uses normalized localized Days + Hours per FR-WF-DURATION-002 and FR-WF-DURATION-003 and each unset duration displays an em dash
+      - workflowOutcomeTableProgramPonderationTotalHoursColumn cell converts each set Theory, Practical, and Individual duration to whole hours, treats an unset component as zero when at least one component is set, sums the components, and normalizes the result to localized Days + Hours; when all three components are unset, it displays an em dash
+      - workflowOutcomeTableProgramCreditsColumn cell displays workflowEditNodeFormCreditsField numerically; an unset credit value displays an em dash and an explicit zero displays 0
+      - on workflowOutcomeTableSectionRow for workflowSectionContainer S, each program summary column cell sums the per-node values shown in that column for all workflowNode entries in S; unset values contribute zero when at least one value in that column is set, and an all-unset column total displays an em dash
+      - every duration-valued section total converts contributions to whole hours and normalizes the sum to localized Days + Hours per FR-WF-DURATION-002 and FR-WF-DURATION-003; credit totals remain numeric
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given a program node has Time T and Specific education OFF, T appears under General education and its Specific education cell is empty; given the switch is ON, T appears under Specific education and its General education cell is empty
+      - given a displayed classification duration is unset, its applicable cell displays an em dash; given explicit zero, it displays the localized zero-duration value
+      - given a program node has Theory 1 day 20 hours, Practical 10 hours, and unset Individual work, the three component cells show their respective values and em dash and the node's Ponderation Total hours displays the localized normalized equivalent of 2 days and 6 hours
+      - given all three ponderation components for a node are unset, that node's Ponderation Total hours displays an em dash
+      - given a program node has unset Credits, its Credits cell displays an em dash; given explicit 0, it displays 0
+      - given a section summary column contains at least one set value, unset values contribute zero and its total equals the sum of the set values; given every value in the column is unset, its total displays an em dash
+      - given a duration-valued section sum exceeds 23 hours, it is normalized to localized Days + Hours; credit totals remain numeric
+
+    openQuestions: []
+
+  - id: FR-WF-OT-008
+    title: Outcome tag grouping on 'Outcome table'
+
+    designEvidence:
+      - FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
+      - FIGMA-WF-OT-COURSE-COMPETENCY-MATRIX-SCROLLED-LEFT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+      - anonymousViewer
+
+    uiObjects:
+      - workflowOutcomeTableGrid
+      - workflowOutcomeTableOutcomeTagGroupBand
+      - workflowOutcomeTableNormalLayout
+      - workflowOutcomeTableCompetencyMatrixLayout
+      - workflowOutcomeTree
+      - workflowOutcomeTableOutcomeRowLabel
+      - workflowOutcomeTableColumnHeader
+      - projectTagItem
+      - workflowEditOutcomeFormTagsAutocomplete
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - current route matches '/workflow/{id}/outcome-table'
+
+    trigger:
+      - system renders workflowOutcomeTableOutcomeTagGroupBand on the outcome axis of workflowOutcomeTableGrid
+
+    mainFlow:
+      - workflowOutcomeTableOutcomeTagGroupBand layout on the outcome axis of workflowOutcomeTableGrid mirrors workflowOutcomesAssignTabTagGroup on workflowRightSidebarOutcomesTab per tests/docs/requirements/features/workflow/workflow_assign_outcome_to_node_requirements_v1.yaml FR-WF-AO-002
+      - tagged workflowOutcomeTableOutcomeTagGroupBand — one band per projectTagItem from FR-PROJ-OV-005 assigned to at least one level-1 workflowOutcome via workflowEditOutcomeFormTagsAutocomplete, ordered alphabetically by tag label (case-insensitive); each band for projectTagItem T shows label T's catalog label and contains every level-1 workflowOutcome tagged with T and their nested descendants on the outcome axis; a level-1 workflowOutcome with multiple tags appears within each qualifying tagged band
+      - untagged workflowOutcomeTableOutcomeTagGroupBand — when at least one tagged band and at least one level-1 workflowOutcome has zero tags, one additional band labeled 'Untagged' contains every untagged level-1 workflowOutcome and their nested descendants on the outcome axis, appended last; when no level-1 workflowOutcome has any tag, every outcome on the outcome axis appears in a single unlabeled band and literal 'Untagged' is not shown; when every level-1 workflowOutcome has at least one tag, no 'Untagged' band and no unlabeled band are rendered
+      - in 'Normal' style per FR-WF-OT-001, outcome-axis members are workflowOutcomeTree rows; in 'Competency matrix' style per FR-WF-OT-002, outcome-axis members are workflowOutcomeTableColumnHeader entries and nested descendant outcome columns
+      - repeated presentation of a multi-tag level-1 workflowOutcome in multiple workflowOutcomeTableOutcomeTagGroupBand entries represents the same underlying workflowOutcome and outcome-to-node assignment set; repeated presentation never creates duplicate persisted assignments and never causes the outcome or its assignment to be counted more than once in any derived calculation
+      - tag-filter visibility follows FR-CAB-008: only outcome tags participate; any toggled-off tag hides every occurrence of a matching workflowOutcome and hides that outcome's displayed subtree, while node tags do not affect Outcome Table visibility
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given tagged level-1 outcomes, one named outcome group is rendered per in-use tag in case-insensitive alphabetical tag-label order and each group contains its tagged level-1 outcomes and their descendants
+      - given a level-1 outcome has multiple tags, it appears in each corresponding tag group but every occurrence represents the same assignment data and is counted at most once in derived calculations
+      - given tagged and untagged level-1 outcomes coexist, an 'Untagged' group containing untagged roots and descendants is rendered last
+      - given no level-1 outcome has a tag, all outcomes render in one visually unlabeled group with accessible name 'Outcomes' and literal 'Untagged' is absent
+      - given every level-1 outcome is tagged, no 'Untagged' or unlabeled group is rendered
+      - given Normal style is active, grouped outcomes appear as rows; given Competency matrix style is active, the same grouping appears as outcome columns
+      - given tag T is toggled off, every occurrence of an outcome carrying T and its displayed subtree is hidden, while node-only tags do not affect Outcome Table visibility
+
+    openQuestions: []
+
+  - id: FR-WF-OT-003
+    title: Expand and collapse workflowOutcome hierarchy in 'Outcome table'
+
+    designEvidence:
+      - FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
+      - FIGMA-WF-OT-COURSE-COMPETENCY-MATRIX-SCROLLED-LEFT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+      - anonymousViewer
+
+    uiObjects:
+      - workflowOutcomeTableView
+      - workflowOutcomeTableGrid
+      - workflowOutcomeTableNormalLayout
+      - workflowOutcomeTableCompetencyMatrixLayout
+      - workflowOutcomeTableOutcomeRowLabel
+      - workflowOutcomeTableColumnHeader
+      - workflowOutcomeTree
+      - workflowOutcomeHeaderToggle
+      - workflowOutcomeTableViewSettingsMenuItemExpandOutcomes
+      - workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - workflowOutcomeTableGrid is rendered per FR-WF-OT-001 or FR-WF-OT-002
+      - workflowOutcomeTree has at least one level-1 or level-2 workflowOutcome with at least one direct child per FR-WF-EO-008
+
+    trigger:
+      - user clicks workflowOutcomeHeaderToggle on a level-1 or level-2 workflowOutcome row or column label in workflowOutcomeTableGrid
+      - user clicks workflowOutcomeTableViewSettingsMenuItemExpandOutcomes or workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes in 'View settings' per FR-CAB-008
+
+    mainFlow:
+      - level-1 and level-2 workflowOutcome entries that have at least one direct child in workflowOutcomeTree expose workflowOutcomeHeaderToggle on workflowOutcomeTableOutcomeRowLabel when 'Normal' style is active and on workflowOutcomeTableColumnHeader when 'Competency matrix' style is active
+      - on first entry to 'Outcome table' in a newly opened workflow, every expandable workflowOutcome is collapsed
+      - when workflowOutcomeHeaderToggle on level-1 or level-2 workflowOutcome P is expanded, descendant workflowOutcome rows or columns nested under P are visible in workflowOutcomeTableGrid; when collapsed, those descendants are hidden
+      - clicking workflowOutcomeTableViewSettingsMenuItemExpandOutcomes labeled 'Expand outcomes' sets every workflowOutcomeHeaderToggle in the active layout to expanded
+      - clicking workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes labeled 'Collapse outcomes' sets every workflowOutcomeHeaderToggle in the active layout to collapsed
+      - expansion state is shared between workflowOutcomeTableNormalLayout and workflowOutcomeTableCompetencyMatrixLayout and is preserved while the actor changes table style or moves among sub-views within the same mounted workflow
+      - expansion state resets to every expandable workflowOutcome collapsed when the actor leaves and later reopens the workflow, opens a different workflow, or reloads the page; expansion state is not persisted to backend data or browser storage
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given actor first enters Outcome Table in a newly opened workflow, every expandable level-1 and level-2 outcome is collapsed
+      - given actor expands outcome P, every descendant nested under P becomes visible on the outcome axis; collapsing P hides those descendants in either table style
+      - given actor selects 'Expand outcomes', every expandable outcome is expanded; selecting 'Collapse outcomes' collapses every expandable outcome
+      - given actor changes between Normal and Competency matrix or moves among sub-views in the mounted workflow, each outcome's expansion state is preserved
+      - given actor reopens the workflow, opens another workflow, or reloads the page, every expandable outcome resets to collapsed
+      - given actor has read-only workflow access, individual and global expand/collapse controls remain actionable because they do not persist data
+
+    openQuestions: []
+
+  - id: FR-WF-OT-004
+    title: Sticky regions during scroll on 'Outcome table' sub-view
+
+    designEvidence:
+      - FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
+      - FIGMA-WF-OT-COURSE-COMPETENCY-MATRIX-SCROLLED-LEFT
+      - FIGMA-WF-OT-COURSE-COMPETENCY-MATRIX-SCROLLED-RIGHT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+      - anonymousViewer
+
+    uiObjects:
+      - workflowOutcomeTableNormalLayout
+      - workflowOutcomeTableCompetencyMatrixLayout
+      - workflowOutcomeTableOutcomeRowLabel
+      - workflowOutcomeTableColumnHeader
+      - workflowOutcomeTableNodeRowLabel
+      - workflowOutcomeTableOutcomeTagGroupBand
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - current route matches '/workflow/{id}/outcome-table'
+      - table content exceeds viewport in at least one scroll axis
+
+    trigger:
+      - user scrolls workflowOutcomeTableView horizontally or vertically
+
+    mainFlow:
+      - in workflowOutcomeTableNormalLayout, horizontal scroll keeps workflowOutcomeTableOutcomeRowLabel column sticky on the left
+      - in workflowOutcomeTableNormalLayout, vertical scroll keeps workflowOutcomeTableColumnHeader row sticky at the top
+      - in workflowOutcomeTableCompetencyMatrixLayout, horizontal scroll keeps workflowOutcomeTableNodeRowLabel column sticky on the left
+      - in workflowOutcomeTableCompetencyMatrixLayout, vertical scroll keeps workflowOutcomeTableColumnHeader row including workflowOutcomeTableOutcomeTagGroupBand bands sticky at the top
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given Normal table width exceeds the viewport, horizontal scrolling keeps outcome row labels fixed at the left while node columns move beneath the scroll region
+      - given Normal table height exceeds the viewport, vertical scrolling keeps the node column-header row fixed at the top while outcome rows move beneath it
+      - given Competency matrix width exceeds the viewport, horizontal scrolling keeps node row labels fixed at the left while outcome and summary columns move beneath the scroll region
+      - given Competency matrix height exceeds the viewport, vertical scrolling keeps outcome column headers and their outcome-tag group bands fixed at the top while node rows move beneath them
+      - given both axes are scrolled, the applicable sticky top and left regions remain visible and do not scroll out with the body cells
+
+    openQuestions: []
+
+  - id: FR-WF-OT-005
+    title: Toggle outcome-to-node assignment from 'Outcome table' cells
+
+    designEvidence:
+      - FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+      - anonymousViewer
+
+    uiObjects:
+      - workflowOutcomeTableGridCell
+      - workflowOutcomeTableGridCellCompleteIndicator
+      - workflowOutcomeTableGridCellPartialIndicator
+      - workflowOutcomeTableGridCellFocusBorder
+      - workflowOutcomeTree
+      - workflowOutcome
+      - workflowNode
+      - workflowView
+      - workflowRightSidebarOutcomesTab
+      - globalMessageSnackbar
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - current route matches '/workflow/{id}/outcome-table'
+      - workflow has at least one workflowOutcome and at least one workflowNode
+      - assignment actionability is derived from WorkflowPermission.ASSIGN_OUTCOMES and the workflow edit-lock state per tests/docs/requirements/features/global/workspace_edit_lock_requirements_v1.yaml
+
+    trigger:
+      - actor activates an actionable workflowOutcomeTableGridCell with a pointer click, Space, or Enter
+
+    mainFlow:
+      - workflowOutcomeTableSectionOutcomeCell is read-only; only workflowOutcomeTableGridCell, each representing one workflowOutcome and one workflowNode pair, is assignable per below
+      - every workflowOutcomeTableGridCell exposes role='checkbox'; its accessible name contains the full hierarchical numbered workflowOutcome title and full workflowNode title, and aria-checked is 'false' for empty, 'mixed' for partial, or 'true' for complete per FR-WF-OT-006
+      - workflowOutcomeTableGridCell is actionable only when actor has WorkflowPermission.ASSIGN_OUTCOMES and currently holds the workflow's unexpired edit lock; an edit lock never grants assignment permission that the actor does not already have
+      - an actionable workflowOutcomeTableGridCell participates in keyboard tab order, Space or Enter performs the same assignment toggle as a pointer click, and keyboard focus renders workflowOutcomeTableGridCellFocusBorder without relying on colour alone
+      - when owner or editor has assignment permission but does not currently hold the workflow edit lock, workflowOutcomeTableGridCell remains visible and read-only until the actor acquires or takes over the lock and the latest server state has reloaded per FR-WS-LOCK-001 through FR-WS-LOCK-004
+      - when owner or editor clicks a workflowOutcomeTableGridCell that is empty or shows workflowOutcomeTableGridCellPartialIndicator for workflowOutcome O on workflowNode N, system assigns O to N; assign→descendants cascade per tests/docs/requirements/features/workflow/workflow_assign_outcome_to_node_requirements_v1.yaml FR-WF-AO-006 adds every descendant workflowOutcome of O to N's assignment set; cell (O, N) and all affected descendant cells show workflowOutcomeTableGridCellCompleteIndicator per FR-WF-OT-006 — same cascade as drag-and-drop from workflowRightSidebarOutcomesTab onto workflowNode on the 'Workflow' sub-view per FR-WF-OT-007
+      - when owner or editor clicks a workflowOutcomeTableGridCell that shows workflowOutcomeTableGridCellCompleteIndicator for workflowOutcome O on workflowNode N, system removes O from N's assignment set; child-removed → parent removal cascade per FR-WF-AO-006 applies; cell presentation updates per FR-WF-OT-006; removal updates the same assignment set as unlink on the 'Workflow' sub-view per FR-WF-OT-007
+      - while an assignment or unassignment request is pending, the initiating cell and every cell whose state may change under the assignment cascade are non-actionable and additional clicks do not submit duplicate mutations
+      - every non-actionable or pending workflowOutcomeTableGridCell exposes aria-disabled='true', preserves its aria-checked status for assistive technology, and does not respond to pointer, Space, or Enter activation
+      - after a successful request, all affected cells render from the authoritative assignment delta returned by the server
+      - after a failed request, no partial assignment change is presented as persisted; affected cells return to the last authoritative assignment state and global error feedback follows the existing graph-mutation and workspace edit-lock behavior, including the exact FR-WS-LOCK-005 feedback when the mutation is rejected because the lock expired or another actor holds it
+      - click zone on workflowOutcomeTableGridCell is deactivated for commenter, viewer, user, anonymousViewer, and any owner or editor who lacks current assignment actionability
+      
+    roleBehavior:
+      owner:
+        workflowOutcomeTableGridCell: editable only with WorkflowPermission.ASSIGN_OUTCOMES and the current unexpired workflow edit lock; otherwise readOnly
+      editor:
+        workflowOutcomeTableGridCell: editable only with WorkflowPermission.ASSIGN_OUTCOMES and the current unexpired workflow edit lock; otherwise readOnly
+      commenter:
+        workflowOutcomeTableGridCell: readOnly
+      viewer:
+        workflowOutcomeTableGridCell: readOnly
+      user:
+        workflowOutcomeTableGridCell: readOnly
+      anonymousViewer:
+        workflowOutcomeTableGridCell: readOnly
+
+    acceptanceCriteria:
+      - given any outcome-node assignment cell, it exposes role='checkbox', an accessible name containing the full numbered outcome title and full node title, and aria-checked matching its FR-WF-OT-006 state
+      - given owner or editor has WorkflowPermission.ASSIGN_OUTCOMES and holds the current unexpired edit lock, an assignment cell is actionable by pointer, Space, and Enter and receives a visible non-colour-only focus outline on keyboard focus
+      - given an empty or partial actionable cell for outcome O and node N, activation assigns O and its descendants to N using the FR-WF-AO-006 cascade; given a complete cell, activation removes O using the corresponding parent-removal cascade
+      - given actor lacks WorkflowPermission.ASSIGN_OUTCOMES, lacks the current edit lock, has a read-only role, or is anonymousViewer, the cell exposes aria-disabled='true', preserves its checked state, and pointer, Space, or Enter causes no mutation
+      - given an assignment request is pending, every potentially affected cascade cell is non-actionable and repeated activation does not submit another mutation
+      - given the server accepts the mutation, every affected cell renders the authoritative returned assignment state
+      - given the server rejects the mutation, every affected cell returns to its last authoritative state, no partial change remains presented as persisted, and the applicable graph-mutation or FR-WS-LOCK-005 error feedback is visible
+      - given an owner or editor acquires or takes over the edit lock, cells remain non-actionable until current server state has reloaded and both permission and lock conditions hold
+
+    openQuestions: []
+
+  - id: FR-WF-OT-006
+    title: Normal outcome-style completion indicators with partial roll-up on 'Outcome table'
+
+    designEvidence:
+      - FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
+      - FIGMA-WF-OT-COURSE-COMPETENCY-MATRIX-SCROLLED-LEFT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+      - anonymousViewer
+
+    uiObjects:
+      - workflowOutcomeTableGridCell
+      - workflowOutcomeTableSectionOutcomeCell
+      - workflowOutcomeTableSectionRow
+      - workflowOutcomeTableGridCellCompleteIndicator
+      - workflowOutcomeTableGridCellPartialIndicator
+      - workflowOutcome
+      - workflowSectionContainer
+      - workflowNode
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - current route matches '/workflow/{id}/outcome-table'
+      - workflowOutcomeTree has level-1, level-2, and level-3 workflowOutcome entries per FR-WF-EO-008
+
+    trigger:
+      - system renders workflowOutcomeTableGridCell on 'Outcome table'
+
+    mainFlow:
+      - when workflowOutcome O is assigned to workflowNode N and O is complete for N, workflowOutcomeTableGridCell has aria-checked='true' and shows workflowOutcomeTableGridCellCompleteIndicator
+      - when O is not assigned to N but some but not all descendant workflowOutcome entries of O are assigned to N, workflowOutcomeTableGridCell has aria-checked='mixed' and shows workflowOutcomeTableGridCellPartialIndicator
+      - when no descendant of O is assigned to N, workflowOutcomeTableGridCell for O has aria-checked='false' and is visually empty
+      - workflowOutcomeTableSectionOutcomeCell for workflowOutcome O and workflowSectionContainer S in both 'Normal' and 'Competency matrix' style is derived automatically from workflowOutcomeTableGridCell status for O on each workflowNode in S — when every such node cell shows workflowOutcomeTableGridCellCompleteIndicator, section cell shows workflowOutcomeTableGridCellCompleteIndicator; when no node cell in S shows workflowOutcomeTableGridCellCompleteIndicator or workflowOutcomeTableGridCellPartialIndicator for O, section cell is empty; otherwise section cell shows workflowOutcomeTableGridCellPartialIndicator
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given outcome O is fully assigned to node N, cell (O, N) has aria-checked='true' and shows the complete indicator
+      - given O is not directly assigned to N and some but not all descendants of O are assigned, cell (O, N) has aria-checked='mixed' and shows the partial indicator
+      - given neither O nor any descendant of O is assigned to N, cell (O, N) has aria-checked='false' and is visually empty
+      - given section S has at least one node and every node cell for O is complete, the read-only section rollup for O is complete
+      - given S has at least one node and no node cell for O is complete or partial, the read-only section rollup for O is empty
+      - given S has at least one node and its node cells for O contain any other mixture of complete, partial, and empty states, the read-only section rollup for O is partial
+      - given S has no nodes, its read-only section rollup is empty and is never reported as complete
+      - given either table style is active, identical assignment data produces identical node-cell and section-rollup states
+
+    openQuestions: []
+
+  - id: FR-WF-OT-007
+    title: Outcome-to-node assignment shared with 'Workflow' sub-view
+
+    designEvidence:
+      - FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+      - anonymousViewer
+
+    uiObjects:
+      - workflowOutcomeTableGridCell
+      - workflowOutcomeTableGridCellCompleteIndicator
+      - workflowOutcomeTableGridCellPartialIndicator
+      - workflowView
+      - workflowNode
+      - workflowRightSidebarOutcomesTab
+      - workflowOutcomesAssignTabOutcomeRow
+
+    preconditions:
+      - documentPreconditions for this file hold
+
+    trigger:
+      - owner or editor assigns workflowOutcome O to workflowNode N via drag from workflowOutcomesAssignTabOutcomeRow onto workflowNode in workflowView on the 'Workflow' sub-view per FR-WF-AO-004
+      - owner or editor unlinks workflowOutcome O from workflowNode N on the 'Workflow' sub-view per FR-WF-AO-010
+      - owner or editor toggles assignment via workflowOutcomeTableGridCell per FR-WF-OT-005
+
+    mainFlow:
+      - workflowOutcomeTableGridCell for pair (O, N) reads the same outcome-to-node assignment set as workflowNode linked outcomes on the 'Workflow' sub-view per FR-WF-AO-004 and FR-WF-AO-010
+      - when owner or editor assigns O to N on the 'Workflow' sub-view per FR-WF-AO-004, workflowOutcomeTableGridCell (O, N) on 'Outcome table' shows workflowOutcomeTableGridCellCompleteIndicator or workflowOutcomeTableGridCellPartialIndicator per FR-WF-OT-006 without requiring a page reload
+      - when owner or editor unlinks O from N on the 'Workflow' sub-view per FR-WF-AO-010, workflowOutcomeTableGridCell (O, N) on 'Outcome table' updates to empty or shows workflowOutcomeTableGridCellPartialIndicator per FR-WF-OT-006
+      - when owner or editor toggles assignment via workflowOutcomeTableGridCell per FR-WF-OT-005, the assignment set on workflowNode N in workflowView on the 'Workflow' sub-view updates to match
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given owner or editor assigns outcome O to node N on the Workflow sub-view, returning to Outcome Table shows cell (O, N) complete or partial per the shared assignment and cascade rules without a page reload
+      - given owner or editor unlinks O from N on the Workflow sub-view, returning to Outcome Table shows cell (O, N) empty or partial per the remaining descendant assignments without a page reload
+      - given owner or editor toggles cell (O, N) in Outcome Table, node N's linked outcomes on the Workflow sub-view reflect the same authoritative assignment set without a page reload
+      - given an assignment cascade affects descendants or ancestors, both sub-views present the same resulting assignments and completion states
+      - given the workflow is reloaded after a successful assignment change from either sub-view, both sub-views still present the same persisted assignment set
+
+    openQuestions: []
+
+  - id: FR-WF-OT-011
+    title: Non-mutating Outcome Table presentation controls remain available in read-only modes
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+      - anonymousViewer
+
+    uiObjects:
+      - workflowOutcomeTableView
+      - workflowOutcomeTablePresentationControls
+      - workflowOutcomeTableStyleTrigger
+      - workflowOutcomeTableSortTrigger
+      - workflowOutcomeTableViewSettingsMenuItemExpandOutcomes
+      - workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes
+      - workflowOutcomeTableViewSettingsMenuTagsSection
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - workflowOutcomeTableView is visible
+
+    trigger:
+      - actor uses a table-style, sort, expand/collapse, or tag-filter control
+
+    mainFlow:
+      - workflowOutcomeTablePresentationControls change only the current browser presentation and never create, update, or delete backend data
+      - every actor who can read workflowOutcomeTableView can use workflowOutcomeTablePresentationControls regardless of mutation permissions or workflow edit-lock ownership
+      - for authenticated actors, workflowOutcomeTablePresentationControls are presented through contextActionBar per FR-CAB-008, FR-CAB-009, and FR-CAB-010
+      - for anonymousViewer, the same presentation capabilities are available inside the public workflowOutcomeTableView without rendering the authenticated contextActionBar, top navigation, workflow right sidebar, or workflow dialogs
+      - on first entry to 'Outcome table' in a newly opened workflow, presentation defaults are 'Normal' style, 'Chronological' sort, every expandable outcome collapsed, and every outcome tag toggled on
+      - style, sort, outcome-expansion, and tag-toggle state is preserved while the actor changes table style or moves among sub-views within the same mounted workflow
+      - all presentation state resets to the stated defaults when the actor leaves and later reopens the workflow, opens a different workflow, or reloads the page; presentation state is not persisted to backend data or browser storage
+      - using workflowOutcomeTablePresentationControls never makes workflowOutcomeTableGridCell actionable when that cell is read-only under FR-WF-OT-005
+
+    roleBehavior:
+      owner:
+        workflowOutcomeTablePresentationControls: available
+      editor:
+        workflowOutcomeTablePresentationControls: available
+      commenter:
+        workflowOutcomeTablePresentationControls: available
+      viewer:
+        workflowOutcomeTablePresentationControls: available
+      user:
+        workflowOutcomeTablePresentationControls: available
+      anonymousViewer:
+        workflowOutcomeTablePresentationControls: available without authenticated application chrome
+
+    acceptanceCriteria:
+      - given any actor who can read Outcome Table, table style, sorting, expand/collapse, and outcome-tag filtering controls are visible and enabled regardless of mutation permission or edit-lock ownership
+      - given an authenticated actor, presentation controls are exposed in contextActionBar; given anonymousViewer, equivalent controls are exposed within the public Outcome Table and authenticated application chrome remains absent
+      - given actor uses any presentation control, only the current browser presentation changes and no create, update, or delete request for workflow data is submitted
+      - given actor first enters Outcome Table in a newly opened workflow, defaults are Normal style, Chronological sort, all expandable outcomes collapsed, and all outcome tags on
+      - given actor changes presentation state and moves among sub-views or table styles inside the mounted workflow, style, sort, expansion, and tag state are preserved
+      - given actor leaves and later reopens the workflow, opens a different workflow, or reloads the page, all presentation state returns to the defaults and no prior state is restored from backend or browser storage
+      - given an assignment cell is read-only under FR-WF-OT-005, using presentation controls never makes that cell actionable
+
+    openQuestions: []
+
+designEvidenceLinkTable:
+  - key: FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
+    url: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5445-53117
+  - key: FIGMA-WF-OT-COURSE-COMPETENCY-MATRIX-SCROLLED-LEFT
+    url: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7199-51650
+  - key: FIGMA-WF-OT-COURSE-COMPETENCY-MATRIX-SCROLLED-RIGHT
+    url: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7199-53892
+  - key: FIGMA-WF-OT-PROGRAM-COMPETENCY-MATRIX-SCROLLED-RIGHT
+    url: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7199-53997
+  - key: FIGMA-WF-OT-VIEW-SETTINGS-DEFAULT
+    url: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7199-37068

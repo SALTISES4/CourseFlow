@@ -137,6 +137,7 @@ export type GraphResourceBundle = {
   nodes: NodeEntity[]
   edges: EdgeEntity[]
   outcomes: OutcomeEntity[]
+  tags: TagEntity[]
   threadCommentCounts: ThreadCommentCount[]
 }
 
@@ -214,6 +215,15 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
     threadUuid: outcome.threadUuid ?? null
   }))
 
+  const tags: TagEntity[] = (view.tags ?? []).map((tag) => ({
+    tagId: String(tag.id),
+    projectId: view.graph.workflowProjectId
+      ? String(view.graph.workflowProjectId)
+      : null,
+    label: tag.label,
+    translationPlural: tag.translationPlural
+  }))
+
   return {
     graph,
     workflow,
@@ -222,6 +232,7 @@ function mapViewToBundle(view: GraphViewOut): GraphResourceBundle {
     nodes,
     edges,
     outcomes,
+    tags,
     threadCommentCounts: view.threadCommentCounts ?? []
   }
 }
@@ -286,11 +297,6 @@ function mapNodeMetaFromApi(node: {
     tagIds: node.tagIds ?? []
   }
 }
-
-// Tags are not returned from the graph view projection; keep a seam for a dedicated loader later.
-export const fetchWorkflowTags = async (
-  _graphUuid: GraphUuid
-): Promise<TagEntity[]> => []
 
 function mapMutationChannel(
   graphUuid: GraphUuid,

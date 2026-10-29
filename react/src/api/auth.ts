@@ -3,11 +3,25 @@
  * HTTP paths remain Django Ninja `course_flow_v2.api.routers.auth`.
  */
 import { getApiErrorBody, getApiErrorCode, getApiErrorStatus } from './apiError'
-import { login, logout, me, register } from './gen/sdk.gen'
+import {
+  confirmPasswordReset,
+  login,
+  logout,
+  me,
+  register,
+  requestPasswordReset,
+  validatePasswordResetToken
+} from './gen/sdk.gen'
 import type {
   LoginIn,
   LoginOut,
   LogoutOut,
+  PasswordResetConfirmIn,
+  PasswordResetConfirmOut,
+  PasswordResetRequestIn,
+  PasswordResetRequestOut,
+  PasswordResetTokenIn,
+  PasswordResetTokenOut,
   RegisterIn,
   UserSummaryOut
 } from './gen/types.gen'
@@ -15,6 +29,9 @@ import type {
 export type LoginResponse = LoginOut
 export type UserLoginPayload = LoginIn
 export type UserRegisterPayload = RegisterIn
+export type PasswordResetRequestPayload = PasswordResetRequestIn
+export type PasswordResetTokenPayload = PasswordResetTokenIn
+export type PasswordResetConfirmPayload = PasswordResetConfirmIn
 
 export class AuthRequestError extends Error {
   constructor(
@@ -119,6 +136,59 @@ export async function logoutRequest(): Promise<LogoutOut | undefined> {
     throw toAuthRequestError(result.error, result.response?.status ?? 0)
   }
 
+  return result.data
+}
+
+export async function requestPasswordResetRequest(
+  data: PasswordResetRequestPayload
+): Promise<PasswordResetRequestOut> {
+  const result = await requestPasswordReset({
+    body: { email: data.email.trim() }
+  })
+
+  if (result.error) {
+    throw toAuthRequestError(result.error, result.response?.status ?? 0)
+  }
+  if (!result.data) {
+    throw new AuthRequestError(
+      'Password-reset request response did not include data',
+      result.response?.status ?? 0
+    )
+  }
+  return result.data
+}
+
+export async function validatePasswordResetTokenRequest(
+  data: PasswordResetTokenPayload
+): Promise<PasswordResetTokenOut> {
+  const result = await validatePasswordResetToken({ body: data })
+
+  if (result.error) {
+    throw toAuthRequestError(result.error, result.response?.status ?? 0)
+  }
+  if (!result.data) {
+    throw new AuthRequestError(
+      'Password-reset validation response did not include data',
+      result.response?.status ?? 0
+    )
+  }
+  return result.data
+}
+
+export async function confirmPasswordResetRequest(
+  data: PasswordResetConfirmPayload
+): Promise<PasswordResetConfirmOut> {
+  const result = await confirmPasswordReset({ body: data })
+
+  if (result.error) {
+    throw toAuthRequestError(result.error, result.response?.status ?? 0)
+  }
+  if (!result.data) {
+    throw new AuthRequestError(
+      'Password-reset confirmation response did not include data',
+      result.response?.status ?? 0
+    )
+  }
   return result.data
 }
 

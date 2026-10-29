@@ -1,8 +1,10 @@
+import { ContextClassification, TagListItemOut } from '@cf/api/gen/types.gen'
 import { OutcomeCheckmarkStatus } from '@cf/components/views/WorkflowView/OutcomeTableView/Checkmark'
 import { RootState } from '@cf/redux/store'
 import { createSelector } from '@reduxjs/toolkit'
 
 import {
+  selectAllTags,
   selectChannelsOrderedByGraphUuid,
   selectNodeEntitiesByGraphUuid,
   selectSectionsOrderedByGraphUuid
@@ -13,6 +15,7 @@ import {
   selectOutcomeTagGroupsTree
 } from './outcomes.selectors'
 import { ChannelEntity, NodeEntity, SectionEntity } from '../model/types'
+import type { OutcomeTableSortMode } from '../slices/outcomeTableUi.slice'
 
 export type OutcomeTable = {
   tagGroups: ReturnType<typeof selectOutcomeTagGroups>
@@ -39,19 +42,46 @@ type PreparedSection = {
   }[]
 }
 
+const selectProjectTagLabels = createSelector([selectAllTags], (tags) =>
+  tags.map<TagListItemOut>((tag) => ({
+    id: Number(tag.tagId),
+    label: tag.label,
+    translationPlural: tag.translationPlural
+  }))
+)
+
+const CONTEXT_ORDER: Record<string, number> = {
+  [ContextClassification.NONE]: 0,
+  [ContextClassification.FORMATIVE]: 1,
+  [ContextClassification.SUMMATIVE]: 2,
+  [ContextClassification.COMPREHENSIVE]: 3
+}
+
 export const selectOutcomeTable = createSelector(
   [
     (state: RootState, graphUuid: string) => selectGraphBoard(state, graphUuid),
     (state: RootState, graphUuid: string) =>
-      selectOutcomeTagGroups(state, graphUuid),
+      selectOutcomeTagGroups(
+        state,
+        graphUuid,
+        selectProjectTagLabels(state),
+        state.graph.graphUi.hiddenOutcomeTagIds
+      ),
     (state: RootState, graphUuid: string) =>
-      selectOutcomeTagGroupsTree(state, graphUuid),
+      selectOutcomeTagGroupsTree(
+        state,
+        graphUuid,
+        selectProjectTagLabels(state),
+        state.graph.graphUi.hiddenOutcomeTagIds
+      ),
     (state: RootState, graphUuid: string) =>
       selectSectionsOrderedByGraphUuid(graphUuid)(state),
     (state: RootState, graphUuid: string) =>
       selectChannelsOrderedByGraphUuid(graphUuid)(state),
     (state: RootState, graphUuid: string) =>
-      selectNodeEntitiesByGraphUuid(graphUuid)(state)
+      selectNodeEntitiesByGraphUuid(graphUuid)(state),
+    (state: RootState): OutcomeTableSortMode =>
+      state.graph.outcomeTableUi.sortMode
   ],
   (
     graphBoard,
@@ -59,7 +89,8 @@ export const selectOutcomeTable = createSelector(
     outcomeTree,
     sections,
     channels,
-    nodes
+    nodes,
+    sortMode
   ): OutcomeTable => {
     // derive necessary sections data beforehand so the UI remains somewhat clean
     const preparedSections: PreparedSection[] = graphBoard.sections.map(
@@ -102,6 +133,41 @@ export const selectOutcomeTable = createSelector(
         }
 
         const sectionNodeCount = sectionNodes.length
+
+        if (sortMode !== 'chronological') {
+          const channelOrder = new Map(
+            channels.map((channel, index) => [channel.uuid, index])
+          )
+          const originalOrder = new Map(
+            sectionNodes.map((node, index) => [node.uuid, index])
+          )
+
+          sectionNodes.sort((a, b) => {
+            const nodeA = nodes[a.uuid]
+            const nodeB = nodes[b.uuid]
+            const rankA =
+              sortMode === 'nodeCategory'
+                ? (channelOrder.get(nodeA.channelUuid ?? '') ??
+                  Number.MAX_VALUE)
+                : (CONTEXT_ORDER[
+                    nodeA.contextClassification ?? ContextClassification.NONE
+                  ] ?? Number.MAX_VALUE)
+            const rankB =
+              sortMode === 'nodeCategory'
+                ? (channelOrder.get(nodeB.channelUuid ?? '') ??
+                  Number.MAX_VALUE)
+                : (CONTEXT_ORDER[
+                    nodeB.contextClassification ?? ContextClassification.NONE
+                  ] ?? Number.MAX_VALUE)
+
+            return (
+              rankA - rankB ||
+              (originalOrder.get(a.uuid) ?? 0) -
+                (originalOrder.get(b.uuid) ?? 0)
+            )
+          })
+        }
+
         Object.keys(outcomeTree.outcomes).forEach((uuid) => {
           const outcome = outcomeTree.outcomes[uuid]
           let fullFound = 0

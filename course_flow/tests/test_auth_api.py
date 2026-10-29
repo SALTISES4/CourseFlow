@@ -1,14 +1,20 @@
 from __future__ import annotations
 
+import threading
 from datetime import timedelta
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.db import close_old_connections, transaction
 from django.test import Client
 from django.utils import timezone
 
+from course_flow.application.services.auth_service import (
+    AuthService,
+    InvalidCredentialsError,
+)
 from course_flow.core.auth import generate_raw_token, hash_token
-from course_flow.core.models import Authtoken, Project
+from course_flow.core.models import Authtoken, Project, User
 
 
 @pytest.fixture
@@ -60,6 +66,61 @@ def test_login_returns_raw_token_and_stores_hash_only(client: Client, user):
     token_row = Authtoken.objects.get(user=user)
     assert token_row.token_hash == hash_token(raw_token)
     assert token_row.token_hash != raw_token
+    assert token_row.credential_version == user.credential_version
+
+
+@pytest.mark.django_db(transaction=True)
+def test_login_checks_password_only_after_requesting_user_row_lock(user, monkeypatch):
+    events: list[str] = []
+    lock_requested = threading.Event()
+    outcome: dict[str, object] = {}
+    original_select_for_update = User.objects.select_for_update
+    original_check_password = User.check_password
+
+    def tracked_select_for_update(*args, **kwargs):
+        events.append("lock_requested")
+        lock_requested.set()
+        return original_select_for_update(*args, **kwargs)
+
+    def tracked_check_password(self, raw_password):
+        events.append("password_checked")
+        return original_check_password(self, raw_password)
+
+    def attempt_old_password_login():
+        close_old_connections()
+        try:
+            outcome["result"] = AuthService().login(
+                email=user.email,
+                password="password123",
+            )
+        except Exception as exc:  # captured for assertion in the test thread
+            outcome["error"] = exc
+        finally:
+            close_old_connections()
+
+    with transaction.atomic():
+        locked_user = User.objects.select_for_update().get(pk=user.pk)
+        monkeypatch.setattr(
+            User.objects,
+            "select_for_update",
+            tracked_select_for_update,
+        )
+        monkeypatch.setattr(User, "check_password", tracked_check_password)
+
+        login_thread = threading.Thread(target=attempt_old_password_login)
+        login_thread.start()
+        assert lock_requested.wait(timeout=5)
+        assert events == ["lock_requested"]
+
+        locked_user.set_password("Valid-New-Password-123!")
+        locked_user.save(update_fields=["password"])
+
+    login_thread.join(timeout=5)
+    assert not login_thread.is_alive()
+    assert isinstance(outcome.get("error"), InvalidCredentialsError)
+    assert "result" not in outcome
+    assert events == ["lock_requested", "password_checked"]
+    assert Authtoken.objects.filter(user=user).count() == 0
 
 
 @pytest.mark.django_db
@@ -164,6 +225,19 @@ def test_revoked_token_is_rejected(client: Client, user):
     raw_token, _ = _issue_token_for(user, revoked=True)
 
     response = client.get("/api/auth/me", **_auth_header(raw_token))
+    assert response.status_code == 401
+    assert response.json() == {"code": "token_revoked", "params": {}}
+
+
+@pytest.mark.django_db
+def test_token_from_older_credential_version_is_rejected(client: Client, user):
+    raw_token, token = _issue_token_for(user)
+    user.credential_version += 1
+    user.save(update_fields=["credential_version"])
+
+    response = client.get("/api/auth/me", **_auth_header(raw_token))
+
+    assert token.revoked_at is None
     assert response.status_code == 401
     assert response.json() == {"code": "token_revoked", "params": {}}
 

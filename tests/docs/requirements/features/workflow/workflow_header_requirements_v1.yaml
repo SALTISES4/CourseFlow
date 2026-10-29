@@ -2,36 +2,42 @@
 # Source: tests/docs/__ARCHIVE/functional-requirements.md (Workflow section: header/navigation) + Figma design evidence.
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
 # Cross-reference:
-#   - tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-002; mid-session unpublish revocation for published-access—FR-WS-ACCESS-003; mid-session contributor removal—FR-WS-ACCESS-004; mid-session archive eviction—FR-WS-ACCESS-005)
+#   - tests/docs/requirements/features/global/workspace_access_requirements_v1.yaml (denied access when documentPreconditions fail—FR-WS-ACCESS-002; mid-session unpublish revocation for published-access—FR-WS-ACCESS-003; mid-session contributor removal—FR-WS-ACCESS-004; mid-session archive eviction—FR-WS-ACCESS-005)
 #   - tests/docs/requirements/features/workflow/workflow_overview_requirements_v1.yaml (overview sub-view content)
-#   - tests/docs/requirements/features/shared/context_action_bar_requirements_v1.yaml (workflow-level action bar controls)
+#   - tests/docs/requirements/features/global/context_action_bar_requirements_v1.yaml (workflow-level action bar controls)
 #   - tests/docs/requirements/features/workflow/workflow_edit_form_requirements_v1.yaml (workflowTitle update on save—FR-WF-FORM-003; edit dialog open—FR-WF-FORM-001)
-#   - tests/docs/requirements/features/shared/card_content_requirements_v1.yaml (FR-CARD-005 favourite snackbar copy for workflowHeaderFavouriteToggle)
+#   - tests/docs/requirements/features/global/card_content_requirements_v1.yaml (FR-CARD-005 favourite snackbar copy for workflowHeaderFavouriteToggle)
 #   - tests/docs/requirements/features/workflow/workflow_public_link_requirements_v1.yaml (anonymous workflowHeader/tab exception and hidden favourite control — FR-WF-PUBLIC-002)
+#   - tests/docs/requirements/features/workflow/workflow_outcome_table_requirements_v1.yaml (workflowOutcomeTableView and Outcome Table behavior — FR-WF-OT-001 onward)
 
 documentPreconditions:
-  - user is authenticated to CourseFlow
-  - actor is one of (a) owner, editor, commenter, or viewer with an explicit contributor role on the parent project of the workflow on any route matching '/workflow/{id}/*', or (b) user (published-access, no explicit contributor role) viewing a workflow whose parent project is published
+  - actor is one of (a) authenticated owner, editor, commenter, or viewer with an explicit contributor role on the parent project of the workflow on any route matching '/workflow/{id}/*', (b) authenticated user (published-access, no explicit contributor role) viewing a workflow whose parent project is published, or (c) anonymousViewer viewing a workflow whose workflow-specific public-link mode is enabled per FR-WF-PUBLIC-002
   - routes matching '/workflow/{id}/*' include '/workflow/{id}' (empty suffix) and '/workflow/{id}/<sub-view>' for any sub-view
-  - requirements in this file assume the above hold; when they do not on navigation, assert per tests/docs/requirements/features/shared/workspace_access_requirements_v1.yaml FR-WS-ACCESS-002; when published-access preconditions fail mid-session because the parent project becomes unpublished, assert per FR-WS-ACCESS-003 on the actor's next in-app action; when a former contributor's access changes mid-session because they were removed per tests/docs/requirements/features/project/project_overview_requirements_v1.yaml FR-PROJ-OV-002, assert per FR-WS-ACCESS-004 on the actor's next in-app action; when the parent project or the current workflow becomes archived while the actor is in workspace, assert per FR-WS-ACCESS-005 on the actor's next in-app action
+  - requirements in this file assume the above hold; when authenticated access fails, assert per tests/docs/requirements/features/global/workspace_access_requirements_v1.yaml FR-WS-ACCESS-002; when anonymous public-link access fails, assert per tests/docs/requirements/features/workflow/workflow_public_link_requirements_v1.yaml FR-WF-PUBLIC-002; when published-access preconditions fail mid-session because the parent project becomes unpublished, assert per FR-WS-ACCESS-003 on the actor's next in-app action; when a former contributor's access changes mid-session because they were removed per tests/docs/requirements/features/project/project_overview_requirements_v1.yaml FR-PROJ-OV-002, assert per FR-WS-ACCESS-004 on the actor's next in-app action; when the parent project or the current workflow becomes archived while the actor is in workspace, assert per FR-WS-ACCESS-005 on the actor's next in-app action
 
 uiObjectDefinitions:
   workflowHeader:
-    meaning: Header region showing workflow title, workflowHeaderFavouriteToggle, and workflowViewTabSelector.
+    meaning: Header region showing workflow title and workflowViewTabSelector and, for authenticated actors, workflowHeaderFavouriteToggle.
   workflowTitle:
     meaning: Workflow title text shown in workflowHeader across workflow sub-views.
   workflowHeaderFavouriteToggle:
     meaning: Favourite toggle control in workflowHeader; shows yellow star when favourited and grey star when not favourited.
   workflowViewTabSelector:
     meaning: Tab selector in workflowHeader for switching between workflow sub-views.
+  workflowOutcomeTableTab:
+    meaning: Fourth tab on workflowViewTabSelector labeled 'Outcome table'; navigates to '/workflow/{id}/outcome-table'.
+  workflowOutcomeTableView:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_outcome_table_requirements_v1.yaml.
   globalMessageSnackbar:
-    meaning: Canonical definition in tests/docs/requirements/features/shared/card_content_requirements_v1.yaml (FR-CARD-005).
+    meaning: Canonical definition in tests/docs/requirements/features/global/card_content_requirements_v1.yaml (FR-CARD-005).
 
 locatorMappings:
   workflowHeader: "canonical_locators.yaml -> workflowHeader"
   workflowTitle: "canonical_locators.yaml -> workflowTitle"
   workflowHeaderFavouriteToggle: "canonical_locators.yaml -> workflowHeaderFavouriteToggle"
   workflowViewTabSelector: "canonical_locators.yaml -> workflowViewTabSelector"
+  workflowOutcomeTableTab: "canonical_locators.yaml -> workflowOutcomeTableTab"
+  workflowOutcomeTableView: "canonical_locators.yaml -> workflowOutcomeTableView"
   globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
 
 requirements:
@@ -64,14 +70,14 @@ requirements:
     mainFlow:
       - system renders workflowHeader with workflowTitle for the current workflow
       - workflowTitle is display-only in workflowHeader; title updates on successful save through editWorkflowDialog per FR-WF-FORM-003
-      - workflowViewTabSelector provides exactly three tabs 'Overview', 'Workflow', and 'Outcomes'
+      - workflowViewTabSelector always provides the base tabs 'Overview', 'Workflow', and 'Outcomes'; course and program workflows additionally provide 'Outcome table' per FR-WF-HEADER-003, while activity workflows provide exactly the three base tabs
 
     roleBehavior: {}
 
     acceptanceCriteria:
       - workflowTitle is visible
       - given actor needs to change workflowTitle, edit path opens editWorkflowDialog per FR-WF-FORM-001; persisted title update per FR-WF-FORM-003
-      - workflowViewTabSelector shows tabs 'Overview', 'Workflow', and 'Outcomes'
+      - workflowViewTabSelector shows base tabs 'Overview', 'Workflow', and 'Outcomes'; Outcome Table tab applicability is asserted by FR-WF-HEADER-003
       - selecting 'Overview' on workflowViewTabSelector navigates to '/workflow/{id}'
       - selecting 'Workflow' on workflowViewTabSelector navigates to '/workflow/{id}/graph'
       - selecting 'Outcomes' on workflowViewTabSelector navigates to '/workflow/{id}/outcomes'
@@ -124,8 +130,75 @@ requirements:
 
     openQuestions: []
 
+  - id: FR-WF-HEADER-003
+    title: "'Outcome table' tab on course and program workflows"
+
+    designEvidence:
+      - FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
+      - FIGMA-WF-OT-VIEW-SETTINGS-DEFAULT
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+      - anonymousViewer
+
+    uiObjects:
+      - workflowHeader
+      - workflowViewTabSelector
+      - workflowOutcomeTableTab
+      - workflowOutcomeTableView
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - current route matches '/workflow/{id}/*'
+
+    trigger:
+      - actor clicks workflowOutcomeTableTab on workflowViewTabSelector
+      - actor directly opens '/workflow/{id}/outcome-table'
+
+    mainFlow:
+      - on course and program workflows, workflowViewTabSelector includes a fourth tab workflowOutcomeTableTab labeled 'Outcome table' in addition to 'Overview', 'Workflow', and 'Outcomes'
+      - on activity workflows, workflowOutcomeTableTab is not shown on workflowViewTabSelector
+      - when the workflow has at least one workflowOutcome and at least one workflowNode, workflowOutcomeTableTab is enabled
+      - when the workflow lacks at least one workflowOutcome or lacks at least one workflowNode, workflowOutcomeTableTab is disabled
+      - when workflowOutcomeTableTab is enabled and actor clicks it, application navigates to '/workflow/{id}/outcome-table' and renders workflowOutcomeTableView per tests/docs/requirements/features/workflow/workflow_outcome_table_requirements_v1.yaml
+      - given current route matches '/workflow/{id}/outcome-table', workflowOutcomeTableTab is the active tab on workflowViewTabSelector
+      - when actor directly opens '/workflow/{id}/outcome-table' for an activity workflow, or for a course or program workflow that lacks at least one workflowOutcome or at least one workflowNode, application replaces the current route with '/workflow/{id}' and renders the workflow Overview sub-view
+      - anonymousViewer receives workflowOutcomeTableTab under the same workflow-type and eligibility rules as authenticated actors; when enabled, workflowOutcomeTableView is read-only per FR-WF-PUBLIC-002
+
+    roleBehavior:
+      owner:
+        workflowOutcomeTableTab: enabled when eligibility preconditions hold
+      editor:
+        workflowOutcomeTableTab: enabled when eligibility preconditions hold
+      commenter:
+        workflowOutcomeTableTab: enabled when eligibility preconditions hold
+      viewer:
+        workflowOutcomeTableTab: enabled when eligibility preconditions hold
+      user:
+        workflowOutcomeTableTab: enabled when eligibility preconditions hold
+      anonymousViewer:
+        workflowOutcomeTableTab: enabled when eligibility preconditions hold; workflowOutcomeTableView is readOnly
+
+    acceptanceCriteria:
+      - given an eligible course or program workflow with at least one workflowOutcome and one workflowNode, workflowViewTabSelector shows workflowOutcomeTableTab as the enabled fourth tab after 'Outcomes' for every actor in this FR
+      - given a course or program workflow with no workflowOutcome or no workflowNode, workflowOutcomeTableTab remains visible but is disabled and cannot navigate
+      - given an activity workflow, workflowOutcomeTableTab is not rendered
+      - given an eligible course or program workflow, when actor selects workflowOutcomeTableTab, current route becomes '/workflow/{id}/outcome-table', workflowOutcomeTableView is visible, and workflowOutcomeTableTab is active
+      - given actor directly opens '/workflow/{id}/outcome-table' for an activity workflow or an ineligible course or program workflow, current history entry is replaced with '/workflow/{id}' and the Overview sub-view is visible
+      - given anonymousViewer opens an eligible public course or program workflow, workflowOutcomeTableTab follows the same visibility and enablement rules and selecting it renders workflowOutcomeTableView read-only
+
+    openQuestions: []
+
 designEvidenceLinkTable:
   - key: FIGMA-WF-HEADER-DEFAULT
     hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-103751&t=6weYZA8hUf6tm7DF-1
   - key: FIGMA-WF-HEADER-FAVOURITE
     hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5671-103751&t=6weYZA8hUf6tm7DF-1
+  - key: FIGMA-WF-OT-COURSE-STANDARD-SCROLLED-LEFT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5445-53117
+  - key: FIGMA-WF-OT-VIEW-SETTINGS-DEFAULT
+    hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=7199-37068

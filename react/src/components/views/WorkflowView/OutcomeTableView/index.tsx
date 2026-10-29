@@ -3,13 +3,22 @@ import { RootState } from '@cf/redux/store'
 import { OuterContentWrap } from '@cfMUI/helper'
 import { type WorkflowPageData } from '@cfPages/Workflow/types'
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 
+import PresentationControls from './PresentationControls'
 import * as Styled from './styles'
 import TableBody from './TableBody'
 import TableHeader from './TableHeader'
 
-const OutcomeTableView = ({ workflow }: { workflow: WorkflowPageData }) => {
+const OutcomeTableView = ({
+  workflow,
+  publicView = false
+}: {
+  workflow: WorkflowPageData
+  publicView?: boolean
+}) => {
+  const { t } = useTranslation('workflow')
   const viewType = useSelector(
     (state: RootState) => state.graph.outcomeTableUi.viewType
   )
@@ -19,9 +28,28 @@ const OutcomeTableView = ({ workflow }: { workflow: WorkflowPageData }) => {
 
   return (
     <OuterContentWrap sx={{ pt: 4 }} data-test-id="workflow-outcome-table-view">
-      <Styled.TableWrap>
-        <TableHeader viewType={viewType} table={outcomeTable} />
-        <TableBody viewType={viewType} table={outcomeTable} />
+      {publicView && (
+        <PresentationControls
+          graphUuid={workflow.graphUuid}
+          workflowType={workflow.workflowType}
+        />
+      )}
+      <Styled.TableWrap
+        role="grid"
+        aria-label={t('outcomeTable.gridLabel')}
+        data-test-id="workflow-outcome-table-grid"
+        data-layout={viewType === 'normal' ? 'normal' : 'competency-matrix'}
+      >
+        <TableHeader
+          viewType={viewType}
+          table={outcomeTable}
+          workflowType={workflow.workflowType}
+        />
+        <TableBody
+          viewType={viewType}
+          table={outcomeTable}
+          workflowType={workflow.workflowType}
+        />
       </Styled.TableWrap>
     </OuterContentWrap>
   )

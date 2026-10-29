@@ -25,6 +25,7 @@ const StyledPopover = styled(Popover)({
 
 type BaseMenuItemType = {
   action?: any
+  disabled?: boolean
   show?: boolean
   id?: string
   uuid?: string
@@ -60,6 +61,7 @@ const MenuToggleButton = (props: MenuItemType) => {
         size={iconButtonProps.size ?? 'small'}
         color={iconButtonProps.color}
         {...iconButtonProps}
+        disabled={props.disabled || iconButtonProps.disabled}
         id={props.id}
         data-test-id={props['data-test-id']}
         aria-controls={props['aria-controls']}
@@ -76,6 +78,7 @@ const MenuToggleButton = (props: MenuItemType) => {
     return (
       <Button
         size="small"
+        disabled={props.disabled}
         startIcon={props.showIconInList && props.icon}
         id={props.id}
         data-test-id={props['data-test-id']}
@@ -97,7 +100,8 @@ export const ListMenuItem = (props: MenuItemType) => {
     return null
   }
 
-  const { id, uuid, title, action, separator, showIconInList, icon } = props
+  const { id, uuid, title, action, disabled, separator, showIconInList, icon } =
+    props
   const content = props.content
 
   const contentChooser = (content?: string | ReactElement) => {
@@ -116,7 +120,12 @@ export const ListMenuItem = (props: MenuItemType) => {
   return (
     <>
       {separator === 'top' && <Divider />}
-      <MenuItem id={`${menuItemId}-button`} onClick={action} title={title}>
+      <MenuItem
+        id={`${menuItemId}-button`}
+        disabled={disabled}
+        onClick={action}
+        title={title}
+      >
         {contentChooser(content)}
       </MenuItem>
       {separator && separator !== 'top' && <Divider />}

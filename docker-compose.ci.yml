@@ -5,6 +5,11 @@ services:
     volumes: !reset []
     restart: "no"
 
+  mailpit:
+    profiles: !reset []
+    ports: !reset []
+    restart: "no"
+
   django:
     profiles: !reset []
     image: courseflow-django-ci
@@ -14,10 +19,21 @@ services:
     environment:
       DJANGO_MIGRATE_ON_STARTUP: "false"
       POSTGRES_HOST: postgres
+      EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
+      EMAIL_HOST: mailpit
+      EMAIL_PORT: "1025"
+      EMAIL_USE_TLS: "false"
+      EMAIL_USE_SSL: "false"
+      DEFAULT_FROM_EMAIL: courseflow@example.test
+      COURSEFLOW_SUPPORT_EMAIL: support@courseflow.test
+      COURSEFLOW_FRONTEND_URL: http://frontend:3000
+      COURSEFLOW_ALLOW_INSECURE_EMAIL_ACTION_URLS: "true"
     volumes:
       - .:/app
     depends_on:
       postgres:
+        condition: service_healthy
+      mailpit:
         condition: service_healthy
     restart: "no"
 
@@ -63,6 +79,8 @@ services:
       CI: "true"
       PLAYWRIGHT_API_BASE_URL: http://django:8000
       PLAYWRIGHT_BASE_URL: http://frontend:3000
+      MAILPIT_API_URL: http://mailpit:8025
+      PLAYWRIGHT_DATABASE_EPHEMERAL: "true"
       TEST_PASSWORD: password
       TEST_USERNAME: teacher@courseflow.com
     volumes:
@@ -74,6 +92,8 @@ services:
       django:
         condition: service_healthy
       frontend:
+        condition: service_healthy
+      mailpit:
         condition: service_healthy
 
 volumes:

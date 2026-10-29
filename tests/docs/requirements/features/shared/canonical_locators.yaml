@@ -1187,6 +1187,9 @@ locatorMappings:
   workflowJumpToMenuSectionItem:
     strategy: "{workflowJumpToMenu} [role='menuitem']"
     confidence: confirmed
+  workflowJumpToUntitledSectionDisplayFallback:
+    strategy: "localized fallback text within {workflowJumpToMenuSectionItem} when the section title is empty"
+    confidence: inferred
   workflowJumpToTrigger:
     strategy: "[data-test-id='jump-to-menu-button']"
     confidence: confirmed
@@ -1399,6 +1402,132 @@ locatorMappings:
     confidence: inferred
   workflowOutcomeHoverActionsMenuInsertSiblingItem:
     strategy: "{workflowOutcomeHoverActionsMenu} item with tooltip 'Insert outcome below'"
+    confidence: inferred
+  workflowOutcomeTableColumnHeader:
+    strategy: "{workflowOutcomeTableGrid} role='columnheader' named by the full node title in Normal style or the full hierarchical numbered outcome title in Competency matrix style"
+    confidence: inferred
+  workflowOutcomeTableCompetencyMatrixLayout:
+    strategy: "{workflowOutcomeTableView} when 'Competency matrix' style is active per FR-CAB-010"
+    confidence: inferred
+  workflowOutcomeTableGrid:
+    strategy: "{workflowOutcomeTableView} element with role='grid' and accessible name 'Outcome table assignments'"
+    confidence: inferred
+  workflowOutcomeTableGridCell:
+    strategy: "{workflowOutcomeTableGrid} role='checkbox' whose accessible name contains the full hierarchical numbered outcome title and full node title"
+    confidence: inferred
+  workflowOutcomeTableGridCellCompleteIndicator:
+    strategy: "{workflowOutcomeTableGridCell}[aria-checked='true'] with solid checkmark icon"
+    confidence: inferred
+  workflowOutcomeTableGridCellFocusBorder:
+    strategy: "{workflowOutcomeTableGridCell}:focus-visible outline"
+    confidence: inferred
+  workflowOutcomeTableGridCellPartialIndicator:
+    strategy: "{workflowOutcomeTableGridCell}[aria-checked='mixed'] with partial checkmark icon"
+    confidence: inferred
+  workflowOutcomeTableNodeChannelColorBand:
+    strategy: "left-edge colour stripe within the node {workflowOutcomeTableColumnHeader} or {workflowOutcomeTableNodeRowLabel}, located from that header's accessible node title"
+    confidence: inferred
+  workflowOutcomeTableNodeRowLabel:
+    strategy: "{workflowOutcomeTableCompetencyMatrixLayout} role='rowheader' named by the full node title"
+    confidence: inferred
+  workflowOutcomeTableNormalLayout:
+    strategy: "{workflowOutcomeTableView} when 'Normal' style is active per FR-CAB-010"
+    confidence: inferred
+  workflowOutcomeTableOutcomeRowLabel:
+    strategy: "{workflowOutcomeTableNormalLayout} role='rowheader' named by the full hierarchical numbered outcome title"
+    confidence: inferred
+  workflowOutcomeTableOutcomeTagGroupBand:
+    strategy: "{workflowOutcomeTableGrid} role='group' named by the outcome tag catalog label, 'Untagged outcomes', or accessible-only label 'Outcomes' for the single visually unlabeled group"
+    confidence: inferred
+  workflowOutcomeTablePresentationControls:
+    strategy: "group with accessible name 'Outcome table display options' within {contextActionBar} for authenticated actors or within {workflowOutcomeTableView} for anonymousViewer"
+    confidence: inferred
+  workflowOutcomeTableProgramClassificationHeaderGroup:
+    strategy: "{workflowOutcomeTableCompetencyMatrixLayout} on program workflows — column group header with text 'Classification'"
+    confidence: inferred
+  workflowOutcomeTableProgramCreditsColumn:
+    strategy: "{workflowOutcomeTableCompetencyMatrixLayout} on program workflows — column header with text 'Credits'"
+    confidence: inferred
+  workflowOutcomeTableProgramGeneralEducationColumn:
+    strategy: "{workflowOutcomeTableProgramClassificationHeaderGroup} sub-column header with text 'General education'"
+    confidence: inferred
+  workflowOutcomeTableProgramPonderationHeaderGroup:
+    strategy: "{workflowOutcomeTableCompetencyMatrixLayout} on program workflows — column group header with text 'Ponderation'"
+    confidence: inferred
+  workflowOutcomeTableProgramPonderationIndividualColumn:
+    strategy: "{workflowOutcomeTableProgramPonderationHeaderGroup} sub-column header with text 'Individual work'"
+    confidence: inferred
+  workflowOutcomeTableProgramPonderationPracticalColumn:
+    strategy: "{workflowOutcomeTableProgramPonderationHeaderGroup} sub-column header with text 'Practical'"
+    confidence: inferred
+  workflowOutcomeTableProgramPonderationTheoryColumn:
+    strategy: "{workflowOutcomeTableProgramPonderationHeaderGroup} sub-column header with text 'Theory'"
+    confidence: inferred
+  workflowOutcomeTableProgramPonderationTotalHoursColumn:
+    strategy: "{workflowOutcomeTableProgramPonderationHeaderGroup} sub-column header with text 'Total hours'"
+    confidence: inferred
+  workflowOutcomeTableProgramSpecificEducationColumn:
+    strategy: "{workflowOutcomeTableProgramClassificationHeaderGroup} sub-column header with text 'Specific education'"
+    confidence: inferred
+  workflowOutcomeTableSectionGroupBand:
+    strategy: "{workflowOutcomeTableGrid} role='group' named by the full workflow section title"
+    confidence: inferred
+  workflowOutcomeTableSectionOutcomeCell:
+    strategy: "read-only cell in 'Normal' style leftmost column of {workflowOutcomeTableSectionGroupBand}; in 'Competency matrix' style within {workflowOutcomeTableSectionRow}"
+    confidence: inferred
+  workflowOutcomeTableSectionRow:
+    strategy: "{workflowOutcomeTableSectionGroupBand} in 'Competency matrix' style — section header row"
+    confidence: inferred
+  workflowOutcomeTableSectionTotalHoursCell:
+    strategy: "{workflowOutcomeTableSectionRow} cell under {workflowOutcomeTableTotalHoursColumn}"
+    confidence: inferred
+  workflowOutcomeTableSortMenu:
+    strategy: "role='menu' opened from {workflowOutcomeTableSortTrigger}"
+    confidence: inferred
+  workflowOutcomeTableSortMenuItemChronological:
+    strategy: "{workflowOutcomeTableSortMenu} role='menuitemradio' named 'Chronological'"
+    confidence: inferred
+  workflowOutcomeTableSortMenuItemContext:
+    strategy: "{workflowOutcomeTableSortMenu} role='menuitemradio' named 'Context'"
+    confidence: inferred
+  workflowOutcomeTableSortMenuItemNodeCategory:
+    strategy: "{workflowOutcomeTableSortMenu} role='menuitemradio' named 'Node category'"
+    confidence: inferred
+  workflowOutcomeTableSortTrigger:
+    strategy: "{contextActionBar} button named 'Sort' on 'Outcome table' sub-view"
+    confidence: inferred
+  workflowOutcomeTableStyleMenu:
+    strategy: "role='menu' opened from {workflowOutcomeTableStyleTrigger}"
+    confidence: inferred
+  workflowOutcomeTableStyleMenuItemCompetencyMatrix:
+    strategy: "{workflowOutcomeTableStyleMenu} role='menuitem' named 'Competency matrix'"
+    confidence: inferred
+  workflowOutcomeTableStyleMenuItemNormal:
+    strategy: "{workflowOutcomeTableStyleMenu} role='menuitem' named 'Normal'"
+    confidence: inferred
+  workflowOutcomeTableStyleTrigger:
+    strategy: "{contextActionBar} button whose accessible name contains 'Table style' and the active style label"
+    confidence: inferred
+  workflowOutcomeTableTab:
+    strategy: "{workflowViewTabSelector} role='tab' named 'Outcome table'"
+    confidence: inferred
+  workflowOutcomeTableTotalHoursColumn:
+    strategy: "{workflowOutcomeTableCompetencyMatrixLayout} on course workflows — column header with text 'Total hours'"
+    confidence: inferred
+  workflowOutcomeTableTruncatedLabelTooltip:
+    strategy: "role='tooltip' opened from a truncated {workflowOutcomeTableOutcomeRowLabel}, {workflowOutcomeTableColumnHeader}, or {workflowOutcomeTableNodeRowLabel}"
+    confidence: inferred
+  workflowOutcomeTableView:
+    strategy: "region with accessible name 'Outcome table' on route '/workflow/{id}/outcome-table'"
+    confidence: inferred
+  workflowOutcomeTableViewSettingsMenuItemCollapseOutcomes:
+    strategy: "{workflowViewSettingsMenu} role='menuitem' named 'Collapse outcomes'"
+    confidence: inferred
+  workflowOutcomeTableViewSettingsMenuItemExpandOutcomes:
+    strategy: "{workflowViewSettingsMenu} role='menuitem' named 'Expand outcomes'"
+    confidence: inferred
+  workflowOutcomeTableViewSettingsMenuTagsSection:
+    strategy: "{workflowViewSettingsMenu} group named 'Tags'; each listed outcome tag is a role='checkbox' control named by its catalog label"
     confidence: inferred
   workflowOutcomeTree:
     strategy: null

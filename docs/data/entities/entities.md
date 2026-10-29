@@ -23,7 +23,7 @@ This document is a **derived** view of that code. When code and prose disagree, 
 ### User (`cf_user`)
 
 - Extends `AbstractUser`; login field is `email` (`USERNAME_FIELD`).
-- Extra fields: `uuid`, `language_preference` (see `course_flow.core.enum.LanguagePreference`), `notifications_active`.
+- Extra fields: `uuid`, `language_preference` (see `course_flow.core.enum.LanguagePreference`), `notifications_active`, `credential_version`.
 - Typical reverse relations: `owned_projects`, `created_graphs` (FK from `Workflow`; name is historical), `comments`, `notifications`, `favorite_projects`, `favorite_graphs`, `team_users`, `authtokens`.
 
 ### Project (`cf_project`)
@@ -117,7 +117,14 @@ This document is a **derived** view of that code. When code and prose disagree, 
 
 ### Authtoken (`cf_authtoken`)
 
-- `user`, `token_hash`, `label`, `created_at`, `expires_at`, `last_used_at`, `revoked_at`
+- `user`, `token_hash`, `credential_version`, `label`, `created_at`, `expires_at`, `last_used_at`, `revoked_at`
+- A token authenticates only when it is unrevoked, unexpired, and its `credential_version` equals the owning user's version. See `docs/architecture/adr_credential_version_and_password_change_sessions.md`.
+
+### PasswordResetAttempt (`cf_password_reset_attempt`)
+
+- `email_key`, `ip_key`, `created_at`
+- `email_key` and `ip_key` are HMAC-SHA256 rate-limit fingerprints, not raw email or IP values.
+- Rows support the rolling password-recovery limits and are not reset tokens. Reset tokens use Django's signed token generator and are not stored. See `docs/architecture/adr_password_recovery_tokens_and_rate_limits.md`.
 
 ---
 

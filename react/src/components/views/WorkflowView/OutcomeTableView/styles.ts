@@ -6,7 +6,14 @@ const TILT_ANGLE = '50deg'
 const CELL_WIDTH = 56
 const CELL_HEIGHT = 50
 
-export const TableWrap = styled(Box)(() => ({}))
+export const TableWrap = styled(Box)(({ theme }) => ({
+  position: 'relative',
+  maxWidth: '100%',
+  maxHeight: 'calc(100vh - 260px)',
+  overflow: 'auto',
+  paddingRight: theme.spacing(1),
+  paddingBottom: theme.spacing(1)
+}))
 
 export const TableHeader = styled(Box)(({ theme }) => ({
   position: 'sticky',
@@ -39,6 +46,44 @@ export const HeaderLegendWrap = styled(Box)(({ theme }) => ({
     background: 'linear-gradient(to right, #fff 60%, transparent 100%)'
   },
 
+  '& [class*="TableLegend"]': {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    width: `calc(${HEADING_WIDTH}px * tan(${TILT_ANGLE}))`
+  }
+}))
+
+export const SummaryHeaders = styled(Box)({
+  display: 'flex',
+  height: `${HEADING_WIDTH}px`,
+  alignItems: 'flex-end'
+})
+
+export const SummaryHeaderGroup = styled(Box)(({ theme }) => ({
+  position: 'relative',
+  display: 'flex',
+  paddingTop: theme.spacing(4),
+  borderLeft: `1px solid ${theme.palette.divider}`
+}))
+
+export const SummaryGroupTitle = styled('span')(({ theme }) => ({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  padding: theme.spacing(0.5),
+  textAlign: 'center',
+  fontWeight: 600,
+  background: theme.palette.workspaceBlocks.background
+}))
+
+export const SummaryHeaderCell = styled(Box)(({ theme }) => ({
+  position: 'relative',
+  width: `${CELL_WIDTH}px`,
+  height: `calc(${HEADING_WIDTH}px - ${theme.spacing(4)})`,
+  transform: `rotateZ(-${TILT_ANGLE}) translate(22px, 28px)`,
+  transformOrigin: 'bottom left',
   '& [class*="TableLegend"]': {
     position: 'absolute',
     bottom: 0,
@@ -142,32 +187,25 @@ export const CheckmarkCell = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
 
-  // hide the checkbox rectangle for the elements in "empty" state
-  '&:not(:has(input)):not(:hover) span': {
-    opacity: 0,
-    transform: 'scale(0.85)'
-  },
-
-  '&:hover span': {
-    borderColor: theme.palette.primary.main
-  },
-  '& label': {
+  '& button': {
+    appearance: 'none',
+    border: 0,
+    background: 'transparent',
     position: 'relative',
     width: '100%',
     height: '100%',
     display: 'flex',
     padding: '6px 8px',
-    cursor: 'pointer'
-  },
-  '& input': {
-    position: 'absolute',
-    left: 0,
-    opacity: 0,
-    '& ~ span': {
-      color: '#8AD6AD'
+    cursor: 'pointer',
+    '&:disabled': {
+      cursor: 'default'
     },
-    '&:checked ~ span': {
-      color: theme.palette.primary.dark
+    '&:focus-visible': {
+      outline: `3px solid ${theme.palette.primary.main}`,
+      outlineOffset: '-3px'
+    },
+    '&:not(:disabled):hover span': {
+      borderColor: theme.palette.primary.main
     }
   },
   '& span': {
@@ -179,6 +217,36 @@ export const CheckmarkCell = styled(Box)(({ theme }) => ({
     border: '1px solid #EEF2FD',
     borderRadius: theme.shape.borderRadius,
     backgroundColor: theme.palette.common.white,
-    transition: `opacity 0.1s ease, transform 0.1s ease`
-  }
+    transition: `opacity 0.1s ease, transform 0.1s ease`,
+    '&[data-status="empty"]': {
+      opacity: 0,
+      transform: 'scale(0.85)'
+    },
+    '&[data-status="partial"]': {
+      color: '#8AD6AD'
+    },
+    '&[data-status="full"]': {
+      color: theme.palette.primary.dark
+    }
+  },
+  '& button:not(:disabled):hover span[data-status="empty"], & button:focus-visible span[data-status="empty"]':
+    {
+      opacity: 1,
+      transform: 'scale(1)'
+    }
+}))
+
+export const SummaryCell = styled(Box)(({ theme }) => ({
+  width: `${CELL_WIDTH}px`,
+  minWidth: `${CELL_WIDTH}px`,
+  height: `${CELL_HEIGHT}px`,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: theme.spacing(0.5),
+  border: `1px solid ${theme.palette.divider}`,
+  borderBottomWidth: 0,
+  borderRightWidth: 0,
+  fontSize: '0.75rem',
+  textAlign: 'center'
 }))

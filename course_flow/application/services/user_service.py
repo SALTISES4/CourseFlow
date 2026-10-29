@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import re
-
 from django.db.models import Q
 
 from course_flow.api.schemas.auth import UserMeta, UserSummaryOut
@@ -83,47 +81,6 @@ class UserService:
             raise ValidationError(errors)
 
         user.save(update_fields=["first_name", "last_name", "language_preference"])
-        return user
-
-    def reset_password(
-        self,
-        *,
-        user_id: int,
-        password: str | None = None,
-        new_password: str | None = None,
-    ) -> User | None:
-        user = self.get_user_by_id(user_id)
-        if user is None:
-            return None
-
-        errors: dict[str, str] = {}
-
-        if password is None or not user.check_password(password):
-            errors["password"] = "current_password_incorrect"
-
-        if new_password is None:
-            errors["newPassword"] = "new_password_required"
-        elif password is not None and new_password == password:
-            errors["newPassword"] = "new_password_matches_current"
-
-        if new_password is not None and "newPassword" not in errors:
-            is_new_pass_valid = (
-                len(new_password) >= 12
-                and re.search(r"[a-zA-Z]", new_password)
-                and re.search(r"\d", new_password)  # at least one digit
-                and re.search(
-                    r"[^a-zA-Z0-9]", new_password
-                )  # at least one symbol
-            )
-            if not is_new_pass_valid:
-                errors["newPassword"] = "password_strength_required"
-
-        if errors:
-            raise ValidationError(errors)
-
-        assert new_password is not None
-        user.set_password(new_password)
-        user.save(update_fields=["password"])
         return user
 
     def get_notification_settings(self, user_id: int) -> User | None:
