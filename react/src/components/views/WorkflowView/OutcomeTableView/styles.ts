@@ -146,7 +146,7 @@ export const TableLegend = styled('span', {
   '&.legend-extra': {
     maxWidth: '265px',
     paddingLeft: '8px',
-    left: '8px',
+    left: '8px !important',
     border: 0
   }
 }))

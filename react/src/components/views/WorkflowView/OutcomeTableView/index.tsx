@@ -1,3 +1,4 @@
+import { selectOutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
 import { RootState } from '@cf/redux/store'
 import { OuterContentWrap } from '@cfMUI/helper'
 import { type WorkflowPageData } from '@cfPages/Workflow/types'
@@ -10,6 +11,8 @@ import TableBodyNormal from './TableBodyNormal'
 import TableHeaderMatrix from './TableHeaderMatrix'
 import TablheHeaderNormal from './TableHeaderNormal'
 
+export type WorkflowType = WorkflowPageData['workflowType']
+
 const OutcomeTableView = ({ workflow }: { workflow: WorkflowPageData }) => {
   const viewType = useSelector(
     (state: RootState) => state.graph.outcomeTableUi.viewType
@@ -19,8 +22,14 @@ const OutcomeTableView = ({ workflow }: { workflow: WorkflowPageData }) => {
     <OuterContentWrap sx={{ pt: 4 }} data-test-id="workflow-outcome-table-view">
       {viewType === 'matrix' && (
         <Styled.TableWrap className="view-matrix">
-          <TableHeaderMatrix graphUuid={workflow.graphUuid} />
-          <TableBodyMatrix graphUuid={workflow.graphUuid} />
+          <TableHeaderMatrix
+            graphUuid={workflow.graphUuid}
+            workflowType={workflow.workflowType}
+          />
+          <TableBodyMatrix
+            graphUuid={workflow.graphUuid}
+            workflowType={workflow.workflowType}
+          />
         </Styled.TableWrap>
       )}
       {viewType === 'normal' && (

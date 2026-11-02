@@ -8,13 +8,19 @@ import OutcomeHeader from '@cfPages/Workflow/Sidebar/components/OutcomesTab/Outc
 import { Fragment, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import { type WorkflowType } from '..'
 import * as Styled from '../styles'
 
-const TableHeader = ({ graphUuid }: { graphUuid: string }) => {
+const TableHeader = ({
+  graphUuid,
+  workflowType
+}: {
+  graphUuid: string
+  workflowType: WorkflowType
+}) => {
   const table = useSelector((state: RootState) =>
     selectOutcomeTable(state, graphUuid)
   )
-  const workflowType = 'program' // TODO: grab this from RTK
   const extraColumns = table.extraColumns[workflowType]
 
   return (

@@ -12,10 +12,17 @@ import { AppDispatch, RootState } from '@cf/redux/store'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
+import { type WorkflowType } from '..'
 import Checkmark, { OutcomeCheckmarkStatus } from '../Checkmark'
 import * as Styled from '../styles'
 
-const TableBody = ({ graphUuid }: { graphUuid: string }) => {
+const TableBody = ({
+  graphUuid,
+  workflowType
+}: {
+  graphUuid: string
+  workflowType: WorkflowType
+}) => {
   const table = useSelector((state: RootState) =>
     selectOutcomeTable(state, graphUuid)
   )
@@ -28,13 +35,13 @@ const TableBody = ({ graphUuid }: { graphUuid: string }) => {
 
     const sectionTitle = displaySystemTitle(t, section, sectionDefaultTitle)
     const sectionNodes = table.sections[sectionIndex].nodes.map((n) => n.uuid)
-    const workflowType = 'program' // TODO: grab this from RTK
     const extraColumns = table.extraColumns[workflowType]
 
     return (
       <>
         <SectionHeaderRow
           index={sectionIndex}
+          workflowType={workflowType}
           title={sectionTitle}
           table={table}
         />
@@ -191,13 +198,14 @@ const CheckmarkGroup = ({
 const SectionHeaderRow = ({
   index,
   title,
-  table
+  table,
+  workflowType
 }: {
   index: number
   title: string
   table: OutcomeTable
+  workflowType: WorkflowType
 }) => {
-  const workflowType = 'program' // TODO: grab this from RTK
   const extraColumns = table.extraColumns[workflowType]
 
   return (
