@@ -66,7 +66,7 @@ const TableBody = ({ graphUuid }: { graphUuid: string }) => {
                 {table.tagGroups.map((group, index) => (
                   <>
                     <Styled.TagBarEmptyCell
-                      className={index !== 0 ? 'tag-offset' : ''}
+                      className={index === 0 ? 'tag-offset' : ''}
                     />
                     <Styled.CheckmarkGroup
                       key={group.uuid}
@@ -90,7 +90,7 @@ const TableBody = ({ graphUuid }: { graphUuid: string }) => {
                 <>
                   {group.columns && (
                     <>
-                      <Styled.TagBarEmptyCell className="tag-offset" />
+                      <Styled.TagBarEmptyCell />
                       <Styled.CheckmarkGroup
                         key={index}
                         className="checkmarks-group bg-light"
@@ -208,7 +208,7 @@ const SectionHeaderRow = ({
       {table.tagGroups.map((group, groupIndex) => (
         <Styled.CheckmarkGroup key={group.uuid}>
           <Styled.TagBarEmptyCell
-            className={groupIndex !== 0 ? 'tag-offset' : ''}
+            className={groupIndex === 0 ? 'tag-offset' : ''}
           />
           <Styled.CheckmarkGroup className="checkmarks-group bg-light">
             {group.outcomes.map((outcomeUuid) => (
@@ -227,7 +227,7 @@ const SectionHeaderRow = ({
         <>
           {group.columns && (
             <>
-              <Styled.TagBarEmptyCell className="tag-offset" />
+              <Styled.TagBarEmptyCell />
               <Styled.CheckmarkGroup
                 key={index}
                 className="checkmarks-group bg-dark"

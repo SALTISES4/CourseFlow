@@ -24,7 +24,7 @@ const TableHeader = ({ graphUuid }: { graphUuid: string }) => {
         <Fragment key={group.uuid}>
           <Styled.HeaderLegendWrap
             tagLabel
-            className={index !== 0 ? 'tag-offset' : ''}
+            className={index === 0 ? 'tag-offset' : ''}
           >
             <Styled.TableLegend>
               {group.title || 'Untagged outcomes'}
@@ -44,14 +44,13 @@ const TableHeader = ({ graphUuid }: { graphUuid: string }) => {
         <Fragment key={index}>
           {group.columns ? (
             <>
-              <Styled.HeaderLegendWrap tagLabel className="tag-offset">
+              <Styled.HeaderLegendWrap tagLabel>
                 <Styled.TableLegend>{group.label}</Styled.TableLegend>
               </Styled.HeaderLegendWrap>
               {group.columns.map((column, colIndex) => (
                 <Styled.HeaderLegendWrap key={colIndex}>
                   <Styled.TableLegend
-                    className={column.className}
-                    sx={{ border: 0, left: '8px !important' }}
+                    className={`legend-extra ${column.className}`}
                   >
                     {column.label}
                   </Styled.TableLegend>
@@ -60,10 +59,7 @@ const TableHeader = ({ graphUuid }: { graphUuid: string }) => {
             </>
           ) : (
             <Styled.HeaderLegendWrap sx={{ marginLeft: 2 }}>
-              <Styled.TableLegend
-                className={group.className}
-                sx={{ border: 0, left: '8px !important' }}
-              >
+              <Styled.TableLegend className={`legend-extra ${group.className}`}>
                 {group.label}
               </Styled.TableLegend>
             </Styled.HeaderLegendWrap>

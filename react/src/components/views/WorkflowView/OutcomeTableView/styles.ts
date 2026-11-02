@@ -7,17 +7,21 @@ const CELL_WIDTH = 56
 const CELL_HEIGHT = 50
 
 export const TableWrap = styled(Box)(({ theme }) => ({
+  fontSize: '14px',
+
   '.bg-light': {
     backgroundColor: '#EEF2FD'
   },
   '.bg-dark': {
     backgroundColor: '#E5E9F4'
   },
+
   '&.view-normal': {
     '[class*="body-row"]:last-child > div:last-child': {
       borderBottom: `1px solid ${theme.palette.divider}`
     }
   },
+
   '&.view-matrix': {
     '& [class*="body-row"]': {
       '&:has(+ [class*="section-header-row"])': {
@@ -31,6 +35,11 @@ export const TableWrap = styled(Box)(({ theme }) => ({
       '&:last-child .checkmarks-group': {
         borderBottom: `1px solid ${theme.palette.divider}`
       }
+    },
+
+    // first column's tag label needs an offset to end up with the correct spacing
+    '& .tag-offset': {
+      marginLeft: theme.spacing(-2)
     }
   }
 }))
@@ -60,9 +69,10 @@ export const HeaderLegendWrap = styled(Box, {
     width: '70px',
     transform: `rotateZ(-${TILT_ANGLE}) translate(18px, 24px)`,
     '& span': {
-      paddingTop: '2px',
-      paddingBottom: '2px',
-      transform: 'translate(7px, 8px)'
+      paddingTop: '4px',
+      paddingBottom: '4px',
+      lineHeight: 1.43,
+      transform: 'translate(12px, 5px)'
     },
     '&:after': {
       content: '""',
@@ -70,9 +80,9 @@ export const HeaderLegendWrap = styled(Box, {
       left: 0,
       bottom: 0,
       width: '28px',
-      height: '28px',
+      height: '24px',
       background: '#EEF2FD',
-      transform: `translate(-8px, 16px) rotateZ(${TILT_ANGLE})`,
+      transform: `translate(-1px, 8px) rotateZ(${TILT_ANGLE})`,
       zIndex: -1
     }
   }),
@@ -130,7 +140,15 @@ export const TableLegend = styled('span', {
   overflow: 'hidden',
   borderLeft: `${theme.spacing(1)} solid ${color || 'transparent'}`,
   borderRadius: theme.shape.borderRadius,
-  background: theme.palette.workspaceBlocks.background
+  background: theme.palette.workspaceBlocks.background,
+
+  // extra columns with a slightly custom legend
+  '&.legend-extra': {
+    maxWidth: '265px',
+    paddingLeft: '8px',
+    left: '8px',
+    border: 0
+  }
 }))
 
 // tag group header / full row body splitter
@@ -144,7 +162,9 @@ export const TagGroup = styled(Box)(({ theme }) => ({
         flexShrink: 0,
         zIndex: 10,
         '& [class*="table-legend"]': {
-          padding: '2px'
+          padding: `4px 4px 4px 2px`,
+          borderTopRightRadius: 0,
+          borderBottomRightRadius: 0
         }
       },
       '&:last-child': {
@@ -154,7 +174,9 @@ export const TagGroup = styled(Box)(({ theme }) => ({
           content: '""',
           width: '100%',
           flexGrow: 1,
-          height: '28px',
+          height: '29px',
+          borderTopRightRadius: theme.shape.borderRadius,
+          borderBottomRightRadius: theme.shape.borderRadius,
           background: theme.palette.workspaceBlocks.background
         }
       }
@@ -175,12 +197,21 @@ export const BodyRow = styled(Box, { name: 'body-row' })(({ theme }) => ({
   '&.tag-header-row [class*="legend-wrap"]': {
     paddingRight: 0
   },
-  '&.section-header-row': {
-    '& label': {
-      // background: '#eef2fd'
-    },
+  '.view-matrix &.section-header-row': {
     '&:not(:first-of-type)': {
-      marginTop: theme.spacing(2)
+      marginTop: theme.spacing(2),
+
+      // ... but also add a white background to cut away the tag label bar from the gap
+      '[class*="legend-wrap"]:after': {
+        content: '""',
+        position: 'absolute',
+        left: 0,
+        top: theme.spacing(-2),
+        width: '100%',
+        height: '100%',
+        background: theme.palette.common.white,
+        zIndex: -1
+      }
     }
   }
 }))

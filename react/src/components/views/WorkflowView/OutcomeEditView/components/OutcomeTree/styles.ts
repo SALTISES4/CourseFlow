@@ -35,9 +35,13 @@ export const OutcomeWrapper = styled(Box, {
 
 export const OutcomeHeader = styled(Box, {
   shouldForwardProp: (prop) =>
-    !['selected', 'highlighted', 'level', 'greenHover', 'editableHover'].includes(
-      prop as string
-    )
+    ![
+      'selected',
+      'highlighted',
+      'level',
+      'greenHover',
+      'editableHover'
+    ].includes(prop as string)
 })<{
   selected?: boolean
   highlighted?: boolean
