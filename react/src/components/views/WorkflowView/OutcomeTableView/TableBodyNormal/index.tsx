@@ -9,6 +9,7 @@ import {
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { AppDispatch, RootState } from '@cf/redux/store'
 import OutcomeHeader from '@cfPages/Workflow/Sidebar/components/OutcomesTab/Outcome/Header'
+import useOutcomeTitle from '@cfViews/WorkflowView/OutcomeEditView/useOutcomeTitle'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -57,6 +58,11 @@ const TagGroupRow = ({
   const outcome = table.outcomeTree.outcomes[uuid]
   const collapsed = !expandedOutcomes[uuid]
 
+  const outcomeTitle = useOutcomeTitle({
+    title: outcome.title,
+    titleCopyCount: outcome.titleCopyCount
+  })
+
   const onOutcomeToggleClick = useCallback(() => {
     dispatch(outcomeTableUiActions.outcomeExpand({ uuid: uuid }))
   }, [dispatch, uuid])
@@ -89,7 +95,7 @@ const TagGroupRow = ({
           <OutcomeHeader
             uuid={uuid}
             level={outcome.level}
-            title={outcome.title}
+            title={`${outcome.prefix} ${outcomeTitle}`}
             tooltip={outcome.tooltipTitle}
             collapsed={collapsed}
             showToggle={!!outcome.children.length}

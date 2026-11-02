@@ -1,7 +1,7 @@
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { WorkflowPermission } from '@cf/api/gen'
+import useOutcomeTitle from '@cf/components/views/WorkflowView/OutcomeEditView/useOutcomeTitle'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
-import { displayOutcomeTitle } from '@cf/features/graph/outcomeTitle'
 import type {
   GraphUuid,
   OutcomeEntity
@@ -17,7 +17,6 @@ import * as StyledOutcomes from '@cfViews/WorkflowView/OutcomeEditView/component
 import * as Styled from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
 import OutcomeHeader from './Header'
@@ -52,12 +51,12 @@ const OutcomeBlock = ({
   title,
   titleCopyCount
 }: OutcomeEntity & { graphUuid: GraphUuid }) => {
-  const { t } = useTranslation('workflow')
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
   const canAssignOutcomes = useResourcePermission(
     WorkflowPermission.ASSIGN_OUTCOMES
   )
+  const outcomeTitle = useOutcomeTitle({ title, titleCopyCount })
   const prefix = useSelector((state: RootState) =>
     getPrefixPath(state, graphUuid, uuid)
   )
@@ -135,11 +134,7 @@ const OutcomeBlock = ({
         uuid={uuid}
         level={level}
         dragRef={dragHandleRef}
-        title={`${prefix}${displayOutcomeTitle(
-          { title, titleCopyCount },
-          t,
-          t('outcomes.untitled')
-        )}`}
+        title={`${prefix}${outcomeTitle}`}
         collapsed={state.collapsed}
         setCollapsed={setCollapsed}
         showToggle={!!childOutcomes.length}

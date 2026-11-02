@@ -5,6 +5,7 @@ import {
 import { outcomeTableUiActions } from '@cf/features/graph/state/slices/outcomeTableUi.slice'
 import { AppDispatch, RootState } from '@cf/redux/store'
 import OutcomeHeader from '@cfPages/Workflow/Sidebar/components/OutcomesTab/Outcome/Header'
+import useOutcomeTitle from '@cfViews/WorkflowView/OutcomeEditView/useOutcomeTitle'
 import { Fragment, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -91,6 +92,11 @@ const TableHeaderOutcome = ({
   const outcome = table.outcomeTree.outcomes[uuid]
   const collapsed = !expandedOutcomes[uuid]
 
+  const outcomeTitle = useOutcomeTitle({
+    title: outcome.title,
+    titleCopyCount: outcome.titleCopyCount
+  })
+
   const onOutcomeToggleClick = useCallback(() => {
     dispatch(outcomeTableUiActions.outcomeExpand({ uuid: uuid }))
   }, [dispatch, uuid])
@@ -102,7 +108,7 @@ const TableHeaderOutcome = ({
           <OutcomeHeader
             uuid={uuid}
             level={outcome.level}
-            title={outcome.title}
+            title={`${outcome.prefix} ${outcomeTitle}`}
             collapsed={collapsed}
             showToggle={!!outcome.children.length}
             setCollapsed={() => {}} // this should be nuked really

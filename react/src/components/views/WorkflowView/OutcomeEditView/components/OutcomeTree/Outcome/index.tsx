@@ -11,7 +11,6 @@ import {
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/list-item'
 import { WorkflowPermission } from '@cf/api/gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
-import { displayOutcomeTitle } from '@cf/features/graph/outcomeTitle'
 import type {
   GraphUuid,
   OutcomeEntity
@@ -26,9 +25,9 @@ import BetterSelectionManager from '@cf/features/selection/betterSelectionManage
 import type { AppDispatch } from '@cf/redux/store'
 import { RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
+import useOutcomeTitle from '@cfViews/WorkflowView/OutcomeEditView/useOutcomeTitle'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
 import OutcomeHeader from './Header'
@@ -51,12 +50,12 @@ const Outcome = ({
   graphUuid: GraphUuid
   greenHover?: boolean
 }) => {
-  const { t } = useTranslation('workflow')
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch<AppDispatch>()
   const canManageOutcomes = useResourcePermission(
     WorkflowPermission.OUTCOME_MANAGEMENT
   )
+  const outcomeTitle = useOutcomeTitle({ title, titleCopyCount })
   const sidebarData = useSelector((state: RootState) => state.sidebar.edit)
   const dragging = useSelector(
     (state: RootState) => state.graph.outcomeUi.dragging
@@ -247,11 +246,7 @@ const Outcome = ({
         greenHover={greenHover}
         editableHover={canManageOutcomes}
         dragRef={dragHandleRef}
-        title={`${prefix}${displayOutcomeTitle(
-          { title, titleCopyCount },
-          t,
-          t('outcomes.untitled')
-        )}`}
+        title={`${prefix}${outcomeTitle}`}
         selected={selected || state.dragHighlight}
         highlighted={highlighted}
         collapsed={state.collapsed}
