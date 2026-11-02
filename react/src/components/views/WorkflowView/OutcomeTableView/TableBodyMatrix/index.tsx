@@ -1,4 +1,3 @@
-import { nodeTitleFallback } from '@cf/components/pages/Workflow/Sidebar/components/EditTab/components/EditNode/linkedWorkflowUi'
 import {
   OutcomeTable,
   selectOutcomeTable
@@ -9,6 +8,7 @@ import {
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import { AppDispatch, RootState } from '@cf/redux/store'
+import { NodeTitle } from '@cfViews/WorkflowView/GraphView/components/Section/Cell/CellNode/useNodeTitle'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -49,23 +49,11 @@ const TableBody = ({
         {sectionNodes.map((nodeUuid, rowIndex) => {
           const node = table.entities.nodes[nodeUuid]
           const color = table.board.columns.colors[node.channelUuid ?? '']
-
-          // TODO: handle title when it's coming from a linked workflow
-          const displayTitle = node.linkedWorkflowUuid
-            ? node.title || nodeTitleFallback(t('linked.untitledNode'))
-            : displaySystemTitle(
-                t,
-                node,
-                nodeTitleFallback(t('linked.untitledNode'))
-              )
-
           return (
             <Styled.BodyRow key={nodeUuid}>
               <Styled.BodyLegendWrap>
                 <Styled.TableLegend color={color}>
-                  {node.linkedWorkflowUuid
-                    ? 'workflow - ' + node.linkedWorkflowUuid
-                    : displayTitle}
+                  <NodeTitle node={node} />
                 </Styled.TableLegend>
               </Styled.BodyLegendWrap>
 

@@ -1,22 +1,16 @@
-import { getWorkflowOptions } from '@cf/api/gen/@tanstack/react-query.gen'
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import {
   selectGraphByUuid,
-  selectNodeByUuid,
-  selectWorkflowByUuid
+  selectNodeByUuid
 } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { isHighlightedViaOutcome } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { selectIsDrawingLinkPreview } from '@cf/features/graph/state/selectors/svglink.selectors'
-import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import { CfObjectType } from '@cf/types/enum'
 import { RootState } from '@cfRedux/store'
-import { nodeTitleFallback } from '@cfSidebar/components/EditTab/components/EditNode/linkedWorkflowUi'
 import LinkedOutcomes from '@cfViews/WorkflowView/OutcomeEditView/components/LinkedOutcomes'
-import { useQuery } from '@tanstack/react-query'
 import { MouseEvent, useCallback, useMemo } from 'react'
 import { createPortal } from 'react-dom'
-import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 
 import Handles from '../../../../components/LineSVG/Handles'
@@ -26,6 +20,7 @@ import Meta from '../Meta'
 import * as StyledNode from '../styles'
 import { SectionCellNodeTypeTypeInternal, SectionCellType } from '../types'
 import useCellNodeDnd from './useCellNodeDnd'
+import useNodeTitle from './useNodeTitle'
 
 const EMPTY_OUTCOME_UUIDS: string[] = []
 
@@ -42,19 +37,11 @@ const SectionCellNode = ({
   onClick,
   onDrop
 }: SectionCellNodeTypeTypeInternal) => {
-  const { t } = useTranslation('workflow')
   const nodeSelector = useMemo(() => selectNodeByUuid(nodeId), [nodeId])
   const node = useSelector(nodeSelector)
+  const nodeTitle = useNodeTitle(node)
   const graphSelector = useMemo(() => selectGraphByUuid(graphUuid), [graphUuid])
   const graph = useSelector(graphSelector)
-  const linkedWorkflowSelector = useMemo(
-    () =>
-      node?.linkedWorkflowUuid
-        ? selectWorkflowByUuid(node.linkedWorkflowUuid)
-        : () => undefined,
-    [node?.linkedWorkflowUuid]
-  )
-  const linkedWorkflow = useSelector(linkedWorkflowSelector)
   const canMoveNodes = useResourcePermission(WorkflowPermission.NODE_MANAGEMENT)
   const canAssignOutcomes = useResourcePermission(
     WorkflowPermission.ASSIGN_OUTCOMES
@@ -62,12 +49,6 @@ const SectionCellNode = ({
   const canManageLinks = useResourcePermission(
     WorkflowPermission.NODE_LINK_MANAGEMENT
   )
-  const { data: linkedWorkflowResp } = useQuery({
-    ...getWorkflowOptions({
-      path: { uuid: node?.linkedWorkflowUuid ?? '' }
-    }),
-    enabled: Boolean(node?.linkedWorkflowUuid)
-  })
   const dnd = useCellNodeDnd({
     wrapRef,
     nodeId,
@@ -105,13 +86,6 @@ const SectionCellNode = ({
     return null
   }
 
-  const displayTitle = node.linkedWorkflowUuid
-    ? linkedWorkflowResp?.item?.title ||
-      linkedWorkflow?.title ||
-      node.title ||
-      nodeTitleFallback(t('linked.untitledNode'))
-    : displaySystemTitle(t, node, nodeTitleFallback(t('linked.untitledNode')))
-
   return (
     <>
       <StyledNode.CellInner
@@ -146,7 +120,7 @@ const SectionCellNode = ({
 
         <StyledNode.Border style={{ backgroundColor: borderColor }} />
         <StyledNode.Content onClick={onNodeClicked}>
-          <StyledNode.Title variant="body2">{displayTitle}</StyledNode.Title>
+          <StyledNode.Title variant="body2">{nodeTitle}</StyledNode.Title>
           <Meta
             workflow={node.linkedWorkflowUuid ?? null}
             parentWorkflowType={graph?.workflowType}
@@ -169,9 +143,7 @@ const SectionCellNode = ({
           <StyledNode.CellInner style={{ width: '180px', minHeight: '70px' }}>
             <StyledNode.Border style={{ backgroundColor: borderColor }} />
             <StyledNode.Content>
-              <StyledNode.Title variant="body2">
-                {displayTitle}
-              </StyledNode.Title>
+              <StyledNode.Title variant="body2">{nodeTitle}</StyledNode.Title>
             </StyledNode.Content>
           </StyledNode.CellInner>,
           dnd.previewTarget
