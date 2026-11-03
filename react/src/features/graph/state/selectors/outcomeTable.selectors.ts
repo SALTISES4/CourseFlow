@@ -331,11 +331,21 @@ function prepareGroupsByContext(
     }
   }
 
-  return contextDisplayOrder.map((contextGroup) => {
+  const groups: PreparedGroup[] = []
+
+  for (const contextGroup of contextDisplayOrder) {
     const nodeUuids = nodeUuidsByContext[contextGroup] ?? []
-    return prepareGroup(contextGroup, nodeUuids, {
-      nodes,
-      outcomes
-    })
-  })
+    if (nodeUuids.length === 0) {
+      continue
+    }
+
+    groups.push(
+      prepareGroup(contextGroup, nodeUuids, {
+        nodes,
+        outcomes
+      })
+    )
+  }
+
+  return groups
 }
