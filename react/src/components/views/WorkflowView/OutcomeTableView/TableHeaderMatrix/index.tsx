@@ -1,7 +1,4 @@
-import {
-  OutcomeTable,
-  selectOutcomeTable
-} from '@cf/features/graph/state/selectors/outcomeTable.selectors'
+import { OutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
 import { outcomeTableUiActions } from '@cf/features/graph/state/slices/outcomeTableUi.slice'
 import { AppDispatch, RootState } from '@cf/redux/store'
 import OutcomeHeader from '@cfPages/Workflow/Sidebar/components/OutcomesTab/Outcome/Header'
@@ -13,15 +10,12 @@ import { type WorkflowType } from '..'
 import * as Styled from '../styles'
 
 const TableHeader = ({
-  graphUuid,
+  table,
   workflowType
 }: {
-  graphUuid: string
+  table: OutcomeTable
   workflowType: WorkflowType
 }) => {
-  const table = useSelector((state: RootState) =>
-    selectOutcomeTable(state, graphUuid)
-  )
   const extraColumns = table.extraColumns[workflowType]
 
   return (

@@ -57,15 +57,15 @@ const sortLabels: Record<
 // TODO: translate strings
 const SortToggle = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const sortBy = useSelector(
-    (state: RootState) => state.graph.outcomeTableUi.sortType
+  const { sortType, viewType } = useSelector(
+    (state: RootState) => state.graph.outcomeTableUi
   )
 
   const header: MenuItemType = {
-    content: sortBy ? `Sort: ${sortLabels[sortBy]}` : 'Sort',
+    content: sortType ? `Sort: ${sortLabels[sortType]}` : 'Sort',
     icon: <SortIcon />,
     showIconInList: true,
-    show: true
+    show: viewType === 'normal'
   }
 
   const menuItems: MenuItemType[] = [

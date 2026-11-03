@@ -13,13 +13,15 @@ import {
   selectOutcomeTagGroupsTree
 } from './outcomes.selectors'
 import { ChannelEntity, NodeEntity, SectionEntity } from '../model/types'
+import { OutcomeTableUiState } from '../slices/outcomeTableUi.slice'
 
 export type OutcomeTable = {
   tagGroups: ReturnType<typeof selectOutcomeTagGroups>
   board: GraphBoard
   outcomeTree: ReturnType<typeof selectOutcomeTagGroupsTree>
   extraColumns: Record<'course' | 'program', ExtraColumnGroups>
-  sections: PreparedSection[]
+  groups: PreparedGroup[]
+  groupedBy: 'sections' | 'channels'
 
   entities: {
     sections: SectionEntity[]
@@ -30,9 +32,8 @@ export type OutcomeTable = {
 
 type CompletionRecord = Record<string, OutcomeCheckmarkStatus>
 
-type PreparedSection = {
+type PreparedGroup = {
   uuid: string
-  rows: Record<string, string>[]
   completion: CompletionRecord
   nodes: {
     uuid: string
@@ -45,8 +46,15 @@ type ExtraColumnGroups = ExtraColumn[]
 type ExtraColumn = {
   label: string
   className?: string
-  values?: Record<string, number>
+  values?: Record<string, number> // nodeUuid, value
   columns?: ExtraColumn[]
+}
+
+const selectOutcomeTableGroupBy = (
+  state: RootState
+): OutcomeTableUiState['sortType'] => {
+  const { viewType, sortType } = state.graph.outcomeTableUi
+  return !sortType || viewType === 'matrix' ? 'time' : sortType
 }
 
 export const selectOutcomeTable = createSelector(
@@ -61,7 +69,8 @@ export const selectOutcomeTable = createSelector(
     (state: RootState, graphUuid: string) =>
       selectChannelsOrderedByGraphUuid(graphUuid)(state),
     (state: RootState, graphUuid: string) =>
-      selectNodeEntitiesByGraphUuid(graphUuid)(state)
+      selectNodeEntitiesByGraphUuid(graphUuid)(state),
+    selectOutcomeTableGroupBy
   ],
   (
     graphBoard,
@@ -69,81 +78,31 @@ export const selectOutcomeTable = createSelector(
     outcomeTree,
     sections,
     channels,
-    nodes
+    nodes,
+    groupBy
   ): OutcomeTable => {
-    // derive necessary sections data beforehand so the UI remains somewhat clean
-    const preparedSections: PreparedSection[] = graphBoard.sections.map(
-      (section) => {
-        const sectionNodes: PreparedSection['nodes'] = []
-        const sectionCompletion: CompletionRecord = {}
+    const groupedBy = groupBy === 'time' ? 'sections' : 'channels'
 
-        for (const nodeRow of section.rows) {
-          // BUG: safeguard against workflow row mode creating empty row
-          if (!nodeRow) {
-            continue
-          }
+    let preparedGroups: PreparedGroup[] = []
+    switch (groupBy) {
+      case 'time':
+        preparedGroups = prepareGroupsBySection(
+          graphBoard,
+          nodes,
+          outcomeTree.outcomes
+        )
+        break
+      case 'category':
+        preparedGroups = prepareGroupsByChannel(
+          graphBoard,
+          channels,
+          nodes,
+          outcomeTree.outcomes
+        )
+        break
+    }
 
-          // sort the node uuids by their row positions/indexes
-          const nodePositions = Object.keys(nodeRow).sort(
-            (a, b) => Number(a) - Number(b)
-          )
-
-          for (const position of nodePositions) {
-            const nodeUuid = nodeRow[position]
-            const outcomeCompletion: CompletionRecord = {}
-            const { outcomeUuids } = nodes[nodeUuid]
-
-            // first pass - just set the completion to full
-            for (const uuid of outcomeUuids) {
-              outcomeCompletion[uuid] = 'full'
-            }
-
-            // second pass - existing parent outcomes should be partial
-            for (const uuid of outcomeUuids) {
-              let parent = outcomeTree.outcomes[uuid]?.parent
-              while (parent && !outcomeCompletion[parent]) {
-                outcomeCompletion[parent] = 'partial'
-                parent = outcomeTree.outcomes[parent]?.parent
-              }
-            }
-
-            sectionNodes.push({ uuid: nodeUuid, completion: outcomeCompletion })
-          }
-        }
-
-        const sectionNodeCount = sectionNodes.length
-        Object.keys(outcomeTree.outcomes).forEach((uuid) => {
-          const outcome = outcomeTree.outcomes[uuid]
-          let fullFound = 0
-          let anyFound = 0
-
-          sectionNodes.forEach((node) => {
-            const found = node.completion[outcome.uuid]
-            if (found) {
-              anyFound += 1
-            }
-            if (found === 'full') {
-              fullFound += 1
-            }
-          })
-
-          sectionCompletion[uuid] =
-            anyFound === 0
-              ? 'empty'
-              : fullFound === sectionNodeCount
-                ? 'full'
-                : 'partial'
-        })
-
-        return {
-          uuid: section.uuid,
-          rows: section.rows,
-          completion: sectionCompletion,
-          nodes: sectionNodes
-        }
-      }
-    )
-
+    // TODO: translate strings + read the actual data
     const extraCourseColums: ExtraColumnGroups = [
       {
         label: 'Total hours',
@@ -176,7 +135,8 @@ export const selectOutcomeTable = createSelector(
       tagGroups: outcomeGroups,
       board: graphBoard,
       outcomeTree,
-      sections: preparedSections,
+      groups: preparedGroups,
+      groupedBy,
       extraColumns: {
         course: extraCourseColums,
         program: extraProgramColumns
@@ -189,3 +149,164 @@ export const selectOutcomeTable = createSelector(
     }
   }
 )
+
+function prepareGroupsByChannel(
+  graphBoard: GraphBoard,
+  channels: ChannelEntity[],
+  nodes: Record<string, NodeEntity>,
+  outcomes: ReturnType<typeof selectOutcomeTagGroupsTree>['outcomes']
+): PreparedGroup[] {
+  // derive as much data as possible in the first step
+  const nodesByChannels: Record<string, PreparedGroup['nodes']> = {}
+  for (const section of graphBoard.sections) {
+    for (const nodeRow of section.rows) {
+      if (!nodeRow) {
+        continue
+      }
+
+      // sort the node uuids by their row positions/indexes
+      const nodePositions = Object.keys(nodeRow).sort(
+        (a, b) => Number(a) - Number(b)
+      )
+
+      for (const position of nodePositions) {
+        const nodeUuid = nodeRow[position]
+        const node = nodes[nodeUuid]
+        const { channelUuid, outcomeUuids } = node
+        const outcomeCompletion: CompletionRecord = {}
+
+        // first pass - just set the completion to full
+        for (const uuid of outcomeUuids) {
+          outcomeCompletion[uuid] = 'full'
+        }
+
+        // second pass - existing parent outcomes should be partial
+        for (const uuid of outcomeUuids) {
+          let parent = outcomes[uuid]?.parent
+          while (parent && !outcomeCompletion[parent]) {
+            outcomeCompletion[parent] = 'partial'
+            parent = outcomes[parent]?.parent
+          }
+        }
+
+        if (!channelUuid) {
+          continue
+        }
+
+        const nodeRowData = { uuid: nodeUuid, completion: outcomeCompletion }
+
+        if (!nodesByChannels[channelUuid]) {
+          nodesByChannels[channelUuid] = [nodeRowData]
+        } else {
+          nodesByChannels[channelUuid].push(nodeRowData)
+        }
+      }
+    }
+  }
+
+  // iterate over sorted channels array to derive the final completion status
+  return channels.map((channel) => {
+    const channelNodes = nodesByChannels[channel.uuid]
+    const channelCompletion: CompletionRecord = {}
+
+    const nodeCount = channelNodes.length
+    for (const uuid of Object.keys(outcomes)) {
+      const outcome = outcomes[uuid]
+      let fullFound = 0
+      let anyFound = 0
+
+      channelNodes.forEach((node) => {
+        const found = node.completion[outcome.uuid]
+        if (found) {
+          anyFound += 1
+        }
+        if (found === 'full') {
+          fullFound += 1
+        }
+      })
+
+      channelCompletion[uuid] =
+        anyFound === 0 ? 'empty' : fullFound === nodeCount ? 'full' : 'partial'
+    }
+
+    return {
+      uuid: channel.uuid,
+      completion: channelCompletion,
+      nodes: channelNodes
+    }
+  })
+}
+
+function prepareGroupsBySection(
+  graphBoard: GraphBoard,
+  nodes: Record<string, NodeEntity>,
+  outcomes: ReturnType<typeof selectOutcomeTagGroupsTree>['outcomes']
+): PreparedGroup[] {
+  return graphBoard.sections.map((section) => {
+    const sectionNodes: PreparedGroup['nodes'] = []
+    const sectionCompletion: CompletionRecord = {}
+
+    for (const nodeRow of section.rows) {
+      if (!nodeRow) {
+        continue
+      }
+
+      // sort the node uuids by their row positions/indexes
+      const nodePositions = Object.keys(nodeRow).sort(
+        (a, b) => Number(a) - Number(b)
+      )
+
+      for (const position of nodePositions) {
+        const nodeUuid = nodeRow[position]
+        const outcomeCompletion: CompletionRecord = {}
+        const { outcomeUuids } = nodes[nodeUuid]
+
+        // first pass - just set the completion to full
+        for (const uuid of outcomeUuids) {
+          outcomeCompletion[uuid] = 'full'
+        }
+
+        // second pass - existing parent outcomes should be partial
+        for (const uuid of outcomeUuids) {
+          let parent = outcomes[uuid]?.parent
+          while (parent && !outcomeCompletion[parent]) {
+            outcomeCompletion[parent] = 'partial'
+            parent = outcomes[parent]?.parent
+          }
+        }
+
+        sectionNodes.push({ uuid: nodeUuid, completion: outcomeCompletion })
+      }
+    }
+
+    const sectionNodeCount = sectionNodes.length
+    Object.keys(outcomes).forEach((uuid) => {
+      const outcome = outcomes[uuid]
+      let fullFound = 0
+      let anyFound = 0
+
+      sectionNodes.forEach((node) => {
+        const found = node.completion[outcome.uuid]
+        if (found) {
+          anyFound += 1
+        }
+        if (found === 'full') {
+          fullFound += 1
+        }
+      })
+
+      sectionCompletion[uuid] =
+        anyFound === 0
+          ? 'empty'
+          : fullFound === sectionNodeCount
+            ? 'full'
+            : 'partial'
+    })
+
+    return {
+      uuid: section.uuid,
+      completion: sectionCompletion,
+      nodes: sectionNodes
+    }
+  })
+}

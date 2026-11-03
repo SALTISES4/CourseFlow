@@ -17,25 +17,23 @@ const OutcomeTableView = ({ workflow }: { workflow: WorkflowPageData }) => {
   const viewType = useSelector(
     (state: RootState) => state.graph.outcomeTableUi.viewType
   )
+  const workflowType = workflow.workflowType
+  const table = useSelector((state: RootState) =>
+    selectOutcomeTable(state, workflow.graphUuid)
+  )
 
   return (
     <OuterContentWrap sx={{ pt: 4 }} data-test-id="workflow-outcome-table-view">
       {viewType === 'matrix' && (
         <Styled.TableWrap className="view-matrix">
-          <TableHeaderMatrix
-            graphUuid={workflow.graphUuid}
-            workflowType={workflow.workflowType}
-          />
-          <TableBodyMatrix
-            graphUuid={workflow.graphUuid}
-            workflowType={workflow.workflowType}
-          />
+          <TableHeaderMatrix workflowType={workflowType} table={table} />
+          <TableBodyMatrix workflowType={workflowType} table={table} />
         </Styled.TableWrap>
       )}
       {viewType === 'normal' && (
         <Styled.TableWrap className="view-normal">
-          <TablheHeaderNormal graphUuid={workflow.graphUuid} />
-          <TableBodyNormal graphUuid={workflow.graphUuid} />
+          <TablheHeaderNormal table={table} />
+          <TableBodyNormal table={table} />
         </Styled.TableWrap>
       )}
     </OuterContentWrap>

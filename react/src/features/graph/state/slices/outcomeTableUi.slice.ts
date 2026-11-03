@@ -2,7 +2,7 @@ import { type PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 import type { ResourceUuid } from '../model/types'
 
-type OutcomeTableUiState = {
+export type OutcomeTableUiState = {
   viewType: 'normal' | 'matrix'
   sortType: 'time' | 'category' | 'context' | null // defaults to time
   expandedOutcomes: Record<ResourceUuid, boolean>

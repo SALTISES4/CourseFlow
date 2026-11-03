@@ -1,7 +1,4 @@
-import {
-  OutcomeTable,
-  selectOutcomeTable
-} from '@cf/features/graph/state/selectors/outcomeTable.selectors'
+import { OutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
 import { outcomeTableUiActions } from '@cf/features/graph/state/slices/outcomeTableUi.slice'
 import {
   linkNodeOutcome,
@@ -16,11 +13,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Checkmark, { OutcomeCheckmarkStatus } from '../Checkmark'
 import * as Styled from '../styles'
 
-const TableBody = ({ graphUuid }: { graphUuid: string }) => {
-  const table = useSelector((state: RootState) =>
-    selectOutcomeTable(state, graphUuid)
-  )
-
+const TableBody = ({ table }: { table: OutcomeTable }) => {
   return (
     <Styled.TableBody>
       {table.tagGroups.map((group) => (
@@ -105,14 +98,14 @@ const TagGroupRow = ({
         </Styled.BodyLegendWrap>
 
         <Styled.CheckmarkGroup className="checkmarks-group">
-          {table.sections.map((section) => (
-            <Styled.CheckmarkGroup key={section.uuid}>
+          {table.groups.map((group) => (
+            <Styled.CheckmarkGroup key={group.uuid}>
               <Checkmark
                 readOnly
                 sx={{ background: '#eef2fd' }}
-                value={section.completion[outcome.uuid] ?? 'empty'}
+                value={group.completion[outcome.uuid] ?? 'empty'}
               />
-              {section.nodes.map((node) => {
+              {group.nodes.map((node) => {
                 const status = node.completion[outcome.uuid] ?? 'empty'
                 return (
                   <Checkmark

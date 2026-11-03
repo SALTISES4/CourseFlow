@@ -1,7 +1,4 @@
-import {
-  OutcomeTable,
-  selectOutcomeTable
-} from '@cf/features/graph/state/selectors/outcomeTable.selectors'
+import { OutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
 import {
   linkNodeOutcome,
   unlinkNodeOutcome
@@ -17,36 +14,31 @@ import Checkmark, { OutcomeCheckmarkStatus } from '../Checkmark'
 import * as Styled from '../styles'
 
 const TableBody = ({
-  graphUuid,
+  table,
   workflowType
 }: {
-  graphUuid: string
+  table: OutcomeTable
   workflowType: WorkflowType
 }) => {
-  const table = useSelector((state: RootState) =>
-    selectOutcomeTable(state, graphUuid)
-  )
-
   const { t } = useTranslation('workflow')
-  const groups = table.entities.sections.map((section, sectionIndex) => {
+  const groups = table.entities.sections.map((group, groupIndex) => {
     const sectionDefaultTitle = t('systemLabels.sectionNumber', {
-      number: (section.position ?? 0) + 1
+      number: (group.position ?? 0) + 1
     })
-
-    const sectionTitle = displaySystemTitle(t, section, sectionDefaultTitle)
-    const sectionNodes = table.sections[sectionIndex].nodes.map((n) => n.uuid)
+    const groupTitle = displaySystemTitle(t, group, sectionDefaultTitle)
+    const groupNodes = table.groups[groupIndex].nodes.map((n) => n.uuid)
     const extraColumns = table.extraColumns[workflowType]
 
     return (
       <>
         <SectionHeaderRow
-          index={sectionIndex}
+          index={groupIndex}
           workflowType={workflowType}
-          title={sectionTitle}
+          title={groupTitle}
           table={table}
         />
 
-        {sectionNodes.map((nodeUuid, rowIndex) => {
+        {groupNodes.map((nodeUuid, rowIndex) => {
           const node = table.entities.nodes[nodeUuid]
           const color = table.board.columns.colors[node.channelUuid ?? '']
           return (
@@ -71,7 +63,7 @@ const TableBody = ({
                         <CheckmarkGroup
                           key={outcomeUuid}
                           outcomeUuid={outcomeUuid}
-                          sectionIndex={sectionIndex}
+                          groupIndex={groupIndex}
                           rowIndex={rowIndex}
                           table={table}
                         />
@@ -125,12 +117,12 @@ const TableBody = ({
 const CheckmarkGroup = ({
   outcomeUuid,
   table,
-  sectionIndex,
+  groupIndex,
   rowIndex
 }: {
   outcomeUuid: string
   table: OutcomeTable
-  sectionIndex: number
+  groupIndex: number
   rowIndex: number
 }) => {
   const dispatch = useDispatch<AppDispatch>()
@@ -138,7 +130,7 @@ const CheckmarkGroup = ({
     (state: RootState) => state.graph.outcomeTableUi.expandedOutcomes
   )
   const outcome = table.outcomeTree.outcomes[outcomeUuid]
-  const node = table.sections[sectionIndex].nodes[rowIndex]
+  const node = table.groups[groupIndex].nodes[rowIndex]
   const status = node.completion[outcomeUuid] ?? 'empty'
   const collapsed = !expandedOutcomes[outcomeUuid]
 
@@ -174,7 +166,7 @@ const CheckmarkGroup = ({
           <CheckmarkGroup
             key={childUuid}
             outcomeUuid={childUuid}
-            sectionIndex={sectionIndex}
+            groupIndex={groupIndex}
             rowIndex={rowIndex}
             table={table}
           />
@@ -211,7 +203,7 @@ const SectionHeaderRow = ({
               <OutcomeGroup
                 key={outcomeUuid}
                 outcomeUuid={outcomeUuid}
-                sectionIndex={index}
+                groupIndex={index}
                 table={table}
               />
             ))}
@@ -253,11 +245,11 @@ const SectionHeaderRow = ({
 
 const OutcomeGroup = ({
   outcomeUuid,
-  sectionIndex,
+  groupIndex,
   table
 }: {
   outcomeUuid: string
-  sectionIndex: number
+  groupIndex: number
   table: OutcomeTable
 }) => {
   const expandedOutcomes = useSelector(
@@ -271,14 +263,14 @@ const OutcomeGroup = ({
       <Checkmark
         key={outcomeUuid}
         readOnly
-        value={table.sections[sectionIndex].completion[outcomeUuid] ?? 'empty'}
+        value={table.groups[groupIndex].completion[outcomeUuid] ?? 'empty'}
       />
       {!collapsed &&
         outcome.children.map((childUuid) => (
           <OutcomeGroup
             key={childUuid}
             outcomeUuid={childUuid}
-            sectionIndex={sectionIndex}
+            groupIndex={groupIndex}
             table={table}
           />
         ))}
