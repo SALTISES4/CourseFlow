@@ -1,3 +1,4 @@
+import { ContextClassification } from '@cf/api/gen'
 import { OutcomeCheckmarkStatus } from '@cf/components/views/WorkflowView/OutcomeTableView/Checkmark'
 import { RootState } from '@cf/redux/store'
 import { createSelector } from '@reduxjs/toolkit'
@@ -21,7 +22,7 @@ export type OutcomeTable = {
   outcomeTree: ReturnType<typeof selectOutcomeTagGroupsTree>
   extraColumns: Record<'course' | 'program', ExtraColumnGroups>
   groups: PreparedGroup[]
-  groupedBy: 'sections' | 'channels'
+  groupedBy: 'sections' | 'channels' | 'context'
 
   entities: {
     sections: SectionEntity[]
@@ -81,17 +82,10 @@ export const selectOutcomeTable = createSelector(
     nodes,
     groupBy
   ): OutcomeTable => {
-    const groupedBy = groupBy === 'time' ? 'sections' : 'channels'
+    let groupedBy: OutcomeTable['groupedBy'] = 'sections'
 
     let preparedGroups: PreparedGroup[] = []
     switch (groupBy) {
-      case 'time':
-        preparedGroups = prepareGroupsBySection(
-          graphBoard,
-          nodes,
-          outcomeTree.outcomes
-        )
-        break
       case 'category':
         preparedGroups = prepareGroupsByChannel(
           graphBoard,
@@ -99,7 +93,22 @@ export const selectOutcomeTable = createSelector(
           nodes,
           outcomeTree.outcomes
         )
+        groupedBy = 'channels'
         break
+      case 'context':
+        preparedGroups = prepareGroupsByContext(
+          graphBoard,
+          nodes,
+          outcomeTree.outcomes
+        )
+        groupedBy = 'context'
+        break
+      default:
+        preparedGroups = prepareGroupsBySection(
+          graphBoard,
+          nodes,
+          outcomeTree.outcomes
+        )
     }
 
     // TODO: translate strings + read the actual data
@@ -150,163 +159,183 @@ export const selectOutcomeTable = createSelector(
   }
 )
 
-function prepareGroupsByChannel(
-  graphBoard: GraphBoard,
-  channels: ChannelEntity[],
-  nodes: Record<string, NodeEntity>,
-  outcomes: ReturnType<typeof selectOutcomeTagGroupsTree>['outcomes']
-): PreparedGroup[] {
-  // derive as much data as possible in the first step
-  const nodesByChannels: Record<string, PreparedGroup['nodes']> = {}
-  for (const section of graphBoard.sections) {
-    for (const nodeRow of section.rows) {
-      if (!nodeRow) {
-        continue
-      }
+type Outcomes = ReturnType<typeof selectOutcomeTagGroupsTree>['outcomes']
 
-      // sort the node uuids by their row positions/indexes
-      const nodePositions = Object.keys(nodeRow).sort(
-        (a, b) => Number(a) - Number(b)
-      )
+function getOrderedNodeUuids(
+  section: GraphBoard['sections'][number]
+): string[] {
+  const nodeUuids: string[] = []
 
-      for (const position of nodePositions) {
-        const nodeUuid = nodeRow[position]
-        const node = nodes[nodeUuid]
-        const { channelUuid, outcomeUuids } = node
-        const outcomeCompletion: CompletionRecord = {}
+  for (const nodeRow of section.rows) {
+    // BUG: safeguard against workflow row mode creating empty row
+    if (!nodeRow) {
+      continue
+    }
 
-        // first pass - just set the completion to full
-        for (const uuid of outcomeUuids) {
-          outcomeCompletion[uuid] = 'full'
-        }
-
-        // second pass - existing parent outcomes should be partial
-        for (const uuid of outcomeUuids) {
-          let parent = outcomes[uuid]?.parent
-          while (parent && !outcomeCompletion[parent]) {
-            outcomeCompletion[parent] = 'partial'
-            parent = outcomes[parent]?.parent
-          }
-        }
-
-        if (!channelUuid) {
-          continue
-        }
-
-        const nodeRowData = { uuid: nodeUuid, completion: outcomeCompletion }
-
-        if (!nodesByChannels[channelUuid]) {
-          nodesByChannels[channelUuid] = [nodeRowData]
-        } else {
-          nodesByChannels[channelUuid].push(nodeRowData)
-        }
-      }
+    const positions = Object.keys(nodeRow).sort((a, b) => Number(a) - Number(b))
+    for (const position of positions) {
+      nodeUuids.push(nodeRow[position])
     }
   }
 
-  // iterate over sorted channels array to derive the final completion status
-  return channels.map((channel) => {
-    const channelNodes = nodesByChannels[channel.uuid]
-    const channelCompletion: CompletionRecord = {}
+  return nodeUuids
+}
 
-    const nodeCount = channelNodes.length
-    for (const uuid of Object.keys(outcomes)) {
-      const outcome = outcomes[uuid]
-      let fullFound = 0
-      let anyFound = 0
+function getNodeCompletion(
+  node: NodeEntity,
+  outcomes: Outcomes
+): CompletionRecord {
+  const completion: CompletionRecord = {}
 
-      channelNodes.forEach((node) => {
-        const found = node.completion[outcome.uuid]
-        if (found) {
-          anyFound += 1
-        }
-        if (found === 'full') {
-          fullFound += 1
-        }
-      })
+  // outcomes the node is tagged with are fully completed
+  for (const uuid of node.outcomeUuids) {
+    completion[uuid] = 'full'
+  }
 
-      channelCompletion[uuid] =
-        anyFound === 0 ? 'empty' : fullFound === nodeCount ? 'full' : 'partial'
+  // their ancestors are only partially completed (unless already full)
+  for (const uuid of node.outcomeUuids) {
+    let parent = outcomes[uuid]?.parent
+    while (parent && !completion[parent]) {
+      completion[parent] = 'partial'
+      parent = outcomes[parent]?.parent
     }
+  }
 
-    return {
-      uuid: channel.uuid,
-      completion: channelCompletion,
-      nodes: channelNodes
+  return completion
+}
+
+function getOutcomeStatus(
+  groupNodes: PreparedGroup['nodes'],
+  outcomeUuid: string
+): OutcomeCheckmarkStatus {
+  let anyCount = 0
+  let fullCount = 0
+
+  for (const node of groupNodes) {
+    const status = node.completion[outcomeUuid]
+
+    if (status) {
+      anyCount += 1
     }
-  })
+    if (status === 'full') {
+      fullCount += 1
+    }
+  }
+
+  if (anyCount === 0) {
+    return 'empty'
+  }
+  if (fullCount === groupNodes.length) {
+    return 'full'
+  }
+  return 'partial'
+}
+
+function prepareGroup(
+  uuid: string,
+  nodeUuids: string[],
+  { nodes, outcomes }: { nodes: Record<string, NodeEntity>; outcomes: Outcomes }
+): PreparedGroup {
+  const groupNodes = nodeUuids.map((nodeUuid) => ({
+    uuid: nodeUuid,
+    completion: getNodeCompletion(nodes[nodeUuid], outcomes)
+  }))
+
+  const completion: CompletionRecord = {}
+  for (const outcomeUuid of Object.keys(outcomes)) {
+    completion[outcomeUuid] = getOutcomeStatus(groupNodes, outcomeUuid)
+  }
+
+  return { uuid, completion, nodes: groupNodes }
 }
 
 function prepareGroupsBySection(
   graphBoard: GraphBoard,
   nodes: Record<string, NodeEntity>,
-  outcomes: ReturnType<typeof selectOutcomeTagGroupsTree>['outcomes']
+  outcomes: Outcomes
 ): PreparedGroup[] {
-  return graphBoard.sections.map((section) => {
-    const sectionNodes: PreparedGroup['nodes'] = []
-    const sectionCompletion: CompletionRecord = {}
+  return graphBoard.sections.map((section) =>
+    prepareGroup(section.uuid, getOrderedNodeUuids(section), {
+      nodes,
+      outcomes
+    })
+  )
+}
 
-    for (const nodeRow of section.rows) {
-      if (!nodeRow) {
+function prepareGroupsByChannel(
+  graphBoard: GraphBoard,
+  channels: ChannelEntity[],
+  nodes: Record<string, NodeEntity>,
+  outcomes: Outcomes
+): PreparedGroup[] {
+  const nodeUuidsByChannel: Record<string, string[]> = {}
+
+  for (const section of graphBoard.sections) {
+    for (const nodeUuid of getOrderedNodeUuids(section)) {
+      const { channelUuid } = nodes[nodeUuid]
+      if (!channelUuid) {
         continue
       }
 
-      // sort the node uuids by their row positions/indexes
-      const nodePositions = Object.keys(nodeRow).sort(
-        (a, b) => Number(a) - Number(b)
-      )
-
-      for (const position of nodePositions) {
-        const nodeUuid = nodeRow[position]
-        const outcomeCompletion: CompletionRecord = {}
-        const { outcomeUuids } = nodes[nodeUuid]
-
-        // first pass - just set the completion to full
-        for (const uuid of outcomeUuids) {
-          outcomeCompletion[uuid] = 'full'
-        }
-
-        // second pass - existing parent outcomes should be partial
-        for (const uuid of outcomeUuids) {
-          let parent = outcomes[uuid]?.parent
-          while (parent && !outcomeCompletion[parent]) {
-            outcomeCompletion[parent] = 'partial'
-            parent = outcomes[parent]?.parent
-          }
-        }
-
-        sectionNodes.push({ uuid: nodeUuid, completion: outcomeCompletion })
+      if (!nodeUuidsByChannel[channelUuid]) {
+        nodeUuidsByChannel[channelUuid] = []
       }
+      nodeUuidsByChannel[channelUuid].push(nodeUuid)
     }
+  }
 
-    const sectionNodeCount = sectionNodes.length
-    Object.keys(outcomes).forEach((uuid) => {
-      const outcome = outcomes[uuid]
-      let fullFound = 0
-      let anyFound = 0
+  return channels.map((channel) => {
+    const nodeUuids = nodeUuidsByChannel[channel.uuid] ?? []
+    return prepareGroup(channel.uuid, nodeUuids, { nodes, outcomes })
+  })
+}
 
-      sectionNodes.forEach((node) => {
-        const found = node.completion[outcome.uuid]
-        if (found) {
-          anyFound += 1
-        }
-        if (found === 'full') {
-          fullFound += 1
-        }
-      })
+// TODO: translate strings
+export const contextLabels: Record<ContextClassification, string> = {
+  [ContextClassification.NONE]: 'None',
+  [ContextClassification.INDIVIDUAL_WORK]: 'Individual Work',
+  [ContextClassification.WORK_IN_GROUPS]: 'Work in Groups',
+  [ContextClassification.IN_THE_CLASSROOM]: 'In the Classroom',
+  [ContextClassification.FORMATIVE]: 'Formative',
+  [ContextClassification.SUMMATIVE]: 'Summative',
+  [ContextClassification.COMPREHENSIVE]: 'Comprehensive'
+}
 
-      sectionCompletion[uuid] =
-        anyFound === 0
-          ? 'empty'
-          : fullFound === sectionNodeCount
-            ? 'full'
-            : 'partial'
+const contextDisplayOrder = [
+  ContextClassification.NONE,
+  ContextClassification.INDIVIDUAL_WORK,
+  ContextClassification.WORK_IN_GROUPS,
+  ContextClassification.IN_THE_CLASSROOM,
+  ContextClassification.FORMATIVE,
+  ContextClassification.SUMMATIVE,
+  ContextClassification.COMPREHENSIVE
+]
+
+function prepareGroupsByContext(
+  graphBoard: GraphBoard,
+  nodes: Record<string, NodeEntity>,
+  outcomes: ReturnType<typeof selectOutcomeTagGroupsTree>['outcomes']
+): PreparedGroup[] {
+  const nodeUuidsByContext: Partial<Record<ContextClassification, string[]>> =
+    {}
+
+  for (const section of graphBoard.sections) {
+    for (const nodeUuid of getOrderedNodeUuids(section)) {
+      const contextClassification =
+        nodes[nodeUuid]?.contextClassification ?? ContextClassification.NONE
+
+      if (!nodeUuidsByContext[contextClassification]) {
+        nodeUuidsByContext[contextClassification] = []
+      }
+      nodeUuidsByContext[contextClassification].push(nodeUuid)
+    }
+  }
+
+  return contextDisplayOrder.map((contextGroup) => {
+    const nodeUuids = nodeUuidsByContext[contextGroup] ?? []
+    return prepareGroup(contextGroup, nodeUuids, {
+      nodes,
+      outcomes
     })
-
-    return {
-      uuid: section.uuid,
-      completion: sectionCompletion,
-      nodes: sectionNodes
-    }
   })
 }
