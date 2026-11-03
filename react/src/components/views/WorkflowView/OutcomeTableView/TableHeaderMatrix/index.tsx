@@ -48,7 +48,9 @@ const TableHeader = ({
           {group.columns ? (
             <>
               <Styled.HeaderLegendWrap tagLabel>
-                <Styled.TableLegend>{group.label}</Styled.TableLegend>
+                <Styled.TableLegend>
+                  {t(`outcomeTable.${group.label}` as any)}
+                </Styled.TableLegend>
               </Styled.HeaderLegendWrap>
               {group.columns.map((column, colIndex) => (
                 <Styled.HeaderLegendWrap key={colIndex}>

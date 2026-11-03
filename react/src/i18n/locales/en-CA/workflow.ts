@@ -101,6 +101,20 @@ const workflow = {
     insertChild: 'Insert child'
   },
   outcomeTable: {
+    toolbar: {
+      view: {
+        normal: 'Normal',
+        matrix: 'Competency matrx'
+      },
+      sortBy: {
+        sort: 'Sort',
+        chronological: 'Chronological',
+        byCategory: 'By node category',
+        category: 'Category',
+        byContext: 'By context',
+        context: 'Context'
+      }
+    },
     extraColumns: {
       totalHours: 'Total hours',
       classification: 'Classification',
