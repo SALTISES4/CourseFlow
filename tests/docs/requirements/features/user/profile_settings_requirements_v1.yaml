@@ -1,7 +1,8 @@
 # Normalized requirements: profile settings page
-# Source: application code (no separate Google Doc for this run)
+# Source: application code plus 2026-10-29 product requirement to make username and email independently changeable
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Cross-reference: tests/docs/requirements/features/navigation/top_navigation_requirements_v1.yaml (entry path to '/user/profile-settings' via accountMenuItemProfile per FR-TOP-003); tests/docs/requirements/features/auth/register_requirements_v1.yaml (profileUsernameField, profileFirstNameField, and profileLastNameField show registerEmailField, registerFirstNameField, and registerLastNameField values from signup per FR-REG-004 and FR-PROFILE-002); tests/docs/requirements/features/deferred/notifications_page_requirements_v1.yaml (notificationListItemUserName uses profileFirstNameField and profileLastNameField values per FR-NPAGE-002); tests/docs/requirements/features/global/localization_requirements_v1.yaml (application locale source, switching, persistence, and literal-copy policy)
+# Cross-reference: tests/docs/requirements/features/navigation/top_navigation_requirements_v1.yaml (entry path to '/user/profile-settings' via accountMenuItemProfile per FR-TOP-003); tests/docs/requirements/features/auth/register_requirements_v1.yaml (registration initializes email and username to registerEmailField per FR-REG-004); tests/docs/requirements/features/user/email_change_requirements_v1.yaml (verified email-change flow); tests/docs/requirements/features/user/profile_details_requirements_v1.yaml (profile image, institution, and primary discipline); tests/docs/requirements/features/deferred/notifications_page_requirements_v1.yaml (notificationListItemUserName uses profileFirstNameField and profileLastNameField values per FR-NPAGE-002); tests/docs/requirements/features/global/localization_requirements_v1.yaml (application locale source, switching, persistence, and literal-copy policy)
+# Design gap: FIGMA-PROFILE-SETTINGS predates separate email and username controls. It remains evidence only for unchanged profile layout and controls, not for the new identity-editing interaction.
 
 documentPreconditions:
   - user is authenticated to CourseFlow
@@ -14,8 +15,12 @@ uiObjectDefinitions:
     meaning: Page title text for the profile settings screen; 'Profile settings'
   profileSettingsForm:
     meaning: Form container on profileSettingsPage.
+  profileEmailField:
+    meaning: Read-only field labeled 'Email' on profileSettingsForm showing the user's current verified login email address.
+  profileChangeEmailButton:
+    meaning: Button labeled 'Change email' associated with profileEmailField; opens the verified email-change flow defined in tests/docs/requirements/features/user/email_change_requirements_v1.yaml.
   profileUsernameField:
-    meaning: Read-only field labeled 'Email / Username' on profileSettingsForm; on first visit after signup shows registerEmailField value per tests/docs/requirements/features/auth/register_requirements_v1.yaml FR-REG-004.
+    meaning: Editable text input labeled 'Username' on profileSettingsForm for the user's username, which is distinct from the login email address per FR-PROFILE-006.
   profileFirstNameField:
     meaning: Text input labeled 'First name' for the user's first name in profileSettingsForm; on first visit after signup shows registerFirstNameField value per tests/docs/requirements/features/auth/register_requirements_v1.yaml FR-REG-004.
   profileLastNameField:
@@ -29,7 +34,7 @@ uiObjectDefinitions:
   profileUpdateButton:
     meaning: Submit button on profileSettingsForm labeled 'Update profile'.
   profileFieldValidationMessage:
-    meaning: Inline field-level error text on profileFirstNameField or profileLastNameField in profileSettingsForm; validation rules per FR-PROFILE-003.
+    meaning: Inline field-level error text for a profileSettingsForm field; validation rules are owned by FR-PROFILE-003 or the companion requirement that owns the field.
   globalMessageSnackbar:
     meaning: Canonical definition in tests/docs/requirements/features/shared/card_content_requirements_v1.yaml.
 
@@ -37,6 +42,8 @@ locatorMappings:
   profileSettingsPage: "canonical_locators.yaml -> profileSettingsPage"
   profileSettingsTitle: "canonical_locators.yaml -> profileSettingsTitle"
   profileSettingsForm: "canonical_locators.yaml -> profileSettingsForm"
+  profileEmailField: "canonical_locators.yaml -> profileEmailField"
+  profileChangeEmailButton: "canonical_locators.yaml -> profileChangeEmailButton"
   profileUsernameField: "canonical_locators.yaml -> profileUsernameField"
   profileFirstNameField: "canonical_locators.yaml -> profileFirstNameField"
   profileLastNameField: "canonical_locators.yaml -> profileLastNameField"
@@ -51,8 +58,7 @@ requirements:
   - id: FR-PROFILE-001
     title: Profile settings page route and primary form elements
 
-    designEvidence:
-      - FIGMA-PROFILE-SETTINGS
+    designEvidence: []
 
     actors:
       - user
@@ -61,6 +67,8 @@ requirements:
       - profileSettingsPage
       - profileSettingsTitle
       - profileSettingsForm
+      - profileEmailField
+      - profileChangeEmailButton
       - profileUsernameField
       - profileFirstNameField
       - profileLastNameField
@@ -76,8 +84,9 @@ requirements:
       - given current route matches '/user/profile-settings', profileSettingsPage is visible
       - profileSettingsTitle is visible on profileSettingsPage
       - profileSettingsForm is visible on profileSettingsPage
-      - profileSettingsForm shows profileUsernameField, profileFirstNameField, profileLastNameField, profileLanguagePreferenceGroup, and profileUpdateButton in that order
-      - profileUsernameField is not editable
+      - profileSettingsForm shows profileEmailField, profileChangeEmailButton, profileUsernameField, profileFirstNameField, profileLastNameField, profileLanguagePreferenceGroup, and profileUpdateButton
+      - profileEmailField is not editable directly
+      - profileUsernameField is editable
       - visible labels on profile settings controls use sentence case
 
     roleBehavior: {}
@@ -86,7 +95,9 @@ requirements:
       - current route matches '/user/profile-settings'
       - profileSettingsTitle is visible with label 'Profile settings'
       - profileSettingsForm is visible
-      - profileUsernameField is visible with label 'Email / Username', is not editable, and shows the user's sign-up email
+      - profileEmailField is visible with label 'Email', is not editable directly, and shows the user's current verified login email address
+      - profileChangeEmailButton is visible with label 'Change email'
+      - profileUsernameField is visible with label 'Username', is editable, and shows the user's current username
       - profileFirstNameField is visible with label 'First name' and is editable
       - profileLastNameField is visible with label 'Last name' and is editable
       - profileLanguagePreferenceGroup is visible with label 'Language preferences' and is editable
@@ -98,8 +109,7 @@ requirements:
   - id: FR-PROFILE-002
     title: Profile settings initial load behavior and data binding
 
-    designEvidence:
-      - FIGMA-PROFILE-SETTINGS
+    designEvidence: []
 
     actors:
       - user
@@ -107,6 +117,7 @@ requirements:
     uiObjects:
       - profileSettingsPage
       - profileSettingsForm
+      - profileEmailField
       - profileUsernameField
       - profileFirstNameField
       - profileLastNameField
@@ -121,20 +132,22 @@ requirements:
 
     mainFlow:
       - profileSettingsForm shows loaded profile settings values
-      - profileUsernameField shows the user's sign-up email
+      - profileEmailField shows the user's current verified login email address
+      - profileUsernameField shows the user's current username
       - profileFirstNameField shows the user's first name
       - profileLastNameField shows the user's last name
-      - on first visit after signup, profileUsernameField shows registerEmailField value, profileFirstNameField shows registerFirstNameField value, and profileLastNameField shows registerLastNameField value per tests/docs/requirements/features/auth/register_requirements_v1.yaml FR-REG-004
+      - on first visit after signup and before any username change, profileEmailField and profileUsernameField show registerEmailField value, profileFirstNameField shows registerFirstNameField value, and profileLastNameField shows registerLastNameField value per tests/docs/requirements/features/auth/register_requirements_v1.yaml FR-REG-004
       - profileLanguagePreferenceGroup shows the user's selected language option
       - given no user-specific language value is provided, profileLanguageOptionEnglish is selected per FR-PROFILE-004
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - profileUsernameField shows the user's sign-up email
+      - profileEmailField shows the user's current verified login email address
+      - profileUsernameField shows the user's current username
       - profileFirstNameField shows the user's first name
       - profileLastNameField shows the user's last name
-      - on first visit after signup, profileUsernameField shows registerEmailField value
+      - on first visit after signup and before any username change, profileEmailField and profileUsernameField show registerEmailField value
       - on first visit after signup, profileFirstNameField shows registerFirstNameField value
       - on first visit after signup, profileLastNameField shows registerLastNameField value
       - profileLanguagePreferenceGroup always has a selected option
@@ -145,14 +158,14 @@ requirements:
   - id: FR-PROFILE-003
     title: Profile settings field validation rules
 
-    designEvidence:
-      - FIGMA-PROFILE-SETTINGS
+    designEvidence: []
 
     actors:
       - user
 
     uiObjects:
       - profileSettingsForm
+      - profileUsernameField
       - profileFirstNameField
       - profileLastNameField
       - profileFieldValidationMessage
@@ -166,16 +179,24 @@ requirements:
       - user changes profileSettingsForm content and clicks profileUpdateButton
 
     mainFlow:
+      - profileUsernameField requires a non-empty value and limits value length to 150 characters
+      - profileUsernameField permits Unicode letters, numbers, and the characters '@', '.', '+', '-', and '_' only
+      - leading and trailing whitespace is removed from profileUsernameField before validation and saving
+      - profileUsernameField must be unique among accounts using a case-insensitive comparison
       - profileFirstNameField requires a non-empty value and limits value length to 200 characters
       - profileLastNameField requires a non-empty value and limits value length to 200 characters
-      - given user first visits profileSettingsPage after signup, profileFieldValidationMessage is not visible for profileFirstNameField or profileLastNameField
-      - validation for profileFirstNameField and profileLastNameField starts only after user interaction with profileSettingsForm and user clicks profileUpdateButton
-      - given validation fails for profileFirstNameField or profileLastNameField, profileSettingsForm is not submitted and profileFieldValidationMessage is visible on the invalid field
+      - given user first visits profileSettingsPage after signup, profileFieldValidationMessage is not visible for profileUsernameField, profileFirstNameField, or profileLastNameField
+      - validation for profileUsernameField, profileFirstNameField, and profileLastNameField starts only after user interaction with profileSettingsForm and user clicks profileUpdateButton
+      - given validation fails for profileUsernameField, profileFirstNameField, or profileLastNameField, profileSettingsForm is not submitted and profileFieldValidationMessage is visible on the invalid field
 
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given user first visits profileSettingsPage after signup, profileFieldValidationMessage is not visible for profileFirstNameField or profileLastNameField
+      - given user first visits profileSettingsPage after signup, profileFieldValidationMessage is not visible for profileUsernameField, profileFirstNameField, or profileLastNameField
+      - given user clears profileUsernameField after interaction and user clicks profileUpdateButton, profileSettingsForm is not submitted and profileFieldValidationMessage is visible with text 'Username is required' for profileUsernameField
+      - given profileUsernameField value length exceeds 150 characters and user clicks profileUpdateButton, profileSettingsForm is not submitted and profileFieldValidationMessage is visible with text 'Username is limited to 150 characters' for profileUsernameField
+      - given profileUsernameField contains a character outside the allowed set and user clicks profileUpdateButton, profileSettingsForm is not submitted and profileFieldValidationMessage is visible with text 'Username may contain letters, numbers, and @/./+/-/_ only' for profileUsernameField
+      - given another account has the same username ignoring case and user clicks profileUpdateButton, profileSettingsForm is not submitted and profileFieldValidationMessage is visible with text 'This username is already in use' for profileUsernameField
       - given user clears profileFirstNameField after interaction and user clicks profileUpdateButton, profileSettingsForm is not submitted and profileFieldValidationMessage is visible with text 'First name is required' for profileFirstNameField
       - given user clears profileLastNameField after interaction and user clicks profileUpdateButton, profileSettingsForm is not submitted and profileFieldValidationMessage is visible with text 'Last name is required' for profileLastNameField
       - given profileFirstNameField value length exceeds 200 characters and user clicks profileUpdateButton, profileSettingsForm is not submitted and profileFieldValidationMessage is visible with text 'First name is limited to 200 characters' for profileFirstNameField
@@ -227,14 +248,14 @@ requirements:
   - id: FR-PROFILE-005
     title: Profile update submit behavior and feedback
 
-    designEvidence:
-      - FIGMA-PROFILE-SETTINGS
+    designEvidence: []
 
     actors:
       - user
 
     uiObjects:
       - profileSettingsForm
+      - profileUsernameField
       - profileFirstNameField
       - profileLastNameField
       - profileLanguagePreferenceGroup
@@ -252,7 +273,7 @@ requirements:
     mainFlow:
       - given profileSettingsForm has no unsaved content change, profileUpdateButton is disabled and not clickable
       - given at least one field value differs from the loaded form state, profileUpdateButton is enabled
-      - given user clicks profileUpdateButton with valid profileSettingsForm values, profileFirstNameField, profileLastNameField, and profileLanguagePreferenceGroup values are saved
+      - given user clicks profileUpdateButton with valid profileSettingsForm values, profileUsernameField, profileFirstNameField, profileLastNameField, profileLanguagePreferenceGroup, and any changed profile details defined by tests/docs/requirements/features/user/profile_details_requirements_v1.yaml FR-PROFILE-DETAILS-006 are saved
       - given profile settings are saved successfully, globalMessageSnackbar shows 'Your profile settings have been updated' and application interface is displayed in the language selected in profileLanguagePreferenceGroup
       - given profile settings update request fails, profileSettingsForm values are unchanged and globalMessageSnackbar shows 'We encountered an issue and your profile settings have not been updated'
 
@@ -261,14 +282,66 @@ requirements:
     acceptanceCriteria:
       - given profileSettingsForm has no unsaved content change, profileUpdateButton is disabled and not clickable
       - given profileSettingsForm has at least one unsaved change and no validation error, profileUpdateButton is enabled
-      - given user clicks profileUpdateButton with valid profileSettingsForm values, profileFirstNameField, profileLastNameField, and profileLanguagePreferenceGroup values are saved
+      - given user clicks profileUpdateButton with valid profileSettingsForm values, profileUsernameField, profileFirstNameField, profileLastNameField, profileLanguagePreferenceGroup, and any changed profile details defined by tests/docs/requirements/features/user/profile_details_requirements_v1.yaml FR-PROFILE-DETAILS-006 are saved
       - given profile settings are saved successfully, globalMessageSnackbar shows 'Your profile settings have been updated'
       - given successful profile update including profileLanguagePreferenceGroup change, application interface is displayed in the language selected in profileLanguagePreferenceGroup per mainFlow
       - given profile settings update request fails, globalMessageSnackbar shows 'We encountered an issue and your profile settings have not been updated'
-      - given profile settings update request fails, profileFirstNameField, profileLastNameField, and profileLanguagePreferenceGroup retain their pre-submit values
+      - given profile settings update request fails, profileUsernameField, profileFirstNameField, profileLastNameField, profileLanguagePreferenceGroup, and changed profile details defined by tests/docs/requirements/features/user/profile_details_requirements_v1.yaml FR-PROFILE-DETAILS-006 retain their pre-submit values
 
     openQuestions: []
+
+  - id: FR-PROFILE-006
+    title: Username is independent from the login email address
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - profileEmailField
+      - profileUsernameField
+      - profileUpdateButton
+      - profileChangeEmailButton
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - profileSettingsForm is visible
+
+    trigger:
+      - user changes profileUsernameField and clicks profileUpdateButton, or completes the verified email-change flow
+
+    mainFlow:
+      - the username is an account profile identifier and is not accepted as a login credential
+      - the current verified email address remains the login credential
+      - changing profileUsernameField does not change profileEmailField, initiate email verification, or affect the email used to sign in
+      - completing the verified email-change flow changes profileEmailField and the email used to sign in but does not change profileUsernameField
+      - registration may initialize username to the registration email per tests/docs/requirements/features/auth/register_requirements_v1.yaml FR-REG-004; that initial equality does not make the fields permanently coupled
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user changes profileUsernameField successfully, profileEmailField remains unchanged and no verification email is sent
+      - given user changes profileUsernameField successfully, login continues to require the current verified email address and password
+      - given user completes the verified email-change flow, profileUsernameField retains its pre-change value
+      - given user completes the verified email-change flow, future login accepts the new verified email address and does not accept the previous email address
+      - given profileUsernameField differs from profileEmailField, saving unrelated profile changes does not synchronize either field to the other
+
+    openQuestions:
+      - Product must identify which application surfaces, if any, display username instead of first name, last name, or email. This requirement defines editing and identity semantics only.
 
 designEvidenceLinkTable:
   - key: FIGMA-PROFILE-SETTINGS
     hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=1842-117777&t=lsKQpS4Jq8MOZwMT-1
+
+changelog:
+  - version: '1.2'
+    date: '2026-10-29'
+    changes:
+      - linked the companion profile-details requirements for profile image, institution, and primary discipline
+  - version: '1.1'
+    date: '2026-10-29'
+    changes:
+      - replaced the combined read-only 'Email / Username' field with separate current-email and editable-username requirements
+      - defined username validation, case-insensitive uniqueness, and independence from the email login credential
+      - delegated verified email changes to tests/docs/requirements/features/user/email_change_requirements_v1.yaml

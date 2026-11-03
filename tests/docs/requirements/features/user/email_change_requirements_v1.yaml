@@ -1,0 +1,438 @@
+# Normalized requirements: authenticated account email change with new-address verification
+# Source: 2026-10-29 product requirement
+# Scope note: 'two-step verification' means (1) request an email change while authenticated and (2) prove control of the proposed address by following the emailed link. It does not mean multi-factor authentication.
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml (entry point and username independence); tests/docs/requirements/features/global/email_communication_requirements_v1.yaml (shared email delivery, localization, sender, and failure behavior); tests/docs/requirements/features/auth/login_requirements_v1.yaml (email remains the login identifier); tests/docs/requirements/features/global/localization_requirements_v1.yaml (localized UI and literal-copy policy)
+
+documentPreconditions:
+  - user has an active CourseFlow account with a current verified email address
+  - user knows the account's current password when requesting an email change
+
+outOfScope:
+  - verifying an email address during initial registration
+  - accepting username as a login credential
+  - administrator-initiated email changes or account-recovery overrides
+  - token persistence, hashing, API endpoint shape, background delivery, and other implementation mechanics
+  - automatically reverting a completed email change from an email link
+
+uiObjectDefinitions:
+  profileEmailField:
+    meaning: Canonical definition in tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml.
+  profileChangeEmailButton:
+    meaning: Canonical definition in tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml.
+  profileEmailChangeForm:
+    meaning: Form opened from profileChangeEmailButton for requesting verification of a proposed new login email address.
+  profileCurrentEmailValue:
+    meaning: Read-only current verified login email address shown in profileEmailChangeForm.
+  profileNewEmailField:
+    meaning: Email input labeled 'New email' in profileEmailChangeForm.
+  profileEmailChangeCurrentPasswordField:
+    meaning: Secret input labeled 'Current password' in profileEmailChangeForm used to reauthenticate the user before a verification email is requested.
+  profileSendEmailVerificationButton:
+    meaning: Submit button labeled 'Send verification email' in profileEmailChangeForm.
+  profileEmailChangeCancelButton:
+    meaning: Button labeled 'Cancel' that closes profileEmailChangeForm without requesting a change.
+  profileEmailChangeValidationMessage:
+    meaning: Inline field-level error text for profileNewEmailField or profileEmailChangeCurrentPasswordField.
+  profilePendingEmailChangePanel:
+    meaning: Status panel on the profile settings page showing that an email change awaits verification and identifying the proposed address.
+  profilePendingEmailValue:
+    meaning: Proposed new email address displayed in profilePendingEmailChangePanel.
+  profileResendEmailVerificationButton:
+    meaning: Button labeled 'Resend verification email' in profilePendingEmailChangePanel.
+  profileCancelPendingEmailChangeButton:
+    meaning: Button labeled 'Cancel email change' in profilePendingEmailChangePanel.
+  emailChangeVerificationEmail:
+    meaning: Required transactional email sent to the proposed new address so the recipient can prove control of it.
+  emailChangeVerificationLink:
+    meaning: Single-use action link labeled 'Verify email address' in emailChangeVerificationEmail.
+  emailChangeVerificationResultPage:
+    meaning: Public result page shown after CourseFlow evaluates an emailChangeVerificationLink.
+  emailChangeVerificationSuccessMessage:
+    meaning: Confirmation text 'Your email address has been updated. Sign in with your new email address.' on emailChangeVerificationResultPage.
+  emailChangeVerificationErrorMessage:
+    meaning: Error text 'This email verification link is invalid or has expired.' on emailChangeVerificationResultPage.
+  emailChangeSecurityNoticeEmail:
+    meaning: Advisory transactional email sent to the previous verified address after an email change completes.
+  globalMessageSnackbar:
+    meaning: Canonical definition in tests/docs/requirements/features/shared/card_content_requirements_v1.yaml.
+
+locatorMappings:
+  profileEmailField: "canonical_locators.yaml -> profileEmailField"
+  profileChangeEmailButton: "canonical_locators.yaml -> profileChangeEmailButton"
+  profileEmailChangeForm: "canonical_locators.yaml -> profileEmailChangeForm"
+  profileCurrentEmailValue: "canonical_locators.yaml -> profileCurrentEmailValue"
+  profileNewEmailField: "canonical_locators.yaml -> profileNewEmailField"
+  profileEmailChangeCurrentPasswordField: "canonical_locators.yaml -> profileEmailChangeCurrentPasswordField"
+  profileSendEmailVerificationButton: "canonical_locators.yaml -> profileSendEmailVerificationButton"
+  profileEmailChangeCancelButton: "canonical_locators.yaml -> profileEmailChangeCancelButton"
+  profileEmailChangeValidationMessage: "canonical_locators.yaml -> profileEmailChangeValidationMessage"
+  profilePendingEmailChangePanel: "canonical_locators.yaml -> profilePendingEmailChangePanel"
+  profilePendingEmailValue: "canonical_locators.yaml -> profilePendingEmailValue"
+  profileResendEmailVerificationButton: "canonical_locators.yaml -> profileResendEmailVerificationButton"
+  profileCancelPendingEmailChangeButton: "canonical_locators.yaml -> profileCancelPendingEmailChangeButton"
+  emailChangeVerificationEmail: "captured email -> message addressed to proposed new email"
+  emailChangeVerificationLink: "captured email alternatives -> action link labeled 'Verify email address'"
+  emailChangeVerificationResultPage:
+    strategy: null
+    confidence: unresolved
+  emailChangeVerificationSuccessMessage: "emailChangeVerificationResultPage -> success message"
+  emailChangeVerificationErrorMessage: "emailChangeVerificationResultPage -> error message"
+  emailChangeSecurityNoticeEmail: "captured email -> message addressed to previous verified email"
+  globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
+
+requirements:
+  - id: FR-EMAIL-CHANGE-001
+    title: Open and cancel the email-change form
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - profileEmailField
+      - profileChangeEmailButton
+      - profileEmailChangeForm
+      - profileCurrentEmailValue
+      - profileNewEmailField
+      - profileEmailChangeCurrentPasswordField
+      - profileSendEmailVerificationButton
+      - profileEmailChangeCancelButton
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - user is authenticated
+      - profile settings page is visible
+
+    trigger:
+      - user clicks profileChangeEmailButton
+
+    mainFlow:
+      - profileEmailChangeForm becomes visible
+      - profileCurrentEmailValue shows the current verified login email and is not editable
+      - profileNewEmailField and profileEmailChangeCurrentPasswordField are editable and initially empty
+      - profileSendEmailVerificationButton is disabled until both editable fields are valid
+      - given user clicks profileEmailChangeCancelButton, profileEmailChangeForm closes and no verification email is requested
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user clicks profileChangeEmailButton, profileEmailChangeForm is visible
+      - profileCurrentEmailValue shows the same address as profileEmailField and is not editable
+      - profileNewEmailField is visible with label 'New email' and an empty value
+      - profileEmailChangeCurrentPasswordField is visible with label 'Current password', has an empty value, and masks entered characters
+      - profileSendEmailVerificationButton is visible with label 'Send verification email'
+      - profileEmailChangeCancelButton is visible with label 'Cancel'
+      - given user clicks profileEmailChangeCancelButton before submitting, profileEmailChangeForm closes, no account field changes, and no email is sent
+
+    openQuestions:
+      - Product design must define whether profileEmailChangeForm is inline, a dialog, or a dedicated route; this does not change the required behavior.
+
+  - id: FR-EMAIL-CHANGE-002
+    title: Validate and reauthenticate an email-change request
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - profileEmailChangeForm
+      - profileCurrentEmailValue
+      - profileNewEmailField
+      - profileEmailChangeCurrentPasswordField
+      - profileSendEmailVerificationButton
+      - profileEmailChangeValidationMessage
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - user is authenticated
+      - profileEmailChangeForm is visible
+
+    trigger:
+      - user enters profileNewEmailField and profileEmailChangeCurrentPasswordField values
+
+    mainFlow:
+      - profileNewEmailField is trimmed and must contain a syntactically valid email address no longer than 254 characters
+      - profileNewEmailField must differ from profileCurrentEmailValue using a case-insensitive comparison
+      - profileNewEmailField must not match another account's current verified email address using a case-insensitive comparison
+      - profileEmailChangeCurrentPasswordField must match the authenticated account's current password
+      - validation starts after interaction with the relevant field and is repeated when user clicks profileSendEmailVerificationButton
+      - profileEmailChangeForm is not submitted while any validation error remains
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given profileNewEmailField is empty after interaction, profileEmailChangeValidationMessage is visible with text 'New email is required' for profileNewEmailField
+      - given profileNewEmailField is not a valid email address, profileEmailChangeValidationMessage is visible with text 'Invalid email format' for profileNewEmailField
+      - given profileNewEmailField exceeds 254 characters, profileEmailChangeValidationMessage is visible with text 'Email is limited to 254 characters' for profileNewEmailField
+      - given profileNewEmailField matches profileCurrentEmailValue ignoring case, profileEmailChangeValidationMessage is visible with text 'Enter an email address different from your current email' for profileNewEmailField
+      - given profileNewEmailField matches another account's current verified email ignoring case, profileEmailChangeValidationMessage is visible with text 'This email address is already in use' for profileNewEmailField
+      - given profileEmailChangeCurrentPasswordField is empty, profileEmailChangeValidationMessage is visible with text 'Current password is required' for profileEmailChangeCurrentPasswordField
+      - given profileEmailChangeCurrentPasswordField does not match the authenticated account, profileEmailChangeValidationMessage is visible with text 'Current password is incorrect' for profileEmailChangeCurrentPasswordField
+      - given either field is invalid, profileSendEmailVerificationButton is disabled or the submitted form is rejected without sending email
+      - given both fields are valid, profileSendEmailVerificationButton is enabled and clickable
+
+    openQuestions: []
+
+  - id: FR-EMAIL-CHANGE-003
+    title: Request verification without changing the current login email
+
+    designEvidence: []
+
+    actors:
+      - user
+      - system
+
+    uiObjects:
+      - profileEmailChangeForm
+      - profileNewEmailField
+      - profileSendEmailVerificationButton
+      - profileEmailField
+      - profilePendingEmailChangePanel
+      - profilePendingEmailValue
+      - emailChangeVerificationEmail
+      - globalMessageSnackbar
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - user is authenticated
+      - profileEmailChangeForm contains valid values per FR-EMAIL-CHANGE-002
+
+    trigger:
+      - user clicks profileSendEmailVerificationButton
+
+    mainFlow:
+      - system sends emailChangeVerificationEmail to profileNewEmailField as an essential action email per FR-EMAIL-005
+      - system does not update profileEmailField or the account's login email before emailChangeVerificationLink is completed successfully
+      - after the email delivery backend accepts emailChangeVerificationEmail, profileEmailChangeForm closes, profilePendingEmailChangePanel shows profilePendingEmailValue, and globalMessageSnackbar shows 'Verification email sent. Your email will change after you verify the new address.'
+      - an accepted request replaces any earlier pending email-change request for the same account and makes earlier verification links unusable
+      - system does not modify the account username, password, first name, last name, language preference, roles, or permissions
+      - if the delivery backend rejects emailChangeVerificationEmail, the new request does not replace an existing pending request and globalMessageSnackbar shows 'We could not send the verification email. Your email address has not changed.'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given emailChangeVerificationEmail is accepted for delivery, exactly one message is addressed to the proposed new email address
+      - given emailChangeVerificationEmail is accepted for delivery, profileEmailField still shows the current verified email address
+      - given emailChangeVerificationEmail is accepted for delivery, the current verified email continues to work for login and the proposed new email does not yet work for login
+      - given emailChangeVerificationEmail is accepted for delivery, profilePendingEmailChangePanel identifies the proposed new email address
+      - given an account already has a pending request and a replacement request is accepted for delivery, the earlier verification link becomes unusable
+      - given emailChangeVerificationEmail delivery is rejected, the current verified email and all non-email account fields remain unchanged
+      - given emailChangeVerificationEmail delivery is rejected, the system does not claim that a verification email was sent
+
+    openQuestions: []
+
+  - id: FR-EMAIL-CHANGE-004
+    title: Verification email content and lifetime
+
+    designEvidence: []
+
+    actors:
+      - system
+      - email recipient
+
+    uiObjects:
+      - emailChangeVerificationEmail
+      - emailChangeVerificationLink
+
+    preconditions:
+      - a valid email-change request is eligible for delivery
+
+    trigger:
+      - system renders emailChangeVerificationEmail
+
+    mainFlow:
+      - emailChangeVerificationEmail is a required transactional essential-action email governed by tests/docs/requirements/features/global/email_communication_requirements_v1.yaml
+      - English Canadian subject is 'Verify your new CourseFlow email address'
+      - email content states that someone requested this address as the new email for a CourseFlow account
+      - email content states that profileEmailField remains unchanged until emailChangeVerificationLink is completed
+      - email content states that emailChangeVerificationLink expires 24 hours after the request
+      - email content presents emailChangeVerificationLink with action label 'Verify email address'
+      - email content states that a recipient who did not request the change can ignore the email and contact the configured support address
+      - email content does not include the user's password, current login email, or reusable credential
+      - emailChangeVerificationLink is single-use and is invalid after successful verification, cancellation, replacement, or expiry
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - captured emailChangeVerificationEmail subject is 'Verify your new CourseFlow email address' when account language is English Canadian
+      - captured emailChangeVerificationEmail is addressed only to the proposed new email address
+      - captured emailChangeVerificationEmail contains the action label 'Verify email address' and the same absolute action URL in its HTML and plain-text alternatives
+      - captured emailChangeVerificationEmail states that the link expires in 24 hours
+      - captured emailChangeVerificationEmail provides ignore-and-contact-support guidance for an unrecognized request
+      - captured emailChangeVerificationEmail contains neither the current login email nor a password
+      - given account language preference is French Canadian, subject, body, and action label are rendered in French Canadian per FR-EMAIL-004
+
+    openQuestions: []
+
+  - id: FR-EMAIL-CHANGE-005
+    title: Complete a verified email change atomically
+
+    designEvidence: []
+
+    actors:
+      - email recipient
+      - system
+
+    uiObjects:
+      - emailChangeVerificationLink
+      - emailChangeVerificationResultPage
+      - emailChangeVerificationSuccessMessage
+      - emailChangeSecurityNoticeEmail
+
+    preconditions:
+      - emailChangeVerificationLink is valid, unexpired, unused, not canceled, and belongs to the account's current pending email-change request
+      - proposed new email is not another account's current verified email at completion time
+
+    trigger:
+      - email recipient clicks emailChangeVerificationLink
+
+    mainFlow:
+      - emailChangeVerificationLink can be completed without an authenticated CourseFlow session because possession of the single-use link proves control of the proposed address
+      - system revalidates the link, pending request, account state, and proposed email availability as one completion operation
+      - system replaces the account's current verified email with the proposed email
+      - system preserves the account username and all other non-email profile fields
+      - system invalidates the completed link and every other pending email-change link for the account
+      - system revokes all existing authenticated sessions for the account and requires a new login with the new verified email address
+      - emailChangeVerificationResultPage shows emailChangeVerificationSuccessMessage
+      - after the email change commits, system sends emailChangeSecurityNoticeEmail to the previous verified email address as a best-effort advisory confirmation
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given a valid emailChangeVerificationLink is completed, account email equals the proposed new email and username retains its pre-change value
+      - given a valid emailChangeVerificationLink is completed, login succeeds with the new verified email and current password
+      - given a valid emailChangeVerificationLink is completed, login does not succeed with the previous email and current password
+      - given a valid emailChangeVerificationLink is completed, all previously issued authenticated sessions for the account are rejected
+      - given a valid emailChangeVerificationLink is completed, emailChangeVerificationSuccessMessage is visible with text 'Your email address has been updated. Sign in with your new email address.'
+      - given a valid emailChangeVerificationLink is completed, the same link cannot complete another change
+      - given emailChangeSecurityNoticeEmail delivery fails after the change commits, the new verified email remains committed and the success result remains visible
+
+    openQuestions: []
+
+  - id: FR-EMAIL-CHANGE-006
+    title: Reject unusable verification links without changing the account
+
+    designEvidence: []
+
+    actors:
+      - email recipient
+      - system
+
+    uiObjects:
+      - emailChangeVerificationLink
+      - emailChangeVerificationResultPage
+      - emailChangeVerificationErrorMessage
+
+    preconditions:
+      - email recipient has an expired, already-used, canceled, superseded, malformed, or otherwise invalid emailChangeVerificationLink, or the proposed email is no longer available
+
+    trigger:
+      - email recipient opens emailChangeVerificationLink
+
+    mainFlow:
+      - system does not change the account email, username, password, profile, roles, permissions, or session state
+      - emailChangeVerificationResultPage shows emailChangeVerificationErrorMessage without distinguishing why the link is unusable
+      - the result does not disclose whether an account exists or which account originated the request
+      - an authenticated user may return to profile settings and request a new verification email using the still-current verified login email
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given an expired link, emailChangeVerificationErrorMessage is visible with text 'This email verification link is invalid or has expired.'
+      - given an already-used, canceled, superseded, malformed, or conflicting link, the same emailChangeVerificationErrorMessage is visible
+      - given an unusable link is opened, current verified email, username, and authenticated sessions remain unchanged
+      - emailChangeVerificationResultPage does not identify an account or reveal the current verified email
+
+    openQuestions: []
+
+  - id: FR-EMAIL-CHANGE-007
+    title: Manage, resend, replace, and rate-limit a pending email change
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - profilePendingEmailChangePanel
+      - profilePendingEmailValue
+      - profileResendEmailVerificationButton
+      - profileCancelPendingEmailChangeButton
+      - profileChangeEmailButton
+      - globalMessageSnackbar
+
+    preconditions:
+      - user is authenticated
+      - account has a pending email-change request
+      - profile settings page is visible
+
+    trigger:
+      - user clicks profileResendEmailVerificationButton, profileCancelPendingEmailChangeButton, or profileChangeEmailButton
+
+    mainFlow:
+      - profilePendingEmailChangePanel shows profilePendingEmailValue and states that profileEmailField remains the login email until verification succeeds
+      - given user clicks profileResendEmailVerificationButton and delivery is accepted, system sends a new 24-hour emailChangeVerificationLink to profilePendingEmailValue and invalidates the previous link
+      - given user clicks profileCancelPendingEmailChangeButton, system invalidates the pending request and keeps profileEmailField unchanged
+      - given user starts and successfully submits a request for a different proposed address, the accepted replacement request invalidates the earlier pending link
+      - system permits no more than five verification-email delivery requests per account and per proposed email address in a rolling one-hour window
+      - given the rate limit is exceeded, no email is sent, the current pending request remains unchanged, and globalMessageSnackbar shows 'Too many verification emails were requested. Try again later.'
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - profilePendingEmailChangePanel shows the proposed email and does not present it as the current login email
+      - given resend delivery is accepted, one new email is sent to profilePendingEmailValue, the new link expires 24 hours after resend, and the earlier link is unusable
+      - given user cancels the pending request, profileEmailField remains unchanged and the canceled link is unusable
+      - given a replacement request for a different address is accepted, only the replacement request remains active
+      - given either rolling one-hour limit has been reached, an additional request sends no email and does not invalidate the currently active link
+
+    openQuestions: []
+
+  - id: FR-EMAIL-CHANGE-008
+    title: Notify the previous email address after a completed change
+
+    designEvidence: []
+
+    actors:
+      - system
+      - user
+
+    uiObjects:
+      - emailChangeSecurityNoticeEmail
+
+    preconditions:
+      - account email change has committed successfully per FR-EMAIL-CHANGE-005
+
+    trigger:
+      - system completes the account email change
+
+    mainFlow:
+      - system sends emailChangeSecurityNoticeEmail to the previous verified email address and not to the new address
+      - emailChangeSecurityNoticeEmail is an advisory confirmation email governed by tests/docs/requirements/features/global/email_communication_requirements_v1.yaml
+      - English Canadian subject is 'Your CourseFlow email address was changed'
+      - email content identifies the new verified email address and states that the previous email can no longer be used to sign in
+      - email content tells the recipient to contact the configured support address immediately if the change was not authorized
+      - email content does not offer a one-click automatic revert
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - captured emailChangeSecurityNoticeEmail is addressed to the previous verified email address
+      - captured emailChangeSecurityNoticeEmail subject is 'Your CourseFlow email address was changed' when account language is English Canadian
+      - captured emailChangeSecurityNoticeEmail identifies the new verified email and provides unauthorized-change support guidance
+      - captured emailChangeSecurityNoticeEmail contains no password, reusable credential, verification token, or automatic-revert link
+      - given account language preference is French Canadian, subject and body are rendered in French Canadian per FR-EMAIL-004
+
+    openQuestions: []
+
+designEvidenceLinkTable: []
+
+changelog:
+  - version: '1.0'
+    date: '2026-10-29'
+    changes:
+      - created the authenticated request and new-address verification flow
+      - defined 24-hour single-use links, current-password reauthentication, pending-state management, rate limits, session revocation, and previous-address security notice

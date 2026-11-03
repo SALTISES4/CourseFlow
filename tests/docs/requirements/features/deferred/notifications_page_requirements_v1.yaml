@@ -3,7 +3,7 @@
 # Source: Figma and application code (no separate Google Doc for this run)
 # Application code evidence: react/src/components/pages/Notifications/index.tsx; react/src/components/pages/Notifications/style.ts; react/src/HTTP/XMLHTTP/API/notifications.rtk.ts; react/src/router/appRoutes.tsx; react/src/router/apiRoutes.ts; react/src/utility/strings.ts
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Cross-reference: tests/docs/requirements/features/deferred/top_navigation_notifications_dropdown_requirements_v1.yaml (entry path to route '/user/notifications' from top navigation notifications panel; FR-TOP-004 notificationListItem objects; row-click navigation deferred from removed FR-TOP-007); tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml (acting user firstName and lastName shown in notificationListItemUserName per FR-NPAGE-002)
+# Cross-reference: tests/docs/requirements/features/deferred/top_navigation_notifications_dropdown_requirements_v1.yaml (entry path to route '/user/notifications' from top navigation notifications panel; FR-TOP-004 notificationListItem objects; row-click navigation deferred from removed FR-TOP-007); tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml (acting user firstName and lastName shown in notificationListItemUserName per FR-NPAGE-002); tests/docs/requirements/features/user/profile_details_requirements_v1.yaml (saved profile image and fallback avatar behavior)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
@@ -25,7 +25,9 @@ uiObjectDefinitions:
   notificationListItem:
     meaning: One row in notificationsList
   notificationListItemUserAvatar:
-    meaning: Visual representing the acting user; for now shows initials only.
+    meaning: Visual representing the acting user; shows the saved profile image when one exists and otherwise the generated fallback avatar per tests/docs/requirements/features/user/profile_details_requirements_v1.yaml FR-PROFILE-DETAILS-003.
+  profileImageFallbackAvatar:
+    meaning: Canonical definition in tests/docs/requirements/features/user/profile_details_requirements_v1.yaml.
   notificationListItemUserName:
     meaning: Text on notificationListItem for the acting user; combines profileFirstNameField and profileLastNameField values per tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml.
   notificationListItemRelativeTimestamp:
@@ -62,6 +64,7 @@ locatorMappings:
   notificationsList: "canonical_locators.yaml -> notificationsList"
   notificationListItem: "canonical_locators.yaml -> notificationListItem"
   notificationListItemUserAvatar: "canonical_locators.yaml -> notificationListItemUserAvatar"
+  profileImageFallbackAvatar: "canonical_locators.yaml -> profileImageFallbackAvatar"
   notificationListItemUserName: "canonical_locators.yaml -> notificationListItemUserName"
   notificationListItemRelativeTimestamp: "canonical_locators.yaml -> notificationListItemRelativeTimestamp"
   notificationListItemContent: "canonical_locators.yaml -> notificationListItemContent"
@@ -135,6 +138,7 @@ requirements:
       - notificationsList
       - notificationListItem
       - notificationListItemUserAvatar
+      - profileImageFallbackAvatar
       - notificationListItemUserName
       - notificationListItemRelativeTimestamp
       - notificationListItemContent
@@ -155,6 +159,7 @@ requirements:
       - notifications row semantics reuse the same canonical objects as FR-TOP-004 in tests/docs/requirements/features/deferred/top_navigation_notifications_dropdown_requirements_v1.yaml (notificationListItem and child objects)
       - notificationsList renders one notificationListItem per notification
       - each notificationListItem presents notificationListItemUserAvatar, notificationListItemUserName, notificationListItemRelativeTimestamp, and notificationListItemContent
+      - notificationListItemUserAvatar shows the acting user's saved profile image when one exists and otherwise shows profileImageFallbackAvatar per tests/docs/requirements/features/user/profile_details_requirements_v1.yaml FR-PROFILE-DETAILS-003
       - unread notificationListItem instances show notificationListItemUnreadDot and unread row background highlight
       - each notificationListItem presents notificationRowActionTrigger as an icon-only control with no visible text label
       - when user clicks notificationRowActionTrigger, system opens notificationActionsMenu with options 'Mark as read' (for unread rows) and 'Delete'
@@ -164,6 +169,8 @@ requirements:
     acceptanceCriteria:
       - given notificationsList is visible, each row has notificationRowActionTrigger
       - each notificationListItem shows notificationListItemUserName
+      - given the acting user has a saved profile image, notificationListItemUserAvatar shows that image
+      - given the acting user has no saved profile image, notificationListItemUserAvatar shows profileImageFallbackAvatar
       - given notification row is unread, notificationListItemUnreadDot is visible
       - given notification row is read, notificationListItemUnreadDot is not visible
       - given user clicks notificationRowActionTrigger for an unread row, notificationActionsMenu is visible with options 'Mark as read' and 'Delete'
@@ -340,3 +347,9 @@ designEvidenceLinkTable:
     hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6540-71425&t=lsKQpS4Jq8MOZwMT-1
   - key: FIGMA-NOTIFICATIONS-ERROR
     hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=6540-72022&t=lsKQpS4Jq8MOZwMT-1
+
+changelog:
+  - version: '1.1'
+    date: '2026-10-29'
+    changes:
+      - replaced initials-only notification avatars with saved profile image and fallback-avatar behavior

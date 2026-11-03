@@ -653,12 +653,90 @@ locatorMappings:
   productUpdatesToggleLabel:
     strategy: "{notificationsSettingsForm} FormControlLabel with label 'I want to receive product updates emails'"
     confidence: inferred
+  emailChangeVerificationErrorMessage:
+    strategy: "{emailChangeVerificationResultPage} message with text 'This email verification link is invalid or has expired.'"
+    confidence: inferred
+  emailChangeVerificationResultPage:
+    strategy: null
+    confidence: unresolved
+  emailChangeVerificationSuccessMessage:
+    strategy: "{emailChangeVerificationResultPage} message with text 'Your email address has been updated. Sign in with your new email address.'"
+    confidence: inferred
+  profileCancelPendingEmailChangeButton:
+    strategy: "{profilePendingEmailChangePanel} button with label 'Cancel email change'"
+    confidence: inferred
+  profileChangeEmailButton:
+    strategy: "{profileSettingsForm} button associated with profileEmailField and labeled 'Change email'"
+    confidence: inferred
+  profileCurrentEmailValue:
+    strategy: "{profileEmailChangeForm} read-only value labeled 'Current email'"
+    confidence: inferred
+  profileDisciplineEmptyOption:
+    strategy: null
+    confidence: unresolved
+  profileDisciplineField:
+    strategy: null
+    confidence: unresolved
+  profileEmailChangeCancelButton:
+    strategy: "{profileEmailChangeForm} button with label 'Cancel'"
+    confidence: inferred
+  profileEmailChangeCurrentPasswordField:
+    strategy: "{profileEmailChangeForm} secret input[name=\"currentPassword\"] with label 'Current password'"
+    confidence: inferred
+  profileEmailChangeForm:
+    strategy: null
+    confidence: unresolved
+  profileEmailChangeValidationMessage:
+    strategy: null
+    confidence: unresolved
+  profileEmailField:
+    strategy: "{profileSettingsForm} read-only field with label 'Email'"
+    confidence: inferred
   profileFieldValidationMessage:
     strategy: null
     confidence: unresolved
   profileFirstNameField:
     strategy: "{profileSettingsForm} input[name=\"firstName\"] with label 'First name'"
     confidence: inferred
+  profileImage:
+    strategy: null
+    confidence: unresolved
+  profileImageAddButton:
+    strategy: null
+    confidence: unresolved
+  profileImageCancelButton:
+    strategy: null
+    confidence: unresolved
+  profileImageChangeButton:
+    strategy: null
+    confidence: unresolved
+  profileImageEditor:
+    strategy: null
+    confidence: unresolved
+  profileImageFallbackAvatar:
+    strategy: null
+    confidence: unresolved
+  profileImageFileInput:
+    strategy: null
+    confidence: unresolved
+  profileImagePreview:
+    strategy: null
+    confidence: unresolved
+  profileImageRemoveButton:
+    strategy: null
+    confidence: unresolved
+  profileImageSaveButton:
+    strategy: null
+    confidence: unresolved
+  profileImageSection:
+    strategy: null
+    confidence: unresolved
+  profileImageValidationMessage:
+    strategy: null
+    confidence: unresolved
+  profileInstitutionField:
+    strategy: null
+    confidence: unresolved
   profileLanguageOptionEnglish:
     strategy: "{profileLanguagePreferenceGroup} radio option with value 'en' (accessible label is localized)"
     confidence: inferred
@@ -670,6 +748,24 @@ locatorMappings:
     confidence: inferred
   profileLastNameField:
     strategy: "{profileSettingsForm} input[name=\"lastName\"] with label 'Last name'"
+    confidence: inferred
+  profileNewEmailField:
+    strategy: "{profileEmailChangeForm} input[name=\"newEmail\"] with label 'New email'"
+    confidence: inferred
+  profilePendingEmailChangePanel:
+    strategy: null
+    confidence: unresolved
+  profilePendingEmailValue:
+    strategy: "{profilePendingEmailChangePanel} proposed email value"
+    confidence: inferred
+  profileProfessionalDetailsSection:
+    strategy: null
+    confidence: unresolved
+  profileResendEmailVerificationButton:
+    strategy: "{profilePendingEmailChangePanel} button with label 'Resend verification email'"
+    confidence: inferred
+  profileSendEmailVerificationButton:
+    strategy: "{profileEmailChangeForm} submit button with label 'Send verification email'"
     confidence: inferred
   profileSettingsForm:
     strategy: "{profileSettingsPage} form"
@@ -684,7 +780,7 @@ locatorMappings:
     strategy: "{profileSettingsForm} button[type=\"submit\"] with label 'Update profile'"
     confidence: inferred
   profileUsernameField:
-    strategy: "{profileSettingsForm} read-only field with label 'Email / Username'"
+    strategy: "{profileSettingsForm} input[name=\"username\"] with label 'Username'"
     confidence: inferred
   projectAccessDeniedSubtitle:
     strategy: "{projectAccessDeniedView} informational body copy below primary heading"

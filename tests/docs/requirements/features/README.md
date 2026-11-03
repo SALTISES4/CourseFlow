@@ -17,7 +17,7 @@ Folder layout mirrors product domains (aligned with `tests/e2e/` and `tests/docs
 | `project/` | Project workspace and forms | `project_overview_requirements_v1.yaml` |
 | `workflow/` | Workflow editor (sections, nodes, channels, outcomes, sidebar, …) | `workflow_edit_section_requirements_v1.yaml` |
 | `workflow/deferred/` | Workflow specs deferred from active scope (same “deferred” intent as top-level `deferred/`, but kept under the workflow domain) | `workflow_graph_outcomes_undo_requirements_v1.yaml` |
-| `user/` | Account and notification settings | `profile_settings_requirements_v1.yaml` |
+| `user/` | Account identity, profile details, verified email changes, and notification settings | `profile_settings_requirements_v1.yaml`, `profile_details_requirements_v1.yaml`, `email_change_requirements_v1.yaml` |
 | `deferred/` | Cross-domain specs deferred from active scope (not owned by a single feature folder) | `notifications_page_requirements_v1.yaml` |
 
 `canonical_locators.yaml` is the requirements-side registry for uiObject names and semantic strategies. Playwright implements them in `tests/e2e/<domain>/*.locators.ts` per `tests/docs/testing/adr_ai_test_generation.md` and `test_suite_layout.md` (shared objects grouped in the owning domain module; re-export elsewhere).

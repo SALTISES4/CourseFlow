@@ -42,6 +42,7 @@
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^5.0.0",
     "globals": "^15.12.0",
+    "openapi-generate-html": "^0.5.4",
     "prettier": "3.3.3",
     "vite": "^5.4.11",
     "vite-plugin-compression": "^0.5.1",

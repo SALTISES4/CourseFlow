@@ -2,7 +2,7 @@
 # Source: product decision for CourseFlow transactional, security, and optional product-update email
 # Scope: user-facing email produced by CourseFlow; feature-specific requirements own each message's trigger, recipient, subject, body copy, action, and feature outcome.
 # ADR: docs/architecture/adr_transactional_email_delivery_and_templates.md
-# Cross-reference: tests/docs/requirements/features/auth/forgot_password_requirements_v1.yaml; tests/docs/requirements/features/auth/password_reset_requirements_v1.yaml; tests/docs/requirements/features/user/notifications_settings_requirements_v1.yaml
+# Cross-reference: tests/docs/requirements/features/auth/forgot_password_requirements_v1.yaml; tests/docs/requirements/features/auth/password_reset_requirements_v1.yaml; tests/docs/requirements/features/user/email_change_requirements_v1.yaml; tests/docs/requirements/features/user/notifications_settings_requirements_v1.yaml
 
 documentPreconditions:
   - CourseFlow initiates an email addressed to an application user or account email address
@@ -72,7 +72,7 @@ requirements:
     roleBehavior: {}
 
     acceptanceCriteria:
-      - given productUpdatesToggle is off, a feature-required password-reset request or password-change confirmation email remains eligible for delivery
+      - given productUpdatesToggle is off, a feature-required password-reset request, password-change confirmation, email-change verification, or email-change security notice remains eligible for delivery
       - given productUpdatesToggle is off, optionalProductUpdateEmail is not sent
       - given productUpdatesToggle is on, optionalProductUpdateEmail may be sent according to its owning feature requirement
 
@@ -211,7 +211,7 @@ requirements:
 
     mainFlow:
       - an essentialActionEmail is treated as successfully sent only after the configured email delivery backend accepts it for delivery
-      - when the configured email delivery backend rejects an essentialActionEmail, the owning feature follows its email-delivery failure behavior and does not claim that the essential action email was sent
+      - when the configured email delivery backend rejects an essentialActionEmail, the owning feature follows its email-delivery failure behavior and does not claim that the essential action email was sent; this includes password-reset and email-change verification links
       - an advisoryConfirmationEmail is a best-effort side effect of an operation that has already completed
       - when the configured email delivery backend rejects an advisoryConfirmationEmail, the completed primary operation is not rolled back and remains successful
       - acceptance by the configured email delivery backend means accepted for delivery and does not guarantee receipt in the destination inbox
@@ -224,3 +224,10 @@ requirements:
       - given either email category is accepted by the configured backend, the system may report that the email was sent without asserting inbox receipt
 
     openQuestions: []
+
+changelog:
+  - version: '1.1'
+    date: '2026-10-29'
+    changes:
+      - classified email-change verification and previous-address security notices as required transactional email
+      - clarified that email-change verification delivery uses essential-action failure semantics

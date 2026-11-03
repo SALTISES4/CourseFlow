@@ -1,0 +1,399 @@
+# Functional requirements: copy project
+# Status: Tentative — in development.
+# Version: 0.2
+# Scope: backend copy logic and automated backend tests. UI exposure, dialogs,
+# navigation, snackbars, localization, and Playwright coverage are deferred.
+# Source: product direction recorded 2026-10-29.
+# Cross-reference:
+#   - tests/docs/requirements/features/workflow/workflow_copy_requirements_v1.yaml (canonical single-workflow copy fidelity and exclusions—FR-WF-COPY-003)
+#   - tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml (project title constraints—FR-PROJ-FORM-004)
+#   - tests/docs/requirements/features/project/project_overview_requirements_v1.yaml (project metadata, contributors, publish state, and project tag catalog)
+#   - tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml (linkedWorkflow same-project invariant—FR-WF-EN-010)
+#   - tests/docs/requirements/features/workflow/workflow_archive_requirements_v1.yaml (field reset when a workflow link is severed—FR-WF-ARCH-003)
+#   - tests/docs/requirements/features/global/workspace_edit_lock_requirements_v1.yaml (copying is read-only with respect to the source workspace)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - source project exists
+  - source project is not modified by the copy operation
+  - linkedWorkflow associations are expected to target workflows in the same source project per FR-WF-EN-010; FR-PROJ-COPY-005 defines safe fallback behavior for invalid or unmapped source links
+  - requirements in this file describe backend-observable behavior only; the existing project copy UI action remains out of scope while this feature is tentative
+
+domainObjectDefinitions:
+  sourceProject:
+    meaning: Existing project selected as the source of the copy operation.
+  copiedProject:
+    meaning: New project created by a successful copy operation with a new identity and the initiating actor as owner.
+  sourceWorkflow:
+    meaning: Workflow belonging to sourceProject at the copy transaction's source snapshot.
+  copiedWorkflow:
+    meaning: New workflow in copiedProject corresponding to exactly one sourceWorkflow.
+  workflowCopyMap:
+    meaning: One-to-one mapping from each sourceWorkflow identity to its corresponding copiedWorkflow identity, used to remap project-internal workflow links.
+  sourceProjectTag:
+    meaning: Tag definition owned by sourceProject.
+  copiedProjectTag:
+    meaning: New tag definition in copiedProject corresponding to exactly one sourceProjectTag.
+  includeArchivedWorkflows:
+    meaning: Boolean copy-request flag; false excludes archived source workflows and true includes them while preserving their archived state. The default is false when omitted.
+
+# No UI objects or locators are defined while UI promotion is deferred.
+uiObjectDefinitions: {}
+locatorMappings: {}
+
+requirements:
+  - id: FR-PROJ-COPY-001
+    title: Authorize and validate a project copy request
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects: []
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - actor submits POST '/api/project/{uuid}/copy' with an explicit title and optional includeArchivedWorkflows flag
+
+    trigger:
+      - backend receives the project copy request
+
+    mainFlow:
+      - system authorizes the actor against sourceProject using explicit ProjectPermission.COPY_PROJECT; access to one child workflow alone is not sufficient to copy the containing project
+      - active-project owner, editor, commenter, and viewer roles receive ProjectPermission.COPY_PROJECT
+      - an authenticated actor with published access but no explicit contributor role receives project-copy access only when sourceProject is both published and a template
+      - an archived sourceProject is non-copyable for every project role; ProjectPermission.COPY_PROJECT is absent and a direct copy request is rejected without creating data
+      - system rejects a request for a missing sourceProject without creating any project or workflow data
+      - system requires an explicit copiedProject title and accepts it only when its trimmed value is non-empty and no longer than 200 characters, matching project title constraints in FR-PROJ-FORM-004
+      - includeArchivedWorkflows is optional and defaults to false; when supplied it must be a Boolean
+      - system does not require or acquire the source project's workspace edit lock because copying is read-only with respect to sourceProject
+      - each independently submitted successful request creates a distinct copiedProject; retry deduplication or idempotency is not implied unless a separate idempotency contract is introduced
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given sourceProject does not exist, when actor submits a copy request, then the request returns not-found behavior and no project, workflow, graph, tag, team, or relationship row is created
+      - given actor is owner, editor, commenter, or viewer of an active sourceProject, when actor submits a valid copy request, then authorization permits project copy
+      - given actor has published access but no explicit contributor role on a published template sourceProject, when actor submits a valid copy request, then authorization permits project copy
+      - given actor has published access but no explicit contributor role on a published non-template sourceProject, when actor submits a copy request, then the request is forbidden and no copiedProject is created
+      - given sourceProject is archived, when any project role submits a copy request, then the request is rejected as non-copyable and no copiedProject is created
+      - given actor does not hold ProjectPermission.COPY_PROJECT and the published-template exception does not apply, when actor submits a copy request, then the request is forbidden and no copiedProject is created
+      - given title is omitted, when actor submits a copy request, then validation fails and no copiedProject is created
+      - given requested title is empty after trim, when actor submits a copy request, then validation fails and no copiedProject is created
+      - given requested title exceeds 200 characters, when actor submits a copy request, then validation fails and no copiedProject is created
+      - given includeArchivedWorkflows is omitted, when actor submits a valid copy request, then system applies includeArchivedWorkflows=false
+      - given includeArchivedWorkflows is not a Boolean, when actor submits a copy request, then validation fails and no copiedProject is created
+      - given sourceProject has an unexpired workspace edit lock held by another user and actor otherwise satisfies copy authorization, when actor submits a valid copy request, then that lock alone does not block the copy
+      - given actor submits the same valid request twice and both requests complete successfully, then two copied projects with different project identities exist
+
+    openQuestions: []
+
+  - id: FR-PROJ-COPY-002
+    title: Create a private active project owned only by the initiating actor
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects: []
+
+    preconditions:
+      - FR-PROJ-COPY-001 validation and authorization succeed
+
+    trigger:
+      - system begins the project copy transaction
+
+    mainFlow:
+      - system creates copiedProject with a new project UUID and new creation and modification timestamps
+      - copiedProject title equals the validated copy title for the request
+      - copiedProject description and discipline selections match sourceProject at the source snapshot
+      - copiedProject is active and unpublished; sourceProject archived and publish states are not transferred
+      - copiedProject is not a template; sourceProject template status is not transferred
+      - actor becomes copiedProject owner regardless of actor's role on sourceProject
+      - sourceProject owner and project team memberships are not copied
+      - no TeamUser membership row from sourceProject is reproduced in copiedProject
+      - because project ownership is represented separately from TeamUser membership in the current domain model, actor receives access as copiedProject owner and does not require a duplicate contributor membership row
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given a successful project copy, copiedProject has a different UUID from sourceProject
+      - given a successful project copy, copiedProject title equals the validated request title and its description and disciplines equal sourceProject values at the source snapshot
+      - given sourceProject is published, when copy succeeds, then copiedProject is unpublished
+      - given sourceProject is a template, when copy succeeds, then copiedProject is not a template
+      - given actor is not sourceProject owner, when copy succeeds, then actor is copiedProject owner and sourceProject owner is not owner of copiedProject
+      - given sourceProject has editor, commenter, or viewer TeamUser rows, when copy succeeds, then copiedProject contains none of those membership rows
+      - given copy succeeds, actor can access copiedProject through ownership and no redundant actor TeamUser row is required
+
+    openQuestions: []
+
+  - id: FR-PROJ-COPY-003
+    title: Copy the project tag catalog and remap tag assignments
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects: []
+
+    preconditions:
+      - system has created copiedProject in the current copy transaction
+
+    trigger:
+      - system copies project-scoped content
+
+    mainFlow:
+      - system creates one copiedProjectTag for every sourceProjectTag
+      - each copiedProjectTag has a new tag identity, belongs to copiedProject, and preserves the source tag label and plural translation value
+      - system maintains a one-to-one source-tag to copied-tag mapping for the duration of the copy transaction
+      - copied workflow node tag assignments and level-1 outcome tag assignments are recreated against copiedProjectTag identities, never against sourceProjectTag identities
+      - project copy therefore overrides the cross-project tag-clearing branch of FR-WF-COPY-003 because the complete destination project tag catalog is copied and can be remapped safely
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given sourceProject has N tag definitions, when copy succeeds, then copiedProject has N corresponding tag definitions with new identities and matching labels and plural translation values
+      - given source node N is assigned sourceProjectTag T, when copy succeeds, then copied node N' is assigned copiedProjectTag T' corresponding to T and is not assigned T
+      - given source level-1 outcome O is assigned sourceProjectTag T, when copy succeeds, then copied outcome O' is assigned copiedProjectTag T' corresponding to T and is not assigned T
+      - given a sourceProjectTag is unused, when copy succeeds, then its corresponding copiedProjectTag still exists in copiedProject
+
+    openQuestions: []
+
+  - id: FR-PROJ-COPY-004
+    title: Copy workflows selected by includeArchivedWorkflows using canonical workflow-copy fidelity
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects: []
+
+    preconditions:
+      - system has created copiedProject and copied its tag catalog in the current copy transaction
+
+    trigger:
+      - system copies sourceProject workflows
+
+    mainFlow:
+      - when includeArchivedWorkflows is false or omitted, system includes every active sourceWorkflow and excludes every archived sourceWorkflow
+      - when includeArchivedWorkflows is true, system includes every active and archived sourceWorkflow
+      - system creates exactly one copiedWorkflow in copiedProject for every included sourceWorkflow in the source snapshot
+      - workflowCopyMap contains every included sourceWorkflow exactly once and every copiedWorkflow exactly once
+      - each copiedWorkflow has a new workflow UUID and a new backing graph UUID
+      - each copiedWorkflow preserves source workflow title, description, and workflow type
+      - actor becomes author of every copiedWorkflow so a source author who is not copied to the new project team cannot retain owner access through workflow authorship
+      - each copiedWorkflow preserves the included sourceWorkflow's archived state; active source workflows produce active copies and included archived source workflows produce archived copies
+      - each copiedWorkflow has its workflow-specific public-link mode disabled regardless of source public-link state
+      - for each workflow, graph content, typed workflow metadata, sections, channels, nodes, intra-workflow edges, outcome tree, node-outcome assignments, node typed metadata, and overview metadata are copied with the fidelity required by FR-WF-COPY-003
+      - workflow node and outcome tag assignments use the copied tag mapping from FR-PROJ-COPY-003 rather than the same-project preservation or cross-project clearing branches in FR-WF-COPY-003
+      - comments and comment threads' messages are not copied, matching FR-WF-COPY-003; copied comment hosts start with empty comment collections
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given sourceProject has zero workflows, when copy succeeds, then copiedProject has zero workflows
+      - given sourceProject has N active workflows and M archived workflows and includeArchivedWorkflows is false or omitted, when copy succeeds, then copiedProject has exactly N copied workflows and none corresponds to an archived source workflow
+      - given sourceProject has N active workflows and M archived workflows and includeArchivedWorkflows is true, when copy succeeds, then copiedProject has exactly N + M copied workflows with distinct new workflow and graph identities
+      - given includeArchivedWorkflows is true and sourceWorkflow W is archived, when copy succeeds, then corresponding W' is archived
+      - given sourceWorkflow W is active and included, when copy succeeds, then corresponding W' is active
+      - given sourceWorkflow W has graph, typed metadata, outcomes, assignments, and overview metadata, when copy succeeds, then W' matches the content fidelity contract in FR-WF-COPY-003 except for the explicit project-copy overrides in this file
+      - given sourceWorkflow W was authored by a user other than actor, when copy succeeds, then W' is authored by actor and the prior author receives no access to W' through authorship
+      - given sourceWorkflow W has public-link mode enabled, when copy succeeds, then W' has public-link mode disabled
+      - given source content has comments, when copy succeeds, then no copied workflow comment host contains a copied source comment
+
+    openQuestions: []
+
+  - id: FR-PROJ-COPY-005
+    title: Remap project-internal workflow links to copied workflows
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects: []
+
+    preconditions:
+      - workflowCopyMap contains all sourceWorkflow and copiedWorkflow pairs for the project copy
+      - workflowCopyMap contains only workflows selected by includeArchivedWorkflows
+
+    trigger:
+      - system recreates a source node that has a linkedWorkflow association
+
+    mainFlow:
+      - if source node N in sourceWorkflow W links to sourceWorkflow L in sourceProject, copied node N' in copiedWorkflow W' links to copiedWorkflow L' obtained from workflowCopyMap
+      - copied node N' never links back to sourceWorkflow L
+      - when the linked target exists in workflowCopyMap, linked node typed metadata is copied using the same fidelity rules as the source node and remains associated with L' in copiedProject
+      - this project-copy rule is a third branch alongside the single-workflow rules in FR-WF-COPY-003: same-project single-workflow copy preserves the original target, cross-project single-workflow copy severs the link, and whole-project copy remaps the link to the copied target
+      - if source data contains a linkedWorkflow outside sourceProject or a linked target absent from workflowCopyMap, system silently severs that association on the copied node and continues the project copy
+      - a target can be absent from workflowCopyMap because includeArchivedWorkflows=false excluded an archived target or because source data is invalid or incomplete
+      - a silently severed copied node uses the field-reset outcomes defined by FR-WF-ARCH-003: restore pre-link persisted values when available, otherwise use empty or product-default values, and do not retain inherited linked-workflow metadata
+      - silently severing an invalid or unmapped link never clears or modifies the link on the source node
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given source course C contains node N linked to source activity A in sourceProject, when copy succeeds, then copied node N' in copied course C' links to copied activity A' in copiedProject
+      - given the preceding relationship, copied node N' does not link to source activity A
+      - given source program P links through multiple nodes to source courses and those courses link through nodes to source activities, when copy succeeds, then every corresponding copied node links to the corresponding copied course or activity in copiedProject
+      - given multiple source nodes link to the same sourceWorkflow L, when copy succeeds, then all corresponding copied nodes link to the same single copiedWorkflow L'
+      - given includeArchivedWorkflows is false and source node N links to an archived workflow omitted from workflowCopyMap, when copy succeeds, then copied node N' is unlinked and has FR-WF-ARCH-003 reset field values
+      - given source node N links to a workflow outside sourceProject or another target absent from workflowCopyMap, when copy succeeds, then copied node N' is unlinked, has FR-WF-ARCH-003 reset field values, and does not retain a reference to the source target
+      - given an invalid or unmapped link is silently severed on copied node N', when copy succeeds, then source node N and its source link remain unchanged
+
+    openQuestions: []
+
+  - id: FR-PROJ-COPY-006
+    title: Do not copy user-specific, collaboration, or transient state
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects: []
+
+    preconditions:
+      - system is copying sourceProject
+
+    trigger:
+      - system evaluates source data related to sourceProject or its workflows
+
+    mainFlow:
+      - project and workflow favourites are user-specific and are not copied for actor or any other user
+      - project team membership is excluded per FR-PROJ-COPY-002
+      - source workflow authorship is excluded and replaced with actor per FR-PROJ-COPY-004
+      - comments are excluded per FR-PROJ-COPY-004
+      - workflow public-link enabled state is excluded and reset to disabled per FR-PROJ-COPY-004
+      - project and workflow workspace edit locks are transient and are not copied
+      - copiedProject and copiedWorkflows do not share mutable project-owned or workflow-owned records with sourceProject; preserved relationships to global reference data such as discipline definitions are allowed
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given sourceProject or a sourceWorkflow is favourited by one or more users, when copy succeeds, then no favourite row for copiedProject or any copiedWorkflow is created by the copy operation
+      - given sourceProject or a sourceWorkflow has an active workspace edit lock, when copy succeeds, then no corresponding lock exists for copiedProject or any copiedWorkflow
+      - given copy succeeds, deleting or changing a copied tag, workflow, graph entity, or relationship does not mutate the corresponding source-owned row
+      - given copy succeeds, global discipline definitions may be referenced by both sourceProject and copiedProject without being duplicated
+
+    openQuestions: []
+
+  - id: FR-PROJ-COPY-007
+    title: Copy the project atomically from one coherent source snapshot
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects: []
+
+    preconditions:
+      - FR-PROJ-COPY-001 validation and authorization succeed
+
+    trigger:
+      - system starts the project copy transaction
+
+    mainFlow:
+      - project creation, tag copying, workflow copying, tag-assignment remapping, and linkedWorkflow remapping execute as one atomic operation
+      - copied content represents one coherent source snapshot; the result does not combine incompatible before-and-after states from concurrent source mutations
+      - system returns success only after copiedProject and all required child content and relationships are persisted
+      - if any required project, workflow, graph, metadata, tag, assignment, or non-recoverable relationship copy step fails, system rolls back every row created by this copy attempt
+      - an invalid or unmapped linkedWorkflow association is recoverable through the silent-sever rule in FR-PROJ-COPY-005 and does not by itself fail or roll back the copy
+      - rollback does not modify sourceProject or any sourceWorkflow
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given a failure after copiedProject is created but before all workflows and relationships are copied, when the transaction ends, then copiedProject and every row created for that copy attempt are absent
+      - given one workflow cannot be copied, when the operation fails, then no partial copiedProject containing only the other workflows remains
+      - given an invalid or unmapped link is encountered under FR-PROJ-COPY-005, when all other copy steps succeed, then copiedProject commits with that copied link silently severed
+      - given copy succeeds, then the returned copiedProject identity resolves to a complete project whose workflow and relationship counts satisfy FR-PROJ-COPY-003 through FR-PROJ-COPY-005
+      - given copy succeeds or fails, sourceProject and its source-owned content remain unchanged by the copy operation
+
+    openQuestions: []
+
+  - id: FR-PROJ-COPY-008
+    title: Return the created project from the backend copy operation
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects: []
+
+    preconditions:
+      - project copy operation completes successfully
+
+    trigger:
+      - transaction commits
+
+    mainFlow:
+      - POST '/api/project/{uuid}/copy' returns the full ProjectDetailOut representation for copiedProject rather than echoing sourceProject identity
+      - response includes copiedProject identity, metadata, included workflow summaries, permissions, disciplines, and tags according to the existing ProjectDetailOut contract
+      - this tentative backend requirement does not require the current UI to expose copy, navigate, or show success or failure feedback
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given successful copy, response contains copiedProject UUID and it differs from sourceProject UUID
+      - given successful copy, response validates as ProjectDetailOut for copiedProject
+      - given successful copy, actor can fetch copiedProject using the returned UUID and receives owner permissions for that project
+      - given successful copy while UI exposure remains deferred, no acceptance criterion requires a visible project copy action, modal, route change, or snackbar
+
+    openQuestions: []
+
+changelog:
+  - version: '0.2'
+    date: '2026-10-29'
+    changes:
+      - Resolved authorization, endpoint, request-title, ownership, publish-state, template-state, and response decisions.
+      - Made archived source projects non-copyable.
+      - Added includeArchivedWorkflows with default false and archived-state preservation when enabled.
+      - Changed invalid or unmapped linkedWorkflow handling from fail-closed rollback to silent severing with FR-WF-ARCH-003 field resets.
+  - version: '0.1'
+    date: '2026-10-29'
+    changes:
+      - Added tentative backend-only functional requirements for whole-project copy.
+      - Reused single-workflow copy fidelity at workflow granularity.
+      - Added project-copy-specific tag duplication and relationship remapping rules.
+      - Required linkedWorkflow targets to resolve to copied workflows in copiedProject.
+      - Excluded source team memberships and made the initiating actor the copied project owner and copied workflow author.
+      - Deferred all UI exposure and recorded unresolved product decisions as open questions.

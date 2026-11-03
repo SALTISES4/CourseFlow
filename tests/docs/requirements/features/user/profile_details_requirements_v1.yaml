@@ -1,0 +1,403 @@
+# Normalized requirements: profile image, institution, and primary discipline
+# Source: 2026-10-29 product requirement
+# Scope note: institution is optional user-entered text; discipline is one optional primary discipline selected from CourseFlow's existing fixed catalogue; profile-image add, replace, and removal use a separate save action from textual profile updates.
+# ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
+# Cross-reference: tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml (profile route, shared form, update action, and feedback); tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml FR-PROJ-FORM-001 (canonical discipline option set); tests/docs/requirements/features/global/localization_requirements_v1.yaml FR-LOC-004 (localized fixed-reference labels and ordering); tests/docs/requirements/features/deferred/notifications_page_requirements_v1.yaml and tests/docs/requirements/features/deferred/top_navigation_notifications_dropdown_requirements_v1.yaml (existing avatar-bearing surfaces)
+
+documentPreconditions:
+  - user is authenticated to CourseFlow
+  - profile settings page at route '/user/profile-settings' is visible
+
+outOfScope:
+  - media storage provider, upload protocol, image-derivative generation, cache invalidation mechanism, and other implementation details
+  - image cropping, repositioning, filters, or other image-editing tools beyond previewing the final avatar framing
+  - an institution directory, autocomplete, institution ownership, or verification of institutional affiliation
+  - selecting more than one user discipline or entering a custom discipline outside the existing catalogue
+  - using institution, discipline, or profile image to grant permissions, assign account roles, or establish identity
+  - a public user-profile page, public account discovery, image reporting, and image moderation workflows
+
+uiObjectDefinitions:
+  profileSettingsPage:
+    meaning: Canonical definition in tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml.
+  profileSettingsForm:
+    meaning: Canonical definition in tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml.
+  profileUpdateButton:
+    meaning: Canonical definition in tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml.
+  profileImageSection:
+    meaning: Profile settings section that displays the user's saved profile image or fallback avatar and provides image-management actions.
+  profileImage:
+    meaning: Saved user-provided profile image rendered as an avatar using the final framing shown in profileImagePreview.
+  profileImageFallbackAvatar:
+    meaning: Generated avatar shown when no saved profile image exists; uses the user's initials when available and otherwise a generic user symbol.
+  profileImageAddButton:
+    meaning: Button labeled 'Add profile image' shown when the user has no saved profile image.
+  profileImageChangeButton:
+    meaning: Button labeled 'Change profile image' shown when the user has a saved profile image.
+  profileImageRemoveButton:
+    meaning: Button labeled 'Remove profile image' shown when the user has a saved profile image.
+  profileImageEditor:
+    meaning: Image-selection and preview surface opened from profileImageAddButton or profileImageChangeButton.
+  profileImageFileInput:
+    meaning: Single-file image input in profileImageEditor for selecting a local static JPEG, PNG, or WebP image.
+  profileImagePreview:
+    meaning: Preview in profileImageEditor showing the selected image with the same one-to-one avatar framing used after save.
+  profileImageSaveButton:
+    meaning: Button labeled 'Save profile image' in profileImageEditor.
+  profileImageCancelButton:
+    meaning: Button labeled 'Cancel' in profileImageEditor that discards the unsaved selection.
+  profileImageValidationMessage:
+    meaning: Inline error message in profileImageEditor explaining why a selected file cannot be saved.
+  profileProfessionalDetailsSection:
+    meaning: Profile settings section containing profileInstitutionField and profileDisciplineField.
+  profileInstitutionField:
+    meaning: Optional text input labeled 'Institution' for the user's self-reported institution name.
+  profileDisciplineField:
+    meaning: Optional single-select control labeled 'Discipline' for the user's self-reported primary discipline.
+  profileDisciplineEmptyOption:
+    meaning: Empty profileDisciplineField option labeled 'No discipline selected'.
+  profileFieldValidationMessage:
+    meaning: Canonical definition in tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml.
+  globalMessageSnackbar:
+    meaning: Canonical definition in tests/docs/requirements/features/user/profile_settings_requirements_v1.yaml.
+
+locatorMappings:
+  profileSettingsPage: "canonical_locators.yaml -> profileSettingsPage"
+  profileSettingsForm: "canonical_locators.yaml -> profileSettingsForm"
+  profileUpdateButton: "canonical_locators.yaml -> profileUpdateButton"
+  profileImageSection: "canonical_locators.yaml -> profileImageSection"
+  profileImage: "canonical_locators.yaml -> profileImage"
+  profileImageFallbackAvatar: "canonical_locators.yaml -> profileImageFallbackAvatar"
+  profileImageAddButton: "canonical_locators.yaml -> profileImageAddButton"
+  profileImageChangeButton: "canonical_locators.yaml -> profileImageChangeButton"
+  profileImageRemoveButton: "canonical_locators.yaml -> profileImageRemoveButton"
+  profileImageEditor: "canonical_locators.yaml -> profileImageEditor"
+  profileImageFileInput: "canonical_locators.yaml -> profileImageFileInput"
+  profileImagePreview: "canonical_locators.yaml -> profileImagePreview"
+  profileImageSaveButton: "canonical_locators.yaml -> profileImageSaveButton"
+  profileImageCancelButton: "canonical_locators.yaml -> profileImageCancelButton"
+  profileImageValidationMessage: "canonical_locators.yaml -> profileImageValidationMessage"
+  profileProfessionalDetailsSection: "canonical_locators.yaml -> profileProfessionalDetailsSection"
+  profileInstitutionField: "canonical_locators.yaml -> profileInstitutionField"
+  profileDisciplineField: "canonical_locators.yaml -> profileDisciplineField"
+  profileDisciplineEmptyOption: "canonical_locators.yaml -> profileDisciplineEmptyOption"
+  profileFieldValidationMessage: "canonical_locators.yaml -> profileFieldValidationMessage"
+  globalMessageSnackbar: "canonical_locators.yaml -> globalMessageSnackbar"
+
+requirements:
+  - id: FR-PROFILE-DETAILS-001
+    title: Load profile image and professional-detail controls
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - profileSettingsPage
+      - profileSettingsForm
+      - profileImageSection
+      - profileImage
+      - profileImageFallbackAvatar
+      - profileImageAddButton
+      - profileImageChangeButton
+      - profileImageRemoveButton
+      - profileProfessionalDetailsSection
+      - profileInstitutionField
+      - profileDisciplineField
+      - profileUpdateButton
+
+    preconditions:
+      - documentPreconditions for this file hold
+
+    trigger:
+      - profile settings data finishes loading
+
+    mainFlow:
+      - profileImageSection shows profileImage when the account has a saved profile image
+      - profileImageSection shows profileImageFallbackAvatar when the account has no saved profile image
+      - profileImageAddButton is visible only when no profile image is saved
+      - profileImageChangeButton and profileImageRemoveButton are visible only when a profile image is saved
+      - profileProfessionalDetailsSection shows profileInstitutionField and profileDisciplineField
+      - profileInstitutionField shows the saved institution value or an empty value when none is saved
+      - profileDisciplineField shows the saved primary discipline or profileDisciplineEmptyOption when none is saved
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - profileImageSection is visible on profileSettingsPage
+      - given no profile image is saved, profileImageFallbackAvatar and profileImageAddButton are visible, and profileImage, profileImageChangeButton, and profileImageRemoveButton are not visible
+      - given a profile image is saved, profileImage, profileImageChangeButton, and profileImageRemoveButton are visible, and profileImageFallbackAvatar and profileImageAddButton are not visible
+      - profileProfessionalDetailsSection is visible and contains profileInstitutionField followed by profileDisciplineField
+      - profileInstitutionField is visible with label 'Institution' and shows the saved value or an empty value
+      - profileDisciplineField is visible with label 'Discipline' and shows the saved selection or profileDisciplineEmptyOption
+
+    openQuestions:
+      - Product design must define the placement and visual treatment of profileImageSection and profileProfessionalDetailsSection; no current Figma evidence covers these controls.
+
+  - id: FR-PROFILE-DETAILS-002
+    title: Select and preview a profile image
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - profileImageAddButton
+      - profileImageChangeButton
+      - profileImageEditor
+      - profileImageFileInput
+      - profileImagePreview
+      - profileImageSaveButton
+      - profileImageCancelButton
+      - profileImageValidationMessage
+
+    preconditions:
+      - documentPreconditions for this file hold
+
+    trigger:
+      - user clicks profileImageAddButton or profileImageChangeButton
+
+    mainFlow:
+      - profileImageEditor opens with profileImageFileInput, profileImageSaveButton, and profileImageCancelButton
+      - profileImageFileInput accepts one static JPEG, PNG, or WebP image no larger than 5 megabytes (5,000,000 bytes)
+      - profileImageSaveButton is disabled until profileImageFileInput contains a valid image
+      - after a valid image is selected, profileImagePreview shows the same one-to-one framing that profileImage will use after save
+      - selecting a second valid image before save replaces the unsaved selection and preview
+      - given user clicks profileImageCancelButton, profileImageEditor closes and the saved profile image remains unchanged
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user clicks profileImageAddButton or profileImageChangeButton, profileImageEditor is visible
+      - profileImageFileInput permits selection of one file and communicates accepted static formats JPEG, PNG, and WebP with a maximum size of 5 megabytes (5,000,000 bytes)
+      - given no valid file is selected, profileImageSaveButton is disabled and profileImagePreview is not visible
+      - given a valid file is selected, profileImagePreview is visible and profileImageSaveButton is enabled
+      - given more than one file is selected, profileImageValidationMessage is visible with text 'Select one profile image'
+      - given the selected file exceeds 5 megabytes, profileImageValidationMessage is visible with text 'Profile image must be 5 MB or smaller'
+      - given the selected file is not a decodable static JPEG, PNG, or WebP image, profileImageValidationMessage is visible with text 'Choose a JPEG, PNG, or WebP image'
+      - given user clicks profileImageCancelButton after selecting a file, profileImageEditor closes and the previously saved image or fallback avatar remains visible
+
+    openQuestions:
+      - Confirm whether the provisional 5-megabyte limit and JPEG, PNG, and WebP format set meet product and operational requirements.
+      - Confirm whether users need interactive crop and reposition controls; this version requires an accurate final-framing preview but no editing tool.
+
+  - id: FR-PROFILE-DETAILS-003
+    title: Add, replace, or remove the saved profile image
+
+    designEvidence: []
+
+    actors:
+      - user
+      - system
+
+    uiObjects:
+      - profileImage
+      - profileImageFallbackAvatar
+      - profileImageEditor
+      - profileImagePreview
+      - profileImageSaveButton
+      - profileImageRemoveButton
+      - globalMessageSnackbar
+
+    preconditions:
+      - documentPreconditions for this file hold
+
+    trigger:
+      - user clicks profileImageSaveButton with a valid selected image, or user clicks profileImageRemoveButton
+
+    mainFlow:
+      - given user clicks profileImageSaveButton, the system validates the actual uploaded content before saving it and does not rely only on filename or browser-provided media type
+      - while the add or replacement request is pending, profileImageSaveButton is disabled and duplicate submissions are prevented
+      - given add or replacement succeeds, profileImageEditor closes, profileImage shows the saved image using profileImagePreview framing, and globalMessageSnackbar shows 'Your profile image has been updated'
+      - given add or replacement fails, the previously saved image or fallback avatar remains unchanged and globalMessageSnackbar shows 'We could not update your profile image'
+      - given user clicks profileImageRemoveButton and removal succeeds, the saved image is no longer displayed by CourseFlow, profileImageFallbackAvatar becomes visible, and globalMessageSnackbar shows 'Your profile image has been removed'
+      - given removal fails, profileImage remains visible and globalMessageSnackbar shows 'We could not remove your profile image'
+      - a successful add, replacement, or removal is reflected on CourseFlow avatar surfaces without requiring logout or a full page reload
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given a valid selected image and successful save, profileImage matches profileImagePreview framing and remains visible after revisiting profileSettingsPage
+      - given a valid selected image and failed save, the pre-submit image or fallback avatar remains visible
+      - given profileImageSaveButton is clicked while a request is pending, no duplicate save request is initiated
+      - given removal succeeds, profileImage is not visible, profileImageFallbackAvatar is visible, and the removed image is no longer presented on CourseFlow avatar surfaces
+      - given removal fails, the existing profileImage remains visible
+      - profileImage accessible text identifies the user by display name and does not expose the uploaded filename
+
+    openQuestions:
+      - Product must identify every avatar surface that consumes the saved image and define whether any anonymous or public-link visitor may see it.
+      - Retention requirements for replaced and removed image objects must be defined before implementation; this requirement only governs what CourseFlow presents after success.
+
+  - id: FR-PROFILE-DETAILS-004
+    title: Edit optional institution information
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - profileSettingsForm
+      - profileInstitutionField
+      - profileFieldValidationMessage
+      - profileUpdateButton
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - profileSettingsForm is visible
+
+    trigger:
+      - user changes profileInstitutionField
+
+    mainFlow:
+      - profileInstitutionField is optional free text with a maximum length of 200 characters
+      - leading and trailing whitespace is removed before validation and saving
+      - clearing profileInstitutionField removes the saved institution when profile settings are updated successfully
+      - CourseFlow preserves the user's authored institution spelling and does not translate the saved value when locale changes
+      - institution is self-reported and is not presented as verified affiliation
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given profileInstitutionField is empty, profileSettingsForm remains valid
+      - given profileInstitutionField contains at most 200 characters after trimming, profileSettingsForm does not show a length error for profileInstitutionField
+      - given profileInstitutionField exceeds 200 characters after trimming, profileFieldValidationMessage is visible with text 'Institution is limited to 200 characters' and profileUpdateButton is disabled
+      - given a valid institution is saved, revisiting profileSettingsPage shows the trimmed saved value
+      - given a saved institution is cleared and the update succeeds, revisiting profileSettingsPage shows an empty profileInstitutionField
+      - changing the application locale does not translate or otherwise change the saved institution value
+
+    openQuestions:
+      - Confirm whether institution should remain free text or become a managed, searchable institution directory with a separate 'Other' path.
+
+  - id: FR-PROFILE-DETAILS-005
+    title: Select an optional primary discipline from the canonical catalogue
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - profileSettingsForm
+      - profileDisciplineField
+      - profileDisciplineEmptyOption
+      - profileUpdateButton
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - profileSettingsForm is visible
+
+    trigger:
+      - user opens or changes profileDisciplineField
+
+    mainFlow:
+      - profileDisciplineField permits zero or one selected discipline
+      - selectable discipline codes are exactly the canonical catalogue exposed to projectDisciplineField per FR-PROJ-FORM-001
+      - profileDisciplineField displays localized labels and locale-aware ordering per FR-LOC-004
+      - profileDisciplineEmptyOption clears the saved discipline
+      - the stable discipline code is persisted independently from the localized label
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - profileDisciplineField includes profileDisciplineEmptyOption with label 'No discipline selected' when English Canadian is active
+      - given English Canadian is active, selectable non-empty options and ordering match projectDisciplineField per FR-PROJ-FORM-001
+      - given French Canadian is active, the same discipline codes use French Canadian labels and French Canadian collation order per FR-LOC-004
+      - given profileDisciplineEmptyOption is selected, profileSettingsForm remains valid and a successful update removes the saved discipline
+      - given a discipline is selected and saved, revisiting profileSettingsPage selects the same stable discipline code
+      - changing locale changes the selected discipline's displayed label but does not change its saved code
+
+    openQuestions:
+      - Confirm that one optional primary discipline is intended; supporting multiple user disciplines would require multiselect behavior and a different persistence relationship.
+
+  - id: FR-PROFILE-DETAILS-006
+    title: Save institution and discipline with profile settings
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - profileSettingsForm
+      - profileInstitutionField
+      - profileDisciplineField
+      - profileUpdateButton
+      - globalMessageSnackbar
+
+    preconditions:
+      - documentPreconditions for this file hold
+      - profileSettingsForm is visible
+
+    trigger:
+      - user changes profileInstitutionField or profileDisciplineField and clicks profileUpdateButton
+
+    mainFlow:
+      - changes to profileInstitutionField or profileDisciplineField participate in the existing profileSettingsForm dirty state
+      - given no profile field has an unsaved change, profileUpdateButton is disabled and not clickable
+      - given profileInstitutionField and all other profile fields are valid and at least one profile field has changed, profileUpdateButton is enabled
+      - given update succeeds, profileInstitutionField and profileDisciplineField values are saved with the other profile form values and globalMessageSnackbar shows 'Your profile settings have been updated'
+      - given update fails, no submitted profile field is partially committed, the form retains its pre-submit values, and globalMessageSnackbar shows 'We encountered an issue and your profile settings have not been updated'
+      - profile-image add, replace, and removal do not use profileUpdateButton and are not coupled to unsaved profileSettingsForm values
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given user changes only profileInstitutionField to a valid value, profileUpdateButton is enabled
+      - given user changes only profileDisciplineField, profileUpdateButton is enabled
+      - given successful update, revisiting profileSettingsPage shows the submitted institution and discipline
+      - given failed update, institution, discipline, and other submitted profile fields retain their pre-submit persisted values and the editable form retains the attempted values for correction or retry
+      - given profileSettingsForm has unsaved institution or discipline changes and user updates profileImage successfully, unsaved profileSettingsForm values remain unsaved and visible in the form
+
+    openQuestions: []
+
+  - id: FR-PROFILE-DETAILS-007
+    title: Additional profile details are informational and privacy-bounded
+
+    designEvidence: []
+
+    actors:
+      - user
+      - system
+
+    uiObjects:
+      - profileImage
+      - profileInstitutionField
+      - profileDisciplineField
+
+    preconditions:
+      - account has a saved profile image, institution, or discipline
+
+    trigger:
+      - CourseFlow evaluates permissions, renders account identity, or exposes profile data
+
+    mainFlow:
+      - institution and discipline are self-reported profile information and do not establish verified identity or affiliation
+      - profile image, institution, and discipline do not grant workspace access, project permissions, workflow permissions, or account roles
+      - profile image is shown only on surfaces where the viewer is already permitted to see that user's account identity
+      - institution and discipline are shown only to the owning user on profileSettingsPage unless another feature requirement explicitly authorizes a viewer and surface
+      - adding these fields does not make an account discoverable through a new user directory or public profile
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - changing profile image, institution, or discipline does not change account role or any existing resource permission
+      - a user who cannot otherwise view an account identity does not gain access to its profile image through this feature
+      - institution and discipline are not labeled or represented as verified
+      - no anonymous profile route or new user-directory result is introduced by this feature
+
+    openQuestions:
+      - Product must explicitly authorize any future non-owner display of institution or discipline and define the applicable visibility controls.
+      - If profile images are visible outside trusted collaboration surfaces, abuse reporting and moderation requirements must be added before release.
+
+designEvidenceLinkTable: []
+
+changelog:
+  - version: '1.0'
+    date: '2026-10-29'
+    changes:
+      - created profile-image add, replace, remove, validation, preview, and feedback requirements
+      - defined optional free-text institution and one optional primary discipline from the existing localized catalogue
+      - separated profile-image persistence from the existing textual profile update action
+      - bounded visibility and prevented profile metadata from affecting authorization
