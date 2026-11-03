@@ -65,7 +65,8 @@ const SortToggle = () => {
     content: sortType ? `Sort: ${sortLabels[sortType]}` : 'Sort',
     icon: <SortIcon />,
     showIconInList: true,
-    show: viewType === 'normal'
+    show: true,
+    disabled: viewType === 'matrix'
   }
 
   const menuItems: MenuItemType[] = [

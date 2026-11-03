@@ -26,6 +26,7 @@ const StyledPopover = styled(Popover)({
 type BaseMenuItemType = {
   action?: any
   show?: boolean
+  disabled?: boolean
   id?: string
   uuid?: string
   title?: string
@@ -65,6 +66,7 @@ const MenuToggleButton = (props: MenuItemType) => {
         aria-controls={props['aria-controls']}
         aria-haspopup={props['aria-haspopup']}
         aria-expanded={props['aria-expanded']}
+        disabled={props.disabled}
         onClick={props.action}
       >
         {icon}
@@ -82,6 +84,7 @@ const MenuToggleButton = (props: MenuItemType) => {
         aria-controls={props['aria-controls']}
         aria-haspopup={props['aria-haspopup']}
         aria-expanded={props['aria-expanded']}
+        disabled={props.disabled}
         onClick={props.action}
       >
         {props.content}
