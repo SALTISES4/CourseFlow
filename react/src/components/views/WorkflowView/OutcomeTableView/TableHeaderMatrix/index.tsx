@@ -4,6 +4,7 @@ import { AppDispatch, RootState } from '@cf/redux/store'
 import OutcomeHeader from '@cfPages/Workflow/Sidebar/components/OutcomesTab/Outcome/Header'
 import useOutcomeTitle from '@cfViews/WorkflowView/OutcomeEditView/useOutcomeTitle'
 import { Fragment, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { type WorkflowType } from '..'
@@ -16,6 +17,7 @@ const TableHeader = ({
   table: OutcomeTable
   workflowType: WorkflowType
 }) => {
+  const { t } = useTranslation('workflow')
   const extraColumns = table.extraColumns[workflowType]
 
   return (
@@ -53,7 +55,7 @@ const TableHeader = ({
                   <Styled.TableLegend
                     className={`legend-extra ${column.className}`}
                   >
-                    {column.label}
+                    {t(`outcomeTable.${column.label}` as any)}
                   </Styled.TableLegend>
                 </Styled.HeaderLegendWrap>
               ))}
@@ -61,7 +63,7 @@ const TableHeader = ({
           ) : (
             <Styled.HeaderLegendWrap sx={{ marginLeft: 2 }}>
               <Styled.TableLegend className={`legend-extra ${group.className}`}>
-                {group.label}
+                {t(`outcomeTable.${group.label}` as any)}
               </Styled.TableLegend>
             </Styled.HeaderLegendWrap>
           )}

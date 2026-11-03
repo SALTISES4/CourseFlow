@@ -14,7 +14,7 @@ const TableHeader = ({ table }: { table: OutcomeTable }) => {
   const groups = table.groups.map((group, index) => {
     let groupTitle = ''
     if (table.groupedBy === 'context') {
-      groupTitle = contextLabels[group.uuid]
+      groupTitle = t(`outcomeTable.${contextLabels[group.uuid]}` as any)
     } else {
       const entity = table.entities[table.groupedBy][index]
 

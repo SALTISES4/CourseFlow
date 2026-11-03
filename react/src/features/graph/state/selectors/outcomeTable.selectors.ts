@@ -20,7 +20,7 @@ export type OutcomeTable = {
   tagGroups: ReturnType<typeof selectOutcomeTagGroups>
   board: GraphBoard
   outcomeTree: ReturnType<typeof selectOutcomeTagGroupsTree>
-  extraColumns: Record<'course' | 'program', ExtraColumnGroups>
+  extraColumns: Record<'course' | 'program', ExtraColumn[]>
   groups: PreparedGroup[]
   groupedBy: 'sections' | 'channels' | 'context'
 
@@ -41,8 +41,6 @@ type PreparedGroup = {
     completion: CompletionRecord
   }[]
 }
-
-type ExtraColumnGroups = ExtraColumn[]
 
 type ExtraColumn = {
   label: string
@@ -111,33 +109,40 @@ export const selectOutcomeTable = createSelector(
         )
     }
 
-    // TODO: translate strings + read the actual data
-    const extraCourseColums: ExtraColumnGroups = [
+    const extraCourseColums: ExtraColumn[] = [
       {
-        label: 'Total hours',
+        label: 'extraColumns.totalHours',
         className: 'bg-dark',
         values: { a: 10 }
       }
     ]
 
-    const extraProgramColumns: ExtraColumnGroups = [
+    const extraProgramColumns: ExtraColumn[] = [
       {
-        label: 'Classification',
+        label: 'extraColumns.classification',
         columns: [
-          { label: 'General education', values: { a: 10 } },
-          { label: 'Specific education', values: { a: 10 } }
+          { label: 'extraColumns.generalEducation', values: { a: 10 } },
+          { label: 'extraColumns.specificEducation', values: { a: 10 } }
         ]
       },
       {
-        label: 'Ponderation',
+        label: 'extraColumns.ponderation',
         columns: [
-          { label: 'Theory', values: { a: 10 } },
-          { label: 'Practical', values: { a: 10 } },
-          { label: 'Individual work', values: { a: 10 } },
-          { label: 'Total hours', className: 'bg-dark', values: { a: 10 } }
+          { label: 'extraColumns.theory', values: { a: 10 } },
+          { label: 'extraColumns.practical', values: { a: 10 } },
+          { label: 'extraColumns.individualWork', values: { a: 10 } },
+          {
+            label: 'extraColumns.totalHours',
+            className: 'bg-dark',
+            values: { a: 10 }
+          }
         ]
       },
-      { label: 'Total credits', className: 'bg-dark', values: { a: 10 } }
+      {
+        label: 'extraColumns.totalCredits',
+        className: 'bg-dark',
+        values: { a: 10 }
+      }
     ]
 
     return {
@@ -290,15 +295,14 @@ function prepareGroupsByChannel(
   })
 }
 
-// TODO: translate strings
 export const contextLabels: Record<ContextClassification, string> = {
-  [ContextClassification.NONE]: 'None',
-  [ContextClassification.INDIVIDUAL_WORK]: 'Individual Work',
-  [ContextClassification.WORK_IN_GROUPS]: 'Work in Groups',
-  [ContextClassification.IN_THE_CLASSROOM]: 'In the Classroom',
-  [ContextClassification.FORMATIVE]: 'Formative',
-  [ContextClassification.SUMMATIVE]: 'Summative',
-  [ContextClassification.COMPREHENSIVE]: 'Comprehensive'
+  [ContextClassification.NONE]: 'classifications.none',
+  [ContextClassification.INDIVIDUAL_WORK]: 'classifications.individual_work',
+  [ContextClassification.WORK_IN_GROUPS]: 'classifications.work_in_groups',
+  [ContextClassification.IN_THE_CLASSROOM]: 'classifications.in_the_classroom',
+  [ContextClassification.FORMATIVE]: 'classifications.formative',
+  [ContextClassification.SUMMATIVE]: 'classifications.summative',
+  [ContextClassification.COMPREHENSIVE]: 'classifications.comprehensive'
 }
 
 const contextDisplayOrder = [

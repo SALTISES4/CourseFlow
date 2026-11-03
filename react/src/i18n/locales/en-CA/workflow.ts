@@ -56,13 +56,17 @@ const workflow = {
     publicLinkCopied: 'Public link copied',
     publicLinkCopyFailed: 'Public link could not be copied.',
     roleUpdated: "The contributor's role was successfully updated",
-    roleUpdateFailed: "We encountered an issue and the contributor's role was not updated",
+    roleUpdateFailed:
+      "We encountered an issue and the contributor's role was not updated",
     commentDeleted: 'Your comment has been successfully deleted',
-    commentDeleteFailed: 'We encountered an issue and your comment was not deleted',
+    commentDeleteFailed:
+      'We encountered an issue and your comment was not deleted',
     copied: 'The {{workflowType}} has been successfully copied',
-    copyFailed: 'We encountered an issue and your {{workflowType}} was not copied',
+    copyFailed:
+      'We encountered an issue and your {{workflowType}} was not copied',
     updated: 'Your {{workflowType}} has been successfully updated',
-    updateFailed: 'We encountered an issue and your {{workflowType}} was not updated'
+    updateFailed:
+      'We encountered an issue and your {{workflowType}} was not updated'
   },
   permissions: {
     owner: 'Owner',
@@ -88,12 +92,35 @@ const workflow = {
     editOne: 'Edit outcome',
     addRequired:
       'Add outcomes before attaching them to nodes and outcomes in the current workflow.',
-    empty: 'There are currently no outcomes in this {{workflowType}}. Open the outcomes view to add outcomes.',
+    empty:
+      'There are currently no outcomes in this {{workflowType}}. Open the outcomes view to add outcomes.',
     fromParents: 'Outcomes from parent workflows',
     untitled: 'Untitled outcome',
     untagged: 'Untagged',
     insertSibling: 'Insert sibling',
     insertChild: 'Insert child'
+  },
+  outcomeTable: {
+    extraColumns: {
+      totalHours: 'Total hours',
+      classification: 'Classification',
+      generalEducation: 'General education',
+      specificEducation: 'Specific education',
+      ponderation: 'Ponderation',
+      theory: 'Theory',
+      practical: 'Practical',
+      individualWork: 'Individual work',
+      totalCredits: 'Total credits'
+    },
+    classifications: {
+      none: 'None',
+      individual_work: 'Individual Work',
+      work_in_groups: 'Work in Groups',
+      in_the_classroom: 'In the Classroom',
+      formative: 'Formative',
+      summative: 'Summative',
+      comprehensive: 'Comprehensive'
+    }
   },
   comments: {
     title: 'Comments',
@@ -138,7 +165,8 @@ const workflow = {
     createFromTemplate: 'Create {{workflowType}} from a template',
     createBlank: 'Create blank {{workflowType}}',
     created: 'Your {{workflowType}} has been successfully created',
-    createFailed: 'We encountered an issue and your {{workflowType}} was not created',
+    createFailed:
+      'We encountered an issue and your {{workflowType}} was not created',
     previousStep: 'Previous step',
     nextStep: 'Next step',
     blank: 'Blank {{workflowType}}',
@@ -146,7 +174,8 @@ const workflow = {
     blankDescription: 'Create your own tailored {{workflowType}} structure',
     fromTemplate: 'From a template',
     recommendedBeginners: 'Recommended for beginners',
-    templateDescription: 'Get a head start with a template anchored in best practices'
+    templateDescription:
+      'Get a head start with a template anchored in best practices'
   },
   unavailableView: 'This view is not available.',
   related: {
@@ -154,7 +183,8 @@ const workflow = {
     contains: 'Contains',
     returnTo: 'Return to',
     returnToEditable: 'Return to editable workflow',
-    multipleLinksWarning: 'This workflow is linked to multiple nodes. Outcomes from different parent workflows, or duplicate outcomes, may appear.',
+    multipleLinksWarning:
+      'This workflow is linked to multiple nodes. Outcomes from different parent workflows, or duplicate outcomes, may appear.',
     unlinkOutcome: 'Unlink outcome'
   },
   addPanel: {
@@ -255,7 +285,8 @@ const workflow = {
     jumpTo: 'Jump to',
     notConnected: 'Not connected',
     onlineUsers: 'Online users',
-    deleteConfirmation: 'Are you sure you want to permanently delete this workflow?'
+    deleteConfirmation:
+      'Are you sure you want to permanently delete this workflow?'
   },
   searchProjects: {
     loadFailed: 'Projects could not be loaded.',
