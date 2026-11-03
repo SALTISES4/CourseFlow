@@ -1,3 +1,4 @@
+import { WorkflowType } from '@cf/api/gen'
 import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import {
   type WorkflowPageData,
@@ -24,6 +25,11 @@ const useWorkflowTabs = (
   const { t } = useTranslation('workflow')
   const { uuid } = useParams()
   const navigate = useNavigate()
+
+  const workflowType = workflow?.workflowType
+  const showOutcomeTable = [WorkflowType.COURSE, WorkflowType.PROGRAM].includes(
+    workflowType!
+  )
 
   const tabs: {
     type: WorkflowViewType
@@ -69,13 +75,17 @@ const useWorkflowTabs = (
               />
             )
           },
-          {
-            type: WorkflowViewType.OUTCOME_TABLE,
-            route: CFRoutes.WORKFLOW_OUTCOME_TABLE,
-            relRoute: RelativeRoutes.OUTCOME_TABLE,
-            label: t('tabs.outcomeTable'),
-            content: <OutcomeTableView workflow={workflow} />
-          }
+          ...(showOutcomeTable
+            ? [
+                {
+                  type: WorkflowViewType.OUTCOME_TABLE,
+                  route: CFRoutes.WORKFLOW_OUTCOME_TABLE,
+                  relRoute: RelativeRoutes.OUTCOME_TABLE,
+                  label: t('tabs.outcomeTable'),
+                  content: <OutcomeTableView workflow={workflow} />
+                }
+              ]
+            : [])
         ]
 
   const tabButtons = tabs
