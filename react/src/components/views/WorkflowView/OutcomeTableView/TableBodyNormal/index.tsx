@@ -102,7 +102,6 @@ const TagGroupRow = ({
             <Styled.CheckmarkGroup key={group.uuid}>
               <Checkmark
                 readOnly
-                sx={{ background: '#eef2fd' }}
                 value={group.completion[outcome.uuid] ?? 'empty'}
               />
               {group.nodes.map((node) => {

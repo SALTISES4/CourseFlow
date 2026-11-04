@@ -16,6 +16,7 @@ const Checkmark = ({ value, readOnly, sx, onClick }: PropsType) => {
   const styles = {
     ...sx,
     ...(readOnly && {
+      backgroundColor: '#eef2fd',
       'pointer-events': 'none'
     })
   }
