@@ -21,24 +21,25 @@ const TableBody = ({
   workflowType: WorkflowType
 }) => {
   const { t } = useTranslation('workflow')
-  const groups = table.entities.sections.map((group, groupIndex) => {
+  const groups = table.entities.sections.map((section, sectionIndex) => {
     const sectionDefaultTitle = t('systemLabels.sectionNumber', {
-      number: (group.position ?? 0) + 1
+      number: (section.position ?? 0) + 1
     })
-    const groupTitle = displaySystemTitle(t, group, sectionDefaultTitle)
-    const groupNodes = table.groups[groupIndex].nodes.map((n) => n.uuid)
+    const sectionTitle = displaySystemTitle(t, section, sectionDefaultTitle)
+    const sectionNodes = table.groups[sectionIndex].nodes.map((n) => n.uuid)
     const extraColumns = table.extraColumns[workflowType]
 
     return (
       <>
         <SectionHeaderRow
-          index={groupIndex}
+          uuid={section.uuid}
+          index={sectionIndex}
           workflowType={workflowType}
-          title={groupTitle}
+          title={sectionTitle}
           table={table}
         />
 
-        {groupNodes.map((nodeUuid, rowIndex) => {
+        {sectionNodes.map((nodeUuid, rowIndex) => {
           const node = table.entities.nodes[nodeUuid]
           const color = table.board.columns.colors[node.channelUuid ?? '']
           return (
@@ -63,7 +64,7 @@ const TableBody = ({
                         <CheckmarkGroup
                           key={outcomeUuid}
                           outcomeUuid={outcomeUuid}
-                          groupIndex={groupIndex}
+                          groupIndex={sectionIndex}
                           rowIndex={rowIndex}
                           table={table}
                         />
@@ -87,7 +88,7 @@ const TableBody = ({
                             key={index}
                             className={colColumn.className}
                           >
-                            {colColumn.values?.['a']}
+                            {colColumn.values[nodeUuid]}
                           </Styled.TableCell>
                         ))}
                       </Styled.CheckmarkGroup>
@@ -99,7 +100,9 @@ const TableBody = ({
                       className={`checkmarks-group ${group.className}`}
                       sx={{ marginLeft: 2 }}
                     >
-                      <Styled.TableCell>{group.values['a']}</Styled.TableCell>
+                      <Styled.TableCell>
+                        {group.values[nodeUuid]}
+                      </Styled.TableCell>
                     </Styled.CheckmarkGroup>
                   )}
                 </>
@@ -176,11 +179,13 @@ const CheckmarkGroup = ({
 }
 
 const SectionHeaderRow = ({
+  uuid,
   index,
   title,
   table,
   workflowType
 }: {
+  uuid: string
   index: number
   title: string
   table: OutcomeTable
@@ -189,7 +194,7 @@ const SectionHeaderRow = ({
   const extraColumns = table.extraColumns[workflowType]
 
   return (
-    <Styled.BodyRow className={`section-header-row index-${index}`}>
+    <Styled.BodyRow className="section-header-row">
       <Styled.BodyLegendWrap>
         <Styled.TableLegend>{title}</Styled.TableLegend>
       </Styled.BodyLegendWrap>
@@ -222,7 +227,7 @@ const SectionHeaderRow = ({
               >
                 {group.columns.map((colColumn, index) => (
                   <Styled.TableCell key={index}>
-                    {colColumn.values?.['a']}
+                    {colColumn.values[uuid]}
                   </Styled.TableCell>
                 ))}
               </Styled.CheckmarkGroup>
@@ -234,7 +239,7 @@ const SectionHeaderRow = ({
               className={`checkmarks-group ${group.className}`}
               sx={{ marginLeft: 2 }}
             >
-              <Styled.TableCell>{group.values['a']}</Styled.TableCell>
+              <Styled.TableCell>{group.values[uuid]}</Styled.TableCell>
             </Styled.CheckmarkGroup>
           )}
         </>

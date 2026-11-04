@@ -49,6 +49,17 @@ type ExtraColumn = {
   columns?: ExtraColumn[]
 }
 
+// holds values of uuid:value for each node/section
+const extraColumnValues: Record<string, Record<string, number>> = {
+  totalCredits: {},
+  totalHours: {},
+  generalEducation: {},
+  specificEducation: {},
+  ponderationTheory: {},
+  ponderationPractical: {},
+  ponderationIndividual: {}
+}
+
 const selectOutcomeTableGroupBy = (
   state: RootState
 ): OutcomeTableUiState['sortType'] => {
@@ -113,7 +124,7 @@ export const selectOutcomeTable = createSelector(
       {
         label: 'extraColumns.totalHours',
         className: 'bg-dark',
-        values: { a: 10 }
+        values: extraColumnValues.totalHours
       }
     ]
 
@@ -121,27 +132,42 @@ export const selectOutcomeTable = createSelector(
       {
         label: 'extraColumns.classification',
         columns: [
-          { label: 'extraColumns.generalEducation', values: { a: 10 } },
-          { label: 'extraColumns.specificEducation', values: { a: 10 } }
+          {
+            label: 'extraColumns.generalEducation',
+            values: extraColumnValues.generalEducation
+          },
+          {
+            label: 'extraColumns.specificEducation',
+            values: extraColumnValues.specificEducation
+          }
         ]
       },
       {
         label: 'extraColumns.ponderation',
         columns: [
-          { label: 'extraColumns.theory', values: { a: 10 } },
-          { label: 'extraColumns.practical', values: { a: 10 } },
-          { label: 'extraColumns.individualWork', values: { a: 10 } },
+          {
+            label: 'extraColumns.theory',
+            values: extraColumnValues.ponderationTheory
+          },
+          {
+            label: 'extraColumns.practical',
+            values: extraColumnValues.ponderationPractical
+          },
+          {
+            label: 'extraColumns.individualWork',
+            values: extraColumnValues.ponderationIndividual
+          },
           {
             label: 'extraColumns.totalHours',
             className: 'bg-dark',
-            values: { a: 10 }
+            values: extraColumnValues.totalHours
           }
         ]
       },
       {
         label: 'extraColumns.totalCredits',
         className: 'bg-dark',
-        values: { a: 10 }
+        values: extraColumnValues.totalCredits
       }
     ]
 
@@ -209,6 +235,30 @@ function getNodeCompletion(
   return completion
 }
 
+function populateExtraColumns(groupUuid: string, node: NodeEntity) {
+  const theory = node.ponderationTheory ?? 0
+  const practice = node.ponderationPractice ?? 0
+  const individual = node.ponderationIndividual ?? 0
+
+  const values = {
+    // TODO: where do these come from? specificEducation is a boolean
+    specificEducation: 0,
+    generalEducation: 0,
+
+    ponderationTheory: theory,
+    ponderationPractical: practice,
+    ponderationIndividual: individual,
+    totalHours: theory + practice + individual,
+    totalCredits: node.credits ?? 0
+  }
+
+  for (const [column, value] of Object.entries(values)) {
+    const columnValues = extraColumnValues[column]
+    columnValues[node.uuid] = value
+    columnValues[groupUuid] = (columnValues[groupUuid] ?? 0) + value
+  }
+}
+
 function getOutcomeStatus(
   groupNodes: PreparedGroup['nodes'],
   outcomeUuid: string
@@ -241,10 +291,11 @@ function prepareGroup(
   nodeUuids: string[],
   { nodes, outcomes }: { nodes: Record<string, NodeEntity>; outcomes: Outcomes }
 ): PreparedGroup {
-  const groupNodes = nodeUuids.map((nodeUuid) => ({
-    uuid: nodeUuid,
-    completion: getNodeCompletion(nodes[nodeUuid], outcomes)
-  }))
+  const groupNodes = nodeUuids.map((nodeUuid) => {
+    const node = nodes[nodeUuid]
+    populateExtraColumns(uuid, node)
+    return { uuid: nodeUuid, completion: getNodeCompletion(node, outcomes) }
+  })
 
   const completion: CompletionRecord = {}
   for (const outcomeUuid of Object.keys(outcomes)) {
