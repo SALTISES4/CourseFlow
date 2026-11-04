@@ -240,11 +240,13 @@ function populateExtraColumns(groupUuid: string, node: NodeEntity) {
   const practice = node.ponderationPractice ?? 0
   const individual = node.ponderationIndividual ?? 0
 
-  const values = {
-    // TODO: where do these come from? specificEducation is a boolean
-    specificEducation: 0,
-    generalEducation: 0,
+  const isSpecific = node.specificEducation
+  // TODO: figure out how timeUnits affects the timeRequired
+  // and what the "normalized" value is (ie, hour/day/etc)
 
+  const values = {
+    specificEducation: isSpecific ? (node.timeRequired ?? 0) : 0,
+    generalEducation: !isSpecific ? (node.timeRequired ?? 0) : 0,
     ponderationTheory: theory,
     ponderationPractical: practice,
     ponderationIndividual: individual,
