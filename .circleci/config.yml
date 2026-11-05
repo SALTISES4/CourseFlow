@@ -328,9 +328,9 @@ workflows:
     when:
       equal: [uat, << pipeline.git.branch >>]
     jobs:
-#      - test-suite:
-#          context:
-#            - slack-integration-cf
+      - test-suite:
+          context:
+            - slack-integration-cf
 #      - playwright-e2e:
 #          context:
 #            - slack-integration-cf
