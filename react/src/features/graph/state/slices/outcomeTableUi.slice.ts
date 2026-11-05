@@ -2,19 +2,15 @@ import { type PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 import type { ResourceUuid } from '../model/types'
 
-export type OutcomeTableSortMode = 'chronological' | 'nodeCategory' | 'context'
-
-export type OutcomeTableViewType = 'normal' | 'matrix'
-
-type OutcomeTableUiState = {
-  viewType: OutcomeTableViewType
-  sortMode: OutcomeTableSortMode
+export type OutcomeTableUiState = {
+  viewType: 'normal' | 'matrix'
+  sortType: 'time' | 'category' | 'context' | null // defaults to time
   expandedOutcomes: Record<ResourceUuid, boolean>
 }
 
 const initialState: OutcomeTableUiState = {
   viewType: 'normal',
-  sortMode: 'chronological',
+  sortType: null,
   expandedOutcomes: {}
 }
 
@@ -24,32 +20,30 @@ const outcomeTableUiSlice = createSlice({
   reducers: {
     outcomeExpand(state, action: PayloadAction<{ uuid: ResourceUuid }>) {
       const { uuid } = action.payload
-      const newVal = state.expandedOutcomes[uuid] ?? false
-      state.expandedOutcomes[uuid] = !newVal
+      const expanded = state.expandedOutcomes[uuid] ?? false
+
+      if (!expanded) {
+        state.expandedOutcomes[uuid] = !expanded
+      } else {
+        delete state.expandedOutcomes[uuid]
+      }
     },
     viewTypeChange(
       state,
       action: PayloadAction<{ viewType: OutcomeTableUiState['viewType'] }>
     ) {
-      const { viewType } = action.payload
-      state.viewType = viewType
+      state.viewType = action.payload.viewType
     },
-    sortModeChange(
+    sortTypeChange(
       state,
-      action: PayloadAction<{ sortMode: OutcomeTableSortMode }>
+      action: PayloadAction<{ sort: OutcomeTableUiState['sortType'] }>
     ) {
-      state.sortMode = action.payload.sortMode
-    },
-    setExpandedOutcomes(
-      state,
-      action: PayloadAction<{ uuids: ResourceUuid[]; expanded: boolean }>
-    ) {
-      state.expandedOutcomes = action.payload.expanded
-        ? Object.fromEntries(action.payload.uuids.map((uuid) => [uuid, true]))
-        : {}
-    },
-    resetOutcomeTableUi() {
-      return { ...initialState, expandedOutcomes: {} }
+      const { sort } = action.payload
+      const newSort = sort ?? 'time'
+
+      if (state.sortType !== sort) {
+        state.sortType = newSort
+      }
     }
   }
 })

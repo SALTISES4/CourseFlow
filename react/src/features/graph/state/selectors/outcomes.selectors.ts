@@ -181,6 +181,8 @@ type Outcome = {
   title: string
   tooltipTitle: string
   level: number
+  prefix: string
+  titleCopyCount: number
   parent: ResourceUuid | null
   children: ResourceUuid[]
 }
@@ -246,7 +248,9 @@ function parseOutcome(
   tree.outcomes[uuid] = {
     uuid: entity.uuid,
     level: selectOutcomeLevel(state, entity.graphUuid, entity.uuid),
-    title: getPrefixPath(state, entity.graphUuid, entity.uuid) + entity.title,
+    prefix: getPrefixPath(state, entity.graphUuid, entity.uuid),
+    title: entity.title,
+    titleCopyCount: entity.titleCopyCount,
     tooltipTitle: entity.title,
     parent: entity.parentUuid,
     children: childrenUuids

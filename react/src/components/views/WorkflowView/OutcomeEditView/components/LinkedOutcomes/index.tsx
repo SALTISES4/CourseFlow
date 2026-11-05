@@ -1,6 +1,5 @@
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
-import { displayOutcomeTitle } from '@cf/features/graph/outcomeTitle'
 import type { OutcomeEntity } from '@cf/features/graph/state/model/types'
 import {
   getPrefixPath,
@@ -12,6 +11,7 @@ import { unlinkNodeOutcome } from '@cf/features/graph/state/thunks/graphMutation
 import type { AppDispatch, RootState } from '@cf/redux/store'
 import OutcomeHeader from '@cfSidebar/components/OutcomesTab/Outcome/Header'
 import * as StyledOutcome from '@cfViews/WorkflowView/OutcomeEditView/components/OutcomeTree/styles'
+import useOutcomeTitle from '@cfViews/WorkflowView/OutcomeEditView/useOutcomeTitle'
 import LinkOffOutlinedIcon from '@mui/icons-material/LinkOffOutlined'
 import Tooltip from '@mui/material/Tooltip'
 import { MouseEvent, useCallback, useMemo, useRef, useState } from 'react'
@@ -41,6 +41,10 @@ const LinkedOutcomeRow = ({
   const rowRef = useRef<HTMLDivElement>(null)
   const [collapsed, setCollapsed] = useState(true)
   const canUnlink = useResourcePermission(WorkflowPermission.ASSIGN_OUTCOMES)
+  const outcomeTitle = useOutcomeTitle({
+    title: outcome.title,
+    titleCopyCount: outcome.titleCopyCount
+  })
   const prefix = useSelector((state: RootState) =>
     getPrefixPath(state, graphUuid, outcome.uuid)
   )
@@ -85,11 +89,7 @@ const LinkedOutcomeRow = ({
         uuid={outcome.uuid}
         level={level}
         dragRef={rowRef}
-        title={`${prefix}${displayOutcomeTitle(
-          outcome,
-          t,
-          t('outcomes.untitled')
-        )}`}
+        title={`${prefix}${outcomeTitle}`}
         collapsed={collapsed}
         setCollapsed={setCollapsed}
         showToggle={children.length > 0}

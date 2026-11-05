@@ -50,6 +50,12 @@ const useWorkflowTabs = (
   const outcomeTableEligible =
     supportsOutcomeTable && nodeUuids.length > 0 && rootOutcomes.length > 0
 
+  const workflowType = workflow?.workflowType
+  const showOutcomeTable = [WorkflowType.COURSE, WorkflowType.PROGRAM].includes(
+    workflowType!
+  )
+
+
   const tabs: {
     type: WorkflowViewType
     route: CFRoutes
@@ -95,6 +101,17 @@ const useWorkflowTabs = (
               />
             )
           },
+            ...(showOutcomeTable
+            ? [
+                {
+                  type: WorkflowViewType.OUTCOME_TABLE,
+                  route: CFRoutes.WORKFLOW_OUTCOME_TABLE,
+                  relRoute: RelativeRoutes.OUTCOME_TABLE,
+                  label: t('tabs.outcomeTable'),
+                  content: <OutcomeTableView workflow={workflow} />
+                }
+              ]
+            : []),
           {
             type: WorkflowViewType.OUTCOME_TABLE,
             route: CFRoutes.WORKFLOW_OUTCOME_TABLE,
