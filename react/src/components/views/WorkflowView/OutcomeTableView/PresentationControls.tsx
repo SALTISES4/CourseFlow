@@ -1,4 +1,3 @@
-import { WorkflowType } from '@cf/api/gen/types.gen'
 import { selectAllTags } from '@cf/features/graph/state/selectors/canonical.selectors'
 import { selectAllOutcomes } from '@cf/features/graph/state/selectors/outcomes.selectors'
 import { graphUiActions } from '@cf/features/graph/state/slices/graphUi.slice'
@@ -14,13 +13,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
-const PresentationControls = ({
-  graphUuid,
-  workflowType
-}: {
-  graphUuid: string
-  workflowType: WorkflowType
-}) => {
+const PresentationControls = ({ graphUuid }: { graphUuid: string }) => {
   const dispatch = useDispatch<AppDispatch>()
   const { t } = useTranslation('workflow')
   const outcomes = useSelector(selectAllOutcomes)
@@ -124,7 +117,7 @@ const PresentationControls = ({
       aria-label={t('outcomeTable.presentationControlsLabel')}
       sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}
     >
-      <OutcomeTableToolbar workflowType={workflowType} />
+      <OutcomeTableToolbar />
       <SimpleMenu
         id="public-outcome-table-view-settings"
         header={header}

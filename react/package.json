@@ -16,6 +16,7 @@
     "build": "tsc && vite build",
     "check-ui-strings": "node ./scripts/check-ui-strings.mjs",
     "check-i18n": "yarn check-ui-strings && node ./scripts/check-i18n-catalogues.mjs",
+    "test:outcome-table-selector": "node -r esbuild-runner/register -e \"require('./scripts/test-outcome-table-selector.ts')\"",
     "unsafe-build": "vite build",
     "tsc-watch": "tsc --watch",
     "prettier": "prettier --write './src/**/*.{js,ts,jsx,tsx}' '!course_flow/static/**/dist/**/*.{js,ts,jsx,tsx}'",

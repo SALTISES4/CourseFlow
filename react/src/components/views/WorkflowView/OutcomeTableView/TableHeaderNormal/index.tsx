@@ -1,7 +1,5 @@
-import {
-  OutcomeTable,
-  contextLabels
-} from '@cf/features/graph/state/selectors/outcomeTable.selectors'
+import { OutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
+import { useReferenceLabels } from '@cf/i18n/referenceLabels'
 import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import { NodeTitle } from '@cfViews/WorkflowView/GraphView/components/Section/Cell/CellNode/useNodeTitle'
 import { useTranslation } from 'react-i18next'
@@ -10,11 +8,12 @@ import * as Styled from '../styles'
 
 const TableHeader = ({ table }: { table: OutcomeTable }) => {
   const { t } = useTranslation('workflow')
+  const { contextLabel } = useReferenceLabels()
 
   const groups = table.groups.map((group, index) => {
     let groupTitle = ''
     if (table.groupedBy === 'context') {
-      groupTitle = t(`outcomeTable.${contextLabels[group.uuid]}` as any)
+      groupTitle = contextLabel(group.uuid)
     } else {
       const entity = table.entities[table.groupedBy][index]
 

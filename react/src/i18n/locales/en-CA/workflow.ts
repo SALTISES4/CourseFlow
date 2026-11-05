@@ -101,22 +101,11 @@ const workflow = {
     insertChild: 'Insert child'
   },
   outcomeTable: {
-    toolbar: {
-      view: {
-        normal: 'Normal',
-        matrix: 'Competency matrx'
-      },
-      sortBy: {
-        sort: 'Sort',
-        chronological: 'Chronological',
-        byCategory: 'By node category',
-        category: 'Category',
-        byContext: 'By context',
-        context: 'Context'
-      }
-    },
-    extraColumns: {
-      totalHours: 'Total hours',
+    gridLabel: 'Outcome table assignments',
+    presentationControlsLabel: 'Outcome table display options',
+    assignmentCellLabel: '{{outcome}} — {{node}}',
+    sectionRollupCellLabel: '{{outcome}} — {{section}} summary',
+    summary: {
       classification: 'Classification',
       generalEducation: 'General education',
       specificEducation: 'Specific education',
@@ -124,16 +113,18 @@ const workflow = {
       theory: 'Theory',
       practical: 'Practical',
       individualWork: 'Individual work',
-      totalCredits: 'Total credits'
+      totalHours: 'Total hours',
+      credits: 'Credits'
     },
-    classifications: {
-      none: 'None',
-      individual_work: 'Individual Work',
-      work_in_groups: 'Work in Groups',
-      in_the_classroom: 'In the Classroom',
-      formative: 'Formative',
-      summative: 'Summative',
-      comprehensive: 'Comprehensive'
+    view: {
+      normal: 'Normal',
+      competencyMatrix: 'Competency matrix'
+    },
+    sort: {
+      title: 'Sort',
+      chronological: 'Chronological',
+      byNodeCategory: 'Node category',
+      byContext: 'Context'
     }
   },
   comments: {

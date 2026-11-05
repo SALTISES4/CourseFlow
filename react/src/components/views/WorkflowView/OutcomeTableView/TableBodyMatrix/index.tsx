@@ -6,6 +6,7 @@ import {
 import { displaySystemTitle } from '@cf/i18n/systemTitles'
 import { AppDispatch, RootState } from '@cf/redux/store'
 import { NodeTitle } from '@cfViews/WorkflowView/GraphView/components/Section/Cell/CellNode/useNodeTitle'
+import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -74,39 +75,33 @@ const TableBody = ({
                 ))}
               </Styled.CheckmarkGroup>
 
-              {extraColumns.map((group, index) => (
-                <>
-                  {group.columns && (
-                    <>
-                      <Styled.TagBarEmptyCell />
-                      <Styled.CheckmarkGroup
-                        key={index}
-                        className="checkmarks-group bg-light"
-                      >
-                        {group.columns.map((colColumn, index) => (
-                          <Styled.TableCell
-                            key={index}
-                            className={colColumn.className}
-                          >
-                            {colColumn.values[nodeUuid]}
-                          </Styled.TableCell>
-                        ))}
-                      </Styled.CheckmarkGroup>
-                    </>
-                  )}
-                  {group.values && (
-                    <Styled.CheckmarkGroup
-                      key={index}
-                      className={`checkmarks-group ${group.className}`}
-                      sx={{ marginLeft: 2 }}
-                    >
-                      <Styled.TableCell>
-                        {group.values[nodeUuid]}
-                      </Styled.TableCell>
+              {extraColumns.map((group) =>
+                'columns' in group ? (
+                  <Fragment key={group.labelKey}>
+                    <Styled.TagBarEmptyCell />
+                    <Styled.CheckmarkGroup className="checkmarks-group bg-light">
+                      {group.columns.map((column) => (
+                        <Styled.TableCell
+                          key={column.labelKey}
+                          className={column.className}
+                        >
+                          {column.values[nodeUuid]}
+                        </Styled.TableCell>
+                      ))}
                     </Styled.CheckmarkGroup>
-                  )}
-                </>
-              ))}
+                  </Fragment>
+                ) : (
+                  <Styled.CheckmarkGroup
+                    key={group.labelKey}
+                    className={`checkmarks-group ${group.className}`}
+                    sx={{ marginLeft: 2 }}
+                  >
+                    <Styled.TableCell>
+                      {group.values[nodeUuid]}
+                    </Styled.TableCell>
+                  </Styled.CheckmarkGroup>
+                )
+              )}
             </Styled.BodyRow>
           )
         })}
@@ -216,34 +211,28 @@ const SectionHeaderRow = ({
         </Styled.CheckmarkGroup>
       ))}
 
-      {extraColumns.map((group, index) => (
-        <>
-          {group.columns && (
-            <>
-              <Styled.TagBarEmptyCell />
-              <Styled.CheckmarkGroup
-                key={index}
-                className="checkmarks-group bg-dark"
-              >
-                {group.columns.map((colColumn, index) => (
-                  <Styled.TableCell key={index}>
-                    {colColumn.values[uuid]}
-                  </Styled.TableCell>
-                ))}
-              </Styled.CheckmarkGroup>
-            </>
-          )}
-          {group.values && (
-            <Styled.CheckmarkGroup
-              key={index}
-              className={`checkmarks-group ${group.className}`}
-              sx={{ marginLeft: 2 }}
-            >
-              <Styled.TableCell>{group.values[uuid]}</Styled.TableCell>
+      {extraColumns.map((group) =>
+        'columns' in group ? (
+          <Fragment key={group.labelKey}>
+            <Styled.TagBarEmptyCell />
+            <Styled.CheckmarkGroup className="checkmarks-group bg-dark">
+              {group.columns.map((column) => (
+                <Styled.TableCell key={column.labelKey}>
+                  {column.values[uuid]}
+                </Styled.TableCell>
+              ))}
             </Styled.CheckmarkGroup>
-          )}
-        </>
-      ))}
+          </Fragment>
+        ) : (
+          <Styled.CheckmarkGroup
+            key={group.labelKey}
+            className={`checkmarks-group ${group.className}`}
+            sx={{ marginLeft: 2 }}
+          >
+            <Styled.TableCell>{group.values[uuid]}</Styled.TableCell>
+          </Styled.CheckmarkGroup>
+        )
+      )}
     </Styled.BodyRow>
   )
 }

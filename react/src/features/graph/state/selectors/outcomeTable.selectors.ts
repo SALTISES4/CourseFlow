@@ -1,20 +1,22 @@
 import { ContextClassification } from '@cf/api/gen'
-import { OutcomeCheckmarkStatus } from '@cf/components/views/WorkflowView/OutcomeTableView/Checkmark'
-import { RootState } from '@cf/redux/store'
-import { createSelector } from '@reduxjs/toolkit'
+import type { OutcomeCheckmarkStatus } from '@cf/components/views/WorkflowView/OutcomeTableView/Checkmark'
+import type { RootState } from '@cf/redux/store'
+import type { ParseKeys } from 'i18next'
+import { createSelector, lruMemoize } from 'reselect'
 
 import {
   selectChannelsOrderedByGraphUuid,
   selectNodeEntitiesByGraphUuid,
   selectSectionsOrderedByGraphUuid
 } from './canonical.selectors'
-import { GraphBoard, selectGraphBoard } from './graphBoard.selectors'
+import { selectGraphBoard } from './graphBoard.selectors'
+import type { GraphBoard } from './graphBoard.selectors'
 import {
   selectOutcomeTagGroups,
   selectOutcomeTagGroupsTree
 } from './outcomes.selectors'
-import { ChannelEntity, NodeEntity, SectionEntity } from '../model/types'
-import { OutcomeTableUiState } from '../slices/outcomeTableUi.slice'
+import type { ChannelEntity, NodeEntity, SectionEntity } from '../model/types'
+import type { OutcomeTableUiState } from '../slices/outcomeTableUi.slice'
 
 export type OutcomeTable = {
   tagGroups: ReturnType<typeof selectOutcomeTagGroups>
@@ -42,15 +44,36 @@ type PreparedGroup = {
   }[]
 }
 
-type ExtraColumn = {
-  label: string
+type ExtraColumnLabelKey = Extract<
+  ParseKeys<'workflow'>,
+  `outcomeTable.summary.${string}`
+>
+
+type ExtraColumnLeaf = {
+  labelKey: ExtraColumnLabelKey
   className?: string
-  values?: Record<string, number> // nodeUuid, value
-  columns?: ExtraColumn[]
+  values: Record<string, number> // nodeUuid, value
 }
 
-// holds values of uuid:value for each node/section
-const extraColumnValues: Record<string, Record<string, number>> = {
+type ExtraColumnGroup = {
+  labelKey: ExtraColumnLabelKey
+  columns: ExtraColumnLeaf[]
+}
+
+type ExtraColumn = ExtraColumnLeaf | ExtraColumnGroup
+
+type ExtraColumnValueKey =
+  | 'totalCredits'
+  | 'totalHours'
+  | 'generalEducation'
+  | 'specificEducation'
+  | 'ponderationTheory'
+  | 'ponderationPractical'
+  | 'ponderationIndividual'
+
+type ExtraColumnValues = Record<ExtraColumnValueKey, Record<string, number>>
+
+const createExtraColumnValues = (): ExtraColumnValues => ({
   totalCredits: {},
   totalHours: {},
   generalEducation: {},
@@ -58,7 +81,7 @@ const extraColumnValues: Record<string, Record<string, number>> = {
   ponderationTheory: {},
   ponderationPractical: {},
   ponderationIndividual: {}
-}
+})
 
 const selectOutcomeTableGroupBy = (
   state: RootState
@@ -67,128 +90,138 @@ const selectOutcomeTableGroupBy = (
   return !sortType || viewType === 'matrix' ? 'time' : sortType
 }
 
-export const selectOutcomeTable = createSelector(
-  [
-    (state: RootState, graphUuid: string) => selectGraphBoard(state, graphUuid),
-    (state: RootState, graphUuid: string) =>
-      selectOutcomeTagGroups(state, graphUuid),
-    (state: RootState, graphUuid: string) =>
-      selectOutcomeTagGroupsTree(state, graphUuid),
-    (state: RootState, graphUuid: string) =>
-      selectSectionsOrderedByGraphUuid(graphUuid)(state),
-    (state: RootState, graphUuid: string) =>
-      selectChannelsOrderedByGraphUuid(graphUuid)(state),
-    (state: RootState, graphUuid: string) =>
-      selectNodeEntitiesByGraphUuid(graphUuid)(state),
-    selectOutcomeTableGroupBy
-  ],
-  (
-    graphBoard,
-    outcomeGroups,
-    outcomeTree,
-    sections,
-    channels,
-    nodes,
-    groupBy
-  ): OutcomeTable => {
-    let groupedBy: OutcomeTable['groupedBy'] = 'sections'
+const makeSelectOutcomeTable = lruMemoize(
+  (graphUuid: string) =>
+    createSelector(
+      [
+        (state: RootState) => selectGraphBoard(state, graphUuid),
+        (state: RootState) => selectOutcomeTagGroups(state, graphUuid),
+        (state: RootState) => selectOutcomeTagGroupsTree(state, graphUuid),
+        selectSectionsOrderedByGraphUuid(graphUuid),
+        selectChannelsOrderedByGraphUuid(graphUuid),
+        selectNodeEntitiesByGraphUuid(graphUuid),
+        selectOutcomeTableGroupBy
+      ],
+      (
+        graphBoard,
+        outcomeGroups,
+        outcomeTree,
+        sections,
+        channels,
+        nodes,
+        groupBy
+      ): OutcomeTable => {
+        let groupedBy: OutcomeTable['groupedBy'] = 'sections'
+        const extraColumnValues = createExtraColumnValues()
 
-    let preparedGroups: PreparedGroup[] = []
-    switch (groupBy) {
-      case 'category':
-        preparedGroups = prepareGroupsByChannel(
-          graphBoard,
-          channels,
-          nodes,
-          outcomeTree.outcomes
-        )
-        groupedBy = 'channels'
-        break
-      case 'context':
-        preparedGroups = prepareGroupsByContext(
-          graphBoard,
-          nodes,
-          outcomeTree.outcomes
-        )
-        groupedBy = 'context'
-        break
-      default:
-        preparedGroups = prepareGroupsBySection(
-          graphBoard,
-          nodes,
-          outcomeTree.outcomes
-        )
-    }
+        let preparedGroups: PreparedGroup[] = []
+        switch (groupBy) {
+          case 'category':
+            preparedGroups = prepareGroupsByChannel(
+              graphBoard,
+              channels,
+              nodes,
+              outcomeTree.outcomes,
+              extraColumnValues
+            )
+            groupedBy = 'channels'
+            break
+          case 'context':
+            preparedGroups = prepareGroupsByContext(
+              graphBoard,
+              nodes,
+              outcomeTree.outcomes,
+              extraColumnValues
+            )
+            groupedBy = 'context'
+            break
+          default:
+            preparedGroups = prepareGroupsBySection(
+              graphBoard,
+              nodes,
+              outcomeTree.outcomes,
+              extraColumnValues
+            )
+        }
 
-    const extraCourseColums: ExtraColumn[] = [
-      {
-        label: 'extraColumns.totalHours',
-        className: 'bg-dark',
-        values: extraColumnValues.totalHours
-      }
-    ]
-
-    const extraProgramColumns: ExtraColumn[] = [
-      {
-        label: 'extraColumns.classification',
-        columns: [
+        const extraCourseColumns: ExtraColumn[] = [
           {
-            label: 'extraColumns.generalEducation',
-            values: extraColumnValues.generalEducation
-          },
-          {
-            label: 'extraColumns.specificEducation',
-            values: extraColumnValues.specificEducation
-          }
-        ]
-      },
-      {
-        label: 'extraColumns.ponderation',
-        columns: [
-          {
-            label: 'extraColumns.theory',
-            values: extraColumnValues.ponderationTheory
-          },
-          {
-            label: 'extraColumns.practical',
-            values: extraColumnValues.ponderationPractical
-          },
-          {
-            label: 'extraColumns.individualWork',
-            values: extraColumnValues.ponderationIndividual
-          },
-          {
-            label: 'extraColumns.totalHours',
+            labelKey: 'outcomeTable.summary.totalHours',
             className: 'bg-dark',
             values: extraColumnValues.totalHours
           }
         ]
-      },
-      {
-        label: 'extraColumns.totalCredits',
-        className: 'bg-dark',
-        values: extraColumnValues.totalCredits
-      }
-    ]
 
-    return {
-      tagGroups: outcomeGroups,
-      board: graphBoard,
-      outcomeTree,
-      groups: preparedGroups,
-      groupedBy,
-      extraColumns: {
-        course: extraCourseColums,
-        program: extraProgramColumns
-      },
-      entities: {
-        channels,
-        sections,
-        nodes
+        const extraProgramColumns: ExtraColumn[] = [
+          {
+            labelKey: 'outcomeTable.summary.classification',
+            columns: [
+              {
+                labelKey: 'outcomeTable.summary.generalEducation',
+                values: extraColumnValues.generalEducation
+              },
+              {
+                labelKey: 'outcomeTable.summary.specificEducation',
+                values: extraColumnValues.specificEducation
+              }
+            ]
+          },
+          {
+            labelKey: 'outcomeTable.summary.ponderation',
+            columns: [
+              {
+                labelKey: 'outcomeTable.summary.theory',
+                values: extraColumnValues.ponderationTheory
+              },
+              {
+                labelKey: 'outcomeTable.summary.practical',
+                values: extraColumnValues.ponderationPractical
+              },
+              {
+                labelKey: 'outcomeTable.summary.individualWork',
+                values: extraColumnValues.ponderationIndividual
+              },
+              {
+                labelKey: 'outcomeTable.summary.totalHours',
+                className: 'bg-dark',
+                values: extraColumnValues.totalHours
+              }
+            ]
+          },
+          {
+            labelKey: 'outcomeTable.summary.credits',
+            className: 'bg-dark',
+            values: extraColumnValues.totalCredits
+          }
+        ]
+
+        return {
+          tagGroups: outcomeGroups,
+          board: graphBoard,
+          outcomeTree,
+          groups: preparedGroups,
+          groupedBy,
+          extraColumns: {
+            course: extraCourseColumns,
+            program: extraProgramColumns
+          },
+          entities: {
+            channels,
+            sections,
+            nodes
+          }
+        }
       }
-    }
-  }
+    ),
+  { maxSize: 32 }
 )
+
+export function selectOutcomeTable(
+  state: RootState,
+  graphUuid: string
+): OutcomeTable {
+  return makeSelectOutcomeTable(graphUuid)(state)
+}
 
 type Outcomes = ReturnType<typeof selectOutcomeTagGroupsTree>['outcomes']
 
@@ -235,7 +268,11 @@ function getNodeCompletion(
   return completion
 }
 
-function populateExtraColumns(groupUuid: string, node: NodeEntity) {
+function populateExtraColumns(
+  groupUuid: string,
+  node: NodeEntity,
+  extraColumnValues: ExtraColumnValues
+) {
   const theory = node.ponderationTheory ?? 0
   const practice = node.ponderationPractice ?? 0
   const individual = node.ponderationIndividual ?? 0
@@ -244,7 +281,7 @@ function populateExtraColumns(groupUuid: string, node: NodeEntity) {
   // TODO: figure out how timeUnits affects the timeRequired
   // and what the "normalized" value is (ie, hour/day/etc)
 
-  const values = {
+  const values: Record<ExtraColumnValueKey, number> = {
     specificEducation: isSpecific ? (node.timeRequired ?? 0) : 0,
     generalEducation: !isSpecific ? (node.timeRequired ?? 0) : 0,
     ponderationTheory: theory,
@@ -254,7 +291,8 @@ function populateExtraColumns(groupUuid: string, node: NodeEntity) {
     totalCredits: node.credits ?? 0
   }
 
-  for (const [column, value] of Object.entries(values)) {
+  for (const column of Object.keys(values) as ExtraColumnValueKey[]) {
+    const value = values[column]
     const columnValues = extraColumnValues[column]
     columnValues[node.uuid] = value
     columnValues[groupUuid] = (columnValues[groupUuid] ?? 0) + value
@@ -291,11 +329,19 @@ function getOutcomeStatus(
 function prepareGroup(
   uuid: string,
   nodeUuids: string[],
-  { nodes, outcomes }: { nodes: Record<string, NodeEntity>; outcomes: Outcomes }
+  {
+    nodes,
+    outcomes,
+    extraColumnValues
+  }: {
+    nodes: Record<string, NodeEntity>
+    outcomes: Outcomes
+    extraColumnValues: ExtraColumnValues
+  }
 ): PreparedGroup {
   const groupNodes = nodeUuids.map((nodeUuid) => {
     const node = nodes[nodeUuid]
-    populateExtraColumns(uuid, node)
+    populateExtraColumns(uuid, node, extraColumnValues)
     return { uuid: nodeUuid, completion: getNodeCompletion(node, outcomes) }
   })
 
@@ -310,12 +356,14 @@ function prepareGroup(
 function prepareGroupsBySection(
   graphBoard: GraphBoard,
   nodes: Record<string, NodeEntity>,
-  outcomes: Outcomes
+  outcomes: Outcomes,
+  extraColumnValues: ExtraColumnValues
 ): PreparedGroup[] {
   return graphBoard.sections.map((section) =>
     prepareGroup(section.uuid, getOrderedNodeUuids(section), {
       nodes,
-      outcomes
+      outcomes,
+      extraColumnValues
     })
   )
 }
@@ -324,7 +372,8 @@ function prepareGroupsByChannel(
   graphBoard: GraphBoard,
   channels: ChannelEntity[],
   nodes: Record<string, NodeEntity>,
-  outcomes: Outcomes
+  outcomes: Outcomes,
+  extraColumnValues: ExtraColumnValues
 ): PreparedGroup[] {
   const nodeUuidsByChannel: Record<string, string[]> = {}
 
@@ -344,18 +393,12 @@ function prepareGroupsByChannel(
 
   return channels.map((channel) => {
     const nodeUuids = nodeUuidsByChannel[channel.uuid] ?? []
-    return prepareGroup(channel.uuid, nodeUuids, { nodes, outcomes })
+    return prepareGroup(channel.uuid, nodeUuids, {
+      nodes,
+      outcomes,
+      extraColumnValues
+    })
   })
-}
-
-export const contextLabels: Record<ContextClassification, string> = {
-  [ContextClassification.NONE]: 'classifications.none',
-  [ContextClassification.INDIVIDUAL_WORK]: 'classifications.individual_work',
-  [ContextClassification.WORK_IN_GROUPS]: 'classifications.work_in_groups',
-  [ContextClassification.IN_THE_CLASSROOM]: 'classifications.in_the_classroom',
-  [ContextClassification.FORMATIVE]: 'classifications.formative',
-  [ContextClassification.SUMMATIVE]: 'classifications.summative',
-  [ContextClassification.COMPREHENSIVE]: 'classifications.comprehensive'
 }
 
 const contextDisplayOrder = [
@@ -371,7 +414,8 @@ const contextDisplayOrder = [
 function prepareGroupsByContext(
   graphBoard: GraphBoard,
   nodes: Record<string, NodeEntity>,
-  outcomes: ReturnType<typeof selectOutcomeTagGroupsTree>['outcomes']
+  outcomes: ReturnType<typeof selectOutcomeTagGroupsTree>['outcomes'],
+  extraColumnValues: ExtraColumnValues
 ): PreparedGroup[] {
   const nodeUuidsByContext: Partial<Record<ContextClassification, string[]>> =
     {}
@@ -399,7 +443,8 @@ function prepareGroupsByContext(
     groups.push(
       prepareGroup(contextGroup, nodeUuids, {
         nodes,
-        outcomes
+        outcomes,
+        extraColumnValues
       })
     )
   }

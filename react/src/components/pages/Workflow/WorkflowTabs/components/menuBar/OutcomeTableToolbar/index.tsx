@@ -3,6 +3,7 @@ import type { AppDispatch, RootState } from '@cf/redux/store'
 import { MenuItemType, SimpleMenu } from '@cfComponents/menu/Menu'
 import SortIcon from '@mui/icons-material/Sort'
 import ToggleButton from '@mui/material/ToggleButton'
+import type { ParseKeys } from 'i18next'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
@@ -36,24 +37,23 @@ const ViewToggle = () => {
         onChange={onViewTypeChange}
       >
         <ToggleButton color="primary" size="small" value="normal">
-          {t('outcomeTable.toolbar.view.normal')}
+          {t('outcomeTable.view.normal')}
         </ToggleButton>
         <ToggleButton color="primary" size="small" value="matrix">
-          {t('outcomeTable.toolbar.view.matrix')}
+          {t('outcomeTable.view.competencyMatrix')}
         </ToggleButton>
       </Styled.ViewTypeButtonGroup>
     </Styled.ViewTypeWrapper>
   )
 }
 
-const sortLabels: Record<
-  NonNullable<RootState['graph']['outcomeTableUi']['sortType']>,
-  string
-> = {
-  time: 'outcomeTable.toolbar.sortBy.chronological',
-  category: 'outcomeTable.toolbar.sortBy.category',
-  context: 'outcomeTable.toolbar.sortBy.context'
-}
+type SortType = NonNullable<RootState['graph']['outcomeTableUi']['sortType']>
+
+const sortLabels = {
+  time: 'outcomeTable.sort.chronological',
+  category: 'outcomeTable.sort.byNodeCategory',
+  context: 'outcomeTable.sort.byContext'
+} satisfies Record<SortType, ParseKeys<'workflow'>>
 
 const SortToggle = () => {
   const { t } = useTranslation('workflow')
@@ -62,12 +62,10 @@ const SortToggle = () => {
     (state: RootState) => state.graph.outcomeTableUi
   )
 
-  const sortLabel = t('outcomeTable.toolbar.sortBy.sort')
+  const sortLabel = t('outcomeTable.sort.title')
 
   const header: MenuItemType = {
-    content: sortType
-      ? `${sortLabel}: ${t(sortLabels[sortType] as any)}`
-      : sortLabel,
+    content: sortType ? `${sortLabel}: ${t(sortLabels[sortType])}` : sortLabel,
     icon: <SortIcon />,
     showIconInList: true,
     show: true,
@@ -76,7 +74,7 @@ const SortToggle = () => {
 
   const menuItems: MenuItemType[] = [
     {
-      content: t('outcomeTable.toolbar.sortBy.chronological'),
+      content: t('outcomeTable.sort.chronological'),
       action: () =>
         dispatch(
           outcomeTableUiActions.sortTypeChange({
@@ -86,7 +84,7 @@ const SortToggle = () => {
       show: true
     },
     {
-      content: t('outcomeTable.toolbar.sortBy.byCategory'),
+      content: t('outcomeTable.sort.byNodeCategory'),
       action: () =>
         dispatch(
           outcomeTableUiActions.sortTypeChange({
@@ -96,7 +94,7 @@ const SortToggle = () => {
       show: true
     },
     {
-      content: t('outcomeTable.toolbar.sortBy.byContext'),
+      content: t('outcomeTable.sort.byContext'),
       action: () =>
         dispatch(
           outcomeTableUiActions.sortTypeChange({

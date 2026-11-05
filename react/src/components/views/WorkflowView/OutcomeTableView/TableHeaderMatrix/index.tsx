@@ -43,21 +43,19 @@ const TableHeader = ({
         </Fragment>
       ))}
 
-      {extraColumns.map((group, index) => (
-        <Fragment key={index}>
-          {group.columns ? (
+      {extraColumns.map((group) => (
+        <Fragment key={group.labelKey}>
+          {'columns' in group ? (
             <>
               <Styled.HeaderLegendWrap tagLabel>
-                <Styled.TableLegend>
-                  {t(`outcomeTable.${group.label}` as any)}
-                </Styled.TableLegend>
+                <Styled.TableLegend>{t(group.labelKey)}</Styled.TableLegend>
               </Styled.HeaderLegendWrap>
-              {group.columns.map((column, colIndex) => (
-                <Styled.HeaderLegendWrap key={colIndex}>
+              {group.columns.map((column) => (
+                <Styled.HeaderLegendWrap key={column.labelKey}>
                   <Styled.TableLegend
                     className={`legend-extra ${column.className}`}
                   >
-                    {t(`outcomeTable.${column.label}` as any)}
+                    {t(column.labelKey)}
                   </Styled.TableLegend>
                 </Styled.HeaderLegendWrap>
               ))}
@@ -65,7 +63,7 @@ const TableHeader = ({
           ) : (
             <Styled.HeaderLegendWrap sx={{ marginLeft: 2 }}>
               <Styled.TableLegend className={`legend-extra ${group.className}`}>
-                {t(`outcomeTable.${group.label}` as any)}
+                {t(group.labelKey)}
               </Styled.TableLegend>
             </Styled.HeaderLegendWrap>
           )}
