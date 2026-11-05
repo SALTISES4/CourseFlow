@@ -239,10 +239,7 @@ function populateExtraColumns(groupUuid: string, node: NodeEntity) {
   const theory = node.ponderationTheory ?? 0
   const practice = node.ponderationPractice ?? 0
   const individual = node.ponderationIndividual ?? 0
-
   const isSpecific = node.specificEducation
-  // TODO: figure out how timeUnits affects the timeRequired
-  // and what the "normalized" value is (ie, hour/day/etc)
 
   const values = {
     specificEducation: isSpecific ? (node.timeRequired ?? 0) : 0,
