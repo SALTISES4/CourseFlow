@@ -2,16 +2,20 @@ import { type PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 import type { ResourceUuid } from '../model/types'
 
+export type ExpandMode = 'default' | 'expandAll' | 'collapseAll'
+
 export type OutcomeTableUiState = {
   viewType: 'normal' | 'matrix'
   sortType: 'time' | 'category' | 'context' | null // defaults to time
-  expandedOutcomes: Record<ResourceUuid, boolean>
+  expandMode: ExpandMode
+  expandedOverrides: Record<ResourceUuid, true>
 }
 
 const initialState: OutcomeTableUiState = {
   viewType: 'normal',
   sortType: null,
-  expandedOutcomes: {}
+  expandMode: 'default',
+  expandedOverrides: {}
 }
 
 const outcomeTableUiSlice = createSlice({
@@ -20,13 +24,15 @@ const outcomeTableUiSlice = createSlice({
   reducers: {
     outcomeExpand(state, action: PayloadAction<{ uuid: ResourceUuid }>) {
       const { uuid } = action.payload
-      const expanded = state.expandedOutcomes[uuid] ?? false
-
-      if (!expanded) {
-        state.expandedOutcomes[uuid] = !expanded
+      if (state.expandedOverrides[uuid]) {
+        delete state.expandedOverrides[uuid]
       } else {
-        delete state.expandedOutcomes[uuid]
+        state.expandedOverrides[uuid] = true
       }
+    },
+    outcomeForceMode(state, action: PayloadAction<{ mode: ExpandMode }>) {
+      state.expandedOverrides = {} // make it so expand mode applies to everything
+      state.expandMode = action.payload.mode
     },
     viewTypeChange(
       state,

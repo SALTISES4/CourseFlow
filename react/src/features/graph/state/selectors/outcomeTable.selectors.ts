@@ -13,7 +13,12 @@ import {
   selectOutcomeTagGroups,
   selectOutcomeTagGroupsTree
 } from './outcomes.selectors'
-import { ChannelEntity, NodeEntity, SectionEntity } from '../model/types'
+import {
+  ChannelEntity,
+  NodeEntity,
+  ResourceUuid,
+  SectionEntity
+} from '../model/types'
 import { OutcomeTableUiState } from '../slices/outcomeTableUi.slice'
 
 export type OutcomeTable = {
@@ -59,6 +64,25 @@ const extraColumnValues: Record<string, Record<string, number>> = {
   ponderationPractical: {},
   ponderationIndividual: {}
 }
+
+const selectOutcomeTableUi = (state: RootState) => state.graph.outcomeTableUi
+const selectExpandMode = (state: RootState) =>
+  selectOutcomeTableUi(state).expandMode
+const selectExpandedOverrides = (state: RootState) =>
+  selectOutcomeTableUi(state).expandedOverrides
+
+export const selectIsOutcomeExpanded = createSelector(
+  [
+    selectExpandMode,
+    selectExpandedOverrides,
+    (_: RootState, outcomeUuid: ResourceUuid) => outcomeUuid
+  ],
+  (expandMode, expandedOverrides, outcomeUuid) => {
+    const overridden = expandedOverrides[outcomeUuid] === true
+    const baseline = expandMode === 'expandAll'
+    return overridden ? !baseline : baseline
+  }
+)
 
 const selectOutcomeTableGroupBy = (
   state: RootState

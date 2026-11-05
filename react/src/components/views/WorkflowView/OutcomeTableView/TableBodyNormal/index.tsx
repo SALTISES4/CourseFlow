@@ -1,4 +1,7 @@
-import { OutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
+import {
+  OutcomeTable,
+  selectIsOutcomeExpanded
+} from '@cf/features/graph/state/selectors/outcomeTable.selectors'
 import { outcomeTableUiActions } from '@cf/features/graph/state/slices/outcomeTableUi.slice'
 import {
   linkNodeOutcome,
@@ -44,12 +47,10 @@ const TagGroupRow = ({
   uuid: string
 }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const expandedOutcomes = useSelector(
-    (state: RootState) => state.graph.outcomeTableUi.expandedOutcomes
-  )
-
   const outcome = table.outcomeTree.outcomes[uuid]
-  const collapsed = !expandedOutcomes[uuid]
+  const expanded = useSelector((state: RootState) =>
+    selectIsOutcomeExpanded(state, outcome.uuid)
+  )
 
   const outcomeTitle = useOutcomeTitle({
     title: outcome.title,
@@ -90,7 +91,7 @@ const TagGroupRow = ({
             level={outcome.level}
             title={`${outcome.prefix} ${outcomeTitle}`}
             tooltip={outcome.tooltipTitle}
-            collapsed={collapsed}
+            collapsed={!expanded}
             showToggle={!!outcome.children.length}
             setCollapsed={() => {}} // this should be nuked really
             onToggleClick={onOutcomeToggleClick}
@@ -119,7 +120,7 @@ const TagGroupRow = ({
           ))}
         </Styled.CheckmarkGroup>
       </Styled.BodyRow>
-      {!collapsed &&
+      {expanded &&
         outcome.children.map((childUuid) => (
           <TagGroupRow key={childUuid} table={table} uuid={childUuid} />
         ))}

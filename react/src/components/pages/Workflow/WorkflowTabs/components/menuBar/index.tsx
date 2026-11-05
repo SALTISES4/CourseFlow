@@ -5,6 +5,7 @@ import {
   useWorkspacePermissions
 } from '@cf/context/workspacePermissionsContext'
 import { graphUiActions } from '@cf/features/graph/state/slices/graphUi.slice'
+import { outcomeTableUiActions } from '@cf/features/graph/state/slices/outcomeTableUi.slice'
 import { workflowTypeLabel } from '@cf/i18n/workflowLabels'
 import type { AppDispatch, RootState } from '@cf/redux/store'
 import { CfObjectType } from '@cf/types/enum'
@@ -20,6 +21,8 @@ import EditIcon from '@mui/icons-material/Edit'
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import TuneIcon from '@mui/icons-material/Tune'
+import UnfoldLessIcon from '@mui/icons-material/UnfoldLess'
+import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore'
 import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
 import { FormControlLabel, Switch } from '@mui/material'
@@ -183,6 +186,19 @@ const ExpandCollapseMenu = ({
     [dispatch, sectionIds]
   )
 
+  const onOutcomeExpand = useCallback(
+    (expand: boolean) => {
+      return () => {
+        dispatch(
+          outcomeTableUiActions.outcomeForceMode({
+            mode: expand ? 'expandAll' : 'collapseAll'
+          })
+        )
+      }
+    },
+    [dispatch]
+  )
+
   if (workflowViewType === WorkflowViewType.OVERVIEW) {
     return null
   }
@@ -232,20 +248,16 @@ const ExpandCollapseMenu = ({
       show: true
     },
     {
-      content: (
-        <FormControlLabel
-          control={
-            <Switch
-              value={CfObjectType.OUTCOME}
-              checked={expanded[CfObjectType.OUTCOME]}
-              onChange={onExpandChange}
-              inputProps={{ 'aria-label': t('menu.expandOutcomes') }}
-            />
-          }
-          label={t('menu.expandOutcomes')}
-        />
-      ),
-      icon: <ZoomInMapIcon />,
+      content: t('menu.expandOutcomes'),
+      action: onOutcomeExpand(true),
+      icon: <UnfoldMoreIcon />,
+      showIconInList: true,
+      show: true
+    },
+    {
+      content: t('menu.collapseOutcomes'),
+      action: onOutcomeExpand(false),
+      icon: <UnfoldLessIcon />,
       showIconInList: true,
       show: true
     }
