@@ -83,6 +83,7 @@ const createExtraColumnValues = (): ExtraColumnValues => ({
   ponderationIndividual: {}
 })
 
+// 
 const selectOutcomeTableGroupBy = (
   state: RootState
 ): OutcomeTableUiState['sortType'] => {
