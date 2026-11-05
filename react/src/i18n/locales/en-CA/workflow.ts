@@ -101,6 +101,9 @@ const workflow = {
     insertChild: 'Insert child'
   },
   outcomeTable: {
+    emptyWarningTitle: 'Unable to generate Outcome Table for this workflow',
+    emptyWarningSubtitle:
+      'At least one outcome and node needs to be assigned to this workflow to be able to generate the Outcome Table view.',
     toolbar: {
       view: {
         normal: 'Normal',
