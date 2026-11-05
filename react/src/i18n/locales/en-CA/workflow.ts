@@ -125,6 +125,43 @@ const workflow = {
       chronological: 'Chronological',
       byNodeCategory: 'Node category',
       byContext: 'Context'
+    },
+    emptyWarningTitle: 'Unable to generate Outcome Table for this workflow',
+    emptyWarningSubtitle:
+      'At least one outcome and node needs to be assigned to this workflow to be able to generate the Outcome Table view.',
+    toolbar: {
+      view: {
+        normal: 'Normal',
+        matrix: 'Competency matrx'
+      },
+      sortBy: {
+        sort: 'Sort',
+        chronological: 'Chronological',
+        byCategory: 'By node category',
+        category: 'Category',
+        byContext: 'By context',
+        context: 'Context'
+      }
+    },
+    extraColumns: {
+      totalHours: 'Total hours',
+      classification: 'Classification',
+      generalEducation: 'General education',
+      specificEducation: 'Specific education',
+      ponderation: 'Ponderation',
+      theory: 'Theory',
+      practical: 'Practical',
+      individualWork: 'Individual work',
+      totalCredits: 'Total credits'
+    },
+    classifications: {
+      none: 'None',
+      individual_work: 'Individual Work',
+      work_in_groups: 'Work in Groups',
+      in_the_classroom: 'In the Classroom',
+      formative: 'Formative',
+      summative: 'Summative',
+      comprehensive: 'Comprehensive'
     }
   },
   comments: {

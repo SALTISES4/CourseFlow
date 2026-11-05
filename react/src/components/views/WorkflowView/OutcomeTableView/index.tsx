@@ -1,8 +1,10 @@
 import { selectOutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
 import { RootState } from '@cf/redux/store'
+import Alert from '@cfComponents/UIPrimitives/Alert'
 import { OuterContentWrap } from '@cfMUI/helper'
 import { type WorkflowPageData } from '@cfPages/Workflow/types'
 import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 
 import * as Styled from './styles'
@@ -14,6 +16,7 @@ import TablheHeaderNormal from './TableHeaderNormal'
 export type WorkflowType = WorkflowPageData['workflowType']
 
 const OutcomeTableView = ({ workflow }: { workflow: WorkflowPageData }) => {
+  const { t } = useTranslation('workflow')
   const viewType = useSelector(
     (state: RootState) => state.graph.outcomeTableUi.viewType
   )
@@ -21,6 +24,25 @@ const OutcomeTableView = ({ workflow }: { workflow: WorkflowPageData }) => {
   const table = useSelector((state: RootState) =>
     selectOutcomeTable(state, workflow.graphUuid)
   )
+
+  if (
+    table.outcomeTree.groups.length === 0 ||
+    Object.keys(table.entities.nodes).length === 0
+  ) {
+    return (
+      <OuterContentWrap
+        sx={{ pt: 4 }}
+        data-test-id="workflow-outcome-table-view"
+      >
+        <Alert
+          severity="warning"
+          persistent
+          title={t('outcomeTable.emptyWarningTitle')}
+          subtitle={t('outcomeTable.emptyWarningSubtitle')}
+        />
+      </OuterContentWrap>
+    )
+  }
 
   return (
     <OuterContentWrap sx={{ pt: 4 }} data-test-id="workflow-outcome-table-view">
