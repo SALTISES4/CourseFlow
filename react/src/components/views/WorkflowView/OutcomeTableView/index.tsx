@@ -7,6 +7,7 @@ import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 
+import PresentationControls from './PresentationControls'
 import * as Styled from './styles'
 import TableBodyMatrix from './TableBodyMatrix'
 import TableBodyNormal from './TableBodyNormal'
@@ -15,7 +16,13 @@ import TablheHeaderNormal from './TableHeaderNormal'
 
 export type WorkflowType = WorkflowPageData['workflowType']
 
-const OutcomeTableView = ({ workflow }: { workflow: WorkflowPageData }) => {
+const OutcomeTableView = ({
+  workflow,
+  publicView = false
+}: {
+  workflow: WorkflowPageData
+  publicView?: boolean
+}) => {
   const { t } = useTranslation('workflow')
   const viewType = useSelector(
     (state: RootState) => state.graph.outcomeTableUi.viewType
@@ -46,6 +53,7 @@ const OutcomeTableView = ({ workflow }: { workflow: WorkflowPageData }) => {
 
   return (
     <OuterContentWrap sx={{ pt: 4 }} data-test-id="workflow-outcome-table-view">
+      {publicView && <PresentationControls graphUuid={workflow.graphUuid} />}
       {viewType === 'matrix' && (
         <Styled.TableWrap className="view-matrix">
           <TableHeaderMatrix workflowType={workflowType} table={table} />
