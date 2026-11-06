@@ -1,4 +1,7 @@
-import { OutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
+import {
+  OutcomeTable,
+  selectIsOutcomeExpanded
+} from '@cf/features/graph/state/selectors/outcomeTable.selectors'
 import { outcomeTableUiActions } from '@cf/features/graph/state/slices/outcomeTableUi.slice'
 import { AppDispatch, RootState } from '@cf/redux/store'
 import OutcomeHeader from '@cfPages/Workflow/Sidebar/components/OutcomesTab/Outcome/Header'
@@ -81,12 +84,10 @@ const TableHeaderOutcome = ({
   uuid: string
 }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const expandedOutcomes = useSelector(
-    (state: RootState) => state.graph.outcomeTableUi.expandedOutcomes
-  )
-
   const outcome = table.outcomeTree.outcomes[uuid]
-  const collapsed = !expandedOutcomes[uuid]
+  const expanded = useSelector((state: RootState) =>
+    selectIsOutcomeExpanded(state, outcome.uuid)
+  )
 
   const outcomeTitle = useOutcomeTitle({
     title: outcome.title,
@@ -105,14 +106,14 @@ const TableHeaderOutcome = ({
             uuid={uuid}
             level={outcome.level}
             title={`${outcome.prefix} ${outcomeTitle}`}
-            collapsed={collapsed}
+            collapsed={!expanded}
             showToggle={!!outcome.children.length}
             setCollapsed={() => {}} // this should be nuked really
             onToggleClick={onOutcomeToggleClick}
           />
         </Styled.TableLegend>
       </Styled.HeaderLegendWrap>
-      {!collapsed &&
+      {expanded &&
         outcome.children.map((childUuid) => (
           <TableHeaderOutcome key={childUuid} table={table} uuid={childUuid} />
         ))}

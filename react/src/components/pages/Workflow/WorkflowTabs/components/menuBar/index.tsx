@@ -24,6 +24,8 @@ import EditIcon from '@mui/icons-material/Edit'
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import TuneIcon from '@mui/icons-material/Tune'
+import UnfoldLessIcon from '@mui/icons-material/UnfoldLess'
+import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore'
 import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
 import { Box, Checkbox, FormControlLabel, Typography } from '@mui/material'
@@ -208,6 +210,19 @@ const ExpandCollapseMenu = ({
     [dispatch, workflowViewType]
   )
 
+  const onOutcomeExpand = useCallback(
+    (expand: boolean) => {
+      return () => {
+        dispatch(
+          outcomeTableUiActions.outcomeForceMode({
+            mode: expand ? 'expandAll' : 'collapseAll'
+          })
+        )
+      }
+    },
+    [dispatch]
+  )
+
   if (workflowViewType === WorkflowViewType.OVERVIEW) {
     return null
   }
@@ -245,28 +260,16 @@ const ExpandCollapseMenu = ({
             {
               uuid: 'expand-all-outcomes',
               content: t('menu.expandOutcomes'),
-              action: () =>
-                dispatch(
-                  outcomeTableUiActions.setExpandedOutcomes({
-                    uuids: graphOutcomes.map((outcome) => outcome.uuid),
-                    expanded: true
-                  })
-                ),
-              icon: <ZoomOutMapIcon />,
+              action: onOutcomeExpand(true),
+              icon: <UnfoldMoreIcon />,
               showIconInList: true,
               show: true
             },
             {
               uuid: 'collapse-all-outcomes',
               content: t('menu.collapseOutcomes'),
-              action: () =>
-                dispatch(
-                  outcomeTableUiActions.setExpandedOutcomes({
-                    uuids: [],
-                    expanded: false
-                  })
-                ),
-              icon: <ZoomInMapIcon />,
+              action: onOutcomeExpand(false),
+              icon: <UnfoldLessIcon />,
               showIconInList: true,
               show: true
             }

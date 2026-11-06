@@ -15,7 +15,12 @@ import {
   selectOutcomeTagGroups,
   selectOutcomeTagGroupsTree
 } from './outcomes.selectors'
-import type { ChannelEntity, NodeEntity, SectionEntity } from '../model/types'
+import type {
+  ChannelEntity,
+  NodeEntity,
+  ResourceUuid,
+  SectionEntity
+} from '../model/types'
 import type { OutcomeTableUiState } from '../slices/outcomeTableUi.slice'
 
 export type OutcomeTable = {
@@ -83,7 +88,25 @@ const createExtraColumnValues = (): ExtraColumnValues => ({
   ponderationIndividual: {}
 })
 
-// 
+const selectOutcomeTableUi = (state: RootState) => state.graph.outcomeTableUi
+const selectExpandMode = (state: RootState) =>
+  selectOutcomeTableUi(state).expandMode
+const selectExpandedOverrides = (state: RootState) =>
+  selectOutcomeTableUi(state).expandedOverrides
+
+export const selectIsOutcomeExpanded = createSelector(
+  [
+    selectExpandMode,
+    selectExpandedOverrides,
+    (_: RootState, outcomeUuid: ResourceUuid) => outcomeUuid
+  ],
+  (expandMode, expandedOverrides, outcomeUuid) => {
+    const overridden = expandedOverrides[outcomeUuid] === true
+    const baseline = expandMode === 'expandAll'
+    return overridden ? !baseline : baseline
+  }
+)
+
 const selectOutcomeTableGroupBy = (
   state: RootState
 ): OutcomeTableUiState['sortType'] => {
@@ -277,10 +300,7 @@ function populateExtraColumns(
   const theory = node.ponderationTheory ?? 0
   const practice = node.ponderationPractice ?? 0
   const individual = node.ponderationIndividual ?? 0
-
   const isSpecific = node.specificEducation
-  // TODO: figure out how timeUnits affects the timeRequired
-  // and what the "normalized" value is (ie, hour/day/etc)
 
   const values: Record<ExtraColumnValueKey, number> = {
     specificEducation: isSpecific ? (node.timeRequired ?? 0) : 0,

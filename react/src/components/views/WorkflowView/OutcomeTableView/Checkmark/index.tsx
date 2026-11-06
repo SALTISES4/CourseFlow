@@ -16,7 +16,6 @@ const Checkmark = ({ value, readOnly, sx, onClick }: PropsType) => {
   const styles = {
     ...sx,
     ...(readOnly && {
-      backgroundColor: '#eef2fd',
       'pointer-events': 'none'
     })
   }
@@ -24,7 +23,7 @@ const Checkmark = ({ value, readOnly, sx, onClick }: PropsType) => {
   if (value === 'empty') {
     return (
       <Styled.CheckmarkCell sx={styles}>
-        <label onClick={onClick}>
+        <label onClick={!readOnly ? onClick : undefined}>
           <span />
         </label>
       </Styled.CheckmarkCell>
@@ -33,7 +32,7 @@ const Checkmark = ({ value, readOnly, sx, onClick }: PropsType) => {
 
   return (
     <Styled.CheckmarkCell sx={styles}>
-      <label htmlFor="" onClick={onClick}>
+      <label htmlFor="" onClick={!readOnly ? onClick : undefined}>
         <input type="checkbox" checked={value === 'full'}></input>
         <span>
           <CheckRoundedIcon />

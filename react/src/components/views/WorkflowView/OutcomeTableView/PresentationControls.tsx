@@ -6,8 +6,8 @@ import type { AppDispatch, RootState } from '@cf/redux/store'
 import { MenuItemType, SimpleMenu } from '@cfComponents/menu/Menu'
 import OutcomeTableToolbar from '@cfPages/Workflow/WorkflowTabs/components/menuBar/OutcomeTableToolbar'
 import TuneIcon from '@mui/icons-material/Tune'
-import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
-import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
+import UnfoldLessIcon from '@mui/icons-material/UnfoldLess'
+import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore'
 import { Box, Checkbox, FormControlLabel, Typography } from '@mui/material'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -50,12 +50,11 @@ const PresentationControls = ({ graphUuid }: { graphUuid: string }) => {
       content: t('menu.expandOutcomes'),
       action: () =>
         dispatch(
-          outcomeTableUiActions.setExpandedOutcomes({
-            uuids: graphOutcomes.map((outcome) => outcome.uuid),
-            expanded: true
+          outcomeTableUiActions.outcomeForceMode({
+            mode: 'expandAll'
           })
         ),
-      icon: <ZoomOutMapIcon />,
+      icon: <UnfoldMoreIcon />,
       showIconInList: true,
       show: true
     },
@@ -64,12 +63,11 @@ const PresentationControls = ({ graphUuid }: { graphUuid: string }) => {
       content: t('menu.collapseOutcomes'),
       action: () =>
         dispatch(
-          outcomeTableUiActions.setExpandedOutcomes({
-            uuids: [],
-            expanded: false
+          outcomeTableUiActions.outcomeForceMode({
+            mode: 'collapseAll'
           })
         ),
-      icon: <ZoomInMapIcon />,
+      icon: <UnfoldLessIcon />,
       showIconInList: true,
       show: true
     }

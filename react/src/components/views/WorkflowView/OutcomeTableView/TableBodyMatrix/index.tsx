@@ -1,4 +1,7 @@
-import { OutcomeTable } from '@cf/features/graph/state/selectors/outcomeTable.selectors'
+import {
+  OutcomeTable,
+  selectIsOutcomeExpanded
+} from '@cf/features/graph/state/selectors/outcomeTable.selectors'
 import {
   linkNodeOutcome,
   unlinkNodeOutcome
@@ -124,13 +127,12 @@ const CheckmarkGroup = ({
   rowIndex: number
 }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const expandedOutcomes = useSelector(
-    (state: RootState) => state.graph.outcomeTableUi.expandedOutcomes
-  )
   const outcome = table.outcomeTree.outcomes[outcomeUuid]
   const node = table.groups[groupIndex].nodes[rowIndex]
   const status = node.completion[outcomeUuid] ?? 'empty'
-  const collapsed = !expandedOutcomes[outcomeUuid]
+  const expanded = useSelector((state: RootState) =>
+    selectIsOutcomeExpanded(state, outcome.uuid)
+  )
 
   const onCheckmarkClick = (
     nodeUuid: string,
@@ -159,7 +161,7 @@ const CheckmarkGroup = ({
         value={status}
         onClick={onCheckmarkClick(node.uuid, status)}
       />
-      {!collapsed &&
+      {expanded &&
         outcome.children.map((childUuid) => (
           <CheckmarkGroup
             key={childUuid}
@@ -246,11 +248,10 @@ const OutcomeGroup = ({
   groupIndex: number
   table: OutcomeTable
 }) => {
-  const expandedOutcomes = useSelector(
-    (state: RootState) => state.graph.outcomeTableUi.expandedOutcomes
-  )
   const outcome = table.outcomeTree.outcomes[outcomeUuid]
-  const collapsed = !expandedOutcomes[outcomeUuid]
+  const expanded = useSelector((state: RootState) =>
+    selectIsOutcomeExpanded(state, outcome.uuid)
+  )
 
   return (
     <>
@@ -259,7 +260,7 @@ const OutcomeGroup = ({
         readOnly
         value={table.groups[groupIndex].completion[outcomeUuid] ?? 'empty'}
       />
-      {!collapsed &&
+      {expanded &&
         outcome.children.map((childUuid) => (
           <OutcomeGroup
             key={childUuid}
