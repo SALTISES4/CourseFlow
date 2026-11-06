@@ -1,138 +1,483 @@
-# Normalized requirements: workflow graph and outcomes — single-step UNDO (deferred)
-# Deferred from current test-generation phase; preliminary scope only — normalized FR entries not yet authored.
+# Normalized requirements: workflow graph and outcomes — single-step undo (deferred implementation)
+# Status: product direction ratified; Phase 1 edge create/delete undo implemented.
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
-# Scope (intended): one undo step (latest committed canvas mutation only) on '/workflow/{id}/graph' and '/workflow/{id}/outcomes' for owner and editor after a successful finalize (not mid-drag abort).
+# Architecture: docs/architecture/adr_single_step_workflow_undo.md
+# Scope: one undo step for the latest successfully finalized in-scope structural mutation on
+# '/workflow/{id}/graph' or '/workflow/{id}/outcomes'. Auto-update form fields are excluded.
 # Cross-reference:
 #   - tests/docs/requirements/features/workflow/workflow_move_node_requirements_v1.yaml (FR-WF-MV-003, FR-WF-MV-004)
 #   - tests/docs/requirements/features/workflow/workflow_edge_requirements_v1.yaml (FR-WF-EDGE-001, FR-WF-EDGE-002, FR-WF-EDGE-003)
 #   - tests/docs/requirements/features/workflow/workflow_add_tab_requirements_v1.yaml (FR-WF-ADD-004, FR-WF-ADD-005, FR-WF-ADD-006)
 #   - tests/docs/requirements/features/workflow/workflow_duplicate_node_requirements_v1.yaml (FR-WF-DUP-002)
-#   - tests/docs/requirements/features/workflow/workflow_delete_node_requirements_v1.yaml (FR-WF-DEL-002, FR-WF-DEL-003)
+#   - tests/docs/requirements/features/workflow/workflow_delete_node_requirements_v1.yaml (FR-WF-DEL-002, FR-WF-DEL-003, FR-WF-DEL-004)
+#   - tests/docs/requirements/features/workflow/workflow_delete_section_requirements_v1.yaml (FR-SEC-006)
+#   - tests/docs/requirements/features/workflow/workflow_delete_channel_requirements_v1.yaml (FR-CHAN-006)
 #   - tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml (section reorder — FR-SEC-009)
 #   - tests/docs/requirements/features/workflow/workflow_edit_channel_requirements_v1.yaml (channel reorder — FR-CHAN-008)
 #   - tests/docs/requirements/features/workflow/workflow_outcome_tree_drag_reorder_requirements_v1.yaml (FR-WF-EO-015, FR-WF-EO-016, FR-WF-EO-017)
 #   - tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml (FR-WF-EO-003)
 #   - tests/docs/requirements/features/workflow/workflow_duplicate_outcome_requirements_v1.yaml (FR-WF-EO-009, FR-WF-EO-010, FR-WF-EO-011)
 #   - tests/docs/requirements/features/workflow/workflow_delete_outcome_requirements_v1.yaml (FR-WF-EO-012, FR-WF-EO-013, FR-WF-EO-014)
-#   - tests/docs/requirements/features/workflow/workflow_assign_outcome_to_node_requirements_v1.yaml (FR-WF-AO-006 tree-change side effects on outcome tree moves — not in-scope assign/unlink gestures)
+#   - tests/docs/requirements/features/workflow/workflow_assign_outcome_to_node_requirements_v1.yaml (FR-WF-AO-006)
 
 documentPreconditions:
   - user is authenticated to CourseFlow
-  - actor is owner or editor on the parent project of the current workflow
   - current route is '/workflow/{id}/graph' or '/workflow/{id}/outcomes'
+  - requirements beyond the Phase 1 rollout remain deferred from active test-generation scope
 
-# Preliminary product scope (not yet expressed as FR-* entries). Each row is one candidate undo unit.
-preliminaryUndoScope:
+implementationStatus:
+  phase1:
+    implementedActions:
+      - Create workflowEdge.
+      - Delete workflowEdge.
+    ui:
+      - Generic Undo button in Workflow and Outcomes views; final placement and styling remain unresolved.
+    unsupportedStructuralMutationBehavior:
+      - A later structural graph mutation that is not yet undoable invalidates the available Phase 1 undo step.
+    preservedExcludedMutations:
+      - Auto-update metadata mutations do not clear the available Phase 1 undo step.
+  deferredActions:
+    - All other actions listed under undoScope.inScopeActions.
+
+uiObjectDefinitions:
+  workflowView:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_add_tab_requirements_v1.yaml.
+  workflowOutcomeView:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml.
+  workflowUndoButton:
+    meaning: Generic button labeled 'Undo' that reverses the single currently available in-scope workflow mutation.
+  workflowNode:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_node_requirements_v1.yaml.
+  workflowEdge:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edge_requirements_v1.yaml.
+  workflowSectionContainer:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_section_requirements_v1.yaml.
+  workflowChannel:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_channel_requirements_v1.yaml.
+  workflowOutcome:
+    meaning: Canonical definition in tests/docs/requirements/features/workflow/workflow_edit_outcome_requirements_v1.yaml.
+
+locatorMappings:
+  workflowView: "canonical_locators.yaml -> workflowView"
+  workflowOutcomeView: "canonical_locators.yaml -> workflowOutcomeView"
+  workflowNode: "canonical_locators.yaml -> workflowNode"
+  workflowEdge: "canonical_locators.yaml -> workflowEdge"
+  workflowSectionContainer: "canonical_locators.yaml -> workflowSectionContainer"
+  workflowChannel: "canonical_locators.yaml -> workflowChannel"
+  workflowOutcome: "canonical_locators.yaml -> workflowOutcome"
+  workflowUndoButton:
+    strategy: null
+    confidence: unresolved
+
+undoScope:
   model:
     depth: singleStep
     appliesAfter: successfulFinalize
     doesNotApplyTo: midDragAbortOrEscapeCancel
+    authority: originatingEditorOnly
+    onEditLeaseHandoff: deleteUndoStep
+    onRouteNavigation: preserveUndoStep
+    redo: none
+    keyboardBinding: none
   inScopeActions:
     - view: graph
       action: Move workflowNode to a new workflowSectionContainer, workflowSectionRow, and/or workflowChannel cell.
-      reverseAction: Restore prior section, row, and channel placement and grid side effects from that move.
-      notes: Edges remain attached; path routing follows existing edge rules — undo restores layout, not edge deletion.
-      relatedRequirements:
-        - FR-WF-MV-003
-        - FR-WF-MV-004
+      reverseAction: Restore prior section, row, and channel placement and all grid side effects from that move.
     - view: graph
-      action: Create workflowEdge by dragging from a source handle on one workflowNode to a target handle on another.
-      reverseAction: Delete that workflowEdge.
-      relatedRequirements:
-        - FR-WF-EDGE-001
+      action: Create workflowEdge.
+      reverseAction: Delete the created workflowEdge.
     - view: graph
-      action: Reconnect workflowEdge source or target to a different workflowNode or handle.
-      reverseAction: Restore previous source workflowNode, target workflowNode, and both handles.
-      notes: Rejected finalize attempts (self-loop, duplicate pair) do not create an undo entry.
-      relatedRequirements:
-        - FR-WF-EDGE-003
+      action: Reconnect workflowEdge source or target.
+      reverseAction: Restore the previous source workflowNode, target workflowNode, and handles.
     - view: graph
-      action: Delete workflowEdge via Edit node link sidebar control.
-      reverseAction: Recreate the workflowEdge with the same endpoints, title, dashed flag, and handles as before deletion.
-      notes: Include only if sidebar-on-graph counts as in-view undo; delete path is sidebar-only in current specs.
-      relatedRequirements:
-        - FR-WF-EDGE-002
+      action: Delete workflowEdge.
+      reverseAction: Recreate the workflowEdge with its previous endpoints and metadata.
     - view: graph
-      action: Add workflowNode by dropping from Add tab onto workflowView.
-      reverseAction: Remove the new workflowNode, any workflowEdges created with it, and restore prior layout.
-      relatedRequirements:
-        - FR-WF-ADD-004
-        - FR-WF-ADD-005
-        - FR-WF-ADD-006
+      action: Add, duplicate, or insert workflowNode.
+      reverseAction: Remove the created workflowNode and restore layout and relationships changed by the original mutation.
     - view: graph
-      action: Duplicate workflowNode via hover menu and placement.
-      reverseAction: Remove the duplicated workflowNode and anything created with it.
-      relatedRequirements:
-        - FR-WF-DUP-002
+      action: Delete workflowNode.
+      reverseAction: Restore the workflowNode, placement, metadata, linked workflow reference, tags, outcome assignments, incident workflowEdges, and deletion-created layout or bypass-edge side effects.
     - view: graph
-      action: Insert workflowNode below via hover menu and placement.
-      reverseAction: Remove the inserted workflowNode and restore prior row order in the section or channel.
-      relatedRequirements: []
+      action: Delete workflowSectionContainer.
+      reverseAction: Restore the workflowSectionContainer at its previous position with its workflowNodes and all internal and cross-boundary workflowEdges.
     - view: graph
-      action: Delete workflowNode via hover menu or sidebar delete.
-      reverseAction: Restore deleted workflowNode at prior cell with prior metadata, workflowEdges, and outcome assignments.
-      notes: High snapshot or server restore cost.
-      relatedRequirements:
-        - FR-WF-DEL-002
-        - FR-WF-DEL-003
+      action: Delete workflowChannel.
+      reverseAction: Restore the workflowChannel at its previous position with its workflowNodes across sections and all internal and cross-boundary workflowEdges.
     - view: graph
-      action: Reorder workflowSectionContainer by vertical drag on section header.
-      reverseAction: Restore prior section index and dependent layout.
-      relatedRequirements:
-        - FR-SEC-009
-    - view: graph
-      action: Reorder workflowChannel by lateral drag on channel header.
-      reverseAction: Restore prior channel column order.
-      relatedRequirements:
-        - FR-CHAN-008
+      action: Reorder workflowSectionContainer or workflowChannel.
+      reverseAction: Restore the previous section or channel order without changing contained workflowNode or workflowEdge identity.
     - view: outcomes
-      action: Reorder or reparent workflowOutcome via drag on workflowOutcomeHeader to a line drop indicator.
-      reverseAction: Restore prior parent and sibling index; recompute ordinals per FR-WF-EO-007.
-      notes: May change workflowNode assignment sets via FR-WF-AO-006 — undo may need tree and assignment snapshot.
-      relatedRequirements:
-        - FR-WF-EO-015
-        - FR-WF-EO-016
+      action: Reorder, reparent, or nest workflowOutcome.
+      reverseAction: Restore the previous parent and sibling position and restore any outcome-assignment side effects caused by the original tree mutation.
     - view: outcomes
-      action: Nest workflowOutcome as last child of another row (combine drop).
-      reverseAction: Restore prior parent and position in the tree.
-      notes: Same FR-WF-AO-006 side-effect note as reorder or reparent.
-      relatedRequirements:
-        - FR-WF-EO-017
+      action: Insert or duplicate workflowOutcome or subtree.
+      reverseAction: Remove the created workflowOutcome or subtree and restore sibling ordinals.
     - view: outcomes
-      action: Insert sibling or child workflowOutcome via hover menu.
-      reverseAction: Delete the new workflowOutcome subtree and restore ordinals.
-      relatedRequirements:
-        - FR-WF-EO-003
-    - view: outcomes
-      action: Duplicate workflowOutcome subtree via hover menu.
-      reverseAction: Remove the duplicated subtree root and descendants.
-      relatedRequirements:
-        - FR-WF-EO-009
-        - FR-WF-EO-010
-        - FR-WF-EO-011
-    - view: outcomes
-      action: Delete workflowOutcome via hover menu or sidebar delete.
-      reverseAction: Restore deleted subtree, sibling ordinals, and node assignments removed per FR-WF-EO-014.
-      relatedRequirements:
-        - FR-WF-EO-012
-        - FR-WF-EO-013
-        - FR-WF-EO-014
+      action: Delete workflowOutcome or subtree.
+      reverseAction: Restore the subtree, logical identities, sibling ordinals, tags, and workflowNode assignments removed by deletion.
   explicitlyExcludedFromUndo:
-    - reason: Reversible directly in edge or link UI without global undo.
+    - reason: Fields persisted through auto-update forms are intentionally outside the initial undo model.
       actions:
-        - Change workflowEdge dashed line flag
-    - reason: Reversible via linked-outcomes UI or Outcomes sidebar without global undo.
+        - Auto-update edits to node, outcome, edge, section, or channel fields, including title, description, tags, and similar metadata.
+    - reason: These relationship gestures remain directly reversible in their owning UI for the initial scope.
       actions:
-        - Assign workflowOutcome to workflowNode by drag from workflowRightSidebarOutcomesTab (FR-WF-AO-004)
-        - Unlink workflowOutcome from workflowNode (FR-WF-AO-010)
-    - reason: No durable model change.
+        - Assign workflowOutcome to workflowNode.
+        - Unlink workflowOutcome from workflowNode.
+    - reason: No durable workflow model change.
       actions:
-        - Selection, outcome highlight set toggles, expand or collapse, view settings
-    - reason: Typing or form auto-save model, not last canvas gesture.
+        - Selection, outcome highlight set toggles, expand or collapse, and view settings.
+    - reason: Outside workflow graph and outcomes scope.
       actions:
-        - Auto-save edits to node, outcome, or edge fields (title, description, tags, and similar)
-    - reason: Outside graph and outcomes canvas scope.
-      actions:
-        - Comments, archive, copy workflow, navigation between routes
+        - Direct comment actions, restoration of deleted entity threads or comments, archive, copy workflow, delete workflow, delete project, and navigation between routes.
 
-requirements: []
+requirements:
+  - id: FR-WF-UNDO-001
+    title: Maintain exactly one undoable workflow mutation
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+      - commenter
+      - viewer
+      - user
+
+    uiObjects:
+      - workflowView
+      - workflowOutcomeView
+      - workflowUndoButton
+
+    preconditions:
+      - owner or editor can modify the current workflow
+      - owner or editor holds the workflow edit lease when finalizing the mutation
+
+    trigger:
+      - owner or editor successfully finalizes an in-scope action listed in undoScope.inScopeActions
+
+    mainFlow:
+      - system makes the successfully finalized action the single available undo step for the current workflow
+      - system records the actor who finalized the mutation as the only actor authorized to use that undo step
+      - if another in-scope action is successfully finalized before workflowUndoButton is clicked, the newer action replaces the older available undo step
+      - a rejected, failed, aborted, or cancelled action does not create or replace the available undo step
+      - commenter, viewer, and user cannot create an undo step because they cannot successfully finalize an in-scope mutation
+
+    roleBehavior:
+      owner:
+        workflowUndoButton: activeWhenActorAuthoredUndoStepAndHoldsEditLease
+      editor:
+        workflowUndoButton: activeWhenActorAuthoredUndoStepAndHoldsEditLease
+      commenter:
+        workflowUndoButton: unavailable
+      viewer:
+        workflowUndoButton: unavailable
+      user:
+        workflowUndoButton: unavailable
+
+    acceptanceCriteria:
+      - given no undo step exists, when owner or editor successfully finalizes one in-scope mutation, then exactly that mutation is available through workflowUndoButton
+      - given an undo step exists, only the actor who finalized the mutation can use that undo step while holding the workflow edit lease
+      - given mutation A is available for undo, when owner or editor successfully finalizes in-scope mutation B, then B is the only available undo step and A is no longer available
+      - given mutation A is available for undo, when a later mutation attempt is rejected, fails, is aborted, or is cancelled before successful finalization, then A remains the available undo step
+      - given actor is commenter, viewer, or user, workflowUndoButton is unavailable
+
+    openQuestions: []
+
+  - id: FR-WF-UNDO-002
+    title: Execute undo as one complete workflow mutation
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowView
+      - workflowOutcomeView
+      - workflowUndoButton
+
+    preconditions:
+      - one undo step exists for the current workflow
+      - actor remains authorized to edit the workflow
+      - actor is the same user who finalized the mutation represented by the undo step
+      - actor currently holds the workflow edit lease
+
+    trigger:
+      - actor clicks workflowUndoButton
+
+    mainFlow:
+      - system applies the complete reverse effect defined for the available undo step
+      - system does not expose an intermediate partially restored workflow state
+      - when reversal succeeds, system refreshes workflowView or workflowOutcomeView to the resulting committed state and consumes the undo step
+      - successful undo does not create a redo step
+      - when reversal cannot be completed, system leaves the workflow unchanged and does not consume the undo step
+
+    roleBehavior:
+      owner:
+        workflowUndoButton: active
+      editor:
+        workflowUndoButton: active
+
+    acceptanceCriteria:
+      - given one valid undo step exists, when its author holds the workflow edit lease and clicks workflowUndoButton, then the full reverse effect is committed as one workflow mutation and no partial restoration is rendered
+      - given the reverse effect succeeds, workflowUndoButton no longer exposes that consumed undo step and no redo step becomes available
+      - given the reverse effect cannot be completed, no part of the reverse effect remains committed and the same undo step remains available
+
+    openQuestions: []
+
+  - id: FR-WF-UNDO-003
+    title: Preserve logical identity when restoring deleted workflow entities
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowNode
+      - workflowSectionContainer
+      - workflowChannel
+      - workflowOutcome
+
+    preconditions:
+      - the available undo step reverses deletion of one or more workflow entities
+
+    trigger:
+      - actor clicks workflowUndoButton
+
+    mainFlow:
+      - each restored workflowNode retains the same logical UUID it had immediately before deletion
+      - each restored workflowSectionContainer retains the same logical UUID it had immediately before deletion
+      - each restored workflowChannel retains the same logical UUID it had immediately before deletion
+      - each restored workflowOutcome retains the same logical UUID it had immediately before deletion
+      - restored relationships point to those preserved logical identities
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given deletion removed an entity with logical UUID X, when deletion is successfully undone, then the restored entity is addressable by logical UUID X
+      - given a restored relationship referred to a deleted entity before deletion, when deletion is successfully undone, then the relationship refers to the restored entity with the preserved logical UUID
+
+    openQuestions: []
+
+  - id: FR-WF-UNDO-004
+    title: Restore deleted workflowNode and deletion side effects
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowView
+      - workflowNode
+      - workflowEdge
+      - workflowUndoButton
+
+    preconditions:
+      - the available undo step represents deletion of one workflowNode per FR-WF-DEL-001 or FR-WF-DEL-002
+
+    trigger:
+      - actor clicks workflowUndoButton
+
+    mainFlow:
+      - system restores the deleted workflowNode to its previous workflowSectionContainer, workflowSectionRow, and workflowChannel cell
+      - system restores the workflowNode metadata, linked workflow reference, tags, and outcome assignments that existed immediately before deletion
+      - system restores every workflowEdge that was removed because it was incident on the deleted workflowNode, including its previous endpoints and metadata
+      - system removes only a bypass workflowEdge created as a direct side effect of the deletion per FR-WF-DEL-004
+      - system reverses row-collapse or other grid-placement changes caused by the deletion
+      - the restored workflowNode retains its logical UUID per FR-WF-UNDO-003
+      - system does not restore the deleted workflowNode comment thread or its comments
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given a deleted workflowNode had metadata, a linked workflow, tags, outcome assignments, and incident workflowEdges immediately before deletion, when deletion is successfully undone, then those values and relationships are restored
+      - given deletion created a bypass workflowEdge per FR-WF-DEL-004, when deletion is successfully undone, then that deletion-created bypass is removed and the previously incident workflowEdges are restored
+      - given deletion collapsed a workflowSectionRow, when deletion is successfully undone, then the previous grid placement of the restored workflowNode and affected workflowNodes is restored
+      - given the deleted workflowNode had a comment thread or comments, when deletion is successfully undone, then those comments are not restored
+
+    openQuestions: []
+
+  - id: FR-WF-UNDO-005
+    title: Restore deleted workflowSectionContainer or workflowChannel aggregate
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowView
+      - workflowSectionContainer
+      - workflowChannel
+      - workflowNode
+      - workflowEdge
+      - workflowUndoButton
+
+    preconditions:
+      - the available undo step represents confirmed deletion of a workflowSectionContainer per FR-SEC-006 or workflowChannel per FR-CHAN-006
+
+    trigger:
+      - actor clicks workflowUndoButton
+
+    mainFlow:
+      - system restores the deleted workflowSectionContainer or workflowChannel at its previous ordered position
+      - system restores every workflowNode removed by the aggregate deletion to its previous section, row, and channel placement
+      - system restores each removed workflowNode's metadata, linked workflow reference, tags, and outcome assignments
+      - system restores workflowEdges whose two endpoints were both removed by the aggregate deletion
+      - system restores workflowEdges whose removed endpoint was inside the deleted aggregate and whose other endpoint remained outside it
+      - restored workflowSectionContainer, workflowChannel, and workflowNodes retain their logical UUIDs per FR-WF-UNDO-003
+      - system does not restore comment threads or comments belonging to the deleted workflowSectionContainer, workflowChannel, or contained workflowNodes
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given deletion of a workflowSectionContainer removed multiple workflowNodes and internal or cross-section workflowEdges, when deletion is successfully undone, then the section, nodes, placements, and all those workflowEdges are restored
+      - given deletion of a workflowChannel removed workflowNodes from multiple workflowSectionContainers and internal or cross-channel workflowEdges, when deletion is successfully undone, then the channel, nodes, placements, and all those workflowEdges are restored
+      - given a workflowEdge had one endpoint outside the deleted aggregate, when deletion is successfully undone, then the relationship to that surviving endpoint is restored without changing the surviving workflowNode's logical identity
+      - given the deleted aggregate or any contained workflowNode had a comment thread or comments, when deletion is successfully undone, then those comments are not restored
+
+    openQuestions: []
+
+  - id: FR-WF-UNDO-006
+    title: Exclude auto-update form fields from initial undo scope
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowView
+      - workflowOutcomeView
+      - workflowUndoButton
+
+    preconditions:
+      - actor edits a field persisted through an auto-update form
+
+    trigger:
+      - the auto-update field change is successfully persisted
+
+    mainFlow:
+      - the auto-update field change does not become an undo step
+      - workflowUndoButton does not offer reversal of that field edit
+      - if a structural undo step existed before the auto-update field change, that structural undo step remains available
+      - this exclusion includes title, description, tags, and similar metadata fields managed through auto-update forms
+      - this exclusion does not prevent a structural deletion undo from restoring the last persisted metadata belonging to a deleted entity
+      - when the later structural undo leaves an existing entity in place, it does not revert auto-updated field values persisted after the structural mutation
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given owner or editor changes a title, description, tags, or similar field through an auto-update form, when the change persists, then workflowUndoButton does not offer reversal of that field edit
+      - given a structural undo step exists, when an auto-update field change is subsequently persisted, then the same structural undo step remains available
+      - given a structural undo step changes placement, order, or relationships without deleting an existing entity, when an auto-update field change is persisted after that structural mutation and the structural mutation is then undone, then the auto-updated field value remains persisted
+      - given an entity's persisted metadata existed immediately before that entity was structurally deleted, when the structural deletion is successfully undone, then the entity's last persisted metadata is restored even though direct metadata editing is outside undo scope
+
+    openQuestions: []
+
+  - id: FR-WF-UNDO-007
+    title: Present a generic Undo button
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowView
+      - workflowOutcomeView
+      - workflowUndoButton
+
+    preconditions:
+      - actor can edit the current workflow
+      - current route is '/workflow/{id}/graph' or '/workflow/{id}/outcomes'
+
+    trigger:
+      - workflowView or workflowOutcomeView is rendered
+      - availability of the single undo step changes
+
+    mainFlow:
+      - system renders a generic button labeled 'Undo' for owner and editor
+      - workflowUndoButton is active when one undo step exists, the current actor authored it, and the current actor holds the workflow edit lease; otherwise it is disabled
+      - clicking active workflowUndoButton invokes the behavior in FR-WF-UNDO-002
+      - exact placement, styling, and surrounding controls are deferred until UI design exists
+      - no keyboard binding invokes undo in the initial scope
+
+    roleBehavior:
+      owner:
+        workflowUndoButton: visibleActiveWhenActorAuthoredUndoStepAndHoldsEditLeaseOtherwiseDisabled
+      editor:
+        workflowUndoButton: visibleActiveWhenActorAuthoredUndoStepAndHoldsEditLeaseOtherwiseDisabled
+
+    acceptanceCriteria:
+      - given owner or editor is viewing workflowView or workflowOutcomeView and no undo step exists, workflowUndoButton is visible, labeled 'Undo', and disabled
+      - given owner or editor is viewing workflowView or workflowOutcomeView, authored the available undo step, and holds the workflow edit lease, workflowUndoButton is visible, labeled 'Undo', and active
+      - given owner or editor did not author the available undo step or does not hold the workflow edit lease, workflowUndoButton is visible, labeled 'Undo', and disabled
+      - given workflowUndoButton is active, when owner or editor clicks it, then system invokes FR-WF-UNDO-002
+      - given an undo step exists, no keyboard shortcut invokes undo
+
+    openQuestions:
+      - Where will workflowUndoButton be placed when the UI is designed?
+
+  - id: FR-WF-UNDO-008
+    title: Delete the undo step when the edit lease changes hands
+
+    designEvidence: []
+
+    actors:
+      - owner
+      - editor
+
+    uiObjects:
+      - workflowView
+      - workflowOutcomeView
+      - workflowUndoButton
+
+    preconditions:
+      - one undo step exists and was authored by actor A
+      - actor A holds or most recently held the workflow edit lease
+
+    trigger:
+      - the workflow edit lease is acquired or taken over by actor B, where actor B is a different user from actor A
+
+    mainFlow:
+      - system deletes the existing undo step when the workflow edit lease changes from actor A to actor B
+      - actor B cannot use, adopt, receive, or reactivate actor A's deleted undo step
+      - workflowUndoButton is disabled for actor B until actor B successfully finalizes a new in-scope structural mutation
+      - if actor A later reacquires the workflow edit lease, actor A's deleted undo step is not restored
+      - refreshing or reacquiring the edit lease by actor A without an intervening different holder does not count as a lease handoff and does not delete actor A's undo step
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given actor A authored the available undo step, when actor B becomes the workflow edit-lease holder, then actor A's undo step is deleted and workflowUndoButton is disabled for actor B
+      - given actor B received the edit lease from actor A, actor B cannot use actor A's prior undo step
+      - given actor A reacquires the edit lease after actor B held it, actor A's prior undo step does not reappear
+      - given actor A refreshes or reacquires the lease without any different user holding it, actor A's undo step remains available
+
+    openQuestions: []
+
+changelog:
+  - date: '2026-11-06'
+    changes:
+      - Replaced the preliminary empty requirement set with normalized FR-WF-UNDO-001 through FR-WF-UNDO-008.
+      - Ratified single-step structural undo direction for workflow graph and outcomes views.
+      - Added deferred aggregate restoration for workflowNode, workflowSectionContainer, and workflowChannel deletion.
+      - Required restored entities to retain their logical UUIDs.
+      - Confirmed that fields managed through auto-update forms remain outside initial undo scope.
+      - Added a generic Undo button requirement while deferring its placement and styling.
+      - Confirmed that the initial scope has no keyboard binding and no redo.
+      - Confirmed that auto-update mutations do not clear an existing structural undo step.
+      - Excluded restoration of deleted comment threads and comments.
+      - Restricted each undo step to the actor who authored its mutation and required that actor to hold the workflow edit lease.
+      - Required deletion of an undo step when the workflow edit lease changes to a different user; undo authority cannot be transferred or restored later.
+      - Left route persistence and Undo button placement explicitly unresolved.

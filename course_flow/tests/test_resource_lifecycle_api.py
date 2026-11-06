@@ -14,6 +14,8 @@ from course_flow.core.models import (
     FavoriteGraph,
     FavoriteProject,
     Graph,
+    GraphUndoEntry,
+    GraphUndoKind,
     Node,
     Project,
     Section,
@@ -72,6 +74,12 @@ def test_project_archive_and_restore_apply_required_batch_side_effects(
         is_published=True,
     )
     workflow = _workflow(project=project, owner=owner, title="Child")
+    GraphUndoEntry.objects.create(
+        graph=workflow.graph,
+        actor=owner,
+        kind=GraphUndoKind.DELETE_CREATED_EDGE,
+        payload={"edge_id": 1},
+    )
     FavoriteProject.objects.create(user=owner, project=project)
     FavoriteGraph.objects.create(user=owner, graph=workflow.graph)
     headers = _auth_header(owner)
@@ -87,6 +95,7 @@ def test_project_archive_and_restore_apply_required_batch_side_effects(
     assert workflow.is_archived is True
     assert not FavoriteProject.objects.filter(project=project).exists()
     assert not FavoriteGraph.objects.filter(graph=workflow.graph).exists()
+    assert not GraphUndoEntry.objects.filter(graph=workflow.graph).exists()
     assert client.get(f"/api/project/{project.uuid}", **headers).status_code == 403
 
     library = client.post(
@@ -143,6 +152,13 @@ def test_single_workflow_archive_breaks_links_and_requires_archive_before_delete
         node_type="activity",
     )
     FavoriteGraph.objects.create(user=owner, graph=child.graph)
+    for graph in (parent.graph, child.graph):
+        GraphUndoEntry.objects.create(
+            graph=graph,
+            actor=owner,
+            kind=GraphUndoKind.DELETE_CREATED_EDGE,
+            payload={"edge_id": 1},
+        )
     parent_revision = parent.graph.revision_id
     headers = _auth_header(owner)
     acquire_workflow_edit_lock(client, headers, child.uuid)
@@ -160,6 +176,9 @@ def test_single_workflow_archive_breaks_links_and_requires_archive_before_delete
     assert node.linked_workflow_id is None
     assert parent.graph.revision_id == parent_revision + 1
     assert not FavoriteGraph.objects.filter(graph=child.graph).exists()
+    assert not GraphUndoEntry.objects.filter(
+        graph__in=(parent.graph, child.graph)
+    ).exists()
     assert client.get(f"/api/workflow/{child.uuid}", **headers).status_code == 403
 
     restored = client.post(f"/api/workflow/{child.uuid}/restore", **headers)

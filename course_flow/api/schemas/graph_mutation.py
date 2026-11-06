@@ -157,6 +157,10 @@ class GraphMutationEnvelopeOut(CamelSchema):
     meta: GraphMutationMetaOut
 
 
+class GraphUndoStatusOut(CamelSchema):
+    available: bool
+
+
 class GraphNodeCreateIn(CamelSchema):
     """Placement is required on ``Node`` (ORM); optional ``workflow_uuid`` selects a workflow on this graph."""
 

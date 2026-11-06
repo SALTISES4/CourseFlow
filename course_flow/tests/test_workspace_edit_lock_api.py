@@ -11,6 +11,9 @@ from course_flow.core.auth import generate_raw_token, hash_token
 from course_flow.core.enum import TeamRole
 from course_flow.core.models import (
     Authtoken,
+    Graph,
+    GraphUndoEntry,
+    GraphUndoKind,
     Project,
     TeamUser,
     WorkspaceEditLock,
@@ -237,3 +240,98 @@ def test_project_lock_does_not_block_child_workflow_creation_or_lock(lock_contex
     assert project_status.json()["state"] == "held"
     assert WorkspaceEditLock.objects.filter(project=project).exists()
     assert WorkspaceEditLock.objects.filter(workflow__uuid=workflow_uuid).exists()
+
+
+@pytest.mark.django_db
+def test_workflow_undo_is_deleted_only_when_edit_lease_changes_hands(lock_context):
+    client = Client()
+    project = lock_context["project"]
+    created = client.post(
+        "/api/workflow",
+        data={
+            "projectUuid": str(project.uuid),
+            "title": "Undo lease workflow",
+            "workflowType": "course",
+        },
+        content_type="application/json",
+        **lock_context["owner_headers"],
+    )
+    assert created.status_code == 200, created.content
+    workflow_uuid = created.json()["uuid"]
+    graph = Graph.objects.get(uuid=created.json()["graphUuid"])
+
+    acquired = client.post(
+        f"/api/workspace-lock/workflow/{workflow_uuid}/acquire",
+        content_type="application/json",
+        **lock_context["owner_headers"],
+    )
+    assert acquired.status_code == 200, acquired.content
+    GraphUndoEntry.objects.create(
+        graph=graph,
+        actor=lock_context["owner"],
+        kind=GraphUndoKind.DELETE_CREATED_EDGE,
+        payload={"edge_id": 123},
+    )
+
+    blocked = client.post(
+        f"/api/workspace-lock/workflow/{workflow_uuid}/acquire",
+        content_type="application/json",
+        **lock_context["editor_headers"],
+    )
+    assert blocked.status_code == 200
+    assert blocked.json()["state"] == "locked"
+    assert GraphUndoEntry.objects.filter(graph=graph).exists()
+
+    takeover = client.post(
+        f"/api/workspace-lock/workflow/{workflow_uuid}/takeover",
+        data={"expectedVersion": acquired.json()["version"]},
+        content_type="application/json",
+        **lock_context["editor_headers"],
+    )
+    assert takeover.status_code == 200, takeover.content
+    assert takeover.json()["state"] == "held"
+    assert not GraphUndoEntry.objects.filter(graph=graph).exists()
+
+
+@pytest.mark.django_db
+def test_same_author_reacquiring_expired_lease_preserves_undo(lock_context):
+    client = Client()
+    project = lock_context["project"]
+    created = client.post(
+        "/api/workflow",
+        data={
+            "projectUuid": str(project.uuid),
+            "title": "Same author workflow",
+            "workflowType": "course",
+        },
+        content_type="application/json",
+        **lock_context["owner_headers"],
+    )
+    assert created.status_code == 200, created.content
+    workflow_uuid = created.json()["uuid"]
+    graph = Graph.objects.get(uuid=created.json()["graphUuid"])
+
+    acquired = client.post(
+        f"/api/workspace-lock/workflow/{workflow_uuid}/acquire",
+        content_type="application/json",
+        **lock_context["owner_headers"],
+    )
+    assert acquired.status_code == 200, acquired.content
+    GraphUndoEntry.objects.create(
+        graph=graph,
+        actor=lock_context["owner"],
+        kind=GraphUndoKind.DELETE_CREATED_EDGE,
+        payload={"edge_id": 123},
+    )
+    lock = WorkspaceEditLock.objects.get(workflow__uuid=workflow_uuid)
+    lock.expires_at = timezone.now() - timedelta(seconds=1)
+    lock.save(update_fields=["expires_at"])
+
+    reacquired = client.post(
+        f"/api/workspace-lock/workflow/{workflow_uuid}/acquire",
+        content_type="application/json",
+        **lock_context["owner_headers"],
+    )
+    assert reacquired.status_code == 200, reacquired.content
+    assert reacquired.json()["state"] == "held"
+    assert GraphUndoEntry.objects.filter(graph=graph).exists()

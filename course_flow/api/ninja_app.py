@@ -18,6 +18,7 @@ from course_flow.api.routers import (
     reference_data,
     sections,
     threads,
+    undo,
     users,
     workflows,
 )
@@ -45,6 +46,7 @@ def expected_api_error_handler(request, exc: ExpectedApiError):
         status=exc.status_code,
     )
 
+
 api.add_router("/project", projects.router)
 api.add_router("/workflow", workflows.router)
 api.add_router("/public", public_workflows.router)
@@ -54,6 +56,7 @@ api.add_router("/graph", sections.graph_collection_router)
 api.add_router("/graph", nodes.graph_collection_router)
 api.add_router("/graph", outcomes.graph_collection_router)
 api.add_router("/graph", edges.graph_edges_router)
+api.add_router("/graph", undo.router)
 api.add_router("/channel", channels.resource_router)
 api.add_router("/section", sections.resource_router)
 api.add_router("/node", nodes.node_resource_router)

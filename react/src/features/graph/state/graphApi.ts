@@ -22,6 +22,7 @@ import {
   placeGraphNode,
   reorderGraphChannels,
   reorderGraphSections,
+  undoGraphMutation as undoGraphMutationSdk,
   unlinkNodeOutcome as unlinkNodeOutcomeSdk,
   updateChannel,
   updateEdge,
@@ -80,6 +81,7 @@ import type {
   SectionEntity,
   TagEntity,
   ThreadCommentCount,
+  UndoGraphMutationInput,
   UnlinkNodeOutcomeInput,
   UpdateEdgeInput,
   UpdateOutcomeInput,
@@ -632,6 +634,15 @@ export const deleteEdgeCommand = async (
 ): Promise<GraphMutationEnvelope> => {
   const result = await deleteEdge({
     path: { edge_id: parseEdgeId(String(input.edgeId)) }
+  })
+  return mapMutationEnvelope(unwrapSdkData(result))
+}
+
+export const undoGraphMutationCommand = async (
+  input: UndoGraphMutationInput
+): Promise<GraphMutationEnvelope> => {
+  const result = await undoGraphMutationSdk({
+    path: { uuid: String(input.graphUuid) }
   })
   return mapMutationEnvelope(unwrapSdkData(result))
 }

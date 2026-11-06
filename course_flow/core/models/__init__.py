@@ -6,6 +6,10 @@ from course_flow.core.models.coursemeta import Coursemeta
 from course_flow.core.models.discipline import Discipline
 from course_flow.core.models.edge import Edge
 from course_flow.core.models.graph import Graph
+from course_flow.core.models.graphundoentry import (
+    GraphUndoEntry,
+    GraphUndoKind,
+)
 from course_flow.core.models.horizontaloutcome import Horizontaloutcome
 from course_flow.core.models.node import Node
 from course_flow.core.models.notification import Notification
@@ -63,5 +67,7 @@ __all__ = [
     "Workflow",
     "User",
     "Graph",
+    "GraphUndoEntry",
+    "GraphUndoKind",
     "WorkspaceEditLock",
 ]

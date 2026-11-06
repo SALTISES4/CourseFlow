@@ -310,6 +310,7 @@ const workflow = {
     collapseSection: 'Collapse section'
   },
   menu: {
+    undo: 'Undo',
     edit: 'Edit workflow',
     sharing: 'Sharing',
     export: 'Export',

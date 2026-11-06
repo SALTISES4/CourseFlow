@@ -19,6 +19,7 @@ from course_flow.core.models import (
     Channel,
     Edge,
     Graph,
+    GraphUndoEntry,
     Node,
     Outcome,
     Section,
@@ -199,6 +200,255 @@ def test_create_and_delete_edge_envelopes(client: Client, user):
     assert b2["revisionId"] == 2
     assert b2["changes"]["edges"]["deleted"] == [eid]
     assert b2["meta"]["triggeredBy"] == "delete_edge"
+
+
+@pytest.mark.django_db
+def test_undo_created_edge_survives_metadata_update(client: Client, user):
+    raw = _issue_token_for(user)
+    graph_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(graph_uuid)
+    source = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+    target = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=1
+    )
+
+    created = client.post(
+        f"/api/graph/{graph_uuid}/edges",
+        data={
+            "sourceNodeUuid": str(source.uuid),
+            "targetNodeUuid": str(target.uuid),
+            "lineType": "solid",
+            "sourcePort": "out",
+            "targetPort": "in",
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert created.status_code == 200, created.content
+    edge_id = created.json()["changes"]["edges"]["created"][0]["id"]
+
+    status = client.get(
+        f"/api/graph/{graph_uuid}/undo",
+        **_auth_header(raw),
+    )
+    assert status.status_code == 200, status.content
+    assert status.json() == {"available": True}
+
+    updated = client.patch(
+        f"/api/edge/{edge_id}",
+        data={"title": "Updated label", "lineType": "dashed"},
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert updated.status_code == 200, updated.content
+    assert GraphUndoEntry.objects.filter(graph__uuid=graph_uuid).exists()
+
+    undone = client.post(
+        f"/api/graph/{graph_uuid}/undo",
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert undone.status_code == 200, undone.content
+    body = undone.json()
+    assert body["revisionId"] == 3
+    assert body["meta"] == {
+        "triggeredBy": "undo",
+        "triggerEntityId": str(edge_id),
+    }
+    assert body["changes"]["edges"]["deleted"] == [edge_id]
+    assert not Edge.objects.filter(pk=edge_id).exists()
+    assert not GraphUndoEntry.objects.filter(graph__uuid=graph_uuid).exists()
+
+
+@pytest.mark.django_db
+def test_undo_deleted_edge_recreates_relationship_with_new_row_id(
+    client: Client,
+    user,
+):
+    raw = _issue_token_for(user)
+    graph_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(graph_uuid)
+    source = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+    target = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=1
+    )
+    edge = Edge.objects.create(
+        source_node=source,
+        target_node=target,
+        title="Dependency",
+        text_position=25,
+        line_type="dashed",
+        source_port="right",
+        target_port="left",
+    )
+    deleted_id = edge.id
+
+    deleted = client.delete(
+        f"/api/edge/{deleted_id}",
+        **_auth_header(raw),
+    )
+    assert deleted.status_code == 200, deleted.content
+
+    undone = client.post(
+        f"/api/graph/{graph_uuid}/undo",
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert undone.status_code == 200, undone.content
+    recreated_payload = undone.json()["changes"]["edges"]["created"][0]
+    assert recreated_payload["id"] != deleted_id
+    assert recreated_payload == {
+        "id": recreated_payload["id"],
+        "sourceNodeUuid": str(source.uuid),
+        "targetNodeUuid": str(target.uuid),
+        "title": "Dependency",
+        "textPosition": 25,
+        "lineType": "dashed",
+        "sourcePort": "right",
+        "targetPort": "left",
+    }
+    recreated = Edge.objects.get(pk=recreated_payload["id"])
+    assert recreated.source_node_id == source.id
+    assert recreated.target_node_id == target.id
+
+
+@pytest.mark.django_db
+def test_unsupported_structural_mutation_invalidates_edge_undo(
+    client: Client,
+    user,
+):
+    raw = _issue_token_for(user)
+    graph_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(graph_uuid)
+    source = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+    target = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=1
+    )
+
+    created = client.post(
+        f"/api/graph/{graph_uuid}/edges",
+        data={
+            "sourceNodeUuid": str(source.uuid),
+            "targetNodeUuid": str(target.uuid),
+            "sourcePort": "out",
+            "targetPort": "in",
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert created.status_code == 200, created.content
+
+    structural = client.post(
+        f"/api/graph/{graph_uuid}/nodes",
+        data={
+            "sectionUuid": str(section.uuid),
+            "channelUuid": str(channel.uuid),
+            "sectionRow": 2,
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert structural.status_code == 200, structural.content
+
+    status = client.get(
+        f"/api/graph/{graph_uuid}/undo",
+        **_auth_header(raw),
+    )
+    assert status.status_code == 200
+    assert status.json() == {"available": False}
+    unavailable = client.post(
+        f"/api/graph/{graph_uuid}/undo",
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert unavailable.status_code == 409
+
+
+@pytest.mark.django_db
+def test_failed_undo_is_atomic_and_preserves_the_undo_step(client: Client, user):
+    raw = _issue_token_for(user)
+    graph_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(graph_uuid)
+    source = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+    target = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=1
+    )
+    created = client.post(
+        f"/api/graph/{graph_uuid}/edges",
+        data={
+            "sourceNodeUuid": str(source.uuid),
+            "targetNodeUuid": str(target.uuid),
+            "sourcePort": "out",
+            "targetPort": "in",
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert created.status_code == 200, created.content
+    edge_id = created.json()["changes"]["edges"]["created"][0]["id"]
+    entry = GraphUndoEntry.objects.get(graph__uuid=graph_uuid)
+    entry.payload = {"edge_id": edge_id + 10_000}
+    entry.save(update_fields=["payload"])
+
+    failed = client.post(
+        f"/api/graph/{graph_uuid}/undo",
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert failed.status_code == 409
+    assert Edge.objects.filter(pk=edge_id).exists()
+    assert Graph.objects.get(uuid=graph_uuid).revision_id == 1
+    assert GraphUndoEntry.objects.filter(pk=entry.pk).exists()
+
+
+@pytest.mark.django_db
+def test_only_recorded_author_can_use_undo(client: Client, user, other_user):
+    raw = _issue_token_for(user)
+    graph_uuid = _create_graph(client, raw)
+    section, channel, workflow = _section_and_channel(graph_uuid)
+    source = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=0
+    )
+    target = create_grid_node(
+        section=section, channel=channel, workflow=workflow, section_row=1
+    )
+    created = client.post(
+        f"/api/graph/{graph_uuid}/edges",
+        data={
+            "sourceNodeUuid": str(source.uuid),
+            "targetNodeUuid": str(target.uuid),
+            "sourcePort": "out",
+            "targetPort": "in",
+        },
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert created.status_code == 200, created.content
+    edge_id = created.json()["changes"]["edges"]["created"][0]["id"]
+    GraphUndoEntry.objects.filter(graph__uuid=graph_uuid).update(actor=other_user)
+
+    status = client.get(
+        f"/api/graph/{graph_uuid}/undo",
+        **_auth_header(raw),
+    )
+    assert status.status_code == 200
+    assert status.json() == {"available": False}
+
+    forbidden = client.post(
+        f"/api/graph/{graph_uuid}/undo",
+        content_type="application/json",
+        **_auth_header(raw),
+    )
+    assert forbidden.status_code == 409
+    assert Edge.objects.filter(pk=edge_id).exists()
 
 
 @pytest.mark.django_db

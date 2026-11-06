@@ -9,9 +9,17 @@ from uuid import UUID
 
 from django.db import transaction
 from django.db.models import F, Q
+from django.utils import timezone
+from pydantic import ValidationError
 
 from course_flow.application.graph_mutation_delta import (
     GraphMutationDeltaBuilder,
+)
+from course_flow.application.graph_undo import (
+    UNDO_SCHEMA_VERSION,
+    DeleteCreatedEdgeUndoPayload,
+    GraphUndoPayload,
+    RecreateDeletedEdgeUndoPayload,
 )
 from course_flow.application.node_grid import (
     DropEdge,
@@ -30,17 +38,20 @@ from course_flow.core.models import (
     Channel,
     Edge,
     Graph,
+    GraphUndoEntry,
+    GraphUndoKind,
     Node,
     Outcome,
     Section,
     Tag,
     User,
     Workflow,
+    WorkspaceEditLock,
 )
 from course_flow.core.models.thread import Thread
 from course_flow.core.permissions import WorkflowPermission
 
-MutationError = Literal["not_found", "forbidden", "bad_request"]
+MutationError = Literal["not_found", "forbidden", "bad_request", "conflict"]
 
 MAX_OUTCOME_LEVELS = 3
 
@@ -429,9 +440,49 @@ def _resolve_outcome_insert_index(
     return _siblings_qs(graph_id, parent_id).count()
 
 
-def _bump_revision(wf: Graph) -> None:
+def _bump_revision(wf: Graph, *, preserve_undo: bool = False) -> None:
+    if not preserve_undo:
+        GraphUndoEntry.objects.filter(graph_id=wf.pk).delete()
     Graph.objects.filter(pk=wf.pk).update(revision_id=F("revision_id") + 1)
     wf.refresh_from_db(fields=["revision_id", "modified_on"])
+
+
+def _record_undo(
+    *,
+    graph: Graph,
+    actor_id: int,
+    kind: GraphUndoKind,
+    payload: GraphUndoPayload,
+) -> None:
+    GraphUndoEntry.objects.update_or_create(
+        graph_id=graph.pk,
+        defaults={
+            "actor_id": actor_id,
+            "kind": kind,
+            "schema_version": UNDO_SCHEMA_VERSION,
+            "payload": payload.model_dump(mode="json"),
+        },
+    )
+
+
+def _actor_holds_graph_edit_lease(graph: Graph, actor_id: int) -> bool:
+    return WorkspaceEditLock.objects.filter(
+        workflow__graph_id=graph.pk,
+        holder_id=actor_id,
+        expires_at__gt=timezone.now(),
+    ).exists()
+
+
+def _edge_creation_is_valid(*, graph: Graph, source: Node, target: Node) -> bool:
+    if not _node_in_graph(source, graph.id) or not _node_in_graph(target, graph.id):
+        return False
+    if source.pk == target.pk:
+        return False
+    if Edge.objects.filter(source_node=source, target_node=target).exists():
+        return False
+    if Edge.objects.filter(source_node=source).count() >= 50:
+        return False
+    return Edge.objects.filter(target_node=target).count() < 50
 
 
 class GraphMutationService:
@@ -473,6 +524,143 @@ class GraphMutationService:
             return None, "forbidden"
 
         return wf, None
+
+    def get_undo_status(
+        self,
+        *,
+        graph_uuid: UUID,
+        user_id: int,
+    ) -> tuple[dict | None, MutationError | None]:
+        try:
+            graph = Graph.objects.select_related("workflow__project").get(
+                uuid=graph_uuid
+            )
+        except Graph.DoesNotExist:
+            return None, "not_found"
+
+        if not self._has_permission(
+            graph=graph,
+            user_id=user_id,
+            action=WorkflowPermission.NODE_LINK_MANAGEMENT,
+        ):
+            return None, "forbidden"
+
+        available = GraphUndoEntry.objects.filter(
+            graph_id=graph.pk,
+            actor_id=user_id,
+            schema_version=UNDO_SCHEMA_VERSION,
+        ).exists() and _actor_holds_graph_edit_lease(graph, user_id)
+        return {"available": available}, None
+
+    @transaction.atomic
+    def undo(
+        self,
+        *,
+        graph_uuid: UUID,
+        user_id: int,
+    ) -> tuple[dict | None, MutationError | None]:
+        graph, err = self._lock_graph(
+            graph_uuid,
+            user_id,
+            WorkflowPermission.NODE_LINK_MANAGEMENT,
+        )
+        if err:
+            return None, err
+        if not _actor_holds_graph_edit_lease(graph, user_id):
+            return None, "conflict"
+
+        entry = (
+            GraphUndoEntry.objects.select_for_update().filter(graph_id=graph.pk).first()
+        )
+        if (
+            entry is None
+            or entry.actor_id != user_id
+            or entry.schema_version != UNDO_SCHEMA_VERSION
+            or not isinstance(entry.payload, dict)
+        ):
+            return None, "conflict"
+
+        builder = GraphMutationDeltaBuilder()
+        trigger_entity_id: str
+
+        if entry.kind == GraphUndoKind.DELETE_CREATED_EDGE:
+            try:
+                undo_payload = DeleteCreatedEdgeUndoPayload.model_validate(
+                    entry.payload
+                )
+            except ValidationError:
+                return None, "conflict"
+            edge_id = undo_payload.edge_id
+            try:
+                edge = Edge.objects.select_related(
+                    "source_node__section",
+                    "source_node__channel",
+                    "target_node__section",
+                    "target_node__channel",
+                ).get(pk=edge_id)
+            except Edge.DoesNotExist:
+                return None, "conflict"
+            if not _node_in_graph(edge.source_node, graph.pk) or not _node_in_graph(
+                edge.target_node,
+                graph.pk,
+            ):
+                return None, "conflict"
+
+            builder.add_edge_deleted(edge.id)
+            trigger_entity_id = str(edge.id)
+            edge.delete()
+
+        elif entry.kind == GraphUndoKind.RECREATE_DELETED_EDGE:
+            try:
+                undo_payload = RecreateDeletedEdgeUndoPayload.model_validate(
+                    entry.payload
+                )
+            except ValidationError:
+                return None, "conflict"
+
+            try:
+                source = Node.objects.select_related("section", "channel").get(
+                    uuid=undo_payload.source_node_uuid
+                )
+                target = Node.objects.select_related("section", "channel").get(
+                    uuid=undo_payload.target_node_uuid
+                )
+            except Node.DoesNotExist:
+                return None, "conflict"
+            if not _edge_creation_is_valid(
+                graph=graph,
+                source=source,
+                target=target,
+            ):
+                return None, "conflict"
+
+            edge = Edge.objects.create(
+                source_node=source,
+                target_node=target,
+                title=undo_payload.title,
+                text_position=undo_payload.text_position,
+                line_type=undo_payload.line_type,
+                source_port=undo_payload.source_port,
+                target_port=undo_payload.target_port,
+            )
+            edge = Edge.objects.select_related("source_node", "target_node").get(
+                pk=edge.pk
+            )
+            builder.add_edge_created(_edge_payload(edge))
+            trigger_entity_id = str(edge.id)
+        else:
+            return None, "conflict"
+
+        _bump_revision(graph)
+        return (
+            builder.build_envelope(
+                graph_uuid=graph.uuid,
+                revision_id=graph.revision_id,
+                triggered_by="undo",
+                trigger_entity_id=trigger_entity_id,
+            ),
+            None,
+        )
 
     @transaction.atomic
     def delete_node(
@@ -1061,19 +1249,7 @@ class GraphMutationService:
         except Node.DoesNotExist:
             return None, "bad_request"
 
-        if not _node_in_graph(sn, wf.id) or not _node_in_graph(tn, wf.id):
-            return None, "bad_request"
-
-        if sn.pk == tn.pk:
-            return None, "bad_request"
-
-        if Edge.objects.filter(source_node=sn, target_node=tn).exists():
-            return None, "bad_request"
-
-        if Edge.objects.filter(source_node=sn).count() >= 50:
-            return None, "bad_request"
-
-        if Edge.objects.filter(target_node=tn).count() >= 50:
+        if not _edge_creation_is_valid(graph=wf, source=sn, target=tn):
             return None, "bad_request"
 
         e = Edge.objects.create(
@@ -1089,6 +1265,12 @@ class GraphMutationService:
         builder.add_edge_created(_edge_payload(e))
 
         _bump_revision(wf)
+        _record_undo(
+            graph=wf,
+            actor_id=user_id,
+            kind=GraphUndoKind.DELETE_CREATED_EDGE,
+            payload=DeleteCreatedEdgeUndoPayload(edge_id=e.id),
+        )
 
         env = builder.build_envelope(
             graph_uuid=wf.uuid,
@@ -1162,11 +1344,26 @@ class GraphMutationService:
 
         builder = GraphMutationDeltaBuilder()
         builder.add_edge_deleted(e.id)
+        undo_payload = RecreateDeletedEdgeUndoPayload(
+            source_node_uuid=e.source_node.uuid,
+            target_node_uuid=e.target_node.uuid,
+            title=e.title or "",
+            text_position=e.text_position,
+            line_type=e.line_type,
+            source_port=e.source_port,
+            target_port=e.target_port,
+        )
 
         eid_str = str(e.id)
         e.delete()
 
         _bump_revision(wf_locked)
+        _record_undo(
+            graph=wf_locked,
+            actor_id=user_id,
+            kind=GraphUndoKind.RECREATE_DELETED_EDGE,
+            payload=undo_payload,
+        )
 
         env = builder.build_envelope(
             graph_uuid=wf_locked.uuid,
@@ -1271,10 +1468,16 @@ class GraphMutationService:
             replacement_source.pk != e.source_node_id
             or replacement_target.pk != e.target_node_id
         )
-        if endpoint_changed and Edge.objects.filter(
-            source_node=replacement_source,
-            target_node=replacement_target,
-        ).exclude(pk=e.pk).exists():
+        connection_changed = endpoint_changed
+        if (
+            endpoint_changed
+            and Edge.objects.filter(
+                source_node=replacement_source,
+                target_node=replacement_target,
+            )
+            .exclude(pk=e.pk)
+            .exists()
+        ):
             return None, "bad_request"
 
         if (
@@ -1311,12 +1514,14 @@ class GraphMutationService:
             source_port = source_port.strip()
             if not source_port:
                 return None, "bad_request"
+            connection_changed = connection_changed or source_port != e.source_port
             e.source_port = source_port
             updates.append("source_port")
         if target_port is not None:
             target_port = target_port.strip()
             if not target_port:
                 return None, "bad_request"
+            connection_changed = connection_changed or target_port != e.target_port
             e.target_port = target_port
             updates.append("target_port")
 
@@ -1329,7 +1534,7 @@ class GraphMutationService:
         builder = GraphMutationDeltaBuilder()
         builder.add_edge_updated(_edge_payload(e))
 
-        _bump_revision(wf_locked)
+        _bump_revision(wf_locked, preserve_undo=not connection_changed)
 
         env = builder.build_envelope(
             graph_uuid=wf_locked.uuid,
@@ -1646,7 +1851,7 @@ class GraphMutationService:
 
         builder = GraphMutationDeltaBuilder()
         builder.add_node_updated(_node_payload(n))
-        _bump_revision(wf_locked)
+        _bump_revision(wf_locked, preserve_undo=True)
 
         return (
             builder.build_envelope(
@@ -2230,7 +2435,7 @@ class GraphMutationService:
 
         builder = GraphMutationDeltaBuilder()
         builder.add_outcome_updated(_outcome_payload(_reload_outcome(outcome.pk)))
-        _bump_revision(wf)
+        _bump_revision(wf, preserve_undo=True)
 
         return (
             builder.build_envelope(

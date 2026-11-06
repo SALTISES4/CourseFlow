@@ -313,6 +313,10 @@ export interface DeleteEdgeInput {
   edgeId: EdgeKey
 }
 
+export interface UndoGraphMutationInput {
+  graphUuid: GraphUuid
+}
+
 /** Partial edge metadata (`GraphEdgePatchIn` on the resource API). */
 export interface EdgeMetaPatch {
   title?: string

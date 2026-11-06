@@ -153,6 +153,7 @@ const workflowFr = {
     sectionNumber: 'Section {{number}}', expandSection: 'Développer la section', collapseSection: 'Réduire la section'
   },
   menu: {
+    undo: 'Annuler',
     edit: 'Modifier le flux de travail', sharing: 'Partage', export: 'Exporter', importOutcomes: 'Importer des résultats',
     importNodes: 'Importer des nœuds', archive: 'Archiver {{workflowType}}', copy: 'Copier {{workflowType}}',
     restore: 'Restaurer le flux de travail', permanentlyDelete: 'Supprimer définitivement le flux de travail',

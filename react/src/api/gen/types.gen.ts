@@ -2130,6 +2130,16 @@ export type GraphEdgeCreateIn = {
 }
 
 /**
+ * GraphUndoStatusOut
+ */
+export type GraphUndoStatusOut = {
+  /**
+   * Available
+   */
+  available: boolean
+}
+
+/**
  * ChannelCreateIn
  */
 export type ChannelCreateIn = {
@@ -4371,6 +4381,50 @@ export type CreateGraphEdgeResponses = {
 
 export type CreateGraphEdgeResponse =
   CreateGraphEdgeResponses[keyof CreateGraphEdgeResponses]
+
+export type GetGraphUndoStatusData = {
+  body?: never
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/graph/{uuid}/undo'
+}
+
+export type GetGraphUndoStatusResponses = {
+  /**
+   * OK
+   */
+  200: GraphUndoStatusOut
+}
+
+export type GetGraphUndoStatusResponse =
+  GetGraphUndoStatusResponses[keyof GetGraphUndoStatusResponses]
+
+export type UndoGraphMutationData = {
+  body?: never
+  path: {
+    /**
+     * Uuid
+     */
+    uuid: string
+  }
+  query?: never
+  url: '/api/graph/{uuid}/undo'
+}
+
+export type UndoGraphMutationResponses = {
+  /**
+   * OK
+   */
+  200: GraphMutationEnvelopeOut
+}
+
+export type UndoGraphMutationResponse =
+  UndoGraphMutationResponses[keyof UndoGraphMutationResponses]
 
 export type CreateChannelData = {
   body: ChannelCreateIn

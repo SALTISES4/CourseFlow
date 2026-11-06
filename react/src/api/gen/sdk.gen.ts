@@ -73,6 +73,8 @@ import type {
   GetEdgeResponses,
   GetGraphData,
   GetGraphResponses,
+  GetGraphUndoStatusData,
+  GetGraphUndoStatusResponses,
   GetGraphViewData,
   GetGraphViewResponses,
   GetMyNotificationSettingsData,
@@ -179,6 +181,8 @@ import type {
   SearchLibraryResponses,
   TakeoverWorkspaceEditLockData,
   TakeoverWorkspaceEditLockResponses,
+  UndoGraphMutationData,
+  UndoGraphMutationResponses,
   UnlinkNodeOutcomeData,
   UnlinkNodeOutcomeResponses,
   UpdateChannelData,
@@ -271,6 +275,8 @@ import {
   zGetEdgeResponse,
   zGetGraphData,
   zGetGraphResponse,
+  zGetGraphUndoStatusData,
+  zGetGraphUndoStatusResponse,
   zGetGraphViewData,
   zGetGraphViewResponse,
   zGetMyNotificationSettingsData,
@@ -377,6 +383,8 @@ import {
   zSearchLibraryResponse,
   zTakeoverWorkspaceEditLockData,
   zTakeoverWorkspaceEditLockResponse,
+  zUndoGraphMutationData,
+  zUndoGraphMutationResponse,
   zUnlinkNodeOutcomeData,
   zUnlinkNodeOutcomeResponse,
   zUpdateChannelData,
@@ -1409,6 +1417,46 @@ export const createGraphEdge = <ThrowOnError extends boolean = false>(
       'Content-Type': 'application/json',
       ...options.headers
     }
+  })
+
+/**
+ * Get Graph Undo Status
+ */
+export const getGraphUndoStatus = <ThrowOnError extends boolean = false>(
+  options: Options<GetGraphUndoStatusData, ThrowOnError>
+) =>
+  (options.client ?? client).get<
+    GetGraphUndoStatusResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zGetGraphUndoStatusData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zGetGraphUndoStatusResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/graph/{uuid}/undo',
+    ...options
+  })
+
+/**
+ * Undo Graph Mutation
+ */
+export const undoGraphMutation = <ThrowOnError extends boolean = false>(
+  options: Options<UndoGraphMutationData, ThrowOnError>
+) =>
+  (options.client ?? client).post<
+    UndoGraphMutationResponses,
+    unknown,
+    ThrowOnError
+  >({
+    requestValidator: async (data) =>
+      await zUndoGraphMutationData.parseAsync(data),
+    responseValidator: async (data) =>
+      await zUndoGraphMutationResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/graph/{uuid}/undo',
+    ...options
   })
 
 /**

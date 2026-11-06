@@ -1070,6 +1070,13 @@ export const zGraphEdgeCreateIn = z.object({
 })
 
 /**
+ * GraphUndoStatusOut
+ */
+export const zGraphUndoStatusOut = z.object({
+  available: z.boolean()
+})
+
+/**
  * ChannelCreateIn
  */
 export const zChannelCreateIn = z.object({
@@ -2339,6 +2346,32 @@ export const zCreateGraphEdgeData = z.object({
  * OK
  */
 export const zCreateGraphEdgeResponse = zGraphMutationEnvelopeOut
+
+export const zGetGraphUndoStatusData = z.object({
+  body: z.never().optional(),
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zGetGraphUndoStatusResponse = zGraphUndoStatusOut
+
+export const zUndoGraphMutationData = z.object({
+  body: z.never().optional(),
+  path: z.object({
+    uuid: z.string().uuid()
+  }),
+  query: z.never().optional()
+})
+
+/**
+ * OK
+ */
+export const zUndoGraphMutationResponse = zGraphMutationEnvelopeOut
 
 export const zCreateChannelData = z.object({
   body: zChannelCreateIn,

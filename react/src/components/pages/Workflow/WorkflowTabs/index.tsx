@@ -15,7 +15,8 @@ import Header from '@cfPages/Workflow/WorkflowTabs/components/Header'
 import {
   ActionMenu,
   ExpandCollapseMenu,
-  JumpToMenu
+  JumpToMenu,
+  UndoButton
 } from '@cfPages/Workflow/WorkflowTabs/components/menuBar'
 import WorkflowDialogs from '@cfPages/Workflow/WorkflowTabs/components/WorkflowDialogs'
 import useWorkflowTabs from '@cfPages/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
@@ -112,6 +113,7 @@ const WorkflowTabs = ({
           : undefined
       }
     >
+      <UndoButton graphUuid={workflow.graphUuid} />
       {editLockControl}
       <JumpToMenu sectionIds={sectionIdsOrdered} />
       <ExpandCollapseMenu

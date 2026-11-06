@@ -23,6 +23,7 @@ import {
   renameNodeCommand,
   reorderChannelsCommand,
   reorderSectionsCommand,
+  undoGraphMutationCommand,
   unlinkNodeOutcomeCommand,
   updateEdgeCommand
 } from '../graphApi'
@@ -48,6 +49,7 @@ import type {
   ReorderChannelsInput,
   ReorderSectionsInput,
   ResourceUuid,
+  UndoGraphMutationInput,
   UnlinkNodeOutcomeInput,
   UpdateEdgeInput
 } from '../model/types'
@@ -176,6 +178,15 @@ export const deleteEdge = (
       dispatch(markGraphFailed(input.graphUuid))
       throw error
     }
+  }
+}
+
+export const undoGraphMutation = (
+  input: UndoGraphMutationInput
+): GraphMutationThunk<Promise<void>> => {
+  return async (dispatch) => {
+    const delta = await undoGraphMutationCommand(input)
+    applyGraphDelta(dispatch, delta)
   }
 }
 

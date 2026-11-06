@@ -15,6 +15,7 @@ from course_flow.core.models import (
     FavoriteGraph,
     FavoriteProject,
     Graph,
+    GraphUndoEntry,
     Node,
     Project,
     User,
@@ -52,6 +53,7 @@ class ResourceLifecycleService:
         workflows.update(is_archived=True, modified_on=timezone.now())
         FavoriteProject.objects.filter(project_id=project.id).delete()
         FavoriteGraph.objects.filter(graph_id__in=graph_ids).delete()
+        GraphUndoEntry.objects.filter(graph_id__in=graph_ids).delete()
         return True
 
     @transaction.atomic
@@ -107,6 +109,9 @@ class ResourceLifecycleService:
         workflow.save(update_fields=["is_archived", "modified_on"])
         FavoriteGraph.objects.filter(graph_id=workflow.graph_id).delete()
         linked_nodes.update(linked_workflow_id=None)
+        GraphUndoEntry.objects.filter(
+            graph_id__in=parent_graph_ids | {workflow.graph_id}
+        ).delete()
         Graph.objects.filter(id__in=parent_graph_ids).update(
             revision_id=F("revision_id") + 1,
             modified_on=timezone.now(),
@@ -157,5 +162,10 @@ class ResourceLifecycleService:
             workflow=workflow,
             action=WorkflowPermission.DELETE_PERMANENTLY,
         )
+        linked_nodes = Node.objects.filter(linked_workflow_id=workflow.id)
+        parent_graph_ids = set(
+            linked_nodes.values_list("workflow__graph_id", flat=True)
+        )
+        GraphUndoEntry.objects.filter(graph_id__in=parent_graph_ids).delete()
         workflow.delete()
         return True

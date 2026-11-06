@@ -13,6 +13,8 @@ def graph_mutation_http(
         raise HttpError(403, "Forbidden")
     if err == "bad_request":
         raise HttpError(400, "Bad request")
+    if err == "conflict":
+        raise HttpError(409, "Undo is no longer available")
     if err == "not_found" or payload is None:
         raise HttpError(404, "Not found")
     return GraphMutationEnvelopeOut.model_validate(payload)

@@ -15,6 +15,7 @@ from course_flow.application.services.authorization_service import (
 from course_flow.core.enum import WorkspaceResourceType
 from course_flow.core.models import (
     Edge,
+    GraphUndoEntry,
     Node,
     Project,
     Thread,
@@ -134,6 +135,20 @@ class WorkspaceEditLockService:
             return WorkspaceResourceType.PROJECT, resource.uuid
         return WorkspaceResourceType.WORKFLOW, resource.uuid
 
+    @staticmethod
+    def _clear_undo_after_workflow_handoff(
+        resource: WorkspaceResource,
+        *,
+        previous_holder_id: int | None,
+        new_holder_id: int,
+    ) -> None:
+        if (
+            isinstance(resource, Workflow)
+            and previous_holder_id is not None
+            and previous_holder_id != new_holder_id
+        ):
+            GraphUndoEntry.objects.filter(graph_id=resource.graph_id).delete()
+
     def _result(
         self,
         resource: WorkspaceResource,
@@ -175,6 +190,7 @@ class WorkspaceEditLockService:
             return self._result(resource, WorkspaceEditLockState.LOCKED, lock)
 
         if lock is None:
+            previous_holder_id = None
             lock = WorkspaceEditLock(
                 holder=user,
                 expires_at=now + EDIT_LOCK_TTL,
@@ -182,10 +198,16 @@ class WorkspaceEditLockService:
                 workflow=resource if isinstance(resource, Workflow) else None,
             )
         else:
+            previous_holder_id = lock.holder_id
             if lock.holder_id != user.id or lock.expires_at <= now:
                 lock.version = uuid4()
             lock.holder = user
             lock.expires_at = now + EDIT_LOCK_TTL
+        self._clear_undo_after_workflow_handoff(
+            resource,
+            previous_holder_id=previous_holder_id,
+            new_holder_id=user.id,
+        )
         lock.save()
         return self._result(resource, WorkspaceEditLockState.HELD, lock)
 
@@ -257,6 +279,7 @@ class WorkspaceEditLockService:
             return self._result(resource, WorkspaceEditLockState.LOCKED, lock)
 
         if lock is None:
+            previous_holder_id = None
             lock = WorkspaceEditLock(
                 holder=user,
                 expires_at=now + EDIT_LOCK_TTL,
@@ -264,10 +287,16 @@ class WorkspaceEditLockService:
                 workflow=resource if isinstance(resource, Workflow) else None,
             )
         else:
+            previous_holder_id = lock.holder_id
             if lock.holder_id != user.id:
                 lock.version = uuid4()
             lock.holder = user
             lock.expires_at = now + EDIT_LOCK_TTL
+        self._clear_undo_after_workflow_handoff(
+            resource,
+            previous_holder_id=previous_holder_id,
+            new_holder_id=user.id,
+        )
         lock.save()
         return self._result(resource, WorkspaceEditLockState.HELD, lock)
 

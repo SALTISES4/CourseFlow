@@ -46,6 +46,7 @@ import {
   getChannel,
   getEdge,
   getGraph,
+  getGraphUndoStatus,
   getGraphView,
   getMyNotificationSettings,
   getMyProfileSettings,
@@ -99,6 +100,7 @@ import {
   restoreWorkflow,
   searchLibrary,
   takeoverWorkspaceEditLock,
+  undoGraphMutation,
   unlinkNodeOutcome,
   updateChannel,
   updateEdge,
@@ -181,6 +183,8 @@ import type {
   GetEdgeResponse,
   GetGraphData,
   GetGraphResponse,
+  GetGraphUndoStatusData,
+  GetGraphUndoStatusResponse,
   GetGraphViewData,
   GetGraphViewResponse,
   GetMyNotificationSettingsData,
@@ -287,6 +291,8 @@ import type {
   SearchLibraryResponse,
   TakeoverWorkspaceEditLockData,
   TakeoverWorkspaceEditLockResponse,
+  UndoGraphMutationData,
+  UndoGraphMutationResponse,
   UnlinkNodeOutcomeData,
   UnlinkNodeOutcomeResponse,
   UpdateChannelData,
@@ -1597,6 +1603,61 @@ export const createGraphEdgeMutation = (
   > = {
     mutationFn: async (fnOptions) => {
       const { data } = await createGraphEdge({
+        ...options,
+        ...fnOptions,
+        throwOnError: true
+      })
+      return data
+    }
+  }
+  return mutationOptions
+}
+
+export const getGraphUndoStatusQueryKey = (
+  options: Options<GetGraphUndoStatusData>
+) => createQueryKey('getGraphUndoStatus', options)
+
+/**
+ * Get Graph Undo Status
+ */
+export const getGraphUndoStatusOptions = (
+  options: Options<GetGraphUndoStatusData>
+) =>
+  queryOptions<
+    GetGraphUndoStatusResponse,
+    DefaultError,
+    GetGraphUndoStatusResponse,
+    ReturnType<typeof getGraphUndoStatusQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getGraphUndoStatus({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true
+      })
+      return data
+    },
+    queryKey: getGraphUndoStatusQueryKey(options)
+  })
+
+/**
+ * Undo Graph Mutation
+ */
+export const undoGraphMutationMutation = (
+  options?: Partial<Options<UndoGraphMutationData>>
+): UseMutationOptions<
+  UndoGraphMutationResponse,
+  DefaultError,
+  Options<UndoGraphMutationData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    UndoGraphMutationResponse,
+    DefaultError,
+    Options<UndoGraphMutationData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await undoGraphMutation({
         ...options,
         ...fnOptions,
         throwOnError: true

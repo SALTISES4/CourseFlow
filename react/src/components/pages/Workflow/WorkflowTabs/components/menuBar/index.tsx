@@ -37,6 +37,7 @@ import { useParams } from 'react-router-dom'
 
 import OutcomeTableToolbar from './OutcomeTableToolbar'
 import SectionTitle from './SectionTitle'
+import UndoButton from './UndoButton'
 
 const ActionMenu = () => {
   const { t } = useTranslation('workflow')
@@ -396,4 +397,4 @@ const JumpToMenu = ({ sectionIds }: { sectionIds: string[] }) => {
   )
 }
 
-export { JumpToMenu, ActionMenu, ExpandCollapseMenu }
+export { JumpToMenu, ActionMenu, ExpandCollapseMenu, UndoButton }
