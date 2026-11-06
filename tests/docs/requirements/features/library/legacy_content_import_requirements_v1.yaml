@@ -1,0 +1,412 @@
+# Functional requirements: legacy CourseFlow content import
+# Status: Tentative discovery draft; product decisions and design evidence are incomplete.
+# Version: 0.1
+# Scope: User-visible discovery, selection, preflight, execution status, and results for importing CourseFlow v1 projects and workflows into CourseFlow v2.
+# Source: Product direction recorded 2026-11-06.
+# Architecture assessment: docs/migration/v1_to_v2_assessment.md
+# Cross-references:
+#   - tests/docs/requirements/features/library/library_page_requirements_v1.yaml
+#   - tests/docs/requirements/features/project/project_create_form_requirements_v1.yaml
+#   - tests/docs/requirements/features/workflow/workflow_create_stepped_form_requirements_v1.yaml
+#   - tests/docs/requirements/features/workflow/workflow_duration_requirements_v1.yaml
+#   - tests/docs/requirements/features/global/localization_requirements_v1.yaml
+
+documentPreconditions:
+  - actor is authenticated to CourseFlow v2
+  - actor has one active, trusted link to a CourseFlow v1 account
+  - legacy source is configured and available through a read-only integration
+  - requirements in this draft do not authorize automatic email-only account linking
+  - comments, contributors, permissions, favourites, notifications, deleted content, strategies, live projects, and assignments are outside the initial content-import scope unless a later revision explicitly includes them
+
+domainObjectDefinitions:
+  legacyAccountLink:
+    meaning: Auditable trusted association between the authenticated CourseFlow v2 user and exactly one CourseFlow v1 user in the configured source system.
+  legacyProject:
+    meaning: Active CourseFlow v1 project eligible under the approved ownership policy.
+  legacyWorkflow:
+    meaning: Active CourseFlow v1 activity, course, or program workflow eligible under the approved ownership policy.
+  standaloneLegacyWorkflow:
+    meaning: Eligible legacyWorkflow with no legacyProject membership.
+  importSelection:
+    meaning: De-duplicated set of legacyProject and legacyWorkflow identities the actor proposes to import, plus required destination choices.
+  importPreflight:
+    meaning: Read-only validation result containing blockers, warnings, exclusions, dependencies, and the exact importSelection that would be submitted.
+  importBatch:
+    meaning: Persisted request containing one or more independently tracked import items.
+  importItem:
+    meaning: One selected top-level legacyProject or legacyWorkflow with its own lifecycle, attempts, result, and destination provenance.
+  importBlocker:
+    meaning: Condition that prevents import because proceeding could violate authorization, destination invariants, or fidelity requirements.
+  importWarning:
+    meaning: Non-lossy condition the actor should know that does not prevent import under an approved policy.
+
+uiObjectDefinitions:
+  legacyImportPage:
+    meaning: Authenticated page for viewing eligible CourseFlow v1 content, preparing an import, and reviewing prior import batches.
+  legacyContentList:
+    meaning: List of eligible legacyProject and legacyWorkflow entries, with project-contained workflows visually associated with their project and standaloneLegacyWorkflow entries distinguishable.
+  legacyContentSelectionControl:
+    meaning: Control for adding or removing one legacyProject or legacyWorkflow from importSelection.
+  legacyImportPreflightSummary:
+    meaning: Review region showing exact selected content, dependencies, destination choices, blockers, warnings, and intentional exclusions before submission.
+  legacyImportSubmitButton:
+    meaning: Button that creates importBatch only when importPreflight has no blockers and still matches importSelection.
+  legacyImportBatchStatus:
+    meaning: Persistent status summary for importBatch and each importItem.
+  legacyImportResultLink:
+    meaning: Link to a successfully created v2 project or workflow.
+  legacyImportRetryButton:
+    meaning: Button that requests another attempt for one failed importItem without recreating successful items.
+
+locatorMappings:
+  legacyImportPage:
+    strategy: null
+    confidence: unresolved
+  legacyContentList:
+    strategy: null
+    confidence: unresolved
+  legacyContentSelectionControl:
+    strategy: null
+    confidence: unresolved
+  legacyImportPreflightSummary:
+    strategy: null
+    confidence: unresolved
+  legacyImportSubmitButton:
+    strategy: null
+    confidence: unresolved
+  legacyImportBatchStatus:
+    strategy: null
+    confidence: unresolved
+  legacyImportResultLink:
+    strategy: null
+    confidence: unresolved
+  legacyImportRetryButton:
+    strategy: null
+    confidence: unresolved
+
+requirements:
+  - id: FR-LEGACY-IMPORT-001
+    title: Require a trusted and unambiguous legacy account link
+
+    designEvidence: []
+
+    actors:
+      - user
+      - administrator
+
+    uiObjects:
+      - legacyImportPage
+
+    preconditions:
+      - actor attempts to access legacyImportPage or its supporting API
+
+    trigger:
+      - system resolves actor's legacyAccountLink
+
+    mainFlow:
+      - system authorizes legacy catalog and import operations using legacyAccountLink rather than an unpersisted email lookup
+      - legacyAccountLink identifies one configured legacy source, one CourseFlow v1 user identity, and actor's CourseFlow v2 user identity
+      - system blocks catalog and import access when the link is missing, inactive, ambiguous, or associated with a different v2 user
+      - system does not establish a trusted link from a case-insensitive email match alone while v1 email uniqueness and v2 email verification are not guaranteed
+      - administrator or another approved identity-verification mechanism can establish, reject, disable, and audit legacyAccountLink
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given actor has no active legacyAccountLink, when actor requests the legacy catalog, then no legacy content is returned and system presents link-required behavior
+      - given a normalized legacy email matches zero or multiple v1 users, when a link is proposed, then system does not automatically activate the link
+      - given active legacyAccountLink belongs to another v2 user, when actor requests the linked catalog or import, then request is forbidden and no legacy content metadata is disclosed
+      - given actor has exactly one active trusted legacyAccountLink, when actor requests the legacy catalog, then system queries only the linked v1 identity under the approved eligibility policy
+
+    openQuestions:
+      - Which identity-verification mechanism is approved for establishing legacyAccountLink?
+
+  - id: FR-LEGACY-IMPORT-002
+    title: List eligible projects and workflows without duplicating project-contained workflows
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - legacyImportPage
+      - legacyContentList
+      - legacyContentSelectionControl
+
+    preconditions:
+      - documentPreconditions hold
+      - system has resolved actor's active legacyAccountLink
+
+    trigger:
+      - actor opens legacyImportPage or refreshes legacyContentList
+
+    mainFlow:
+      - system lists eligible active legacyProject and legacyWorkflow entries under the approved ownership policy
+      - legacyContentList shows each workflow with its legacy type, title, containing project when any, modified date, and prior-import state
+      - workflows contained in a listed legacyProject are associated with that project rather than repeated as unrelated standalone rows
+      - standaloneLegacyWorkflow entries remain selectable even though they have no legacyProject
+      - deleted content and initial-scope exclusions are not selectable
+      - selecting legacyProject includes its eligible workflows according to the project-import policy
+      - when actor also selects a workflow already included by selected legacyProject, importSelection contains that source workflow exactly once
+      - when the source is unavailable, system does not present an empty catalog as if actor owns no content; system presents source-unavailable behavior
+
+    roleBehavior:
+      user:
+        legacyContentList: visible
+        legacyContentSelectionControl: enabled
+
+    acceptanceCriteria:
+      - given linked v1 identity owns two eligible projects and three eligible standalone workflows, when catalog loads, then all five top-level entries are distinguishable and selectable
+      - given legacyWorkflow belongs to listed legacyProject, when catalog loads, then workflow is associated with that project and is not misrepresented as standalone
+      - given actor selects legacyProject and separately selects one of its included workflows, when importSelection is calculated, then that workflow occurs once
+      - given legacy source cannot be reached, when catalog request completes, then system presents source-unavailable behavior and does not claim the catalog is empty
+      - given source content was previously imported, when catalog loads, then its prior-import state and destination link are visible
+
+    openQuestions:
+      - Does eligible content mean authored content only, editable content, or viewable content?
+      - When actor owns a project containing collaborator-authored workflows, which workflows are eligible through project selection?
+
+  - id: FR-LEGACY-IMPORT-003
+    title: Require explicit destination and dependency choices
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - legacyContentSelectionControl
+      - legacyImportPreflightSummary
+
+    preconditions:
+      - actor has selected at least one eligible legacyProject or legacyWorkflow
+
+    trigger:
+      - actor requests importPreflight
+
+    mainFlow:
+      - importing legacyProject proposes creation of one new private v2 project owned by actor and includes workflows approved by the project-import policy
+      - importing an individual legacyWorkflow requires a resolved v2 destination project before submission unless product requirements later permit projectless workflows
+      - system identifies selected workflow links whose target workflows are outside importSelection
+      - importPreflight reports each missing linked-workflow dependency and applies only an approved dependency policy
+      - system does not silently import additional unselected top-level content
+      - system does not silently sever a linked-workflow association or retain a link to v1
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given actor selects legacyProject, when preflight succeeds, then proposed destination is a new private v2 project owned by actor
+      - given actor selects individual legacyWorkflow without a resolved destination project, when preflight runs, then destination choice is a blocker
+      - given selected workflow links to unselected workflow, when preflight runs, then dependency is explicitly reported and submission follows the approved include, sever, or block policy
+      - given importSelection omits workflow W, when preflight runs, then system does not add W without actor-visible confirmation
+
+    openQuestions:
+      - Should an individual workflow use an existing project, create a new project, or support both?
+      - Should an unselected linked-workflow dependency be required, optionally included, or explicitly severed?
+
+  - id: FR-LEGACY-IMPORT-004
+    title: Preflight fidelity and structural compatibility before creating content
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - legacyImportPreflightSummary
+      - legacyImportSubmitButton
+
+    preconditions:
+      - actor has a non-empty importSelection with resolved destination choices
+
+    trigger:
+      - actor requests importPreflight
+
+    mainFlow:
+      - system performs read-only extraction and validation without modifying v1 or creating v2 project/workflow content
+      - legacyImportPreflightSummary identifies exact selected items, content counts, dependencies, intentional exclusions, importBlocker entries, and importWarning entries
+      - system treats authorization ambiguity, malformed relationships, unsupported required mappings, and any transformation that would silently discard or materially change data as importBlocker
+      - system validates legacy free-form durations and unsupported units against workflow_duration_requirements_v1.yaml and blocks incompatible values until a product-approved rule exists
+      - system distinguishes a non-lossy informational exclusion from data loss
+      - legacyImportSubmitButton is disabled while importPreflight contains a blocker or no longer matches the current importSelection
+
+    roleBehavior:
+      user:
+        legacyImportPreflightSummary: visible
+        legacyImportSubmitButton: enabledWhenNoBlockers
+
+    acceptanceCriteria:
+      - given preflight finds no blockers, when summary renders, then legacyImportSubmitButton is enabled and summary identifies the exact selection that will be submitted
+      - given source duration is a range or cannot be represented without rounding, when preflight runs, then item has a blocker and no destination content is created
+      - given active node references a missing placement object, when preflight runs, then item has a structural blocker rather than silently dropping the node
+      - given actor changes importSelection after preflight, when submit is considered, then stale preflight cannot be submitted
+      - given preflight completes, then no v1 row and no v2 project/workflow row was created, updated, or deleted
+
+    openQuestions:
+      - Which intentional exclusions are acceptable for the first release?
+
+  - id: FR-LEGACY-IMPORT-005
+    title: Execute a durable multi-item import with per-item atomicity
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - legacyImportSubmitButton
+      - legacyImportBatchStatus
+
+    preconditions:
+      - importPreflight has no blockers and still matches importSelection
+
+    trigger:
+      - actor clicks legacyImportSubmitButton
+
+    mainFlow:
+      - system persists importBatch and one importItem per de-duplicated top-level selection before background execution begins
+      - legacyImportSubmitButton cannot create a second batch from an accidental duplicate submission of the same request
+      - system imports each importItem atomically so an item is either complete with destination provenance or failed without a partial destination aggregate
+      - failure of one importItem does not roll back successful sibling items
+      - successful imported projects and workflows are private and active; actor becomes owner of imported projects and author of imported workflows
+      - system never falls back to running a long import in the web request when the background execution service is unavailable
+      - legacyImportBatchStatus remains readable after page reload, worker restart, or queue-result expiration
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given valid selection has three import items, when actor submits, then one importBatch and exactly three importItem records exist before execution
+      - given one item fails and two succeed, when batch reaches a terminal state, then successful destinations remain available, failed item has no partial destination aggregate, and batch reports partial success
+      - given worker terminates during an item and work is redelivered, when execution resumes, then no successful destination project or workflow is duplicated
+      - given background execution service is unavailable, when actor submits, then system reports temporary unavailability and does not execute the import synchronously in the request process
+      - given actor reloads legacyImportPage, when batch is queued, running, or complete, then persisted item statuses remain visible
+
+    openQuestions:
+      - What user-visible progress granularity is required beyond item lifecycle status?
+
+  - id: FR-LEGACY-IMPORT-006
+    title: Preserve approved content fidelity and report every intentional difference
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - legacyImportBatchStatus
+      - legacyImportResultLink
+
+    preconditions:
+      - importItem begins execution after successful preflight
+
+    trigger:
+      - system maps the legacy snapshot into a v2 destination aggregate
+
+    mainFlow:
+      - system preserves all fields and relations approved in the versioned mapping contract
+      - system derives v2 node type from the parent workflow hierarchy and does not copy the legacy node-type integer without interpretation
+      - project import remaps links between imported workflows to their corresponding v2 workflows
+      - system generates new v2 identities and retains source provenance separately; it does not reuse a v1 primary key as a v2 primary key
+      - publication, public-link, template, collaborator, and permission state is not transferred unless a later approved requirement includes it
+      - every approved exclusion or transformation appears in the item result with a stable reason code and affected source identity/count
+      - system reconciles source and destination entity/relation counts covered by the mapping contract before marking item successful
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given successful project import contains two linked workflows, when item completes, then the imported node links to imported target workflow and never to the v1 workflow
+      - given successful import, when actor opens destination through legacyImportResultLink, then destination is private and actor has owner access through v2 ownership rules
+      - given mapping contract excludes legacy comments, when item completes, then result explicitly reports comment exclusion count and no source comment is silently represented as imported
+      - given reconciliation detects missing required destination entity or relation, when execution completes, then item is failed and is not reported successful
+
+    openQuestions:
+      - Which mapping differences are approved warnings rather than blockers?
+
+  - id: FR-LEGACY-IMPORT-007
+    title: Make prior imports, retries, and duplicate policy explicit
+
+    designEvidence: []
+
+    actors:
+      - user
+
+    uiObjects:
+      - legacyContentList
+      - legacyImportBatchStatus
+      - legacyImportResultLink
+      - legacyImportRetryButton
+
+    preconditions:
+      - source item has a prior or current import record
+
+    trigger:
+      - actor views catalog or batch result
+      - actor requests retry for failed importItem
+
+    mainFlow:
+      - system shows queued, running, successful, failed, or prior-import state for a source item
+      - successful prior import exposes legacyImportResultLink when actor retains destination access
+      - retry is available only for a failed importItem and reuses its source selection, destination options, and idempotency identity
+      - retry never recreates successful sibling items
+      - system does not update an earlier imported destination from changed v1 content unless an explicit re-import/update policy is approved
+      - if destination was deleted or actor lost access, system reports that state without disclosing destination content
+
+    roleBehavior:
+      user:
+        legacyImportRetryButton: enabledForFailedOwnedItem
+
+    acceptanceCriteria:
+      - given item imported successfully, when catalog loads, then source item shows prior-import state and destination link
+      - given item failed and actor clicks retry, when retry succeeds, then exactly one successful destination aggregate exists for that import identity
+      - given sibling item already succeeded, when actor retries failed item, then successful sibling is not enqueued or recreated
+      - given v1 source changed after successful import, when actor views catalog, then system does not silently overwrite the existing v2 destination
+
+    openQuestions:
+      - Are users allowed to create an explicit second copy, and if so how is it distinguished from retry or update?
+
+  - id: FR-LEGACY-IMPORT-008
+    title: Protect source data and audit sensitive operations
+
+    designEvidence: []
+
+    actors:
+      - user
+      - administrator
+
+    uiObjects:
+      - legacyImportBatchStatus
+
+    preconditions:
+      - a legacy link, catalog read, preflight, import submission, execution attempt, or retry occurs
+
+    trigger:
+      - system performs the sensitive operation
+
+    mainFlow:
+      - source integration uses read-only credentials and does not expose credentials or raw connection details to clients
+      - system records actor, source identity, action, timestamp, outcome, and correlation identity for account-link and import operations
+      - user-visible errors use stable reason codes and do not expose stack traces, SQL, credentials, or unrelated authored content
+      - actor can read only their own import batches unless administrator support access is explicitly authorized
+      - retained source snapshots and diagnostic details follow an approved retention and deletion policy
+
+    roleBehavior: {}
+
+    acceptanceCriteria:
+      - given actor requests another user's importBatch UUID, when request is authorized, then access is denied without disclosing batch contents
+      - given source query fails, when error is presented, then user sees stable safe error behavior and server diagnostics retain correlation identity without exposing credentials
+      - given any import completes, when support audit is queried by authorized administrator, then actor, source item identity, destination identity when any, timestamps, attempts, and outcome are reconstructable
+
+    openQuestions:
+      - What retention periods apply to canonical snapshots, preflight reports, item errors, audit events, and provenance?
+
+openQuestions:
+  - Identity verification, content eligibility, project-contained collaborator content, individual workflow destination, linked dependency behavior, duplicate/re-import policy, duration transformation, initial exclusions, source topology, retention, and production task backend must be resolved before this specification can become Accepted.
+
+changelog:
+  - version: '0.1'
+    date: '2026-11-06'
+    changes:
+      - Added tentative end-user and system behavior for trusted account linking, catalog discovery, selection, preflight, durable execution, fidelity, retry, and auditing.
+      - Explicitly blocked email-only authorization and silent legacy-duration conversion.
+      - Kept UI locators and design evidence unresolved pending product and design work.
