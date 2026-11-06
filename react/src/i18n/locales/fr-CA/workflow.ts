@@ -59,6 +59,27 @@ const workflowFr = {
     sort: {
       title: 'Trier', chronological: 'Ordre chronologique',
       byNodeCategory: 'Par catégorie de nœuds', byContext: 'Par contexte'
+    },
+    emptyWarningTitle: 'Impossible de générer le tableau des résultats pour ce flux de travail',
+    emptyWarningSubtitle: 'Au moins un résultat et un nœud doivent être associés à ce flux de travail afin de pouvoir générer la vue du tableau des résultats.',
+    toolbar: {
+      view: { normal: 'Normal', matrix: 'Matrice de compétences' },
+      sortBy: {
+        sort: 'Trier', chronological: 'Ordre chronologique',
+        byCategory: 'Par catégorie de nœuds', category: 'Catégorie',
+        byContext: 'Par contexte', context: 'Contexte'
+      }
+    },
+    extraColumns: {
+      totalHours: 'Heures totales', classification: 'Classification',
+      generalEducation: 'Formation générale', specificEducation: 'Formation spécifique',
+      ponderation: 'Pondération', theory: 'Théorie', practical: 'Pratique',
+      individualWork: 'Travail individuel', totalCredits: 'Crédits totaux'
+    },
+    classifications: {
+      none: 'Aucun', individual_work: 'Travail individuel',
+      work_in_groups: 'Travail en groupe', in_the_classroom: 'Classe entière',
+      formative: 'Formatif', summative: 'Sommatif', comprehensive: 'Global'
     }
   },
   comments: {
