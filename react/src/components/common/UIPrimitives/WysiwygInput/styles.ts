@@ -51,6 +51,13 @@ export const WysiwygWrap = styled(Box, {
       '& .ql-toolbar': {
         display: 'none'
       },
+      ...(noBorder && {
+        userSelect: 'text',
+        '& .ql-editor': {
+          minHeight: 'auto',
+          paddingLeft: 0
+        }
+      }),
       '& > span': {
         position: 'absolute',
         zIndex: 3,
