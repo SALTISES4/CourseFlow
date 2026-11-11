@@ -181,6 +181,21 @@ h3.big-space {
 .main-wrapper {
   height: 100vh;
   display: flex;
+
+  > .main-block {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0.8em;
+      height: 100%;
+      background: linear-gradient(to right, rgba(0, 0, 0, 0.18) -20%, transparent);
+      z-index: 999999;
+    }
+  }
 }
 
 .main-block {
