@@ -1,0 +1,5 @@
+{
+  "extends": "./pyproject.toml",
+  "venvPath": "/opt",
+  "venv": "courseflow-venv"
+}

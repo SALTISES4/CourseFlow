@@ -45,6 +45,10 @@ test-unit:
 typecheck:
   uv run pyright
 
+[group: 'Testing:run']
+typecheck-ci:
+  uv run --no-sync pyright --project pyrightconfig.ci.json
+
 
 [group: 'Testing:run']
 test-frontend:

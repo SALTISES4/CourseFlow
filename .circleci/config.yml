@@ -68,7 +68,7 @@ jobs:
           command: docker compose exec -T django just testing::test-unit
       - run:
           name: Run backend type checking
-          command: docker compose exec -T django just testing::typecheck
+          command: docker compose exec -T django just testing::typecheck-ci
       - run:
           name: Print container diagnostics
           when: on_fail

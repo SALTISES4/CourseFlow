@@ -1,3 +1,6 @@
+ARG NODE_VERSION=24.14.1
+FROM node:${NODE_VERSION}-bookworm-slim AS node-toolchain
+
 FROM python:3.12-slim-bookworm AS base
 
 WORKDIR /app
@@ -21,14 +24,18 @@ CMD ["uv", "run", "--no-sync", "python", "manage.py", "runserver", "0.0.0.0:8000
 
 FROM base AS test
 
+ARG NODE_VERSION
 ENV UV_PROJECT_ENVIRONMENT=/opt/courseflow-venv
 
+COPY --from=node-toolchain /usr/local/bin/node /usr/local/bin/node
 COPY --from=ghcr.io/casey/just:1.58.0 /just /usr/local/bin/just
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends git libatomic1 \
+    && apt-get install -y --no-install-recommends git libatomic1 libstdc++6 \
     && rm -rf /var/lib/apt/lists/* \
     && git config --system --add safe.directory /app \
-    && uv sync --frozen --group dev
+    && test "$(node --version)" = "v${NODE_VERSION}" \
+    && uv sync --frozen --group dev \
+    && uv run --no-sync pyright --version
 
 FROM base AS runtime
 
