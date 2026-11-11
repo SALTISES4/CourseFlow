@@ -27,12 +27,11 @@ export const WysiwygWrap = styled(Box, {
       height: '22px'
     },
     '& .ql-editor': {
-      minHeight: '120px',
+      minHeight: readOnly || noBorder ? 'auto' : '120px',
       ...(noBorder && {
         paddingLeft: 0,
         paddingRight: 0
       }),
-
       '& ul, & ol': {
         paddingLeft: '4px'
       },
@@ -51,10 +50,12 @@ export const WysiwygWrap = styled(Box, {
       '& .ql-toolbar': {
         display: 'none'
       },
+      '& .ql-toolbar.ql-snow + .ql-container.ql-snow': {
+        borderTop: `1px solid ${alpha(theme.palette.text.primary, 0.23)}`
+      },
       ...(noBorder && {
         userSelect: 'text',
         '& .ql-editor': {
-          minHeight: 'auto',
           paddingLeft: 0
         }
       }),
@@ -70,7 +71,7 @@ export const WysiwygWrap = styled(Box, {
           top: '-50%',
           transform: 'translateY(50%)',
           zIndex: 0,
-          backgroundColor: '#fff'
+          backgroundColor: theme.palette.common.white
         }
       },
       '& .MuiFormLabel-root': {
