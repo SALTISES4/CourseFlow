@@ -9,6 +9,7 @@
 import 'scripts/just/config.just'
 mod django 'scripts/just/django.just'
 mod docker 'scripts/just/docker.just'
+mod io 'scripts/just/io.just'
 mod testing 'scripts/just/testing.just'
 mod toolchain 'scripts/just/toolchain.just'
 
@@ -100,7 +101,7 @@ e2e-prepare:
 # Deployment
 #########################################################
 
-# Destructively rebuild the managed UAT database and restart Django.
+# Destructively rebuild UAT in migrate -> seed -> import order and restart Django.
 [group: 'Deployment']
 reset-uat-db:
   #!/usr/bin/env bash

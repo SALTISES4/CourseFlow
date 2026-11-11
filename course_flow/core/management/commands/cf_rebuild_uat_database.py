@@ -5,13 +5,22 @@ Destructively rebuild the ephemeral UAT application database.
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
+from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connection, transaction
 
 _APPLICATION_SCHEMA = "public"
 _LOCAL_DATABASE_HOSTS = {"", "127.0.0.1", "localhost", "postgres"}
+_PERSISTENT_PROJECT_SNAPSHOT = (
+    Path(settings.BASE_DIR)
+    / "course_flow"
+    / "project_snapshots"
+    / "project_for_templates.v1.json"
+)
+_PERSISTENT_PROJECT_OWNER_EMAIL = "teacher@courseflow.com"
 
 
 def _drop_application_tables() -> list[str]:
@@ -44,7 +53,7 @@ def _drop_application_tables() -> list[str]:
 class Command(BaseCommand):
     help = (
         "Delete every table in the UAT public schema, rerun migrations, and "
-        "seed the canonical E2E fixtures."
+        "seed the canonical E2E fixtures before importing persistent projects."
     )
 
     def add_arguments(self, parser) -> None:
@@ -101,6 +110,14 @@ class Command(BaseCommand):
             clear_and_seed=True,
             verbosity=options["verbosity"],
         )
+        call_command(
+            "cf_import_project_snapshot",
+            str(_PERSISTENT_PROJECT_SNAPSHOT),
+            owner_email=_PERSISTENT_PROJECT_OWNER_EMAIL,
+            verbosity=options["verbosity"],
+        )
         self.stdout.write(
-            self.style.SUCCESS("Rebuilt and seeded the ephemeral UAT database.")
+            self.style.SUCCESS(
+                "Rebuilt, seeded, and imported persistent UAT project snapshots."
+            )
         )

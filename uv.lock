@@ -581,6 +581,7 @@ dependencies = [
     { name = "django-ses" },
     { name = "gunicorn" },
     { name = "psycopg", extra = ["binary"] },
+    { name = "pydantic" },
     { name = "python-dotenv" },
 ]
 
@@ -602,6 +603,7 @@ requires-dist = [
     { name = "django-ses", specifier = ">=4.7,<5" },
     { name = "gunicorn", specifier = ">=23.0.0,<24" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2" },
+    { name = "pydantic", specifier = ">=2.12,<3" },
     { name = "python-dotenv", specifier = ">=1.0" },
 ]
 

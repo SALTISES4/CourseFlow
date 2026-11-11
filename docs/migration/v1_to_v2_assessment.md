@@ -5,6 +5,43 @@
 **Scope:** User-initiated import of legacy projects and workflows into CourseFlow v2.  
 **Not authorized by this document:** Live database access, deployment changes, worker infrastructure, or production data mutation.
 
+## Shared project-transfer foundation (implemented 2026-11-11)
+
+The UAT persistent-project requirement introduced a narrow v2-to-v2 source
+adapter, not a legacy migration path. The two source mechanisms remain distinct:
+
+```text
+v2 ORM project -> v2 snapshot exporter ----┐
+                                            ├-> ProjectSnapshotBundle v1
+v1 source -> future legacy source adapter -┘        -> validator
+                                                     -> ProjectImportService
+                                                     -> transactional v2 writer
+```
+
+The reusable boundary now exists in
+`course_flow/application/project_transfer/contract.py` and
+`course_flow/application/project_transfer/service.py`. The Django v2 exporter
+and destination writer are infrastructure adapters in
+`course_flow/infrastructure/project_transfer/`. The contract is published as
+`docs/schemas/project_snapshot_v1.schema.json`.
+
+This foundation does **not** mean that general import/export or v1 migration is
+complete. The current management-command workflow:
+
+- imports one complete project closure atomically;
+- supports preserved UUIDs for deterministic environment rebuilds and regenerated
+  UUIDs for future copy-style imports;
+- rejects external workflow links, unknown disciplines, invalid references,
+  relationship cycles, identity collisions, and content-fingerprint mismatch;
+- excludes comments, team membership, favourites, edit leases, and user identity;
+- has no update/merge semantics, persisted import job/provenance records, legacy
+  mapper, account linking, user-facing API, or asynchronous execution.
+
+The future v1 adapter must construct this application-owned contract rather than
+calling the v2 ORM exporter or creating a second destination writer. If legacy
+data needs fields that the v1 contract cannot represent without loss, version
+the shared contract; do not add legacy-only writes around the validator.
+
 ## Executive assessment
 
 A robust import is feasible, but it is not a thin wrapper around the existing v1 export feature. The existing exporter is intended to produce human-readable Excel and CSV documents. It flattens or omits data required to reconstruct a v2 graph and therefore is not a safe migration contract.
@@ -236,6 +273,11 @@ Deliverables:
 - reconciliation report comparing source counts/relations with destination counts/relations.
 
 Exit gate: repeated execution of the same import item cannot create duplicates, and all intentional exclusions are visible in the result.
+
+Implementation status: partially delivered by the shared project-transfer
+foundation above. A real UAT v2 snapshot and PostgreSQL round-trip test cover the
+current v2 aggregate shape. Legacy golden fixtures, legacy mapping tests,
+reconciliation reporting, and persisted idempotency/provenance remain open.
 
 ### Phase 2: Read-only source catalog and trusted account links
 

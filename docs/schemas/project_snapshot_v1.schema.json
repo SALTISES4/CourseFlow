@@ -1,0 +1,1166 @@
+{
+  "$defs": {
+    "ActivityMetaSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "activity",
+          "default": "activity",
+          "title": "Kind",
+          "type": "string"
+        },
+        "calculate_time": {
+          "default": false,
+          "title": "Calculate Time",
+          "type": "boolean"
+        },
+        "context_classification": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Context Classification"
+        },
+        "task_classification": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Task Classification"
+        },
+        "time_required": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Required"
+        },
+        "time_units": {
+          "anyOf": [
+            {
+              "maxLength": 16,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Units"
+        },
+        "represents_workflow": {
+          "default": false,
+          "title": "Represents Workflow",
+          "type": "boolean"
+        },
+        "context": {
+          "default": "",
+          "maxLength": 1024,
+          "title": "Context",
+          "type": "string"
+        },
+        "classification": {
+          "default": "",
+          "maxLength": 255,
+          "title": "Classification",
+          "type": "string"
+        }
+      },
+      "title": "ActivityMetaSnapshot",
+      "type": "object"
+    },
+    "ChannelSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Ref",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 200,
+          "title": "Title",
+          "type": "string"
+        },
+        "system_label_code": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "System Label Code"
+        },
+        "title_copy_count": {
+          "default": 0,
+          "maximum": 32767,
+          "minimum": 0,
+          "title": "Title Copy Count",
+          "type": "integer"
+        },
+        "colour": {
+          "default": "",
+          "maxLength": 7,
+          "title": "Colour",
+          "type": "string"
+        },
+        "position": {
+          "title": "Position",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "ref",
+        "title",
+        "position"
+      ],
+      "title": "ChannelSnapshot",
+      "type": "object"
+    },
+    "CourseMetaSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "course",
+          "default": "course",
+          "title": "Kind",
+          "type": "string"
+        },
+        "calculate_time": {
+          "default": false,
+          "title": "Calculate Time",
+          "type": "boolean"
+        },
+        "time_required": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Required"
+        },
+        "time_units": {
+          "anyOf": [
+            {
+              "maxLength": 16,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Units"
+        },
+        "ponderation_theory": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ponderation Theory"
+        },
+        "ponderation_practice": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ponderation Practice"
+        },
+        "ponderation_individual": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ponderation Individual"
+        },
+        "credits": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Credits"
+        },
+        "specific_education": {
+          "default": false,
+          "title": "Specific Education",
+          "type": "boolean"
+        },
+        "classification": {
+          "default": "",
+          "maxLength": 255,
+          "title": "Classification",
+          "type": "string"
+        },
+        "code": {
+          "default": "",
+          "maxLength": 255,
+          "title": "Code",
+          "type": "string"
+        }
+      },
+      "title": "CourseMetaSnapshot",
+      "type": "object"
+    },
+    "EdgeSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Ref",
+          "type": "string"
+        },
+        "source_node_ref": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Source Node Ref",
+          "type": "string"
+        },
+        "target_node_ref": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Target Node Ref",
+          "type": "string"
+        },
+        "title": {
+          "default": "",
+          "maxLength": 255,
+          "title": "Title",
+          "type": "string"
+        },
+        "text_position": {
+          "default": 50,
+          "maximum": 32767,
+          "minimum": 0,
+          "title": "Text Position",
+          "type": "integer"
+        },
+        "line_type": {
+          "default": "",
+          "maxLength": 64,
+          "title": "Line Type",
+          "type": "string"
+        },
+        "source_port": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Source Port",
+          "type": "string"
+        },
+        "target_port": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Target Port",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ref",
+        "source_node_ref",
+        "target_node_ref",
+        "source_port",
+        "target_port"
+      ],
+      "title": "EdgeSnapshot",
+      "type": "object"
+    },
+    "ExclusionSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Kind",
+          "type": "string"
+        },
+        "count": {
+          "minimum": 0,
+          "title": "Count",
+          "type": "integer"
+        },
+        "reason": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "count",
+        "reason"
+      ],
+      "title": "ExclusionSnapshot",
+      "type": "object"
+    },
+    "GraphSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Ref",
+          "type": "string"
+        },
+        "revision_id": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Revision Id",
+          "type": "integer"
+        },
+        "sections": {
+          "items": {
+            "$ref": "#/$defs/SectionSnapshot"
+          },
+          "title": "Sections",
+          "type": "array"
+        },
+        "channels": {
+          "items": {
+            "$ref": "#/$defs/ChannelSnapshot"
+          },
+          "title": "Channels",
+          "type": "array"
+        },
+        "outcomes": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/OutcomeSnapshot"
+          },
+          "title": "Outcomes",
+          "type": "array"
+        },
+        "nodes": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/NodeSnapshot"
+          },
+          "title": "Nodes",
+          "type": "array"
+        },
+        "edges": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/EdgeSnapshot"
+          },
+          "title": "Edges",
+          "type": "array"
+        },
+        "horizontal_outcomes": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/HorizontalOutcomeSnapshot"
+          },
+          "title": "Horizontal Outcomes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "ref",
+        "sections",
+        "channels"
+      ],
+      "title": "GraphSnapshot",
+      "type": "object"
+    },
+    "HorizontalOutcomeSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Ref",
+          "type": "string"
+        },
+        "outcome_refs": {
+          "items": {
+            "maxLength": 255,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Outcome Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "ref",
+        "outcome_refs"
+      ],
+      "title": "HorizontalOutcomeSnapshot",
+      "type": "object"
+    },
+    "NodeSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Ref",
+          "type": "string"
+        },
+        "section_ref": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Section Ref",
+          "type": "string"
+        },
+        "channel_ref": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Channel Ref",
+          "type": "string"
+        },
+        "linked_workflow_ref": {
+          "anyOf": [
+            {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Linked Workflow Ref"
+        },
+        "section_row": {
+          "minimum": 0,
+          "title": "Section Row",
+          "type": "integer"
+        },
+        "node_type": {
+          "enum": [
+            "course",
+            "activity",
+            "task"
+          ],
+          "title": "Node Type",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 200,
+          "title": "Title",
+          "type": "string"
+        },
+        "title_copy_count": {
+          "default": 0,
+          "maximum": 32767,
+          "minimum": 0,
+          "title": "Title Copy Count",
+          "type": "integer"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "metadata": {
+          "discriminator": {
+            "mapping": {
+              "activity": "#/$defs/ActivityMetaSnapshot",
+              "course": "#/$defs/CourseMetaSnapshot",
+              "task": "#/$defs/TaskMetaSnapshot"
+            },
+            "propertyName": "kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ActivityMetaSnapshot"
+            },
+            {
+              "$ref": "#/$defs/CourseMetaSnapshot"
+            },
+            {
+              "$ref": "#/$defs/TaskMetaSnapshot"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "tag_refs": {
+          "default": [],
+          "items": {
+            "maxLength": 255,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Tag Refs",
+          "type": "array"
+        },
+        "outcome_refs": {
+          "default": [],
+          "items": {
+            "maxLength": 255,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Outcome Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "ref",
+        "section_ref",
+        "channel_ref",
+        "section_row",
+        "node_type",
+        "title",
+        "metadata"
+      ],
+      "title": "NodeSnapshot",
+      "type": "object"
+    },
+    "OutcomeSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Ref",
+          "type": "string"
+        },
+        "parent_ref": {
+          "anyOf": [
+            {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Ref"
+        },
+        "order": {
+          "minimum": 0,
+          "title": "Order",
+          "type": "integer"
+        },
+        "title": {
+          "maxLength": 200,
+          "title": "Title",
+          "type": "string"
+        },
+        "title_copy_count": {
+          "default": 0,
+          "maximum": 32767,
+          "minimum": 0,
+          "title": "Title Copy Count",
+          "type": "integer"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "code": {
+          "default": "",
+          "maxLength": 64,
+          "title": "Code",
+          "type": "string"
+        },
+        "tag_refs": {
+          "default": [],
+          "items": {
+            "maxLength": 255,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Tag Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "ref",
+        "order",
+        "title"
+      ],
+      "title": "OutcomeSnapshot",
+      "type": "object"
+    },
+    "ProgramMetaSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "program",
+          "default": "program",
+          "title": "Kind",
+          "type": "string"
+        },
+        "code": {
+          "default": "",
+          "maxLength": 255,
+          "title": "Code",
+          "type": "string"
+        },
+        "calculate_time": {
+          "default": "",
+          "title": "Calculate Time",
+          "type": "string"
+        },
+        "calculate_credits": {
+          "default": "",
+          "title": "Calculate Credits",
+          "type": "string"
+        },
+        "calculate_ponderation": {
+          "default": "",
+          "title": "Calculate Ponderation",
+          "type": "string"
+        },
+        "calculate_classification": {
+          "default": "",
+          "title": "Calculate Classification",
+          "type": "string"
+        },
+        "time_required": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Required"
+        },
+        "time_units": {
+          "anyOf": [
+            {
+              "maxLength": 16,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Units"
+        },
+        "ponderation_theory": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ponderation Theory"
+        },
+        "ponderation_practice": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ponderation Practice"
+        },
+        "ponderation_individual": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ponderation Individual"
+        },
+        "credits": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Credits"
+        },
+        "classification_general_seconds": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Classification General Seconds"
+        },
+        "classification_specific_seconds": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Classification Specific Seconds"
+        }
+      },
+      "title": "ProgramMetaSnapshot",
+      "type": "object"
+    },
+    "ProjectSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Ref",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "is_published": {
+          "default": false,
+          "title": "Is Published",
+          "type": "boolean"
+        },
+        "is_archived": {
+          "default": false,
+          "title": "Is Archived",
+          "type": "boolean"
+        },
+        "is_template": {
+          "default": false,
+          "title": "Is Template",
+          "type": "boolean"
+        },
+        "discipline_codes": {
+          "items": {
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Discipline Codes",
+          "type": "array"
+        },
+        "tags": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/TagSnapshot"
+          },
+          "title": "Tags",
+          "type": "array"
+        },
+        "workflows": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/WorkflowSnapshot"
+          },
+          "title": "Workflows",
+          "type": "array"
+        }
+      },
+      "required": [
+        "ref",
+        "title",
+        "discipline_codes"
+      ],
+      "title": "ProjectSnapshot",
+      "type": "object"
+    },
+    "SectionSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Ref",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 200,
+          "title": "Title",
+          "type": "string"
+        },
+        "title_copy_count": {
+          "default": 0,
+          "maximum": 32767,
+          "minimum": 0,
+          "title": "Title Copy Count",
+          "type": "integer"
+        },
+        "position": {
+          "title": "Position",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "ref",
+        "title",
+        "position"
+      ],
+      "title": "SectionSnapshot",
+      "type": "object"
+    },
+    "SourceSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "system": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "System",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "exported_at": {
+          "format": "date-time",
+          "title": "Exported At",
+          "type": "string"
+        },
+        "fingerprint_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Fingerprint Sha256",
+          "type": "string"
+        },
+        "exclusions": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ExclusionSnapshot"
+          },
+          "title": "Exclusions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "system",
+        "project_id",
+        "exported_at",
+        "fingerprint_sha256"
+      ],
+      "title": "SourceSnapshot",
+      "type": "object"
+    },
+    "TagSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Ref",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 255,
+          "title": "Label",
+          "type": "string"
+        },
+        "translation_plural": {
+          "default": "",
+          "maxLength": 255,
+          "title": "Translation Plural",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ref",
+        "label"
+      ],
+      "title": "TagSnapshot",
+      "type": "object"
+    },
+    "TaskMetaSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "task",
+          "default": "task",
+          "title": "Kind",
+          "type": "string"
+        },
+        "context_classification": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Context Classification"
+        },
+        "task_classification": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Task Classification"
+        },
+        "time_required": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,8}|(?=[\\d.]{1,11}0*$)\\d{0,8}\\.\\d{0,2}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Required"
+        },
+        "time_units": {
+          "anyOf": [
+            {
+              "maxLength": 16,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Units"
+        },
+        "represents_workflow": {
+          "default": false,
+          "title": "Represents Workflow",
+          "type": "boolean"
+        },
+        "context": {
+          "default": "",
+          "maxLength": 1024,
+          "title": "Context",
+          "type": "string"
+        }
+      },
+      "title": "TaskMetaSnapshot",
+      "type": "object"
+    },
+    "WorkflowSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Ref",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 200,
+          "title": "Title",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "is_archived": {
+          "default": false,
+          "title": "Is Archived",
+          "type": "boolean"
+        },
+        "public_link_enabled": {
+          "default": false,
+          "title": "Public Link Enabled",
+          "type": "boolean"
+        },
+        "workflow_type": {
+          "enum": [
+            "program",
+            "course",
+            "activity"
+          ],
+          "title": "Workflow Type",
+          "type": "string"
+        },
+        "metadata": {
+          "discriminator": {
+            "mapping": {
+              "activity": "#/$defs/ActivityMetaSnapshot",
+              "course": "#/$defs/CourseMetaSnapshot",
+              "program": "#/$defs/ProgramMetaSnapshot"
+            },
+            "propertyName": "kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ActivityMetaSnapshot"
+            },
+            {
+              "$ref": "#/$defs/CourseMetaSnapshot"
+            },
+            {
+              "$ref": "#/$defs/ProgramMetaSnapshot"
+            }
+          ],
+          "title": "Metadata"
+        },
+        "graph": {
+          "$ref": "#/$defs/GraphSnapshot"
+        }
+      },
+      "required": [
+        "ref",
+        "title",
+        "workflow_type",
+        "metadata",
+        "graph"
+      ],
+      "title": "WorkflowSnapshot",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "kind": {
+      "const": "courseflow.project",
+      "default": "courseflow.project",
+      "title": "Kind",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceSnapshot"
+    },
+    "project": {
+      "$ref": "#/$defs/ProjectSnapshot"
+    }
+  },
+  "required": [
+    "source",
+    "project"
+  ],
+  "title": "ProjectSnapshotBundle",
+  "type": "object"
+}

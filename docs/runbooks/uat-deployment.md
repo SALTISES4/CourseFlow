@@ -18,10 +18,19 @@ deployment topology are defined.
 4. Run `git pull` in the server checkout.
 5. Build the Django image and stop the running Django container.
 6. From a one-off UAT container, delete every table in the managed database's
-   `public` schema, rerun migrations, and seed the canonical E2E fixtures.
-7. Recreate Django and wait for the container health check.
-8. Confirm that Django reports no unapplied migrations.
-9. Replace the served files in `react/dist` with the tested frontend artifact.
+   `public` schema.
+7. Apply migrations to the empty database.
+8. Seed the canonical E2E users, reference data, and fixtures.
+9. Import the persistent project snapshot owned by `teacher@courseflow.com`.
+10. Recreate Django and wait for the container health check.
+11. Confirm that Django reports no unapplied migrations.
+12. Replace the served files in `react/dist` with the tested frontend artifact.
+
+`cf_rebuild_uat_database` owns steps 6 through 9 in that exact order. The UAT
+Compose overlay sets `DJANGO_MIGRATE_ON_STARTUP=false`, so starting Django does
+not apply migrations again after the seed and import. The later
+`manage.py migrate --check` is read-only: it fails on unapplied migrations but
+does not modify the schema.
 
 UAT is intentionally ephemeral: every successful deployment replaces all
 application data. The reset command requires `ENV=uat`, the UAT Compose-only

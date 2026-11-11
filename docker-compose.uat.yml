@@ -4,6 +4,9 @@ services:
       - uat
     environment:
       ALLOW_UAT_DATABASE_RESET: "true"
+      # cf_rebuild_uat_database exclusively owns migrate -> seed -> import.
+      # Do not run a second migrate from the service entrypoint after import.
+      DJANGO_MIGRATE_ON_STARTUP: "false"
       UAT_DATABASE_RESET_HOST: ${UAT_DATABASE_RESET_HOST:?}
       UAT_DATABASE_RESET_NAME: ${UAT_DATABASE_RESET_NAME:?}
     volumes: !reset []

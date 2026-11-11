@@ -84,9 +84,9 @@ def test_rebuild_uat_database_requires_matching_target_fingerprint(monkeypatch):
         )
 
 
-def test_rebuild_uat_database_drops_migrates_and_seeds(monkeypatch):
+def test_rebuild_uat_database_drops_migrates_seeds_and_imports(monkeypatch):
     statements: list[tuple[str, object | None]] = []
-    nested_commands: list[tuple[str, dict]] = []
+    nested_commands: list[tuple[str, tuple, dict]] = []
 
     class FakeCursor:
         def __enter__(self):
@@ -115,8 +115,8 @@ def test_rebuild_uat_database_drops_migrates_and_seeds(monkeypatch):
     def fake_atomic():
         yield
 
-    def fake_call_command(name, **options):
-        nested_commands.append((name, options))
+    def fake_call_command(name, *args, **options):
+        nested_commands.append((name, args, options))
 
     monkeypatch.setenv("ENV", "uat")
     monkeypatch.setenv("ALLOW_UAT_DATABASE_RESET", "true")
@@ -145,6 +145,14 @@ def test_rebuild_uat_database_drops_migrates_and_seeds(monkeypatch):
         ),
     ]
     assert nested_commands == [
-        ("migrate", {"interactive": False, "verbosity": 0}),
-        ("cf_seed_e2e_data", {"clear_and_seed": True, "verbosity": 0}),
+        ("migrate", (), {"interactive": False, "verbosity": 0}),
+        ("cf_seed_e2e_data", (), {"clear_and_seed": True, "verbosity": 0}),
+        (
+            "cf_import_project_snapshot",
+            (str(cf_rebuild_uat_database._PERSISTENT_PROJECT_SNAPSHOT),),
+            {
+                "owner_email": "teacher@courseflow.com",
+                "verbosity": 0,
+            },
+        ),
     ]
