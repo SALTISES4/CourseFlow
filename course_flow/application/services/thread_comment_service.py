@@ -72,10 +72,12 @@ class ThreadCommentService:
         requester_user_id: int,
         action: WorkflowPermission,
     ) -> Thread | None:
-        """Return the thread if it exists, is in a graph context, and requester may access it.
+        """
+        Return the thread if it exists, is in a graph context, and requester may access
+        it.
 
-        Returns ``None`` if the thread does not exist or has no graph context.
-        Raises ``PermissionError`` if the requested action is not allowed.
+        Returns None if the thread does not exist or has no graph context.
+        Raises PermissionError if the requested action is not allowed.
         """
         try:
             thread = Thread.objects.get(uuid=thread_uuid)
@@ -105,10 +107,10 @@ class ThreadCommentService:
         requester_user_id: int,
     ) -> list[CommentDTO] | None:
         """
-        Returns ``None`` if the thread does not exist or is not attached to any graph
+        Returns None if the thread does not exist or is not attached to any graph
         context we can authorize (treated as not found).
 
-        Raises ``PermissionError`` if the requested workflow action is not allowed.
+        Raises PermissionError if the requested workflow action is not allowed.
         """
         try:
             thread = self._get_authorized_thread(
@@ -134,11 +136,12 @@ class ThreadCommentService:
         requester_user_id: int,
         body: str,
     ) -> CommentDTO | None:
-        """Create a comment on the thread as the current user.
+        """
+        Create a comment on the thread as the current user.
 
-        Returns ``None`` if the thread cannot be resolved or authorized like list.
-        Raises ``ValueError`` if ``body`` is empty after strip.
-        Raises ``PermissionError`` if the requested workflow action is not allowed.
+        Returns None if the thread cannot be resolved or authorized like list.
+        Raises ValueError if body is empty after strip.
+        Raises PermissionError if the requested workflow action is not allowed.
         """
         text = body.strip()
         if not text:
@@ -169,7 +172,9 @@ class ThreadCommentService:
         comment_uuid: UUID,
         requester_user_id: int,
     ) -> Literal["deleted", "not_found", "comment_not_found", "wrong_thread"]:
-        """Delete a comment authored by the current actor."""
+        """
+        Delete a comment authored by the current actor.
+        """
         try:
             thread = self._get_authorized_thread(
                 thread_uuid,
@@ -203,7 +208,9 @@ class ThreadCommentService:
     def delete_all_comments(
         self, thread_uuid: UUID, requester_user_id: int
     ) -> int | None:
-        """Delete all comments authored by the actor on one thread."""
+        """
+        Delete all comments authored by the actor on one thread.
+        """
         try:
             thread = self._get_authorized_thread(
                 thread_uuid,

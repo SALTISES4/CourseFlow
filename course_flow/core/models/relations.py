@@ -4,6 +4,10 @@ Explicit join / through models (M2M through tables and favorites).
 Domain entities live in sibling modules; this module holds only relational glue.
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from django.conf import settings
 from django.db import models
 
@@ -17,10 +21,18 @@ from course_flow.core.models.project import Project
 from course_flow.core.models.tag import Tag
 from course_flow.core.models.team import Team
 
+if TYPE_CHECKING:
+    from course_flow.core.models.user import User
+
 ROLE_CHOICES = [(e.value, e.name.title()) for e in TeamRole]
 
 
 class ProjectDiscipline(models.Model):
+    if TYPE_CHECKING:
+        id: int
+        project_id: int
+        discipline_id: int
+
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     discipline = models.ForeignKey(Discipline, on_delete=models.CASCADE)
 
@@ -35,7 +47,12 @@ class ProjectDiscipline(models.Model):
 
 
 class TeamUser(models.Model):
-    user = models.ForeignKey(
+    if TYPE_CHECKING:
+        id: int
+        user_id: int
+        team_id: int
+
+    user: models.ForeignKey[User, User] = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="team_users",
@@ -65,6 +82,11 @@ class TeamUser(models.Model):
 
 
 class NodeTag(models.Model):
+    if TYPE_CHECKING:
+        id: int
+        node_id: int
+        tag_id: int
+
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
@@ -79,6 +101,11 @@ class NodeTag(models.Model):
 
 
 class OutcomeTag(models.Model):
+    if TYPE_CHECKING:
+        id: int
+        outcome_id: int
+        tag_id: int
+
     outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
@@ -93,6 +120,11 @@ class OutcomeTag(models.Model):
 
 
 class NodeOutcome(models.Model):
+    if TYPE_CHECKING:
+        id: int
+        node_id: int
+        outcome_id: int
+
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
     outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
 
@@ -107,6 +139,11 @@ class NodeOutcome(models.Model):
 
 
 class HorizontaloutcomeOutcome(models.Model):
+    if TYPE_CHECKING:
+        id: int
+        horizontal_outcome_id: int
+        outcome_id: int
+
     horizontal_outcome = models.ForeignKey(
         Horizontaloutcome,
         on_delete=models.CASCADE,
@@ -129,6 +166,11 @@ class HorizontaloutcomeOutcome(models.Model):
 
 
 class FavoriteProject(models.Model):
+    if TYPE_CHECKING:
+        id: int
+        user_id: int
+        project_id: int
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -151,6 +193,11 @@ class FavoriteProject(models.Model):
 
 
 class FavoriteGraph(models.Model):
+    if TYPE_CHECKING:
+        id: int
+        user_id: int
+        graph_id: int
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

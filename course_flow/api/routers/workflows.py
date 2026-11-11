@@ -23,6 +23,7 @@ from course_flow.api.schemas.workflows import (
     WorkflowListItemOut,
     WorkflowListMetaOut,
     WorkflowListOut,
+    WorkflowOverviewMetadataOut,
     WorkflowPublicLinkIn,
     WorkflowRelatedOut,
     WorkflowUpdateIn,
@@ -104,7 +105,9 @@ def _workflow_detail(current_user: User, dto: WorkflowDTO) -> WorkflowDetailOut:
         graph_uuid=dto.graph_uuid,
         title=dto.title,
         description=dto.description,
-        overview_metadata=dto.overview_metadata,
+        overview_metadata=WorkflowOverviewMetadataOut.model_validate(
+            dto.overview_metadata
+        ),
         workflow_type=dto.workflow_type,
         owner=user_service.get_user_summary(owner),
         project_uuid=dto.project_uuid,

@@ -1,4 +1,6 @@
-"""Persist deterministic E2E workflow graph fixtures."""
+"""
+Persist deterministic E2E workflow graph fixtures.
+"""
 
 from __future__ import annotations
 
@@ -88,7 +90,9 @@ def build_nodes_from_layout(
     channels: list[Channel],
     layout: GraphLayoutPlan,
 ) -> list[Node]:
-    """Create nodes in the same global order as ``iter_layout_node_meta``."""
+    """
+    Create nodes in the same global order as iter_layout_node_meta.
+    """
     workflow = graph.workflow
     nodes: list[Node] = []
     for si, sec in enumerate(layout.sections):

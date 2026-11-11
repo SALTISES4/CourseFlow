@@ -6,7 +6,9 @@ from course_flow.core.models import Graph, Project
 
 
 class ProjectGraphViewService:
-    """Project-level Graph View: entity fields + graph UUID references."""
+    """
+    Project-level Graph View: entity fields + graph UUID references.
+    """
 
     def get_by_project_uuid(self, project_uuid: UUID):
         try:

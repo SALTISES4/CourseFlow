@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.db import models
 
 from course_flow.core.models.base import UUIDModel
@@ -6,6 +8,11 @@ from course_flow.core.models.thread import Thread
 
 
 class Outcome(UUIDModel):
+    if TYPE_CHECKING:
+        graph_id: int
+        thread_id: int | None
+        parent_id: int | None
+
     graph = models.ForeignKey(
         Graph,
         on_delete=models.CASCADE,
@@ -35,7 +42,7 @@ class Outcome(UUIDModel):
         blank=True,
     )
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         db_table = "cf_outcome"
         constraints = [
             models.UniqueConstraint(

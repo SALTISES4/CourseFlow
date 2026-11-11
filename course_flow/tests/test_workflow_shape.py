@@ -1,4 +1,6 @@
-"""Structural invariants for ``graph_shape`` layout + edge generation."""
+"""
+Structural invariants for graph_shape layout + edge generation.
+"""
 
 from __future__ import annotations
 

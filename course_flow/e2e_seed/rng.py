@@ -1,4 +1,6 @@
-"""Deterministic pseudo-random helpers for E2E fixture structure."""
+"""
+Deterministic pseudo-random helpers for E2E fixture structure.
+"""
 
 from __future__ import annotations
 
@@ -8,7 +10,9 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class SeededRNG:
-    """All structural randomness goes through this instance."""
+    """
+    All structural randomness goes through this instance.
+    """
 
     seed: int
     _rng: random.Random

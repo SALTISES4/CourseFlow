@@ -1,4 +1,6 @@
-"""Read/write typed meta for grid nodes (mirrors workflow typed-meta pattern)."""
+"""
+Read/write typed meta for grid nodes (mirrors workflow typed-meta pattern).
+"""
 
 from __future__ import annotations
 
@@ -45,12 +47,16 @@ _COURSE_LAYER_PATCH_KEYS = frozenset(
 
 
 def typed_meta_patch_keys() -> frozenset[str]:
-    """Keys that may be routed to typed meta (union of all node layers)."""
+    """
+    Keys that may be routed to typed meta (union of all node layers).
+    """
     return _ACTIVITY_LAYER_PATCH_KEYS | _TASK_LAYER_PATCH_KEYS | _COURSE_LAYER_PATCH_KEYS
 
 
 def _empty_graph_meta_fields() -> dict[str, Any]:
-    """Unified graph node payload shape; unset layers return nulls/false."""
+    """
+    Unified graph node payload shape; unset layers return nulls/false.
+    """
     return {
         "context_classification": None,
         "task_classification": None,
@@ -116,7 +122,9 @@ def _graph_fields_from_course_meta(meta: Coursemeta) -> dict[str, Any]:
 
 
 def read_node_meta_fields(node: Node) -> dict[str, Any]:
-    """API-shaped meta fields for graph payloads."""
+    """
+    API-shaped meta fields for graph payloads.
+    """
     node_type = NodeType(node.node_type)
 
     if node_type == NodeType.COURSE:
@@ -141,7 +149,9 @@ def read_node_meta_fields(node: Node) -> dict[str, Any]:
 
 
 def patch_node_typed_meta(node: Node, patch: dict[str, Any]) -> list[str]:
-    """Apply patch keys that belong on typed meta; return ORM update_fields names."""
+    """
+    Apply patch keys that belong on typed meta; return ORM update_fields names.
+    """
     node_type = NodeType(node.node_type)
     meta = _get_or_create_typed_meta(node)
     if meta is None:
@@ -221,7 +231,9 @@ def _apply_task_layer_patch(meta: Taskmeta, patch: dict[str, Any]) -> list[str]:
 
 
 def copy_node_typed_meta(*, source: Node, target: Node) -> None:
-    """Copy typed meta field values when duplicating a node (same node_type)."""
+    """
+    Copy typed meta field values when duplicating a node (same node_type).
+    """
     if source.node_type != target.node_type:
         return
 

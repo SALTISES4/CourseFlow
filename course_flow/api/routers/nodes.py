@@ -1,4 +1,6 @@
-"""Node collection (graph-scoped) and singular node resource routes."""
+"""
+Node collection (graph-scoped) and singular node resource routes.
+"""
 
 from __future__ import annotations
 

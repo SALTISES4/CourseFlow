@@ -1,4 +1,6 @@
-"""Transactional project and workflow archive lifecycle operations."""
+"""
+Transactional project and workflow archive lifecycle operations.
+"""
 
 from __future__ import annotations
 
@@ -24,7 +26,9 @@ from course_flow.core.permissions import ProjectPermission, WorkflowPermission
 
 
 class ResourceStateConflict(ValueError):
-    """The requested lifecycle transition conflicts with parent resource state."""
+    """
+    The requested lifecycle transition conflicts with parent resource state.
+    """
 
 
 class ResourceLifecycleService:

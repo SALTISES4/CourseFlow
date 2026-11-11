@@ -1,4 +1,6 @@
-"""Django settings for CourseFlow V2 (rebuild)."""
+"""
+Django settings for CourseFlow V2 (rebuild).
+"""
 
 import os
 from pathlib import Path
@@ -11,7 +13,9 @@ ENVIRONMENT = os.environ.get("ENV", "development").strip().lower()
 
 
 def env_or_file(name: str, default: str = "") -> str:
-    """Read a setting directly or from a Docker/Compose secret file."""
+    """
+    Read a setting directly or from a Docker/Compose secret file.
+    """
     file_path = os.environ.get(f"{name}_FILE")
     if file_path:
         return Path(file_path).read_text(encoding="utf-8").rstrip("\n")
@@ -72,7 +76,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         # Transactional email templates intentionally live outside the
-        # ``course_flow.core`` Django app; make the ADR-defined location
+        # course_flow.core Django app; make the ADR-defined location
         # explicit instead of relying on APP_DIRS discovery.
         "DIRS": [BASE_DIR / "course_flow" / "templates"],
         "APP_DIRS": True,

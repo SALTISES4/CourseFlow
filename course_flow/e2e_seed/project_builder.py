@@ -1,4 +1,6 @@
-"""Project, team, and user builders used by the E2E fixture orchestrator."""
+"""
+Project, team, and user builders used by the E2E fixture orchestrator.
+"""
 
 from __future__ import annotations
 
@@ -56,7 +58,9 @@ def create_project(
 
 
 def ensure_team(project: Project, owner: User) -> Team:
-    """Attach the project owner as the canonical owner-team membership."""
+    """
+    Attach the project owner as the canonical owner-team membership.
+    """
     team, _ = Team.objects.get_or_create(project=project)
     TeamUser.objects.get_or_create(
         team=team,

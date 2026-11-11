@@ -1,4 +1,6 @@
-"""Generate or clear deterministic local-development and E2E fixture data."""
+"""
+Generate or clear deterministic local-development and E2E fixture data.
+"""
 
 from __future__ import annotations
 

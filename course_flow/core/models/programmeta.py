@@ -1,9 +1,15 @@
+from typing import TYPE_CHECKING
+
 from django.db import models
 
 from course_flow.core.models.workflow import Workflow
 
 
 class Programmeta(models.Model):
+    if TYPE_CHECKING:
+        id: int
+        workflow_id: int
+
     code = models.CharField(max_length=255, blank=True)
     workflow = models.OneToOneField(
         Workflow,
@@ -17,9 +23,7 @@ class Programmeta(models.Model):
     time_required = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
     )
-    time_units = models.CharField(
-        max_length=16, null=True, blank=True
-    )
+    time_units = models.CharField(max_length=16, null=True, blank=True)
     ponderation_theory = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
     )

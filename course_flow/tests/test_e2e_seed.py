@@ -1,4 +1,6 @@
-"""Tests for deterministic E2E fixture generation and clear behavior."""
+"""
+Tests for deterministic E2E fixture generation and clear behavior.
+"""
 
 from __future__ import annotations
 

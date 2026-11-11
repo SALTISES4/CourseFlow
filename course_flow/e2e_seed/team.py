@@ -1,4 +1,6 @@
-"""E2E fixture team members with explicit contributor roles."""
+"""
+E2E fixture team members with explicit contributor roles.
+"""
 
 from __future__ import annotations
 
@@ -31,7 +33,9 @@ def _contributor_manifest(*, email: str, role: Role) -> dict:
 
 
 def ensure_e2e_owner() -> User:
-    """Create or update the primary E2E actor: a non-admin teacher."""
+    """
+    Create or update the primary E2E actor: a non-admin teacher.
+    """
     return ensure_fixture_user(
         email=E2E_FIXTURE_TEACHER_EMAIL,
         first_name="testteacher",

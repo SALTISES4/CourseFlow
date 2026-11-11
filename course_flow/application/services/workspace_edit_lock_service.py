@@ -72,7 +72,9 @@ def _display_name(user: User) -> str:
 
 
 class WorkspaceEditLockService:
-    """Atomic edit-lease lifecycle and mutation-time authorization."""
+    """
+    Atomic edit-lease lifecycle and mutation-time authorization.
+    """
 
     def __init__(self) -> None:
         self._authorization = AuthorizationService()

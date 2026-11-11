@@ -1,4 +1,6 @@
-"""Read-only code and database catalogues required by frontend forms."""
+"""
+Read-only code and database catalogues required by frontend forms.
+"""
 
 from ninja import Router
 

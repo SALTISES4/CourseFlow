@@ -12,8 +12,6 @@ import '@cf/i18n'
 import { normalizeLocale } from '@cf/i18n/config'
 import CfRouter from '@cf/router/appRoutes'
 import { MainSidebarRootStyles } from '@cfComponents/globalNav/MainSidebar/styles'
-import createCache from '@emotion/cache'
-import { CacheProvider } from '@emotion/react'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
@@ -63,11 +61,6 @@ console.error = (message, ...args) => {
  * // HACK
  *******************************************************/
 
-// create the emotion cache
-const cache = createCache({
-  key: 'emotion'
-})
-
 const rootElement = document.getElementById('root')
 if (!rootElement) {
   throw new Error('Root element "#root" was not found')
@@ -96,22 +89,20 @@ function LocalizedApplication() {
           adapterLocale={adapterLocale}
           localeText={datePickerLocaleText[locale]}
         >
-          <CacheProvider value={cache}>
-            <SnackbarProvider
-              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            >
-              <DialogContextProvider>
-                <ThemeProvider theme={theme}>
-                  <ScopedCssBaseline sx={MainSidebarRootStyles}>
-                    <RouterProvider
-                      router={CfRouter}
-                      future={{ v7_startTransition: true }}
-                    />
-                  </ScopedCssBaseline>
-                </ThemeProvider>
-              </DialogContextProvider>
-            </SnackbarProvider>
-          </CacheProvider>
+          <SnackbarProvider
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          >
+            <DialogContextProvider>
+              <ThemeProvider theme={theme}>
+                <ScopedCssBaseline sx={MainSidebarRootStyles}>
+                  <RouterProvider
+                    router={CfRouter}
+                    future={{ v7_startTransition: true }}
+                  />
+                </ScopedCssBaseline>
+              </ThemeProvider>
+            </DialogContextProvider>
+          </SnackbarProvider>
         </LocalizationProvider>
       </CookieProvider>
     </QueryClientProvider>

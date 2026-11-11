@@ -98,10 +98,11 @@ class UserService:
         return user
 
     def list_users(self, filter_term: str | None = None) -> list[User]:
-        """Return all users ordered by name, optionally restricted by a case-insensitive
-        substring match on ``first_name``, ``last_name``, or ``email``.
+        """
+        Return all users ordered by name, optionally restricted by a case-insensitive
+        substring match on first_name, last_name, or email.
 
-        ``filter_term`` absent or blank (after strip) returns the full list.
+        filter_term absent or blank (after strip) returns the full list.
         """
         qs = User.objects.all()
         if filter_term is not None:

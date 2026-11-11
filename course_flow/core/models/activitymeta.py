@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.db import models
 
 from course_flow.core.models.meta_fields import NodeActivityMetaFields
@@ -6,6 +8,10 @@ from course_flow.core.models.workflow import Workflow
 
 
 class Activitymeta(NodeActivityMetaFields):
+    if TYPE_CHECKING:
+        workflow_id: int | None
+        node_id: int | None
+
     calculate_time = models.BooleanField(default=False)
     workflow = models.OneToOneField(
         Workflow,
@@ -24,7 +30,7 @@ class Activitymeta(NodeActivityMetaFields):
     context = models.CharField(max_length=1024, blank=True)
     classification = models.CharField(max_length=255, blank=True)
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         db_table = "cf_activitymeta"
         constraints = [
             models.CheckConstraint(

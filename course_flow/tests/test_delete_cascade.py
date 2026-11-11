@@ -1,4 +1,6 @@
-"""Regression tests for Part A delete semantics (model + signals)."""
+"""
+Regression tests for Part A delete semantics (model + signals).
+"""
 
 from __future__ import annotations
 

@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
 
 class Authtoken(models.Model):
+    if TYPE_CHECKING:
+        id: int
+        user_id: int
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

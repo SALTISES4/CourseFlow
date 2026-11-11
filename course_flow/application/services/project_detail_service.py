@@ -7,7 +7,9 @@ from course_flow.core.models import Graph, Project
 
 
 class ProjectDetailService:
-    """Assemble project detail with graphs, workflows, and typed workflow meta."""
+    """
+    Assemble project detail with graphs, workflows, and typed workflow meta.
+    """
 
     def get_by_project_uuid(self, project_uuid: UUID):
         try:

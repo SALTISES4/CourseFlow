@@ -164,7 +164,9 @@ def test_graph_view_requires_auth(client: Client, user):
 
 @pytest.mark.django_db
 def test_graph_view_thread_comment_counts_use_thread_id_resolution(client: Client, user):
-    """Regression: comment aggregates filter by thread_id after resolving thread UUIDs."""
+    """
+    Regression: comment aggregates filter by thread_id after resolving thread UUIDs.
+    """
     raw_token = _issue_token_for(user)
     workflow_uuid, graph_uuid = _create_workflow(client, raw_token)
     wf = Graph.objects.select_related("workflow").get(uuid=graph_uuid)
@@ -210,7 +212,10 @@ def test_graph_view_node_includes_section_row(client: Client, user):
 
 @pytest.mark.django_db
 def test_graph_view_program_course_node_typed_meta_shape(client: Client, user):
-    """Course-type nodes use coursemeta; graph API still returns activity-layer keys as null."""
+    """
+    Course-type nodes use coursemeta; graph API still returns activity-layer keys as
+    null.
+    """
     raw_token = _issue_token_for(user)
     response = client.post(
         "/api/workflow",

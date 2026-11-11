@@ -5,7 +5,7 @@ Layout: section-local 2D grids — one node per (section, channel, section_row),
 compact row indices, structured channel spread. Edges: weighted out-degrees,
 same-section majority, forward bias, bounded cross-links.
 
-Structural randomness uses only ``SeededRNG``.
+Structural randomness uses only SeededRNG.
 """
 
 from __future__ import annotations
@@ -17,7 +17,9 @@ from course_flow.e2e_seed.rng import SeededRNG
 
 @dataclass(frozen=True)
 class GraphShapeParams:
-    """Bounds for one graph graph."""
+    """
+    Bounds for one graph.
+    """
 
     section_count: int  # 1–5
     channel_count: int  # 2–5
@@ -29,7 +31,9 @@ class GraphShapeParams:
 
 @dataclass
 class SectionLayoutPlan:
-    """Planned node positions within one section."""
+    """
+    Planned node positions within one section.
+    """
 
     placements: list[tuple[int, int]] = field(default_factory=list)
     # (channel_index, section_row), unique; rows compact 0..R-1
@@ -48,7 +52,7 @@ def iter_layout_node_meta(layout: GraphLayoutPlan) -> list[tuple[int, int, int]]
     """
     Global node order: section index, then row-major within section.
 
-    Must match the order used when persisting ``Node`` rows so edge indices align.
+    Must match the order used when persisting Node rows so edge indices align.
     """
     meta: list[tuple[int, int, int]] = []
     for si, sec in enumerate(layout.sections):
@@ -62,7 +66,9 @@ def choose_section_node_count(
     *,
     p: GraphShapeParams,
 ) -> int:
-    """4–12 nodes per section, usually medium-sized."""
+    """
+    4–12 nodes per section, usually medium-sized.
+    """
     lo = _clamp(p.min_nodes_per_section, 1, 12)
     hi = _clamp(p.max_nodes_per_section, lo, 12)
     r = rng.randint(0, 99)
@@ -137,7 +143,9 @@ def generate_graph_layout(
 
 
 def weighted_out_degree(rng: SeededRNG) -> int:
-    """Mostly 1–2; some 0; few 3–4."""
+    """
+    Mostly 1–2; some 0; few 3–4.
+    """
     r = rng.random()
     if r < 0.12:
         return 0

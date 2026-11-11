@@ -1,4 +1,7 @@
-"""Accumulate graph mutation deltas and build the canonical mutation envelope (internal API)."""
+"""
+Accumulate graph mutation deltas and build the canonical mutation envelope (internal
+API).
+"""
 
 from __future__ import annotations
 
@@ -8,7 +11,9 @@ from uuid import UUID
 
 @dataclass
 class GraphMutationDeltaBuilder:
-    """Narrow helper to collect created/updated/deleted graph entities for one mutation."""
+    """
+    Narrow helper to collect created/updated/deleted graph entities for one mutation.
+    """
 
     nodes_created: list[dict] = field(default_factory=list)
     nodes_updated: list[dict] = field(default_factory=list)
@@ -79,7 +84,9 @@ class GraphMutationDeltaBuilder:
         triggered_by: str,
         trigger_entity_id: str,
     ) -> dict:
-        """Return a dict matching ``GraphMutationEnvelopeOut`` (snake_case JSON keys)."""
+        """
+        Return a dict matching GraphMutationEnvelopeOut (snake_case JSON keys).
+        """
 
         return {
             "graph_id": graph_uuid,

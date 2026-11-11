@@ -44,13 +44,10 @@ class WorkflowService:
             description=description,
         )
 
-        graph = Graph.objects.filter(uuid=workflow_dtd.graph_uuid).first()
+        graph = Graph.objects.get(uuid=workflow_dtd.graph_uuid)
 
         # create one empty section for the workflow
-        Section.objects.create(
-            graph_id=graph.id,
-            title=""
-        )
+        Section.objects.create(graph_id=graph.id, title="")
 
         # create proper channels depending on the workflow_type
         for position, (system_label_code, colour) in enumerate(
@@ -71,9 +68,7 @@ class WorkflowService:
 
     def get_by_graph_uuid(self, uuid: UUID) -> WorkflowDTO | None:
         """
-        lookup the WorkflowDTO by a graph's uuid
-        :param uuid:
-        :return:
+        Return the workflow identified by its graph UUID.
         """
         return self._repository.get_by_graph_uuid(uuid)
 

@@ -1,5 +1,6 @@
 """
-Graph-affecting mutations: cascades, revision bump, delta envelope (graph aggregate root).
+Graph-affecting mutations: cascades, revision bump, delta envelope (graph aggregate
+root).
 """
 
 from __future__ import annotations
@@ -133,7 +134,9 @@ def _add_outcome_parents_with_all_children(
     assigned: set[int],
     children_by_parent: dict[int, set[int]],
 ) -> None:
-    """Add every parent whose direct children are all assigned, recursively."""
+    """
+    Add every parent whose direct children are all assigned, recursively.
+    """
     changed = True
     while changed:
         changed = False
@@ -166,7 +169,9 @@ def _assigned_outcome_ids_after_tree_attach(
     parent_by_id: dict[int, int | None],
     children_by_parent: dict[int, set[int]],
 ) -> set[int]:
-    """Apply FR-WF-AO-006 after a subtree is attached below a parent."""
+    """
+    Apply FR-WF-AO-006 after a subtree is attached below a parent.
+    """
     assigned = {assigned_outcome.id for assigned_outcome in node.outcomes.all()}
 
     if parent_id in assigned:
@@ -309,7 +314,9 @@ def _outcome_is_descendant(graph_id: int, ancestor_pk: int, candidate_pk: int) -
 
 
 def _outcome_level(graph_id: int, outcome_pk: int) -> int:
-    """Return the one-based level of an outcome in its graph hierarchy."""
+    """
+    Return the one-based level of an outcome in its graph hierarchy.
+    """
     level = 0
     current_pk: int | None = outcome_pk
     while current_pk is not None:
@@ -323,7 +330,9 @@ def _outcome_level(graph_id: int, outcome_pk: int) -> int:
 
 
 def _outcome_subtree_levels(graph_id: int, outcome_pk: int) -> int:
-    """Return the number of levels in an outcome subtree, including its root."""
+    """
+    Return the number of levels in an outcome subtree, including its root.
+    """
     parent_by_pk = dict(
         Outcome.objects.filter(graph_id=graph_id).values_list("pk", "parent_id")
     )
@@ -342,7 +351,9 @@ def _outcome_subtree_levels(graph_id: int, outcome_pk: int) -> int:
 
 
 def _outcome_subtree_uuids(graph_id: int, outcome_pk: int) -> list[UUID]:
-    """Return the UUIDs removed by a cascading outcome deletion."""
+    """
+    Return the UUIDs removed by a cascading outcome deletion.
+    """
     outcomes = list(
         Outcome.objects.filter(graph_id=graph_id).values_list(
             "pk",
@@ -378,7 +389,9 @@ def _assign_outcome_sibling_orders(
     siblings: list[Outcome],
     builder: GraphMutationDeltaBuilder,
 ) -> None:
-    """Two-phase order assignment to satisfy sibling unique constraints."""
+    """
+    Two-phase order assignment to satisfy sibling unique constraints.
+    """
     for i, o in enumerate(siblings):
         Outcome.objects.filter(pk=o.pk).update(order=10_000 + i)
     for i, o in enumerate(siblings):
@@ -459,7 +472,7 @@ class GraphMutationService:
         graph_uuid: UUID,
         user_id: int,
         action: WorkflowPermission,
-    ) -> tuple[Graph | None, MutationError | None]:
+    ) -> Graph | MutationError:
         try:
             wf = (
                 Graph.objects.select_for_update(of=("self",))
@@ -467,12 +480,12 @@ class GraphMutationService:
                 .get(uuid=graph_uuid)
             )
         except Graph.DoesNotExist:
-            return None, "not_found"
+            return "not_found"
 
         if not self._has_permission(graph=wf, user_id=user_id, action=action):
-            return None, "forbidden"
+            return "forbidden"
 
-        return wf, None
+        return wf
 
     @transaction.atomic
     def delete_node(
@@ -730,13 +743,13 @@ class GraphMutationService:
         channel_uuid: UUID | None = None,
         duplicate: bool = False,
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_graph(
+        wf = self._lock_graph(
             graph_uuid,
             user_id,
             WorkflowPermission.NODE_CATEGORY_MANAGEMENT,
         )
-        if err:
-            return None, err
+        if isinstance(wf, str):
+            return None, wf
 
         channels = list(
             Channel.objects.filter(graph_id=wf.id)
@@ -810,13 +823,13 @@ class GraphMutationService:
         user_id: int,
         channel_uuids: list[UUID],
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_graph(
+        wf = self._lock_graph(
             graph_uuid,
             user_id,
             WorkflowPermission.NODE_CATEGORY_MANAGEMENT,
         )
-        if err:
-            return None, err
+        if isinstance(wf, str):
+            return None, wf
 
         channels = list(
             Channel.objects.filter(graph_id=wf.id)
@@ -855,13 +868,13 @@ class GraphMutationService:
         section_uuid: UUID,
         duplicate: bool = False,
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_graph(
+        wf = self._lock_graph(
             graph_uuid,
             user_id,
             WorkflowPermission.PART_MANAGEMENT,
         )
-        if err:
-            return None, err
+        if isinstance(wf, str):
+            return None, wf
 
         try:
             anchor = Section.objects.select_related("graph", "thread").get(
@@ -985,13 +998,13 @@ class GraphMutationService:
         user_id: int,
         section_uuids: list[UUID],
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_graph(
+        wf = self._lock_graph(
             graph_uuid,
             user_id,
             WorkflowPermission.PART_MANAGEMENT,
         )
-        if err:
-            return None, err
+        if isinstance(wf, str):
+            return None, wf
 
         sections = list(
             Section.objects.filter(graph_id=wf.id)
@@ -1038,14 +1051,14 @@ class GraphMutationService:
         if not source_port or not target_port:
             return None, "bad_request"
 
-        wf, err = self._lock_graph(
+        wf = self._lock_graph(
             graph_uuid,
             user_id,
             WorkflowPermission.NODE_LINK_MANAGEMENT,
         )
 
-        if err:
-            return None, err
+        if isinstance(wf, str):
+            return None, wf
 
         try:
             sn = Node.objects.select_related("section", "channel").get(
@@ -1350,13 +1363,13 @@ class GraphMutationService:
         section_row: int,
         workflow_uuid: UUID | None,
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_graph(
+        wf = self._lock_graph(
             graph_uuid,
             user_id,
             WorkflowPermission.NODE_MANAGEMENT,
         )
-        if err:
-            return None, err
+        if isinstance(wf, str):
+            return None, wf
 
         try:
             section = Section.objects.get(uuid=section_uuid, graph_id=wf.id)
@@ -1528,7 +1541,9 @@ class GraphMutationService:
         parent_id: int | None,
         builder: GraphMutationDeltaBuilder,
     ) -> None:
-        """Persist and report assignment changes caused by an outcome-tree attach."""
+        """
+        Persist and report assignment changes caused by an outcome-tree attach.
+        """
         if parent_id is None:
             return
 
@@ -1687,13 +1702,13 @@ class GraphMutationService:
         duplicate: bool = False,
         edge: DropEdge | None = None,
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_graph(
+        wf = self._lock_graph(
             graph_uuid,
             user_id,
             WorkflowPermission.NODE_MANAGEMENT,
         )
-        if err:
-            return None, err
+        if isinstance(wf, str):
+            return None, wf
         try:
             anchor = Node.objects.select_related(
                 "section", "channel", "workflow", "thread"
@@ -1773,13 +1788,13 @@ class GraphMutationService:
         mode: InsertMode,
         edge: DropEdge | None = None,
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_graph(
+        wf = self._lock_graph(
             graph_uuid,
             user_id,
             WorkflowPermission.NODE_MANAGEMENT,
         )
-        if err:
-            return None, err
+        if isinstance(wf, str):
+            return None, wf
         try:
             section = Section.objects.get(uuid=section_uuid, graph_id=wf.id)
             channel = Channel.objects.get(uuid=channel_uuid, graph_id=wf.id)
@@ -1848,13 +1863,13 @@ class GraphMutationService:
         if wf is None:
             return None, "bad_request"
 
-        wf_locked, err = self._lock_graph(
+        wf_locked = self._lock_graph(
             wf.uuid,
             user_id,
             WorkflowPermission.NODE_MANAGEMENT,
         )
-        if err:
-            return None, err
+        if isinstance(wf_locked, str):
+            return None, wf_locked
 
         try:
             to_section = Section.objects.get(uuid=to_section_uuid, graph_id=wf_locked.id)
@@ -1933,13 +1948,13 @@ class GraphMutationService:
         if wf is None:
             return None, "bad_request"
 
-        wf_locked, err = self._lock_graph(
+        wf_locked = self._lock_graph(
             wf.uuid,
             user_id,
             WorkflowPermission.NODE_LINK_MANAGEMENT,
         )
-        if err:
-            return None, err
+        if isinstance(wf_locked, str):
+            return None, wf_locked
 
         if not _node_in_graph(node, wf_locked.id):
             return None, "not_found"
@@ -2011,13 +2026,13 @@ class GraphMutationService:
         if wf is None:
             return None, None, None, "bad_request"
 
-        wf_locked, err = self._lock_graph(
+        wf_locked = self._lock_graph(
             wf.uuid,
             user_id,
             WorkflowPermission.ASSIGN_OUTCOMES,
         )
-        if err:
-            return None, None, None, err
+        if isinstance(wf_locked, str):
+            return None, None, None, wf_locked
 
         if not _node_in_graph(node, wf_locked.id):
             return None, None, None, "not_found"
@@ -2112,13 +2127,13 @@ class GraphMutationService:
         code: str = "",
         tag_ids: list[int] | None = None,
     ) -> tuple[dict | None, MutationError | None]:
-        wf, err = self._lock_graph(
+        wf = self._lock_graph(
             graph_uuid,
             user_id,
             WorkflowPermission.OUTCOME_MANAGEMENT,
         )
-        if err:
-            return None, err
+        if isinstance(wf, str):
+            return None, wf
 
         parent_pk: int | None = None
         if parent_uuid is not None:
@@ -2196,13 +2211,13 @@ class GraphMutationService:
         except Outcome.DoesNotExist:
             return None, "not_found"
 
-        wf, err = self._lock_graph(
+        wf = self._lock_graph(
             outcome.graph.uuid,
             user_id,
             WorkflowPermission.OUTCOME_MANAGEMENT,
         )
-        if err:
-            return None, err
+        if isinstance(wf, str):
+            return None, wf
 
         try:
             outcome = _reload_outcome(
@@ -2256,13 +2271,13 @@ class GraphMutationService:
         except Outcome.DoesNotExist:
             return None, "not_found"
 
-        wf, err = self._lock_graph(
+        wf = self._lock_graph(
             outcome.graph.uuid,
             user_id,
             WorkflowPermission.OUTCOME_MANAGEMENT,
         )
-        if err:
-            return None, err
+        if isinstance(wf, str):
+            return None, wf
 
         try:
             outcome = Outcome.objects.get(uuid=outcome_uuid, graph_id=wf.id)
@@ -2320,13 +2335,13 @@ class GraphMutationService:
         except Outcome.DoesNotExist:
             return None, "not_found"
 
-        wf, err = self._lock_graph(
+        wf = self._lock_graph(
             source.graph.uuid,
             user_id,
             WorkflowPermission.OUTCOME_MANAGEMENT,
         )
-        if err:
-            return None, err
+        if isinstance(wf, str):
+            return None, wf
 
         try:
             source = _reload_outcome(
@@ -2409,13 +2424,13 @@ class GraphMutationService:
         except Outcome.DoesNotExist:
             return None, "not_found"
 
-        wf, err = self._lock_graph(
+        wf = self._lock_graph(
             moving.graph.uuid,
             user_id,
             WorkflowPermission.OUTCOME_MANAGEMENT,
         )
-        if err:
-            return None, err
+        if isinstance(wf, str):
+            return None, wf
 
         try:
             moving = _reload_outcome(

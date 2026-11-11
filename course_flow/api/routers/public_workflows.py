@@ -10,6 +10,7 @@ from course_flow.api.schemas.permissions import PermissionContextOut
 from course_flow.api.schemas.workflows import (
     PublicWorkflowDetailOut,
     PublicWorkflowDetailOutResp,
+    WorkflowOverviewMetadataOut,
 )
 from course_flow.application.dto import WorkflowDTO
 from course_flow.core.permissions import ResourceRole, WorkflowPermission
@@ -52,7 +53,9 @@ def get_public_workflow(request, uuid: UUID):
             graph_uuid=workflow.graph_uuid,
             title=workflow.title,
             description=workflow.description,
-            overview_metadata=workflow.overview_metadata,
+            overview_metadata=WorkflowOverviewMetadataOut.model_validate(
+                workflow.overview_metadata
+            ),
             workflow_type=workflow.workflow_type,
             date_created=workflow.date_created,
             modified_on=workflow.modified_on,

@@ -1,37 +1,23 @@
-"""API layering conventions for CourseFlow V2 (Ninja).
+"""
+Define API naming and resource-layer conventions for CourseFlow V2.
 
-JSON transport naming
-    Python code (services, ORM, Ninja handler parameters, DTOs) uses **snake_case**.
-    Public HTTP JSON bodies (request and response) use **camelCase** field names.
+JSON transport:
+- Python services, ORM models, handler parameters, and DTOs use snake_case.
+- Public request and response bodies use camelCase.
+- Request and response models inherit from CamelSchema, which supplies the
+  Pydantic alias generator. Use explicit field aliases only for exceptions.
+- Prefer typed schemas over raw dictionaries for frontend-facing contracts.
+- Query and path parameters remain snake_case unless a route documents an
+  exception.
 
-    API request/response models inherit from ``CamelSchema`` in
-    ``course_flow.api.common.schemas``, which applies a Pydantic v2
-    ``alias_generator`` so ORM-friendly snake_case attributes map to camelCase in
-    JSON. Avoid per-field ``Field(alias=...)`` unless the alias generator cannot
-    express an exception. Prefer typed ``CamelSchema`` (or nested schemas) over
-    returning raw ``dict`` from routes when the payload is part of the frontend
-    contract.
+Entity resources:
+- Primary CRUD routes return only fields belonging to the persisted resource.
+- Related graphs and editor-specific joins belong in dedicated read models.
 
-    Query and path parameters are not globally rewritten: path kwargs stay
-    snake_case in Python; list routes that take explicit query parameters (for
-    example notification pagination) use **snake_case** query names
-    (``page``, ``page_size``) unless a future change standardizes otherwise.
+Graph views:
+- Graph view routes return flat top-level collections linked by UUID references.
+- Thread UUIDs and comment counts may appear in graph views, but comment bodies
+  remain behind thread and comment endpoints.
 
-Entity resources
-    Primary CRUD routes (e.g. ``/project``, ``/graph``) return *entity* payloads
-    only: fields that belong to the persisted resource, without embedding related
-    graphs or editor-specific joins.
-
-Graph View
-    Loading everything needed to render the graph in one round trip uses
-    dedicated Graph View routes (e.g. ``GET .../graph/{uuid}/view``).
-    Graph View payloads return **flat** top-level collections (lists) keyed by type, linked by
-    **UUID references** between rows—not nested trees.
-
-Comments / threads
-    Graph View payloads may expose ``thread_uuid`` and/or ``comment_count`` per thread for UI
-    badges. Full comment bodies stay behind separate thread/comment endpoints.
-
-This module documents the contract; enforcement is by schema placement and route
-naming under ``course_flow.api``.
+Schema placement and route naming under course_flow.api enforce these conventions.
 """

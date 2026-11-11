@@ -1,4 +1,6 @@
-"""Canonical resource roles, states, actions, and permission matrices."""
+"""
+Canonical resource roles, states, actions, and permission matrices.
+"""
 
 from __future__ import annotations
 

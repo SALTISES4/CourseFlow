@@ -1,4 +1,6 @@
-"""Thread comment read models (lazy-loaded; not embedded in Graph View)."""
+"""
+Thread comment read models (lazy-loaded; not embedded in Graph View).
+"""
 
 from __future__ import annotations
 
@@ -25,13 +27,17 @@ class CommentOut(CamelSchema):
 
 
 class CommentCreateIn(CamelSchema):
-    """Body for POST /thread/{uuid}/comments."""
+    """
+    Body for POST /thread/{uuid}/comments.
+    """
 
     body: str
 
 
 class ThreadCommentsBulkDeleteOut(CamelSchema):
-    """Response for deleting all comments authored by the current actor."""
+    """
+    Response for deleting all comments authored by the current actor.
+    """
 
     success: bool = True
     deleted_count: int

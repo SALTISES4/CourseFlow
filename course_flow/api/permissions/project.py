@@ -1,4 +1,6 @@
-"""Project authorization adapters for Django Ninja controllers."""
+"""
+Project authorization adapters for Django Ninja controllers.
+"""
 
 from course_flow.application.dto import ProjectDTO
 from course_flow.application.services.authorization_service import (
@@ -24,7 +26,9 @@ def has_project_permission(
 
 
 def can_view_project(*, current_user: User, project: ProjectDTO | None) -> bool:
-    """Compatibility seam for routes not yet migrated to action-based guards."""
+    """
+    Compatibility seam for routes not yet migrated to action-based guards.
+    """
     return project is not None and has_project_permission(
         current_user=current_user,
         project=project,

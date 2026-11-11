@@ -1,4 +1,11 @@
+from typing import TYPE_CHECKING
+
 from django.db import models
+
+if TYPE_CHECKING:
+    from django_stubs_ext.db.models.manager import RelatedManager
+
+    from course_flow.core.models.node import Node
 
 from course_flow.core.models.base import TimeStampedUUIDModel
 from course_flow.core.models.graph import Graph
@@ -6,6 +13,11 @@ from course_flow.core.models.thread import Thread
 
 
 class Section(TimeStampedUUIDModel):
+    if TYPE_CHECKING:
+        graph_id: int
+        thread_id: int | None
+        nodes: RelatedManager[Node]
+
     graph = models.ForeignKey(
         Graph,
         on_delete=models.CASCADE,
@@ -20,5 +32,5 @@ class Section(TimeStampedUUIDModel):
         related_name="section",
     )
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         db_table = "cf_section"

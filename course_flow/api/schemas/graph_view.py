@@ -1,4 +1,5 @@
-"""Graph View read model (flat collections, UUID references).
+"""
+Graph View read model (flat collections, UUID references).
 
 Not a CRUD entity payload — use primary graph routes for resource fields only.
 """
@@ -21,7 +22,10 @@ from course_flow.core.enum import (
 
 
 class GraphMetaOut(CamelSchema):
-    """Graph UUID/revision plus root ``Workflow`` fields (graph row has no title/author/project)."""
+    """
+    Graph UUID/revision plus root Workflow fields (graph row has no
+    title/author/project).
+    """
 
     uuid: UUID
     workflow_title: str
@@ -95,7 +99,9 @@ class NodeGraphOut(CamelSchema):
 
 
 class EdgeGraphOut(CamelSchema):
-    """Endpoints are node UUIDs; ``id`` distinguishes multiple edges between the same pair."""
+    """
+    Endpoints are node UUIDs; id distinguishes multiple edges between the same pair.
+    """
 
     id: int
     source_node_uuid: UUID
@@ -113,7 +119,9 @@ class ThreadCommentCountOut(CamelSchema):
 
 
 class GraphViewOut(CamelSchema):
-    """Single round-trip Graph View payload (not nested entity trees)."""
+    """
+    Single round-trip Graph View payload (not nested entity trees).
+    """
 
     graph: GraphMetaOut
     channels: list[ChannelGraphOut]

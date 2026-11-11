@@ -13,7 +13,9 @@ MAX_NOTIFICATION_PAGE_SIZE = 100
 
 @dataclass(frozen=True)
 class NotificationListPage:
-    """One page of notifications plus list-level metadata (server-side pagination)."""
+    """
+    One page of notifications plus list-level metadata (server-side pagination).
+    """
 
     items: list[Notification]
     total: int
@@ -31,7 +33,9 @@ class NotificationService:
         message_code: str,
         message_params: Mapping[str, Any] | None = None,
     ) -> Notification:
-        """Create a locale-independent notification for a frontend renderer."""
+        """
+        Create a locale-independent notification for a frontend renderer.
+        """
         normalized_code = message_code.strip()
         if not normalized_code:
             raise ValueError("message_code must not be blank")
@@ -60,11 +64,11 @@ class NotificationService:
         page_size: int,
     ) -> NotificationListPage:
         """
-        Paginated inbox for one user. Page numbers are **1-based**.
+        Paginated inbox for one user. Page numbers are one-based.
 
-        If ``page`` is greater than the last page while ``total > 0``, it is
-        clamped to ``total_pages`` so callers always receive a valid slice and
-        ``meta.current_page`` matches the rows returned.
+        If page is greater than the last page while total > 0, it is
+        clamped to total_pages so callers always receive a valid slice and
+        meta.current_page matches the rows returned.
         """
         if page < 1:
             raise ValueError("page must be >= 1")

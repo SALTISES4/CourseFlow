@@ -47,8 +47,9 @@ package = true
 
 [dependency-groups]
 dev = [
+  "django-stubs>=6.1.2",
   "pre-commit>=4.3",
-  "pyright[nodejs]>=1.1.400",
+  "pyright>=1.1.414",
   "pytest>=8.0",
   "pytest-django>=4.8",
   "ruff>=0.8",
@@ -59,22 +60,30 @@ dev = [
 DJANGO_SETTINGS_MODULE = "course_flow.settings"
 python_files = ["tests.py", "test_*.py", "*_tests.py"]
 
+[tool.ruff.lint]
+extend-select = ["D209", "D213"]
+
 # Initial CI ratchet. Pyright does not understand Django's generated ORM attributes;
 # expand this list as Django-aware typing is introduced instead of suppressing errors.
 [tool.pyright]
+venvPath = "."
+venv = ".venv"
 include = [
-  "course_flow/api/common/schemas.py",
-  "course_flow/api/schemas",
-  "course_flow/application/dto.py",
-  "course_flow/application/graph_mutation_delta.py",
-  "course_flow/application/ports.py",
-  "course_flow/application/services/email_service.py",
-  "course_flow/application/services/password_policy.py",
-  "course_flow/core/discipline_catalogue.py",
-  "course_flow/core/enum.py",
-  "course_flow/core/hierarchy.py",
-  "course_flow/core/reference_data.py",
-  "course_flow/core/system_labels.py",
+  "course_flow/api",
+  "course_flow/application",
+  "course_flow/core",
+#  "course_flow/api/common/schemas.py",
+#  "course_flow/api/schemas",
+#  "course_flow/application/dto.py",
+#  "course_flow/application/graph_mutation_delta.py",
+#  "course_flow/application/ports.py",
+#  "course_flow/application/services/email_service.py",
+#  "course_flow/application/services/password_policy.py",
+#  "course_flow/core/discipline_catalogue.py",
+#  "course_flow/core/enum.py",
+#  "course_flow/core/hierarchy.py",
+#  "course_flow/core/reference_data.py",
+#  "course_flow/core/system_labels.py",
 ]
 pythonVersion = "3.12"
 typeCheckingMode = "standard"

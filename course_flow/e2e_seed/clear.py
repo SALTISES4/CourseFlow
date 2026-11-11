@@ -1,4 +1,6 @@
-"""Clear E2E fixture projects without touching unrelated rows."""
+"""
+Clear E2E fixture projects without touching unrelated rows.
+"""
 
 from __future__ import annotations
 
@@ -11,7 +13,9 @@ from course_flow.e2e_seed.constants import E2E_FIXTURE_PROJECT_TITLE_PREFIX
 
 
 def clear_e2e_fixtures() -> dict[str, Any]:
-    """Remove projects whose titles start with ``E2E_FIXTURE_PROJECT_TITLE_PREFIX``."""
+    """
+    Remove projects whose titles start with E2E_FIXTURE_PROJECT_TITLE_PREFIX.
+    """
     projects = Project.objects.filter(
         title__startswith=E2E_FIXTURE_PROJECT_TITLE_PREFIX,
     )

@@ -1,4 +1,6 @@
-"""Stable E2E asset catalog and human-readable dependency export."""
+"""
+Stable E2E asset catalog and human-readable dependency export.
+"""
 
 from __future__ import annotations
 
@@ -77,7 +79,9 @@ ACCESS_PATTERN = re.compile(
 
 
 def discover_seed_asset_dependencies(tests_root: Path) -> list[dict[str, str]]:
-    """Collect declared stable asset IDs from Playwright spec source."""
+    """
+    Collect declared stable asset IDs from Playwright spec source.
+    """
     known_assets = seed_assets_by_id()
     dependencies: list[dict[str, str]] = []
     for spec_path in sorted(tests_root.glob("e2e/**/*.spec.ts")):
@@ -116,7 +120,9 @@ def discover_seed_asset_dependencies(tests_root: Path) -> list[dict[str, str]]:
 
 
 def write_seed_asset_dependency_csv(output_path: Path, *, tests_root: Path) -> None:
-    """Write a spreadsheet-friendly catalog/dependency view from the JSON authority."""
+    """
+    Write a spreadsheet-friendly catalog/dependency view from the JSON authority.
+    """
     catalog = load_seed_asset_catalog()
     dependencies_by_asset: dict[str, list[dict[str, str]]] = {}
     dependencies = [

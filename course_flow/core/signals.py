@@ -1,22 +1,13 @@
 """
-Cascade helpers for ownership directions Django FKs do not express directly.
+Maintain related objects that Django's foreign-key directions do not delete.
 
-Audit (Part A):
-- ``Channel.thread`` / ``Section.thread`` point *from* parent *to* ``Thread``; deleting the
-  parent does not auto-delete the thread via FK direction. We delete the linked thread in
-  ``post_delete`` on ``Channel`` / ``Section``.
-- ``Node.thread`` points *from* node *to* thread; deleting the node does not delete the
-  thread. We delete the linked thread in ``post_delete`` on ``Node``.
-- ``Outcome`` rows reference ``Thread`` with ``PROTECT``; deleting a thread that is still
-  referenced by an ``Outcome`` will raise ``ProtectedError`` (deterministic failure).
-- ``Tag`` is decoupled from ``Project`` with ``SET_NULL`` so project deletion does not
-  delete tag rows (shared / reusable tag records per product rules).
-- ``NodeOutcome`` / ``Edge`` already CASCADE from ``Node``; shared ``Outcome`` entities
-  are not deleted when a node is deleted—only join rows are.
+Channel, Section, Node, and Workflow reference objects that they own. Deleting
+those owners does not automatically delete the referenced objects, so post-delete
+handlers remove them explicitly. Creation handlers initialize required threads,
+teams, and typed metadata.
 
-Ambiguity / follow-up:
-- Outcomes can orphan their threads when the outcome row is removed (e.g. graph
-  cascade). Cleaning those threads is a separate schema/task.
+Deleting an Outcome can leave its thread orphaned. That lifecycle is not handled
+here.
 """
 
 from __future__ import annotations
@@ -97,7 +88,9 @@ def ensure_project_team_on_project_create(
 
 @receiver(post_delete, sender=Workflow)
 def delete_graph_after_workflow_delete(sender, instance: Workflow, **kwargs) -> None:
-    """When a workflow row is removed, drop its graph so project/user cascades do not orphan graphs."""
+    """
+    Delete the graph owned by a deleted workflow.
+    """
     gid = instance.graph_id
     if gid:
         Graph.objects.filter(pk=gid).delete()

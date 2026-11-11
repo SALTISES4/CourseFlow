@@ -34,7 +34,9 @@ class EmailLocale(StrEnum):
 
 
 class EmailDeliveryError(RuntimeError):
-    """The configured backend did not accept an essential email."""
+    """
+    The configured backend did not accept an essential email.
+    """
 
 
 @dataclass(frozen=True, slots=True)

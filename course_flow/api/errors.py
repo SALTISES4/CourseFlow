@@ -14,7 +14,9 @@ class ErrorDescriptor:
 
 
 class ExpectedApiError(Exception):
-    """An expected failure whose machine code is safe for clients to branch on."""
+    """
+    An expected failure whose machine code is safe for clients to branch on.
+    """
 
     def __init__(
         self,

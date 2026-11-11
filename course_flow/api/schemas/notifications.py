@@ -20,7 +20,7 @@ class NotificationItemOutResp(CamelSchema):
 
 class NotificationListMetaOut(CamelSchema):
     """
-    List metadata for a paginated inbox (``page`` and ``current_page`` are 1-based).
+    List metadata for a paginated inbox (page and current_page are 1-based).
     """
 
     total: int

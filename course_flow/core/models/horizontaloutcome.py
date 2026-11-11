@@ -11,5 +11,5 @@ class Horizontaloutcome(UUIDModel):
         blank=True,
     )
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         db_table = "cf_horizontaloutcome"

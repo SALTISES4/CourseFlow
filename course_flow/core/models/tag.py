@@ -1,9 +1,15 @@
+from typing import TYPE_CHECKING
+
 from django.db import models
 
 from course_flow.core.models.project import Project
 
 
 class Tag(models.Model):
+    if TYPE_CHECKING:
+        id: int
+        project_id: int | None
+
     project = models.ForeignKey(
         Project,
         on_delete=models.SET_NULL,

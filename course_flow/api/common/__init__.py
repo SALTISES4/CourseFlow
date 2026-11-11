@@ -1,1 +1,3 @@
-"""Shared API utilities (schemas, helpers)."""
+"""
+Shared API utilities (schemas, helpers).
+"""

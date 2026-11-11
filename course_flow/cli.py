@@ -1,4 +1,6 @@
-"""Console script entrypoint (see ``[project.scripts]`` in ``pyproject.toml``)."""
+"""
+Console script entrypoint (see [project.scripts] in pyproject.toml).
+"""
 
 from __future__ import annotations
 

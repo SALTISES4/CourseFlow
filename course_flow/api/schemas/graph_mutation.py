@@ -1,4 +1,6 @@
-"""Canonical delta envelope for graph mutations."""
+"""
+Canonical delta envelope for graph mutations.
+"""
 
 from __future__ import annotations
 
@@ -15,7 +17,9 @@ from course_flow.core.enum import (
 
 
 class GraphNodeMutationOut(CamelSchema):
-    """Flat node snapshot for created/updated buckets (aligned with graph read shape)."""
+    """
+    Flat node snapshot for created/updated buckets (aligned with graph read shape).
+    """
 
     uuid: UUID
     node_type: str
@@ -43,7 +47,9 @@ class GraphNodeMutationOut(CamelSchema):
 
 
 class GraphEdgeMutationOut(CamelSchema):
-    """Edge row; ``id`` is the integer PK (``cf_edge`` has no UUID column)."""
+    """
+    Edge row; id is the integer PK (cf_edge has no UUID column).
+    """
 
     id: int
     source_node_uuid: UUID
@@ -56,13 +62,17 @@ class GraphEdgeMutationOut(CamelSchema):
 
 
 class GraphTagStubOut(CamelSchema):
-    """Placeholder for future tag mutations; buckets remain empty until implemented."""
+    """
+    Placeholder for future tag mutations; buckets remain empty until implemented.
+    """
 
     id: int
 
 
 class GraphChannelMutationOut(CamelSchema):
-    """Flat channel snapshot for created/updated buckets (aligned with graph read shape)."""
+    """
+    Flat channel snapshot for created/updated buckets (aligned with graph read shape).
+    """
 
     uuid: UUID
     graph_uuid: UUID
@@ -75,7 +85,9 @@ class GraphChannelMutationOut(CamelSchema):
 
 
 class GraphSectionMutationOut(CamelSchema):
-    """Flat section snapshot for created/updated buckets (aligned with graph read shape)."""
+    """
+    Flat section snapshot for created/updated buckets (aligned with graph read shape).
+    """
 
     uuid: UUID
     graph_uuid: UUID
@@ -86,7 +98,9 @@ class GraphSectionMutationOut(CamelSchema):
 
 
 class GraphOutcomeMutationOut(CamelSchema):
-    """Flat outcome snapshot for created/updated buckets (aligned with graph read shape)."""
+    """
+    Flat outcome snapshot for created/updated buckets (aligned with graph read shape).
+    """
 
     uuid: UUID
     graph_uuid: UUID
@@ -158,7 +172,10 @@ class GraphMutationEnvelopeOut(CamelSchema):
 
 
 class GraphNodeCreateIn(CamelSchema):
-    """Placement is required on ``Node`` (ORM); optional ``workflow_uuid`` selects a workflow on this graph."""
+    """
+    Placement is required on Node (ORM); optional workflow_uuid selects a workflow on
+    this graph.
+    """
 
     section_uuid: UUID
     channel_uuid: UUID
@@ -167,7 +184,10 @@ class GraphNodeCreateIn(CamelSchema):
 
 
 class GraphNodePatchIn(CamelSchema):
-    """Partial update; do not send ``null`` for FK fields (ORM requires section, channel, workflow)."""
+    """
+    Partial update; do not send null for FK fields (ORM requires section, channel,
+    workflow).
+    """
 
     section_uuid: UUID | None = None
     channel_uuid: UUID | None = None
@@ -176,7 +196,9 @@ class GraphNodePatchIn(CamelSchema):
 
 
 class GraphNodeInsertBelowIn(CamelSchema):
-    """Insert a node below ``node_uuid``; backend computes grid reflow."""
+    """
+    Insert a node below node_uuid; backend computes grid reflow.
+    """
 
     node_uuid: UUID
     mode: str  # row | column
@@ -185,7 +207,9 @@ class GraphNodeInsertBelowIn(CamelSchema):
 
 
 class GraphNodePlaceIn(CamelSchema):
-    """Place a new node on the grid (sidebar / row drop); backend computes reflow."""
+    """
+    Place a new node on the grid (sidebar / row drop); backend computes reflow.
+    """
 
     section_uuid: UUID
     channel_uuid: UUID
@@ -195,7 +219,9 @@ class GraphNodePlaceIn(CamelSchema):
 
 
 class GraphNodeMoveIn(CamelSchema):
-    """Move an existing node; backend computes sibling row/channel updates."""
+    """
+    Move an existing node; backend computes sibling row/channel updates.
+    """
 
     to_section_uuid: UUID
     to_channel_uuid: UUID
@@ -205,7 +231,10 @@ class GraphNodeMoveIn(CamelSchema):
 
 
 class GraphNodeLinkWorkflowIn(CamelSchema):
-    """Set or clear the node's symbolic link to a library workflow (parent ``workflow`` unchanged)."""
+    """
+    Set or clear the node's symbolic link to a library workflow (parent workflow
+    unchanged).
+    """
 
     workflow_uuid: UUID | None = None
 
@@ -215,7 +244,9 @@ class GraphNodeLinkOutcomeIn(CamelSchema):
 
 
 class GraphNodeMetaPatchIn(CamelSchema):
-    """Editable node metadata (grid placement and ``node_type`` are not patchable here)."""
+    """
+    Editable node metadata (grid placement and node_type are not patchable here).
+    """
 
     title: str | None = None
     description: str | None = None
@@ -259,26 +290,34 @@ class GraphEdgePatchIn(CamelSchema):
 
 
 class GraphReorderChannelsIn(CamelSchema):
-    """Full channel order for a graph; every channel on the graph must appear exactly once."""
+    """
+    Full channel order for a graph; every channel on the graph must appear exactly once.
+    """
 
     channel_uuids: list[UUID]
 
 
 class GraphReorderSectionsIn(CamelSchema):
-    """Full section order for a graph; every section on the graph must appear exactly once."""
+    """
+    Full section order for a graph; every section on the graph must appear exactly once.
+    """
 
     section_uuids: list[UUID]
 
 
 class GraphSectionInsertBelowIn(CamelSchema):
-    """Insert a new section directly below ``section_uuid``; optionally duplicate title."""
+    """
+    Insert a new section directly below section_uuid; optionally duplicate title.
+    """
 
     section_uuid: UUID
     duplicate: bool = False
 
 
 class GraphChannelInsertBelowIn(CamelSchema):
-    """Insert below ``channel_uuid``, or append at end when ``channel_uuid`` is omitted."""
+    """
+    Insert below channel_uuid, or append at end when channel_uuid is omitted.
+    """
 
     channel_uuid: UUID | None = None
     duplicate: bool = False
@@ -301,7 +340,9 @@ class GraphOutcomePatchIn(CamelSchema):
 
 
 class GraphOutcomeMoveIn(CamelSchema):
-    """Reparent and/or reorder among siblings; backend renumbers affected sibling orders."""
+    """
+    Reparent and/or reorder among siblings; backend renumbers affected sibling orders.
+    """
 
     parent_uuid: UUID | None = None
     insert_index: int | None = None

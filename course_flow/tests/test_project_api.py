@@ -269,7 +269,9 @@ def test_project_detail_marks_workflow_favorite_via_graph_id_resolution(
 
 @pytest.mark.django_db
 def test_json_uses_camel_case_get_and_post_accepts_camel_case_body(client: Client, user):
-    """GET/PATCH responses serialize snake_case schema fields as camelCase JSON."""
+    """
+    GET/PATCH responses serialize snake_case schema fields as camelCase JSON.
+    """
     raw = _issue_token_for(user)
     created = client.post(
         "/api/project",

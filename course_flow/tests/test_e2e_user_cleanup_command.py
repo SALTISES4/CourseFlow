@@ -1,4 +1,6 @@
-"""Safety tests for disposable Playwright account cleanup."""
+"""
+Safety tests for disposable Playwright account cleanup.
+"""
 
 import pytest
 from django.core.management import call_command

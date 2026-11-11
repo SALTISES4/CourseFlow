@@ -1,4 +1,6 @@
-"""Contextual authorization for account roles and project-team roles."""
+"""
+Contextual authorization for account roles and project-team roles.
+"""
 
 from __future__ import annotations
 
@@ -20,7 +22,9 @@ from course_flow.core.permissions import (
 
 
 class AuthorizationDenied(PermissionError):
-    """The actor does not hold the requested contextual permission."""
+    """
+    The actor does not hold the requested contextual permission.
+    """
 
 
 @dataclass(frozen=True, slots=True)
@@ -36,7 +40,9 @@ class PermissionContext:
 
 
 class AuthorizationService:
-    """Resolve all effective actions for a user in one resource context."""
+    """
+    Resolve all effective actions for a user in one resource context.
+    """
 
     def permissions_for_project(
         self,
@@ -109,7 +115,9 @@ class AuthorizationService:
         user: User,
         workflow: Workflow | WorkflowDTO | Graph,
     ) -> PermissionContext | None:
-        """Resolve the parent-project context exposed with a workflow response."""
+        """
+        Resolve the parent-project context exposed with a workflow response.
+        """
         if isinstance(workflow, WorkflowDTO):
             project_id = workflow.project_id
             project_owner_id = workflow.project_owner_id
@@ -216,7 +224,7 @@ class AuthorizationService:
                 actions=frozenset(action.value for action in ProjectPermission),
                 admin_override=True,
             )
-        actions = PROJECT_PERMISSION_MATRIX[state].get(role, frozenset())
+        actions = PROJECT_PERMISSION_MATRIX[state][role] if role is not None else frozenset()
         return PermissionContext(
             account_role=account_role,
             resource_role=role,
@@ -244,7 +252,7 @@ class AuthorizationService:
                 actions=frozenset(action.value for action in WorkflowPermission),
                 admin_override=True,
             )
-        actions = WORKFLOW_PERMISSION_MATRIX[state].get(role, frozenset())
+        actions = WORKFLOW_PERMISSION_MATRIX[state][role] if role is not None else frozenset()
         return PermissionContext(
             account_role=account_role,
             resource_role=role,

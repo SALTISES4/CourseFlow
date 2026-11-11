@@ -2,7 +2,9 @@ from enum import StrEnum
 
 
 class WorkflowType(StrEnum):
-    """Root graph workflow semantic layer (``task`` is not a valid root type)."""
+    """
+    Root graph workflow semantic layer (task is not a valid root type).
+    """
 
     PROGRAM = "program"
     COURSE = "course"
@@ -11,7 +13,9 @@ class WorkflowType(StrEnum):
 
 
 class NodeType(StrEnum):
-    """Grid node semantic layer (``program`` exists only on workflows, not nodes)."""
+    """
+    Grid node semantic layer (program exists only on workflows, not nodes).
+    """
 
     COURSE = "course"
     ACTIVITY = "activity"
@@ -19,7 +23,9 @@ class NodeType(StrEnum):
 
 
 class TeamRole(StrEnum):
-    """A user's role within one project team."""
+    """
+    A user's role within one project team.
+    """
 
     EDITOR = "editor"
     COMMENTER = "commenter"
@@ -27,7 +33,9 @@ class TeamRole(StrEnum):
 
 
 class AccountRole(StrEnum):
-    """Canonical Django ``auth.Group`` names for account-level roles."""
+    """
+    Canonical Django auth.Group names for account-level roles.
+    """
 
     ADMIN = "admin"
     TEACHER = "teacher"
@@ -46,14 +54,18 @@ class LanguagePreference(StrEnum):
 
 
 class WorkspaceResourceType(StrEnum):
-    """Resource scopes that participate in the one-editor lease contract."""
+    """
+    Resource scopes that participate in the one-editor lease contract.
+    """
 
     PROJECT = "project"
     WORKFLOW = "workflow"
 
 
 class ContextClassification(StrEnum):
-    """Stable API/database values for activity and course-node context."""
+    """
+    Stable API/database values for activity and course-node context.
+    """
 
     NONE = "none"
     INDIVIDUAL_WORK = "individual_work"
@@ -65,7 +77,9 @@ class ContextClassification(StrEnum):
 
 
 class TaskClassification(StrEnum):
-    """Stable API/database values for activity and legacy strategy classifications."""
+    """
+    Stable API/database values for activity and legacy strategy classifications.
+    """
 
     NONE = "none"
     GATHER_INFORMATION = "gather_information"
@@ -99,7 +113,9 @@ class TaskClassification(StrEnum):
 
 
 class TimeUnit(StrEnum):
-    """Stable API/database values for legacy duration-unit fields."""
+    """
+    Stable API/database values for legacy duration-unit fields.
+    """
 
     SECONDS = "seconds"
     MINUTES = "minutes"

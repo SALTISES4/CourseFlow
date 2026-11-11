@@ -1,4 +1,6 @@
-"""Transactional deep-copy operation for workflows."""
+"""
+Transactional deep-copy operation for workflows.
+"""
 
 from __future__ import annotations
 
@@ -30,19 +32,27 @@ from course_flow.core.permissions import ProjectPermission, WorkflowPermission
 
 
 class WorkflowCopySourceNotFound(LookupError):
-    """Raised when the requested source workflow does not exist."""
+    """
+    Raised when the requested source workflow does not exist.
+    """
 
 
 class WorkflowCopyDestinationNotFound(LookupError):
-    """Raised when the requested destination project does not exist."""
+    """
+    Raised when the requested destination project does not exist.
+    """
 
 
 class WorkflowCopyValidationError(ValueError):
-    """Raised when the requested copy attributes are invalid."""
+    """
+    Raised when the requested copy attributes are invalid.
+    """
 
 
 class WorkflowCopyService:
-    """Clone a workflow and its owned graph content as one atomic operation."""
+    """
+    Clone a workflow and its owned graph content as one atomic operation.
+    """
 
     def __init__(self, authorization: AuthorizationService | None = None) -> None:
         self._authorization = authorization or AuthorizationService()

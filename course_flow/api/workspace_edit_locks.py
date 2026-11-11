@@ -131,7 +131,9 @@ def workspace_mutation_lock(
     lookup_arg: str = "uuid",
     lookup_attr: str | None = None,
 ):
-    """Serialize a protected endpoint with its current workspace lease."""
+    """
+    Serialize a protected endpoint with its current workspace lease.
+    """
 
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
         signature = inspect.signature(func)

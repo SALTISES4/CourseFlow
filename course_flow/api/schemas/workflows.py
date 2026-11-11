@@ -11,7 +11,9 @@ from course_flow.core.enum import TimeUnit, WorkflowType
 
 
 class WorkflowTypeIn(str, Enum):
-    """Allowed root graph workflow types (``task`` is only valid on grid nodes)."""
+    """
+    Allowed root graph workflow types (task is only valid on grid nodes).
+    """
 
     PROGRAM = "program"
     COURSE = "course"
@@ -19,7 +21,9 @@ class WorkflowTypeIn(str, Enum):
 
 
 class WorkflowCreateIn(CamelSchema):
-    """Create a root ``Workflow`` and its backing ``Graph`` row (1:1 ORM)."""
+    """
+    Create a root Workflow and its backing Graph row (1:1 ORM).
+    """
 
     project_uuid: UUID | None = None
     title: str = Field(min_length=1, max_length=200)
@@ -28,7 +32,9 @@ class WorkflowCreateIn(CamelSchema):
 
 
 class WorkflowCopyIn(CamelSchema):
-    """Copy an existing workflow into an eligible destination project."""
+    """
+    Copy an existing workflow into an eligible destination project.
+    """
 
     project_uuid: UUID
     title: str = Field(min_length=1, max_length=200)

@@ -1,5 +1,8 @@
-from ninja import Query, Router
+from typing import Annotated
+
+from ninja import Router
 from ninja.errors import HttpError
+from ninja.params.functions import Query as QueryParam
 
 from course_flow.api.auth import (
     BearerAuth,
@@ -162,7 +165,10 @@ def patch_my_notification_settings(request, payload: UserNotificationSettingsPat
 
 
 @router.get("", response=UserListOut, auth=BearerAuth(), operation_id="listUsers")
-def list_users(request, filter_term: str | None = Query(None, alias="filter")):
+def list_users(
+    request,
+    filter_term: Annotated[str | None, QueryParam(alias="filter")] = None,
+):
     _ = get_current_user(request)
     rows = get_user_service().list_users(filter_term=filter_term)
     items = [_user_list_item_out(u) for u in rows]

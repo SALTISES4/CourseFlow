@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
@@ -59,9 +58,10 @@ class AuthService:
                 label=label,
             )
 
-    def login(self, *, email: str, password: str, label: str = "") -> tuple[User, IssuedAuthToken]:
-        user_model = get_user_model()
-        normalized_email = user_model.objects.normalize_email(email.strip())
+    def login(
+        self, *, email: str, password: str, label: str = ""
+    ) -> tuple[User, IssuedAuthToken]:
+        normalized_email = User.objects.normalize_email(email.strip())
         with transaction.atomic():
             user = (
                 User.objects.select_for_update()
@@ -85,17 +85,21 @@ class AuthService:
         cleaned_first_name = first_name.strip()
         cleaned_last_name = last_name.strip()
 
-        if not cleaned_email or not password or not cleaned_first_name or not cleaned_last_name:
+        if (
+            not cleaned_email
+            or not password
+            or not cleaned_first_name
+            or not cleaned_last_name
+        ):
             raise RegistrationValidationError("All fields are required")
 
-        user_model = get_user_model()
-        normalized_email = user_model.objects.normalize_email(cleaned_email)
+        normalized_email = User.objects.normalize_email(cleaned_email)
 
-        if user_model.objects.filter(email__iexact=normalized_email).exists():
+        if User.objects.filter(email__iexact=normalized_email).exists():
             raise DuplicateEmailError
 
         try:
-            user = user_model.objects.create_user(
+            user = User.objects.create_user(
                 email=normalized_email,
                 password=password,
                 first_name=cleaned_first_name,

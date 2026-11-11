@@ -1,4 +1,6 @@
-"""Project-level Graph View schemas (non-CRUD read models)."""
+"""
+Project-level Graph View schemas (non-CRUD read models).
+"""
 
 from __future__ import annotations
 
@@ -10,7 +12,9 @@ from course_flow.api.schemas.permissions import PermissionContextOut
 
 
 class ProjectGraphViewOut(CamelSchema):
-    """Project overview: entity fields + graph UUID references only."""
+    """
+    Project overview: entity fields + graph UUID references only.
+    """
 
     uuid: UUID
     title: str

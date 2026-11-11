@@ -1,9 +1,16 @@
+from typing import TYPE_CHECKING
+
 from django.db import models
 
 from course_flow.core.models.node import Node
 
 
 class Edge(models.Model):
+    if TYPE_CHECKING:
+        id: int
+        source_node_id: int
+        target_node_id: int
+
     source_node = models.ForeignKey(
         Node,
         on_delete=models.CASCADE,

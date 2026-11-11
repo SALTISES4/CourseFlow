@@ -18,7 +18,9 @@ DropEdge = Literal["top", "bottom"]
 
 @dataclass
 class GridNode:
-    """Minimal node view for grid algorithms."""
+    """
+    Minimal node view for grid algorithms.
+    """
 
     instance: Node
     uuid: UUID
@@ -43,7 +45,10 @@ def resolve_target_row(
     row_hint: int,
     edge: DropEdge | None,
 ) -> int:
-    """Map UI drop hint + insert mode to target section_row (legacy resolveNodeDropSectionRow)."""
+    """
+    Map UI drop hint + insert mode to target section_row (legacy
+    resolveNodeDropSectionRow).
+    """
     if mode == "column":
         if edge is None:
             return row_hint
@@ -180,7 +185,9 @@ def apply_insert_reflow(
     mode: InsertMode,
     channel_id: int | None = None,
 ) -> list[GridNode]:
-    """Bump siblings before inserting a new node at new_row."""
+    """
+    Bump siblings before inserting a new node at new_row.
+    """
     column_filter = channel_id if mode == "column" else None
     _, grid_after = split_workflow_grid_nodes(
         section_nodes,

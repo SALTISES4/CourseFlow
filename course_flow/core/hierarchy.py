@@ -1,4 +1,6 @@
-"""Program → course → activity → task layering rules."""
+"""
+Program → course → activity → task layering rules.
+"""
 
 from __future__ import annotations
 

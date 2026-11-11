@@ -334,7 +334,9 @@ def get_project_graph(request, uuid: UUID):
     operation_id="duplicateProjectPlaceholder",
 )
 def duplicate_project_placeholder(request, uuid: UUID):
-    """Placeholder route: no duplicate project is created (see application service)."""
+    """
+    Placeholder route: no duplicate project is created (see application service).
+    """
     current_user = get_current_user(request)
     svc = get_project_service()
     dto = svc.get_by_uuid(uuid)

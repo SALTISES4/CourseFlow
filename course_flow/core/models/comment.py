@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.db import models
 
 from course_flow.core.models.base import TimeStampedUUIDModel
@@ -6,6 +8,10 @@ from course_flow.core.models.user import User
 
 
 class Comment(TimeStampedUUIDModel):
+    if TYPE_CHECKING:
+        author_id: int
+        thread_id: int
+
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -18,5 +24,5 @@ class Comment(TimeStampedUUIDModel):
     )
     body = models.TextField()
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         db_table = "cf_comment"

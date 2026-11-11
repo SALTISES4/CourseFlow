@@ -1,4 +1,6 @@
-"""Code-owned, read-only option catalogues exposed by the REST API."""
+"""
+Code-owned, read-only option catalogues exposed by the REST API.
+"""
 
 from __future__ import annotations
 

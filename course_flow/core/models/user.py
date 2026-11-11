@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import uuid
+from typing import TYPE_CHECKING, ClassVar, TypeVar
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser, Group
@@ -8,11 +11,13 @@ from course_flow.core.enum import AccountRole, LanguagePreference
 
 LANGUAGE_PREFERENCES_CHOICES = [(e.value, e.name.title()) for e in LanguagePreference]
 
+_UserT = TypeVar("_UserT", bound="User")
 
-class CourseFlowUserManager(BaseUserManager):
+
+class CourseFlowUserManager(BaseUserManager[_UserT]):
     use_in_migrations = True
 
-    def _create_user(self, email: str, password: str | None, **extra_fields):
+    def _create_user(self, email: str, password: str | None, **extra_fields) -> _UserT:
         if not email:
             raise ValueError("The email field must be set.")
 
@@ -29,7 +34,7 @@ class CourseFlowUserManager(BaseUserManager):
         *,
         account_role: AccountRole | str = AccountRole.STUDENT,
         **extra_fields,
-    ):
+    ) -> _UserT:
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
         with transaction.atomic():
@@ -42,7 +47,7 @@ class CourseFlowUserManager(BaseUserManager):
         email: str,
         password: str | None = None,
         **extra_fields,
-    ):
+    ) -> _UserT:
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
@@ -59,6 +64,9 @@ class CourseFlowUserManager(BaseUserManager):
 
 
 class User(AbstractUser):
+    if TYPE_CHECKING:
+        id: int
+
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     email = models.EmailField(unique=True)
     language_preference = models.CharField(
@@ -68,12 +76,12 @@ class User(AbstractUser):
     )
     notifications_active = models.BooleanField(default=False)
     credential_version = models.PositiveBigIntegerField(default=1)
-    objects = CourseFlowUserManager()
+    objects: ClassVar[CourseFlowUserManager[User]] = CourseFlowUserManager()  # pyright: ignore[reportIncompatibleVariableOverride]
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS: list[str] = []
+    REQUIRED_FIELDS: ClassVar[list[str]] = []
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         db_table = "cf_user"
         constraints = [
             models.CheckConstraint(
@@ -88,7 +96,9 @@ class User(AbstractUser):
 
     @property
     def account_role(self) -> AccountRole | None:
-        """Return the single canonical account role, or ``None`` for invalid data."""
+        """
+        Return the single canonical account role, or None for invalid data.
+        """
         if self.is_superuser:
             return AccountRole.ADMIN
         canonical_names = {role.value for role in AccountRole}
@@ -100,7 +110,9 @@ class User(AbstractUser):
         return assigned[0] if len(assigned) == 1 else None
 
     def set_account_role(self, role: AccountRole | str) -> None:
-        """Replace this user's canonical account role while preserving other groups."""
+        """
+        Replace this user's canonical account role while preserving other groups.
+        """
         resolved = AccountRole(role)
         canonical_names = [candidate.value for candidate in AccountRole]
         with transaction.atomic():

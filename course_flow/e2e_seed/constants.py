@@ -1,4 +1,6 @@
-"""Naming, actor, and content contracts for Playwright E2E fixtures."""
+"""
+Naming, actor, and content contracts for Playwright E2E fixtures.
+"""
 
 E2E_FIXTURE_PROJECT_TITLE_PREFIX = "E2E FIXTURE -"
 E2E_FIXTURE_PASSWORD = "password"

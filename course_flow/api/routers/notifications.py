@@ -1,11 +1,11 @@
 """
 Authenticated notification resource routes (current user's inbox).
 
-Mounted under the same ``/user`` prefix as ``users.router`` so URLs stay
-``/api/user/me/notifications`` and match the generated OpenAPI client.
+Mounted under the same /user prefix as users.router so URLs stay
+/api/user/me/notifications and match the generated OpenAPI client.
 
-List GET accepts ``page`` and ``page_size`` query parameters (**1-based** ``page``);
-see ``NotificationService.list_page_for_user``.
+List GET accepts page and page_size query parameters. Page numbers are one-based.
+See NotificationService.list_page_for_user for pagination behavior.
 """
 
 from uuid import UUID

@@ -22,14 +22,18 @@ class ProjectDTO:
 
 @dataclass(frozen=True, slots=True)
 class ProjectDuplicatePlaceholderDTO:
-    """Echoes the source project UUID for the duplicate placeholder endpoint only."""
+    """
+    Echoes the source project UUID for the duplicate placeholder endpoint only.
+    """
 
     project_uuid: UUID
 
 
 @dataclass(frozen=True, slots=True)
 class WorkflowDTO:
-    """Root workflow plus backing graph row (Graph ORM has no title/author/project)."""
+    """
+    Root workflow plus backing graph row (Graph ORM has no title/author/project).
+    """
 
     id: int
     graph_uuid: UUID
@@ -60,7 +64,9 @@ class TagDTO:
 
 @dataclass(frozen=True, slots=True)
 class ProjectTeamMemberDTO:
-    """Membership row (join) for project team API."""
+    """
+    Membership row (join) for project team API.
+    """
 
     id: int
     project_team_uuid: UUID

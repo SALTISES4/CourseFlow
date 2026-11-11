@@ -10,7 +10,7 @@ from course_flow.core.node_meta import read_node_meta_fields
 
 class GraphViewService:
     """
-    Bounded read-model assembly for ``GET /graph/{uuid}/view``.
+    Bounded read-model assembly for GET /graph/{uuid}/view.
 
     Loads graph metadata, channels, sections, nodes, edges, and thread comment
     summaries in separate queries (no recursive ORM trees, no mega-join).

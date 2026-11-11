@@ -1,4 +1,5 @@
 import uuid
+from typing import TYPE_CHECKING
 
 from django.db import models
 
@@ -8,7 +9,15 @@ from course_flow.core.models.workflow import Workflow
 
 
 class WorkspaceEditLock(models.Model):
-    """One short-lived edit lease for exactly one project or workflow."""
+    """
+    One short-lived edit lease for exactly one project or workflow.
+    """
+
+    if TYPE_CHECKING:
+        id: int
+        project_id: int | None
+        workflow_id: int | None
+        holder_id: int
 
     project = models.OneToOneField(
         Project,

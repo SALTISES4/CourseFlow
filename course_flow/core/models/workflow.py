@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.db import models
 
 from course_flow.core.enum import WorkflowType
@@ -9,6 +11,11 @@ WORKFLOW_TYPE_CHOICES = [(e.value, e.name.title()) for e in WorkflowType]
 
 
 class Workflow(TimeStampedUUIDModel):
+    if TYPE_CHECKING:
+        author_id: int | None
+        graph_id: int
+        project_id: int | None
+
     author = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -37,5 +44,5 @@ class Workflow(TimeStampedUUIDModel):
         choices=WORKFLOW_TYPE_CHOICES,
     )
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         db_table = "cf_workflow"

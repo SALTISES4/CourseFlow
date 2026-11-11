@@ -1,4 +1,6 @@
-"""Delete one Playwright-owned disposable user and its dependent data."""
+"""
+Delete one Playwright-owned disposable user and its dependent data.
+"""
 
 from __future__ import annotations
 

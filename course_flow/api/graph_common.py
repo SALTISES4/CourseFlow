@@ -1,4 +1,6 @@
-"""Shared helpers for graph mutation HTTP responses (Ninja)."""
+"""
+Shared helpers for graph mutation HTTP responses (Ninja).
+"""
 
 from ninja.errors import HttpError
 

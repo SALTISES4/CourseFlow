@@ -52,15 +52,16 @@ class ProjectService:
         project_uuid: UUID,
         actor_user_id: int,
     ) -> ProjectDuplicatePlaceholderDTO | None:
-        """Placeholder for project duplication: verifies the project exists only.
+        """
+        Placeholder for project duplication: verifies the project exists only.
 
-        Does **not** clone the project, graphs, tags, team members, or any related
+        Does not clone the project, graphs, tags, team members, or any related
         data. Full Django-side duplication is intentionally deferred (TODO).
 
-        ``actor_user_id`` is accepted for future authorization/audit when real
+        actor_user_id is accepted for future authorization/audit when real
         duplication is implemented; it is unused in this placeholder.
 
-        Returns ``None`` if no project exists for ``project_uuid``.
+        Returns None if no project exists for project_uuid.
         """
         _ = actor_user_id
         if self.get_by_uuid(project_uuid) is None:

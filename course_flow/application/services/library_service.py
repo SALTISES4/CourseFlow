@@ -4,12 +4,12 @@ import math
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any
 from uuid import UUID
 
 from django.db.models import Count, Q, QuerySet
 from django.utils import timezone
 
+from course_flow.api.permission_context import permission_context_out
 from course_flow.api.schemas.library import (
     LibraryAllowedFiltersOut,
     LibraryAppliedFiltersOut,
@@ -25,6 +25,7 @@ from course_flow.api.schemas.library import (
     LibrarySortDirectionIn,
     LibrarySortValueIn,
 )
+from course_flow.api.schemas.permissions import PermissionContextOut
 from course_flow.application.services.authorization_service import (
     AuthorizationService,
     PermissionContext,
@@ -310,7 +311,7 @@ class LibraryService:
     def toggle_favorite(self, *, user_id: int, uuid: UUID):
         library_item = self._find_from_uuid(uuid)
         user = User.objects.get(pk=user_id)
-        if library_item.type is LibraryObjectType.PROJECT:
+        if isinstance(library_item.resource, Project):
             allowed = self._authorization.permissions_for_project(
                 user=user,
                 project=library_item.resource,
@@ -323,19 +324,19 @@ class LibraryService:
         if not allowed:
             raise PermissionError
 
-        TYPE_TO_MODEL_MAP = {
-            LibraryObjectType.WORKFLOW: (FavoriteGraph, "graph_id"),
-            LibraryObjectType.PROJECT: (FavoriteProject, "project_id"),
-        }
-
-        model, field = TYPE_TO_MODEL_MAP[library_item.type]
-        obj, created = model.objects.get_or_create(
-            user_id=user_id,
-            **{field: library_item.id}
-        )
+        if isinstance(library_item.resource, Project):
+            favorite, created = FavoriteProject.objects.get_or_create(
+                user_id=user_id,
+                project_id=library_item.id,
+            )
+        else:
+            favorite, created = FavoriteGraph.objects.get_or_create(
+                user_id=user_id,
+                graph_id=library_item.id,
+            )
 
         if not created:
-            obj.delete()
+            favorite.delete()
 
         return LibraryFavoriteOut(
             user_id=user_id,
@@ -501,18 +502,12 @@ class LibraryService:
             return None
         return cls._owner_name(edit_lock.holder)
 
-    def _permission_payload(self, context: PermissionContext) -> dict[str, Any]:
-        return {
-            "account_role": context.account_role,
-            "resource_role": context.resource_role,
-            "state": context.state.value,
-            "actions": sorted(context.actions),
-            "admin_override": context.admin_override,
-        }
+    def _permission_payload(self, context: PermissionContext) -> PermissionContextOut:
+        return permission_context_out(context)
 
     def _discipline_options(
         self, allowed_discipline_codes: set[str]
-    ) -> list[dict[str, Any]]:
+    ) -> list[LibraryDisciplineOptionOut]:
         return [
             LibraryDisciplineOptionOut(
                 code=discipline.code,

@@ -1,4 +1,6 @@
-"""Canonical code-owned discipline catalogue."""
+"""
+Canonical code-owned discipline catalogue.
+"""
 
 DISCIPLINE_CATALOGUE: tuple[str, ...] = (
     "anthropology",

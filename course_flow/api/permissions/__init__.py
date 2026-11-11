@@ -1,4 +1,6 @@
-"""Transport adapters over the centralized contextual authorization service."""
+"""
+Transport adapters over the centralized contextual authorization service.
+"""
 
 from course_flow.api.permissions.graph import (
     can_view_graph,

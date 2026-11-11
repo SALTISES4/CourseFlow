@@ -2,17 +2,24 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from django.contrib.auth import get_user_model
 from django.db import transaction
 
 from course_flow.application.dto import ProjectTeamMemberDTO, TagDTO
-from course_flow.core.models import Project, Tag, Team, TeamUser, Workflow
-
-User = get_user_model()
+from course_flow.core.models import (
+    Project,
+    Tag,
+    Team,
+    TeamUser,
+    User,
+    Workflow,
+)
 
 
 class ProjectRelationsService:
-    """Read-side queries for project-related collections (not embedded on primary resources)."""
+    """
+    Read-side queries for project-related collections (not embedded on primary
+    resources).
+    """
 
     def list_tags(self, project_uuid: UUID) -> list[TagDTO] | None:
         try:
@@ -43,9 +50,7 @@ class ProjectRelationsService:
             translation_plural=tag.translation_plural,
         )
 
-    def update_tag(
-        self, project_uuid: UUID, tag_id: int, label: str
-    ) -> TagDTO | None:
+    def update_tag(self, project_uuid: UUID, tag_id: int, label: str) -> TagDTO | None:
         clean_label = label.strip()
         if not clean_label:
             raise ValueError("tag_label_required")
@@ -67,9 +72,7 @@ class ProjectRelationsService:
         ).delete()
         return deleted > 0
 
-    def _team_member_to_dto(
-        self, m: TeamUser, team: Team
-    ) -> ProjectTeamMemberDTO:
+    def _team_member_to_dto(self, m: TeamUser, team: Team) -> ProjectTeamMemberDTO:
         return ProjectTeamMemberDTO(
             id=m.id,
             project_team_uuid=team.uuid,
@@ -80,7 +83,9 @@ class ProjectRelationsService:
             role=m.role,
         )
 
-    def list_team_members(self, project_uuid: UUID) -> list[ProjectTeamMemberDTO] | None:
+    def list_team_members(
+        self, project_uuid: UUID
+    ) -> list[ProjectTeamMemberDTO] | None:
         try:
             p = Project.objects.get(uuid=project_uuid)
         except Project.DoesNotExist:
@@ -102,12 +107,13 @@ class ProjectRelationsService:
         user_uuids: list[UUID],
         role: str,
     ) -> list[ProjectTeamMemberDTO] | None:
-        """Attach users to the project's team.
+        """
+        Attach users to the project's team.
 
-        Duplicate UUIDs in ``user_uuids`` are de-duplicated (order preserved).
+        Duplicate UUIDs in user_uuids are de-duplicated (order preserved).
 
         If a user is already a member, returns the existing row unchanged (role is
-        not updated here; use ``update_team_member_role`` to change roles).
+        not updated here; use update_team_member_role to change roles).
         """
         try:
             p = Project.objects.get(uuid=project_uuid)
@@ -157,9 +163,7 @@ class ProjectRelationsService:
         return self._team_member_to_dto(m, team)
 
     @transaction.atomic
-    def remove_team_member(
-        self, project_uuid: UUID, membership_id: int
-    ) -> bool:
+    def remove_team_member(self, project_uuid: UUID, membership_id: int) -> bool:
         try:
             p = Project.objects.select_for_update().get(uuid=project_uuid)
         except Project.DoesNotExist:

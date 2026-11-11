@@ -1,8 +1,13 @@
+from typing import TYPE_CHECKING
+
 from django.db import models
 from django.utils import timezone
 
 
 class PasswordResetAttempt(models.Model):
+    if TYPE_CHECKING:
+        id: int
+
     email_key = models.CharField(max_length=64)
     ip_key = models.CharField(max_length=64)
     created_at = models.DateTimeField(default=timezone.now, editable=False)

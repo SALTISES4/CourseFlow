@@ -1,6 +1,8 @@
-"""Edge collection (graph-scoped) and singular edge resource routes.
+"""
+Edge collection (graph-scoped) and singular edge resource routes.
 
-Edges use integer primary keys (no UUID column on ``Edge``); flat routes use ``/edge/{edge_id}``.
+Edges use integer primary keys (no UUID column on Edge); flat routes use
+/edge/{edge_id}.
 """
 
 from __future__ import annotations

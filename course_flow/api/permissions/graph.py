@@ -1,4 +1,6 @@
-"""Workflow/graph authorization adapters for Django Ninja controllers."""
+"""
+Workflow/graph authorization adapters for Django Ninja controllers.
+"""
 
 from course_flow.application.dto import WorkflowDTO
 from course_flow.application.services.authorization_service import (
@@ -28,7 +30,9 @@ def can_view_graph(
     current_user: User,
     graph: WorkflowDTO | Graph | None,
 ) -> bool:
-    """Compatibility seam for routes not yet migrated to action-based guards."""
+    """
+    Compatibility seam for routes not yet migrated to action-based guards.
+    """
     return graph is not None and has_workflow_permission(
         current_user=current_user,
         workflow=graph,

@@ -1,4 +1,6 @@
-"""Destructively rebuild the ephemeral UAT application database."""
+"""
+Destructively rebuild the ephemeral UAT application database.
+"""
 
 from __future__ import annotations
 
@@ -13,7 +15,9 @@ _LOCAL_DATABASE_HOSTS = {"", "127.0.0.1", "localhost", "postgres"}
 
 
 def _drop_application_tables() -> list[str]:
-    """Drop every table in the application schema as one PostgreSQL transaction."""
+    """
+    Drop every table in the application schema as one PostgreSQL transaction.
+    """
     quote_name = connection.ops.quote_name
     with transaction.atomic():
         with connection.cursor() as cursor:

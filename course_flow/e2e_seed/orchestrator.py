@@ -1,4 +1,6 @@
-"""Deterministic Playwright E2E fixture generation."""
+"""
+Deterministic Playwright E2E fixture generation.
+"""
 
 from __future__ import annotations
 
@@ -215,7 +217,9 @@ def _project_manifest(project, *, asset_id: str | None = None) -> dict:
 
 
 def _seed_home_projects(*, owner) -> tuple[list[dict], dict]:
-    """Seed FR-HOME-003 projects with a stable newest-first ordering."""
+    """
+    Seed FR-HOME-003 projects with a stable newest-first ordering.
+    """
     # Keep these projects newer than ordinary fixture mutations during a test run.
     newest_at = timezone.now() + timedelta(days=1)
     recent_projects = []
@@ -253,7 +257,9 @@ def _seed_home_projects(*, owner) -> tuple[list[dict], dict]:
 
 
 def _seed_favourite_projects(*, owner) -> list[dict]:
-    """Seed five distinct sidebar favourites without changing recency fixtures."""
+    """
+    Seed five distinct sidebar favourites without changing recency fixtures.
+    """
     projects = []
     for index, title in enumerate(E2E_FIXTURE_FAVOURITE_PROJECT_TITLES, start=1):
         project = create_project(

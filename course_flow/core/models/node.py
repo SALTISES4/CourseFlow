@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.db import models
 
 from course_flow.core.enum import NodeType
@@ -12,6 +14,13 @@ NODE_TYPE_CHOICES = [(e.value, e.name.title()) for e in NodeType]
 
 
 class Node(UUIDModel):
+    if TYPE_CHECKING:
+        section_id: int
+        channel_id: int
+        workflow_id: int
+        linked_workflow_id: int | None
+        thread_id: int | None
+
     section = models.ForeignKey(
         Section,
         on_delete=models.CASCADE,
@@ -68,5 +77,5 @@ class Node(UUIDModel):
         blank=True,
     )
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         db_table = "cf_node"

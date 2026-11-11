@@ -1,4 +1,6 @@
-"""Stable identities for system-owned graph labels rendered by the React client."""
+"""
+Stable identities for system-owned graph labels rendered by the React client.
+"""
 
 DEFAULT_CHANNELS_BY_WORKFLOW_TYPE: dict[str, tuple[tuple[str, str], ...]] = {
     "activity": (

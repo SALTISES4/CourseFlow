@@ -1,4 +1,6 @@
-"""Safety and orchestration tests for the destructive UAT database rebuild."""
+"""
+Safety and orchestration tests for the destructive UAT database rebuild.
+"""
 
 from __future__ import annotations
 

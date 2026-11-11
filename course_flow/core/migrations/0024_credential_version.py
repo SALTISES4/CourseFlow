@@ -1,4 +1,5 @@
-"""Add credential generations without preserving legacy rows.
+"""
+Add credential generations without preserving legacy rows.
 
 The initial AddField operations intentionally have no default. They succeed on
 fresh/reset databases and fail when legacy user or token rows exist. The later
