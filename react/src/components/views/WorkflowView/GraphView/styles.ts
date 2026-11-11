@@ -21,11 +21,19 @@ export const SectionsWrapper = styled(Box)(() => ({
   position: 'relative'
 }))
 
-export const CellRow = styled(Box)(({ theme }) => ({
+export const CellRow = styled(Box, {
+  shouldForwardProp: (prop) => !['stickyChannels'].includes(prop as string)
+})<{ stickyChannels?: boolean }>(({ theme, stickyChannels }) => ({
   position: 'relative',
   display: 'flex',
   padding: theme.spacing(2),
-  gap: theme.spacing(3)
+  gap: theme.spacing(3),
+  ...(stickyChannels && {
+    position: 'sticky',
+    top: 0,
+    zIndex: 5,
+    background: theme.palette.common.white
+  })
 }))
 
 export const Cell = styled(Box)({

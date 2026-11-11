@@ -10,7 +10,7 @@ type PropsType = {
 }
 
 const ColumnsHeader = ({ board, onReorder }: PropsType) => (
-  <Styled.CellRow data-test-id="columns-block">
+  <Styled.CellRow stickyChannels data-test-id="columns-block">
     {board.columns.ids.map((columnId, index) => (
       <Cell
         key={`column-header-${columnId}`}

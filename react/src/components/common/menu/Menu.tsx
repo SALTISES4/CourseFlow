@@ -25,8 +25,9 @@ const StyledPopover = styled(Popover)({
 
 type BaseMenuItemType = {
   action?: any
-  disabled?: boolean
   show?: boolean
+  disabled?: boolean
+  persistent?: boolean // menu stays on when this menu item's action fires
   id?: string
   uuid?: string
   title?: string
@@ -156,6 +157,24 @@ const SimpleMenu = ({
   const handleClose = () => {
     setAnchorEl(null)
   }
+
+  const buttons = menuItems.map((item, el) => {
+    const action = () => {
+      if (item.action && !item.persistent) {
+        handleClose()
+      }
+
+      item.action?.()
+    }
+
+    return (
+      <ListMenuItem
+        key={item.uuid ?? item.id ?? el}
+        {...item}
+        action={action}
+      />
+    )
+  })
 
   return (
     <>

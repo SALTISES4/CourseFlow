@@ -128,7 +128,6 @@ const Sidebar = () => {
       </SC.Collapse>
 
       <SC.SidebarInner
-        elevation={8}
         aria-hidden={collapsed}
         {...(collapsed ? { inert: '' } : {})}
       >

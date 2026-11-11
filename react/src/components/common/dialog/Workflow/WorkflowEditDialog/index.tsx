@@ -1,4 +1,3 @@
-import { WorkflowType } from '@cf/api/gen'
 import {
   getWorkflowOptions,
   getWorkflowQueryKey,
@@ -9,12 +8,12 @@ import {
   WorkflowFormType,
   createWorkflowSchema
 } from '@cf/components/common/dialog/Workflow/components/WorkflowForm'
+import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { workflowTypeLabel } from '@cf/i18n/workflowLabels'
 import Utility from '@cf/utility/Utility.class'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
-import RichTextDescription from '@cfComponents/dialog/Workflow/components/RichTextDescription'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -49,8 +48,8 @@ const WorkflowEditDialog = () => {
   )
 
   const {
-    register,
     control,
+    register,
     handleSubmit,
     reset,
     formState: { errors, isDirty }
@@ -140,15 +139,14 @@ const WorkflowEditDialog = () => {
               fullWidth
               helperText={errors.title?.message}
             />
-
             <Controller
               name="description"
               control={control}
               render={({ field }) => (
-                <RichTextDescription
+                <WysiwygField
+                  placeholder={t('form.description')}
                   label={t('form.description')}
-                  value={field.value ?? ''}
-                  onChange={field.onChange}
+                  field={field}
                 />
               )}
             />

@@ -5,6 +5,30 @@
   --ds-border-selected: #52C68C;
 }
 
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+
+/* Chrome, Edge, Safari */
+*::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #aaa;
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #eee;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 body,
 html {
   overflow: hidden;
@@ -181,6 +205,21 @@ h3.big-space {
 .main-wrapper {
   height: 100vh;
   display: flex;
+
+  > .main-block {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0.8em;
+      height: 100%;
+      background: linear-gradient(to right, rgba(0, 0, 0, 0.18) -20%, transparent);
+      z-index: 999999;
+    }
+  }
 }
 
 .main-block {

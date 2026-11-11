@@ -4,6 +4,7 @@ import {
 } from '@cf/api/gen/@tanstack/react-query.gen'
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
 import DurationTextField from '@cf/components/common/DurationTextField'
+import TimeDurationField from '@cf/components/common/UIPrimitives/TimeDurationInput'
 import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import type { NodeEntity } from '@cf/features/graph/state/model/types'
@@ -389,7 +390,6 @@ const EditNodeForm = ({
                   <WysiwygField
                     placeholder={t('edit.description')}
                     field={field}
-                    readOnly={!canEdit}
                   />
                 )}
               />

@@ -11,10 +11,9 @@ export const SidebarWrap = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'collapsed'
 })<{ collapsed: boolean }>(({ theme, collapsed }) => ({
   position: 'relative',
-  width: '290px',
+  width: '250px',
   height: '100%',
   marginLeft: 'auto',
-  paddingLeft: '40px',
   flexShrink: 0,
   transition: theme.transitions.create('width', {
     duration: SIDEBAR_TRANSITION_DURATION_MS,
@@ -24,7 +23,7 @@ export const SidebarWrap = styled(Box, {
     position: 'relative',
     display: 'flex',
     flexDirection: 'column',
-    width: '250px',
+    width: '100%',
     height: '100%',
     flexShrink: 0,
     borderRadius: 0,
@@ -45,10 +44,11 @@ export const SidebarWrap = styled(Box, {
       }),
       `visibility 0s linear ${collapsed ? SIDEBAR_TRANSITION_DURATION_MS : 0}ms`
     ].join(', '),
-    willChange: 'transform, opacity'
+    willChange: 'transform, opacity',
+    zIndex: 100
   },
   ...(collapsed && {
-    width: '40px'
+    width: 0
   }),
   '@media (prefers-reduced-motion: reduce)': {
     transition: 'none',
@@ -67,10 +67,10 @@ export const SidebarToggle = styled(IconButton)(() => ({
 export const SidebarTabsWrap = styled(ToggleButtonGroup)(({ theme }) => ({
   position: 'absolute',
   top: '3rem',
-  left: 0,
+  right: '100%',
   boxShadow: '0.3em 0.8em 1.3em 0.35em #c2c2c2',
   border: 0,
-  zIndex: 0,
+  zIndex: 100,
   background: '#dfdfdf',
   gap: '4px',
   '& .MuiToggleButton-root': {

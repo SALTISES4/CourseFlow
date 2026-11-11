@@ -1,3 +1,4 @@
+import { SxProps } from '@mui/material'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormLabel from '@mui/material/FormLabel'
@@ -17,6 +18,7 @@ type EditorCommand = {
   command: string
   value?: string
   text: string
+  sx?: SxProps
 }
 
 function normalizeLink(value: string): string | null {
@@ -43,9 +45,24 @@ const RichTextDescription = ({
   const labelId = `${editorId}-label`
   const localizedLabel = label ?? t('richText.description')
   const commands: EditorCommand[] = [
-    { label: t('richText.bold'), command: 'bold', text: 'B' },
-    { label: t('richText.italic'), command: 'italic', text: 'I' },
-    { label: t('richText.underline'), command: 'underline', text: 'U' },
+    {
+      label: t('richText.bold'),
+      command: 'bold',
+      text: 'B',
+      sx: { fontWeight: 'bold' }
+    },
+    {
+      label: t('richText.italic'),
+      command: 'italic',
+      text: 'I',
+      sx: { fontStyle: 'italic' }
+    },
+    {
+      label: t('richText.underline'),
+      command: 'underline',
+      text: 'U',
+      sx: { textDecoration: 'underline' }
+    },
     {
       label: t('richText.superscript'),
       command: 'superscript',
@@ -102,7 +119,7 @@ const RichTextDescription = ({
           gap={0.5}
           sx={{ mt: 0.5, mb: 0.5 }}
         >
-          {commands.map(({ label: commandLabel, command, value, text }) => (
+          {commands.map(({ label: commandLabel, command, value, text, sx }) => (
             <Button
               key={command}
               type="button"
@@ -111,7 +128,7 @@ const RichTextDescription = ({
               variant="outlined"
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => runCommand(command, value)}
-              sx={{ minWidth: 32, px: 0.75 }}
+              sx={{ minWidth: 32, px: 0.75, ...sx }}
             >
               {text}
             </Button>
