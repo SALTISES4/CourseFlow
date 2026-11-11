@@ -27,6 +27,7 @@ type BaseMenuItemType = {
   action?: any
   show?: boolean
   disabled?: boolean
+  persistemt?: boolean // menu stays on when this menu item's action fires
   id?: string
   uuid?: string
   title?: string
@@ -150,7 +151,21 @@ const SimpleMenu = ({
   }
 
   const buttons = menuItems.map((item, el) => {
-    return <ListMenuItem key={item.uuid ?? item.id ?? el} {...item} />
+    const action = () => {
+      if (item.action && !item.persistemt) {
+        handleClose()
+      }
+
+      item.action?.()
+    }
+
+    return (
+      <ListMenuItem
+        key={item.uuid ?? item.id ?? el}
+        {...item}
+        action={action}
+      />
+    )
   })
 
   return (
