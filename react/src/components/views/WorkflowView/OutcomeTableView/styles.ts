@@ -17,18 +17,18 @@ export const TableWrap = styled(Box)(({ theme }) => ({
   },
 
   '&.view-normal': {
-    '[class*="body-row"]:last-child > div:last-child': {
+    '.body-row:last-child > div:last-child': {
       borderBottom: `1px solid ${theme.palette.divider}`
     }
   },
 
   '&.view-matrix': {
-    '& [class*="body-row"]': {
-      '&:has(+ [class*="section-header-row"])': {
+    '& .body-row': {
+      '&:has(+ .section-header-row)': {
         '& .checkmarks-group': {
           borderBottom: `1px solid ${theme.palette.divider}`
         },
-        '& [class*="tag-bar"]::before': {
+        '& .tag-bar::before': {
           height: '200%'
         }
       },
@@ -98,7 +98,7 @@ export const HeaderLegendWrap = styled(Box, {
     background: 'linear-gradient(to right, #fff 60%, transparent 100%)'
   },
 
-  '& [class*="table-legend"]': {
+  '& .table-legend': {
     position: 'absolute',
     bottom: 0,
     left: 0,
@@ -111,7 +111,7 @@ export const TableBody = styled(Box)(() => ({
 }))
 
 export const BodyLegendWrap = styled(Box, {
-  name: 'legend-wrap'
+  target: 'legend-wrap'
 })(({ theme }) => ({
   position: 'sticky',
   left: 0,
@@ -122,7 +122,7 @@ export const BodyLegendWrap = styled(Box, {
   alignItems: 'center',
   backgroundColor: theme.palette.common.white,
   zIndex: 10,
-  '& + [class*="legend-wrap"]': {
+  '& + .legend-wrap': {
     zIndex: 3
   }
 }))
@@ -130,7 +130,7 @@ export const BodyLegendWrap = styled(Box, {
 // header or first first clumn left hand side "column/row legend" element
 export const TableLegend = styled('span', {
   shouldForwardProp: (prop) => !['color', 'sx'].includes(prop as string),
-  name: 'table-legend'
+  target: 'table-legend'
 })<{ color?: string }>(({ theme, color }) => ({
   display: 'block',
   flexGrow: 1,
@@ -153,15 +153,15 @@ export const TableLegend = styled('span', {
 
 // tag group header / full row body splitter
 export const TagGroup = styled(Box)(({ theme }) => ({
-  '& [class*="body-row"]:first-child': {
+  '& .body-row:first-child': {
     marginTop: theme.spacing(0.5),
     marginBottom: theme.spacing(0.5),
     border: 0,
-    '& [class*="legend-wrap"]': {
+    '& .legend-wrap': {
       '&:first-child': {
         flexShrink: 0,
         zIndex: 10,
-        '& [class*="table-legend"]': {
+        '& .table-legend': {
           padding: `4px 4px 4px 2px`,
           borderTopRightRadius: 0,
           borderBottomRightRadius: 0
@@ -184,17 +184,17 @@ export const TagGroup = styled(Box)(({ theme }) => ({
   }
 }))
 
-export const BodyRow = styled(Box, { name: 'body-row' })(({ theme }) => ({
+export const BodyRow = styled(Box, { target: 'body-row' })(({ theme }) => ({
   display: 'flex',
   '.checkmarks-group': {
     boxShadow: `inset -1px 0 0 0 ${theme.palette.divider}`
   },
   '&:not(.section-header-row):hover .checkmarks-group': {
-    '&, & [class*="table-cell"]': {
+    '&, & .table-cell': {
       backgroundColor: theme.palette.action.hover
     }
   },
-  '&.tag-header-row [class*="legend-wrap"]': {
+  '&.tag-header-row .legend-wrap': {
     paddingRight: 0
   },
   '.view-matrix &.section-header-row': {
@@ -202,7 +202,7 @@ export const BodyRow = styled(Box, { name: 'body-row' })(({ theme }) => ({
       marginTop: theme.spacing(2),
 
       // ... but also add a white background to cut away the tag label bar from the gap
-      '[class*="legend-wrap"]:after': {
+      '.legend-wrap:after': {
         content: '""',
         position: 'absolute',
         left: 0,
@@ -268,14 +268,16 @@ export const CheckmarkCell = styled(Box)(({ theme }) => ({
   }
 }))
 
-export const TableCell = styled(CheckmarkCell, { name: 'table-cell' })(() => ({
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  textAlign: 'center'
-}))
+export const TableCell = styled(CheckmarkCell, { target: 'table-cell' })(
+  () => ({
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center'
+  })
+)
 
-export const TagBarEmptyCell = styled(CheckmarkCell, { name: 'tag-bar' })(
+export const TagBarEmptyCell = styled(CheckmarkCell, { target: 'tag-bar' })(
   ({ theme }) => ({
     display: 'flex',
     width: '70px',
