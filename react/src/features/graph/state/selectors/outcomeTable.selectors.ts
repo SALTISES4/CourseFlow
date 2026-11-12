@@ -70,6 +70,7 @@ type ExtraColumn = ExtraColumnLeaf | ExtraColumnGroup
 type ExtraColumnValueKey =
   | 'totalCredits'
   | 'totalHours'
+  | 'totalHoursMatrix'
   | 'generalEducation'
   | 'specificEducation'
   | 'ponderationTheory'
@@ -81,6 +82,7 @@ type ExtraColumnValues = Record<ExtraColumnValueKey, Record<string, number>>
 const createExtraColumnValues = (): ExtraColumnValues => ({
   totalCredits: {},
   totalHours: {},
+  totalHoursMatrix: {},
   generalEducation: {},
   specificEducation: {},
   ponderationTheory: {},
@@ -208,7 +210,7 @@ const makeSelectOutcomeTable = lruMemoize(
               {
                 labelKey: 'outcomeTable.summary.totalHours',
                 className: 'bg-dark',
-                values: extraColumnValues.totalHours
+                values: extraColumnValues.totalHoursMatrix
               }
             ]
           },
@@ -292,6 +294,8 @@ function getNodeCompletion(
   return completion
 }
 
+// loop through each node to gather data for the extra columns
+// as well as the section totals
 function populateExtraColumns(
   groupUuid: string,
   node: NodeEntity,
@@ -302,13 +306,16 @@ function populateExtraColumns(
   const individual = node.ponderationIndividual ?? 0
   const isSpecific = node.specificEducation
 
+  const timeRequired = node.timeRequired ?? 0
+
   const values: Record<ExtraColumnValueKey, number> = {
-    specificEducation: isSpecific ? (node.timeRequired ?? 0) : 0,
-    generalEducation: !isSpecific ? (node.timeRequired ?? 0) : 0,
+    specificEducation: isSpecific ? timeRequired : 0,
+    generalEducation: !isSpecific ? timeRequired : 0,
     ponderationTheory: theory,
     ponderationPractical: practice,
     ponderationIndividual: individual,
-    totalHours: theory + practice + individual,
+    totalHours: timeRequired,
+    totalHoursMatrix: theory + practice + individual,
     totalCredits: node.credits ?? 0
   }
 
