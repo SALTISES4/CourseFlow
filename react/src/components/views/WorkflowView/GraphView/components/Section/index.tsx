@@ -161,9 +161,7 @@ const Section = (props: SectionPropsType) => {
         canDrop({ source }) {
           return isGridSection(source.data) || isSidebarPart(source.data)
         },
-        onDragLeave() {
-          resetState()
-        },
+        onDragLeave: resetState,
         onDrag({ source, self }) {
           const dragging = source.data
           if (!isGridSection(dragging) && !isSidebarPart(dragging)) {
@@ -209,6 +207,13 @@ const Section = (props: SectionPropsType) => {
           } else {
             return
           }
+
+          // cleanup for the DropIndicator to go away on drop
+          setState(
+            produce((draft) => {
+              draft.closestEdge = null
+            })
+          )
         }
       })
     )
