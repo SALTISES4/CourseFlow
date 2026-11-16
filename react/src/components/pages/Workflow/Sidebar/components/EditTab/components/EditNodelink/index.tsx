@@ -83,7 +83,7 @@ const EditNodeLinkForm = ({ edge }: { edge: EdgeEntity }) => {
             })
           )
         },
-        300
+        1000
       ),
     [canEdit, dispatch, edge.edgeId, edge.graphUuid]
   )

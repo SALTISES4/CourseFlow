@@ -17,7 +17,7 @@ import * as SC from '@cfSidebar/styles'
 import { debounce } from '@mui/material'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
-import { useCallback, useEffect, useMemo } from 'react'
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
@@ -60,26 +60,19 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
     t('systemLabels.sectionNumber', { number: section.position + 1 })
   )
 
+  const [title, setTitle] = useState(editableTitle)
+
   const {
     register,
     getValues,
-    watch,
+    subscribe,
     reset,
-    formState: { errors, isDirty }
+    formState: { errors }
   } = useForm<SectionFormType>({
     defaultValues: {
       title: editableTitle
     }
   })
-  const watchedFields = watch()
-
-  useEffect(() => {
-    if (section && !isDirty) {
-      reset({
-        title: editableTitle
-      })
-    }
-  }, [reset, isDirty, editableTitle, section])
 
   const debouncedDispatch = useMemo(
     () =>
@@ -91,18 +84,21 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
             meta: { title: data.title }
           })
         )
-
-        reset({}, { keepValues: true })
-      }, 300),
-    [dispatch, reset, section.graphUuid, section.uuid]
+      }, 1000),
+    [dispatch, section.graphUuid, section.uuid]
   )
 
-  useEffect(() => {
-    const formValues = getValues()
-    if (canEdit && isDirty) {
-      debouncedDispatch(formValues)
-    }
-  }, [watchedFields, canEdit, isDirty, getValues, debouncedDispatch])
+  const onTitleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      if (!canEdit) {
+        return
+      }
+      const value = e.target.value
+      setTitle(value)
+      debouncedDispatch({ title: value })
+    },
+    [canEdit, debouncedDispatch]
+  )
 
   const onDuplicate = useCallback(() => {
     dispatch(
@@ -131,7 +127,8 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
           label={t('edit.title')}
           variant="outlined"
           size="small"
-          {...register('title')}
+          value={title}
+          onChange={onTitleChange}
           disabled={!canEdit}
           error={!!errors.title}
           helperText={errors.title?.message}

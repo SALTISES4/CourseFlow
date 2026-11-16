@@ -105,6 +105,7 @@ const workflow = {
     presentationControlsLabel: 'Outcome table display options',
     assignmentCellLabel: '{{outcome}} — {{node}}',
     sectionRollupCellLabel: '{{outcome}} — {{section}} summary',
+    untaggedOutcomes: 'Untagged outcomes',
     summary: {
       classification: 'Classification',
       generalEducation: 'General education',

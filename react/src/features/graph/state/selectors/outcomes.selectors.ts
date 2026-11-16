@@ -160,11 +160,14 @@ export const selectOutcomeTagGroups = createSelector(
       a.title.localeCompare(b.title, undefined, { sensitivity: 'base' })
     )
 
+    // untagged group receieves a title key only if there's other groups
+    // otherwise the label is not rendered since it's the only group
+    if (tagGroups.length) {
+      untagged.title = 'outcomeTable.untaggedOutcomes'
+    }
+
     if (untagged.outcomes.length) {
-      tagGroups.push({
-        ...untagged,
-        title: ''
-      })
+      tagGroups.push(untagged)
     }
 
     return tagGroups

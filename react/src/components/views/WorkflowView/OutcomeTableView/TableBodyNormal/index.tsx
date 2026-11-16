@@ -11,24 +11,26 @@ import { AppDispatch, RootState } from '@cf/redux/store'
 import OutcomeHeader from '@cfPages/Workflow/Sidebar/components/OutcomesTab/Outcome/Header'
 import useOutcomeTitle from '@cfViews/WorkflowView/OutcomeEditView/useOutcomeTitle'
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 
 import Checkmark, { OutcomeCheckmarkStatus } from '../Checkmark'
 import * as Styled from '../styles'
 
 const TableBody = ({ table }: { table: OutcomeTable }) => {
+  const { t } = useTranslation('workflow')
   return (
     <Styled.TableBody>
       {table.tagGroups.map((group) => (
         <Styled.TagGroup key={group.uuid}>
-          <Styled.BodyRow className="tag-header-row">
-            <Styled.BodyLegendWrap>
-              <Styled.TableLegend>
-                {group.title || 'Untagged outcomes'}
-              </Styled.TableLegend>
-            </Styled.BodyLegendWrap>
-            <Styled.BodyLegendWrap />
-          </Styled.BodyRow>
+          {group.title && (
+            <Styled.BodyRow className="tag-header-row">
+              <Styled.BodyLegendWrap>
+                <Styled.TableLegend>{t(group.title as any)}</Styled.TableLegend>
+              </Styled.BodyLegendWrap>
+              <Styled.BodyLegendWrap />
+            </Styled.BodyRow>
+          )}
 
           {group.outcomes.map((outcomeUuid) => (
             <TagGroupRow key={outcomeUuid} table={table} uuid={outcomeUuid} />

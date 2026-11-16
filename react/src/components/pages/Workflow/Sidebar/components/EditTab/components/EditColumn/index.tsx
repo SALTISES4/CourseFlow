@@ -111,7 +111,7 @@ const EditColumnForm = ({
             meta
           })
         )
-      }, 300),
+      }, 1000),
     [channel.graphUuid, channel.uuid, dispatch]
   )
 

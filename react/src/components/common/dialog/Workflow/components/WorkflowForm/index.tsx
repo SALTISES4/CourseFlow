@@ -1,7 +1,7 @@
 import { WorkflowTypeIn } from '@cf/api/gen'
+import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
 import { workflowTypeLabel } from '@cf/i18n/workflowLabels'
 import { StyledBox } from '@cfComponents/dialog/styles'
-import RichTextDescription from '@cfComponents/dialog/Workflow/components/RichTextDescription'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -104,7 +104,7 @@ const WorkflowForm = ({
           name="description"
           control={control}
           render={({ field }) => (
-            <RichTextDescription
+            <WysiwygField
               label={t('form.descriptionForType', {
                 workflowType: localizedWorkflowType
               })}
