@@ -28,14 +28,14 @@ const TableHeader = ({
       <Styled.HeaderLegendWrap />
       {table.tagGroups.map((group, index) => (
         <Fragment key={group.uuid}>
-          <Styled.HeaderLegendWrap
-            tagLabel
-            className={index === 0 ? 'tag-offset' : ''}
-          >
-            <Styled.TableLegend>
-              {group.title || 'Untagged outcomes'}
-            </Styled.TableLegend>
-          </Styled.HeaderLegendWrap>
+          {group.title && (
+            <Styled.HeaderLegendWrap
+              tagLabel
+              className={index === 0 ? 'tag-offset' : ''}
+            >
+              <Styled.TableLegend>{t(group.title as any)}</Styled.TableLegend>
+            </Styled.HeaderLegendWrap>
+          )}
           {group.outcomes.map((outcomeUuid) => (
             <TableHeaderOutcome
               key={outcomeUuid}
