@@ -246,7 +246,7 @@ const EditNodeForm = ({
             meta
           })
         )
-      }, 300),
+      }, 1000),
     [
       canEdit,
       dispatch,
