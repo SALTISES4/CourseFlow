@@ -1,5 +1,5 @@
 import { WorkflowPermission } from '@cf/api/gen/types.gen'
-import RichTextDescription from '@cf/components/common/dialog/Workflow/components/RichTextDescription'
+import WysiwygField from '@cf/components/common/UIPrimitives/WysiwygInput'
 import { useResourcePermission } from '@cf/context/workspacePermissionsContext'
 import { displayEditableOutcomeTitle } from '@cf/features/graph/outcomeTitle'
 import type { OutcomeEntity } from '@cf/features/graph/state/model/types'
@@ -162,7 +162,7 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
             name="description"
             control={control}
             render={({ field }) => (
-              <RichTextDescription
+              <WysiwygField
                 label={t('edit.description')}
                 readOnly={!canManageOutcomes}
                 value={field.value || ''}
