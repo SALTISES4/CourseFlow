@@ -71,9 +71,9 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
   const {
     control,
     register,
-    watch,
+    subscribe,
     reset,
-    formState: { dirtyFields, isDirty }
+    formState: { errors }
   } = useForm<OutcomeFormValues>({
     defaultValues: {
       title: editableTitle,
@@ -82,19 +82,6 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
       tagIds: outcome.tagIds
     }
   })
-
-  const watchedFields = watch()
-
-  useEffect(() => {
-    if (!isDirty) {
-      reset({
-        title: editableTitle,
-        description: outcome.description,
-        code: outcome.code,
-        tagIds: outcome.tagIds
-      })
-    }
-  }, [reset, isDirty, editableTitle, outcome])
 
   const debouncedDispatch = useMemo(
     () =>
@@ -114,17 +101,25 @@ const EditOutcomeForm = ({ outcome }: { outcome: OutcomeEntity }) => {
             }
           })
         )
-
-        reset({}, { keepValues: true })
-      }, 300),
-    [canManageOutcomes, dispatch, reset, outcome.graphUuid, outcome.uuid]
+      }, 1000),
+    [canManageOutcomes, dispatch, outcome.graphUuid, outcome.uuid]
   )
 
   useEffect(() => {
-    if (isDirty) {
-      debouncedDispatch(watchedFields, Boolean(dirtyFields.title))
+    const unsubscribe = subscribe({
+      formState: { values: true, dirtyFields: true },
+      callback: ({ values, dirtyFields }) =>
+        debouncedDispatch(
+          values as OutcomeFormValues,
+          Boolean(dirtyFields?.title)
+        )
+    })
+
+    return () => {
+      unsubscribe()
+      debouncedDispatch.clear()
     }
-  }, [watchedFields, dirtyFields.title, isDirty, debouncedDispatch])
+  }, [subscribe, debouncedDispatch])
 
   const onDuplicate = useCallback(() => {
     dispatch(
