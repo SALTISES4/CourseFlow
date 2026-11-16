@@ -250,7 +250,11 @@ class LibraryService:
             ).distinct()
 
         project_qs = project_qs.select_related("owner", "edit_lock__holder").annotate(
-            library_workflow_count=Count("workflows", distinct=True)
+            library_workflow_count=Count(
+                "workflows",
+                filter=Q(workflows__is_archived=False),
+                distinct=True,
+            )
         )
         workflow_graph_qs = workflow_graph_qs.select_related(
             "workflow__edit_lock__holder"

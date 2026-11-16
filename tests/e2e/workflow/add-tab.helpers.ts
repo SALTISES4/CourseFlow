@@ -193,7 +193,7 @@ export async function expectCustomCategoryDropDefaults(
 
   await workflowChannelHeader(page, newChannelUuid).click();
   await expect(workflowEditChannelForm(page)).toBeVisible();
-  await expect(workflowEditChannelFormTitleField(page)).toHaveValue(INSERT_CHANNEL_DEFAULT_TITLE);
+  await expect(workflowEditChannelFormTitleField(page)).toHaveValue('');
   await expect(workflowEditChannelFormColorField(page)).toHaveValue(INSERT_CHANNEL_DEFAULT_COLOUR);
 
   await workflowRightSidebarAddTab(page).click();

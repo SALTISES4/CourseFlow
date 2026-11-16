@@ -105,7 +105,7 @@ export function sectionContainers(page: Page): Locator {
 }
 
 export function titleFieldInEditSectionForm(page: Page): Locator {
-  return editSectionForm(page).getByLabel(/^Section$/i);
+  return editSectionForm(page).getByLabel(/^Title$/i);
 }
 
 export {

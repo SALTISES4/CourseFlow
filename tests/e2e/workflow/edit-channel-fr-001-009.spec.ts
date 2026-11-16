@@ -416,7 +416,10 @@ test.describe('FR-CHAN-004: insert right', () => {
     await page.goto(workflow.path);
   });
 
-  test('hover Insert right creates new column at K+1', async ({ page }) => {
+  test('insert right keeps the persisted title and Title field empty while the header shows the fallback', async ({
+    page,
+    workflow,
+  }) => {
     const channelC = await channelUuidByTitle(page, E2E_CHANNEL_C);
     const sidebarOpenBefore = await workflowEditChannelForm(page).isVisible();
     const insertedUuid = await insertChannelRight(page, channelC);
@@ -424,15 +427,20 @@ test.describe('FR-CHAN-004: insert right', () => {
 
     expect(await workflowEditChannelForm(page).isVisible()).toBe(sidebarOpenBefore);
 
-    await workflowChannelHeader(page, insertedUuid).click();
-    await expect(workflowEditChannelForm(page)).toBeVisible();
-    await expect(workflowRightSidebarContentPanel(page)).toBeVisible();
-    await expect(workflowEditChannelFormTitleField(page)).toHaveValue(
-      INSERT_CHANNEL_DEFAULT_TITLE,
-    );
+    const graph = await fetchGraphView(page, workflowUuidFromPath(workflow.path));
+    const insertedChannel = graph.channels.find((channel) => channel.uuid === insertedUuid);
+    expect(insertedChannel).toMatchObject({
+      title: '',
+      systemLabelCode: 'custom_node_category',
+    });
     await expect(workflowChannelHeader(page, insertedUuid)).toContainText(
       INSERT_CHANNEL_DEFAULT_TITLE,
     );
+
+    await workflowChannelHeader(page, insertedUuid).click();
+    await expect(workflowEditChannelForm(page)).toBeVisible();
+    await expect(workflowRightSidebarContentPanel(page)).toBeVisible();
+    await expect(workflowEditChannelFormTitleField(page)).toHaveValue('');
   });
 
   test('insert right shows default colour on workflowChannelHeaderColorIndicator', async ({

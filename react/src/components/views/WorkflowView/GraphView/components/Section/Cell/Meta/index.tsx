@@ -30,6 +30,7 @@ const Meta = ({
   const { t } = useTranslation('workflow')
   const contextIcon = getIcon('context', contextType)
   const taskIcon = getIcon('task', taskType)
+  const hasTime = typeof time === 'number' && time > 0
   const workflowUrl = workflow
     ? generatePath(CFRoutes.WORKFLOW, {
         uuid: workflow
@@ -67,7 +68,7 @@ const Meta = ({
           </Link>
         </Styled.WorkflowLink>
       )}
-      {(time || contextIcon || taskIcon) && (
+      {(hasTime || contextIcon || taskIcon) && (
         <Styled.Footer>
           {(contextIcon || taskIcon) && (
             <Styled.IconWrap>
@@ -75,7 +76,7 @@ const Meta = ({
               {taskIcon && <Styled.Tag>{taskIcon}</Styled.Tag>}
             </Styled.IconWrap>
           )}
-          {time && (
+          {hasTime && (
             <Styled.Tag>
               <TimerOutlinedIcon />
               <span>{formatHoursDuration(time)}</span>

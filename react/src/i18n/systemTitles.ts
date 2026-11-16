@@ -61,3 +61,21 @@ export function displayEditableSystemTitle(
   }
   return displaySystemTitle(t, entity, fallback)
 }
+
+/**
+ * Resolve a channel title for its edit field. The custom-category system label
+ * is presentation-only: an empty persisted title must remain empty in the form.
+ */
+export function displayEditableChannelTitle(
+  t: TFunction<'workflow'>,
+  entity: SystemTitle,
+  fallback: string
+): string {
+  if (
+    entity.systemLabelCode === 'custom_node_category' &&
+    !entity.title.trim()
+  ) {
+    return entity.title
+  }
+  return displayEditableSystemTitle(t, entity, fallback)
+}

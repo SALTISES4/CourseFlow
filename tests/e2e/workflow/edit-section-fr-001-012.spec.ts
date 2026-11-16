@@ -105,7 +105,7 @@ test.describe('edit-section-fr-001-012', () => {
       ).toBeVisible();
     });
 
-    test('FR-SEC-001: workflowEditSectionForm shows Section title field, Duplicate, and Delete', async ({
+    test('FR-SEC-001: workflowEditSectionForm shows Title field, Duplicate, and Delete', async ({
       page,
       workflow,
     }) => {

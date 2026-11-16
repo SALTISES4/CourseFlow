@@ -1245,7 +1245,7 @@ locatorMappings:
     strategy: "{workflowEditSectionForm} button with accessible name 'Duplicate'"
     confidence: confirmed
   workflowEditSectionFormTitleField:
-    strategy: "{workflowEditSectionForm} TextField labeled 'Section'"
+    strategy: "{workflowEditSectionForm} TextField labeled 'Title'"
     confidence: confirmed
   workflowFormFieldValidationMessage:
     strategy: null

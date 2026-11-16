@@ -92,6 +92,7 @@ def _graph_with_workflow(
     workflow_title: str,
     workflow_description: str = "",
     workflow_type: str = WorkflowType.COURSE,
+    is_archived: bool = False,
 ) -> Graph:
     graph = Graph.objects.create()
     Workflow.objects.create(
@@ -101,6 +102,7 @@ def _graph_with_workflow(
         title=workflow_title,
         description=workflow_description,
         workflow_type=workflow_type,
+        is_archived=is_archived,
     )
     return graph
 
@@ -115,6 +117,12 @@ def test_search_no_filters_returns_project_and_workflow_items(client: Client, us
         workflow_title="Workflow",
         workflow_description="Workflow description",
         workflow_type=WorkflowType.COURSE,
+    )
+    _graph_with_workflow(
+        user,
+        project=project,
+        workflow_title="Archived workflow",
+        is_archived=True,
     )
 
     body = _post_search(client, raw, {})

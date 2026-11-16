@@ -125,7 +125,7 @@ const workflowFr = {
     section: 'Modifier la section', title: 'Titre', titleRequired: 'Le titre est obligatoire', description: 'Description',
     context: 'Contexte', task: 'Tâche', type: 'Type', time: 'Durée', credits: 'Crédits', ponderation: 'Pondération',
     theoryHours: 'H théoriques', practiceHours: 'H pratiques', individualHours: 'H individuelles',
-    specificEducation: 'Formation spécifique', tags: 'Étiquettes', sectionLabel: 'Section', textPosition: 'Position du texte',
+    specificEducation: 'Formation spécifique', tags: 'Étiquettes', textPosition: 'Position du texte',
     dashedLine: 'Ligne pointillée'
   },
   linkAction: {

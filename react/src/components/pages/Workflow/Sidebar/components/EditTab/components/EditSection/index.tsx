@@ -128,7 +128,7 @@ const EditSectionForm = ({ section }: { section: SectionEntity }) => {
           {t('edit.section')}
         </SC.SidebarTitle>
         <TextField
-          label={t('edit.sectionLabel')}
+          label={t('edit.title')}
           variant="outlined"
           size="small"
           {...register('title')}

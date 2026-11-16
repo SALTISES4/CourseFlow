@@ -319,7 +319,7 @@ requirements:
 
     acceptanceCriteria:
       - given workflowChannel at index K in left-to-right order, when insert right succeeds, new workflowChannel is at K+1 and following channels shift right by one index
-      - given insert right succeeds, the new channel stores an empty title with system label code 'custom_node_category'; workflowChannelHeaderTitleText shows localized title 'Untitled node category' per FR-CHAN-002; given user opens workflowEditChannelForm for the new channel per FR-CHAN-001, workflowEditChannelFormTitleField shows the localized system title 'Untitled node category'
+      - given insert right succeeds, the new channel stores an empty title with system label code 'custom_node_category'; workflowChannelHeaderTitleText shows localized title 'Untitled node category' per FR-CHAN-002; given user opens workflowEditChannelForm for the new channel per FR-CHAN-001, workflowEditChannelFormTitleField is blank
       - given insert right succeeds, workflowChannelHeaderColorIndicator colour is '#CFD8DC'; given user opens workflowEditChannelForm for the new channel per FR-CHAN-001, workflowEditChannelFormColorField shows '#CFD8DC'
       - given insert right succeeds, workflowRightSidebar tab and channel selection are unchanged until the user selects the new channel per FR-CHAN-001
       - given actor is commenter with workflowChannelHoverActionsMenu visible per FR-CHAN-007, workflowChannelHoverActionsMenuInsertRightItem is disabled

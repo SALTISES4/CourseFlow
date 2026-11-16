@@ -179,6 +179,29 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
     }
   });
 
+  test('FR-WF-NODE-001: one-hour node time uses the singular unit', async ({
+    page,
+    workflow,
+  }) => {
+    await page.goto(workflow.path);
+    const nodeUuid = await firstWorkflowNodeUuid(page);
+
+    try {
+      await patchNodeMetaViaApi(page, nodeUuid, {
+        timeRequired: 1,
+        timeUnits: 'hours',
+      });
+      await page.reload();
+
+      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toHaveText('1 hour');
+    } finally {
+      await patchNodeMetaViaApi(page, nodeUuid, {
+        timeRequired: 0,
+        timeUnits: null,
+      });
+    }
+  });
+
   test('FR-WF-NODE-001/FR-WF-EN-007: editing workflowEditNodeForm updates workflowNode canvas chrome', async ({
     page,
     workflow,
@@ -286,6 +309,36 @@ test.describe('Workflow node — static structure (FR-WF-NODE-001)', () => {
     await expect(workflowNodeMeta(page, nodeUuid)).toHaveCount(0);
     await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toHaveCount(0);
     await expect(workflowNodeLinkedWorkflowIndicator(page, nodeUuid)).toHaveCount(0);
+  });
+
+  test('FR-WF-NODE-001: unset time renders no value when other meta is present', async ({
+    page,
+    workflow,
+  }) => {
+    await page.goto(workflow.path);
+    const nodeUuid = await firstWorkflowNodeUuid(page);
+
+    try {
+      await patchNodeMetaViaApi(page, nodeUuid, {
+        contextClassification: 'individual_work',
+        taskClassification: 'none',
+        timeRequired: 0,
+        timeUnits: null,
+      });
+      await page.reload();
+
+      await expect(workflowNodeMeta(page, nodeUuid)).toBeVisible();
+      await expect(workflowNodeMetaContextTag(page, nodeUuid)).toBeVisible();
+      await expect(workflowNodeMetaTimeTag(page, nodeUuid)).toHaveCount(0);
+      await expect(workflowNodeMeta(page, nodeUuid)).not.toContainText('0');
+    } finally {
+      await patchNodeMetaViaApi(page, nodeUuid, {
+        contextClassification: 'none',
+        taskClassification: 'none',
+        timeRequired: 0,
+        timeUnits: null,
+      });
+    }
   });
 
   test('FR-WF-NODE-001: linked course node shows Linked activity indicator between title and meta', async ({

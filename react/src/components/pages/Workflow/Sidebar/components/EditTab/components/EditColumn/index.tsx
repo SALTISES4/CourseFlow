@@ -11,7 +11,7 @@ import {
 } from '@cf/features/graph/state/thunks/graphMutations.thunks'
 import { sidebarChangeTab } from '@cf/features/sidebar/state/sidebar.slice'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { displaySystemTitle } from '@cf/i18n/systemTitles'
+import { displayEditableChannelTitle } from '@cf/i18n/systemTitles'
 import type { AppDispatch, RootState } from '@cf/redux/store'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import ColorPicker from '@cfComponents/UIPrimitives/ColorPicker'
@@ -85,7 +85,7 @@ const EditColumnForm = ({
   const canEdit = useResourcePermission(
     WorkflowPermission.NODE_CATEGORY_MANAGEMENT
   )
-  const localizedTitle = displaySystemTitle(
+  const editableTitle = displayEditableChannelTitle(
     t,
     channel,
     t('graph.untitledNodeCategory')
@@ -94,12 +94,12 @@ const EditColumnForm = ({
   const [color, setColor] = useState(() =>
     resolveChannelColour(channel, themeColumnType)
   )
-  const [titleDraft, setTitleDraft] = useState(localizedTitle)
+  const [titleDraft, setTitleDraft] = useState(editableTitle)
 
   useEffect(() => {
-    setTitleDraft(localizedTitle)
+    setTitleDraft(editableTitle)
     setColor(resolveChannelColour(channel, themeColumnType))
-  }, [channel, localizedTitle, themeColumnType])
+  }, [channel, editableTitle, themeColumnType])
 
   const debouncedPersistMeta = useMemo(
     () =>

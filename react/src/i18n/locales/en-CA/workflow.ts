@@ -259,7 +259,6 @@ const workflow = {
     individualHours: 'Hrs. individual',
     specificEducation: 'Specific education',
     tags: 'Tags',
-    sectionLabel: 'Section',
     textPosition: 'Text position',
     dashedLine: 'Dashed line'
   },

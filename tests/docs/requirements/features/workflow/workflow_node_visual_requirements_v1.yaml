@@ -1,5 +1,5 @@
 # Normalized requirements: workflowNode visual appearance and hover actions in 'Workflow' view
-# Version: 1.1
+# Version: 1.2
 # Out of scope: canonical mapping of context-classification and task-classification values to workflowNodeMetaContextTag and workflowNodeMetaTaskTag icon glyphs and accessible names (deferred until a dedicated lookup or FR-WF-NODE-001 extension is authored).
 # Source: Figma workflow node frame (see designEvidenceLinkTable); tests/docs/requirements/guidelines_functional_requirements.md
 # ADR: tests/docs/requirements/adr_requirement_normalization_for_test_generation.md
@@ -211,6 +211,7 @@ requirements:
       - given parent workflow type is course or program, workflowNodeMetaTaskTag is not rendered for that workflowNode (workflowEditNodeFormTaskTypeSelect does not apply per FR-WF-EN-003 through FR-WF-EN-006)
       - given parent workflow type is program, workflowNodeMetaContextTag is not rendered for that workflowNode (neither workflowEditNodeFormActivityContextSelect nor workflowEditNodeFormCourseContextSelect applies per FR-WF-EN-005 and FR-WF-EN-006)
       - given workflowEditNodeFormTimeField for the workflowNode has no persisted duration (empty or cleared), workflowNodeMetaTimeTag is not rendered for that workflowNode
+      - given workflowEditNodeFormTimeField for the workflowNode has no persisted duration while workflowNodeMetaContextTag or workflowNodeMetaTaskTag is rendered, workflowNodeMeta contains no time text or numeric fallback value (including a standalone '0')
       - given workflowEditNodeFormTimeField represents 26 hours, workflowNodeMetaTimeTag displays the localized equivalent of '1 day 2 hours' rather than '26 hours'
       - given a workflowNode would show no workflowNodeMetaContextTag, workflowNodeMetaTaskTag, or workflowNodeMetaTimeTag, workflowNodeMeta is not rendered for that workflowNode
       - given a workflowNode is rendered in workflowView, workflowNodeBorder is rendered as the channel-colored top stripe on that workflowNode
@@ -513,6 +514,10 @@ designEvidenceLinkTable:
     hyperlink: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow-2.0?node-id=5677-55544&t=6weYZA8hUf6tm7DF-1
 
 changelog:
+  - version: '1.2'
+    date: '2026-11-16'
+    changes:
+      - Clarified that an empty node time must not leak a standalone numeric fallback into workflowNodeMeta when another metadata tag keeps the footer visible.
   - version: '1.1'
     date: '2026-10-05'
     changes:

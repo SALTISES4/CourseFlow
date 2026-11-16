@@ -126,7 +126,7 @@ const SectionCellNode = ({
             parentWorkflowType={graph?.workflowType}
             contextType={node.contextClassification}
             taskType={node.taskClassification}
-            time={node.timeRequired ?? 0}
+            time={node.timeRequired}
           />
         </StyledNode.Content>
 

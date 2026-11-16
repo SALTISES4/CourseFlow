@@ -54,7 +54,7 @@ uiObjectDefinitions:
   workflowEditSectionForm:
     meaning: Right-sidebar edit form for the selected workflowSectionContainer.
   workflowEditSectionFormTitleField:
-    meaning: Single-line field for section title on workflowEditSectionForm.
+    meaning: Single-line field labeled 'Title' for the section title on workflowEditSectionForm.
   workflowEditSectionFormDuplicateButton:
     meaning: Duplicate button on workflowEditSectionForm.
   workflowEditSectionFormDeleteButton:
@@ -122,6 +122,7 @@ requirements:
       - workflowRightSidebarCommentsTab
       - workflowRightSidebarAddTab
       - workflowEditSectionForm
+      - workflowEditSectionFormTitleField
       - workflowNode
 
     preconditions:
@@ -136,6 +137,7 @@ requirements:
       - if workflowRightSidebar is closed, system opens workflowRightSidebar with workflowRightSidebarEditTab selected
       - if workflowRightSidebar is open on a different tab (including workflowRightSidebarCommentsTab or workflowRightSidebarAddTab) or bound to a different host, system switches workflowRightSidebar to workflowRightSidebarEditTab and rebinds workflowRightSidebarEditTabContent to the identified workflowSectionContainer
       - system renders workflowEditSectionForm inside workflowRightSidebarEditTabContent bound to the identified workflowSectionContainer; workflowRightSidebar is bound to that workflowSectionContainer
+      - workflowEditSectionForm renders workflowEditSectionFormTitleField with the visible label 'Title'
 
     roleBehavior:
       owner:
@@ -154,6 +156,7 @@ requirements:
       - given workflowRightSidebar is already open on workflowRightSidebarCommentsTab or another selection, when user clicks workflowSectionHeader for section S outside any workflowNode cell in that workflowSectionContainer, then workflowRightSidebar switches to workflowRightSidebarEditTab and workflowEditSectionForm is rebound to S
       - given user opened comments for section S via FR-WF-COMMENTS-002 and then clicks workflowRightSidebarEditTab, workflowEditSectionForm targets S per FR-WF-COMMENTS-005 (same section selected in workflowRightSidebar)
       - given user clicks a workflowNode cell inside a workflowSectionContainer, that click does not select the parent section via workflowSectionHeader (section selection for workflowEditSectionForm follows only workflowSectionHeader clicks outside workflowNode cells)
+      - given workflowEditSectionForm is rendered, workflowEditSectionFormTitleField has the visible label 'Title', not 'Section'
 
     openQuestions: []
 
