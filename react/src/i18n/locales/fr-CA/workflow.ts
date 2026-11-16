@@ -49,6 +49,7 @@ const workflowFr = {
     presentationControlsLabel: 'Options d’affichage du tableau des résultats',
     assignmentCellLabel: '{{outcome}} — {{node}}',
     sectionRollupCellLabel: '{{outcome}} — résumé de {{section}}',
+    untaggedOutcomes: 'Résultats sans étiquette',
     summary: {
       classification: 'Classification', generalEducation: 'Formation générale',
       specificEducation: 'Formation spécifique', ponderation: 'Pondération',
